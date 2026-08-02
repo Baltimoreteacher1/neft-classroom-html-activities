@@ -6,7 +6,7 @@
     <title>Real-World Data Investigation — Statistics Culminating Project B</title>
     <meta
       name="description"
-      content="Pose a statistical question, analyze weather temperatures, compute measures of center and spread, and represent the data on a box plot. Step-by-step tab-based guide."
+      content="Pose a statistical question, analyze an eight-day weather sample, compute measures of center and spread using a stated quartile method, represent the data on a box plot, and explain the limits of a short sample."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -740,93 +740,6 @@
         transition: all 0.25s ease;
       }
 
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        width: 330px;
-        max-height: 480px;
-        overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        padding: 16px;
-        color: #f8fafc;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        box-shadow:
-          0 10px 25px -5px rgba(0, 0, 0, 0.3),
-          0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        display: none;
-        box-sizing: border-box;
-        text-align: left;
-      }
-      #teacher-console.show {
-        display: block;
-      }
-      #teacher-console h4 {
-        margin: 0 0 8px 0;
-        color: #38bdf8;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      #teacher-console .close-btn {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0 4px;
-        line-height: 1;
-      }
-      #teacher-console .close-btn:hover {
-        color: #f1f5f9;
-      }
-      #teacher-console table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-      #teacher-console td {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-      }
-      #teacher-console .lbl {
-        font-weight: 600;
-        color: #94a3b8;
-      }
-      #teacher-console .val {
-        font-weight: 700;
-        text-align: right;
-        color: #38bdf8;
-        word-break: break-all;
-      }
-      #teacher-console .prefill-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: #0284c7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      #teacher-console .prefill-btn:hover {
-        background: #0369a1;
-      }
           .lvl0-only { display: none; }
       body.level-0 .lvl0-only { display: block; }
     </style>
@@ -919,11 +832,11 @@
       <p class="hero-sub">
         <span class="en-text"
           >Statistics Culminating Project B — Pose a statistical question, analyze weather
-          variability, and map it using a box plot.</span
+          variability in an eight-day weather sample, and represent it using a box plot.</span
         >
         <span class="es-text"
           >Proyecto final de estadística B: plantea una pregunta estadística, analiza la
-          variabilidad del clima y represéntala en un diagrama de caja.</span
+          variabilidad de una muestra meteorológica de ocho días y represéntala en un diagrama de caja.</span
         >
       </p>
       <div class="hero-tags">
@@ -1086,12 +999,12 @@
               </div>
               <div class="vocab-def">
                 <span class="en-text"
-                  >The distance between the 1st and 3rd quartiles: IQR = Q3 - Q1. Measures typical
-                  spread.</span
+                  >The distance between the 1st and 3rd quartiles: IQR = Q3 − Q1. In this project,
+                  sort 8 values, split them into two groups of 4, and find the median of each half.</span
                 >
                 <span class="es-text"
-                  >La distancia entre el primer y tercer cuartil: RIC = Q3 - Q1. Mide la dispersión
-                  típica.</span
+                  >La distancia entre el primer y tercer cuartil: RIC = Q3 − Q1. En este proyecto,
+                  ordena 8 valores, sepáralos en dos grupos de 4 y halla la mediana de cada mitad.</span
                 >
               </div>
               <div class="vocab-ex">
@@ -1191,13 +1104,13 @@
           <div class="instruct">
             <span class="en-text"
               ><strong>Your job:</strong> Pose a statistical question about daily temperatures.
-              Then, enter daily high temperatures for 5 to 8 days in your chosen city and click
+              Then enter eight daily high temperatures from one city and one continuous date range. Click
               Calculate to find the statistical summaries.</span
             >
             <span class="es-text"
               ><strong>Tu trabajo:</strong> Plantea una pregunta estadística sobre las temperaturas
-              diarias. Luego, ingresa las temperaturas máximas diarias de 5 a 8 días para la ciudad
-              elegida y haz clic en Calcular para obtener los resúmenes estadísticos.</span
+              diarias. Luego, ingresa ocho temperaturas máximas diarias de una ciudad y un período
+              continuo. Haz clic en Calcular para obtener los resúmenes estadísticos.</span
             >
           </div>
 
@@ -1281,7 +1194,7 @@
               >🔍 Pose your Statistical Question for this weather investigation:</span
             >
             <span class="es-text"
-              >🔍 Plantea tu pregunta estadística para esta investigación del clima:</span
+              >🔍 Plantea tu pregunta estadística para esta investigación meteorológica:</span
             >
           </label>
           <input type="text" id="stat-question" placeholder="" />
@@ -1336,11 +1249,11 @@
               onclick="loadSampleData()"
             >
               <span class="en-text">📅 Load Sample Weather Data</span>
-              <span class="es-text">📅 Cargar datos climáticos de muestra</span>
+              <span class="es-text">📅 Cargar datos meteorológicos de muestra</span>
             </button>
             <span style="font-size: 13px; color: var(--muted); margin-left: 8px">
-              <span class="en-text">Loads 5 days of sample temperatures.</span>
-              <span class="es-text">Carga 5 días de temperaturas de muestra.</span>
+              <span class="en-text">Loads an illustrative 8-day dataset.</span>
+              <span class="es-text">Carga un conjunto ilustrativo de 8 días.</span>
             </span>
           </div>
 
@@ -1381,25 +1294,24 @@
               <input type="number" id="temp-5" placeholder="" oninput="clearCalculation()" />
             </div>
 
-            <!-- Days 6-8 are Level 2 challenge elements -->
-            <div class="lvl2-only">
+            <div>
               <label class="lbl" for="temp-6">
-                <span class="en-text">Day 6 Temp (Lvl 2)</span>
-                <span class="es-text">Temp Día 6 (Niv 2)</span>
+                <span class="en-text">Day 6 Temp</span>
+                <span class="es-text">Temp Día 6</span>
               </label>
               <input type="number" id="temp-6" placeholder="" oninput="clearCalculation()" />
             </div>
-            <div class="lvl2-only">
+            <div>
               <label class="lbl" for="temp-7">
-                <span class="en-text">Day 7 Temp (Lvl 2)</span>
-                <span class="es-text">Temp Día 7 (Niv 2)</span>
+                <span class="en-text">Day 7 Temp</span>
+                <span class="es-text">Temp Día 7</span>
               </label>
               <input type="number" id="temp-7" placeholder="" oninput="clearCalculation()" />
             </div>
-            <div class="lvl2-only">
+            <div>
               <label class="lbl" for="temp-8">
-                <span class="en-text">Day 8 Temp (Lvl 2)</span>
-                <span class="es-text">Temp Día 8 (Niv 2)</span>
+                <span class="en-text">Day 8 Temp</span>
+                <span class="es-text">Temp Día 8</span>
               </label>
               <input type="number" id="temp-8" placeholder="" oninput="clearCalculation()" />
             </div>
@@ -1419,12 +1331,12 @@
             <p style="font-size: 14px; margin-bottom: 8px">
               <span class="en-text"
                 >Add an outlier (a temperature much higher or lower than the rest) into one of the
-                Level 2 slots. How does it change the <strong>mean</strong> versus the
+                eight data slots. How does it change the <strong>mean</strong> versus the
                 <strong>median</strong>? Which center is more reliable when outliers exist?</span
               >
               <span class="es-text"
                 >Agrega un valor atípico (una temperatura mucho más alta o baja que el resto) en una
-                de las casillas de Nivel 2. ¿Cómo afecta a la <strong>media</strong> en comparación
+                una de las ocho casillas. ¿Cómo afecta a la <strong>media</strong> en comparación
                 con la <strong>mediana</strong>? ¿Qué medida de centro es más confiable cuando hay
                 valores atípicos?</span
               >
@@ -1609,15 +1521,15 @@
             <div class="card-icon gold">🌎</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 3 — Compare Regions</span>
-                <span class="es-text">Paso 3 — Comparar regiones</span>
+                <span class="en-text">Step 3 — Compare Samples &amp; Name the Limits</span>
+                <span class="es-text">Paso 3 — Comparar muestras y explicar los límites</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
-                  >Contrast your data spread against real regional databases</span
+                  >Compare IQRs without claiming that a short sample describes climate</span
                 >
                 <span class="es-text"
-                  >Compara la dispersión de tus datos con <span class="vocab-word" data-vocab="bases" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('bases')">bases</span> de datos regionales reales</span
+                  >Compara los RIC sin afirmar que una muestra corta describe el clima</span
                 >
               </div>
             </div>
@@ -1625,14 +1537,14 @@
 
           <div class="instruct gold">
             <span class="en-text"
-              ><strong>Your job:</strong> Compare your climate's Interquartile Range (IQR) to
-              standard regional weather metrics. Find which region matches your climate's
-              variability.</span
+              ><strong>Your job:</strong> Compare your eight-day weather IQR with one illustrative
+              sample below. Then explain a limit: eight days describe that period's weather, but
+              cannot establish a location's climate.</span
             >
             <span class="es-text"
-              ><strong>Tu trabajo:</strong> Compara el rango intercuartil (RIC) de tu clima con
-              métricas climáticas regionales estándar. Identifica qué región coincide con la
-              variabilidad de tu clima.</span
+              ><strong>Tu trabajo:</strong> Compara el RIC de tus ocho días con una muestra
+              ilustrativa. Luego explica un límite: ocho días describen el tiempo de ese período,
+              pero no establecen el clima de un lugar.</span
             >
           </div>
 
@@ -1648,12 +1560,12 @@
               rel="noopener noreferrer"
               class="level-btn"
               ><span class="en-text">NOAA — Past Weather ↗</span
-              ><span class="es-text">NOAA — Clima pasado ↗</span></a
+              ><span class="es-text">NOAA — Tiempo pasado ↗</span></a
             >
             <small class="sr-hint"
-              ><span class="en-text">Find: Monthly average temperatures for your city</span
+              ><span class="en-text">Find: daily highs from one continuous eight-day period</span
               ><span class="es-text"
-                >Buscar: Las temperaturas promedio mensuales de tu ciudad</span
+                >Buscar: máximas diarias de un período continuo de ocho días</span
               ></small
             >
             <input
@@ -1675,17 +1587,17 @@
             />
             🌎
             <a
-              href="https://en.wikipedia.org/wiki/U.S._state_and_territory_temperature_extremes"
+              href="https://www.ncei.noaa.gov/products/land-based-station/us-climate-normals"
               target="_blank"
               rel="noopener noreferrer"
               class="level-btn"
-              ><span class="en-text">Wikipedia — U.S. Temperature Extremes ↗</span
-              ><span class="es-text">Wikipedia — Temperaturas extremas de EE. UU. ↗</span></a
+              ><span class="en-text">NOAA — Climate Normals ↗</span
+              ><span class="es-text">NOAA — Normales climáticas ↗</span></a
             >
             <small class="sr-hint"
-              ><span class="en-text">Find: Record high and low for your state (the range)</span
+              ><span class="en-text">Find: why climate normals use long periods, not one week</span
               ><span class="es-text"
-                >Buscar: El récord máximo y mínimo de tu estado (el rango)</span
+                >Buscar: por qué las normales climáticas usan períodos largos, no una semana</span
               ></small
             >
             <input
@@ -1711,30 +1623,30 @@
             <div class="stat-box">
               <div class="stat-num" id="my-iqr-stat">—</div>
               <div class="stat-lbl">
-                <span class="en-text">Your Climate IQR</span>
-                <span class="es-text">Tu RIC de clima</span>
+                <span class="en-text">Your 8-Day Weather IQR</span>
+                <span class="es-text">Tu RIC meteorológico de 8 días</span>
               </div>
             </div>
           </div>
 
           <h3 style="font-size: 15px; font-weight: 800; color: var(--navy); margin-top: 20px">
-            <span class="en-text">🌎 Typical Daily Temperature IQRs by Region</span>
-            <span class="es-text">🌎 RIC de temperatura diaria típica por región</span>
+            <span class="en-text">🌎 Illustrative 8-Day Samples (not climate averages)</span>
+            <span class="es-text">🌎 Muestras ilustrativas de 8 días (no promedios climáticos)</span>
           </h3>
           <table class="data-table">
             <thead>
               <tr>
                 <th>
-                  <span class="en-text">Region Category</span>
-                  <span class="es-text">Categoría de región</span>
+                  <span class="en-text">Reference Sample</span>
+                  <span class="es-text">Muestra de referencia</span>
                 </th>
                 <th>
-                  <span class="en-text">Typical IQR Range</span>
-                  <span class="es-text">Rango de RIC típico</span>
+                  <span class="en-text">8 Daily Highs &amp; IQR</span>
+                  <span class="es-text">8 máximas diarias y RIC</span>
                 </th>
                 <th>
-                  <span class="en-text">Climate Characteristics</span>
-                  <span class="es-text">Características del clima</span>
+                  <span class="en-text">Valid Conclusion</span>
+                  <span class="es-text">Conclusión válida</span>
                 </th>
               </tr>
             </thead>
@@ -1742,42 +1654,38 @@
               <tr>
                 <td>
                   <span class="en-text"
-                    ><strong>Coastal Regions</strong> (e.g. Seattle, San Diego)</span
+                    ><strong>Sample C</strong> (illustrative)</span
                   >
                   <span class="es-text"
-                    ><strong>Regiones costeras</strong> (ej. Seattle, San Diego)</span
+                    ><strong>Muestra C</strong> (ilustrativa)</span
                   >
                 </td>
-                <td>5°F – 10°F</td>
+                <td>62, 64, 64, 65, 66, 67, 68, 69°F<br /><strong>IQR = 3.5°F</strong></td>
                 <td>
                   <span class="en-text"
-                    >Low variability. Sea breezes and ocean water buffer temperatures, keeping them
-                    highly consistent.</span
+                    >The middle half is tightly grouped. This sample does not prove a climate pattern.</span
                   >
                   <span class="es-text"
-                    >Variabilidad baja. Las brisas marinas y el agua del océano moderan las
-                    temperaturas, manteniéndolas muy constantes.</span
+                    >La mitad central está muy agrupada. Esta muestra no prueba un patrón climático.</span
                   >
                 </td>
               </tr>
               <tr>
                 <td>
                   <span class="en-text"
-                    ><strong>Desert Regions</strong> (e.g. Phoenix, Las Vegas)</span
+                    ><strong>Sample D</strong> (illustrative)</span
                   >
                   <span class="es-text"
-                    ><strong>Regiones desérticas</strong> (ej. Phoenix, Las Vegas)</span
+                    ><strong>Muestra D</strong> (ilustrativa)</span
                   >
                 </td>
-                <td>15°F – 25°F</td>
+                <td>58, 63, 69, 74, 79, 83, 88, 91°F<br /><strong>IQR = 19.5°F</strong></td>
                 <td>
                   <span class="en-text"
-                    >High variability. Dry air and lack of vegetation allow intense daytime heating
-                    and rapid nighttime cooling.</span
+                    >The middle half is more spread out. This sample does not identify the cause.</span
                   >
                   <span class="es-text"
-                    >Variabilidad alta. El aire seco y la escasez de vegetación permiten un
-                    calentamiento diurno intenso y un enfriamiento nocturno rápido.</span
+                    >La mitad central está más dispersa. Esta muestra no identifica la causa.</span
                   >
                 </td>
               </tr>
@@ -1787,57 +1695,55 @@
           <div style="margin-top: 20px">
             <label class="lbl" for="region-match">
               <span class="en-text"
-                >🌎 Which region does your weather log match better based on your IQR?</span
+                >🌎 Which illustrative sample has an IQR closer to your weather log?</span
               >
               <span class="es-text"
-                >🌎 ¿Con qué región coincide mejor tu registro meteorológico según tu RIC?</span
+                >🌎 ¿Qué muestra ilustrativa tiene un RIC más cercano al de tu registro?</span
               >
             </label>
             <select id="region-match">
               <option value="">-- Select a match --</option>
-              <option value="Coastal Region">Coastal Region (IQR: 5°F - 10°F)</option>
-              <option value="Desert Region">Desert Region (IQR: 15°F - 25°F)</option>
+              <option value="Coastal Region">Sample C (IQR: 3.5°F)</option>
+              <option value="Desert Region">Sample D (IQR: 19.5°F)</option>
               <option value="Neither">
-                Neither / Other (IQR outside typical coastal/desert ranges)
+                Both are equally close / I need more data
               </option>
             </select>
           </div>
 
           <label class="lbl" for="region-explain" style="margin-top: 14px">
             <span class="en-text"
-              >✍️ Compare your temperature statistics to this region. How does your IQR support your
-              choice?</span
+              >✍️ Compare the two IQRs. Then state one conclusion the samples support and one
+              conclusion they do not support.</span
             >
             <span class="es-text"
-              >✍️ Compara tus estadísticas de temperatura con esta región. ¿Cómo justifica tu RIC tu
-              elección?</span
+              >✍️ Compara los dos RIC. Luego escribe una conclusión válida y una que los datos no
+              pueden justificar.</span
             >
           </label>
           <textarea
             id="region-explain"
-            placeholder="My daily temperature IQR is ___°F, which fits into... This means my weather is..."
+            placeholder="My 8-day IQR is ___°F. It is ___°F from Sample ___. The samples support ___. They do not prove that the city's climate is ___."
           ></textarea>
 
           <div class="lvl2-block lvl2-only">
             <span class="lvl2-label">
-              <span class="en-text">LEVEL 2 SCIENCE INQUIRY — Thermal Absorption</span>
-              <span class="es-text">INVESTIGACIÓN CIENTÍFICA NIVEL 2 — Absorción térmica</span>
+              <span class="en-text">LEVEL 2 INQUIRY — What Evidence Is Missing?</span>
+              <span class="es-text">INVESTIGACIÓN NIVEL 2 — ¿Qué evidencia falta?</span>
             </span>
             <p style="font-size: 14px; margin-bottom: 8px">
               <span class="en-text"
-                >Explain the scientific reason behind these differences. Why does water (specific
-                heat capacity) stabilize temperatures in coastal areas while deserts have wide
-                temperature swings?</span
+                >What additional evidence would you need before explaining a climate pattern?
+                Consider a longer date range, matching seasons, location, and multiple years.</span
               >
               <span class="es-text"
-                >Explica la razón científica detrás de estas diferencias. ¿Por qué el agua
-                (capacidad calorífica específica) estabiliza las temperaturas en las zonas costeras
-                mientras que los desiertos tienen grandes oscilaciones de temperatura?</span
+                >¿Qué evidencia adicional necesitarías antes de explicar un patrón climático?
+                Considera un período más largo, la misma estación, la ubicación y varios años.</span
               >
             </p>
             <textarea
               id="science-reason"
-              placeholder="Coastal regions have smaller IQRs because water has a high specific heat capacity, which... On the other hand, deserts..."
+              placeholder="Before making a climate claim, I would need ___ because ___."
             ></textarea>
           </div>
         </div>
@@ -1868,11 +1774,10 @@
               </h2>
               <div class="card-sub">
                 <span class="en-text"
-                  >Swap data logs and analyze differences in centers and spreads</span
+                  >Compare two weather samples without making climate claims</span
                 >
                 <span class="es-text"
-                  >Intercambien registros de datos y analicen las diferencias en los centros y
-                  dispersiones</span
+                  >Comparen dos muestras meteorológicas sin afirmar conclusiones climáticas</span
                 >
               </div>
             </div>
@@ -1880,13 +1785,14 @@
 
           <div class="instruct teal">
             <span class="en-text"
-              ><strong>Your job:</strong> Find a classmate, swap your calculated weather statistics,
-              and enter their data below. Analyze who has the more consistent weather pattern.</span
+              ><strong>Your job:</strong> Exchange only the calculated median and IQR for two
+              weather samples. Compare variability during those date ranges. Do not conclude that
+              either sample represents a location's climate.</span
             >
             <span class="es-text"
-              ><strong>Tu trabajo:</strong> Busca a un compañero, intercambien sus estadísticas
-              meteorológicas calculadas e ingresa sus datos a continuación. Analicen quién tiene el
-              patrón climático más constante.</span
+              ><strong>Tu trabajo:</strong> Intercambien solo la mediana y el RIC de dos muestras.
+              Comparen la variabilidad de esos períodos. No concluyan que una muestra representa el
+              clima de un lugar.</span
             >
           </div>
 
@@ -1985,19 +1891,19 @@
           </div>
 
           <button class="calc-btn teal" onclick="comparePartner()">
-            <span class="en-text">📊 Compare Our Climates</span>
-            <span class="es-text">📊 Comparar nuestros climas</span>
+            <span class="en-text">📊 Compare Our Weather Samples</span>
+            <span class="es-text">📊 Comparar nuestras muestras meteorológicas</span>
           </button>
           <div class="readout" id="partner-out"></div>
 
           <label class="lbl" for="p-reflect" style="margin-top: 18px">
             <span class="en-text"
               >✍️ Reflection: What do the differences in your medians and IQRs tell you about the
-              climates of your two locations?</span
+              weather samples during the dates studied? What can you not conclude?</span
             >
             <span class="es-text"
               >✍️ Reflexión: ¿Qué les dicen las diferencias en sus medianas y RIC sobre los climas
-              de sus dos ubicaciones?</span
+              de las dos muestras durante las fechas estudiadas? ¿Qué no pueden concluir?</span
             >
           </label>
           <textarea
@@ -2043,13 +1949,13 @@
 
           <div class="instruct green">
             <span class="en-text"
-              ><strong>Your job:</strong> Write a 3–5 sentence weather analysis pitch summarizing
-              your climate statistics. Verify the project checklist, read the rubric, and generate
+              ><strong>Your job:</strong> Write a 3–5 sentence weather analysis that summarizes
+              your sample statistics and names one limitation. Verify the checklist and generate
               your final printable report.</span
             >
             <span class="es-text"
               ><strong>Tu trabajo:</strong> Escribe un pitch de análisis meteorológico de 3 a 5
-              oraciones que resuma tus estadísticas climáticas. Verifica la lista de verificación
+              oraciones que resuma las estadísticas de tu muestra y un límite. Verifica la lista
               del proyecto, lee la rúbrica y genera tu informe final imprimible.</span
             >
           </div>
@@ -2057,12 +1963,10 @@
           <!-- Pitch -->
           <label class="lbl" for="pitch">
             <span class="en-text"
-              >✍️ Weather Analysis Pitch (Summarize the climate using your mean, median, and
-              IQR):</span
+              >✍️ Weather Analysis Pitch (Use mean, median, IQR, and one limitation):</span
             >
             <span class="es-text"
-              >✍️ Pitch de análisis del clima (resume el clima usando la media, mediana y el
-              RIC):</span
+              >✍️ Pitch meteorológico (usa media, mediana, RIC y un límite):</span
             >
           </label>
           <textarea
@@ -2084,11 +1988,10 @@
             <li>
               <input type="checkbox" id="ck2" />
               <span class="en-text"
-                >I recorded 5–8 daily temperature observations in a dataset.</span
+                >I recorded 8 daily temperature observations from one continuous date range.</span
               >
               <span class="es-text"
-                >Registré de 5 a 8 observaciones de temperatura diaria en un conjunto de
-                datos.</span
+                >Registré 8 temperaturas diarias de un período continuo.</span
               >
             </li>
             <li>
@@ -2109,10 +2012,10 @@
             <li>
               <input type="checkbox" id="ck5" />
               <span class="en-text"
-                >I compared my climate to coastal and desert regional tables.</span
+                >I compared my weather sample with an illustrative reference sample.</span
               >
               <span class="es-text"
-                >Comparé mi clima con las tablas de las regiones costeras y desérticas.</span
+                >Comparé mi muestra meteorológica con una muestra ilustrativa.</span
               >
             </li>
             <li>
@@ -2247,17 +2150,17 @@
                 </td>
                 <td>
                   <span class="en-text"
-                    >Detailed comparisons against regional averages and classmates with scientific
-                    reasoning.</span
+                    >Compares two samples with correct IQR evidence and states what the short
+                    samples cannot prove.</span
                   >
                   <span class="es-text"
-                    >Comparaciones detalladas con los promedios regionales y compañeros de clase con
-                    razonamiento científico.</span
+                    >Compara dos muestras con evidencia correcta de RIC y explica lo que las
+                    muestras cortas no pueden probar.</span
                   >
                 </td>
                 <td>
-                  <span class="en-text">Compared IQR against regions and a partner.</span>
-                  <span class="es-text">Comparó el RIC con las regiones y un compañero.</span>
+                  <span class="en-text">Compared IQRs and included a reasonable limitation.</span>
+                  <span class="es-text">Comparó los RIC e incluyó un límite razonable.</span>
                 </td>
                 <td>
                   <span class="en-text">Lacks data support in comparisons.</span>
@@ -2518,19 +2421,15 @@
 
       // ---- Pre-load sample data for Level 1 ----
       function loadSampleData() {
-        const sample = [72, 75, 78, 70, 75];
-        for (let i = 1; i <= 5; i++) {
+        const sample = [68, 70, 72, 72, 74, 75, 77, 80];
+        for (let i = 1; i <= 8; i++) {
           const el = document.getElementById("temp-" + i);
           if (el) el.value = sample[i - 1];
         }
-        for (let i = 6; i <= 8; i++) {
-          const el = document.getElementById("temp-" + i);
-          if (el) el.value = "";
-        }
         const isEs = document.body.classList.contains("es");
         document.getElementById("stat-question").value = isEs
-          ? "¿Cuál fue la temperatura máxima diaria en San Diego durante un período de 5 días?"
-          : "What was the daily high temperature in San Diego over a 5-day period?";
+          ? "¿Cuáles fueron las temperaturas máximas diarias en la Ciudad Ejemplo durante 8 días consecutivos?"
+          : "What were the daily high temperatures in Example City during 8 consecutive days?";
         calculateStats();
       }
 
@@ -2547,8 +2446,7 @@
       // ---- Statistics Calculations ----
       function calculateStats() {
         const values = [];
-        const isLvl2 = document.getElementById("body").classList.contains("level-2");
-        const totalInputs = isLvl2 ? 8 : 5;
+        const totalInputs = 8;
         const isEs = document.body.classList.contains("es");
 
         for (let i = 1; i <= totalInputs; i++) {
@@ -2560,10 +2458,10 @@
           }
         }
 
-        if (values.length < 5) {
+        if (values.length < 8) {
           const errMsg = isEs
-            ? `<span style="color:#ef4444; font-weight:bold;">⚠️ Por favor ingresa al menos 5 valores de temperatura para ejecutar los cálculos.</span>`
-            : `<span style="color:#ef4444; font-weight:bold;">⚠️ Please enter at least 5 temperature values to run calculations.</span>`;
+            ? `<span style="color:#ef4444; font-weight:bold;">⚠️ Ingresa los 8 valores de temperatura para ejecutar los cálculos.</span>`
+            : `<span style="color:#ef4444; font-weight:bold;">⚠️ Enter all 8 temperature values to run calculations.</span>`;
           showReadout("stats-out", errMsg);
           return;
         }
@@ -2584,7 +2482,8 @@
         const max = sorted[sorted.length - 1];
         const range = max - min;
 
-        // Q1 and Q3 calculation (middle school method)
+        // Project quartile convention: split the sorted values into equal lower
+        // and upper halves, then take the median of each half.
         let lowerHalf = [];
         let upperHalf = [];
         if (sorted.length % 2 === 0) {
@@ -2824,28 +2723,28 @@
 
         let text = isEs
           ? `
-          <strong>📊 Resumen de comparación climática:</strong><br>
+          <strong>📊 Resumen de comparación de muestras:</strong><br>
           • <strong>Mediana (Centro):</strong> Tu temperatura mediana es de <strong>${myMed.toFixed(1)}°F</strong>. La de ${pName} es de <strong>${pMedVal.toFixed(1)}°F</strong> (Diferencia: <strong>${medDiff}°F</strong>).<br>
           • <strong>RIC (Dispersión):</strong> Tu RIC es de <strong>${myIqr.toFixed(1)}°F</strong>. El de ${pName} es de <strong>${pIqrVal.toFixed(1)}°F</strong> (Diferencia: <strong>${iqrDiff}°F</strong>).<br><br>
         `
           : `
-          <strong>📊 Climate Comparison Summary:</strong><br>
+          <strong>📊 Weather Sample Comparison:</strong><br>
           • <strong>Median (Center):</strong> Your median high temperature is <strong>${myMed.toFixed(1)}°F</strong>. ${pName}'s median is <strong>${pMedVal.toFixed(1)}°F</strong> (Difference: <strong>${medDiff}°F</strong>).<br>
           • <strong>IQR (Spread):</strong> Your IQR is <strong>${myIqr.toFixed(1)}°F</strong>. ${pName}'s IQR is <strong>${pIqrVal.toFixed(1)}°F</strong> (Difference: <strong>${iqrDiff}°F</strong>).<br><br>
         `;
 
         if (myIqr < pIqrVal) {
           text += isEs
-            ? `✨ Tu clima es <strong>más constante (menos variable)</strong> porque el rango de tu temperatura (RIC) es más estrecho por ${iqrDiff}°F.`
-            : `✨ Your climate is <strong>more consistent (less variable)</strong> because your temperature spread (IQR) is narrower by ${iqrDiff}°F.`;
+            ? `✨ Tu muestra meteorológica es <strong>menos variable</strong> durante las fechas estudiadas porque su RIC es menor por ${iqrDiff}°F.`
+            : `✨ Your weather sample is <strong>less variable</strong> during the dates studied because its IQR is narrower by ${iqrDiff}°F.`;
         } else if (myIqr > pIqrVal) {
           text += isEs
-            ? `✨ El clima de ${pName} es <strong>más constante (menos variable)</strong> porque su rango de temperatura (RIC) es más estrecho por ${iqrDiff}°F.`
-            : `✨ ${pName}'s climate is <strong>more consistent (less variable)</strong> because their temperature spread (IQR) is narrower by ${iqrDiff}°F.`;
+            ? `✨ La muestra de ${pName} es <strong>menos variable</strong> durante las fechas estudiadas porque su RIC es menor por ${iqrDiff}°F.`
+            : `✨ ${pName}'s weather sample is <strong>less variable</strong> during the dates studied because its IQR is narrower by ${iqrDiff}°F.`;
         } else {
           text += isEs
-            ? `✨ Ambos climas tienen la <strong>misma constancia de temperatura</strong> (mismo RIC).`
-            : `✨ Both of your climates have the <strong>exact same temperature consistency</strong> (equal IQRs).`;
+            ? `✨ Las dos muestras tienen el <strong>mismo RIC</strong> durante las fechas estudiadas.`
+            : `✨ Both weather samples have the <strong>same IQR</strong> for the dates studied.`;
         }
 
         showReadout("partner-out", text);
@@ -2889,7 +2788,7 @@
         let lines = [];
         if (isEs) {
           lines = [
-            "═══ PROYECTO FINAL DE ESTADÍSTICA — INVESTIGACIÓN CLIMÁTICA B ═══",
+            "═══ PROYECTO FINAL DE ESTADÍSTICA — INVESTIGACIÓN METEOROLÓGICA B ═══",
             `Nivel de desafío: ${isLvl2 ? "Nivel 2 (Desafío)" : "Nivel 1 (Con apoyo)"}`,
             `Generado: ${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}`,
             "═════════════════════════════════════════════════════════════════",
@@ -2909,18 +2808,18 @@
             `   Gráfico recomendado: ${displayBest}`,
             `   Razón de selección de gráfico: ${displayExplain}`,
             "",
-            "🌎 PASO 3 — COMPARACIÓN CON REGIONES",
-            `   Categoría de región coincidente: ${regionMatch}`,
-            `   Razonamiento de comparación regional: ${regionExplain}`,
+            "🌎 PASO 3 — COMPARACIÓN DE MUESTRAS Y LÍMITES",
+            `   Muestra de referencia: ${regionMatch}`,
+            `   Comparación y límite: ${regionExplain}`,
           ];
 
           if (isLvl2) {
-            lines.push(`   Razonamiento científico térmico (Niv 2): ${scienceReason}`);
+            lines.push(`   Evidencia adicional necesaria (Niv 2): ${scienceReason}`);
           }
 
           lines.push(
             "",
-            "👥 PASO 4 — ALINEACIÓN CLIMÁTICA CON UN COMPAÑERO",
+            "👥 PASO 4 — COMPARACIÓN DE MUESTRAS",
             `   Nombre del compañero: ${pName}`,
             `   Mediana del compañero: ${pMedian}°F | RIC del compañero: ${pIqr}°F`,
             `   Reflexión: ${pReflect}`,
@@ -2952,18 +2851,18 @@
             `   Recommended Display: ${displayBest}`,
             `   Display Selection Reason: ${displayExplain}`,
             "",
-            "🌎 STEP 3 — COMPARISON TO REGIONAL BASES",
-            `   Region Category Match: ${regionMatch}`,
-            `   Regional Comparison Reasoning: ${regionExplain}`,
+            "🌎 STEP 3 — SAMPLE COMPARISON & LIMITS",
+            `   Reference sample: ${regionMatch}`,
+            `   Comparison and limitation: ${regionExplain}`,
           ];
 
           if (isLvl2) {
-            lines.push(`   Thermal Science Reasoning (Lvl 2): ${scienceReason}`);
+            lines.push(`   Additional evidence needed (Lvl 2): ${scienceReason}`);
           }
 
           lines.push(
             "",
-            "👥 STEP 4 — CLASSMATE CLIMATE ALIGNMENT",
+            "👥 STEP 4 — WEATHER SAMPLE COMPARISON",
             `   Partner Name: ${pName}`,
             `   Partner Median: ${pMedian}°F | Partner IQR: ${pIqr}°F`,
             `   Reflection: ${pReflect}`,
@@ -3082,14 +2981,14 @@
             ? "-- Seleccionar una opción --"
             : "-- Select a match --";
           selectRegion.options[1].text = isEs
-            ? "Región costera (RIC: 5 °F - 10 °F)"
-            : "Coastal Region (IQR: 5°F - 10°F)";
+            ? "Muestra C (RIC: 3.5 °F)"
+            : "Sample C (IQR: 3.5°F)";
           selectRegion.options[2].text = isEs
-            ? "Región desértica (RIC: 15 °F - 25 °F)"
-            : "Desert Region (IQR: 15°F - 25°F)";
+            ? "Muestra D (RIC: 19.5 °F)"
+            : "Sample D (IQR: 19.5°F)";
           selectRegion.options[3].text = isEs
-            ? "Ninguna / Otra (RIC fuera de los rangos típicos)"
-            : "Neither / Other (IQR outside typical coastal/desert ranges)";
+            ? "Ambas están igual de cerca / necesito más datos"
+            : "Both are equally close / I need more data";
           selectRegion.value = val;
         }
       }
@@ -3119,15 +3018,15 @@
         const regionExplain = document.getElementById("region-explain");
         if (regionExplain) {
           regionExplain.placeholder = isEs
-            ? "El RIC de mi temperatura diaria es ___ °F, lo que encaja en... Esto significa que mi clima es..."
-            : "My daily temperature IQR is ___°F, which fits into... This means my weather is...";
+            ? "Mi RIC de 8 días es ___ °F. Está a ___ °F de la muestra ___. Los datos apoyan ___, pero no prueban ___."
+            : "My 8-day IQR is ___°F. It is ___°F from Sample ___. The data support ___, but do not prove ___.";
         }
 
         const scienceReason = document.getElementById("science-reason");
         if (scienceReason) {
           scienceReason.placeholder = isEs
-            ? "Las regiones costeras tienen RIC más pequeños porque el agua tiene una alta capacidad calorífica específica, lo que... Por otro lado, los desiertos..."
-            : "Coastal regions have smaller IQRs because water has a high specific heat capacity, which... On the other hand, deserts...";
+            ? "Antes de afirmar algo sobre el clima, necesitaría ___ porque ___."
+            : "Before making a climate claim, I would need ___ because ___.";
         }
 
         const pName = document.getElementById("p-name");
@@ -3247,98 +3146,6 @@
       updatePlaceholders();
       translateSelects();
 
-      function toggleGradingConsole() {
-        const el = document.getElementById("teacher-console");
-        if (el) {
-          el.classList.toggle("show");
-          if (el.classList.contains("show")) updateGradingAnswers();
-        }
-      }
-
-      function prefillGradingConsole() {
-        // Fill the real temperature inputs with the Level-1 sample set, then
-        // recompute the grading answers.
-        loadSampleData();
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const resolver = function () {
-            const vals = [];
-            for (let i = 1; i <= 8; i++) {
-              const el = document.getElementById("temp-" + i);
-              if (!el) continue;
-              const v = parseFloat(el.value);
-              if (!isNaN(v)) vals.push(v);
-            }
-            if (!vals.length) return { Error: "No values" };
-            const sorted = [...vals].sort((a, b) => a - b);
-            const sum = sorted.reduce((a, b) => a + b, 0);
-            const mean = sum / sorted.length;
-            const mid = Math.floor(sorted.length / 2);
-            const median =
-              sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-            const min = sorted[0];
-            const max = sorted[sorted.length - 1];
-            const range = max - min;
-            // Quartiles via the middle-school exclusive method (median-excluded
-            // for odd counts) — identical to the student calculateStats().
-            const getMedian = function (arr) {
-              if (!arr.length) return 0;
-              const m = Math.floor(arr.length / 2);
-              return arr.length % 2 !== 0 ? arr[m] : (arr[m - 1] + arr[m]) / 2;
-            };
-            let lowerHalf, upperHalf;
-            if (sorted.length % 2 === 0) {
-              lowerHalf = sorted.slice(0, mid);
-              upperHalf = sorted.slice(mid);
-            } else {
-              lowerHalf = sorted.slice(0, mid);
-              upperHalf = sorted.slice(mid + 1);
-            }
-            const q1 = getMedian(lowerHalf);
-            const q3 = getMedian(upperHalf);
-            const iqr = q3 - q1;
-            return {
-              Count: sorted.length,
-              "Expected Mean": mean.toFixed(2),
-              "Expected Median": median.toFixed(2),
-              "Expected Range": `${max} - ${min} = ${range}`,
-              "Expected Q1": q1.toFixed(2),
-              "Expected Q3": q3.toFixed(2),
-              "Expected IQR": iqr.toFixed(2),
-            };
-          };
-          const ans = resolver();
-          const body = document.getElementById("teacher-answers-body");
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans)
-              .map(
-                ([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `,
-              )
-              .join("");
-          }
-        } catch (e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-
-      // Teacher-only reveal: obscure, non-hijacking chord (Alt+Shift+G).
-      // (Ctrl+Shift+T is a browser "reopen closed tab" shortcut, so it is not
-      // used; the student-reachable triple-click on the title has been removed.)
-      document.addEventListener("keydown", function (e) {
-        if (e.altKey && e.shiftKey && e.key.toLowerCase() === "g") {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
-
       window.exportStudentBackup = function () {
         try {
           const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
@@ -3394,7 +3201,6 @@
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === "function") updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
@@ -3405,56 +3211,15 @@
         reader.readAsText(file);
       };
 
-      document.addEventListener("DOMContentLoaded", function () {
-        // Teacher grading console is reached via the Alt+Shift+G chord only.
-        // (The former triple-click gesture on the title was student-reachable
-        // and has been removed to keep answers teacher-only.)
-        // Re-calculate answers when any temperature input (temp-1..temp-8) changes
-        document.addEventListener("input", function (e) {
-          if (/^temp-[1-8]$/.test(e.target.id || "")) {
-            updateGradingAnswers();
-          }
-        });
-      });
     </script>
 
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
-        Calculated dynamically based on student inputs:
-      </p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display: flex; gap: 6px; margin-top: 6px">
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #059669"
-          onclick="exportStudentBackup()"
-        >
-          📥 Export JSON
-        </button>
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #7c3aed"
-          onclick="triggerImportStudentBackup()"
-        >
-          📤 Import JSON
-        </button>
-      </div>
-      <input
-        type="file"
-        id="student-backup-file-input"
-        style="display: none"
-        onchange="importStudentBackup(event)"
-        accept=".json"
-      />
-    </div>
+    <input
+      type="file"
+      id="student-backup-file-input"
+      style="display: none"
+      onchange="importStudentBackup(event)"
+      accept=".json"
+    />
 
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>

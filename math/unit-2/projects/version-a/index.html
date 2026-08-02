@@ -724,94 +724,6 @@
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
-
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        width: 330px;
-        max-height: 480px;
-        overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        padding: 16px;
-        color: #f8fafc;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        box-shadow:
-          0 10px 25px -5px rgba(0, 0, 0, 0.3),
-          0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        display: none;
-        box-sizing: border-box;
-        text-align: left;
-      }
-      #teacher-console.show {
-        display: block;
-      }
-      #teacher-console h4 {
-        margin: 0 0 8px 0;
-        color: #38bdf8;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      #teacher-console .close-btn {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0 4px;
-        line-height: 1;
-      }
-      #teacher-console .close-btn:hover {
-        color: #f1f5f9;
-      }
-      #teacher-console table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-      #teacher-console td {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-      }
-      #teacher-console .lbl {
-        font-weight: 600;
-        color: #94a3b8;
-      }
-      #teacher-console .val {
-        font-weight: 700;
-        text-align: right;
-        color: #38bdf8;
-        word-break: break-all;
-      }
-      #teacher-console .prefill-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: #0284c7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      #teacher-console .prefill-btn:hover {
-        background: #0369a1;
-      }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1849,11 +1761,11 @@
                 margin-bottom: 6px;
               "
             >
-              🥯 Real-World Bakery Yields
+              🥯 Illustrative Bakery Yield Ranges
             </h3>
             <p style="font-size: 14px; color: var(--muted); margin-bottom: 6px">
-              Compare your roll cut slice yield against typical professional
-              bakery batch ranges:
+              Compare your roll-cut quotient with these classroom example ranges. Actual bakery
+              yields depend on recipe size, loaf dimensions, and serving size.
             </p>
             <table class="data-table">
               <thead>
@@ -1887,8 +1799,8 @@
               </tbody>
             </table>
             <label class="lbl" for="bakery-compare"
-              >Compare your roll cuts to the table. Which bakery item does your
-              yield match best? Write 1-2 sentences.</label
+              >Compare your roll cuts to the illustrative table. Which range contains your
+              whole-slice yield? Write 1-2 sentences and name the roll and slice sizes.</label
             >
             <textarea
               id="bakery-compare"
@@ -2050,8 +1962,8 @@
           <div class="readout" id="peer-out"></div>
 
           <label class="lbl" for="peer-reflect" style="margin-top: 18px"
-            >How does divisor size affect servings? Compare your results and
-            explain using your math vocabulary.</label
+            >For the same positive recipe amount (dividend), how does divisor size affect
+            servings? Compare your results and explain using your math vocabulary.</label
           >
           <textarea
             id="peer-reflect"
@@ -2229,8 +2141,8 @@
               <tr>
                 <td><strong>Real-World &amp; Peer Analysis</strong></td>
                 <td>
-                  Explains clearly how divisor size affects the quotient size,
-                  referencing partner comparison and bakery yields.
+                  Explains clearly how divisor size affects the quotient when the same positive
+                  dividend is held constant, referencing numeric comparisons.
                 </td>
                 <td>Completed partner swap and real bakery comparisons.</td>
                 <td>
@@ -3186,136 +3098,6 @@
         originalGoStep(n);
       };
 
-      function toggleGradingConsole() {
-        const el = document.getElementById("teacher-console");
-        if (el) {
-          el.classList.toggle("show");
-          if (el.classList.contains("show")) updateGradingAnswers();
-        }
-      }
-
-      function prefillGradingConsole() {
-        // Restore the Level-1 default sample inputs, then recompute.
-        const samples = {
-          "p1-dividend": "3/4",
-          "p1-divisor": "1/8",
-          "p2-batch": "4",
-          "p2-scoop": "3",
-          "p3-roll-w": "2",
-          "p3-roll-frac": "1/2",
-          "p3-slice": "1/4",
-        };
-        for (const [id, val] of Object.entries(samples)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        recalcAll();
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const resolver = function () {
-            const isL2 = document.body.classList.contains("level-2");
-            const fmt = (x) =>
-              Number.isFinite(x)
-                ? (Math.round(x * 100) / 100).toString()
-                : "—";
-
-            // Step 1 — Portion Control (fraction ÷ fraction)
-            let n1, d1, n2, d2, s1Eq;
-            if (!isL2) {
-              [n1, d1] = document
-                .getElementById("p1-dividend")
-                .value.split("/")
-                .map(Number);
-              [n2, d2] = document
-                .getElementById("p1-divisor")
-                .value.split("/")
-                .map(Number);
-              s1Eq =
-                document.getElementById("p1-dividend").value +
-                " ÷ " +
-                document.getElementById("p1-divisor").value;
-            } else {
-              n1 = parseInt(document.getElementById("p1-div-num").value);
-              d1 = parseInt(document.getElementById("p1-div-den").value);
-              n2 = parseInt(document.getElementById("p1-div-num2").value);
-              d2 = parseInt(document.getElementById("p1-div-den2").value);
-              s1Eq = `${n1}/${d1} ÷ ${n2}/${d2}`;
-            }
-            const portQ = n1 && d1 && n2 && d2 ? (n1 * d2) / (d1 * n2) : NaN;
-
-            // Step 2 — Big Batch (whole ÷ unit fraction)
-            const w = parseInt(
-              document.getElementById(isL2 ? "p2-batch-input" : "p2-batch")
-                .value,
-            );
-            const scoopDen = parseInt(
-              document.getElementById(isL2 ? "p2-scoop-den" : "p2-scoop").value,
-            );
-            const batchQ = w && scoopDen ? w * scoopDen : NaN;
-
-            // Step 3 — Roll Cuts (mixed number ÷ fraction)
-            let rw, rn, rd, sn, sd;
-            if (!isL2) {
-              rw = parseInt(document.getElementById("p3-roll-w").value);
-              [rn, rd] = document
-                .getElementById("p3-roll-frac")
-                .value.split("/")
-                .map(Number);
-              [sn, sd] = document
-                .getElementById("p3-slice")
-                .value.split("/")
-                .map(Number);
-            } else {
-              rw = parseInt(document.getElementById("p3-roll-w-input").value) || 0;
-              rn = parseInt(document.getElementById("p3-roll-num").value) || 0;
-              rd = parseInt(document.getElementById("p3-roll-den").value) || 1;
-              sn = parseInt(document.getElementById("p3-slice-num").value);
-              sd = parseInt(document.getElementById("p3-slice-den").value);
-            }
-            const rollImp = rw * rd + rn;
-            const rollQ =
-              rd && sn && sd ? (rollImp * sd) / (rd * sn) : NaN;
-
-            return {
-              "Step 1 · Portion Control": `${s1Eq} = ${fmt(portQ)} portions`,
-              "Step 2 · Big Batch": `${w || "—"} ÷ 1/${scoopDen || "—"} = ${fmt(batchQ)} servings`,
-              "Step 3 · Roll Cuts": `${rw} ${rn}/${rd} ÷ ${sn}/${sd} = ${fmt(rollQ)} slices`,
-              "Step 4 · Partner Compare": "Difference of student vs. partner (no fixed answer)",
-            };
-          };
-          const ans = resolver();
-          const body = document.getElementById("teacher-answers-body");
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans)
-              .map(
-                ([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `,
-              )
-              .join("");
-          }
-        } catch (e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-
-      // Wire up key listener (Ctrl+Alt+G — non-hijacking) and triple click on h1
-      document.addEventListener("keydown", function (e) {
-        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "g") {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
-
       window.exportStudentBackup = function () {
         try {
           const state = window.NeftSaveResume
@@ -3375,8 +3157,6 @@
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === "function")
-                updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
@@ -3386,97 +3166,9 @@
         };
         reader.readAsText(file);
       };
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const titleEl = document.querySelector(".hero h1");
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener("click", function () {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => {
-              clicks = 0;
-            }, 1000);
-          });
-        }
-        // Re-calculate answers when any project input changes
-        document.addEventListener("input", function (e) {
-          const inputs = [
-            "p1-div-num",
-            "p1-div-den",
-            "p1-div-num2",
-            "p1-div-den2",
-            "p2-batch-input",
-            "p2-scoop-den",
-            "p3-roll-w-input",
-            "p3-roll-num",
-            "p3-roll-den",
-            "p3-slice-num",
-            "p3-slice-den",
-          ];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-        document.addEventListener("change", function (e) {
-          const selects = [
-            "p1-dividend",
-            "p1-divisor",
-            "p2-batch",
-            "p2-scoop",
-            "p3-roll-w",
-            "p3-roll-frac",
-            "p3-slice",
-          ];
-          if (selects.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
     </script>
+    <input type="file" id="student-backup-file-input" hidden onchange="importStudentBackup(event)" accept=".json" />
 
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
-        Calculated dynamically based on student inputs:
-      </p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">
-        Prefill Sample Answers
-      </button>
-      <div style="display: flex; gap: 6px; margin-top: 6px">
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #059669"
-          onclick="exportStudentBackup()"
-        >
-          📥 Export JSON
-        </button>
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #7c3aed"
-          onclick="triggerImportStudentBackup()"
-        >
-          📤 Import JSON
-        </button>
-      </div>
-      <input
-        type="file"
-        id="student-backup-file-input"
-        style="display: none"
-        onchange="importStudentBackup(event)"
-        accept=".json"
-      />
-    </div>
 
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>

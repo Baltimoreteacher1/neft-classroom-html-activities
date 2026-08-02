@@ -88,7 +88,8 @@
       })
       .join("");
     var card = document.createElement("section");
-    card.className = "cms-goals no-print";
+    // The brief is part of the student product and belongs in print/PDF output.
+    card.className = "cms-goals";
     card.setAttribute("aria-labelledby", "cms-goals-title");
     card.innerHTML =
       '<p class="cms-kicker">' +
@@ -97,6 +98,11 @@
       '<h2 id="cms-goals-title">' +
       bi(config.title.en, config.title.es) +
       "</h2>" +
+      '<p class="cms-mission"><strong>' +
+      bi("Your mission:", "Tu misión:") +
+      "</strong> " +
+      bi(config.question.en, config.question.es) +
+      "</p>" +
       '<div class="cms-goals__grid">' +
       "<article><h3>" +
       bi("Mathematics target", "Meta de matemáticas") +
@@ -108,17 +114,47 @@
       "</h3><p>" +
       bi(config.languageTarget.en, config.languageTarget.es) +
       "</p></article>" +
+      '<article class="cms-goals__product"><h3>' +
+      bi("Final product", "Producto final") +
+      "</h3><p>" +
+      bi(
+        config.product?.en ||
+          "An audience-ready project proposal with labeled math, a model, evidence, and a revision.",
+        config.product?.es ||
+          "Una propuesta lista para una audiencia con matemáticas rotuladas, un modelo, evidencia y una revisión.",
+      ) +
+      "</p></article>" +
       "<article><h3>" +
-      bi("Possible client", "Cliente posible") +
+      bi("Audience or client", "Audiencia o cliente") +
       "</h3><p>" +
       bi(config.client.en, config.client.es) +
       "</p></article>" +
-      "<article><h3>" +
-      bi("Driving question", "Pregunta guía") +
-      "</h3><p>" +
-      bi(config.question.en, config.question.es) +
-      "</p></article>" +
       "</div>" +
+      '<ol class="cms-roadmap" aria-label="Project roadmap">' +
+      "<li><strong>" +
+      bi("Plan", "Planifica") +
+      "</strong> " +
+      bi("Read the mission and choose a path.", "Lee la misión y elige un camino.") +
+      "</li>" +
+      "<li><strong>" +
+      bi("Build", "Construye") +
+      "</strong> " +
+      bi("Show the math in more than one way.", "Muestra las matemáticas de más de una manera.") +
+      "</li>" +
+      "<li><strong>" +
+      bi("Revise", "Revisa") +
+      "</strong> " +
+      bi("Use feedback and check your evidence.", "Usa comentarios y revisa tu evidencia.") +
+      "</li>" +
+      "<li><strong>" +
+      bi("Publish", "Publica") +
+      "</strong> " +
+      bi(
+        "Prepare the final product for your audience.",
+        "Prepara el producto final para tu audiencia.",
+      ) +
+      "</li>" +
+      "</ol>" +
       '<details class="cms-constraints"><summary>' +
       bi("Core constraints", "Condiciones principales") +
       "</summary><ul>" +
@@ -318,10 +354,12 @@
     var panels = document.querySelectorAll(".step-panel");
     if (!panels.length || document.querySelector(".cms-studio")) return;
     var first = panels[0];
-    var firstHeading = first.querySelector("h2, h3");
     var goals = goalCard();
-    if (firstHeading) firstHeading.insertAdjacentElement("afterend", goals);
-    else first.prepend(goals);
+    // Always mount as a direct child. The old heading-based insertion could
+    // nest the brief inside the asynchronously injected warm-up; the partner
+    // layer later moves that warm-up to the final step, taking the project
+    // mission with it and hiding the purpose until students were finished.
+    first.prepend(goals);
 
     var last = panels[panels.length - 1];
     var studio = document.createElement("section");

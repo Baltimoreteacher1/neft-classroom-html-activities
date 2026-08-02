@@ -283,26 +283,6 @@
         transition: all 0.25s ease;
       }
     
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed; bottom: 20px; right: 20px; z-index: 10000;
-        width: 330px; max-height: 480px; overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px;
-        padding: 16px; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif;
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3);
-        display: none; box-sizing: border-box; text-align: left;
-      }
-      #teacher-console.show { display: block; }
-      #teacher-console h4 { margin: 0 0 8px 0; color: #38bdf8; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
-      #teacher-console .close-btn { background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; }
-      #teacher-console .close-btn:hover { color: #f1f5f9; }
-      #teacher-console table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-      #teacher-console td { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); color: #e2e8f0; }
-      #teacher-console .lbl { font-weight: 600; color: #94a3b8; }
-      #teacher-console .val { font-weight: 700; text-align: right; color: #38bdf8; word-break: break-all; }
-      #teacher-console .prefill-btn { width: 100%; margin-top: 12px; background: #0284c7; border: none; border-radius: 6px; padding: 8px; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s; }
-      #teacher-console .prefill-btn:hover { background: #0369a1; }
 
           .lvl0-only { display: none; }
       body.level-0 .lvl0-only { display: block; }
@@ -517,8 +497,8 @@
                 <span class="es-text">Un número que muestra cuántas veces se debe multiplicar la base por sí misma.</span>
               </div>
               <div class="vocab-ex">
-                <span class="en-text">2^m (doubles every month)</span>
-                <span class="es-text">2^m (se duplica cada mes)</span>
+                <span class="en-text">2^(m−1) (Month 1 uses zero doublings)</span>
+                <span class="es-text">2^(m−1) (el Mes 1 usa cero duplicaciones)</span>
               </div>
             </div>
             <div class="vocab-card">
@@ -750,8 +730,8 @@
           </div>
 
           <div class="instruct teal">
-            <span class="en-text"><strong>Your job:</strong> Your app hosting costs double every month. The cost is modeled by: <strong>C &times; 2^m</strong>, where C is the starting base cost multiplier and m is the month. Evaluate costs for Month 1 through Month 5.</span>
-            <span class="es-text"><strong>Tu trabajo:</strong> Los costos de alojamiento de tu aplicación se duplican cada mes. El costo está modelado por: <strong>C &times; 2^m</strong>, donde C es el multiplicador de costo base inicial y m es el mes. Evalúa los costos desde el Mes 1 hasta el Mes 5.</span>
+            <span class="en-text"><strong>Your job:</strong> In this hypothetical model, hosting costs double every month. If <strong>C is the Month 1 starting cost</strong>, Month m is modeled by <strong>C &times; 2^(m − 1)</strong>. Month 1 has zero doublings, so its cost is C × 2⁰ = C.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> En este modelo hipotético, los costos de alojamiento se duplican cada mes. Si <strong>C es el costo inicial del Mes 1</strong>, el Mes m se modela con <strong>C &times; 2^(m − 1)</strong>. El Mes 1 tiene cero duplicaciones, así que su costo es C × 2⁰ = C.</span>
           </div>
 
           <div class="step-research no-print">
@@ -790,8 +770,8 @@
           <div class="grid2">
             <div>
               <label class="lbl" for="s-multiplier">
-                <span class="en-text">💵 Starting cost multiplier C ($)</span>
-                <span class="es-text">💵 Multiplicador de costo inicial C ($)</span>
+                <span class="en-text">💵 Month 1 starting cost C ($)</span>
+                <span class="es-text">💵 Costo inicial C del Mes 1 ($)</span>
               </label>
               <input type="number" id="s-multiplier" min="0.01" step="0.01" placeholder="" value="1.00" oninput="calcServerCost()" />
             </div>
@@ -816,8 +796,8 @@
               <span class="es-text">¿Necesitas una pista?</span>
             </summary>
             <p>
-              <span class="en-text">An exponent shows how many times a base is multiplied by itself. 2^5 = 2 &times; 2 &times; 2 &times; 2 &times; 2 = 32. Multiply this by your multiplier C.<br><strong>Example:</strong> For C = $1.50 and month 5: $1.50 &times; 32 = <strong>$48.00</strong>.</span>
-              <span class="es-text">Un exponente muestra cuántas veces se multiplica una base por sí misma. 2^5 = 2 &times; 2 &times; 2 &times; 2 &times; 2 = 32. Multiplica esto por tu multiplicador C.<br><strong>Ejemplo:</strong> Para C = $1.50 y el mes 5: $1.50 &times; 32 = <strong>$48.00</strong>.</span>
+              <span class="en-text">The exponent counts doublings after Month 1. At Month 5, four doublings have occurred: 2^(5 − 1) = 2⁴ = 16.<br><strong>Example:</strong> For C = $1.50, Month 5 costs $1.50 × 16 = <strong>$24.00</strong>.</span>
+              <span class="es-text">El exponente cuenta las duplicaciones después del Mes 1. En el Mes 5 han ocurrido cuatro duplicaciones: 2^(5 − 1) = 2⁴ = 16.<br><strong>Ejemplo:</strong> Para C = $1.50, el Mes 5 cuesta $1.50 × 16 = <strong>$24.00</strong>.</span>
             </p>
           </details>
 
@@ -859,19 +839,19 @@
             <div class="card-icon gold">📈</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 3 — Net Profit &amp; Benchmarks</span>
-                <span class="es-text">Paso 3 — Ganancia neta y referencias</span>
+                <span class="en-text">Step 3 — Net Profit &amp; Hypothetical Tiers</span>
+                <span class="es-text">Paso 3 — Ganancia neta y niveles hipotéticos</span>
               </h2>
               <div class="card-sub">
-                <span class="en-text">Subtract server costs from revenue and compare to industry tiers</span>
-                <span class="es-text">Resta los costos del servidor de los ingresos y compáralos con los niveles de la industria</span>
+                <span class="en-text">Subtract hypothetical server costs from revenue and compare classroom net-profit tiers</span>
+                <span class="es-text">Resta los costos hipotéticos del servidor de los ingresos y compara niveles de ganancia neta del salón</span>
               </div>
             </div>
           </div>
 
           <div class="instruct gold">
-            <span class="en-text"><strong>Your job:</strong> Net Profit is what your business keeps after paying costs. Calculate Month 5 Net Profit: <strong>Net Profit = Revenue - Server Cost</strong>. Then, analyze how your app compares to benchmarks.</span>
-            <span class="es-text"><strong>Tu trabajo:</strong> La ganancia neta es lo que conserva tu negocio después de pagar los costos. Calcula la ganancia neta del Mes 5: <strong>Ganancia neta = Ingresos - Costo de servidor</strong>. Luego, analiza cómo se compara tu aplicación con los valores de referencia.</span>
+            <span class="en-text"><strong>Your job:</strong> Net Profit is what this simplified model keeps after its modeled server cost. Calculate Month 5 Net Profit: <strong>Net Profit = Revenue - Server Cost</strong>. Then compare it to the hypothetical classroom tiers below.</span>
+            <span class="es-text"><strong>Tu trabajo:</strong> La ganancia neta es lo que conserva este modelo simplificado después del costo de servidor modelado. Calcula la ganancia neta del Mes 5: <strong>Ganancia neta = Ingresos - Costo de servidor</strong>. Luego compárala con los niveles hipotéticos del salón.</span>
           </div>
 
           <!-- SVG Visual: Side by side comparison -->
@@ -888,12 +868,12 @@
           <!-- Real-world comparison table -->
           <div style="margin-top:22px;">
             <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">
-              <span class="en-text">📊 Average App Monthly Revenue Tiers</span>
-              <span class="es-text">📊 Niveles promedio de ingresos mensuales de aplicaciones</span>
+              <span class="en-text">📊 Hypothetical Monthly Net-Profit Tiers</span>
+              <span class="es-text">📊 Niveles hipotéticos de ganancia neta mensual</span>
             </h3>
             <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">
-              <span class="en-text">Compare your app's Month 5 Net Profit to these average industry tiers:</span>
-              <span class="es-text">Compara la ganancia neta del Mes 5 de tu aplicación con estos niveles promedio de la industria:</span>
+              <span class="en-text">Compare Month 5 net profit to these hypothetical classroom tiers. They are not published industry averages or real app benchmarks.</span>
+              <span class="es-text">Compara la ganancia neta del Mes 5 con estos niveles hipotéticos del salón. No son promedios publicados de la industria ni referencias de aplicaciones reales.</span>
             </p>
             <table class="data-table">
               <thead>
@@ -948,8 +928,8 @@
                 </tr>
                 <tr>
                   <td>
-                    <span class="en-text">Tier 4: Industry Leader</span>
-                    <span class="es-text">Nivel 4: Líder de la industria</span>
+                    <span class="en-text">Tier 4: Large-Scale Scenario</span>
+                    <span class="es-text">Nivel 4: Escenario a gran escala</span>
                   </td>
                   <td>$15,000+</td>
                   <td>
@@ -963,7 +943,7 @@
               <span class="en-text">Where does your app's net profit fit? Write a sentence comparing your profit to these tiers.</span>
               <span class="es-text">¿Dónde encaja la ganancia neta de tu aplicación? Escribe una oración comparando tu ganancia con estos niveles.</span>
             </label>
-            <textarea id="p-tier-reflect" placeholder="My app's net profit is $___ in Month 5. Compared to average app tiers, my app falls under..."></textarea>
+            <textarea id="p-tier-reflect" placeholder="My app's net profit is $___ in Month 5. In the hypothetical classroom tiers, it falls under..."></textarea>
           </div>
 
           <details class="hint">
@@ -1169,8 +1149,8 @@
             </li>
             <li>
               <input type="checkbox" id="ck2" />
-              <span class="en-text">I modeled monthly server cost growth using the exponent expression <strong>C &times; 2^m</strong>.</span>
-              <span class="es-text">Modelé el crecimiento mensual del costo del servidor usando la expresión exponencial <strong>C &times; 2^m</strong>.</span>
+              <span class="en-text">I modeled monthly server cost growth using <strong>C &times; 2^(m − 1)</strong>, where C is Month 1 cost.</span>
+              <span class="es-text">Modelé el crecimiento mensual del costo del servidor usando <strong>C &times; 2^(m − 1)</strong>, donde C es el costo del Mes 1.</span>
             </li>
             <li>
               <input type="checkbox" id="ck3" />
@@ -1179,8 +1159,8 @@
             </li>
             <li>
               <input type="checkbox" id="ck4" />
-              <span class="en-text">I compared my net profit to real app monthly revenue benchmarks.</span>
-              <span class="es-text">Comparé mi ganancia neta con los niveles de referencia de ingresos mensuales de aplicaciones reales.</span>
+              <span class="en-text">I compared my net profit to the hypothetical classroom net-profit tiers.</span>
+              <span class="es-text">Comparé mi ganancia neta con los niveles hipotéticos de ganancia neta del salón.</span>
             </li>
             <li>
               <input type="checkbox" id="ck5" />
@@ -1263,8 +1243,8 @@
                   <span class="es-text">Ganancia neta (6.AT.6.c)</span>
                 </strong></td>
                 <td>
-                  <span class="en-text">Net Profit correct with benchmark comparison</span>
-                  <span class="es-text">Ganancia neta correcta con comparación con referencias</span>
+                  <span class="en-text">Net Profit correct with hypothetical-tier comparison</span>
+                  <span class="es-text">Ganancia neta correcta con comparación de niveles hipotéticos</span>
                 </td>
                 <td>
                   <span class="en-text">Net Profit correct</span>
@@ -1281,8 +1261,8 @@
                   <span class="es-text">Comparación</span>
                 </strong></td>
                 <td>
-                  <span class="en-text">Compares classmate and benchmark data with detail</span>
-                  <span class="es-text">Compara detalladamente los datos del compañero y de referencia</span>
+                  <span class="en-text">Compares classmate data and hypothetical tiers with detail</span>
+                  <span class="es-text">Compara detalladamente los datos del compañero y los niveles hipotéticos</span>
                 </td>
                 <td>
                   <span class="en-text">Classmate comparison done</span>
@@ -1537,8 +1517,8 @@
         const tierReflect = document.getElementById('p-tier-reflect');
         if (tierReflect) {
           tierReflect.placeholder = isEs 
-            ? "La ganancia neta de mi aplicación es de $___ en el Mes 5. En comparación con los niveles promedio de aplicaciones, mi aplicación entra en..." 
-            : "My app's net profit is $___ in Month 5. Compared to average app tiers, my app falls under...";
+            ? "La ganancia neta de mi aplicación es de $___ en el Mes 5. En los niveles hipotéticos del salón, entra en..."
+            : "My app's net profit is $___ in Month 5. In the hypothetical classroom tiers, it falls under...";
         }
 
         const pName = document.getElementById('p-name');
@@ -1684,25 +1664,25 @@
           return;
         }
         
-        const targetCost = mult * Math.pow(2, m);
+        const targetCost = mult * Math.pow(2, m - 1);
         const isEs = document.body.classList.contains('es');
         const readoutHtml = isEs ? `
-          <strong>Expresión de costo de servidor: ${mult.toFixed(2)} &times; 2^m</strong><br>
+          <strong>Expresión de costo de servidor: ${mult.toFixed(2)} &times; 2^(m − 1)</strong><br>
           Valores para los meses 1-5:<br>
-          Mes 1: ${mult.toFixed(2)} &times; 2^1 = <strong>$${(mult * 2).toFixed(2)}</strong><br>
-          Mes 2: ${mult.toFixed(2)} &times; 2^2 = <strong>$${(mult * 4).toFixed(2)}</strong><br>
-          Mes 3: ${mult.toFixed(2)} &times; 2^3 = <strong>$${(mult * 8).toFixed(2)}</strong><br>
-          Mes 4: ${mult.toFixed(2)} &times; 2^4 = <strong>$${(mult * 16).toFixed(2)}</strong><br>
-          Mes 5: ${mult.toFixed(2)} &times; 2^5 = <strong>$${(mult * 32).toFixed(2)}</strong><br>
+          Mes 1: ${mult.toFixed(2)} &times; 2^0 = <strong>$${mult.toFixed(2)}</strong><br>
+          Mes 2: ${mult.toFixed(2)} &times; 2^1 = <strong>$${(mult * 2).toFixed(2)}</strong><br>
+          Mes 3: ${mult.toFixed(2)} &times; 2^2 = <strong>$${(mult * 4).toFixed(2)}</strong><br>
+          Mes 4: ${mult.toFixed(2)} &times; 2^3 = <strong>$${(mult * 8).toFixed(2)}</strong><br>
+          Mes 5: ${mult.toFixed(2)} &times; 2^4 = <strong>$${(mult * 16).toFixed(2)}</strong><br>
           Costo de servidor del mes objetivo ${m}: <strong>$${targetCost.toFixed(2)}</strong>
         ` : `
-          <strong>Server Cost Expression: ${mult.toFixed(2)} &times; 2^m</strong><br>
+          <strong>Server Cost Expression: ${mult.toFixed(2)} &times; 2^(m − 1)</strong><br>
           Values for Months 1-5:<br>
-          Month 1: ${mult.toFixed(2)} &times; 2^1 = <strong>$${(mult * 2).toFixed(2)}</strong><br>
-          Month 2: ${mult.toFixed(2)} &times; 2^2 = <strong>$${(mult * 4).toFixed(2)}</strong><br>
-          Month 3: ${mult.toFixed(2)} &times; 2^3 = <strong>$${(mult * 8).toFixed(2)}</strong><br>
-          Month 4: ${mult.toFixed(2)} &times; 2^4 = <strong>$${(mult * 16).toFixed(2)}</strong><br>
-          Month 5: ${mult.toFixed(2)} &times; 2^5 = <strong>$${(mult * 32).toFixed(2)}</strong><br>
+          Month 1: ${mult.toFixed(2)} &times; 2^0 = <strong>$${mult.toFixed(2)}</strong><br>
+          Month 2: ${mult.toFixed(2)} &times; 2^1 = <strong>$${(mult * 2).toFixed(2)}</strong><br>
+          Month 3: ${mult.toFixed(2)} &times; 2^2 = <strong>$${(mult * 4).toFixed(2)}</strong><br>
+          Month 4: ${mult.toFixed(2)} &times; 2^3 = <strong>$${(mult * 8).toFixed(2)}</strong><br>
+          Month 5: ${mult.toFixed(2)} &times; 2^4 = <strong>$${(mult * 16).toFixed(2)}</strong><br>
           Target Month ${m} Server Cost: <strong>$${targetCost.toFixed(2)}</strong>
         `;
         showReadout('server-out', readoutHtml);
@@ -1713,14 +1693,14 @@
         const svg = document.getElementById('exponent-svg');
         if (!svg) return;
         
-        const vals = [2, 4, 8, 16, 32].map(x => x * mult);
+        const vals = [1, 2, 4, 8, 16].map(x => x * mult);
         const maxVal = Math.max(...vals, 1);
         const heights = vals.map(v => (v / maxVal) * 80);
         
         const isEs = document.body.classList.contains('es');
         const titleText = isEs 
-          ? `Crecimiento exponencial del servidor: ${mult.toFixed(2)} &times; 2^m`
-          : `Exponential Server Growth: ${mult.toFixed(2)} &times; 2^m`;
+          ? `Crecimiento exponencial del servidor: ${mult.toFixed(2)} &times; 2^(m − 1)`
+          : `Exponential Server Growth: ${mult.toFixed(2)} &times; 2^(m − 1)`;
         
         svg.innerHTML = `
           <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">${titleText}</text>
@@ -1759,7 +1739,7 @@
         const mult = parseFloat(document.getElementById('s-multiplier').value) || 0;
         
         const rev = stdPrice * stdSub + premPrice * premSub;
-        const cost = mult * 32;
+        const cost = mult * 16;
         const profit = rev - cost;
         
         drawProfitSVG();
@@ -1767,12 +1747,12 @@
         const isEs = document.body.classList.contains('es');
         const readoutHtml = isEs ? `
           Ingresos por suscripción del mes 5 (del Paso 1): <strong>$${rev.toFixed(2)}</strong><br>
-          Costo de servidor del mes 5 (del Paso 2: 2^5 = 32): <strong>$${cost.toFixed(2)}</strong><br>
+          Costo de servidor del mes 5 (del Paso 2: 2^(5 − 1) = 16): <strong>$${cost.toFixed(2)}</strong><br>
           Ganancia neta = Ingresos - Costo de servidor:<br>
           $${rev.toFixed(2)} - $${cost.toFixed(2)} = <strong>$${profit.toFixed(2)}</strong>
         ` : `
           Month 5 Subscription Revenue (from Step 1): <strong>$${rev.toFixed(2)}</strong><br>
-          Month 5 Server Cost (from Step 2: 2^5 = 32): <strong>$${cost.toFixed(2)}</strong><br>
+          Month 5 Server Cost (from Step 2: 2^(5 − 1) = 16): <strong>$${cost.toFixed(2)}</strong><br>
           Net Profit = Revenue - Server Cost:<br>
           $${rev.toFixed(2)} - $${cost.toFixed(2)} = <strong>$${profit.toFixed(2)}</strong>
         `;
@@ -1787,7 +1767,7 @@
         const mult = parseFloat(document.getElementById('s-multiplier').value) || 1.00;
         
         const rev = stdPrice * stdSub + premPrice * premSub;
-        const cost = mult * 32;
+        const cost = mult * 16;
         const profit = rev - cost;
         
         const svg = document.getElementById('profit-svg');
@@ -1842,7 +1822,7 @@
         const mult = parseFloat(document.getElementById('s-multiplier').value) || 0;
         
         const myRevenue = stdPrice * stdSub + premPrice * premSub;
-        const myServerCost = mult * 32;
+        const myServerCost = mult * 16;
         const myProfit = myRevenue - myServerCost;
         
         const pName = document.getElementById('p-name').value || 'Partner';
@@ -1860,7 +1840,7 @@
         }
         
         const partnerRevenue = pStdPrice * pStdSub + pPremPrice * pPremSub;
-        const partnerServerCost = pMult * 32;
+        const partnerServerCost = pMult * 16;
         const partnerProfit = partnerRevenue - partnerServerCost;
         
         const diffRevenue = myRevenue - partnerRevenue;
@@ -1894,7 +1874,7 @@
         const stdSub = parseInt(document.getElementById('r-std-sub').value) || 100;
         const premSub = parseInt(document.getElementById('r-prem-sub').value) || 50;
         const mult = parseFloat(document.getElementById('s-multiplier').value) || 1.00;
-        const myProfit = (stdPrice * stdSub + premPrice * premSub) - (mult * 32);
+        const myProfit = (stdPrice * stdSub + premPrice * premSub) - (mult * 16);
         
         const pName = document.getElementById('p-name').value || 'Partner';
         const pStdPrice = parseFloat(document.getElementById('p-std-price').value);
@@ -1917,7 +1897,7 @@
           return;
         }
         
-        const partnerProfit = (pStdPrice * pStdSub + pPremPrice * pPremSub) - (pMult * 32);
+        const partnerProfit = (pStdPrice * pStdSub + pPremPrice * pPremSub) - (pMult * 16);
         
         let angle = 0;
         const diff = myProfit - partnerProfit;
@@ -1995,11 +1975,11 @@
         const reflectPartner = document.getElementById('p-reflect').value || '(no partner reflection)';
         
         const myRevenue = (parseFloat(stdPrice)*parseInt(stdSub)) + (parseFloat(premPrice)*parseInt(premSub));
-        const myServerCostM5 = parseFloat(multiplier) * 32;
+        const myServerCostM5 = parseFloat(multiplier) * 16;
         const myProfit = myRevenue - myServerCostM5;
 
         const partnerRevenue = (parseFloat(pStdPrice)*parseInt(pStdSub)) + (parseFloat(pPremPrice)*parseInt(pPremSub));
-        const partnerServerCostM5 = parseFloat(pMultiplier) * 32;
+        const partnerServerCostM5 = parseFloat(pMultiplier) * 16;
         const partnerProfit = partnerRevenue - partnerServerCostM5;
 
         const isEs = document.body.classList.contains('es');
@@ -2017,14 +1997,14 @@
           '',
           '⚡ PASO 2 — EXPONENTE DE COSTO DE SERVIDOR',
           `   Costo base de servidor: $${multiplier}`,
-          `   Expresión de costo de servidor = ${multiplier} × 2^m`,
-          `   Costo de servidor del mes 5 (2^5 = 32) = $${myServerCostM5.toFixed(2)}`,
-          `   Costo de servidor del mes objetivo ${targetMonth} = $${(parseFloat(multiplier) * Math.pow(2, parseInt(targetMonth))).toFixed(2)}`,
+          `   Expresión de costo de servidor = ${multiplier} × 2^(m − 1)`,
+          `   Costo de servidor del mes 5 (2^(5 − 1) = 16) = $${myServerCostM5.toFixed(2)}`,
+          `   Costo de servidor del mes objetivo ${targetMonth} = $${(parseFloat(multiplier) * Math.pow(2, parseInt(targetMonth) - 1)).toFixed(2)}`,
           '',
           '📈 PASO 3 — GANANCIA NETA',
           `   Fórmula: Ganancia neta = Ingresos - Costo de servidor del mes 5`,
           `   Ganancia neta = $${myRevenue.toFixed(2)} - $${myServerCostM5.toFixed(2)} = $${myProfit.toFixed(2)}`,
-          `   Reflexión sobre los niveles de referencia: ${reflectTiers}`,
+          `   Reflexión sobre los niveles hipotéticos: ${reflectTiers}`,
           '',
           '👥 PASO 4 — COMPARACIÓN CON COMPAÑERO',
           `   Nombre del compañero: ${pName}`,
@@ -2051,14 +2031,14 @@
           '',
           '⚡ STEP 2 — SERVER COST EXPONENT',
           `   Base Server Cost: $${multiplier}`,
-          `   Server Cost Expression = ${multiplier} × 2^m`,
-          `   Month 5 Server Cost (2^5 = 32) = $${myServerCostM5.toFixed(2)}`,
-          `   Target Month ${targetMonth} Server Cost = $${(parseFloat(multiplier) * Math.pow(2, parseInt(targetMonth))).toFixed(2)}`,
+          `   Server Cost Expression = ${multiplier} × 2^(m − 1)`,
+          `   Month 5 Server Cost (2^(5 − 1) = 16) = $${myServerCostM5.toFixed(2)}`,
+          `   Target Month ${targetMonth} Server Cost = $${(parseFloat(multiplier) * Math.pow(2, parseInt(targetMonth) - 1)).toFixed(2)}`,
           '',
           '📈 STEP 3 — NET PROFIT',
           `   Formula: Net Profit = Revenue - Month 5 Server Cost`,
           `   Net Profit = $${myRevenue.toFixed(2)} - $${myServerCostM5.toFixed(2)} = $${myProfit.toFixed(2)}`,
-          `   Benchmark Reflection: ${reflectTiers}`,
+          `   Hypothetical Tier Reflection: ${reflectTiers}`,
           '',
           '👥 STEP 4 — PARTNER COMPARISON',
           `   Partner Name: ${pName}`,
@@ -2109,77 +2089,6 @@
       // Delay slightly for save-resume module to populate inputs
       setTimeout(recalcAll, 100);
 
-      function toggleGradingConsole() {
-        const el = document.getElementById('teacher-console');
-        if (el) {
-          el.classList.toggle('show');
-          if (el.classList.contains('show')) updateGradingAnswers();
-        }
-      }
-      
-      function prefillGradingConsole() {
-        // Sample "example number" values that match the answer key
-        const samples = {
-          "r-std-price": 3.99,
-          "r-prem-price": 8.99,
-          "r-std-sub": 100,
-          "r-prem-sub": 50,
-          "s-multiplier": 1.00
-        };
-        for (const [id, val] of Object.entries(samples)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event('input', { bubbles: true }));
-            el.dispatchEvent(new Event('change', { bubbles: true }));
-          }
-        }
-        updateGradingAnswers();
-      }
-      
-      function updateGradingAnswers() {
-        try {
-          const resolver = function() {
-            
-          const stdPrice = parseFloat(document.getElementById('r-std-price').value) || 0;
-          const premPrice = parseFloat(document.getElementById('r-prem-price').value) || 0;
-          const stdSub = parseInt(document.getElementById('r-std-sub').value) || 0;
-          const premSub = parseInt(document.getElementById('r-prem-sub').value) || 0;
-          const mult = parseFloat(document.getElementById('s-multiplier').value) || 0;
-          const revenue = stdPrice * stdSub + premPrice * premSub;
-          const serverCostM5 = mult * 32;
-          const netProfit = revenue - serverCostM5;
-          return {
-            'Revenue expression': `${stdPrice.toFixed(2)}s + ${premPrice.toFixed(2)}p`,
-            [`Total Revenue (s=${stdSub}, p=${premSub})`]: '$' + revenue.toFixed(2),
-            'Server cost expression': `${mult.toFixed(2)} × 2^m`,
-            'Month 5 Server Cost (2^5=32)': '$' + serverCostM5.toFixed(2),
-            'Net Profit (Rev − Cost)': '$' + netProfit.toFixed(2)
-          };
-        
-          };
-          const ans = resolver();
-          const body = document.getElementById('teacher-answers-body');
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans).map(([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `).join('');
-          }
-        } catch(e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-      
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
-      document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
       
       
       window.exportStudentBackup = function() {
@@ -2233,7 +2142,6 @@
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === 'function') updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
@@ -2244,48 +2152,9 @@
         reader.readAsText(file);
       };
 
-      document.addEventListener('DOMContentLoaded', function() {
-        const titleEl = document.querySelector('.hero h1');
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener('click', function() {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => { clicks = 0; }, 1000);
-          });
-        }
-        // Re-calculate answers when input event fires
-        document.addEventListener('input', function(e) {
-          const inputs = ["r-std-price", "r-prem-price", "r-std-sub", "r-prem-sub", "s-multiplier"];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
 
     </script>
   
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size:11px;color:#94a3b8;margin:0 0 10px;">Calculated dynamically based on student inputs:</p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display:flex;gap:6px;margin-top:6px;">
-        <button class="prefill-btn" style="margin-top:0;background:#059669;" onclick="exportStudentBackup()">📥 Export JSON</button>
-        <button class="prefill-btn" style="margin-top:0;background:#7c3aed;" onclick="triggerImportStudentBackup()">📤 Import JSON</button>
-      </div>
-      <input type="file" id="student-backup-file-input" style="display:none;" onchange="importStudentBackup(event)" accept=".json" />
-    </div>
-
   <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
   <script src="/shared/projects/projects-pro.js" defer></script>
   <!-- projects-pro-injected:end -->

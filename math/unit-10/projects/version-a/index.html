@@ -707,94 +707,6 @@
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
-
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        width: 330px;
-        max-height: 480px;
-        overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        padding: 16px;
-        color: #f8fafc;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        box-shadow:
-          0 10px 25px -5px rgba(0, 0, 0, 0.3),
-          0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        display: none;
-        box-sizing: border-box;
-        text-align: left;
-      }
-      #teacher-console.show {
-        display: block;
-      }
-      #teacher-console h4 {
-        margin: 0 0 8px 0;
-        color: #38bdf8;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      #teacher-console .close-btn {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0 4px;
-        line-height: 1;
-      }
-      #teacher-console .close-btn:hover {
-        color: #f1f5f9;
-      }
-      #teacher-console table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-      #teacher-console td {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-      }
-      #teacher-console .lbl {
-        font-weight: 600;
-        color: #94a3b8;
-      }
-      #teacher-console .val {
-        font-weight: 700;
-        text-align: right;
-        color: #38bdf8;
-        word-break: break-all;
-      }
-      #teacher-console .prefill-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: #0284c7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      #teacher-console .prefill-btn:hover {
-        background: #0369a1;
-      }
           .lvl0-only { display: none; }
       body.level-0 .lvl0-only { display: block; }
     </style>
@@ -1400,6 +1312,13 @@
           <!-- Dynamic SVG Container for 2D Net -->
           <div id="dynamic-net-svg-container"></div>
 
+          <div class="instruct teal" style="margin-top: 14px">
+            <span class="en-text"><strong>Required 6.GR.4 evidence:</strong> On paper or in your class drawing tool, draw your own connected net. Label every face with its dimensions, label each face area, and show how the faces add to your total. The generated net above is a reference; it does not replace your student-drawn net. Submit the drawing with this project.</span>
+            <span class="es-text"><strong>Evidencia requerida de 6.GR.4:</strong> En papel o en la herramienta de dibujo de la clase, dibuja tu propio desarrollo plano conectado. Etiqueta cada cara con sus dimensiones y su área, y muestra cómo las caras suman el total. El modelo generado es una referencia; no reemplaza tu dibujo. Entrégalo con el proyecto.</span>
+          </div>
+          <label class="lbl" for="net-evidence"><span class="en-text">Where is your labeled net submitted?</span><span class="es-text">¿Dónde entregaste tu desarrollo plano etiquetado?</span></label>
+          <input id="net-evidence" data-save placeholder="Paper / Papel · Page / Página 2" />
+
           <div class="instruct lvl0-only">
             <span class="en-text">🟠 <strong>Level 0:</strong> Faces come in pairs. Step 1: find one face area, then double it. Tiny example: a 3×2 face = 6, two of them = 12. Starter: “Two faces = ___ sq in.”</span>
             <span class="es-text">🟠 <strong>Nivel 0:</strong> Las caras vienen en pares. Paso 1: halla el área de una cara y duplícala. Ejemplo: una cara 3×2 = 6, dos = 12. Empieza: “Dos caras = ___ in².”</span>
@@ -1686,18 +1605,19 @@
           <!-- Real-world comparison -->
           <div style="margin-top: 22px">
             <h3 style="font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 6px">
-              <span class="en-text">🌎 Real-World Shipping Box Pricing</span>
-              <span class="es-text">🌎 Precios de Cajas de Envío en el Mundo Real</span>
+              <span class="en-text">🧮 Illustrative Shipping-Box Cost Scenarios</span>
+              <span class="es-text">🧮 Escenarios ilustrativos de costo de cajas</span>
             </h3>
             <p style="font-size: 14px; color: var(--muted); margin-bottom: 6px">
               <span class="en-text"
-                >Below are average retail costs of shipping boxes based on their size category.
-                Compare your box's calculated cardboard cost to these market rates.</span
+                >These invented ranges are for math practice. Your calculation includes raw cardboard only,
+                while a retail box may include cutting, printing, labor, profit, and quantity discounts;
+                compare only after naming what each cost includes.</span
               >
               <span class="es-text"
-                >A continuación se presentan los costos promedio de venta al por menor de las cajas
-                de envío según su categoría de tamaño. Compara el costo de cartón calculado de tu
-                caja con estas tarifas del mercado.</span
+                >Estos rangos inventados son para practicar matemáticas. Tu cálculo incluye solo cartón,
+                mientras una caja al por menor puede incluir corte, impresión, mano de obra, ganancia y descuentos;
+                compara solo después de indicar qué incluye cada costo.</span
               >
             </p>
             <table class="data-table">
@@ -1712,8 +1632,8 @@
                     <span class="es-text">Rango de Área de Superficie</span>
                   </th>
                   <th>
-                    <span class="en-text">Average Retail Cost</span>
-                    <span class="es-text">Costo Promedio al por Menor</span>
+                    <span class="en-text">Illustrative Cost Range</span>
+                    <span class="es-text">Rango de costo ilustrativo</span>
                   </th>
                 </tr>
               </thead>
@@ -2037,9 +1957,9 @@
             <li>
               <input type="checkbox" id="ck3" />
               <span class="en-text"
-                >I calculated the areas of all 6 faces from the net in Step 2.</span
+                >I drew and labeled my own connected net and calculated every face area in Step 2.</span
               ><span class="es-text"
-                >Calculé las áreas de las 6 caras a partir de la plantilla en el Paso 2.</span
+                >Dibujé y etiqueté mi propio desarrollo plano conectado y calculé el área de cada cara.</span
               >
             </li>
             <li>
@@ -2171,11 +2091,10 @@
                 </td>
                 <td>
                   <span class="en-text"
-                    >Accurately calculates total cost and reflects on retail market ranges</span
+                    >Accurately calculates raw-cardboard cost and explains what the illustrative comparison includes</span
                   >
                   <span class="es-text"
-                    >Calcula con precisión el costo total y reflexiona sobre los rangos del mercado
-                    minorista</span
+                    >Calcula el costo del cartón y explica qué incluye la comparación ilustrativa</span
                   >
                 </td>
                 <td>
@@ -2200,11 +2119,10 @@
                 </td>
                 <td>
                   <span class="en-text"
-                    >Compares side-by-side and analyzes material efficiency using ratios (L2)</span
+                    >Compares side-by-side and analyzes material efficiency using a clearly defined ratio</span
                   >
                   <span class="es-text"
-                    >Compara lado a lado y analiza la eficiencia del material usando relaciones
-                    (L2)</span
+                    >Compara lado a lado y analiza la eficiencia del material usando una razón claramente definida</span
                   >
                 </td>
                 <td>
@@ -3340,7 +3258,7 @@
           } else {
             const betterName = myEff < pEff ? "Your box" : `${pName}'s box`;
             const worseName = myEff < pEff ? `${pName}'s box` : "Your box";
-            summaryText = `<br>📊 <strong>Material Efficiency Analysis (L2):</strong> 
+            summaryText = `<br>📊 <strong>Material Efficiency Analysis:</strong>
               ${betterName} is more material-efficient because its surface-area-to-volume ratio is <strong>${Math.min(myEff, pEff).toFixed(3)}</strong>, which is lower than ${worseName}'s ratio of <strong>${Math.max(myEff, pEff).toFixed(3)}</strong>. 
               A lower ratio means it uses less cardboard material to enclose each cubic inch of shipping volume.`;
           }
@@ -3796,192 +3714,7 @@
       updateProgress();
       updateVolumeCalc();
 
-      function toggleGradingConsole() {
-        const el = document.getElementById("teacher-console");
-        if (el) {
-          el.classList.toggle("show");
-          if (el.classList.contains("show")) updateGradingAnswers();
-        }
-      }
-
-      function prefillGradingConsole() {
-        // Fill the real dimension + face inputs with the worked example box.
-        if (typeof loadExampleNumbers === "function") loadExampleNumbers();
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const resolver = function () {
-            const l = parseFloat(document.getElementById("v-len").value) || 8;
-            const w = parseFloat(document.getElementById("v-wid").value) || 5;
-            const h = parseFloat(document.getElementById("v-hgt").value) || 4;
-            const vol = l * w * h;
-            const sa = 2 * (l * w + w * h + h * l);
-            return {
-              Length: l + " in",
-              Width: w + " in",
-              Height: h + " in",
-              "Expected Volume (V)": vol.toFixed(2) + " cu in",
-              "Expected Surface Area (SA)": sa.toFixed(2) + " sq in",
-            };
-          };
-          const ans = resolver();
-          const body = document.getElementById("teacher-answers-body");
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans)
-              .map(
-                ([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `,
-              )
-              .join("");
-          }
-        } catch (e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-
-      // Wire up teacher-only key listener (Ctrl+Alt+K) and triple click on h1.
-      // Ctrl+Alt+K avoids hijacking the browser's Ctrl+Shift+T (reopen tab).
-      document.addEventListener("keydown", function (e) {
-        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "k") {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
-
-      window.exportStudentBackup = function () {
-        try {
-          const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
-          const inputs = {};
-          document.querySelectorAll("input, textarea, select").forEach((el) => {
-            if (el.id) inputs[el.id] = el.value;
-          });
-          const metadata = {
-            schemaVersion: 1,
-            studentName: document.getElementById("student-name")?.value || "Student",
-            section: document.getElementById("class-period")?.value || "Class",
-            activityId: window.NeftSaveResumeConfig?.activityId || "project",
-            activityTitle: document.title,
-            timestamp: new Date().toISOString(),
-            inputs: inputs,
-            state: state,
-          };
-
-          const dataStr =
-            "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(metadata, null, 2));
-          const dlAnchor = document.createElement("a");
-          dlAnchor.setAttribute("href", dataStr);
-          dlAnchor.setAttribute(
-            "download",
-            `${metadata.studentName.replace(/\s+/g, "_")}_${metadata.activityId}_backup.json`,
-          );
-          document.body.appendChild(dlAnchor);
-          dlAnchor.click();
-          dlAnchor.remove();
-        } catch (e) {
-          alert("Export failed: " + e.message);
-        }
-      };
-
-      window.triggerImportStudentBackup = function () {
-        document.getElementById("student-backup-file-input").click();
-      };
-
-      window.importStudentBackup = function (event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          try {
-            const data = JSON.parse(e.target.result);
-            if (data && data.inputs) {
-              for (const [id, val] of Object.entries(data.inputs)) {
-                const el = document.getElementById(id);
-                if (el) {
-                  el.value = val;
-                  el.dispatchEvent(new Event("input", { bubbles: true }));
-                  el.dispatchEvent(new Event("change", { bubbles: true }));
-                }
-              }
-              alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === "function") updateGradingAnswers();
-            } else {
-              alert("Invalid backup file structure.");
-            }
-          } catch (err) {
-            alert("Error parsing backup file: " + err.message);
-          }
-        };
-        reader.readAsText(file);
-      };
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const titleEl = document.querySelector(".hero h1");
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener("click", function () {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => {
-              clicks = 0;
-            }, 1000);
-          });
-        }
-        // Re-calculate answers when input event fires
-        document.addEventListener("input", function (e) {
-          const inputs = ["v-len", "v-wid", "v-hgt"];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
     </script>
-
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
-        Calculated dynamically based on student inputs:
-      </p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display: flex; gap: 6px; margin-top: 6px">
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #059669"
-          onclick="exportStudentBackup()"
-        >
-          📥 Export JSON
-        </button>
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #7c3aed"
-          onclick="triggerImportStudentBackup()"
-        >
-          📤 Import JSON
-        </button>
-      </div>
-      <input
-        type="file"
-        id="student-backup-file-input"
-        style="display: none"
-        onchange="importStudentBackup(event)"
-        accept=".json"
-      />
-    </div>
 
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>

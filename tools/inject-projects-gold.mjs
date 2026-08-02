@@ -8,7 +8,7 @@
  *          feedback, reduced-motion, mobile table scroll)
  *        • /shared/projects/projects-gold.js   (aria-live readouts,
  *          aria-pressed toggles, confetti motion gate, goStep focus, table
- *          wrappers, input clamps, teacher-console PIN gate)
+ *          wrappers, input clamps, removal of the legacy teacher console)
  *
  *   2. Every unit-project ANSWER-KEY page
  *      (math/unit-N/projects/answer-key/index.html):

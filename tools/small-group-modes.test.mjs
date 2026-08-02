@@ -146,6 +146,13 @@ const closedResponse = await middleware({
 });
 assert.equal(closedResponse.status, 503, "teacher access must fail closed when unconfigured");
 
+const answerKeyClosed = await middleware({
+  request: new Request("https://example.test/math/unit-1/projects/answer-key/"),
+  env: {},
+  next: async () => new Response("unexpected"),
+});
+assert.equal(answerKeyClosed.status, 503, "project answer keys must fail closed when unconfigured");
+
 const teacherResponse = await teacherRouteHandler({
   request: new Request("https://example.test/teacher-small-group/1-1-group1/data"),
   params: { path: ["1-1-group1", "data"] },

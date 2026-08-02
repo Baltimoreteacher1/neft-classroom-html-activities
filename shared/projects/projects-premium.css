@@ -547,13 +547,31 @@
     #eef3f8;
 }
 .pk-hub .hero.compact-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+  column-gap: 34px;
+  align-items: center;
   background: linear-gradient(135deg, #0b2c52 0%, #1763c7 60%, #1c84c6 100%);
   color: #fff;
   border-radius: var(--pp-radius-lg);
-  padding: 48px 36px;
+  padding: 34px 36px;
   box-shadow: var(--pp-shadow);
   position: relative;
   overflow: hidden;
+}
+.pk-hub .hero.compact-hero > :not(.hero-illustration) {
+  grid-column: 1;
+}
+.pk-hub .hero.compact-hero .hero-illustration {
+  grid-column: 2;
+  grid-row: 1 / span 4;
+  margin-top: 0 !important;
+}
+.pk-hub .hero.compact-hero .hero-illustration svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: auto;
 }
 .pk-hub .hero.compact-hero::before {
   content: "";
@@ -585,6 +603,7 @@
 
 /* Version choice cards become bold product tiles */
 .pk-hub .activity-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: 22px;
 }
 .pk-hub .activity-card {
@@ -620,8 +639,24 @@
   border-radius: 999px;
   padding: 4px 12px;
   font-weight: 800;
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.02em;
+}
+.pk-hub .activity-card:focus-visible,
+.pk-hub a:focus-visible,
+.pk-hub summary:focus-visible {
+  outline: 3px solid #f4a924;
+  outline-offset: 4px;
+}
+
+.pk-hub .activity-card.is-stretch,
+.pk-hub .activity-card.optional-practice {
+  border-style: dashed;
+  background: #fffdf5;
+}
+
+.pk-hub .activity-card.optional-practice {
+  grid-column: 1 / -1;
 }
 .pk-hub .activity-card:nth-child(2) .card-kicker {
   background: #fff3e0;
@@ -658,6 +693,78 @@
   border-left: 6px solid var(--pp-teal);
   background: linear-gradient(135deg, #f4fbf9, #eef6ff);
   box-shadow: var(--pp-shadow-sm);
+}
+
+.project-hub-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 0 0 14px;
+}
+
+.project-hub-nav a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid #bdd0e3;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--pp-blue-deep);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.project-teacher-guide {
+  margin-top: 1.5rem;
+  border: 1px solid var(--pp-line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--pp-shadow-sm);
+}
+
+.project-teacher-guide > summary {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: var(--pp-blue-deep);
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.project-teacher-guide__body {
+  padding: 0 1rem 1rem;
+}
+
+.project-teacher-guide__body .section-heading {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .pk-hub .hero.compact-hero {
+    grid-template-columns: 1fr;
+    padding: 28px 20px;
+  }
+  .pk-hub .hero.compact-hero > :not(.hero-illustration),
+  .pk-hub .hero.compact-hero .hero-illustration {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .pk-hub .hero.compact-hero .hero-illustration {
+    margin-top: 14px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pk-hub .activity-card,
+  .pk-hub .activity-card .button-link {
+    transition: none !important;
+  }
+  .pk-hub .activity-card:hover,
+  .pk-hub .activity-card:hover .button-link {
+    transform: none !important;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -756,13 +863,24 @@
   }
   .pk .phero,
   .pk-hub .hero.compact-hero {
-    background: #0b2c52 !important;
+    break-inside: avoid-page;
+    background: #fff !important;
+    color: #000 !important;
+    border: 2px solid #23384d;
     box-shadow: none !important;
+  }
+  .pk-hub .hero.compact-hero * {
+    color: #000 !important;
+    text-shadow: none !important;
+  }
+  .pk-hub .hero.compact-hero .hero-illustration {
+    display: none !important;
   }
   .pk .intro-card,
   .pk .phase,
   .pk .btn,
   .pk-hub .activity-card {
+    break-inside: avoid-page;
     box-shadow: none !important;
     transform: none !important;
     animation: none !important;

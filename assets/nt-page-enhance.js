@@ -272,6 +272,10 @@
   function isActivityPage() {
     if (window.NT_ACTIVITY === true) return true;
     if (window.NT_ACTIVITY === false) return false;
+    // Project hubs are launch/catalogue pages. Their `.activity-card` links used
+    // to trip the broad class-name detector below, mounting a fixed name/export
+    // dock over the very project choices students were trying to read.
+    if (document.body && document.body.classList.contains("pk-hub")) return false;
     // Vite lesson engine pages (#app) ship their own export toolbar + identity UX.
     if (document.getElementById("app")) return false;
     if (document.querySelector(".identity-screen")) return false;

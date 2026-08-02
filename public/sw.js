@@ -107,6 +107,16 @@ self.addEventListener("fetch", (event) => {
   // Skip cross-origin or API POST requests from cache forcing
   if (url.origin !== self.location.origin) return;
 
+  // Protected teacher HTML must always come from the network. Never place it
+  // in a shared Chromebook cache where a later student session could read it.
+  const path = url.pathname.toLowerCase();
+  const isProtectedPath =
+    path.includes("teacher") ||
+    path.includes("dashboard") ||
+    path.includes("answer-key") ||
+    path.startsWith("/admin");
+  if (isProtectedPath) return;
+
   // API calls are dynamic and must never be served stale from cache — a
   // teacher-set warmup time, roster, or progress read has to be live. Let them
   // go straight to the network (the SW does not intercept them).
@@ -132,7 +142,12 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(req)
         .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
+          const cacheControl = networkResponse && networkResponse.headers.get("cache-control");
+          if (
+            networkResponse &&
+            networkResponse.status === 200 &&
+            !/private|no-store/i.test(cacheControl || "")
+          ) {
             const resClone = networkResponse.clone();
             caches.open(CACHE).then((cache) => cache.put(req, resClone));
           }
@@ -168,7 +183,12 @@ self.addEventListener("fetch", (event) => {
     caches.match(req).then((cachedResponse) => {
       const fetchPromise = fetch(req)
         .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
+          const cacheControl = networkResponse && networkResponse.headers.get("cache-control");
+          if (
+            networkResponse &&
+            networkResponse.status === 200 &&
+            !/private|no-store/i.test(cacheControl || "")
+          ) {
             const resClone = networkResponse.clone();
             caches.open(CACHE).then((cache) => cache.put(req, resClone));
           }

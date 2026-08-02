@@ -24,9 +24,10 @@
      5. Mobile tables: .rubric / .data-table get an overflow-x scroll wrapper.
      6. Input safety: number inputs without a max get max=1000000 so absurd
         values cannot stall factor/loop math.
-     7. Teacher console gate: toggleGradingConsole() (sample answers) now
-        requires teacher mode (nt-teacher-mode) or the shared teacher PIN —
-        students can no longer surface the answer console by triple-click.
+     7. Student-bundle safety: removes the legacy embedded grading console.
+        Teacher answers live only on the authenticated answer-key route.
+     8. Backup safety: routes JSON export/import through the shared save engine
+        so dynamic fields and full project state round-trip with validation.
 
    Injected by tools/inject-projects-gold.mjs (sentinel: projects-gold).
    ========================================================================== */
@@ -35,22 +36,9 @@
 
   if (typeof document === "undefined") return;
 
-  // ⚠️ Canonical copy is engine/core/teacher-mode.js — see the full rotation
-  // list there (six files). Client-side gate against casual access only.
-  var TEACHER_PIN = "BlueHeron2026";
-  var SESSION_KEY = "nt-answer-console-ok";
   var LEVEL_KEY_PREFIX = "nt-project-level:";
   var lockedLevel = null;
   var pageSetLevel = null;
-
-  function isTeacherMode() {
-    try {
-      var v = (localStorage.getItem("nt-teacher-mode") || "").toLowerCase();
-      return v === "1" || v === "true" || v === "on" || v === "yes";
-    } catch (_e) {
-      return false;
-    }
-  }
 
   function reducedMotion() {
     return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -81,7 +69,10 @@
       clampNumberInputs();
     } catch (_e) {}
     try {
-      gateTeacherConsole();
+      removeTeacherConsole();
+    } catch (_e) {}
+    try {
+      installBackupHandlers();
     } catch (_e) {}
     try {
       initLevelLock();
@@ -230,31 +221,48 @@
     }
   }
 
-  /* --- 7. Gate the teacher answer console ---------------------------------- */
-  function gateTeacherConsole() {
-    if (typeof window.toggleGradingConsole !== "function") return;
-    var orig = window.toggleGradingConsole;
-    window.toggleGradingConsole = function () {
-      var ok = false;
-      try {
-        ok = isTeacherMode() || sessionStorage.getItem(SESSION_KEY) === "1";
-      } catch (_e) {}
-      if (!ok) {
-        var pin = window.prompt("Teacher PIN required to open the answer console:");
-        if (pin === null) return; // cancelled
-        if (pin.trim() !== TEACHER_PIN) {
-          window.alert("Incorrect PIN. The answer console stays locked.");
-          return;
-        }
-        try {
-          sessionStorage.setItem(SESSION_KEY, "1");
-        } catch (_e) {}
-      }
-      return orig.apply(this, arguments);
-    };
+  /* --- 7. Remove legacy teacher answers from the student experience -------- */
+  function removeTeacherConsole() {
+    var consoleNode = document.getElementById("teacher-console");
+    if (consoleNode) consoleNode.remove();
+    // Legacy triple-click handlers may still call this global. Keep the call
+    // harmless while page sources migrate away from the old embedded console.
+    window.toggleGradingConsole = function () {};
   }
 
-  /* --- 8. Make the welcome-screen level choice permanent per project ------- */
+  function installBackupHandlers() {
+    setTimeout(function () {
+      var engine = window.NeftSaveResume;
+      if (!engine || typeof engine.exportRecord !== "function") return;
+      window.exportStudentBackup = function () {
+        try {
+          engine.exportRecord();
+        } catch (_error) {
+          window.alert("We could not export this backup. Save your work and try again.");
+        }
+      };
+      window.importStudentBackup = function (event) {
+        var input = event && event.target;
+        var file = input && input.files && input.files[0];
+        if (!file) return;
+        engine
+          .importRecord(file)
+          .then(function () {
+            window.alert("Your project backup was restored successfully.");
+          })
+          .catch(function (error) {
+            window.alert(
+              error && error.message ? error.message : "That backup could not be restored.",
+            );
+          })
+          .finally(function () {
+            input.value = "";
+          });
+      };
+    }, 0);
+  }
+
+  /* --- 9. Make the welcome-screen level choice permanent per project ------- */
   function levelStorageKey() {
     return LEVEL_KEY_PREFIX + window.location.pathname.replace(/\/+$/, "/");
   }

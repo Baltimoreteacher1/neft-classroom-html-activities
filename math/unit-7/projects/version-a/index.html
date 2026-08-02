@@ -847,93 +847,6 @@
         transition: all 0.25s ease;
       }
 
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        width: 330px;
-        max-height: 480px;
-        overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        padding: 16px;
-        color: #f8fafc;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        box-shadow:
-          0 10px 25px -5px rgba(0, 0, 0, 0.3),
-          0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        display: none;
-        box-sizing: border-box;
-        text-align: left;
-      }
-      #teacher-console.show {
-        display: block;
-      }
-      #teacher-console h4 {
-        margin: 0 0 8px 0;
-        color: #38bdf8;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      #teacher-console .close-btn {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0 4px;
-        line-height: 1;
-      }
-      #teacher-console .close-btn:hover {
-        color: #f1f5f9;
-      }
-      #teacher-console table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-      #teacher-console td {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-      }
-      #teacher-console .lbl {
-        font-weight: 600;
-        color: #94a3b8;
-      }
-      #teacher-console .val {
-        font-weight: 700;
-        text-align: right;
-        color: #38bdf8;
-        word-break: break-all;
-      }
-      #teacher-console .prefill-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: #0284c7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      #teacher-console .prefill-btn:hover {
-        background: #0369a1;
-      }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1961,20 +1874,22 @@
           <div class="lvl2-block lvl2-only">
             <span class="lvl2-label">
               <span class="en-text"
-                >LEVEL 2 CHALLENGE — Diagonal Distance (Pythagoras Preview)</span
+                >OPTIONAL, UNSCORED PREVIEW — Diagonal Distance (Grade 8 Pythagoras)</span
               >
               <span class="es-text"
-                >RETO DE NIVEL 2 — Distancia Diagonal (Introducción a Pitágoras)</span
+                >VISTA PREVIA OPCIONAL SIN PUNTOS — Distancia diagonal (Pitágoras de 8.º grado)</span
               >
             </span>
             <p style="font-size: 14px; margin-bottom: 10px">
               <span class="en-text"
-                >Select two attractions that do <strong>not</strong> share an axis (diagonal line).
+                ><strong>This preview is not required and is not part of your Unit 7 score.</strong>
+                Select two attractions that do <strong>not</strong> share an axis (diagonal line).
                 Count the grid units of the horizontal and vertical legs, then estimate the
                 straight-line diagonal distance.</span
               >
               <span class="es-text"
-                >Selecciona dos atracciones que <strong>no</strong> compartan un eje (línea
+                ><strong>Esta vista previa no es obligatoria ni forma parte de tu puntuación de la Unidad 7.</strong>
+                Selecciona dos atracciones que <strong>no</strong> compartan un eje (línea
                 diagonal). Cuenta las unidades de cuadrícula de los catetos horizontal y vertical,
                 luego estima la distancia diagonal en línea recta.</span
               >
@@ -4239,7 +4154,7 @@
               `  Atracciones Seleccionadas: ${distA} (${dAx}, ${dAy}) y ${distB} (${dBx}, ${dBy})`,
               `  Distancia Calculada: ${distVal || "—"} unidades usando valores absolutos`,
               activeLevel === 2
-                ? `  Catetos Pitagóricos Nivel 2: |Δx| = ${document.getElementById("diag-leg-x").value || "—"}, |Δy| = ${document.getElementById("diag-leg-y").value || "—"}, diagonal estimada: ${document.getElementById("diag-student-ans").value || "—"} unidades`
+                ? `  Vista previa opcional sin puntos: |Δx| = ${document.getElementById("diag-leg-x").value || "—"}, |Δy| = ${document.getElementById("diag-leg-y").value || "—"}, diagonal estimada: ${document.getElementById("diag-student-ans").value || "—"} unidades`
                 : "",
               "",
               "🪞 PASO 3 — REFLEJOS EN EL PARQUE Y ESCALA",
@@ -4276,7 +4191,7 @@
               `  Selected Attractions: ${distA} (${dAx}, ${dAy}) & ${distB} (${dBx}, ${dBy})`,
               `  Calculated Distance: ${distVal || "—"} units using absolute values`,
               activeLevel === 2
-                ? `  Level 2 Pythagoras legs: |Δx| = ${document.getElementById("diag-leg-x").value || "—"}, |Δy| = ${document.getElementById("diag-leg-y").value || "—"}, straight-line estimated: ${document.getElementById("diag-student-ans").value || "—"} units`
+                ? `  Optional unscored preview: |Δx| = ${document.getElementById("diag-leg-x").value || "—"}, |Δy| = ${document.getElementById("diag-leg-y").value || "—"}, straight-line estimated: ${document.getElementById("diag-student-ans").value || "—"} units`
                 : "",
               "",
               "🪞 STEP 3 — MIRROR REFLECTIONS & SCALE",
@@ -4601,83 +4516,6 @@
       updateProgress();
       updatePlot();
 
-      function toggleGradingConsole() {
-        const el = document.getElementById("teacher-console");
-        if (el) {
-          el.classList.toggle("show");
-          if (el.classList.contains("show")) updateGradingAnswers();
-        }
-      }
-
-      function prefillGradingConsole() {
-        // Load the sample attraction map, then recompute the teacher answers from it
-        if (typeof loadExamples === "function") loadExamples();
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const qnames = {
-            I: "Quadrant I",
-            II: "Quadrant II",
-            III: "Quadrant III",
-            IV: "Quadrant IV",
-            x: "x-axis",
-            y: "y-axis",
-            origin: "Origin",
-          };
-          const ans = {};
-          for (let i = 1; i <= 5; i++) {
-            const nm = document.getElementById(`attr${i}-name`).value || `Attraction ${i}`;
-            const x = parseFloat(document.getElementById(`attr${i}-x`).value);
-            const y = parseFloat(document.getElementById(`attr${i}-y`).value);
-            if (isNaN(x) || isNaN(y)) {
-              ans[nm] = "(not plotted)";
-              continue;
-            }
-            ans[nm] = `(${x}, ${y}) → ${qnames[getQuadrantName(x, y)] || "—"}`;
-          }
-          // Park width from the real plotted x-coordinates
-          let mn = Infinity,
-            mx = -Infinity,
-            cnt = 0;
-          for (let i = 1; i <= 5; i++) {
-            const x = parseFloat(document.getElementById(`attr${i}-x`).value);
-            if (!isNaN(x)) {
-              cnt++;
-              mn = Math.min(mn, x);
-              mx = Math.max(mx, x);
-            }
-          }
-          if (cnt > 0) {
-            const w = mx - mn;
-            ans["Park width"] = `${w} units = ${(w * 0.1).toFixed(2)} mi`;
-          }
-          const body = document.getElementById("teacher-answers-body");
-          if (body) {
-            body.innerHTML = Object.entries(ans)
-              .map(
-                ([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `,
-              )
-              .join("");
-          }
-        } catch (e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-
-      // Wire up an obscure, non-browser-hijacking key combo (Alt+Shift+G) for teachers
-      document.addEventListener("keydown", function (e) {
-        if (e.altKey && e.shiftKey && e.key.toLowerCase() === "g") {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
 
       window.exportStudentBackup = function () {
         try {
@@ -4734,7 +4572,6 @@
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === "function") updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
@@ -4745,54 +4582,7 @@
         reader.readAsText(file);
       };
 
-      document.addEventListener("DOMContentLoaded", function () {
-        // Teacher console stays teacher-only (Alt+Shift+G). No student-reachable
-        // title triple-click. Keep the grading table current as attractions change.
-        document.addEventListener("input", function (e) {
-          if (e.target.id && /^attr[1-5]-(x|y|name)$/.test(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
     </script>
-
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
-        Calculated dynamically based on student inputs:
-      </p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display: flex; gap: 6px; margin-top: 6px">
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #059669"
-          onclick="exportStudentBackup()"
-        >
-          📥 Export JSON
-        </button>
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #7c3aed"
-          onclick="triggerImportStudentBackup()"
-        >
-          📤 Import JSON
-        </button>
-      </div>
-      <input
-        type="file"
-        id="student-backup-file-input"
-        style="display: none"
-        onchange="importStudentBackup(event)"
-        accept=".json"
-      />
-    </div>
 
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>

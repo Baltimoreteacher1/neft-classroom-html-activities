@@ -26,6 +26,8 @@
  *   .save(reason)                  — force a save now
  *   .getState()                    — current captured state object
  *   .getTeacherSummary()           — clean summary object for teachers/export
+ *   .exportRecord()                — download a current, complete JSON backup
+ *   .importRecord(file|string)     — validate and restore a JSON backup
  *   .registerStateProvider(fn)     — contribute custom state (returns plain obj)
  *   .registerStateRestorer(fn)     — restore custom state (receives that obj)
  *   .open() / .close()             — open/close the panel
@@ -46,20 +48,15 @@
   var IDENTITY_KEY = LS_PREFIX + "identity"; // remembered name + class (this device)
 
   /* ---------------------------------------------------------------------------
-   * CENTRAL RECORD (teacher backup of every student's code).
+   * SHARED STORAGE DEFAULT.
    * ---------------------------------------------------------------------------
-   * Leave endpoint "" and nothing changes: work saves to the student's own
-   * browser only (offline-first, zero regression). Paste your deployed Google
-   * Apps Script Web App URL (ends in /exec) here to turn ON a central record —
-   * then EVERY activity that loads this engine will also mirror each save
-   * (name + class + code + activity + progress) into your Google Sheet, with one
-   * tab per class. See tools/google-apps-script/save-resume-webapp.gs for setup.
-   * A page may still override per-activity via window.NeftSaveResumeConfig.
+   * Student work is local-only by default. A page may opt in to an approved,
+   * same-origin backend through window.NeftSaveResumeConfig, but this shared
+   * student bundle never contains or silently activates a third-party endpoint.
    * ------------------------------------------------------------------------ */
   var CENTRAL_RECORD = {
-    backend: "googleAppsScript",
-    endpoint:
-      "https://script.google.com/macros/s/AKfycbyhljxS4TsClKDr-dMpw8cN_mrhDDkHAUbxGCgN7sbAm__vbkoGftY05GH6Sw-1kwmd1Q/exec",
+    backend: "localStorage",
+    endpoint: "",
   };
 
   // Unambiguous code alphabet: no 0/O/1/I/L to keep codes student-friendly.
@@ -606,13 +603,15 @@
   /* ---------------------------------------------------------------------------
    * State restore
    * ------------------------------------------------------------------------ */
-  function restoreFields(fields) {
-    if (!fields) return;
-    Object.keys(fields).forEach(function (key) {
+  function restoreFields(fields, selectedKeys) {
+    if (!fields) return [];
+    var missing = [];
+    (selectedKeys || Object.keys(fields)).forEach(function (key) {
       safe(function () {
         var node = findByKey(key);
         if (!node) {
           log("could not restore field (gone from page):", key);
+          missing.push(key);
           return;
         }
         var rec = fields[key];
@@ -637,6 +636,7 @@
         dispatch(node, "change");
       }, "restore-field:" + key);
     });
+    return missing;
   }
   function dispatch(node, type) {
     safe(function () {
@@ -721,6 +721,73 @@
     },
     registerStateRestorer: function (fn) {
       if (typeof fn === "function") this._restorers.push(fn);
+    },
+    exportRecord: function () {
+      var self = this;
+      var state = this._captureState();
+      var payload = Object.assign({}, this.record || {}, {
+        schema: 1,
+        activityId: this.cfg.activityId,
+        activityTitle: this.cfg.activityTitle,
+        activityVersion: this.cfg.activityVersion,
+        url: location.pathname,
+        updatedAt: now(),
+        state: state,
+        progressPercent: state.progressPercent,
+      });
+      var json = JSON.stringify(payload, null, 2);
+      var blob = new Blob([json], { type: "application/json" });
+      var href = URL.createObjectURL(blob);
+      var link = el("a", {
+        href: href,
+        download:
+          slugify(payload.activityTitle || payload.activityId || "project") + "-backup.json",
+      });
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(function () {
+        URL.revokeObjectURL(href);
+      }, 0);
+      if (self.record) {
+        self.record.state = state;
+        self.record.progressPercent = state.progressPercent;
+        self.record.updatedAt = payload.updatedAt;
+        self._persist("export");
+      }
+      return payload;
+    },
+    importRecord: function (fileOrText) {
+      var self = this;
+      if (fileOrText && fileOrText.size > 2 * 1024 * 1024)
+        return Promise.reject(new Error("Backup files must be smaller than 2 MB."));
+      var textPromise =
+        typeof fileOrText === "string"
+          ? Promise.resolve(fileOrText)
+          : fileOrText && typeof fileOrText.text === "function"
+            ? fileOrText.text()
+            : Promise.reject(new Error("Choose a JSON backup file."));
+      return textPromise.then(function (text) {
+        var data;
+        try {
+          data = JSON.parse(text);
+        } catch (_error) {
+          throw new Error("That file is not valid JSON.");
+        }
+        if (!data || data.schema !== 1 || !data.state || typeof data.state !== "object")
+          throw new Error("That file is not a supported project backup.");
+        if (data.activityId && data.activityId !== self.cfg.activityId)
+          throw new Error("That backup belongs to a different project.");
+        if (!self.record) self.startNew(data.studentName || "", data.section || "");
+        self.record.state = data.state;
+        self.record.progressPercent = Number(data.progressPercent) || 0;
+        self.record.updatedAt = now();
+        self._restoreState(data.state);
+        return self._persist("import").then(function () {
+          updatePanelFields(self);
+          return { ok: true, saveCode: self.record.saveCode };
+        });
+      });
     },
     getLmsGradePayload: function () {
       var summary =
@@ -1035,7 +1102,7 @@
 
     _restoreState: function (state) {
       restoreNavigation(state.navigation);
-      restoreFields(state.fields);
+      var missingFields = restoreFields(state.fields);
       restoreDragDrop(state.dragDrop);
       // Author-provided custom restorers (graphs, games, canvases...).
       var custom = state.custom || {};
@@ -1045,6 +1112,31 @@
         }, "restorer#" + i);
       });
       updatePanelFields(this);
+
+      // Several project workspaces mount after the shared save engine. Replay
+      // field restoration for a short, bounded readiness window so a valid
+      // resume never appears successful while late-added student work is blank.
+      if (missingFields.length && "MutationObserver" in window && document.body) {
+        var observer = new MutationObserver(function (mutations) {
+          var added = mutations.some(function (mutation) {
+            return mutation.addedNodes && mutation.addedNodes.length;
+          });
+          if (!added) return;
+          var ready = missingFields.filter(function (key) {
+            return !!findByKey(key);
+          });
+          if (ready.length) restoreFields(state.fields, ready);
+          missingFields = missingFields.filter(function (key) {
+            return !findByKey(key);
+          });
+          if (!missingFields.length) observer.disconnect();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+        setTimeout(function () {
+          observer.disconnect();
+          restoreFields(state.fields, missingFields);
+        }, 5000);
+      }
     },
 
     // NOTE: there is deliberately no `data:` key here. A former captureData()
@@ -1281,16 +1373,54 @@
     },
   };
 
-  // Rough progress %: filled fields / total fields, blended with author markers.
+  function isProgressField(key, record) {
+    var node = findByKey(key);
+    if (!node || node.disabled || node.readOnly) return false;
+    if (
+      node.closest(
+        ".nsr-root, .no-print, #teacher-console, [data-nsr-progress='ignore'], [aria-hidden='true']",
+      )
+    )
+      return false;
+    if (node.matches("[data-nsr-progress='required'], [required]")) return true;
+    if (record.t === "checkbox" || record.t === "radio" || record.t === "select-multi")
+      return false;
+    return node.matches("textarea, input:not([type='hidden'])");
+  }
+
+  function differsFromDefault(node, record) {
+    if (!node) return false;
+    if (record.t === "checkbox" || record.t === "radio")
+      return !!record.v !== !!node.defaultChecked;
+    if (record.t === "select-multi") {
+      var defaults = [].filter
+        .call(node.options || [], function (option) {
+          return option.defaultSelected;
+        })
+        .map(function (option) {
+          return option.value;
+        });
+      return JSON.stringify(record.v || []) !== JSON.stringify(defaults);
+    }
+    return String(record.v || "").trim() !== String(node.defaultValue || "").trim();
+  }
+
+  // Student progress counts response-bearing fields and only credits work that
+  // differs from the page defaults. Tool controls, hidden tiers, and prefilled
+  // examples no longer make a brand-new project appear partially complete.
   function computeProgress(state) {
     return safe(
       function () {
         var f = state.fields || {};
-        var keys = Object.keys(f);
+        var keys = Object.keys(f).filter(function (key) {
+          return isProgressField(key, f[key]);
+        });
         if (!keys.length) return 0;
         var filled = 0;
         keys.forEach(function (k) {
           var v = f[k];
+          var node = findByKey(k);
+          if (!differsFromDefault(node, v)) return;
           if (v.t === "checkbox" || v.t === "radio") {
             if (v.v) filled++;
           } else if (v.t === "select-multi") {
@@ -1653,6 +1783,10 @@
    * ------------------------------------------------------------------------ */
   window.NeftSaveResume = Engine;
   onReady(function () {
+    // A project hub contains links, not student work. Keep the engine available
+    // to the actual version pages while preventing an empty, focusable launcher
+    // from sitting underneath the chooser page's export chrome.
+    if (document.body && document.body.classList.contains("pk-hub")) return;
     if (!Engine._started) {
       var pre = window.NeftSaveResumeConfig || {};
       if (pre.autoStart !== false) Engine.init(pre);

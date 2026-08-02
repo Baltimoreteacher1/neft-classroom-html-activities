@@ -38,10 +38,6 @@
   var COMPLETE_KEY = "nt-project-complete:v1";
   var RUBRIC_PREFIX = "nt-project-rubric:";
   var REFLECT_PREFIX = "nt-project-reflect:";
-  var TELEMETRY_URL = "/api/progress/telemetry";
-  var SUBMIT_TIMEOUT_MS = 7000;
-  var MAX_ANSWER = 400;
-
   /* ---------------------------------------------------------------- utils */
 
   function ready(fn) {
@@ -149,18 +145,6 @@
     if (cls) n.className = cls;
     if (html != null) n.innerHTML = html;
     return n;
-  }
-
-  /* Same slug as projects-publisher.js / NeftSaveResume autoId, so telemetry
-     rows line up with the activity_id save/resume already writes. */
-  function activitySlug() {
-    return (
-      String(PATH.replace(/\/+$/, "") || "home")
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "")
-        .slice(0, 80) || "home"
-    );
   }
 
   /* ------------------------------------------------------- B2: rubric state */
@@ -521,27 +505,13 @@
 
   /* ---------------------------------------------------- B4: submit to teacher */
 
-  function studentIdentity() {
-    var out = {};
-    var nt = jsonGet("nt_student", null);
-    if (nt) {
-      var nm = nt.name || nt.alias || "";
-      if (nm) out.studentName = String(nm).slice(0, 60);
-      if (nt.section) out.section = String(nt.section).slice(0, 40);
-    }
-    if (!out.studentName) {
-      var legacy = lsGet("nt-student-name");
-      if (legacy) out.studentName = String(legacy).slice(0, 60);
-    }
-    return out;
-  }
-
   function buildSubmitRow() {
     var row = el("div", "ntc-submit-row no-print");
 
     var btn = el("button", "ntc-submit-btn");
     btn.type = "button";
-    btn.innerHTML = "📤 " + bi("Send to my teacher", "Enviar a mi maestro");
+    btn.innerHTML =
+      "✓ " + bi("Mark complete on this device", "Marcar completo en este dispositivo");
 
     var status = el("span", "ntc-submit-status");
     status.setAttribute("role", "status");
@@ -551,8 +521,8 @@
       "p",
       "ntc-submit-hint",
       bi(
-        "Optional. Your work is already saved on this device either way.",
-        "Opcional. Tu trabajo ya está guardado en este dispositivo de todos modos.",
+        "This keeps your reflection private. Use the project report or export when your teacher asks for it.",
+        "Esto mantiene privada tu reflexión. Usa el informe o la exportación cuando tu maestro lo pida.",
       ),
     );
 
@@ -561,16 +531,14 @@
       var record = recordCompletion("submit");
       btn.disabled = true;
       status.className = "ntc-submit-status is-busy";
-      status.textContent = t("Sending…", "Enviando…");
+      status.textContent = t("Saving…", "Guardando…");
       submitTelemetry(record)
         .then(function (ok) {
           status.className = "ntc-submit-status " + (ok ? "is-ok" : "is-local");
-          status.textContent = ok
-            ? t("Sent to your teacher ✓", "Enviado a tu maestro ✓")
-            : t(
-                "Saved on this device — show your teacher your report.",
-                "Guardado en este dispositivo: muéstrale tu resumen a tu maestro.",
-              );
+          status.textContent = t(
+            "Saved on this device — show your teacher your report.",
+            "Guardado en este dispositivo: muéstrale tu resumen a tu maestro.",
+          );
           btn.disabled = false;
         })
         .catch(function () {
@@ -589,81 +557,12 @@
     return row;
   }
 
-  /* Payload shape matches shared/projects/projects-publisher.js exactly
-     (activityId / activityTitle / standard / kind / events[] / createdAt, plus
-     optional studentName + section). The endpoint is unauthenticated for POST
-     and always answers 204, so there is nothing to retry and no key to hold.
-     No roster/class code: the existing payload has no such field. */
+  /* Completion is deliberately local-only. A project report/export is the
+     student-controlled handoff; reflections and identity are never silently
+     posted from the public student bundle. */
   function submitTelemetry(record) {
-    if (typeof fetch !== "function") return Promise.resolve(false);
-    var now = new Date().toISOString();
-    var refl = reflectionAnswers();
-    var props = {
-      unit: record.unit,
-      version: record.version,
-      title: record.title,
-      level: record.level,
-      stars: record.stars,
-      rubricTotal: record.rubricTotal,
-      rubricMax: record.rubricMax,
-      path: PATH,
-      reflection: {
-        r1: String(refl.r1 || "").slice(0, MAX_ANSWER),
-        r2: String(refl.r2 || "").slice(0, MAX_ANSWER),
-        r3: String(refl.r3 || "").slice(0, MAX_ANSWER),
-      },
-    };
-    var payload = {
-      activityId: activitySlug(),
-      activityTitle: (document.title || "").slice(0, 200),
-      standard: "",
-      kind: "telemetry",
-      events: [
-        {
-          id: Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8),
-          event: "project-complete",
-          lessonSlug: activitySlug(),
-          standard: "",
-          ts: now,
-          props: props,
-        },
-      ],
-      createdAt: now,
-    };
-    var who = studentIdentity();
-    if (who.studentName) payload.studentName = who.studentName;
-    if (who.section) payload.section = who.section;
-
-    var ctrl = null;
-    var timer = null;
-    try {
-      if (typeof AbortController === "function") {
-        ctrl = new AbortController();
-        timer = setTimeout(function () {
-          try {
-            ctrl.abort();
-          } catch (_e) {}
-        }, SUBMIT_TIMEOUT_MS);
-      }
-    } catch (_e) {}
-
-    var opts = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      credentials: "omit",
-    };
-    if (ctrl) opts.signal = ctrl.signal;
-
-    return fetch(TELEMETRY_URL, opts)
-      .then(function (res) {
-        if (timer) clearTimeout(timer);
-        return !!(res && (res.ok || res.status === 204));
-      })
-      .catch(function () {
-        if (timer) clearTimeout(timer);
-        return false;
-      });
+    void record;
+    return Promise.resolve(false);
   }
 
   /* ------------------------------------------------- B1: completion record */

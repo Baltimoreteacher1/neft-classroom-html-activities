@@ -46,12 +46,13 @@ for (const u of UNITS) {
   ROUTES.push({ url: `/math/${u}/projects/`, kind: "hub" });
   ROUTES.push({ url: `/math/${u}/projects/version-a/`, kind: "version" });
   ROUTES.push({ url: `/math/${u}/projects/version-b/`, kind: "version" });
-  // Statistics has no separate answer-key folder.
-  if (u !== "statistics") {
-    ROUTES.push({ url: `/math/${u}/projects/answer-key/`, kind: "key" });
-  }
+  ROUTES.push({ url: `/math/${u}/projects/answer-key/`, kind: "key" });
 }
+// Unit 8 ships a real third student experience. Keep it in the same fleet gate
+// so a stretch project cannot silently miss shared layers or break at runtime.
+ROUTES.push({ url: "/math/unit-8/projects/version-c/", kind: "version" });
 ROUTES.push({ url: "/math/unit-10/projects/world-architect/", kind: "extra" });
+ROUTES.push({ url: "/math/statistics/statistics-of-my-life/", kind: "extra" });
 
 const IGNORE_404 = [
   /\/favicon\.ico$/,
@@ -113,6 +114,21 @@ for (const route of ROUTES) {
     // Page must not be blank.
     const bodyLen = await page.evaluate(() => (document.body?.innerText || "").trim().length);
     expect(bodyLen, `page appears blank on ${route.url}`).toBeGreaterThan(60);
+
+    if (route.kind === "hub") {
+      await expect(page.locator(".project-hub-nav")).toBeVisible();
+      await expect(page.locator("#nsr-root")).toHaveCount(0);
+      await expect(page.locator(".project-teacher-guide")).toHaveCount(1);
+      const directionsLead = await page.evaluate(() => {
+        const directions = document.getElementById("pickpath-heading")?.closest("section");
+        const choices = document.getElementById("versions-heading")?.closest("section");
+        if (!directions || !choices) return false;
+        return Boolean(
+          directions.compareDocumentPosition(choices) & Node.DOCUMENT_POSITION_FOLLOWING,
+        );
+      });
+      expect(directionsLead, `student directions must precede choices on ${route.url}`).toBe(true);
+    }
 
     if (route.kind === "version") {
       // Student version pages load the PRO + GOLD + PUBLISHER layers
@@ -272,6 +288,12 @@ for (const route of ROUTES) {
         18,
       );
       expect(award.stages, `modeling stages missing on ${route.url}`).toBe(7);
+      await expect(page.locator(".cms-goals .cms-mission")).toBeVisible();
+      await expect(page.locator(".cms-goals .cms-goals__product")).toBeVisible();
+      expect(
+        await page.locator(".cms-goals").evaluate((node) => node.parentElement?.classList.contains("step-panel")),
+        `project brief nested inside another injected layer on ${route.url}`,
+      ).toBe(true);
 
       const awardAccessibility = await new AxeBuilder({ page })
         .include(".cms-goals")
@@ -328,6 +350,7 @@ for (const route of ROUTES) {
       expect(gold.unannounced, `readout(s) missing aria-live on ${route.url}`).toBe(0);
       expect(gold.lv1Pressed, `#btn-lv1 missing aria-pressed on ${route.url}`).toBe(true);
       expect(gold.unclamped, `unclamped number input(s) on ${route.url}`).toBe(0);
+      await expect(page.locator("#teacher-console")).toHaveCount(0);
 
       // Toggle EN/ES and each Level tier — these must not throw.
       await page.evaluate(() => {
@@ -391,6 +414,56 @@ for (const route of ROUTES) {
     expect(consoleErrors, `console error(s) on ${route.url}`).toEqual([]);
   });
 }
+
+test("student project save, late-field restore, and JSON backup stay private", async ({ page }) => {
+  const outgoing: string[] = [];
+  page.on("request", (request) => {
+    if (/script\.google\.com|\/api\/progress\/telemetry/.test(request.url())) {
+      outgoing.push(request.url());
+    }
+  });
+  await page.goto("/math/unit-2/projects/version-b/", { waitUntil: "load" });
+  await page.waitForFunction(
+    () =>
+      document.body?.dataset.goldInit === "1" &&
+      document.body?.dataset.awardInit === "1" &&
+      Boolean((window as unknown as { NeftSaveResume?: unknown }).NeftSaveResume),
+  );
+  await page.locator('.gold-level-option[data-level="1"]').click();
+  const result = await page.evaluate(async () => {
+    const engine = (window as unknown as {
+      NeftSaveResume: {
+        startNew: (name: string, section: string) => string;
+        save: (reason: string) => Promise<unknown>;
+        exportRecord: () => Record<string, unknown>;
+        importRecord: (text: string) => Promise<unknown>;
+        record: { progressPercent: number; saveCode: string };
+      };
+    }).NeftSaveResume;
+    engine.startNew("QA Student", "QA");
+    await engine.save("test-fresh");
+    const freshProgress = engine.record.progressPercent;
+    const field = document.querySelector<HTMLTextAreaElement>("[data-award-field]");
+    if (!field) throw new Error("late-mounted award field missing");
+    field.value = "A saved modeling decision.";
+    field.dispatchEvent(new Event("input", { bubbles: true }));
+    await engine.save("test-filled");
+    const backup = engine.exportRecord();
+    field.value = "";
+    await engine.importRecord(JSON.stringify(backup));
+    return {
+      freshProgress,
+      restored: field.value,
+      code: engine.record.saveCode,
+    };
+  });
+  expect(result.freshProgress, "a fresh project must begin at 0% complete").toBe(0);
+  expect(result.restored, "JSON import must restore late-mounted project fields").toBe(
+    "A saved modeling decision.",
+  );
+  expect(result.code).toBeTruthy();
+  expect(outgoing, "student work must not be transmitted by default").toEqual([]);
+});
 
 test("Publication Studio evidence persists locally and fits a phone viewport", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 760 });

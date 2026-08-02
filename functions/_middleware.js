@@ -27,6 +27,25 @@ function toStudentConfig(value) {
   return clean;
 }
 
+function decodeBase64(value) {
+  try {
+    return atob(value);
+  } catch (_error) {
+    return "";
+  }
+}
+
+async function privateTeacherResponse(next) {
+  const response = await next();
+  const headers = new Headers(response.headers);
+  headers.set("Cache-Control", "private, no-store");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export async function onRequest(context) {
   const { request, env, next } = context;
   const password = env.SITE_PASSWORD;
@@ -44,6 +63,17 @@ export async function onRequest(context) {
     !p.endsWith("/published") &&
     !isFamilyPublishedFeed &&
     !isPublicFamilySchedulingApi;
+  const isSharedStudentAsset = p.startsWith("/assets/") || p.startsWith("/data/");
+  const isApiWithOwnPolicy =
+    (p.startsWith("/api/") && !isFamilyPublishingApi) || p.endsWith("/config.json");
+  const isTeacherSurface =
+    !isSharedStudentAsset &&
+    !isApiWithOwnPolicy &&
+    (isFamilyPublishingApi ||
+      p.includes("teacher") ||
+      p.includes("dashboard") ||
+      p.includes("answer-key") ||
+      p.startsWith("/admin"));
 
   // Student small-group configs never include facilitation fields. The
   // authenticated teacher route reads the original asset directly.
@@ -60,7 +90,7 @@ export async function onRequest(context) {
   // Public pages remain open when the gate is unavailable. Publishing edits
   // are the exception and fail closed instead of becoming publicly writable.
   if (!password) {
-    if (isFamilyPublishingApi || p.startsWith("/teacher-small-group/")) {
+    if (isTeacherSurface) {
       return new Response("Teacher access is not configured.", { status: 503 });
     }
     return next();
@@ -68,8 +98,7 @@ export async function onRequest(context) {
 
   // APIs and lesson config JSON have their own auth / are fetched by external
   // automation (e.g. the Apps Script slide generator). Never gate them here.
-  if ((p.startsWith("/api/") && !isFamilyPublishingApi) || p.endsWith("/config.json"))
-    return next();
+  if (isApiWithOwnPolicy) return next();
 
   // Static bundles under /assets/ and curriculum data under /data/ are shared
   // code/content, not teacher pages. Some are named for the feature they serve
@@ -80,20 +109,13 @@ export async function onRequest(context) {
   // filename substring 401s every student on /curriculum/ and breaks the hub,
   // so never gate these dirs here. Sensitive surfaces are teacher *pages*,
   // matched below.
-  if (p.startsWith("/assets/") || p.startsWith("/data/")) return next();
+  if (isSharedStudentAsset) return next();
 
   // Teacher-only surfaces that STAY behind the password. These substrings cover
   // every teacher directory in the repo:
   //   .../teacher-notes, .../teacher, access-teacher, teacher-tools/*,
   //   teacher-data-dashboard, dashboard, */dashboard (class/curriculum/games),
   //   math/unit-N/projects/answer-key, and any /admin surface.
-  const isTeacherSurface =
-    isFamilyPublishingApi ||
-    p.includes("teacher") ||
-    p.includes("dashboard") ||
-    p.includes("answer-key") ||
-    p.startsWith("/admin");
-
   // Everything else is student-facing -> open, no password.
   if (!isTeacherSurface) return next();
 
@@ -101,12 +123,12 @@ export async function onRequest(context) {
   const header = request.headers.get("Authorization") || "";
   const [scheme, encoded] = header.split(" ");
   if (scheme === "Basic" && encoded) {
-    const decoded = atob(encoded);
+    const decoded = decodeBase64(encoded);
     const supplied = decoded.slice(decoded.indexOf(":") + 1);
     if (supplied === password) {
       context.data.teacherAccessConfigured = true;
       context.data.teacherAuthorized = true;
-      return next();
+      return privateTeacherResponse(next);
     }
   }
 

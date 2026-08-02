@@ -191,6 +191,18 @@
   function buildPanel(panel, stepIndex, lvl) {
     if (panel.querySelector(".ntp-card")) return false;
 
+    // Level 1/2 projects begin with a vocabulary/orientation screen. Pair-work
+    // directions there buried the actual launch behind a tall procedure card,
+    // even though the screen contains no response to solve together. Level 0
+    // keeps the card because its reduced-path response is injected at runtime.
+    if (
+      lvl > 0 &&
+      !panel.querySelector(
+        "input:not([type='hidden']), textarea, select, [contenteditable='true'], [data-award-field]",
+      )
+    )
+      return false;
+
     var role = ROLES[0];
     /* Alternate who drives so one partner does not own the keyboard all
        period. Odd steps swap the two names. */
@@ -200,9 +212,9 @@
 
     var wrap = document.createElement("details");
     wrap.className = "ntp-card no-print";
-    /* Open on the first step so the pair sees the routine once, collapsed
-       after that so it never buries the actual work. */
-    if (stepIndex === 0) wrap.open = true;
+    // Only the most-supported path auto-opens coaching. Level 1/2 students can
+    // open it when working with a partner without losing the math below it.
+    if (lvl === 0 && stepIndex === 0) wrap.open = true;
 
     var summary = document.createElement("summary");
     summary.className = "ntp-summary";

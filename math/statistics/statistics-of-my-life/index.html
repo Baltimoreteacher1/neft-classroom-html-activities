@@ -7,7 +7,7 @@
     <title>Statistics of My Life | 6th Grade Math Project</title>
     <meta
       name="description"
-      content="Interactive language-friendly project for mean, median, mode, range, classmate interviews, and global data comparison."
+      content="Privacy-conscious Grade 6 project for comparing activity-minute distributions with mean, median, mode, range, and an illustrative sample."
     />
     <style>
       :root {
@@ -540,9 +540,9 @@
         <span class="eyebrow">📊 Math & Data Project</span>
         <h1>Statistics of My Life</h1>
         <p>
-          Build a personal data set, interview a classmate, calculate mean,
-          median, mode, and range, then compare your numbers with a global
-          sample.
+          Compare how minutes are distributed across the same ten everyday
+          activities. Analyze your own data, a classmate's data, and a clearly
+          labeled practice sample without collecting private health information.
         </p>
         <div
           class="no-print"
@@ -578,7 +578,7 @@
         ><button data-go="mystats">3 My Stats</button
         ><button data-go="interview">4 Interview</button
         ><button data-go="partnerstats">5 Partner Stats</button
-        ><button data-go="world">6 World</button
+        ><button data-go="world">6 Sample</button
         ><button data-go="report">7 Report</button
         ><button onclick="toggleEs()">ES/EN Help</button
         ><button onclick="save()">Save</button
@@ -639,12 +639,12 @@
           <div>
             <span class="tag">15 minutes</span>
             <h2>Part 1: My Data</h2>
-            <p class="sub">Answer at least 15 questions. Numbers only.</p>
+            <p class="sub">Enter minutes for the same ten activities. Use 0 when an activity did not happen.</p>
           </div>
         </div>
         <div class="progress">
           <div class="rowline">
-            <span id="myProgressText">0 of 15 answered</span
+            <span id="myProgressText">0 of 10 answered</span
             ><span id="myProgressPct">0%</span>
           </div>
           <div class="bar"><div class="fill" id="myFill"></div></div>
@@ -724,8 +724,8 @@
         <div class="section-head">
           <div>
             <span class="tag">15 minutes</span>
-            <h2>Part 2: Classmate Interview</h2>
-            <p class="sub">Collect a second data set from a partner.</p>
+            <h2>Part 2: Classmate Comparison</h2>
+            <p class="sub">With permission, collect the same ten activity-minute values from a partner. Initials are enough, and anyone may use the practice sample instead.</p>
           </div>
         </div>
         <div class="grid g2">
@@ -802,28 +802,25 @@
         <div class="section-head">
           <div>
             <span class="tag">20 minutes</span>
-            <h2>Part 3: Global Comparison</h2>
+            <h2>Part 3: Practice-Sample Comparison</h2>
             <p class="sub">
-              Compare one of your numbers with a sample of students around the
-              world.
+              Compare one category with an illustrative, anonymous classroom sample.
+              These values are for math practice—not national estimates.
             </p>
           </div>
         </div>
         <div class="card">
-          <h3>Global Student Snapshot</h3>
+          <h3>Illustrative Classroom Snapshot</h3>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Student</th>
-                  <th>Place</th>
-                  <th>Sleep</th>
+                  <th>Anonymous record</th>
+                  <th>Reading</th>
+                  <th>Math</th>
                   <th>Creative</th>
-                  <th>Screen</th>
-                  <th>Languages</th>
-                  <th>Home</th>
-                  <th>Books</th>
-                  <th>Water</th>
+                  <th>Outdoors</th>
+                  <th>Helping</th>
                 </tr>
               </thead>
               <tbody id="worldRows"></tbody>
@@ -835,13 +832,11 @@
             <h3>Visual Comparison</h3>
             <label>Category</label
             ><select id="worldCat" onchange="worldCompare()">
-              <option value="sleep">Hours of sleep</option>
+              <option value="reading">Reading minutes</option>
+              <option value="math">Math minutes</option>
               <option value="creative">Creative minutes</option>
-              <option value="screen">Screen time minutes</option>
-              <option value="languages">Languages spoken</option>
-              <option value="household">People in home</option>
-              <option value="books">Books read this month</option>
-              <option value="water">Cups of water</option></select
+              <option value="outdoors">Outdoor minutes</option>
+              <option value="helping">Helping minutes</option></select
             ><label style="margin-top: 10px; display: block">My number</label
             ><input id="myWorld" type="number" oninput="worldCompare()" />
             <div id="worldMeter"></div>
@@ -863,7 +858,7 @@
             <h3>Comparison Reflection</h3>
             <textarea
               id="worldQ1"
-              placeholder="My number is below, near, or above the global mean because..."
+              placeholder="My number is below, near, or above the illustrative sample mean because..."
             ></textarea>
           </div>
           <div class="card">
@@ -886,10 +881,10 @@
         <div class="grid g2">
           <div class="card">
             <h3>Checklist</h3>
-            <p>✅ Answered personal data questions</p>
+            <p>✅ Recorded one consistent variable: minutes</p>
             <p>✅ Calculated statistics</p>
             <p>✅ Interviewed a classmate</p>
-            <p>✅ Compared data to the world sample</p>
+            <p>✅ Compared data to the illustrative sample</p>
             <button class="primary no-print" onclick="report()">
               Generate report
             </button>
@@ -911,175 +906,37 @@
     </div>
     <script>
       const $ = (id) => document.getElementById(id);
-      const myQs = [
-        ["age", "🎂", "How old are you?", "years", 8, 15],
-        ["grade", "🏫", "What grade are you in?", "example: 6", 1, 12],
-        [
-          "household",
-          "🏠",
-          "How many people live in your home?",
-          "count yourself too",
-          1,
-          20,
-        ],
-        [
-          "siblings",
-          "👥",
-          "How many siblings do you have?",
-          "0 is okay",
-          0,
-          20,
-        ],
-        ["pets", "🐾", "How many pets do you have?", "0 is okay", 0, 20],
-        [
-          "languages",
-          "🌍",
-          "How many languages do you speak or learn?",
-          "include English",
-          1,
-          10,
-        ],
-        [
-          "letters",
-          "🔤",
-          "How many letters are in your first name?",
-          "letters only",
-          1,
-          30,
-        ],
-        ["wake", "⏰", "What hour did you wake up today?", "hour only", 1, 12],
-        [
-          "bed",
-          "🌙",
-          "What hour did you go to bed last night?",
-          "hour only",
-          1,
-          12,
-        ],
-        [
-          "sleep",
-          "😴",
-          "How many hours did you sleep last night?",
-          "nearest hour",
-          0,
-          16,
-        ],
-        [
-          "reading",
-          "📚",
-          "How many minutes did you read yesterday?",
-          "school or home",
-          0,
-          240,
-        ],
-        [
-          "math",
-          "➕",
-          "How many minutes did you spend on math?",
-          "classwork or homework",
-          0,
-          240,
-        ],
-        [
-          "creative",
-          "🎨",
-          "How many minutes on a hobby?",
-          "art, music, building, writing",
-          0,
-          240,
-        ],
-        [
-          "screen",
-          "📱",
-          "How many minutes of screen time?",
-          "games, TV, videos, texting",
-          0,
-          600,
-        ],
-        ["lucky", "⭐", "Choose a favorite or lucky number.", "0 to 99", 0, 99],
-        [
-          "hobbies",
-          "🎾",
-          "How many hobbies or clubs this week?",
-          "0 is okay",
-          0,
-          30,
-        ],
-        [
-          "chores",
-          "✅",
-          "How many chores did you do this week?",
-          "estimate",
-          0,
-          50,
-        ],
-        [
-          "countries",
-          "🗺️",
-          "How many countries can you name in 30 seconds?",
-          "estimate or time yourself",
-          0,
-          80,
-        ],
-        [
-          "songs",
-          "🎧",
-          "How many songs did you listen to yesterday?",
-          "estimate",
-          0,
-          200,
-        ],
-        ["water", "💧", "How many cups of water yesterday?", "estimate", 0, 30],
+      const activityQuestions = [
+        ["reading", "📚", "Minutes spent reading yesterday?", "school or home"],
+        ["math", "➕", "Minutes spent on math yesterday?", "classwork or practice"],
+        ["writing", "✍️", "Minutes spent writing yesterday?", "any kind of writing"],
+        ["creative", "🎨", "Minutes spent creating yesterday?", "art, music, building, or making"],
+        ["outdoors", "🌳", "Minutes spent outdoors yesterday?", "any safe outdoor activity"],
+        ["movement", "🏃", "Minutes spent moving yesterday?", "play, walking, dance, or sports"],
+        ["helping", "🤝", "Minutes spent helping yesterday?", "home, school, or community"],
+        ["puzzles", "🧩", "Minutes spent on games or puzzles yesterday?", "digital or non-digital"],
+        ["conversation", "💬", "Minutes spent in conversation yesterday?", "family, friends, or classmates"],
+        ["making", "🛠️", "Minutes spent cooking or making yesterday?", "0 is always okay"],
       ];
-      const partnerQs = [
-        ["p_letters", "🔤", "Letters in your name?", "letters only", 1, 30],
-        ["p_household", "🏠", "People in your home?", "count yourself", 1, 20],
-        ["p_pets", "🐾", "How many pets?", "0 is okay", 0, 20],
-        ["p_languages", "🌍", "Languages you speak?", "include English", 1, 10],
-        ["p_sleep", "😴", "Hours of sleep last night?", "nearest hour", 0, 16],
-        [
-          "p_creative",
-          "🎨",
-          "Creative minutes yesterday?",
-          "hobby time",
-          0,
-          240,
-        ],
-        [
-          "p_reading",
-          "📚",
-          "Reading minutes yesterday?",
-          "any language",
-          0,
-          240,
-        ],
-        ["p_books", "📖", "Books or long texts this month?", "estimate", 0, 30],
-        ["p_water", "💧", "Cups of water yesterday?", "estimate", 0, 30],
-        ["p_lucky", "⭐", "Lucky number?", "0 to 99", 0, 99],
-      ];
+      const myQs = activityQuestions.map((q) => [q[0], q[1], q[2], q[3], 0, 240]);
+      const partnerQs = activityQuestions.map((q) => ["p_" + q[0], q[1], q[2], q[3], 0, 240]);
+      // Invented, anonymous values for practicing comparison. They are not
+      // claims about a country, demographic group, or individual student.
       const world = [
-        ["Amina", "🇰🇪", "Kenya", 9, 45, 75, 3, 6, 3, 6],
-        ["Ren", "🇯🇵", "Japan", 8, 35, 95, 2, 4, 4, 5],
-        ["Lia", "🇧🇷", "Brazil", 9, 50, 120, 2, 5, 2, 7],
-        ["Sofía", "🇲🇽", "Mexico", 8, 40, 105, 2, 5, 3, 6],
-        ["Noah", "🇨🇦", "Canada", 10, 55, 110, 2, 4, 5, 8],
-        ["Aarav", "🇮🇳", "India", 8, 30, 90, 3, 5, 4, 7],
-        ["Mariam", "🇪🇬", "Egypt", 9, 35, 85, 2, 6, 2, 6],
-        ["Camille", "🇫🇷", "France", 9, 60, 80, 3, 4, 6, 7],
-        ["Min-jun", "🇰🇷", "South Korea", 7, 45, 130, 2, 4, 4, 5],
-        ["Mia", "🇦🇺", "Australia", 10, 70, 100, 1, 4, 5, 8],
-        ["Diego", "🇪🇸", "Spain", 9, 50, 95, 2, 4, 4, 6],
-        ["Thabo", "🇿🇦", "South Africa", 8, 50, 70, 3, 6, 3, 7],
+        ["Record A", 20, 35, 30, 45, 25],
+        ["Record B", 30, 40, 45, 20, 15],
+        ["Record C", 15, 50, 25, 60, 30],
+        ["Record D", 40, 30, 55, 35, 20],
+        ["Record E", 25, 45, 35, 50, 40],
+        ["Record F", 35, 25, 40, 30, 25],
+        ["Record G", 20, 55, 20, 45, 35],
+        ["Record H", 45, 35, 50, 25, 30],
+        ["Record I", 30, 40, 30, 55, 20],
+        ["Record J", 25, 30, 45, 40, 45],
+        ["Record K", 50, 45, 35, 30, 25],
+        ["Record L", 35, 50, 40, 20, 30],
       ];
-      const wIndex = {
-        sleep: 3,
-        creative: 4,
-        screen: 5,
-        languages: 6,
-        household: 7,
-        books: 8,
-        water: 9,
-      };
+      const wIndex = { reading: 1, math: 2, creative: 3, outdoors: 4, helping: 5 };
       const state = { my: [], partner: [], myStats: null, partnerStats: null };
       function init() {
         document
@@ -1131,18 +988,18 @@
         let m = vals("my", myQs).length,
           p = vals("partner", partnerQs).length;
         $("myProgressText").textContent =
-          `${m} of 15 answered${m >= 15 ? " ✅" : ""}`;
+          `${m} of 10 answered${m >= 10 ? " ✅" : ""}`;
         $("myProgressPct").textContent =
-          Math.min(100, Math.round((m / 15) * 100)) + "%";
-        $("myFill").style.width = Math.min(100, (m / 15) * 100) + "%";
+          Math.min(100, Math.round((m / 10) * 100)) + "%";
+        $("myFill").style.width = Math.min(100, (m / 10) * 100) + "%";
         $("partnerProgressText").textContent = `${p} of 10 answered`;
         $("partnerProgressPct").textContent = Math.round((p / 10) * 100) + "%";
         $("partnerFill").style.width = (p / 10) * 100 + "%";
       }
       function buildMine(next) {
         state.my = vals("my", myQs);
-        if (next && state.my.length < 15) {
-          alert("Please answer at least 15 questions first.");
+        if (next && state.my.length < 10) {
+          alert("Please answer all 10 activity-minute questions first.");
           return;
         }
         if (next) go("mystats");
@@ -1280,7 +1137,7 @@
         $("worldRows").innerHTML = world
           .map(
             (r) =>
-              `<tr><td>${r[1]} ${r[0]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]}</td><td>${r[8]}</td><td>${r[9]}</td></tr>`,
+              `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`,
           )
           .join("");
       }
@@ -1300,7 +1157,7 @@
           range = max - min || 1,
           meanPos = ((st.mean - min) / range) * 100,
           myPos = ((val - min) / range) * 100;
-        box.innerHTML = `<div class="meter"><div class="meter-fill" style="width:${Math.max(meanPos, myPos)}%"></div><div class="mark" style="left:${meanPos}%"><span>Mean ${st.mean.toFixed(1)}</span></div><div class="mark me" style="left:${myPos}%"><span>Me ${val}</span></div></div><p><b>Your number is ${val > st.mean ? "above" : val < st.mean ? "below" : "equal to"} the global sample mean.</b></p>`;
+        box.innerHTML = `<div class="meter"><div class="meter-fill" style="width:${Math.max(meanPos, myPos)}%"></div><div class="mark" style="left:${meanPos}%"><span>Mean ${st.mean.toFixed(1)}</span></div><div class="mark me" style="left:${myPos}%"><span>Me ${val}</span></div></div><p><b>Your number is ${val > st.mean ? "above" : val < st.mean ? "below" : "equal to"} the illustrative sample mean.</b></p>`;
       }
       function whatIf() {
         let n = parseFloat($("newWorld").value),
@@ -1314,7 +1171,7 @@
         let m = state.myStats,
           p = state.partnerStats,
           name = $("partnerName").value || "Classmate";
-        return `STATISTICS OF MY LIFE REPORT\n============================\n\nPART 1: MY DATA\nMy data set: ${state.my.join(", ")}\nMy statistics: ${m ? `Mean ${m.mean.toFixed(2)} | Median ${m.median} | Mode ${m.modes.length ? m.modes.join(", ") : "none"} | Range ${m.range}` : "Not finished"}\n\nMy data story:\n${$("myStory").value || "Not written yet."}\n\nOutlier detective:\n${$("myOutlier").value || "Not written yet."}\n\nPART 2: CLASSMATE INTERVIEW\nPartner: ${name}\nPartner data set: ${state.partner.join(", ")}\nPartner statistics: ${p ? `Mean ${p.mean.toFixed(2)} | Median ${p.median} | Mode ${p.modes.length ? p.modes.join(", ") : "none"} | Range ${p.range}` : "Not finished"}\n\nComparison reflection:\n${$("pairReflection").value || "Not written yet."}\n\nPART 3: GLOBAL COMPARISON\n${$("worldQ1").value || "Not written yet."}\n\nCareful thinking:\n${$("ethicsQ").value || "Not written yet."}`;
+        return `STATISTICS OF MY LIFE REPORT\n============================\n\nVariable: minutes spent across the same ten everyday activities\n\nPART 1: MY DATA\nMy data set: ${state.my.join(", ")}\nMy statistics: ${m ? `Mean ${m.mean.toFixed(2)} | Median ${m.median} | Mode ${m.modes.length ? m.modes.join(", ") : "none"} | Range ${m.range}` : "Not finished"}\n\nMy data story:\n${$("myStory").value || "Not written yet."}\n\nOutlier detective:\n${$("myOutlier").value || "Not written yet."}\n\nPART 2: CLASSMATE COMPARISON\nPartner: ${name}\nPartner data set: ${state.partner.join(", ")}\nPartner statistics: ${p ? `Mean ${p.mean.toFixed(2)} | Median ${p.median} | Mode ${p.modes.length ? p.modes.join(", ") : "none"} | Range ${p.range}` : "Not finished"}\n\nComparison reflection:\n${$("pairReflection").value || "Not written yet."}\n\nPART 3: ILLUSTRATIVE SAMPLE COMPARISON\n${$("worldQ1").value || "Not written yet."}\n\nCareful thinking:\n${$("ethicsQ").value || "Not written yet."}`;
       }
       function report() {
         buildMine(false);

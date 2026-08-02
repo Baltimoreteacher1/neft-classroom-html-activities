@@ -731,94 +731,6 @@
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
-
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        width: 330px;
-        max-height: 480px;
-        overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        padding: 16px;
-        color: #f8fafc;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        box-shadow:
-          0 10px 25px -5px rgba(0, 0, 0, 0.3),
-          0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        display: none;
-        box-sizing: border-box;
-        text-align: left;
-      }
-      #teacher-console.show {
-        display: block;
-      }
-      #teacher-console h4 {
-        margin: 0 0 8px 0;
-        color: #38bdf8;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      #teacher-console .close-btn {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0 4px;
-        line-height: 1;
-      }
-      #teacher-console .close-btn:hover {
-        color: #f1f5f9;
-      }
-      #teacher-console table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-      #teacher-console td {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-      }
-      #teacher-console .lbl {
-        font-weight: 600;
-        color: #94a3b8;
-      }
-      #teacher-console .val {
-        font-weight: 700;
-        text-align: right;
-        color: #38bdf8;
-        word-break: break-all;
-      }
-      #teacher-console .prefill-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: #0284c7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      #teacher-console .prefill-btn:hover {
-        background: #0369a1;
-      }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1125,12 +1037,14 @@
             <span class="en-text"
               ><strong>Your job:</strong> Enter the amounts (in cups) of the two main ingredients
               you'll use in your signature smoothie. Write the recipe ratio in three different
-              ways.</span
+              ways. For this classroom model, those two amounts together make the
+              <strong>base recipe for 1 smoothie</strong>.</span
             >
             <span class="es-text"
               ><strong>Tu trabajo:</strong> Ingresa las cantidades (en tazas) de los dos
               ingredientes principales que usarás en tu batido signature. Escribe la razón de la
-              receta de tres maneras diferentes.</span
+              receta de tres maneras diferentes. Para este modelo de clase, esas dos cantidades
+              juntas forman la <strong>receta base para 1 batido</strong>.</span
             >
           </div>
 
@@ -2501,7 +2415,7 @@
                 <td>Comparison missing details or values.</td>
               </tr>
               <tr>
-                <td><strong>Pitch &amp; Pitch</strong></td>
+                <td><strong>Business Pitch</strong></td>
                 <td>Business pitch details all key math stats clearly and persuasively.</td>
                 <td>Pitch contains some math values.</td>
                 <td>Pitch is incomplete or missing numbers.</td>
@@ -3474,108 +3388,6 @@
         }, 300);
       });
 
-      function toggleGradingConsole() {
-        const el = document.getElementById("teacher-console");
-        if (el) {
-          el.classList.toggle("show");
-          if (el.classList.contains("show")) updateGradingAnswers();
-        }
-      }
-
-      function prefillGradingConsole() {
-        // Prefill the real Version A example inputs (matches shipped defaults)
-        const presets = {
-          "r-ing1-cups": 3,
-          "r-ing2-cups": 2,
-          "c-fruit": 12,
-          "c-liquids": 5,
-          "c-supplies": 3,
-          "c-smoothie-count": 5,
-          "deal-a-lbs": 5,
-          "deal-a-cost": 10,
-          "deal-b-lbs": 3,
-          "deal-b-cost": 7,
-        };
-        for (const [id, val] of Object.entries(presets)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event("input", { bubbles: true }));
-            el.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const resolver = function () {
-            const num = (id, dflt) => {
-              const el = document.getElementById(id);
-              const v = el ? parseFloat(el.value) : NaN;
-              return isNaN(v) ? dflt : v;
-            };
-            // Step 1 — recipe ratio (simplified)
-            const cups1 = num("r-ing1-cups", 3);
-            const cups2 = num("r-ing2-cups", 2);
-            const simp = findSimplifiedRatio(cups1, cups2);
-            const simpText = simp[0] !== null ? `${simp[0]} : ${simp[1]}` : "—";
-            // Step 3 — cost per smoothie (unit rate)
-            const total = num("c-fruit", 12) + num("c-liquids", 5) + num("c-supplies", 3);
-            const count = num("c-smoothie-count", 5);
-            const perSmoothie = count ? (total / count).toFixed(2) : "—";
-            // Step 3 — better buy (price per pound, lower is better)
-            const lbsA = num("deal-a-lbs", 5),
-              costA = num("deal-a-cost", 10);
-            const lbsB = num("deal-b-lbs", 3),
-              costB = num("deal-b-cost", 7);
-            const rateA = lbsA ? costA / lbsA : NaN;
-            const rateB = lbsB ? costB / lbsB : NaN;
-            const better =
-              isNaN(rateA) || isNaN(rateB)
-                ? "—"
-                : Math.abs(rateA - rateB) < 0.005
-                  ? "Equal"
-                  : rateA < rateB
-                    ? "Deal A"
-                    : "Deal B";
-            return {
-              "Recipe ratio (cups)": `${cups1} : ${cups2}`,
-              "Simplified ratio": simpText,
-              "Batch cost": `$${total.toFixed(2)} for ${count} smoothies`,
-              "Cost per Smoothie (unit rate)": `$${perSmoothie}`,
-              "Deal A price/lb": isNaN(rateA) ? "—" : `$${rateA.toFixed(2)}/lb`,
-              "Deal B price/lb": isNaN(rateB) ? "—" : `$${rateB.toFixed(2)}/lb`,
-              "Better Buy": better,
-            };
-          };
-          const ans = resolver();
-          const body = document.getElementById("teacher-answers-body");
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans)
-              .map(
-                ([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `,
-              )
-              .join("");
-          }
-        } catch (e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-
-      // Wire up key listener (Alt+Shift+G — non-hijacking) and triple click on h1
-      document.addEventListener("keydown", function (e) {
-        if (e.altKey && e.shiftKey && e.key.toLowerCase() === "g") {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
-
       window.exportStudentBackup = function () {
         try {
           const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
@@ -3631,7 +3443,6 @@
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === "function") updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
@@ -3641,80 +3452,9 @@
         };
         reader.readAsText(file);
       };
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const titleEl = document.querySelector(".hero h1");
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener("click", function () {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => {
-              clicks = 0;
-            }, 1000);
-          });
-        }
-        // Re-calculate answers when input event fires
-        document.addEventListener("input", function (e) {
-          const inputs = [
-            "r-ing1-cups",
-            "r-ing2-cups",
-            "c-fruit",
-            "c-liquids",
-            "c-supplies",
-            "c-smoothie-count",
-            "deal-a-lbs",
-            "deal-a-cost",
-            "deal-b-lbs",
-            "deal-b-cost",
-          ];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
     </script>
+    <input type="file" id="student-backup-file-input" hidden onchange="importStudentBackup(event)" accept=".json" />
 
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
-        Calculated dynamically based on student inputs:
-      </p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display: flex; gap: 6px; margin-top: 6px">
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #059669"
-          onclick="exportStudentBackup()"
-        >
-          📥 Export JSON
-        </button>
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #7c3aed"
-          onclick="triggerImportStudentBackup()"
-        >
-          📤 Import JSON
-        </button>
-      </div>
-      <input
-        type="file"
-        id="student-backup-file-input"
-        style="display: none"
-        onchange="importStudentBackup(event)"
-        accept=".json"
-      />
-    </div>
 
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>

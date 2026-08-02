@@ -673,94 +673,6 @@
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
-
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        width: 330px;
-        max-height: 480px;
-        overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        padding: 16px;
-        color: #f8fafc;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        box-shadow:
-          0 10px 25px -5px rgba(0, 0, 0, 0.3),
-          0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        display: none;
-        box-sizing: border-box;
-        text-align: left;
-      }
-      #teacher-console.show {
-        display: block;
-      }
-      #teacher-console h4 {
-        margin: 0 0 8px 0;
-        color: #38bdf8;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      #teacher-console .close-btn {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0 4px;
-        line-height: 1;
-      }
-      #teacher-console .close-btn:hover {
-        color: #f1f5f9;
-      }
-      #teacher-console table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-      #teacher-console td {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-      }
-      #teacher-console .lbl {
-        font-weight: 600;
-        color: #94a3b8;
-      }
-      #teacher-console .val {
-        font-weight: 700;
-        text-align: right;
-        color: #38bdf8;
-        word-break: break-all;
-      }
-      #teacher-console .prefill-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: #0284c7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      #teacher-console .prefill-btn:hover {
-        background: #0369a1;
-      }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1544,12 +1456,15 @@
           <div class="instruct gold">
             <span class="en-text"
               ><strong>Your job:</strong> Enter what you will spend on motors, sensors, and frames.
-              Add them up, then divide by the number of robots to find the cost per robot.</span
+              Add them up, then divide by the number of robots to find the cost per robot. Your
+              team has a <strong>$150 parts-budget ceiling</strong>; show the remaining balance or
+              the amount over budget.</span
             >
             <span class="es-text"
               ><strong>Tu trabajo:</strong> Ingresa lo que gastarás en motores, sensores y chasis.
               Súmalos, luego divide entre la cantidad de robots para encontrar el costo por
-              robot.</span
+              robot. Tu equipo tiene un <strong>límite de $150 para piezas</strong>; muestra el
+              saldo restante o la cantidad que excede el presupuesto.</span
             >
           </div>
 
@@ -2202,9 +2117,9 @@
             </li>
             <li>
               <input type="checkbox" id="ck3" />
-              <span class="en-text">I calculated my total parts budget and cost per robot.</span>
+              <span class="en-text">I compared my total with the $150 ceiling and found the remaining balance and cost per robot.</span>
               <span class="es-text"
-                >Calculé mi presupuesto total de piezas y el costo por robot.</span
+                >Comparé mi total con el límite de $150 y encontré el saldo restante y el costo por robot.</span
               >
             </li>
             <li>
@@ -2284,8 +2199,8 @@
                   </strong>
                 </td>
                 <td>
-                  <span class="en-text">All costs correct, under budget</span>
-                  <span class="es-text">Todos los costos correctos, dentro del presupuesto</span>
+                  <span class="en-text">All costs correct; compares total with the $150 ceiling and shows the balance</span>
+                  <span class="es-text">Todos los costos correctos; compara el total con el límite de $150 y muestra el saldo</span>
                 </td>
                 <td>
                   <span class="en-text">Total is accurate</span>
@@ -2892,6 +2807,7 @@
       }
 
       function calcBudget() {
+        const budgetCeiling = 150;
         var motors = parseFloat(document.getElementById("c-motors").value) || 0;
         var sensors = parseFloat(document.getElementById("c-sensors").value) || 0;
         var frames = parseFloat(document.getElementById("c-frames").value) || 0;
@@ -2918,6 +2834,14 @@
           return;
         }
         var perRobot = total / robots;
+        var balance = budgetCeiling - total;
+        var budgetStatus = isEs
+          ? balance >= 0
+            ? "Saldo restante: <strong>$" + balance.toFixed(2) + "</strong>"
+            : "Excede el presupuesto por: <strong>$" + Math.abs(balance).toFixed(2) + "</strong>"
+          : balance >= 0
+            ? "Remaining balance: <strong>$" + balance.toFixed(2) + "</strong>"
+            : "Over budget by: <strong>$" + Math.abs(balance).toFixed(2) + "</strong>";
         if (isEs) {
           showReadout(
             "budget-out",
@@ -2930,7 +2854,11 @@
               total.toFixed(2) +
               " / " +
               robots +
-              " robots)<br>" +
+              " robots)<br>Límite de $150 - Total de $" +
+              total.toFixed(2) +
+              " = " +
+              budgetStatus +
+              "<br>" +
               "<small>Motores $" +
               motors.toFixed(2) +
               " + Sensores $" +
@@ -2953,7 +2881,11 @@
               total.toFixed(2) +
               " / " +
               robots +
-              " robots)<br>" +
+              " robots)<br>$150 ceiling - $" +
+              total.toFixed(2) +
+              " total = " +
+              budgetStatus +
+              "<br>" +
               "<small>Motors $" +
               motors.toFixed(2) +
               " + Sensors $" +
@@ -3057,6 +2989,7 @@
         var worldNote = document.getElementById("world-compare").value;
         var total =
           (parseFloat(motors) || 0) + (parseFloat(sensorC) || 0) + (parseFloat(frames) || 0);
+        var balance = 150 - total;
         var perRobot = robots ? (total / parseFloat(robots)).toFixed(2) : "-";
         var g = cables && sens ? gcd(parseInt(cables), parseInt(sens)) : "-";
         var l = robotA && robotB ? lcm(parseInt(robotA), parseInt(robotB)) : "-";
@@ -3089,6 +3022,10 @@
               " | Chasis: $" +
               (frames || "-"),
             "   Total: $" + total.toFixed(2) + " | Robots: " + (robots || "-"),
+            "   Límite: $150.00 | " +
+              (balance >= 0 ? "Saldo restante" : "Exceso") +
+              ": $" +
+              Math.abs(balance).toFixed(2),
             "   Costo por robot: $" + perRobot,
             worldNote ? "   Nota de comparación de kit: " + worldNote : "",
             "",
@@ -3128,6 +3065,10 @@
               " | Frames: $" +
               (frames || "-"),
             "   Total: $" + total.toFixed(2) + " | Robots: " + (robots || "-"),
+            "   Ceiling: $150.00 | " +
+              (balance >= 0 ? "Remaining balance" : "Amount over") +
+              ": $" +
+              Math.abs(balance).toFixed(2),
             "   Cost per robot: $" + perRobot,
             worldNote ? "   Kit comparison note: " + worldNote : "",
             "",
@@ -3285,101 +3226,6 @@
       // Initialize
       updateDynamicTexts();
 
-      function toggleGradingConsole() {
-        const el = document.getElementById("teacher-console");
-        if (el) {
-          el.classList.toggle("show");
-          if (el.classList.contains("show")) updateGradingAnswers();
-        }
-      }
-
-      function prefillGradingConsole() {
-        const presets = {
-          "g-cables": 16,
-          "g-sensors": 24,
-          "l-robotA": 6,
-          "l-robotB": 8,
-        };
-        for (const [id, val] of Object.entries(presets)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event("input", { bubbles: true }));
-            el.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        // Also prefill student calculation answers
-        if (document.getElementById("student-gcf-input")) {
-          document.getElementById("student-gcf-input").value =
-            document.getElementById("student-gcf-input").min || 1;
-          document
-            .getElementById("student-gcf-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        if (document.getElementById("student-lcm-input")) {
-          document.getElementById("student-lcm-input").value =
-            document.getElementById("student-lcm-input").min || 1;
-          document
-            .getElementById("student-lcm-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const resolver = function () {
-            const a = parseInt(document.getElementById("g-cables").value) || 16;
-            const b = parseInt(document.getElementById("g-sensors").value) || 24;
-            const lm = parseInt(document.getElementById("l-robotA").value) || 6;
-            const lb = parseInt(document.getElementById("l-robotB").value) || 8;
-            const motors = parseFloat(document.getElementById("c-motors").value) || 0;
-            const sensors = parseFloat(document.getElementById("c-sensors").value) || 0;
-            const frames = parseFloat(document.getElementById("c-frames").value) || 0;
-            const robots = parseInt(document.getElementById("c-robots").value) || 8;
-
-            const g = gcd(a, b);
-            const l = lcm(lm, lb);
-            const total = motors + sensors + frames;
-            const perRobot = robots ? (total / robots).toFixed(2) : "0.00";
-
-            return {
-              "GCF (Kits count)": g,
-              "Cables per kit": Math.floor(a / g),
-              "Sensors per kit": Math.floor(b / g),
-              "Distributive Property": `${g}(${a / g} + ${b / g})`,
-              "LCM (Sync hours)": l,
-              "Total Parts Cost": "$" + total.toFixed(2),
-              "Cost per Robot": "$" + perRobot,
-            };
-          };
-          const ans = resolver();
-          const body = document.getElementById("teacher-answers-body");
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans)
-              .map(
-                ([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `,
-              )
-              .join("");
-          }
-        } catch (e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
-      document.addEventListener("keydown", function (e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
-
       window.exportStudentBackup = function () {
         try {
           const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
@@ -3435,7 +3281,6 @@
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === "function") updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
@@ -3445,78 +3290,9 @@
         };
         reader.readAsText(file);
       };
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const titleEl = document.querySelector(".hero h1");
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener("click", function () {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => {
-              clicks = 0;
-            }, 1000);
-          });
-        }
-        // Re-calculate answers when input event fires
-        document.addEventListener("input", function (e) {
-          const inputs = [
-            "g-cables",
-            "g-sensors",
-            "l-robotA",
-            "l-robotB",
-            "c-motors",
-            "c-sensors",
-            "c-frames",
-            "c-robots",
-          ];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
     </script>
+    <input type="file" id="student-backup-file-input" hidden onchange="importStudentBackup(event)" accept=".json" />
 
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
-        Calculated dynamically based on student inputs:
-      </p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display: flex; gap: 6px; margin-top: 6px">
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #059669"
-          onclick="exportStudentBackup()"
-        >
-          📥 Export JSON
-        </button>
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #7c3aed"
-          onclick="triggerImportStudentBackup()"
-        >
-          📤 Import JSON
-        </button>
-      </div>
-      <input
-        type="file"
-        id="student-backup-file-input"
-        style="display: none"
-        onchange="importStudentBackup(event)"
-        accept=".json"
-      />
-    </div>
 
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>

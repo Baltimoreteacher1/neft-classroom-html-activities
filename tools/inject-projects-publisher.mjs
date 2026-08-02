@@ -62,9 +62,9 @@ function inject(rel) {
   return true;
 }
 
-/* Storefront hubs get a student-facing "Pick Your Path" strip (same copy on
-   every hub — both versions are always parallel and share a rubric, work
-   always saves, and every response box now has sentence starters). */
+/* Storefront hubs get student directions before their project choices. Each
+   project owns its evidence and success criteria; we never promise false
+   interchangeability between contexts or extensions. */
 const HUB_STRIP = [
   "      <!-- pub-hub-injected:begin (publisher storefront strip — tools/inject-projects-publisher.mjs) -->",
   '      <section aria-labelledby="pickpath-heading">',
@@ -74,9 +74,8 @@ const HUB_STRIP = [
   "        </div>",
   '        <div class="note-panel">',
   "          <p>",
-  "            <strong>Same math, same rubric.</strong> Both versions practice the",
-  "            exact same skills and are graded the same way — choose the story",
-  "            that sounds more fun to you.",
+  "            <strong>Choose the project your teacher assigned—or the context that fits you.</strong>",
+  "            Each path has its own aligned success criteria, math evidence, and final product.",
   "          </p>",
   "          <p>",
   "            <strong>Take your time.</strong> Plan for two to three class",
@@ -92,7 +91,7 @@ const HUB_STRIP = [
   "      </section>",
   "      <!-- pub-hub-injected:end -->",
 ].join("\n");
-const HUB_ANCHOR = '<section aria-labelledby="teacher-heading">';
+const HUB_ANCHOR = '<section aria-labelledby="versions-heading">';
 
 function injectHub(rel) {
   const file = path.join(ROOT, rel);
@@ -104,7 +103,7 @@ function injectHub(rel) {
   if (before.includes("pub-hub-injected:begin")) return false; // already injected
   const idx = before.lastIndexOf(HUB_ANCHOR);
   if (idx === -1) {
-    console.error(`  ✗ no teacher-heading section in ${rel} — skipped`);
+    console.error(`  ✗ no versions-heading section in ${rel} — skipped`);
     return false;
   }
   const after = `${before.slice(0, idx)}${HUB_STRIP}\n\n      ${before.slice(idx)}`;

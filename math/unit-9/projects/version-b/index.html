@@ -760,94 +760,6 @@
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
-
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        width: 330px;
-        max-height: 480px;
-        overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        padding: 16px;
-        color: #f8fafc;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        box-shadow:
-          0 10px 25px -5px rgba(0, 0, 0, 0.3),
-          0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        display: none;
-        box-sizing: border-box;
-        text-align: left;
-      }
-      #teacher-console.show {
-        display: block;
-      }
-      #teacher-console h4 {
-        margin: 0 0 8px 0;
-        color: #38bdf8;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      #teacher-console .close-btn {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0 4px;
-        line-height: 1;
-      }
-      #teacher-console .close-btn:hover {
-        color: #f1f5f9;
-      }
-      #teacher-console table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-      #teacher-console td {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-      }
-      #teacher-console .lbl {
-        font-weight: 600;
-        color: #94a3b8;
-      }
-      #teacher-console .val {
-        font-weight: 700;
-        text-align: right;
-        color: #38bdf8;
-        word-break: break-all;
-      }
-      #teacher-console .prefill-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: #0284c7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      #teacher-console .prefill-btn:hover {
-        background: #0369a1;
-      }
           .lvl0-only { display: none; }
       body.level-0 .lvl0-only { display: block; }
     </style>
@@ -1077,6 +989,10 @@
           <div class="instruct">
             <strong>Your job:</strong> Set the price levels for your custom phone plan. Enter a flat
             fee (base price) and a rate for each gigabyte of data you use.
+          </div>
+          <div class="instruct teal">
+            <span class="en-text"><strong>Model assumption:</strong> <code>C = mg + f</code> assumes one line, one month, the same charge for every GB, and no taxes, discounts, activation fees, device payments, or speed limits. Compare plans only when the included features and billing basis match.</span>
+            <span class="es-text"><strong>Suposición del modelo:</strong> <code>C = mg + f</code> supone una línea, un mes, el mismo cargo por cada GB y sin impuestos, descuentos, activación, pagos del equipo ni límites de velocidad. Compara planes solo cuando coincidan las funciones y la base de facturación.</span>
           </div>
 
           <div class="step-research no-print">
@@ -1801,17 +1717,18 @@
 
           <div style="margin-top: 24px">
             <h3 style="font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 6px">
-              🌎 Real-World Market Prices
+              🧮 Illustrative Monthly Plan Scenarios
             </h3>
             <p style="font-size: 14px; color: var(--muted); margin-bottom: 6px">
-              Below are real average competitor prices. Compare your plan's cost for 5 GB of data
-              ($<span id="comp-cost-5">0.00</span>) to these tiers:
+              These invented ranges are comparison practice, not current carrier averages. Compare
+              your one-line, one-month cost for 5 GB ($<span id="comp-cost-5">0.00</span>) only to
+              the 2–5 GB row; other rows use different data allowances.
             </p>
             <table class="data-table">
               <thead>
                 <tr>
                   <th>Plan Tier</th>
-                  <th>Average Price</th>
+                  <th>Illustrative Price Range</th>
                   <th>Description</th>
                 </tr>
               </thead>
@@ -1834,8 +1751,8 @@
               </tbody>
             </table>
             <label class="lbl" for="world-compare"
-              >How does your plan compare to market prices for 5 GB of data? Write 2
-              sentences.</label
+              >How does your 5 GB cost compare with the illustrative 2–5 GB row? State the
+              one-line/one-month assumption and write 2 sentences.</label
             >
             <textarea
               id="world-compare"
@@ -3477,204 +3394,7 @@
       buildTrail();
       updateProgress();
 
-      function toggleGradingConsole() {
-        const el = document.getElementById("teacher-console");
-        if (el) {
-          el.classList.toggle("show");
-          if (el.classList.contains("show")) updateGradingAnswers();
-        }
-      }
-
-      function prefillGradingConsole() {
-        const presets = { "plan-rate": 10, "plan-fee": 20 };
-        for (const [id, val] of Object.entries(presets)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event("input", { bubbles: true }));
-            el.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const resolver = function () {
-            const rate = parseFloat(document.getElementById("plan-rate").value) || 0;
-            const fee = parseFloat(document.getElementById("plan-fee").value) || 0;
-            return {
-              "Independent variable (g)": "Gigabytes of data",
-              "Dependent variable (C)": "Total monthly cost ($)",
-              "Cost per GB (rate)": "$" + rate.toFixed(2),
-              "Flat monthly fee": "$" + fee.toFixed(2),
-              "Equation (C=)": `${rate}g + ${fee}`,
-              "y-intercept (cost at 0 GB)": "$" + fee.toFixed(2),
-              "Proportional?": fee === 0 ? "Yes (fee = 0)" : "No (flat fee)",
-              "Cost for 8 GB": "$" + (rate * 8 + fee).toFixed(2),
-              "Cost for 10 GB": "$" + (rate * 10 + fee).toFixed(2),
-            };
-          };
-          const ans = resolver();
-          const body = document.getElementById("teacher-answers-body");
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans)
-              .map(
-                ([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `,
-              )
-              .join("");
-          }
-        } catch (e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-
-      // Teacher-only reveal: requires ?teacher in the URL, then Alt+Shift+K.
-      // (Avoids hijacking Ctrl+Shift+T and keeps the console away from students.)
-      function teacherModeEnabled() {
-        return /[?&]teacher\b/.test(window.location.search);
-      }
-      document.addEventListener("keydown", function (e) {
-        if (teacherModeEnabled() && e.altKey && e.shiftKey && e.key.toLowerCase() === "k") {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
-
-      window.exportStudentBackup = function () {
-        try {
-          const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
-          const inputs = {};
-          document.querySelectorAll("input, textarea, select").forEach((el) => {
-            if (el.id) inputs[el.id] = el.value;
-          });
-          const metadata = {
-            schemaVersion: 1,
-            studentName: document.getElementById("student-name")?.value || "Student",
-            section: document.getElementById("class-period")?.value || "Class",
-            activityId: window.NeftSaveResumeConfig?.activityId || "project",
-            activityTitle: document.title,
-            timestamp: new Date().toISOString(),
-            inputs: inputs,
-            state: state,
-          };
-
-          const dataStr =
-            "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(metadata, null, 2));
-          const dlAnchor = document.createElement("a");
-          dlAnchor.setAttribute("href", dataStr);
-          dlAnchor.setAttribute(
-            "download",
-            `${metadata.studentName.replace(/\s+/g, "_")}_${metadata.activityId}_backup.json`,
-          );
-          document.body.appendChild(dlAnchor);
-          dlAnchor.click();
-          dlAnchor.remove();
-        } catch (e) {
-          alert("Export failed: " + e.message);
-        }
-      };
-
-      window.triggerImportStudentBackup = function () {
-        document.getElementById("student-backup-file-input").click();
-      };
-
-      window.importStudentBackup = function (event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          try {
-            const data = JSON.parse(e.target.result);
-            if (data && data.inputs) {
-              for (const [id, val] of Object.entries(data.inputs)) {
-                const el = document.getElementById(id);
-                if (el) {
-                  el.value = val;
-                  el.dispatchEvent(new Event("input", { bubbles: true }));
-                  el.dispatchEvent(new Event("change", { bubbles: true }));
-                }
-              }
-              alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === "function") updateGradingAnswers();
-            } else {
-              alert("Invalid backup file structure.");
-            }
-          } catch (err) {
-            alert("Error parsing backup file: " + err.message);
-          }
-        };
-        reader.readAsText(file);
-      };
-
-      document.addEventListener("DOMContentLoaded", function () {
-        // Triple-click reveal only when teacher mode is enabled (?teacher).
-        const titleEl = document.querySelector(".hero h1");
-        if (titleEl && teacherModeEnabled()) {
-          let clicks = 0;
-          titleEl.addEventListener("click", function () {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => {
-              clicks = 0;
-            }, 1000);
-          });
-        }
-        // Re-calculate answers when input event fires
-        document.addEventListener("input", function (e) {
-          const inputs = ["plan-rate", "plan-fee"];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
     </script>
-
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
-        Calculated dynamically based on student inputs:
-      </p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display: flex; gap: 6px; margin-top: 6px">
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #059669"
-          onclick="exportStudentBackup()"
-        >
-          📥 Export JSON
-        </button>
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #7c3aed"
-          onclick="triggerImportStudentBackup()"
-        >
-          📤 Import JSON
-        </button>
-      </div>
-      <input
-        type="file"
-        id="student-backup-file-input"
-        style="display: none"
-        onchange="importStudentBackup(event)"
-        accept=".json"
-      />
-    </div>
 
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>

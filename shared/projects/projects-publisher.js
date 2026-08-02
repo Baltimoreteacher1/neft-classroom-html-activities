@@ -536,13 +536,7 @@
         d.exemplars.slice(0, 6).forEach(function (x) {
           if (!x) return;
           var card = el("div", "pub-trait");
-          card.appendChild(
-            el(
-              "div",
-              "pub-trait-name",
-              (x.firstNameInitial || "A classmate") + (x.section ? " · " + x.section : ""),
-            ),
-          );
+          card.appendChild(el("div", "pub-trait-name", x.firstNameInitial || "A classmate"));
           (Array.isArray(x.excerpts) ? x.excerpts : []).slice(0, 3).forEach(function (t) {
             if (!t) return;
             var q = el("blockquote", "pub-trait-sample");
@@ -577,7 +571,11 @@
     var maxStep = 0;
 
     function sendMilestone(step) {
-      if (typeof fetch !== "function") return;
+      // Student pages are private and offline-first. Aggregate milestone
+      // reporting is available only when a school explicitly enables it; the
+      // default project experience never transmits identity or student work.
+      var consent = window.NeftProjectTelemetry;
+      if (!consent || consent.enabled !== true || typeof fetch !== "function") return;
       try {
         var now = new Date().toISOString();
         var payload = {
@@ -597,19 +595,12 @@
           ],
           createdAt: now,
         };
-        try {
-          var stu = JSON.parse(localStorage.getItem("nt_student") || "{}");
-          if (stu && typeof stu === "object") {
-            if (stu.name) payload.studentName = String(stu.name).slice(0, 60);
-            if (stu.section) payload.section = String(stu.section).slice(0, 40);
-          }
-        } catch (_e) {}
         fetch("/api/progress/telemetry", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
           keepalive: true,
-          credentials: "omit",
+          credentials: "same-origin",
         }).catch(function () {});
       } catch (_e) {}
     }

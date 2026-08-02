@@ -306,26 +306,6 @@
         transition: all 0.25s ease;
       }
     
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed; bottom: 20px; right: 20px; z-index: 10000;
-        width: 330px; max-height: 480px; overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px;
-        padding: 16px; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif;
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3);
-        display: none; box-sizing: border-box; text-align: left;
-      }
-      #teacher-console.show { display: block; }
-      #teacher-console h4 { margin: 0 0 8px 0; color: #38bdf8; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
-      #teacher-console .close-btn { background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; }
-      #teacher-console .close-btn:hover { color: #f1f5f9; }
-      #teacher-console table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-      #teacher-console td { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); color: #e2e8f0; }
-      #teacher-console .lbl { font-weight: 600; color: #94a3b8; }
-      #teacher-console .val { font-weight: 700; text-align: right; color: #38bdf8; word-break: break-all; }
-      #teacher-console .prefill-btn { width: 100%; margin-top: 12px; background: #0284c7; border: none; border-radius: 6px; padding: 8px; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s; }
-      #teacher-console .prefill-btn:hover { background: #0369a1; }
 
           .lvl0-only { display: none; }
       body.level-0 .lvl0-only { display: block; }
@@ -802,7 +782,7 @@
             <span class="en-text">🧩 Equivalence Challenges</span><span class="es-text">🧩 Desafíos de equivalencia</span>
           </h3>
           <p style="font-size:14px; color:var(--muted); margin-bottom:12px;">
-            <span class="en-text">Test if these expressions are equivalent by plugging in the values <strong style="color:var(--blue);">p = 3</strong> and <strong style="color:var(--teal);">b = 2</strong>. Evaluate both sides, then choose if they are equivalent.</span><span class="es-text">Prueba si estas expresiones son equivalentes sustituyendo los valores <strong style="color:var(--blue);">p = 3</strong> y <strong style="color:var(--teal);">b = 2</strong>. Evalúa ambos lados, luego elige si son equivalentes.</span>
+            <span class="en-text">First expand each left side with the distributive property and compare the resulting algebraic forms; that rewrite proves whether the expressions are equivalent for every value. Then use <strong style="color:var(--blue);">p = 3</strong> and <strong style="color:var(--teal);">b = 2</strong> only as a numerical check. One matching substitution alone does not prove equivalence.</span><span class="es-text">Primero desarrolla cada lado izquierdo con la propiedad distributiva y compara las formas algebraicas resultantes; esa reescritura demuestra si las expresiones son equivalentes para todo valor. Luego usa <strong style="color:var(--blue);">p = 3</strong> y <strong style="color:var(--teal);">b = 2</strong> solo como comprobación numérica. Una sola sustitución que coincida no demuestra equivalencia.</span>
           </p>
 
           <!-- Challenge 1 -->
@@ -811,6 +791,7 @@
               <span class="en-text">Challenge 1: <span class="vocab-word" data-vocab="factor" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('factor')">Factor</span> out a constant</span><span class="es-text">Desafío 1: Factorizar una constante</span>
             </div>
             <div class="equiv-expr">3(2p + 4b) &nbsp; vs &nbsp; 6p + 12b</div>
+            <p style="font-size:13px;color:var(--muted);margin:4px 0 8px"><span class="en-text"><strong>Algebraic proof:</strong> 3(2p + 4b) = 3·2p + 3·4b = 6p + 12b.</span><span class="es-text"><strong>Demostración algebraica:</strong> 3(2p + 4b) = 3·2p + 3·4b = 6p + 12b.</span></p>
             <div class="grid2">
               <div>
                 <label class="lbl" for="eq1-left"><span class="en-text">Evaluate Left: 3(2(3) + 4(2))</span><span class="es-text">Evaluar izquierda: 3(2(3) + 4(2))</span></label>
@@ -838,6 +819,7 @@
               <span class="en-text">Challenge 2: Forgetting to distribute</span><span class="es-text">Desafío 2: Olvidar distribuir</span>
             </div>
             <div class="equiv-expr">4(p + 3b) &nbsp; vs &nbsp; 4p + 3b</div>
+            <p style="font-size:13px;color:var(--muted);margin:4px 0 8px"><span class="en-text"><strong>Algebraic comparison:</strong> 4(p + 3b) = 4p + 12b, which is not 4p + 3b.</span><span class="es-text"><strong>Comparación algebraica:</strong> 4(p + 3b) = 4p + 12b, que no es 4p + 3b.</span></p>
             <div class="grid2">
               <div>
                 <label class="lbl" for="eq2-left"><span class="en-text">Evaluate Left: 4(3 + 3(2))</span><span class="es-text">Evaluar izquierda: 4(3 + 3(2))</span></label>
@@ -865,6 +847,7 @@
               <span class="en-text">Challenge 3: Distributing with constants</span><span class="es-text">Desafío 3: Distribuir con constantes</span>
             </div>
             <div class="equiv-expr">5(2p + b + 8) &nbsp; vs &nbsp; 10p + 5b + 40</div>
+            <p style="font-size:13px;color:var(--muted);margin:4px 0 8px"><span class="en-text"><strong>Algebraic proof:</strong> 5(2p + b + 8) = 10p + 5b + 40.</span><span class="es-text"><strong>Demostración algebraica:</strong> 5(2p + b + 8) = 10p + 5b + 40.</span></p>
             <div class="grid2">
               <div>
                 <label class="lbl" for="eq3-left"><span class="en-text">Evaluate Left: 5(2(3) + 2 + 8)</span><span class="es-text">Evaluar izquierda: 5(2(3) + 2 + 8)</span></label>
@@ -1018,7 +1001,7 @@
             <li><input type="checkbox" id="ck1" /> <span class="en-text">I defined variables and chose points and bonus rates for my game.</span><span class="es-text">Definí variables y elegí las tasas de puntos y bonificaciones para mi juego.</span></li>
             <li><input type="checkbox" id="ck2" /> <span class="en-text">I evaluated my base score formula for specific player achievements.</span><span class="es-text">Evalué mi fórmula de puntuación base para logros específicos del jugador.</span></li>
             <li><input type="checkbox" id="ck3" /> <span class="en-text">I calculated level multiplier powers using exponents.</span><span class="es-text">Calculé las potencias del multiplicador de nivel usando exponentes.</span></li>
-            <li><input type="checkbox" id="ck4" /> <span class="en-text">I verified expression equivalence using properties and substitution.</span><span class="es-text">Verifiqué la equivalencia de expresiones usando propiedades y sustitución.</span></li>
+            <li><input type="checkbox" id="ck4" /> <span class="en-text">I proved expression equivalence by rewriting with properties and used substitution only to check an example.</span><span class="es-text">Demostré la equivalencia reescribiendo con propiedades y usé la sustitución solo para comprobar un ejemplo.</span></li>
             <li><input type="checkbox" id="ck5" /> <span class="en-text">I simulated a partner duel and compared scoring metrics.</span><span class="es-text">Simulé un duelo de compañeros y comparé las métricas de puntuación.</span></li>
             <li><input type="checkbox" id="ck6" /> <span class="en-text">I wrote a design pitch incorporating my exact math values.</span><span class="es-text">Escribí una presentación de diseño que incorpora mis valores matemáticos exactos.</span></li>
           </ul>
@@ -1050,14 +1033,14 @@
                 <td><span class="en-text">Formula is incomplete or values not evaluated.</span><span class="es-text">La fórmula está incompleta o los valores no se evaluaron.</span></td>
               </tr>
               <tr>
-                <td><strong><span class="en-text">Equivalent (6.AT.7/4)</span><span class="es-text">Equivalent (6.AT.7/4)</span></strong></td>
-                <td><span class="en-text">Verifies equivalence for all challenges and factors own correctly.</span><span class="es-text">Verifica la equivalencia para todos los desafíos y factoriza el propio correctamente.</span></td>
-                <td><span class="en-text">Correctly identifies equivalence via substitution.</span><span class="es-text">Identifica correctamente la equivalencia mediante sustitución.</span></td>
-                <td><span class="en-text">Equivalent concepts are incomplete.</span><span class="es-text">Los conceptos equivalentes están incompletos.</span></td>
+                <td><strong><span class="en-text">Equivalence (6.AT.7/4)</span><span class="es-text">Equivalencia (6.AT.7/4)</span></strong></td>
+                <td><span class="en-text">Proves equivalence with correct property-based rewrites and factors the student's expression correctly.</span><span class="es-text">Demuestra la equivalencia con reescrituras correctas basadas en propiedades y factoriza correctamente la expresión propia.</span></td>
+                <td><span class="en-text">Uses the distributive property to justify each equivalence; numerical substitution checks an example.</span><span class="es-text">Usa la propiedad distributiva para justificar cada equivalencia; la sustitución numérica comprueba un ejemplo.</span></td>
+                <td><span class="en-text">The equivalence justification is incomplete or relies only on one substitution.</span><span class="es-text">La justificación de equivalencia está incompleta o depende solo de una sustitución.</span></td>
               </tr>
               <tr>
                 <td><strong><span class="en-text">Comparison (Model)</span><span class="es-text">Comparación (Modelo)</span></strong></td>
-                <td><span class="en-text">Compares engines, calculates duel score, and reflects thoughtfully.</span><span class="es-text">Compara motores, calcula la puntuación del duelo y reflexiona reflexivamente.</span></td>
+                <td><span class="en-text">Compares engines, calculates duel score, and reflects thoughtfully.</span><span class="es-text">Compara motores, calcula la puntuación del duelo y reflexiona con atención.</span></td>
                 <td><span class="en-text">Calculates duel scores correctly.</span><span class="es-text">Calcula correctamente las puntuaciones del duelo.</span></td>
                 <td><span class="en-text">Scores missing or reflection incomplete.</span><span class="es-text">Faltan puntuaciones o la reflexión está incompleta.</span></td>
               </tr>
@@ -1651,19 +1634,19 @@
         const ansKey = `eq${num}-ans`;
         if (ansEl.value !== '') {
           if (ansEl.value === targetAns) {
-            ansFb.textContent = isEs ? "¡Verificación de equivalencia correcta!" : "Correct equivalence check!";
+            ansFb.textContent = isEs ? "¡Conclusión correcta, justificada por la reescritura algebraica!" : "Correct conclusion, justified by the algebraic rewrite!";
             ansFb.className = "feedback correct";
             ladderReset(ansKey);
           } else {
             const tE = ladderStep(ansKey);
             if (tE === 1) {
               ansFb.textContent = isEs
-                ? "Compara los dos valores que evaluaste para este desafío."
-                : "Compare the two values you evaluated for this challenge.";
+                ? "Desarrolla el lado izquierdo con la propiedad distributiva y compara las formas algebraicas."
+                : "Expand the left side with the distributive property and compare the algebraic forms.";
             } else if (tE === 2) {
               ansFb.textContent = isEs
-                ? "Si ambos lados dan el mismo número, las expresiones son equivalentes (Yes); si no, no lo son (No)."
-                : "If both sides evaluate to the same number, the expressions are equivalent (Yes); if not, they are not (No).";
+                ? "Una coincidencia numérica no basta para demostrar equivalencia; las formas reescritas deben coincidir para todo valor."
+                : "One numerical match does not prove equivalence; the rewritten forms must match for every value.";
             } else {
               ansFb.textContent = isEs ? `Elección incorrecta. Respuesta correcta: ${targetAns}` : `Incorrect choice. Correct answer: ${targetAns}`;
             }
@@ -1994,65 +1977,6 @@
         setTimeout(recalcAll, 200);
       });
 
-      function toggleGradingConsole() {
-        const el = document.getElementById('teacher-console');
-        if (el) {
-          el.classList.toggle('show');
-          if (el.classList.contains('show')) updateGradingAnswers();
-        }
-      }
-      
-      function prefillGradingConsole() {
-        const presets = {"g-pt-rate": 10, "g-bn-rate": 5};
-        for (const [id, val] of Object.entries(presets)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event('input', { bubbles: true }));
-            el.dispatchEvent(new Event('change', { bubbles: true }));
-          }
-        }
-        updateGradingAnswers();
-      }
-      
-      function updateGradingAnswers() {
-        try {
-          const resolver = function() {
-            
-          const pt = parseInt(document.getElementById('g-pt-rate').value) || 10;
-          const bn = parseInt(document.getElementById('g-bn-rate').value) || 5;
-          const g = gcd(pt, bn);
-          return {
-            'Points multiplier': pt,
-            'Bonus multiplier': bn,
-            'Factored Formula': `${g}(${pt/g}p + ${bn/g}b)`,
-            'Expected Config A (50p, 10b)': (pt*50 + bn*10),
-            'Expected Config B (100p, 20b)': (pt*100 + bn*20)
-          };
-        
-          };
-          const ans = resolver();
-          const body = document.getElementById('teacher-answers-body');
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans).map(([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `).join('');
-          }
-        } catch(e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-      
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
-      document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
       
       
       window.exportStudentBackup = function() {
@@ -2106,7 +2030,6 @@
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === 'function') updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
@@ -2117,48 +2040,9 @@
         reader.readAsText(file);
       };
 
-      document.addEventListener('DOMContentLoaded', function() {
-        const titleEl = document.querySelector('.hero h1');
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener('click', function() {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => { clicks = 0; }, 1000);
-          });
-        }
-        // Re-calculate answers when input event fires
-        document.addEventListener('input', function(e) {
-          const inputs = ["g-pt-rate", "g-bn-rate"];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
 
     </script>
   
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size:11px;color:#94a3b8;margin:0 0 10px;">Calculated dynamically based on student inputs:</p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display:flex;gap:6px;margin-top:6px;">
-        <button class="prefill-btn" style="margin-top:0;background:#059669;" onclick="exportStudentBackup()">📥 Export JSON</button>
-        <button class="prefill-btn" style="margin-top:0;background:#7c3aed;" onclick="triggerImportStudentBackup()">📤 Import JSON</button>
-      </div>
-      <input type="file" id="student-backup-file-input" style="display:none;" onchange="importStudentBackup(event)" accept=".json" />
-    </div>
-
   <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
   <script src="/shared/projects/projects-pro.js" defer></script>
   <!-- projects-pro-injected:end -->

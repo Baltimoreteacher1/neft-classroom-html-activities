@@ -6,7 +6,7 @@
     <title>Smart Shopper Showdown — Unit 4 Culminating Project</title>
     <meta
       name="description"
-      content="Unit 4 Rates &amp; Percents culminating project. Compare deals, find unit rates, and calculate discounts and final totals with tax."
+      content="Unit 4 Rates &amp; Percents culminating project. Compare deals, find unit rates, and model discounts and tax on clearly identified taxable nonfood items."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -754,94 +754,6 @@
         opacity: 0.65;
         text-decoration: line-through;
         transition: all 0.25s ease;
-      }
-
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        width: 330px;
-        max-height: 480px;
-        overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        padding: 16px;
-        color: #f8fafc;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        box-shadow:
-          0 10px 25px -5px rgba(0, 0, 0, 0.3),
-          0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        display: none;
-        box-sizing: border-box;
-        text-align: left;
-      }
-      #teacher-console.show {
-        display: block;
-      }
-      #teacher-console h4 {
-        margin: 0 0 8px 0;
-        color: #38bdf8;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      #teacher-console .close-btn {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0 4px;
-        line-height: 1;
-      }
-      #teacher-console .close-btn:hover {
-        color: #f1f5f9;
-      }
-      #teacher-console table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-      #teacher-console td {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-      }
-      #teacher-console .lbl {
-        font-weight: 600;
-        color: #94a3b8;
-      }
-      #teacher-console .val {
-        font-weight: 700;
-        text-align: right;
-        color: #38bdf8;
-        word-break: break-all;
-      }
-      #teacher-console .prefill-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: #0284c7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      #teacher-console .prefill-btn:hover {
-        background: #0369a1;
       }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
@@ -1945,15 +1857,16 @@
 
           <div class="instruct gold">
             <span class="en-text"
-              ><strong>Your job:</strong> Enter the prices of 3 food items in
-              your shopping cart. Add a local sales tax rate to find your final
-              bill. Then compare it to real average weekly grocery data!</span
+              ><strong>Your job:</strong> Enter the prices of 3 taxable nonfood items from a
+              grocery store, such as paper goods or soap. Research the combined local rate for
+              those items, then calculate the final bill. Do not assume the same rate applies to
+              food: taxability varies by item and location.</span
             >
             <span class="es-text"
-              ><strong>Tu tarea:</strong> Ingresa los precios de 3 artículos de
-              comida en tu carrito de compras. Agrega una tasa de impuesto sobre
-              las ventas local para encontrar tu factura final. ¡Luego compárala
-              con los datos reales de promedio semanal de comestibles!</span
+              ><strong>Tu tarea:</strong> Ingresa los precios de 3 artículos no alimentarios
+              gravables de una tienda, como productos de papel o jabón. Investiga la tasa local
+              combinada para esos artículos y calcula la factura final. No supongas que la misma
+              tasa se aplica a los alimentos: la tributación varía por artículo y lugar.</span
             >
           </div>
 
@@ -1970,22 +1883,22 @@
               target="_blank"
               rel="noopener noreferrer"
               class="level-btn"
-              ><span class="en-text">Sales Tax Rates by State ↗</span
+              ><span class="en-text">Research Local Sales Tax ↗</span
               ><span class="es-text"
                 >Tasas de impuesto sobre ventas por estado ↗</span
               ></a
             >
             <small class="sr-hint"
-              ><span class="en-text">Fill in: My state's sales tax is ___%.</span
+              ><span class="en-text">Fill in: In ___ (location), ___ (nonfood item) is taxable at a combined rate of ___%.</span
               ><span class="es-text"
-                >Completa: El impuesto de venta de mi estado es ___%.</span
+                >Completa: En ___ (lugar), ___ (artículo no alimentario) es gravable a una tasa combinada de ___%.</span
               ></small
             >
             <input
               type="text"
               id="rfind-3"
               data-research-find
-              placeholder="✍️ e.g. My state's sales tax is 6%"
+              placeholder="✍️ e.g. In ___, taxable nonfood item ___ uses a combined rate of ___%"
               style="
                 width: 100%;
                 box-sizing: border-box;
@@ -2033,8 +1946,8 @@
               font-weight="bold"
               fill="#0e302b"
             >
-              <tspan class="en-text">🛒 GROCERY RECEIPT</tspan>
-              <tspan class="es-text">🛒 RECIBO DE COMPRAS</tspan>
+              <tspan class="en-text">🛒 TAXABLE NONFOOD RECEIPT</tspan>
+              <tspan class="es-text">🛒 RECIBO DE ARTÍCULOS NO ALIMENTARIOS GRAVABLES</tspan>
             </text>
             <line
               x1="170"
@@ -2108,8 +2021,8 @@
 
           <!-- Level 1 hint -->
           <div class="instruct lvl0-only">
-            <span class="en-text">🟠 <strong>Level 0:</strong> Tax adds a little. Step 1: For every $1, add about 6 cents. Tiny example: $10 → $0.60 tax. Starter: “Tax is about $___.”</span>
-            <span class="es-text">🟠 <strong>Nivel 0:</strong> El impuesto agrega un poco. Paso 1: Por cada $1, agrega unos 6 centavos. Ejemplo: $10 → $0.60 de impuesto. Empieza: “El impuesto es de unos $___.”</span>
+            <span class="en-text">🟠 <strong>Level 0:</strong> In a 6% taxable-nonfood example, every $1 adds 6 cents. Tiny example: $10 → $0.60 tax. Starter: “For this example, tax is $___.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> En un ejemplo de artículo no alimentario gravable al 6%, cada $1 agrega 6 centavos. Ejemplo: $10 → $0.60. Empieza: “En este ejemplo, el impuesto es $___.”</span>
           </div>
           <div class="instruct lvl1-only gold">
             <span class="en-text"
@@ -2125,8 +2038,8 @@
           <div class="grid2">
             <div>
               <label class="lbl" for="t-item1">
-                <span class="en-text">🥖 Item 1 Price ($)</span>
-                <span class="es-text">🥖 Precio del artículo 1 ($)</span>
+                <span class="en-text">🧻 Taxable Nonfood Item 1 ($)</span>
+                <span class="es-text">🧻 Artículo no alimentario gravable 1 ($)</span>
               </label>
               <input
                 type="number"
@@ -2139,8 +2052,8 @@
             </div>
             <div>
               <label class="lbl" for="t-item2">
-                <span class="en-text">🥩 Item 2 Price ($)</span>
-                <span class="es-text">🥩 Precio del artículo 2 ($)</span>
+                <span class="en-text">🧼 Taxable Nonfood Item 2 ($)</span>
+                <span class="es-text">🧼 Artículo no alimentario gravable 2 ($)</span>
               </label>
               <input
                 type="number"
@@ -2153,8 +2066,8 @@
             </div>
             <div>
               <label class="lbl" for="t-item3">
-                <span class="en-text">🧀 Item 3 Price ($)</span>
-                <span class="es-text">🧀 Precio del artículo 3 ($)</span>
+                <span class="en-text">🧴 Taxable Nonfood Item 3 ($)</span>
+                <span class="es-text">🧴 Artículo no alimentario gravable 3 ($)</span>
               </label>
               <input
                 type="number"
@@ -2167,9 +2080,9 @@
             </div>
             <div>
               <label class="lbl" for="t-tax">
-                <span class="en-text">🧾 Sales Tax Rate (%)</span>
+                <span class="en-text">🧾 Researched Combined Rate (%)</span>
                 <span class="es-text"
-                  >🧾 Tasa de impuesto sobre las ventas (%)</span
+                  >🧾 Tasa combinada investigada (%)</span
                 >
               </label>
               <input
@@ -2200,78 +2113,76 @@
                 margin-bottom: 6px;
               "
             >
-              <span class="en-text">🌎 Real-World Comparison</span>
-              <span class="es-text">🌎 Comparación con el mundo real</span>
+              <span class="en-text">🌎 Illustrative Classroom Budget Check</span>
+              <span class="es-text">🌎 Comparación ilustrativa del presupuesto de clase</span>
             </h3>
             <p style="font-size: 14px; color: var(--muted); margin-bottom: 6px">
               <span class="en-text"
-                >Here is the average weekly cost of groceries per person in the
-                US. Compare your bill to these benchmarks.</span
+                >These are illustrative spending ceilings for this activity, not claims about
+                average U.S. grocery spending. Compare your taxable nonfood cart with one ceiling.</span
               >
               <span class="es-text"
-                >Aquí está el costo promedio semanal de los comestibles por
-                persona en los EE. UU. Compara tu factura con estos puntos de
-                referencia.</span
+                >Estos son límites de gasto ilustrativos para esta actividad, no afirmaciones sobre
+                el gasto promedio en comestibles. Compara tu carrito no alimentario gravable con un límite.</span
               >
             </p>
             <table class="data-table">
               <thead>
                 <tr>
                   <th>
-                    <span class="en-text">Household Size</span>
-                    <span class="es-text">Tamaño del hogar</span>
+                    <span class="en-text">Classroom scenario</span>
+                    <span class="es-text">Escenario de clase</span>
                   </th>
                   <th>
-                    <span class="en-text">Average Weekly Budget</span>
-                    <span class="es-text">Presupuesto semanal promedio</span>
+                    <span class="en-text">Illustrative Ceiling</span>
+                    <span class="es-text">Límite ilustrativo</span>
                   </th>
                   <th>
-                    <span class="en-text">Cost Per Person (weekly)</span>
-                    <span class="es-text">Costo por persona (semanal)</span>
+                    <span class="en-text">Use</span>
+                    <span class="es-text">Uso</span>
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>
-                    <span class="en-text">1 Person</span>
-                    <span class="es-text">1 Persona</span>
+                    <span class="en-text">Small restock</span>
+                    <span class="es-text">Reposición pequeña</span>
                   </td>
-                  <td>$75 – $120</td>
-                  <td>$75 – $120</td>
+                  <td>$25</td>
+                  <td><span class="en-text">Choose a few essentials</span><span class="es-text">Elige algunos artículos esenciales</span></td>
                 </tr>
                 <tr>
                   <td>
-                    <span class="en-text">2 People</span>
-                    <span class="es-text">2 Personas</span>
+                    <span class="en-text">Medium restock</span>
+                    <span class="es-text">Reposición mediana</span>
                   </td>
-                  <td>$150 – $240</td>
-                  <td>$75 – $120</td>
+                  <td>$50</td>
+                  <td><span class="en-text">Compare more items</span><span class="es-text">Compara más artículos</span></td>
                 </tr>
                 <tr>
                   <td>
-                    <span class="en-text">4 People</span>
-                    <span class="es-text">4 Personas</span>
+                    <span class="en-text">Project ceiling</span>
+                    <span class="es-text">Límite del proyecto</span>
                   </td>
-                  <td>$300 – $480</td>
-                  <td>$75 – $120</td>
+                  <td>$100</td>
+                  <td><span class="en-text">Used in the Level 2 percent question</span><span class="es-text">Se usa en la pregunta de porcentaje del Nivel 2</span></td>
                 </tr>
               </tbody>
             </table>
             <label class="lbl" for="world-compare">
               <span class="en-text"
-                >Where does your cart total fit? Is it within the typical range
-                for one person's weekly budget? Explain.</span
+                >Which illustrative ceiling did you choose? Show the remaining balance or amount
+                over that ceiling.</span
               >
               <span class="es-text"
-                >¿Dónde encaja el total de tu carrito? ¿Está dentro del rango
-                típico para el presupuesto semanal de una persona?
-                Explica.</span
+                >¿Qué límite ilustrativo elegiste? Muestra el saldo restante o la cantidad que
+                excede ese límite.</span
               >
             </label>
             <textarea
               id="world-compare"
-              placeholder="My subtotal is $___. Compared to real grocery spending data, this represents..."
+              placeholder="My final bill is $___. Compared with the $___ classroom ceiling, $___ remains/is over."
             ></textarea>
           </div>
 
@@ -2811,12 +2722,10 @@
             <li>
               <input type="checkbox" id="ck4" />
               <span class="en-text"
-                >I compared my total to the real-world average weekly grocery
-                budgets.</span
+                >I compared my final bill with an illustrative classroom ceiling and found the balance.</span
               >
               <span class="es-text"
-                >Comparé mi total con los presupuestos semanales promedio de
-                comestibles del mundo real.</span
+                >Comparé mi factura final con un límite ilustrativo de la clase y encontré el saldo.</span
               >
             </li>
             <li>
@@ -2921,12 +2830,10 @@
                 </td>
                 <td>
                   <span class="en-text"
-                    >Calculated savings amount and sale price correctly, plus
-                    completed the challenge question</span
+                    >Calculated savings amount and sale price correctly and explained the percent steps</span
                   >
                   <span class="es-text"
-                    >Calculó correctamente el monto de ahorro y el precio de
-                    venta, además de completar la pregunta del desafío</span
+                    >Calculó correctamente el ahorro y el precio de venta y explicó los pasos porcentuales</span
                   >
                 </td>
                 <td>
@@ -2959,13 +2866,10 @@
                 </td>
                 <td>
                   <span class="en-text"
-                    >Accurate subtotal, tax charge, and grand total compared to
-                    weekly grocery budget averages</span
+                    >Accurate taxable subtotal, researched rate, tax charge, total, and classroom-budget balance</span
                   >
                   <span class="es-text"
-                    >Subtotal, cargo de impuestos y total general precisos en
-                    comparación con los promedios del presupuesto semanal de
-                    comestibles</span
+                    >Subtotal gravable, tasa investigada, impuesto, total y saldo del presupuesto de clase precisos</span
                   >
                 </td>
                 <td>
@@ -3293,7 +3197,7 @@
 
         document.getElementById("world-compare").placeholder = isEs
           ? "Mi subtotal es $___. Comparado con los datos reales de gastos de comestibles, esto representa..."
-          : "My subtotal is $___. Compared to real grocery spending data, this represents...";
+          : "My final bill is $___. Compared with the $___ classroom ceiling, $___ remains/is over.";
 
         document.getElementById("t-budget-pct").placeholder = isEs ? "" : "";
 
@@ -3834,7 +3738,7 @@
           lines = [
             "═══ DESAFÍO DEL COMPRADOR INTELIGENTE — PROYECTO DE LA UNIDAD 4 (Versión B) ═══",
             "",
-            "📖 ESTÁNDARES MATEMÁTICOS: 6.AT.4 (Porcentajes), 6.AT.2 y 6.AT.2 (Tasas unitarias)",
+            "📖 ESTÁNDARES MATEMÁTICOS: 6.AT.4 (Porcentajes) y 6.AT.2 (Tasas unitarias)",
             "",
             "⚖️ PASO 1 — ENCUENTRA LA MEJOR OFERTA (TASAS UNITARIAS)",
             `   Artículo A: ${nameA} (${sizeA} ${translateUnit(unit)} por $${priceA.toFixed(2)}) -> $${rateA.toFixed(3)} por ${translateUnit(unit)}`,
@@ -3866,7 +3770,7 @@
           lines = [
             "═══ SMART SHOPPER SHOWDOWN — UNIT 4 PROJECT (Version B) ═══",
             "",
-            "📖 MATH STANDARDS: 6.AT.4 (Percents), 6.AT.2 & 6.AT.2 (Unit Rates)",
+            "📖 MATH STANDARDS: 6.AT.4 (Percents) & 6.AT.2 (Unit Rates)",
             "",
             "⚖️ STEP 1 — FIND THE BETTER DEAL (UNIT RATES)",
             `   Item A: ${nameA} (${sizeA} ${unit} for $${priceA.toFixed(2)}) -> $${rateA.toFixed(3)} per ${unit}`,
@@ -3921,114 +3825,6 @@
       buildTrail();
       updateProgress();
       updateDynamicTexts();
-
-      function toggleGradingConsole() {
-        const el = document.getElementById("teacher-console");
-        if (el) {
-          el.classList.toggle("show");
-          if (el.classList.contains("show")) updateGradingAnswers();
-        }
-      }
-
-      function prefillGradingConsole() {
-        // Populate the real student inputs with worked example values so the
-        // console shows a live, correct set of expected answers.
-        const samples = {
-          "item-a-price": 3.6,
-          "item-a-size": 12,
-          "item-b-price": 5.25,
-          "item-b-size": 20,
-          "s-price": 80,
-          "s-percent": 25,
-          "t-item1": 4.5,
-          "t-item2": 3.25,
-          "t-item3": 2.75,
-          "t-tax": 6,
-        };
-        for (const [id, val] of Object.entries(samples)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event("input", { bubbles: true }));
-            el.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const num = (id) => parseFloat(document.getElementById(id)?.value);
-          const money = (n) => (isNaN(n) ? "—" : "$" + n.toFixed(2));
-          const resolver = function () {
-            const out = {};
-
-            // Step 1 — Better buy by unit price (price ÷ size), lower wins.
-            const pA = num("item-a-price"),
-              sA = num("item-a-size"),
-              pB = num("item-b-price"),
-              sB = num("item-b-size");
-            if (pA > 0 && sA > 0 && pB > 0 && sB > 0) {
-              const rA = pA / sA,
-                rB = pB / sB;
-              out["Item A unit price"] = "$" + rA.toFixed(4) + "/unit";
-              out["Item B unit price"] = "$" + rB.toFixed(4) + "/unit";
-              out["Better buy"] =
-                Math.abs(rA - rB) < 0.0005
-                  ? "Equal"
-                  : rA < rB
-                    ? "Item A"
-                    : "Item B";
-            }
-
-            // Step 2 — Percent savings on a sale price.
-            const orig = num("s-price"),
-              pct = num("s-percent");
-            if (orig > 0 && pct >= 0) {
-              const discount = orig * (pct / 100);
-              out["Discount amount"] = money(discount);
-              out["Sale price"] = money(orig - discount);
-            }
-
-            // Step 3 — Grocery bill subtotal + tax.
-            const i1 = num("t-item1") || 0,
-              i2 = num("t-item2") || 0,
-              i3 = num("t-item3") || 0,
-              tax = num("t-tax");
-            const subtotal = i1 + i2 + i3;
-            if (subtotal > 0 && !isNaN(tax)) {
-              out["Grocery subtotal"] = money(subtotal);
-              out["Tax amount"] = money(subtotal * (tax / 100));
-              out["Total with tax"] = money(subtotal * (1 + tax / 100));
-            }
-
-            if (Object.keys(out).length === 0) {
-              out["No student inputs yet"] =
-                "Enter values or click Prefill Sample Answers";
-            }
-            return out;
-          };
-          const ans = resolver();
-          const body = document.getElementById("teacher-answers-body");
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans)
-              .map(
-                ([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `,
-              )
-              .join("");
-          }
-        } catch (e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-
-      // Teacher console reveal: obscure triple-click on the page title only
-      // (the old Ctrl+Shift+T combo hijacked the browser's reopen-tab shortcut).
 
       window.exportStudentBackup = function () {
         try {
@@ -4089,8 +3885,6 @@
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === "function")
-                updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
@@ -4100,82 +3894,9 @@
         };
         reader.readAsText(file);
       };
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const titleEl = document.querySelector(".hero h1");
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener("click", function () {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => {
-              clicks = 0;
-            }, 1000);
-          });
-        }
-        // Re-calculate teacher answers live as the student edits real inputs.
-        document.addEventListener("input", function (e) {
-          const inputs = [
-            "item-a-price",
-            "item-a-size",
-            "item-b-price",
-            "item-b-size",
-            "s-price",
-            "s-percent",
-            "t-item1",
-            "t-item2",
-            "t-item3",
-            "t-tax",
-          ];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
     </script>
+    <input type="file" id="student-backup-file-input" hidden onchange="importStudentBackup(event)" accept=".json" />
 
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
-        Calculated dynamically based on student inputs:
-      </p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">
-        Prefill Sample Answers
-      </button>
-      <div style="display: flex; gap: 6px; margin-top: 6px">
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #059669"
-          onclick="exportStudentBackup()"
-        >
-          📥 Export JSON
-        </button>
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #7c3aed"
-          onclick="triggerImportStudentBackup()"
-        >
-          📤 Import JSON
-        </button>
-      </div>
-      <input
-        type="file"
-        id="student-backup-file-input"
-        style="display: none"
-        onchange="importStudentBackup(event)"
-        accept=".json"
-      />
-    </div>
 
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>

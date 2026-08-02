@@ -281,27 +281,6 @@
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
-    
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed; bottom: 20px; right: 20px; z-index: 10000;
-        width: 330px; max-height: 480px; overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px;
-        padding: 16px; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif;
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3);
-        display: none; box-sizing: border-box; text-align: left;
-      }
-      #teacher-console.show { display: block; }
-      #teacher-console h4 { margin: 0 0 8px 0; color: #38bdf8; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
-      #teacher-console .close-btn { background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; }
-      #teacher-console .close-btn:hover { color: #f1f5f9; }
-      #teacher-console table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-      #teacher-console td { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); color: #e2e8f0; }
-      #teacher-console .lbl { font-weight: 600; color: #94a3b8; }
-      #teacher-console .val { font-weight: 700; text-align: right; color: #38bdf8; word-break: break-all; }
-      #teacher-console .prefill-btn { width: 100%; margin-top: 12px; background: #0284c7; border: none; border-radius: 6px; padding: 8px; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s; }
-      #teacher-console .prefill-btn:hover { background: #0369a1; }
 
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
@@ -712,7 +691,7 @@
           </div>
 
           <div class="instruct">
-            <strong><span class="en-text">Your job:</span><span class="es-text">Tu tarea:</span></strong> <span class="en-text">Enter the size of the fabric swatches you want to make. Then, compare how many pieces you get from standard retail rolls and boards versus your workshop's custom sizes.</span><span class="es-text">Ingresa el tamaño de las muestras de tela que deseas hacer. Luego, compara cuántas piezas obtienes de rollos y tablas comerciales estándar en comparación con los tamaños personalizados de tu taller.</span>
+            <strong><span class="en-text">Your job:</span><span class="es-text">Tu tarea:</span></strong> <span class="en-text">Enter the fabric swatch size you want to make. Then calculate full pieces and physical scrap for the classroom example source sizes.</span><span class="es-text">Ingresa el tamaño de la muestra de tela que deseas hacer. Luego calcula las piezas completas y el sobrante físico para los tamaños de origen de ejemplo de la clase.</span>
           </div>
 
           <div class="step-research no-print">
@@ -766,13 +745,13 @@
 
           <!-- Commercial scale table -->
           <div style="margin-top:22px;">
-            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;"><span class="en-text">🏭 Commercial Supply Yield Table</span><span class="es-text">🏭 Tabla de rendimiento de suministro comercial</span></h3>
-            <p style="font-size:14px;color:var(--muted);margin-bottom:10px;"><span class="en-text">Compare how many total pieces can be harvested from full standard-sized retail supplies using your cut dimensions.</span><span class="es-text">Compara cuántas piezas totales se pueden cosechar de suministros minoristas de tamaño estándar completo usando tus dimensiones de corte.</span></p>
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;"><span class="en-text">🏭 Classroom Source-Size Yield Table</span><span class="es-text">🏭 Tabla de rendimiento con tamaños de origen de la clase</span></h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:10px;"><span class="en-text">These are classroom example source sizes, not universal retail standards. The table reports full pieces and physical scrap. Because the source amounts and units differ, raw piece counts do not by themselves show which material is more efficient.</span><span class="es-text">Estos son tamaños de origen de ejemplo para la clase, no estándares universales de venta. La tabla muestra piezas completas y sobrante físico. Como las cantidades y las unidades de origen son diferentes, los conteos de piezas por sí solos no muestran qué material es más eficiente.</span></p>
             <table class="data-table">
               <thead>
                 <tr>
                   <th><span class="en-text">Material Type</span><span class="es-text">Tipo de material</span></th>
-                  <th><span class="en-text">Standard Supplier Size</span><span class="es-text">Tamaño estándar del proveedor</span></th>
+                  <th><span class="en-text">Example Source Size</span><span class="es-text">Tamaño de origen de ejemplo</span></th>
                   <th><span class="en-text">Your Piece/Swatch Size</span><span class="es-text">Tu tamaño de pieza/muestra</span></th>
                   <th><span class="en-text">Yield (Full Pieces)</span><span class="es-text">Rendimiento (piezas completas)</span></th>
                   <th><span class="en-text">Remaining Scrap</span><span class="es-text">Residuo restante</span></th>
@@ -780,7 +759,7 @@
               </thead>
               <tbody>
                 <tr>
-                  <td><strong><span class="en-text">🪢 Standard Rope Spool</span><span class="es-text">🪢 Carrete de cuerda estándar</span></strong></td>
+                  <td><strong><span class="en-text">🪢 Rope Spool Example</span><span class="es-text">🪢 Ejemplo de carrete de cuerda</span></strong></td>
                   <td><span class="en-text">25 feet</span><span class="es-text">25 pies</span></td>
                   <td id="td-rope-divisor">1/4 ft</td>
                   <td id="td-rope-yield">—</td>
@@ -803,8 +782,8 @@
               </tbody>
             </table>
 
-            <label class="lbl" for="world-compare" style="margin-top:18px;"><span class="en-text">Which material yields the most pieces when scaled up? Write a one-sentence reflection.</span><span class="es-text">¿Qué material rinde más piezas cuando se escala? Escribe una reflexión de una frase.</span></label>
-            <textarea id="world-compare" placeholder="Scaling up shows that the rope yields the most pieces because..."></textarea>
+            <label class="lbl" for="world-compare" style="margin-top:18px;"><span class="en-text">Which example produces the greatest number of full pieces? Explain why this raw count is not a fair efficiency comparison across different materials and source units.</span><span class="es-text">¿Qué ejemplo produce la mayor cantidad de piezas completas? Explica por qué este conteo no es una comparación justa de eficiencia entre materiales y unidades de origen diferentes.</span></label>
+            <textarea id="world-compare" placeholder="The ___ example has the most full pieces. This does not prove it is more efficient because..."></textarea>
           </div>
 
           <div class="lvl2-block lvl2-only" style="margin-top:18px">
@@ -834,7 +813,7 @@
           </div>
 
           <div class="instruct">
-            <strong><span class="en-text">Your job:</span><span class="es-text">Tu tarea:</span></strong> <span class="en-text">Interview a classmate and write down their yields. Press Compare to see who yielded more pieces and whose cuts are more efficient.</span><span class="es-text">Entrevista a un compañero de clase y escribe sus rendimientos. Presiona Comparar para ver quién obtuvo más piezas y cuyos cortes son más eficientes.</span>
+            <strong><span class="en-text">Your job:</span><span class="es-text">Tu tarea:</span></strong> <span class="en-text">Interview a classmate and record their yields. Compare piece counts only when the source amount and units match; otherwise describe what must be held constant for a fair efficiency comparison.</span><span class="es-text">Entrevista a un compañero y registra sus rendimientos. Compara conteos solo cuando coincidan la cantidad de origen y las unidades; de lo contrario, describe qué debe mantenerse constante para una comparación justa de eficiencia.</span>
           </div>
 
           <!-- SVG Visual: Comparison diagram -->
@@ -904,7 +883,7 @@
             <li><input type="checkbox" id="ck1" /> <span class="en-text">I defined the core terms for fraction division.</span><span class="es-text">Definí los términos principales de la división de fracciones.</span></li>
             <li><input type="checkbox" id="ck2" /> <span class="en-text">I completed the rope division calculations and visual.</span><span class="es-text">Completé los cálculos de división de cuerda y el visual.</span></li>
             <li><input type="checkbox" id="ck3" /> <span class="en-text">I solved the wood board division involving mixed numbers.</span><span class="es-text">Resolví la división de la tabla de madera que involucra números mixtos.</span></li>
-            <li><input type="checkbox" id="ck4" /> <span class="en-text">I compared fabric cuts to standard commercial sizes.</span><span class="es-text">Comparé los cortes de tela con los tamaños comerciales estándar.</span></li>
+            <li><input type="checkbox" id="ck4" /> <span class="en-text">I calculated full pieces and scrap for the classroom source-size examples.</span><span class="es-text">Calculé piezas completas y sobrantes para los ejemplos de tamaños de origen de la clase.</span></li>
             <li><input type="checkbox" id="ck5" /> <span class="en-text">I compared my results side-by-side with a classmate.</span><span class="es-text">Comparé mis resultados lado a lado con un compañero de clase.</span></li>
             <li><input type="checkbox" id="ck6" /> <span class="en-text">I wrote a workshop memo summarizing my plan.</span><span class="es-text">Escribí un memorando de taller que resume mi plan.</span></li>
           </ul>
@@ -934,14 +913,14 @@
                 <td><span class="en-text">Confuses the fraction of a piece with the physical length of scrap.</span><span class="es-text">Confunde la fracción de una pieza con la longitud física del residuo.</span></td>
               </tr>
               <tr>
-                <td><strong><span class="en-text">Commercial Scale</span><span class="es-text">Escala comercial</span></strong></td>
-                <td><span class="en-text">Accurately scales up to 25ft, 15yd, and 8ft sizes, showing perfect yields and waste.</span><span class="es-text">Escala con precisión a tamaños de 25 pies, 15 yardas y 8 pies, mostrando rendimientos y desperdicios perfectos.</span></td>
+                <td><strong><span class="en-text">Source-Size Scale</span><span class="es-text">Escala del tamaño de origen</span></strong></td>
+                <td><span class="en-text">Accurately finds full-piece yields and physical scrap for the 25 ft, 15 yd, and 8 ft examples.</span><span class="es-text">Encuentra con precisión los rendimientos de piezas completas y el sobrante físico para los ejemplos de 25 pies, 15 yardas y 8 pies.</span></td>
                 <td><span class="en-text">Completes comparison table with valid computations.</span><span class="es-text">Completa la tabla de comparación con cálculos válidos.</span></td>
                 <td><span class="en-text">Comparison table contains arithmetic errors or is incomplete.</span><span class="es-text">La tabla de comparación contiene errores aritméticos o está incompleta.</span></td>
               </tr>
               <tr>
                 <td><strong>Reflection</strong></td>
-                <td><span class="en-text">Provides deep comparisons and explains how smaller divisors generate larger quotients.</span><span class="es-text">Proporciona comparaciones profundas y explica cómo los divisores más pequeños generan cocientes más grandes.</span></td>
+                <td><span class="en-text">Explains that with the same positive dividend, a smaller positive divisor gives a larger quotient, and avoids treating unlike source amounts as equal-efficiency evidence.</span><span class="es-text">Explica que, con el mismo dividendo positivo, un divisor positivo menor produce un cociente mayor y evita tratar cantidades de origen distintas como evidencia de igual eficiencia.</span></td>
                 <td><span class="en-text">Compares lists and writes reflection sentences.</span><span class="es-text">Compara listas y escribe oraciones de reflexión.</span></td>
                 <td><span class="en-text">Reflections are very short or lack mathematical backing.</span><span class="es-text">Las reflexiones son muy cortas o carecen de respaldo matemático.</span></td>
               </tr>
@@ -1381,8 +1360,7 @@
             fabricYieldStr = isEs ? `${full} muestras` : `${full} swatches`;
             fabricScrapStr = `0 yd`;
           } else {
-            const cg = gcd(rem, fNum);
-            fabricYieldStr = isEs ? `${full} ${rem/cg}/${fNum/cg} muestras` : `${full} ${rem/cg}/${fNum/cg} swatches`;
+            fabricYieldStr = isEs ? `${full} muestras completas` : `${full} full swatches`;
             const scrapNum = 15 * fDen - full * fNum;
             const scG = gcd(scrapNum, fDen);
             fabricScrapStr = `${scrapNum/scG}/${fDen/scG} yd`;
@@ -1402,8 +1380,7 @@
             woodYieldStr = isEs ? `${wFull} tiras` : `${wFull} strips`;
             woodScrapStr = `0 ft`;
           } else {
-            const cg = gcd(wRem, wSNum);
-            woodYieldStr = isEs ? `${wFull} ${wRem/cg}/${wSNum/cg} tiras` : `${wFull} ${wRem/cg}/${wSNum/cg} strips`;
+            woodYieldStr = isEs ? `${wFull} tiras completas` : `${wFull} full strips`;
             const scrapNum = 8 * wSDen - wFull * wSNum;
             const scG = gcd(scrapNum, wSDen);
             woodScrapStr = `${scrapNum/scG}/${wSDen/scG} ft`;
@@ -1595,7 +1572,7 @@
           'p-fabric': { en: "Partner's Fabric Swatches", es: "Muestras de tela del compañero" },
           'peer-reflect': { en: "Explain your workshop comparison details...", es: "Explica los detalles de la comparación de tu taller..." },
           'pitch': { en: "Write your workshop summary memo...", es: "Escribe el memorándum de resumen de tu taller..." },
-          'world-compare': { en: "Explain which supply is most efficient...", es: "Explica qué suministro es más eficiente..." }
+          'world-compare': { en: "Name the largest full-piece count and explain why unlike sources are not a fair efficiency comparison...", es: "Nombra el mayor conteo de piezas completas y explica por qué fuentes distintas no permiten una comparación justa de eficiencia..." }
         };
         for (const [id, langObj] of Object.entries(placeholders)) {
           const el = document.getElementById(id);
@@ -1681,102 +1658,6 @@
         originalGoStep(n);
       };
 
- 
-      function toggleGradingConsole() {
-        const el = document.getElementById('teacher-console');
-        if (el) {
-          el.classList.toggle('show');
-          if (el.classList.contains('show')) updateGradingAnswers();
-        }
-      }
-      
-      function prefillGradingConsole() {
-        // Restore the Level-1 default sample inputs, then recompute.
-        const samples = {
-          'rope-type': 'whole',
-          'rope-whole': '4',
-          'rope-divisor-den': '4',
-          'w-whole': '4',
-          'w-num': '1',
-          'w-den': '2',
-          'w-strip-num': '3',
-          'w-strip-den': '4',
-          'f-swatch-num': '2',
-          'f-swatch-den': '3'
-        };
-        for (const [id, val] of Object.entries(samples)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event('change', { bubbles: true }));
-          }
-        }
-        if (typeof toggleRopeInput === 'function') toggleRopeInput();
-        calcRope();
-        calcWood();
-        calcFabric();
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const resolver = function() {
-            const fmt = (x) => Number.isFinite(x) ? (Math.round(x * 100) / 100).toString() : '—';
-
-            // Step 1 — Rope Cuts (total ÷ unit fraction)
-            const rType = document.getElementById('rope-type').value;
-            const rWhole = parseInt(document.getElementById('rope-whole').value) || 0;
-            const rNum = parseInt(document.getElementById('rope-num').value) || 0;
-            const rDen = parseInt(document.getElementById('rope-den').value) || 1;
-            const rDivDen = parseInt(document.getElementById('rope-divisor-den').value) || 4;
-            const ropeTotalStr = rType === 'whole' ? (rWhole + ' ft') : (rNum + '/' + rDen + ' ft');
-            const ropeQ = rType === 'whole' ? (rWhole * rDivDen) : (rNum * rDivDen / rDen);
-
-            // Step 2 — Wood Strips (mixed number ÷ fraction)
-            const wWhole = parseInt(document.getElementById('w-whole').value) || 0;
-            const wNum = parseInt(document.getElementById('w-num').value) || 0;
-            const wDen = parseInt(document.getElementById('w-den').value) || 1;
-            const wSNum = parseInt(document.getElementById('w-strip-num').value) || 0;
-            const wSDen = parseInt(document.getElementById('w-strip-den').value) || 1;
-            const impNum = wWhole * wDen + wNum;
-            const woodQ = wSNum ? (impNum * wSDen) / (wDen * wSNum) : NaN;
-
-            // Step 3 — Fabric Cuts (15 yd bolt ÷ swatch)
-            const fNum = parseInt(document.getElementById('f-swatch-num').value) || 0;
-            const fDen = parseInt(document.getElementById('f-swatch-den').value) || 1;
-            const fabricQ = fNum ? (15 * fDen) / fNum : NaN;
-
-            return {
-              'Step 1 · Rope Cuts': `${ropeTotalStr} ÷ 1/${rDivDen} = ${fmt(ropeQ)} pieces`,
-              'Step 2 · Wood Strips': `${impNum}/${wDen} ÷ ${wSNum}/${wSDen} = ${fmt(woodQ)} strips`,
-              'Step 3 · Fabric Cuts': `15 ÷ ${fNum}/${fDen} = ${fmt(fabricQ)} swatches`,
-              'Step 4 · Partner Compare': 'Difference of student vs. partner (no fixed answer)'
-            };
-          };
-          const ans = resolver();
-          const body = document.getElementById('teacher-answers-body');
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans).map(([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `).join('');
-          }
-        } catch(e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-      
-      // Wire up key listener (Ctrl+Alt+G — non-hijacking) and triple click on h1
-      document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'g') {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
-      
-      
       window.exportStudentBackup = function() {
         try {
           const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
@@ -1828,7 +1709,6 @@
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === 'function') updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
@@ -1839,57 +1719,9 @@
         reader.readAsText(file);
       };
 
-      document.addEventListener('DOMContentLoaded', function() {
-        const titleEl = document.querySelector('.hero h1');
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener('click', function() {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => { clicks = 0; }, 1000);
-          });
-        }
-        // Re-calculate answers when any project input changes
-        document.addEventListener('input', function(e) {
-          const inputs = [
-            "rope-whole", "rope-num", "rope-den",
-            "w-whole", "w-num", "w-den", "w-strip-num", "w-strip-den",
-            "f-swatch-num", "f-swatch-den"
-          ];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-        document.addEventListener('change', function(e) {
-          const selects = ["rope-type", "rope-divisor-den"];
-          if (selects.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
-
     </script>
-  
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size:11px;color:#94a3b8;margin:0 0 10px;">Calculated dynamically based on student inputs:</p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display:flex;gap:6px;margin-top:6px;">
-        <button class="prefill-btn" style="margin-top:0;background:#059669;" onclick="exportStudentBackup()">📥 Export JSON</button>
-        <button class="prefill-btn" style="margin-top:0;background:#7c3aed;" onclick="triggerImportStudentBackup()">📤 Import JSON</button>
-      </div>
-      <input type="file" id="student-backup-file-input" style="display:none;" onchange="importStudentBackup(event)" accept=".json" />
-    </div>
+    <input type="file" id="student-backup-file-input" hidden onchange="importStudentBackup(event)" accept=".json" />
+
 
   <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
   <script src="/shared/projects/projects-pro.js" defer></script>

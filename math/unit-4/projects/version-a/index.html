@@ -6,7 +6,7 @@
     <title>Pop-Up Shop Owner — Unit 4 Culminating Project</title>
     <meta
       name="description"
-      content="Unit 4 Rates & Percents culminating project. Run a pop-up shop: price items with discounts, calculate unit rates to find the best deal, and calculate sales tax."
+      content="Unit 4 Rates & Percents culminating project. Run a pop-up shop: price items with discounts, calculate unit rates to find the best deal, and model sales tax with a clearly stated classroom rate."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -743,94 +743,6 @@
         opacity: 0.65;
         text-decoration: line-through;
         transition: all 0.25s ease;
-      }
-
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        width: 330px;
-        max-height: 480px;
-        overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        padding: 16px;
-        color: #f8fafc;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        box-shadow:
-          0 10px 25px -5px rgba(0, 0, 0, 0.3),
-          0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        display: none;
-        box-sizing: border-box;
-        text-align: left;
-      }
-      #teacher-console.show {
-        display: block;
-      }
-      #teacher-console h4 {
-        margin: 0 0 8px 0;
-        color: #38bdf8;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      #teacher-console .close-btn {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0 4px;
-        line-height: 1;
-      }
-      #teacher-console .close-btn:hover {
-        color: #f1f5f9;
-      }
-      #teacher-console table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-      #teacher-console td {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-      }
-      #teacher-console .lbl {
-        font-weight: 600;
-        color: #94a3b8;
-      }
-      #teacher-console .val {
-        font-weight: 700;
-        text-align: right;
-        color: #38bdf8;
-        word-break: break-all;
-      }
-      #teacher-console .prefill-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: #0284c7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      #teacher-console .prefill-btn:hover {
-        background: #0369a1;
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
@@ -1937,9 +1849,9 @@
                 ><span class="es-text">Paso 3 — Impuesto sobre las ventas</span>
               </h2>
               <div class="card-sub">
-                <span class="en-text">Add standard tax and compare other regional tax rates</span
+                <span class="en-text">Use an illustrative taxable-item rate and compare rates</span
                 ><span class="es-text"
-                  >Suma el impuesto estándar y compara otras tasas de impuestos regionales</span
+                  >Usa una tasa ilustrativa para artículos gravables y compara tasas</span
                 >
               </div>
             </div>
@@ -1948,14 +1860,17 @@
           <div class="instruct gold">
             <span class="en-text"
               ><strong>Your job:</strong> Enter a purchase subtotal (usually a customer's cart
-              total). Find the standard 6% sales tax, then select different states to see how
-              regional tax variations impact the total cost.</span
+              total). For this classroom model, assume every item in the subtotal is taxable and
+              use 6% as an <strong>illustrative rate</strong>. Then compare it with another
+              illustrative rate. Actual taxability and combined local rates vary, so verify them
+              for a real purchase.</span
             >
             <span class="es-text"
               ><strong>Tu trabajo:</strong> Ingresa el subtotal de una compra (generalmente el total
-              del carrito del cliente). Encuentra el impuesto sobre las ventas estándar del 6%,
-              luego selecciona diferentes estados para ver cómo las variaciones de impuestos
-              regionales impactan el costo total.</span
+              del carrito del cliente). Para este modelo, supone que todos los artículos del
+              subtotal son gravables y usa 6% como <strong>tasa ilustrativa</strong>. Luego
+              compárala con otra tasa ilustrativa. La tasa local combinada y qué artículos son
+              gravables varían, así que verifícalos para una compra real.</span
             >
           </div>
 
@@ -1970,20 +1885,20 @@
               target="_blank"
               rel="noopener noreferrer"
               class="level-btn"
-              ><span class="en-text">Sales Tax Rates by State ↗</span
+              ><span class="en-text">Research Local Sales Tax ↗</span
               ><span class="es-text">Tasas de impuesto sobre ventas por estado ↗</span></a
             >
             <small class="sr-hint"
-              ><span class="en-text">Fill in: My state's sales tax is ___%.</span
+              ><span class="en-text">Fill in: For ___ (taxable item) in ___ (location), the researched combined rate is ___%.</span
               ><span class="es-text"
-                >Completa: El impuesto de venta de mi estado es ___%.</span
+                >Completa: Para ___ (artículo gravable) en ___ (lugar), la tasa combinada investigada es ___%.</span
               ></small
             >
             <input
               type="text"
               id="rfind-3"
               data-research-find
-              placeholder="✍️ e.g. My state's sales tax is 6%"
+              placeholder="✍️ e.g. Taxable item ___ in ___ uses a researched combined rate of ___%"
               style="
                 width: 100%;
                 box-sizing: border-box;
@@ -2014,8 +1929,8 @@
               font-weight="bold"
               fill="#2d1a04"
             >
-              <tspan class="en-text">Calculating Sales Tax (6% Standard)</tspan>
-              <tspan class="es-text">Calculando el impuesto sobre las ventas (6% estándar)</tspan>
+              <tspan class="en-text">Classroom Tax Model (Illustrative 6%)</tspan>
+              <tspan class="es-text">Modelo de impuesto de clase (6% ilustrativo)</tspan>
             </text>
             <!-- Receipt -->
             <rect
@@ -2072,16 +1987,16 @@
 
           <!-- Level 1 support hint -->
           <div class="instruct lvl0-only">
-            <span class="en-text">🟠 <strong>Level 0:</strong> Tax is a small extra. Step 1: For every $1, add about 6 cents. Tiny example: $10 → about $0.60 tax. Starter: “My tax is about $___.”</span>
-            <span class="es-text">🟠 <strong>Nivel 0:</strong> El impuesto es un poco extra. Paso 1: Por cada $1, agrega unos 6 centavos. Ejemplo: $10 → unos $0.60 de impuesto. Empieza: “Mi impuesto es de unos $___.”</span>
+            <span class="en-text">🟠 <strong>Level 0:</strong> In our illustrative 6% taxable-item example, every $1 adds 6 cents. Tiny example: $10 → $0.60 tax. Starter: “In this example, my tax is $___.”</span>
+            <span class="es-text">🟠 <strong>Nivel 0:</strong> En nuestro ejemplo ilustrativo de un artículo gravable al 6%, cada $1 agrega 6 centavos. Ejemplo: $10 → $0.60 de impuesto. Empieza: “En este ejemplo, mi impuesto es $___.”</span>
           </div>
           <div class="instruct lvl1-only gold">
             <span class="en-text"
-              >🟢 <strong>Level 1 support:</strong> A 6% tax rate means you add $0.06 of tax for
+              >🟢 <strong>Level 1 support:</strong> In this taxable-item model, a 6% rate means you add $0.06 of tax for
               every $1.00 spent. For $50.00, the tax is 50 × 0.06 = $3.00.</span
             >
             <span class="es-text"
-              >🟢 <strong>Soporte de Nivel 1:</strong> Una tasa de impuesto del 6% significa que
+              >🟢 <strong>Soporte de Nivel 1:</strong> En este modelo de artículo gravable, una tasa del 6% significa que
               agregas $0.06 de impuesto por cada $1.00 gastado. Para $50.00, el impuesto es 50 ×
               0.06 = $3.00.</span
             >
@@ -2177,60 +2092,60 @@
               </div>
               <div>
                 <label class="lbl" for="tax-state"
-                  ><span class="en-text">Select Location (State tax rate)</span
+                  ><span class="en-text">Select an Illustrative Comparison Rate</span
                   ><span class="es-text"
-                    >Selecciona ubicación (Tasa de impuesto estatal)</span
+                    >Selecciona una tasa ilustrativa de comparación</span
                   ></label
                 >
                 <select id="tax-state" onchange="calcTax()">
                   <option
                     value="0"
                     class="translate-option"
-                    data-en="Oregon (0%)"
-                    data-es="Oregón (0%)"
+                    data-en="Illustrative 0% rate"
+                    data-es="Tasa ilustrativa de 0%"
                   >
-                    Oregon (0%)
+                    Illustrative 0% rate
                   </option>
                   <option
-                    value="0"
+                    value="2"
                     class="translate-option"
-                    data-en="Delaware (0%)"
-                    data-es="Delaware (0%)"
+                    data-en="Illustrative 2% rate"
+                    data-es="Tasa ilustrativa de 2%"
                   >
-                    Delaware (0%)
+                    Illustrative 2% rate
                   </option>
                   <option
                     value="4"
                     class="translate-option"
-                    data-en="Hawaii (4%)"
-                    data-es="Hawái (4%)"
+                    data-en="Illustrative 4% rate"
+                    data-es="Tasa ilustrativa de 4%"
                   >
-                    Hawaii (4%)
+                    Illustrative 4% rate
                   </option>
                   <option
                     value="6"
                     selected
                     class="translate-option"
-                    data-en="Maryland (6%)"
-                    data-es="Maryland (6%)"
+                    data-en="Classroom 6% rate"
+                    data-es="Tasa de clase de 6%"
                   >
-                    Maryland (6%)
+                    Classroom 6% rate
                   </option>
                   <option
                     value="7.25"
                     class="translate-option"
-                    data-en="California (7.25%)"
-                    data-es="California (7.25%)"
+                    data-en="Illustrative 7.25% rate"
+                    data-es="Tasa ilustrativa de 7.25%"
                   >
-                    California (7.25%)
+                    Illustrative 7.25% rate
                   </option>
                   <option
                     value="9.55"
                     class="translate-option"
-                    data-en="Tennessee (9.55%)"
-                    data-es="Tennessee (9.55%)"
+                    data-en="Illustrative 9.55% rate"
+                    data-es="Tasa ilustrativa de 9.55%"
                   >
-                    Tennessee (9.55%)
+                    Illustrative 9.55% rate
                   </option>
                 </select>
               </div>
@@ -2246,33 +2161,35 @@
           <!-- Real-world data table -->
           <div style="margin-top: 22px">
             <h3 style="font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 6px">
-              <span class="en-text">🌎 Real-World Sales Tax Comparisons</span>
+              <span class="en-text">🌎 Illustrative Rate Comparisons</span>
               <span class="es-text"
-                >🌎 Comparaciones de impuestos sobre las ventas en el mundo real</span
+                >🌎 Comparaciones de tasas ilustrativas</span
               >
             </h3>
             <p style="font-size: 14px; color: var(--muted); margin-bottom: 6px">
               <span class="en-text"
-                >Look at the range of tax structures across the United States:</span
+                >Use these classroom scenarios to compare rate effects; they are not claims about
+                a particular location.</span
               >
               <span class="es-text"
-                >Observa el rango de estructuras de impuestos en los Estados Unidos:</span
+                >Usa estos escenarios para comparar los efectos de las tasas; no son afirmaciones
+                sobre un lugar específico.</span
               >
             </p>
             <table class="data-table">
               <thead>
                 <tr>
                   <th>
-                    <span class="en-text">State category</span
-                    ><span class="es-text">Categoría del estado</span>
+                    <span class="en-text">Classroom scenario</span
+                    ><span class="es-text">Escenario de clase</span>
                   </th>
                   <th>
                     <span class="en-text">Tax Rate</span
                     ><span class="es-text">Tasa de impuesto</span>
                   </th>
                   <th>
-                    <span class="en-text">Example States</span
-                    ><span class="es-text">Estados de ejemplo</span>
+                    <span class="en-text">How to use it</span
+                    ><span class="es-text">Cómo usarlo</span>
                   </th>
                 </tr>
               </thead>
@@ -2280,59 +2197,56 @@
                 <tr>
                   <td>
                     <strong
-                      ><span class="en-text">No Tax States</span
-                      ><span class="es-text">Estados sin impuestos</span></strong
+                      ><span class="en-text">Scenario A</span
+                      ><span class="es-text">Escenario A</span></strong
                     >
                   </td>
                   <td>0%</td>
                   <td>
-                    <span class="en-text">Oregon (OR), Delaware (DE), New Hampshire (NH)</span
-                    ><span class="es-text">Oregón (OR), Delaware (DE), Nueva Hampshire (NH)</span>
+                    <span class="en-text">Illustrates no added tax in the model</span
+                    ><span class="es-text">Ilustra que no se agrega impuesto en el modelo</span>
                   </td>
                 </tr>
                 <tr>
                   <td>
                     <strong
-                      ><span class="en-text">Standard Tax States</span
-                      ><span class="es-text">Estados con impuestos estándar</span></strong
+                      ><span class="en-text">Scenario B</span
+                      ><span class="es-text">Escenario B</span></strong
                     >
                   </td>
-                  <td>4% – 6%</td>
+                  <td>4%–6%</td>
                   <td>
-                    <span class="en-text">Hawaii (4%), Colorado (2.9%), Maryland (6%)</span
-                    ><span class="es-text">Hawái (4%), Colorado (2.9%), Maryland (6%)</span>
+                    <span class="en-text">Compare two moderate illustrative rates</span
+                    ><span class="es-text">Compara dos tasas ilustrativas moderadas</span>
                   </td>
                 </tr>
                 <tr>
                   <td>
                     <strong
-                      ><span class="en-text">High Tax States</span
-                      ><span class="es-text">Estados con impuestos altos</span></strong
+                      ><span class="en-text">Scenario C</span
+                      ><span class="es-text">Escenario C</span></strong
                     >
                   </td>
-                  <td>7% – 10%</td>
+                  <td>7%–10%</td>
                   <td>
-                    <span class="en-text"
-                      >California (7.25%), Tennessee (9.55%), Washington (8.9%)</span
-                    ><span class="es-text"
-                      >California (7.25%), Tennessee (9.55%), Washington (8.9%)</span
-                    >
+                    <span class="en-text">Compare how a larger illustrative rate changes the total</span
+                    ><span class="es-text">Compara cómo una tasa ilustrativa mayor cambia el total</span>
                   </td>
                 </tr>
               </tbody>
             </table>
             <label class="lbl" for="tax-reflect"
               ><span class="en-text"
-                >Compare your 6% tax rate total with another state. Write 1-2 reflection
+                >Compare the illustrative 6% total with another classroom rate. Write 1-2 reflection
                 sentences.</span
               ><span class="es-text"
-                >Compara tu total con la tasa de impuesto del 6% con la de otro estado. Escribe 1-2
+                >Compara el total ilustrativo del 6% con otra tasa de clase. Escribe 1-2
                 oraciones de reflexión.</span
               ></label
             >
             <textarea
               id="tax-reflect"
-              placeholder="In Oregon, my total is $___ because they have 0% tax. Compared to standard tax, high-tax states like California..."
+              placeholder="At the illustrative 6% rate, my total is $___. At ___%, it would be $___ because..."
             ></textarea>
           </div>
 
@@ -2671,10 +2585,9 @@
             <li>
               <input type="checkbox" id="ck3" />
               <span class="en-text"
-                >I calculated 6% sales tax and compared total costs to other state rates.</span
+                >I calculated the illustrative 6% tax and compared it with another stated rate.</span
               ><span class="es-text"
-                >Calculé el 6% de impuesto sobre las ventas y comparé los costos totales con las
-                tasas de otros estados.</span
+                >Calculé el impuesto ilustrativo del 6% y lo comparé con otra tasa indicada.</span
               >
             </li>
             <li>
@@ -2751,16 +2664,15 @@
               <tr>
                 <td>
                   <strong
-                    ><span class="en-text">Unit Rates (6.AT.2 · 6.AT.2)</span
-                    ><span class="es-text">Tasas unitarias (6.AT.2 · 6.AT.2)</span></strong
+                    ><span class="en-text">Unit Rates (6.AT.2)</span
+                    ><span class="es-text">Tasas unitarias (6.AT.2)</span></strong
                   >
                 </td>
                 <td>
                   <span class="en-text"
-                    >Unit rates correct; includes Level 2 conversion explanation</span
+                    >Unit rates correct with units and a clear comparison explanation</span
                   ><span class="es-text"
-                    >Tasas unitarias correctas; incluye la explicación de la conversión del Nivel
-                    2</span
+                    >Tasas unitarias correctas con unidades y una explicación clara de la comparación</span
                   >
                 </td>
                 <td>
@@ -2781,10 +2693,9 @@
                 </td>
                 <td>
                   <span class="en-text"
-                    >Correctly calculated 6% tax, state comparisons, and stacked challenge</span
+                    >Correctly calculates and explains an illustrative or researched taxable-item rate</span
                   ><span class="es-text"
-                    >Calculó correctamente el impuesto del 6%, las comparaciones estatales y el
-                    desafío acumulado</span
+                    >Calcula y explica correctamente una tasa ilustrativa o investigada para un artículo gravable</span
                   >
                 </td>
                 <td>
@@ -2988,8 +2899,8 @@
         "db-price": { en: "", es: "" },
         "tax-sub": { en: "", es: "" },
         "tax-reflect": {
-          en: "In Oregon, my total is $___ because they have 0% tax. Compared to standard tax, high-tax states like California...",
-          es: "En Oregón, mi total es $___ porque tienen 0% de impuestos. En comparación con el impuesto estándar, los estados con impuestos altos como California...",
+          en: "At the illustrative 6% rate, my total is $___. At ___%, it would be $___ because...",
+          es: "Con la tasa ilustrativa del 6%, mi total es $___. Con ___%, sería $___ porque...",
         },
         "p-name": { en: "", es: "" },
         "p-i1-name": { en: "", es: "" },
@@ -3646,9 +3557,9 @@
           showReadout(
             "tax-out",
             `
-            <strong>Impuesto sobre ventas estándar 6%:</strong><br>
+            <strong>Tasa ilustrativa de 6% para artículos gravables:</strong><br>
             Monto de impuesto: <strong>${fmtMoney(stdTaxAmt)}</strong> &nbsp;|&nbsp; Total debido: <strong>${fmtMoney(stdTotal)}</strong><br><br>
-            <strong>Ubicación seleccionada (${stateName}):</strong><br>
+            <strong>Tasa ilustrativa seleccionada (${stateName}):</strong><br>
             Monto de impuesto: <strong>${fmtMoney(stateTaxAmt)}</strong> &nbsp;|&nbsp; Total debido: <strong>${fmtMoney(stateTotal)}</strong>
           `,
           );
@@ -3656,9 +3567,9 @@
           showReadout(
             "tax-out",
             `
-            <strong>Standard 6% Sales Tax:</strong><br>
+            <strong>Illustrative 6% Taxable-Item Rate:</strong><br>
             Tax Amount: <strong>${fmtMoney(stdTaxAmt)}</strong> &nbsp;|&nbsp; Total Due: <strong>${fmtMoney(stdTotal)}</strong><br><br>
-            <strong>Selected Location (${stateName}):</strong><br>
+            <strong>Selected Illustrative Rate (${stateName}):</strong><br>
             Tax Amount: <strong>${fmtMoney(stateTaxAmt)}</strong> &nbsp;|&nbsp; Total Due: <strong>${fmtMoney(stateTotal)}</strong>
           `,
           );
@@ -3707,7 +3618,7 @@
               - Descuento: $50.00 × 20% = $10.00 de ahorro, por lo que el Precio de Venta es <strong>${fmtMoney(expectedSale)}</strong>.<br>
               - Impuesto: $40.00 × 6% = <strong>${fmtMoney(expectedTaxAmt)}</strong>.<br>
               - Total: $40.00 + $2.40 = <strong>${fmtMoney(expectedTotal)}</strong>.<br>
-              Los sistemas minoristas estándar calculan el impuesto sobre las ventas sobre el subtotal con descuento. ¡Excelente trabajo!
+              En este modelo, calcula el impuesto sobre el subtotal con descuento. ¡Excelente trabajo!
             `,
             );
           } else {
@@ -3718,7 +3629,7 @@
               - Discount: $50.00 × 20% = $10.00 off, so the Sale Price is <strong>${fmtMoney(expectedSale)}</strong>.<br>
               - Tax: $40.00 × 6% = <strong>${fmtMoney(expectedTaxAmt)}</strong>.<br>
               - Total: $40.00 + $2.40 = <strong>${fmtMoney(expectedTotal)}</strong>.<br>
-              Standard retail systems calculate sales tax on the discounted subtotal. Great job!
+              In this model, calculate tax on the discounted subtotal. Great job!
             `,
             );
           }
@@ -3979,8 +3890,8 @@
             "",
             "🧾 PASO 3 — COMPARACIÓN DE IMPUESTOS SOBRE VENTAS",
             `   - Subtotal: ${fmtMoney(taxSub)}`,
-            `   - Impuesto sobre ventas estándar 6%: Impuesto: ${fmtMoney(stdTax)} | Total: ${fmtMoney(stdTotal)}`,
-            `   - Estado seleccionado (${stateName} - ${stateRate}%): Impuesto: ${fmtMoney(stateTax)} | Total: ${fmtMoney(stateTotal)}`,
+            `   - Tasa ilustrativa de 6% para artículos gravables: Impuesto: ${fmtMoney(stdTax)} | Total: ${fmtMoney(stdTotal)}`,
+            `   - Tasa ilustrativa seleccionada (${stateName} - ${stateRate}%): Impuesto: ${fmtMoney(stateTax)} | Total: ${fmtMoney(stateTotal)}`,
             taxReflect ? `   - Reflexión: ${taxReflect}` : "",
             "",
             "👥 PASO 4 — COMPARACIÓN CON COMPAÑERO",
@@ -4000,7 +3911,7 @@
           lines = [
             "═══ POP-UP SHOP OWNER — UNIT 4 PROJECT (Version A) ═══",
             "",
-            "📖 MATH SKILLS USED: Percents, Discount Options, Unit Rates, Sales Tax",
+            "📖 MATH SKILLS USED: Percents, Discount Options, Unit Rates, Illustrative Sales Tax",
             "",
             "🏷️ STEP 1 — SET YOUR PRICES & DISCOUNTS",
             `   1. ${i1Name}: Original: ${fmtMoney(i1Price)} | 10% Off: ${fmtMoney(i1_10_pay)} | 20% Off: ${fmtMoney(i1_20_pay)} | 25% Off: ${fmtMoney(i1_25_pay)}`,
@@ -4014,8 +3925,8 @@
             "",
             "🧾 STEP 3 — SALES TAX COMPARISON",
             `   - Subtotal: ${fmtMoney(taxSub)}`,
-            `   - Standard 6% Sales Tax: Tax: ${fmtMoney(stdTax)} | Total: ${fmtMoney(stdTotal)}`,
-            `   - Selected State (${stateName} - ${stateRate}%): Tax: ${fmtMoney(stateTax)} | Total: ${fmtMoney(stateTotal)}`,
+            `   - Illustrative 6% Taxable-Item Rate: Tax: ${fmtMoney(stdTax)} | Total: ${fmtMoney(stdTotal)}`,
+            `   - Selected Illustrative Rate (${stateName} - ${stateRate}%): Tax: ${fmtMoney(stateTax)} | Total: ${fmtMoney(stateTotal)}`,
             taxReflect ? `   - Reflection: ${taxReflect}` : "",
             "",
             "👥 STEP 4 — PARTNER COMPARISON",
@@ -4132,110 +4043,6 @@
       updateProgress();
       loadState();
 
-      function toggleGradingConsole() {
-        const el = document.getElementById("teacher-console");
-        if (el) {
-          el.classList.toggle("show");
-          if (el.classList.contains("show")) updateGradingAnswers();
-        }
-      }
-
-      function prefillGradingConsole() {
-        // Populate the real student inputs with worked example values so the
-        // console shows a live, correct set of expected answers.
-        const samples = {
-          "i1-orig": 20,
-          "i2-orig": 15,
-          "i3-orig": 8,
-          "da-qty": 3,
-          "da-price": 7.5,
-          "db-qty": 2,
-          "db-price": 5.2,
-          "tax-sub": 40,
-        };
-        for (const [id, val] of Object.entries(samples)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event("input", { bubbles: true }));
-            el.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const num = (id) => parseFloat(document.getElementById(id)?.value);
-          const money = (n) => (isNaN(n) ? "—" : "$" + n.toFixed(2));
-          const resolver = function () {
-            const out = {};
-
-            // Step 1 — Discount table for the student's Item 1 price.
-            const i1 = num("i1-orig");
-            if (!isNaN(i1) && i1 > 0) {
-              out["Item 1 price"] = money(i1);
-              out["Item 1 — 10% off (pay)"] = money(i1 * 0.9);
-              out["Item 1 — 20% off (pay)"] = money(i1 * 0.8);
-              out["Item 1 — 25% off (pay)"] = money(i1 * 0.75);
-            }
-
-            // Step 2 — Unit-rate deals (cost ÷ quantity), lower rate wins.
-            const daQ = num("da-qty"),
-              daP = num("da-price"),
-              dbQ = num("db-qty"),
-              dbP = num("db-price");
-            if (daQ > 0 && daP > 0 && dbQ > 0 && dbP > 0) {
-              const rA = daP / daQ,
-                rB = dbP / dbQ;
-              out["Deal A unit rate"] = money(rA) + "/item";
-              out["Deal B unit rate"] = money(rB) + "/item";
-              out["Better deal"] =
-                Math.abs(rA - rB) < 0.005 ? "Equal" : rA < rB ? "Deal A" : "Deal B";
-            }
-
-            // Step 3 — Sales tax (standard 6% + selected state).
-            const sub = num("tax-sub");
-            const stateSel = document.getElementById("tax-state");
-            if (!isNaN(sub) && sub > 0) {
-              out["Standard 6% tax"] = money(sub * 0.06);
-              out["Total (6%)"] = money(sub * 1.06);
-              if (stateSel) {
-                const rate = parseFloat(stateSel.value) || 0;
-                const label = stateSel.options[stateSel.selectedIndex].text;
-                out["Selected state"] = label;
-                out["State tax"] = money(sub * (rate / 100));
-                out["Total (state)"] = money(sub * (1 + rate / 100));
-              }
-            }
-
-            if (Object.keys(out).length === 0) {
-              out["No student inputs yet"] = "Enter values or click Prefill Sample Answers";
-            }
-            return out;
-          };
-          const ans = resolver();
-          const body = document.getElementById("teacher-answers-body");
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans)
-              .map(
-                ([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `,
-              )
-              .join("");
-          }
-        } catch (e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-
-      // Teacher console reveal: obscure triple-click on the page title only
-      // (the old Ctrl+Shift+T combo hijacked the browser's reopen-tab shortcut).
-
       window.exportStudentBackup = function () {
         try {
           const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
@@ -4291,7 +4098,6 @@
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === "function") updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
@@ -4301,73 +4107,9 @@
         };
         reader.readAsText(file);
       };
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const titleEl = document.querySelector(".hero h1");
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener("click", function () {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => {
-              clicks = 0;
-            }, 1000);
-          });
-        }
-        // Re-calculate teacher answers live as the student edits real inputs.
-        document.addEventListener("input", function (e) {
-          const inputs = ["i1-orig", "da-qty", "da-price", "db-qty", "db-price", "tax-sub"];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-        // Also refresh when the tax state dropdown changes.
-        document.addEventListener("change", function (e) {
-          if (e.target.id === "tax-state") updateGradingAnswers();
-        });
-      });
     </script>
+    <input type="file" id="student-backup-file-input" hidden onchange="importStudentBackup(event)" accept=".json" />
 
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
-        Calculated dynamically based on student inputs:
-      </p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display: flex; gap: 6px; margin-top: 6px">
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #059669"
-          onclick="exportStudentBackup()"
-        >
-          📥 Export JSON
-        </button>
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #7c3aed"
-          onclick="triggerImportStudentBackup()"
-        >
-          📤 Import JSON
-        </button>
-      </div>
-      <input
-        type="file"
-        id="student-backup-file-input"
-        style="display: none"
-        onchange="importStudentBackup(event)"
-        accept=".json"
-      />
-    </div>
 
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>

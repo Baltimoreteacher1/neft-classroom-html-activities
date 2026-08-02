@@ -740,94 +740,6 @@
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
-
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        width: 330px;
-        max-height: 480px;
-        overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        padding: 16px;
-        color: #f8fafc;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        box-shadow:
-          0 10px 25px -5px rgba(0, 0, 0, 0.3),
-          0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        display: none;
-        box-sizing: border-box;
-        text-align: left;
-      }
-      #teacher-console.show {
-        display: block;
-      }
-      #teacher-console h4 {
-        margin: 0 0 8px 0;
-        color: #38bdf8;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      #teacher-console .close-btn {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0 4px;
-        line-height: 1;
-      }
-      #teacher-console .close-btn:hover {
-        color: #f1f5f9;
-      }
-      #teacher-console table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-      #teacher-console td {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-      }
-      #teacher-console .lbl {
-        font-weight: 600;
-        color: #94a3b8;
-      }
-      #teacher-console .val {
-        font-weight: 700;
-        text-align: right;
-        color: #38bdf8;
-        word-break: break-all;
-      }
-      #teacher-console .prefill-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: #0284c7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      #teacher-console .prefill-btn:hover {
-        background: #0369a1;
-      }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1647,12 +1559,15 @@
             <span class="en-text"
               ><strong>Your job:</strong> Enter what you'll spend on food, decorations, and
               activities. Add them up, then divide by the number of guests to find the cost per
-              person.</span
+              person. Your block party has a <strong>$200 budget ceiling</strong>; use the
+              calculator to show how much remains or how far the plan is over budget.</span
             >
             <span class="es-text"
               ><strong>Tu trabajo:</strong> Ingresa lo que gastarás en comida, decoraciones y
               actividades. Súmalos y luego divídelos por el número de invitados para encontrar el
-              costo por persona.</span
+              costo por persona. Tu fiesta de cuadra tiene un <strong>límite de presupuesto de
+              $200</strong>; usa la calculadora para mostrar cuánto queda o cuánto excede el
+              plan el presupuesto.</span
             >
           </div>
 
@@ -2285,8 +2200,8 @@
             </li>
             <li>
               <input type="checkbox" id="ck3" />
-              <span class="en-text">I calculated my total budget and cost per guest.</span
-              ><span class="es-text">Calculé mi presupuesto total y el costo por invitado.</span>
+              <span class="en-text">I compared my total with the $200 ceiling and found the remaining balance and cost per guest.</span
+              ><span class="es-text">Comparé mi total con el límite de $200 y encontré el saldo restante y el costo por invitado.</span>
             </li>
             <li>
               <input type="checkbox" id="ck4" />
@@ -2352,8 +2267,8 @@
               <tr>
                 <td><strong>Decimal Budget</strong></td>
                 <td>
-                  <span class="en-text">All costs correct, within budget</span>
-                  <span class="es-text">Todos los costos correctos, dentro del presupuesto</span>
+                  <span class="en-text">All costs correct; compares total with the $200 ceiling and shows the balance</span>
+                  <span class="es-text">Todos los costos correctos; compara el total con el límite de $200 y muestra el saldo</span>
                 </td>
                 <td>
                   <span class="en-text">Total is accurate</span>
@@ -2888,6 +2803,7 @@
 
       // ---- Budget ----
       function calcBudget() {
+        const budgetCeiling = 200;
         const food = parseFloat(document.getElementById("c-food").value) || 0;
         const deco = parseFloat(document.getElementById("c-deco").value) || 0;
         const act = parseFloat(document.getElementById("c-act").value) || 0;
@@ -2905,14 +2821,25 @@
           return;
         }
         const perGuest = total / guests;
+        const balance = budgetCeiling - total;
+        const budgetStatusEn =
+          balance >= 0
+            ? `Remaining balance: <strong>$${balance.toFixed(2)}</strong>`
+            : `Over budget by: <strong>$${Math.abs(balance).toFixed(2)}</strong>`;
+        const budgetStatusEs =
+          balance >= 0
+            ? `Saldo restante: <strong>$${balance.toFixed(2)}</strong>`
+            : `Excede el presupuesto por: <strong>$${Math.abs(balance).toFixed(2)}</strong>`;
         showReadout(
           "budget-out",
           `
           <span class="en-text"><strong>Total cost: $${total.toFixed(2)}</strong><br>
           Cost per guest: <strong>$${perGuest.toFixed(2)}</strong> (${total.toFixed(2)} ÷ ${guests} guests)<br>
+          $200 budget ceiling − $${total.toFixed(2)} total = ${budgetStatusEn}<br>
           <small>Food $${food.toFixed(2)} + Decorations $${deco.toFixed(2)} + Activities $${act.toFixed(2)} = $${total.toFixed(2)}</small></span>
           <span class="es-text"><strong>Costo total: $${total.toFixed(2)}</strong><br>
           Costo por invitado: <strong>$${perGuest.toFixed(2)}</strong> (${total.toFixed(2)} ÷ ${guests} invitados)<br>
+          Límite de $200 − total de $${total.toFixed(2)} = ${budgetStatusEs}<br>
           <small>Comida $${food.toFixed(2)} + Decoraciones $${deco.toFixed(2)} + Actividades $${act.toFixed(2)} = $${total.toFixed(2)}</small></span>
         `,
         );
@@ -2973,6 +2900,7 @@
         const pReflect = document.getElementById("peer-reflect").value;
         const worldNote = document.getElementById("world-compare").value;
         const total = (parseFloat(food) || 0) + (parseFloat(deco) || 0) + (parseFloat(act) || 0);
+        const balance = 200 - total;
         const perGuest = guests ? (total / parseFloat(guests)).toFixed(2) : "—";
         const g = gcfA && gcfB ? gcd(parseInt(gcfA), parseInt(gcfB)) : "—";
         const l = lcmA && lcmB ? lcm(parseInt(lcmA), parseInt(lcmB)) : "—";
@@ -2995,6 +2923,7 @@
             "💵 PASO 3 — PRESUPUESTO",
             `   Comida: $${food || "—"} | Decoraciones: $${deco || "—"} | Actividades: $${act || "—"}`,
             `   Total: $${total.toFixed(2)} | Invitados: ${guests || "—"}`,
+            `   Límite: $200.00 | ${balance >= 0 ? "Saldo restante" : "Exceso"}: $${Math.abs(balance).toFixed(2)}`,
             `   Costo por invitado: $${perGuest}`,
             worldNote ? `   Comparación del mundo real: ${worldNote}` : "",
             "",
@@ -3025,6 +2954,7 @@
             "💵 STEP 3 — BUDGET",
             `   Food: $${food || "—"} | Decorations: $${deco || "—"} | Activities: $${act || "—"}`,
             `   Total: $${total.toFixed(2)} | Guests: ${guests || "—"}`,
+            `   Ceiling: $200.00 | ${balance >= 0 ? "Remaining balance" : "Amount over"}: $${Math.abs(balance).toFixed(2)}`,
             `   Cost per guest: $${perGuest}`,
             worldNote ? `   Real-world comparison: ${worldNote}` : "",
             "",
@@ -3073,101 +3003,6 @@
       // ---- Init ----
       buildTrail();
       updateProgress();
-
-      function toggleGradingConsole() {
-        const el = document.getElementById("teacher-console");
-        if (el) {
-          el.classList.toggle("show");
-          if (el.classList.contains("show")) updateGradingAnswers();
-        }
-      }
-
-      function prefillGradingConsole() {
-        const presets = {
-          "g-stickers": 24,
-          "g-bars": 36,
-          "l-music": 5,
-          "l-bubble": 7,
-        };
-        for (const [id, val] of Object.entries(presets)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event("input", { bubbles: true }));
-            el.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        // Also prefill student calculation answers
-        if (document.getElementById("student-gcf-input")) {
-          document.getElementById("student-gcf-input").value =
-            document.getElementById("student-gcf-input").min || 1;
-          document
-            .getElementById("student-gcf-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        if (document.getElementById("student-lcm-input")) {
-          document.getElementById("student-lcm-input").value =
-            document.getElementById("student-lcm-input").min || 1;
-          document
-            .getElementById("student-lcm-input")
-            .dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const resolver = function () {
-            const a = parseInt(document.getElementById("g-stickers").value) || 24;
-            const b = parseInt(document.getElementById("g-bars").value) || 36;
-            const lm = parseInt(document.getElementById("l-music").value) || 5;
-            const lb = parseInt(document.getElementById("l-bubble").value) || 7;
-            const food = parseFloat(document.getElementById("c-food").value) || 0;
-            const deco = parseFloat(document.getElementById("c-deco").value) || 0;
-            const act = parseFloat(document.getElementById("c-act").value) || 0;
-            const guests = parseInt(document.getElementById("c-guests").value) || 25;
-
-            const g = gcd(a, b);
-            const l = lcm(lm, lb);
-            const total = food + deco + act;
-            const perGuest = guests ? (total / guests).toFixed(2) : "0.00";
-
-            return {
-              "GCF (Bags count)": g,
-              "Stickers per bag": Math.floor(a / g),
-              "Bars per bag": Math.floor(b / g),
-              "Distributive Property": `${g}(${a / g} + ${b / g})`,
-              "LCM (Sync min)": l,
-              "Total Budget": "$" + total.toFixed(2),
-              "Cost per Guest": "$" + perGuest,
-            };
-          };
-          const ans = resolver();
-          const body = document.getElementById("teacher-answers-body");
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans)
-              .map(
-                ([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `,
-              )
-              .join("");
-          }
-        } catch (e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
-      document.addEventListener("keydown", function (e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
 
       window.exportStudentBackup = function () {
         try {
@@ -3224,7 +3059,6 @@
                 }
               }
               alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === "function") updateGradingAnswers();
             } else {
               alert("Invalid backup file structure.");
             }
@@ -3234,78 +3068,9 @@
         };
         reader.readAsText(file);
       };
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const titleEl = document.querySelector(".hero h1");
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener("click", function () {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => {
-              clicks = 0;
-            }, 1000);
-          });
-        }
-        // Re-calculate answers when input event fires
-        document.addEventListener("input", function (e) {
-          const inputs = [
-            "g-stickers",
-            "g-bars",
-            "l-music",
-            "l-bubble",
-            "c-food",
-            "c-deco",
-            "c-act",
-            "c-guests",
-          ];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
     </script>
+    <input type="file" id="student-backup-file-input" hidden onchange="importStudentBackup(event)" accept=".json" />
 
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
-        Calculated dynamically based on student inputs:
-      </p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display: flex; gap: 6px; margin-top: 6px">
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #059669"
-          onclick="exportStudentBackup()"
-        >
-          📥 Export JSON
-        </button>
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #7c3aed"
-          onclick="triggerImportStudentBackup()"
-        >
-          📤 Import JSON
-        </button>
-      </div>
-      <input
-        type="file"
-        id="student-backup-file-input"
-        style="display: none"
-        onchange="importStudentBackup(event)"
-        accept=".json"
-      />
-    </div>
 
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>

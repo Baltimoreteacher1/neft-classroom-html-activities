@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Validate every solve-along.json across the 22 unit culminating-project
+ * Validate every solve-along.json across all unit culminating-project
  * wizard pages. This is the correctness gate for the SOLVE-ALONG layer:
  *
  *   1. Each file parses and matches the schema (version, solves[]).
@@ -20,6 +20,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 
 const UNITS = [...Array.from({ length: 10 }, (_, i) => `unit-${i + 1}`), "statistics"];
+
+function versionsOf(unit) {
+  const projects = path.join(ROOT, "math", unit, "projects");
+  if (!fs.existsSync(projects)) return [];
+  return fs
+    .readdirSync(projects, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && /^version-[a-z]$/.test(entry.name))
+    .map((entry) => entry.name)
+    .sort();
+}
 
 /* Evaluate a strict arithmetic expression: digits, . + - * / ( ) and spaces
    only. No identifiers, no calls — safe to Function-eval. */
@@ -51,7 +61,7 @@ let practiceItems = 0;
 let errorCards = 0;
 
 for (const u of UNITS) {
-  for (const v of ["version-a", "version-b"]) {
+  for (const v of versionsOf(u)) {
     const rel = `math/${u}/projects/${v}/solve-along.json`;
     const file = path.join(ROOT, rel);
     if (!fs.existsSync(file)) continue;

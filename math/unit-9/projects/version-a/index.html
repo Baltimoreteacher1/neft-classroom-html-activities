@@ -740,94 +740,6 @@
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
-
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        width: 330px;
-        max-height: 480px;
-        overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        padding: 16px;
-        color: #f8fafc;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        box-shadow:
-          0 10px 25px -5px rgba(0, 0, 0, 0.3),
-          0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        display: none;
-        box-sizing: border-box;
-        text-align: left;
-      }
-      #teacher-console.show {
-        display: block;
-      }
-      #teacher-console h4 {
-        margin: 0 0 8px 0;
-        color: #38bdf8;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      #teacher-console .close-btn {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0 4px;
-        line-height: 1;
-      }
-      #teacher-console .close-btn:hover {
-        color: #f1f5f9;
-      }
-      #teacher-console table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-      #teacher-console td {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-      }
-      #teacher-console .lbl {
-        font-weight: 600;
-        color: #94a3b8;
-      }
-      #teacher-console .val {
-        font-weight: 700;
-        text-align: right;
-        color: #38bdf8;
-        word-break: break-all;
-      }
-      #teacher-console .prefill-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: #0284c7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      #teacher-console .prefill-btn:hover {
-        background: #0369a1;
-      }
           .lvl0-only { display: none; }
       body.level-0 .lvl0-only { display: block; }
     </style>
@@ -1157,13 +1069,14 @@
 
           <div class="instruct pink">
             <span class="en-text"
-              ><strong>Your job:</strong> Enter a name for your streaming channel, pick a realistic
-              weekly growth rate (k), and identify your independent and dependent variables.</span
+              ><strong>Your job:</strong> Enter a name, choose a weekly rate for a simplified model,
+              and identify the variables. Your equation assumes the same number of new subscribers
+              every week; it is a mathematical scenario, not a promise about actual channel growth.</span
             >
             <span class="es-text"
-              ><strong>Tu trabajo:</strong> Ingresa un nombre para tu canal de streaming, elige una
-              tasa de crecimiento semanal realista (k) e identifica tus variables independientes y
-              dependientes.</span
+              ><strong>Tu trabajo:</strong> Ingresa un nombre, elige una tasa semanal para un modelo
+              simplificado e identifica las variables. La ecuación supone el mismo número de nuevos
+              suscriptores cada semana; es un escenario matemático, no una promesa de crecimiento real.</span
             >
           </div>
 
@@ -1614,9 +1527,9 @@
                 <span class="es-text">Paso 3 — Lee y analiza tu gráfica</span>
               </h2>
               <div class="card-sub">
-                <span class="en-text">Plot points and compare against real growth tiers</span>
+                <span class="en-text">Plot points and state the constant-growth assumption</span>
                 <span class="es-text"
-                  >Dibuja los puntos y compáralos con los niveles de crecimiento reales</span
+                  >Dibuja los puntos y explica la suposición de crecimiento constante</span
                 >
               </div>
             </div>
@@ -1624,13 +1537,14 @@
 
           <div class="instruct gold">
             <span class="en-text"
-              ><strong>Your job:</strong> Analyze the graph of your channel growth below and compare
-              your metrics to real-world creator standards.</span
+              ><strong>Your job:</strong> Analyze what the graph predicts <em>if</em> the chosen
+              weekly rate stays constant. Actual audiences can grow unevenly, so label every future
+              value as a model prediction.</span
             >
             <span class="es-text"
-              ><strong>Tu trabajo:</strong> Analiza la gráfica del crecimiento de tu canal a
-              continuación y compara tus métricas con los estándares de creadores del mundo
-              real.</span
+              ><strong>Tu trabajo:</strong> Analiza lo que predice la gráfica <em>si</em> la tasa
+              semanal se mantiene constante. Las audiencias reales crecen de manera irregular;
+              etiqueta cada valor futuro como predicción del modelo.</span
             >
           </div>
 
@@ -1687,16 +1601,15 @@
 
           <div style="margin-top: 20px">
             <h3 style="font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 6px">
-              <span class="en-text">🌎 Real-World Creator Growth Tiers</span>
-              <span class="es-text">🌎 Niveles de crecimiento de creadores en el mundo real</span>
+              <span class="en-text">🧮 Illustrative Constant-Growth Scenarios</span>
+              <span class="es-text">🧮 Escenarios ilustrativos de crecimiento constante</span>
             </h3>
             <p style="font-size: 14px; color: var(--muted); margin-bottom: 8px">
               <span class="en-text"
-                >Real-world average monthly growth rates for streaming channels and creators:</span
+                >These invented ranges are for comparing slopes, not reported creator averages:</span
               >
               <span class="es-text"
-                >Tasas promedio de crecimiento mensual en el mundo real para canales de streaming y
-                creadores:</span
+                >Estos rangos inventados sirven para comparar pendientes; no son promedios publicados de creadores:</span
               >
             </p>
 
@@ -1762,24 +1675,24 @@
                   <td>500 – 2,000 / month</td>
                   <td>115 – 460 / week</td>
                   <td>
-                    <span class="en-text">Full-time streaming career benchmark.</span>
+                    <span class="en-text">Invented steep-line scenario for slope comparison.</span>
                     <span class="es-text"
-                      >Punto de referencia para una carrera de streaming a tiempo completo.</span
+                      >Escenario inventado de línea inclinada para comparar pendientes.</span
                     >
                   </td>
                 </tr>
                 <tr>
                   <td>
                     <strong>
-                      <span class="en-text">🔥 Viral Sensation</span>
-                      <span class="es-text">🔥 Sensación viral</span>
+                      <span class="en-text">🔥 Very Steep Linear Scenario</span>
+                      <span class="es-text">🔥 Escenario lineal muy inclinado</span>
                     </strong>
                   </td>
                   <td>2,000+ / month</td>
                   <td>460+ / week</td>
                   <td>
-                    <span class="en-text">Exponential viral growth.</span>
-                    <span class="es-text">Crecimiento viral exponencial.</span>
+                    <span class="en-text">Still constant linear growth in this model—not exponential.</span>
+                    <span class="es-text">Sigue siendo crecimiento lineal constante, no exponencial.</span>
                   </td>
                 </tr>
               </tbody>
@@ -1789,12 +1702,10 @@
 
             <label class="lbl" for="world-reflect">
               <span class="en-text"
-                >🌎 Real-World Reflection: How realistic is your weekly growth rate for a brand new
-                channel?</span
+                >🧮 Model Reflection: What constant-rate assumption does your weekly rate make, and why might actual growth differ?</span
               >
               <span class="es-text"
-                >🌎 Reflexión sobre el mundo real: ¿Qué tan realista es tu tasa de crecimiento
-                semanal para un canal completamente nuevo?</span
+                >🧮 Reflexión del modelo: ¿Qué supone tu tasa constante y por qué podría diferir el crecimiento real?</span
               >
             </label>
             <textarea
@@ -2839,26 +2750,26 @@
         if (monthly < 50) {
           tier = isEs ? "Creador aficionado" : "Hobbyist Creator";
           tierDesc = isEs
-            ? "Tu canal está creciendo de manera constante a un ritmo de aficionado. ¡Excelente para creadores principiantes!"
-            : "Your channel is growing steadily at a hobbyist pace. Great for beginning creators!";
+            ? "En este escenario inventado, la línea tiene una pendiente pequeña y constante."
+            : "In this invented scenario, the line has a small constant slope.";
           emoji = "🎮";
         } else if (monthly < 500) {
           tier = isEs ? "Estrella en ascenso" : "Rising Star";
           tierDesc = isEs
-            ? "¡Eres una estrella en ascenso! Construyendo una comunidad dedicada semana tras semana."
-            : "You are a Rising Star! Building a dedicated community week over week.";
+            ? "En este escenario inventado, la línea tiene una pendiente mediana y constante."
+            : "In this invented scenario, the line has a medium constant slope.";
           emoji = "✨";
         } else if (monthly < 2000) {
           tier = isEs ? "Creador profesional" : "Professional Creator";
           tierDesc = isEs
-            ? "¡Punto de referencia profesional! Altas exigencias semanales que coinciden con creadores a tiempo completo."
-            : "Professional benchmark! High weekly demands matching full-time creators.";
+            ? "En este escenario inventado, la línea tiene una pendiente grande y constante."
+            : "In this invented scenario, the line has a large constant slope.";
           emoji = "👔";
         } else {
-          tier = isEs ? "Sensación viral" : "Viral Sensation";
+          tier = isEs ? "Escenario lineal muy inclinado" : "Very Steep Linear Scenario";
           tierDesc = isEs
-            ? "¡Crecimiento viral! Métricas exponenciales, atrae patrocinadores rápidamente."
-            : "Viral growth! Exponential metrics, attract sponsors rapidly.";
+            ? "La pendiente es muy grande, pero el modelo sigue siendo lineal y condicional."
+            : "The slope is very large, but the model remains linear and conditional.";
           emoji = "🔥";
         }
 
@@ -3389,204 +3300,7 @@
       updateProgress();
       selfTest();
 
-      function toggleGradingConsole() {
-        const el = document.getElementById("teacher-console");
-        if (el) {
-          el.classList.toggle("show");
-          if (el.classList.contains("show")) updateGradingAnswers();
-        }
-      }
-
-      function prefillGradingConsole() {
-        const presets = { "c-rate": 15 };
-        for (const [id, val] of Object.entries(presets)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event("input", { bubbles: true }));
-            el.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const resolver = function () {
-            const k = parseInt(document.getElementById("c-rate").value) || CONFIG.defaultGrowthRate;
-            const isLevel2 = document.getElementById("body").classList.contains("level-2");
-            const b = isLevel2 ? parseInt(document.getElementById("c-start").value) || 0 : 0;
-            const eq = isLevel2 ? `y = ${k}x + ${b}` : `y = ${k}x`;
-            return {
-              "Independent variable (x)": "Time in weeks",
-              "Dependent variable (y)": "Total subscribers",
-              "Growth rate k (subs/week)": String(k),
-              "Head start b (Level 2)": isLevel2 ? String(b) : "n/a (Level 1)",
-              Equation: eq,
-              "Subscribers at week 5": String(k * 5 + b),
-              "Weeks to reach 1,000": k > 0 ? ((CONFIG.targetMilestone - b) / k).toFixed(1) : "—",
-            };
-          };
-          const ans = resolver();
-          const body = document.getElementById("teacher-answers-body");
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans)
-              .map(
-                ([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `,
-              )
-              .join("");
-          }
-        } catch (e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-
-      // Teacher-only reveal: requires ?teacher in the URL, then Alt+Shift+K.
-      // (Avoids hijacking Ctrl+Shift+T and keeps the console away from students.)
-      function teacherModeEnabled() {
-        return /[?&]teacher\b/.test(window.location.search);
-      }
-      document.addEventListener("keydown", function (e) {
-        if (teacherModeEnabled() && e.altKey && e.shiftKey && e.key.toLowerCase() === "k") {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
-
-      window.exportStudentBackup = function () {
-        try {
-          const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
-          const inputs = {};
-          document.querySelectorAll("input, textarea, select").forEach((el) => {
-            if (el.id) inputs[el.id] = el.value;
-          });
-          const metadata = {
-            schemaVersion: 1,
-            studentName: document.getElementById("student-name")?.value || "Student",
-            section: document.getElementById("class-period")?.value || "Class",
-            activityId: window.NeftSaveResumeConfig?.activityId || "project",
-            activityTitle: document.title,
-            timestamp: new Date().toISOString(),
-            inputs: inputs,
-            state: state,
-          };
-
-          const dataStr =
-            "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(metadata, null, 2));
-          const dlAnchor = document.createElement("a");
-          dlAnchor.setAttribute("href", dataStr);
-          dlAnchor.setAttribute(
-            "download",
-            `${metadata.studentName.replace(/\s+/g, "_")}_${metadata.activityId}_backup.json`,
-          );
-          document.body.appendChild(dlAnchor);
-          dlAnchor.click();
-          dlAnchor.remove();
-        } catch (e) {
-          alert("Export failed: " + e.message);
-        }
-      };
-
-      window.triggerImportStudentBackup = function () {
-        document.getElementById("student-backup-file-input").click();
-      };
-
-      window.importStudentBackup = function (event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          try {
-            const data = JSON.parse(e.target.result);
-            if (data && data.inputs) {
-              for (const [id, val] of Object.entries(data.inputs)) {
-                const el = document.getElementById(id);
-                if (el) {
-                  el.value = val;
-                  el.dispatchEvent(new Event("input", { bubbles: true }));
-                  el.dispatchEvent(new Event("change", { bubbles: true }));
-                }
-              }
-              alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === "function") updateGradingAnswers();
-            } else {
-              alert("Invalid backup file structure.");
-            }
-          } catch (err) {
-            alert("Error parsing backup file: " + err.message);
-          }
-        };
-        reader.readAsText(file);
-      };
-
-      document.addEventListener("DOMContentLoaded", function () {
-        // Triple-click reveal only when teacher mode is enabled (?teacher).
-        const titleEl = document.querySelector(".hero h1");
-        if (titleEl && teacherModeEnabled()) {
-          let clicks = 0;
-          titleEl.addEventListener("click", function () {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => {
-              clicks = 0;
-            }, 1000);
-          });
-        }
-        // Re-calculate answers when input event fires
-        document.addEventListener("input", function (e) {
-          const inputs = ["c-rate", "c-start"];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
     </script>
-
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
-        Calculated dynamically based on student inputs:
-      </p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display: flex; gap: 6px; margin-top: 6px">
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #059669"
-          onclick="exportStudentBackup()"
-        >
-          📥 Export JSON
-        </button>
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #7c3aed"
-          onclick="triggerImportStudentBackup()"
-        >
-          📤 Import JSON
-        </button>
-      </div>
-      <input
-        type="file"
-        id="student-backup-file-input"
-        style="display: none"
-        onchange="importStudentBackup(event)"
-        accept=".json"
-      />
-    </div>
 
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>

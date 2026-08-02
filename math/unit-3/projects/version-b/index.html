@@ -732,94 +732,6 @@
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
-
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        width: 330px;
-        max-height: 480px;
-        overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        padding: 16px;
-        color: #f8fafc;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        box-shadow:
-          0 10px 25px -5px rgba(0, 0, 0, 0.3),
-          0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        display: none;
-        box-sizing: border-box;
-        text-align: left;
-      }
-      #teacher-console.show {
-        display: block;
-      }
-      #teacher-console h4 {
-        margin: 0 0 8px 0;
-        color: #38bdf8;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      #teacher-console .close-btn {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0 4px;
-        line-height: 1;
-      }
-      #teacher-console .close-btn:hover {
-        color: #f1f5f9;
-      }
-      #teacher-console table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-      #teacher-console td {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-      }
-      #teacher-console .lbl {
-        font-weight: 600;
-        color: #94a3b8;
-      }
-      #teacher-console .val {
-        font-weight: 700;
-        text-align: right;
-        color: #38bdf8;
-        word-break: break-all;
-      }
-      #teacher-console .prefill-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: #0284c7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      #teacher-console .prefill-btn:hover {
-        background: #0369a1;
-      }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1061,10 +973,10 @@
               </div>
               <div class="vocab-def">
                 <span class="en-text"
-                  >Using a constant rate to predict future stats or results.</span
+                  >Using an assumed constant rate to estimate future stats or results.</span
                 >
                 <span class="es-text"
-                  >Usar una tasa constante para predecir estadísticas o resultados futuros.</span
+                  >Usar una tasa constante supuesta para estimar estadísticas o resultados futuros.</span
                 >
               </div>
               <div class="vocab-ex">
@@ -1478,9 +1390,9 @@
                 <span class="es-text">Paso 2 — Proyectar el Rendimiento de la Temporada</span>
               </h2>
               <div class="card-sub">
-                <span class="en-text">Predict season stats over 10, 20, 40, and 80 games</span>
+                <span class="en-text">Estimate stats over 10, 20, 40, and 80 games</span>
                 <span class="es-text"
-                  >Predice estadísticas de la temporada en 10, 20, 40 y 80 juegos</span
+                  >Estima estadísticas de la temporada en 10, 20, 40 y 80 juegos</span
                 >
               </div>
             </div>
@@ -1488,14 +1400,13 @@
 
           <div class="instruct teal">
             <span class="en-text"
-              ><strong>Your job:</strong> How many points will your athlete score in a full season?
-              Convert their points per minute to points per game, and then project their performance
-              using a ratio table.</span
+              ><strong>Your job:</strong> What point total does a constant-rate model estimate?
+              Convert points per minute to points per game, then build a ratio-table projection.</span
             >
             <span class="es-text"
-              ><strong>Tu trabajo:</strong> ¿Cuántos puntos anotará tu atleta en una temporada
-              completa? Convierte sus puntos por minuto a puntos por juego, y luego proyecta su
-              rendimiento usando una tabla de razones.</span
+              ><strong>Tu trabajo:</strong> ¿Qué total de puntos estima un modelo de tasa constante?
+              Convierte los puntos por minuto a puntos por juego y crea una proyección con una
+              tabla de razones.</span
             >
           </div>
 
@@ -1712,13 +1623,12 @@
           </div>
           <div class="lvl1-only instruct teal">
             <span class="en-text"
-              >🟢 <strong>Level 1 tip:</strong> Standard youth games are 20 minutes long. Pro games
-              are 32 minutes (or 48 minutes in the NBA). Try a 20-minute average game length.</span
+              >🟢 <strong>Level 1 tip:</strong> Game lengths vary by league and age group. For this
+              classroom model, try a 20-minute game length.</span
             >
             <span class="es-text"
-              >🟢 <strong>Consejo de Nivel 1:</strong> Los juegos estándar de jóvenes duran 20
-              minutos. Los juegos profesionales duran 32 minutos (o 48 minutos en la NBA). Prueba
-              con un promedio de duración de juego de 20 minutos.</span
+              >🟢 <strong>Consejo de Nivel 1:</strong> La duración de los juegos varía según la liga
+              y el grupo de edad. Para este modelo de clase, prueba con 20 minutos por juego.</span
             >
           </div>
 
@@ -1773,15 +1683,19 @@
                 Step 1) by the minutes per game. Then, multiply the PPG by 10, 20, 40, and 80 to
                 scale the points scored.<br /><strong>Example:</strong> If a player averages 1.5
                 points per minute and plays 20 minutes, they average 30 PPG. Over 10 games, they
-                will score 30 × 10 = 300 points.</span
+                project to 30 × 10 = 300 points.</span
               >
               <span class="es-text"
                 >Primero, encuentra los Puntos Por Juego (PPG) multiplicando los puntos por minuto
                 (del Paso 1) por los minutos por juego. Luego, multiplica el PPG por 10, 20, 40 y 80
                 para escalar los puntos anotados.<br /><strong>Ejemplo:</strong> Si un jugador
                 promedia 1.5 puntos por minuto y juega 20 minutos, promedia 30 PPG. En 10 juegos,
-                anotará 30 × 10 = 300 puntos.</span
+                la proyección es 30 × 10 = 300 puntos.</span
               >
+            </p>
+            <p style="font-size: 14px; margin-top: 8px">
+              <span class="en-text"><strong>Model limitation:</strong> This projection assumes the same scoring rate and minutes in every game. Opponents, roles, playing time, injuries, and game rules can change actual results.</span>
+              <span class="es-text"><strong>Limitación del modelo:</strong> Esta proyección supone la misma tasa de anotación y los mismos minutos en cada juego. Los oponentes, roles, tiempo de juego, lesiones y reglas pueden cambiar los resultados reales.</span>
             </p>
           </details>
         </div>
@@ -1812,10 +1726,10 @@
               </h2>
               <div class="card-sub">
                 <span class="en-text"
-                  >Find the better average and compare against youth benchmarks</span
+                  >Compare averages and use a fictional youth dataset</span
                 >
                 <span class="es-text"
-                  >Encuentra el mejor promedio y compáralo con las referencias de jóvenes</span
+                  >Compara promedios y usa un conjunto de datos juvenil ficticio</span
                 >
               </div>
             </div>
@@ -1824,13 +1738,13 @@
           <div class="instruct gold">
             <span class="en-text"
               ><strong>Your job:</strong> Compare two players' stats to find who has the better
-              average points per game. Then compare your athlete's rate to real youth averages
-              around the world.</span
+              average points per game. Then compare your athlete's rate with the fictional,
+              anonymized classroom dataset below.</span
             >
             <span class="es-text"
               ><strong>Tu trabajo:</strong> Compara las estadísticas de dos jugadores para encontrar
               quién tiene el mejor promedio de puntos por juego. Luego compara la tasa de tu atleta
-              con los promedios reales de jóvenes en el mundo.</span
+              con el conjunto de datos ficticio y anonimizado de la clase.</span
             >
           </div>
 
@@ -2078,18 +1992,22 @@
           <!-- Youth Player Averages comparison -->
           <div style="margin-top: 22px">
             <h3 style="font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 6px">
-              <span class="en-text">🌎 Real Youth Player Benchmarks</span>
-              <span class="es-text">🌎 Referencias Reales de Jugadores Jóvenes</span>
+              <span class="en-text">🌎 Fictional Youth Scoring Dataset</span>
+              <span class="es-text">🌎 Conjunto de Datos Ficticio de Anotación Juvenil</span>
             </h3>
             <p style="font-size: 14px; color: var(--muted); margin-bottom: 6px">
               <span class="en-text"
-                >Here are real average points-per-game (PPG) rates for youth league players around
-                the world.</span
+                >These names, countries, and PPG values are fictional and anonymized for classroom
+                math practice; they are not records of real children.</span
               >
               <span class="es-text"
-                >Aquí están las tasas reales promedio de puntos por juego (PPG) para jugadores de
-                ligas juveniles de todo el mundo.</span
+                >Estos nombres, países y valores de PPG son ficticios y están anonimizados para la
+                práctica matemática; no son registros de menores reales.</span
               >
+            </p>
+            <p style="font-size: 14px; color: var(--muted); margin-bottom: 6px">
+              <span class="en-text">PPG alone does not measure overall ability and should not be compared across leagues without matching age group, rules, game length, role, and playing time.</span>
+              <span class="es-text">Los PPG por sí solos no miden la capacidad total y no deben compararse entre ligas sin igualar el grupo de edad, las reglas, la duración del juego, el rol y el tiempo de juego.</span>
             </p>
 
             <table class="data-table">
@@ -2548,9 +2466,9 @@
             </li>
             <li>
               <input type="checkbox" id="ck4" />
-              <span class="en-text">I compared my athlete to real youth average benchmarks.</span
+              <span class="en-text">I compared my athlete to the fictional dataset and stated its limits.</span
               ><span class="es-text"
-                >Comparé a mi atleta con referencias reales del promedio de jóvenes.</span
+                >Comparé a mi atleta con el conjunto ficticio y expliqué sus límites.</span
               >
             </li>
             <li>
@@ -3734,13 +3652,10 @@
         buildTrail();
         setLevel(1);
 
-        // Setup change event listeners to auto-recalc
         document.getElementById("ath-name").addEventListener("input", calcUnitRate);
         document.getElementById("ath-pts").addEventListener("input", calcUnitRate);
         document.getElementById("ath-min").addEventListener("input", calcUnitRate);
-
         document.getElementById("proj-mpg").addEventListener("input", calcSeasonProject);
-
         document.getElementById("comp-p1-name").addEventListener("input", calcCompareAverages);
         document.getElementById("comp-p1-pts").addEventListener("input", calcCompareAverages);
         document.getElementById("comp-p1-games").addEventListener("input", calcCompareAverages);
@@ -3750,211 +3665,19 @@
         document
           .getElementById("world-player-select")
           .addEventListener("change", calcCompareAverages);
-
         document.getElementById("part-name").addEventListener("input", calcPartnerCompare);
         document.getElementById("part-ath-name").addEventListener("input", calcPartnerCompare);
         document.getElementById("part-pts").addEventListener("input", calcPartnerCompare);
         document.getElementById("part-games").addEventListener("input", calcPartnerCompare);
         document.getElementById("part-common-games").addEventListener("input", calcPartnerCompare);
 
-        // Run initial calculations
         calcUnitRate();
         calcSeasonProject();
         renderCompareScenario();
         calcPartnerCompare();
       });
-
-      function toggleGradingConsole() {
-        const el = document.getElementById("teacher-console");
-        if (el) {
-          el.classList.toggle("show");
-          if (el.classList.contains("show")) updateGradingAnswers();
-        }
-      }
-
-      function prefillGradingConsole() {
-        // Prefill the real Version B Step 1 example inputs (Level-1 scaffold values)
-        const presets = { "ath-name": "Steph Curry", "ath-pts": 60, "ath-min": 30 };
-        for (const [id, val] of Object.entries(presets)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event("input", { bubbles: true }));
-            el.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const resolver = function () {
-            const pts = parseFloat(document.getElementById("ath-pts").value) || 60;
-            const min = parseFloat(document.getElementById("ath-min").value) || 30;
-            const rate = min ? (pts / min).toFixed(2) : "0";
-            return {
-              "Points scored": pts,
-              "Minutes played": min,
-              "Points per Minute (unit rate)": rate,
-              "Projected in 10 min": (rate * 10).toFixed(2) + " pts",
-              "Projected in 30 min": (rate * 30).toFixed(2) + " pts",
-            };
-          };
-          const ans = resolver();
-          const body = document.getElementById("teacher-answers-body");
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans)
-              .map(
-                ([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `,
-              )
-              .join("");
-          }
-        } catch (e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-
-      // Wire up key listener (Alt+Shift+G — non-hijacking) and triple click on h1
-      document.addEventListener("keydown", function (e) {
-        if (e.altKey && e.shiftKey && e.key.toLowerCase() === "g") {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
-
-      window.exportStudentBackup = function () {
-        try {
-          const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
-          const inputs = {};
-          document.querySelectorAll("input, textarea, select").forEach((el) => {
-            if (el.id) inputs[el.id] = el.value;
-          });
-          const metadata = {
-            schemaVersion: 1,
-            studentName: document.getElementById("student-name")?.value || "Student",
-            section: document.getElementById("class-period")?.value || "Class",
-            activityId: window.NeftSaveResumeConfig?.activityId || "project",
-            activityTitle: document.title,
-            timestamp: new Date().toISOString(),
-            inputs: inputs,
-            state: state,
-          };
-
-          const dataStr =
-            "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(metadata, null, 2));
-          const dlAnchor = document.createElement("a");
-          dlAnchor.setAttribute("href", dataStr);
-          dlAnchor.setAttribute(
-            "download",
-            `${metadata.studentName.replace(/\s+/g, "_")}_${metadata.activityId}_backup.json`,
-          );
-          document.body.appendChild(dlAnchor);
-          dlAnchor.click();
-          dlAnchor.remove();
-        } catch (e) {
-          alert("Export failed: " + e.message);
-        }
-      };
-
-      window.triggerImportStudentBackup = function () {
-        document.getElementById("student-backup-file-input").click();
-      };
-
-      window.importStudentBackup = function (event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          try {
-            const data = JSON.parse(e.target.result);
-            if (data && data.inputs) {
-              for (const [id, val] of Object.entries(data.inputs)) {
-                const el = document.getElementById(id);
-                if (el) {
-                  el.value = val;
-                  el.dispatchEvent(new Event("input", { bubbles: true }));
-                  el.dispatchEvent(new Event("change", { bubbles: true }));
-                }
-              }
-              alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === "function") updateGradingAnswers();
-            } else {
-              alert("Invalid backup file structure.");
-            }
-          } catch (err) {
-            alert("Error parsing backup file: " + err.message);
-          }
-        };
-        reader.readAsText(file);
-      };
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const titleEl = document.querySelector(".hero h1");
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener("click", function () {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => {
-              clicks = 0;
-            }, 1000);
-          });
-        }
-        // Re-calculate answers when input event fires
-        document.addEventListener("input", function (e) {
-          const inputs = ["ath-pts", "ath-min"];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
     </script>
 
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
-        Calculated dynamically based on student inputs:
-      </p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display: flex; gap: 6px; margin-top: 6px">
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #059669"
-          onclick="exportStudentBackup()"
-        >
-          📥 Export JSON
-        </button>
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #7c3aed"
-          onclick="triggerImportStudentBackup()"
-        >
-          📤 Import JSON
-        </button>
-      </div>
-      <input
-        type="file"
-        id="student-backup-file-input"
-        style="display: none"
-        onchange="importStudentBackup(event)"
-        accept=".json"
-      />
-    </div>
 
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>

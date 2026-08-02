@@ -736,94 +736,6 @@
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
-
-      /* ---- Teacher Diagnostics Console ---- */
-      #teacher-console {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 10000;
-        width: 330px;
-        max-height: 480px;
-        overflow-y: auto;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        padding: 16px;
-        color: #f8fafc;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        box-shadow:
-          0 10px 25px -5px rgba(0, 0, 0, 0.3),
-          0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        display: none;
-        box-sizing: border-box;
-        text-align: left;
-      }
-      #teacher-console.show {
-        display: block;
-      }
-      #teacher-console h4 {
-        margin: 0 0 8px 0;
-        color: #38bdf8;
-        font-size: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      #teacher-console .close-btn {
-        background: transparent;
-        border: none;
-        color: #94a3b8;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0 4px;
-        line-height: 1;
-      }
-      #teacher-console .close-btn:hover {
-        color: #f1f5f9;
-      }
-      #teacher-console table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-      #teacher-console td {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
-      }
-      #teacher-console .lbl {
-        font-weight: 600;
-        color: #94a3b8;
-      }
-      #teacher-console .val {
-        font-weight: 700;
-        text-align: right;
-        color: #38bdf8;
-        word-break: break-all;
-      }
-      #teacher-console .prefill-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: #0284c7;
-        border: none;
-        border-radius: 6px;
-        padding: 8px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      #teacher-console .prefill-btn:hover {
-        background: #0369a1;
-      }
           .lvl0-only { display: none; }
       body.level-0 .lvl0-only { display: block; }
     </style>
@@ -1235,12 +1147,12 @@
             <!-- Offline Spec Sheet Fallback -->
             <details style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:10px 14px; margin-bottom:14px;">
               <summary style="font-weight:700; cursor:pointer; color:var(--navy);">
-                <span class="en-text">📋 Quick Fundraiser Benchmark Sheet (Offline Mode)</span>
-                <span class="es-text">📋 Hoja de Referencia de Recaudación (Modo Desconectado)</span>
+                <span class="en-text">📋 Illustrative Fundraiser Scenario (Offline)</span>
+                <span class="es-text">📋 Escenario ilustrativo de recaudación (sin conexión)</span>
               </summary>
               <div style="font-size:13px; color:#334155; margin-top:8px; line-height:1.5;">
-                • <strong>Classroom Project Goal:</strong> $500 to $2,500 (e.g., band equipment, STEM field trip, room library).<br>
-                • <strong>Starting Funds Raised:</strong> $150 to $800.<br>
+                • <strong>Invented project-goal range:</strong> $500 to $2,500.<br>
+                • <strong>Invented starting-funds range:</strong> $150 to $800.<br>
                 • <strong>Addition Equation:</strong> <em>Current Raised + Remaining Needed = Total Goal</em> (e.g., $350 + x = $1,200).
               </div>
             </details>
@@ -1634,15 +1546,15 @@
 
           <div class="instruct gold">
             <span class="en-text"
-              ><strong>Your job:</strong> Your class will sell fundraiser products to raise the
-              remaining needed funds. Write and solve a multiplication equation to find the number
-              of items (<strong>n</strong>) to sell.</span
+              ><strong>Your job:</strong> Use <em>net proceeds per item = selling price − item cost</em>.
+              Write and solve an equation for the whole number of items (<strong>n</strong>) needed
+              so net proceeds reach or exceed the remaining goal.</span
             >
             <span class="es-text"
               ><strong>Tu trabajo:</strong> Tu clase venderá productos de recaudación de fondos para
-              obtener los fondos restantes necesarios. Escribe y resuelve una ecuación de
-              multiplicación para encontrar la cantidad de artículos (<strong>n</strong>) a
-              vender.</span
+              obtener los fondos restantes. Usa <em>ganancia neta por artículo = precio de venta − costo del artículo</em>.
+              Escribe y resuelve una ecuación para hallar el número entero de artículos (<strong>n</strong>)
+              cuya ganancia neta alcance o supere la meta restante.</span
             >
           </div>
 
@@ -1691,9 +1603,9 @@
               <span class="es-text">🍩 Elige un artículo para vender</span>
             </label>
             <select id="sales-item-select" onchange="updateLvl1Item()">
-              <option value="Popcorn" data-price="5">🍿 Popcorn ($5.00 each)</option>
-              <option value="Cookie Dough" data-price="8">🍪 Cookie Dough ($8.00 each)</option>
-              <option value="Candy Bars" data-price="2">🍫 Candy Bars ($2.00 each)</option>
+              <option value="Popcorn" data-price="5" data-cost="2">🍿 Popcorn (sell $5.00; costs $2.00)</option>
+              <option value="Cookie Dough" data-price="8" data-cost="4">🍪 Cookie Dough (sell $8.00; costs $4.00)</option>
+              <option value="Candy Bars" data-price="2" data-cost="1">🍫 Candy Bars (sell $2.00; costs $1.00)</option>
             </select>
           </div>
 
@@ -1713,8 +1625,8 @@
               </div>
               <div>
                 <label class="lbl" for="sales-price-input">
-                  <span class="en-text">💵 Price Per Item ($)</span>
-                  <span class="es-text">💵 Precio por artículo ($)</span>
+                  <span class="en-text">💵 Selling Price Per Item ($)</span>
+                  <span class="es-text">💵 Precio de venta por artículo ($)</span>
                 </label>
                 <input
                   type="number"
@@ -1725,11 +1637,24 @@
                   oninput="updateLvl2Item()"
                 />
               </div>
+              <div>
+                <label class="lbl" for="sales-cost-input">
+                  <span class="en-text">📦 Cost Per Item ($)</span>
+                  <span class="es-text">📦 Costo por artículo ($)</span>
+                </label>
+                <input type="number" id="sales-cost-input" value="2" min="0" step="0.5" oninput="updateLvl2Item()" />
+              </div>
             </div>
           </div>
 
           <!-- Hidden active price state -->
           <input type="hidden" id="sales-price" value="5" />
+          <input type="hidden" id="sales-cost" value="2" />
+
+          <div class="instruct gold" style="margin-top: 8px">
+            <span class="en-text"><strong>Modeling rule:</strong> only net proceeds count toward the goal. For the popcorn preset, $5 selling price − $2 item cost = <strong>$3 net per item</strong>. Therefore <code>3n ≥ 320</code> models “at least enough,” while <code>3n = 320</code> finds the break-even boundary before rounding up.</span>
+            <span class="es-text"><strong>Regla del modelo:</strong> solo la ganancia neta cuenta para la meta. Para las palomitas, $5 de venta − $2 de costo = <strong>$3 netos por artículo</strong>. Por eso <code>3n ≥ 320</code> modela “al menos suficiente”, mientras <code>3n = 320</code> encuentra el límite antes de redondear hacia arriba.</span>
+          </div>
 
           <div class="grid2" style="margin-top: 8px">
             <div>
@@ -1741,8 +1666,8 @@
             </div>
             <div>
               <label class="lbl" for="sales-eq-input">
-                <span class="en-text">✍️ Write multiplication equation (e.g. 5n = 320)</span>
-                <span class="es-text">✍️ Escribe la ecuación de multiplicación (ej. 5n = 320)</span>
+                <span class="en-text">✍️ Write the net-proceeds equation (e.g. 3n = 320)</span>
+                <span class="es-text">✍️ Escribe la ecuación de ganancia neta (ej. 3n = 320)</span>
               </label>
               <input type="text" id="sales-eq-input" placeholder="" />
             </div>
@@ -1776,18 +1701,17 @@
           <!-- Real-world benchmarks -->
           <div style="margin-top: 24px; border-top: 1px solid var(--line); padding-top: 16px">
             <h3 style="font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 6px">
-              <span class="en-text">🌎 Real-World School Fundraiser Benchmarks</span>
+              <span class="en-text">🧮 Illustrative School Fundraiser Scenarios</span>
               <span class="es-text"
-                >🌎 Puntos de referencia de recaudación de fondos escolares en el mundo real</span
+                >🧮 Escenarios ilustrativos de recaudación escolar</span
               >
             </h3>
             <p style="font-size: 14px; color: var(--muted); margin-bottom: 10px">
               <span class="en-text"
-                >Compare your class target to typical fundraising amounts in US schools:</span
+                >These invented gross-total ranges are for comparison practice only. Actual net proceeds depend on costs, fees, returns, and your local campaign:</span
               >
               <span class="es-text"
-                >Compara el objetivo de tu clase con las cantidades típicas de recaudación de fondos
-                en las escuelas de EE. UU.:</span
+                >Estos rangos brutos inventados son solo para practicar comparaciones. La ganancia neta real depende de costos, tarifas, devoluciones y tu campaña local:</span
               >
             </p>
             <table class="data-table">
@@ -1798,8 +1722,8 @@
                     <span class="es-text">Tipo de recaudación</span>
                   </th>
                   <th>
-                    <span class="en-text">Typical Total Raised</span>
-                    <span class="es-text">Total típico recaudado</span>
+                    <span class="en-text">Illustrative Gross Total</span>
+                    <span class="es-text">Total bruto ilustrativo</span>
                   </th>
                   <th>
                     <span class="en-text">Level Best Suited For</span>
@@ -1845,7 +1769,7 @@
             </table>
             <label class="lbl" for="benchmark-compare">
               <span class="en-text"
-                >Where does your goal fit in these benchmarks? Write 1-2 sentences.</span
+                >Where does your goal fit in these illustrative scenarios? Write 1–2 sentences and distinguish gross sales from net proceeds.</span
               >
               <span class="es-text"
                 >¿Dónde encaja tu meta en estos puntos de referencia? Escribe 1 o 2 oraciones.</span
@@ -1853,7 +1777,7 @@
             </label>
             <textarea
               id="benchmark-compare"
-              placeholder="My fundraiser goal is $___. According to typical school benchmarks, this level of goal is best for..."
+              placeholder="My goal is $___. In the illustrative table it fits ___. My net-proceeds plan is..."
             ></textarea>
           </div>
 
@@ -2107,7 +2031,7 @@
             <li>
               <input type="checkbox" id="ck6" />
               <span class="en-text"
-                >I compared my class goal to classmate and real-world school benchmarks.</span
+                >I compared my plan with a classmate and the clearly labeled illustrative scenarios.</span
               >
               <span class="es-text"
                 >Comparé la meta de mi clase con la de un compañero/a y con puntos de referencia
@@ -2918,6 +2842,7 @@
         const select = document.getElementById("sales-item-select");
         const opt = select.options[select.selectedIndex];
         document.getElementById("sales-price").value = opt.getAttribute("data-price");
+        document.getElementById("sales-cost").value = opt.getAttribute("data-cost");
 
         document.getElementById("sales-eq-out").classList.remove("show");
         document.getElementById("sales-sol-out").classList.remove("show");
@@ -2926,7 +2851,9 @@
       // ---- Level 2 Toggle Sync ----
       function updateLvl2Item() {
         const price = parseFloat(document.getElementById("sales-price-input").value) || 5;
+        const cost = parseFloat(document.getElementById("sales-cost-input").value) || 0;
         document.getElementById("sales-price").value = price;
+        document.getElementById("sales-cost").value = cost;
 
         document.getElementById("sales-eq-out").classList.remove("show");
         document.getElementById("sales-sol-out").classList.remove("show");
@@ -2938,6 +2865,8 @@
         const raised = parseFloat(document.getElementById("fg-raised").value) || 180;
         const remaining = goal - raised;
         const price = parseFloat(document.getElementById("sales-price").value) || 5;
+        const cost = parseFloat(document.getElementById("sales-cost").value) || 0;
+        const net = Number((price - cost).toFixed(2));
         const varName = (document.getElementById("sales-var").value || "n").trim().toLowerCase();
         const eqRaw = (document.getElementById("sales-eq-input").value || "")
           .replace(/\s+/g, "")
@@ -2953,12 +2882,16 @@
 
         const eqNorm = eqRaw.replace(/\*/g, "");
 
-        const v1 = `${price}${varName}=${remaining}`;
-        const v2 = `${varName}${price}=${remaining}`;
-        const v3 = `${remaining}=${price}${varName}`;
-        const v4 = `${remaining}=${varName}${price}`;
-        const v5 = `${remaining}/${price}=${varName}`;
-        const v6 = `${varName}=${remaining}/${price}`;
+        if (net <= 0) {
+          showReadout("sales-eq-out", `<span class="en-text">⚠️ Selling price must be greater than item cost so net proceeds are positive.</span><span class="es-text">⚠️ El precio de venta debe ser mayor que el costo para que la ganancia neta sea positiva.</span>`);
+          return;
+        }
+        const v1 = `${net}${varName}=${remaining}`;
+        const v2 = `${varName}${net}=${remaining}`;
+        const v3 = `${remaining}=${net}${varName}`;
+        const v4 = `${remaining}=${varName}${net}`;
+        const v5 = `${remaining}/${net}=${varName}`;
+        const v6 = `${varName}=${remaining}/${net}`;
 
         const isValid = [v1, v2, v3, v4, v5, v6].includes(eqNorm);
 
@@ -2967,8 +2900,8 @@
           showReadout(
             "sales-eq-out",
             `
-            <span class="en-text">✅ <strong>Correct!</strong> Your multiplication equation models the sales required correctly.</span>
-            <span class="es-text">✅ <strong>¡Correcto!</strong> Tu ecuación de multiplicación modela correctamente las ventas requeridas.</span>
+            <span class="en-text">✅ <strong>Correct!</strong> Your equation uses $${net.toFixed(2)} net proceeds per item.</span>
+            <span class="es-text">✅ <strong>¡Correcto!</strong> Tu ecuación usa $${net.toFixed(2)} de ganancia neta por artículo.</span>
           `,
           );
         } else {
@@ -2994,8 +2927,8 @@
             showReadout(
               "sales-eq-out",
               `
-            <span class="en-text">Here's the worked path: relate item price (<strong>$${price}</strong>), item count (<strong>${varName}</strong>), and amount needed (<strong>$${remaining}</strong>).<br>Example: <code>${price}${varName} = ${remaining}</code></span>
-            <span class="es-text">Aquí está el camino resuelto: relaciona el precio del artículo (<strong>$${price}</strong>), la cantidad de artículos (<strong>${varName}</strong>) y la cantidad necesaria (<strong>$${remaining}</strong>).<br>Ejemplo: <code>${price}${varName} = ${remaining}</code></span>
+            <span class="en-text">Here's the worked path: $${price} selling price − $${cost} cost = <strong>$${net} net per item</strong>.<br>Example: <code>${net}${varName} = ${remaining}</code></span>
+            <span class="es-text">Camino resuelto: $${price} de venta − $${cost} de costo = <strong>$${net} netos por artículo</strong>.<br>Ejemplo: <code>${net}${varName} = ${remaining}</code></span>
           `,
             );
           }
@@ -3008,6 +2941,8 @@
         const raised = parseFloat(document.getElementById("fg-raised").value) || 180;
         const remaining = goal - raised;
         const price = parseFloat(document.getElementById("sales-price").value) || 5;
+        const cost = parseFloat(document.getElementById("sales-cost").value) || 0;
+        const net = Number((price - cost).toFixed(2));
         const varName = document.getElementById("sales-var").value || "n";
         const solVal = parseFloat(document.getElementById("sales-sol-input").value);
 
@@ -3019,7 +2954,11 @@
           return;
         }
 
-        const exact = remaining / price;
+        if (net <= 0) {
+          showReadout("sales-sol-out", `<span class="en-text">⚠️ Net proceeds must be positive.</span><span class="es-text">⚠️ La ganancia neta debe ser positiva.</span>`);
+          return;
+        }
+        const exact = remaining / net;
         const neededItems = Math.ceil(exact);
 
         if (Math.abs(solVal - exact) < 0.01 || solVal === neededItems) {
@@ -3027,17 +2966,17 @@
           let htmlEn = `
             ✅ <strong>Correct! Solution is ${varName} = ${solVal}</strong><br>
             <strong style="color:#86efac">Step-by-step Solution:</strong><br>
-            1. Equation: <code>${price}${varName} = ${remaining}</code><br>
-            2. Divide both sides by ${price} (Division Property of Equality):<br>
-               <code>${varName} = ${remaining} / ${price}</code><br>
+            1. Net per item: <code>${price} − ${cost} = ${net}</code><br>
+            2. Boundary equation: <code>${net}${varName} = ${remaining}</code>; divide by ${net}:<br>
+               <code>${varName} = ${remaining} / ${net}</code><br>
             3. Simplify: <code>${varName} = ${exact.toFixed(2)}</code>
           `;
           let htmlEs = `
             ✅ <strong>¡Correcto! La solución es ${varName} = ${solVal}</strong><br>
             <strong style="color:#86efac">Solución paso a paso:</strong><br>
-            1. Ecuación: <code>${price}${varName} = ${remaining}</code><br>
-            2. Divide ambos lados por ${price} (Propiedad de la división de la igualdad):<br>
-               <code>${varName} = ${remaining} / ${price}</code><br>
+            1. Neto por artículo: <code>${price} − ${cost} = ${net}</code><br>
+            2. Ecuación límite: <code>${net}${varName} = ${remaining}</code>; divide por ${net}:<br>
+               <code>${varName} = ${remaining} / ${net}</code><br>
             3. Simplifica: <code>${varName} = ${exact.toFixed(2)}</code>
           `;
 
@@ -3068,16 +3007,16 @@
             showReadout(
               "sales-sol-out",
               `
-            <span class="en-text">❌ <strong>Still not quite.</strong> Divide the remaining amount needed ($${remaining}) by the item price ($${price}), then double-check your division.</span>
-            <span class="es-text">❌ <strong>Todavía no.</strong> Divide la cantidad restante necesaria ($${remaining}) por el precio del artículo ($${price}), y vuelve a revisar tu división.</span>
+            <span class="en-text">❌ <strong>Still not quite.</strong> First subtract $${cost} cost from $${price} selling price, then divide $${remaining} by the $${net} net proceeds.</span>
+            <span class="es-text">❌ <strong>Todavía no.</strong> Primero resta $${cost} de costo de $${price} de venta y luego divide $${remaining} por los $${net} netos.</span>
           `,
             );
           } else {
             showReadout(
               "sales-sol-out",
               `
-            <span class="en-text">Here's the worked path: <code>${varName} = ${remaining} / ${price} = ${exact.toFixed(2)}</code>${neededItems !== exact ? ` — round up to <strong>${neededItems}</strong> items since you can't sell a partial item.` : ""}</span>
-            <span class="es-text">Aquí está el camino resuelto: <code>${varName} = ${remaining} / ${price} = ${exact.toFixed(2)}</code>${neededItems !== exact ? ` — redondea a <strong>${neededItems}</strong> artículos ya que no puedes vender un artículo parcial.` : ""}</span>
+            <span class="en-text">Here's the worked path: <code>${varName} = ${remaining} / ${net} = ${exact.toFixed(2)}</code>${neededItems !== exact ? ` — round up to <strong>${neededItems}</strong> items so <code>${net}${varName} ≥ ${remaining}</code>.` : ""}</span>
+            <span class="es-text">Camino resuelto: <code>${varName} = ${remaining} / ${net} = ${exact.toFixed(2)}</code>${neededItems !== exact ? ` — redondea a <strong>${neededItems}</strong> para que <code>${net}${varName} ≥ ${remaining}</code>.` : ""}</span>
           `,
             );
           }
@@ -3182,11 +3121,13 @@
           : document.getElementById("sales-item-select").value ||
             (isEs ? "Palomitas de maíz" : "Popcorn");
         const price = parseFloat(document.getElementById("sales-price").value) || 5;
+        const cost = parseFloat(document.getElementById("sales-cost").value) || 0;
+        const net = Number((price - cost).toFixed(2));
         const varSales = document.getElementById("sales-var").value || "n";
         const salesEq =
-          document.getElementById("sales-eq-input").value || `${price}${varSales} = ${remaining}`;
+          document.getElementById("sales-eq-input").value || `${net}${varSales} = ${remaining}`;
         const salesItems =
-          document.getElementById("sales-sol-input").value || Math.ceil(remaining / price);
+          document.getElementById("sales-sol-input").value || Math.ceil(remaining / net);
         const benchmarkNote = document.getElementById("benchmark-compare").value || "";
 
         const partner = document.getElementById("p-name").value || "";
@@ -3219,7 +3160,7 @@
             `   Desigualdad: ${ineqEq}`,
             "",
             "🧮 PASO 3 — VENTAS DE ARTÍCULOS (ECUACIONES DE MULTIPLICACIÓN)",
-            `   Artículo a vender: ${item} | Precio: $${price.toFixed(2)}`,
+            `   Artículo: ${item} | Venta: $${price.toFixed(2)} | Costo: $${cost.toFixed(2)} | Neto: $${net.toFixed(2)}`,
             `   Ecuación: ${salesEq}`,
             `   Solución: ${varSales} = ${salesItems} artículos a vender`,
             benchmarkNote ? `   Comparación con puntos de referencia: ${benchmarkNote}` : "",
@@ -3254,7 +3195,7 @@
             `   Inequality: ${ineqEq}`,
             "",
             "🧮 STEP 3 — ITEM SALES (MULTIPLICATION EQUATIONS)",
-            `   Item to Sell: ${item} | Price: $${price.toFixed(2)}`,
+            `   Item: ${item} | Sell: $${price.toFixed(2)} | Cost: $${cost.toFixed(2)} | Net: $${net.toFixed(2)}`,
             `   Equation: ${salesEq}`,
             `   Solution: ${varSales} = ${salesItems} items to sell`,
             benchmarkNote ? `   Benchmark Comparison: ${benchmarkNote}` : "",
@@ -3304,7 +3245,7 @@
         "sales-eq-input": { en: "", es: "" },
         "sales-sol-input": { en: "", es: "" },
         "benchmark-compare": {
-          en: "My fundraiser goal is $___. According to typical school benchmarks, this level of goal is best for...",
+          en: "My goal is $___. In the illustrative table it fits ___. My net-proceeds plan is...",
           es: "La meta de mi recaudación es $___. Según los puntos de referencia escolares típicos, este nivel de meta es mejor para...",
         },
         "p-name": { en: "", es: "" },
@@ -3461,195 +3402,7 @@
       drawNumberLine();
       updatePlaceholders("en");
 
-      function toggleGradingConsole() {
-        const el = document.getElementById("teacher-console");
-        if (el) {
-          el.classList.toggle("show");
-          if (el.classList.contains("show")) updateGradingAnswers();
-        }
-      }
-
-      function prefillGradingConsole() {
-        // Ids must match the page's fundraiser inputs (fg-goal / fg-raised).
-        const presets = { "fg-goal": 500, "fg-raised": 180 };
-        for (const [id, val] of Object.entries(presets)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.value = val;
-            el.dispatchEvent(new Event("input", { bubbles: true }));
-            el.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        updateGradingAnswers();
-      }
-
-      function updateGradingAnswers() {
-        try {
-          const resolver = function () {
-            const g = parseFloat(document.getElementById("fg-goal")?.value) || 500;
-            const e = parseFloat(document.getElementById("fg-raised")?.value) || 180;
-            return {
-              "Goal amount": "$" + g.toFixed(2),
-              "Earned amount": "$" + e.toFixed(2),
-              "Equation (e + r = g)": `${e} + r = ${g}`,
-              "Remaining amount (r)": "$" + (g - e).toFixed(2),
-            };
-          };
-          const ans = resolver();
-          const body = document.getElementById("teacher-answers-body");
-          if (body && ans) {
-            body.innerHTML = Object.entries(ans)
-              .map(
-                ([k, v]) => `
-              <tr>
-                <td class="lbl">${k}</td>
-                <td class="val">${v}</td>
-              </tr>
-            `,
-              )
-              .join("");
-          }
-        } catch (e) {
-          console.error("Grading resolver error", e);
-        }
-      }
-
-      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
-      document.addEventListener("keydown", function (e) {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
-          e.preventDefault();
-          toggleGradingConsole();
-        }
-      });
-
-      window.exportStudentBackup = function () {
-        try {
-          const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
-          const inputs = {};
-          document.querySelectorAll("input, textarea, select").forEach((el) => {
-            if (el.id) inputs[el.id] = el.value;
-          });
-          const metadata = {
-            schemaVersion: 1,
-            studentName: document.getElementById("student-name")?.value || "Student",
-            section: document.getElementById("class-period")?.value || "Class",
-            activityId: window.NeftSaveResumeConfig?.activityId || "project",
-            activityTitle: document.title,
-            timestamp: new Date().toISOString(),
-            inputs: inputs,
-            state: state,
-          };
-
-          const dataStr =
-            "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(metadata, null, 2));
-          const dlAnchor = document.createElement("a");
-          dlAnchor.setAttribute("href", dataStr);
-          dlAnchor.setAttribute(
-            "download",
-            `${metadata.studentName.replace(/\s+/g, "_")}_${metadata.activityId}_backup.json`,
-          );
-          document.body.appendChild(dlAnchor);
-          dlAnchor.click();
-          dlAnchor.remove();
-        } catch (e) {
-          alert("Export failed: " + e.message);
-        }
-      };
-
-      window.triggerImportStudentBackup = function () {
-        document.getElementById("student-backup-file-input").click();
-      };
-
-      window.importStudentBackup = function (event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          try {
-            const data = JSON.parse(e.target.result);
-            if (data && data.inputs) {
-              for (const [id, val] of Object.entries(data.inputs)) {
-                const el = document.getElementById(id);
-                if (el) {
-                  el.value = val;
-                  el.dispatchEvent(new Event("input", { bubbles: true }));
-                  el.dispatchEvent(new Event("change", { bubbles: true }));
-                }
-              }
-              alert("Successfully imported student backup!");
-              if (typeof updateGradingAnswers === "function") updateGradingAnswers();
-            } else {
-              alert("Invalid backup file structure.");
-            }
-          } catch (err) {
-            alert("Error parsing backup file: " + err.message);
-          }
-        };
-        reader.readAsText(file);
-      };
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const titleEl = document.querySelector(".hero h1");
-        if (titleEl) {
-          let clicks = 0;
-          titleEl.addEventListener("click", function () {
-            clicks++;
-            if (clicks >= 3) {
-              toggleGradingConsole();
-              clicks = 0;
-            }
-            setTimeout(() => {
-              clicks = 0;
-            }, 1000);
-          });
-        }
-        // Re-calculate answers when input event fires
-        document.addEventListener("input", function (e) {
-          const inputs = ["goal-amt", "earned-amt"];
-          if (inputs.includes(e.target.id)) {
-            updateGradingAnswers();
-          }
-        });
-      });
     </script>
-
-    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
-    <div id="teacher-console" class="no-print">
-      <h4>
-        <span>🔑 Teacher Grading Console</span>
-        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
-      </h4>
-      <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px">
-        Calculated dynamically based on student inputs:
-      </p>
-      <table>
-        <tbody id="teacher-answers-body"></tbody>
-      </table>
-      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
-      <div style="display: flex; gap: 6px; margin-top: 6px">
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #059669"
-          onclick="exportStudentBackup()"
-        >
-          📥 Export JSON
-        </button>
-        <button
-          class="prefill-btn"
-          style="margin-top: 0; background: #7c3aed"
-          onclick="triggerImportStudentBackup()"
-        >
-          📤 Import JSON
-        </button>
-      </div>
-      <input
-        type="file"
-        id="student-backup-file-input"
-        style="display: none"
-        onchange="importStudentBackup(event)"
-        accept=".json"
-      />
-    </div>
 
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
     <script src="/shared/projects/projects-pro.js" defer></script>
