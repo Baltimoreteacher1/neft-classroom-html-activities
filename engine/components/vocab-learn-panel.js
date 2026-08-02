@@ -48,6 +48,176 @@ function openVisualLightbox(imgSrc, captionText) {
   document.body.append(modal);
 }
 
+/**
+ * Resolve or derive the appropriate interactive math tool configuration for any lesson.
+ * Supports factor trees, prime factorization, LCM/GCF, area transformations, 3D solids/nets,
+ * fraction division, decimal operations, percents, exponents, ratios, and algebra.
+ */
+export function resolveInteractiveToolForLesson(config) {
+  const cfg = config || {};
+
+  // 1. Check for explicitly authored interactive visual tool
+  const authored =
+    cfg.conceptIntro?.interactiveVisual ||
+    cfg.interactiveVisual ||
+    cfg.visualModel ||
+    cfg.explore?.visual ||
+    null;
+
+  if (authored && typeof authored === "object" && authored.kind) {
+    return authored;
+  }
+
+  // 2. Derive interactive tool from lesson title, standard, or content objective
+  const text = `${cfg.title || ""} ${cfg.standard || ""} ${cfg.contentObjective || ""} ${cfg.objective || ""}`.toLowerCase();
+
+  // Factor Trees & Prime Factorization
+  if (text.includes("factor tree") || text.includes("prime factor") || text.includes("prime factorization") || text.includes("factorization")) {
+    return {
+      kind: "factor-tree-lab",
+      number: 36,
+      label: "Interactive Factor Tree Explorer: Build prime factorizations step-by-step!",
+    };
+  }
+
+  // Greatest Common Factor (GCF) / Least Common Multiple (LCM)
+  if (text.includes("least common multiple") || text.includes("lcm")) {
+    return {
+      kind: "lcm-lab",
+      num1: 6,
+      num2: 8,
+      label: "Interactive LCM Explorer: Tap shared multiples to find the LCM!",
+    };
+  }
+
+  if (text.includes("greatest common factor") || text.includes("gcf")) {
+    return {
+      kind: "factor-tree-lab",
+      number: 48,
+      label: "Interactive GCF & Factor Tree Explorer",
+    };
+  }
+
+  // Exponents & Powers
+  if (text.includes("exponent") || text.includes("power") || text.includes("base")) {
+    return {
+      kind: "power-builder",
+      base: 2,
+      exponent: 4,
+      label: "Interactive Powers & Exponents Builder",
+    };
+  }
+
+  // Multiply / Divide Fractions
+  if (text.includes("divide fraction") || text.includes("fraction division") || text.includes("dividing fraction")) {
+    return {
+      kind: "fraction-divide",
+      num1: "3/4",
+      num2: "1/2",
+      label: "Interactive Fraction Division: Keep, Change, Flip!",
+    };
+  }
+
+  if (text.includes("tape diagram") || text.includes("ratio")) {
+    return {
+      kind: "tape-diagram",
+      parts: [3, 5],
+      labels: ["Quantity A", "Quantity B"],
+      label: "Interactive Tape Diagram Explorer",
+    };
+  }
+
+  // Decimal Operations
+  if (text.includes("divide decimal") || text.includes("decimal division")) {
+    return {
+      kind: "decimal-quotient",
+      label: "Interactive Decimal Division Tool",
+    };
+  }
+
+  if (text.includes("multiply decimal") || text.includes("decimal multiplication")) {
+    return {
+      kind: "decimal-product",
+      label: "Interactive Decimal Multiplication Tool",
+    };
+  }
+
+  if (text.includes("add decimal") || text.includes("subtract decimal") || text.includes("decimal")) {
+    return {
+      kind: "decimal-columns",
+      label: "Interactive Decimal Columns & Regrouping Tool",
+    };
+  }
+
+  // Area & Geometry
+  if (text.includes("area of") || text.includes("parallelogram") || text.includes("triangle area") || text.includes("trapezoid")) {
+    return {
+      kind: "area-morph",
+      shape: text.includes("triangle") ? "triangle" : text.includes("trapezoid") ? "trapezoid" : "parallelogram",
+      label: "Interactive Area Morph & Transformation Explorer",
+    };
+  }
+
+  // 3D Solids & Nets
+  if (text.includes("net") || text.includes("surface area") || text.includes("3d") || text.includes("prism") || text.includes("pyramid")) {
+    return {
+      kind: "solid-3d",
+      shape: text.includes("pyramid") ? "triangular-pyramid" : text.includes("triangular") ? "triangular-prism" : "cube",
+      label: "Interactive 3D Solid & Net Explorer",
+    };
+  }
+
+  // Percent Grid & Percent Builder
+  if (text.includes("percent") || text.includes("percentage")) {
+    return {
+      kind: "percent-grid",
+      percent: 45,
+      label: "Interactive Percent Grid Tool",
+    };
+  }
+
+  // Algebra & Distributive Property
+  if (text.includes("distribut") || text.includes("expand")) {
+    return {
+      kind: "distributive-builder",
+      a: 3,
+      b: "x",
+      c: 4,
+      label: "Interactive Distributive Property Area Model",
+    };
+  }
+
+  if (text.includes("combine like terms") || text.includes("like terms")) {
+    return {
+      kind: "combine-like-terms",
+      label: "Interactive Combine Like Terms Lab",
+    };
+  }
+
+  // Coordinate Plane
+  if (text.includes("coordinate") || text.includes("ordered pair") || text.includes("quadrant")) {
+    return {
+      kind: "coordinate-plane",
+      points: [{ x: 3, y: 4, label: "A" }, { x: -2, y: 5, label: "B" }],
+      label: "Interactive Coordinate Plane Explorer",
+    };
+  }
+
+  // Inequalities & Number Line
+  if (text.includes("number line") || text.includes("inequality") || text.includes("inequalities")) {
+    return {
+      kind: "number-line",
+      min: -5,
+      max: 5,
+      step: 1,
+      points: [{ value: 3, label: "x = 3" }],
+      label: "Interactive Number Line Explorer",
+    };
+  }
+
+  return null;
+}
+
 let injectedStyles = false;
 
 function injectVocabLearnStyles() {
@@ -482,14 +652,9 @@ export function renderLearnItPanel(container, config, options = {}) {
   const keyIdea = concept.keyIdea || config.contentObjective || "";
   const iDo = concept.iDo || {};
 
-  // Resolve visual model & interactive manipulative
+  // Resolve visual model & interactive manipulative tool
   const visuals = resolveObjectiveVisuals(config);
-  const ivConfig =
-    config.conceptIntro?.interactiveVisual ||
-    config.interactiveVisual ||
-    config.visualModel ||
-    config.explore?.visual ||
-    null;
+  const ivConfig = resolveInteractiveToolForLesson(config);
 
   const mainCard = document.createElement("div");
   mainCard.className = "vl-section-card";
@@ -524,10 +689,16 @@ export function renderLearnItPanel(container, config, options = {}) {
       </div>
     </div>
 
-    <!-- OPTIONAL MOUNT HOST FOR INTERACTIVE MANIPULATIVE -->
+    <!-- MOUNT HOST FOR LIVE INTERACTIVE MATH TOOL -->
     ${
       ivConfig && ivConfig.kind
-        ? interactiveVisualHost(ivConfig, visuals.content.caption)
+        ? `
+      <div style="margin:24px 0; padding:18px; background:#f8fbff; border:2px solid #38bdf8; border-radius:18px; box-shadow:0 6px 20px rgba(56,189,248,0.12);">
+        <div style="font-family:'Outfit',sans-serif; font-size:1.1rem; font-weight:800; color:#0369a1; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+          <span>🛠️ ${isEs ? "Herramienta Matemática Interactiva (¡Toca para explorar!):" : "Interactive Math Tool (Tap & Explore Live!):"}</span>
+        </div>
+        ${interactiveVisualHost(ivConfig, ivConfig.label || visuals.content.caption)}
+      </div>`
         : ""
     }
 
