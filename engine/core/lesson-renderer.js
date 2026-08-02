@@ -1324,18 +1324,23 @@ function renderNoticeAndWonder(host, config, state) {
 
   // Image and the notice/wonder boxes sit SIDE BY SIDE (image left, boxes right)
   // so students can look at the scene while they write. `.nw-layout` stacks to a
-  // single column on narrow screens. The image column is omitted when absent.
+  // single column on narrow screens.
   const layout = document.createElement("div");
   layout.className = "nw-layout";
-  if (nw.image) {
+
+  const objVisuals = resolveObjectiveVisuals(config);
+  const imgSrc = nw.image || (objVisuals && objVisuals.content && objVisuals.content.src ? objVisuals.content.src : null);
+
+  if (imgSrc) {
     const fig = document.createElement("figure");
     fig.className = "nw-figure";
+    fig.style.cssText = "background:#ffffff; padding:10px; border-radius:12px; border:1px solid #cbd5e1;";
     const img = document.createElement("img");
     img.className = "nw-img";
     img.setAttribute("loading", "lazy");
     img.setAttribute("decoding", "async");
-    img.src = String(nw.image);
-    img.alt = nw.context ? String(nw.context) : "Notice and Wonder data display";
+    img.src = String(imgSrc);
+    img.alt = nw.context ? String(nw.context) : (objVisuals?.content?.caption || config.title || "Notice and Wonder data display");
     fig.append(img);
     attachImageZoom(img);
     // "Annotate the scene": a draw overlay so students can circle/underline what
@@ -2102,6 +2107,13 @@ function renderObjectives(el, config, state, opts = {}) {
   // Definition-only popups on the goals: the picture for this card is the visual
   // model below the text, and it opens on its own click (attachImageZoom).
   wireObjectiveTermPopups(block, vocab);
+  // Underline vocabulary terms in ALL text within the objectives block — captions,
+  // discussion prompts, "Talk about it" sections, talk targets, and the "Visual
+  // Representation" caption — not just the "I can…" sentence (which was already
+  // linkified inline by linkifyObjectiveTerms). underlineVocabTerms respects
+  // .obj-term so it never double-wraps the objective text, and it respects the
+  // exclusion list (buttons, labels, svg…) so controls remain untouched.
+  underlineVocabTerms(block, vocab);
 
   block.querySelectorAll(".visual-model-wrapper img").forEach((img) => {
     attachImageZoom(img);
