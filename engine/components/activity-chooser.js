@@ -162,8 +162,12 @@ export function renderOptionalPracticeOptIn(container, { onTry, onSkip, activity
 // `renderComponent` is the engine's shared component renderer (used to
 // launch the optional Extra Practice items, which use the standard
 // problem-object shape {type, ...props}).
-export function renderActivityChooser(container, { config, renderComponent }) {
+export function renderActivityChooser(container, { config, renderComponent, only } = {}) {
   ensureChooserStyles();
+  // `only: "vocab"` renders just the word-study games, for callers that already
+  // show the word wall themselves and have no use for the Extra Practice tile —
+  // the Vocab tab. Everything else behaves exactly as before.
+  const vocabOnly = only === "vocab";
   const terms = Array.isArray(config.vocabulary) ? config.vocabulary : [];
   const hasVocab = terms.length > 0;
   const optional = Array.isArray(config.practice?.optional) ? config.practice.optional : [];
@@ -173,12 +177,16 @@ export function renderActivityChooser(container, { config, renderComponent }) {
 
   if (hasVocab) {
     tiles.push(
-      {
-        icon: "📖",
-        title: "Word Wall",
-        desc: "Study every word, definition, and example.",
-        run: (host, done) => renderVocabIntro(host, { terms, onComplete: () => done() }),
-      },
+      ...(vocabOnly
+        ? []
+        : [
+            {
+              icon: "📖",
+              title: "Word Wall",
+              desc: "Study every word, definition, and example.",
+              run: (host, done) => renderVocabIntro(host, { terms, onComplete: () => done() }),
+            },
+          ]),
       {
         icon: "🔗",
         title: "Term Match",
@@ -221,7 +229,7 @@ export function renderActivityChooser(container, { config, renderComponent }) {
     );
   }
 
-  if (hasOptional) {
+  if (hasOptional && !vocabOnly) {
     // Use the named TPT-style activity (config.practice.optionalActivity) when
     // present so the menu tile shows its real title instead of the generic
     // "Extra Practice". Falls back to the generic label when absent.

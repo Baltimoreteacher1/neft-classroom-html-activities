@@ -1,7 +1,7 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-import { runComponentList } from "../components/activity-chooser.js";
+import { renderActivityChooser, runComponentList } from "../components/activity-chooser.js";
 import {
   renderVocabAndLearnIt,
   renderVocabPanel,
@@ -1136,6 +1136,17 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           state,
           onComplete: () => this.openExtra("learn"),
         });
+        // Term Match, Fill-the-Blanks, Example Sort and Memory Match all exist,
+        // but the only place they were rendered was the end-of-lesson completion
+        // screen — a student had to finish all eight phases before the word games
+        // for this lesson's vocabulary appeared. They belong next to the words
+        // they practise, so the same chooser is offered here too, in vocab-only
+        // mode (the word wall is already above it, and Extra Practice is not a
+        // vocabulary activity). Ungraded, exactly as on the completion screen.
+        const vocabGames = document.createElement("div");
+        vocabGames.style.cssText = "margin-top:var(--sp-6, 24px);";
+        renderActivityChooser(vocabGames, { config, only: "vocab" });
+        if (vocabGames.childNodes.length) el.append(vocabGames);
         el.scrollIntoView({ block: "start" });
         return;
       }
