@@ -254,6 +254,20 @@ export function getPreferredLang() {
   return "en";
 }
 
+// Mirror the saved choice onto <html lang> as soon as this module loads.
+// setPreferredLang() stamps it when the student TOGGLES, but on a later page
+// load nothing did — so a student who had chosen Spanish got Spanish phase
+// names (phaseName reads the preference directly) while every stacked bilingual
+// label stayed hidden, because those are switched by the lang attribute. The
+// attribute is now set from the same source of truth on every load.
+if (typeof document !== "undefined") {
+  try {
+    document.documentElement.lang = getPreferredLang();
+  } catch {
+    /* nothing to do — the attribute is a hint, not a requirement */
+  }
+}
+
 /** Persist the student's language choice ("en" | "es"); "" clears it. */
 export function setPreferredLang(lang) {
   try {

@@ -4137,10 +4137,22 @@ html.projector .main {
 .i18n-en {
   font-weight: inherit;
 }
+/* The Spanish line is OPT-IN, not a default.
+   .i18n-stack renders both languages into the DOM, and the Spanish half used to
+   be visible unconditionally — so every phase button, tab and nav control read
+   as two languages stacked whether or not anyone had asked for Spanish. That is
+   the same complaint as the vocabulary cards: support a student chooses, not a
+   second language printed on top of everything.
+   setPreferredLang() stamps <html lang>, so it is the switch. */
 .i18n-es {
+  display: none;
   font-size: 0.82em;
   opacity: 0.92;
   font-style: italic;
+}
+:root[lang="es"] .i18n-es,
+html[lang^="es"] .i18n-es {
+  display: revert;
 }
 .i18n-btn .i18n-es {
   font-size: 0.78em;
