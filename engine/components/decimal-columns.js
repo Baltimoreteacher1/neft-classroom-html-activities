@@ -166,7 +166,17 @@ export function renderDecimalColumns(host, cfg = {}) {
         b: Number(p.b),
         label: p.label,
       }))
-    : [{ op: cfg.op === "-" ? "-" : "+", a: Number(cfg.a), b: Number(cfg.b) }];
+    : [
+        {
+          op: cfg.op === "-" ? "-" : "+",
+          // Mount this with no operands and Number(undefined) is NaN, which the
+          // digit-cell layout then spells out one character per box: the student
+          // sees "N a N" stacked over "N a N". A tool with nothing to work on
+          // should show a real problem, not the word for its own failure.
+          a: Number.isFinite(Number(cfg.a)) ? Number(cfg.a) : 3.4,
+          b: Number.isFinite(Number(cfg.b)) ? Number(cfg.b) : 1.25,
+        },
+      ];
 
   const wrap = document.createElement("div");
   wrap.className = "dccols-wrap";

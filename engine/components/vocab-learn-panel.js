@@ -79,8 +79,8 @@ export function resolveInteractiveToolForLesson(config) {
   if (std === "6.NOS.1") {
     return {
       kind: "fraction-divide",
-      num1: "3/4",
-      num2: "1/2",
+      dividend: "3/4",
+      divisor: "1/2",
       label: "Interactive Fraction Division: Keep, Change, Flip!",
     };
   }
@@ -94,10 +94,10 @@ export function resolveInteractiveToolForLesson(config) {
   // 6.NOS.3 — Decimal Operations (refine by wording)
   if (std === "6.NOS.3") {
     if (wb("multiply|multiplication|product"))
-      return { kind: "decimal-product", label: "Interactive Decimal Multiplication Tool" };
+      return { kind: "decimal-product", a: 4.5, b: 1.2, label: "Interactive Decimal Multiplication Tool" };
     if (wb("divide|division|quotient"))
-      return { kind: "decimal-quotient", label: "Interactive Decimal Division Tool" };
-    return { kind: "decimal-columns", label: "Interactive Decimal Columns & Regrouping Tool" };
+      return { kind: "decimal-quotient", dividend: 18.9, divisor: 6.3, label: "Interactive Decimal Division Tool" };
+    return { kind: "decimal-columns", op: "+", a: 3.4, b: 1.25, label: "Interactive Decimal Columns & Regrouping Tool" };
   }
   // 6.NOS.4 — Factors, GCF, LCM
   if (std === "6.NOS.4") {
@@ -159,8 +159,13 @@ export function resolveInteractiveToolForLesson(config) {
   if (std === "6.AT.1") {
     return {
       kind: "tape-diagram",
-      parts: [3, 5],
-      labels: ["Quantity A", "Quantity B"],
+      // tape-diagram-lab reads `rows: [{ label, parts: [{value}] }]`. The
+      // parts/labels pair below was a shape no component ever consumed, so the
+      // lab counted zero parts and drew nothing.
+      rows: [
+        { label: "Quantity A", parts: [{ value: 1 }, { value: 1 }, { value: 1 }] },
+        { label: "Quantity B", parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }] },
+      ],
       label: "Interactive Tape Diagram Explorer: Count and compare equal parts!",
     };
   }
@@ -212,7 +217,7 @@ export function resolveInteractiveToolForLesson(config) {
         label: "Interactive Distributive Property Area Model",
       };
     if (wb("like terms|combine"))
-      return { kind: "combine-like-terms", label: "Interactive Combine Like Terms Lab" };
+      return { kind: "combine-like-terms", expr: "5x + 3 + 2x - 1", label: "Interactive Combine Like Terms Lab" };
     return { kind: "step-solver", label: "Interactive Expression Evaluator & Step Solver" };
   }
   // 6.AT.8 — Equations / Inequalities
@@ -297,8 +302,13 @@ export function resolveInteractiveToolForLesson(config) {
       return { kind: "percent-grid", percent: 45, label: "Interactive Percent Grid Tool" };
     return {
       kind: "tape-diagram",
-      parts: [3, 5],
-      labels: ["Quantity A", "Quantity B"],
+      // tape-diagram-lab reads `rows: [{ label, parts: [{value}] }]`. The
+      // parts/labels pair below was a shape no component ever consumed, so the
+      // lab counted zero parts and drew nothing.
+      rows: [
+        { label: "Quantity A", parts: [{ value: 1 }, { value: 1 }, { value: 1 }] },
+        { label: "Quantity B", parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }] },
+      ],
       label: "Interactive Tape Diagram Explorer",
     };
   }
@@ -320,12 +330,12 @@ export function resolveInteractiveToolForLesson(config) {
     if (wb("fraction|divid"))
       return {
         kind: "fraction-divide",
-        num1: "3/4",
-        num2: "1/2",
+        dividend: "3/4",
+        divisor: "1/2",
         label: "Interactive Fraction Division",
       };
     if (wb("decimal"))
-      return { kind: "decimal-columns", label: "Interactive Decimal Columns Tool" };
+      return { kind: "decimal-columns", op: "+", a: 3.4, b: 1.25, label: "Interactive Decimal Columns Tool" };
     if (wb("factor|GCF|LCM"))
       return { kind: "factor-tree-lab", number: 36, label: "Interactive Factor Tree Explorer" };
     if (wb("coordinate"))
@@ -360,8 +370,13 @@ export function resolveInteractiveToolForLesson(config) {
   if (wb("tape diagram")) {
     return {
       kind: "tape-diagram",
-      parts: [3, 5],
-      labels: ["Quantity A", "Quantity B"],
+      // tape-diagram-lab reads `rows: [{ label, parts: [{value}] }]`. The
+      // parts/labels pair below was a shape no component ever consumed, so the
+      // lab counted zero parts and drew nothing.
+      rows: [
+        { label: "Quantity A", parts: [{ value: 1 }, { value: 1 }, { value: 1 }] },
+        { label: "Quantity B", parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }] },
+      ],
       label: "Interactive Tape Diagram Explorer",
     };
   }
@@ -385,8 +400,8 @@ export function resolveInteractiveToolForLesson(config) {
   if (wb("divid\\w* fractions?|fraction division|divid\\w* by a fraction")) {
     return {
       kind: "fraction-divide",
-      num1: "3/4",
-      num2: "1/2",
+      dividend: "3/4",
+      divisor: "1/2",
       label: "Interactive Fraction Division: Keep, Change, Flip!",
     };
   }
@@ -394,13 +409,13 @@ export function resolveInteractiveToolForLesson(config) {
     return { kind: "long-division-builder", label: "Interactive Long Division Lab" };
   }
   if (wb("divid\\w* decimals?|decimal division")) {
-    return { kind: "decimal-quotient", label: "Interactive Decimal Division Tool" };
+    return { kind: "decimal-quotient", dividend: 18.9, divisor: 6.3, label: "Interactive Decimal Division Tool" };
   }
   if (wb("multiply\\w* decimals?|decimal multiplication")) {
-    return { kind: "decimal-product", label: "Interactive Decimal Multiplication Tool" };
+    return { kind: "decimal-product", a: 4.5, b: 1.2, label: "Interactive Decimal Multiplication Tool" };
   }
   if (wb("add\\w* decimals?|subtract\\w* decimals?|decimal")) {
-    return { kind: "decimal-columns", label: "Interactive Decimal Columns & Regrouping Tool" };
+    return { kind: "decimal-columns", op: "+", a: 3.4, b: 1.25, label: "Interactive Decimal Columns & Regrouping Tool" };
   }
   if (wb("percent of|percentage of")) {
     return { kind: "percent-builder", label: "Interactive Percent of a Quantity Builder" };
@@ -411,8 +426,13 @@ export function resolveInteractiveToolForLesson(config) {
   if (wb("ratios?")) {
     return {
       kind: "tape-diagram",
-      parts: [3, 5],
-      labels: ["Quantity A", "Quantity B"],
+      // tape-diagram-lab reads `rows: [{ label, parts: [{value}] }]`. The
+      // parts/labels pair below was a shape no component ever consumed, so the
+      // lab counted zero parts and drew nothing.
+      rows: [
+        { label: "Quantity A", parts: [{ value: 1 }, { value: 1 }, { value: 1 }] },
+        { label: "Quantity B", parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }] },
+      ],
       label: "Interactive Tape Diagram Explorer",
     };
   }
@@ -426,7 +446,7 @@ export function resolveInteractiveToolForLesson(config) {
     };
   }
   if (wb("combine like terms|like terms")) {
-    return { kind: "combine-like-terms", label: "Interactive Combine Like Terms Lab" };
+    return { kind: "combine-like-terms", expr: "5x + 3 + 2x - 1", label: "Interactive Combine Like Terms Lab" };
   }
   if (wb("equations?") && wb("solve|one-step|two-step|balance")) {
     return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
@@ -490,8 +510,8 @@ export function resolveInteractiveToolForLesson(config) {
   if (wb("fractions?")) {
     return {
       kind: "fraction-divide",
-      num1: "3/4",
-      num2: "1/2",
+      dividend: "3/4",
+      divisor: "1/2",
       label: "Interactive Fraction Division Tool",
     };
   }
