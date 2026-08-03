@@ -2042,14 +2042,14 @@ function renderObjectives(el, config, state, opts = {}) {
   const card = (o) => `
     <div class="card ${o.cardClass} launch-objective">
       <div class="launch-objective-head" style="display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2); margin-bottom:var(--sp-2);">
-        <h4 style="color:${o.ink}; margin:0; font-size:1.15rem; font-weight:800; letter-spacing:-0.01em;">${o.label}</h4>
+        <h4 style="color:${o.ink}; margin:0; font-size:1.28rem; font-weight:800; letter-spacing:-0.01em;">${o.label}</h4>
         <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.85rem; font-weight:800; color:${o.ink}; cursor:pointer; white-space:nowrap;">
           <input type="checkbox" class="objective-check-box" data-obj-key="${o.key}" aria-label="${o.checkAria}"
                  style="width:18px; height:18px; accent-color:${o.ink}; cursor:pointer;" />
           ${o.checkLabel}
         </label>
       </div>
-      <p style="margin:0; font-size:1.08rem; font-weight:800; color:#0f172a; line-height:1.65; -webkit-font-smoothing:antialiased;">${o.text}</p>
+      <p style="margin:0; font-size:1.32rem; font-weight:800; color:#0f172a; line-height:1.55; letter-spacing:-0.005em; -webkit-font-smoothing:antialiased;">${o.text}</p>
       
       <!-- PUBLISHER-GRADE VISUAL MODEL CARD DIRECTLY BELOW OBJECTIVE TEXT -->
       <div class="visual-model-wrapper" style="margin-top:16px; margin-bottom:16px; border-radius:14px; overflow:hidden; border:1.5px solid rgba(15,23,42,0.18); box-shadow:0 6px 20px rgba(0,0,0,0.08); background:#0b0f19; cursor:zoom-in;">

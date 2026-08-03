@@ -4260,15 +4260,21 @@
         const styleEl = document.createElement("style");
         styleEl.id = "objective-contrast-styles";
         styleEl.textContent = `
+          /* This !important block is the declaration that actually wins on the
+             objective text — it overrides the renderer's own inline font-size,
+             so the size lives HERE and the renderer inline value is kept in
+             sync only so the two never read as contradicting each other. */
           .launch-objective p, .objective-text, .obj-text {
             font-weight: 800 !important;
             color: #0F172A !important;
-            font-size: 1.08rem !important;
-            line-height: 1.65 !important;
+            font-size: 1.32rem !important;
+            line-height: 1.55 !important;
+            letter-spacing: -0.005em !important;
             -webkit-font-smoothing: antialiased !important;
           }
           .launch-objective h4, .launch-objective-head h4, .obj-card-title {
             font-weight: 800 !important;
+            font-size: 1.28rem !important;
             letter-spacing: -0.01em !important;
           }
           .visual-model-caption {
