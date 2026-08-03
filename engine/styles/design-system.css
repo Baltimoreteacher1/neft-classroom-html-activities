@@ -5220,3 +5220,35 @@ body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-doc
 .obj-nowrap {
   white-space: nowrap;
 }
+
+/* ── Tool beside the work it supports ─────────────────────────────────────
+   Explore and Practice used to stack: the manipulative as a full-width card,
+   the problems underneath it. A student working problem 3 had scrolled the tool
+   off the screen, so the tool stopped being something they used and became
+   something they passed. Paired, and with the tool sticky, it stays beside the
+   problem it is for. Stacks to one column below 1024px, work first, exactly as
+   it behaved before. */
+.nt-work-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--sp-4, 16px);
+  align-items: start;
+  margin-bottom: var(--sp-4, 16px);
+}
+.nt-work-pair .nt-work-tool {
+  position: sticky;
+  top: var(--sp-3, 12px);
+}
+.nt-work-pair .nt-work-tool > .card,
+.nt-work-pair .nt-work-main > .card:first-child {
+  margin-top: 0;
+}
+@media (max-width: 1023px) {
+  .nt-work-pair {
+    grid-template-columns: 1fr;
+  }
+  .nt-work-pair .nt-work-tool {
+    position: static;
+    order: -1;
+  }
+}

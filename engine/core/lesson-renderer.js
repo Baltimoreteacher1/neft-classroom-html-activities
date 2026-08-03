@@ -3248,14 +3248,14 @@ function renderExplorePhase(el, state, ctx, config) {
   // (histogram, dot-plot, box-plot, bar-chart, number-line); `histogram` kept
   // for back-compat.
   const exploreDiagram = cfg.diagram || cfg.histogram;
+  let exploreFig = null;
   if (exploreDiagram) {
-    const figCard = document.createElement("div");
-    figCard.className = "card";
-    figCard.innerHTML = cfg.diagram ? buildVisual(cfg.diagram) : histogramSVG(cfg.histogram);
-    el.append(figCard);
-    // Explore is where the building happens, so this is the mount that most
-    // needs to remember. phaseId 1 = Explore.
-    mountInteractiveVisuals(figCard, { state, phaseId: 1 });
+    exploreFig = document.createElement("div");
+    exploreFig.className = "card";
+    exploreFig.innerHTML = cfg.diagram ? buildVisual(cfg.diagram) : histogramSVG(cfg.histogram);
+    // Held, not appended: it is placed beside the activity below rather than
+    // stacked above it. Mounted after placement so the component measures a
+    // node that is already in its final column.
   }
 
   // Surface a Turn & Talk discussion moment after the Explore interaction.
@@ -3284,7 +3284,18 @@ function renderExplorePhase(el, state, ctx, config) {
 
   const exploreShell = document.createElement("div");
   exploreShell.className = "explore-problem-wrap";
-  el.append(exploreShell);
+  if (exploreFig) {
+    // Figure on the right, the activity it describes on the left, so a student
+    // reading the data can work the interaction without scrolling away from it.
+    const pair = openWorkPair(el);
+    pair.main.append(exploreShell);
+    pair.tool.append(exploreFig);
+    // Explore is where the building happens, so this is the mount that most
+    // needs to remember. phaseId 1 = Explore.
+    mountInteractiveVisuals(exploreFig, { state, phaseId: 1 });
+  } else {
+    el.append(exploreShell);
+  }
 
   // Inline Reveal Math slides for the Explore section.
   renderRevealSlides(el, config, "explore");
@@ -3438,6 +3449,23 @@ function stripLabelForGrading(correct) {
 // are auto-graded (✅/❌); complex expressions fall back to a self-check reveal.
 // Genuinely practices the skill (not only matching/sorting games), and saves
 // work to the Practice phase responses. No-op when there are no solvable items.
+// Put an interactive tool beside the work it supports instead of above it.
+// Returns the two columns: `main` for the problems, `tool` for the manipulative.
+// Callers append the tool once and then keep appending problem content to
+// `main`; anything appended to the original host afterwards still lands full
+// width below the pair, which is what wide content wants.
+function openWorkPair(host) {
+  const pair = document.createElement("div");
+  pair.className = "nt-work-pair";
+  const main = document.createElement("div");
+  main.className = "nt-work-main";
+  const tool = document.createElement("div");
+  tool.className = "nt-work-tool";
+  pair.append(main, tool);
+  host.append(pair);
+  return { main, tool };
+}
+
 function renderSkillPractice(host, config, state) {
   const p = config.practice || {};
   // The Worked Example panel above (renderWorkedExamplePanel) reveals the I-Do
@@ -3654,6 +3682,7 @@ function renderPracticePhase(el, state, ctx, config) {
   // mounted at the top of Practice so students can rehearse the skill before the
   // adaptive items. `practice.diagram` accepts any interactive/static visual
   // kind, or an ARRAY of them to stack several complementary labs.
+  const labCards = [];
   if (config.practice?.diagram) {
     const labs = Array.isArray(config.practice.diagram)
       ? config.practice.diagram
@@ -3668,17 +3697,26 @@ function renderPracticePhase(el, state, ctx, config) {
       // and what it is for. Falls back to the bare tool when a kind somehow has
       // no catalog entry (tools/interactive-tools.test.mjs gates against that).
       labCard.innerHTML = practiceLabHeaderHtml(lab) + buildVisual(lab);
-      el.append(labCard);
+      labCards.push(labCard);
       mountInteractiveVisuals(labCard, { state, phaseId: 2 });
     }
   }
 
-  renderWorkedExamplePanel(el, config);
-  renderCommonMistakeCallout(el, config);
+  // The lab sits BESIDE the work it is for. Stacked above it, a student on
+  // problem 3 had already scrolled the tool off screen.
+  let workHost = el;
+  if (labCards.length) {
+    const pair = openWorkPair(el);
+    labCards.forEach((c) => pair.tool.append(c));
+    workHost = pair.main;
+  }
+
+  renderWorkedExamplePanel(workHost, config);
+  renderCommonMistakeCallout(workHost, config);
 
   // Lead with real skill practice — solve problems, show steps — before the
   // interactive games/sorts below.
-  renderSkillPractice(el, config, state);
+  renderSkillPractice(workHost, config, state);
 
   // Opt-in discussion moment: after doing the skill, students compare and
   // question each other's strategies. Non-graded, dismissible, never blocks.
