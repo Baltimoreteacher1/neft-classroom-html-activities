@@ -61,7 +61,6 @@ import {
   resolveNoticeWonderAcademicWord,
 } from "./notice-wonder-glossary.js";
 import { resolveObjectiveVisuals } from "./objective-visuals.js";
-import { speakText } from "./speech-voice.js";
 import { studentFirstName, toThirdPersonObjective } from "./objective-voice.js";
 import { mountPeerExchange } from "./peer-exchange.js";
 import {
@@ -2038,7 +2037,6 @@ function renderObjectives(el, config, state, opts = {}) {
           <div style="font-weight:900; font-size:0.82rem; color:#c2410c; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
             <span>🗣️ Student Talk Targets (What to Say & Listen For):</span>
             <div style="display:inline-flex; align-items:center; gap:6px;">
-              <button type="button" class="talk-audio-btn btn btn-xs btn-outline" data-talk-text="${esc(o.talkPrompts.say)}" title="Listen to pronunciation" style="padding:2px 8px; font-size:0.75rem; font-weight:800; border-radius:6px; background:white; color:#c2410c; border:1px solid #fdba74; cursor:pointer;">🔊 Listen</button>
               <button type="button" class="talk-lang-toggle btn btn-xs btn-outline" title="Switch English / Spanish" style="padding:2px 8px; font-size:0.75rem; font-weight:800; border-radius:6px; background:white; color:#0369a1; border:1px solid #7dd3fc; cursor:pointer;">🇲🇽 ES</button>
             </div>
           </div>
@@ -2124,16 +2122,6 @@ function renderObjectives(el, config, state, opts = {}) {
     attachImageZoom(img);
   });
 
-  block.querySelectorAll(".talk-audio-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const text = btn.getAttribute("data-talk-text");
-      const cardEl = btn.closest(".language-talk-card");
-      const isEs = cardEl?.getAttribute("data-lang") === "es";
-      if (text) speakText(text, isEs ? "es-US" : "en-US");
-    });
-  });
-
   block.querySelectorAll(".talk-lang-toggle").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -2143,12 +2131,10 @@ function renderObjectives(el, config, state, opts = {}) {
       cardEl.setAttribute("data-lang", isEs ? "en" : "es");
       const sayEl = cardEl.querySelector(".talk-say-text");
       const listenEl = cardEl.querySelector(".talk-listen-text");
-      const audioBtn = cardEl.querySelector(".talk-audio-btn");
       const sayText = isEs ? cardEl.getAttribute("data-say-en") : cardEl.getAttribute("data-say-es");
       const listenText = isEs ? cardEl.getAttribute("data-listen-en") : cardEl.getAttribute("data-listen-es");
       if (sayEl) sayEl.textContent = `"${sayText}"`;
       if (listenEl) listenEl.textContent = `"${listenText}"`;
-      if (audioBtn && sayText) audioBtn.setAttribute("data-talk-text", sayText);
       btn.textContent = isEs ? "🇲🇽 ES" : "🇺🇸 EN";
     });
   });
