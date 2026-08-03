@@ -6,7 +6,6 @@ import {
   renderActivityChooser,
   renderOptionalPracticeOptIn,
 } from "../components/activity-chooser.js";
-import { renderCelebrationPicker, fireCelebrationFX } from "./celebration-picker.js";
 import {
   renderAlgebraTiles,
   renderBalanceScale,
@@ -33,6 +32,7 @@ import { createAdaptiveSequence } from "./adaptive.js";
 import { enableWordProblemAnnotation, observeWordProblemAnnotation } from "./annotate.js";
 import { fullerFormHint, isRight } from "./answer-match.js";
 import { createApp } from "./app.js";
+import { fireCelebrationFX, renderCelebrationPicker } from "./celebration-picker.js";
 import { mountCertificateDownload } from "./certificate-export.js";
 import { mountChalkAnnotations } from "./chalk-annotate.js";
 import { deriveCommonMistake, deriveErrorExample } from "./content-enrichment.js";

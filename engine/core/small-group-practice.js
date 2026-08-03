@@ -1,10 +1,10 @@
 import { attachRegenPractice } from "../components/regen-practice.js";
 import { isRight, numberOf } from "./answer-match.js";
+import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
 import { mountReasoningReader } from "./small-group-reasoning.js";
 import { createRubricDetails } from "./small-group-rubric.js";
 import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
-import { renderConversionChip, hasConversionFacts } from "./conversion-chart.js";
 import { renderToolChip } from "./tool-drawer.js";
 import { extractDivisionDiagram } from "./division-helper.js";
 import { figureBlock } from "./small-group-labs.js";
@@ -55,7 +55,10 @@ function detectConceptTool(stemText) {
   if (str.includes("lcm") || str.includes("least common multiple")) {
     return { kind: "lcm-lab", icon: "🔢", label: "LCM Lab" };
   }
-  if (str.includes("fraction") && (str.includes("divide") || str.includes("÷") || str.includes("kcf"))) {
+  if (
+    str.includes("fraction") &&
+    (str.includes("divide") || str.includes("÷") || str.includes("kcf"))
+  ) {
     return { kind: "fraction-divide", icon: "🥞", label: "Divide Fractions Lab" };
   }
   if (str.includes("decimal") && (str.includes("multiply") || str.includes("product"))) {

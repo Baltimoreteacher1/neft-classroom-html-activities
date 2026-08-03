@@ -33,8 +33,8 @@
  * ========================================================================== */
 
 import { execFile, execFileSync } from "node:child_process";
-import { cpus } from "node:os";
 import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
+import { cpus } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -89,17 +89,52 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
 const UNIVERSAL = ["lint"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
-  [/^lessons\/[^/]+\/config\.json$/, ["validate:math", "validate:ccss", "validate:connect", "validate:homework", "validate:practice", "validate:scope", "audit:homework"]],
-  [/^lessons\//, ["validate:static", "validate:save-resume", "validate:lesson-boot", "audit:links"]],
+  [
+    /^lessons\/[^/]+\/config\.json$/,
+    [
+      "validate:math",
+      "validate:ccss",
+      "validate:connect",
+      "validate:homework",
+      "validate:practice",
+      "validate:scope",
+      "audit:homework",
+    ],
+  ],
+  [
+    /^lessons\//,
+    ["validate:static", "validate:save-resume", "validate:lesson-boot", "audit:links"],
+  ],
   [/^curriculum\/ai-hub\//, ["validate:ai-hub", "validate:hub", "audit:links"]],
   [/^curriculum\/forge\//, ["validate:forge"]],
   [/^curriculum\/showcase\//, ["validate:showcase"]],
   [/^curriculum\/class-boss\//, ["validate:class-boss"]],
   [/^curriculum\/teach-the-machine\//, ["validate:teach-machine"]],
   [/^curriculum\/family-connections\//, ["validate:family-broadcast"]],
-  [/^curriculum\/projects\//, ["validate:projects-publication", "validate:projects-award", "validate:solve-along", "validate:injection"]],
-  [/^curriculum\/index\.html$/, ["validate:hub", "validate:curriculum-top1", "validate:teacher-workflow", "validate:guided-path", "validate:curriculum-product", "audit:links"]],
-  [/^curriculum\//, ["validate:hub", "validate:runtime", "validate:static", "audit:links", "audit:curriculum"]],
+  [
+    /^curriculum\/projects\//,
+    [
+      "validate:projects-publication",
+      "validate:projects-award",
+      "validate:solve-along",
+      "validate:injection",
+    ],
+  ],
+  [
+    /^curriculum\/index\.html$/,
+    [
+      "validate:hub",
+      "validate:curriculum-top1",
+      "validate:teacher-workflow",
+      "validate:guided-path",
+      "validate:curriculum-product",
+      "audit:links",
+    ],
+  ],
+  [
+    /^curriculum\//,
+    ["validate:hub", "validate:runtime", "validate:static", "audit:links", "audit:curriculum"],
+  ],
   [/^\.github\/workflows\//, ["validate:workflow-yaml"]],
   [/^data\/ccss-standards\.json$/, ["validate:ccss", "validate:scope"]],
   [/^data\/routes\.json$/, ["validate:static", "audit:links"]],
@@ -158,10 +193,21 @@ function changedPaths() {
       return "";
     }
   };
-    const override = optVal("--paths");
-  if (override) return override.split(",").map((s) => s.trim()).filter(Boolean);
+  const override = optVal("--paths");
+  if (override)
+    return override
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
   const merged = `${run(["diff", "--name-only", "HEAD"])}\n${run(["ls-files", "--others", "--exclude-standard"])}`;
-  return [...new Set(merged.split("\n").map((s) => s.trim()).filter(Boolean))];
+  return [
+    ...new Set(
+      merged
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    ),
+  ];
 }
 
 function scopeFor(paths) {
@@ -182,7 +228,7 @@ function scopeFor(paths) {
  * checks the old serial loop ran. A scheduler that quietly stops running a
  * gate is worse than a slow one.
  * ------------------------------------------------------------------------ */
-export { GATE, COVERAGE, UNIVERSAL, CARRIES_SCRIPT, expand, resolveSet, scopeFor, needsOf };
+export { CARRIES_SCRIPT, COVERAGE, expand, GATE, needsOf, resolveSet, scopeFor, UNIVERSAL };
 
 async function main() {
   /* --- Decide the check set ------------------------------------------------- */
@@ -199,7 +245,10 @@ async function main() {
       label = `change-scoped (${paths.length} changed file(s))`;
     } else {
       checks = resolveSet(GATE);
-      label = paths.length === 0 ? "FULL (no changes detected)" : "FULL (a changed path has no coverage rule)";
+      label =
+        paths.length === 0
+          ? "FULL (no changes detected)"
+          : "FULL (a changed path has no coverage rule)";
     }
   } else {
     checks = resolveSet(GATE);
@@ -239,23 +288,31 @@ async function main() {
   const started = Date.now();
 
   const ready = (c) => needsOf(c).every((d) => !checks.includes(d) || results.get(d)?.ok);
-  const blocked = (c) => needsOf(c).some((d) => checks.includes(d) && results.get(d) && !results.get(d).ok);
+  const blocked = (c) =>
+    needsOf(c).some((d) => checks.includes(d) && results.get(d) && !results.get(d).ok);
 
   function runOne(name) {
     return new Promise((resolve) => {
       const t0 = Date.now();
-      execFile("npm", ["run", name], { cwd: ROOT, maxBuffer: 64 * 1024 * 1024 }, (err, stdout, stderr) => {
-        const secs = ((Date.now() - t0) / 1000).toFixed(1);
-        const ok = !err;
-        results.set(name, { ok, secs });
-        logTo(`\n===== ${ok ? "PASS" : "FAIL"} npm run ${name} (${secs}s) =====\n${stdout}\n${stderr}\n`);
-        console.log(`${ok ? "PASS" : "FAIL"}  ${name.padEnd(32)} ${secs}s`);
-        if (!ok) {
-          const tail = `${stdout}\n${stderr}`.trim().split("\n").slice(-12);
-          for (const l of tail) console.log(`      | ${l}`);
-        }
-        resolve();
-      });
+      execFile(
+        "npm",
+        ["run", name],
+        { cwd: ROOT, maxBuffer: 64 * 1024 * 1024 },
+        (err, stdout, stderr) => {
+          const secs = ((Date.now() - t0) / 1000).toFixed(1);
+          const ok = !err;
+          results.set(name, { ok, secs });
+          logTo(
+            `\n===== ${ok ? "PASS" : "FAIL"} npm run ${name} (${secs}s) =====\n${stdout}\n${stderr}\n`,
+          );
+          console.log(`${ok ? "PASS" : "FAIL"}  ${name.padEnd(32)} ${secs}s`);
+          if (!ok) {
+            const tail = `${stdout}\n${stderr}`.trim().split("\n").slice(-12);
+            for (const l of tail) console.log(`      | ${l}`);
+          }
+          resolve();
+        },
+      );
     });
   }
 
@@ -300,14 +357,15 @@ async function main() {
   const failed = checks.filter((c) => !results.get(c)?.ok);
   const wall = ((Date.now() - started) / 1000).toFixed(1);
   console.log("---------------------------------------------------------------");
-  console.log(`PASS ${checks.length - failed.length}/${checks.length}   wall ${wall}s   log ${LOG}`);
+  console.log(
+    `PASS ${checks.length - failed.length}/${checks.length}   wall ${wall}s   log ${LOG}`,
+  );
   if (failed.length) {
     console.log(`FAILED: ${failed.join(", ")}`);
     console.log("Re-run one check with:  npm run qa:fast -- --only <name>");
     process.exit(1);
   }
   console.log("STATUS: PASS — no deploy, commit, or push performed.");
-
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) await main();

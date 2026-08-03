@@ -162,7 +162,8 @@ export const CELEBRATION_PRESETS = {
  * Get the 4 celebration choices for a lesson based on unit/topic
  */
 export function getLessonCelebrations(config = null) {
-  const unit = Number(config?.unit) || (config?.lessonId ? Number(config.lessonId.split("-")[0]) : 0);
+  const unit =
+    Number(config?.unit) || (config?.lessonId ? Number(config.lessonId.split("-")[0]) : 0);
   const title = (config?.title || "").toLowerCase();
 
   let p1 = { ...CELEBRATION_PRESETS.polygon_3d };
@@ -174,19 +175,42 @@ export function getLessonCelebrations(config = null) {
     p1.name = "Fraction & Decimal Cascade";
     p1.desc = "Cascading 3D fraction pieces and decimal digits";
     p1.icon = "🥞";
-  } else if (unit === 3 || unit === 4 || title.includes("ratio") || title.includes("percent") || title.includes("conversion")) {
+  } else if (
+    unit === 3 ||
+    unit === 4 ||
+    title.includes("ratio") ||
+    title.includes("percent") ||
+    title.includes("conversion")
+  ) {
     p3.name = "Percent & Ratio Fireworks";
     p3.desc = "Rocket fireworks exploding into % and ratio symbols";
     p3.icon = "🏷️";
-  } else if (unit === 5 || unit === 10 || title.includes("area") || title.includes("volume") || title.includes("net")) {
+  } else if (
+    unit === 5 ||
+    unit === 10 ||
+    title.includes("area") ||
+    title.includes("volume") ||
+    title.includes("net")
+  ) {
     p1.name = "3D Polyhedron Net Burst";
     p1.desc = "Tumbling 3D prisms, pyramids, and net polyhedrons";
     p1.icon = "📦";
-  } else if (unit === 6 || unit === 7 || title.includes("equation") || title.includes("inequality") || title.includes("expression")) {
+  } else if (
+    unit === 6 ||
+    unit === 7 ||
+    title.includes("equation") ||
+    title.includes("inequality") ||
+    title.includes("expression")
+  ) {
     p3.name = "Algebra Balance Fireworks";
     p3.desc = "Fireworks launching and balancing into = and x values";
     p3.icon = "⚖️";
-  } else if (unit === 8 || title.includes("data") || title.includes("histogram") || title.includes("box plot")) {
+  } else if (
+    unit === 8 ||
+    title.includes("data") ||
+    title.includes("histogram") ||
+    title.includes("box plot")
+  ) {
     p2.name = "Histogram & Data Wave";
     p2.desc = "Digital data streams and statistical frequencies";
     p2.icon = "📊";

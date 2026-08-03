@@ -8,6 +8,7 @@ import {
   renderLearnItPanel,
 } from "../components/vocab-learn-panel.js";
 import { createEngagement } from "../engagement/engagement.js";
+import { fireCelebrationFX } from "./celebration-picker.js";
 import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import { mountExportToolbar } from "./export.js";
 import { completeLesson, reportExitTicketScore } from "./grade-emit.js";
@@ -28,7 +29,6 @@ import { initPresentMode } from "./present-mode.js";
 import { reportScore } from "./score-reporter.js";
 import { clearLessonStorage, createState, findSavedStudents, normalizeStudentId } from "./state.js";
 import { mountTeacherClearButton } from "./teacher-clear.js";
-import { fireCelebrationFX } from "./celebration-picker.js";
 import {
   buildWelcomeTeacherNotes,
   initTeacherAccess,

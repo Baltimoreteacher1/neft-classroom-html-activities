@@ -29,9 +29,9 @@
 // Lazy by design: nothing is built until the first open, so a lesson nobody opens
 // the drawer on pays only for one chip per point.
 
+import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
 import { toolMeta } from "./tool-catalog.js";
 import { buildToolCard, collectTools } from "./tools-mode.js";
-import { renderConversionChip, hasConversionFacts } from "./conversion-chart.js";
 
 const STYLE_ID = "nt-tool-drawer-style";
 const CSS = `

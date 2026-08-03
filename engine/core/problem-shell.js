@@ -2,8 +2,8 @@
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 
+import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
 import { renderMathText } from "./math-typography.js";
-import { renderConversionChip, hasConversionFacts } from "./conversion-chart.js";
 import { renderToolChip } from "./tool-drawer.js";
 
 const TYPE_LABELS = {
@@ -32,7 +32,13 @@ function detectConceptTool(stemText) {
   if (!stemText || typeof stemText !== "string") return null;
   const str = stemText.toLowerCase();
 
-  if (str.includes("exponent") || str.includes("power") || str.includes("base") || str.includes("squared") || str.includes("cubed")) {
+  if (
+    str.includes("exponent") ||
+    str.includes("power") ||
+    str.includes("base") ||
+    str.includes("squared") ||
+    str.includes("cubed")
+  ) {
     return { kind: "power-builder", icon: "⚡", label: "Powers & Exponents" };
   }
   if (str.includes("factor tree") || str.includes("prime factor")) {
@@ -41,7 +47,13 @@ function detectConceptTool(stemText) {
   if (str.includes("lcm") || str.includes("least common multiple")) {
     return { kind: "lcm-lab", icon: "🔢", label: "LCM Lab" };
   }
-  if (str.includes("fraction") && (str.includes("divide") || str.includes("÷") || str.includes("kcf") || str.includes("reciprocal"))) {
+  if (
+    str.includes("fraction") &&
+    (str.includes("divide") ||
+      str.includes("÷") ||
+      str.includes("kcf") ||
+      str.includes("reciprocal"))
+  ) {
     return { kind: "fraction-divide", icon: "🥞", label: "Divide Fractions Lab" };
   }
   if (str.includes("decimal") && (str.includes("multiply") || str.includes("product"))) {
@@ -50,16 +62,28 @@ function detectConceptTool(stemText) {
   if (str.includes("decimal") && (str.includes("divide") || str.includes("quotient"))) {
     return { kind: "decimal-quotient", icon: "🔢", label: "Divide Decimals Lab" };
   }
-  if (str.includes("decimal") && (str.includes("add") || str.includes("subtract") || str.includes("column"))) {
+  if (
+    str.includes("decimal") &&
+    (str.includes("add") || str.includes("subtract") || str.includes("column"))
+  ) {
     return { kind: "decimal-columns", icon: "🔢", label: "Decimal Column Lab" };
   }
-  if ((str.includes("divide") || str.includes("quotient") || str.includes("long division")) && str.includes("remainder")) {
+  if (
+    (str.includes("divide") || str.includes("quotient") || str.includes("long division")) &&
+    str.includes("remainder")
+  ) {
     return { kind: "long-division-builder", icon: "🧮", label: "Long Division Lab" };
   }
   if (str.includes("equation") || str.includes("balance scale")) {
     return { kind: "algebra-balance-scale", icon: "⚖️", label: "Balance Scale" };
   }
-  if (str.includes("inequality") || str.includes("greater than") || str.includes("less than") || str.includes("≤") || str.includes("≥")) {
+  if (
+    str.includes("inequality") ||
+    str.includes("greater than") ||
+    str.includes("less than") ||
+    str.includes("≤") ||
+    str.includes("≥")
+  ) {
     return { kind: "neon-inequality", icon: "📈", label: "Inequality Lab" };
   }
   if (str.includes("surface area") || str.includes("net") || str.includes("prism")) {
@@ -68,7 +92,12 @@ function detectConceptTool(stemText) {
   if (str.includes("area of") || str.includes("parallelogram") || str.includes("trapezoid")) {
     return { kind: "area-morph", icon: "📐", label: "Area Lab" };
   }
-  if (str.includes("coordinate") || str.includes("quadrant") || str.includes("ordered pair") || str.includes("x-axis")) {
+  if (
+    str.includes("coordinate") ||
+    str.includes("quadrant") ||
+    str.includes("ordered pair") ||
+    str.includes("x-axis")
+  ) {
     return { kind: "coordinate-navigator", icon: "📍", label: "Coordinate Navigator" };
   }
   if (str.includes("box plot") || str.includes("quartile") || str.includes("interquartile")) {
@@ -86,7 +115,14 @@ function detectConceptTool(stemText) {
 /**
  * Create a premium problem card. Returns { card, body, coinSlot, setResult }.
  */
-export function createProblemCard({ number, total, tier, typeLabel, stem, hasConversionChart } = {}) {
+export function createProblemCard({
+  number,
+  total,
+  tier,
+  typeLabel,
+  stem,
+  hasConversionChart,
+} = {}) {
   const card = document.createElement("article");
   card.className = "problem-card";
   card.setAttribute("aria-label", `Problem ${number} of ${total}`);

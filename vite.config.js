@@ -1,7 +1,7 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
-import { makeCopyFilter } from "./scripts/lib/copy-filter.mjs";
 import { defineConfig } from "vite";
+import { makeCopyFilter } from "./scripts/lib/copy-filter.mjs";
 
 function getLessonEntries() {
   const lessonsDir = resolve(__dirname, "lessons");

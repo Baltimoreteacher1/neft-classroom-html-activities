@@ -52,12 +52,16 @@ for (let i = 0; i < argv.length; i += 1) {
 }
 const slug = positionals[0];
 if (!slug || !/^[a-z][a-z0-9-]*[a-z0-9]$/.test(slug)) {
-  console.error("usage: node scripts/new-surface.mjs <kebab-slug> --title \"Name\" [--icon 🧭] [--tag Label] [--blurb \"…\"] [--route /x] [--dry-run]");
+  console.error(
+    'usage: node scripts/new-surface.mjs <kebab-slug> --title "Name" [--icon 🧭] [--tag Label] [--blurb "…"] [--route /x] [--dry-run]',
+  );
   process.exit(2);
 }
 const title = opt("--title");
 if (!title) {
-  console.error("new-surface: --title is required (it becomes the <title>, the hub card heading, and the aria label).");
+  console.error(
+    "new-surface: --title is required (it becomes the <title>, the hub card heading, and the aria label).",
+  );
   process.exit(2);
 }
 const icon = opt("--icon", "🧭");
@@ -67,7 +71,9 @@ const route = opt("--route", `/${slug}`);
 const dir = join(ROOT, "curriculum", slug);
 
 if (existsSync(dir)) {
-  console.error(`new-surface: curriculum/${slug}/ already exists. Pick another slug or edit it directly.`);
+  console.error(
+    `new-surface: curriculum/${slug}/ already exists. Pick another slug or edit it directly.`,
+  );
   process.exit(1);
 }
 
@@ -341,7 +347,9 @@ const routes = JSON.parse(routesRaw);
 const dest = `/curriculum/${slug}/`;
 const clash = (routes.redirects || []).find((r) => r.source === route);
 if (clash) {
-  console.error(`new-surface: ${route} already redirects to ${clash.destination}. Pass a different --route.`);
+  console.error(
+    `new-surface: ${route} already redirects to ${clash.destination}. Pass a different --route.`,
+  );
   process.exit(1);
 }
 /* Text insertion, not JSON.stringify of the whole object. This file is not
@@ -352,7 +360,9 @@ if (clash) {
 const REDIR_START = routesRaw.indexOf('\n  "redirects": [');
 const REDIR_END = REDIR_START === -1 ? -1 : routesRaw.indexOf("\n  ],", REDIR_START);
 if (REDIR_END === -1) {
-  console.error("new-surface: could not locate the redirects array in data/routes.json. Add the route by hand.");
+  console.error(
+    "new-surface: could not locate the redirects array in data/routes.json. Add the route by hand.",
+  );
 } else {
   const entry = `,\n    {\n      "source": "${route}",\n      "destination": "${dest}",\n      "status": 301\n    }`;
   editFile("data/routes.json", routesRaw.slice(0, REDIR_END) + entry + routesRaw.slice(REDIR_END));
@@ -363,7 +373,9 @@ const hubPath = join(ROOT, "curriculum/index.html");
 const hub = readFileSync(hubPath, "utf8");
 const ANCHOR = '\n          <div class="features-section-header hub-teacher-only">';
 if (!hub.includes(ANCHOR)) {
-  console.error("new-surface: could not find the hub card anchor in curriculum/index.html. Add the card by hand; everything else still applied.");
+  console.error(
+    "new-surface: could not find the hub card anchor in curriculum/index.html. Add the card by hand; everything else still applied.",
+  );
 } else {
   const card = `
           <section class="mailbox-feature cns-feature" aria-labelledby="cns-${slug}-feature-title">
@@ -384,12 +396,14 @@ if (!hub.includes(ANCHOR)) {
 /* --- 8. qa-run coverage: so editing this surface stays on the fast lane ---- */
 const qaPath = join(ROOT, "scripts/qa-run.mjs");
 const qa = readFileSync(qaPath, "utf8");
-const COV_ANCHOR = '  [/^curriculum\\//,';
+const COV_ANCHOR = "  [/^curriculum\\//,";
 if (qa.includes(COV_ANCHOR)) {
   const rule = `  [/^curriculum\\/${slug}\\//, ["validate:${slug}"]],\n`;
   editFile("scripts/qa-run.mjs", qa.replace(COV_ANCHOR, `${rule}${COV_ANCHOR}`));
 } else {
-  console.error("new-surface: could not find the qa-run coverage anchor; add a rule for this slug by hand.");
+  console.error(
+    "new-surface: could not find the qa-run coverage anchor; add a rule for this slug by hand.",
+  );
 }
 
 /* --- Apply ---------------------------------------------------------------- */
