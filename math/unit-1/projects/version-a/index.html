@@ -905,8 +905,8 @@
             <div class="card-icon gold">📖</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Key Words</span>
-                <span class="es-text">Palabras clave</span>
+                <span class="en-text">Step 1 — Key Words</span>
+                <span class="es-text">Paso 1 — Palabras clave</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Learn these 4 math words before you begin</span>
@@ -1021,8 +1021,8 @@
             <div class="card-icon">🎁</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 1 — Build the Goodie Bags</span>
-                <span class="es-text">Paso 1 — Preparar las bolsas de regalos</span>
+                <span class="en-text">Step 2 — Build the Goodie Bags</span>
+                <span class="es-text">Paso 2 — Preparar las bolsas de regalos</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Use GCF to make equal bags with no leftovers</span>
@@ -1308,8 +1308,8 @@
             <div class="card-icon teal">⏱️</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 2 — Sync the Entertainment</span>
-                <span class="es-text">Paso 2 — Sincronizar el entretenimiento</span>
+                <span class="en-text">Step 3 — Sync the Entertainment</span>
+                <span class="es-text">Paso 3 — Sincronizar el entretenimiento</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
@@ -1543,8 +1543,8 @@
             <div class="card-icon gold">💵</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 3 — Track Your Budget</span>
-                <span class="es-text">Paso 3 — Monitorear tu presupuesto</span>
+                <span class="en-text">Step 4 — Track Your Budget</span>
+                <span class="es-text">Paso 4 — Monitorear tu presupuesto</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Add up costs, then divide to find cost per guest</span>
@@ -1968,8 +1968,8 @@
             <div class="card-icon teal">👥</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 4 — Compare With a Partner</span>
-                <span class="es-text">Paso 4 — Comparar con un compañero</span>
+                <span class="en-text">Step 5 — Compare With a Partner</span>
+                <span class="es-text">Paso 5 — Comparar con un compañero</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
@@ -2145,8 +2145,8 @@
             <div class="card-icon green">🏆</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 5 — Finish &amp; Submit</span>
-                <span class="es-text">Paso 5 — Terminar y entregar</span>
+                <span class="en-text">Step 6 — Finish &amp; Submit</span>
+                <span class="es-text">Paso 6 — Terminar y entregar</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Write your pitch, check the list, get your score</span>
@@ -2485,6 +2485,7 @@
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
 
         handleLevelPreset(n);
+        saveWizard();
       }
 
       // ---- Language toggle ----
@@ -2596,6 +2597,7 @@
         document.getElementById("step-" + n).classList.add("active");
         buildTrail();
         updateProgress();
+        saveWizard();
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
@@ -2699,8 +2701,8 @@
                     : '<br><span style="color:var(--green)"><strong>✅ Correct Distributive Property GCF!</strong></span>';
                 } else {
                   feedback += isEs
-                    ? `<br><span style="color:var(--coral)">❌ Aún no es correcto. Debería ser: ${g}(${a / g} + ${b / g})</span>`
-                    : `<br><span style="color:var(--coral)">❌ Not quite correct. Should match: ${g}(${a / g} + ${b / g})</span>`;
+                    ? `<br><span style="color:var(--coral)">❌ Aún no es correcto. Estrategia: escribe el MCD afuera del paréntesis, luego divide cada número original entre el MCD para obtener los dos términos de adentro.</span>`
+                    : `<br><span style="color:var(--coral)">❌ Not quite correct. Strategy: write the GCF outside the parentheses, then divide each original number by the GCF to get the two terms inside.</span>`;
                 }
               } else {
                 feedback += isEs
@@ -2727,8 +2729,8 @@
           } else {
             // 3rd+ wrong: reveal the worked value/path so the student isn't stuck
             feedback = isEs
-              ? `<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto.</span><br><small>✅ Camino resuelto: MCD(${a}, ${b}) = <strong>${g}</strong>.</small>`
-              : `<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet.</span><br><small>✅ Worked path: GCF(${a}, ${b}) = <strong>${g}</strong>.</small>`;
+              ? `<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto.</span><br><small>💡 Estrategia: mira las dos listas de factores de abajo. Busca los factores que aparecen en AMBAS listas y elige el más grande.</small>`
+              : `<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet.</span><br><small>💡 Strategy: look at the two factor lists below. Find the factors that appear in BOTH lists, then pick the largest one.</small>`;
             feedback += `<br><small>${isEs ? "Factores" : "Factors"} of ${a}: ${getFactors(a).join(", ")} &nbsp;|&nbsp; ${isEs ? "Factores" : "Factors"} of ${b}: ${getFactors(b).join(", ")}</small>`;
           }
         }
@@ -2792,8 +2794,8 @@
             const musMultiples = Array.from({ length: 5 }, (_, i) => a * (i + 1));
             const bubMultiples = Array.from({ length: 5 }, (_, i) => b * (i + 1));
             feedback = isEs
-              ? `<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto.</span><br><small>✅ Camino resuelto: MCM(${a}, ${b}) = <strong>${l}</strong>.</small>`
-              : `<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet.</span><br><small>✅ Worked path: LCM(${a}, ${b}) = <strong>${l}</strong>.</small>`;
+              ? `<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto.</span><br><small>💡 Estrategia: mira las dos listas de múltiplos de abajo. Busca el primer número que aparece en AMBAS listas.</small>`
+              : `<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet.</span><br><small>💡 Strategy: look at the two multiple lists below. Find the first number that appears in BOTH lists.</small>`;
             feedback += `<br><small>Música (×${a}): ${musMultiples.join(", ")}… &nbsp;|&nbsp; Burbujas (×${b}): ${bubMultiples.join(", ")}…</small>`;
           }
         }
@@ -3001,6 +3003,45 @@
       }
 
       // ---- Init ----
+      // ---- Save & restore the wizard position (level, current step, visited steps) ----
+      const WIZ_KEY = "nt-wizard:" + location.pathname;
+      function saveWizard() {
+        try {
+          const body = document.getElementById("body") || document.body;
+          let lvl = 1;
+          if (body.classList.contains("level-0")) lvl = 0;
+          else if (body.classList.contains("level-2")) lvl = 2;
+          localStorage.setItem(
+            WIZ_KEY,
+            JSON.stringify({ level: lvl, step: currentStep, visited: Array.from(visited) }),
+          );
+        } catch (e) {}
+      }
+      function restoreWizard() {
+        try {
+          const raw = localStorage.getItem(WIZ_KEY);
+          if (!raw) return;
+          const saved = JSON.parse(raw);
+          if (!saved) return;
+          if (saved.level === 0 || saved.level === 1 || saved.level === 2) {
+            setLevel(saved.level);
+          }
+          if (Array.isArray(saved.visited)) {
+            saved.visited.forEach(function (n) {
+              if (n >= 1 && n <= STEPS.length) visited.add(n);
+            });
+          }
+          const step = saved.step;
+          if (step >= 1 && step <= STEPS.length && document.getElementById("step-" + step)) {
+            document.getElementById("step-" + currentStep).classList.remove("active");
+            currentStep = step;
+            visited.add(step);
+            document.getElementById("step-" + step).classList.add("active");
+          }
+        } catch (e) {}
+      }
+
+      restoreWizard();
       buildTrail();
       updateProgress();
 

@@ -1819,7 +1819,7 @@
         </div>
 
         <div class="nav-row">
-          <button class="nav-btn ghost" onclick="goStep(4)">
+          <button class="nav-btn ghost" onclick="goStep(3)">
             <span class="en-text">← Back</span>
             <span class="es-text">← Atrás</span>
           </button>
@@ -2155,6 +2155,23 @@
               <span class="es-text"
                 >Escribí un discurso de presentación utilizando mis cálculos
                 reales.</span
+              >
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="ck8"
+                name="ck8"
+                data-save
+                onchange="autoSave()"
+              />
+              <span class="en-text"
+                >I generated my report and turned it in the way my teacher asked
+                (print, download, or show the screen).</span
+              >
+              <span class="es-text"
+                >Generé mi informe y lo entregué como pidió mi maestro
+                (imprimir, descargar o mostrar la pantalla).</span
               >
             </li>
           </ul>
@@ -3390,10 +3407,47 @@
       // ---- Done Button Localized Handler ----
       function onDoneClick() {
         const isEs = document.getElementById("body").classList.contains("es");
+        // Name what is still missing instead of celebrating an empty project.
+        const ids = ["ck1", "ck2", "ck3", "ck4", "ck5", "ck6", "ck7", "ck8"];
+        const missing = ids.filter((id) => {
+          const el = document.getElementById(id);
+          return el && !el.checked;
+        }).length;
+        const reportReady = !!document
+          .getElementById("reportBox")
+          .textContent.trim();
+
+        if (missing > 0 || !reportReady) {
+          const parts = [];
+          if (missing > 0) {
+            parts.push(
+              isEs
+                ? `Todavía hay ${missing} casilla(s) sin marcar en la Lista de Verificación.`
+                : `You still have ${missing} unchecked box(es) on the Project Checklist.`,
+            );
+          }
+          if (!reportReady) {
+            parts.push(
+              isEs
+                ? 'Aún no has presionado "📝 Generar Resumen" para crear tu informe.'
+                : 'You have not pressed "📝 Generate Summary" yet to create your report.',
+            );
+          }
+          alert(
+            (isEs ? "Casi listo. " : "Almost there. ") +
+              parts.join(" ") +
+              (isEs
+                ? " Termina eso y vuelve a presionar este botón."
+                : " Finish that, then press this button again."),
+          );
+          return;
+        }
+
+        playConfetti();
         alert(
           isEs
-            ? "¡Increíble trabajo! 🎉 Muestra esta página y tu informe generado a tu maestro."
-            : "Amazing work! 🎉 Show this page and your generated report to your teacher.",
+            ? "¡Increíble trabajo! 🎉 Entrega tu informe: imprímelo, descárgalo o muéstralo a tu maestro."
+            : "Amazing work! 🎉 Turn in your report: print it, download it, or show it to your teacher.",
         );
       }
 
@@ -3581,6 +3635,7 @@
           "ck5",
           "ck6",
           "ck7",
+          "ck8",
         ];
         const data = {};
         fields.forEach((f) => {
@@ -3593,11 +3648,12 @@
             }
           }
         });
-        data.level = document
-          .getElementById("body")
-          .classList.contains("level-2")
+        const bodyEl = document.getElementById("body");
+        data.level = bodyEl.classList.contains("level-2")
           ? 2
-          : 1;
+          : bodyEl.classList.contains("level-0")
+            ? 0
+            : 1;
         data.lang = document.getElementById("body").classList.contains("es")
           ? "es"
           : "en";
@@ -3642,11 +3698,11 @@
             }
           }
 
-          if (data.level) setLevel(data.level);
-          if (data.currentStep) {
-            currentStep = data.currentStep;
-            visited.add(data.currentStep);
+          const savedLevel = Number(data.level);
+          if (savedLevel === 0 || savedLevel === 1 || savedLevel === 2) {
+            setLevel(savedLevel);
           }
+          const savedStep = Number(data.currentStep);
 
           Object.keys(data).forEach((key) => {
             if (key === "level" || key === "currentStep" || key === "lang")
@@ -3661,6 +3717,12 @@
             }
           });
           recalcAll();
+          // Restore the step LAST, through goStep(), so the visible panel, the
+          // step trail and the progress bar all agree with the saved position.
+          if (savedStep >= 1 && savedStep <= STEPS.length) {
+            for (let i = 1; i <= savedStep; i++) visited.add(i);
+            goStep(savedStep);
+          }
         } catch (e) {
           console.error("Auto-load failed: ", e);
         }

@@ -908,7 +908,8 @@
             <div class="card-icon gold">📖</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Key Words</span><span class="es-text">Palabras clave</span>
+                <span class="en-text">Step 1 — Key Words</span
+                ><span class="es-text">Paso 1 — Palabras clave</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Learn these 4 math words before you begin</span
@@ -1029,8 +1030,8 @@
             <div class="card-icon">🏷️</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 1 — Set Your Prices</span
-                ><span class="es-text">Paso 1 — Establece tus precios</span>
+                <span class="en-text">Step 2 — Set Your Prices</span
+                ><span class="es-text">Paso 2 — Establece tus precios</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Enter original prices and calculate discount options</span
@@ -1462,8 +1463,8 @@
             <div class="card-icon teal">⚖️</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 2 — Unit Rate Deals</span
-                ><span class="es-text">Paso 2 — Ofertas de tasas unitarias</span>
+                <span class="en-text">Step 3 — Unit Rate Deals</span
+                ><span class="es-text">Paso 3 — Ofertas de tasas unitarias</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Compare bundle options by finding the cost per item</span
@@ -1845,8 +1846,8 @@
             <div class="card-icon gold">🧾</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 3 — Sales Tax</span
-                ><span class="es-text">Paso 3 — Impuesto sobre las ventas</span>
+                <span class="en-text">Step 4 — Sales Tax</span
+                ><span class="es-text">Paso 4 — Impuesto sobre las ventas</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Use an illustrative taxable-item rate and compare rates</span
@@ -2292,8 +2293,8 @@
             <div class="card-icon teal">👥</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 4 — Partner Shop</span
-                ><span class="es-text">Paso 4 — Tienda de compañero</span>
+                <span class="en-text">Step 5 — Partner Shop</span
+                ><span class="es-text">Paso 5 — Tienda de compañero</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Compare your pop-up shop prices with a classmate</span
@@ -2518,8 +2519,8 @@
             <div class="card-icon green">🏆</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 5 — Finish &amp; Submit</span
-                ><span class="es-text">Paso 5 — Terminar y enviar</span>
+                <span class="en-text">Step 6 — Finish &amp; Submit</span
+                ><span class="es-text">Paso 6 — Terminar y enviar</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
@@ -3966,12 +3967,48 @@
         a.click();
       }
 
+      // Names exactly what is still missing instead of congratulating a blank
+      // page, so the student knows what to fix before turning the project in.
       function finishProject() {
-        const msg =
+        const missing = [];
+        const boxes = document.querySelectorAll("#checklist input[type=checkbox]");
+        let checked = 0;
+        boxes.forEach((b) => {
+          if (b.checked) checked++;
+        });
+        if (boxes.length && checked < boxes.length) {
+          missing.push(
+            lang === "es"
+              ? `Marca los ${boxes.length - checked} punto(s) que faltan en la lista de verificación.`
+              : `Tick the ${boxes.length - checked} remaining item(s) on the Project Checklist.`,
+          );
+        }
+        if (!(document.getElementById("pitch").value || "").trim()) {
+          missing.push(
+            lang === "es" ? "Escribe el discurso de tu tienda." : "Write your pop-up shop pitch.",
+          );
+        }
+        if (!document.getElementById("reportBox").classList.contains("show")) {
+          missing.push(
+            lang === "es"
+              ? "Presiona “Generar mi informe” para crear tu resumen."
+              : "Press “Generate My Report” to build your summary.",
+          );
+        }
+        if (missing.length) {
+          alert(
+            (lang === "es"
+              ? "Casi listo. Antes de entregar:\n\n• "
+              : "Almost there. Before you turn it in:\n\n• ") + missing.join("\n• "),
+          );
+          return;
+        }
+        playConfetti();
+        alert(
           lang === "es"
-            ? "¡Felicitaciones! 🎉 Comparte esta página y tu resumen generado con tu maestro."
-            : "Congratulations! 🎉 Share this page and your generated summary with your teacher.";
-        alert(msg);
+            ? "¡Felicitaciones! 🎉 Ya puedes entregar: imprime o descarga tu informe de resumen y dáselo a tu maestro."
+            : "Congratulations! 🎉 You are ready to turn in: print or download your summary report and hand it to your teacher.",
+        );
       }
 
       // ---- Save/Load State (Local Storage backup) ----
@@ -3989,6 +4026,7 @@
         state["currentStep"] = currentStep;
         state["levelNum"] = levelNum;
         state["lang"] = lang;
+        state["visited"] = Array.from(visited);
         localStorage.setItem("popup_shop_state", JSON.stringify(state));
       }
 
@@ -4009,8 +4047,13 @@
           if (state["lang"]) {
             lang = state["lang"];
           }
-          if (state["levelNum"]) {
-            levelNum = parseInt(state["levelNum"]);
+          if (state["levelNum"] !== undefined) {
+            // setLevel() also repaints the level bar, so the highlighted button
+            // matches the level the page is actually rendering.
+            setLevel(parseInt(state["levelNum"]));
+          }
+          if (Array.isArray(state["visited"])) {
+            state["visited"].forEach((n) => visited.add(parseInt(n)));
           }
           if (state["currentStep"]) {
             currentStep = parseInt(state["currentStep"]);

@@ -148,6 +148,15 @@
         padding: 8px 12px;
         border-radius: 10px;
         transition: background 0.15s;
+        background: none;
+        border: 0;
+        font: inherit;
+        color: inherit;
+        text-align: left;
+      }
+      .step-trail-item:focus-visible {
+        outline: 3px solid var(--blue);
+        outline-offset: 2px;
       }
       .step-trail-item:hover {
         background: var(--blue-lt);
@@ -839,16 +848,16 @@
           <span class="es-text">Versión A</span>
         </span>
       </div>
-      <div class="level-bar">
-        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+      <div class="level-bar" role="group" aria-label="Choose your level">
+        <button type="button" class="level-btn" id="btn-lv0" aria-pressed="false" onclick="setLevel(0)">
           <span class="en-text">🟠 Level 0 — Extra Support</span>
           <span class="es-text">🟠 Nivel 0 — Apoyo Extra</span>
         </button>
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+        <button type="button" class="level-btn active" id="btn-lv1" aria-pressed="true" onclick="setLevel(1)">
           <span class="en-text">🟢 Level 1 — One-Step</span>
           <span class="es-text">🟢 Nivel 1 — Un paso</span>
         </button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+        <button type="button" class="level-btn" id="btn-lv2" aria-pressed="false" onclick="setLevel(2)">
           <span class="en-text">🔵 Level 2 — Challenge</span>
           <span class="es-text">🔵 Nivel 2 — Desafío</span>
         </button>
@@ -896,8 +905,8 @@
             <div class="card-icon gold">📖</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Key Words</span>
-                <span class="es-text">Palabras clave</span>
+                <span class="en-text">Step 1 — Key Words</span>
+                <span class="es-text">Paso 1 — Palabras clave</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Learn these 5 math words before you begin</span>
@@ -1028,8 +1037,8 @@
             <div class="card-icon">🔒</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 1 — Set the Code</span>
-                <span class="es-text">Paso 1 — Configurar el código</span>
+                <span class="en-text">Step 2 — Set the Code</span>
+                <span class="es-text">Paso 2 — Configurar el código</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
@@ -1374,8 +1383,8 @@
             <div class="card-icon teal">🔑</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 2 — Solve a Clue Equation</span>
-                <span class="es-text">Paso 2 — Resolver una ecuación de pista</span>
+                <span class="en-text">Step 3 — Solve a Clue Equation</span>
+                <span class="es-text">Paso 3 — Resolver una ecuación de pista</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
@@ -1626,8 +1635,8 @@
             <div class="card-icon gold">⚖️</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 3 — Check &amp; Compare</span>
-                <span class="es-text">Paso 3 — Verificar y comparar</span>
+                <span class="en-text">Step 4 — Check &amp; Compare</span>
+                <span class="es-text">Paso 4 — Verificar y comparar</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
@@ -1763,7 +1772,7 @@
               text-align: center;
             "
           >
-            <span style="color: var(--muted)">Choose a lock in Step 2 first!</span>
+            <span style="color: var(--muted)">Choose a lock in Step 3 first!</span>
           </div>
 
           <button class="calc-btn gold" onclick="verifyCheck()">
@@ -1914,8 +1923,8 @@
             <div class="card-icon teal">👥</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 4 — Partner Clues</span>
-                <span class="es-text">Paso 4 — Pistas del compañero</span>
+                <span class="en-text">Step 5 — Partner Clues</span>
+                <span class="es-text">Paso 5 — Pistas del compañero</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Swap one clue <span class="vocab-word" data-vocab="equation" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('equation')">equation</span> with a partner and solve theirs</span>
@@ -1938,6 +1947,25 @@
             <span class="es-text"
               >Intercambia una ecuación de pista con un compañero. Ingresa su nombre y ecuación a
               continuación, luego resuélvela paso a paso usando operaciones inversas.</span
+            >
+          </div>
+
+          <div class="instruct">
+            <strong>
+              <span class="en-text">No partner today?</span>
+              <span class="es-text">¿No tienes compañero/a hoy?</span>
+            </strong>
+            <span class="en-text"
+              >You can still finish this step. Write "Solo" for the name, then pick any clue
+              equation from the Step 3 menu that you did NOT already solve and use it as the
+              partner clue. Solve it the same way — name the operation, apply the inverse to both
+              sides, then check by substitution.</span
+            >
+            <span class="es-text"
+              >Igual puedes terminar este paso. Escribe "Solo" en el nombre y elige del menú del
+              Paso 3 cualquier ecuación de pista que aún NO hayas resuelto, y úsala como la pista
+              del compañero. Resuélvela igual: nombra la operación, aplica la inversa a ambos
+              lados y comprueba por sustitución.</span
             >
           </div>
 
@@ -2130,8 +2158,8 @@
             <div class="card-icon green">🏆</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 5 — Finish &amp; Submit</span>
-                <span class="es-text">Paso 5 — Finalizar y entregar</span>
+                <span class="en-text">Step 6 — Finish &amp; Submit</span>
+                <span class="es-text">Paso 6 — Finalizar y entregar</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
@@ -2380,6 +2408,8 @@
           <pre class="report-box" id="reportBox"></pre>
         </div>
 
+        <div class="instruct" id="finishStatus" role="status" tabindex="-1" hidden></div>
+
         <div class="nav-row">
           <button class="nav-btn ghost" onclick="goStep(5)">
             <span class="en-text">← Back</span>
@@ -2493,9 +2523,12 @@
         document.getElementById("body").className = document
           .getElementById("body")
           .className.replace(/level-\d/, "level-" + n);
-        document.getElementById("btn-lv0").classList.toggle("active", n === 0);
-        document.getElementById("btn-lv1").classList.toggle("active", n === 1);
-        document.getElementById("btn-lv2").classList.toggle("active", n === 2);
+        [0, 1, 2].forEach(function (i) {
+          const b = document.getElementById("btn-lv" + i);
+          if (!b) return;
+          b.classList.toggle("active", n === i);
+          b.setAttribute("aria-pressed", n === i ? "true" : "false");
+        });
 
         handleLevelPreset(n);
       }
@@ -2508,10 +2541,14 @@
         trail.innerHTML = STEPS.map((s, i) => {
           const label = isEs ? s.labelEs : s.labelEn;
           const isLast = i === STEPS.length - 1;
-          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" role="button" tabindex="0" onclick="goStep(${s.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(${s.id});}">
-            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id}</span>
+          const isNow = s.id === currentStep;
+          const isDone = visited.has(s.id) && !isNow;
+          const goEn = `Go to step ${s.id} of ${STEPS.length}: ${label}`;
+          const goEs = `Ir al paso ${s.id} de ${STEPS.length}: ${label}`;
+          return `<button type="button" class="step-trail-item${isNow ? " active" : ""}${isDone ? " done" : ""}"${isNow ? ' aria-current="step"' : ""} aria-label="${isEs ? goEs : goEn}" onclick="goStep(${s.id})">
+            <span class="s-num" aria-hidden="true">${isDone ? "✓" : s.id}</span>
             <span class="s-label">${label}</span>
-          </span>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
+          </button>${!isLast ? '<span class="step-arrow" aria-hidden="true">›</span>' : ""}`;
         }).join("");
       }
 
@@ -2811,7 +2848,7 @@
         const container = document.getElementById("check-template-container");
         const isEs = document.body.classList.contains("es");
         if (!sel) {
-          container.innerHTML = `<span style="color: var(--muted)">${isEs ? "¡Elige y resuelve una pista de cerradura en el Paso 2 primero!" : "Choose and solve a lock clue in Step 2 first!"}</span>`;
+          container.innerHTML = `<span style="color: var(--muted)">${isEs ? "¡Elige y resuelve una pista de cerradura en el Paso 3 primero!" : "Choose and solve a lock clue in Step 3 first!"}</span>`;
           return;
         }
 
@@ -2901,11 +2938,11 @@
               isEs
                 ? `
             <strong>❌ Verificación Fallida.</strong><br>
-            Antes de volver a intentarlo: asegúrate de usar exactamente la misma solución que encontraste en el Paso 2, y vuelve a calcular con cuidado qué obtienes al sustituirla.
+            Antes de volver a intentarlo: asegúrate de usar exactamente la misma solución que encontraste en el Paso 3, y vuelve a calcular con cuidado qué obtienes al sustituirla.
           `
                 : `
             <strong>❌ Check Failed.</strong><br>
-            Before you try again: make sure you're using the exact same solution you found in Step 2, and carefully recompute what you get when you substitute it in.
+            Before you try again: make sure you're using the exact same solution you found in Step 3, and carefully recompute what you get when you substitute it in.
           `,
             );
           } else if (tries === 2) {
@@ -3551,13 +3588,73 @@
         }
       }
 
+      // ---- Finish & Turn In ----
+      function finishStatusRead() {
+        const boxes = Array.prototype.slice.call(
+          document.querySelectorAll(".checklist input[type='checkbox']"),
+        );
+        const missing = boxes.filter((b) => !b.checked).length;
+        const pitchEl = document.getElementById("pitch");
+        const words = pitchEl ? pitchEl.value.trim().split(/\s+/).filter(Boolean).length : 0;
+        return { total: boxes.length, missing: missing, words: words };
+      }
+
       function alertDone() {
         const isEs = document.body.classList.contains("es");
-        alert(
-          isEs
-            ? "¡Felicitaciones! 🏆 Has diseñado una sala de escape. Muestra esta página a tu profesor."
-            : "Congratulations! 🏆 You have designed an escape room. Show this page to your teacher.",
-        );
+        const st = finishStatusRead();
+        const todo = [];
+        if (st.total && st.missing > 0) {
+          todo.push(
+            isEs
+              ? `Faltan ${st.missing} de ${st.total} casillas de la lista de verificacion.`
+              : `${st.missing} of ${st.total} checklist boxes are still unchecked.`,
+          );
+        }
+        if (st.words < 25) {
+          todo.push(
+            isEs
+              ? "Tu presentacion todavia necesita de 3 a 5 oraciones completas."
+              : "Your written pitch still needs 3-5 full sentences.",
+          );
+        }
+        // Generating the summary is what records this project as complete.
+        try {
+          if (typeof buildReport === "function") buildReport();
+        } catch (_e) {}
+
+        const box = document.getElementById("finishStatus");
+        if (!box) {
+          alert(
+            todo.length
+              ? (isEs ? "Casi listo: " : "Almost there: ") + todo.join(" ")
+              : isEs
+                ? "Felicitaciones! Muestra esta pagina a tu profesor."
+                : "Congratulations! Show this page to your teacher.",
+          );
+          return;
+        }
+        if (todo.length) {
+          box.className = "instruct";
+          box.innerHTML =
+            "<strong>" +
+            (isEs ? "Casi listo — falta esto:" : "Almost there — finish these first:") +
+            "</strong><ul style=\"margin:8px 0 0 20px\">" +
+            todo.map((t) => "<li>" + t + "</li>").join("") +
+            "</ul>";
+        } else {
+          box.className = "instruct green";
+          box.innerHTML =
+            "<strong>" +
+            (isEs ? "Listo para entregar!" : "Ready to turn in!") +
+            "</strong> " +
+            (isEs
+              ? "Tu resumen esta generado abajo. Descargalo o imprimelo y entregaselo a tu profesor."
+              : "Your summary is generated below. Download or print it, then hand it in to your teacher.");
+        }
+        box.hidden = false;
+        try {
+          box.focus();
+        } catch (_e) {}
       }
 
       // ---- Init ----

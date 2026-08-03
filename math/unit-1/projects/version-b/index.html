@@ -831,8 +831,8 @@
             <div class="card-icon gold">📖</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Key Words</span>
-                <span class="es-text">Palabras Clave</span>
+                <span class="en-text">Step 1 — Key Words</span>
+                <span class="es-text">Paso 1 — Palabras Clave</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Learn these 4 math words before you start building</span>
@@ -948,8 +948,8 @@
             <div class="card-icon">🧰</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 1 — Build Equal Tool Kits</span>
-                <span class="es-text">Paso 1 — Construir Kits de Herramientas Iguales</span>
+                <span class="en-text">Step 2 — Build Equal Tool Kits</span>
+                <span class="es-text">Paso 2 — Construir Kits de Herramientas Iguales</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
@@ -1250,8 +1250,8 @@
             <div class="card-icon teal">🔋</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 2 — Sync the Charging Schedule</span>
-                <span class="es-text">Paso 2 — Sincronizar el Horario de Carga</span>
+                <span class="en-text">Step 3 — Sync the Charging Schedule</span>
+                <span class="es-text">Paso 3 — Sincronizar el Horario de Carga</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
@@ -1438,8 +1438,8 @@
             <div class="card-icon gold">💰</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 3 — Track the Parts Budget</span>
-                <span class="es-text">Paso 3 — Monitorear el Presupuesto de Piezas</span>
+                <span class="en-text">Step 4 — Track the Parts Budget</span>
+                <span class="es-text">Paso 4 — Monitorear el Presupuesto de Piezas</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
@@ -1884,8 +1884,8 @@
             <div class="card-icon teal">👥</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 4 — Compare With a Partner</span>
-                <span class="es-text">Paso 4 — Comparar con un Compañero</span>
+                <span class="en-text">Step 5 — Compare With a Partner</span>
+                <span class="es-text">Paso 5 — Comparar con un Compañero</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
@@ -2063,8 +2063,8 @@
             <div class="card-icon green">🏆</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 5 — Finish and Submit</span>
-                <span class="es-text">Paso 5 — Finalizar y Enviar</span>
+                <span class="en-text">Step 6 — Finish and Submit</span>
+                <span class="es-text">Paso 6 — Finalizar y Enviar</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Write your pitch, check the list, get your score</span>
@@ -2434,6 +2434,7 @@
         document.getElementById("btn-lv0").classList.toggle("active", n === 0);
         document.getElementById("btn-lv1").classList.toggle("active", n === 1);
         document.getElementById("btn-lv2").classList.toggle("active", n === 2);
+        saveWizard();
       }
 
       function buildTrail() {
@@ -2477,6 +2478,7 @@
         document.getElementById("step-" + n).classList.add("active");
         buildTrail();
         updateProgress();
+        saveWizard();
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
@@ -2615,8 +2617,8 @@
                     : '<br><span style="color:var(--green)"><strong>✅ Correct Distributive Property GCF!</strong></span>';
                 } else {
                   feedback += isEs
-                    ? `<br><span style="color:var(--coral)">❌ Aún no es correcto. Debería ser: ${g}(${a / g} + ${b / g})</span>`
-                    : `<br><span style="color:var(--coral)">❌ Not quite correct. Should match: ${g}(${a / g} + ${b / g})</span>`;
+                    ? `<br><span style="color:var(--coral)">❌ Aún no es correcto. Estrategia: escribe el MCD afuera del paréntesis, luego divide cada número original entre el MCD para obtener los dos términos de adentro.</span>`
+                    : `<br><span style="color:var(--coral)">❌ Not quite correct. Strategy: write the GCF outside the parentheses, then divide each original number by the GCF to get the two terms inside.</span>`;
                 }
               } else {
                 feedback += isEs
@@ -2662,8 +2664,8 @@
             showReadout(
               "gcf-out",
               (isEs
-                ? `<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto.</span><br><small>✅ Camino resuelto: MCD(${a}, ${b}) = <strong>${g}</strong>.</small>`
-                : `<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet.</span><br><small>✅ Worked path: GCF(${a}, ${b}) = <strong>${g}</strong>.</small>`) +
+                ? `<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto.</span><br><small>💡 Estrategia: mira las dos listas de factores de abajo. Busca los factores que aparecen en AMBAS listas y elige el más grande.</small>`
+                : `<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet.</span><br><small>💡 Strategy: look at the two factor lists below. Find the factors that appear in BOTH lists, then pick the largest one.</small>`) +
                 "<br><small>" +
                 (isEs ? "Factores de " : "Factors of ") +
                 a +
@@ -2790,8 +2792,8 @@
             showReadout(
               "lcm-out",
               (isEs
-                ? `<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto.</span><br><small>✅ Camino resuelto: MCM(${a}, ${b}) = <strong>${l}</strong>.</small>`
-                : `<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet.</span><br><small>✅ Worked path: LCM(${a}, ${b}) = <strong>${l}</strong>.</small>`) +
+                ? `<span style="color:var(--coral); font-weight:bold;">❌ Aún no es correcto.</span><br><small>💡 Estrategia: mira las dos listas de múltiplos de abajo. Busca el primer número que aparece en AMBAS listas.</small>`
+                : `<span style="color:var(--coral); font-weight:bold;">❌ Not quite correct yet.</span><br><small>💡 Strategy: look at the two multiple lists below. Find the first number that appears in BOTH lists.</small>`) +
                 "<br><small>Robot A (x" +
                 a +
                 "): " +
@@ -3224,6 +3226,45 @@
       }
 
       // Initialize
+      // ---- Save & restore the wizard position (level, current step, visited steps) ----
+      const WIZ_KEY = "nt-wizard:" + location.pathname;
+      function saveWizard() {
+        try {
+          const body = document.getElementById("body") || document.body;
+          let lvl = 1;
+          if (body.classList.contains("level-0")) lvl = 0;
+          else if (body.classList.contains("level-2")) lvl = 2;
+          localStorage.setItem(
+            WIZ_KEY,
+            JSON.stringify({ level: lvl, step: currentStep, visited: Array.from(visited) }),
+          );
+        } catch (e) {}
+      }
+      function restoreWizard() {
+        try {
+          const raw = localStorage.getItem(WIZ_KEY);
+          if (!raw) return;
+          const saved = JSON.parse(raw);
+          if (!saved) return;
+          if (saved.level === 0 || saved.level === 1 || saved.level === 2) {
+            setLevel(saved.level);
+          }
+          if (Array.isArray(saved.visited)) {
+            saved.visited.forEach(function (n) {
+              if (n >= 1 && n <= STEPS.length) visited.add(n);
+            });
+          }
+          const step = saved.step;
+          if (step >= 1 && step <= STEPS.length && document.getElementById("step-" + step)) {
+            document.getElementById("step-" + currentStep).classList.remove("active");
+            currentStep = step;
+            visited.add(step);
+            document.getElementById("step-" + step).classList.add("active");
+          }
+        } catch (e) {}
+      }
+
+      restoreWizard();
       updateDynamicTexts();
 
       window.exportStudentBackup = function () {

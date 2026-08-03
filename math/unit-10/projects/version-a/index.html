@@ -1986,6 +1986,16 @@
                 >Escribí una propuesta de presentación y revisé la rúbrica de calificación.</span
               >
             </li>
+            <li>
+              <input type="checkbox" id="ck7" />
+              <span class="en-text"
+                >I generated my spec sheet and turned it in the way my teacher asked
+                (print, download, or show the screen).</span
+              ><span class="es-text"
+                >Generé mi hoja de especificaciones y la entregué como pidió mi maestro
+                (imprimir, descargar o mostrar la pantalla).</span
+              >
+            </li>
           </ul>
 
           <!-- Rubric -->
@@ -2246,7 +2256,7 @@
         } catch (e) {}
       }
 
-      // Low-floor ESOL scaffold: fill the real inputs with a worked example
+      // Low-floor support scaffold: fill the real inputs with a worked example
       // box (8" × 5" × 4") and its six face areas, then recompute.
       function loadExampleNumbers() {
         const vals = {
@@ -2386,11 +2396,16 @@
       }
 
       // ---- Navigation ----
+      const STEP_KEY = "u10ProjectA_step";
+
       function goStep(n) {
         if (n < 1 || n > STEPS.length) return;
         document.getElementById("step-" + currentStep).classList.remove("active");
         currentStep = n;
         visited.add(n);
+        try {
+          localStorage.setItem(STEP_KEY, String(n));
+        } catch (e) {}
         document.getElementById("step-" + n).classList.add("active");
         buildTrail();
         updateProgress();
@@ -2594,11 +2609,48 @@
       }
 
       function finishProject() {
-        if (isSpanish) {
-          alert("¡Felicitaciones! 🎉 Muestra esta hoja de especificaciones completa a tu maestro.");
-        } else {
-          alert("Congratulations! 🎉 Show this completed spec sheet to your teacher.");
+        // Name what is still missing instead of celebrating an empty project.
+        const ids = ["ck1", "ck2", "ck3", "ck4", "ck5", "ck6", "ck7"];
+        const missing = ids.filter((id) => {
+          const el = document.getElementById(id);
+          return el && !el.checked;
+        }).length;
+        const reportReady = !!document
+          .getElementById("reportBox")
+          .textContent.trim();
+
+        if (missing > 0 || !reportReady) {
+          const parts = [];
+          if (missing > 0) {
+            parts.push(
+              isSpanish
+                ? `Todavía hay ${missing} casilla(s) sin marcar en la Lista de Verificación.`
+                : `You still have ${missing} unchecked box(es) on the Project Checklist.`,
+            );
+          }
+          if (!reportReady) {
+            parts.push(
+              isSpanish
+                ? 'Aún no has presionado "📝 Generar Resumen" para crear tu hoja de especificaciones.'
+                : 'You have not pressed "📝 Generate Summary" yet to create your spec sheet.',
+            );
+          }
+          alert(
+            (isSpanish ? "Casi listo. " : "Almost there. ") +
+              parts.join(" ") +
+              (isSpanish
+                ? " Termina eso y vuelve a presionar este botón."
+                : " Finish that, then press this button again."),
+          );
+          return;
         }
+
+        playConfetti();
+        alert(
+          isSpanish
+            ? "¡Felicitaciones! 🎉 Entrega tu hoja de especificaciones: imprímela, descárgala o muéstrala a tu maestro."
+            : "Congratulations! 🎉 Turn in your spec sheet: print it, download it, or show it to your teacher.",
+        );
       }
 
       // ---- Math helpers ----
@@ -3556,7 +3608,7 @@
         const worldNote = document.getElementById("world-compare").value || "";
         const peerReflect = document.getElementById("peer-reflect").value || "";
 
-        const cks = ["ck1", "ck2", "ck3", "ck4", "ck5", "ck6"].map((id) => {
+        const cks = ["ck1", "ck2", "ck3", "ck4", "ck5", "ck6", "ck7"].map((id) => {
           const el = document.getElementById(id);
           return el ? (el.checked ? "✅" : "❌") : "❌";
         });
@@ -3614,6 +3666,7 @@
             `   [${cks[3]}] Costo del material de cartón calculado`,
             `   [${cks[4]}] Comparado lado a lado con un compañero`,
             `   [${cks[5]}] Propuesta escrita y revisada contra la rúbrica`,
+            `   [${cks[6]}] Hoja de especificaciones generada y entregada`,
             "",
             "═══════════════════════════════",
             `Generado: ${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}`,
@@ -3666,6 +3719,7 @@
             `   [${cks[3]}] Cardboard material cost calculated`,
             `   [${cks[4]}] Compared side-by-side with classmate`,
             `   [${cks[5]}] Pitch written & checked against rubric`,
+            `   [${cks[6]}] Spec sheet generated & turned in`,
             "",
             "═══════════════════════════════",
             `Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`,
@@ -3713,6 +3767,18 @@
       buildTrail();
       updateProgress();
       updateVolumeCalc();
+
+      // Resume the student at the step they left off on (their answers are
+      // restored separately by the shared save/resume engine).
+      (function restoreStep() {
+        try {
+          const saved = parseInt(localStorage.getItem(STEP_KEY), 10);
+          if (saved >= 1 && saved <= STEPS.length && saved !== currentStep) {
+            for (let i = 1; i <= saved; i++) visited.add(i);
+            goStep(saved);
+          }
+        } catch (e) {}
+      })();
 
     </script>
 
