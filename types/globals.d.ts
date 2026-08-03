@@ -347,6 +347,13 @@ interface Window {
   SpeechRecognition: any;
   webkitSpeechRecognition: any;
   webkitAudioContext: any;
+  /**
+   * `assets/formula-popup.js` publishes this so any page that loads the popup
+   * can open the vocab card for a term. It is looked up defensively
+   * (`if (window.openVocabModal)`) because pages that do not load the script
+   * simply will not have it.
+   */
+  openVocabModal?: (termOrKey: string) => void;
 }
 
 /**
