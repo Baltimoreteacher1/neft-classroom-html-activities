@@ -1329,7 +1329,12 @@ function renderNoticeAndWonder(host, config, state) {
   layout.className = "nw-layout";
 
   const objVisuals = resolveObjectiveVisuals(config);
-  const imgSrc = nw.image || (objVisuals && objVisuals.content && objVisuals.content.src ? objVisuals.content.src : null);
+  // Only ever show the lesson's OWN data-context image. This used to fall back to
+  // the generic objective illustration, which put a stock classroom scene next to
+  // starters like "I notice the two totals differ by ___" — 29 lessons author no
+  // nw.image, so every one of them asked students to describe a picture that was
+  // not about their problem. `.nw-layout-noimg` already handles the no-image case.
+  const imgSrc = nw.image || null;
 
   if (imgSrc) {
     const fig = document.createElement("figure");
