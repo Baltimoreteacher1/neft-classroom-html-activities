@@ -2821,8 +2821,8 @@
               isEs
                 ? k
                   ? `
-            <strong>Aquí está el camino resuelto:</strong><br>
-            En <code>${sel}</code>, x está ${opWordEs} por ${k.num}. Aplica la operación inversa (${invWordEs} por ${k.num}) a ambos lados: <strong>x = ${k.sol}</strong>.
+            <strong>Aquí está tu plan de ataque:</strong><br>
+            En <code>${sel}</code>, x está ${opWordEs} por ${k.num}. Deshazlo aplicando la operación inversa (${invWordEs} por ${k.num}) a AMBOS lados. Escribe esa operación usando el número que está al otro lado del signo igual en <code>${sel}</code>, calcula tú ese resultado y escríbelo como x.
           `
                   : `
             <strong>❌ No es del todo correcto todavía.</strong><br>
@@ -2830,8 +2830,8 @@
           `
                 : k
                   ? `
-            <strong>Here's the worked path:</strong><br>
-            In <code>${sel}</code>, x is ${opWordEn} by ${k.num}. Apply the inverse operation (${invWordEn} by ${k.num}) to both sides: <strong>x = ${k.sol}</strong>.
+            <strong>Here's your attack plan:</strong><br>
+            In <code>${sel}</code>, x is ${opWordEn} by ${k.num}. Undo it by applying the inverse operation (${invWordEn} by ${k.num}) to BOTH sides. Write out that operation using the number on the other side of the equals sign in <code>${sel}</code>, work out that result yourself, and enter it as x.
           `
                   : `
             <strong>❌ Not quite correct yet.</strong><br>
@@ -2959,24 +2959,25 @@
           `,
             );
           } else {
-            const egStr =
+            const egShape =
               sel === "3x = 36"
-                ? "3 × 12 = 36"
+                ? "3 × ___ = ___"
                 : sel === "x / 4 = 8"
-                  ? "32 ÷ 4 = 8"
+                  ? "___ ÷ 4 = ___"
                   : sel === "12x = 180"
-                    ? "12 × 15 = 180"
-                    : "30 ÷ 2.5 = 12";
+                    ? "12 × ___ = ___"
+                    : "___ ÷ 2.5 = ___";
+            const egIsDiv = sel.includes("/");
             showReadout(
               "check-out",
               isEs
                 ? `
-            <strong>Aquí está la verificación resuelta:</strong><br>
-            Por ejemplo: ${egStr}. Sustituye la solución correcta de la ecuación de pista en ambos campos para que la verificación se equilibre.
+            <strong>Así se arma la verificación:</strong><br>
+            La comprobación tiene esta forma: <code>${egShape}</code>. En el primer espacio va tu solución del Paso 3 (el valor de x). Calcula tú ${egIsDiv ? "esa división" : "ese producto"} y escribe el resultado en el segundo espacio. Si tu solución es correcta, ese resultado será igual al número que está a la derecha en <code>${sel}</code>; si no lo es, vuelve al Paso 3 y rehaz la operación inversa.
           `
                 : `
-            <strong>Here's the worked check:</strong><br>
-            For example: ${egStr}. Substitute the correct solution from the clue equation into both fields so the check balances.
+            <strong>Here's how to build the check:</strong><br>
+            The check has this shape: <code>${egShape}</code>. The first blank is your Step 3 solution (the value of x). Work out ${egIsDiv ? "that division" : "that product"} yourself and put the result in the second blank. If your solution is right, that result will equal the number on the right side of <code>${sel}</code>; if it doesn't, go back to Step 3 and redo the inverse operation.
           `,
             );
           }
@@ -3138,12 +3139,12 @@
                   : `- The inverse operation is not ${invOp}.<br>`;
               if (!numMatch)
                 errorMsg += isEs
-                  ? `- El número utilizado en la operación inversa debería ser ${expectedOpNum}.<br>`
-                  : `- The number used in the inverse operation should be ${expectedOpNum}.<br>`;
+                  ? `- El número de la operación inversa no coincide. Busca el número que acompaña a la variable en la ecuación de tu compañero/a y usa ESE número aquí.<br>`
+                  : `- The number in the inverse operation doesn't match. Find the number attached to the variable in your partner's equation and use THAT number here.<br>`;
               if (!solMatch)
                 errorMsg += isEs
-                  ? `- La solución x = ${sol} es incorrecta. Esperada: ${expectedSol}.<br>`
-                  : `- The solution x = ${sol} is incorrect. Expected: ${expectedSol}.<br>`;
+                  ? `- La solución x = ${sol} no comprueba. Aplica la operación inversa al número que está al otro lado del signo igual, calcula tú ese resultado y escríbelo como x.<br>`
+                  : `- The solution x = ${sol} doesn't check out. Apply the inverse operation to the number on the other side of the equals sign, work out that result yourself, and enter it as x.<br>`;
               if (!checkMatch)
                 errorMsg += isEs
                   ? `- Los lados de la sustitución no coinciden (LHS ${lhs} vs RHS ${rhs}).<br>`

@@ -2577,8 +2577,8 @@
             showReadout(
               "fg-eq-out",
               `
-            <span class="en-text">Here's the worked path: relate the raised amount (<strong>$${raised}</strong>), the variable (<strong>${varName}</strong>), and the total goal (<strong>$${goal}</strong>). <br>Example: <code>${raised} + ${varName} = ${goal}</code></span>
-            <span class="es-text">Aquí está el camino resuelto: relaciona la cantidad recaudada (<strong>$${raised}</strong>), la variable (<strong>${varName}</strong>) y la meta total (<strong>$${goal}</strong>). <br>Ejemplo: <code>${raised} + ${varName} = ${goal}</code></span>
+            <span class="en-text">Here's the setup: your equation has three slots — <code>___ + ${varName} = ___</code>. The first blank is the amount you have already raised; the last blank is your total goal. Read those two numbers off your Step 1 fields, type each into its slot, and leave <strong>${varName}</strong> in the middle standing for the amount still needed.</span>
+            <span class="es-text">Así se arma: tu ecuación tiene tres espacios — <code>___ + ${varName} = ___</code>. El primer espacio es la cantidad que ya recaudaste; el último es tu meta total. Lee esos dos números en los campos del Paso 1, escribe cada uno en su espacio y deja <strong>${varName}</strong> en el medio representando la cantidad que aún falta.</span>
           `,
             );
           }
@@ -2650,18 +2650,18 @@
               "fg-sol-out",
               `
             <span class="en-text">
-              Here's the worked path: <strong>${varName} = $${correctSol}</strong><br>
+              Here's the setup — you finish the arithmetic:<br>
               1. Write equation: <code>${raised} + ${varName} = ${goal}</code><br>
               2. Subtract ${raised} from both sides:<br>
                  <code>${varName} = ${goal} - ${raised}</code><br>
-              3. Simplify: <code>${varName} = ${correctSol}</code>
+              3. Work out <code>${goal} - ${raised}</code> on paper and enter that number as your solution.
             </span>
             <span class="es-text">
-              Aquí está el camino resuelto: <strong>${varName} = $${correctSol}</strong><br>
+              Así se arma — tú terminas la aritmética:<br>
               1. Escribe la ecuación: <code>${raised} + ${varName} = ${goal}</code><br>
               2. Resta ${raised} de ambos lados:<br>
                  <code>${varName} = ${goal} - ${raised}</code><br>
-              3. Simplifica: <code>${varName} = ${correctSol}</code>
+              3. Calcula <code>${goal} - ${raised}</code> en papel y escribe ese número como tu solución.
             </span>
           `,
             );
@@ -2807,8 +2807,8 @@
             showReadout(
               "ineq-out",
               `
-            <span class="en-text">Here's the worked path: write an inequality using <strong>y</strong>, your comparison symbol, and the milestone target <strong>$${target}</strong>. <br>Example: <code>y ${symbol} ${target}</code> (you can type <code>y ${typeSym} ${target}</code>)</span>
-            <span class="es-text">Aquí está el camino resuelto: escribe una desigualdad usando <strong>y</strong>, tu símbolo de comparación y la meta del hito <strong>$${target}</strong>. <br>Ejemplo: <code>y ${symbol} ${target}</code> (puedes escribir <code>y ${typeSym} ${target}</code>)</span>
+            <span class="en-text">Here's the setup: an inequality is three parts in this order — variable, symbol, number: <code>y ${typeSym} ___</code>. Type <strong>y</strong>, then <code>${typeSym}</code>, then read the milestone target off the milestone target field above and type that number into the blank.</span>
+            <span class="es-text">Así se arma: una desigualdad son tres partes en este orden — variable, símbolo, número: <code>y ${typeSym} ___</code>. Escribe <strong>y</strong>, luego <code>${typeSym}</code>, y luego lee la meta del hito en el campo de meta de arriba y escribe ese número en el espacio.</span>
           `,
             );
           }
@@ -2966,8 +2966,8 @@
             showReadout(
               "sales-eq-out",
               `
-            <span class="en-text">Here's the worked path: $${price} selling price − $${cost} cost = <strong>$${net} net per item</strong>.<br>Example: <code>${net}${varName} = ${remaining}</code></span>
-            <span class="es-text">Camino resuelto: $${price} de venta − $${cost} de costo = <strong>$${net} netos por artículo</strong>.<br>Ejemplo: <code>${net}${varName} = ${remaining}</code></span>
+            <span class="en-text">Here's the setup: first find your net per item by computing $${price} selling price − $${cost} cost. Then write the equation in this shape — <code>(net)${varName} = (amount still needed)</code> — putting the net number you just computed directly in front of <strong>${varName}</strong>, and the amount you still need after the equals sign.</span>
+            <span class="es-text">Así se arma: primero halla tu ganancia neta por artículo calculando $${price} de venta − $${cost} de costo. Luego escribe la ecuación con esta forma — <code>(neto)${varName} = (cantidad que aún falta)</code> — poniendo el número neto que acabas de calcular justo delante de <strong>${varName}</strong>, y la cantidad que aún necesitas después del signo igual.</span>
           `,
             );
           }
@@ -3054,8 +3054,8 @@
             showReadout(
               "sales-sol-out",
               `
-            <span class="en-text">Here's the worked path: <code>${varName} = ${remaining} / ${net} = ${exact.toFixed(2)}</code>${neededItems !== exact ? ` — round up to <strong>${neededItems}</strong> items so <code>${net}${varName} ≥ ${remaining}</code>.` : ""}</span>
-            <span class="es-text">Camino resuelto: <code>${varName} = ${remaining} / ${net} = ${exact.toFixed(2)}</code>${neededItems !== exact ? ` — redondea a <strong>${neededItems}</strong> para que <code>${net}${varName} ≥ ${remaining}</code>.` : ""}</span>
+            <span class="en-text">Here's the setup: <strong>${varName}</strong> is multiplied by your net per item, so undo that by dividing BOTH sides by the net — that is, compute <code>${varName} = (amount still needed) ÷ (net per item)</code>. Work out that quotient yourself, and since you can't sell part of an item, round it UP to the next whole number before entering it.</span>
+            <span class="es-text">Así se arma: <strong>${varName}</strong> está multiplicada por tu neto por artículo, así que deshazlo dividiendo AMBOS lados entre el neto — es decir, calcula <code>${varName} = (cantidad que aún falta) ÷ (neto por artículo)</code>. Halla tú ese cociente y, como no puedes vender parte de un artículo, redondéalo HACIA ARRIBA al siguiente número entero antes de escribirlo.</span>
           `,
             );
           }
