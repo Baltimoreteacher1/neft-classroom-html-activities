@@ -122,6 +122,15 @@ const out = {
       { name: "BOOTH 2", qty: "8 tokens", price: "$5.00" },
     ],
   ),
+  // 4-1-flagship runs the same two-booth comparison as 4-1 with its own prices.
+  "4-1-flagship": twoSigns(
+    "Two ticket booths at NeonPlex Arcade",
+    "The two signs quote the same thing in opposite orders.",
+    [
+      { name: "BOOTH A", qty: "5 games", price: "$3.00" },
+      { name: "BOOTH B", qty: "8 games", price: "$5.00" },
+    ],
+  ),
   "4-3": leaderboard(),
   "4-6": speedSign(),
   "4-7": twoSigns(
