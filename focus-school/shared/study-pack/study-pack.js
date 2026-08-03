@@ -553,7 +553,7 @@
       if (canAsk) tabs.push({ id: "ask", label: "💬 Ask", render: renderAsk });
 
       var tablist = el("div", { class: "stp-tablist", role: "tablist" });
-      var panel = el("div", { class: "stp-panel", role: "tabpanel", tabindex: "-1" });
+      var panel = el("div", { class: "stp-panel", id: "stp-panel", role: "tabpanel", tabindex: "-1" });
       var btns = [];
       tabs.forEach(function (t, i) {
         var b = el("button", {
@@ -562,6 +562,8 @@
           type: "button",
           id: "stp-tab-" + t.id,
           "aria-selected": i === 0 ? "true" : "false",
+          "aria-controls": "stp-panel",
+          tabindex: i === 0 ? "0" : "-1",
           text: t.label,
           onclick: function () {
             select(i);
@@ -573,16 +575,24 @@
       tablist.addEventListener("keydown", function (e) {
         var cur = btns.indexOf(document.activeElement);
         if (cur < 0) return;
+        // ARIA tabs pattern: arrows both move focus AND activate (selection
+        // follows focus), so aria-selected can never desync from the panel.
         if (e.key === "ArrowRight") {
-          btns[(cur + 1) % btns.length].focus();
+          var nxt = (cur + 1) % btns.length;
+          btns[nxt].focus();
+          select(nxt);
         } else if (e.key === "ArrowLeft") {
-          btns[(cur - 1 + btns.length) % btns.length].focus();
+          var prv = (cur - 1 + btns.length) % btns.length;
+          btns[prv].focus();
+          select(prv);
         }
       });
       function select(i) {
         stopSpeech();
         btns.forEach(function (b, j) {
           b.setAttribute("aria-selected", j === i ? "true" : "false");
+          // Roving tabindex: only the active tab sits in the Tab order.
+          b.setAttribute("tabindex", j === i ? "0" : "-1");
         });
         clear(panel);
         panel.setAttribute("aria-labelledby", "stp-tab-" + tabs[i].id);
@@ -848,6 +858,7 @@
       shuffle(items).forEach(function (it) {
         var t = el("button", { class: "stp-tile", type: "button", text: it.text });
         t.addEventListener("click", function () {
+          if (t.classList.contains("matched")) return;
           if (selected) selected.classList.remove("selected");
           if (selected === t) {
             selected = null;
@@ -1012,13 +1023,16 @@
     }
 
     // Generic sequential player. items -> {text, voice}; highlights paras[i].
-    function playSequence(items, paras, onDone, btns) {
+    // btns are the play buttons (disabled while speaking); stopBtn is enabled
+    // only while speaking, so the student can always interrupt read-aloud.
+    function playSequence(items, paras, onDone, btns, stopBtn) {
       if (!global.speechSynthesis) return;
       stopSpeech();
       speaking = true;
       btns.forEach(function (b) {
         b.disabled = true;
       });
+      if (stopBtn) stopBtn.disabled = false;
       var i = 0;
       function highlight(k) {
         paras.forEach(function (p, j) {
@@ -1032,6 +1046,7 @@
           btns.forEach(function (b) {
             b.disabled = false;
           });
+          if (stopBtn) stopBtn.disabled = true;
           speaking = false;
           if (onDone) onDone();
           return;
@@ -1087,7 +1102,7 @@
         var items = lines.map(function (t) {
           return { text: t, voice: null };
         });
-        playSequence(items, paras, null, [overviewBtn, podcastBtn, stopBtn]);
+        playSequence(items, paras, null, [overviewBtn, podcastBtn], stopBtn);
       });
 
       // 2-host podcast overview (lazy-generated once, then cached on the pack).
@@ -1115,7 +1130,7 @@
         var items = script.map(function (turn) {
           return { text: turn.text, voice: turn.speaker === "B" ? voices[1] : voices[0] };
         });
-        playSequence(items, pParas, null, [overviewBtn, podcastBtn, stopBtn]);
+        playSequence(items, pParas, null, [overviewBtn, podcastBtn], stopBtn);
       }
       podcastBtn.addEventListener("click", function () {
         if (pack.__audioScript) {
@@ -1145,7 +1160,8 @@
 
       stopBtn.addEventListener("click", function () {
         stopSpeech();
-        paras.forEach(function (p) {
+        stopBtn.disabled = true;
+        [].forEach.call(transcript.querySelectorAll("p"), function (p) {
           p.className = "";
         });
         [overviewBtn, podcastBtn].forEach(function (b) {

@@ -2459,7 +2459,7 @@
         ? lessonPath.match(/^\/lessons\/([^/]+)\/$/)
         : head.match(/Lesson\s+([0-9\-a-zA-Z]+)/);
       var lessonId = lessonIdMatch ? lessonIdMatch[1] : "";
-      var baseLessonId = lessonId.replace("-flagship", "");
+      var baseLessonId = lessonId.replace(/-(?:flagship|group[12]|catchup)$/, "");
 
       // TPT bonus activity — appears in the curriculum activity dropdown.
       var bonus = LESSON_BONUS_ACTIVITIES[lessonId] || LESSON_BONUS_ACTIVITIES[baseLessonId];

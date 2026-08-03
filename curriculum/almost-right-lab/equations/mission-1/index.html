@@ -609,9 +609,9 @@
           const correct = this.dataset.correct === "true";
           document.querySelectorAll(".diag-btn").forEach(b => {
             b.disabled = true;
-            if (b.dataset.correct === "true") b.classList.add("correct");
-            else b.classList.add("wrong");
           });
+          // Scaffold, don't give away: only mark the button the student chose.
+          this.classList.add(correct ? "correct" : "wrong");
           const fb = document.getElementById("diag-feedback");
           if (correct) {
             fb.textContent = "✓ Right! The creature adds instead of subtracting. Now let's teach it the correct rule.";

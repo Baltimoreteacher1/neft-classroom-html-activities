@@ -6,7 +6,7 @@
  * Bump CACHE on any deploy that must purge the precached shell.
  * ========================================================================== */
 
-const CACHE = "eduwonderlab-vmsaoy7gp";
+const CACHE = "eduwonderlab-vmswdata1";
 const USER_OFFLINE_CACHE = "eduwonderlab-user-offline-v1";
 const PRECACHE_URLS = [
   "/curriculum/",
@@ -131,9 +131,13 @@ self.addEventListener("fetch", (event) => {
   // game-score.js and edupulse-bridge.js are the reporting path: a stale copy
   // silently mis-records or drops student scores, so they are never served from
   // the stale-while-revalidate branch below.
+  // /data/curriculum-*.json is the curriculum's live data (manifest, launch
+  // manifest, teacher workflow, supports). These URLs carry no ?v= stamp, so
+  // the SWR branch would serve one deploy stale forever — keep them live.
   const isCurriculumAsset =
     url.pathname.startsWith("/curriculum") ||
     url.pathname.startsWith("/assets/curriculum") ||
+    url.pathname.startsWith("/data/curriculum-") ||
     url.pathname === "/assets/game-score.js" ||
     url.pathname === "/assets/edupulse-bridge.js" ||
     url.pathname.includes("routes.json");

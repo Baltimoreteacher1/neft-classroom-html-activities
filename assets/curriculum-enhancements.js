@@ -278,6 +278,7 @@
     }
     updateStudentHint();
     refreshHub();
+    document.dispatchEvent(new CustomEvent("nt:mode-change"));
   }
 
   function escapeHtml(s) {
@@ -445,15 +446,13 @@
     }
     if (existing) {
       existing.textContent = code;
-      existing.href = "http://corestandards.org/Math/Content/" + code.replace(".", "/");
       return;
     }
-    var badge = document.createElement("a");
+    // Non-navigating on purpose: these are Maryland 2025 MCCRS codes with no
+    // stable public URL (the old corestandards.org path 404s for every code).
+    var badge = document.createElement("span");
     badge.className = "lesson-standard-badge badge badge-cluster";
-    badge.href = "http://corestandards.org/Math/Content/" + code.replace(".", "/");
-    badge.target = "_blank";
-    badge.rel = "noopener noreferrer";
-    badge.title = "Common Core State Standard";
+    badge.title = "Maryland College and Career Ready Standard";
     badge.textContent = code;
     var obj = infoBlock.querySelector(".lesson-info-obj");
     if (obj) infoBlock.insertBefore(badge, obj);
@@ -1733,6 +1732,16 @@
     box.addEventListener("input", function () {
       clearBtn.hidden = !box.value;
     });
+
+    // Deep-link search: /curriculum/?q=<term> pre-fills and runs the search.
+    // My Progress "Practise this" links rely on this to land students on the
+    // matching lessons instead of the unfiltered hub.
+    var qParam = new URLSearchParams(location.search).get("q");
+    if (qParam && !box.value) {
+      box.value = qParam;
+      box.dispatchEvent(new Event("input", { bubbles: true }));
+      clearBtn.hidden = false;
+    }
 
     // Press "/" anywhere to jump to search; Esc clears it.
     document.addEventListener("keydown", function (e) {
