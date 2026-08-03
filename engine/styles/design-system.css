@@ -1011,7 +1011,14 @@ h4 {
 .obj-popup-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1100;
+  /* Sits above every other layer on a lesson page. At z-index 1100 this modal
+     was BELOW 25 live elements — the sidebar and draw HUD (9999), the supports
+     dock and content panel (10000/10001), the formula modal (99999), and the
+     save/resume + workbench launchers (2147483000) — so tapping an underlined
+     objective term opened a definition hidden behind whichever dock overlapped
+     it. A dismissible aria-modal dialog belongs on top while it is open, and
+     [hidden] below sets display:none, so it captures nothing once closed. */
+  z-index: 2147483001;
   display: flex;
   align-items: center;
   justify-content: center;
