@@ -2533,28 +2533,23 @@ body:has(.identity-screen) .export-toolbar {
   margin-bottom: var(--sp-4);
 }
 
+/* The word wall WRAPS. It used to be a single `nowrap` flex row with
+   `overflow-x: auto`, so a seven-word lesson laid 2,072px of cards into an
+   808px column — 1,264px of vocabulary lived off the right edge, reachable only
+   by a horizontal scroll most students never tried. Auto-fit columns stack the
+   cards down the page instead: several per row when there is room, one per row
+   on a phone, and nothing off-screen at any width. */
 .vocab-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, max-content));
   justify-content: center;
-  justify-content: safe center;
   gap: var(--sp-4);
-  overflow-x: auto;
   padding: var(--sp-3) var(--sp-2) var(--sp-5);
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-color: var(--teal) transparent;
-}
-
-.vocab-container::-webkit-scrollbar {
-  height: 6px;
-}
-.vocab-container::-webkit-scrollbar-thumb {
-  background: var(--teal);
-  border-radius: 3px;
 }
 
 .vocab-card {
-  flex: 0 0 280px;
+  /* Grid item now, not a flex child — the width comes from the column. */
+  width: 280px;
   /* Taller than it used to be (220px) to hold the enlarged word-wall picture.
      The card is a fixed-height flip container, so the thumbnail can only grow
      if this grows with it. */
@@ -3128,7 +3123,7 @@ body:has(.identity-screen) .export-toolbar {
     padding: var(--sp-4);
   }
   .vocab-card {
-    flex: 0 0 240px;
+    width: 240px;
     height: 280px;
   }
   .vocab-thumb {

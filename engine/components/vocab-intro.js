@@ -116,15 +116,18 @@ function injectVocabIntroStyles() {
       border-radius: var(--radius-md, 12px);
     }
 
+    /* The deck is a wrapping grid, not a horizontal scroller (see
+       .vocab-container in design-system.css), so the phone rules are about
+       fitting ONE card per row rather than about snapping a swipe. The old
+       scroll-snap + flex-basis pair is gone with the scroller it served. */
     @media (max-width: 540px) {
       .vocab-container {
-        scroll-snap-type: x mandatory;
-        scroll-padding-inline: var(--sp-3, 12px);
+        grid-template-columns: 1fr;
       }
       .vocab-card {
-        flex: 0 0 min(82vw, 300px);
-        scroll-snap-align: center;
-        scroll-snap-stop: always;
+        width: 100%;
+        max-width: 340px;
+        margin-inline: auto;
       }
     }
 
