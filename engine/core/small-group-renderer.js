@@ -41,6 +41,7 @@ import {
   createModelLab,
   figureBlock,
 } from "./small-group-labs.js";
+import { createMasteryLadder } from "./small-group-mastery.js";
 import { createMathCheckLab } from "./small-group-math-check.js";
 import { installSmallGroupPassport } from "./small-group-passport.js";
 import {
@@ -321,7 +322,7 @@ function hero(config, accent, voice) {
   const container = el("div", "sg-hero");
   markScene(container, "hero");
   const grid = el("div", "sg-hero-grid");
-  const copy = el("div");
+  const copy = el("div", "sg-hero-copy");
   copy.classList.add("sg-scene-enter");
   const badge = config.launch?.badge || `Small Group · ${accent.name}`;
   copy.appendChild(el("div", null, `<span class="sg-kicker">${accent.emoji} ${esc(badge)}</span>`));
@@ -350,7 +351,6 @@ function hero(config, accent, voice) {
     copy.appendChild(el("div", "sg-hero-scene-chip", `Scene · ${esc(sceneName)}`));
   }
   const mathMove = mathMoveOfTheDay(config);
-  if (mathMove) copy.appendChild(mathMove);
   const mark = el("div", "sg-hero-mark sg-scene-enter");
   // Code-drawn theme SVG / emoji is the fallback; if the lesson carries authored
   // hero art, that wins and this runs only if the asset fails to load.
@@ -367,7 +367,16 @@ function hero(config, accent, voice) {
   } else {
     heroFallback();
   }
+  // The math move is a GRID ITEM, not an absolutely-positioned overlay.
+  // It used to be `position:absolute` inside `copy` with a hand-tuned
+  // `top:154px`, which worked until the storyboard wave gave `.sg-scene-enter`
+  // an entrance animation: a transformed ancestor becomes the containing block
+  // for absolute descendants, so `right:0` started resolving against the 648px
+  // text column instead of the 974px hero — and the card landed on top of the
+  // objective, covering the one line every student is supposed to read. Placed
+  // in the reserved second column it cannot overlap anything at any width.
   grid.append(copy, mark);
+  if (mathMove) grid.appendChild(mathMove);
   container.appendChild(grid);
   return container;
 }
@@ -519,6 +528,12 @@ function renderStudio(config) {
     // consensus/coach labs survive a reload instead of resetting to "—".
     mathCheckDone: Boolean(store.get("mathCheckDone")),
     consensusVotes: store.get("consensusVotes") || [],
+    masteryLevel: store.get("masteryLevel") || null,
+    selfCheck: store.get("selfCheck") || {},
+    selfCheckEvidence: store.get("selfCheckEvidence") || "",
+    m4Justify: store.get("m4Justify") || "",
+    m4Generalize: store.get("m4Generalize") || "",
+    m4Create: store.get("m4Create") || "",
     revision: store.get("revision") || null,
     revisionReason: store.get("revisionReason") || "",
     adaptivePath: store.get("adaptivePath") || null,
@@ -830,6 +845,16 @@ function renderStudio(config) {
       adaptivePath: state.adaptivePath || store.get("adaptivePath") || "connect",
     },
   );
+  // More Practice used to be "the same set again". The mastery ladder in front
+  // of it makes the section a rubric a student can act on: criteria, a level
+  // they choose, level-4 tasks anyone can attempt, and a self-check.
+  const masteryLadder = createMasteryLadder({
+    config,
+    state,
+    store,
+    practiceSection: morePractice,
+  });
+
   const apply = createApplyLab(config, variant, {
     store,
     events,
@@ -913,7 +938,7 @@ function renderStudio(config) {
     {
       id: "sg-tab-more",
       label: "More Practice",
-      panel: makePanel("sg-tab-more", [morePractice, mission, apply, goDeeper]),
+      panel: makePanel("sg-tab-more", [masteryLadder, morePractice, mission, apply, goDeeper]),
     },
     // Group 2 only — keep the stable id for saved-tab compatibility.
     {

@@ -64,12 +64,18 @@
 
   .sg-hero-grid {
     grid-column: 1 / -1;
+    /* max-content / 1fr — without it the browser splits the spare height of the
+       row-spanning copy column evenly between both rows, and the math move
+       drifts to the bottom of a tall empty gap instead of sitting under the
+       hero mark. */
     grid-template-columns: minmax(0, 1fr) 292px;
+    grid-template-rows: max-content 1fr;
     align-items: start;
   }
 
-  .sg-hero-mark { justify-self: end; }
-  .sg-math-move { position: absolute; top: 154px; right: 0; width: 292px; max-width: none; margin: 0; }
+  .sg-hero-copy { grid-column: 1; grid-row: 1 / -1; }
+  .sg-hero-mark { justify-self: end; grid-column: 2; grid-row: 1; }
+  .sg-math-move { grid-column: 2; grid-row: 2; align-self: start; width: 292px; max-width: none; margin: 16px 0 0; }
   .sg-room-chip { min-height: 62px; margin: 0; padding: 10px 12px; border: 1px solid var(--sg-line); border-radius: var(--sg-radius-sm); background: color-mix(in srgb, var(--sg-card) 82%, var(--sg-soft)); }
   .sg-hero > .nt-toolpoint { min-height: 62px; margin: 0; }
 }

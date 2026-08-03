@@ -3,7 +3,11 @@
   padding: 22px;
   border: 1px solid color-mix(in srgb, var(--sg) 26%, var(--sg-line));
   border-radius: 20px;
-  background: linear-gradient(145deg, var(--sg-card), color-mix(in srgb, var(--sg-soft) 52%, var(--sg-card)));
+  background: linear-gradient(
+    145deg,
+    var(--sg-card),
+    color-mix(in srgb, var(--sg-soft) 52%, var(--sg-card))
+  );
   box-shadow: 0 12px 30px rgba(23, 32, 51, 0.08);
 }
 
@@ -54,16 +58,110 @@ fieldset.sg-innovation {
   cursor: pointer;
 }
 
-.sg-proof-button span {
-  color: var(--sg);
-  font-size: 25px;
-}
-
 .sg-proof-button:hover,
 .sg-proof-button[aria-pressed="true"] {
   border-color: var(--sg);
   color: var(--sg-deep);
   background: var(--sg-soft);
+}
+
+/* ── One row, every method (2026-08-03) ────────────────────────────────────
+   Choosing and learning-how used to be two separate controls. They are one
+   control now: the row IS the choice, and tapping a tile opens its steps. */
+.sg-proof-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.sg-proof-row .sg-proof-button {
+  display: grid;
+  min-height: 96px;
+  align-content: center;
+  justify-items: center;
+  gap: 3px;
+  text-align: center;
+}
+
+.sg-proof-icon {
+  font-size: 27px;
+  line-height: 1.1;
+}
+
+.sg-proof-label {
+  color: var(--sg-deep);
+  font-family: var(--sg-display);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.sg-proof-hint {
+  color: var(--sg-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sg-proof-button[aria-pressed="true"] .sg-proof-hint {
+  color: var(--sg);
+}
+
+.sg-proof-button:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.sg-proof-button[aria-pressed="true"]:disabled {
+  opacity: 1;
+}
+
+.sg-seat-label {
+  margin-bottom: 6px;
+  color: var(--sg);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sg-guide-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.sg-guide-art {
+  flex: none;
+  width: 76px;
+  height: 52px;
+  padding: 6px;
+  border-radius: 10px;
+  color: var(--sg);
+  background: var(--sg-card);
+}
+
+.sg-guide-foot {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--sg-line);
+  color: var(--sg-muted);
+  font-size: 13px;
+}
+
+.sg-guide-cols ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.sg-guide-cols ol li {
+  margin: 5px 0;
+  padding-left: 2px;
+  font-weight: 600;
+}
+
+.sg-guide-cols ol li::marker {
+  color: var(--sg);
+  font-weight: 900;
 }
 
 .sg-proof-prompt,
@@ -147,49 +245,6 @@ fieldset.sg-innovation {
   background: color-mix(in srgb, var(--sg-soft) 50%, var(--sg-card));
 }
 
-.sg-guide {
-  margin-top: 14px;
-}
-
-.sg-guide-lede {
-  margin-bottom: 8px;
-  color: var(--sg-muted);
-  font-size: 14px;
-}
-
-.sg-guide-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.sg-guide-chip {
-  padding: 6px 12px;
-  border: 1px solid var(--sg-line);
-  border-radius: 999px;
-  color: var(--sg-deep);
-  background: var(--sg-card);
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.sg-guide-chip span {
-  display: inline-grid;
-  place-items: center;
-  width: 18px;
-  height: 18px;
-  margin-left: 4px;
-  border-radius: 50%;
-  color: #fff;
-  background: var(--sg);
-  font-size: 12px;
-}
-
-.sg-guide-chip:hover,
-.sg-guide-chip[aria-expanded="true"] {
-  border-color: var(--sg);
-  background: var(--sg-soft);
-}
 
 .sg-guide-panel {
   margin-top: 10px;
@@ -374,7 +429,8 @@ fieldset.sg-innovation {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .sg-vote-row {
+  .sg-vote-row,
+  .sg-proof-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -403,8 +459,11 @@ fieldset.sg-innovation {
     align-items: start;
     flex-direction: column;
   }
-}
 
+  .sg-guide-head {
+    flex-direction: column;
+  }
+}
 
 /* ── Award-wave interaction parity (2026-07-20) ─────────────────────────────
    Same touch language as the studio core: soft lift on hover, press-down on
@@ -412,7 +471,6 @@ fieldset.sg-innovation {
    anonymous distribution reveals. */
 .sg-proof-button,
 .sg-vote-button,
-.sg-guide-chip,
 .sg-observation {
   transition:
     transform 0.12s,
@@ -422,15 +480,13 @@ fieldset.sg-innovation {
 }
 
 .sg-proof-button:hover,
-.sg-vote-button:hover:not(:disabled),
-.sg-guide-chip:hover {
+.sg-vote-button:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(23, 32, 51, 0.1);
 }
 
 .sg-proof-button:active,
-.sg-vote-button:active:not(:disabled),
-.sg-guide-chip:active {
+.sg-vote-button:active:not(:disabled) {
   transform: translateY(1px) scale(0.98);
   box-shadow: none;
 }
@@ -470,7 +526,6 @@ fieldset.sg-innovation {
 @media (prefers-reduced-motion: reduce) {
   .sg-proof-button,
   .sg-vote-button,
-  .sg-guide-chip,
   .sg-observation {
     transition: none;
     animation: none;
@@ -914,4 +969,220 @@ fieldset.sg-innovation {
 .sg-reasoning-note {
   font-size: 12.5px !important;
   color: var(--sg-muted);
+}
+
+/* ── Mastery ladder — More Practice (2026-08-03) ───────────────────────────
+   More Practice was the same problem set a second time. This is the rubric
+   made operable: criteria the student can read, a level the student picks,
+   the level-4 tasks, and a self-check. Styling job: make the three levels
+   read as three equal choices, never as a ranking of the students. */
+.sg-mastery {
+  margin: 18px 0 24px;
+  padding: 24px;
+  border: 1px solid color-mix(in srgb, var(--sg) 26%, var(--sg-line));
+  border-radius: var(--sg-radius-lg);
+  background: linear-gradient(
+    150deg,
+    var(--sg-card) 0 62%,
+    color-mix(in srgb, var(--sg-soft) 60%, var(--sg-card))
+  );
+  box-shadow: var(--sg-shadow);
+}
+
+.sg-criteria {
+  margin: 4px 0 18px;
+  padding: 15px 18px;
+  border: 1px solid var(--sg-line);
+  border-left: 5px solid var(--sg-pop);
+  border-radius: var(--sg-radius);
+  background: var(--sg-card);
+}
+
+.sg-criteria-list {
+  margin: 6px 0 0;
+  padding-left: 20px;
+}
+
+.sg-criteria-list li {
+  margin: 6px 0;
+}
+
+.sg-criteria-list b {
+  color: var(--sg);
+}
+
+.sg-level-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.sg-level-button {
+  display: grid;
+  min-height: 92px;
+  align-content: center;
+  justify-items: center;
+  gap: 6px;
+  padding: 12px;
+  border: 2px solid var(--sg-line);
+  border-radius: var(--sg-radius);
+  background: var(--sg-card);
+  color: var(--sg-text);
+  text-align: center;
+  cursor: pointer;
+}
+
+.sg-level-num {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--sg-fill);
+  color: var(--sg-ink);
+  font-family: var(--sg-display);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.sg-level-name {
+  font-family: var(--sg-display);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.sg-level-button:hover {
+  border-color: var(--sg);
+  background: var(--sg-soft);
+}
+
+.sg-level-button[aria-pressed="true"] {
+  border-color: var(--sg);
+  background: var(--sg-soft);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sg) 22%, transparent);
+}
+
+.sg-level-button[aria-pressed="true"] .sg-level-num {
+  background: var(--sg);
+  color: #fff;
+}
+
+.sg-level-note {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: var(--sg-radius-sm);
+  background: var(--sg-soft);
+  color: var(--sg-ink);
+  font-weight: 700;
+}
+
+.sg-level-switch {
+  margin: 8px 0 0;
+  color: var(--sg-muted);
+  font-size: 14px;
+}
+
+.sg-m4 {
+  margin-top: 20px;
+  padding: 18px;
+  border: 2px dashed color-mix(in srgb, var(--sg-pop) 62%, var(--sg-line));
+  border-radius: var(--sg-radius);
+  background: var(--sg-card);
+}
+
+.sg-m4.is-target {
+  border-style: solid;
+  border-color: var(--sg-pop);
+}
+
+.sg-m4-task {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--sg-line);
+}
+
+.sg-m4-task:first-of-type {
+  border-top: 0;
+}
+
+.sg-m4-task .sg-frames {
+  margin-top: 8px;
+}
+
+.sg-m4-status,
+.sg-mastery-summary {
+  margin-top: 14px;
+  padding: 10px 14px;
+  border: 1px dashed var(--sg-line);
+  border-radius: var(--sg-radius-sm);
+  color: var(--sg-muted);
+  font-weight: 700;
+}
+
+.sg-m4-status.is-complete,
+.sg-mastery-summary.is-complete {
+  border-style: solid;
+  border-color: var(--sg-good);
+  background: var(--sg-good-bg);
+  color: var(--sg-good-ink);
+}
+
+.sg-selfcheck {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid var(--sg-line);
+  border-radius: var(--sg-radius);
+  background: var(--sg-card);
+}
+
+.sg-selfcheck-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--sg-line);
+}
+
+.sg-selfcheck-text b {
+  display: block;
+  color: var(--sg);
+  font-family: var(--sg-display);
+}
+
+.sg-selfcheck-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sg-selfcheck-radio {
+  white-space: nowrap;
+}
+
+/* The evidence field closes the self-check; without its own rule it reads as
+   part of the last criterion row instead of as the summary of all of them. */
+.sg-selfcheck > .block-lab {
+  display: block;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 2px solid var(--sg-line);
+}
+
+@media (max-width: 700px) {
+  .sg-level-row {
+    grid-template-columns: 1fr;
+  }
+
+  .sg-selfcheck-row {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+}
+
+@media print {
+  .sg-mastery {
+    display: none !important;
+  }
 }

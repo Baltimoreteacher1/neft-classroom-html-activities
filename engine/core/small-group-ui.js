@@ -511,7 +511,18 @@ export function injectSmallGroupStyles(accent) {
     .sg-teacher summary{cursor:pointer;padding:14px 17px;font-family:var(--sg-display);font-weight:700;color:var(--sg-ink)}
     .sg-tbody{padding:0 18px 18px}.sg-tbody li{margin:5px 0}.sg-frames,.sg-wordbank{display:flex;flex-wrap:wrap;gap:8px}
     .sg-frame,.sg-word{padding:7px 12px;border:1px dashed color-mix(in srgb,var(--sg) 28%,transparent);border-radius:10px;background:var(--sg-soft);color:var(--sg-ink);font-weight:700}
-    .sg-mode{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 -24px;padding:10px 24px;color:#fff;background:var(--sg-deep);font-family:var(--sg-display);font-size:14px;font-weight:700;letter-spacing:.01em}
+    /* Full-bleed, not a slab. The old "margin:0 -24px" only cancelled #app's
+       28px padding, so on any viewport wider than the 1160px content column the
+       bar rendered as a dark rectangle floating in the middle of the paper with
+       page showing on both sides — the loudest "unfinished" tell on the page.
+       It is chrome; chrome runs edge to edge. It gets there by being a sibling
+       of #app rather than a child (see small-group-teacher-access.js): a plain
+       block in the body is exactly the viewport's content width. The obvious
+       alternative, width:100vw with negative margins, overshoots by the
+       scrollbar width and opens a horizontal scrollbar the studio spec forbids.
+       The left padding clears the fixed passport pill (12px + 82px + gap),
+       which used to sit on top of the bar's own label. */
+    .sg-mode{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0;padding:10px 28px 10px 110px;color:#fff;background:var(--sg-deep);font-family:var(--sg-display);font-size:14px;font-weight:700;letter-spacing:.01em}
     .sg-mode-action{display:inline-flex;align-items:center;min-height:44px;padding:9px 14px;border:1px solid rgba(255,255,255,.34);border-radius:10px;background:rgba(255,255,255,.1);color:#fff;text-decoration:none}
     .sg-mode-action:hover{background:rgba(255,255,255,.2)}
     .sg-mode--teacher{background:#5c3c05}.sg-mode-notice{margin:12px 0;padding:11px 14px;border:1px solid var(--sg-warn-line);border-radius:11px;color:var(--sg-warn-ink);background:var(--sg-warn-bg)}
@@ -786,7 +797,7 @@ export function injectSmallGroupStyles(accent) {
     @keyframes sg-pop{0%{opacity:0;transform:scale(.25) rotate(-8deg)}35%{opacity:1;transform:scale(1.12) rotate(4deg)}100%{opacity:0;transform:scale(1.35)}}
     .sg-confetti{position:absolute;left:50%;top:50%;width:10px;height:14px;border-radius:3px;opacity:0;animation:sg-confetti .9s cubic-bezier(.16,1,.3,1) forwards}
     @keyframes sg-confetti{0%{opacity:1;transform:translate(-50%,-50%) rotate(0)}100%{opacity:0;transform:translate(calc(-50% + var(--cx)),calc(-50% + var(--cy))) rotate(var(--cr))}}
-    @media(max-width:760px){#app{padding-inline:14px}.sg-mode{margin-inline:-14px;padding-inline:14px}
+    @media(max-width:760px){#app{padding-inline:14px}.sg-mode{padding-inline:14px}
     .sg-hero{margin-inline:0;padding:22px 18px 20px;border-radius:var(--sg-radius)}
     .sg-hero-grid{grid-template-columns:1fr}
     /* The mark is decoration, and on a phone it costs a third of the first
