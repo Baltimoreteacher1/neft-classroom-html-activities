@@ -64,42 +64,85 @@ export function resolveInteractiveToolForLesson(config) {
     return authored;
   }
 
-  const text = `${cfg.title || ""} ${cfg.standard || ""} ${cfg.contentObjective || ""} ${cfg.objective || ""}`.toLowerCase();
+  const text =
+    `${cfg.title || ""} ${cfg.standard || ""} ${cfg.contentObjective || ""} ${cfg.objective || ""}`.toLowerCase();
 
   // Helper: word-boundary test (prevents "means" matching "mean", etc.)
   const wb = (pattern) => new RegExp(`\\b(?:${pattern})\\b`, "i").test(text);
 
   // ── 1. Standard-based classification (most reliable) ──────────────────────
-  const std = String(cfg.standard || "").trim().toUpperCase();
+  const std = String(cfg.standard || "")
+    .trim()
+    .toUpperCase();
 
   // 6.NOS.1 — Fraction Division
   if (std === "6.NOS.1") {
-    return { kind: "fraction-divide", num1: "3/4", num2: "1/2", label: "Interactive Fraction Division: Keep, Change, Flip!" };
+    return {
+      kind: "fraction-divide",
+      num1: "3/4",
+      num2: "1/2",
+      label: "Interactive Fraction Division: Keep, Change, Flip!",
+    };
   }
   // 6.NOS.2 — Long Division
   if (std === "6.NOS.2") {
-    return { kind: "long-division-builder", label: "Interactive Long Division & Partial Quotients Lab" };
+    return {
+      kind: "long-division-builder",
+      label: "Interactive Long Division & Partial Quotients Lab",
+    };
   }
   // 6.NOS.3 — Decimal Operations (refine by wording)
   if (std === "6.NOS.3") {
-    if (wb("multiply|multiplication|product")) return { kind: "decimal-product", label: "Interactive Decimal Multiplication Tool" };
-    if (wb("divide|division|quotient")) return { kind: "decimal-quotient", label: "Interactive Decimal Division Tool" };
+    if (wb("multiply|multiplication|product"))
+      return { kind: "decimal-product", label: "Interactive Decimal Multiplication Tool" };
+    if (wb("divide|division|quotient"))
+      return { kind: "decimal-quotient", label: "Interactive Decimal Division Tool" };
     return { kind: "decimal-columns", label: "Interactive Decimal Columns & Regrouping Tool" };
   }
   // 6.NOS.4 — Factors, GCF, LCM
   if (std === "6.NOS.4") {
-    if (wb("least common multiple|LCM")) return { kind: "lcm-lab", num1: 6, num2: 8, label: "Interactive LCM Explorer: Tap shared multiples to find the LCM!" };
-    if (wb("greatest common factor|GCF")) return { kind: "factor-tree-lab", number: 48, label: "Interactive GCF & Factor Tree Explorer" };
-    return { kind: "factor-tree-lab", number: 36, label: "Interactive Factor Tree Explorer: Build prime factorizations step-by-step!" };
+    if (wb("least common multiple|LCM"))
+      return {
+        kind: "lcm-lab",
+        num1: 6,
+        num2: 8,
+        label: "Interactive LCM Explorer: Tap shared multiples to find the LCM!",
+      };
+    if (wb("greatest common factor|GCF"))
+      return {
+        kind: "factor-tree-lab",
+        number: 48,
+        label: "Interactive GCF & Factor Tree Explorer",
+      };
+    return {
+      kind: "factor-tree-lab",
+      number: 36,
+      label: "Interactive Factor Tree Explorer: Build prime factorizations step-by-step!",
+    };
   }
   // 6.NOS.6 — Coordinate Plane / Number Line
   if (std === "6.NOS.6") {
-    if (wb("number line")) return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
-    return { kind: "coordinate-plane", points: [{ x: 3, y: 4, label: "A" }, { x: -2, y: 5, label: "B" }], label: "Interactive Coordinate Plane Explorer" };
+    if (wb("number line"))
+      return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
+    return {
+      kind: "coordinate-plane",
+      points: [
+        { x: 3, y: 4, label: "A" },
+        { x: -2, y: 5, label: "B" },
+      ],
+      label: "Interactive Coordinate Plane Explorer",
+    };
   }
   // 6.NOS.7 — Quadrants / Coordinate Plane
   if (std === "6.NOS.7") {
-    return { kind: "coordinate-plane", points: [{ x: 3, y: 4, label: "A" }, { x: -2, y: -3, label: "B" }], label: "Interactive Four-Quadrant Coordinate Plane Explorer" };
+    return {
+      kind: "coordinate-plane",
+      points: [
+        { x: 3, y: 4, label: "A" },
+        { x: -2, y: -3, label: "B" },
+      ],
+      label: "Interactive Four-Quadrant Coordinate Plane Explorer",
+    };
   }
   // 6.NOS.8 — Integers / Absolute Value
   if (std === "6.NOS.8") {
@@ -107,20 +150,37 @@ export function resolveInteractiveToolForLesson(config) {
   }
   // 6.NOS.9 — Distance
   if (std === "6.NOS.9") {
-    return { kind: "number-line-explorer", label: "Interactive Distance on a Number Line Explorer" };
+    return {
+      kind: "number-line-explorer",
+      label: "Interactive Distance on a Number Line Explorer",
+    };
   }
   // 6.AT.1 — Ratios
   if (std === "6.AT.1") {
-    return { kind: "tape-diagram", parts: [3, 5], labels: ["Quantity A", "Quantity B"], label: "Interactive Tape Diagram Explorer: Count and compare equal parts!" };
+    return {
+      kind: "tape-diagram",
+      parts: [3, 5],
+      labels: ["Quantity A", "Quantity B"],
+      label: "Interactive Tape Diagram Explorer: Count and compare equal parts!",
+    };
   }
   // 6.AT.2 — Rates
   if (std === "6.AT.2") {
-    return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder: Calculate 'per 1' unit rates live on double number lines!" };
+    return {
+      kind: "unit-rate-builder",
+      label:
+        "Interactive Unit Rate Builder: Calculate 'per 1' unit rates live on double number lines!",
+    };
   }
   // 6.AT.3, 6.AT.3a — Ratio Tables / Rates
   if (std === "6.AT.3" || std === "6.AT.3A") {
-    if (wb("unit rate")) return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder" };
-    return { kind: "ratio-table-builder", label: "Interactive Ratio Table Explorer: Scale quantities up and down to find equivalent ratios!" };
+    if (wb("unit rate"))
+      return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder" };
+    return {
+      kind: "ratio-table-builder",
+      label:
+        "Interactive Ratio Table Explorer: Scale quantities up and down to find equivalent ratios!",
+    };
   }
   // 6.AT.3c — Measurement Conversions
   if (std === "6.AT.3C") {
@@ -128,27 +188,59 @@ export function resolveInteractiveToolForLesson(config) {
   }
   // 6.AT.4 — Percents
   if (std === "6.AT.4") {
-    if (wb("percent of|percentage of")) return { kind: "percent-builder", label: "Interactive Percent of a Quantity Builder" };
+    if (wb("percent of|percentage of"))
+      return { kind: "percent-builder", label: "Interactive Percent of a Quantity Builder" };
     return { kind: "percent-grid", percent: 45, label: "Interactive Percent Grid Tool" };
   }
   // 6.AT.5 — Exponents
   if (std === "6.AT.5") {
-    return { kind: "power-builder", base: 2, exponent: 4, label: "Interactive Powers & Exponents Builder" };
+    return {
+      kind: "power-builder",
+      base: 2,
+      exponent: 4,
+      label: "Interactive Powers & Exponents Builder",
+    };
   }
   // 6.AT.6a, 6.AT.6c, 6.AT.7 — Expressions
   if (std === "6.AT.6A" || std === "6.AT.6C" || std === "6.AT.7") {
-    if (wb("distributive")) return { kind: "distributive-builder", a: 3, b: "x", c: 4, label: "Interactive Distributive Property Area Model" };
-    if (wb("like terms|combine")) return { kind: "combine-like-terms", label: "Interactive Combine Like Terms Lab" };
+    if (wb("distributive"))
+      return {
+        kind: "distributive-builder",
+        a: 3,
+        b: "x",
+        c: 4,
+        label: "Interactive Distributive Property Area Model",
+      };
+    if (wb("like terms|combine"))
+      return { kind: "combine-like-terms", label: "Interactive Combine Like Terms Lab" };
     return { kind: "step-solver", label: "Interactive Expression Evaluator & Step Solver" };
   }
   // 6.AT.8 — Equations / Inequalities
   if (std === "6.AT.8") {
-    if (wb("inequalit")) return { kind: "number-line", min: -5, max: 5, step: 1, problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }], label: "Interactive Inequality Number Line" };
-    return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance: Keep both sides equal!" };
+    if (wb("inequalit"))
+      return {
+        kind: "number-line",
+        min: -5,
+        max: 5,
+        step: 1,
+        problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }],
+        label: "Interactive Inequality Number Line",
+      };
+    return {
+      kind: "equation-balance-lab",
+      label: "Interactive Equation Pan Balance: Keep both sides equal!",
+    };
   }
   // 6.AT.9 — Inequalities
   if (std === "6.AT.9") {
-    return { kind: "number-line", min: -5, max: 5, step: 1, problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }], label: "Interactive Inequality Number Line" };
+    return {
+      kind: "number-line",
+      min: -5,
+      max: 5,
+      step: 1,
+      problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }],
+      label: "Interactive Inequality Number Line",
+    };
   }
   // 6.DS.1 — Statistical Questions
   if (std === "6.DS.1") {
@@ -164,8 +256,12 @@ export function resolveInteractiveToolForLesson(config) {
   }
   // 6.DS.5 — Box Plots / Histograms
   if (std === "6.DS.5") {
-    if (wb("histogram")) return { kind: "histogram-builder", label: "Interactive Histogram Bar Builder" };
-    return { kind: "box-plot-builder", label: "Interactive Box Plot & Five-Number Summary Builder" };
+    if (wb("histogram"))
+      return { kind: "histogram-builder", label: "Interactive Histogram Bar Builder" };
+    return {
+      kind: "box-plot-builder",
+      label: "Interactive Box Plot & Five-Number Summary Builder",
+    };
   }
   // 6.DS.6c, 6.DS.6d — MAD / Center
   if (std === "6.DS.6C" || std === "6.DS.6D") {
@@ -178,36 +274,77 @@ export function resolveInteractiveToolForLesson(config) {
   }
   // 6.GR.2, 6.GR.4 — Solids / Nets
   if (std === "6.GR.2" || std === "6.GR.4") {
-    if (wb("net|fold|surface area")) return { kind: "net-folder", solid: "cube", label: "Interactive 3D Net Folder: Fold 2D nets into 3D solids!" };
-    return { kind: "solid-3d", shape: wb("pyramid") ? "triangular-pyramid" : "cube", label: "Interactive 3D Solid & Net Explorer" };
+    if (wb("net|fold|surface area"))
+      return {
+        kind: "net-folder",
+        solid: "cube",
+        label: "Interactive 3D Net Folder: Fold 2D nets into 3D solids!",
+      };
+    return {
+      kind: "solid-3d",
+      shape: wb("pyramid") ? "triangular-pyramid" : "cube",
+      label: "Interactive 3D Solid & Net Explorer",
+    };
   }
 
   // Also handle RP standard codes (alternate standard labels)
   if (/^6\.RP/i.test(std)) {
-    if (wb("ratio table|equivalent ratio")) return { kind: "ratio-table-builder", label: "Interactive Ratio Table Explorer" };
-    if (wb("unit rate")) return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder" };
-    if (wb("percent")) return { kind: "percent-grid", percent: 45, label: "Interactive Percent Grid Tool" };
-    return { kind: "tape-diagram", parts: [3, 5], labels: ["Quantity A", "Quantity B"], label: "Interactive Tape Diagram Explorer" };
+    if (wb("ratio table|equivalent ratio"))
+      return { kind: "ratio-table-builder", label: "Interactive Ratio Table Explorer" };
+    if (wb("unit rate"))
+      return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder" };
+    if (wb("percent"))
+      return { kind: "percent-grid", percent: 45, label: "Interactive Percent Grid Tool" };
+    return {
+      kind: "tape-diagram",
+      parts: [3, 5],
+      labels: ["Quantity A", "Quantity B"],
+      label: "Interactive Tape Diagram Explorer",
+    };
   }
   if (/^6\.EE/i.test(std)) {
-    if (wb("inequalit")) return { kind: "number-line", min: -5, max: 5, step: 1, problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }], label: "Interactive Inequality Number Line" };
-    if (wb("equation")) return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
+    if (wb("inequalit"))
+      return {
+        kind: "number-line",
+        min: -5,
+        max: 5,
+        step: 1,
+        problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }],
+        label: "Interactive Inequality Number Line",
+      };
+    if (wb("equation"))
+      return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
     return { kind: "step-solver", label: "Interactive Expression Evaluator & Step Solver" };
   }
   if (/^6\.NS/i.test(std)) {
-    if (wb("fraction|divid")) return { kind: "fraction-divide", num1: "3/4", num2: "1/2", label: "Interactive Fraction Division" };
-    if (wb("decimal")) return { kind: "decimal-columns", label: "Interactive Decimal Columns Tool" };
-    if (wb("factor|GCF|LCM")) return { kind: "factor-tree-lab", number: 36, label: "Interactive Factor Tree Explorer" };
-    if (wb("coordinate")) return { kind: "coordinate-plane", points: [{ x: 3, y: 4, label: "A" }], label: "Interactive Coordinate Plane Explorer" };
+    if (wb("fraction|divid"))
+      return {
+        kind: "fraction-divide",
+        num1: "3/4",
+        num2: "1/2",
+        label: "Interactive Fraction Division",
+      };
+    if (wb("decimal"))
+      return { kind: "decimal-columns", label: "Interactive Decimal Columns Tool" };
+    if (wb("factor|GCF|LCM"))
+      return { kind: "factor-tree-lab", number: 36, label: "Interactive Factor Tree Explorer" };
+    if (wb("coordinate"))
+      return {
+        kind: "coordinate-plane",
+        points: [{ x: 3, y: 4, label: "A" }],
+        label: "Interactive Coordinate Plane Explorer",
+      };
     return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
   }
   if (/^6\.SP/i.test(std)) {
     if (wb("box plot")) return { kind: "box-plot-builder", label: "Interactive Box Plot Builder" };
-    if (wb("histogram")) return { kind: "histogram-builder", label: "Interactive Histogram Builder" };
+    if (wb("histogram"))
+      return { kind: "histogram-builder", label: "Interactive Histogram Builder" };
     return { kind: "stats-data-lab", label: "Interactive Statistics Explorer" };
   }
   if (/^6\.G/i.test(std)) {
-    if (wb("area")) return { kind: "area-morph", shape: "parallelogram", label: "Interactive Area Explorer" };
+    if (wb("area"))
+      return { kind: "area-morph", shape: "parallelogram", label: "Interactive Area Explorer" };
     return { kind: "solid-3d", shape: "cube", label: "Interactive 3D Solid Explorer" };
   }
 
@@ -221,7 +358,12 @@ export function resolveInteractiveToolForLesson(config) {
     return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder" };
   }
   if (wb("tape diagram")) {
-    return { kind: "tape-diagram", parts: [3, 5], labels: ["Quantity A", "Quantity B"], label: "Interactive Tape Diagram Explorer" };
+    return {
+      kind: "tape-diagram",
+      parts: [3, 5],
+      labels: ["Quantity A", "Quantity B"],
+      label: "Interactive Tape Diagram Explorer",
+    };
   }
   if (wb("factor tree|prime factorization")) {
     return { kind: "factor-tree-lab", number: 36, label: "Interactive Factor Tree Explorer" };
@@ -233,10 +375,20 @@ export function resolveInteractiveToolForLesson(config) {
     return { kind: "factor-tree-lab", number: 48, label: "Interactive GCF & Factor Tree Explorer" };
   }
   if (wb("exponents?|powers of")) {
-    return { kind: "power-builder", base: 2, exponent: 4, label: "Interactive Powers & Exponents Builder" };
+    return {
+      kind: "power-builder",
+      base: 2,
+      exponent: 4,
+      label: "Interactive Powers & Exponents Builder",
+    };
   }
   if (wb("divid\\w* fractions?|fraction division|divid\\w* by a fraction")) {
-    return { kind: "fraction-divide", num1: "3/4", num2: "1/2", label: "Interactive Fraction Division: Keep, Change, Flip!" };
+    return {
+      kind: "fraction-divide",
+      num1: "3/4",
+      num2: "1/2",
+      label: "Interactive Fraction Division: Keep, Change, Flip!",
+    };
   }
   if (wb("long division|partial quotients?")) {
     return { kind: "long-division-builder", label: "Interactive Long Division Lab" };
@@ -257,10 +409,21 @@ export function resolveInteractiveToolForLesson(config) {
     return { kind: "percent-grid", percent: 45, label: "Interactive Percent Grid Tool" };
   }
   if (wb("ratios?")) {
-    return { kind: "tape-diagram", parts: [3, 5], labels: ["Quantity A", "Quantity B"], label: "Interactive Tape Diagram Explorer" };
+    return {
+      kind: "tape-diagram",
+      parts: [3, 5],
+      labels: ["Quantity A", "Quantity B"],
+      label: "Interactive Tape Diagram Explorer",
+    };
   }
   if (wb("distributive property")) {
-    return { kind: "distributive-builder", a: 3, b: "x", c: 4, label: "Interactive Distributive Property Area Model" };
+    return {
+      kind: "distributive-builder",
+      a: 3,
+      b: "x",
+      c: 4,
+      label: "Interactive Distributive Property Area Model",
+    };
   }
   if (wb("combine like terms|like terms")) {
     return { kind: "combine-like-terms", label: "Interactive Combine Like Terms Lab" };
@@ -269,13 +432,27 @@ export function resolveInteractiveToolForLesson(config) {
     return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
   }
   if (wb("inequalit\\w*")) {
-    return { kind: "number-line", min: -5, max: 5, step: 1, problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }], label: "Interactive Inequality Number Line" };
+    return {
+      kind: "number-line",
+      min: -5,
+      max: 5,
+      step: 1,
+      problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }],
+      label: "Interactive Inequality Number Line",
+    };
   }
   if (wb("absolute value")) {
     return { kind: "number-line-explorer", label: "Interactive Absolute Value Explorer" };
   }
   if (wb("coordinate plane|ordered pairs?")) {
-    return { kind: "coordinate-plane", points: [{ x: 3, y: 4, label: "A" }, { x: -2, y: 5, label: "B" }], label: "Interactive Coordinate Plane Explorer" };
+    return {
+      kind: "coordinate-plane",
+      points: [
+        { x: 3, y: 4, label: "A" },
+        { x: -2, y: 5, label: "B" },
+      ],
+      label: "Interactive Coordinate Plane Explorer",
+    };
   }
   if (wb("number line")) {
     return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
@@ -288,7 +465,11 @@ export function resolveInteractiveToolForLesson(config) {
     return { kind: "net-folder", solid: "cube", label: "Interactive 3D Net Folder" };
   }
   if (wb("prisms?|pyramids?|volume")) {
-    return { kind: "solid-3d", shape: wb("pyramid") ? "triangular-pyramid" : "cube", label: "Interactive 3D Solid Explorer" };
+    return {
+      kind: "solid-3d",
+      shape: wb("pyramid") ? "triangular-pyramid" : "cube",
+      label: "Interactive 3D Solid Explorer",
+    };
   }
   if (wb("cross sections?")) {
     return { kind: "cross-section", label: "Interactive 3D Cross-Section Slicing Tool" };
@@ -307,7 +488,12 @@ export function resolveInteractiveToolForLesson(config) {
     return { kind: "dot-plot", label: "Interactive Dot Plot Explorer" };
   }
   if (wb("fractions?")) {
-    return { kind: "fraction-divide", num1: "3/4", num2: "1/2", label: "Interactive Fraction Division Tool" };
+    return {
+      kind: "fraction-divide",
+      num1: "3/4",
+      num2: "1/2",
+      label: "Interactive Fraction Division Tool",
+    };
   }
   if (wb("equations?")) {
     return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
@@ -326,7 +512,8 @@ export function resolveInteractiveToolForLesson(config) {
 function resolveLessonMisconception(config) {
   const cfg = config || {};
   if (cfg.misconception) return cfg.misconception;
-  const text = `${cfg.title || ""} ${cfg.standard || ""} ${cfg.contentObjective || ""}`.toLowerCase();
+  const text =
+    `${cfg.title || ""} ${cfg.standard || ""} ${cfg.contentObjective || ""}`.toLowerCase();
 
   if (text.includes("factor tree") || text.includes("prime factor")) {
     return {
@@ -370,12 +557,27 @@ function resolveTryItChallenge(config) {
 
   if (text.includes("ratio") || text.includes("2-1")) {
     return {
-      question: "In a ratio table comparing flour to sugar as 3 : 2, if you use 9 cups of flour, how much sugar do you need?",
-      questionEs: "En una tabla de razones que compara harina y azúcar como 3 : 2, si usas 9 tazas de harina, ¿cuánta azúcar necesitas?",
+      question:
+        "In a ratio table comparing flour to sugar as 3 : 2, if you use 9 cups of flour, how much sugar do you need?",
+      questionEs:
+        "En una tabla de razones que compara harina y azúcar como 3 : 2, si usas 9 tazas de harina, ¿cuánta azúcar necesitas?",
       options: [
-        { text: "6 cups of sugar (scaled up by ×3)", correct: true, explain: "Correct! Both quantities scaled up by ×3 (3×3=9 and 2×3=6)!" },
-        { text: "5 cups of sugar", correct: false, explain: "Not quite: Remember to multiply both terms of the ratio by the SAME factor (3×3=9, so 2×3=6)." },
-        { text: "12 cups of sugar", correct: false, explain: "Not quite: Scale 2 by ×3 to get 6 cups." },
+        {
+          text: "6 cups of sugar (scaled up by ×3)",
+          correct: true,
+          explain: "Correct! Both quantities scaled up by ×3 (3×3=9 and 2×3=6)!",
+        },
+        {
+          text: "5 cups of sugar",
+          correct: false,
+          explain:
+            "Not quite: Remember to multiply both terms of the ratio by the SAME factor (3×3=9, so 2×3=6).",
+        },
+        {
+          text: "12 cups of sugar",
+          correct: false,
+          explain: "Not quite: Scale 2 by ×3 to get 6 cups.",
+        },
       ],
     };
   }
@@ -384,9 +586,21 @@ function resolveTryItChallenge(config) {
       question: "Which of the following is the correct prime factorization of 12?",
       questionEs: "¿Cuál de las siguientes es la factorización prima correcta de 12?",
       options: [
-        { text: "2 × 2 × 3", correct: true, explain: "Correct! 2 × 2 × 3 = 12, and 2 and 3 are both prime numbers!" },
-        { text: "2 × 6", correct: false, explain: "Not quite: 6 is not a prime number (6 = 2 × 3)." },
-        { text: "3 × 4", correct: false, explain: "Not quite: 4 is not a prime number (4 = 2 × 2)." },
+        {
+          text: "2 × 2 × 3",
+          correct: true,
+          explain: "Correct! 2 × 2 × 3 = 12, and 2 and 3 are both prime numbers!",
+        },
+        {
+          text: "2 × 6",
+          correct: false,
+          explain: "Not quite: 6 is not a prime number (6 = 2 × 3).",
+        },
+        {
+          text: "3 × 4",
+          correct: false,
+          explain: "Not quite: 4 is not a prime number (4 = 2 × 2).",
+        },
       ],
     };
   }
@@ -395,19 +609,44 @@ function resolveTryItChallenge(config) {
       question: "When computing 3/4 ÷ 1/2, what is the first step?",
       questionEs: "Al calcular 3/4 ÷ 1/2, ¿cuál es el primer paso?",
       options: [
-        { text: "Multiply 3/4 by 2/1 (Keep, Change, Flip)", correct: true, explain: "Correct! Flip 1/2 into 2/1 and multiply: 3/4 × 2/1 = 6/4 = 1 1/2!" },
-        { text: "Divide 3 by 1 and 4 by 2 directly", correct: false, explain: "Incorrect: Remember the rule: Keep, Change, Flip!" },
-        { text: "Flip 3/4 into 4/3", correct: false, explain: "Incorrect: Always keep the first fraction unchanged!" },
+        {
+          text: "Multiply 3/4 by 2/1 (Keep, Change, Flip)",
+          correct: true,
+          explain: "Correct! Flip 1/2 into 2/1 and multiply: 3/4 × 2/1 = 6/4 = 1 1/2!",
+        },
+        {
+          text: "Divide 3 by 1 and 4 by 2 directly",
+          correct: false,
+          explain: "Incorrect: Remember the rule: Keep, Change, Flip!",
+        },
+        {
+          text: "Flip 3/4 into 4/3",
+          correct: false,
+          explain: "Incorrect: Always keep the first fraction unchanged!",
+        },
       ],
     };
   }
   return {
     question: "Which statement best describes how to check if your math reasoning is correct?",
-    questionEs: "¿Qué afirmación describe mejor cómo comprobar si tu razonamiento matemático es correcto?",
+    questionEs:
+      "¿Qué afirmación describe mejor cómo comprobar si tu razonamiento matemático es correcto?",
     options: [
-      { text: "Explain each step and prove why the visual model matches your math", correct: true, explain: "Exactly! Explaining each step and connecting to a visual model proves accuracy!" },
-      { text: "Only write down the final number without showing steps", correct: false, explain: "Showing steps and explaining reasoning is essential for deep math learning." },
-      { text: "Guess the answer without checking the math model", correct: false, explain: "Always verify your answer using the visual representation." },
+      {
+        text: "Explain each step and prove why the visual model matches your math",
+        correct: true,
+        explain: "Exactly! Explaining each step and connecting to a visual model proves accuracy!",
+      },
+      {
+        text: "Only write down the final number without showing steps",
+        correct: false,
+        explain: "Showing steps and explaining reasoning is essential for deep math learning.",
+      },
+      {
+        text: "Guess the answer without checking the math model",
+        correct: false,
+        explain: "Always verify your answer using the visual representation.",
+      },
     ],
   };
 }
@@ -415,7 +654,10 @@ function resolveTryItChallenge(config) {
 let injectedStyles = false;
 
 function injectVocabLearnStyles() {
-  if (injectedStyles || (typeof document !== "undefined" && document.getElementById("vl-panel-styles"))) {
+  if (
+    injectedStyles ||
+    (typeof document !== "undefined" && document.getElementById("vl-panel-styles"))
+  ) {
     injectedStyles = true;
     return;
   }
@@ -879,14 +1121,18 @@ export function renderVocabPanel(container, config, options = {}) {
   renderVocabIntro(vocabTarget, {
     terms: vocabList,
     onComplete: () => {
-      try { if (state) state.set({ vocabVisited: true }); } catch (_) {}
+      try {
+        if (state) state.set({ vocabVisited: true });
+      } catch (_) {}
       onComplete?.();
     },
   });
 
   // Highlight vocabulary terms throughout
   if (vocabList.length > 0) {
-    try { underlineVocabTerms(cardSection, vocabList); } catch (_) {}
+    try {
+      underlineVocabTerms(cardSection, vocabList);
+    } catch (_) {}
   }
 
   const actions = document.createElement("div");
@@ -899,7 +1145,9 @@ export function renderVocabPanel(container, config, options = {}) {
     isEs ? "Siguiente: Aprender el Concepto 💡 →" : "Next: Learn It (How the Math Works) 💡 →"
   }</span>`;
   btn.addEventListener("click", () => {
-    try { if (state) state.set({ vocabVisited: true }); } catch (_) {}
+    try {
+      if (state) state.set({ vocabVisited: true });
+    } catch (_) {}
     onComplete?.();
   });
   actions.append(btn);
@@ -1121,9 +1369,11 @@ export function renderLearnItPanel(container, config, options = {}) {
   const turnAndTalkData = (Array.isArray(config.turnAndTalk) && config.turnAndTalk[0]) || {};
   let currentLangEs = isEs;
 
-  const defaultQuestionEn = turnAndTalkData.question ||
+  const defaultQuestionEn =
+    turnAndTalkData.question ||
     `Turn and talk with your partner: How does this math visual and example work? What step did you notice first?`;
-  const defaultQuestionEs = turnAndTalkData.questionEs ||
+  const defaultQuestionEs =
+    turnAndTalkData.questionEs ||
     `Habla con tu compañero: ¿Cómo funciona este modelo visual y ejemplo? ¿Qué paso notaste primero?`;
 
   // 202 of 222 lesson configs author `turnAndTalk[].stems` — bilingual starters
@@ -1197,7 +1447,9 @@ export function renderLearnItPanel(container, config, options = {}) {
     );
     starterChips.forEach((chip) => {
       chip.addEventListener("click", () => {
-        ttContainer.querySelectorAll(".vl-starter-chip").forEach((c) => c.classList.remove("active"));
+        ttContainer
+          .querySelectorAll(".vl-starter-chip")
+          .forEach((c) => c.classList.remove("active"));
         chip.classList.add("active");
         const idx = Number(chip.dataset.idx);
         const text = starters[idx];
@@ -1288,7 +1540,9 @@ export function renderLearnItPanel(container, config, options = {}) {
   // Underline vocabulary terms throughout Learn It for definition & image popups
   const vocabList = Array.isArray(config.vocabulary) ? config.vocabulary : [];
   if (vocabList.length > 0) {
-    try { underlineVocabTerms(mainCard, vocabList); } catch (_) {}
+    try {
+      underlineVocabTerms(mainCard, vocabList);
+    } catch (_) {}
   }
 
   // Bottom Continue Action Button
@@ -1298,12 +1552,16 @@ export function renderLearnItPanel(container, config, options = {}) {
   btn.type = "button";
   btn.className = "btn btn-primary btn-lg vl-continue-btn";
   btn.innerHTML = `<span>${
+    // Learn It hands off to Practice. The label used to say "let's explore",
+    // which named a phase this button has never opened.
     isEs
-      ? "¡He aprendido el concepto — a explorar! 🚀 →"
-      : "I've learned the concept — let's explore! 🚀 →"
+      ? "¡He aprendido el concepto — a practicar! ✏️ →"
+      : "I've learned the concept — let's practice! ✏️ →"
   }</span>`;
   btn.addEventListener("click", () => {
-    try { if (state) state.set({ notesVisited: true }); } catch (_) {}
+    try {
+      if (state) state.set({ notesVisited: true });
+    } catch (_) {}
     onComplete?.();
   });
   actions.append(btn);

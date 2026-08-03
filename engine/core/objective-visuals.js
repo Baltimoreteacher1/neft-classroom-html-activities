@@ -340,113 +340,114 @@ function joinCaption(scene, lead, goalPhrase) {
   return `${scene} ${lead} ${goalPhrase}.`;
 }
 
+// ── Student talk targets ────────────────────────────────────────────────────
+// These print on the objective cards under "What to Say / What to Listen For".
+// They used to be one long sentence each, built by pasting the whole content or
+// language objective into a frame — e.g. "To solve this, I can multiply
+// multi-digit decimals fluently using the standard algorithm and estimate to
+// check reasonableness." That is the objective, not something a multilingual
+// sixth grader can say out loud, and it is the one line on the card a newcomer
+// most needs to be able to read.
+//
+// Both resolvers now return SHORT BULLETS instead: three frames of a handful of
+// words each, ending in a blank the student fills. The lesson still shows up —
+// one bullet names the skill or the key word — but the grammar is handed over
+// rather than modelled at full length.
+
+// Cut a long objective down to a sayable skill phrase. Objectives are written as
+// "I can <skill>, <qualifier> using <tool> to <purpose>"; everything after the
+// first clause boundary is detail a speaker does not need.
+function shortSkillPhrase(objective, fallback) {
+  const cleaned = String(objective || "")
+    .replace(/^\s*(students?\s+will\s+be\s+able\s+to|swbat|I\s+can)\s+/i, "")
+    .replace(/\.\s*$/, "")
+    .trim();
+  if (!cleaned) return fallback;
+  const clause = cleaned.split(
+    /\s*,\s*|\s+(?:using|by|to|so that|in order to|and then|while)\s+/i,
+  )[0];
+  const words = clause.trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return fallback;
+  return words
+    .slice(0, 6)
+    .join(" ")
+    .replace(/[.,;:]$/, "");
+}
+
+const firstTerm = (list) => (list && list.length ? String(list[0]) : "");
+
+function vocabTerms(cfg) {
+  return Array.isArray(cfg.vocabulary)
+    ? cfg.vocabulary
+        .map((v) => (typeof v === "object" && v ? v.term || v.word || "" : String(v || "")))
+        .filter(Boolean)
+    : [];
+}
+
 /**
- * Generate 1-2 concrete, student-facing "What to Say" and "What to Listen For"
- * prompts derived directly from the lesson's language objective, sentence stems,
- * or key academic vocabulary.
+ * Short, student-facing "What to Say" / "What to Listen For" bullets for the
+ * CONTENT objective card.
  *
  * @param {LessonConfig} config
- * @returns {{ say: string, sayEs?: string, listen: string, listenEs?: string, keyWords?: string[] }}
+ * @returns {{ say: string[], sayEs: string[], listen: string[], listenEs: string[] }}
  */
 export function resolveContentTalkPrompts(config) {
   const cfg = config || {};
   const contentObj = String(cfg.contentObjective || cfg.objective || cfg.launch?.objective || "");
-  const title = String(cfg.title || "this math topic");
-  const vocabList = Array.isArray(cfg.vocabulary)
-    ? cfg.vocabulary
-        .map((v) => (typeof v === "object" && v ? v.term || v.word || "" : String(v || "")))
-        .filter(Boolean)
-    : [];
+  const skill = shortSkillPhrase(contentObj, "solve this problem");
 
-  let say = "";
-  if (contentObj) {
-    const cleaned = contentObj.replace(/^\s*I\s+can\s+/i, "").replace(/\.\s*$/, "");
-    say = `To solve this, I can ${cleaned}.`;
-  } else {
-    say = `I solved this problem by explaining my math steps clearly.`;
-  }
-
-  let sayEs = contentObj
-    ? `Para resolver esto, puedo explicar los pasos de la lección sobre ${title}.`
-    : `Resolví este problema explicando mis pasos matemáticos claramente.`;
-
-  let listen = "";
-  if (contentObj.toLowerCase().includes("step") || contentObj.toLowerCase().includes("find") || contentObj.toLowerCase().includes("solve")) {
-    listen = `My partner explaining each mathematical step in order and showing why their final answer is correct.`;
-  } else if (vocabList.length >= 1) {
-    listen = `My partner explaining how their visual model proves their solution using ${vocabList[0]}.`;
-  } else {
-    listen = `My partner describing their problem-solving strategy and checking that their work makes sense.`;
-  }
-
-  let listenEs = `Mi compañero explicando cada paso matemático en orden y demostrando por qué su respuesta final es correcta.`;
-
-  return { say, sayEs, listen, listenEs };
+  return {
+    say: [`I can ${skill}.`, "First I ___. Then I ___.", "My answer is ___ because ___."],
+    // No lesson in the corpus authors a Spanish content objective, so the
+    // Spanish first bullet stays generic rather than pasting the English skill
+    // phrase into a Spanish sentence ("Puedo multiply decimals…").
+    sayEs: [
+      "Puedo explicar mi trabajo paso a paso.",
+      "Primero yo ___. Luego yo ___.",
+      "Mi respuesta es ___ porque ___.",
+    ],
+    listen: [
+      "Did they say every step?",
+      "Did they say WHY it works?",
+      "Did they check the answer?",
+    ],
+    listenEs: ["¿Dijeron cada paso?", "¿Dijeron POR QUÉ funciona?", "¿Revisaron la respuesta?"],
+  };
 }
 
+/**
+ * Short, student-facing "What to Say" / "What to Listen For" bullets for the
+ * LANGUAGE objective card. One bullet always names a real lesson word so the
+ * target is a word the student will actually hear today.
+ *
+ * @param {LessonConfig} config
+ * @returns {{ say: string[], sayEs: string[], listen: string[], listenEs: string[], keyWords: string[] }}
+ */
 export function resolveLanguageTalkPrompts(config) {
   const cfg = config || {};
-  const langObj = String(cfg.languageObjective || "");
-  const vocabList = Array.isArray(cfg.vocabulary)
-    ? cfg.vocabulary
-        .map((v) => (typeof v === "object" && v ? v.term || v.word || "" : String(v || "")))
-        .filter(Boolean)
-    : [];
+  const vocabList = vocabTerms(cfg);
+  const word = firstTerm(vocabList);
 
-  let stemSay = "";
-  let stemSayEs = "";
-  if (Array.isArray(cfg.turnAndTalk)) {
-    for (const item of cfg.turnAndTalk) {
-      if (Array.isArray(item.stems) && item.stems.length > 0) {
-        const firstStem = item.stems[0];
-        const rawStem = typeof firstStem === "object" && firstStem ? firstStem.en : firstStem;
-        if (rawStem && typeof rawStem === "string") {
-          stemSay = rawStem.replace(/^I\s+/i, "I ").trim();
-        }
-        if (typeof firstStem === "object" && firstStem && firstStem.es) {
-          stemSayEs = firstStem.es;
-        }
-        if (stemSay) break;
-      }
-    }
-  }
+  const wordSay = word ? `I used the word "${word}".` : "I used today's math words.";
+  const wordSayEs = word ? `Usé la palabra "${word}".` : "Usé las palabras de hoy.";
+  const wordListen = word ? `Did they say "${word}"?` : "Did they use today's math words?";
+  const wordListenEs = word ? `¿Dijeron "${word}"?` : "¿Usaron las palabras de hoy?";
 
-  let say = "";
-  if (stemSay) {
-    say = stemSay;
-  } else if (langObj) {
-    const cleaned = langObj.replace(/^\s*I\s+can\s+/i, "").replace(/\.\s*$/, "");
-    say = `I can ${cleaned}.`;
-  } else if (vocabList.length >= 2) {
-    say = `I used the academic terms "${vocabList[0]}" and "${vocabList[1]}" to explain my strategy.`;
-  } else if (vocabList.length === 1) {
-    say = `I used the math term "${vocabList[0]}" to describe my work to my partner.`;
-  } else {
-    say = "I know my solution is correct because I can explain each step clearly to my partner.";
-  }
-
-  let sayEs = stemSayEs || (langObj ? `Puedo explicar mi razonamiento usando el vocabulario matemático de hoy.` : "Sé que mi solución es correcta porque puedo explicar cada paso claramente.");
-
-  let listen = "";
-  if (vocabList.length >= 2) {
-    listen = `My partner using academic terms like "${vocabList[0]}" and "${vocabList[1]}" to justify their reasoning.`;
-  } else if (vocabList.length === 1) {
-    listen = `My partner using the word "${vocabList[0]}" while describing how they solved the problem.`;
-  } else if (langObj.toLowerCase().includes("words") || langObj.toLowerCase().includes("using")) {
-    const match = langObj.match(/words?\s+([^\.]+)/i);
-    const wordClause = match ? match[1].trim() : "academic vocabulary";
-    listen = `My partner explaining their strategy using ${wordClause}.`;
-  } else if (langObj.toLowerCase().includes("explain") || langObj.toLowerCase().includes("justify")) {
-    listen = "My partner explaining WHY their strategy works, not just sharing the final answer.";
-  } else {
-    listen = "My partner naming the mathematical model and describing how their steps connect to it.";
-  }
-
-  let listenEs = vocabList.length >= 1
-    ? `Mi compañero usando términos del vocabulario como "${vocabList[0]}" para justificar su razonamiento.`
-    : "Mi compañero explicando POR QUÉ funciona su estrategia y usando el vocabulario matemático.";
-
-  return { say, sayEs, listen, listenEs, keyWords: vocabList };
+  return {
+    say: ["I think ___ because ___.", wordSay, "I agree with ___ because ___."],
+    sayEs: ["Creo que ___ porque ___.", wordSayEs, "Estoy de acuerdo con ___ porque ___."],
+    listen: [
+      wordListen,
+      "Did they say why, not just the answer?",
+      "Did they talk in a full sentence?",
+    ],
+    listenEs: [
+      wordListenEs,
+      "¿Dijeron por qué, no solo la respuesta?",
+      "¿Hablaron con una oración completa?",
+    ],
+    keyWords: vocabList,
+  };
 }
 
 export function resolveObjectiveVisuals(config) {

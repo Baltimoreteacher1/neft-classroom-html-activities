@@ -1338,13 +1338,16 @@ function renderNoticeAndWonder(host, config, state) {
   if (imgSrc) {
     const fig = document.createElement("figure");
     fig.className = "nw-figure";
-    fig.style.cssText = "background:#ffffff; padding:10px; border-radius:12px; border:1px solid #cbd5e1;";
+    fig.style.cssText =
+      "background:#ffffff; padding:10px; border-radius:12px; border:1px solid #cbd5e1;";
     const img = document.createElement("img");
     img.className = "nw-img";
     img.setAttribute("loading", "lazy");
     img.setAttribute("decoding", "async");
     img.src = String(imgSrc);
-    img.alt = nw.context ? String(nw.context) : (objVisuals?.content?.caption || config.title || "Notice and Wonder data display");
+    img.alt = nw.context
+      ? String(nw.context)
+      : objVisuals?.content?.caption || config.title || "Notice and Wonder data display";
     fig.append(img);
     attachImageZoom(img);
     // "Annotate the scene": a draw overlay so students can circle/underline what
@@ -2000,6 +2003,28 @@ export function observeVocabTerms(container, vocab) {
 // keys so ticking "Did it" at the end does not rewrite the "Got it" the student
 // ticked at the start. With no name entered it degrades to the ordinary
 // first-person wording, so nothing depends on the Name field being filled in.
+// Talk targets are short bullets now, not one long sentence. Older callers (and
+// any lesson that pins its own prompt text) may still hand over a single string,
+// so normalise both shapes to a list before rendering.
+function talkList(value) {
+  if (Array.isArray(value)) return value.map((v) => String(v)).filter(Boolean);
+  const s = String(value || "").trim();
+  return s ? [s] : [];
+}
+
+// esc() escapes < > &, but NOT the double quotes a JSON list is full of, so the
+// list is percent-encoded before it goes into an attribute. Encoding rather than
+// re-escaping keeps the round trip lossless no matter what a prompt contains.
+function talkAttr(value) {
+  return encodeURIComponent(JSON.stringify(talkList(value)));
+}
+
+function talkBulletsHtml(value) {
+  return talkList(value)
+    .map((line) => `<li style="margin:2px 0;">${esc(line)}</li>`)
+    .join("");
+}
+
 function renderObjectives(el, config, state, opts = {}) {
   const review = !!opts.review;
   const name = review ? studentFirstName(state) : "";
@@ -2032,8 +2057,10 @@ function renderObjectives(el, config, state, opts = {}) {
         <div style="padding:12px 16px; background:#ffffff; border-top:1.5px solid #e2e8f0; font-size:0.96rem; color:#0f172a; font-weight:800; line-height:1.5; -webkit-font-smoothing:antialiased;">
           ${o.icon} <strong>Visual Representation:</strong> ${esc(o.caption)} <span style="display:inline-block; font-size:0.78rem; font-weight:800; color:#0284c7; background:rgba(2,132,199,0.08); padding:3px 8px; border-radius:6px; margin-left:6px; border:1px solid rgba(2,132,199,0.2);">🔍 Click to enlarge</span>
         </div>
-        ${o.talkPrompts ? `
-        <div class="language-talk-card" data-lang="en" data-say-en="${esc(o.talkPrompts.say)}" data-say-es="${esc(o.talkPrompts.sayEs || o.talkPrompts.say)}" data-listen-en="${esc(o.talkPrompts.listen)}" data-listen-es="${esc(o.talkPrompts.listenEs || o.talkPrompts.listen)}" style="padding:14px 16px; background:#fff7ed; border-top:2px solid #fdba74; font-size:0.95rem; color:#0f172a; line-height:1.55; -webkit-font-smoothing:antialiased;">
+        ${
+          o.talkPrompts
+            ? `
+        <div class="language-talk-card" data-lang="en" data-say-en="${talkAttr(o.talkPrompts.say)}" data-say-es="${talkAttr(o.talkPrompts.sayEs || o.talkPrompts.say)}" data-listen-en="${talkAttr(o.talkPrompts.listen)}" data-listen-es="${talkAttr(o.talkPrompts.listenEs || o.talkPrompts.listen)}" style="padding:14px 16px; background:#fff7ed; border-top:2px solid #fdba74; font-size:0.95rem; color:#0f172a; line-height:1.55; -webkit-font-smoothing:antialiased;">
           <div style="font-weight:900; font-size:0.82rem; color:#c2410c; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
             <span>🗣️ Student Talk Targets (What to Say & Listen For):</span>
             <div style="display:inline-flex; align-items:center; gap:6px;">
@@ -2042,16 +2069,18 @@ function renderObjectives(el, config, state, opts = {}) {
           </div>
           <div style="display:flex; flex-direction:column; gap:8px;">
             <div style="background:rgba(234,88,12,0.06); padding:9px 12px; border-radius:8px; border-left:4px solid #ea580c;">
-              <strong style="color:#c2410c; font-weight:900; font-size:0.95rem;">What to Say:</strong> 
-              <span class="talk-say-text" style="font-weight:750; font-size:0.98rem; color:#0f172a; font-style:italic;">"${esc(o.talkPrompts.say)}"</span>
+              <strong style="color:#c2410c; font-weight:900; font-size:0.95rem;">What to Say:</strong>
+              <ul class="talk-say-text talk-bullets" style="margin:6px 0 0; padding-left:20px; font-weight:750; font-size:1rem; color:#0f172a; font-style:italic; line-height:1.6;">${talkBulletsHtml(o.talkPrompts.say)}</ul>
             </div>
             <div style="background:rgba(2,132,199,0.06); padding:9px 12px; border-radius:8px; border-left:4px solid #0284c7;">
-              <strong style="color:#0369a1; font-weight:900; font-size:0.95rem;">What to Listen For:</strong> 
-              <span class="talk-listen-text" style="font-weight:750; font-size:0.98rem; color:#0f172a;">"${esc(o.talkPrompts.listen)}"</span>
+              <strong style="color:#0369a1; font-weight:900; font-size:0.95rem;">What to Listen For:</strong>
+              <ul class="talk-listen-text talk-bullets" style="margin:6px 0 0; padding-left:20px; font-weight:750; font-size:1rem; color:#0f172a; line-height:1.6;">${talkBulletsHtml(o.talkPrompts.listen)}</ul>
             </div>
           </div>
         </div>
-        ` : ""}
+        `
+            : ""
+        }
       </div>
 
       <div class="objective-discuss" style="margin-top:var(--sp-3); padding-top:var(--sp-2); border-top:1px dashed rgba(0,0,0,0.12);">
@@ -2131,10 +2160,19 @@ function renderObjectives(el, config, state, opts = {}) {
       cardEl.setAttribute("data-lang", isEs ? "en" : "es");
       const sayEl = cardEl.querySelector(".talk-say-text");
       const listenEl = cardEl.querySelector(".talk-listen-text");
-      const sayText = isEs ? cardEl.getAttribute("data-say-en") : cardEl.getAttribute("data-say-es");
-      const listenText = isEs ? cardEl.getAttribute("data-listen-en") : cardEl.getAttribute("data-listen-es");
-      if (sayEl) sayEl.textContent = `"${sayText}"`;
-      if (listenEl) listenEl.textContent = `"${listenText}"`;
+      // Both language variants ride along as JSON lists, so switching language
+      // rebuilds the bullets instead of swapping one sentence.
+      const readList = (attr) => {
+        try {
+          return talkList(JSON.parse(decodeURIComponent(cardEl.getAttribute(attr) || "%5B%5D")));
+        } catch (_e) {
+          return [];
+        }
+      };
+      const sayText = readList(isEs ? "data-say-en" : "data-say-es");
+      const listenText = readList(isEs ? "data-listen-en" : "data-listen-es");
+      if (sayEl) sayEl.innerHTML = talkBulletsHtml(sayText);
+      if (listenEl) listenEl.innerHTML = talkBulletsHtml(listenText);
       btn.textContent = isEs ? "🇲🇽 ES" : "🇺🇸 EN";
     });
   });
@@ -3155,8 +3193,12 @@ function renderLaunchPhase(el, state, ctx, config) {
   btn.className = "btn btn-primary btn-lg mt-6";
   const isStudied = (state.get() || {}).vocabVisited || (state.get() || {}).notesVisited;
   btn.textContent = isStudied
-    ? (isEs ? "Continuar a la Fase 4: Explorar 🔍 →" : "Continue to Phase 4: Explore 🔍 →")
-    : (isEs ? "🔑 Vocabulario 🚀 →" : "🔑 Vocabulary 🚀 →");
+    ? isEs
+      ? "Continuar a la Fase 4: Explorar 🔍 →"
+      : "Continue to Phase 4: Explore 🔍 →"
+    : isEs
+      ? "🔑 Vocabulario 🚀 →"
+      : "🔑 Vocabulary 🚀 →";
 
   btn.addEventListener("click", async () => {
     if (
@@ -4060,7 +4102,9 @@ function renderConnectPhase(el, state, ctx, config) {
 
   // Editable response box (core-owned), mirroring Launch/Reflect persistence.
   const minLength = 25;
-  const promptText = cfg.promptQuestion || `Explain your mathematical solution for ${config.title || "this scenario"}:`;
+  const promptText =
+    cfg.promptQuestion ||
+    `Explain your mathematical solution for ${config.title || "this scenario"}:`;
 
   const respCard = document.createElement("div");
   respCard.className = "card card-teal";
@@ -4070,7 +4114,8 @@ function renderConnectPhase(el, state, ctx, config) {
   const label = document.createElement("label");
   label.setAttribute("for", fieldId);
   label.className = "connect-prompt-label";
-  label.style.cssText = "font-weight:800; font-size:1.1rem; color:var(--teal-ink); margin-bottom:10px; display:block;";
+  label.style.cssText =
+    "font-weight:800; font-size:1.1rem; color:var(--teal-ink); margin-bottom:10px; display:block;";
   label.textContent = promptText;
   respCard.append(label);
 

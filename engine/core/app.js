@@ -756,6 +756,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     state.set({ studentName, studentPeriod });
   }
 
+  // Named index for the one phase the pre-lesson tabs hand off to. The tabs
+  // used to hardcode raw numbers (3, 2) that no longer matched this list.
+  const PHASE_PRACTICE = 4;
+
   const phaseConfigs = [
     { name: phaseName(0), icon: "⚡" }, // Warmup (Phase 1)
     { name: phaseName(1), icon: "🎯" }, // Objectives (Phase 2)
@@ -1145,8 +1149,13 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         el.setAttribute("aria-label", "Learn It");
         phaseContainer.append(el);
         renderLearnItPanel(el, config, {
+          // Learn It hands off to PRACTICE (phase index 4 in phaseConfigs).
+          // This used to be navigateTo(3), which is Explore — so the button
+          // that said it was moving you forward dropped you into a phase you
+          // had already done, and the pre-lesson chain Vocab → Learn It →
+          // Practice quietly broke at its last link.
           state,
-          onComplete: () => this.navigateTo(3),
+          onComplete: () => this.navigateTo(PHASE_PRACTICE),
         });
         el.scrollIntoView({ block: "start" });
         return;
@@ -1265,21 +1274,35 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // ── Curated forward flow: Launch → Vocab → Notes → Launch → Explore ──────
       const addContinue = (label, onClick) => {
         const wrap = document.createElement("div");
-        wrap.style.cssText = "margin-top:var(--sp-4, 16px); text-align:center; padding-bottom:24px;";
+        wrap.style.cssText =
+          "margin-top:var(--sp-4, 16px); text-align:center; padding-bottom:24px;";
         const b = document.createElement("button");
         b.type = "button";
         b.className = "btn btn-primary btn-lg";
-        b.style.cssText = "padding:14px 28px; font-weight:800; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
+        b.style.cssText =
+          "padding:14px 28px; font-weight:800; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
         b.textContent = label;
         b.addEventListener("click", onClick);
         wrap.append(b);
         el.append(wrap);
       };
 
+      // Each tab's bottom button moves to the NEXT thing in the pre-lesson
+      // chain: Vocab → Learn It → Practice. Vocab used to jump to Guided Notes
+      // (skipping Learn It entirely) and Learn It used to go back to Launch, so
+      // neither button did what its position implied. Guided Notes is a side
+      // tab, not a link in the chain, so it still returns to Launch.
       if (kind === "vocab") {
-        addContinue("Continue to Guided Notes 📝 →", () => this.openExtra("notes"));
-      } else if (kind === "notes" || kind === "learn") {
-        if (kind === "learn") this.renderLearnItExtras?.(el);
+        addContinue("Continue to Learn It 📖 →", () => this.openExtra("learn"));
+      } else if (kind === "learn") {
+        this.renderLearnItExtras?.(el);
+        addContinue("Continue to Practice ✏️ →", () => {
+          try {
+            state.set({ notesVisited: true });
+          } catch (_) {}
+          this.navigateTo(PHASE_PRACTICE);
+        });
+      } else if (kind === "notes") {
         addContinue("Continue to Launch 🚀 →", () => {
           try {
             state.set({ notesVisited: true });
@@ -1647,8 +1670,15 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const total = config.phases.length;
       const onExtra = document.documentElement.classList.contains("nt-extra-fullpage-open");
       const nextName = phaseConfigs[cur + 1]?.name || "Next";
+      const hide = cur >= total - 1 || onExtra;
       nextBtn.innerHTML = `Next: ${nextName} <span aria-hidden="true">→</span>`;
-      nextBtn.hidden = cur >= total - 1 || onExtra;
+      nextBtn.hidden = hide;
+      // `hidden` alone was not enough. The UA rule is [hidden] { display: none },
+      // and this button carries an INLINE display:inline-flex, which wins on
+      // specificity — so on the last phase (Objectives Review) the control stayed
+      // on screen reading "Next: Next →" with nowhere to go. Drive display
+      // directly, from the same condition, so the two can never disagree.
+      nextBtn.style.display = hide ? "none" : "inline-flex";
     }
     nextBtn.addEventListener("click", () => {
       const cur = state.get().currentPhase ?? 0;

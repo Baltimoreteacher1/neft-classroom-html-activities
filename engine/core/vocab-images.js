@@ -22,6 +22,7 @@ const DEDICATED = new Set([
   "decimal",
   "integer",
   "absolute-value",
+  "place-value",
   "opposite",
   "number-line",
   "negative",
@@ -140,7 +141,12 @@ const SYNONYMS = {
   "decimal-division": "decimal",
   tenths: "decimal",
   hundredths: "decimal",
-  "place-value": "decimal",
+  // "place value" used to resolve to decimal.svg — a shaded hundredths grid for
+  // 0.37. That picture is about what a decimal *is*, not about a digit's value
+  // depending on its column, so the word wall illustrated the term with a
+  // diagram that never shows a place. It now has its own chart (place-value.svg);
+  // the plural is mapped because lessons author both spellings.
+  "place-values": "place-value",
   "rational-number": "number-line",
 
   "negative-integer": "negative",

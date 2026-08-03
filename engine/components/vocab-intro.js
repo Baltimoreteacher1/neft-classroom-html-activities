@@ -212,13 +212,11 @@ export function renderVocabIntro(container, { terms, onComplete }) {
     thumb.loading = "lazy";
     thumbWrap.append(thumb);
 
-    const popBadge = document.createElement("span");
-    popBadge.className = "vocab-pop-badge";
-    popBadge.innerHTML = "🔍 Pop Out";
-    popBadge.style.cssText =
-      "position:absolute; bottom:6px; right:6px; background:rgba(15,23,42,0.88); color:#ffffff; font-size:0.72rem; font-weight:900; padding:3px 9px; border-radius:6px; backdrop-filter:blur(4px); pointer-events:none; border:1px solid rgba(255,255,255,0.2);";
-    thumbWrap.append(popBadge);
-
+    // No "Pop Out" chip over the picture. The badge sat on the bottom-right
+    // corner of a 72px thumbnail and covered the part of the diagram it was
+    // advertising. The image itself is the affordance (cursor:zoom-in, a title
+    // tooltip, and the hint line above the deck), so the pop-out still works —
+    // there is just no chrome on top of the visual any more.
     thumbWrap.addEventListener("click", (e) => {
       e.stopPropagation();
       openVocabPopOut(t);
@@ -267,17 +265,10 @@ export function renderVocabIntro(container, { terms, onComplete }) {
       back.append(ex);
     }
 
-    const backPopBtn = document.createElement("button");
-    backPopBtn.type = "button";
-    backPopBtn.className = "btn sm";
-    backPopBtn.style.cssText = "margin-top: auto; padding: 4px 12px; font-size: 0.78rem; font-weight: 800; background: #0f172a; color: #fff; border-radius: 6px; border: none; cursor: pointer;";
-    backPopBtn.textContent = "🔍 Pop Out Image & Defs";
-    backPopBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      openVocabPopOut(t);
-    });
-    back.append(backPopBtn);
-
+    // The back of the card used to end in a "🔍 Pop Out Image & Defs" button.
+    // It is gone for the same reason as the front badge: the pop-out is reached
+    // by tapping the picture, and a button that duplicates that only competes
+    // with the definition for the small amount of room on the back face.
     inner.append(front, back);
     card.append(inner);
 

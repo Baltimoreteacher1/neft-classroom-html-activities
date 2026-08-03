@@ -2554,8 +2554,11 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .vocab-card {
-  flex: 0 0 260px;
-  height: 220px;
+  flex: 0 0 280px;
+  /* Taller than it used to be (220px) to hold the enlarged word-wall picture.
+     The card is a fixed-height flip container, so the thumbnail can only grow
+     if this grows with it. */
+  height: 310px;
   perspective: 1000px;
   cursor: pointer;
   scroll-snap-align: start;
@@ -2609,8 +2612,13 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .vocab-thumb {
-  width: 72px;
-  height: 72px;
+  /* Was 72px — a math diagram at that size is a smudge, and the "Pop Out" chip
+     that used to sit on it covered a corner of the smudge. Now the picture is
+     the biggest thing on the card and readable without opening the pop-out;
+     tapping it still opens the full-size view. */
+  width: 100%;
+  max-width: 190px;
+  height: 150px;
   object-fit: contain;
   border-radius: 10px;
   background: var(--cream);
@@ -3120,8 +3128,12 @@ body:has(.identity-screen) .export-toolbar {
     padding: var(--sp-4);
   }
   .vocab-card {
-    flex: 0 0 220px;
-    height: 200px;
+    flex: 0 0 240px;
+    height: 280px;
+  }
+  .vocab-thumb {
+    max-width: 160px;
+    height: 128px;
   }
 }
 
