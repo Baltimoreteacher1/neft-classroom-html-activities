@@ -1227,6 +1227,34 @@ export function renderVocabPanel(container, config, options = {}) {
 //
 // Conservative by design: it overrides only on a clean match for the operation
 // the tool already performs, and otherwise leaves the authored defaults alone.
+function decimalsIn(n) {
+  const s = String(n);
+  const dot = s.indexOf(".");
+  return dot === -1 ? 0 : s.length - dot - 1;
+}
+
+// A PARALLEL problem — same shape, different numbers.
+//
+// Seeding the tool with the exact problem the worked example solves let a
+// student read the answer straight off the step beside it. This keeps every
+// feature the lesson is teaching — the number of decimal places in each operand
+// (so "annex a zero" still applies), the operation, and which operand is larger
+// — and changes only the digits, so the student has to actually do it.
+//
+// Deterministic: the same lesson always produces the same practice problem, so
+// it matches the printout and does not reshuffle on every reload.
+function parallelPair(a, b, op) {
+  const keep = (v, places) => Number(v.toFixed(places));
+  const pa = decimalsIn(a);
+  const pb = decimalsIn(b);
+  let na = keep(a * 1.17, pa);
+  let nb = keep(b * 1.17, pb);
+  // Subtraction must not go negative, and neither operand should collapse to 0.
+  if (op === "-" && nb >= na) [na, nb] = [nb + keep(na, pa), na];
+  if (!(na > 0) || !(nb > 0)) return [a, b];
+  return [na, nb];
+}
+
 function seedVisualFromWorkedExample(iv, lines) {
   if (!iv || !iv.kind || !Array.isArray(lines) || !lines.length) return iv;
   const text = lines.join(" ");
@@ -1238,15 +1266,27 @@ function seedVisualFromWorkedExample(iv, lines) {
 
   if (iv.kind === "decimal-columns") {
     const hit = find("+\\-\u2212");
-    if (hit) return { ...iv, op: hit.op === "+" ? "+" : "-", a: hit.a, b: hit.b };
+    if (hit) {
+      const [a, b] = parallelPair(hit.a, hit.b, hit.op === "+" ? "+" : "-");
+      return { ...iv, op: hit.op === "+" ? "+" : "-", a, b };
+    }
   }
   if (iv.kind === "decimal-product") {
     const hit = find("\u00d7x*");
-    if (hit) return { ...iv, a: hit.a, b: hit.b };
+    if (hit) {
+      const [a, b] = parallelPair(hit.a, hit.b, "*");
+      return { ...iv, a, b };
+    }
   }
   if (iv.kind === "decimal-quotient") {
     const hit = find("\u00f7/");
-    if (hit && hit.b) return { ...iv, dividend: hit.a, divisor: hit.b };
+    if (hit && hit.b) {
+      // Keep the quotient exact: scale the dividend so it still divides evenly.
+      const divisor = hit.b;
+      const q = Math.round(hit.a / hit.b);
+      const dividend = Number((divisor * (q + 1)).toFixed(decimalsIn(hit.a)));
+      return { ...iv, dividend, divisor };
+    }
   }
   if (iv.kind === "fraction-divide") {
     const f = "(\\d+\\s+\\d+/\\d+|\\d+/\\d+|\\d+)";
