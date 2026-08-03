@@ -6,7 +6,6 @@ import {
   renderVocabCloze,
   renderVocabDragMatch,
   renderVocabIntro,
-  renderVocabSort,
 } from "./index.js";
 
 // ── Optional "Extra Practice" opt-in card ─────────────────────────────
@@ -199,12 +198,10 @@ export function renderActivityChooser(container, { config, renderComponent, only
         desc: "Complete sentences with the right word.",
         run: (host, done) => renderVocabCloze(host, { terms, onComplete: () => done() }),
       },
-      {
-        icon: "🗂️",
-        title: "Example Sort",
-        desc: "Sort examples and non-examples.",
-        run: (host, done) => renderVocabSort(host, { terms, onComplete: () => done() }),
-      },
+      // Example Sort removed at Joel's request. The activity worked, but the
+      // sorting task it sets up is weaker than the other three: a lesson's
+      // examples are authored per TERM, so every chip belongs under the term it
+      // came from and the sort is largely self-answering.
       {
         icon: "🃏",
         title: "Memory Match",

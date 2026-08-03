@@ -314,7 +314,26 @@ export function renderVocabSort(container, { terms, onComplete }) {
 }
 
 function buildExamples(term) {
-  if (term.examples && term.examples.length) return term.examples;
+  // `examples` is authored two ways across the corpus: as plain strings, and as
+  // { text, isExample, why } objects (238 terms in 164 lessons use the object
+  // form). This returned the array untouched, so every object chip rendered as
+  // String(object) — Example Sort on 1-1 was a bank of chips all reading
+  // "[object Object]". vocab-explore-tasks and the small-group renderer both
+  // already normalise this shape; only this component did not.
+  //
+  // Non-examples are dropped rather than shown: the task is "sort each example
+  // under the correct term", so a chip that belongs under NEITHER term has no
+  // right answer and cannot be sorted correctly.
+  if (Array.isArray(term.examples) && term.examples.length) {
+    const usable = term.examples
+      .map((ex) => {
+        if (typeof ex === "string") return ex;
+        if (ex && typeof ex === "object" && ex.isExample !== false) return ex.text;
+        return null;
+      })
+      .filter((t) => typeof t === "string" && t.trim());
+    if (usable.length) return usable;
+  }
   const pieces = [];
   if (term.visual) pieces.push(term.visual);
   pieces.push(`"${term.term}" — ${term.definition}`);
