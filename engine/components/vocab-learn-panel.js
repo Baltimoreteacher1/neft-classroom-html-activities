@@ -873,6 +873,46 @@ function injectVocabLearnStyles() {
       border-radius: 8px;
       border: 1.5px solid rgba(2, 132, 199, 0.25);
     }
+    /* Watch Me and the tool that practises it, side by side. The tool sticks so
+       it stays beside whichever step the student is reading, instead of
+       scrolling away from the step it is meant to be used on. Stacks to one
+       column on anything narrower than a laptop, worked example first. */
+    .vl-learn-pair {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: var(--sp-4, 16px);
+      align-items: start;
+      margin: 26px 0;
+    }
+    .vl-learn-pair > :last-child {
+      position: sticky;
+      top: var(--sp-3, 12px);
+      margin: 0 !important;
+    }
+    .vl-learn-pair .vl-demo-box { margin: 0; }
+    /* Each step is a [badge][text][Hear Step] row, which needs the full panel
+       width. In half a panel the sentence wrapped every three words, so inside
+       the pair the row becomes a small grid: badge and button on one line, the
+       sentence across the full column underneath. */
+    .vl-learn-pair .vl-demo-step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-template-areas: "num btn" "text text";
+      align-items: center;
+      gap: 8px 10px;
+    }
+    .vl-learn-pair .vl-demo-step .vl-step-num { grid-area: num; }
+    .vl-learn-pair .vl-demo-step .vl-step-text { grid-area: text; }
+    .vl-learn-pair .vl-demo-step .vl-step-speak-btn { grid-area: btn; justify-self: end; }
+    @media (max-width: 1023px) {
+      .vl-learn-pair {
+        grid-template-columns: 1fr;
+      }
+      .vl-learn-pair > :last-child {
+        position: static;
+      }
+    }
+
     .vl-demo-box {
       background: #f8fbff;
       border: 2.5px solid #cbd5e1;
@@ -1177,6 +1217,45 @@ export function renderVocabPanel(container, config, options = {}) {
 }
 
 // ─── 2. SEPARATE LEARN IT PANEL (EXPLANATION + INTERACTIVE VISUAL + TURN AND TALK + CONFIDENCE CHECK) ──
+// Open the Learn It tool on the problem the worked example is actually working.
+//
+// The tool used to be chosen by resolveInteractiveVisual() from the standard and
+// the title, with hard-coded operands — so a student read "I add: 128.75 + 46.80"
+// and then met a tool set to 3.4 + 1.25. Nothing connected the two. Reading the
+// operands out of the iDo lines makes the tool the place you TRY the step you
+// just watched.
+//
+// Conservative by design: it overrides only on a clean match for the operation
+// the tool already performs, and otherwise leaves the authored defaults alone.
+function seedVisualFromWorkedExample(iv, lines) {
+  if (!iv || !iv.kind || !Array.isArray(lines) || !lines.length) return iv;
+  const text = lines.join(" ");
+  const num = "(\\d+(?:\\.\\d+)?)";
+  const find = (opChars) => {
+    const m = text.match(new RegExp(`${num}\\s*([${opChars}])\\s*${num}`));
+    return m ? { a: Number(m[1]), op: m[2], b: Number(m[3]) } : null;
+  };
+
+  if (iv.kind === "decimal-columns") {
+    const hit = find("+\\-\u2212");
+    if (hit) return { ...iv, op: hit.op === "+" ? "+" : "-", a: hit.a, b: hit.b };
+  }
+  if (iv.kind === "decimal-product") {
+    const hit = find("\u00d7x*");
+    if (hit) return { ...iv, a: hit.a, b: hit.b };
+  }
+  if (iv.kind === "decimal-quotient") {
+    const hit = find("\u00f7/");
+    if (hit && hit.b) return { ...iv, dividend: hit.a, divisor: hit.b };
+  }
+  if (iv.kind === "fraction-divide") {
+    const f = "(\\d+\\s+\\d+/\\d+|\\d+/\\d+|\\d+)";
+    const m = text.match(new RegExp(`${f}\\s*\u00f7\\s*${f}`));
+    if (m) return { ...iv, dividend: m[1].trim(), divisor: m[2].trim() };
+  }
+  return iv;
+}
+
 export function renderLearnItPanel(container, config, options = {}) {
   const { onComplete = () => {}, state = null } = options;
   injectVocabLearnStyles();
@@ -1222,7 +1301,10 @@ export function renderLearnItPanel(container, config, options = {}) {
   wrap.append(hero);
 
   const visuals = resolveObjectiveVisuals(config);
-  const ivConfig = resolveInteractiveToolForLesson(config);
+  const ivConfig = seedVisualFromWorkedExample(
+    resolveInteractiveToolForLesson(config),
+    iDo.lines,
+  );
 
   const mainCard = document.createElement("div");
   mainCard.className = "vl-section-card";
@@ -1265,21 +1347,9 @@ export function renderLearnItPanel(container, config, options = {}) {
       </div>
     </div>
 
-    <!-- MOUNT HOST FOR LIVE INTERACTIVE MATH TOOL -->
-    ${
-      ivConfig && ivConfig.kind
-        ? `
-      <div style="margin:26px 0; padding:20px; background:#f8fbff; border:2.5px solid #38bdf8; border-radius:20px; box-shadow:0 8px 24px rgba(56,189,248,0.14);">
-        <div style="font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:900; color:#0369a1; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
-          <span>🛠️ ${isEs ? "Herramienta Matemática Interactiva (¡Toca para explorar!):" : "Interactive Math Tool (Tap & Explore Live!):"}</span>
-          <span style="font-size:0.82rem; font-weight:800; color:#0284c7; background:#e0f2fe; padding:4px 10px; border-radius:999px;">Live Tool</span>
-        </div>
-        ${interactiveVisualHost(ivConfig, ivConfig.label || visuals.content.caption)}
-      </div>`
-        : ""
-    }
-
-    <!-- STEP-BY-STEP WORKED EXAMPLE -->
+    <!-- WORKED EXAMPLE + THE TOOL THAT PRACTISES IT, SIDE BY SIDE -->
+    <div class="vl-learn-pair">
+      <!-- Watch me -->
     ${
       Array.isArray(iDo.lines) && iDo.lines.length > 0
         ? `
@@ -1304,6 +1374,21 @@ export function renderLearnItPanel(container, config, options = {}) {
       </div>`
         : ""
     }
+      <!-- Now try that step here -->
+    ${
+      ivConfig && ivConfig.kind
+        ? `
+      <div style="margin:26px 0; padding:20px; background:#f8fbff; border:2.5px solid #38bdf8; border-radius:20px; box-shadow:0 8px 24px rgba(56,189,248,0.14);">
+        <div style="font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:900; color:#0369a1; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+          <span>🛠️ ${isEs ? "Herramienta Matemática Interactiva (¡Toca para explorar!):" : "Interactive Math Tool (Tap & Explore Live!):"}</span>
+          <span style="font-size:0.82rem; font-weight:800; color:#0284c7; background:#e0f2fe; padding:4px 10px; border-radius:999px;">Live Tool</span>
+        </div>
+        ${interactiveVisualHost(ivConfig, ivConfig.label || visuals.content.caption)}
+      </div>`
+        : ""
+    }
+
+    </div>
   `;
 
   // Attach Step Audio Listeners
