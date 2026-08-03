@@ -230,20 +230,26 @@ const HINT_LABELS = [
 /** Persisted student language choice (English and Spanish only). */
 const LANG_LS = "nt-lang";
 
-/** Detect preferred language: saved choice first, then html[lang]/browser. */
+/**
+ * The student's language, which is ENGLISH until they say otherwise.
+ *
+ * This used to auto-detect: no saved choice meant falling through to
+ * `document.documentElement.lang`, and then to `navigator.language`. On any
+ * device whose browser is set to Spanish — a shared Chromebook, a phone, a
+ * teacher's laptop — the lesson opened in Spanish with nobody having asked for
+ * it, and the only way back was to find the ES/EN toggle. The Spanish is a
+ * support students opt into, not a default the operating system picks for them.
+ *
+ * `setPreferredLang` still stamps `document.documentElement.lang`, so the html
+ * attribute is a mirror of the saved choice rather than a second source of
+ * truth; reading it back here would just reintroduce the same guess.
+ */
 export function getPreferredLang() {
   try {
     const saved = localStorage.getItem(LANG_LS);
     if (saved === "es" || saved === "en") return saved;
   } catch {
-    /* storage blocked — fall through to auto-detect */
-  }
-  if (typeof document !== "undefined") {
-    const htmlLang = document.documentElement.lang || "";
-    if (htmlLang.startsWith("es")) return "es";
-  }
-  if (typeof navigator !== "undefined" && navigator.language?.startsWith("es")) {
-    return "es";
+    /* storage blocked — the choice simply does not persist; English stands */
   }
   return "en";
 }
