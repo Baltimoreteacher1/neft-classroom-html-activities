@@ -124,6 +124,48 @@ async function ensureSchema(db) {
     .run();
 }
 
+/* Columns added by migrations/0007 that link a progress row back to the student
+   who owns it. They are added lazily so a database that has not had the
+   migration applied still works — but ALTER TABLE on every request would be
+   wasteful, so the result is cached per isolate. A cold isolate pays one
+   PRAGMA; everything after is free.
+
+   Deliberately additive: older clients that never send these fields keep
+   saving exactly as before, they just don't appear on the /today screen until
+   the student next opens the activity. Nothing breaks, nothing is lost. */
+const STUDENT_LINK_COLUMNS = ["student_id", "class_code", "activity_url"];
+// progressPercent is the engine's own heuristic (filled fields / total), so it
+// rarely lands exactly on 100 even when a student is finished. Treat "almost
+// entirely filled in" as done rather than nagging them back into a lesson they
+// have effectively completed.
+const DONE_PERCENT = 95;
+let studentLinkReady = false;
+
+async function ensureStudentLinkColumns(db) {
+  if (studentLinkReady) return;
+  const info = await db.prepare("PRAGMA table_info(student_progress)").all();
+  const have = new Set((info.results || []).map((r) => r.name));
+  for (const col of STUDENT_LINK_COLUMNS) {
+    if (have.has(col)) continue;
+    try {
+      await db.prepare(`ALTER TABLE student_progress ADD COLUMN ${col} TEXT`).run();
+    } catch (_e) {
+      // Raced with another request that added it — harmless either way.
+    }
+  }
+  try {
+    await db
+      .prepare(
+        `CREATE INDEX IF NOT EXISTS idx_student_progress_student
+           ON student_progress (class_code, student_id, updated_at DESC)`,
+      )
+      .run();
+  } catch (_e) {
+    /* index is an optimisation, not a correctness requirement */
+  }
+  studentLinkReady = true;
+}
+
 async function ensureTelemetrySchema(db) {
   // Idempotent: created on first telemetry write — no separate migration needed.
   await db
@@ -432,17 +474,25 @@ async function upsert(db, body, isCreate) {
   const stateJson = JSON.stringify(body.state || {});
   const nowIso = new Date().toISOString();
   const progress = Number(body.progressPercent) || 0;
+  await ensureStudentLinkColumns(db);
+  const studentId = clamp(body.studentId, 64);
+  const classCode = clamp(body.classCode, 12).toUpperCase();
+  const activityUrl = clamp(body.url, 300);
   if (isCreate) {
     await db
       .prepare(
         `INSERT INTO student_progress
            (save_code, activity_id, activity_title, student_name, section,
-            state_json, progress_percent, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            state_json, progress_percent, created_at, updated_at,
+            student_id, class_code, activity_url)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(save_code) DO UPDATE SET
             state_json = excluded.state_json,
             progress_percent = excluded.progress_percent,
-            updated_at = excluded.updated_at`,
+            updated_at = excluded.updated_at,
+            student_id = COALESCE(NULLIF(excluded.student_id, ''), student_progress.student_id),
+            class_code = COALESCE(NULLIF(excluded.class_code, ''), student_progress.class_code),
+            activity_url = COALESCE(NULLIF(excluded.activity_url, ''), student_progress.activity_url)`,
       )
       .bind(
         code,
@@ -454,19 +504,37 @@ async function upsert(db, body, isCreate) {
         progress,
         body.createdAt || nowIso,
         nowIso,
+        studentId,
+        classCode,
+        activityUrl,
       )
       .run();
   } else {
     // Save: update if present, else insert (covers cross-device first save).
+    // Identity fields only ever fill in — a client that doesn't know the
+    // student's roster id must never blank one that an earlier save recorded.
     const res = await db
       .prepare(
         `UPDATE student_progress
             SET state_json = ?, progress_percent = ?, updated_at = ?,
                 student_name = COALESCE(NULLIF(?, ''), student_name),
-                section = COALESCE(NULLIF(?, ''), section)
+                section = COALESCE(NULLIF(?, ''), section),
+                student_id = COALESCE(NULLIF(?, ''), student_id),
+                class_code = COALESCE(NULLIF(?, ''), class_code),
+                activity_url = COALESCE(NULLIF(?, ''), activity_url)
           WHERE save_code = ?`,
       )
-      .bind(stateJson, progress, nowIso, clamp(body.studentName, 60), clamp(body.section, 40), code)
+      .bind(
+        stateJson,
+        progress,
+        nowIso,
+        clamp(body.studentName, 60),
+        clamp(body.section, 40),
+        studentId,
+        classCode,
+        activityUrl,
+        code,
+      )
       .run();
     if (!res.meta || res.meta.changes === 0) {
       await upsert(db, body, true);
@@ -1309,25 +1377,27 @@ export async function onRequest(context) {
         const since = Number.isFinite(sinceMs)
           ? new Date(sinceMs).toISOString()
           : new Date(Date.now() - 7 * 86400000).toISOString(); // default: last 7 days
-        const prog = await (section
-          ? env.DB.prepare(
-              `SELECT * FROM student_progress WHERE updated_at >= ? AND section = ?
+        const prog = await (
+          section
+            ? env.DB.prepare(
+                `SELECT * FROM student_progress WHERE updated_at >= ? AND section = ?
                 ORDER BY section, student_name`,
-            ).bind(since, section)
-          : env.DB.prepare(
-              `SELECT * FROM student_progress WHERE updated_at >= ?
+              ).bind(since, section)
+            : env.DB.prepare(
+                `SELECT * FROM student_progress WHERE updated_at >= ?
                 ORDER BY section, student_name`,
-            ).bind(since)
+              ).bind(since)
         ).all();
-        const tel = await (section
-          ? env.DB.prepare(
-              `SELECT standard, student_name, section, event_type FROM lesson_telemetry
+        const tel = await (
+          section
+            ? env.DB.prepare(
+                `SELECT standard, student_name, section, event_type FROM lesson_telemetry
                 WHERE created_at >= ? AND section = ? ORDER BY id DESC LIMIT 5000`,
-            ).bind(since, section)
-          : env.DB.prepare(
-              `SELECT standard, student_name, section, event_type FROM lesson_telemetry
+              ).bind(since, section)
+            : env.DB.prepare(
+                `SELECT standard, student_name, section, event_type FROM lesson_telemetry
                 WHERE created_at >= ? ORDER BY id DESC LIMIT 5000`,
-            ).bind(since)
+              ).bind(since)
         ).all();
 
         const students = new Map();
@@ -1403,17 +1473,18 @@ export async function onRequest(context) {
           return stu.cells.get(std);
         };
 
-        const tel = await (section
-          ? env.DB.prepare(
-              `SELECT standard, student_name, event_type, payload_json, section
+        const tel = await (
+          section
+            ? env.DB.prepare(
+                `SELECT standard, student_name, event_type, payload_json, section
                  FROM lesson_telemetry
                  WHERE created_at >= ? AND section = ? ORDER BY id DESC LIMIT 10000`,
-            ).bind(since, section)
-          : env.DB.prepare(
-              `SELECT standard, student_name, event_type, payload_json, section
+              ).bind(since, section)
+            : env.DB.prepare(
+                `SELECT standard, student_name, event_type, payload_json, section
                  FROM lesson_telemetry
                  WHERE created_at >= ? ORDER BY id DESC LIMIT 10000`,
-            ).bind(since)
+              ).bind(since)
         ).all();
         for (const r of tel.results || []) {
           if (!r.student_name || !r.standard) continue;
@@ -1441,23 +1512,24 @@ export async function onRequest(context) {
         }
 
         try {
-          const scores = await (section
-            ? env.DB.prepare(
-                `SELECT gs.standard AS standard, gs.correct AS correct,
+          const scores = await (
+            section
+              ? env.DB.prepare(
+                  `SELECT gs.standard AS standard, gs.correct AS correct,
                           sp.student_name AS student_name, sp.section AS section
                      FROM game_scores gs
                      JOIN student_progress sp ON sp.save_code = gs.save_code
                     WHERE gs.created_at >= ? AND sp.section = ?
                     ORDER BY gs.id DESC LIMIT 10000`,
-              ).bind(since, section)
-            : env.DB.prepare(
-                `SELECT gs.standard AS standard, gs.correct AS correct,
+                ).bind(since, section)
+              : env.DB.prepare(
+                  `SELECT gs.standard AS standard, gs.correct AS correct,
                           sp.student_name AS student_name, sp.section AS section
                      FROM game_scores gs
                      JOIN student_progress sp ON sp.save_code = gs.save_code
                     WHERE gs.created_at >= ?
                     ORDER BY gs.id DESC LIMIT 10000`,
-              ).bind(since)
+                ).bind(since)
           ).all();
           for (const r of scores.results || []) {
             if (!r.student_name || !r.standard) continue;
@@ -1509,15 +1581,16 @@ export async function onRequest(context) {
             });
           return groups.get(k);
         };
-        const tel = await (section
-          ? env.DB.prepare(
-              `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
+        const tel = await (
+          section
+            ? env.DB.prepare(
+                `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
                 WHERE section = ? ORDER BY id DESC LIMIT 10000`,
-            ).bind(section)
-          : env.DB.prepare(
-              `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
+              ).bind(section)
+            : env.DB.prepare(
+                `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
                 ORDER BY id DESC LIMIT 10000`,
-            )
+              )
         ).all();
         for (const r of tel.results || []) {
           if (!r.standard) continue;
@@ -1532,21 +1605,22 @@ export async function onRequest(context) {
           }
         }
         try {
-          const scores = await (section
-            ? env.DB.prepare(
-                `SELECT gs.standard AS standard, gs.correct AS correct,
+          const scores = await (
+            section
+              ? env.DB.prepare(
+                  `SELECT gs.standard AS standard, gs.correct AS correct,
                         gs.misconception_tag AS tag, sp.section AS section
                    FROM game_scores gs
                    LEFT JOIN student_progress sp ON sp.save_code = gs.save_code
                   WHERE sp.section = ? ORDER BY gs.id DESC LIMIT 10000`,
-              ).bind(section)
-            : env.DB.prepare(
-                `SELECT gs.standard AS standard, gs.correct AS correct,
+                ).bind(section)
+              : env.DB.prepare(
+                  `SELECT gs.standard AS standard, gs.correct AS correct,
                         gs.misconception_tag AS tag, sp.section AS section
                    FROM game_scores gs
                    LEFT JOIN student_progress sp ON sp.save_code = gs.save_code
                   ORDER BY gs.id DESC LIMIT 10000`,
-              )
+                )
           ).all();
           for (const r of scores.results || []) {
             if (!r.standard) continue;
@@ -1587,23 +1661,24 @@ export async function onRequest(context) {
       const minutes = Math.min(Math.max(Number(url.searchParams.get("minutes")) || 30, 5), 1440);
       const since = new Date(Date.now() - minutes * 60000).toISOString();
       const rows = [];
-      const tel = await (section
-        ? env.DB.prepare(
-            `SELECT lesson_slug, lesson_title, standard, student_name, section,
+      const tel = await (
+        section
+          ? env.DB.prepare(
+              `SELECT lesson_slug, lesson_title, standard, student_name, section,
                     event_type, payload_json, created_at
                FROM lesson_telemetry
               WHERE created_at >= ? AND section = ?
                 AND event_type IN ('struggle', 'misconception', 'hint-exhausted')
               ORDER BY id DESC LIMIT 200`,
-          ).bind(since, section)
-        : env.DB.prepare(
-            `SELECT lesson_slug, lesson_title, standard, student_name, section,
+            ).bind(since, section)
+          : env.DB.prepare(
+              `SELECT lesson_slug, lesson_title, standard, student_name, section,
                     event_type, payload_json, created_at
                FROM lesson_telemetry
               WHERE created_at >= ?
                 AND event_type IN ('struggle', 'misconception', 'hint-exhausted')
               ORDER BY id DESC LIMIT 200`,
-          ).bind(since)
+            ).bind(since)
       ).all();
       for (const r of tel.results || []) {
         rows.push({
@@ -1621,9 +1696,10 @@ export async function onRequest(context) {
       try {
         // Recent low performance: per (game, save code, standard) within the
         // window, ≥2 attempts with under 60% correct. Named via the roster join.
-        const low = await (section
-          ? env.DB.prepare(
-              `SELECT gs.game_id AS game_id, gs.standard AS standard,
+        const low = await (
+          section
+            ? env.DB.prepare(
+                `SELECT gs.game_id AS game_id, gs.standard AS standard,
                       gs.save_code AS save_code,
                       COUNT(*) AS attempts, SUM(gs.correct) AS correct_sum,
                       MAX(gs.created_at) AS last_at, MAX(gs.misconception_tag) AS tag,
@@ -1634,9 +1710,9 @@ export async function onRequest(context) {
                 GROUP BY gs.game_id, gs.save_code, gs.standard
                HAVING COUNT(*) >= 2 AND (SUM(gs.correct) * 1.0) / COUNT(*) < 0.6
                 ORDER BY last_at DESC LIMIT 100`,
-            ).bind(since, section)
-          : env.DB.prepare(
-              `SELECT gs.game_id AS game_id, gs.standard AS standard,
+              ).bind(since, section)
+            : env.DB.prepare(
+                `SELECT gs.game_id AS game_id, gs.standard AS standard,
                       gs.save_code AS save_code,
                       COUNT(*) AS attempts, SUM(gs.correct) AS correct_sum,
                       MAX(gs.created_at) AS last_at, MAX(gs.misconception_tag) AS tag,
@@ -1647,7 +1723,7 @@ export async function onRequest(context) {
                 GROUP BY gs.game_id, gs.save_code, gs.standard
                HAVING COUNT(*) >= 2 AND (SUM(gs.correct) * 1.0) / COUNT(*) < 0.6
                 ORDER BY last_at DESC LIMIT 100`,
-            ).bind(since)
+              ).bind(since)
         ).all();
         for (const r of low.results || []) {
           rows.push({
@@ -1721,6 +1797,77 @@ export async function onRequest(context) {
         return json({ ok: false, error: "not-found" }, 404);
       }
       return json({ ok: true, record: recordFromRow(row) });
+    }
+
+    /* GET /api/progress/mine?code=CLASSCODE&student=ID
+       -> { ok, resume, recent:[...], done:[activityId] }
+
+       Everything this student has going, newest first. This is the query that
+       makes the /today screen possible: `resume` is the single most recently
+       touched unfinished piece of work (the big "Continue" button), `recent`
+       is the rest of the unfinished work, and `done` is a bare list of
+       activity ids so the lesson picker can show checkmarks without shipping
+       the state blobs for finished work.
+
+       Auth posture matches /load: a class code plus a roster student id is a
+       bearer credential, so it gets the SAME per-IP miss throttle. It is a
+       weaker secret than a random save code (a classmate knows both), so the
+       response deliberately carries no state_json — only titles, percentages
+       and the save codes needed to resume. Reading a classmate's row tells you
+       what lesson they're on, which is what the classroom wall already shows.
+    */
+    if (seg === "mine" && method === "GET") {
+      const params2 = new URL(request.url).searchParams;
+      const classCode = (params2.get("code") || "").toUpperCase().trim();
+      const studentId = (params2.get("student") || "").trim();
+      if (!/^[A-Z0-9]{4,12}$/.test(classCode) || !studentId || studentId.length > 64) {
+        return json({ ok: false, error: "bad-request" }, 400);
+      }
+
+      const ip = clientIp(request);
+      const bucket = loadBucket();
+      await ensureLoadGuardSchema(env.DB);
+      if ((await loadMissCount(env.DB, ip, bucket)) > LOAD_MAX_MISSES) {
+        return json({ ok: false, error: "rate-limited" }, 429, {
+          "Retry-After": String(LOAD_WINDOW_SEC),
+        });
+      }
+
+      await ensureStudentLinkColumns(env.DB);
+      const res = await env.DB.prepare(
+        `SELECT save_code, activity_id, activity_title, activity_url,
+                progress_percent, updated_at
+           FROM student_progress
+          WHERE class_code = ? AND student_id = ?
+          ORDER BY updated_at DESC
+          LIMIT 60`,
+      )
+        .bind(classCode, studentId)
+        .all();
+      const rows = res.results || [];
+      // An unknown pair is indistinguishable from a student who has simply not
+      // started anything, so it counts as a miss for throttling purposes but
+      // still returns 200 — a brand-new student must not see an error screen.
+      if (!rows.length) await noteLoadMiss(env.DB, ip, bucket);
+
+      const open = [];
+      const done = [];
+      for (const r of rows) {
+        const percent = Number(r.progress_percent) || 0;
+        if (percent >= DONE_PERCENT) {
+          done.push(r.activity_id);
+          continue;
+        }
+        open.push({
+          saveCode: r.save_code,
+          activityId: r.activity_id,
+          activityTitle: r.activity_title || r.activity_id,
+          url: r.activity_url || "",
+          percent,
+          updatedAt: r.updated_at,
+        });
+      }
+      return json({ ok: true, resume: open[0] || null, recent: open.slice(1), done });
     }
 
     if ((seg === "create" || seg === "save") && method === "POST") {
