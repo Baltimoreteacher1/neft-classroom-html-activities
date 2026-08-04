@@ -77,7 +77,16 @@ function detectConceptTool(stemText) {
     return { kind: "surface-area-packer", icon: "📦", label: "Surface Area Packer" };
   }
   if (str.includes("area of") || str.includes("parallelogram") || str.includes("trapezoid")) {
-    return { kind: "area-morph", icon: "📐", label: "Area Lab" };
+    // Match the figure to the stem — a triangle problem must not open a
+    // parallelogram morph (area-morph's default when no figure is passed).
+    const figure = str.includes("trapezoid")
+      ? "trapezoid"
+      : str.includes("triangle")
+        ? "triangle"
+        : str.includes("composite") || str.includes("l-shaped")
+          ? "composite"
+          : "parallelogram";
+    return { kind: "area-morph", figure, icon: "📐", label: "Area Lab" };
   }
   if (str.includes("coordinate") || str.includes("quadrant") || str.includes("ordered pair")) {
     return { kind: "coordinate-navigator", icon: "📍", label: "Coordinate Navigator" };

@@ -70,6 +70,20 @@ export function resolveInteractiveToolForLesson(config) {
   // Helper: word-boundary test (prevents "means" matching "mean", etc.)
   const wb = (pattern) => new RegExp(`\\b(?:${pattern})\\b`, "i").test(text);
 
+  // Which figure an area-morph should demonstrate for this term. area-morph
+  // reads `figure` and defaults to a parallelogram, so a term this misses gets
+  // the wrong shape's formula rather than an obvious failure — hence polygon
+  // and composite are matched here too, not just triangle and trapezoid.
+  // Whole-figure kinds are tested FIRST: "Area of Regular Polygons — decompose
+  // into triangles" names both, and the lesson is about the polygon.
+  const areaFigure = () => {
+    if (wb("hexagons?|pentagons?|octagons?|regular polygons?|apothem")) return "polygon";
+    if (wb("composite|l-shaped?|irregular figures?")) return "composite";
+    if (wb("trapezoids?|trapezoidal")) return "trapezoid";
+    if (wb("triangles?|triangular")) return "triangle";
+    return "parallelogram";
+  };
+
   // ── 1. Standard-based classification (most reliable) ──────────────────────
   const std = String(cfg.standard || "")
     .trim()
@@ -94,10 +108,26 @@ export function resolveInteractiveToolForLesson(config) {
   // 6.NOS.3 — Decimal Operations (refine by wording)
   if (std === "6.NOS.3") {
     if (wb("multiply|multiplication|product"))
-      return { kind: "decimal-product", a: 4.5, b: 1.2, label: "Interactive Decimal Multiplication Tool" };
+      return {
+        kind: "decimal-product",
+        a: 4.5,
+        b: 1.2,
+        label: "Interactive Decimal Multiplication Tool",
+      };
     if (wb("divide|division|quotient"))
-      return { kind: "decimal-quotient", dividend: 18.9, divisor: 6.3, label: "Interactive Decimal Division Tool" };
-    return { kind: "decimal-columns", op: "+", a: 3.4, b: 1.25, label: "Interactive Decimal Columns & Regrouping Tool" };
+      return {
+        kind: "decimal-quotient",
+        dividend: 18.9,
+        divisor: 6.3,
+        label: "Interactive Decimal Division Tool",
+      };
+    return {
+      kind: "decimal-columns",
+      op: "+",
+      a: 3.4,
+      b: 1.25,
+      label: "Interactive Decimal Columns & Regrouping Tool",
+    };
   }
   // 6.NOS.4 — Factors, GCF, LCM
   if (std === "6.NOS.4") {
@@ -164,7 +194,10 @@ export function resolveInteractiveToolForLesson(config) {
       // lab counted zero parts and drew nothing.
       rows: [
         { label: "Quantity A", parts: [{ value: 1 }, { value: 1 }, { value: 1 }] },
-        { label: "Quantity B", parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }] },
+        {
+          label: "Quantity B",
+          parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }],
+        },
       ],
       label: "Interactive Tape Diagram Explorer: Count and compare equal parts!",
     };
@@ -217,7 +250,11 @@ export function resolveInteractiveToolForLesson(config) {
         label: "Interactive Distributive Property Area Model",
       };
     if (wb("like terms|combine"))
-      return { kind: "combine-like-terms", expr: "5x + 3 + 2x - 1", label: "Interactive Combine Like Terms Lab" };
+      return {
+        kind: "combine-like-terms",
+        expr: "5x + 3 + 2x - 1",
+        label: "Interactive Combine Like Terms Lab",
+      };
     return { kind: "step-solver", label: "Interactive Expression Evaluator & Step Solver" };
   }
   // 6.AT.8 — Equations / Inequalities
@@ -274,8 +311,15 @@ export function resolveInteractiveToolForLesson(config) {
   }
   // 6.GR.1 — Area
   if (std === "6.GR.1") {
-    const shape = wb("triangle") ? "triangle" : wb("trapezoid") ? "trapezoid" : "parallelogram";
-    return { kind: "area-morph", shape, label: "Interactive Area Morph & Transformation Explorer" };
+    // `figure` is the key area-morph reads. It was `shape` here, which the
+    // component never looks at, so every triangle/trapezoid term silently
+    // demonstrated a PARALLELOGRAM — the wrong shape's formula.
+    const figure = areaFigure();
+    return {
+      kind: "area-morph",
+      figure,
+      label: "Interactive Area Morph & Transformation Explorer",
+    };
   }
   // 6.GR.2, 6.GR.4 — Solids / Nets
   if (std === "6.GR.2" || std === "6.GR.4") {
@@ -307,7 +351,10 @@ export function resolveInteractiveToolForLesson(config) {
       // lab counted zero parts and drew nothing.
       rows: [
         { label: "Quantity A", parts: [{ value: 1 }, { value: 1 }, { value: 1 }] },
-        { label: "Quantity B", parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }] },
+        {
+          label: "Quantity B",
+          parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }],
+        },
       ],
       label: "Interactive Tape Diagram Explorer",
     };
@@ -335,7 +382,13 @@ export function resolveInteractiveToolForLesson(config) {
         label: "Interactive Fraction Division",
       };
     if (wb("decimal"))
-      return { kind: "decimal-columns", op: "+", a: 3.4, b: 1.25, label: "Interactive Decimal Columns Tool" };
+      return {
+        kind: "decimal-columns",
+        op: "+",
+        a: 3.4,
+        b: 1.25,
+        label: "Interactive Decimal Columns Tool",
+      };
     if (wb("factor|GCF|LCM"))
       return { kind: "factor-tree-lab", number: 36, label: "Interactive Factor Tree Explorer" };
     if (wb("coordinate"))
@@ -354,7 +407,7 @@ export function resolveInteractiveToolForLesson(config) {
   }
   if (/^6\.G/i.test(std)) {
     if (wb("area"))
-      return { kind: "area-morph", shape: "parallelogram", label: "Interactive Area Explorer" };
+      return { kind: "area-morph", figure: areaFigure(), label: "Interactive Area Explorer" };
     return { kind: "solid-3d", shape: "cube", label: "Interactive 3D Solid Explorer" };
   }
 
@@ -375,7 +428,10 @@ export function resolveInteractiveToolForLesson(config) {
       // lab counted zero parts and drew nothing.
       rows: [
         { label: "Quantity A", parts: [{ value: 1 }, { value: 1 }, { value: 1 }] },
-        { label: "Quantity B", parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }] },
+        {
+          label: "Quantity B",
+          parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }],
+        },
       ],
       label: "Interactive Tape Diagram Explorer",
     };
@@ -409,13 +465,29 @@ export function resolveInteractiveToolForLesson(config) {
     return { kind: "long-division-builder", label: "Interactive Long Division Lab" };
   }
   if (wb("divid\\w* decimals?|decimal division")) {
-    return { kind: "decimal-quotient", dividend: 18.9, divisor: 6.3, label: "Interactive Decimal Division Tool" };
+    return {
+      kind: "decimal-quotient",
+      dividend: 18.9,
+      divisor: 6.3,
+      label: "Interactive Decimal Division Tool",
+    };
   }
   if (wb("multiply\\w* decimals?|decimal multiplication")) {
-    return { kind: "decimal-product", a: 4.5, b: 1.2, label: "Interactive Decimal Multiplication Tool" };
+    return {
+      kind: "decimal-product",
+      a: 4.5,
+      b: 1.2,
+      label: "Interactive Decimal Multiplication Tool",
+    };
   }
   if (wb("add\\w* decimals?|subtract\\w* decimals?|decimal")) {
-    return { kind: "decimal-columns", op: "+", a: 3.4, b: 1.25, label: "Interactive Decimal Columns & Regrouping Tool" };
+    return {
+      kind: "decimal-columns",
+      op: "+",
+      a: 3.4,
+      b: 1.25,
+      label: "Interactive Decimal Columns & Regrouping Tool",
+    };
   }
   if (wb("percent of|percentage of")) {
     return { kind: "percent-builder", label: "Interactive Percent of a Quantity Builder" };
@@ -431,7 +503,10 @@ export function resolveInteractiveToolForLesson(config) {
       // lab counted zero parts and drew nothing.
       rows: [
         { label: "Quantity A", parts: [{ value: 1 }, { value: 1 }, { value: 1 }] },
-        { label: "Quantity B", parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }] },
+        {
+          label: "Quantity B",
+          parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }],
+        },
       ],
       label: "Interactive Tape Diagram Explorer",
     };
@@ -446,7 +521,11 @@ export function resolveInteractiveToolForLesson(config) {
     };
   }
   if (wb("combine like terms|like terms")) {
-    return { kind: "combine-like-terms", expr: "5x + 3 + 2x - 1", label: "Interactive Combine Like Terms Lab" };
+    return {
+      kind: "combine-like-terms",
+      expr: "5x + 3 + 2x - 1",
+      label: "Interactive Combine Like Terms Lab",
+    };
   }
   if (wb("equations?") && wb("solve|one-step|two-step|balance")) {
     return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
@@ -478,8 +557,8 @@ export function resolveInteractiveToolForLesson(config) {
     return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
   }
   if (wb("area of|parallelogram|trapezoid")) {
-    const shape = wb("triangle") ? "triangle" : wb("trapezoid") ? "trapezoid" : "parallelogram";
-    return { kind: "area-morph", shape, label: "Interactive Area Explorer" };
+    const figure = areaFigure();
+    return { kind: "area-morph", figure, label: "Interactive Area Explorer" };
   }
   if (wb("nets?|surface area") && !wb("internet|planet")) {
     return { kind: "net-folder", solid: "cube", label: "Interactive 3D Net Folder" };
@@ -1341,10 +1420,7 @@ export function renderLearnItPanel(container, config, options = {}) {
   wrap.append(hero);
 
   const visuals = resolveObjectiveVisuals(config);
-  const ivConfig = seedVisualFromWorkedExample(
-    resolveInteractiveToolForLesson(config),
-    iDo.lines,
-  );
+  const ivConfig = seedVisualFromWorkedExample(resolveInteractiveToolForLesson(config), iDo.lines);
 
   const mainCard = document.createElement("div");
   mainCard.className = "vl-section-card";

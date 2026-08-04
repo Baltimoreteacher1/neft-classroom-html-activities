@@ -90,7 +90,16 @@ function detectConceptTool(stemText) {
     return { kind: "surface-area-packer", icon: "📦", label: "Surface Area Packer" };
   }
   if (str.includes("area of") || str.includes("parallelogram") || str.includes("trapezoid")) {
-    return { kind: "area-morph", icon: "📐", label: "Area Lab" };
+    // Name the figure the STEM is about; area-morph defaults to a parallelogram
+    // otherwise, which would demonstrate the wrong formula for a triangle stem.
+    const figure = str.includes("trapezoid")
+      ? "trapezoid"
+      : str.includes("triangle")
+        ? "triangle"
+        : str.includes("composite") || str.includes("l-shaped")
+          ? "composite"
+          : "parallelogram";
+    return { kind: "area-morph", figure, icon: "📐", label: "Area Lab" };
   }
   if (
     str.includes("coordinate") ||
