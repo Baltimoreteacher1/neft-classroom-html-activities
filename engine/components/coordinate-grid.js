@@ -11,7 +11,10 @@ export function renderCoordinateGrid(container, config = {}) {
     : Array.isArray(config.points)
       ? config.points
       : [];
-  const label = config.label || config.instructions;
+  // `hideStem` means the surrounding problem shell already printed the task
+  // above this widget. Falling back to `instructions` there reprinted the same
+  // sentence a second time, one line under itself.
+  const label = config.hideStem ? config.label : config.label || config.instructions;
 
   // Default the axis bounds/steps when a lesson omits them, otherwise toSvgX/Y
   // divide by NaN and the grid renders blank. Derive a symmetric range that
@@ -140,26 +143,20 @@ export function renderCoordinateGrid(container, config = {}) {
     targetMarkers.push({ ring, ...t });
   });
 
-  // Instruction text
-  const instrGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  const instrBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  instrBg.setAttribute("x", PAD.left + 10);
-  instrBg.setAttribute("y", PAD.top + 6);
-  instrBg.setAttribute("width", 200);
-  instrBg.setAttribute("height", 22);
-  instrBg.setAttribute("rx", 4);
-  instrBg.setAttribute("fill", "rgba(247,244,236,0.9)");
-  const instrTxt = svgText(
-    instrGroup,
-    PAD.left + 14,
-    PAD.top + 22,
-    `Click to plot ${targets.length} point(s)`,
-    "11px",
-    "#5f6f80",
-  );
-  instrTxt.setAttribute("font-style", "italic");
-  instrGroup.append(instrBg, instrTxt);
-  svg.append(instrGroup);
+  // How-to strip. This used to be 11px italic text tucked inside the SVG, where
+  // it read as a watermark rather than a direction — students could not tell the
+  // grid was something they tapped, or that a wrong point could be undone.
+  const plural = targets.length === 1 ? "point" : "points";
+  const howTo = document.createElement("div");
+  howTo.className = "cgrid-howto";
+  howTo.innerHTML =
+    `<p class="cgrid-howto-do">👉 Tap the grid to plot the ${targets.length} ${plural} listed below.</p>` +
+    `<p class="cgrid-howto-undo">Tapped the wrong square? Tap that point again to remove it.</p>`;
+  wrapper.append(howTo);
+
+  const instrTxt = document.createElement("p");
+  instrTxt.className = "cgrid-remaining";
+  instrTxt.textContent = `${targets.length} ${plural} left to plot`;
 
   // Keyboard crosshair cursor — the grid is focusable (tabindex/role) but was
   // pointer-only. Arrows move the cursor, Enter/Space plots, Backspace removes.
@@ -191,11 +188,12 @@ export function renderCoordinateGrid(container, config = {}) {
   }
 
   function updateRemaining() {
-    const done = placedPoints.length >= targets.length;
+    const left = targets.length - placedPoints.length;
+    const done = left <= 0;
     instrTxt.textContent = done
-      ? "All points plotted"
-      : `${targets.length - placedPoints.length} point(s) remaining`;
-    instrGroup.style.display = done ? "none" : "";
+      ? "All points plotted — now press Check Points."
+      : `${left} ${left === 1 ? "point" : "points"} left to plot`;
+    instrTxt.classList.toggle("is-done", done);
   }
 
   function removePoint(rec) {
@@ -300,7 +298,7 @@ export function renderCoordinateGrid(container, config = {}) {
   layout.style.cssText = "display:flex; flex-wrap:wrap; gap:var(--sp-4); align-items:flex-start;";
   const planeWrap = document.createElement("div");
   planeWrap.style.cssText = "flex:1 1 320px; min-width:260px;";
-  planeWrap.append(svg);
+  planeWrap.append(instrTxt, svg);
 
   const side = document.createElement("aside");
   side.style.cssText =
@@ -576,6 +574,35 @@ function injectCoordinateGridStyles() {
   outline-offset: 2px;
   box-shadow: 0 0 0 4px rgba(31,166,162,0.18);
 }
+
+/* How-to strip: the direction a student reads before touching the grid */
+.cgrid-howto {
+  margin: 0 0 var(--sp-3, 12px);
+  padding: 10px 14px;
+  border-radius: var(--radius-md, 8px);
+  background: rgba(31,166,162,0.10);
+  border-left: 4px solid var(--teal, #1fa6a2);
+}
+.cgrid-howto-do {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--ink, #1f2d3d);
+}
+.cgrid-howto-undo {
+  margin: 4px 0 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--muted, #5f6f80);
+}
+.cgrid-remaining {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--navy, #12355b);
+}
+.cgrid-remaining.is-done { color: var(--success, #0f7c4a); }
 
 .cgrid-check:focus-visible {
   outline: 3px solid var(--navy, #12355b);

@@ -3237,12 +3237,17 @@ function renderLaunchPhase(el, state, ctx, config) {
 // ── Phase 3: Explore ──
 function renderExplorePhase(el, state, ctx, config) {
   const cfg = config.explore;
+  // The header states the POINT of the phase; the task itself is printed once,
+  // on the activity card below. Printing `instructions` here as well meant a
+  // student read the same sentence three times (header, stem, tool label)
+  // before reaching anything they could touch.
   phaseHeader(
     el,
     "🔍",
     "section-icon-teal",
     "Explore",
-    cfg.instructions || "Investigate the concept with an interactive tool.",
+    cfg.goal ||
+      "Build it yourself first. You do not need the formula yet — you are looking for it.",
   );
 
   // Opt-in data diagram shown up front so students can SEE and read the visual
@@ -3289,7 +3294,12 @@ function renderExplorePhase(el, state, ctx, config) {
   if (exploreFig) {
     // Figure on the right, the activity it describes on the left, so a student
     // reading the data can work the interaction without scrolling away from it.
+    // Two live widgets side by side with no captions read as two unrelated
+    // assignments, so each column says plainly what it is and what order to
+    // work in.
     const pair = openWorkPair(el);
+    pair.main.prepend(workPairCaption("Step 1", "Do this"));
+    pair.tool.prepend(workPairCaption("Step 2", "Use this to see why"));
     pair.main.append(exploreShell);
     pair.tool.append(exploreFig);
     // Explore is where the building happens, so this is the mount that most
@@ -3308,7 +3318,10 @@ function renderExplorePhase(el, state, ctx, config) {
     // (exploreDiagram). Drop it here so renderComponent's per-item diagram
     // slot doesn't render the SAME figure a second time (was producing two
     // identical balance widgets in Explore).
-    { ...cfg, diagram: undefined, stem: cfg.instructions || cfg.stem },
+    // `label` is dropped for the same reason as `diagram`: the component prints
+    // it directly above its own widget, one line under the stem that already
+    // said it. One instruction, one place.
+    { ...cfg, diagram: undefined, label: undefined, stem: cfg.instructions || cfg.stem },
     () => {
       if (cfg.discourse) {
         // Post-activity discussion is now a SPOKEN Turn & Talk (not a writing
@@ -3466,6 +3479,23 @@ function openWorkPair(host) {
   pair.append(main, tool);
   host.append(pair);
   return { main, tool };
+}
+
+// Small "Step 1 · Do this" caption that sits above one column of a work pair,
+// so a two-widget layout reads as one ordered activity instead of two.
+function workPairCaption(step, text) {
+  const p = document.createElement("p");
+  p.className = "nt-work-caption";
+  p.style.cssText =
+    "display:flex; align-items:center; gap:8px; margin:0 0 var(--sp-2,8px); font-size:0.95rem; font-weight:800; color:var(--navy,#12355b);";
+  const badge = document.createElement("span");
+  badge.style.cssText =
+    "flex:0 0 auto; padding:2px 10px; border-radius:999px; background:var(--teal,#1fa6a2); color:#fff; font-size:0.78rem; letter-spacing:0.03em; text-transform:uppercase;";
+  badge.textContent = step;
+  const txt = document.createElement("span");
+  txt.textContent = text;
+  p.append(badge, txt);
+  return p;
 }
 
 function renderSkillPractice(host, config, state) {

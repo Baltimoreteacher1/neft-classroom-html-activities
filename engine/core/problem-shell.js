@@ -32,12 +32,16 @@ function detectConceptTool(stemText) {
   if (!stemText || typeof stemText !== "string") return null;
   const str = stemText.toLowerCase();
 
+  // "base" alone is NOT an exponent signal: every geometry stem says "base 12
+  // and height 8", which was offering the Powers & Exponents lab on the Area of
+  // Triangles lesson. Require it to sit next to actual exponent language.
+  const geometryBase = /\b(height|area|triangle|parallelogram|trapezoid|prism)\b/.test(str);
   if (
     str.includes("exponent") ||
-    str.includes("power") ||
-    str.includes("base") ||
     str.includes("squared") ||
-    str.includes("cubed")
+    str.includes("cubed") ||
+    (str.includes("power") && !geometryBase) ||
+    (str.includes("base") && !geometryBase && str.includes("power"))
   ) {
     return { kind: "power-builder", icon: "⚡", label: "Powers & Exponents" };
   }
