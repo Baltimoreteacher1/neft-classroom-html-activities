@@ -845,6 +845,12 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     canvas.id = "lesson-drawing-canvas";
     canvas.style.cssText =
       "position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:9998; display:none;";
+    // `.main` is `position:static` in the design system, so an absolutely
+    // positioned child anchors to the nearest POSITIONED ancestor instead —
+    // the canvas was laid out over a different box than the one it measured,
+    // which is why ink landed away from the pen. Promote main to a containing
+    // block (nothing else about its layout changes).
+    if (getComputedStyle(main).position === "static") main.style.position = "relative";
     main.append(canvas);
 
     // The drawing canvas (z-index 9998) spans the viewport when active and would
@@ -859,11 +865,82 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     let color = "#ef4444";
     let width = 3;
 
+    // Strokes are kept as point arrays in CSS pixels relative to the canvas
+    // box, NOT just painted and forgotten. Assigning canvas.width/height wipes
+    // the bitmap, so a resize (or the lesson growing as a phase opens) used to
+    // erase everything a student had drawn; with a model we simply repaint.
+    /** @type {{color:string,width:number,pts:{x:number,y:number}[]}[]} */
+    const strokes = [];
+    /** @type {{color:string,width:number,pts:{x:number,y:number}[]}|null} */
+    let current = null;
+
+    function paintStroke(s) {
+      if (!s.pts.length) return;
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = s.width;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      if (s.pts.length === 1) {
+        // A single tap is a dot, not nothing.
+        ctx.moveTo(s.pts[0].x, s.pts[0].y);
+        ctx.lineTo(s.pts[0].x + 0.01, s.pts[0].y);
+      } else {
+        // Quadratic curves through the midpoints of consecutive samples. A raw
+        // lineTo polyline shows every pointer sample as a visible corner, which
+        // is what made the ink look ragged; midpoint smoothing costs nothing
+        // and renders a continuous line.
+        ctx.moveTo(s.pts[0].x, s.pts[0].y);
+        for (let i = 1; i < s.pts.length - 1; i++) {
+          const mx = (s.pts[i].x + s.pts[i + 1].x) / 2;
+          const my = (s.pts[i].y + s.pts[i + 1].y) / 2;
+          ctx.quadraticCurveTo(s.pts[i].x, s.pts[i].y, mx, my);
+        }
+        const last = s.pts[s.pts.length - 1];
+        ctx.lineTo(last.x, last.y);
+      }
+      ctx.stroke();
+    }
+
+    function repaint() {
+      const r = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, r.width, r.height);
+      strokes.forEach(paintStroke);
+      if (current) paintStroke(current);
+    }
+
     function resizeCanvas() {
-      canvas.width = main.clientWidth;
-      canvas.height = main.clientHeight;
+      // Measure the CANVAS, not `main`: the canvas is the box the ink lands in,
+      // and `main`'s clientWidth/Height is a different rectangle once padding
+      // and the containing block are taken into account.
+      const r = canvas.getBoundingClientRect();
+      if (r.width < 1 || r.height < 1) return;
+      // Back the canvas with real device pixels so lines are crisp instead of
+      // upscaled and fuzzy on a retina screen or a projector.
+      const dpr = Math.min(window.devicePixelRatio || 1, 3);
+      const w = Math.round(r.width * dpr);
+      const h = Math.round(r.height * dpr);
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
+      // One transform, so every coordinate below stays in plain CSS pixels.
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      repaint();
     }
     window.addEventListener("resize", resizeCanvas);
+    // A lesson grows as phases open; without this the backing store keeps the
+    // size it had when Draw was switched on and the ink drifts from the pen.
+    if (typeof ResizeObserver !== "undefined") {
+      new ResizeObserver(() => {
+        if (canvas.style.display !== "none") resizeCanvas();
+      }).observe(main);
+    }
+
+    function pointFrom(e) {
+      const r = canvas.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
 
     // Drawing event listeners
     canvas.addEventListener("pointerdown", (e) => {
@@ -889,27 +966,45 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         return;
       }
       drawing = true;
-      ctx.beginPath();
-      const rect = canvas.getBoundingClientRect();
-      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+      current = { color, width, pts: [pointFrom(e)] };
+      // Capture keeps the stroke alive when the pointer crosses a child element
+      // or briefly leaves the canvas — previously the line just stopped dead.
+      try {
+        canvas.setPointerCapture(e.pointerId);
+      } catch {
+        /* capture unsupported — events still fire */
+      }
+      e.preventDefault();
+      repaint();
     });
 
     canvas.addEventListener("pointermove", (e) => {
-      if (!drawing) return;
-      ctx.lineWidth = width;
-      ctx.lineCap = "round";
-      ctx.strokeStyle = color;
-      const rect = canvas.getBoundingClientRect();
-      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-      ctx.stroke();
+      if (!drawing || !current) return;
+      // A fast drag delivers several positions per frame. Reading the coalesced
+      // events keeps the corners the browser would otherwise throw away, which
+      // is the difference between a smooth arc and a chain of straight chords.
+      const events = typeof e.getCoalescedEvents === "function" ? e.getCoalescedEvents() : [e];
+      for (const ev of events.length ? events : [e]) current.pts.push(pointFrom(ev));
+      e.preventDefault();
+      repaint();
     });
 
-    canvas.addEventListener("pointerup", () => {
+    function endStroke(e) {
+      if (!drawing) return;
       drawing = false;
-    });
-    canvas.addEventListener("pointerleave", () => {
-      drawing = false;
-    });
+      if (current && current.pts.length) strokes.push(current);
+      current = null;
+      if (e && e.pointerId != null) {
+        try {
+          canvas.releasePointerCapture(e.pointerId);
+        } catch {
+          /* nothing captured */
+        }
+      }
+      repaint();
+    }
+    canvas.addEventListener("pointerup", endStroke);
+    canvas.addEventListener("pointercancel", endStroke);
 
     // Drawing Tool controls HUD
     const drawHud = document.createElement("div");
@@ -921,7 +1016,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       <button class="color-btn" data-color="#3b82f6" style="width:20px; height:20px; border-radius:50%; border:none; background:#3b82f6; cursor:pointer; padding:0;"></button>
       <button class="color-btn" data-color="#10b981" style="width:20px; height:20px; border-radius:50%; border:none; background:#10b981; cursor:pointer; padding:0;"></button>
       <button class="color-btn" data-color="rgba(253,224,71,0.5)" style="width:20px; height:20px; border-radius:50%; border:none; background:#fde047; cursor:pointer; padding:0;"></button>
-      <button id="draw-clear-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer; margin-left:8px;">Clear</button>
+      <button id="draw-undo-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer; margin-left:8px;">Undo</button>
+      <button id="draw-clear-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer;">Clear</button>
     `;
     document.body.append(drawHud);
 
@@ -935,8 +1031,17 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       });
     });
 
+    // Undo is only possible now that strokes exist as data. One click removes
+    // one whole mark, which is what a student means by "undo".
+    drawHud.querySelector("#draw-undo-btn").addEventListener("click", () => {
+      strokes.pop();
+      repaint();
+    });
+
     drawHud.querySelector("#draw-clear-btn").addEventListener("click", () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      strokes.length = 0;
+      current = null;
+      repaint();
     });
 
     // Toggle draw mode
