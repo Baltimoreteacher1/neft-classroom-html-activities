@@ -2132,7 +2132,8 @@ export const GUIDED_NOTES_CSS = `
    Math words in the notes/practice prose become dotted-underline buttons that open
    a simple EN/ES definition + illustration, exactly like the lessons. */
 .obj-term {
-  display: inline; margin: 0; padding: 0; border: 0; background: none;
+  display: inline; margin: -6px 0; padding: 6px 2px; border: 0; background: none;
+  touch-action: manipulation;
   font: inherit; color: inherit; cursor: pointer;
   text-decoration: underline; text-decoration-style: dotted;
   text-decoration-thickness: 2px; text-underline-offset: 2px;
@@ -2157,7 +2158,7 @@ export const GUIDED_NOTES_CSS = `
   padding: 26px 20px 20px; text-align: center; animation: objFadeIn 0.2s ease;
 }
 .obj-popup-close {
-  position: absolute; top: 8px; right: 10px; width: 36px; height: 36px;
+  position: absolute; top: 8px; right: 10px; width: 44px; height: 44px;
   border: 0; border-radius: 50%; background: var(--cream, #f7f4ec);
   color: var(--navy, #12355b); font-size: 1.5rem; line-height: 1; cursor: pointer;
 }
@@ -2539,15 +2540,10 @@ body.obj-popup-open { overflow: hidden; }
   scroll-snap-type: x proximity;
 }
 /* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
-   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
-   trailing edge so the strip reads as scrollable. Only below 700px, where the
-   overflow is guaranteed — a permanent fade on desktop would just look broken. */
-@media (max-width: 700px) {
-  .homework-tab-bar {
-    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
-    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
-  }
-}
+   (Help, More, Done) sat off-screen. A trailing fade was the first attempt, but a
+   28px fade is a weak hint for 2x overflow and five tabs stayed undiscoverable.
+   Wrap into two rows of five instead: every tab is visible, and the compact row
+   height keeps the whole strip under ~104px of a phone viewport. */
 .homework-tab-btn {
   flex: 0 0 auto;
   scroll-snap-align: start;
@@ -2564,7 +2560,7 @@ body.obj-popup-open { overflow: hidden; }
   justify-content: center;
   gap: 3px;
   font-family: var(--font-display);
-  font-size: 11px;
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--muted);
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
@@ -2579,8 +2575,29 @@ body.obj-popup-open { overflow: hidden; }
 }
 .tab-icon { font-size: 20px; line-height: 1; }
 .tab-label { display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
-.tab-es { font-size: 10px; color: var(--muted); font-weight: 600; }
+.tab-es { font-size: 11.5px; color: var(--muted); font-weight: 600; }
 .homework-tab-btn.is-active .tab-es { color: var(--white); }
+
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .homework-tab-btn {
+    flex: 0 0 calc(20% - 5px);
+    min-width: 0;
+    min-height: 48px;
+    padding: 5px 2px;
+    font-size: 11.5px;
+  }
+  .tab-icon { font-size: 17px; }
+  /* The stacked EN + ES gloss is what makes each button two lines tall — three
+     rows of tabs would eat 28% of a phone screen. In bilingual/English mode the
+     English label carries it; ES-only mode already hides .tab-en and shows this. */
+  body:not(.lang-mode-es) .tab-es { display: none; }
+}
 
 .help-pop-btn {
   margin: 8px 0;
@@ -2642,7 +2659,7 @@ body.help-modal-open { overflow: hidden; }
   border-radius: var(--radius-sm); font-size: 14px; line-height: 1.5;
 }
 .help-modal-frame[hidden] { display: none !important; }
-.help-frame-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.help-frame-tag { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; color: var(--teal-ink); }
 .help-frame-es { color: var(--muted); }
 
 /* Guided "Try together" fill-in spaces + step actions */
@@ -2674,7 +2691,7 @@ body.help-modal-open { overflow: hidden; }
 .ladder-item { border: 1px solid var(--line); border-left: 4px solid #5b8def; border-radius: var(--radius-sm); padding: 9px 11px; background: var(--white); }
 .ladder-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
 .ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
-.ladder-tier { font-family: var(--font-display); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--navy); }
+.ladder-tier { font-family: var(--font-display); font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; color: var(--navy); }
 .ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
 .ladder-choices { list-style: upper-alpha; margin: 0 0 8px; padding: 0 0 0 22px; display: flex; flex-direction: column; gap: 3px; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
@@ -2691,8 +2708,8 @@ body.teacher-mode .ladder-answer { display: block; }
 
 /* "More practice" accordion in the Check tab */
 /* Tiered practice sections (warm-up first, then a harder challenge set) */
-.practice-tier { margin: 0 0 22px; }
-.practice-tier + .practice-tier { margin-top: 4px; }
+.practice-tier { margin: 0 0 40px; }
+.practice-tier + .practice-tier { margin-top: 0; padding-top: 32px; border-top: 2px solid var(--line); }
 .practice-tier-head {
   display: flex; align-items: center; gap: 12px; margin: 0 0 10px;
   padding: 12px 16px; border-radius: var(--radius-md);
@@ -2755,7 +2772,7 @@ body.teacher-mode .ladder-answer { display: block; }
   background: var(--cream); text-decoration: none; color: inherit;
 }
 .external-resource-link:hover { border-color: var(--teal); background: var(--teal-light); text-decoration: none; }
-.ext-source { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.ext-source { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; color: var(--teal-ink); }
 .ext-title-en { font-weight: 700; color: var(--navy); }
 .ext-title-es { font-size: 13px; color: var(--muted); }
 .section-more { border-left: 4px solid #5b8def; }
@@ -2996,7 +3013,7 @@ body.lang-mode-es .bilingual-grid {
   margin: 0 0 4px;
   font-family: var(--font-display);
   font-size: 16px;
-  color: var(--teal);
+  color: var(--teal-ink);
   font-weight: 800;
 }
 .cert-detail {
@@ -3063,7 +3080,11 @@ body.lang-mode-es .bilingual-grid {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .homework-tab-btn, .hw-game-choice-btn, .help-pop-btn { transition: none; }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
@@ -3075,6 +3096,16 @@ body.lang-mode-es .bilingual-grid {
   [data-tab-panel="play"],
   [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
+  /* Browsers drop background colours when printing. Several distinctions on this
+     sheet are carried by fill alone — the EN/ES columns, the highlighted worked
+     step, and above all the green "say this" vs red "don't say this" coaching
+     panels, which print as two identical white boxes without this. */
+  .bilingual-col, .worked-step, .worked-step.highlighted,
+  .stuck-say, .stuck-dont, .watch-for-list, .watch-for,
+  .practice-tier-head, .key-idea-banner {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
   
   .print-only-certificate.is-signed {
     display: block !important;
