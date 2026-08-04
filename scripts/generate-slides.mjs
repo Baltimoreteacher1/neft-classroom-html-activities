@@ -19,6 +19,7 @@ import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
 import { writeGenerated } from "./lib/preserve-injected.mjs";
 import { REFERENCE_CSS, tokensToCssVars } from "./lib/slide-reference-theme.mjs";
 import { getUnitPalette, paletteToCssVars } from "./lib/slide-theme-palettes.mjs";
+import { linkifyDeck } from "./lib/vocab-linkify.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -3830,6 +3831,11 @@ ${deck.thumbnailsHtml}
     
   </script>
 
+  <!-- Glossary modal for the .vocab-word links emitted by scripts/lib/vocab-linkify.mjs.
+       Both the links AND this tag must come from the generator: when the tag was
+       only ever added by a one-shot decorate pass, regenerating a deck silently
+       removed openVocabModal and every vocab link on the page became dead. -->
+  <script src="/assets/formula-popup.js" defer></script>
 </body>
 </html>
 `;
@@ -3863,7 +3869,11 @@ function main() {
       const configPath = path.join(lessonsDir, id, "config.json");
       const data = JSON.parse(fs.readFileSync(configPath, "utf8"));
       const googleSlidesUrl = urlMap[id] || null;
-      const html = generateSlidesHtml(id, data, googleSlidesUrl);
+      // linkifyDeck, not the raw generator output: the `.vocab-word` glossary
+      // links used to be added by a separate one-shot pass, so regenerating a
+      // deck silently STRIPPED them. Emitting them here is what makes these
+      // decks regenerable at all.
+      const html = linkifyDeck(generateSlidesHtml(id, data, googleSlidesUrl));
 
       const outputPath = path.join(lessonsDir, id, "slides.html");
       // writeGenerated, not fs.writeFileSync: the injectors (Save/Resume,

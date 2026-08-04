@@ -326,6 +326,31 @@
         <text x="165" y="60" fill="#EA580C" font-weight="900" font-size="14">h (90°)</text>
       </svg>`
     },
+    "width": {
+      title: "Width",
+      def: "How wide a shape or object is — the distance across it from one side to the other.",
+      example: "A rectangle that measures 8 cm across has a width of 8 cm.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0F9FF; border-radius:12px; border:1px solid #BAE6FD; width:100%;">
+        <rect x="55" y="30" width="170" height="50" fill="rgba(2,132,199,0.15)" stroke="#0284C7" stroke-width="3"/>
+        <line x1="55" y1="98" x2="225" y2="98" stroke="#EA580C" stroke-width="3"/>
+        <line x1="55" y1="92" x2="55" y2="104" stroke="#EA580C" stroke-width="3"/>
+        <line x1="225" y1="92" x2="225" y2="104" stroke="#EA580C" stroke-width="3"/>
+        <text x="140" y="115" text-anchor="middle" fill="#EA580C" font-weight="900" font-size="13">width = 8 cm</text>
+      </svg>`
+    },
+    "length": {
+      title: "Length",
+      def: "How long a shape or object is — the distance from one end to the other.",
+      example: "A rectangle 8 cm long and 3 cm wide has a length of 8 cm.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0F9FF; border-radius:12px; border:1px solid #BAE6FD; width:100%;">
+        <rect x="55" y="25" width="160" height="55" fill="rgba(2,132,199,0.15)" stroke="#0284C7" stroke-width="3"/>
+        <line x1="55" y1="98" x2="215" y2="98" stroke="#0284C7" stroke-width="3"/>
+        <line x1="55" y1="92" x2="55" y2="104" stroke="#0284C7" stroke-width="3"/>
+        <line x1="215" y1="92" x2="215" y2="104" stroke="#0284C7" stroke-width="3"/>
+        <text x="135" y="115" text-anchor="middle" fill="#0284C7" font-weight="900" font-size="13">length = 8 cm</text>
+        <text x="232" y="58" fill="#EA580C" font-weight="900" font-size="12">3 cm</text>
+      </svg>`
+    },
     "exponent": {
       title: "Exponent",
       def: "A small number placed above and to the right of a base showing how many times to multiply the base by itself.",
