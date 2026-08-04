@@ -3,33 +3,17 @@
 
   const STORAGE_KEY = "nfe_gold_state_v5";
   const PROFILE_PREFIX = "nfe_profile_";
-  const PHASES = [
-    "IDLE",
-    "CONFIGURING",
-    "VALIDATING",
-    "COMPUTING",
-    "SUCCESS",
-    "ERROR",
-  ];
+  const PHASES = ["IDLE", "CONFIGURING", "VALIDATING", "COMPUTING", "SUCCESS", "ERROR"];
 
   const TABS = {
     start: ["Start Here", "A guided teacher workflow for classroom evidence."],
-    setup: [
-      "Setup Class",
-      "Add class info, students, standards, and manual evidence.",
-    ],
-    import: [
-      "Import Data",
-      "Download a template, upload a file, or paste rows.",
-    ],
+    setup: ["Setup Class", "Add class info, students, standards, and manual evidence."],
+    import: ["Import Data", "Download a template, upload a file, or paste rows."],
     quality: [
       "Review Data",
       "Check missing records, duplicates, and readiness before forecasting.",
     ],
-    forecast: [
-      "Forecast",
-      "Review planning estimates by student and standard.",
-    ],
+    forecast: ["Forecast", "Review planning estimates by student and standard."],
     groups: ["Groups", "Create flexible reteach groups."],
     reports: ["Reports", "Generate teacher-facing summaries and exports."],
     settings: ["Settings", "Manage local profiles, theme, and self-tests."],
@@ -53,15 +37,7 @@
     saveTimer: null,
   };
 
-  function makeEvidence(
-    student,
-    standard,
-    score,
-    max,
-    date,
-    assessment,
-    syncKey,
-  ) {
+  function makeEvidence(student, standard, score, max, date, assessment, syncKey) {
     const safeScore = Number(score);
     const safeMax = Number(max);
     const row = {
@@ -89,9 +65,7 @@
       phase: "IDLE",
       active: "start",
       theme:
-        window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light",
+        window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
       profile: "Default",
       threshold: 70,
       groupNames: {},
@@ -127,9 +101,7 @@
     return Math.max(0, Math.min(100, Math.round(Number.isFinite(n) ? n : 0)));
   }
   function average(values) {
-    return values.length
-      ? values.reduce((sum, value) => sum + value, 0) / values.length
-      : 0;
+    return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
   }
   function escapeHtml(value) {
     return String(value ?? "").replace(
@@ -185,10 +157,7 @@
         Number(input.threshold) <= 90
           ? Number(input.threshold)
           : base.threshold,
-      groupNames:
-        input.groupNames && typeof input.groupNames === "object"
-          ? input.groupNames
-          : {},
+      groupNames: input.groupNames && typeof input.groupNames === "object" ? input.groupNames : {},
     };
   }
 
@@ -224,8 +193,7 @@
     const period = String(record.studentPeriod || "").trim();
     const seed = (period ? `${base}|${period}` : base).toLowerCase();
     let hash = 0;
-    for (let i = 0; i < seed.length; i += 1)
-      hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+    for (let i = 0; i < seed.length; i += 1) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
     return `L_${hash.toString(36)}`;
   }
 
@@ -282,20 +250,10 @@
           desc: "Synced from lesson",
         });
 
-      const row = makeEvidence(
-        student.id,
-        standard,
-        score,
-        max,
-        date,
-        assessment,
-        syncKey,
-      );
+      const row = makeEvidence(student.id, standard, score, max, date, assessment, syncKey);
 
       // De-dupe on studentName||lessonId: update in place, else append.
-      const idx = State.current.evidence.findIndex(
-        (e) => e.syncKey === syncKey,
-      );
+      const idx = State.current.evidence.findIndex((e) => e.syncKey === syncKey);
       if (idx >= 0) {
         row.id = State.current.evidence[idx].id;
         State.current.evidence[idx] = row;
@@ -331,9 +289,7 @@
 
   function loadState() {
     try {
-      return normalizeState(
-        JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || seedState(),
-      );
+      return normalizeState(JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || seedState());
     } catch {
       return seedState();
     }
@@ -377,43 +333,29 @@
       seenEvidence = new Set();
     state.students.forEach((student) => {
       if (!student.id) issues.push(["bad", "A student is missing an ID."]);
-      if (studentIds.has(student.id))
-        issues.push(["bad", `Duplicate student ID: ${student.id}`]);
+      if (studentIds.has(student.id)) issues.push(["bad", `Duplicate student ID: ${student.id}`]);
       studentIds.add(student.id);
     });
     state.standards.forEach((standard) => {
       if (!standard.code) issues.push(["bad", "A standard is missing a code."]);
       if (!standard.desc)
-        issues.push([
-          "warn",
-          `Standard ${standard.code} is missing a description.`,
-        ]);
+        issues.push(["warn", `Standard ${standard.code} is missing a description.`]);
     });
     state.evidence.forEach((row) => {
       if (!studentIds.has(row.student))
         issues.push(["warn", `Evidence uses unknown student: ${row.student}`]);
       if (!standardCodes.has(row.standard))
-        issues.push([
-          "warn",
-          `Evidence uses unknown standard: ${row.standard}`,
-        ]);
+        issues.push(["warn", `Evidence uses unknown standard: ${row.standard}`]);
       if (
         !Number.isFinite(Number(row.score)) ||
         !Number.isFinite(Number(row.max)) ||
         Number(row.max) <= 0
       )
-        issues.push([
-          "bad",
-          "An evidence row has an invalid score or max score.",
-        ]);
+        issues.push(["bad", "An evidence row has an invalid score or max score."]);
       if (Number(row.score) > Number(row.max))
-        issues.push([
-          "warn",
-          `Score greater than max for ${row.student} on ${row.standard}.`,
-        ]);
+        issues.push(["warn", `Score greater than max for ${row.student} on ${row.standard}.`]);
       const key = `${row.student}|${row.standard}|${row.date}|${row.assessment}`;
-      if (seenEvidence.has(key))
-        issues.push(["warn", `Duplicate evidence row: ${key}`]);
+      if (seenEvidence.has(key)) issues.push(["warn", `Duplicate evidence row: ${key}`]);
       seenEvidence.add(key);
     });
     return issues;
@@ -479,14 +421,12 @@
     const projected = bound(weightedMean + slope * 0.5);
 
     const plainMean = pcts.reduce((s, v) => s + v, 0) / n;
-    const variance =
-      n >= 2 ? pcts.reduce((s, v) => s + (v - plainMean) ** 2, 0) / (n - 1) : 0;
+    const variance = n >= 2 ? pcts.reduce((s, v) => s + (v - plainMean) ** 2, 0) / (n - 1) : 0;
     const stdErr = n >= 2 ? Math.sqrt(variance / n) : 14;
     const margin = Math.max(4, Math.min(20, Math.round(1.6 * stdErr)));
 
     const [label, cls] = band(projected);
-    const trend =
-      slope > 1.5 ? "improving" : slope < -1.5 ? "slipping" : "flat";
+    const trend = slope > 1.5 ? "improving" : slope < -1.5 ? "slipping" : "flat";
 
     return {
       n,
@@ -518,9 +458,7 @@
   function setTab(tabName) {
     const next = TABS[tabName] ? tabName : "start";
     State.current.active = next;
-    $$(".screen").forEach((screen) =>
-      screen.classList.toggle("active", screen.id === next),
-    );
+    $$(".screen").forEach((screen) => screen.classList.toggle("active", screen.id === next));
     $$(".nav button").forEach((button) => {
       const on = button.dataset.tab === next;
       button.classList.toggle("active", on);
@@ -577,11 +515,7 @@
   function renderHome() {
     const mean = average(State.current.evidence.map((row) => row.pct));
     $("#metrics").innerHTML = [
-      [
-        "Class",
-        State.current.class.name || "Unnamed",
-        State.current.class.grade || "",
-      ],
+      ["Class", State.current.class.name || "Unnamed", State.current.class.grade || ""],
       ["Students", State.current.students.length, "local roster"],
       ["Evidence", State.current.evidence.length, "records"],
       ["Average", `${bound(mean)}%`, "current evidence"],
@@ -594,9 +528,7 @@
     $("#priorityStandards").innerHTML =
       State.current.standards
         .map((standard) => {
-          const meanScore = average(
-            rowsFor(null, standard.code).map((row) => row.pct),
-          );
+          const meanScore = average(rowsFor(null, standard.code).map((row) => row.pct));
           const [label, cls] = band(meanScore);
           return `<p><strong>${escapeHtml(standard.code)}</strong> <span class="badge ${cls}">${cue(cls)}${label}</span><br><span class="muted">${escapeHtml(standard.desc)} • ${bound(meanScore)}%</span></p><div class="bar"><i style="width:${bound(meanScore)}%"></i></div>`;
         })
@@ -665,21 +597,9 @@
     const issues = validateState(),
       critical = issues.filter((issue) => issue[0] === "bad").length;
     $("#qualityCards").innerHTML = [
-      [
-        "Students",
-        State.current.students.length,
-        State.current.students.length ? "ok" : "bad",
-      ],
-      [
-        "Standards",
-        State.current.standards.length,
-        State.current.standards.length ? "ok" : "bad",
-      ],
-      [
-        "Issues",
-        issues.length,
-        critical ? "bad" : issues.length ? "warn" : "ok",
-      ],
+      ["Students", State.current.students.length, State.current.students.length ? "ok" : "bad"],
+      ["Standards", State.current.standards.length, State.current.standards.length ? "ok" : "bad"],
+      ["Issues", issues.length, critical ? "bad" : issues.length ? "warn" : "ok"],
     ]
       .map(
         ([title, count, cls]) =>
@@ -763,9 +683,7 @@
               student,
               result: forecast(student.id, standard.code),
             }))
-            .filter(
-              (entry) => entry.result.n && entry.result.p < getThreshold(),
-            ),
+            .filter((entry) => entry.result.n && entry.result.p < getThreshold()),
         }))
         .filter((group) => group.kids.length),
     };
@@ -842,9 +760,7 @@
     row.push(cell.trim());
     if (row.some(Boolean)) rows.push(row);
     if (rows.length < 2) return [];
-    const headers = rows
-      .shift()
-      .map((header) => header.toLowerCase().replace(/[^a-z0-9]/g, ""));
+    const headers = rows.shift().map((header) => header.toLowerCase().replace(/[^a-z0-9]/g, ""));
     return rows.map((values) => {
       const obj = {};
       headers.forEach((header, index) => {
@@ -909,9 +825,7 @@
           warnings.push(`Row ${index + 2}: missing standard`);
           return;
         }
-        if (
-          !State.current.standards.some((standard) => standard.code === code)
-        ) {
+        if (!State.current.standards.some((standard) => standard.code === code)) {
           State.current.standards.push({
             code,
             desc: row.description || "Imported standard",
@@ -924,13 +838,7 @@
         standard = row.standard || row.code || row.ccss,
         score = Number(row.score),
         max = Number(row.maxscore || row.max || 100);
-      if (
-        !student ||
-        !standard ||
-        !Number.isFinite(score) ||
-        !Number.isFinite(max) ||
-        max <= 0
-      ) {
+      if (!student || !standard || !Number.isFinite(score) || !Number.isFinite(max) || max <= 0) {
         warnings.push(`Row ${index + 2}: missing student/standard/score/max`);
         return;
       }
@@ -959,9 +867,7 @@
         warnings.push(`Row ${index + 2}: duplicate skipped`);
         return;
       }
-      State.current.evidence.push(
-        makeEvidence(student, standard, score, max, date, assessment),
-      );
+      State.current.evidence.push(makeEvidence(student, standard, score, max, date, assessment));
       add.evidence += 1;
     });
     transition("SUCCESS", "Import complete");
@@ -985,26 +891,14 @@
     ok("Bound handles NaN", bound(NaN) === 0);
     ok("Empty forecast is safe", forecast("missing", "6.GR.A.1").n === 0);
     const before = State.current.students.length;
-    importRows(
-      parseDelimitedRows(
-        "rowType,studentId,studentName\nstudent,T999,Test Student",
-      ),
-    );
+    importRows(parseDelimitedRows("rowType,studentId,studentName\nstudent,T999,Test Student"));
     ok(
       "Import adds a student",
       State.current.students.some((student) => student.id === "T999"),
     );
-    State.current.students = State.current.students.filter(
-      (student) => student.id !== "T999",
-    );
-    ok(
-      "State restores after test cleanup",
-      State.current.students.length === before,
-    );
-    transition(
-      tests.every((test) => test.pass) ? "SUCCESS" : "ERROR",
-      "Self-test complete",
-    );
+    State.current.students = State.current.students.filter((student) => student.id !== "T999");
+    ok("State restores after test cleanup", State.current.students.length === before);
+    transition(tests.every((test) => test.pass) ? "SUCCESS" : "ERROR", "Self-test complete");
     persist();
     return tests;
   }
@@ -1013,10 +907,7 @@
   function supportTier(tags) {
     const t = String(tags || "").toLowerCase();
     if (/ml|newcomer|esol|ell|iep|504/.test(t))
-      return [
-        '<span class="badge info tier">Level 1 scaffold</span>',
-        "Level 1",
-      ];
+      return ['<span class="badge info tier">Level 1 scaffold</span>', "Level 1"];
     return ['<span class="badge ok tier">Level 2 extension</span>', "Level 2"];
   }
 
@@ -1028,10 +919,7 @@
     return `g_${code}`;
   }
   function groupName(code) {
-    return (
-      (State.current.groupNames && State.current.groupNames[groupKey(code)]) ||
-      ""
-    );
+    return (State.current.groupNames && State.current.groupNames[groupKey(code)]) || "";
   }
 
   // Move a student's evidence-derived placement note. We track manual moves in
@@ -1051,10 +939,7 @@
               const [tierBadge] = supportTier(entry.student.tags);
               const others = standards
                 .filter((s) => s.code !== code)
-                .map(
-                  (s) =>
-                    `<option value="${escapeHtml(s.code)}">${escapeHtml(s.code)}</option>`,
-                )
+                .map((s) => `<option value="${escapeHtml(s.code)}">${escapeHtml(s.code)}</option>`)
                 .join("");
               return `<div class="move-row" data-student="${escapeHtml(entry.student.id)}" data-from="${escapeHtml(code)}">
                 <span>${escapeHtml(entry.student.name)} (${entry.result.p}%) ${trendBadge(entry.result)}</span>
@@ -1067,9 +952,11 @@
               </div>`;
             })
             .join("");
+          const assignNames = group.kids.map((entry) => entry.student.name).join(", ");
           return `<article class="card group-card" data-code="${escapeHtml(code)}">
             <h3 contenteditable="true" class="groupTitle" data-code="${escapeHtml(code)}" aria-label="Editable group name">${escapeHtml(customName || `${code}: ${group.standard.desc}`)}</h3>
             <p><span class="badge warn">${cue("warn")}Support group (below ${threshold}%)</span></p>
+            ${group.kids.length ? `<p><button class="btn copyNames" type="button" data-names="${escapeHtml(assignNames)}">Copy Assign-To names</button></p>` : ""}
             ${kidsHtml || '<p class="muted">No students below threshold.</p>'}
             <p class="muted">Suggested move: worked example → visual model → 3-question exit check.</p>
           </article>`;
@@ -1083,6 +970,30 @@
   }
 
   function wireGroupEditing() {
+    // One paste into Canvas's Assign-To field: comma-separated student names
+    // for this group. Clipboard API needs a secure context; the execCommand
+    // fallback covers file:// and older embeds.
+    $$("#groupOutput .copyNames").forEach((btn) => {
+      btn.onclick = async () => {
+        const names = btn.dataset.names || "";
+        let copied = false;
+        try {
+          await navigator.clipboard.writeText(names);
+          copied = true;
+        } catch (_err) {
+          const scratch = document.createElement("textarea");
+          scratch.value = names;
+          document.body.appendChild(scratch);
+          scratch.select();
+          copied = document.execCommand("copy");
+          scratch.remove();
+        }
+        btn.textContent = copied ? "Copied ✓" : "Copy failed — select names manually";
+        setTimeout(() => {
+          btn.textContent = "Copy Assign-To names";
+        }, 2000);
+      };
+    });
     $$("#groupOutput .groupTitle").forEach((el) => {
       el.onblur = () => {
         const code = el.dataset.code;
@@ -1119,15 +1030,11 @@
   }
 
   function buildReportHtml() {
-    const classAvg = bound(
-      average(State.current.evidence.map((row) => row.pct)),
-    );
+    const classAvg = bound(average(State.current.evidence.map((row) => row.pct)));
     const threshold = getThreshold();
     const standardRows = State.current.standards
       .map((standard) => {
-        const meanScore = bound(
-          average(rowsFor(null, standard.code).map((row) => row.pct)),
-        );
+        const meanScore = bound(average(rowsFor(null, standard.code).map((row) => row.pct)));
         const [label, cls] = band(meanScore);
         return `<tr><td>${escapeHtml(standard.code)}</td><td>${escapeHtml(standard.desc)}</td><td>${meanScore}%</td><td><span class="badge ${cls}">${cue(cls)}${label}</span></td></tr>`;
       })
@@ -1242,9 +1149,7 @@
       renderGradebookMapping(matrix);
     };
     if (file) {
-      readSpreadsheetFile(file).then(done, (err) =>
-        alert(err.message || String(err)),
-      );
+      readSpreadsheetFile(file).then(done, (err) => alert(err.message || String(err)));
     } else if (pasted) {
       done(parseToMatrix(pasted));
     } else {
@@ -1263,21 +1168,17 @@
         )
         .join("");
     // Heuristics for default selections.
-    const findCol = (re) =>
-      headers.findIndex((h) => re.test(String(h).toLowerCase()));
+    const findCol = (re) => headers.findIndex((h) => re.test(String(h).toLowerCase()));
     const idCol = findCol(/(student\s*id|^id$|^sid$)/);
     const nameCol = findCol(/name|student/);
     const studentCol = idCol >= 0 ? idCol : nameCol >= 0 ? nameCol : 0;
-    const standardCols = headers
-      .map((h, i) => i)
-      .filter((i) => i !== studentCol);
+    const standardCols = headers.map((h, i) => i).filter((i) => i !== studentCol);
 
     const previewHtml = `<div class="preview"><table><tr>${headers
       .map((h) => `<th>${escapeHtml(h)}</th>`)
       .join("")}</tr>${sampleRows
       .map(
-        (r) =>
-          `<tr>${headers.map((_, i) => `<td>${escapeHtml(r[i] || "")}</td>`).join("")}</tr>`,
+        (r) => `<tr>${headers.map((_, i) => `<td>${escapeHtml(r[i] || "")}</td>`).join("")}</tr>`,
       )
       .join("")}</table></div>`;
 
@@ -1317,13 +1218,11 @@
     const headers = matrix[0];
     const studentCol = Number($("#gbStudentCol").value);
     const max = Number($("#gbMax").value) || 100;
-    if (!Number.isFinite(max) || max <= 0)
-      return alert("Enter a valid max score greater than 0.");
+    if (!Number.isFinite(max) || max <= 0) return alert("Enter a valid max score greater than 0.");
     const stdCols = $$(".gbStandardCol")
       .filter((cb) => cb.checked)
       .map((cb) => Number(cb.value));
-    if (!stdCols.length)
-      return alert("Select at least one standard column to import.");
+    if (!stdCols.length) return alert("Select at least one standard column to import.");
 
     // Wide → long reshape into the row-typed format importRows already accepts.
     const longRows = [];
@@ -1347,8 +1246,7 @@
         });
       });
     });
-    if (!longRows.length)
-      return alert("No numeric scores found in the selected columns.");
+    if (!longRows.length) return alert("No numeric scores found in the selected columns.");
     importRows(longRows);
     $("#gradebookMapping").hidden = true;
     Gradebook.matrix = null;
@@ -1376,10 +1274,8 @@
         const currentIndex = tabs.indexOf(document.activeElement);
         const from = currentIndex === -1 ? 0 : currentIndex;
         let nextIndex = from;
-        if (event.key === "ArrowLeft")
-          nextIndex = (from - 1 + tabs.length) % tabs.length;
-        else if (event.key === "ArrowRight")
-          nextIndex = (from + 1) % tabs.length;
+        if (event.key === "ArrowLeft") nextIndex = (from - 1 + tabs.length) % tabs.length;
+        else if (event.key === "ArrowRight") nextIndex = (from + 1) % tabs.length;
         else if (event.key === "Home") nextIndex = 0;
         else if (event.key === "End") nextIndex = tabs.length - 1;
         event.preventDefault();
@@ -1395,10 +1291,8 @@
       persist();
     };
     $("#saveClassBtn").onclick = () => {
-      State.current.class.name =
-        $("#className").value || State.current.class.name;
-      State.current.class.grade =
-        $("#gradeCourse").value || State.current.class.grade;
+      State.current.class.name = $("#className").value || State.current.class.name;
+      State.current.class.grade = $("#gradeCourse").value || State.current.class.grade;
       transition("CONFIGURING", "Class saved");
       render();
     };
@@ -1432,8 +1326,7 @@
         maxRaw = $("#manualMax").value.trim();
       if (!$("#manualStudent").value || !$("#manualStandard").value)
         return alert("Add at least one student and standard first.");
-      if (scoreRaw === "" || maxRaw === "")
-        return alert("Enter both a score and a max score.");
+      if (scoreRaw === "" || maxRaw === "") return alert("Enter both a score and a max score.");
       const score = Number(scoreRaw),
         max = Number(maxRaw);
       if (!Number.isFinite(score) || score < 0)
@@ -1441,9 +1334,7 @@
       if (!Number.isFinite(max) || max <= 0)
         return alert("Max score must be a number greater than 0.");
       if (score > max)
-        return alert(
-          `Score (${score}) cannot be greater than max (${max}). Please correct it.`,
-        );
+        return alert(`Score (${score}) cannot be greater than max (${max}). Please correct it.`);
       State.current.evidence.push(
         makeEvidence(
           $("#manualStudent").value,
@@ -1457,24 +1348,19 @@
       transition("SUCCESS", "Evidence added");
       render();
     };
-    $("#importPasteBtn").onclick = () =>
-      importRows(parseDelimitedRows($("#pasteBox").value));
+    $("#importPasteBtn").onclick = () => importRows(parseDelimitedRows($("#pasteBox").value));
     $("#importFileBtn").onclick = () => {
       const file = $("#fileInput").files[0];
       if (!file) return alert("Choose a file.");
       const reader = new FileReader();
-      reader.onload = () =>
-        importRows(parseHtmlTableRows(String(reader.result)));
+      reader.onload = () => importRows(parseHtmlTableRows(String(reader.result)));
       reader.readAsText(file);
     };
     $("#downloadCsvBtn").onclick = () =>
       downloadFile("forecast-template.csv", TEMPLATE, "text/csv");
     $("#runForecastBtn").onclick = () => {
       transition("COMPUTING", "Forecast requested");
-      const result = forecast(
-        $("#forecastStudent").value,
-        $("#forecastStandard").value,
-      );
+      const result = forecast($("#forecastStudent").value, $("#forecastStandard").value);
       $("#forecastResult").innerHTML = result.n
         ? `<div class="metric">${result.lo}–${result.hi}%</div><p><span class="badge ${result.cls}">${cue(result.cls)}${result.label}</span> <span class="badge info">${result.conf} confidence</span> ${trendBadge(result)}</p><p class="muted">${result.n} evidence point(s); projected ${result.p}% (recency-weighted + trend). Use as a planning estimate, not a label.</p>`
         : '<p class="muted">Not enough evidence for this student and standard.</p>';
@@ -1530,9 +1416,7 @@
                 row.assessment,
               ];
               if (includeTags) cells.push(tagFor(row.student));
-              return cells
-                .map((value) => `"${String(value).replace(/"/g, '""')}"`)
-                .join(",");
+              return cells.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(",");
             })
             .join("\n"),
         "text/csv",
@@ -1547,28 +1431,18 @@
           delete student.tags;
         });
       }
-      downloadFile(
-        "forecast-backup.json",
-        JSON.stringify(snapshot, null, 2),
-        "application/json",
-      );
+      downloadFile("forecast-backup.json", JSON.stringify(snapshot, null, 2), "application/json");
     };
     $("#saveProfileBtn").onclick = () => {
-      const profile =
-        $("#profileName").value.trim() || State.current.profile || "Default";
+      const profile = $("#profileName").value.trim() || State.current.profile || "Default";
       if (
         localStorage.getItem(PROFILE_PREFIX + profile) !== null &&
-        !confirm(
-          `A profile named "${profile}" already exists. Overwrite it with the current data?`,
-        )
+        !confirm(`A profile named "${profile}" already exists. Overwrite it with the current data?`)
       )
         return;
       State.current.profile = profile;
       try {
-        localStorage.setItem(
-          PROFILE_PREFIX + profile,
-          JSON.stringify(State.current),
-        );
+        localStorage.setItem(PROFILE_PREFIX + profile, JSON.stringify(State.current));
       } catch {
         alert(
           "Could not save the profile — local storage is full. Export a backup and remove old profiles, then try again.",
@@ -1623,13 +1497,9 @@
     if (thresholdSlider) {
       thresholdSlider.oninput = () => {
         const v = Number(thresholdSlider.value);
-        State.current.threshold =
-          Number.isFinite(v) && v >= 40 && v <= 90 ? v : 70;
+        State.current.threshold = Number.isFinite(v) && v >= 40 && v <= 90 ? v : 70;
         $("#groupThresholdValue").textContent = String(getThreshold());
-        thresholdSlider.setAttribute(
-          "aria-valuetext",
-          getThreshold() + " percent",
-        );
+        thresholdSlider.setAttribute("aria-valuetext", getThreshold() + " percent");
       };
       thresholdSlider.onchange = () => {
         persist();
@@ -1653,8 +1523,7 @@
     const lessonSyncBtn = $("#lessonSyncBtn");
     if (lessonSyncBtn) lessonSyncBtn.onclick = () => syncLessonGrades(true);
     const lessonSyncBtnQuality = $("#lessonSyncBtnQuality");
-    if (lessonSyncBtnQuality)
-      lessonSyncBtnQuality.onclick = () => syncLessonGrades(true);
+    if (lessonSyncBtnQuality) lessonSyncBtnQuality.onclick = () => syncLessonGrades(true);
 
     let clicks = 0,
       timer = null;
