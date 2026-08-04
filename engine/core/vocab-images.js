@@ -78,6 +78,9 @@ const DEDICATED = new Set([
   "reciprocal",
   "scale-factor",
   "discount",
+  "markup",
+  "tax",
+  "tip",
   "add",
   "subtract",
   "dividend",
@@ -128,9 +131,16 @@ const SYNONYMS = {
   "cross-multiply": "proportion",
   scale: "scale-factor",
   "better-buy": "unit-rate",
-  markup: "percent",
-  tax: "percent",
-  tip: "percent",
+  // markup / tax / tip used to resolve to percent.svg — a plain "50 out of 100"
+  // grid. That picture says what a percent IS, not what these three words DO
+  // (each adds an amount on top of a starting price), so the word wall showed
+  // the same generic grid for three distinct terms. Each now has its own
+  // before → added amount → total diagram that matches its `visual` example.
+  markup: "markup",
+  "sales-tax": "tax",
+  tax: "tax",
+  tip: "tip",
+  gratuity: "tip",
   "greater-than-100": "percent",
   "less-than-1": "percent",
 

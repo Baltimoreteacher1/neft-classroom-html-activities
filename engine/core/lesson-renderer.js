@@ -517,10 +517,12 @@ function buildVisual(v) {
     }
     case "percent-builder": {
       return interactiveVisualHost(v, {
-        ariaLabel:
-          "Interactive percent-of-a-number lab. Type a percent and a whole to find that part on a double number line.",
-        fallback:
-          "Interactive percent-of-a-number builder. Turn on JavaScript to find a percent of a number.",
+        ariaLabel: v.apply
+          ? "Interactive percent problem lab. Type a percent and a price, then choose whether the amount is taken off (discount) or added on (tax, tip, markup) to see the finished total."
+          : "Interactive percent-of-a-number lab. Type a percent and a whole to find that part on a double number line.",
+        fallback: v.apply
+          ? "Interactive percent problem lab. Turn on JavaScript to find a percent of a price and then take it off or add it on."
+          : "Interactive percent-of-a-number builder. Turn on JavaScript to find a percent of a number.",
       });
     }
     case "unit-rate-builder": {
