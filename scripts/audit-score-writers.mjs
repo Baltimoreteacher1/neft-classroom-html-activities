@@ -184,8 +184,27 @@ for (const g of games) {
 }
 
 const wired = games.filter((g) => g.wired);
-const silent = wired.filter((g) => !wrote.has(g.id));
 const uninstrumented = games.filter((g) => !g.wired);
+
+/**
+ * "Wired, zero rows" has two very different readings, and out of school-season
+ * they are mostly the second: the score path is dead (SILENT), or nobody has
+ * opened the page since it was wired (IDLE). The nt-usage beacon tells them
+ * apart: a page with recorded views and no score row has a broken integration;
+ * a page nobody has viewed has produced exactly the rows it should have — none.
+ * Only SILENT fails the audit. If the views table cannot be read, every
+ * zero-row game stays SILENT: a false alarm is recoverable, a masked dead
+ * integration is the failure mode this whole script exists to prevent.
+ */
+const viewRows = d1("SELECT path, SUM(views) AS v FROM usage_signal GROUP BY path");
+const viewsByPath = new Map(
+  (viewRows ?? []).map((r) => [String(r.path).replace(/\/+$/, ""), Number(r.v) || 0]),
+);
+const wasViewed = (g) => viewRows === null || (viewsByPath.get(`/${g.path}`) ?? 0) > 0;
+
+const zeroRow = wired.filter((g) => !wrote.has(g.id));
+const silent = zeroRow.filter(wasViewed);
+const idle = zeroRow.filter((g) => !wasViewed(g));
 
 /**
  * "63 pages cannot report a score" is a true sentence and a misleading number.
@@ -274,8 +293,10 @@ const report = {
   ok: silent.length === 0 && orphanIds.length === 0,
   pages: games.length,
   wired: wired.length,
-  reporting: wired.length - silent.length,
+  reporting: wired.length - zeroRow.length,
   silent: silent.map((g) => g.path),
+  idle: idle.map((g) => g.path),
+  viewsAvailable: viewRows !== null,
   uninstrumented: uninstrumented.map((g) => g.path),
   // The uninstrumented total, split by whether a score would mean anything.
   scorable: scorable.map((g) => g.path),
@@ -294,9 +315,15 @@ if (AS_JSON) {
   console.log(`audit-score-writers — ${report.pages} game pages on disk\n`);
   console.log(`  wired to report a score:  ${report.wired}`);
   console.log(`  actually reporting:       ${report.reporting}`);
-  console.log(`  SILENT (wired, 0 rows):   ${silent.length}   <- broken integrations`);
+  console.log(`  SILENT (viewed, 0 rows):  ${silent.length}   <- broken integrations`);
   for (const p of report.silent.slice(0, 30)) console.log(`      ${p}`);
   if (report.silent.length > 30) console.log(`      … and ${report.silent.length - 30} more`);
+  console.log(
+    `  IDLE (wired, never viewed since instrumentation): ${idle.length}   <- silence is expected`,
+  );
+  if (!report.viewsAvailable) {
+    console.log("      ^ usage_signal unreadable — every zero-row game held as SILENT.");
+  }
 
   console.log(`\n  UNINSTRUMENTED (no scoring wiring at all): ${uninstrumented.length}`);
   console.log(

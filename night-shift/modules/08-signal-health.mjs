@@ -139,7 +139,13 @@ export async function run(ctx) {
             "has never written a row has a dead score path.",
         );
       } else {
-        details.push(`✅ Every wired game has reported at least once.`);
+        details.push(`✅ Every wired game that students have viewed has reported.`);
+      }
+      if (report.idle?.length) {
+        details.push(
+          `ℹ️ ${report.idle.length} wired game(s) have no recorded views since instrumentation — ` +
+            `silence there is expected, not a broken score path.`,
+        );
       }
       if (report.uninstrumented?.length) {
         details.push(
