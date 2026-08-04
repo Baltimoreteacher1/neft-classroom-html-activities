@@ -356,7 +356,7 @@ export function injectSmallGroupStyles(accent) {
     const storyboard = document.createElement("link");
     storyboard.id = "sg-storyboard-styles";
     storyboard.rel = "stylesheet";
-    storyboard.href = "/assets/small-group-storyboard.css?v=20260731-pub1";
+    storyboard.href = "/assets/small-group-storyboard.css?v=20260804-adapt1";
     document.head.appendChild(storyboard);
   }
   // assets/small-group-designsystem.css is the studio's art direction: the base

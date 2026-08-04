@@ -1,13 +1,14 @@
 import { attachRegenPractice } from "../components/regen-practice.js";
 import { isRight, numberOf } from "./answer-match.js";
 import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
+import { extractDivisionDiagram } from "./division-helper.js";
+import { pickWorkedModel } from "./small-group-adaptive.js";
+import { figureBlock } from "./small-group-labs.js";
 import { mountReasoningReader } from "./small-group-reasoning.js";
 import { createRubricDetails } from "./small-group-rubric.js";
 import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
 import { renderToolChip } from "./tool-drawer.js";
-import { extractDivisionDiagram } from "./division-helper.js";
-import { figureBlock } from "./small-group-labs.js";
 
 const firstHint = (item) => item.hints?.[0] || item.hint || null;
 
@@ -1105,6 +1106,68 @@ export function createPracticeSection(
     if (header) header.after(note);
     else section.prepend(note);
   });
+  // Automatic difficulty moves — dispatched by the renderer's auto-pilot
+  // (small-group-adaptive.js) on two consecutive misses or three clean solves.
+  //
+  // DOWN respects the same furniture rule as sg:auto-support: it opens
+  // supports and adds a worked model drawn from the student's OWN solved work,
+  // but never reorders — it fires mid-problem, not in answer to a button.
+  // UP fires right after a third clean solve — a reward moment — so in More
+  // Practice it also promotes the harder items the way the coach's path
+  // buttons do.
+  document.addEventListener("sg:auto-move", (event) => {
+    const detail = /** @type {CustomEvent} */ (event).detail || {};
+    if (detail.move === "up") {
+      if (options.mode === "more") applyPathOrder(detail.path);
+      if (section.dataset.autoMoveUp === "on") return;
+      section.dataset.autoMoveUp = "on";
+      const note = el(
+        "div",
+        "sg-adaptive-banner",
+        biHtml(
+          "Three clean solves in a row — the set just stepped up. You earned the harder problems.",
+          "Tres aciertos seguidos sin pistas — el conjunto acaba de subir de nivel. Te ganaste los problemas más difíciles.",
+        ),
+      );
+      note.setAttribute("aria-live", "polite");
+      const header = section.querySelector(":scope > .sg-h");
+      if (header) header.after(note);
+      else section.prepend(note);
+      return;
+    }
+    if (detail.move !== "down") return;
+    for (const card of section.querySelectorAll(":scope > .prob:not(.sg-done-all)"))
+      card.sgApplySupport?.();
+    if (section.dataset.autoMoveDown === "on") return;
+    section.dataset.autoMoveDown = "on";
+    const note = el(
+      "div",
+      "sg-adaptive-banner",
+      biHtml(
+        "Let's steady this: supports are open on every problem.",
+        "Vamos a afianzar esto: los apoyos están abiertos en cada problema.",
+      ),
+    );
+    note.setAttribute("aria-live", "polite");
+    const header = section.querySelector(":scope > .sg-h");
+    if (header) header.after(note);
+    else section.prepend(note);
+    // Worked model from the student's own solved work — never from an
+    // unsolved problem, which would print an answer they haven't earned.
+    const model = pickWorkedModel(items, (storeIndex) =>
+      Boolean(store?.has("solvedPractice", storeIndex) || counted.has(storeIndex)),
+    );
+    if (model) {
+      const panel = el("details", "card sg-worked-model");
+      panel.open = true;
+      const answer = answerOf(model);
+      panel.innerHTML = `<summary>📌 ${bi("Look how you solved this one", "Mira cómo resolviste este")}</summary><p class="sg-worked-model-stem">${esc(model.stem || "")}</p>${
+        answer == null ? "" : `<p><b>${bi("Your answer", "Tu respuesta")}:</b> ${esc(answer)}</p>`
+      }<p>${esc(model.explanation || model.sampleAnswer || "")}</p>`;
+      note.after(panel);
+    }
+  });
+
   const optional = config.practice?.optionalActivity;
   if (optional && options.includeOptional)
     section.appendChild(

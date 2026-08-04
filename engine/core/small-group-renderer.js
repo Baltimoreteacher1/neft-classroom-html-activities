@@ -15,6 +15,7 @@ import {
 // all — the stylesheet reaches the page through Vite's shared CSS chunk, which
 // every lesson entry links.
 import { mountPresentWidget } from "./present-mode.js";
+import { createAutoPilot } from "./small-group-adaptive.js";
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
 import { createBuildVisualizer } from "./small-group-build-visuals.js";
 import {
@@ -562,6 +563,12 @@ function renderStudio(config) {
   // opened the coach worked the whole set unscaffolded no matter how it went.
   const autoSupport = createAutoSupportTracker();
 
+  // Automatic difficulty pilot — the rule the coach never applied on its own:
+  // two consecutive misses step the set down (supports + a worked model from
+  // the student's own solved work); three hint-free solves step it up. The
+  // pilot resumes from the stored path so a reload doesn't reset difficulty.
+  const autoPilot = createAutoPilot(state.adaptivePath);
+
   const events = {
     onAttempt({ correct, item, response, choiceIndex = null }) {
       state.attempts++;
@@ -603,9 +610,16 @@ function renderStudio(config) {
       // Live momentum chip in the sticky rail (tabs mount after restore, so
       // the optional chain keeps restored solves from crashing the studio).
       tabs?.setStreak?.(state.streak || 0);
+      const autoMove = autoPilot.recordAttempt(Boolean(correct));
+      if (autoMove) {
+        state.adaptivePath = autoMove.path;
+        store.set("adaptivePath", autoMove.path);
+        document.dispatchEvent(new CustomEvent("sg:auto-move", { detail: autoMove }));
+      }
     },
     onHint() {
       state.hints++;
+      autoPilot.noteHint();
     },
     onSolved() {
       state.solved++;
