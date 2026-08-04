@@ -109,7 +109,7 @@ const wallImg = configureVocabImage(document.createElement("img"), {
   definition: "a rate for one unit",
 });
 assert.equal(wallImg.dataset.zoomable, "1", "small-group vocabulary cards must enlarge on tap");
-assert.equal(wallImg.getAttribute("role"), "button");
+assert.equal(wallImg.getAttribute("role"), null, "word-wall image keeps its img role");
 assert.equal(wallImg.getAttribute("tabindex"), "0");
 
 // ───────────────────────────────────────────────────────────────────────────
