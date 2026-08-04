@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Expression Arena | Neft Teacher</title>
     <meta
       name="description"
@@ -41,12 +41,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          130% 90% at 50% 0%,
-          #134a5a 0%,
-          #0f2b3c 55%,
-          #08202c 100%
-        );
+        background: radial-gradient(130% 90% at 50% 0%, #134a5a 0%, #0f2b3c 55%, #08202c 100%);
       }
       .ff-mote {
         position: absolute;
@@ -472,38 +467,60 @@
     <!-- Games-2D metadata source of truth (must load before the game script) -->
     <script src="/assets/games2d-data.js"></script>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-  <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+  </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
     <div id="ff-sr" role="status" aria-live="polite"></div>
 
-    
-      <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100;">
-        <div class="ewl-arcade-title-group">
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
+    <!-- EWL Universal Arcade Enhancements Header -->
+    <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100">
+      <div class="ewl-arcade-title-group">
+        <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge"
+          >⭐ Level 1: Guided Support</span
+        >
+        <span style="font-size: 13px; font-weight: 600; opacity: 0.85"
+          >| EduWonderLab Interactive Arcade</span
+        >
       </div>
-  
-<main id="wrap">
+      <div class="ewl-arcade-controls">
+        <button
+          type="button"
+          class="ewl-btn-toggle active"
+          id="ewl-btn-l1"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(1);"
+        >
+          L1 Support
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-l2"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(2);"
+        >
+          L2 Challenge
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-lang"
+          onclick="if (window.ewlToggleLang) window.ewlToggleLang();"
+        >
+          🌐 EN / ES
+        </button>
+      </div>
+    </div>
+
+    <main id="wrap">
       <!-- VOCAB GATE -->
       <section id="screen-vocab" class="screen on" aria-labelledby="vh">
         <h1 id="vh">⚖️ Expression Arena</h1>
-        <p class="sub">
-          Evaluate &amp; compare two expressions in x · 6.AT.C.8
-        </p>
+        <p class="sub">Evaluate &amp; compare two expressions in x · 6.AT.C.8</p>
         <div class="card">
           <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
           <div class="vocab" id="vocab-list"></div>
@@ -522,22 +539,14 @@
 
       <!-- PLAY -->
       <section id="screen-play" class="screen" aria-labelledby="ph">
-        <h1 id="ph" style="position: absolute; left: -9999px">
-          Expression Arena play
-        </h1>
+        <h1 id="ph" style="position: absolute; left: -9999px">Expression Arena play</h1>
         <div class="hud">
           <span class="pill"
-            ><small>Duel</small> <span id="hud-round">1</span>/<span
-              id="hud-total"
-              >6</span
-            ></span
+            ><small>Duel</small> <span id="hud-round">1</span>/<span id="hud-total">6</span></span
           >
+          <span class="pill"><small>Score</small> <span id="hud-score">0</span></span>
           <span class="pill"
-            ><small>Score</small> <span id="hud-score">0</span></span
-          >
-          <span class="pill"
-            ><small>Lives</small>
-            <span class="lives" id="hud-lives">●●●●●</span></span
+            ><small>Lives</small> <span class="lives" id="hud-lives">●●●●●</span></span
           >
         </div>
         <div class="card">
@@ -545,8 +554,7 @@
             <span class="xchip" id="xval">x = 5</span>
           </div>
           <p style="text-align: center; color: var(--muted); margin: 0 0 6px">
-            Step 1 — build each side's value. Step 2 — choose the sign that
-            makes it true.
+            Step 1 — build each side's value. Step 2 — choose the sign that makes it true.
           </p>
 
           <div class="duel">
@@ -557,21 +565,11 @@
               <div class="build">
                 <span class="lbl">My value for LEFT:</span>
                 <div class="counter">
-                  <button
-                    class="step"
-                    data-side="a"
-                    data-dir="-1"
-                    aria-label="Decrease left value"
-                  >
+                  <button class="step" data-side="a" data-dir="-1" aria-label="Decrease left value">
                     −
                   </button>
                   <span class="val" id="bval-a" aria-live="polite">0</span>
-                  <button
-                    class="step"
-                    data-side="a"
-                    data-dir="1"
-                    aria-label="Increase left value"
-                  >
+                  <button class="step" data-side="a" data-dir="1" aria-label="Increase left value">
                     +
                   </button>
                 </div>
@@ -596,12 +594,7 @@
                     −
                   </button>
                   <span class="val" id="bval-b" aria-live="polite">0</span>
-                  <button
-                    class="step"
-                    data-side="b"
-                    data-dir="1"
-                    aria-label="Increase right value"
-                  >
+                  <button class="step" data-side="b" data-dir="1" aria-label="Increase right value">
                     +
                   </button>
                 </div>
@@ -612,37 +605,13 @@
           <p style="text-align: center; color: var(--muted); margin: 8px 0 2px">
             Now compare LEFT to RIGHT:
           </p>
-          <div
-            class="compare"
-            id="compare"
-            role="group"
-            aria-label="Comparison"
-          >
-            <button
-              class="cmp"
-              data-rel="lt"
-              aria-label="Left is less than right"
-            >
-              &lt;
-            </button>
-            <button class="cmp" data-rel="eq" aria-label="Left equals right">
-              =
-            </button>
-            <button
-              class="cmp"
-              data-rel="gt"
-              aria-label="Left is greater than right"
-            >
-              &gt;
-            </button>
+          <div class="compare" id="compare" role="group" aria-label="Comparison">
+            <button class="cmp" data-rel="lt" aria-label="Left is less than right">&lt;</button>
+            <button class="cmp" data-rel="eq" aria-label="Left equals right">=</button>
+            <button class="cmp" data-rel="gt" aria-label="Left is greater than right">&gt;</button>
           </div>
 
-          <div
-            class="feedback"
-            id="feedback"
-            role="status"
-            aria-live="assertive"
-          ></div>
+          <div class="feedback" id="feedback" role="status" aria-live="assertive"></div>
           <p class="hint" id="hint"></p>
         </div>
       </section>
@@ -653,12 +622,8 @@
         <div class="card">
           <div class="result-stars" id="r-stars">★★★</div>
           <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
-          <div class="result-stat">
-            <span>Duels won</span><b id="r-correct">0</b>
-          </div>
-          <div class="result-stat">
-            <span>Duels played</span><b id="r-rounds">0</b>
-          </div>
+          <div class="result-stat"><span>Duels won</span><b id="r-correct">0</b></div>
+          <div class="result-stat"><span>Duels played</span><b id="r-rounds">0</b></div>
           <div class="result-stat" id="r-high-row" style="display: none">
             <span>★ New high score!</span><b id="r-high">0</b>
           </div>
@@ -676,8 +641,7 @@
         var host = document.getElementById("ff-bg");
         if (!host) return;
         var reduce =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         var n = reduce ? 10 : 26;
         for (var i = 0; i < n; i++) {
           var d = document.createElement("div");
@@ -715,8 +679,7 @@
       // Metadata source of truth: window.Games2DData (from scripts/games2d/data.mjs
       // via assets/games2d-data.js). Inline fallback keeps the page alive if the
       // artifact fails to load. SAME data is authored in the returned dataEntry.
-      const DATA = (window.Games2DData &&
-        window.Games2DData["variablecomparisongame"]) || {
+      const DATA = (window.Games2DData && window.Games2DData["variablecomparisongame"]) || {
         ccss: "6.AT.C.8",
         title: "Expression Arena",
         vocab: [
@@ -736,8 +699,7 @@
         misconceptions: [
           {
             tag: "skip-multiply",
-            trigger:
-              "Adds the coefficient and x instead of multiplying (reads 3x as 3 + x).",
+            trigger: "Adds the coefficient and x instead of multiplying (reads 3x as 3 + x).",
             feedback:
               "3x means 3 TIMES x. Multiply the coefficient by x first, then add or subtract.",
           },
@@ -769,9 +731,7 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         },
         play(t, f, d, v = 0.2) {
@@ -881,9 +841,7 @@
       };
 
       function show(screen) {
-        document
-          .querySelectorAll(".screen")
-          .forEach((s) => s.classList.remove("on"));
+        document.querySelectorAll(".screen").forEach((s) => s.classList.remove("on"));
         $("screen-" + screen).classList.add("on");
       }
 
@@ -912,11 +870,7 @@
           .join("");
         $("level-list")
           .querySelectorAll("[data-level]")
-          .forEach((el) =>
-            el.addEventListener("click", () =>
-              startGame(Number(el.dataset.level)),
-            ),
-          );
+          .forEach((el) => el.addEventListener("click", () => startGame(Number(el.dataset.level))));
       }
 
       // ── Game flow ──
@@ -952,10 +906,8 @@
         $("fighter-a").classList.remove("win");
         $("fighter-b").classList.remove("win");
         // Level 1 shows the substitution skeleton; Level 2 hides it.
-        $("sub-a").textContent =
-          S.level === 1 ? subSkeleton(d.left, d.x) : "evaluate this";
-        $("sub-b").textContent =
-          S.level === 1 ? subSkeleton(d.right, d.x) : "evaluate this";
+        $("sub-a").textContent = S.level === 1 ? subSkeleton(d.left, d.x) : "evaluate this";
+        $("sub-b").textContent = S.level === 1 ? subSkeleton(d.right, d.x) : "evaluate this";
         $("hint").textContent =
           S.level === 1
             ? "Tip: multiply first (the number times x), then add or subtract. Keys: q/a, w/s, then < = >."
@@ -995,9 +947,7 @@
       }
 
       function setControls(on) {
-        document
-          .querySelectorAll(".step, .cmp")
-          .forEach((b) => (b.disabled = !on));
+        document.querySelectorAll(".step, .cmp").forEach((b) => (b.disabled = !on));
       }
 
       // ── Stepping the built values (constructing each quantity) ──
@@ -1024,6 +974,7 @@
         const rel = trueRel(d);
         const relOK = S.rel === rel;
         S.played++;
+        if (window.NeftScore) NeftScore.attempt(evalOK && relOK);
 
         if (evalOK && relOK) {
           S.locked = true;
@@ -1083,16 +1034,10 @@
             );
           const wrong = [];
           if (builtA !== d.lv)
-            wrong.push(
-              `LEFT ${exprLabel(d.left)} is not ${builtA} at x = ${d.x}`,
-            );
+            wrong.push(`LEFT ${exprLabel(d.left)} is not ${builtA} at x = ${d.x}`);
           if (builtB !== d.rv)
-            wrong.push(
-              `RIGHT ${exprLabel(d.right)} is not ${builtB} at x = ${d.x}`,
-            );
-          return (
-            "Re-evaluate — " + wrong.join("; ") + ". Multiply first, then add."
-          );
+            wrong.push(`RIGHT ${exprLabel(d.right)} is not ${builtB} at x = ${d.x}`);
+          return "Re-evaluate — " + wrong.join("; ") + ". Multiply first, then add.";
         }
         // Evaluation right, comparison sign wrong.
         return (
@@ -1126,17 +1071,13 @@
           $("r-high").textContent = S.score;
           $("r-high-row").style.display = "flex";
         }
+        // NeftScore counted each duel as it was judged and beacons on
+        // pagehide; the old direct EduPulse.record here only fired on a
+        // finished game with the bridge loaded, and never produced a row.
+        // It also reported attempts as ROUNDS even when the game ended
+        // early on lost lives.
         try {
-          window.EduPulse &&
-            EduPulse.record({
-              activityTitle: ACTIVITY_TITLE,
-              score: S.score,
-              stars: stars,
-              problemsCorrect: S.won,
-              problemsAttempted: ROUNDS,
-              percent: Math.round(pct * 100),
-              standard: STANDARD,
-            });
+          window.NeftScore && NeftScore.finish();
         } catch (e) {}
         srSay(
           "Arena complete. Won " +
@@ -1162,9 +1103,7 @@
         show("level");
       });
       document.querySelectorAll(".step").forEach((b) => {
-        b.addEventListener("click", () =>
-          step(b.dataset.side, Number(b.dataset.dir)),
-        );
+        b.addEventListener("click", () => step(b.dataset.side, Number(b.dataset.dir)));
       });
       document.querySelectorAll(".cmp").forEach((b) => {
         b.addEventListener("click", () => chooseRel(b.dataset.rel));
@@ -1186,28 +1125,43 @@
     </script>
 
     <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/game-score.js"></script>
+    <script>
+      window.NeftScore &&
+        NeftScore.init({ gameId: "variablecomparisongame", standard: "6.AT.C.8" });
+    </script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  
-  <!-- mwb-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Plot (x, y) by moving horizontally along x first, then vertically along y!" data-es="¡Grafica (x, y) moviéndote horizontalmente en x primero!">Plot (x, y) by moving horizontally along x first, then vertically along y!</p>
-        </div>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+
+    <!-- mwb-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
+
+    <!-- EWL Diagnostic Misconception Coach -->
+    <div
+      class="ewl-coach-card"
+      id="ewl-coach-card"
+      style="display: flex; position: relative; z-index: 100"
+    >
+      <div class="ewl-coach-icon">💡</div>
+      <div class="ewl-coach-content">
+        <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
+        <p
+          id="ewl-coach-text"
+          data-en="Plot (x, y) by moving horizontally along x first, then vertically along y!"
+          data-es="¡Grafica (x, y) moviéndote horizontalmente en x primero!"
+        >
+          Plot (x, y) by moving horizontally along x first, then vertically along y!
+        </p>
       </div>
-  
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-</body>
+    </div>
+
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <script src="/assets/formula-popup.js" defer></script>
+  </body>
 </html>
