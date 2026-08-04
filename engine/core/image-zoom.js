@@ -190,7 +190,9 @@ export function attachImageZoom(img) {
   if (!img || img.dataset.zoomable === "1") return;
   img.dataset.zoomable = "1";
   img.classList.add("is-zoomable");
-  img.setAttribute("role", "button");
+  // Keep the implicit img role: overriding it with role="button" hid the
+  // picture from assistive tech as an image (and its alt became a button
+  // label), which is exactly backwards for a vocabulary illustration.
   img.setAttribute("tabindex", "0");
   if (!img.getAttribute("title")) img.setAttribute("title", "Click to enlarge");
   const open = () => ensureLessonLightbox().open(img.currentSrc || img.src, img.alt, img);
