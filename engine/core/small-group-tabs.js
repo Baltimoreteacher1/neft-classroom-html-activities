@@ -125,6 +125,14 @@ export function mountSmallGroupTabs(
         : `${toHalfway} more to halfway`;
     } else if (percent >= 50) {
       label.textContent = `${solved} of ${total} — over halfway 💪`;
+    } else if (solved === 0) {
+      // The one milestone the ladder above did not cover was the first sight of
+      // the page. "0 of 27 steps done" opens the lesson by reporting a score of
+      // zero against a total no one asked for; every other branch here is
+      // encouraging, and the start deserves the same treatment.
+      label.textContent = esLane()
+        ? `${total} pasos · empieza aquí`
+        : `${total} steps · start here`;
     } else {
       label.textContent = `${solved} of ${total} steps done`;
     }

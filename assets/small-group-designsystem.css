@@ -868,3 +868,133 @@
   min-height: 200px;
   object-fit: cover;
 }
+
+/* ---------------------------------------------------------------------------
+   14 · DESIGN REVIEW PASS (2026-08-04)
+
+   Findings from a page-level design review of the small-group shell. Every rule
+   here is structure-guarded: it styles a class the renderer only emits when the
+   lesson actually authored that feature, so a lesson with no vocabulary
+   examples, no cloze, or no context line is left untouched rather than given an
+   empty treatment. Nothing below changes the DOM, the copy, or layout flow.
+   --------------------------------------------------------------------------- */
+
+/* 14a · Vocabulary card baseline.
+
+   Section 6 stretches the cards so the ROW squares up, and deliberately keeps
+   the definition at the top rather than centring it in the leftover space. What
+   that left behind was a ragged BOTTOM edge: the example chips sat wherever the
+   definition happened to end, so a three-across row showed chips at three
+   different heights, and the one card with a long definition and no chips ended
+   in a 180px hole. Seating the chips on the card floor squares the row a second
+   time along its bottom edge without moving the definition.
+
+   .sg-vexamples is nested inside .sg-vdef rather than being a direct child of
+   the card, so the flex column on .sg-vcard cannot reach it — .sg-vdef has to
+   become the growing element and hand the spare height down to the chips. A
+   card with no examples has no .sg-vexamples and is left exactly as it was. */
+.sg-vcard .sg-vdef {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.sg-vcard .sg-vexamples {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+/* 14b · Inline audio buttons inside a vocabulary card.
+
+   .sg-speak-inline is a 44px circle set inline at the end of a definition. At
+   44px it is taller than the 1.55 line box it sits in, so it both inflates the
+   line it lands on and, more often, wraps onto a line of its own — which is
+   what put a lone speaker under three of the six definitions in the review
+   screenshot, each at a different place, reading as a layout fault.
+
+   Shrinking the painted circle to 34px lets it sit inside the line box. The
+   touch target does not shrink with it: the ::after pseudo-element restores a
+   44px hit area, so WCAG 2.5.5 and the repo touch-target floor both still hold,
+   and the accessible name on the button is untouched. Scoped to the vocabulary
+   card — the standalone .sg-speak button and every other pathway keep 44px. */
+.sg-vcard .sg-speak-inline {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  margin-block: -4px;
+  vertical-align: middle;
+  font-size: 14px;
+}
+
+.sg-vcard .sg-speak-inline::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+}
+
+/* 14c · Inline vocabulary triggers.
+
+   .sg-vocab-inline opens a definition dialog, but it was drawn with a solid
+   underline in body colour, which is the one convention a 6th grader reads as
+   "this navigates somewhere else". A dotted rule in the pathway accent is still
+   plainly interactive and no longer promises a page change. The aria-haspopup
+   already on the button says the same thing to a screen reader. */
+.sg-vocab-inline {
+  border-bottom: 2px dotted color-mix(in srgb, var(--sg) 65%, transparent);
+  border-radius: 2px;
+  color: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+}
+
+.sg-vocab-inline:hover,
+.sg-vocab-inline:focus-visible {
+  border-bottom-style: solid;
+  background: color-mix(in srgb, var(--sg-pop) 18%, transparent);
+}
+
+/* 14d · Weight hierarchy in running text.
+
+   The objective and the context paragraph are set at 700 — the same weight as
+   the headings, the chips, the buttons and the step rail. When the longest
+   prose on the page carries as much mass as everything around it, there is no
+   emphasis left to give a word inside it, and Atkinson Hyperlegible is already
+   a wide high-contrast face that holds up on a projector without the extra
+   weight. 600 keeps the authority and gives the bolded terms somewhere to go. */
+.sg-obj,
+.sg-context {
+  font-weight: 600;
+}
+
+/* 14e · Hero metadata.
+
+   Duration, standard and privacy are reference information, but each was drawn
+   as an outlined pill — three bordered objects competing with the title and the
+   objective immediately above them. Same information, one quiet meta row: drop
+   the border and let a flat fill carry the grouping. .sg-kicker (the pathway
+   badge) and .sg-hero-scene-chip keep their own treatments; those are labels,
+   not metadata. */
+.sg-chips .sg-chip {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--sg-fill) 70%, var(--sg-card));
+}
+
+/* 14f · Telling the two word panels apart.
+
+   The quick match and the bonus cloze render as identical cards — same fill,
+   same 5px leading edge, same accent — stacked directly on top of one another,
+   so the second reads as a repeat of the first rather than as a different task.
+   Giving the cloze the secondary accent separates them at a glance. Only a
+   lesson that authored a cloze has one. */
+.sg-cloze {
+  border-left-color: var(--sg-pop);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--sg-pop) 10%, var(--sg-card)),
+    var(--sg-card)
+  );
+}
+
+.sg-cloze-blank {
+  border-bottom-color: var(--sg-pop);
+}
