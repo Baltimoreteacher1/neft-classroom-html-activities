@@ -92,6 +92,23 @@ function setStickyTeacher(on, role) {
   }
 }
 
+// The teacher PIN is typed on a shared classroom device, often several times a
+// day. A bare <input> the browser cannot recognise as a credential is never
+// offered for saving, so the PIN got retyped every single time. These fields
+// make the form a real login as far as Chrome/Safari are concerned: a stable
+// username, a `current-password` field, and a submit button. The teacher saves
+// it once per device and it autofills after that.
+const TEACHER_USERNAME_FIELD =
+  '<input type="text" name="username" value="teacher" autocomplete="username" readonly tabindex="-1" aria-hidden="true" class="nt-credential-user" />';
+
+function teacherPinInput(cls) {
+  return (
+    `<input type="password" name="password" class="${cls}" ` +
+    'autocomplete="current-password" placeholder="Enter teacher password" ' +
+    'aria-label="Enter teacher password" />'
+  );
+}
+
 export function isTeacherMode() {
   if (typeof window === "undefined") return false;
   const params = new URLSearchParams(window.location.search);
@@ -197,7 +214,8 @@ function mountModeToggle() {
     '<span class="mode-toggle-state">Student Mode</span>' +
     '<span class="mode-toggle-action">Teacher →</span></button>' +
     '<form class="mode-toggle-unlock" hidden>' +
-    '<input type="password" class="mode-toggle-pin" placeholder="Enter teacher password" autocomplete="off" aria-label="Enter teacher password" />' +
+    TEACHER_USERNAME_FIELD +
+    teacherPinInput("mode-toggle-pin") +
     '<button type="submit" class="mode-toggle-go">Enter</button></form>';
   const enterBtn = wrap.querySelector(".mode-toggle-enter");
   const form = wrap.querySelector(".mode-toggle-unlock");
@@ -242,7 +260,8 @@ export function mountIdentityTeacherButton(slot) {
     <div class="identity-teacher">
       <button type="button" class="identity-teacher-btn">Teacher</button>
       <form class="identity-teacher-unlock" hidden>
-        <input type="password" class="identity-teacher-pin" placeholder="Enter teacher password" autocomplete="off" aria-label="Enter teacher password" />
+        ${TEACHER_USERNAME_FIELD}
+        ${teacherPinInput("identity-teacher-pin")}
         <button type="submit" class="identity-teacher-go">Enter</button>
         <p class="identity-teacher-err" role="alert" hidden>That password did not work. Try again.</p>
       </form>
