@@ -2084,8 +2084,8 @@ function renderObjectives(el, config, state, opts = {}) {
       </div>
 
       <div class="objective-discuss" style="margin-top:var(--sp-3); padding-top:var(--sp-2); border-top:1px dashed rgba(0,0,0,0.12);">
-        <span style="display:block; font-size:.85rem; font-weight:800; letter-spacing:.02em; color:${o.ink}; margin-bottom:3px;">💬 Talk about it</span>
-        <span style="font-size:.98rem; font-weight:700; color:#1e293b; line-height:1.5;">${o.discuss}</span>
+        <span style="display:block; font-size:1.1rem; font-weight:800; letter-spacing:.02em; color:${o.ink}; margin-bottom:6px;">💬 Talk about it</span>
+        <span style="display:block; font-size:1.25rem; font-weight:700; color:#1e293b; line-height:1.6;">${o.discuss}</span>
       </div>
     </div>`;
 
