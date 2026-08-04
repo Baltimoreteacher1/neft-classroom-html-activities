@@ -751,5 +751,35 @@
         })();
       })();
     </script>
+    <script>
+      // Usage signal for /today: does anyone actually use the front door?
+      // One event per outbound click, riding the standard telemetry producer
+      // (lessonSlug pinned so deriveSlug never invents one from the path).
+      (function () {
+        window.NT_TELEMETRY_CONFIG = { lessonSlug: "today" };
+        var s = document.createElement("script");
+        s.src = "/assets/lesson-telemetry.js";
+        s.defer = true;
+        document.head.appendChild(s);
+        document.addEventListener(
+          "click",
+          function (e) {
+            var a = e.target && e.target.closest && e.target.closest("a[href]");
+            if (!a || !window.NTtelemetry) return;
+            var kind = null;
+            if (a.id === "resume-go") kind = "resume";
+            else if (a.id === "assigned-go") kind = "assigned";
+            else if (a.closest("#lesson-list")) kind = "list";
+            if (!kind) return;
+            window.NTtelemetry.track("today_open", {
+              kind: kind,
+              target: (a.getAttribute("href") || "").slice(0, 80),
+            });
+            window.NTtelemetry.flush();
+          },
+          true,
+        );
+      })();
+    </script>
   </body>
 </html>
