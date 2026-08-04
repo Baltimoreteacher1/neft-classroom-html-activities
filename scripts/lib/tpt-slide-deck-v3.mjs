@@ -448,7 +448,20 @@ function buildStudentWorkspaceSlide(explore, themeEmoji, themeName, contentObj) 
     tableHtml += "<tr>";
     row.forEach((cell, cIdx) => {
       const edit = editable.find((e) => e.row === rIdx && e.col === cIdx);
-      if (edit) {
+      if (edit && Array.isArray(edit.options) && edit.options.length) {
+        // A cell that authors `options` is a choice, not a calculation — the
+        // lesson's fill-table renders those as a dropdown (see
+        // engine/components/fill-table.js) and the deck's workspace has to
+        // match, or the same column asks for a typed answer on the board and a
+        // chosen one on the page.
+        tableHtml +=
+          // A stable id, because the deck's save/restore keys off id-or-
+          // placeholder and a <select> has no placeholder to fall back on.
+          `<td><select id="ws-${rIdx}-${cIdx}" class="workspace-cell workspace-select" data-answer="${esc(edit.answer)}">` +
+          `<option value="">${esc(edit.placeholder || "Choose one…")}</option>` +
+          edit.options.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join("") +
+          `</select></td>`;
+      } else if (edit) {
         tableHtml += `<td><input type="text" class="workspace-cell" data-answer="${esc(edit.answer)}" placeholder="?" /></td>`;
       } else {
         tableHtml += `<td class="workspace-fixed">${esc(cell)}</td>`;

@@ -2038,6 +2038,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
     .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
     .workspace-table th { background:var(--teal-light); font-weight:800; }
     .workspace-cell { width:60px; text-align:center; border:1px solid var(--teal); border-radius:4px; padding:4px; font-weight:700; }
+    .workspace-select { width:auto; max-width:190px; font-size:10px; }
     .workspace-cell.correct { background:var(--teal-light); border-color:var(--teal); }
     .workspace-cell.incorrect { background:var(--coral); border-color:#D9795D; }
     .sketch-canvas { width:100%; border:1.5px solid var(--gray); border-radius:8px; background:white; cursor:crosshair; }
@@ -2928,7 +2929,7 @@ ${deck.thumbnailsHtml}
     
     function saveWork() {
       const data = {};
-      document.querySelectorAll('textarea, input[type="text"]').forEach((input) => {
+      document.querySelectorAll('textarea, input[type="text"], select.workspace-cell').forEach((input) => {
         data[input.id || input.placeholder] = input.value;
       });
       
@@ -3082,7 +3083,7 @@ ${deck.thumbnailsHtml}
         const saved = localStorage.getItem(storageKey);
         if (saved) {
           const data = JSON.parse(saved);
-          document.querySelectorAll('textarea, input[type="text"]').forEach((input) => {
+          document.querySelectorAll('textarea, input[type="text"], select.workspace-cell').forEach((input) => {
             const val = data[input.id || input.placeholder];
             if (val !== undefined) input.value = val;
           });
