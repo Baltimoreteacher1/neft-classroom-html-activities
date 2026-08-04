@@ -110,7 +110,7 @@ export function renderFillTable(container, config) {
   // { columns:[...], items|rows:[{key:value,...}] } where each row is an
   // object whose values map positionally to `columns`. Without this adapter
   // those tables render blank (missing headers/rows/editableCells).
-  const { headers, rows, editableCells, onComplete } = normalizeFillTable(config);
+  const { headers, rows, editableCells, rowFigures, onComplete } = normalizeFillTable(config);
 
   const wrapper = document.createElement("div");
   wrapper.className = "card ft-root";
@@ -187,7 +187,16 @@ export function renderFillTable(container, config) {
         td.append(input);
         inputs.push(input);
       } else {
-        td.textContent = cell;
+        // An authored per-row figure rides in the FIRST cell, above its label,
+        // so a student can see the shape the row is describing instead of
+        // holding "octagon = 8 triangles" in their head.
+        if (ci === 0 && rowFigures[ri]) {
+          const fig = buildRowFigure(rowFigures[ri]);
+          if (fig) td.append(fig);
+        }
+        const text = document.createElement("span");
+        text.textContent = cell;
+        td.append(text);
         td.style.fontWeight = "600";
       }
 
@@ -315,6 +324,7 @@ export function normalizeFillTable(config = {}) {
       headers: config.headers,
       rows: config.rows,
       editableCells: Array.isArray(config.editableCells) ? config.editableCells : [],
+      rowFigures: Array.isArray(config.rowFigures) ? config.rowFigures : [],
       onComplete,
     };
   }
@@ -336,7 +346,7 @@ export function normalizeFillTable(config = {}) {
 
   if (!headers.length || !objectRows.length) {
     // Could not interpret — return what we have so the caller can fall back.
-    return { headers, rows: [], editableCells: [], onComplete };
+    return { headers, rows: [], editableCells: [], rowFigures: [], onComplete };
   }
 
   // Determine which column index holds the answer to make editable. Prefer a
@@ -344,9 +354,14 @@ export function normalizeFillTable(config = {}) {
   const colCount = headers.length;
   const rows = [];
   const editableCells = [];
+  const rowFigures = [];
 
   objectRows.forEach((obj, ri) => {
-    const keys = Object.keys(obj);
+    // `figure` is metadata, not a column: it draws a small shape in the first
+    // cell. Strip it before the positional value mapping below, or every
+    // column after it would shift by one.
+    rowFigures.push(obj.figure || null);
+    const keys = Object.keys(obj).filter((k) => k !== "figure");
     // Map object values to columns by position, padding/truncating to headers.
     const values = keys.map((k) => obj[k]);
     const cells = [];
@@ -376,7 +391,60 @@ export function normalizeFillTable(config = {}) {
     rows.push(cells);
   });
 
-  return { headers, rows, editableCells, onComplete };
+  return { headers, rows, editableCells, rowFigures, onComplete };
+}
+
+// Draws the small per-row shape authored as `figure` on a row object.
+// Only one shape so far: { shape:"regular-polygon", sides:6 } — the polygon fanned
+// into its congruent triangles, which is exactly the "one triangle per side"
+// idea students are being asked to use. Returns null for anything unknown, so
+// an unrecognised figure degrades to no picture rather than a broken cell.
+// DOM-light by design: pure SVG, no listeners, no layout measurement.
+export function buildRowFigure(spec) {
+  if (!spec || typeof spec !== "object") return null;
+  if (spec.shape !== "regular-polygon") return null;
+  const sides = Number(spec.sides);
+  if (!Number.isInteger(sides) || sides < 3 || sides > 12) return null;
+
+  const size = 56;
+  const cx = size / 2;
+  const cy = size / 2;
+  const r = size / 2 - 4;
+  const vertex = (i) => {
+    const angle = (2 * Math.PI * i) / sides - Math.PI / 2;
+    return [cx + Math.cos(angle) * r, cy + Math.sin(angle) * r];
+  };
+  const fmt = (n) => Math.round(n * 100) / 100;
+
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
+  svg.setAttribute("width", String(size));
+  svg.setAttribute("height", String(size));
+  svg.setAttribute("role", "img");
+  svg.setAttribute(
+    "aria-label",
+    `A regular polygon with ${sides} sides, split into ${sides} congruent triangles that meet at the center.`,
+  );
+  svg.style.cssText = "display:block; margin-bottom:6px;";
+
+  for (let i = 0; i < sides; i++) {
+    const [x1, y1] = vertex(i);
+    const [x2, y2] = vertex(i + 1);
+    const wedge = document.createElementNS(ns, "polygon");
+    wedge.setAttribute(
+      "points",
+      `${fmt(cx)},${fmt(cy)} ${fmt(x1)},${fmt(y1)} ${fmt(x2)},${fmt(y2)}`,
+    );
+    // Alternating fills so the triangle count is countable at a glance.
+    wedge.setAttribute("fill", i % 2 ? "var(--teal-soft, #d7f0ee)" : "var(--coral-soft, #fde3dd)");
+    wedge.setAttribute("stroke", "var(--teal-ink, #0f6f6a)");
+    wedge.setAttribute("stroke-width", "1");
+    wedge.setAttribute("stroke-linejoin", "round");
+    svg.append(wedge);
+  }
+
+  return svg;
 }
 
 function showFb(slot, type, msg) {

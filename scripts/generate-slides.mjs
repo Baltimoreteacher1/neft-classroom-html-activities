@@ -583,7 +583,17 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
   let normalizedItems = [];
   const rawItems = explore.items || explore.cards || [];
   rawItems.forEach((item, idx) => {
-    let text = item.text || String(item);
+    // Sort cards author `text`; fill-table rows are plain objects of column
+    // values (plus a `figure` that is metadata, not content). Without this the
+    // slide printed "[object Object]" for every fill-table row.
+    let text = item.text;
+    if (!text && item && typeof item === "object") {
+      text = Object.entries(item)
+        .filter(([k, v]) => k !== "figure" && v != null && typeof v !== "object")
+        .map(([, v]) => String(v))
+        .join(" · ");
+    }
+    if (!text) text = String(item);
     let catId = "";
 
     if (item.category !== undefined) {
