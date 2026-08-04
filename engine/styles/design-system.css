@@ -45,9 +45,9 @@
   /* Transitions */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --duration-slow: 400ms;
+  --duration-fast: var(--duration-fast);
+  --duration-normal: var(--duration-normal);
+  --duration-slow: var(--duration-slow);
 
   /* Theme override slot (set per-unit) */
   --theme-accent: var(--teal);
@@ -940,7 +940,7 @@ h4 {
 .drag-item.incorrect {
   border-color: var(--error);
   background: var(--error-bg);
-  animation: shake 0.4s ease;
+  animation: shake var(--duration-slow) ease;
 }
 
 @keyframes shake {
@@ -1040,7 +1040,7 @@ h4 {
   justify-content: center;
   padding: var(--sp-4, 18px);
   background: rgba(15, 23, 42, 0.55);
-  animation: objFadeIn 0.15s ease;
+  animation: objFadeIn var(--duration-fast) ease;
 }
 .obj-popup-backdrop[hidden] {
   display: none;
@@ -1196,7 +1196,7 @@ body.obj-popup-open {
 .star-display .star-icon.earned {
   opacity: 1;
   color: var(--amber);
-  animation: starPop 0.4s var(--ease-spring);
+  animation: starPop var(--duration-slow) var(--ease-spring);
 }
 
 @keyframes starPop {
@@ -1284,8 +1284,8 @@ body.obj-popup-open {
 /* ── Card Hover Polish ── */
 .card {
   transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+    transform var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
 }
 
 /* ── Matching Game Flip ── */
@@ -1297,14 +1297,14 @@ body.obj-popup-open {
   transform: translateY(-3px);
 }
 .match-card-inner {
-  transition: transform 0.4s var(--ease-out);
+  transition: transform var(--duration-slow) var(--ease-out);
   transform-style: preserve-3d;
 }
 .match-card.flipped .match-card-inner {
   transform: rotateY(180deg);
 }
 .match-card.matched {
-  animation: matchPop 0.4s var(--ease-spring);
+  animation: matchPop var(--duration-slow) var(--ease-spring);
 }
 @keyframes matchPop {
   0% {
@@ -1381,7 +1381,7 @@ body.obj-popup-open {
 
 /* ── Multiple Choice Selection ── */
 .mc-option {
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) ease;
 }
 .mc-option:hover:not(.selected):not(.correct):not(.wrong) {
   border-color: var(--teal);
@@ -1396,7 +1396,7 @@ body.obj-popup-open {
 .mc-option.wrong {
   border-color: var(--error);
   background: var(--error-bg);
-  animation: shake 0.4s ease;
+  animation: shake var(--duration-slow) ease;
 }
 
 /* ── Balance Scale Tilt ── */
@@ -1999,7 +1999,7 @@ body:has(.identity-screen) .export-toolbar {
   border-radius: var(--radius-md);
   background: var(--card);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) ease;
   min-height: 64px;
 }
 .level-option:hover {
@@ -2236,7 +2236,7 @@ body:has(.identity-screen) .export-toolbar {
   transition:
     border-color 0.3s ease,
     box-shadow 0.3s ease;
-  animation: problemSlideIn 0.4s var(--ease-out);
+  animation: problemSlideIn var(--duration-slow) var(--ease-out);
 }
 
 @keyframes problemSlideIn {
@@ -2528,7 +2528,7 @@ body:has(.identity-screen) .export-toolbar {
 .mc-option-label.is-incorrect {
   border-color: var(--error) !important;
   background: var(--error-bg) !important;
-  animation: shake 0.4s ease;
+  animation: shake var(--duration-slow) ease;
 }
 
 .mc-option-label.is-incorrect .mc-letter-badge {
@@ -2573,7 +2573,7 @@ body:has(.identity-screen) .export-toolbar {
   perspective: 1000px;
   cursor: pointer;
   scroll-snap-align: start;
-  animation: phaseIn 0.4s var(--ease-out) both;
+  animation: phaseIn var(--duration-slow) var(--ease-out) both;
 }
 
 .vocab-card-inner {
@@ -3447,7 +3447,7 @@ body:has(.identity-screen) .export-toolbar {
   border-radius: var(--radius-md);
   cursor: pointer;
   text-align: left;
-  transition: all 0.25s var(--ease-out);
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .story-beat-card:hover,
@@ -3588,7 +3588,7 @@ body:has(.identity-screen) .export-toolbar {
   background: linear-gradient(135deg, var(--teal-light), white);
   border: 2px solid var(--teal);
   border-radius: var(--radius-md);
-  animation: bannerIn 0.4s var(--ease-spring);
+  animation: bannerIn var(--duration-slow) var(--ease-spring);
 }
 
 .phase-next-label {
@@ -4247,7 +4247,7 @@ html[lang^="es"] .i18n-es {
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: #0f766e;
+  color: var(--teal-ink);
 }
 .reveal-slides-figure {
   margin: 0 0 var(--sp-3);
@@ -4277,7 +4277,7 @@ html[lang^="es"] .i18n-es {
    Opt-in card. The renderer only emits `.nw-card` when config.noticeAndWonder
    exists, so this block has no effect on lessons without the field. */
 .nw-card {
-  border-top: 4px solid #0f766e;
+  border-top: 4px solid var(--teal-ink);
 }
 .nw-head {
   margin-bottom: var(--sp-4);
@@ -4288,7 +4288,7 @@ html[lang^="es"] .i18n-es {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #0f766e;
+  color: var(--teal-ink);
 }
 .nw-title {
   margin: var(--sp-1) 0 0;
@@ -4383,8 +4383,8 @@ html[lang^="es"] .i18n-es {
 }
 .nw-chip:hover,
 .nw-chip:focus-visible {
-  background: #0f766e;
-  border-color: #0f766e;
+  background: var(--teal-ink);
+  border-color: var(--teal-ink);
   color: #fff;
 }
 .nw-textarea {
@@ -4480,7 +4480,7 @@ html[lang^="es"] .i18n-es {
    Opt-in display card. The renderer only emits `.wp-card` when
    config.revealWordProblem exists. */
 .wp-card {
-  border-top: 4px solid #0f766e;
+  border-top: 4px solid var(--teal-ink);
 }
 .wp-head {
   display: flex;
@@ -4499,7 +4499,7 @@ html[lang^="es"] .i18n-es {
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #0f766e;
+  color: var(--teal-ink);
   background: var(--teal-light);
   border-radius: var(--radius-full);
 }
@@ -4672,7 +4672,7 @@ textarea.syw-input {
   padding: var(--sp-4);
   border-radius: var(--radius-md);
   background: var(--teal-light);
-  border-left: 4px solid #0f766e;
+  border-left: 4px solid var(--teal-ink);
 }
 .syw-checklist[hidden] {
   display: none;
@@ -5091,8 +5091,8 @@ html.nt-extra-fullpage-open body {
   cursor: pointer;
   box-shadow: 0 6px 18px rgba(185, 28, 28, 0.3);
   transition:
-    transform 0.15s ease,
-    background 0.15s ease;
+    transform var(--duration-fast) ease,
+    background var(--duration-fast) ease;
 }
 .nt-teacher-clear-fab:hover {
   background: #991b1b;
