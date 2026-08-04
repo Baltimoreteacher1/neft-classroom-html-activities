@@ -1334,6 +1334,84 @@ function parallelPair(a, b, op) {
   return [na, nb];
 }
 
+// Display unit for the tool, read from the words the lesson actually uses.
+// area-morph prints the unit on every measurement ("b = 12 ft"), so an unset
+// unit makes the figure read as abstract next to a lesson about a garden.
+function unitFromText(text) {
+  const m = text.match(
+    /\b(feet|foot|ft|inches|inch|in\.|centimeters|cm|meters|metres|m|yards|yd)\b/i,
+  );
+  if (!m) return "";
+  const w = m[1].toLowerCase();
+  if (/^(feet|foot|ft)$/.test(w)) return "ft";
+  if (/^(inches|inch|in\.)$/.test(w)) return "in";
+  if (/^(centimeters|cm)$/.test(w)) return "cm";
+  if (/^(meters|metres|m)$/.test(w)) return "m";
+  return "yd";
+}
+
+/* Give the area explorer the LESSON'S OWN measurements.
+ *
+ * Unlike the arithmetic tools above, this one is deliberately NOT a parallel
+ * problem. area-morph does not pose a question to answer — it demonstrates WHY
+ * a formula works, by rotating a copy of the triangle to build a parallelogram.
+ * There is no answer for a student to read off the worked example, so changing
+ * the digits buys nothing and costs the thing that matters: seeing the very
+ * garden they just read about get cut apart. Left unseeded it drew the
+ * component's built-in 8 × 5 default beside a lesson about 12 × 8.
+ *
+ * Dimensions are clamped to what the drawing can actually hold — a stray
+ * "126 square feet" total from the same paragraph must not become a base.
+ */
+function seedAreaMorph(iv, text) {
+  const n = "(\\d+(?:\\.\\d+)?)";
+  const grab = (re) => {
+    const m = text.match(re);
+    const v = m ? Number(m[1]) : NaN;
+    return Number.isFinite(v) && v > 0 && v <= 40 ? v : null;
+  };
+
+  const unit = unitFromText(text);
+  const out = { ...iv };
+  if (unit) out.unit = unit;
+
+  const height = grab(new RegExp(`heights?\\s+of\\s+${n}`, "i"));
+
+  if (iv.figure === "trapezoid") {
+    // "a top base of 4 feet, a bottom base of 8 feet" → a = top, b = bottom.
+    const top = grab(new RegExp(`top\\s+base\\s+of\\s+${n}`, "i"));
+    const bottom = grab(new RegExp(`bottom\\s+base\\s+of\\s+${n}`, "i"));
+    if (top) out.a = top;
+    if (bottom) out.b = bottom;
+    if (height) out.h = height;
+    return out;
+  }
+
+  if (iv.figure === "polygon") {
+    // "Each side is 6 feet, and each center triangle has a height of 5.2 feet"
+    const side = grab(new RegExp(`each\\s+side\\s+is\\s+${n}`, "i"));
+    if (side) out.b = side;
+    if (height) out.h = height;
+    return out;
+  }
+
+  if (iv.figure === "composite") {
+    // "one is 12 ft by 8 ft" — the first rectangle sets the overall scale.
+    const by = text.match(new RegExp(`${n}\\s*(?:ft|feet|in|cm|m)?\\s+by\\s+${n}`, "i"));
+    const w = by ? Number(by[1]) : null;
+    const t = by ? Number(by[2]) : null;
+    if (w > 0 && w <= 40) out.b = w;
+    if (t > 0 && t <= 40) out.h = t;
+    return out;
+  }
+
+  // parallelogram + triangle: "a base of 12 feet and a height of 8 feet"
+  const base = grab(new RegExp(`bases?\\s+of\\s+${n}`, "i"));
+  if (base) out.b = base;
+  if (height) out.h = height;
+  return out;
+}
+
 function seedVisualFromWorkedExample(iv, lines) {
   if (!iv || !iv.kind || !Array.isArray(lines) || !lines.length) return iv;
   const text = lines.join(" ");
@@ -1342,6 +1420,8 @@ function seedVisualFromWorkedExample(iv, lines) {
     const m = text.match(new RegExp(`${num}\\s*([${opChars}])\\s*${num}`));
     return m ? { a: Number(m[1]), op: m[2], b: Number(m[3]) } : null;
   };
+
+  if (iv.kind === "area-morph") return seedAreaMorph(iv, text);
 
   if (iv.kind === "decimal-columns") {
     const hit = find("+\\-\u2212");
