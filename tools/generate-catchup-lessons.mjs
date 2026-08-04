@@ -53,6 +53,10 @@ function tagItem(item, tag) {
 }
 
 const rows = [];
+// What regeneration carried forward rather than dropping — reported at the end,
+// because a preservation step that works silently looks exactly like one that
+// has stopped running.
+const preserved = [];
 for (const band of bands) {
   const { unit: u, lessons } = band;
   const first = lessons[0];
@@ -106,6 +110,33 @@ for (const band of bands) {
       seen.add(k);
       out.vocabulary.push(v);
     }
+  }
+
+  /* Regeneration must never DELETE vocabulary that is already published.
+   *
+   * The committed catch-ups carry more terms than this rule produces — 56 of
+   * them across the 20 stations, e.g. 5-3-catchup lost Parallelogram, Parallel,
+   * Base 1 (b1), Height and Perpendicular. They were curated past what the
+   * generator emits, so a plain re-run to propagate an unrelated base-lesson
+   * change silently stripped them (found 2026-08-04, reverted before shipping).
+   *
+   * Raising the "top 2" cap does not fix it: even at 8 terms per lesson one
+   * term is still lost, and catch-up lists balloon to 24 entries, which is a
+   * worse review station than the curated 5–13. So the cap stays, and anything
+   * already on disk is carried forward instead. A term is only ever removed by
+   * deliberately editing the config.
+   */
+  const priorPath = join(LESSONS, id, "config.json");
+  if (existsSync(priorPath)) {
+    let carried = 0;
+    for (const v of JSON.parse(readFileSync(priorPath, "utf8")).vocabulary || []) {
+      const k = String(v.term || "").toLowerCase();
+      if (!k || seen.has(k)) continue;
+      seen.add(k);
+      out.vocabulary.push(v);
+      carried++;
+    }
+    if (carried) preserved.push(`${id}: kept ${carried} curated term(s)`);
   }
 
   out.launch.badge = "Catch-Up Station";
@@ -228,6 +259,10 @@ for (const band of bands) {
 
 writeFileSync(new URL("./catchup-rows.json", import.meta.url), JSON.stringify(rows, null, 2));
 console.log(`${DRY ? "[dry] " : ""}bands: ${rows.length}`);
+if (preserved.length) {
+  console.log(`carried forward (not regenerable, would otherwise be deleted):`);
+  for (const p of preserved) console.log(`  ${p}`);
+}
 for (const r of rows)
   console.log(
     `${r.id.padEnd(14)} after ${r.afterLesson.padEnd(5)} ${r.range.padEnd(9)} v${r.counts.vocab} a${r.counts.approaching} o${r.counts.onLevel} e${r.counts.extending} opt${r.counts.optional} p${r.counts.parallel}`,

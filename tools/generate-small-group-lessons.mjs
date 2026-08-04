@@ -205,7 +205,7 @@ function buildGroup1(base, u, m) {
     // keep .hints so support is available on the check
   }
 
-  out.vocabulary = (base.vocabulary || []).slice(0, 8);
+  out.vocabulary = withPriorVocabulary((base.vocabulary || []).slice(0, 8), id);
 
   out.smallGroup = {
     group: 1,
@@ -297,7 +297,7 @@ function buildGroup2(base, u, m) {
     out.reflect.exitTicket.stem = `Explain your thinking — ${out.reflect.exitTicket.stem}`;
   }
 
-  out.vocabulary = (base.vocabulary || []).slice(0, 8);
+  out.vocabulary = withPriorVocabulary((base.vocabulary || []).slice(0, 8), id);
 
   out.smallGroup = {
     group: 2,
@@ -358,6 +358,37 @@ const bases = readdirSync(LESSONS)
     const [bu, bm] = b.split("-").map(Number);
     return au - bu || am - bm;
   });
+
+/* Regeneration must never DELETE vocabulary that is already published.
+ *
+ * These groups take the base lesson's first 8 terms. Committed groups can hold
+ * more — 5-1-group1/group2 carry all 10 of lesson 5-1's terms, so a plain
+ * re-run stripped "Composite figure" and "Formula" from both. Same class of
+ * silent loss the catch-up generator had (56 terms there); see
+ * tools/generators-preserve-vocabulary.test.mjs.
+ *
+ * The cap stays — a small-group pull-out is meant to be compact — but nothing
+ * already on disk is removed. A term goes away only by editing the config.
+ */
+function withPriorVocabulary(vocabulary, id) {
+  const priorPath = join(LESSONS, id, "config.json");
+  if (!existsSync(priorPath)) return vocabulary;
+  const out = [...vocabulary];
+  const seen = new Set(out.map((v) => String(v.term || "").toLowerCase()));
+  let prior;
+  try {
+    prior = JSON.parse(readFileSync(priorPath, "utf8")).vocabulary || [];
+  } catch {
+    return out; // unreadable prior config is not a reason to fail the run
+  }
+  for (const v of prior) {
+    const k = String(v.term || "").toLowerCase();
+    if (!k || seen.has(k)) continue;
+    seen.add(k);
+    out.push(v);
+  }
+  return out;
+}
 
 const rows = [];
 const facilitationByLesson = {};
