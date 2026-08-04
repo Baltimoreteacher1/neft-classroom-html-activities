@@ -26,7 +26,12 @@
       }
       body {
         margin: 0;
-        font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        font:
+          16px/1.5 system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
         background: var(--bg);
         color: var(--ink);
       }
@@ -283,17 +288,89 @@
     <main>
       <section class="card" aria-label="Lesson picker">
         <h2>Lesson</h2>
-        <input id="search" type="search" placeholder="Search lessons…" aria-label="Search lessons" />
+        <input
+          id="search"
+          type="search"
+          placeholder="Search lessons…"
+          aria-label="Search lessons"
+        />
         <div class="lesson-list" id="lessonList"></div>
       </section>
       <section class="detail" id="detail" aria-live="polite">
-        <div class="empty">Pick a lesson to build its rotation links and see live class evidence.</div>
+        <div class="empty">
+          Pick a lesson to build its rotation links and see live class evidence.
+        </div>
       </section>
     </main>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script>
       // Base lessons embedded at author time (id, unit, lesson, title, hasCatchup).
-      var LESSONS = [{"id": "1-1", "u": 1, "l": 1, "t": "Prime Factorization", "c": false}, {"id": "1-2", "u": 1, "l": 2, "t": "Greatest Common Factor", "c": false}, {"id": "1-3", "u": 1, "l": 3, "t": "Least Common Multiple", "c": true}, {"id": "1-4", "u": 1, "l": 4, "t": "Divide Multi-Digit Numbers", "c": false}, {"id": "1-5", "u": 1, "l": 5, "t": "Add and Subtract Decimals", "c": false}, {"id": "1-6", "u": 1, "l": 6, "t": "Multiply Decimals", "c": false}, {"id": "1-7", "u": 1, "l": 7, "t": "Divide Decimals", "c": true}, {"id": "2-1", "u": 2, "l": 1, "t": "Interpret Division of Fractions", "c": false}, {"id": "2-2", "u": 2, "l": 2, "t": "Divide Whole Numbers by Fractions", "c": false}, {"id": "2-3", "u": 2, "l": 3, "t": "Divide Fractions", "c": true}, {"id": "2-4", "u": 2, "l": 4, "t": "Divide Mixed Numbers", "c": false}, {"id": "2-5", "u": 2, "l": 5, "t": "Fraction Division Problem Solving", "c": true}, {"id": "3-1", "u": 3, "l": 1, "t": "Understand Ratios", "c": false}, {"id": "3-2", "u": 3, "l": 2, "t": "Ratio Tables", "c": false}, {"id": "3-3", "u": 3, "l": 3, "t": "Graph Ratio Tables", "c": true}, {"id": "3-4", "u": 3, "l": 4, "t": "Equivalent Ratios", "c": false}, {"id": "3-5", "u": 3, "l": 5, "t": "Compare Ratios", "c": false}, {"id": "3-6", "u": 3, "l": 6, "t": "Use Ratio Reasoning", "c": false}, {"id": "3-7", "u": 3, "l": 7, "t": "Ratio and Rate Problem Solving", "c": true}, {"id": "4-1", "u": 4, "l": 1, "t": "Rates and Unit Rates", "c": false}, {"id": "4-2", "u": 4, "l": 2, "t": "Relate Fractions, Decimals, and Percents", "c": false}, {"id": "4-3", "u": 4, "l": 3, "t": "Percents Greater Than 100% and Less Than 1%", "c": true}, {"id": "4-4", "u": 4, "l": 4, "t": "Find the Percent of a Number", "c": false}, {"id": "4-5", "u": 4, "l": 5, "t": "Use Percent to Solve Problems", "c": false}, {"id": "4-6", "u": 4, "l": 6, "t": "Convert Measurement Units", "c": false}, {"id": "4-7", "u": 4, "l": 7, "t": "Solve Problems with Unit Rates", "c": true}, {"id": "5-1", "u": 5, "l": 1, "t": "Area of Parallelograms", "c": false}, {"id": "5-2", "u": 5, "l": 2, "t": "Area of Trapezoids", "c": false}, {"id": "5-3", "u": 5, "l": 3, "t": "Area of Triangles", "c": true}, {"id": "5-4", "u": 5, "l": 4, "t": "Area of Regular Polygons", "c": false}, {"id": "5-5", "u": 5, "l": 5, "t": "Area of Composite Figures", "c": true}, {"id": "6-1", "u": 6, "l": 1, "t": "Powers and Exponents", "c": false}, {"id": "6-2", "u": 6, "l": 2, "t": "Evaluate Expressions", "c": false}, {"id": "6-3", "u": 6, "l": 3, "t": "Write Algebraic Expressions", "c": true}, {"id": "6-4", "u": 6, "l": 4, "t": "Properties of Operations", "c": false}, {"id": "6-5", "u": 6, "l": 5, "t": "The Distributive Property", "c": false}, {"id": "6-6", "u": 6, "l": 6, "t": "Equivalent Expressions", "c": false}, {"id": "6-7", "u": 6, "l": 7, "t": "Simplify Algebraic Expressions", "c": true}, {"id": "7-1", "u": 7, "l": 1, "t": "Write Equations", "c": false}, {"id": "7-2", "u": 7, "l": 2, "t": "Solve One-Step Addition and Subtraction Equations", "c": false}, {"id": "7-3", "u": 7, "l": 3, "t": "Solve Multiplication and Division Equations", "c": true}, {"id": "7-4", "u": 7, "l": 4, "t": "Write Inequalities", "c": false}, {"id": "7-5", "u": 7, "l": 5, "t": "Graph Inequalities", "c": false}, {"id": "7-6", "u": 7, "l": 6, "t": "Solve and Graph Inequalities", "c": false}, {"id": "7-7", "u": 7, "l": 7, "t": "Equations and Inequalities Problem Solving", "c": true}, {"id": "8-1", "u": 8, "l": 1, "t": "Statistical Questions and Data", "c": false}, {"id": "8-2", "u": 8, "l": 2, "t": "Mean, Median, and Mode", "c": false}, {"id": "8-3", "u": 8, "l": 3, "t": "Mean Absolute Deviation", "c": true}, {"id": "8-4", "u": 8, "l": 4, "t": "Appropriate Measures", "c": false}, {"id": "8-5", "u": 8, "l": 5, "t": "Display Data: Box Plots", "c": false}, {"id": "8-6", "u": 8, "l": 6, "t": "Display Data: Histograms", "c": false}, {"id": "8-7", "u": 8, "l": 7, "t": "Shape of Data Distributions", "c": true}, {"id": "9-1", "u": 9, "l": 1, "t": "Graph on the Coordinate Plane", "c": false}, {"id": "9-2", "u": 9, "l": 2, "t": "Integers and Absolute Value", "c": false}, {"id": "9-3", "u": 9, "l": 3, "t": "Compare and Order Integers", "c": true}, {"id": "9-4", "u": 9, "l": 4, "t": "Rational Numbers on the Number Line", "c": false}, {"id": "9-5", "u": 9, "l": 5, "t": "Ordered Pairs in All Four Quadrants", "c": false}, {"id": "9-6", "u": 9, "l": 6, "t": "Distance on the Coordinate Plane", "c": false}, {"id": "9-7", "u": 9, "l": 7, "t": "Reflect Points Across Axes", "c": true}, {"id": "10-1", "u": 10, "l": 1, "t": "Volume with Whole Number Edges", "c": false}, {"id": "10-2", "u": 10, "l": 2, "t": "Volume of Rectangular Prisms", "c": false}, {"id": "10-3", "u": 10, "l": 3, "t": "Surface Area Using Nets", "c": true}, {"id": "10-4", "u": 10, "l": 4, "t": "Surface Area of Prisms", "c": false}, {"id": "10-5", "u": 10, "l": 5, "t": "Surface Area of Pyramids", "c": true}];
+      var LESSONS = [
+        { id: "1-1", u: 1, l: 1, t: "Prime Factorization", c: false },
+        { id: "1-2", u: 1, l: 2, t: "Greatest Common Factor", c: false },
+        { id: "1-3", u: 1, l: 3, t: "Least Common Multiple", c: true },
+        { id: "1-4", u: 1, l: 4, t: "Divide Multi-Digit Numbers", c: false },
+        { id: "1-5", u: 1, l: 5, t: "Add and Subtract Decimals", c: false },
+        { id: "1-6", u: 1, l: 6, t: "Multiply Decimals", c: false },
+        { id: "1-7", u: 1, l: 7, t: "Divide Decimals", c: true },
+        { id: "2-1", u: 2, l: 1, t: "Interpret Division of Fractions", c: false },
+        { id: "2-2", u: 2, l: 2, t: "Divide Whole Numbers by Fractions", c: false },
+        { id: "2-3", u: 2, l: 3, t: "Divide Fractions", c: true },
+        { id: "2-4", u: 2, l: 4, t: "Divide Mixed Numbers", c: false },
+        { id: "2-5", u: 2, l: 5, t: "Fraction Division Problem Solving", c: true },
+        { id: "3-1", u: 3, l: 1, t: "Understand Ratios", c: false },
+        { id: "3-2", u: 3, l: 2, t: "Ratio Tables", c: false },
+        { id: "3-3", u: 3, l: 3, t: "Graph Ratio Tables", c: true },
+        { id: "3-4", u: 3, l: 4, t: "Equivalent Ratios", c: false },
+        { id: "3-5", u: 3, l: 5, t: "Compare Ratios", c: false },
+        { id: "3-6", u: 3, l: 6, t: "Use Ratio Reasoning", c: false },
+        { id: "3-7", u: 3, l: 7, t: "Ratio and Rate Problem Solving", c: true },
+        { id: "4-1", u: 4, l: 1, t: "Rates and Unit Rates", c: false },
+        { id: "4-2", u: 4, l: 2, t: "Relate Fractions, Decimals, and Percents", c: false },
+        { id: "4-3", u: 4, l: 3, t: "Percents Greater Than 100% and Less Than 1%", c: true },
+        { id: "4-4", u: 4, l: 4, t: "Find the Percent of a Number", c: false },
+        { id: "4-5", u: 4, l: 5, t: "Use Percent to Solve Problems", c: false },
+        { id: "4-6", u: 4, l: 6, t: "Convert Measurement Units", c: false },
+        { id: "4-7", u: 4, l: 7, t: "Solve Problems with Unit Rates", c: true },
+        { id: "5-1", u: 5, l: 1, t: "Area of Parallelograms", c: false },
+        { id: "5-2", u: 5, l: 2, t: "Area of Trapezoids", c: false },
+        { id: "5-3", u: 5, l: 3, t: "Area of Triangles", c: true },
+        { id: "5-4", u: 5, l: 4, t: "Area of Regular Polygons", c: false },
+        { id: "5-5", u: 5, l: 5, t: "Area of Composite Figures", c: true },
+        { id: "6-1", u: 6, l: 1, t: "Powers and Exponents", c: false },
+        { id: "6-2", u: 6, l: 2, t: "Evaluate Expressions", c: false },
+        { id: "6-3", u: 6, l: 3, t: "Write Algebraic Expressions", c: true },
+        { id: "6-4", u: 6, l: 4, t: "Properties of Operations", c: false },
+        { id: "6-5", u: 6, l: 5, t: "The Distributive Property", c: false },
+        { id: "6-6", u: 6, l: 6, t: "Equivalent Expressions", c: false },
+        { id: "6-7", u: 6, l: 7, t: "Simplify Algebraic Expressions", c: true },
+        { id: "7-1", u: 7, l: 1, t: "Write Equations", c: false },
+        { id: "7-2", u: 7, l: 2, t: "Solve One-Step Addition and Subtraction Equations", c: false },
+        { id: "7-3", u: 7, l: 3, t: "Solve Multiplication and Division Equations", c: true },
+        { id: "7-4", u: 7, l: 4, t: "Write Inequalities", c: false },
+        { id: "7-5", u: 7, l: 5, t: "Graph Inequalities", c: false },
+        { id: "7-6", u: 7, l: 6, t: "Solve and Graph Inequalities", c: false },
+        { id: "7-7", u: 7, l: 7, t: "Equations and Inequalities Problem Solving", c: true },
+        { id: "8-1", u: 8, l: 1, t: "Statistical Questions and Data", c: false },
+        { id: "8-2", u: 8, l: 2, t: "Mean, Median, and Mode", c: false },
+        { id: "8-3", u: 8, l: 3, t: "Mean Absolute Deviation", c: true },
+        { id: "8-4", u: 8, l: 4, t: "Appropriate Measures", c: false },
+        { id: "8-5", u: 8, l: 5, t: "Display Data: Box Plots", c: false },
+        { id: "8-6", u: 8, l: 6, t: "Display Data: Histograms", c: false },
+        { id: "8-7", u: 8, l: 7, t: "Shape of Data Distributions", c: true },
+        { id: "9-1", u: 9, l: 1, t: "Graph on the Coordinate Plane", c: false },
+        { id: "9-2", u: 9, l: 2, t: "Integers and Absolute Value", c: false },
+        { id: "9-3", u: 9, l: 3, t: "Compare and Order Integers", c: true },
+        { id: "9-4", u: 9, l: 4, t: "Rational Numbers on the Number Line", c: false },
+        { id: "9-5", u: 9, l: 5, t: "Ordered Pairs in All Four Quadrants", c: false },
+        { id: "9-6", u: 9, l: 6, t: "Distance on the Coordinate Plane", c: false },
+        { id: "9-7", u: 9, l: 7, t: "Reflect Points Across Axes", c: true },
+        { id: "10-1", u: 10, l: 1, t: "Volume with Whole Number Edges", c: false },
+        { id: "10-2", u: 10, l: 2, t: "Volume of Rectangular Prisms", c: false },
+        { id: "10-3", u: 10, l: 3, t: "Surface Area Using Nets", c: true },
+        { id: "10-4", u: 10, l: 4, t: "Surface Area of Prisms", c: false },
+        { id: "10-5", u: 10, l: 5, t: "Surface Area of Pyramids", c: true },
+      ];
 
       var listEl = document.getElementById("lessonList");
       var detailEl = document.getElementById("detail");
@@ -502,17 +579,24 @@
                   (g.avgTotal || 0) +
                   '</td><td class="num">' +
                   (g.hintHeavy || 0) +
+                  '</td><td class="num">' +
+                  (g.devicesReporting || 0) +
                   "</td></tr>"
                 );
               })
               .join("");
+            var reporting = Number(data.devicesReporting) || 0;
             body.innerHTML =
               "<table><thead><tr><th>Section</th><th>Variant</th>" +
               '<th class="num">Done</th><th class="num">In progress</th>' +
-              '<th class="num">Avg solved</th><th class="num">Hint-heavy</th></tr></thead>' +
+              '<th class="num">Avg solved</th><th class="num">Hint-heavy</th>' +
+              '<th class="num">Devices</th></tr></thead>' +
               "<tbody>" +
               rows +
-              "</tbody></table>";
+              "</tbody></table>" +
+              '<p class="status">' +
+              reporting +
+              " device(s) reported in the last 14 days. Counts above describe only those devices — a 0 with no devices reporting means no evidence, not zero learning.</p>";
           })
           .catch(function () {
             body.innerHTML = '<p class="status">Class evidence is unavailable right now.</p>';
@@ -524,8 +608,8 @@
       };
       renderList("");
     </script>
-  <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
+    <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
     <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-</body>
+    <script src="/assets/formula-popup.js" defer></script>
+  </body>
 </html>

@@ -727,7 +727,7 @@ export async function onRequest(context) {
   if (seg === "small-group-summary" && method === "GET") {
     const base = clamp(url.searchParams.get("lesson"), 10);
     if (!/^\d{1,2}-\d{1,2}$/.test(base)) return json({ ok: false, error: "invalid-lesson" }, 400);
-    if (!env.DB) return json({ ok: true, groups: [] });
+    if (!env.DB) return json({ ok: true, devicesReporting: 0, groups: [] });
     try {
       await ensureTelemetrySchema(env.DB);
       const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
@@ -755,7 +755,12 @@ export async function onRequest(context) {
           solvedSum: 0,
           totalSum: 0,
           hintHeavy: 0,
+          devicesReporting: 0,
         };
+        // Coverage denominator (epistemic policy): each event declares
+        // reported:1, so a group whose counts are 0 can be told apart from a
+        // group nobody's device ever reported from.
+        group.devicesReporting += Number(payload.reported) || 0;
         if (payload.kind === "checkpoint") {
           group.inProgress++;
         } else {
@@ -766,10 +771,12 @@ export async function onRequest(context) {
         }
         groups.set(key, group);
       }
+      const groupList = [...groups.values()];
       return json({
         ok: true,
         lesson: base,
-        groups: [...groups.values()].map((group) => ({
+        devicesReporting: groupList.reduce((sum, g) => sum + g.devicesReporting, 0),
+        groups: groupList.map((group) => ({
           section: group.section,
           variant: group.variant,
           completions: group.completions,
@@ -777,10 +784,11 @@ export async function onRequest(context) {
           avgSolved: group.completions ? Math.round(group.solvedSum / group.completions) : 0,
           avgTotal: group.completions ? Math.round(group.totalSum / group.completions) : 0,
           hintHeavy: group.hintHeavy,
+          devicesReporting: group.devicesReporting,
         })),
       });
     } catch (_err) {
-      return json({ ok: true, groups: [] });
+      return json({ ok: true, devicesReporting: 0, groups: [] });
     }
   }
 

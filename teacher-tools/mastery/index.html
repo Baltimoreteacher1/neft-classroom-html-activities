@@ -198,31 +198,22 @@
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <!-- Gate -->
     <div id="gate" class="gate">
       <h2>🔐 Mastery Dashboard</h2>
-      <p>
-        Teacher access only. Enter the dashboard key to view student mastery
-        data.
-      </p>
+      <p>Teacher access only. Enter the dashboard key to view student mastery data.</p>
       <div class="row">
-        <input
-          id="keyInput"
-          type="password"
-          placeholder="Teacher key"
-          autocomplete="off"
-        />
+        <input id="keyInput" type="password" placeholder="Teacher key" autocomplete="off" />
         <button class="primary" id="enterBtn">View</button>
       </div>
       <div class="msg" id="gateMsg"></div>
       <p class="foot">
-        Set the <code>TEACHER_KEY</code> environment variable on the Pages
-        project to enable this dashboard. Data is read-only and never exposed
-        without the key.
+        Set the <code>TEACHER_KEY</code> environment variable on the Pages project to enable this
+        dashboard. Data is read-only and never exposed without the key.
       </p>
     </div>
 
@@ -294,11 +285,7 @@
         return (n * 100).toFixed(0) + "%";
       }
       function color(a) {
-        return a >= 0.8
-          ? "var(--good)"
-          : a >= 0.5
-            ? "var(--warn)"
-            : "var(--bad)";
+        return a >= 0.8 ? "var(--good)" : a >= 0.5 ? "var(--warn)" : "var(--bad)";
       }
       function fmtDate(s) {
         if (!s) return "—";
@@ -315,17 +302,12 @@
       }
 
       async function load(key) {
-        var res = await fetch(
-          ENDPOINT + "?key=" + encodeURIComponent(key) + "&limit=5000",
-          {
-            headers: { "x-teacher-key": key },
-          },
-        );
+        var res = await fetch(ENDPOINT + "?key=" + encodeURIComponent(key) + "&limit=5000", {
+          headers: { "x-teacher-key": key },
+        });
         if (res.status === 401) throw new Error("Wrong key.");
         if (res.status === 503)
-          throw new Error(
-            "Dashboard not enabled (TEACHER_KEY not set on the server).",
-          );
+          throw new Error("Dashboard not enabled (TEACHER_KEY not set on the server).");
         if (!res.ok) throw new Error("Server error (" + res.status + ").");
         var data = await res.json();
         return (data && data.events) || [];
@@ -424,12 +406,19 @@
 
       function render(events) {
         var agg = aggregate(events);
+        // Coverage denominator (epistemic policy): every completion event
+        // carries reported:1, so the dashboard can say whether a 0 below means
+        // "no evidence arrived" rather than "students did nothing".
+        var devicesReporting = events.reduce(function (sum, e) {
+          return sum + (Number(e.props && e.props.reported) || 0);
+        }, 0);
         $("#summary").innerHTML = [
           ["Students", agg.students.length],
           ["Item attempts", agg.attemptTotal],
           ["Overall accuracy", pct(agg.accuracy)],
           ["Masteries reached", agg.masteryTotal],
           ["Standards touched", agg.standards.length],
+          ["Devices reporting", devicesReporting],
         ]
           .map(function (c) {
             return (
@@ -501,12 +490,13 @@
                 "</td></tr>"
               );
             })
-            .join("") ||
-          '<tr><td colspan="5" style="color:var(--muted)">No data yet.</td></tr>';
+            .join("") || '<tr><td colspan="5" style="color:var(--muted)">No data yet.</td></tr>';
 
         $("#meta").textContent = events.length + " events";
         $("#emptyNote").textContent = events.length
-          ? ""
+          ? devicesReporting
+            ? ""
+            : "No device has sent a completion marker in this window — zeros here mean no evidence, not zero learning."
           : "No telemetry recorded yet — data appears as students work through lessons.";
       }
 
@@ -557,8 +547,8 @@
         if (saved) enter(saved);
       })();
     </script>
-  <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
+    <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
     <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-</body>
+    <script src="/assets/formula-popup.js" defer></script>
+  </body>
 </html>
