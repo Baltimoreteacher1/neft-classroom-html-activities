@@ -759,7 +759,12 @@ function renderStudio(config) {
     events,
     onDone: phaseDone("sg-tab-learn", "modelDone"),
   });
-  const vocab = createVocabularySection(config, phaseDone("sg-tab-vocab", "vocabDone"), store);
+  const vocab = createVocabularySection(
+    config,
+    variant,
+    phaseDone("sg-tab-vocab", "vocabDone"),
+    store,
+  );
   // Partner talk lives inside the Practice tab so discussion is part of
   // practicing, not a detour.
   const talk =

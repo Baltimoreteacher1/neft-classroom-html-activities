@@ -1,3 +1,13 @@
+// Fill the Blanks — drag a word from the bank into the sentence it completes.
+//
+// Two things used to make this read as broken to students:
+//   1. A wrong word simply bounced. The chip never landed anywhere, so the
+//      activity looked like drag-and-drop that did not work rather than like a
+//      wrong answer. A word now ALWAYS lands in the blank it was dropped on;
+//      a wrong one lands marked "not yet" and can be taken back out by tapping
+//      it. Only correct placements count toward the progress bar.
+//   2. The activity rendered full-bleed against the left edge. It is now a
+//      centred column like the other vocab activities.
 export function renderVocabCloze(container, { terms, onComplete }) {
   injectClozeStyles();
 
@@ -111,7 +121,7 @@ export function renderVocabCloze(container, { terms, onComplete }) {
   shuffled.forEach((s, idx) => {
     const row = document.createElement("div");
     row.className = "card card-compact";
-    row.style.cssText = "padding:var(--sp-4); line-height:1.8; font-size:0.95rem;";
+    row.style.cssText = "padding:var(--sp-4); line-height:1.9; font-size:1.1rem;";
 
     const parts = s.sentence.split("___");
     const span1 = document.createTextNode(parts[0] || "");
@@ -131,24 +141,40 @@ export function renderVocabCloze(container, { terms, onComplete }) {
     blank.textContent = " ";
 
     blank.addEventListener("dragover", (e) => {
+      if (blank.classList.contains("filled")) return;
       e.preventDefault();
+      blank.classList.add("vocab-cloze-over");
       blank.style.borderColor = "var(--amber)";
       blank.style.background = "var(--amber-light)";
     });
     blank.addEventListener("dragleave", () => {
-      if (!blank.classList.contains("filled")) {
-        blank.style.borderColor = "var(--teal)";
-        blank.style.background = "var(--teal-light)";
+      blank.classList.remove("vocab-cloze-over");
+      if (blank.classList.contains("filled")) return;
+      // A blank holding a wrong word keeps its "not yet" colours; only an empty
+      // one goes back to the neutral dashed target.
+      if (blank.classList.contains("placed")) {
+        blank.style.borderColor = "var(--error)";
+        blank.style.background = "var(--error-bg)";
+        return;
       }
+      blank.style.borderColor = "var(--teal)";
+      blank.style.background = "var(--teal-light)";
     });
     blank.addEventListener("drop", (e) => {
       e.preventDefault();
+      blank.classList.remove("vocab-cloze-over");
       const term = e.dataTransfer.getData("text/plain");
+      if (!term) return;
       attemptFill(blank, term, activeDragChip);
     });
 
     blank.addEventListener("click", () => {
       if (blank.classList.contains("filled")) return;
+      // Tapping a word placed in the wrong sentence sends it back to the bank.
+      if (blank.classList.contains("placed") && !selectedChip) {
+        releaseBlank(blank);
+        return;
+      }
       if (!selectedChip || selectedChip.classList.contains("used")) return;
       attemptFill(blank, selectedChip.dataset.term, selectedChip);
       selectedChip.style.boxShadow = "";
@@ -164,8 +190,31 @@ export function renderVocabCloze(container, { terms, onComplete }) {
 
   wrapper.append(sentenceList);
 
+  // Put a chip back in the bank and empty the blank it was sitting in. Used
+  // when a student taps a word they placed in the wrong sentence.
+  function releaseBlank(blank) {
+    const chipEl = blank._chip;
+    blank._chip = null;
+    blank.classList.remove("placed");
+    blank.textContent = " ";
+    blank.style.borderColor = "var(--teal)";
+    blank.style.borderStyle = "dashed";
+    blank.style.background = "var(--teal-light)";
+    blank.style.color = "var(--teal-ink)";
+    blank.removeAttribute("title");
+    if (chipEl) {
+      chipEl.classList.remove("used");
+      chipEl.style.opacity = "";
+      chipEl.style.cursor = "grab";
+      chipEl.setAttribute("draggable", "true");
+    }
+  }
+
   function attemptFill(blank, term, chipEl) {
     if (blank.classList.contains("filled")) return;
+    // A blank already holding a wrong word: send that one back first, so the
+    // new word has somewhere to land instead of being silently refused.
+    if (blank.classList.contains("placed")) releaseBlank(blank);
 
     const expected = blankAnswers[Number(blank.dataset.idx)] || "";
     const correct = term.toLowerCase().trim() === expected.toLowerCase().trim();
@@ -173,6 +222,8 @@ export function renderVocabCloze(container, { terms, onComplete }) {
     if (correct) {
       blank.textContent = term;
       blank.classList.add("filled");
+      blank.classList.remove("placed");
+      blank.removeAttribute("title");
       blank.style.borderColor = "var(--success)";
       blank.style.borderStyle = "solid";
       blank.style.background = "var(--success-bg)";
@@ -203,17 +254,28 @@ export function renderVocabCloze(container, { terms, onComplete }) {
         }, 600);
       }
     } else {
+      // The word LANDS even though it is wrong — a chip that springs back to
+      // the bank reads as "the drag didn't work", not as "wrong answer".
+      blank.textContent = term;
+      blank.classList.add("placed");
+      blank._chip = chipEl || null;
       blank.style.borderColor = "var(--error)";
+      blank.style.borderStyle = "solid";
       blank.style.background = "var(--error-bg)";
+      blank.style.color = "var(--error)";
+      blank.title = "Not this one — tap to take it back.";
       blank.classList.add("vocab-cloze-shake");
       blank.addEventListener("animationend", () => blank.classList.remove("vocab-cloze-shake"), {
         once: true,
       });
-      setTimeout(() => {
-        if (blank.classList.contains("filled")) return;
-        blank.style.borderColor = "var(--teal)";
-        blank.style.background = "var(--teal-light)";
-      }, 600);
+
+      if (chipEl) {
+        chipEl.classList.add("used");
+        chipEl.classList.remove("vocab-cloze-chip-selected");
+        chipEl.style.opacity = "0.3";
+        chipEl.style.cursor = "default";
+        chipEl.setAttribute("draggable", "false");
+      }
     }
   }
 
@@ -277,6 +339,26 @@ function injectClozeStyles() {
   const style = document.createElement("style");
   style.id = "vocab-cloze-styles";
   style.textContent = `
+    /* The activity used to render flush against the left edge of whatever
+       column hosted it. It is a centred, readable-width block like the other
+       vocab activities. */
+    .vocab-cloze-root {
+      max-width: 860px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* The blank is the drop target, so it has to be big enough to aim at with a
+       mouse or a finger — the old inline-thin box was easy to miss, which read
+       as "the word won't drop". */
+    .vocab-cloze-blank {
+      min-width: 150px;
+      min-height: 42px;
+      padding: 8px 16px !important;
+      font-size: 1.05rem;
+    }
+    .vocab-cloze-over {
+      transform: scale(1.04);
+    }
     .vocab-cloze-progress-fill {
       transition: width var(--duration-fast, 0.2s) ease;
     }

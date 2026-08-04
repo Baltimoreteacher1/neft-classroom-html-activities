@@ -252,10 +252,10 @@ function buildVisual(v) {
       });
     }
     case "tape-diagram":
-      // Interactive "count the equal parts" tape (interactive-visual bridge).
-      // The static SVG stays as the JS-off / print fallback.
+      // Interactive "solve for the missing quantity" tape (interactive-visual
+      // bridge). The static SVG stays as the JS-off / print fallback.
       return interactiveVisualHost(v, {
-        ariaLabel: `Interactive tape diagram: ${v.title || "count the equal parts"}. Tap each part to count how many equal parts there are in all.`,
+        ariaLabel: `Interactive tape diagram: ${v.title || "find the missing amount"}. Read the whole bar and the equal parts, then type the amount the model leaves out and check it.`,
         fallback: tapeDiagramSVG(v),
       });
     case "coordinate-plane":

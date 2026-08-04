@@ -42,6 +42,28 @@ const DEDICATED = new Set([
   "triangle",
   "parallelogram",
   "trapezoid",
+  "rectangle",
+  "rhombus",
+  "square",
+  // "parallel" and "perpendicular" are taught words in their own right, not
+  // decoration on another term's picture. "perpendicular" used to resolve to
+  // triangle.svg and "parallel" fell all the way through to cat-shape.svg, so
+  // the two ideas a student must tell apart were illustrated by a triangle and
+  // a placeholder. Each now has its own diagram.
+  "parallel",
+  "perpendicular",
+  // "slanted side" used to resolve to parallelogram.svg, which highlights the
+  // HEIGHT — the exact thing the term exists to contrast against.
+  "slanted-side",
+  // Compound terms ("area of a ___") carry the formula in their own picture;
+  // they used to borrow the plain shape image, which shows no formula at all.
+  "area-of-parallelograms",
+  "area-of-trapezoids",
+  "area-of-triangles",
+  "area-of-composite-figures",
+  "volume-of-rectangular-prisms",
+  "surface-area-of-prisms",
+  "surface-area-of-pyramids",
   "rectangular-prism",
   "net",
   "edge",
@@ -167,25 +189,23 @@ const SYNONYMS = {
   "negative-coordinate": "negative",
   "whole-number": "integer",
 
-  "base-area": "area",
+  "base-area": "base-area-prism",
   "square-units": "square-unit",
   "cubic-unit": "cubic-units",
+  // `base` and `height` are PARTS of a shape, so the generic picture is only
+  // ever right by accident. Each lesson that teaches them pins a shape-matched
+  // image (`base-parallelogram`, `height-triangle`, …) on the vocabulary entry
+  // itself; these slugs stay as the safe default for anywhere that does not.
   base: "base",
   height: "height",
-  "slant-height": "height",
-  slant: "parallelogram",
-  slanted: "parallelogram",
-  "slanted-side": "parallelogram",
-  "area-of-parallelograms": "parallelogram",
-  "area-of-trapezoids": "trapezoid",
-  "area-of-triangles": "triangle",
+  "slant-height": "slant-height-pyramid",
+  slant: "slanted-side",
+  slanted: "slanted-side",
   "area-of-regular-polygons": "area-of-regular-polygons",
-  "area-of-composite-figures": "composite-figure",
-  "volume-with-whole-number-edges": "volume",
-  "volume-of-rectangular-prisms": "volume",
-  "surface-area-using-nets": "net",
-  "surface-area-of-prisms": "surface-area",
-  "surface-area-of-pyramids": "surface-area",
+  // These two compounds state a formula, so they get the formula picture
+  // rather than the plain shape/net image, which shows no formula at all.
+  "volume-with-whole-number-edges": "volume-of-rectangular-prisms",
+  "surface-area-using-nets": "surface-area-of-prisms",
   dimensions: "dimensions",
   "length-width-height": "dimensions",
   "lateral-area": "surface-area",
@@ -198,9 +218,20 @@ const SYNONYMS = {
   "regular-polygon": "regular-polygon",
   "two-dimensional": "square-unit",
   composite: "composite-figure",
-  perpendicular: "triangle",
-  "base-1-b1": "trapezoid",
-  "base-2-b2": "trapezoid",
+  parallel: "parallel",
+  "parallel-side": "parallel",
+  "parallel-sides": "parallel",
+  "parallel-lines": "parallel",
+  perpendicular: "perpendicular",
+  "perpendicular-lines": "perpendicular",
+  "perpendicular-height": "perpendicular",
+  "right-angle": "perpendicular",
+  "base-1-b1": "base-1-trapezoid",
+  "base-2-b2": "base-2-trapezoid",
+  rectangle: "rectangle",
+  rhombus: "rhombus",
+  square: "square",
+  quadrilateral: "parallelogram",
 
   "mean-absolute-deviation": "mean-absolute-deviation",
   mad: "mean-absolute-deviation",
@@ -366,6 +397,18 @@ const EXTRA_DEDICATED = new Set([
   "measurement",
   "number",
   "bar-model",
+  // Shape-qualified part terms. A lesson pins one of these on the vocabulary
+  // entry's `image` field so "base"/"height" show the shape THAT lesson is
+  // about; they are also listed here so a slug or synonym can reach them.
+  "base-parallelogram",
+  "base-triangle",
+  "base-1-trapezoid",
+  "base-2-trapezoid",
+  "base-area-prism",
+  "height-parallelogram",
+  "height-triangle",
+  "height-trapezoid",
+  "slant-height-pyramid",
 ]);
 
 export function resolveVocabImage(term, override) {

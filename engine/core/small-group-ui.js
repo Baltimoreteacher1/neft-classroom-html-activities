@@ -735,6 +735,23 @@ export function injectSmallGroupStyles(accent) {
     .sg-cloze-sentence{font-size:18px;font-weight:400;line-height:1.75}
     .sg-cloze-blank{display:inline-grid;min-width:120px;min-height:30px;place-items:center;padding:2px 10px;border-bottom:3px solid var(--sg);color:var(--sg-ink);font-weight:900}
     .sg-cloze-blank.ok{color:var(--sg-good);border-color:var(--sg-good)}
+    /* Group 2 bonus: "use it in writing". One card per word — prompt, a real
+       place to write, a check that names what to fix, and a model to compare
+       against. No timer, no lock-out: a finished card is marked, never scored. */
+    .sg-write-intro{margin:10px 0 4px;color:var(--sg-muted);font-weight:700}
+    .sg-write-item{margin-top:14px;padding:15px;border:1px solid var(--sg-line);border-radius:14px;background:var(--sg-card)}
+    .sg-write-item.done{border-color:var(--sg-good);box-shadow:inset 4px 0 0 var(--sg-good)}
+    .sg-write-prompt{display:block;margin-bottom:9px;color:var(--sg-ink);font-size:17px;font-weight:800;line-height:1.5}
+    .sg-write-es{margin:0 0 9px;color:var(--sg-muted);font-size:15px;font-weight:700}
+    .sg-write-es[hidden]{display:none}
+    .sg-write-input{display:block;width:100%;min-height:88px;padding:11px 13px;border:2px solid var(--sg-line);border-radius:12px;background:var(--sg-card);color:var(--sg-ink);font:inherit;font-size:17px;line-height:1.6;resize:vertical}
+    .sg-write-input:focus-visible{border-color:var(--sg);outline:3px solid color-mix(in srgb,var(--sg) 45%,transparent);outline-offset:2px}
+    .sg-write-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:11px}
+    .sg-write-actions .btn{min-height:44px}
+    .sg-write-status{min-height:0;color:var(--sg-ink)}
+    .sg-write-model{margin-top:11px;padding:12px 14px;border-left:5px solid var(--sg-good);border-radius:10px;background:var(--sg-soft);font-size:16px;line-height:1.6}
+    .sg-write-model[hidden]{display:none}
+    .sg-write-modellab{display:block;color:var(--sg-good);font-family:var(--sg-display);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
     /* ── Learning map + progress meter ── */
     .sg-map{margin:0 0 24px;padding:20px 22px;border:1px solid var(--sg-line);border-left:6px solid var(--sg);border-radius:18px;background:var(--sg-card);box-shadow:0 8px 24px rgba(23,32,51,.07)}
     .sg-map-goal{margin:0 0 6px;font-size:18px;font-weight:800;color:var(--sg-ink)}

@@ -154,6 +154,10 @@ export function renderEquationBalanceLab(container, cfg = {}) {
         `</div>`
       : "") +
     `<div class="eqlab-eq" data-el="eq" aria-live="polite"></div>` +
+    // Stage: the scale stays the dominant element, with the number box and the
+    // four "both sides" buttons in a panel BESIDE it. The panel drops back
+    // underneath on narrow screens (see the 720px media query below).
+    `<div class="eqlab-stage">` +
     `<div class="eqlab-scale" data-el="scale"></div>` +
     `<div class="eqlab-controls">` +
     `<label class="eqlab-field"><span>Number</span><input type="number" inputmode="decimal" value="" data-el="val" placeholder="?" aria-label="Value to apply to both sides"/></label>` +
@@ -161,7 +165,7 @@ export function renderEquationBalanceLab(container, cfg = {}) {
     OPS.map(
       (o) => `<button type="button" class="eqlab-op" data-op="${o.op}">${esc(o.label)}</button>`,
     ).join("") +
-    `</div></div>` +
+    `</div></div></div>` +
     `<div class="eqlab-actions">` +
     `<button type="button" class="eqlab-btn" data-el="undo">↩ Undo</button>` +
     `<button type="button" class="eqlab-btn" data-el="reset">Start over</button></div>` +
@@ -366,7 +370,7 @@ function injectStyles() {
   const s = document.createElement("style");
   s.id = "eqlab-styles";
   s.textContent = `
-  .eqlab{max-width:600px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
+  .eqlab{max-width:780px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
   .eqlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.05rem;}
   .eqlab-hint{margin:4px 0 12px;color:${C.muted};font-size:.9rem;line-height:1.45;}
   .eqlab-presets{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;}
@@ -376,12 +380,14 @@ function injectStyles() {
   .eqlab-side{font-size:1.5rem;font-weight:800;color:${C.navy};}
   .eqlab-equals{font-size:1.4rem;font-weight:800;color:${C.muted};}
   .eqlab-scale svg{width:100%;height:auto;display:block;}
-  .eqlab-controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;margin-top:8px;}
+  /* Two columns: scale (dominant, keeps its own aspect) + control panel. */
+  .eqlab-stage{display:grid;grid-template-columns:minmax(0,1fr) 200px;align-items:start;gap:14px;margin-top:8px;}
+  .eqlab-controls{display:flex;flex-direction:column;align-items:stretch;gap:10px;}
   .eqlab-field{display:flex;flex-direction:column;gap:3px;font-size:.7rem;font-weight:800;color:${C.muted};text-transform:uppercase;letter-spacing:.03em;}
-  .eqlab-field input{width:88px;padding:9px 10px;font-size:1.1rem;font-weight:700;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;text-transform:none;font-family:inherit;}
+  .eqlab-field input{width:100%;padding:9px 10px;font-size:1.1rem;font-weight:700;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;text-transform:none;font-family:inherit;}
   .eqlab-field input:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
-  .eqlab-ops{display:flex;flex-wrap:wrap;gap:6px;flex:1;}
-  .eqlab-op{padding:9px 12px;font-size:.85rem;font-weight:800;color:${C.navy};background:${C.chipBg};border:1.5px solid ${C.line};border-radius:10px;cursor:pointer;font-family:inherit;}
+  .eqlab-ops{display:flex;flex-direction:column;gap:6px;}
+  .eqlab-op{padding:9px 12px;text-align:left;font-size:.85rem;font-weight:800;color:${C.navy};background:${C.chipBg};border:1.5px solid ${C.line};border-radius:10px;cursor:pointer;font-family:inherit;}
   .eqlab-op:hover{background:#e2ecff;border-color:${C.accent};}
   .eqlab-op:focus-visible,.eqlab-btn:focus-visible,.eqlab-chip:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .eqlab-actions{display:flex;gap:8px;margin-top:10px;}
@@ -399,6 +405,15 @@ function injectStyles() {
   .eqlab-solved .eqlab-eq{animation:eqlab-pop .5s ease;}
   @keyframes eqlab-pop{0%{transform:scale(1)}40%{transform:scale(1.04)}100%{transform:scale(1)}}
   @media (prefers-reduced-motion:reduce){.eqlab-solved .eqlab-eq{animation:none}}
+  /* Tablet/phone: panel drops back UNDER the visual so neither gets squeezed. */
+  @media (max-width:720px){
+    .eqlab-stage{grid-template-columns:1fr;gap:10px;}
+    .eqlab-controls{flex-direction:row;flex-wrap:wrap;align-items:flex-end;}
+    .eqlab-field{flex:0 0 auto;}
+    .eqlab-field input{width:88px;}
+    .eqlab-ops{flex-direction:row;flex-wrap:wrap;flex:1;}
+    .eqlab-op{text-align:center;}
+  }
   @media (max-width:480px){.eqlab-side{font-size:1.25rem;}}
   `;
   document.head.appendChild(s);

@@ -183,7 +183,302 @@ function definitionLine(label, text, lang, dir = "ltr") {
   return line;
 }
 
-export function createVocabularySection(config, onDone, store = null) {
+// --- Bonus round: "Use it in writing" (Group 2 only) -------------------------
+// Group 1 and catch-up finish vocabulary with the chip cloze — a supported,
+// recognition-level task. Group 2 is the enrichment tier, and following one
+// multiple-choice round (the word match) with a second one (the cloze) asks
+// nothing new of them. These helpers back a PRODUCTIVE round instead: the
+// student writes their own sentence and gets specific, nameable feedback.
+
+// Words too common to count as evidence that a sentence reached for the
+// lesson's context. Kept small on purpose — this list only filters the
+// context-word pool, it never rejects a student's sentence by itself.
+const WRITE_STOPWORDS = new Set([
+  "a",
+  "an",
+  "and",
+  "are",
+  "as",
+  "at",
+  "be",
+  "both",
+  "but",
+  "by",
+  "can",
+  "each",
+  "for",
+  "from",
+  "has",
+  "have",
+  "in",
+  "into",
+  "is",
+  "it",
+  "its",
+  "like",
+  "make",
+  "makes",
+  "of",
+  "on",
+  "one",
+  "or",
+  "same",
+  "that",
+  "the",
+  "their",
+  "them",
+  "then",
+  "there",
+  "these",
+  "they",
+  "this",
+  "to",
+  "two",
+  "use",
+  "used",
+  "uses",
+  "using",
+  "was",
+  "what",
+  "when",
+  "which",
+  "with",
+  "you",
+  "your",
+]);
+
+const normalizeWrite = (text) =>
+  String(text || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+// Loose stem so "inverse operations" satisfies a prompt about "inverse
+// operation" (and "multiplied" satisfies "multiply"). Deliberately generous:
+// a false accept costs nothing, a false reject reads as the app calling a
+// correct sentence wrong.
+const writeStem = (token) => (token.length > 5 ? token.slice(0, token.length - 2) : token);
+
+// Did the sentence actually put the term to work? A multi-word term counts
+// when each of its content words appears (in any order, any inflection), so
+// "I used an inverse operation" satisfies "Inverse operation".
+function usesTerm(sentence, term) {
+  const normalTerm = normalizeWrite(term);
+  if (!normalTerm) return true;
+  if (sentence.includes(normalTerm)) return true;
+  const keyWords = normalTerm.split(" ").filter((token) => !WRITE_STOPWORDS.has(token));
+  if (!keyWords.length) return false;
+  return keyWords.every((token) => sentence.includes(writeStem(token)));
+}
+
+// Content words drawn from the word's own example/definition and the lesson
+// title — the vocabulary of the math this sentence should be about.
+function contextWords(word, config) {
+  const pool = normalizeWrite(
+    `${word.visual || ""} ${word.definition || ""} ${config.title || ""} ${config.objective || ""}`,
+  ).split(" ");
+  const termTokens = new Set(normalizeWrite(word.term).split(" "));
+  return [
+    ...new Set(
+      pool.filter(
+        (token) => token.length >= 4 && !WRITE_STOPWORDS.has(token) && !termTokens.has(token),
+      ),
+    ),
+  ];
+}
+
+// Constructive check. Every failure names the ONE thing to change, and the
+// student can always keep their sentence anyway (see the escape button below),
+// so nothing here can trap anyone.
+function checkWriting(raw, word, context) {
+  const text = String(raw || "").trim();
+  const sentence = normalizeWrite(text);
+  const wordCount = sentence ? sentence.split(" ").length : 0;
+  if (!wordCount) {
+    return { ok: false, message: "Write your sentence in the box, then check it." };
+  }
+  if (wordCount < 6) {
+    return {
+      ok: false,
+      message: `Good start — stretch it into a full sentence (at least 6 words). You have ${wordCount}.`,
+    };
+  }
+  if (!usesTerm(sentence, word.term)) {
+    return {
+      ok: false,
+      message: `Strong sentence — now work the word "${word.term}" into it.`,
+    };
+  }
+  const definition = normalizeWrite(word.definition);
+  if (definition && definition.length > 12 && sentence.includes(definition)) {
+    return {
+      ok: false,
+      message: "That is the definition copied over. Say it in your own words instead.",
+    };
+  }
+  const hasNumber = /\d/.test(text);
+  const hasContext = context.some((token) => sentence.includes(token));
+  if (!hasNumber && !hasContext) {
+    return {
+      ok: false,
+      message:
+        "Almost — tie it to today's math. Add a number, an example, or where you would use it.",
+    };
+  }
+  return {
+    ok: true,
+    message: `That is your own sentence, and "${word.term}" is doing real work in it.`,
+  };
+}
+
+// A sentence to compare against — never a "right answer" to be scored, only a
+// model. Prefers the authored cloze (a real sentence with a real blank).
+function modelSentence(word) {
+  if (word.cloze?.includes("___")) return word.cloze.split("___").join(word.term.toLowerCase());
+  const definition = word.definition || word.visual || "";
+  const example = word.visual && word.definition ? ` For example: ${word.visual}.` : "";
+  return `${word.term} means ${definition}${definition.endsWith(".") ? "" : "."}${example}`;
+}
+
+// The writing prompt: a short real context, so the student has something to
+// write ABOUT rather than a bare "use it in a sentence".
+function writePrompt(word) {
+  if (word.visual) {
+    return `Look at ${word.visual}. Write one sentence that explains what is happening — and use "${word.term}".`;
+  }
+  return `Teach a classmate what "${word.term}" means in today's math. Write one sentence that uses the word.`;
+}
+
+// Builds the Group 2 bonus: one card per word, each with a prompt, a place to
+// write, a check that names what to fix, and a model to compare against. It is
+// optional and ungated — the section is already complete when this renders.
+function createWritingBonus(config, words, store, langRef) {
+  // Lesson vocabulary lists lead with a concept entry whose "term" is the
+  // lesson title ("Solve Multiplication and Division Equations"). That is a
+  // heading, not a word — asking a student to work it into a sentence is
+  // unwritable — so prefer real terms and only fall back if a lesson has none.
+  const usable = words.filter((word) => word.definition || word.visual);
+  const short = usable.filter((word) => word.term.trim().split(/\s+/).length <= 3);
+  const picks = (short.length ? short : usable).slice(0, 4);
+  if (!picks.length) return null;
+  const saved = store?.get("vocabWriting") || {};
+  const wrap = el("div", "sg-cloze sg-write");
+  wrap.appendChild(el("div", "sg-eyebrow", "Bonus · use the word in writing"));
+  wrap.appendChild(
+    el(
+      "p",
+      "sg-write-intro",
+      "No word bank this time — these are your sentences. Write one for each word, check it, then compare it with a model. You can keep your own version either way.",
+    ),
+  );
+  const spanishLines = [];
+
+  picks.forEach((word) => {
+    const context = contextWords(word, config);
+    const item = el("div", "sg-write-item");
+    const fieldId = `sg-write-${normalizeWrite(word.term).split(" ").join("-")}`;
+
+    const label = el("label", "sg-write-prompt", esc(writePrompt(word)));
+    label.setAttribute("for", fieldId);
+    item.appendChild(label);
+
+    // Spanish support: the definition in the student's lane, plus permission to
+    // plan in Spanish. Updated in place on a lane switch so a student mid-
+    // sentence never loses their writing.
+    const spanish = el("p", "sg-write-es");
+    spanish.lang = "es";
+    const refreshSpanish = () => {
+      const lang = langRef();
+      const secondary = lang && word[`definition${lang.suffix}`];
+      spanish.hidden = !secondary;
+      spanish.textContent = secondary
+        ? `${secondary} — puedes planear tu oración en español y luego escribirla en inglés.`
+        : "";
+      if (lang) spanish.lang = lang.id;
+    };
+    refreshSpanish();
+    spanishLines.push(refreshSpanish);
+    item.appendChild(spanish);
+
+    const field = document.createElement("textarea");
+    field.className = "sg-write-input";
+    field.id = fieldId;
+    field.rows = 3;
+    field.placeholder = "Write your sentence here…";
+    field.value = saved[word.term] || "";
+    // Save/resume: the studio store already persists this section's language
+    // lane, so student writing rides the same channel (device-local only).
+    field.oninput = () => {
+      const next = { ...(store?.get("vocabWriting") || {}) };
+      next[word.term] = field.value;
+      store?.set("vocabWriting", next);
+    };
+    item.appendChild(field);
+
+    const status = el("div", "sg-match-status sg-write-status");
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+
+    const model = el("div", "sg-write-model");
+    model.hidden = true;
+    const showModel = () => {
+      if (!model.hidden) return;
+      model.innerHTML = `<span class="sg-write-modellab">A model sentence</span> ${esc(modelSentence(word))}`;
+      model.hidden = false;
+    };
+
+    const actions = el("div", "sg-write-actions");
+    const check = el("button", "btn sg-write-check", "Check my sentence");
+    check.type = "button";
+    const keep = el("button", "btn sg-write-keep", "Keep mine anyway →");
+    keep.type = "button";
+    keep.hidden = true;
+    const peek = el("button", "btn sg-write-peek", "Show me a model sentence");
+    peek.type = "button";
+    // The escape hatch is present from the first render, before any attempt.
+    peek.onclick = () => {
+      showModel();
+      status.textContent = "Compare the model with yours — what did each of you make clear?";
+    };
+    const accept = (message, emoji) => {
+      item.classList.add("done");
+      status.textContent = message;
+      keep.hidden = true;
+      showModel();
+      store?.addTo("vocabWritingDone", word.term);
+      celebrate(emoji);
+    };
+    check.onclick = () => {
+      const result = checkWriting(field.value, word, context);
+      if (result.ok) {
+        accept(`${result.message} Compare it with the model below.`, "✍️");
+        return;
+      }
+      status.textContent = result.message;
+      // Second thoughts are welcome, but never required: after one miss the
+      // student can accept their own sentence and move on.
+      keep.hidden = false;
+    };
+    keep.onclick = () =>
+      accept("Kept — that is your sentence. Here is a model to compare it with.", "📝");
+    actions.append(check, keep, peek);
+    item.append(actions, status, model);
+
+    if (store?.has("vocabWritingDone", word.term) && field.value.trim()) {
+      item.classList.add("done");
+      showModel();
+      status.textContent = "Saved from earlier — compare yours with the model.";
+    }
+    wrap.appendChild(item);
+  });
+
+  wrap.dataset.sgWriteLangHook = "1";
+  wrap.__refreshLang = () => spanishLines.forEach((fn) => fn());
+  return wrap;
+}
+
+export function createVocabularySection(config, variant, onDone, store = null) {
   // Catch-ups span several lessons, so they keep more of their word list.
   const words = (config.vocabulary || []).slice(0, 8);
   if (!words.length) return null;
@@ -195,7 +490,9 @@ export function createVocabularySection(config, onDone, store = null) {
     el(
       "p",
       null,
-      "Read each word and its meaning. Use the speaker to hear the word, then finish the quick match.",
+      variant === "group2"
+        ? "Read each word and its meaning. Use the speaker to hear the word, finish the quick match, then write the words into sentences of your own."
+        : "Read each word and its meaning. Use the speaker to hear the word, then finish the quick match.",
     ),
   );
 
@@ -208,6 +505,9 @@ export function createVocabularySection(config, onDone, store = null) {
     available.find((lang) => lang.id === "es") ||
     available[0] ||
     null;
+  // Group 2's writing bonus, if this lesson gets one — declared here so the
+  // language picker below can refresh its Spanish support line.
+  let bonus = null;
   const grid = el("div", "sg-vgrid sg-scene-stagger");
 
   if (available.length) {
@@ -239,6 +539,9 @@ export function createVocabularySection(config, onDone, store = null) {
         button.setAttribute("aria-pressed", String(id === nextLane)),
       );
       renderCards();
+      // Writing bonus refreshes its Spanish support IN PLACE — re-rendering it
+      // would throw away a sentence the student is part-way through.
+      bonus?.__refreshLang?.();
       // Reload only when the Spanish lane actually flips, so problem stems,
       // steps, and hints re-render in the chosen language.
       if (laneChanged && (nextLane === "es" || bootLane === "es")) {
@@ -384,6 +687,15 @@ export function createVocabularySection(config, onDone, store = null) {
   match.append(prompt, options, status);
   section.appendChild(match);
   renderRound();
+
+  // Bonus round. Group 2 (enrichment) PRODUCES language — the word match just
+  // above was already a choose-the-right-answer task, and a chip cloze after it
+  // asks for nothing new. Group 1 and catch-up keep the supported chip cloze.
+  if (variant === "group2") {
+    bonus = createWritingBonus(config, words, store, () => currentLang);
+    if (bonus) section.appendChild(bonus);
+    return section;
+  }
 
   // Bonus cloze round — put each word to work inside its authored sentence.
   const clozeWords = words.filter((word) => word.cloze?.includes("___"));

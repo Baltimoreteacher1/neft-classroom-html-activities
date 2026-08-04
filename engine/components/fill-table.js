@@ -40,6 +40,10 @@ function injectFillTableStyles() {
       background-size: 100% 2px;
     }
 
+    /* Dropdown cells (authored via editableCells[].options) */
+    .ft-root .ft-select { cursor: pointer; background-color: var(--surface, #fff); }
+    .ft-root .ft-select:disabled { cursor: default; opacity: 1; }
+
     /* Parallax row lift on hover: row shifts up, shadow grows */
     .ft-root .ft-table tbody tr {
       position: relative;
@@ -149,11 +153,34 @@ export function renderFillTable(container, config) {
       const editable = editableCells.find((e) => e.row === ri && e.col === ci);
 
       if (editable) {
-        const input = document.createElement("input");
-        input.type = "text";
-        input.className = "text-input ft-input";
-        input.style.cssText = "padding:6px 8px; font-size:0.9rem; width:100%; min-width:60px;";
-        input.placeholder = "?";
+        // A cell that authors a fixed `options` list becomes a dropdown, not a
+        // free-text box. Some columns ("Better Buy?") are a CHOICE, and a blank
+        // text box there tells a student nothing about what to type.
+        const choices = Array.isArray(editable.options)
+          ? editable.options.filter((o) => o != null).map(String)
+          : null;
+        let input;
+        if (choices && choices.length) {
+          input = document.createElement("select");
+          input.className = "text-input ft-input ft-select";
+          input.style.cssText = "padding:6px 8px; font-size:0.9rem; width:100%; min-width:60px;";
+          const placeholder = document.createElement("option");
+          placeholder.value = "";
+          placeholder.textContent = editable.placeholder || "Choose…";
+          input.append(placeholder);
+          choices.forEach((choice) => {
+            const opt = document.createElement("option");
+            opt.value = choice;
+            opt.textContent = choice;
+            input.append(opt);
+          });
+        } else {
+          input = document.createElement("input");
+          input.type = "text";
+          input.className = "text-input ft-input";
+          input.style.cssText = "padding:6px 8px; font-size:0.9rem; width:100%; min-width:60px;";
+          input.placeholder = "?";
+        }
         input.setAttribute("aria-label", `${headers[ci]} for row ${ri + 1}`);
         input.dataset.key = cellKey;
         answerByKey.set(cellKey, String(editable.answer));
@@ -197,7 +224,10 @@ export function renderFillTable(container, config) {
 
       if (isMatch) {
         correct++;
-        input.readOnly = true;
+        // `readOnly` is a no-op on <select>; lock those with `disabled` so a
+        // confirmed-correct dropdown cannot be changed back to a wrong choice.
+        if (input.tagName === "SELECT") input.disabled = true;
+        else input.readOnly = true;
         // Confirmation pop (1 -> 1.05 -> 1); CSS gates it under reduced motion.
         // Retrigger reliably by clearing then re-adding the animation class.
         input.classList.remove("ft-cell-correct");
