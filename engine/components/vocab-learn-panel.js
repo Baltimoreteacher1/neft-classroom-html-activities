@@ -1,9 +1,9 @@
 import { getPreferredLang } from "../core/i18n.js";
-import { renderMathText } from "../core/math-typography.js";
-import { renderVocabIntro } from "./vocab-intro.js";
-import { resolveObjectiveVisuals } from "../core/objective-visuals.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "../core/interactive-visual.js";
 import { underlineVocabTerms } from "../core/lesson-renderer.js";
+import { renderMathText } from "../core/math-typography.js";
+import { resolveObjectiveVisuals } from "../core/objective-visuals.js";
+import { renderVocabIntro } from "./vocab-intro.js";
 
 function escHtml(s) {
   return String(s || "")
@@ -650,8 +650,76 @@ function resolveLessonMisconception(config) {
   };
 }
 
+/**
+ * Build a Try It challenge from the lesson's OWN practice items — the only way
+ * the checkpoint is guaranteed to be about THIS lesson's concept. Picks the
+ * first multiple-choice item with a stem and a valid answer, keeps the correct
+ * choice plus the first two distractors (preferring authored choiceFeedback so
+ * the wrong-answer coaching names the actual error), and preserves the
+ * original choice order. Returns null when the lesson has no usable item.
+ */
+function tryItFromPractice(cfg) {
+  const seen = new Set();
+  const findItem = (node, depth) => {
+    if (!node || typeof node !== "object" || depth > 4 || seen.has(node)) return null;
+    seen.add(node);
+    if (
+      typeof node.stem === "string" &&
+      node.stem.trim() &&
+      Array.isArray(node.choices) &&
+      node.choices.length >= 3 &&
+      Number.isInteger(node.correctIndex) &&
+      node.choices[node.correctIndex] != null
+    ) {
+      return node;
+    }
+    for (const value of Object.values(node)) {
+      const hit = findItem(value, depth + 1);
+      if (hit) return hit;
+    }
+    return null;
+  };
+  const item = findItem(cfg.practice, 0) || findItem(cfg.explore, 0);
+  if (!item) return null;
+
+  const feedback = Array.isArray(item.choiceFeedback) ? item.choiceFeedback : [];
+  const correctExplain =
+    (typeof item.explanation === "string" && item.explanation.trim()) ||
+    "Correct! That matches the worked example above.";
+  const options = [];
+  item.choices.forEach((choice, idx) => {
+    if (choice == null || String(choice).trim() === "") return;
+    if (idx === item.correctIndex) {
+      options.push({ text: String(choice), correct: true, explain: correctExplain, idx });
+    } else {
+      options.push({
+        text: String(choice),
+        correct: false,
+        explain:
+          (typeof feedback[idx] === "string" && feedback[idx].trim()) ||
+          "Not quite — walk back through the worked example above and try again.",
+        idx,
+      });
+    }
+  });
+  const correct = options.find((o) => o.correct);
+  if (!correct) return null;
+  // Cap at 3 (A/B/C), always including the correct choice, original order.
+  const wrong = options.filter((o) => !o.correct).slice(0, 2);
+  const capped = [correct, ...wrong].sort((a, b) => a.idx - b.idx);
+  return {
+    question: item.stem,
+    questionEs: typeof item.stemEs === "string" && item.stemEs.trim() ? item.stemEs : item.stem,
+    options: capped.map(({ text, correct: ok, explain }) => ({ text, correct: ok, explain })),
+  };
+}
+
 function resolveTryItChallenge(config) {
   const cfg = config || {};
+  // Lesson-specific first: a question from this lesson's own practice set
+  // beats any keyword-matched bank.
+  const fromPractice = tryItFromPractice(cfg);
+  if (fromPractice) return fromPractice;
   const text = `${cfg.title || ""} ${cfg.standard || ""}`.toLowerCase();
 
   if (text.includes("ratio") || text.includes("2-1")) {
@@ -726,28 +794,10 @@ function resolveTryItChallenge(config) {
       ],
     };
   }
-  return {
-    question: "Which statement best describes how to check if your math reasoning is correct?",
-    questionEs:
-      "¿Qué afirmación describe mejor cómo comprobar si tu razonamiento matemático es correcto?",
-    options: [
-      {
-        text: "Explain each step and prove why the visual model matches your math",
-        correct: true,
-        explain: "Exactly! Explaining each step and connecting to a visual model proves accuracy!",
-      },
-      {
-        text: "Only write down the final number without showing steps",
-        correct: false,
-        explain: "Showing steps and explaining reasoning is essential for deep math learning.",
-      },
-      {
-        text: "Guess the answer without checking the math model",
-        correct: false,
-        explain: "Always verify your answer using the visual representation.",
-      },
-    ],
-  };
+  // No lesson-specific item and no matching bank: render NO checkpoint. A
+  // generic "how do you check your reasoning?" question taught nothing about
+  // the lesson at hand and read as filler.
+  return null;
 }
 
 let injectedStyles = false;
@@ -1604,9 +1654,12 @@ export function renderLearnItPanel(container, config, options = {}) {
   }
 
   // ─── MINI PRACTICE CHECKPOINT (TRY IT!) ─────────────────────────────────────
-  const tryItCard = document.createElement("div");
-  tryItCard.className = "vl-tryit-card";
-  tryItCard.innerHTML = `
+  // Only rendered when a lesson-specific (or concept-matched) question exists;
+  // resolveTryItChallenge returns null rather than serving generic filler.
+  if (tryIt) {
+    const tryItCard = document.createElement("div");
+    tryItCard.className = "vl-tryit-card";
+    tryItCard.innerHTML = `
     <div class="vl-tryit-head">
       <div class="vl-tryit-title">
         <span>✏️ ${isEs ? "¡Pruébalo! Verificación Rápida de Práctica" : "Try It! Quick Concept Practice"}</span>
@@ -1629,42 +1682,43 @@ export function renderLearnItPanel(container, config, options = {}) {
     <div class="vl-tryit-feedback" style="margin-top:16px; padding:14px; border-radius:14px; font-weight:800; font-size:1rem; display:none;"></div>
   `;
 
-  const tryOpts = /** @type {NodeListOf<HTMLButtonElement>} */ (
-    tryItCard.querySelectorAll(".vl-tryit-opt")
-  );
-  const tryFb = /** @type {HTMLElement} */ (tryItCard.querySelector(".vl-tryit-feedback"));
+    const tryOpts = /** @type {NodeListOf<HTMLButtonElement>} */ (
+      tryItCard.querySelectorAll(".vl-tryit-opt")
+    );
+    const tryFb = /** @type {HTMLElement} */ (tryItCard.querySelector(".vl-tryit-feedback"));
 
-  tryOpts.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const isCorrect = btn.dataset.correct === "true";
-      const explain = btn.dataset.explain;
+    tryOpts.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const isCorrect = btn.dataset.correct === "true";
+        const explain = btn.dataset.explain;
 
-      tryOpts.forEach((b) => {
-        b.style.background = "#ffffff";
-        b.style.borderColor = "#bae6fd";
+        tryOpts.forEach((b) => {
+          b.style.background = "#ffffff";
+          b.style.borderColor = "#bae6fd";
+        });
+
+        if (isCorrect) {
+          btn.style.background = "#dcfce7";
+          btn.style.borderColor = "#16a34a";
+          tryFb.style.background = "#f0fdf4";
+          tryFb.style.color = "#14532d";
+          tryFb.style.border = "2px solid #22c55e";
+          tryFb.textContent = `🎉 ${explain}`;
+        } else {
+          btn.style.background = "#fef2f2";
+          btn.style.borderColor = "#ef4444";
+          tryFb.style.background = "#fff1f2";
+          tryFb.style.color = "#9f1239";
+          tryFb.style.border = "2px solid #f43f5e";
+          tryFb.textContent = `💡 ${explain}`;
+        }
+        tryFb.style.display = "block";
+        speakText(explain, isEs ? "es-US" : "en-US");
       });
-
-      if (isCorrect) {
-        btn.style.background = "#dcfce7";
-        btn.style.borderColor = "#16a34a";
-        tryFb.style.background = "#f0fdf4";
-        tryFb.style.color = "#14532d";
-        tryFb.style.border = "2px solid #22c55e";
-        tryFb.textContent = `🎉 ${explain}`;
-      } else {
-        btn.style.background = "#fef2f2";
-        btn.style.borderColor = "#ef4444";
-        tryFb.style.background = "#fff1f2";
-        tryFb.style.color = "#9f1239";
-        tryFb.style.border = "2px solid #f43f5e";
-        tryFb.textContent = `💡 ${explain}`;
-      }
-      tryFb.style.display = "block";
-      speakText(explain, isEs ? "es-US" : "en-US");
     });
-  });
 
-  mainCard.append(tryItCard);
+    mainCard.append(tryItCard);
+  }
 
   // ─── BUILT-IN TURN AND TALK SECTION ─────────────────────────────────────────
   const turnAndTalkData = (Array.isArray(config.turnAndTalk) && config.turnAndTalk[0]) || {};
