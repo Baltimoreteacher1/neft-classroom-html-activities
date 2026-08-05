@@ -12,7 +12,7 @@
  * Exit 0 = fresh, 1 = stale (lists the files), 2 = could not run.
  */
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, rmSync, cpSync, readFileSync, existsSync } from "node:fs";
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -20,7 +20,9 @@ const ROOT = process.cwd();
 const GENERATOR = join(ROOT, "scripts", "generate-printable-lesson.mjs");
 
 if (!existsSync(GENERATOR)) {
-  console.error("validate-printables: generator not found at scripts/generate-printable-lesson.mjs");
+  console.error(
+    "validate-printables: generator not found at scripts/generate-printable-lesson.mjs",
+  );
   process.exit(2);
 }
 
@@ -69,9 +71,13 @@ try {
 }
 
 if (stale.length) {
-  console.error(`validate-printables: ${stale.length} stale printable(s) — source changed without regenerating:`);
+  console.error(
+    `validate-printables: ${stale.length} stale printable(s) — source changed without regenerating:`,
+  );
   for (const f of stale) console.error(`  ${f}`);
-  console.error("\nFix: npm run generate-printable-lessons  (or npm run build), then commit the result.");
+  console.error(
+    "\nFix: npm run generate-printable-lessons  (or npm run build), then commit the result.",
+  );
   process.exit(1);
 }
 

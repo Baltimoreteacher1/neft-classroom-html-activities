@@ -207,7 +207,7 @@ function writeRow(parent, { key, frameEn, frameEs, rows = 2, getResponse, saveRe
   // Margin now lives on the counter badge below (kept consistent via --sp-3).
   if (getResponse) {
     const val = getResponse(key);
-    ta.value = val ? val : (getResponse("connect") || "");
+    ta.value = val ? val : getResponse("connect") || "";
   }
 
   // Additive character-count badge under each box (cosmetic; aria-hidden).

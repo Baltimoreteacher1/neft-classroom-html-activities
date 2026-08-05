@@ -167,12 +167,19 @@ function twoNotes() {
   return wrap(
     W,
     H,
-    head(
-      "Detective Chen's two case notes",
-      "One note fixes an amount. The other sets a limit.",
-    ) +
-      note(60, "NOTE A", ["The evidence locker holds", "EXACTLY 54 files, split", "equally among 6 shelves."], TEAL) +
-      note(60 + bw + 40, "NOTE B", ["The surveillance van must", "stay parked NO MORE THAN", "45 minutes."], CORAL),
+    head("Detective Chen's two case notes", "One note fixes an amount. The other sets a limit.") +
+      note(
+        60,
+        "NOTE A",
+        ["The evidence locker holds", "EXACTLY 54 files, split", "equally among 6 shelves."],
+        TEAL,
+      ) +
+      note(
+        60 + bw + 40,
+        "NOTE B",
+        ["The surveillance van must", "stay parked NO MORE THAN", "45 minutes."],
+        CORAL,
+      ),
   );
 }
 

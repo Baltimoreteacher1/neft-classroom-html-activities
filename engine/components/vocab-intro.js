@@ -1,6 +1,6 @@
+import { speakText } from "../core/speech-voice.js";
 import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
 import { openExplorer } from "./vocab-explore.js";
-import { speakText } from "../core/speech-voice.js";
 
 function _esc(s) {
   const d = document.createElement("div");

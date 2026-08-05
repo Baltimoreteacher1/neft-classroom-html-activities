@@ -80,7 +80,10 @@ function twoDotPlots() {
   return wrap(
     W,
     H,
-    head("Two dot plots from the team's data analyst", "Same kind of picture, two very different shapes.") +
+    head(
+      "Two dot plots from the team's data analyst",
+      "Same kind of picture, two very different shapes.",
+    ) +
       ages +
       shoes,
   );
@@ -116,13 +119,18 @@ function foldedMap() {
     `<path d="M ${x - 9} ${y + 9} L ${x} ${y - 12} L ${x + 9} ${y + 9} Z" fill="${fill}" stroke="${NAVY}" stroke-width="1.8"/>` +
     `<text x="${x + 16}" y="${y + 5}" font-size="14" font-weight="800" fill="${NAVY}">${label}</text>`;
 
-  const towers = tower(px(5), py(2), "rgba(42,157,143,0.6)", "(5, 2)") + tower(px(5), py(-2), "rgba(233,196,106,0.7)", "(5, −2)");
+  const towers =
+    tower(px(5), py(2), "rgba(42,157,143,0.6)", "(5, 2)") +
+    tower(px(5), py(-2), "rgba(233,196,106,0.7)", "(5, −2)");
   const link = `<line x1="${px(5)}" y1="${py(2)}" x2="${px(5)}" y2="${py(-2)}" stroke="${MUTED}" stroke-width="1.6" stroke-dasharray="4 4"/>`;
 
   return wrap(
     W,
     H,
-    head("Captain Vega's map, folded along the x-axis", "The lookout tower and the tower it lands on.") +
+    head(
+      "Captain Vega's map, folded along the x-axis",
+      "The lookout tower and the tower it lands on.",
+    ) +
       grid +
       axes +
       fold +
@@ -151,8 +159,26 @@ function twoCapsules() {
 
   // Drawn to scale against each other: A is 4x3x8, B is 6x6x6.
   const k = 17;
-  const a = box(120, 140, 4 * k, 8 * k, 3 * k, "Capsule A", "4 in x 3 in x 8 in", "rgba(42,157,143,0.55)");
-  const b = box(430, 174, 6 * k, 6 * k, 6 * k, "Capsule B", "6 in x 6 in x 6 in", "rgba(233,196,106,0.75)");
+  const a = box(
+    120,
+    140,
+    4 * k,
+    8 * k,
+    3 * k,
+    "Capsule A",
+    "4 in x 3 in x 8 in",
+    "rgba(42,157,143,0.55)",
+  );
+  const b = box(
+    430,
+    174,
+    6 * k,
+    6 * k,
+    6 * k,
+    "Capsule B",
+    "6 in x 6 in x 6 in",
+    "rgba(233,196,106,0.75)",
+  );
 
   const aside = `<text x="${W / 2}" y="${H - 18}" font-size="16" font-weight="700" fill="${INK}" text-anchor="middle">A classmate says Capsule A must hold more, because it looks taller.</text>`;
 

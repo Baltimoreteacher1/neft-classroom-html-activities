@@ -16,7 +16,9 @@ try {
   await page.evaluate(() => localStorage.removeItem("neft.mathWorkbench.reasoning.v1"));
   await page.reload({ waitUntil: "domcontentloaded" });
   await page.locator("#reasoningStudioBtn").click();
-  await page.locator('[data-field="prompt"]').fill("For every 2 cups of juice, use 3 cups of water. Explain the relationship.");
+  await page
+    .locator('[data-field="prompt"]')
+    .fill("For every 2 cups of juice, use 3 cups of water. Explain the relationship.");
   await page.locator('[data-action="next"]').click();
   await page.locator('[data-action="rep"][data-value="ratio table"]').click();
   await page.locator('[data-action="rep"][data-value="words"]').click();
@@ -30,12 +32,16 @@ try {
   await page.locator('[data-action="next"]').click();
   await page
     .locator('[data-field="firstDraft"]')
-    .fill("The ratio table and words match because for every 2 cups of juice there are 3 cups of water.");
+    .fill(
+      "The ratio table and words match because for every 2 cups of juice there are 3 cups of water.",
+    );
   await page.locator('[data-action="analyze"]').click();
   await page.locator('[data-action="next"]').click();
   await page
     .locator('[data-field="revised"]')
-    .fill("The ratio table and words match because scaling both cup quantities by the same factor keeps 2 for every 3 equivalent.");
+    .fill(
+      "The ratio table and words match because scaling both cup quantities by the same factor keeps 2 for every 3 equivalent.",
+    );
   await page.locator('[data-field="afterConfidence"]').selectOption("4");
   await page.locator('[data-action="finish"]').click();
   await page.getByRole("heading", { name: "5. Evidence of growth" }).waitFor();

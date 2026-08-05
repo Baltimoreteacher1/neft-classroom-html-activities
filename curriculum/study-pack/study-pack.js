@@ -553,7 +553,12 @@
       if (canAsk) tabs.push({ id: "ask", label: "💬 Ask", render: renderAsk });
 
       var tablist = el("div", { class: "stp-tablist", role: "tablist" });
-      var panel = el("div", { class: "stp-panel", id: "stp-panel", role: "tabpanel", tabindex: "-1" });
+      var panel = el("div", {
+        class: "stp-panel",
+        id: "stp-panel",
+        role: "tabpanel",
+        tabindex: "-1",
+      });
       var btns = [];
       tabs.forEach(function (t, i) {
         var b = el("button", {
