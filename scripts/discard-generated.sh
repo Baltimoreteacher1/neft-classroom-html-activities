@@ -17,6 +17,23 @@ cd "$(git rev-parse --show-toplevel)"
 #   tools/generate-small-group-lessons.mjs  -> lessons/*-group{1,2}/{config.json,lesson.js}, tools/small-group-rows.json,
 #                                              functions/teacher-small-group/_facilitation-data.js
 #   vocab-hub build-bank.mjs                -> vocab-hub/vocab-bank.json
+#   scripts/generate-notes.mjs              -> lessons/*/{notes,notes-teacher,learn,vocab}.html
+#   scripts/generate-homework-html.mjs      -> lessons/*/homework.html
+#   scripts/generate-printable-lesson.mjs   -> lessons/*/printable.html
+#   scripts/generate-family-pages.mjs       -> families/index.html, families/lessons/*/index.html,
+#                                              src/data/family-lessons.json
+#   scripts/generate-activity-teacher-docs.mjs -> teacher-tools/activity-guides/*
+#
+# Every entry below was verified against the generator's own write call, not
+# guessed from a directory name — `lessons/` and `tools/` hold hand-written work
+# in the same folders as generated output, which is the whole reason this script
+# exists instead of a `git checkout -- lessons/`.
+#
+# NOTE the deliberate omissions: `lessons/*/config.json` and `lessons/*/lesson.js`
+# are HAND-WRITTEN for ordinary lessons (only the -catchup/-group variants are
+# generated), and `data/*.json` manifests are regenerated but are also the
+# curriculum source of truth — reverting one silently un-does a real curriculum
+# edit. Neither belongs on this list.
 GENERATED_GLOBS=(
   "lessons/*-catchup/config.json"
   "lessons/*-catchup/lesson.js"
@@ -24,6 +41,16 @@ GENERATED_GLOBS=(
   "lessons/*-group1/lesson.js"
   "lessons/*-group2/config.json"
   "lessons/*-group2/lesson.js"
+  "lessons/*/notes.html"
+  "lessons/*/notes-teacher.html"
+  "lessons/*/learn.html"
+  "lessons/*/vocab.html"
+  "lessons/*/homework.html"
+  "lessons/*/printable.html"
+  "families/index.html"
+  "families/lessons/*/index.html"
+  "src/data/family-lessons.json"
+  "teacher-tools/activity-guides"
   "tools/catchup-rows.json"
   "tools/small-group-rows.json"
   "functions/teacher-small-group/_facilitation-data.js"
