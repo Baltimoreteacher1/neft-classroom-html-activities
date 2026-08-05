@@ -162,12 +162,29 @@
     }
   }
 
+  function unitForCard(card) {
+    // The hub renders cards in several layouts (grid, single-card detail
+    // mode), so index pairing is unreliable — read the card's own "Unit N"
+    // label and match it against unitsData.
+    var numEl = card.querySelector(".unit-card-num");
+    var text = numEl ? numEl.textContent : "";
+    var m = /Unit\s+(\d+)/i.exec(text || "");
+    if (!m) return null;
+    var wanted = m[1];
+    var units = hubApi.unitsData || [];
+    for (var i = 0; i < units.length; i++) {
+      var um = /Unit\s+(\d+)/i.exec(units[i].num || "");
+      if (um && um[1] === wanted) return units[i];
+    }
+    return null;
+  }
+
   function decorateAll() {
     if (!hubApi || !hubApi.hubEl || !graph || !lessonStandard) return;
     var cards = hubApi.hubEl.querySelectorAll(".unit-card");
-    var units = hubApi.unitsData || [];
-    cards.forEach(function (card, i) {
-      if (units[i]) decorateCard(card, units[i]);
+    cards.forEach(function (card) {
+      var unit = unitForCard(card);
+      if (unit) decorateCard(card, unit);
     });
   }
 
