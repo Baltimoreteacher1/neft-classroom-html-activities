@@ -187,7 +187,7 @@ function seededOrder(length, seed) {
 }
 
 function multipleChoiceCard(item, index, onSolved, events = {}) {
-  const card = questionCard(index, itemStem(item), item.stemEs);
+  const card = questionCard(index, itemStem(item), item.stemEs, item);
   const status = feedback();
   const choices = el("div", "choices");
   let complete = false;
@@ -255,6 +255,7 @@ function errorAnalysisCard(item, index, onSolved, events = {}) {
     index,
     item.title || item.stem || "Find the reasoning break.",
     item.stemEs || item.titleEs,
+    item,
   );
   const work = el("div", "we-steps");
   const list = el("ol", "steps");
@@ -558,7 +559,7 @@ function appendStepGuide(card, item, scaffold) {
 }
 
 function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
-  const card = questionCard(index, itemStem(item), item.stemEs);
+  const card = questionCard(index, itemStem(item), item.stemEs, item);
   const status = feedback();
   const answer = answerOf(item);
   // Wired after the guide/hints exist (they render below the control); after

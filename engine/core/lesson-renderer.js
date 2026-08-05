@@ -549,6 +549,16 @@ function buildVisual(v) {
           "Interactive ratio-table builder. Turn on JavaScript to build a table of equivalent ratios.",
       });
     }
+    case "long-division-builder":
+      // In the REGISTRY since the Lab shipped, but absent from this bridge —
+      // so every main-path practice item with a division diagram rendered
+      // nothing (the exact "registered but unrenderable" gap the static
+      // lesson-visuals probe exists to catch; it only sweeps authored kinds).
+      return interactiveVisualHost(v, {
+        ariaLabel: figureAria(v, "Long Division Lab — type each digit of the algorithm"),
+        fallback:
+          "Interactive long-division workspace. Turn on JavaScript to work the algorithm step by step.",
+      });
     default:
       return "";
   }
