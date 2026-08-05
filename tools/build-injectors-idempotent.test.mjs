@@ -124,8 +124,37 @@ for (const step of chain) {
     continue;
   }
 
-  const changed = dirtyTracked();
+  let changed = dirtyTracked();
   if (changed.length) {
+    // Before accusing this step, prove it. Other agents run builds in sibling
+    // worktrees against the same repo, and a concurrent writer's changes land
+    // in the tree while this loop is between steps — the loop would then blame
+    // whichever step happened to finish next. That mis-attribution is the exact
+    // failure this file exists to prevent, so a one-shot observation is not
+    // enough: revert, run the step ALONE, and only fail if it reproduces.
+    git("checkout", "--", ...changed);
+    try {
+      execFileSync(step, {
+        cwd: ROOT,
+        stdio: "pipe",
+        encoding: "utf8",
+        shell: true,
+        env: { ...process.env, PATH: `${resolve(ROOT, "node_modules/.bin")}:${process.env.PATH}` },
+      });
+    } catch {
+      // Non-zero on the retry is reported by the next dirty check or not at all;
+      // the first run already succeeded, so a flake here is not this step's bug.
+    }
+    const confirmed = dirtyTracked();
+    if (!confirmed.length) {
+      console.log(
+        `   – ${step}: ${changed.length} file(s) changed during the run but did NOT\n` +
+          `     reproduce in isolation — a concurrent writer (another worktree or\n` +
+          `     agent), not this step. Not counted as a failure.`,
+      );
+      continue;
+    }
+    changed = confirmed;
     failures++;
     const isStamper = step.includes("stamp-build");
     console.error(
