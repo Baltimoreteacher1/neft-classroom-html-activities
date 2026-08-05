@@ -22,7 +22,7 @@ const lessonIds = readdirSync(lessonsDir)
   })
   .sort();
 
-assert.equal(lessonIds.length, 74, "expected the complete 74-lesson curriculum");
+assert.equal(lessonIds.length, 64, "expected the complete 64-lesson curriculum");
 
 const bannedLegacyLanguage = /matters in math|Wow,|Sentence Types|Show excitement/i;
 

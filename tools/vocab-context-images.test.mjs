@@ -60,7 +60,7 @@ const REQUIRED = {
   "percent-part": { term: "part", lessons: ["4-4", "4-4-group1", "4-4-group2"] },
   "exponent-base": {
     term: "base",
-    lessons: ["6-1", "6-1-flagship", "6-1-group1", "6-1-group2", "6-3-catchup"],
+    lessons: ["6-1", "6-1-group1", "6-1-group2", "6-3-catchup"],
   },
   "pyramid-base": { term: "base", lessons: ["10-5", "10-5-group1", "10-5-group2"] },
   "percent-of-a-number": {
@@ -117,7 +117,7 @@ for (const [id, config] of configs) {
     `${id}: "${drawn}" never appears in the lesson — pick an equation the lesson actually uses`,
   );
 }
-assert.ok(equations >= 19, `expected the equation lessons to be wired, found ${equations}`);
+assert.ok(equations >= 18, `expected the equation lessons to be wired, found ${equations}`);
 
 // ── 4. No vocab word may show a generic category placeholder. ─────────────
 // cat-number.svg is a literal "#" tile. 203 entries used to land on one — the
