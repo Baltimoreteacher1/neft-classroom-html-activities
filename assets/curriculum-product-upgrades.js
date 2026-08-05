@@ -4,6 +4,19 @@
 
   var MANIFEST_URL = "/data/curriculum-manifest.json";
   var LAUNCH_URL = "/data/curriculum-launch-manifest.json";
+
+  // Routed through /assets/curriculum-json-cache.js so the hub fetches each
+  // data file once instead of once per feature script. The original chain here
+  // called response.json() without checking response.ok, so a 404 rejected on
+  // the HTML body; that rejection shape is preserved by letting json() throw.
+  function loadJson(url) {
+    var cache = window.NTJsonCache;
+    if (cache) return cache.json(url);
+    return fetch(url).then(function (response) {
+      return response.json();
+    });
+  }
+
   var openedAt = Date.now();
   var manifest = null;
   var launchData = null;
@@ -446,14 +459,7 @@
         openPalette();
       }
     });
-    Promise.all([
-      fetch(MANIFEST_URL).then(function (response) {
-        return response.json();
-      }),
-      fetch(LAUNCH_URL).then(function (response) {
-        return response.json();
-      }),
-    ])
+    Promise.all([loadJson(MANIFEST_URL), loadJson(LAUNCH_URL)])
       .then(function (data) {
         manifest = data[0];
         launchData = data[1];

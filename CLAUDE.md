@@ -155,8 +155,13 @@ the strongest one(s) relevant to what you changed:
 > `tools/redirects-shadowing.test.mjs` (no `_redirects` rule may be unreachable),
 > `tools/build-injectors-idempotent.test.mjs` (`npm run build` must not modify
 > committed source), `tools/a11y-coverage.test.mjs` (the a11y sample must cover
-> every page template), and `functions/api-contract.test.mjs` (a new `/api`
-> endpoint must use the shared handler in `functions/_lib/http.js`). It is wired into `npm run validate`, so every `ship` gates on it.
+> every page template), `functions/api-contract.test.mjs` (a new `/api`
+> endpoint must use the shared handler in `functions/_lib/http.js`), and
+> `tools/curriculum-json-cache.test.mjs` (every hub feature script that reads a
+> shared `/data` manifest must go through `window.NTJsonCache`, and the hub must
+> load it first — seven scripts each fetching the same two manifests is what put
+> `/curriculum/` over its 60-request perf budget, and no per-file check can see
+> it because each of those files is individually correct). It is wired into `npm run validate`, so every `ship` gates on it.
 > There is also `npm run check` (Biome), `npm run e2e` (Playwright), and
 > `npm run qa` (check + test + e2e).
 >

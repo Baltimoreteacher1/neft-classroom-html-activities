@@ -222,11 +222,23 @@
     controls.parentNode.insertBefore(bar, controls.nextSibling);
   }
 
+  // Routed through /assets/curriculum-json-cache.js so the hub fetches each
+  // data file once instead of once per feature script. A missing manifest still
+  // resolves to null, which the next step treats as "render no badges".
+  function loadManifest() {
+    var cache = window.NTJsonCache;
+    if (cache) {
+      return cache.json(MANIFEST_URL).catch(function () {
+        return null;
+      });
+    }
+    return fetch(MANIFEST_URL).then(function (r) {
+      return r.ok ? r.json() : null;
+    });
+  }
+
   function run() {
-    fetch(MANIFEST_URL)
-      .then(function (r) {
-        return r.ok ? r.json() : null;
-      })
+    loadManifest()
       .then(function (manifest) {
         if (!manifest || !Array.isArray(manifest.lessons)) return;
         injectStyles();

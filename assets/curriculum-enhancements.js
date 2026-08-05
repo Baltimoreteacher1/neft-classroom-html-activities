@@ -82,14 +82,19 @@
     }
   }
 
+  // Routed through /assets/curriculum-json-cache.js so the hub fetches each
+  // data file once instead of once per feature script. This file also loads on
+  // 64 homework pages, which do not carry the cache — hence the plain fallback.
   function loadJson(url) {
-    return fetch(url)
-      .then(function (r) {
-        return r.ok ? r.json() : {};
-      })
-      .catch(function () {
-        return {};
-      });
+    var cache = window.NTJsonCache;
+    var request = cache
+      ? cache.json(url)
+      : fetch(url).then(function (r) {
+          return r.ok ? r.json() : {};
+        });
+    return request.catch(function () {
+      return {};
+    });
   }
 
   function loadProgress() {

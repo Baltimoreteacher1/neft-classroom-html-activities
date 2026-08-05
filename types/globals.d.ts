@@ -60,6 +60,19 @@ interface Window {
   NTEdgeTwins: any;
   NTFocus: any;
   NTFuture: any;
+  /**
+   * `assets/curriculum-json-cache.js` publishes this so the hub's feature
+   * scripts fetch each shared `/data` manifest once instead of once apiece.
+   * Optional and looked up defensively (`var cache = window.NTJsonCache`)
+   * because the same scripts also load on pages that do not carry the cache.
+   */
+  NTJsonCache?: {
+    json: (url: string, init?: RequestInit) => Promise<any>;
+    text: (
+      url: string,
+      init?: RequestInit,
+    ) => Promise<{ ok: boolean; status: number; text: string }>;
+  };
   NTHubUnits: any;
   NTIdentity: any;
   NTInkMath: any;

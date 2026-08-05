@@ -30,7 +30,11 @@
   var lessonsByStandard = null; // node id -> [{id, title, path}] ordered by unit/lesson
   var hubApi = null;
 
+  // Routed through /assets/curriculum-json-cache.js so the hub fetches each
+  // data file once instead of once per feature script.
   function loadJson(url) {
+    var cache = window.NTJsonCache;
+    if (cache) return cache.json(url);
     return fetch(url, { credentials: "same-origin" }).then(function (r) {
       if (!r.ok) throw new Error(url + " " + r.status);
       return r.json();
