@@ -3225,14 +3225,21 @@ function renderLaunchPhase(el, state, ctx, config) {
   const isEs = getPreferredLang() === "es";
   const btn = document.createElement("button");
   btn.className = "btn btn-primary btn-lg mt-6";
-  const isStudied = (state.get() || {}).vocabVisited || (state.get() || {}).notesVisited;
-  btn.textContent = isStudied
-    ? isEs
-      ? "Continuar a la Fase 4: Explorar 🔍 →"
-      : "Continue to Phase 4: Explore 🔍 →"
-    : isEs
-      ? "🔑 Vocabulario 🚀 →"
-      : "🔑 Vocabulary 🚀 →";
+  // Launch always continues to Vocab, which continues to Learn It. That is the
+  // taught order, so it is the order the button offers — every time, not only
+  // on a student's first visit.
+  //
+  // This used to branch on `vocabVisited || notesVisited`: a student who had
+  // opened either one ONCE got "Continue to Phase 4: Explore" instead and was
+  // sent straight past both pre-lesson steps. Opening a tab is not the same as
+  // having studied it, and it silently produced two different lesson orders for
+  // two students sitting next to each other.
+  //
+  // The label is "Continue to Vocab →" for the same reason the rest of the
+  // chain reads that way ("Continue to Learn It", "Continue to Practice"): the
+  // old "🔑 Vocabulary 🚀 →" named a destination without saying it was the next
+  // step, so it read as a side trip rather than the way forward.
+  btn.textContent = isEs ? "Continuar a Vocabulario →" : "Continue to Vocab →";
 
   btn.addEventListener("click", async () => {
     if (
@@ -3253,15 +3260,7 @@ function renderLaunchPhase(el, state, ctx, config) {
     }
     el.querySelector(".launch-fb")?.remove();
     await completePhase(el, ctx, state, 2, "Launch", 1, 1, { quiet: true });
-    if (isStudied) {
-      if (typeof ctx.navigateTo === "function") {
-        ctx.navigateTo(3);
-      } else if (typeof ctx.nextPhase === "function") {
-        ctx.nextPhase();
-      }
-    } else {
-      ctx.openExtra("vocab");
-    }
+    ctx.openExtra("vocab");
   });
   el.append(btn);
 }
