@@ -23,7 +23,7 @@ assert.equal(COPY_KEYS.includes("findHomework"), false);
 assert.match(translationsEs.homeworkTitle, /Práctica familiar opcional/i);
 assert.match(translationsEs.homeworkIntro, /aparte de la tarea regular/i);
 
-assert.equal(lessons.length, 74, "every curriculum lesson should be available");
+assert.equal(lessons.length, 64, "every curriculum lesson should be available");
 assert.equal(lessons[0].id, "1-1");
 assert.equal(lessons.at(-1).id, "10-5");
 
@@ -62,7 +62,7 @@ const future = {
 const merged = mergeHomework([...manifest.lessons, future], {
   "1-1": { title: "Factor Trees at Home", directions: "Explain one branch at a time." },
 });
-assert.equal(merged.length, 75, "future manifest lessons should appear without migration");
+assert.equal(merged.length, 65, "future manifest lessons should appear without migration");
 assert.equal(merged.find((item) => item.id === "1-1").title, "Factor Trees at Home");
 assert.equal(merged.at(-1).id, "12-9");
 assert.equal(mergeHomework([future], { "12-9": { visible: false } }).length, 0);

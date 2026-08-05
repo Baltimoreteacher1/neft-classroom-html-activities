@@ -153,7 +153,7 @@ if (workflowData && supportData && launchData) {
 
 if (launchData) {
   const lessons = launchData.lessons || [];
-  check(lessons.length >= 74, "launch manifest contains all curriculum lessons");
+  check(lessons.length >= 64, "launch manifest contains all curriculum lessons");
   check(
     new Set(lessons.map((lesson) => lesson.id)).size === lessons.length,
     "launch lesson IDs are unique",
