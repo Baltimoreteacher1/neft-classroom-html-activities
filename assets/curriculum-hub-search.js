@@ -51,23 +51,6 @@
         isPrintable: true,
       },
     ],
-    "1-1-flagship": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/1-1-flagship/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Prime Factorization Escape Folder",
-        href: "/lessons/1-1-flagship/downloads/printables/1-1-flagship-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Prime Factorization — Color by Number",
-        href: "/lessons/1-1-flagship/downloads/printables/1-1-flagship-color-by-number.pdf",
-        isPrintable: true,
-      },
-    ],
     "1-2": [
       {
         text: "📝 Practice Worksheet (A & B)",
@@ -217,23 +200,6 @@
         isPrintable: true,
       },
     ],
-    "10-1-flagship": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/10-1-flagship/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Time Capsule Design Challenge",
-        href: "/lessons/10-1-flagship/downloads/printables/10-1-flagship-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Volume with Whole Number Edges — Color by Number",
-        href: "/lessons/10-1-flagship/downloads/printables/10-1-flagship-color-by-number.pdf",
-        isPrintable: true,
-      },
-    ],
     "10-2": [
       {
         text: "📝 Practice Worksheet (A & B)",
@@ -359,23 +325,6 @@
         isPrintable: true,
       },
     ],
-    "2-1-flagship": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/2-1-flagship/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Fraction Detective File-Folder Mystery",
-        href: "/lessons/2-1-flagship/downloads/printables/2-1-flagship-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Interpret Division of Fractions — Color by Number",
-        href: "/lessons/2-1-flagship/downloads/printables/2-1-flagship-color-by-number.pdf",
-        isPrintable: true,
-      },
-    ],
     "2-2": [
       {
         text: "📝 Practice Worksheet (A & B)",
@@ -488,33 +437,6 @@
       {
         text: "📝 Understand Ratios — MCAP-Style Practice",
         href: "/lessons/3-1/downloads/printables/3-1-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "3-1-flagship": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/3-1-flagship/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Create-a-Recipe Ratio Challenge",
-        href: "/lessons/3-1-flagship/downloads/printables/3-1-flagship-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Understand Ratios — Color by Number",
-        href: "/lessons/3-1-flagship/downloads/printables/3-1-flagship-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Understand Ratios — Vocabulary Word Search",
-        href: "/lessons/3-1-flagship/downloads/printables/3-1-flagship-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Understand Ratios — MCAP-Style Practice",
-        href: "/lessons/3-1-flagship/downloads/printables/3-1-flagship-mcap-practice.docx",
         isPrintable: true,
       },
     ],
@@ -674,33 +596,6 @@
       {
         text: "📝 Rates and Unit Rates — MCAP-Style Practice",
         href: "/lessons/4-1/downloads/printables/4-1-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "4-1-flagship": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/4-1-flagship/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Arcade Better-Buy Tournament",
-        href: "/lessons/4-1-flagship/downloads/printables/4-1-flagship-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Rates and Unit Rates — Color by Number",
-        href: "/lessons/4-1-flagship/downloads/printables/4-1-flagship-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Rates and Unit Rates — Vocabulary Word Search",
-        href: "/lessons/4-1-flagship/downloads/printables/4-1-flagship-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Rates and Unit Rates — MCAP-Style Practice",
-        href: "/lessons/4-1-flagship/downloads/printables/4-1-flagship-mcap-practice.docx",
         isPrintable: true,
       },
     ],
@@ -927,33 +822,6 @@
         isPrintable: true,
       },
     ],
-    "5-3-flagship": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/5-3-flagship/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Triangle Design Studio",
-        href: "/lessons/5-3-flagship/downloads/printables/5-3-flagship-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Area of Triangles — Color by Number",
-        href: "/lessons/5-3-flagship/downloads/printables/5-3-flagship-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Area of Triangles — Vocabulary Word Search",
-        href: "/lessons/5-3-flagship/downloads/printables/5-3-flagship-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Area of Triangles — MCAP-Style Practice",
-        href: "/lessons/5-3-flagship/downloads/printables/5-3-flagship-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
     "5-4": [
       {
         text: "📝 Practice Worksheet (A & B)",
@@ -1022,33 +890,6 @@
       {
         text: "📝 Powers and Exponents — MCAP-Style Practice",
         href: "/lessons/6-1/downloads/printables/6-1-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "6-1-flagship": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/6-1-flagship/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Powers Puzzle Race",
-        href: "/lessons/6-1-flagship/downloads/printables/6-1-flagship-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Powers and Exponents — Color by Number",
-        href: "/lessons/6-1-flagship/downloads/printables/6-1-flagship-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Powers and Exponents — Vocabulary Word Search",
-        href: "/lessons/6-1-flagship/downloads/printables/6-1-flagship-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Powers and Exponents — MCAP-Style Practice",
-        href: "/lessons/6-1-flagship/downloads/printables/6-1-flagship-mcap-practice.docx",
         isPrintable: true,
       },
     ],
@@ -1221,33 +1062,6 @@
         isPrintable: true,
       },
     ],
-    "7-1-flagship": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/7-1-flagship/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Equation Detective Case Files",
-        href: "/lessons/7-1-flagship/downloads/printables/7-1-flagship-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Write Equations — Color by Number",
-        href: "/lessons/7-1-flagship/downloads/printables/7-1-flagship-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Write Equations — Vocabulary Word Search",
-        href: "/lessons/7-1-flagship/downloads/printables/7-1-flagship-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Write Equations — MCAP-Style Practice",
-        href: "/lessons/7-1-flagship/downloads/printables/7-1-flagship-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
     "7-2": [
       {
         text: "📝 Practice Worksheet (A & B)",
@@ -1414,33 +1228,6 @@
       {
         text: "📝 Statistical Questions and Data — MCAP-Style Practice",
         href: "/lessons/8-1/downloads/printables/8-1-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "8-1-flagship": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/8-1-flagship/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Data Investigation Proposal",
-        href: "/lessons/8-1-flagship/downloads/printables/8-1-flagship-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Statistical Questions and Data — Color by Number",
-        href: "/lessons/8-1-flagship/downloads/printables/8-1-flagship-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Statistical Questions and Data — Vocabulary Word Search",
-        href: "/lessons/8-1-flagship/downloads/printables/8-1-flagship-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Statistical Questions and Data — MCAP-Style Practice",
-        href: "/lessons/8-1-flagship/downloads/printables/8-1-flagship-mcap-practice.docx",
         isPrintable: true,
       },
     ],
@@ -1630,33 +1417,6 @@
       {
         text: "📝 Graph on the Coordinate Plane — MCAP-Style Practice",
         href: "/lessons/9-1/downloads/printables/9-1-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "9-1-flagship": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/9-1-flagship/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Coordinate Map Mission",
-        href: "/lessons/9-1-flagship/downloads/printables/9-1-flagship-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Graph on the Coordinate Plane — Color by Number",
-        href: "/lessons/9-1-flagship/downloads/printables/9-1-flagship-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Graph on the Coordinate Plane — Vocabulary Word Search",
-        href: "/lessons/9-1-flagship/downloads/printables/9-1-flagship-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Graph on the Coordinate Plane — MCAP-Style Practice",
-        href: "/lessons/9-1-flagship/downloads/printables/9-1-flagship-mcap-practice.docx",
         isPrintable: true,
       },
     ],
