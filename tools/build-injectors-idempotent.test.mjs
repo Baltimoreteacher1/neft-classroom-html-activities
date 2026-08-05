@@ -107,7 +107,16 @@ for (const step of chain) {
   }
 
   try {
-    execFileSync(step, { cwd: ROOT, stdio: "pipe", encoding: "utf8", shell: true });
+    // npm puts node_modules/.bin on PATH for its scripts; a bare shell does not,
+    // so `vite build` would fail here as "command not found" and read like a
+    // broken build rather than a missing PATH entry.
+    execFileSync(step, {
+      cwd: ROOT,
+      stdio: "pipe",
+      encoding: "utf8",
+      shell: true,
+      env: { ...process.env, PATH: `${resolve(ROOT, "node_modules/.bin")}:${process.env.PATH}` },
+    });
     ran++;
   } catch (err) {
     failures++;
