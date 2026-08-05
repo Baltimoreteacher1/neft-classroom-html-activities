@@ -106,7 +106,19 @@ function showMissionIntro(fl, config, onStart) {
       <button class="btn btn-primary btn-lg flagship-mission-start">${esc(mission.cta || t("startActivity"))}</button>
     </div>
   `;
-  document.body.append(overlay);
+  // Into #app, NOT document.body — and `root` above exists for exactly this.
+  //
+  // assets/lesson-shell-guard.js treats "#app is still empty 9s after load" as
+  // proof that a lesson failed to boot, and paints a "This lesson is having
+  // trouble loading" card. A flagship lesson does not call bootLesson() until
+  // the student presses Start, so appending the briefing to <body> left #app
+  // empty for as long as the student spent reading it — and the briefing is a
+  // story screen, so nine seconds is a normal dwell time, not an edge case.
+  // All 10 unit-entry lessons showed students a false "broken lesson" alert.
+  //
+  // The overlay is `position: fixed; inset: 0` (flagship.css) and #app has no
+  // transformed ancestor, so the parent has no effect on how it paints.
+  root.append(overlay);
 
   const start = () => {
     overlay.classList.add("leaving");
