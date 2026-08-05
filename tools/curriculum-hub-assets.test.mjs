@@ -26,6 +26,7 @@ const ASSETS = [
   "curriculum-hub-pacing.js",
   "curriculum-hub-options.js",
   "curriculum-hub-search.js",
+  "curriculum-ready-next.js",
 ];
 
 const hub = readFileSync(HUB_PATH, "utf8");
