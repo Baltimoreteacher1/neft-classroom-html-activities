@@ -1,7 +1,7 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-import { extractDivisionDiagram } from "./division-helper.js";
+
 import {
   renderActivityChooser,
   renderOptionalPracticeOptIn,
@@ -37,6 +37,7 @@ import { mountCertificateDownload } from "./certificate-export.js";
 import { mountChalkAnnotations } from "./chalk-annotate.js";
 import { deriveCommonMistake, deriveErrorExample } from "./content-enrichment.js";
 import { mountDiscussionMoment } from "./discourse.js";
+import { extractDivisionDiagram } from "./division-helper.js";
 import { getFeedbackMode, MODES, mountFeedbackModeToggle } from "./feedback-mode.js";
 import {
   fadeNoteFor,
@@ -2027,6 +2028,21 @@ function talkBulletsHtml(value) {
     .join("");
 }
 
+// The caption under the visual model, as short labelled bullets rather than one
+// long sentence. Newcomers read the label ("You see", "Your goal") and one
+// clause, instead of a 45-word paragraph of subordinate clauses.
+// Falls back to the single-sentence caption if a config resolves no bullets.
+function visualCaptionHtml(bullets, caption) {
+  const list = Array.isArray(bullets) ? bullets.filter((b) => b && b.text) : [];
+  if (!list.length) return esc(caption || "");
+  return `<ul style="margin:0; padding-left:0; list-style:none; display:flex; flex-direction:column; gap:5px;">${list
+    .map(
+      (b) =>
+        `<li style="display:flex; gap:8px; align-items:flex-start; line-height:1.45;"><span aria-hidden="true">${esc(b.icon)}</span><span><strong>${esc(b.label)}:</strong> ${esc(b.text)}</span></li>`,
+    )
+    .join("")}</ul>`;
+}
+
 function renderObjectives(el, config, state, opts = {}) {
   const review = !!opts.review;
   const name = review ? studentFirstName(state) : "";
@@ -2057,7 +2073,11 @@ function renderObjectives(el, config, state, opts = {}) {
       <div class="visual-model-wrapper" style="margin-top:16px; margin-bottom:16px; border-radius:14px; overflow:hidden; border:1.5px solid rgba(15,23,42,0.18); box-shadow:0 6px 20px rgba(0,0,0,0.08); background:#0b0f19; cursor:zoom-in;">
         <img src="${o.img}" alt="${esc(o.alt)}" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
         <div style="padding:12px 16px; background:#ffffff; border-top:1.5px solid #e2e8f0; font-size:0.96rem; color:#0f172a; font-weight:800; line-height:1.5; -webkit-font-smoothing:antialiased;">
-          ${o.icon} <strong>Visual Representation:</strong> ${esc(o.caption)} <span style="display:inline-block; font-size:0.78rem; font-weight:800; color:#0284c7; background:rgba(2,132,199,0.08); padding:3px 8px; border-radius:6px; margin-left:6px; border:1px solid rgba(2,132,199,0.2);">🔍 Click to enlarge</span>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:7px;">
+            <span>${o.icon} <strong>Visual Representation</strong></span>
+            <span style="display:inline-block; font-size:0.78rem; font-weight:800; color:#0284c7; background:rgba(2,132,199,0.08); padding:3px 8px; border-radius:6px; border:1px solid rgba(2,132,199,0.2);">🔍 Click to enlarge</span>
+          </div>
+          ${visualCaptionHtml(o.captionBullets, o.caption)}
         </div>
         ${
           o.talkPrompts
@@ -2109,6 +2129,7 @@ function renderObjectives(el, config, state, opts = {}) {
       alt: visuals.content.alt,
       icon: "🎯",
       caption: visuals.content.caption,
+      captionBullets: visuals.content.captionBullets,
       talkPrompts: visuals.content.talkPrompts,
       checkLabel: review ? "Did it" : "Got it",
       checkAria: review
@@ -2128,6 +2149,7 @@ function renderObjectives(el, config, state, opts = {}) {
       alt: visuals.language.alt,
       icon: "🗣️",
       caption: visuals.language.caption,
+      captionBullets: visuals.language.captionBullets,
       talkPrompts: visuals.language.talkPrompts,
       checkLabel: review ? "Did it" : "Got it",
       checkAria: review

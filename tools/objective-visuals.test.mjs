@@ -47,6 +47,8 @@ import {
   OBJECTIVE_IMAGES,
   objectivePhrase,
   resolveObjectiveVisuals,
+  shortGoal,
+  shortScene,
   TOPICS,
 } from "../engine/core/objective-visuals.js";
 
@@ -409,6 +411,78 @@ assert.ok(checked > 200, `expected 2 visuals per lesson, checked only ${checked}
 const alts = [...altBySrc.values()];
 assert.equal(new Set(alts).size, alts.length, "two images share the same alt text");
 
+// ── ESOL caption bullets ────────────────────────────────────────────────────
+// The card prints these INSTEAD of the caption sentence, so they carry the whole
+// burden of explaining the picture to a newcomer. What is asserted here is that
+// they stay SHORT and stay COMPLETE: a bullet that has been cut into a fragment
+// ("use the commutative") is worse than the paragraph it replaced.
+{
+  const BULLET_MAX = 130;
+  let bulletCount = 0;
+  let worst = 0;
+  for (const id of lessonDirs) {
+    const cfgPath = resolve(LESSONS, id, "config.json");
+    if (!existsSync(cfgPath)) continue;
+    const cfg = JSON.parse(readFileSync(cfgPath, "utf8"));
+    const visuals = resolveObjectiveVisuals(cfg);
+    for (const side of ["content", "language"]) {
+      const bullets = visuals[side].captionBullets;
+      assert.ok(
+        Array.isArray(bullets) && bullets.length >= 1,
+        `${id} ${side}: no caption bullets — the card would fall back to the paragraph`,
+      );
+      for (const b of bullets) {
+        assert.ok(
+          b.icon && b.label && b.text,
+          `${id} ${side}: incomplete bullet ${JSON.stringify(b)}`,
+        );
+        assert.ok(
+          b.text.length <= BULLET_MAX,
+          `${id} ${side}: bullet is ${b.text.length} chars, over the ${BULLET_MAX} cap — ${b.text}`,
+        );
+        assert.ok(!/[,;:]$/.test(b.text), `${id} ${side}: bullet ends mid-clause — ${b.text}`);
+        bulletCount += 1;
+        worst = Math.max(worst, b.text.length);
+      }
+      assert.ok(
+        bullets.every((b) => b.text.length < visuals[side].caption.length),
+        `${id} ${side}: a bullet is no shorter than the caption sentence it replaced`,
+      );
+    }
+  }
+  assert.ok(bulletCount > 0, "swept zero caption bullets — the sweep found no lessons");
+  console.log(`objective-visuals: ${bulletCount} caption bullets, longest ${worst} chars`);
+}
+
+// Fragment guards for the two shorteners, on the shapes that produced fragments
+// before: a coordinate pair the length cut used to split, and a comma-separated
+// list of tools that a comma cut used to truncate to its first item.
+assert.equal(
+  shortScene(
+    "A student folds a paper net of a triangular prism on her grid mat, with every face numbered.",
+  ),
+  "A student folds a paper net of a triangular prism on her grid mat",
+);
+assert.ok(
+  !/\(−?\d+$/.test(
+    shortScene(
+      "On a four-quadrant coordinate plane, A (3, 2) reflects across the y-axis to B (−3, 2) and across the x-axis to D (3, −2), each reflection flipping exactly one sign.",
+    ),
+  ),
+  "shortScene must not cut inside an ordered pair",
+);
+assert.equal(
+  shortGoal("use the commutative, associative, and identity properties to rewrite expressions"),
+  "use the commutative, associative, and identity properties to rewrite expressions",
+);
+assert.equal(
+  shortGoal("go beyond today's lesson: find the mean of a data set"),
+  "find the mean of a data set",
+  "a lead-in label must be dropped in favour of the substance after it",
+);
+assert.equal(shortScene(""), "");
+assert.equal(shortGoal(""), "");
+
 // ── The renderer is still wired to this module ──────────────────────────────
 const renderer = readFileSync(resolve(ROOT, "engine/core/lesson-renderer.js"), "utf8");
 assert.match(
@@ -427,8 +501,21 @@ assert.match(
 );
 assert.match(
   renderer,
-  /<strong>Visual Representation:<\/strong> \$\{esc\(o\.caption\)\}/,
-  "the caption must be escaped — inequality objectives contain < and >",
+  /\$\{visualCaptionHtml\(o\.captionBullets, o\.caption\)\}/,
+  "the caption must render through visualCaptionHtml (bullets, with the sentence as fallback)",
+);
+// visualCaptionHtml is the ONLY place the caption text reaches innerHTML, so the
+// escaping that used to sit inline at the call site has to live inside it —
+// inequality objectives contain < and >.
+assert.match(
+  renderer,
+  /function visualCaptionHtml[\s\S]{0,900}?esc\(b\.text\)/,
+  "visualCaptionHtml must escape each bullet's text",
+);
+assert.match(
+  renderer,
+  /function visualCaptionHtml[\s\S]{0,900}?return esc\(caption \|\| ""\)/,
+  "visualCaptionHtml must escape the fallback caption sentence",
 );
 
 console.log(

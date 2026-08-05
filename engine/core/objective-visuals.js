@@ -340,6 +340,111 @@ function joinCaption(scene, lead, goalPhrase) {
   return `${scene} ${lead} ${goalPhrase}.`;
 }
 
+// ── ESOL caption bullets ────────────────────────────────────────────────────
+// The card used to print `caption` as one run-on line: a full scene sentence
+// ("A student moves unit cubes on a pan balance labelled x + 3 = 7, keeping the
+// two pans level so the equation stays true while she works out what x is
+// worth.") followed by the whole objective. That is ~45 words of subordinate
+// clauses under a picture, and a newcomer reading at an entering/emerging level
+// gets nothing from it — the sentence is longer than the objective it explains.
+//
+// So the SAME two facts are now printed as two short bullets: what is on the
+// screen, then what you are aiming at. Nothing new is invented and no scene text
+// was rewritten — each bullet is the first clause of a sentence the module
+// already had, cut at the first real clause boundary.
+
+// Clause boundaries that reliably start a subordinate clause in the authored
+// scenes. Cutting here keeps a complete, true main clause every time.
+const SCENE_CLAUSE =
+  /\s*(?:,\s*(?:so|and|with|while|instead|then|which|because|but|each|its|one|the other)\b|,\s*\w+ing\b|\s—\s|[;:]\s).*$/i;
+
+const SCENE_MAX = 110;
+
+// Last ", " at paren depth 0 before `limit`. Coordinate pairs are written
+// "(3, 2)", so a depth-blind search cuts scenes mid-ordered-pair — "reflects
+// across the y-axis to B (−3" is worse than the long sentence it shortened.
+function lastTopLevelComma(text, limit) {
+  let depth = 0;
+  let found = -1;
+  for (let i = 0; i < text.length && i < limit; i += 1) {
+    const ch = text[i];
+    if (ch === "(") depth += 1;
+    else if (ch === ")") depth = Math.max(0, depth - 1);
+    else if (ch === "," && depth === 0 && text[i + 1] === " ") found = i;
+  }
+  return found;
+}
+
+/**
+ * The one-clause version of a scene sentence: what a student can see, with the
+ * explanatory tail removed.
+ *
+ * @param {string} scene authored scene sentence
+ * @returns {string} plain text, no trailing punctuation
+ */
+export function shortScene(scene) {
+  let s = String(scene || "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!s) return "";
+  s = s.replace(SCENE_CLAUSE, "");
+  if (s.length > SCENE_MAX) {
+    const cut = lastTopLevelComma(s, SCENE_MAX);
+    if (cut > 40) s = s.slice(0, cut);
+  }
+  return s.replace(/[.,;:]+$/, "").trim();
+}
+
+/**
+ * The one-clause version of an objective phrase, for the goal bullet. The full
+ * phrase stays available on `goalPhrase` and in `caption`.
+ *
+ * @param {string} phrase output of {@link objectivePhrase}
+ * @returns {string}
+ */
+export function shortGoal(phrase) {
+  let s = String(phrase || "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!s) return "";
+  // Level-2 objectives open with a lead-in label ("go beyond today's lesson:
+  // solve one-step equations…"). The label is framing for the teacher; the
+  // substance is after the colon, and printing the label alone says nothing.
+  const lead = s.match(/^([^:]{1,40}):\s+(.+)$/);
+  if (lead) s = lead[2];
+  // Split only on markers that genuinely END the main idea. A bare comma does
+  // not: objectives list their tools ("use the commutative, associative and
+  // distributive properties"), and cutting there prints the fragment "use the
+  // commutative". Over-long goals are handled by the honest word cap below.
+  const clause = s.split(/\s+—\s+|\s+(?:so that|in order to|and then|while)\s+/i)[0].trim();
+  if (clause.length >= 12) s = clause;
+  const words = s.split(/\s+/);
+  if (words.length > 12) s = `${words.slice(0, 12).join(" ")}…`;
+  return s.replace(/[.,;:]+$/, "").trim();
+}
+
+/**
+ * The two short lines printed under the picture, in place of the old paragraph.
+ * An authored `contentVisualCaption` / `languageVisualCaption` wins outright —
+ * a teacher who wrote their own caption gets it printed as a single bullet.
+ *
+ * @param {object} o
+ * @param {string} o.scene authored scene sentence
+ * @param {string} o.goalPhrase full objective phrase
+ * @param {string} o.goalLabel "Your goal" / "Your talking goal"
+ * @param {string} [o.authored] author-supplied caption override
+ * @returns {{ icon: string, label: string, text: string }[]}
+ */
+function captionBullets({ scene, goalPhrase, goalLabel, authored }) {
+  if (authored) return [{ icon: "🖼️", label: "About this picture", text: String(authored) }];
+  const bullets = [];
+  const look = shortScene(scene);
+  if (look) bullets.push({ icon: "👀", label: "You see", text: look });
+  const goal = shortGoal(goalPhrase);
+  if (goal) bullets.push({ icon: "🎯", label: goalLabel, text: goal });
+  return bullets;
+}
+
 // ── Student talk targets ────────────────────────────────────────────────────
 // These print on the objective cards under "What to Say / What to Listen For".
 // They used to be one long sentence each, built by pasting the whole content or
@@ -471,6 +576,12 @@ export function resolveObjectiveVisuals(config) {
       goalPhrase: contentPhrase,
       caption:
         cfg.contentVisualCaption || joinCaption(contentScene, "Today's goal:", contentPhrase),
+      captionBullets: captionBullets({
+        scene: contentScene,
+        goalPhrase: contentPhrase,
+        goalLabel: "Your goal",
+        authored: cfg.contentVisualCaption,
+      }),
       talkPrompts: resolveContentTalkPrompts(cfg),
     },
     language: {
@@ -481,6 +592,12 @@ export function resolveObjectiveVisuals(config) {
       caption:
         cfg.languageVisualCaption ||
         joinCaption(languageScene, "Today's talking goal:", languagePhrase),
+      captionBullets: captionBullets({
+        scene: languageScene,
+        goalPhrase: languagePhrase,
+        goalLabel: "Your talking goal",
+        authored: cfg.languageVisualCaption,
+      }),
       talkPrompts: resolveLanguageTalkPrompts(cfg),
     },
   };

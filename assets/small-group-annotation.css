@@ -289,8 +289,19 @@
   background: var(--sg-soft);
 }
 
+/* Same treatment as the lesson-engine word popup (.obj-popup-example): the
+   wording that explains the picture reads one step larger, in a box that
+   scrolls on its own. The cap is in `em` so it is the same box on a phone, a
+   laptop and a projector — a vh cap collapses to two lines on a short window —
+   and the scroll is unconditional rather than gated behind a breakpoint. */
 .sg-vocab-example-wrap p {
+  max-height: 9em;
   margin: 4px 0 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  font-size: 20px;
+  line-height: 1.55;
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 760px) {
