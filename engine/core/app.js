@@ -1252,6 +1252,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         vocabGames.style.cssText = "margin-top:var(--sp-6, 24px);";
         renderActivityChooser(vocabGames, { config, only: "vocab" });
         if (vocabGames.childNodes.length) el.append(vocabGames);
+        el.append(chainContinueButton("Continue to Learn It 📖 →", () => this.openExtra("learn")));
         el.scrollIntoView({ block: "start" });
         return;
       }
@@ -1273,6 +1274,9 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           state,
           onComplete: () => this.navigateTo(PHASE_PRACTICE),
         });
+        el.append(
+          chainContinueButton("Continue to Practice ✏️ →", () => this.navigateTo(PHASE_PRACTICE)),
+        );
         el.scrollIntoView({ block: "start" });
         return;
       }
@@ -1835,6 +1839,32 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   initPresentMode({ app, config, phaseConfigs, phaseContainer, state });
 
   return app;
+}
+
+/**
+ * The forward button for a pre-lesson step: Launch → Vocab → Learn It → Practice.
+ *
+ * The native Vocab and Learn It panels advanced ONLY through their `onComplete`
+ * hook — finish the vocabulary activity and you were moved on. A student who
+ * read the words without completing the activity had no way forward at all: the
+ * panel replaces the phase container, so there was no Continue button and no
+ * visible next step. The iframe-backed panels further down openExtra() have had
+ * their own addContinue() for exactly this reason; the native ones never got it.
+ *
+ * Styling matches that addContinue() so the chain looks like one flow.
+ */
+function chainContinueButton(label, onClick) {
+  const wrap = document.createElement("div");
+  wrap.style.cssText = "margin-top:var(--sp-4, 16px); text-align:center; padding-bottom:24px;";
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "btn btn-primary btn-lg";
+  b.style.cssText =
+    "padding:14px 28px; font-weight:800; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
+  b.textContent = label;
+  b.addEventListener("click", onClick);
+  wrap.append(b);
+  return wrap;
 }
 
 function buildSidebar(config, state, _phaseConfigs) {

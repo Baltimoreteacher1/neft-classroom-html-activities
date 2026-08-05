@@ -48,12 +48,17 @@ test.describe("shared lesson shell reflow", () => {
       // element and the fill retried until the test timed out.
       await page.locator("#nw-notice").fill("I notice a math pattern in the example.");
       await page.locator("#nw-wonder").fill("I wonder how the pattern will help me solve it.");
+
+      // The taught order: Launch → Vocab → Learn It → Practice. Every hop is a
+      // real button a student can press, which is the point — Vocab and Learn It
+      // used to advance ONLY by completing their activity, so a student who read
+      // the page without finishing it had no way forward.
       await page.getByRole("button", { name: "Continue to Vocab →" }).click();
-      await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Vocab");
-      await page.getByRole("button", { name: "Continue to Learn It →" }).click();
+      await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Vocabulary");
+      await page.getByRole("button", { name: "Continue to Learn It" }).click();
       await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Learn It");
-      await page.getByRole("button", { name: "Continue to the Lesson →" }).click();
-      await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Explore");
+      await page.getByRole("button", { name: "Continue to Practice" }).click();
+      await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Practice");
     });
   }
 
