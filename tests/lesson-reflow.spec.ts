@@ -2,12 +2,36 @@ import { expect, test } from "@playwright/test";
 
 const LESSON_PATH = "/lessons/1-1/?sn=Layout%20Tester";
 
+/**
+ * Dismiss the flagship Mission Briefing if this lesson has one.
+ *
+ * The 10 unit-entry lessons (1-1, 2-1, 3-1, 4-1, 5-3, 6-1 … 10-1) were moved
+ * onto the flagship narrative shell in dfb9d20, which opens on a full-screen
+ * story screen and does not call bootLesson() — so no `.sidebar`, no phases,
+ * no Continue buttons — until the student presses Start. These specs predate
+ * that and drove straight into the phase assertions, so every one of them that
+ * targets /lessons/1-1/ has been failing on a lesson that works.
+ *
+ * Deliberately conditional, not an unconditional click: it keeps the same spec
+ * honest for the ~200 non-flagship lessons, which have no briefing at all.
+ */
+async function enterLesson(page: import("@playwright/test").Page) {
+  const start = page.locator(".flagship-mission-start");
+  if (await start.count()) {
+    await start.click();
+    // The overlay leaves on a 350ms transition before bootLesson() runs.
+    await page.locator(".flagship-mission").waitFor({ state: "detached" });
+  }
+  await page.locator(".sidebar").waitFor();
+}
+
 test.describe("shared lesson shell reflow", () => {
   for (const lessonPath of ["/lessons/1-1/", "/lessons/10-3/"]) {
     test(`bottom Continue buttons advance each shared lesson phase: ${lessonPath}`, async ({
       page,
     }) => {
       await page.goto(`${lessonPath}?sn=Navigation%20Tester`, { waitUntil: "networkidle" });
+      await enterLesson(page);
 
       await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Warmup");
       await page.getByRole("button", { name: "Continue to Phase 2: Objectives 🎯" }).click();
@@ -36,6 +60,7 @@ test.describe("shared lesson shell reflow", () => {
   test("keeps every lesson navigation item visible at 320 CSS pixels", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 900 });
     await page.goto(LESSON_PATH, { waitUntil: "networkidle" });
+    await enterLesson(page);
     await page.evaluate(() => window.scrollTo(0, 48));
 
     const layout = await page.locator(".sidebar").evaluate((sidebar) => {
@@ -99,6 +124,7 @@ test.describe("shared lesson shell reflow", () => {
     test(`keeps floating chrome off the phase rail at ${label} size`, async ({ page }) => {
       await page.setViewportSize({ width, height });
       await page.goto(LESSON_PATH, { waitUntil: "networkidle" });
+      await enterLesson(page);
 
       const clashes = await page.evaluate(() => {
         const buttons = Array.from(document.querySelectorAll<HTMLElement>(".phase-btn"));
@@ -130,6 +156,7 @@ test.describe("shared lesson shell reflow", () => {
   }) => {
     await page.setViewportSize({ width: 2560, height: 900 });
     await page.goto(LESSON_PATH, { waitUntil: "networkidle" });
+    await enterLesson(page);
 
     const gaps = await page.locator(".app").evaluate((app) => {
       const sidebar = app.querySelector<HTMLElement>(".sidebar");
