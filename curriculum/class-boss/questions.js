@@ -24,11 +24,14 @@
 
 /** The closed tag vocabulary, sorted. Mirrors data/misconception-labels.json. */
 export const BOSS_TAGS = [
+  "algebra-distributive-partial",
   "decimal-place-value",
   "exponent-as-multiplication",
   "fraction-added-denominators",
   "fraction-no-reciprocal",
   "fraction-straight-across-division",
+  "geom-triangle-area-no-half",
+  "geom-volume-added-dimensions",
   "measure-area-perimeter-swap",
   "op-added-instead-of-multiplied",
   "op-divided-instead-of-multiplied",
@@ -787,6 +790,188 @@ export const QUESTION_BANK = {
         prompt: {
           en: `A room floor is ${l} ft by ${w} ft. How many square feet of carpet cover the whole floor?`,
           es: `El piso de un cuarto mide ${l} pies por ${w} pies. ¿Cuántos pies cuadrados de alfombra cubren todo el piso?`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Found base × height but forgot the half --------------------------- */
+  "geom-triangle-area-no-half": [
+    T("tri-sail", (r) => {
+      const b = r.int(4, 14);
+      const h = 2 * r.int(2, 7); // even so the correct answer is whole
+      return {
+        values: { b, h },
+        correct: (b * h) / 2,
+        distractor: b * h,
+        prompt: {
+          en: `A triangular sail has a base of ${b} m and a height of ${h} m. What is its area, in square metres?`,
+          es: `Una vela triangular tiene una base de ${b} m y una altura de ${h} m. ¿Cuál es su área, en metros cuadrados?`,
+        },
+      };
+    }),
+    T("tri-garden", (r) => {
+      const b = 2 * r.int(3, 9);
+      const h = r.int(3, 11);
+      return {
+        values: { b, h },
+        correct: (b * h) / 2,
+        distractor: b * h,
+        prompt: {
+          en: `A triangle-shaped garden bed has a base of ${b} ft and a height of ${h} ft. How many square feet is it?`,
+          es: `Un jardín en forma de triángulo tiene una base de ${b} pies y una altura de ${h} pies. ¿Cuántos pies cuadrados mide?`,
+        },
+      };
+    }),
+    T("tri-ramp", (r) => {
+      const b = 2 * r.int(3, 10);
+      const h = r.int(2, 9);
+      return {
+        values: { b, h },
+        correct: (b * h) / 2,
+        distractor: b * h,
+        prompt: {
+          en: `A skate ramp's side is a triangle with base ${b} ft and height ${h} ft. What is its area, in square feet?`,
+          es: `El lado de una rampa es un triángulo con base de ${b} pies y altura de ${h} pies. ¿Cuál es su área, en pies cuadrados?`,
+        },
+      };
+    }),
+    T("tri-flag", (r) => {
+      const b = 2 * r.int(2, 8);
+      const h = r.int(4, 12);
+      return {
+        values: { b, h },
+        correct: (b * h) / 2,
+        distractor: b * h,
+        prompt: {
+          en: `A pennant flag is a triangle with base ${b} cm and height ${h} cm. What is its area, in square cm?`,
+          es: `Un banderín es un triángulo con base de ${b} cm y altura de ${h} cm. ¿Cuál es su área, en cm cuadrados?`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Added the dimensions instead of multiplying ----------------------- */
+  "geom-volume-added-dimensions": [
+    T("vol-box", (r) => {
+      const l = r.int(3, 8);
+      const w = r.int(2, 6);
+      let h = r.int(2, 6);
+      if (l * w * h === l + w + h) h += 1;
+      return {
+        values: { l, w, h },
+        correct: l * w * h,
+        distractor: l + w + h,
+        prompt: {
+          en: `A storage box is ${l} ft by ${w} ft by ${h} ft. How many cubic feet fit inside?`,
+          es: `Una caja mide ${l} pies por ${w} pies por ${h} pies. ¿Cuántos pies cúbicos caben adentro?`,
+        },
+      };
+    }),
+    T("vol-tank", (r) => {
+      const l = r.int(4, 9);
+      const w = r.int(3, 7);
+      let h = r.int(2, 5);
+      if (l * w * h === l + w + h) h += 1;
+      return {
+        values: { l, w, h },
+        correct: l * w * h,
+        distractor: l + w + h,
+        prompt: {
+          en: `An aquarium is ${l} in long, ${w} in wide, and ${h} in tall. What is its volume, in cubic inches?`,
+          es: `Un acuario mide ${l} pulgadas de largo, ${w} de ancho y ${h} de alto. ¿Cuál es su volumen, en pulgadas cúbicas?`,
+        },
+      };
+    }),
+    T("vol-locker", (r) => {
+      const l = r.int(2, 6);
+      const w = r.int(2, 5);
+      let h = r.int(3, 8);
+      if (l * w * h === l + w + h) h += 1;
+      return {
+        values: { l, w, h },
+        correct: l * w * h,
+        distractor: l + w + h,
+        prompt: {
+          en: `A locker cube bin is ${l} ft by ${w} ft by ${h} ft. What is its volume, in cubic feet?`,
+          es: `Un casillero mide ${l} pies por ${w} pies por ${h} pies. ¿Cuál es su volumen, en pies cúbicos?`,
+        },
+      };
+    }),
+    T("vol-cube", (r) => {
+      let s = r.int(2, 7);
+      if (s * s * s === 3 * s) s += 1;
+      return {
+        values: { s },
+        correct: s * s * s,
+        distractor: 3 * s,
+        prompt: {
+          en: `A number cube has edges ${s} cm long. What is its volume, in cubic cm?`,
+          es: `Un cubo tiene aristas de ${s} cm. ¿Cuál es su volumen, en cm cúbicos?`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Distributed to the first term only -------------------------------- */
+  "algebra-distributive-partial": [
+    T("dist-sum", (r) => {
+      const a = r.int(2, 9);
+      const b = r.int(2, 9);
+      let c = r.int(2, 9);
+      if (a * (b + c) === a * b + c) c += 1;
+      return {
+        values: { a, b, c },
+        correct: a * (b + c),
+        distractor: a * b + c,
+        prompt: {
+          en: `Evaluate ${a}(${b} + ${c}).`,
+          es: `Evalúa ${a}(${b} + ${c}).`,
+        },
+      };
+    }),
+    T("dist-tickets", (r) => {
+      const a = r.int(3, 8);
+      const b = r.int(4, 12);
+      let c = r.int(2, 6);
+      if (a * (b + c) === a * b + c) c += 1;
+      return {
+        values: { a, b, c },
+        correct: a * (b + c),
+        distractor: a * b + c,
+        prompt: {
+          en: `${a} friends each pay $${b} for a ticket and $${c} for snacks. How much do they spend in all?`,
+          es: `${a} amigos pagan cada uno $${b} por una entrada y $${c} por meriendas. ¿Cuánto gastan en total?`,
+        },
+      };
+    }),
+    T("dist-garden", (r) => {
+      const a = r.int(2, 6);
+      const b = r.int(5, 12);
+      let c = r.int(2, 7);
+      if (a * (b + c) === a * b + c) c += 1;
+      return {
+        values: { a, b, c },
+        correct: a * (b + c),
+        distractor: a * b + c,
+        prompt: {
+          en: `A garden has ${a} rows. Each row has ${b} tomato plants and ${c} pepper plants. How many plants in all?`,
+          es: `Un jardín tiene ${a} filas. Cada fila tiene ${b} plantas de tomate y ${c} de pimiento. ¿Cuántas plantas hay en total?`,
+        },
+      };
+    }),
+    T("dist-diff", (r) => {
+      const a = r.int(2, 7);
+      const b = r.int(6, 14);
+      let c = r.int(2, 5);
+      if (a * (b - c) === a * b - c) c += 1;
+      return {
+        values: { a, b, c },
+        correct: a * (b - c),
+        distractor: a * b - c,
+        prompt: {
+          en: `Evaluate ${a}(${b} − ${c}).`,
+          es: `Evalúa ${a}(${b} − ${c}).`,
         },
       };
     }),

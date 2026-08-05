@@ -45,6 +45,9 @@
     "sign-dropped": "Right magnitude, lost the negative sign",
     "stat-summed-instead-of-averaged": "Added the data set instead of averaging it",
     "measure-area-perimeter-swap": "Swapped area and perimeter",
+    "geom-triangle-area-no-half": "Found base × height but forgot the half",
+    "geom-volume-added-dimensions": "Added the dimensions instead of multiplying",
+    "algebra-distributive-partial": "Distributed to the first term only",
   };
 
   var MOVES = {
@@ -72,6 +75,10 @@
     "stat-summed-instead-of-averaged":
       "Ask whether the answer could be a real single value in that set.",
     "measure-area-perimeter-swap": "Ask what the unit should be — units or square units?",
+    "geom-triangle-area-no-half":
+      "Draw the rectangle around the triangle — the triangle is half of it.",
+    "geom-volume-added-dimensions": "Build one layer of unit cubes first, then count the layers.",
+    "algebra-distributive-partial": "Draw the area model — the outside factor touches BOTH terms.",
   };
 
   var LANES = {

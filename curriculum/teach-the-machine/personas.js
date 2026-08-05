@@ -38,11 +38,14 @@
 const A = (id, en, es, match) => ({ id, en, es, match });
 
 export const TAGS = [
+  "algebra-distributive-partial",
   "decimal-place-value",
   "exponent-as-multiplication",
   "fraction-added-denominators",
   "fraction-no-reciprocal",
   "fraction-straight-across-division",
+  "geom-triangle-area-no-half",
+  "geom-volume-added-dimensions",
   "measure-area-perimeter-swap",
   "op-added-instead-of-multiplied",
   "op-divided-instead-of-multiplied",
@@ -492,6 +495,147 @@ export const PERSONAS = {
       "recta numérica",
       "residuo",
     ],
+  },
+
+  "geom-triangle-area-no-half": {
+    tag: "geom-triangle-area-no-half",
+    standards: ["6.GR.1"],
+    persona: {
+      name: "Sailcloth",
+      blurb: "Multiplies base by height and calls every shape a rectangle.",
+      blurbEs: "Multiplica base por altura y trata cada figura como un rectángulo.",
+    },
+    wrongIdea: "the area of a triangle is base times height, the same rule as a rectangle",
+    wrongIdeaEs: "el área de un triángulo es base por altura, la misma regla que un rectángulo",
+    openingLine:
+      "The sail has a base of 6 and a height of 4, so I say its area is 24. Rectangles and triangles follow the same rule, right?",
+    openingLineEs:
+      "La vela tiene base 6 y altura 4, así que digo que su área es 24. Los rectángulos y los triángulos siguen la misma regla, ¿verdad?",
+    probes: [
+      "If I draw the rectangle around my triangle, how much of it does the triangle actually fill?",
+      "Why does the formula have a one-half in it? Where does the half come from?",
+      "Two identical triangles — what shape can I build if I put them together?",
+    ],
+    probesEs: [
+      "Si dibujo el rectángulo alrededor de mi triángulo, ¿cuánto de él llena el triángulo en realidad?",
+      "¿Por qué la fórmula tiene un medio? ¿De dónde sale esa mitad?",
+      "Dos triángulos idénticos: ¿qué figura puedo armar si los junto?",
+    ],
+    mustAddress: [
+      A(
+        "triangle-is-half-rectangle",
+        "A triangle is HALF of the rectangle built on the same base and height",
+        "Un triángulo es la MITAD del rectángulo con la misma base y altura",
+        [["half"], ["rectangle"], ["mitad"], ["rect"]],
+      ),
+      A(
+        "divide-by-two",
+        "After multiplying base × height you still have to divide by 2",
+        "Después de multiplicar base × altura todavía hay que dividir entre 2",
+        [["divide"], ["by 2"], ["÷ 2"], ["entre 2"], ["divid"]],
+      ),
+    ],
+    giveawayPhrases: ["base times height", "b times h", "base por altura", "just multiply"],
+    worked:
+      "Base times height gives the rectangle that the triangle sits inside, and the triangle covers exactly half of it. Two copies of the triangle fill the rectangle perfectly. So the area is 6 × 4 = 24 for the rectangle, and 24 ÷ 2 = 12 for the sail.",
+    workedEs:
+      "Base por altura da el rectángulo donde vive el triángulo, y el triángulo cubre exactamente la mitad. Dos copias del triángulo llenan el rectángulo por completo. El rectángulo es 6 × 4 = 24, y la vela es 24 ÷ 2 = 12.",
+    wordBank: ["base", "height", "half", "rectangle", "square units", "compose"],
+    wordBankEs: ["base", "altura", "mitad", "rectángulo", "unidades cuadradas", "componer"],
+  },
+
+  "geom-volume-added-dimensions": {
+    tag: "geom-volume-added-dimensions",
+    standards: ["6.GR.2"],
+    persona: {
+      name: "Boxcar",
+      blurb: "Reads three measurements and adds them because there are three.",
+      blurbEs: "Lee tres medidas y las suma porque son tres.",
+    },
+    wrongIdea: "volume is length plus width plus height, since those are the box's measurements",
+    wrongIdeaEs: "el volumen es largo más ancho más alto, porque esas son las medidas de la caja",
+    openingLine:
+      "The box is 3 by 4 by 5, and I say its volume is 12 cubic feet. I used every measurement once, did I not?",
+    openingLineEs:
+      "La caja mide 3 por 4 por 5, y digo que su volumen es 12 pies cúbicos. Usé cada medida una vez, ¿no?",
+    probes: [
+      "If I build just the bottom layer out of unit cubes, how many cubes is that?",
+      "How many of those layers stack up to fill the box?",
+      "Could a box that is 1 by 1 by 10 really hold the same as one that is 4 by 4 by 4? My rule says almost.",
+    ],
+    probesEs: [
+      "Si armo solo la capa de abajo con cubos unitarios, ¿cuántos cubos son?",
+      "¿Cuántas de esas capas se apilan para llenar la caja?",
+      "¿Una caja de 1 por 1 por 10 puede guardar lo mismo que una de 4 por 4 por 4? Mi regla dice que casi.",
+    ],
+    mustAddress: [
+      A(
+        "volume-fills-with-cubes",
+        "Volume counts the unit cubes that FILL the box, layer by layer",
+        "El volumen cuenta los cubos unitarios que LLENAN la caja, capa por capa",
+        [["cube"], ["fill"], ["layer"], ["cubo"], ["llena"], ["capa"]],
+      ),
+      A(
+        "multiply-three",
+        "The three dimensions multiply: length × width × height",
+        "Las tres dimensiones se multiplican: largo × ancho × alto",
+        [["multiply"], ["times"], ["×"], ["multiplic"], ["por"]],
+      ),
+    ],
+    giveawayPhrases: ["add them up", "l plus w plus h", "súmalas", "3 + 4 + 5"],
+    worked:
+      "The bottom layer is 3 × 4 = 12 cubes. The box is 5 layers tall, so 12 × 5 = 60 cubes fill it. Adding 3 + 4 + 5 counts one edge of each direction, not the space inside.",
+    workedEs:
+      "La capa de abajo tiene 3 × 4 = 12 cubos. La caja tiene 5 capas, así que 12 × 5 = 60 cubos la llenan. Sumar 3 + 4 + 5 cuenta un borde de cada dirección, no el espacio de adentro.",
+    wordBank: ["volume", "unit cube", "layer", "dimension", "cubic units", "prism"],
+    wordBankEs: ["volumen", "cubo unitario", "capa", "dimensión", "unidades cúbicas", "prisma"],
+  },
+
+  "algebra-distributive-partial": {
+    tag: "algebra-distributive-partial",
+    standards: ["6.AT.7"],
+    persona: {
+      name: "Half-Deal",
+      blurb: "Multiplies the first thing in the parentheses and calls it done.",
+      blurbEs: "Multiplica lo primero del paréntesis y lo da por terminado.",
+    },
+    wrongIdea: "the number outside the parentheses only multiplies the first term inside",
+    wrongIdeaEs: "el número fuera del paréntesis solo multiplica el primer término de adentro",
+    openingLine:
+      "For 3(4 + 5) I did 3 × 4 = 12, then added the 5 to get 17. The 3 already did its job on the 4, right?",
+    openingLineEs:
+      "Para 3(4 + 5) hice 3 × 4 = 12 y luego sumé el 5 para llegar a 17. El 3 ya se ocupó del 4, ¿no?",
+    probes: [
+      "What does 3(4 + 5) mean if I say it as three GROUPS of something?",
+      "If I add inside first — 4 + 5 = 9 — and then multiply, why do I get a different answer from yours?",
+      "In the area model, what rectangle did I forget to count?",
+    ],
+    probesEs: [
+      "¿Qué significa 3(4 + 5) si lo digo como tres GRUPOS de algo?",
+      "Si primero sumo adentro — 4 + 5 = 9 — y luego multiplico, ¿por qué me da distinto que a ti?",
+      "En el modelo de área, ¿qué rectángulo olvidé contar?",
+    ],
+    mustAddress: [
+      A(
+        "factor-hits-both",
+        "The outside factor multiplies EVERY term inside the parentheses",
+        "El factor de afuera multiplica CADA término dentro del paréntesis",
+        [["both"], ["every term"], ["each term"], ["ambos"], ["cada término"], ["los dos"]],
+      ),
+      A(
+        "groups-meaning",
+        "3(4 + 5) means three whole groups of (4 + 5), so the 5 gets three copies too",
+        "3(4 + 5) significa tres grupos completos de (4 + 5), así que el 5 también se copia tres veces",
+        [["group"], ["copies"], ["grupo"], ["copias"], ["veces"]],
+      ),
+    ],
+    giveawayPhrases: ["only the first", "just the 4", "solo el primero", "ya hizo su trabajo"],
+    worked:
+      "3(4 + 5) is three groups of a 4-and-5 pair: 3 × 4 = 12 and 3 × 5 = 15, and 12 + 15 = 27. Checking the other way, 4 + 5 = 9 and 3 × 9 = 27 — both roads agree, and 17 misses the three copies of the 5.",
+    workedEs:
+      "3(4 + 5) son tres grupos de un par 4-y-5: 3 × 4 = 12 y 3 × 5 = 15, y 12 + 15 = 27. Por el otro camino, 4 + 5 = 9 y 3 × 9 = 27 — los dos caminos coinciden, y 17 pierde las tres copias del 5.",
+    wordBank: ["distribute", "factor", "term", "equivalent", "area model", "expression"],
+    wordBankEs: ["distribuir", "factor", "término", "equivalente", "modelo de área", "expresión"],
   },
 
   "measure-area-perimeter-swap": {

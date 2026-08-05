@@ -90,6 +90,18 @@ export const STANDARDS = Object.freeze({
     family: "describing a whole set of numbers with one fair number",
     familyEs: "describir todo un conjunto de números con un solo número justo",
   },
+  "6.GR.2": {
+    label: "Volume",
+    labelEs: "Volumen",
+    family: "measuring how much space fills the inside of a box",
+    familyEs: "medir cuánto espacio llena el interior de una caja",
+  },
+  "6.AT.7": {
+    label: "Equivalent expressions",
+    labelEs: "Expresiones equivalentes",
+    family: "rewriting an expression so it says the same thing a different way",
+    familyEs: "reescribir una expresión para decir lo mismo de otra manera",
+  },
   "6.GR.1": {
     label: "Area",
     labelEs: "Área",
@@ -232,6 +244,20 @@ export const ASSETS = Object.freeze({
       path: "/math/unit-8/projects/",
     },
   ],
+  "6.GR.2": [
+    {
+      title: "10-1 Volume with Whole Number Edges",
+      titleEs: "10-1 Volumen con aristas de números enteros",
+      path: "/lessons/10-1/",
+    },
+  ],
+  "6.AT.7": [
+    {
+      title: "6-6 Equivalent Expressions",
+      titleEs: "6-6 Expresiones equivalentes",
+      path: "/lessons/6-6/",
+    },
+  ],
   "6.GR.1": [
     {
       title: "5-3 Area of Triangles",
@@ -341,6 +367,16 @@ export const BRIDGES = Object.freeze({
     en: "An average is a division. A slip in the arithmetic looks like a mix-up about averages.",
     es: "Un promedio es una división. Un desliz en la aritmética parece una confusión sobre promedios.",
   },
+  "6.GR.2": {
+    from: "6.NOS.1",
+    en: "Volume with fractional edges is fraction multiplication stacked in three directions.",
+    es: "El volumen con aristas fraccionarias es multiplicación de fracciones en tres direcciones.",
+  },
+  "6.AT.7": {
+    from: "6.AT.6b",
+    en: "Rewriting an expression means naming its terms and factors first.",
+    es: "Reescribir una expresión requiere primero nombrar sus términos y factores.",
+  },
   "6.GR.1": {
     from: "6.NOS.3",
     en: "Area of triangles and combined shapes leans on confident decimal and fraction arithmetic.",
@@ -403,6 +439,27 @@ export const TAGS = Object.freeze({
     watchFor: "Reground division as “how many of these fit into that?”",
     watchForEs: "Replantee la división como “¿cuántos de estos caben en aquello?”",
     standards: ["6.NOS.1"],
+  },
+  "geom-triangle-area-no-half": {
+    label: "Found base × height but forgot the half",
+    labelEs: "Calculó base × altura pero olvidó la mitad",
+    watchFor: "Draw the rectangle around the triangle — the triangle is half of it.",
+    watchForEs: "Dibuje el rectángulo alrededor del triángulo: el triángulo es la mitad.",
+    standards: ["6.GR.1"],
+  },
+  "geom-volume-added-dimensions": {
+    label: "Added the dimensions instead of multiplying",
+    labelEs: "Sumó las dimensiones en vez de multiplicarlas",
+    watchFor: "Build one layer of unit cubes first, then count the layers.",
+    watchForEs: "Arme primero una capa de cubos unitarios y luego cuente las capas.",
+    standards: ["6.GR.2"],
+  },
+  "algebra-distributive-partial": {
+    label: "Distributed to the first term only",
+    labelEs: "Distribuyó solo al primer término",
+    watchFor: "Draw the area model — the outside factor touches BOTH terms.",
+    watchForEs: "Dibuje el modelo de área: el factor de afuera toca AMBOS términos.",
+    standards: ["6.AT.7"],
   },
   "measure-area-perimeter-swap": {
     label: "Swapped area and perimeter",
@@ -625,6 +682,69 @@ export const KITCHEN_TABLE = Object.freeze({
     why: "Division asks how many of these fit into that. The pieces on the table settle the argument in seconds.",
     whyEs:
       "La división pregunta cuántos de estos caben en aquello. Las piezas sobre la mesa resuelven la discusión en segundos.",
+  },
+  "geom-triangle-area-no-half": {
+    minutes: 5,
+    title: "Cut the rectangle in half",
+    titleEs: "Corta el rectángulo por la mitad",
+    materials: "A piece of paper, scissors, and a pencil.",
+    materialsEs: "Una hoja de papel, tijeras y un lápiz.",
+    steps: [
+      "Cut a rectangle out of paper and find its area together: length times width.",
+      "Draw one diagonal and cut along it to make two triangles.",
+      "Stack the two triangles to show they match exactly.",
+      "Ask: if the rectangle was 24 squares, how big is each triangle? Say why out loud.",
+    ],
+    stepsEs: [
+      "Recorten un rectángulo de papel y hallen juntos su área: largo por ancho.",
+      "Dibujen una diagonal y córtenla para formar dos triángulos.",
+      "Apilen los dos triángulos para mostrar que son idénticos.",
+      "Pregunte: si el rectángulo era de 24 cuadrados, ¿cuánto mide cada triángulo? Digan por qué en voz alta.",
+    ],
+    why: "Seeing the two matching halves is the whole formula — the ½ stops being a rule to memorize.",
+    whyEs: "Ver las dos mitades idénticas es toda la fórmula: el ½ deja de ser una regla de memoria.",
+  },
+  "geom-volume-added-dimensions": {
+    minutes: 5,
+    title: "Fill the box in layers",
+    titleEs: "Llena la caja por capas",
+    materials: "A small box and anything cube-ish: dice, sugar cubes, or blocks.",
+    materialsEs: "Una caja pequeña y algo con forma de cubo: dados, cubos de azúcar o bloques.",
+    steps: [
+      "Cover just the bottom of the box with cubes and count that one layer.",
+      "Ask how many layers like that would stack to the top.",
+      "Multiply layer × layers, then check by filling the box if you have enough cubes.",
+      "Ask: why does adding the three side lengths NOT tell us how much fits inside?",
+    ],
+    stepsEs: [
+      "Cubran solo el fondo de la caja con cubos y cuenten esa primera capa.",
+      "Pregunte cuántas capas como esa se apilarían hasta arriba.",
+      "Multipliquen capa × capas y comprueben llenando la caja si tienen cubos suficientes.",
+      "Pregunte: ¿por qué sumar los tres lados NO nos dice cuánto cabe adentro?",
+    ],
+    why: "Volume is filling, not measuring edges. One layer, times the number of layers, is the formula.",
+    whyEs: "El volumen es llenar, no medir bordes. Una capa, por el número de capas, es la fórmula.",
+  },
+  "algebra-distributive-partial": {
+    minutes: 5,
+    title: "Three of everything",
+    titleEs: "Tres de todo",
+    materials: "Any small snack items: crackers and grapes work well.",
+    materialsEs: "Cualquier merienda pequeña: galletas y uvas funcionan bien.",
+    steps: [
+      "Make one plate with 4 crackers and 2 grapes.",
+      "Ask your student to build THREE plates exactly like it.",
+      "Count everything: 3 × 4 crackers and 3 × 2 grapes. Write 3(4 + 2) = 12 + 6.",
+      "Ask: what goes wrong if only the crackers get tripled?",
+    ],
+    stepsEs: [
+      "Armen un plato con 4 galletas y 2 uvas.",
+      "Pida a su estudiante que arme TRES platos exactamente iguales.",
+      "Cuenten todo: 3 × 4 galletas y 3 × 2 uvas. Escriban 3(4 + 2) = 12 + 6.",
+      "Pregunte: ¿qué sale mal si solo se triplican las galletas?",
+    ],
+    why: "Three groups means three of EVERYTHING in the group — the parentheses travel together.",
+    whyEs: "Tres grupos significa tres de TODO lo que hay en el grupo: el paréntesis viaja junto.",
   },
   "measure-area-perimeter-swap": {
     minutes: 5,

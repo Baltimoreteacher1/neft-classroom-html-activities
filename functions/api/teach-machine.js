@@ -66,11 +66,14 @@ const WORKERS_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
 // tools/validate-teach-machine.mjs asserts this stays identical to
 // curriculum/teach-the-machine/personas.js TAGS.
 const ALLOWED_TAGS = [
+  "algebra-distributive-partial",
   "decimal-place-value",
   "exponent-as-multiplication",
   "fraction-added-denominators",
   "fraction-no-reciprocal",
   "fraction-straight-across-division",
+  "geom-triangle-area-no-half",
+  "geom-volume-added-dimensions",
   "measure-area-perimeter-swap",
   "op-added-instead-of-multiplied",
   "op-divided-instead-of-multiplied",

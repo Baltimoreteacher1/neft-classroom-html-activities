@@ -122,6 +122,18 @@ const EXPECT = {
   "fsa-trail": (v) => [F(v.a * v.d, v.b * v.c), F(v.c / v.a, v.d / v.b)],
 
   // measure-area-perimeter-swap — distractor is the other measure entirely.
+  "tri-sail": (v) => [(v.b * v.h) / 2, v.b * v.h],
+  "tri-garden": (v) => [(v.b * v.h) / 2, v.b * v.h],
+  "tri-ramp": (v) => [(v.b * v.h) / 2, v.b * v.h],
+  "tri-flag": (v) => [(v.b * v.h) / 2, v.b * v.h],
+  "vol-box": (v) => [v.l * v.w * v.h, v.l + v.w + v.h],
+  "vol-tank": (v) => [v.l * v.w * v.h, v.l + v.w + v.h],
+  "vol-locker": (v) => [v.l * v.w * v.h, v.l + v.w + v.h],
+  "vol-cube": (v) => [v.s * v.s * v.s, 3 * v.s],
+  "dist-sum": (v) => [v.a * (v.b + v.c), v.a * v.b + v.c],
+  "dist-tickets": (v) => [v.a * (v.b + v.c), v.a * v.b + v.c],
+  "dist-garden": (v) => [v.a * (v.b + v.c), v.a * v.b + v.c],
+  "dist-diff": (v) => [v.a * (v.b - v.c), v.a * v.b - v.c],
   "ap-area": (v) => [v.l * v.w, 2 * v.l + 2 * v.w],
   "ap-perimeter": (v) => [2 * v.l + 2 * v.w, v.l * v.w],
   "ap-square": (v) => [v.s * v.s, 4 * v.s],
