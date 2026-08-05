@@ -72,16 +72,6 @@ export async function onRequestGet(context) {
           resources: [{ text: "Interactive Activity", href: "/lessons/1-1/", type: "activity" }],
         },
         {
-          id: "1-1-flagship",
-          num: "Lesson 1.1 Flagship",
-          title: "Prime Factorization Escape Lab",
-          std: "6.NS.B.4",
-          obj: "Master prime factor decomposition to unlock escape lab challenges.",
-          resources: [
-            { text: "Interactive Activity", href: "/lessons/1-1-flagship/", type: "activity" },
-          ],
-        },
-        {
           id: "1-2",
           num: "Lesson 1.2",
           title: "Greatest Common Factor (GCF)",
@@ -146,16 +136,6 @@ export async function onRequestGet(context) {
           resources: [{ text: "Interactive Activity", href: "/lessons/2-1/", type: "activity" }],
         },
         {
-          id: "2-1-flagship",
-          num: "Lesson 2.1 Flagship",
-          title: "Fraction Detective Case File",
-          std: "6.NS.A.1",
-          obj: "Apply visual fraction division models to solve mystery cases.",
-          resources: [
-            { text: "Interactive Activity", href: "/lessons/2-1-flagship/", type: "activity" },
-          ],
-        },
-        {
           id: "2-2",
           num: "Lesson 2.2",
           title: "Dividing Fractions by Fractions",
@@ -202,16 +182,6 @@ export async function onRequestGet(context) {
           std: "6.RP.A.1",
           obj: "Understand the concept of a ratio and use ratio language.",
           resources: [{ text: "Interactive Activity", href: "/lessons/3-1/", type: "activity" }],
-        },
-        {
-          id: "3-1-flagship",
-          num: "Lesson 3.1 Flagship",
-          title: "Culinary Ratio Challenge Room",
-          std: "6.RP.A.1",
-          obj: "Design custom recipes using precise ratio relationships.",
-          resources: [
-            { text: "Interactive Activity", href: "/lessons/3-1-flagship/", type: "activity" },
-          ],
         },
         {
           id: "3-2",
@@ -276,16 +246,6 @@ export async function onRequestGet(context) {
           std: "6.RP.A.2",
           obj: "Solve unit rate problems including unit pricing and constant speed.",
           resources: [{ text: "Interactive Activity", href: "/lessons/4-1/", type: "activity" }],
-        },
-        {
-          id: "4-1-flagship",
-          num: "Lesson 4.1 Flagship",
-          title: "Arcade Builder Escape Room",
-          std: "6.RP.A.2",
-          obj: "Optimize unit rate calculations to construct arcade games.",
-          resources: [
-            { text: "Interactive Activity", href: "/lessons/4-1-flagship/", type: "activity" },
-          ],
         },
         {
           id: "4-2",
@@ -368,16 +328,6 @@ export async function onRequestGet(context) {
           resources: [{ text: "Interactive Activity", href: "/lessons/5-3/", type: "activity" }],
         },
         {
-          id: "5-3-flagship",
-          num: "Lesson 5.3 Flagship",
-          title: "Algebraic Balance Scale Lab",
-          std: "6.EE.A.2.C",
-          obj: "Use visual balance scales to evaluate and simplify algebraic terms.",
-          resources: [
-            { text: "Interactive Activity", href: "/lessons/5-3-flagship/", type: "activity" },
-          ],
-        },
-        {
           id: "5-4",
           num: "Lesson 5.4",
           title: "Equivalent Expressions & Distributive Property",
@@ -408,16 +358,6 @@ export async function onRequestGet(context) {
           std: "6.EE.B.5",
           obj: "Understand solving an equation as a process of answering a question.",
           resources: [{ text: "Interactive Activity", href: "/lessons/6-1/", type: "activity" }],
-        },
-        {
-          id: "6-1-flagship",
-          num: "Lesson 6.1 Flagship",
-          title: "Equation Quest Adventure",
-          std: "6.EE.B.5",
-          obj: "Solve one-step equations to navigate the adventure map.",
-          resources: [
-            { text: "Interactive Activity", href: "/lessons/6-1-flagship/", type: "activity" },
-          ],
         },
         {
           id: "6-2",
@@ -484,16 +424,6 @@ export async function onRequestGet(context) {
           resources: [{ text: "Interactive Activity", href: "/lessons/7-1/", type: "activity" }],
         },
         {
-          id: "7-1-flagship",
-          num: "Lesson 7.1 Flagship",
-          title: "Cartesian Odyssey 4-Quadrant Mission",
-          std: "6.NS.C.8",
-          obj: "Navigate all 4 quadrants of the coordinate plane to complete exploration objectives.",
-          resources: [
-            { text: "Interactive Activity", href: "/lessons/7-1-flagship/", type: "activity" },
-          ],
-        },
-        {
           id: "7-2",
           num: "Lesson 7.2",
           title: "Rational Numbers on the Number Line",
@@ -558,16 +488,6 @@ export async function onRequestGet(context) {
           resources: [{ text: "Interactive Activity", href: "/lessons/8-1/", type: "activity" }],
         },
         {
-          id: "8-1-flagship",
-          num: "Lesson 8.1 Flagship",
-          title: "World Architect Surface Lab",
-          std: "6.G.A.4",
-          obj: "Design 3D structures and compute total surface area using 2D nets.",
-          resources: [
-            { text: "Interactive Activity", href: "/lessons/8-1-flagship/", type: "activity" },
-          ],
-        },
-        {
           id: "8-2",
           num: "Lesson 8.2",
           title: "Area of Triangles",
@@ -630,16 +550,6 @@ export async function onRequestGet(context) {
           std: "6.SP.A.1",
           obj: "Recognize a statistical question as one that anticipates variability in data.",
           resources: [{ text: "Interactive Activity", href: "/lessons/9-1/", type: "activity" }],
-        },
-        {
-          id: "9-1-flagship",
-          num: "Lesson 9.1 Flagship",
-          title: "Sports Analytics Data Lab",
-          std: "6.SP.B.5",
-          obj: "Collect, analyze, and display sports telemetry data to draw conclusions.",
-          resources: [
-            { text: "Interactive Activity", href: "/lessons/9-1-flagship/", type: "activity" },
-          ],
         },
         {
           id: "9-2",

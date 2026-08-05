@@ -6,11 +6,6 @@ window.LESSON_FAMILY_HOMEWORK = {
     "href": "/lessons/1-1/homework.html",
     "isFamilyHomework": true
   },
-  "1-1-flagship": {
-    "text": "🏠 Family Practice (optional) · Extended",
-    "href": "/lessons/1-1-flagship/homework.html",
-    "isFamilyHomework": true
-  },
   "1-2": {
     "text": "🏠 Family Practice (optional)",
     "href": "/lessons/1-2/homework.html",
@@ -46,11 +41,6 @@ window.LESSON_FAMILY_HOMEWORK = {
     "href": "/lessons/2-1/homework.html",
     "isFamilyHomework": true
   },
-  "2-1-flagship": {
-    "text": "🏠 Family Practice (optional) · Extended",
-    "href": "/lessons/2-1-flagship/homework.html",
-    "isFamilyHomework": true
-  },
   "2-2": {
     "text": "🏠 Family Practice (optional)",
     "href": "/lessons/2-2/homework.html",
@@ -74,11 +64,6 @@ window.LESSON_FAMILY_HOMEWORK = {
   "3-1": {
     "text": "🏠 Family Practice (optional)",
     "href": "/lessons/3-1/homework.html",
-    "isFamilyHomework": true
-  },
-  "3-1-flagship": {
-    "text": "🏠 Family Practice (optional) · Extended",
-    "href": "/lessons/3-1-flagship/homework.html",
     "isFamilyHomework": true
   },
   "3-2": {
@@ -114,11 +99,6 @@ window.LESSON_FAMILY_HOMEWORK = {
   "4-1": {
     "text": "🏠 Family Practice (optional)",
     "href": "/lessons/4-1/homework.html",
-    "isFamilyHomework": true
-  },
-  "4-1-flagship": {
-    "text": "🏠 Family Practice (optional) · Extended",
-    "href": "/lessons/4-1-flagship/homework.html",
     "isFamilyHomework": true
   },
   "4-2": {
@@ -166,11 +146,6 @@ window.LESSON_FAMILY_HOMEWORK = {
     "href": "/lessons/5-3/homework.html",
     "isFamilyHomework": true
   },
-  "5-3-flagship": {
-    "text": "🏠 Family Practice (optional) · Extended",
-    "href": "/lessons/5-3-flagship/homework.html",
-    "isFamilyHomework": true
-  },
   "5-4": {
     "text": "🏠 Family Practice (optional)",
     "href": "/lessons/5-4/homework.html",
@@ -184,11 +159,6 @@ window.LESSON_FAMILY_HOMEWORK = {
   "6-1": {
     "text": "🏠 Family Practice (optional)",
     "href": "/lessons/6-1/homework.html",
-    "isFamilyHomework": true
-  },
-  "6-1-flagship": {
-    "text": "🏠 Family Practice (optional) · Extended",
-    "href": "/lessons/6-1-flagship/homework.html",
     "isFamilyHomework": true
   },
   "6-2": {
@@ -226,11 +196,6 @@ window.LESSON_FAMILY_HOMEWORK = {
     "href": "/lessons/7-1/homework.html",
     "isFamilyHomework": true
   },
-  "7-1-flagship": {
-    "text": "🏠 Family Practice (optional) · Extended",
-    "href": "/lessons/7-1-flagship/homework.html",
-    "isFamilyHomework": true
-  },
   "7-2": {
     "text": "🏠 Family Practice (optional)",
     "href": "/lessons/7-2/homework.html",
@@ -264,11 +229,6 @@ window.LESSON_FAMILY_HOMEWORK = {
   "8-1": {
     "text": "🏠 Family Practice (optional)",
     "href": "/lessons/8-1/homework.html",
-    "isFamilyHomework": true
-  },
-  "8-1-flagship": {
-    "text": "🏠 Family Practice (optional) · Extended",
-    "href": "/lessons/8-1-flagship/homework.html",
     "isFamilyHomework": true
   },
   "8-2": {
@@ -306,11 +266,6 @@ window.LESSON_FAMILY_HOMEWORK = {
     "href": "/lessons/9-1/homework.html",
     "isFamilyHomework": true
   },
-  "9-1-flagship": {
-    "text": "🏠 Family Practice (optional) · Extended",
-    "href": "/lessons/9-1-flagship/homework.html",
-    "isFamilyHomework": true
-  },
   "9-2": {
     "text": "🏠 Family Practice (optional)",
     "href": "/lessons/9-2/homework.html",
@@ -344,11 +299,6 @@ window.LESSON_FAMILY_HOMEWORK = {
   "10-1": {
     "text": "🏠 Family Practice (optional)",
     "href": "/lessons/10-1/homework.html",
-    "isFamilyHomework": true
-  },
-  "10-1-flagship": {
-    "text": "🏠 Family Practice (optional) · Extended",
-    "href": "/lessons/10-1-flagship/homework.html",
     "isFamilyHomework": true
   },
   "10-2": {

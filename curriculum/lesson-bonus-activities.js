@@ -6,11 +6,6 @@ window.LESSON_BONUS_ACTIVITIES = {
     "href": "/lessons/1-1/?extra=activity",
     "isBonus": true
   },
-  "1-1-flagship": {
-    "text": "🚀 Prime Factorization Escape Lab",
-    "href": "/lessons/1-1-flagship/?extra=activity",
-    "isBonus": true
-  },
   "1-2": {
     "text": "🚀 GCF Grouping Challenge",
     "href": "/lessons/1-2/?extra=activity",
@@ -46,11 +41,6 @@ window.LESSON_BONUS_ACTIVITIES = {
     "href": "/lessons/2-1/?extra=activity",
     "isBonus": true
   },
-  "2-1-flagship": {
-    "text": "🕵️ Fraction Detective Case File",
-    "href": "/lessons/2-1-flagship/?extra=activity",
-    "isBonus": true
-  },
   "2-2": {
     "text": "🥣 Recipe Batch Builder",
     "href": "/lessons/2-2/?extra=activity",
@@ -74,11 +64,6 @@ window.LESSON_BONUS_ACTIVITIES = {
   "3-1": {
     "text": "👨‍🍳 Ratio Recipe Sort",
     "href": "/lessons/3-1/?extra=activity",
-    "isBonus": true
-  },
-  "3-1-flagship": {
-    "text": "👨‍🍳 Culinary Ratio Challenge Room",
-    "href": "/lessons/3-1-flagship/?extra=activity",
     "isBonus": true
   },
   "3-2": {
@@ -114,11 +99,6 @@ window.LESSON_BONUS_ACTIVITIES = {
   "4-1": {
     "text": "🕹️ Arcade Unit Rate Scoreboard",
     "href": "/lessons/4-1/?extra=activity",
-    "isBonus": true
-  },
-  "4-1-flagship": {
-    "text": "🕹️ Arcade Builder Escape Room",
-    "href": "/lessons/4-1-flagship/?extra=activity",
     "isBonus": true
   },
   "4-2": {
@@ -166,11 +146,6 @@ window.LESSON_BONUS_ACTIVITIES = {
     "href": "/lessons/5-3/?extra=activity",
     "isBonus": true
   },
-  "5-3-flagship": {
-    "text": "📐 Triangle Design Studio",
-    "href": "/lessons/5-3-flagship/?extra=activity",
-    "isBonus": true
-  },
   "5-4": {
     "text": "📐 Polygon Floor Tile Designer",
     "href": "/lessons/5-4/?extra=activity",
@@ -184,11 +159,6 @@ window.LESSON_BONUS_ACTIVITIES = {
   "6-1": {
     "text": "🎵 Exponent Beat Builder",
     "href": "/lessons/6-1/?extra=activity",
-    "isBonus": true
-  },
-  "6-1-flagship": {
-    "text": "🎧 Power-Up Studio Escape Room",
-    "href": "/lessons/6-1-flagship/?extra=activity",
     "isBonus": true
   },
   "6-2": {
@@ -226,11 +196,6 @@ window.LESSON_BONUS_ACTIVITIES = {
     "href": "/lessons/7-1/?extra=activity",
     "isBonus": true
   },
-  "7-1-flagship": {
-    "text": "🕵️ Equation Detective Case File",
-    "href": "/lessons/7-1-flagship/?extra=activity",
-    "isBonus": true
-  },
   "7-2": {
     "text": "🔍 Balance Scale Unlock Cards",
     "href": "/lessons/7-2/?extra=activity",
@@ -264,11 +229,6 @@ window.LESSON_BONUS_ACTIVITIES = {
   "8-1": {
     "text": "🏀 Statistical or Not? Sports Sort",
     "href": "/lessons/8-1/?extra=activity",
-    "isBonus": true
-  },
-  "8-1-flagship": {
-    "text": "🏀 Sports Data Investigation Launch",
-    "href": "/lessons/8-1-flagship/?extra=activity",
     "isBonus": true
   },
   "8-2": {
@@ -306,11 +266,6 @@ window.LESSON_BONUS_ACTIVITIES = {
     "href": "/lessons/9-1/?extra=activity",
     "isBonus": true
   },
-  "9-1-flagship": {
-    "text": "🗺 Treasure Map Navigator Quest",
-    "href": "/lessons/9-1-flagship/?extra=activity",
-    "isBonus": true
-  },
   "9-2": {
     "text": "🌡️ Integer Temperature Mission",
     "href": "/lessons/9-2/?extra=activity",
@@ -344,11 +299,6 @@ window.LESSON_BONUS_ACTIVITIES = {
   "10-1": {
     "text": "📦 Cube Stack Volume Build",
     "href": "/lessons/10-1/?extra=activity",
-    "isBonus": true
-  },
-  "10-1-flagship": {
-    "text": "📦 Time Capsule Volume Quest",
-    "href": "/lessons/10-1-flagship/?extra=activity",
     "isBonus": true
   },
   "10-2": {
