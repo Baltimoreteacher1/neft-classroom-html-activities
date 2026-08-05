@@ -159,6 +159,15 @@ test.describe("lesson engine launcher — award layer", () => {
     expect(mcByStem.size).toBeGreaterThanOrEqual(3);
 
     await page.goto("/lessons/1-1/");
+    // 1-1 is one of the 10 flagship lessons (dfb9d20): it opens on a
+    // full-screen Mission Briefing and does not boot the lesson — so no
+    // identity gate exists yet — until Start is pressed. Conditional, because
+    // the other lesson this spec drives (LESSON_PATH) has no briefing.
+    const missionStart = page.locator(".flagship-mission-start");
+    if (await missionStart.count()) {
+      await missionStart.click();
+      await page.locator(".flagship-mission").waitFor({ state: "detached" });
+    }
     await page.getByPlaceholder(/First name Last initial/i).fill("Test S");
     const period = page.getByPlaceholder(/e\.g\.\s*3/);
     if (await period.count()) await period.fill("3");
@@ -201,7 +210,14 @@ test.describe("lesson engine launcher — award layer", () => {
         .click();
       await card.getByRole("button", { name: "Check Answer" }).click();
       if (i === 2) {
-        await expect(page.locator(".practice-toast .i18n-es").first()).toBeVisible();
+        // Attached, not visible. The Spanish praise ships with every toast, but
+        // design-system.css reveals .i18n-es only under <html lang="es"> — a
+        // deliberate change in 8872f27 ("support a student chooses, not a
+        // second language printed on top of everything"). Asserting visibility
+        // here demanded the behaviour that change removed, so this failed
+        // nightly on a page doing exactly what it was told to do.
+        // tests/award-experience.spec.ts checks the same copy the same way.
+        await expect(page.locator(".practice-toast .i18n-es").first()).toBeAttached();
         await expect(page.locator(".celebration-overlay .confetti-piece").first()).toBeVisible();
       }
       // Correct answers auto-advance after ~1.5s.

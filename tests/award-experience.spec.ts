@@ -17,6 +17,16 @@ import { expect, test, type Page } from "@playwright/test";
 
 async function enterLesson(page: Page, path: string) {
   await page.goto(path);
+  // The 10 unit-entry lessons (1-1 among them) were moved onto the flagship
+  // narrative shell in dfb9d20, which opens on a full-screen Mission Briefing
+  // and does not call bootLesson() — so the identity gate does not exist yet —
+  // until the student presses Start. Conditional, so this helper stays correct
+  // for the ~200 lessons that have no briefing.
+  const start = page.locator(".flagship-mission-start");
+  if (await start.count()) {
+    await start.click();
+    await page.locator(".flagship-mission").waitFor({ state: "detached" });
+  }
   await page.locator("#id-name").fill("Test Star");
   await page.locator("#id-start").click();
 }

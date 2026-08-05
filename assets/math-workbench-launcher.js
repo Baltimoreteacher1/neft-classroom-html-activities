@@ -178,7 +178,16 @@
     a.innerHTML =
       '<span class="mwb-star" aria-hidden="true">✱</span>' +
       '<span class="mwb-label">Math Workbench</span>';
-    document.body.appendChild(a);
+    // Inside a landmark, not loose on <body>. Appended directly, this link was
+    // page content belonging to no landmark region — an axe "region" violation
+    // on EVERY page that loads this script, and one a screen-reader user feels
+    // directly: navigating by landmark skipped the Workbench entirely. A single
+    // labelled <nav> is the smallest thing that makes it reachable that way.
+    var nav = document.createElement("nav");
+    nav.className = "mwb-launcher-nav";
+    nav.setAttribute("aria-label", "Math Workbench");
+    nav.appendChild(a);
+    document.body.appendChild(nav);
     lessonAwareHref(a);
 
     // Geometry lessons (Unit 10 / 3D solids / nets) mount a twin NetFold 3D
