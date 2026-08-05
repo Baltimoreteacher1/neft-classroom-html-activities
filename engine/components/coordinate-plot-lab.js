@@ -25,9 +25,9 @@ function ensureStyles() {
   .cpl-wrap{margin:var(--sp-3,12px) 0;display:flex;flex-direction:column;align-items:center;}
   .cpl-title{font-weight:800;color:${C.navy};margin-bottom:4px;font-size:.98rem;text-align:center;}
   .cpl-hint{font-size:.82rem;color:${C.muted};margin-bottom:8px;text-align:center;max-width:420px;line-height:1.4;}
-  .cpl-stage{width:100%;max-width:360px;background:#fff;border:1px solid ${C.line};border-radius:12px;padding:8px;}
+  .cpl-stage{width:100%;max-width:560px;background:#fff;border:1px solid ${C.line};border-radius:12px;padding:8px;}
   .cpl-stage svg{width:100%;height:auto;display:block;cursor:crosshair;touch-action:manipulation;}
-  .cpl-todo{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px;max-width:360px;}
+  .cpl-todo{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px;max-width:560px;}
   .cpl-chip{font-size:.8rem;font-weight:700;color:${C.navy};background:#eef4fb;border:2px solid ${C.line};
     border-radius:999px;padding:4px 10px;}
   .cpl-chip.done{color:${C.ok};background:${C.okFill};border-color:${C.ok};}
@@ -35,7 +35,7 @@ function ensureStyles() {
   .cpl-status{min-height:1.2em;margin-top:8px;font-size:.9rem;font-weight:700;text-align:center;}
   .cpl-status.ok{color:${C.ok};}
   .cpl-status.no{color:${C.wrong};}
-  .cpl-reveal{margin-top:8px;width:100%;max-width:360px;box-sizing:border-box;padding:10px 14px;
+  .cpl-reveal{margin-top:8px;width:100%;max-width:560px;box-sizing:border-box;padding:10px 14px;
     border:1px solid ${C.line};border-left:4px solid ${C.accent};border-radius:12px;background:#f7faff;
     font-size:.88rem;color:${C.navy};line-height:1.4;}
   `;
@@ -55,14 +55,14 @@ export function renderCoordinatePlot(host, cfg) {
   const hi = m;
   const span = hi - lo || 1;
 
-  const W = 340;
-  const pad = 26;
+  const W = 480;
+  const pad = 34;
   const plot = W - 2 * pad;
   const unit = plot / span;
   const X = (x) => pad + (x - lo) * unit;
   const Y = (y) => pad + (hi - y) * unit;
   const stride = span > 12 ? 2 : 1;
-  const tick = 'style="font-size:10px;fill:#6b7688;font-weight:600"';
+  const tick = 'style="font-size:13px;fill:#4a5668;font-weight:600"';
 
   let grid = "";
   for (let i = lo; i <= hi; i++) {
@@ -111,10 +111,37 @@ export function renderCoordinatePlot(host, cfg) {
   });
 
   function place(p) {
+    // White under-ring keeps the dot readable on gridline crossings; the
+    // coordinate label makes each plotted point self-explanatory.
+    const cx = X(p.x).toFixed(1);
+    const cy = Y(p.y).toFixed(1);
+    const flip = X(p.x) > W - pad - 60;
     plotted.insertAdjacentHTML(
       "beforeend",
-      `<circle cx="${X(p.x).toFixed(1)}" cy="${Y(p.y).toFixed(1)}" r="6" fill="${C.pop}" stroke="${C.ok}" stroke-width="2.5"/>`,
+      `<circle cx="${cx}" cy="${cy}" r="11" fill="#fff" fill-opacity="0.85"/>` +
+        `<circle cx="${cx}" cy="${cy}" r="8" fill="${C.pop}" stroke="${C.ok}" stroke-width="2.5"/>` +
+        `<text x="${(X(p.x) + (flip ? -12 : 12)).toFixed(1)}" y="${(Y(p.y) - 10).toFixed(1)}" text-anchor="${flip ? "end" : "start"}" style="font-size:13px;fill:${C.navy};font-weight:700">(${p.x}, ${p.y})</text>`,
     );
+  }
+
+  let ghost = null;
+  function showGhost(gx, gy) {
+    // A brief gray dot where the tap landed, so a miss is visible instead of
+    // feeling like the grid ignored the tap.
+    if (ghost) ghost.remove();
+    const el = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    el.setAttribute("cx", X(gx).toFixed(1));
+    el.setAttribute("cy", Y(gy).toFixed(1));
+    el.setAttribute("r", "7");
+    el.setAttribute("fill", "rgba(84,103,124,0.45)");
+    plotted.appendChild(el);
+    ghost = el;
+    setTimeout(() => {
+      if (ghost === el) {
+        el.remove();
+        ghost = null;
+      }
+    }, 900);
   }
 
   svg.addEventListener("click", (e) => {
@@ -124,8 +151,10 @@ export function renderCoordinatePlot(host, cfg) {
     const gx = Math.round((vbX - pad) / unit + lo);
     const gy = Math.round(hi - (vbY - pad) / unit);
     const idx = points.findIndex((p, i) => !done.has(i) && p.x === gx && p.y === gy);
+    if (gx < lo || gx > hi || gy < lo || gy > hi) return;
     if (idx === -1) {
-      status.textContent = `(${gx}, ${gy}) isn't one of the points to plot yet — try again.`;
+      showGhost(gx, gy);
+      status.textContent = `You tapped (${gx}, ${gy}) — that isn't one of the points in the list. Go right for x, then up for y.`;
       status.className = "cpl-status no";
       return;
     }

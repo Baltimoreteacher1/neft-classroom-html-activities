@@ -18,7 +18,7 @@
       ".pki-coord h4{margin:0 0 4px;font-size:1.15rem}" +
       ".pki-coord .pki-c-sub{margin:0 0 12px;color:var(--tp-muted,#54677c);font-size:.95rem}" +
       ".pki-c-wrap{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}" +
-      ".pki-c-svg{flex:1 1 320px;max-width:440px}" +
+      ".pki-c-svg{flex:1 1 380px;max-width:560px}" +
       ".pki-c-svg svg{width:100%;height:auto;border-radius:12px;background:#fbfdff;border:1px solid var(--tp-line,#e4ebf2);touch-action:manipulation;cursor:crosshair}" +
       ".pki-c-side{flex:1 1 180px;min-width:170px}" +
       ".pki-c-side h5{margin:0 0 8px;font-size:.95rem}" +
@@ -49,8 +49,8 @@
     injectStyle();
 
     var R = parseInt(el.dataset.range, 10) || 10;
-    var SZ = 400,
-      PAD = 24;
+    var SZ = 480,
+      PAD = 30;
     var span = SZ - PAD * 2;
     var unit = span / (2 * R);
     var COLORS = ["#1763c7", "#ef6b52", "#0e9a8c", "#6d4ad6", "#f4a924", "#19a35a"];
@@ -111,6 +111,26 @@
           (major ? 1.6 : 1) +
           '"/>';
       }
+      var stride = R > 12 ? 5 : R > 6 ? 2 : 1;
+      for (var t = -R; t <= R; t += stride) {
+        if (t === 0) continue;
+        g +=
+          '<text x="' +
+          sx(t) +
+          '" y="' +
+          (sy(0) + 14) +
+          '" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">' +
+          t +
+          "</text>";
+        g +=
+          '<text x="' +
+          (sx(0) - 6) +
+          '" y="' +
+          (sy(t) + 4) +
+          '" font-size="11" font-weight="600" fill="#64748b" text-anchor="end">' +
+          t +
+          "</text>";
+      }
       g +=
         '<text x="' +
         (SZ - PAD + 4) +
@@ -123,22 +143,6 @@
         '" y="' +
         (PAD - 6) +
         '" font-size="11" fill="#475569">y</text>';
-      g +=
-        '<text x="' +
-        (sx(R) - 4) +
-        '" y="' +
-        (sy(0) + 14) +
-        '" font-size="9" fill="#94a3b8" text-anchor="end">' +
-        R +
-        "</text>";
-      g +=
-        '<text x="' +
-        (sx(0) + 4) +
-        '" y="' +
-        (sy(R) + 10) +
-        '" font-size="9" fill="#94a3b8">' +
-        R +
-        "</text>";
       return g;
     }
     function pointsSvg() {
@@ -153,14 +157,14 @@
             sx(p.x) +
             '" cy="' +
             sy(p.y) +
-            '" r="7" fill="' +
+            '" r="9" fill="' +
             c +
             '" stroke="#fff" stroke-width="2"/>' +
             '<text x="' +
             (sx(p.x) + 10) +
             '" y="' +
             (sy(p.y) - 8) +
-            '" font-size="11" font-weight="700" fill="' +
+            '" font-size="14" font-weight="700" fill="' +
             c +
             '">(' +
             p.x +
