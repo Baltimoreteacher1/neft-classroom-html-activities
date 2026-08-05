@@ -199,7 +199,7 @@ function buildEntry(id, cfg) {
     unit,
     lesson,
     title: cfg.title || id,
-    flagship: id.endsWith("-flagship") || cfg.flagship != null,
+    flagship: id.endsWith("-flagship"),
     standard: standard || "Needs Review",
     topic: cfg.theme || "",
     objective: cfg.contentObjective || "",

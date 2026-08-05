@@ -484,7 +484,7 @@ function buildLessonRecords() {
         blurb: "Grade 6 math practice and support.",
       };
       const topic = topicFor(lessonSource);
-      const isFlagship = lessonId.endsWith("-flagship") || Boolean(lessonSource.flagship);
+      const isFlagship = lessonId.endsWith("-flagship");
       return {
         lessonId,
         unit,

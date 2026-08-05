@@ -383,7 +383,7 @@ function lessonConfigs() {
       const cfg = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
       // A lesson is "flagship" if the dir is suffixed OR the config carries a
       // flagship block (mission/scenes/finale). Both are handled gracefully.
-      const isFlagship = id.endsWith("-flagship") || cfg.flagship != null;
+      const isFlagship = id.endsWith("-flagship");
       return { id, cfg, isFlagship };
     })
     .sort((a, b) => {
@@ -3621,8 +3621,6 @@ ${vocabImageZoomScript()}
 }
 
 function buildIndex(lessons) {
-  const flagshipTotal = lessons.filter((l) => l.isFlagship).length;
-  const coreTotal = lessons.length - flagshipTotal;
   const byUnit = new Map();
   for (const { id, cfg, isFlagship } of lessons) {
     const u = cfg.unit ?? id.split("-")[0];
@@ -3680,8 +3678,7 @@ a:hover{text-decoration:underline;}
 <body>
 <div class="wrap">
   <h1>Notes Packets</h1>
-  <p>Printable, leveled guided-notes sheets for all ${lessons.length} Grade 6 math lessons (${coreTotal} core + ${flagshipTotal} flagship). Each sheet includes visual vocabulary and a four-step, lesson-specific <strong>Write About the Math</strong> routine with oral rehearsal, leveled frames, and a self-check. Every packet downloads as <strong>HTML, PDF, or Word (DOCX)</strong> and prints with a branded header, footer, and page numbers.</p>
-  <p class="legend"><span class="tag tag-core">Core</span> standard lesson &nbsp; <span class="tag tag-flagship">Flagship</span> mission-based lesson</p>
+  <p>Printable, leveled guided-notes sheets for all ${lessons.length} Grade 6 math lessons. Each sheet includes visual vocabulary and a four-step, lesson-specific <strong>Write About the Math</strong> routine with oral rehearsal, leveled frames, and a self-check. Every packet downloads as <strong>HTML, PDF, or Word (DOCX)</strong> and prints with a branded header, footer, and page numbers.</p>
   ${groups}
 </div>
 </body>
