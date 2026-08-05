@@ -185,7 +185,7 @@ if (!ran) {
 console.log(`   ${ran}/${chain.length} build step(s) executed, tree clean after each`);
 
 if (failures) {
-  console.error(`\n✗ build injectors: ${failures} failure(s)`);
+  console.error(`\n✗ build chain: ${failures} step(s) modified committed source`);
   process.exit(1);
 }
-console.log(`   ✓ all ${INJECTORS.length} build steps left the working tree unchanged`);
+console.log(`   ✓ all ${ran} build steps left the working tree unchanged`);
