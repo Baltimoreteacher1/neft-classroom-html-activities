@@ -128,6 +128,7 @@ const COVERAGE = [
       "validate:teacher-workflow",
       "validate:guided-path",
       "validate:curriculum-product",
+      "validate:curriculum-links",
       "audit:links",
     ],
   ],
