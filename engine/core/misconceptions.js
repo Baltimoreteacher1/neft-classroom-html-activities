@@ -208,6 +208,33 @@ export const MISCONCEPTIONS = {
     studentEs:
       "Eso es el total de los datos, no su promedio. ¿Tu respuesta podría ser un valor real de esa lista? Un promedio tiene que caer dentro de los datos.",
   },
+  "geom-triangle-area-no-half": {
+    label: "Found base × height but forgot the half",
+    labelEs: "Calculó base × altura pero olvidó la mitad",
+    watchFor: "Draw the rectangle around the triangle — the triangle is half of it.",
+    student:
+      "You multiplied base × height, but that gives the whole rectangle. A triangle is half of that rectangle — take half of your answer.",
+    studentEs:
+      "Multiplicaste base × altura, pero eso da el rectángulo completo. Un triángulo es la mitad de ese rectángulo: toma la mitad de tu respuesta.",
+  },
+  "geom-volume-added-dimensions": {
+    label: "Added the dimensions instead of multiplying",
+    labelEs: "Sumó las dimensiones en vez de multiplicarlas",
+    watchFor: "Build one layer of unit cubes first, then count the layers.",
+    student:
+      "You added length + width + height. Volume fills the box with cubes — build one layer, then multiply by how many layers stack up.",
+    studentEs:
+      "Sumaste largo + ancho + alto. El volumen llena la caja con cubos: arma una capa y multiplica por cuántas capas se apilan.",
+  },
+  "algebra-distributive-partial": {
+    label: "Distributed to the first term only",
+    labelEs: "Distribuyó solo al primer término",
+    watchFor: "Draw the area model — the outside factor touches BOTH terms.",
+    student:
+      "The number outside the parentheses has to multiply BOTH terms inside, not just the first one. Draw the area model and check both pieces.",
+    studentEs:
+      "El número fuera del paréntesis debe multiplicar AMBOS términos de adentro, no solo el primero. Dibuja el modelo de área y revisa las dos partes.",
+  },
   "measure-area-perimeter-swap": {
     label: "Swapped area and perimeter",
     labelEs: "Confundió área y perímetro",
@@ -227,6 +254,14 @@ export const MISCONCEPTIONS = {
 const AUTHORED_TAGS = {
   "place-value": "decimal-place-value",
   "sign-error": "sign-dropped",
+  // Straight-across fraction division is ALGEBRAICALLY VALID, so it has no
+  // numeric predictor (see the long note in predictions()) — an authored
+  // distractor is the only honest way to name it, and until this mapping
+  // existed an authored "straight-across" tag resolved to nothing at all.
+  "straight-across": "fraction-straight-across-division",
+  "triangle-half": "geom-triangle-area-no-half",
+  "volume-added": "geom-volume-added-dimensions",
+  "distributive-partial": "algebra-distributive-partial",
 };
 
 /** Split "3/4" into parts. Returns null unless the whole string is a fraction. */
@@ -504,6 +539,45 @@ export function predictions(item, correct) {
   if (/\bper\b|\beach\b|\bunit rate\b/i.test(stem) && expression && expression.op === "/") {
     push("rate-not-per-one", expression.a);
     push("ratio-inverted", apply(expression.b, expression.a, "/"));
+  }
+
+  // Triangle area: base × height offered without the half. Gated on the words
+  // "triangle" AND "area" AND explicitly labelled base/height quantities, so a
+  // rectangle problem or a bare "6 by 4" stem never earns a triangle label.
+  if (/\btriangle\b/i.test(stem) && /\barea\b/i.test(stem)) {
+    const base = stem.match(/base\s*(?:of|is|=|:)?\s*(\d+(?:\.\d+)?)/i);
+    const height = stem.match(/height\s*(?:of|is|=|:)?\s*(\d+(?:\.\d+)?)/i);
+    if (base && height) {
+      push("geom-triangle-area-no-half", Number(base[1]) * Number(height[1]));
+    }
+  }
+
+  // Volume of a rectangular prism: the three dimensions added instead of
+  // multiplied. Needs the word "volume" and a full "L by W by H" chain.
+  if (/\bvolume\b/i.test(stem)) {
+    const triple = stem.match(
+      /(\d+(?:\.\d+)?)\s*(?:units?|cm|m|in|ft|mm)?\s*(?:by|×|x)\s*(\d+(?:\.\d+)?)\s*(?:units?|cm|m|in|ft|mm)?\s*(?:by|×|x)\s*(\d+(?:\.\d+)?)/i,
+    );
+    if (triple) {
+      push(
+        "geom-volume-added-dimensions",
+        Number(triple[1]) + Number(triple[2]) + Number(triple[3]),
+      );
+    }
+  }
+
+  // Distributive property: a(b + c) with the outside factor applied to the
+  // first term only — a·b + c. Only for a literal numeric "N(N ± N)" in the
+  // stem, so prose never triggers it.
+  const distributive = stem.match(
+    /(\d+(?:\.\d+)?)\s*\(\s*(\d+(?:\.\d+)?)\s*([+−–-])\s*(\d+(?:\.\d+)?)\s*\)/,
+  );
+  if (distributive) {
+    const factor = Number(distributive[1]);
+    const first = Number(distributive[2]);
+    const second = Number(distributive[4]);
+    const sign = distributive[3] === "+" ? 1 : -1;
+    push("algebra-distributive-partial", factor * first + sign * second);
   }
 
   // Sign loss is the explanation of LAST RESORT, and only for negative answers.

@@ -51,6 +51,18 @@ const TAG_LABELS = {
     "Divided numerators and denominators straight across",
     "Dividió numeradores y denominadores directamente",
   ],
+  "geom-triangle-area-no-half": [
+    "Found base × height but forgot the half",
+    "Calculó base × altura pero olvidó la mitad",
+  ],
+  "geom-volume-added-dimensions": [
+    "Added the dimensions instead of multiplying",
+    "Sumó las dimensiones en vez de multiplicarlas",
+  ],
+  "algebra-distributive-partial": [
+    "Distributed to the first term only",
+    "Distribuyó solo al primer término",
+  ],
   "measure-area-perimeter-swap": ["Swapped area and perimeter", "Intercambió área y perímetro"],
   "op-added-instead-of-multiplied": [
     "Added when the problem multiplies",
@@ -105,6 +117,9 @@ const TAG_STANDARDS = {
   "fraction-added-denominators": ["6.NOS.1", "6.NOS.4"],
   "fraction-no-reciprocal": ["6.NOS.1"],
   "fraction-straight-across-division": ["6.NOS.1"],
+  "geom-triangle-area-no-half": ["6.GR.1"],
+  "geom-volume-added-dimensions": ["6.GR.2"],
+  "algebra-distributive-partial": ["6.AT.7"],
   "measure-area-perimeter-swap": ["6.GR.1"],
   "op-added-instead-of-multiplied": ["6.AT.6a"],
   "op-divided-instead-of-multiplied": ["6.AT.3"],
