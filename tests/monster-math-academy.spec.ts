@@ -289,12 +289,15 @@ test.describe("Monster Math Academy smoke", () => {
   });
 
   test("Math Workbench link on title screen", async ({ page }) => {
-    await expect(
-      page.getByRole("link", { name: /Math Workbench|Banco de Matematicas/i }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: /Math Workbench|Banco de Matematicas/i }),
-    ).toHaveAttribute("href", /math-workbench/);
+    // Scoped to the title screen's OWN link (.mma-workbench-link) rather than
+    // "any link whose name mentions Math Workbench". assets/math-workbench-launcher.js
+    // injects a site-wide floating launcher (#mwb-launcher) onto this page too,
+    // so the loose accessible-name match resolved to two elements and failed on
+    // Playwright strict mode — a test broken by a second, working button.
+    const link = page.locator(".mma-workbench-link");
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", /math-workbench/);
+    await expect(link).toHaveAccessibleName(/Math Workbench|Banco de Matematicas/i);
   });
 
   test("title screen shows Start Mission, Choose Level, and Settings", async ({

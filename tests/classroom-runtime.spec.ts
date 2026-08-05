@@ -1,11 +1,22 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import launchManifest from "../data/curriculum-launch-manifest.json" with { type: "json" };
+
+// Read the count from the curriculum's source of truth rather than hardcoding
+// it. This assertion said "74 canonical lessons ready" for weeks after the
+// curriculum became 64 lessons: the 74→64 retune updated the other lesson-count
+// gates and missed this one, so it failed nightly on a page that was correct.
+// Comparing against the manifest still catches the real defect — the runtime
+// page disagreeing with the curriculum — without rotting on the next change.
+const CANONICAL_LESSONS = launchManifest.lessons.length;
 
 test("classroom runtime compiles, adapts, reviews, and forks in English/Spanish only", async ({
   page,
 }) => {
   await page.goto("/curriculum/runtime/");
-  await expect(page.getByRole("status")).toContainText("74 canonical lessons ready");
+  await expect(page.getByRole("status")).toContainText(
+    `${CANONICAL_LESSONS} canonical lessons ready`,
+  );
 
   const language = page.getByLabel("Bilingual mode");
   await expect(language.locator("option")).toHaveCount(2);
