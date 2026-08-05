@@ -5303,6 +5303,13 @@ body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-doc
 .nt-work-pair .nt-work-tool {
   position: sticky;
   top: var(--sp-3, 12px);
+  /* Sticky alone is not enough: a manipulative taller than the viewport scrolls
+     its own bottom off-screen and never comes back. Cap it to the viewport and
+     let the tool scroll inside its column, so the whole tool stays reachable
+     beside whichever problem the student is on. */
+  max-height: calc(100vh - var(--sp-5, 24px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .nt-work-pair .nt-work-tool > .card,
 .nt-work-pair .nt-work-main > .card:first-child {

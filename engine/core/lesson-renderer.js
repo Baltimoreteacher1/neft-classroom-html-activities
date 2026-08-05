@@ -3509,10 +3509,10 @@ function workPairCaption(step, text) {
   const p = document.createElement("p");
   p.className = "nt-work-caption";
   p.style.cssText =
-    "display:flex; align-items:center; gap:8px; margin:0 0 var(--sp-2,8px); font-size:0.95rem; font-weight:800; color:var(--navy,#12355b);";
+    "display:flex; align-items:center; gap:10px; margin:0 0 var(--sp-3,12px); font-size:var(--fs-xl,1.4rem); font-weight:800; color:var(--navy,#12355b);";
   const badge = document.createElement("span");
   badge.style.cssText =
-    "flex:0 0 auto; padding:2px 10px; border-radius:999px; background:var(--teal,#1fa6a2); color:#fff; font-size:0.78rem; letter-spacing:0.03em; text-transform:uppercase;";
+    "flex:0 0 auto; padding:6px 16px; border-radius:999px; background:var(--teal,#1fa6a2); color:#fff; font-size:var(--fs-lg,1.15rem); font-weight:900; letter-spacing:0.03em; text-transform:uppercase;";
   badge.textContent = step;
   const txt = document.createElement("span");
   txt.textContent = text;

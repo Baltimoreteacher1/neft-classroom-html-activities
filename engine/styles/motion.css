@@ -47,6 +47,17 @@
     animation: none;
   }
 
+  /* The work pair holds the sticky tool column. `animation: … both` leaves the
+     final keyframe applied forever, and ANY transform on an ancestor — even the
+     identity `transform: none` this animation ends on, which still computes to a
+     matrix while the fill is held — makes that ancestor the containing block for
+     `position: sticky` inside it. The manipulative then scrolled away from the
+     problem it belongs to. Fade the pair in instead: same entrance, no transform,
+     sticky intact. */
+  .app .phase.active > .nt-work-pair {
+    animation-name: motionFadeIn;
+  }
+
   /* ── Section header ambience ── */
   .app .section-header {
     position: relative;
@@ -153,6 +164,15 @@
   pointer-events: none;
   z-index: 9999;
   animation: motionSparkFly 0.55s ease-out both;
+}
+
+@keyframes motionFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes motionRise {
