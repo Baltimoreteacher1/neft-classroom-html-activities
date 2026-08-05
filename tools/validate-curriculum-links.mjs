@@ -74,7 +74,10 @@ for (const [id, hubUnit] of unitOfHubLesson) {
 for (const l of lessons) {
   const p = l.arcade?.path;
   if (!p) continue;
-  check(existsSync(resolve(ROOT, p.replace(/^\//, ""))), `arcade file missing: ${p} (lesson ${l.id})`);
+  check(
+    existsSync(resolve(ROOT, p.replace(/^\//, ""))),
+    `arcade file missing: ${p} (lesson ${l.id})`,
+  );
   const home = blocks.find((b) => b.body.includes(`href="${p}"`));
   if (home) {
     check(

@@ -326,8 +326,16 @@ export function createMasteryLadder({
       document.dispatchEvent(new CustomEvent("sg:adaptive-path", { detail: level.path }));
     }
     if (level.supports && practiceSection) {
-      for (const card of practiceSection.querySelectorAll(":scope > .prob:not(.sg-done-all)"))
+      // Braced deliberately. As a bare (unbraced) loop body this line was the
+      // one file in the repo the formatter could not settle on: it hoisted the
+      // JSDoc cast up onto the `for`, which orphaned the parens around `card`,
+      // and then wanted to strip those parens on the next pass. A block gives
+      // the comment somewhere to live, so the cast stays attached to `card` --
+      // which it must, since `sgApplySupport` is a property this file hangs on
+      // the element and Element does not declare it.
+      for (const card of practiceSection.querySelectorAll(":scope > .prob:not(.sg-done-all)")) {
         /** @type {any} */ (card).sgApplySupport?.();
+      }
     }
     wrap.dataset.level = level.id;
     fourPanel?.node.classList.toggle("is-target", level.id === "l4");

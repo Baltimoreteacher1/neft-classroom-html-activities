@@ -3,9 +3,9 @@
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 import { renderActivityChooser, runComponentList } from "../components/activity-chooser.js";
 import {
+  renderLearnItPanel,
   renderVocabAndLearnIt,
   renderVocabPanel,
-  renderLearnItPanel,
 } from "../components/vocab-learn-panel.js";
 import { createEngagement } from "../engagement/engagement.js";
 import { fireCelebrationFX } from "./celebration-picker.js";

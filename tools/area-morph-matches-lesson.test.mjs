@@ -19,7 +19,7 @@
  *   2. seedAreaMorph still reads those dimensions out of the worked example,
  *      for lessons that author no diagram at all.
  */
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 

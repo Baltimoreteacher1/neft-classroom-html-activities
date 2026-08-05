@@ -19,7 +19,7 @@
 // A picture that 404s is obvious; a picture that parses badly looks fine to
 // every gate we had.
 import assert from "node:assert/strict";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { resolveVocabImage } from "../engine/core/vocab-images.js";

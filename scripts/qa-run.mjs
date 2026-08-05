@@ -50,7 +50,13 @@ const SCRIPTS = pkg.scripts || {};
  * ------------------------------------------------------------------------ */
 const GATE = [
   "build",
-  "lint",
+  // `check` (biome check), NOT `lint` (biome lint). Both are read-only, but
+  // `lint` ignores formatting, and `biome check` -- the thing the PR-only
+  // Pre-Deploy Gate actually runs -- does not. Because every deploy here goes
+  // straight to `main` via `npm run ship`, which opens no PR, nothing ran
+  // `biome check` for weeks and 32 format errors banked up unseen on `main`.
+  // `check` is a strict superset of `lint`, so this only ever catches more.
+  "check",
   "validate",
   "validate:homework",
   "validate:practice",
@@ -86,7 +92,7 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
  * ~1,000 files plus ~3,100 inline blocks and costs 23s, which would be the
  * whole budget of a "fast" lane. It is added below only when a changed path can
  * actually carry a script, and the full gate at push time runs it regardless. */
-const UNIVERSAL = ["lint"];
+const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
   [

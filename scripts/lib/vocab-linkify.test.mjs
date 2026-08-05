@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { VOCAB_TERMS, linkifyDeck, linkifyVocab } from "./vocab-linkify.mjs";
+import { linkifyDeck, linkifyVocab, VOCAB_TERMS } from "./vocab-linkify.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -66,7 +66,10 @@ t("never double-wraps an already-linked term", () => {
   const once = linkifyVocab("<p>The area matters.</p>");
   assert.equal((once.match(/vocab-word/g) || []).length, 1);
   assert.equal(linkifyVocab(once), once);
-  assert.equal(linkifyDeck(linkifyDeck("<p>The area matters.</p>")), linkifyDeck("<p>The area matters.</p>"));
+  assert.equal(
+    linkifyDeck(linkifyDeck("<p>The area matters.</p>")),
+    linkifyDeck("<p>The area matters.</p>"),
+  );
 });
 
 t("never wraps a term inside another term's link text", () => {

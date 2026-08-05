@@ -1,11 +1,16 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-import { extractDivisionDiagram } from "../core/division-helper.js";
-
+// This component was born (8872f27) with an `extractDivisionDiagram` import and
+// a `diagram` parameter that it never read — scaffolding for showing a long
+// division diagram beside a Find-the-Error problem that was never finished.
+// Both are removed rather than left as a promise the code does not keep. The
+// caller spreads `...problemDef`, so a lesson may still author `diagram`; it is
+// simply ignored here, exactly as it has been since the file shipped. Wiring it
+// up is a content decision, not a lint fix.
 export function renderErrorAnalysis(
   container,
-  { title, workedExample, errorStep, correctWork, hints, onAnswer, diagram },
+  { title, workedExample, errorStep, correctWork, hints, onAnswer },
 ) {
   injectErrorAnalysisStyles();
 

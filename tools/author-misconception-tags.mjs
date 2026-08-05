@@ -22,8 +22,7 @@
 // clones of the same items, so both are tagged with the same deterministic rule
 // and a generator re-run converges on the identical result.
 
-import { readFileSync, writeFileSync } from "node:fs";
-import { globSync } from "node:fs";
+import { globSync, readFileSync, writeFileSync } from "node:fs";
 
 const DRY = process.argv.includes("--dry-run");
 
@@ -91,7 +90,8 @@ function selfTest() {
   };
   const derived = deriveTags(taco);
   const want = JSON.stringify([null, null, "place-value", "place-value"]);
-  if (JSON.stringify(derived) !== want) throw new Error(`selftest place-value: got ${JSON.stringify(derived)}`);
+  if (JSON.stringify(derived) !== want)
+    throw new Error(`selftest place-value: got ${JSON.stringify(derived)}`);
   const signed = { stem: "-8 + 3 = ?", choices: ["-5", "5", "-11"], correctIndex: 0 };
   const signTags = deriveTags(signed);
   if (JSON.stringify(signTags) !== JSON.stringify([null, "sign-error", null]))
