@@ -271,12 +271,25 @@ async function probeRoute(page, base, route) {
       { selector: route.measure === "html" ? route.selector : null, measure: route.measure },
     )
     .catch(() => -1);
+  // assets/lesson-shell-guard.js paints #nt-shell-fallback ("This lesson is
+  // having trouble loading") when a lesson fails to boot. That card is ~1072
+  // characters — comfortably OVER this probe's 800-char floor — so a page
+  // showing students a failure notice scored as a PASS on content length alone.
+  // It is not hypothetical: all 10 flagship lessons rendered nothing but that
+  // card and this probe reported "16/16 pages rendered" for weeks. The card is
+  // the single most explicit statement a page can make that it did not render,
+  // so look for it directly rather than trusting a byte count to imply it.
+  const fallback = await page
+    .evaluate(() => Boolean(document.getElementById("nt-shell-fallback")))
+    .catch(() => false);
+
   page.off("pageerror", onPageError);
   page.off("console", onConsole);
 
   const reasons = [];
   if (navError) reasons.push(`navigation failed: ${navError}`);
   if (pageErrors.length) reasons.push(`uncaught: ${pageErrors[0]}`);
+  if (fallback) reasons.push("shell guard fallback shown (lesson did not boot)");
   if (len < route.min) reasons.push(`content below min (${len} < ${route.min})`);
   return { ...route, len, pageErrors, consoleErrors, ok: reasons.length === 0, reasons };
 }
