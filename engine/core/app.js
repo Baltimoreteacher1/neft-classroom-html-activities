@@ -1149,17 +1149,51 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     "position:fixed; bottom:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; display:flex; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:0.3s;";
   document.body.append(minimapHUD);
 
+  // The phase dots PERSIST across renders, and that is the whole point.
+  //
+  // This used to re-write minimapHUD.innerHTML on every state change, which
+  // replaced each dot with a brand-new element. A CSS transition can only
+  // animate from a previous value on the SAME node, so the `transition: 0.3s`
+  // these dots declared never ran once — the map snapped between phases while
+  // appearing, in source, to glide. Keeping the nodes and mutating only their
+  // colour and scale lets that transition finally play, so the map travels
+  // alongside the phase slide instead of teleporting after it.
+  //
+  // They are also <button>s now rather than divs carrying an inline onclick:
+  // the dots are real navigation, and a div is not reachable by keyboard.
+  let minimapDots = [];
   function updateMinimap() {
     const s = state.get();
-    minimapHUD.innerHTML = s.phases
-      .map((p, i) => {
-        const isCurrent = i === s.currentPhase;
-        const done = p.status === "completed";
-        const bg = isCurrent ? "#387F84" : done ? "#F2A93B" : "rgba(0,0,0,0.1)";
-        const scale = isCurrent ? "scale(1.2)" : "scale(1)";
-        return `<div style="width:12px;height:12px;border-radius:50%;background:${bg}; transform:${scale}; transition:0.3s; cursor:pointer;" title="Phase ${i + 1}" onclick="document.dispatchEvent(new CustomEvent('rma:navigate', {detail:{phase:${i}}}))"></div>`;
-      })
-      .join("");
+    if (minimapDots.length !== s.phases.length) {
+      minimapHUD.innerHTML = "";
+      minimapDots = s.phases.map((_, i) => {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "minimap-dot";
+        dot.title = `Phase ${i + 1}`;
+        dot.setAttribute("aria-label", `Go to phase ${i + 1}`);
+        dot.style.cssText =
+          "width:12px; height:12px; padding:0; border:0; border-radius:50%; cursor:pointer;" +
+          "transition:background-color 0.3s ease, transform 0.3s ease;";
+        dot.addEventListener("click", () =>
+          document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: i } })),
+        );
+        minimapHUD.append(dot);
+        return dot;
+      });
+    }
+    s.phases.forEach((p, i) => {
+      const dot = minimapDots[i];
+      if (!dot) return;
+      const isCurrent = i === s.currentPhase;
+      dot.style.backgroundColor = isCurrent
+        ? "#387F84"
+        : p.status === "completed"
+          ? "#F2A93B"
+          : "rgba(0,0,0,0.1)";
+      dot.style.transform = isCurrent ? "scale(1.2)" : "scale(1)";
+      dot.setAttribute("aria-current", isCurrent ? "step" : "false");
+    });
   }
 
   state.subscribe(() => {
