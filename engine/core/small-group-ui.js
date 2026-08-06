@@ -433,7 +433,7 @@ export function injectSmallGroupStyles(accent) {
        — so a callout inside a card inside the page read as one flat surface and
        the studio looked unfinished no matter how good the type was. Keep the
        steps visible. */
-    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#c8d4e0;--sg-paper:#f6f2e9;--sg-card:#fff;--sg-text:#1d2a36;--sg-muted:#4c5f72;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e0f3ef;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fcede7;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fffdf8;--sg-fill:#e8eff6;
+    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#d8dfe6;--sg-paper:#fdfaf3;--sg-card:#fff;--sg-text:#1d2a36;--sg-muted:#5a6b7c;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e0f3ef;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fcede7;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fffdf8;--sg-fill:#e8eff6;
       /* Type pairing. Outfit (the site display face, already loaded by the
          lesson shell) for anything that acts as a heading or a label; Atkinson
          Hyperlegible — chosen for these pathways because it is the most legible
@@ -459,14 +459,21 @@ export function injectSmallGroupStyles(accent) {
        frame — measurable jank on a classroom Chromebook — and at these
        document lengths it also left whole screens unpainted mid-scroll.
        Anchoring to the document costs nothing and paints reliably. */
+    /* Warm paper, and nothing tiled behind the words.
+       This used to lay a 40px graph-paper grid across the entire document —
+       two repeating 1px gradients — under every paragraph, worked example and
+       vocabulary card. A ruled texture reads as "math notebook" in a mockup and
+       as visual noise on a Chromebook an hour into a rotation, because the
+       lines never stop and they sit directly beneath the text the student is
+       trying to track. The two soft washes stay: they are large, static, and
+       nowhere near reading size. */
     body{margin:0;color:var(--sg-text);font-family:var(--sg-body);font-size:17px;line-height:1.62;background-color:var(--sg-paper);background-image:
-      radial-gradient(110% 86% at 88% 0%,color-mix(in srgb,var(--sg-pop) 12%,transparent),transparent 70%),
-      radial-gradient(90% 74% at 4% 100%,rgba(18,53,91,.06),transparent 72%),
-      linear-gradient(rgba(18,53,91,.026) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(18,53,91,.026) 1px,transparent 1px);
-      background-position:top right,bottom left,0 0,0 0;
-      background-repeat:no-repeat,no-repeat,repeat,repeat;
-      background-size:100% 780px,100% 620px,40px 40px,40px 40px;
+      radial-gradient(120% 90% at 88% 0%,color-mix(in srgb,var(--sg-pop) 9%,transparent),transparent 72%),
+      radial-gradient(95% 78% at 4% 100%,rgba(18,53,91,.045),transparent 74%);
+      background-position:top right,bottom left;
+      background-repeat:no-repeat,no-repeat;
+      background-size:100% 780px,100% 620px;
+      background-attachment:scroll;
       -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-optical-sizing:auto}
     button,input,textarea{font:inherit}
     button,a,input,textarea,summary{outline-offset:4px}
@@ -537,12 +544,25 @@ export function injectSmallGroupStyles(accent) {
        active step), which is what makes "where am I" answerable at a glance. */
     .sg-rail,.sg-tabs{position:sticky;top:0;z-index:30;display:grid;gap:6px;margin:0 -6px 30px;padding:9px;border:1px solid var(--sg-line);border-top:0;border-radius:0 0 var(--sg-radius) var(--sg-radius);background:color-mix(in srgb,var(--sg-card) 88%,var(--sg-paper));backdrop-filter:blur(14px) saturate(1.4);box-shadow:0 6px 20px -8px rgba(17,34,56,.22)}
     .sg-rail{grid-template-columns:repeat(auto-fit,minmax(0,1fr))}
-    .sg-tabs{grid-template-columns:repeat(6,minmax(0,1fr))}
-    .sg-step{position:relative;display:flex;min-height:48px;align-items:center;justify-content:center;gap:8px;padding:6px 8px;border:0;border-radius:var(--sg-radius-sm);background:transparent;color:var(--sg-muted);font-family:var(--sg-display);font-size:13.5px;font-weight:700;cursor:pointer}
+    /* One track per part, set from the real count by mountSmallGroupTabs.
+       A hard repeat(6,...) left an empty column whenever a lesson shipped five
+       parts, and squeezed "Practice & Check" into a wrap to pay for it.
+       auto-fit is the reflex fix and is wrong here: it sizes tracks to the
+       minimum and leaves the row short, which truncated "Worked example" to
+       "Worked exa...". The count is known when the strip is built, so it is
+       passed in rather than guessed. */
+    .sg-tabs{grid-template-columns:repeat(var(--sg-tab-count,5),minmax(0,1fr))}
+    /* The parts of the lesson, as real cards rather than a row of words. Each
+       is a titled destination — name on top, what-you-do underneath — so the
+       strip reads as the lesson's table of contents instead of decoration. */
+    .sg-step{position:relative;display:flex;min-height:52px;align-items:center;justify-content:flex-start;gap:9px;padding:8px 10px;border:1px solid var(--sg-line);border-radius:var(--sg-radius-sm);background:var(--sg-card);color:var(--sg-ink);font-family:var(--sg-display);font-size:13.5px;font-weight:700;text-align:left;cursor:pointer;box-shadow:0 3px 8px rgba(16,40,63,.05);transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
+    .sg-step .lbl{display:block;min-width:0;line-height:1.2}
+    .sg-step .lbl small{display:block;margin-top:2px;color:var(--sg-muted);font-size:11.5px;font-weight:600;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .sg-step .dot{display:grid;width:26px;height:26px;flex:none;place-items:center;border-radius:8px;background:var(--sg-fill);color:var(--sg-ink);font-size:13px;font-weight:800}
-    .sg-step:hover:not([aria-selected="true"]){color:var(--sg-ink);background:var(--sg-soft)}
+    .sg-step:hover:not([aria-selected="true"]){color:var(--sg-ink);background:var(--sg-card);transform:translateY(-1px);box-shadow:0 6px 15px rgba(16,40,63,.09)}
     .sg-step.done{color:var(--sg-ink)}.sg-step.done .dot{color:#fff;background:var(--sg-good)}
-    .sg-step[aria-selected="true"]{color:#fff;background:var(--sg);box-shadow:0 5px 14px -6px color-mix(in srgb,var(--sg) 70%,transparent)}
+    .sg-step[aria-selected="true"]{color:#fff;background:var(--sg);border-color:var(--sg);box-shadow:0 6px 16px -6px color-mix(in srgb,var(--sg) 70%,transparent)}
+    .sg-step[aria-selected="true"] .lbl small{color:rgba(255,255,255,.78)}
     .sg-step[aria-selected="true"] .dot{color:var(--sg-deep);background:var(--sg-pop)}
     /* Accent tick under the active step — the pathway signature, repeated. */
     .sg-step[aria-selected="true"]::after{content:"";position:absolute;left:50%;bottom:-9px;width:22px;height:3px;border-radius:3px;background:var(--sg-pop);transform:translateX(-50%)}
