@@ -460,7 +460,14 @@ if (process.argv.includes("--static-only")) process.exit(0);
 
 console.log(`Probing ${ids.length} lesson(s) at ${BASE} (concurrency ${CONCURRENCY})`);
 
-const browser = await chromium.launch();
+// PW_CHROMIUM_PATH: point at a system Chromium when the Playwright-managed
+// download is missing/version-mismatched (e.g. sandboxed CI containers). Same
+// override tools/smoke-lesson-boot.mjs takes — without it this gate cannot run
+// wherever Playwright's own build number does not match what is on disk, and a
+// gate that cannot open a browser probes nothing.
+const browser = await chromium.launch(
+  process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
+);
 const results = await runPool(ids, browser);
 await browser.close();
 console.log("");
