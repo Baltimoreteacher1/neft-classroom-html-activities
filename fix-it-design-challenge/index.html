@@ -21,7 +21,8 @@
         --shadow: 0 18px 38px rgba(16, 40, 63, 0.12);
         --soft: 0 8px 20px rgba(16, 40, 63, 0.08);
         --radius: 22px;
-        --font: Calibri, Arial, Helvetica, sans-serif;
+        --font: system-ui, -apple-system, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
       }
 
       * {
@@ -1400,6 +1401,94 @@
       }
 
       /* Print: clean facilitator/participant handout */
+      /* ---- Storage-blocked state for the save pill ---- */
+      .save-pill.blocked {
+        border-color: rgba(201, 104, 74, 0.55);
+        background: rgba(201, 104, 74, 0.1);
+        color: #8a3d2a;
+      }
+      .save-pill.blocked .dot {
+        background: var(--terracotta);
+      }
+
+      /* ---- "Gemini is blocked" fallback note ---- */
+      .tool-note {
+        margin: 10px 0 0;
+        font-size: 13px;
+        line-height: 1.45;
+        color: #3a4a58;
+        background: rgba(220, 232, 223, 0.5);
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+      .tool-note strong {
+        color: var(--navy);
+      }
+
+      /* ---- Padlet QR ---- */
+      .qr-wrap {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+        width: 100%;
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+      .qr-wrap img {
+        width: 124px;
+        height: 124px;
+        flex: 0 0 auto;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        padding: 7px;
+      }
+      .qr-wrap p {
+        margin: 0;
+        max-width: 320px;
+        font-size: 14px;
+        line-height: 1.42;
+        color: var(--muted);
+      }
+
+      /* ---- Shared-work restore banner ---- */
+      .restore-banner {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+        padding: 16px 18px;
+        border: 1px solid rgba(224, 169, 60, 0.55);
+        border-radius: 18px;
+        background: rgba(224, 169, 60, 0.14);
+      }
+      .restore-banner p {
+        margin: 0;
+        color: #5c4310;
+        font-weight: 700;
+        line-height: 1.42;
+        max-width: 640px;
+      }
+      .restore-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      /* ---- Programmatic panel focus ---- */
+      .page:focus {
+        outline: none;
+      }
+      .page:focus-visible {
+        outline: 3px solid var(--teal);
+        outline-offset: 6px;
+        border-radius: 8px;
+      }
+
       @media print {
         .top,
         .skip-link,
@@ -1699,6 +1788,68 @@
           transition-duration: 0.001ms !important;
         }
       }
+      @media print {
+        .tool-note,
+        .qr-wrap,
+        .restore-banner,
+        .save-pill {
+          display: none !important;
+        }
+      }
+
+      /* ---- Page-local GameFX opt-out ---------------------------------------
+         The shared kit (/assets/game-fx.js) is injected site-wide and opens an
+         "Arcade" mission-brief dialog on load, plus an Esc-to-pause dialog. The
+         kit's own comment scopes those to "arcade / juiced games", but its
+         guard only exempts the practice-arcade path, so this professional-
+         learning page inherited both: every participant had to dismiss a modal
+         before they could touch anything, and Esc opened a game-pause card.
+         The rest of the kit (parallax, polish) is still wanted here, so this
+         hides just those two overlays. The shared kit is untouched. ---------- */
+      #gfx-mission-brief,
+      #gfx-pause-overlay {
+        display: none !important;
+      }
+
+      /* Game-only chrome the kit pins over the page. None of it means anything
+         on a professional-learning worksheet, and #gfx-arcade-controls (an
+         on-screen d-pad) and #gfx-combo-meter sat on top of the step fields. */
+      #game-combo-hud,
+      #gfx-combo-meter,
+      #gfx-arcade-controls,
+      #game-passport-dialog,
+      #btn-game-passport,
+      #btn-game-pause,
+      #btn-game-controls {
+        display: none !important;
+      }
+
+      /* The kit's #game-pub-toolbar is position:fixed at the very top with
+         z-index 10000, so it printed straight over the <h1> and over the
+         save-status pill (measured: toolbar top 12px, h1 top 16px). On a phone
+         it wrapped to four rows and buried the whole header. The remaining
+         buttons are the genuinely useful ones here - Scratchpad, Language,
+         Read aloud, Sound, Contrast - so instead of hiding the bar we reserve
+         exactly the space it occupies. The value is measured at runtime
+         because the bar re-wraps with viewport width. */
+      :root {
+        --gfx-bar-clear: 0px;
+        --nt-bar-clear: 96px;
+      }
+      .top {
+        padding-top: var(--gfx-bar-clear);
+      }
+      body {
+        padding-bottom: var(--nt-bar-clear);
+      }
+      @media print {
+        .top {
+          padding-top: 0 !important;
+        }
+        body {
+          padding-bottom: 0 !important;
+        }
+      }
     </style>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <link rel="stylesheet" href="/assets/game-fx.css" />
@@ -1714,7 +1865,65 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
-</head>
+    <script>
+      /* Opt out of the shared GameFX mission brief using the kit's own
+         once-per-session key, so the dialog is never built rather than built
+         and hidden. The CSS rule above is the fallback for private windows
+         where sessionStorage throws. */
+      (function () {
+        try {
+          var path = location.pathname || "/";
+          var keys = [path, path.replace(/index\.html$/, "")];
+          keys.forEach(function (candidate) {
+            sessionStorage.setItem("gfx-brief:" + (candidate || "/"), "1");
+          });
+        } catch (error) {
+          /* sessionStorage unavailable — the CSS fallback covers it. */
+        }
+      })();
+
+      /* Measure the shared kit's fixed bars and reserve their space, so nothing
+         they add can cover the header or the last field on the page. Runs after
+         the kit builds them, and re-runs when the bars re-wrap. */
+      (function () {
+        function reserve(bar, variable, pad) {
+          function update() {
+            var rect = bar.getBoundingClientRect();
+            var space = rect.height ? Math.ceil(rect.height + pad) : 0;
+            document.documentElement.style.setProperty(variable, space + "px");
+          }
+          update();
+          if (window.ResizeObserver) new ResizeObserver(update).observe(bar);
+          window.addEventListener("resize", update);
+        }
+        function find(tries) {
+          var top = document.getElementById("game-pub-toolbar");
+          var bottom = document.querySelector(".nt-pe-bar");
+          if (top && !top.dataset.ntReserved) {
+            top.dataset.ntReserved = "1";
+            /* the bar is offset from the viewport top, so include that offset */
+            reserve(top, "--gfx-bar-clear", top.getBoundingClientRect().top + 8);
+          }
+          if (bottom && !bottom.dataset.ntReserved) {
+            bottom.dataset.ntReserved = "1";
+            reserve(bottom, "--nt-bar-clear", 24);
+          }
+          if ((!top || !bottom) && tries > 0) {
+            window.setTimeout(function () {
+              find(tries - 1);
+            }, 120);
+          }
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", function () {
+            find(30);
+          });
+        } else {
+          find(30);
+        }
+      })();
+    </script>
+  </head>
   <body>
     <a class="skip-link" href="#launch">Skip to content</a>
     <header class="top">
@@ -1756,6 +1965,9 @@
             aria-selected="true"
             href="#launch"
             data-page="launch"
+            id="tab-launch"
+            aria-controls="launch"
+            tabindex="0"
             ><span>Start</span><small>Walkthrough</small></a
           >
           <a
@@ -1764,6 +1976,9 @@
             aria-selected="false"
             href="#menu"
             data-page="menu"
+            id="tab-menu"
+            aria-controls="menu"
+            tabindex="-1"
             ><span>Groups</span><small>Choose page</small></a
           >
           <a
@@ -1772,6 +1987,9 @@
             aria-selected="false"
             href="#group-1"
             data-page="group-1"
+            id="tab-group-1"
+            aria-controls="group-1"
+            tabindex="-1"
             ><span>Group 1</span><small>Math Reasoning</small></a
           >
           <a
@@ -1780,6 +1998,9 @@
             aria-selected="false"
             href="#group-2"
             data-page="group-2"
+            id="tab-group-2"
+            aria-controls="group-2"
+            tabindex="-1"
             ><span>Group 2</span><small>ELA Evidence</small></a
           >
           <a
@@ -1788,6 +2009,9 @@
             aria-selected="false"
             href="#group-3"
             data-page="group-3"
+            id="tab-group-3"
+            aria-controls="group-3"
+            tabindex="-1"
             ><span>Group 3</span><small>Science Model</small></a
           >
           <a
@@ -1796,6 +2020,9 @@
             aria-selected="false"
             href="#group-4"
             data-page="group-4"
+            id="tab-group-4"
+            aria-controls="group-4"
+            tabindex="-1"
             ><span>Group 4</span><small>Social Studies Claim</small></a
           >
           <a
@@ -1804,6 +2031,9 @@
             aria-selected="false"
             href="#group-5"
             data-page="group-5"
+            id="tab-group-5"
+            aria-controls="group-5"
+            tabindex="-1"
             ><span>Group 5</span><small>MLL Language Access</small></a
           >
           <a
@@ -1812,6 +2042,9 @@
             aria-selected="false"
             href="#group-6"
             data-page="group-6"
+            id="tab-group-6"
+            aria-controls="group-6"
+            tabindex="-1"
             ><span>Group 6</span><small>Executive Function</small></a
           >
           <a
@@ -1820,6 +2053,9 @@
             aria-selected="false"
             href="#gallery"
             data-page="gallery"
+            id="tab-gallery"
+            aria-controls="gallery"
+            tabindex="-1"
             ><span>Padlet</span><small>Post builder</small></a
           >
         </nav>
@@ -1831,7 +2067,8 @@
         class="page active"
         id="launch"
         role="tabpanel"
-        aria-label="Guided walkthrough"
+        aria-labelledby="tab-launch"
+        tabindex="-1"
       >
         <!-- Step 1: Welcome -->
         <div class="hero">
@@ -2162,7 +2399,8 @@ Students still read the original text, identify the central claim, select their 
         class="page"
         id="menu"
         role="tabpanel"
-        aria-label="Group menu page"
+        aria-labelledby="tab-menu"
+        tabindex="-1"
       >
         <div class="page-head">
           <div>
@@ -2289,7 +2527,8 @@ Students still read the original text, identify the central claim, select their 
         class="page group-page"
         id="group-1"
         role="tabpanel"
-        aria-label="Group 1 page"
+        aria-labelledby="tab-group-1"
+        tabindex="-1"
       >
         <div class="page-head compact">
           <div>
@@ -2533,7 +2772,8 @@ Students still read the original text, identify the central claim, select their 
         class="page group-page"
         id="group-2"
         role="tabpanel"
-        aria-label="Group 2 page"
+        aria-labelledby="tab-group-2"
+        tabindex="-1"
       >
         <div class="page-head compact">
           <div>
@@ -2777,7 +3017,8 @@ Students still read the original text, identify the central claim, select their 
         class="page group-page"
         id="group-3"
         role="tabpanel"
-        aria-label="Group 3 page"
+        aria-labelledby="tab-group-3"
+        tabindex="-1"
       >
         <div class="page-head compact">
           <div>
@@ -3022,7 +3263,8 @@ Students still read the original text, identify the central claim, select their 
         class="page group-page"
         id="group-4"
         role="tabpanel"
-        aria-label="Group 4 page"
+        aria-labelledby="tab-group-4"
+        tabindex="-1"
       >
         <div class="page-head compact">
           <div>
@@ -3267,7 +3509,8 @@ Students still read the original text, identify the central claim, select their 
         class="page group-page"
         id="group-5"
         role="tabpanel"
-        aria-label="Group 5 page"
+        aria-labelledby="tab-group-5"
+        tabindex="-1"
       >
         <div class="page-head compact">
           <div>
@@ -3511,7 +3754,8 @@ Students still read the original text, identify the central claim, select their 
         class="page group-page"
         id="group-6"
         role="tabpanel"
-        aria-label="Group 6 page"
+        aria-labelledby="tab-group-6"
+        tabindex="-1"
       >
         <div class="page-head compact">
           <div>
@@ -3755,7 +3999,8 @@ Students still read the original text, identify the central claim, select their 
         class="page"
         id="gallery"
         role="tabpanel"
-        aria-label="Gallery page"
+        aria-labelledby="tab-gallery"
+        tabindex="-1"
       >
         <div class="page-head">
           <div>
@@ -3972,6 +4217,7 @@ Students still read the original text, identify the central claim, select their 
         const pill = $("#savePill");
         if (!pill) return;
         const text = $(".save-text", pill);
+        pill.classList.remove("blocked");
         pill.classList.add("saving");
         if (text) text.textContent = "Saving…";
         window.clearTimeout(savePillTimer);
@@ -3981,10 +4227,62 @@ Students still read the original text, identify the central claim, select their 
         }, 550);
       }
 
-      function save() {
-        localStorage.setItem(STORE, JSON.stringify(state));
-        flagSaved();
+      /* Storage is not guaranteed: private windows and locked-down school
+         profiles can make localStorage throw. The throw used to escape setValue
+         and abort the rest of the update, so the page looked alive while
+         nothing saved and no progress refreshed. Contain it, and say so. */
+      let storageOk = true;
+      let saveTimer = null;
+
+      function flagStorageBlocked() {
+        const pill = $("#savePill");
+        if (!pill) return;
+        const text = $(".save-text", pill);
+        window.clearTimeout(savePillTimer);
+        pill.classList.remove("saving");
+        pill.classList.add("blocked");
+        if (text) text.textContent = "Not saving on this device";
+        pill.title =
+          "This browser is blocking local storage, so your answers will not survive a refresh. Use \u201cDownload my group\u2019s work\u201d before you close the tab.";
       }
+
+      function writeState() {
+        window.clearTimeout(saveTimer);
+        saveTimer = null;
+        try {
+          localStorage.setItem(STORE, JSON.stringify(state));
+          if (!storageOk) {
+            storageOk = true;
+            flagSaved();
+          }
+          return true;
+        } catch (error) {
+          storageOk = false;
+          flagStorageBlocked();
+          return false;
+        }
+      }
+
+      function save() {
+        if (storageOk) flagSaved();
+        writeState();
+      }
+
+      /* Typing path: coalesce writes so a long paragraph costs one write rather
+         than one per keystroke. Always flushed before the tab can go away. */
+      function queueSave() {
+        if (storageOk) flagSaved();
+        window.clearTimeout(saveTimer);
+        saveTimer = window.setTimeout(writeState, 400);
+      }
+
+      function flushSave() {
+        if (saveTimer !== null) writeState();
+      }
+
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      );
 
       function key(groupId, field) {
         return `g${groupId}_${field}`;
@@ -3994,12 +4292,37 @@ Students still read the original text, identify the central claim, select their 
         return state[key(groupId, field)] || "";
       }
 
+      /* Every keystroke used to rewrite storage AND rebuild all six gallery
+         cards (each one a full postFor() + escapeHtml pass). That is visible
+         lag on the classroom Chromebooks this runs on, so coalesce it. Copy
+         buttons read state directly, and flushRender() runs before any read
+         that has to be current, so nothing observable goes stale. */
+      let renderTimer = null;
+      const pendingGroups = new Set();
+
+      function galleryIsOpen() {
+        const gallery = document.getElementById("gallery");
+        return Boolean(gallery && gallery.classList.contains("active"));
+      }
+
+      function flushRender() {
+        window.clearTimeout(renderTimer);
+        renderTimer = null;
+        if (!pendingGroups.size) return;
+        pendingGroups.forEach((id) => {
+          updateGroup(id);
+          refreshProgress(id);
+        });
+        pendingGroups.clear();
+        if (galleryIsOpen()) renderGallery();
+      }
+
       function setValue(groupId, field, value) {
         state[key(groupId, field)] = value;
-        save();
-        updateGroup(groupId);
-        refreshProgress(groupId);
-        renderGallery();
+        queueSave();
+        pendingGroups.add(String(groupId));
+        window.clearTimeout(renderTimer);
+        renderTimer = window.setTimeout(flushRender, 200);
       }
 
       /* Which fields count as "complete" for each numbered step. */
@@ -4254,7 +4577,7 @@ Students still read the original text, identify the central claim, select their 
         return GROUPS.find((group) => group.id === Number(groupId));
       }
 
-      function openPage(pageId, updateHash = true) {
+      function openPage(pageId, updateHash = true, focusPanel = false) {
         const page = document.getElementById(pageId) ? pageId : "launch";
 
         $$(".page").forEach((section) => {
@@ -4265,13 +4588,28 @@ Students still read the original text, identify the central claim, select their 
           const isActive = button.dataset.page === page;
           button.classList.toggle("active", isActive);
           button.setAttribute("aria-selected", String(isActive));
+          /* Roving tabindex: the tablist is one Tab stop, not nine. */
+          button.tabIndex = isActive ? 0 : -1;
         });
 
         if (updateHash && location.hash !== `#${page}`) {
           history.replaceState(null, "", `#${page}`);
         }
 
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        if (page === "gallery") {
+          flushRender();
+          renderGallery();
+        }
+
+        if (focusPanel) {
+          const panel = document.getElementById(page);
+          if (panel) panel.focus({ preventScroll: true });
+        }
+
+        window.scrollTo({
+          top: 0,
+          behavior: prefersReducedMotion.matches ? "auto" : "smooth",
+        });
       }
 
       function promptFor(groupId) {
@@ -4438,19 +4776,211 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
           .replaceAll("'", "&#039;");
       }
 
-      function downloadResponses() {
-        const content = GROUPS.map((group) => postFor(group.id)).join(
-          "\n\n---\n\n",
-        );
+      const ANSWER_FIELDS = [
+        "barrier",
+        "thinking",
+        "before",
+        "feedback",
+        "after",
+        "osamr",
+        "evidence",
+      ];
+
+      function groupHasWork(groupId) {
+        return ANSWER_FIELDS.some((field) => getValue(groupId, field).trim());
+      }
+
+      function downloadText(filename, content) {
         const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = "fix-it-design-challenge-responses.txt";
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         link.remove();
         URL.revokeObjectURL(url);
+      }
+
+      /* Only export groups that actually have work. Exporting all six meant a
+         group's own record was buried in five blocks of "[Before-Gemini
+         scaffold]" placeholders. */
+      function downloadResponses() {
+        flushRender();
+        flushSave();
+        const started = GROUPS.filter((group) => groupHasWork(group.id));
+        if (!started.length) {
+          showToast("Nothing to download yet");
+          return;
+        }
+        downloadText(
+          "fix-it-design-challenge-responses.txt",
+          started.map((group) => postFor(group.id)).join("\n\n---\n\n"),
+        );
+        showToast(
+          started.length === 1
+            ? "Downloaded 1 group's work"
+            : `Downloaded ${started.length} groups' work`,
+        );
+      }
+
+      function downloadGroup(groupId) {
+        flushRender();
+        flushSave();
+        const group = groupById(groupId);
+        if (!group) return;
+        const slug = group.short.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        downloadText(
+          `fix-it-group-${group.id}-${slug}.txt`,
+          postFor(group.id),
+        );
+        showToast(`Group ${group.id} work downloaded`);
+      }
+
+      /* Share/restore: a group's answers travel in the URL so work can move off
+         one laptop (to the facilitator, or to another device) with no backend
+         and no account. */
+      function encodeShare(groupId) {
+        const payload = { g: Number(groupId) };
+        ANSWER_FIELDS.forEach((field) => {
+          const value = getValue(groupId, field);
+          if (value) payload[field] = value;
+        });
+        READY_CHECKS.forEach((name) => {
+          if (state[checkKey(groupId, name)]) payload[`check_${name}`] = true;
+        });
+        const bytes = new TextEncoder().encode(JSON.stringify(payload));
+        let binary = "";
+        bytes.forEach((byte) => {
+          binary += String.fromCharCode(byte);
+        });
+        return btoa(binary)
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=+$/, "");
+      }
+
+      function decodeShare(token) {
+        const padded = token.replace(/-/g, "+").replace(/_/g, "/");
+        const binary = atob(padded + "=".repeat((4 - (padded.length % 4)) % 4));
+        const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+        return JSON.parse(new TextDecoder().decode(bytes));
+      }
+
+      function shareUrlFor(groupId) {
+        return `${location.href.split("#")[0]}#load=${encodeShare(groupId)}`;
+      }
+
+      function applySharedWork(payload) {
+        const groupId = String(payload.g);
+        ANSWER_FIELDS.forEach((field) => {
+          if (typeof payload[field] === "string") {
+            state[key(groupId, field)] = payload[field];
+          }
+        });
+        READY_CHECKS.forEach((name) => {
+          if (payload[`check_${name}`]) state[checkKey(groupId, name)] = true;
+        });
+        writeState();
+        $$(`[data-group="${groupId}"][data-field]`).forEach((input) => {
+          input.value = getValue(groupId, input.dataset.field);
+        });
+        $$(`.ready-check[data-group="${groupId}"]`).forEach((box) => {
+          box.checked = Boolean(state[checkKey(groupId, box.dataset.check)]);
+        });
+        updateGroup(groupId);
+        refreshProgress(groupId);
+        refreshReadyChecks(groupId);
+        renderGallery();
+        openPage(`group-${groupId}`, true, true);
+        showToast(`Group ${groupId} work loaded`);
+      }
+
+      /* Never silently overwrite: a share link asks first. */
+      function showRestoreBanner(payload) {
+        const wrap = $("main.wrap");
+        if (!wrap) return;
+        const banner = document.createElement("div");
+        banner.className = "restore-banner";
+        banner.innerHTML = `
+          <p>A shared <strong>Group ${payload.g}</strong> fix was opened on this device. Loading it replaces whatever is currently saved on the Group ${payload.g} page.</p>
+          <span class="restore-actions">
+            <button class="btn primary" type="button" data-restore="load">Load it</button>
+            <button class="btn secondary" type="button" data-restore="dismiss">Keep what is here</button>
+          </span>`;
+        wrap.insertBefore(banner, wrap.firstChild);
+        banner.addEventListener("click", (event) => {
+          const button = event.target.closest("[data-restore]");
+          if (!button) return;
+          if (button.dataset.restore === "load") applySharedWork(payload);
+          banner.remove();
+        });
+      }
+
+      function initSharedLoad() {
+        const hash = location.hash.replace("#", "");
+        if (!hash.startsWith("load=")) return;
+        let payload = null;
+        try {
+          payload = decodeShare(hash.slice(5));
+        } catch (error) {
+          payload = null;
+        }
+        history.replaceState(null, "", location.pathname);
+        if (!payload || !payload.g || !groupById(payload.g)) {
+          showToast("That share link could not be read");
+          return;
+        }
+        showRestoreBanner(payload);
+      }
+
+      /* Gemini is blocked on plenty of district staff accounts. The clipboard
+         still holds the coach prompt, so say where else it can go. */
+      function buildToolNotes() {
+        $$("[data-copy-prompt]").forEach((button) => {
+          const row = button.closest(".action-row");
+          if (!row || !row.parentNode) return;
+          if (row.parentNode.querySelector(".tool-note")) return;
+          const note = document.createElement("p");
+          note.className = "tool-note";
+          note.innerHTML =
+            "<strong>If Gemini is blocked on your account:</strong> the prompt is already on your clipboard \u2014 paste it into whichever AI tool your district has approved. The coach prompt works the same anywhere.";
+          row.parentNode.insertBefore(note, row.nextSibling);
+        });
+      }
+
+      function buildGroupActions() {
+        GROUPS.forEach((group) => {
+          const page = document.getElementById(`group-${group.id}`);
+          if (!page) return;
+          const row = $(".post-card .action-row", page);
+          if (!row || $("[data-download-group]", row)) return;
+          const share = document.createElement("button");
+          share.type = "button";
+          share.className = "btn secondary";
+          share.dataset.shareGroup = group.id;
+          share.textContent = "Copy share link";
+          const download = document.createElement("button");
+          download.type = "button";
+          download.className = "btn secondary";
+          download.dataset.downloadGroup = group.id;
+          download.textContent = "Download my group's work";
+          row.appendChild(share);
+          row.appendChild(download);
+        });
+      }
+
+      const PADLET_QR = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MSA0MSIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIiByb2xlPSJpbWciPjxyZWN0IHdpZHRoPSI0MSIgaGVpZ2h0PSI0MSIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0yIDJoN3YxaC03ek0xMSAyaDJ2MWgtMnpNMTQgMmg1djFoLTV6TTIwIDJoMXYxaC0xek0yMiAyaDR2MWgtNHpNMzIgMmg3djFoLTd6TTIgM2gxdjFoLTF6TTggM2gxdjFoLTF6TTExIDNoMXYxaC0xek0xMyAzaDN2MWgtM3pNMTcgM2gxdjFoLTF6TTE5IDNoMXYxaC0xek0yMSAzaDF2MWgtMXpNMjMgM2gydjFoLTJ6TTI3IDNoMXYxaC0xek0yOSAzaDJ2MWgtMnpNMzIgM2gxdjFoLTF6TTM4IDNoMXYxaC0xek0yIDRoMXYxaC0xek00IDRoM3YxaC0zek04IDRoMXYxaC0xek0xMCA0aDF2MWgtMXpNMTIgNGgxdjFoLTF6TTE0IDRoMnYxaC0yek0yMSA0aDN2MWgtM3pNMjUgNGgydjFoLTJ6TTI4IDRoM3YxaC0zek0zMiA0aDF2MWgtMXpNMzQgNGgzdjFoLTN6TTM4IDRoMXYxaC0xek0yIDVoMXYxaC0xek00IDVoM3YxaC0zek04IDVoMXYxaC0xek0xMCA1aDF2MWgtMXpNMTIgNWgxdjFoLTF6TTE4IDVoMnYxaC0yek0yMSA1aDF2MWgtMXpNMjcgNWgzdjFoLTN6TTMyIDVoMXYxaC0xek0zNCA1aDN2MWgtM3pNMzggNWgxdjFoLTF6TTIgNmgxdjFoLTF6TTQgNmgzdjFoLTN6TTggNmgxdjFoLTF6TTEwIDZoNHYxaC00ek0xNiA2aDN2MWgtM3pNMjAgNmg0djFoLTR6TTI1IDZoMXYxaC0xek0yNyA2aDF2MWgtMXpNMzAgNmgxdjFoLTF6TTMyIDZoMXYxaC0xek0zNCA2aDN2MWgtM3pNMzggNmgxdjFoLTF6TTIgN2gxdjFoLTF6TTggN2gxdjFoLTF6TTEwIDdoMXYxaC0xek0xMiA3aDJ2MWgtMnpNMTYgN2gxdjFoLTF6TTE4IDdoMXYxaC0xek0yMCA3aDF2MWgtMXpNMjIgN2gxdjFoLTF6TTI0IDdoMXYxaC0xek0yNiA3aDF2MWgtMXpNMjggN2gydjFoLTJ6TTMyIDdoMXYxaC0xek0zOCA3aDF2MWgtMXpNMiA4aDd2MWgtN3pNMTAgOGgxdjFoLTF6TTEyIDhoMXYxaC0xek0xNCA4aDF2MWgtMXpNMTYgOGgxdjFoLTF6TTE4IDhoMXYxaC0xek0yMCA4aDF2MWgtMXpNMjIgOGgxdjFoLTF6TTI0IDhoMXYxaC0xek0yNiA4aDF2MWgtMXpNMjggOGgxdjFoLTF6TTMwIDhoMXYxaC0xek0zMiA4aDd2MWgtN3pNMTAgOWgxdjFoLTF6TTEyIDloMXYxaC0xek0xNSA5aDJ2MWgtMnpNMjIgOWgydjFoLTJ6TTI1IDloMXYxaC0xek0yOCA5aDF2MWgtMXpNMzAgOWgxdjFoLTF6TTIgMTBoMXYxaC0xek00IDEwaDV2MWgtNXpNMTIgMTBoNHYxaC00ek0yMCAxMGgydjFoLTJ6TTI0IDEwaDF2MWgtMXpNMjcgMTBoMnYxaC0yek0zMiAxMGg1djFoLTV6TTIgMTFoMnYxaC0yek03IDExaDF2MWgtMXpNMTAgMTFoMXYxaC0xek0xNSAxMWg0djFoLTR6TTI1IDExaDF2MWgtMXpNMjcgMTFoMnYxaC0yek0zMCAxMWgxdjFoLTF6TTMzIDExaDF2MWgtMXpNMzYgMTFoMnYxaC0yek0yIDEyaDd2MWgtN3pNMTEgMTJoNnYxaC02ek0yMCAxMmgxdjFoLTF6TTIyIDEyaDF2MWgtMXpNMjQgMTJoMXYxaC0xek0yNiAxMmg1djFoLTV6TTMyIDEyaDN2MWgtM3pNMzcgMTJoMnYxaC0yek0zIDEzaDV2MWgtNXpNOSAxM2gzdjFoLTN6TTE0IDEzaDN2MWgtM3pNMTggMTNoMXYxaC0xek0yMyAxM2gydjFoLTJ6TTI2IDEzaDF2MWgtMXpNMjggMTNoMXYxaC0xek0zMiAxM2gxdjFoLTF6TTM4IDEzaDF2MWgtMXpNMiAxNGgxdjFoLTF6TTUgMTRoMXYxaC0xek04IDE0aDF2MWgtMXpNMTAgMTRoMXYxaC0xek0xMiAxNGgxdjFoLTF6TTE5IDE0aDF2MWgtMXpNMjEgMTRoMXYxaC0xek0yNCAxNGg2djFoLTZ6TTMxIDE0aDR2MWgtNHpNMzYgMTRoM3YxaC0zek0yIDE1aDJ2MWgtMnpNNSAxNWgxdjFoLTF6TTEwIDE1aDF2MWgtMXpNMTQgMTVoMnYxaC0yek0xOCAxNWg0djFoLTR6TTIzIDE1aDF2MWgtMXpNMjUgMTVoMXYxaC0xek0zMyAxNWgxdjFoLTF6TTIgMTZoMXYxaC0xek03IDE2aDJ2MWgtMnpNMTIgMTZoMXYxaC0xek0xNyAxNmgzdjFoLTN6TTI5IDE2aDF2MWgtMXpNMzMgMTZoM3YxaC0zek0zOCAxNmgxdjFoLTF6TTMgMTdoMXYxaC0xek01IDE3aDF2MWgtMXpNOSAxN2gxdjFoLTF6TTEyIDE3aDN2MWgtM3pNMTYgMTdoNXYxaC01ek0yMiAxN2gzdjFoLTN6TTI4IDE3aDN2MWgtM3pNMzIgMTdoM3YxaC0zek0zOCAxN2gxdjFoLTF6TTIgMThoMXYxaC0xek00IDE4aDN2MWgtM3pNOCAxOGg0djFoLTR6TTEzIDE4aDJ2MWgtMnpNMTYgMThoMXYxaC0xek0xOCAxOGgxdjFoLTF6TTI0IDE4aDF2MWgtMXpNMjcgMThoMXYxaC0xek0yOSAxOGg2djFoLTZ6TTM2IDE4aDN2MWgtM3pNMiAxOWgxdjFoLTF6TTcgMTloMXYxaC0xek0xMSAxOWg3djFoLTd6TTE5IDE5aDV2MWgtNXpNMjUgMTloNHYxaC00ek0zMCAxOWgxdjFoLTF6TTMzIDE5aDF2MWgtMXpNMzUgMTloMXYxaC0xek0zNyAxOWgxdjFoLTF6TTIgMjBoMXYxaC0xek00IDIwaDJ2MWgtMnpNOCAyMGgxdjFoLTF6TTEwIDIwaDF2MWgtMXpNMTUgMjBoMXYxaC0xek0xNyAyMGgydjFoLTJ6TTIyIDIwaDF2MWgtMXpNMjQgMjBoMXYxaC0xek0yNiAyMGgxdjFoLTF6TTI4IDIwaDN2MWgtM3pNMzIgMjBoMnYxaC0yek0zNSAyMGgxdjFoLTF6TTM3IDIwaDJ2MWgtMnpNNSAyMWgxdjFoLTF6TTkgMjFoNnYxaC02ek0xNyAyMWgxdjFoLTF6TTIwIDIxaDF2MWgtMXpNMjMgMjFoMXYxaC0xek0yNiAyMWgxdjFoLTF6TTI4IDIxaDJ2MWgtMnpNMzEgMjFoNHYxaC00ek0zOCAyMWgxdjFoLTF6TTQgMjJoMnYxaC0yek04IDIyaDF2MWgtMXpNMTAgMjJoMXYxaC0xek0xNiAyMmgydjFoLTJ6TTE5IDIyaDF2MWgtMXpNMjEgMjJoMnYxaC0yek0yNCAyMmg0djFoLTR6TTI5IDIyaDR2MWgtNHpNMzQgMjJoM3YxaC0zek0yIDIzaDF2MWgtMXpNNyAyM2gxdjFoLTF6TTkgMjNoMXYxaC0xek0xMyAyM2gzdjFoLTN6TTIwIDIzaDN2MWgtM3pNMjUgMjNoMXYxaC0xek0zMCAyM2gxdjFoLTF6TTM1IDIzaDF2MWgtMXpNMyAyNGgxdjFoLTF6TTUgMjRoMXYxaC0xek04IDI0aDJ2MWgtMnpNMTMgMjRoNnYxaC02ek0yMCAyNGgxdjFoLTF6TTIyIDI0aDF2MWgtMXpNMjQgMjRoMXYxaC0xek0yNiAyNGgxdjFoLTF6TTI5IDI0aDN2MWgtM3pNMzMgMjRoM3YxaC0zek0zNyAyNGgydjFoLTJ6TTUgMjVoMnYxaC0yek0xMSAyNWgydjFoLTJ6TTE3IDI1aDF2MWgtMXpNMjMgMjVoMXYxaC0xek0yNSAyNWgxdjFoLTF6TTI5IDI1aDN2MWgtM3pNMzMgMjVoMnYxaC0yek0yIDI2aDF2MWgtMXpNNiAyNmg4djFoLTh6TTIwIDI2aDN2MWgtM3pNMjQgMjZoNnYxaC02ek0zMSAyNmgydjFoLTJ6TTM0IDI2aDF2MWgtMXpNMzYgMjZoMnYxaC0yek0yIDI3aDJ2MWgtMnpNNSAyN2gxdjFoLTF6TTcgMjdoMXYxaC0xek05IDI3aDd2MWgtN3pNMTcgMjdoM3YxaC0zek0yMSAyN2gydjFoLTJ6TTI1IDI3aDF2MWgtMXpNMjcgMjdoMnYxaC0yek0zMCAyN2gydjFoLTJ6TTIgMjhoMXYxaC0xek00IDI4aDF2MWgtMXpNNiAyOGgxdjFoLTF6TTggMjhoMXYxaC0xek0xMyAyOGgxdjFoLTF6TTE1IDI4aDJ2MWgtMnpNMjMgMjhoMXYxaC0xek0yNyAyOGg2djFoLTZ6TTM0IDI4aDF2MWgtMXpNMzcgMjhoMnYxaC0yek0yIDI5aDF2MWgtMXpNNCAyOWgydjFoLTJ6TTcgMjloMXYxaC0xek0xMCAyOWgydjFoLTJ6TTEzIDI5aDN2MWgtM3pNMTggMjloMXYxaC0xek0yMCAyOWg2djFoLTZ6TTI4IDI5aDF2MWgtMXpNMzIgMjloMXYxaC0xek0zNyAyOWgxdjFoLTF6TTIgMzBoMXYxaC0xek00IDMwaDF2MWgtMXpNNiAzMGgzdjFoLTN6TTExIDMwaDF2MWgtMXpNMTggMzBoMnYxaC0yek0yNCAzMGgxdjFoLTF6TTI2IDMwaDExdjFoLTExek0xMCAzMWgxdjFoLTF6TTEyIDMxaDF2MWgtMXpNMTQgMzFoMnYxaC0yek0xOCAzMWg1djFoLTV6TTI0IDMxaDJ2MWgtMnpNMjcgMzFoMXYxaC0xek0yOSAzMWgydjFoLTJ6TTM0IDMxaDJ2MWgtMnpNMiAzMmg3djFoLTd6TTExIDMyaDN2MWgtM3pNMTcgMzJoMXYxaC0xek0xOSAzMmgxdjFoLTF6TTIyIDMyaDN2MWgtM3pNMjYgMzJoMXYxaC0xek0zMCAzMmgxdjFoLTF6TTMyIDMyaDF2MWgtMXpNMzQgMzJoMXYxaC0xek0zNiAzMmgzdjFoLTN6TTIgMzNoMXYxaC0xek04IDMzaDF2MWgtMXpNMTAgMzNoMXYxaC0xek0xNiAzM2gxdjFoLTF6TTE5IDMzaDJ2MWgtMnpNMjIgMzNoMnYxaC0yek0zMCAzM2gxdjFoLTF6TTM0IDMzaDJ2MWgtMnpNMzcgMzNoMnYxaC0yek0yIDM0aDF2MWgtMXpNNCAzNGgzdjFoLTN6TTggMzRoMXYxaC0xek0xMCAzNGgxdjFoLTF6TTEyIDM0aDF2MWgtMXpNMTQgMzRoMXYxaC0xek0xNyAzNGgydjFoLTJ6TTIxIDM0aDF2MWgtMXpNMjQgMzRoMXYxaC0xek0yNyAzNGg4djFoLTh6TTM2IDM0aDF2MWgtMXpNMzggMzRoMXYxaC0xek0yIDM1aDF2MWgtMXpNNCAzNWgzdjFoLTN6TTggMzVoMXYxaC0xek0xMCAzNWgxdjFoLTF6TTEzIDM1aDN2MWgtM3pNMTcgMzVoMXYxaC0xek0yMCAzNWgzdjFoLTN6TTI1IDM1aDF2MWgtMXpNMjcgMzVoMXYxaC0xek0yOSAzNWgxdjFoLTF6TTMxIDM1aDJ2MWgtMnpNMzQgMzVoMXYxaC0xek0zOCAzNWgxdjFoLTF6TTIgMzZoMXYxaC0xek00IDM2aDN2MWgtM3pNOCAzNmgxdjFoLTF6TTEwIDM2aDJ2MWgtMnpNMTUgMzZoMXYxaC0xek0xNyAzNmgydjFoLTJ6TTIyIDM2aDJ2MWgtMnpNMjYgMzZoMnYxaC0yek0zMCAzNmgxdjFoLTF6TTM3IDM2aDJ2MWgtMnpNMiAzN2gxdjFoLTF6TTggMzdoMXYxaC0xek0xMSAzN2gydjFoLTJ6TTE2IDM3aDJ2MWgtMnpNMjEgMzdoMXYxaC0xek0yMyAzN2gxdjFoLTF6TTI1IDM3aDF2MWgtMXpNMjkgMzdoNHYxaC00ek0zNCAzN2gxdjFoLTF6TTM4IDM3aDF2MWgtMXpNMiAzOGg3djFoLTd6TTEwIDM4aDN2MWgtM3pNMTYgMzhoNHYxaC00ek0yNSAzOGg0djFoLTR6TTMxIDM4aDF2MWgtMXpNMzQgMzhoMXYxaC0xek0zNiAzOGgzdjFoLTN6IiBmaWxsPSIjMTAyODNmIi8+PC9zdmc+";
+
+      function buildPadletQr() {
+        const callout = $("#gallery .padlet-callout");
+        if (!callout || $(".qr-wrap", callout)) return;
+        const wrap = document.createElement("div");
+        wrap.className = "qr-wrap";
+        wrap.innerHTML = `
+          <img src="${PADLET_QR}" alt="QR code that opens the Fix-It gallery Padlet" width="124" height="124" />
+          <p>Point a phone camera here to open the Padlet \u2014 useful when the projector is the only shared screen.</p>`;
+        callout.appendChild(wrap);
       }
 
       function flashCopied(button) {
@@ -4476,12 +5006,34 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
         );
         if (pageLink) {
           event.preventDefault();
-          openPage(pageLink.dataset.openPage || pageLink.dataset.page);
+          const target = pageLink.dataset.openPage || pageLink.dataset.page;
+          /* In-content links move focus to the panel; tabs keep focus on the
+             tab, per the ARIA tabs pattern. */
+          openPage(target, true, !pageLink.classList.contains("tab-btn"));
+          return;
+        }
+
+        const shareButton = event.target.closest("[data-share-group]");
+        if (shareButton) {
+          flushRender();
+          flushSave();
+          const copied = await copyText(
+            shareUrlFor(shareButton.dataset.shareGroup),
+          );
+          showToast(copied ? "Share link copied" : "Share link ready to copy");
+          if (copied) flashCopied(shareButton);
+          return;
+        }
+
+        const downloadButton = event.target.closest("[data-download-group]");
+        if (downloadButton) {
+          downloadGroup(downloadButton.dataset.downloadGroup);
           return;
         }
 
         const copyElButton = event.target.closest("[data-copy-el]");
         if (copyElButton) {
+          flushRender();
           const source = $(copyElButton.dataset.copyEl);
           const copied = source ? await copyText(source.value) : false;
           showToast(copied ? "Coach prompt copied" : "Prompt ready to copy");
@@ -4545,14 +5097,29 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
       if (downloadButton)
         downloadButton.addEventListener("click", downloadResponses);
 
+      /* Nothing may sit unwritten when the tab goes away. */
+      window.addEventListener("beforeunload", flushSave);
+      window.addEventListener("pagehide", flushSave);
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
+          flushRender();
+          flushSave();
+        }
+      });
+
       hydrateInputs();
       buildProgressHeaders();
       buildMenuBadges();
       buildReadyChecks();
       hydrateReadyChecks();
+      buildToolNotes();
+      buildGroupActions();
+      buildPadletQr();
       GROUPS.forEach((group) => refreshProgress(group.id));
+      GROUPS.forEach((group) => refreshReadyChecks(group.id));
       renderGallery();
       initTabKeyboardNav();
+      initSharedLoad();
       openPage(location.hash.replace("#", "") || "launch", false);
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
