@@ -248,6 +248,18 @@ export const CARDS = [
     rows: [[{ t: "25% of 80" }], [{ t: "= 0.25 × 80 =  " }, { t: "20", hi: true }]],
     caption: "multiply by the percent as a decimal",
   },
+  // ── "Ratio table" across the ratio lessons (3.2–3.7, 4.6). Without a card
+  // the term fell through to the generic ratio.svg pie — a ratio, not a table.
+  // This card IS a two-row table, the same juice/water one its `visual` names.
+  {
+    slug: "ratio-table",
+    title: "Ratio table: rows of equivalent ratios",
+    rows: [
+      [{ t: "juice  " }, { t: "2", hi: true }, { t: " | 4 | 6" }],
+      [{ t: "water  " }, { t: "3", hi: true }, { t: " | 6 | 9" }],
+    ],
+    caption: "every column shows the same ratio",
+  },
   // ── "Base" in 6.1 Powers and Exponents: the number being multiplied.
   {
     slug: "exponent-base",
