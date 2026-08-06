@@ -1,0 +1,64 @@
+name: Refresh Visual Baseline
+# On-demand regeneration of the curriculum-visual screenshot baselines, on the
+# runner's own rendering stack, pushed to a review branch — never to main.
+#
+# Why this exists: the baseline can only be regenerated on the EXACT browser
+# build CI compares against. When hub work legitimately changes the page (as
+# the readiness-chip and manifest-cache changes did), Nightly Browser QA goes
+# red every night until someone with a matching local Chromium runs
+# --update-snapshots — and a version-mismatched local browser produces a
+# baseline that matches nothing, making it worse. This job runs the update
+# where the comparison actually happens.
+#
+# Deliberately NOT automatic and NOT self-merging: accepting a new baseline
+# means declaring the current appearance CORRECT, which is a human judgement.
+# The refreshed PNGs land on `ci/visual-baseline-refresh` for a reviewed PR;
+# GitHub's image diff (2-up / swipe) is the review surface.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-visual-baseline
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Regenerate curriculum-visual baselines
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Regenerate the visual baselines
+        # The Playwright webServer builds and serves dist/ itself, exactly as
+        # Nightly Browser QA runs it — same stack, same fonts, same browser.
+        run: npx playwright test tests/curriculum-visual.spec.ts --update-snapshots --workers=1
+      - name: Push refreshed baselines to the review branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/curriculum-visual.spec.ts-snapshots
+          if git diff --cached --quiet; then
+            echo "Baselines unchanged — nothing to review."
+            exit 0
+          fi
+          git checkout -B ci/visual-baseline-refresh
+          git commit -m "test(visual): refresh curriculum-visual baselines on CI's rendering stack"
+          git push -f origin ci/visual-baseline-refresh
+      - name: Upload baselines as an artifact (backup review surface)
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: refreshed-visual-baselines
+          path: tests/curriculum-visual.spec.ts-snapshots/
+          retention-days: 14
