@@ -1,0 +1,10 @@
+name = "neft-deploy-watch"
+main = "worker.js"
+compatibility_date = "2026-05-25"
+workers_dev = true
+
+# Every 5 minutes. The check is two GETs, so this stays far inside the free
+# tier, and GitHub's unauthenticated API limit (60/hr per IP) is untouched at
+# 12/hr. Deploy with:  cd workers/deploy-watch && npx wrangler deploy
+[triggers]
+crons = ["*/5 * * * *"]
