@@ -199,6 +199,9 @@ const STRINGS = {
   mathematician: { en: "Mathematician", es: "Matemático" },
   ofComplete: { en: "of", es: "de" },
   complete: { en: "complete", es: "completadas" },
+  // Lesson entrance badge (engine/core/app.js playLessonEntrance).
+  entranceWelcome: { en: "Welcome,", es: "Te damos la bienvenida," },
+  entranceGo: { en: "Your lesson is ready — let's go!", es: "Tu lección está lista — ¡vamos!" },
   // Matching-game chrome (engine/components/matching-game.js).
   mgTap: {
     en: "Tap an item on the left, then its match on the right.",
