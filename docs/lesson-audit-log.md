@@ -10,6 +10,83 @@ lessons in the same way are logged once as a schema/engine gap, not repeated per
 > two largest schema gaps are closed. Wave 2 re-verifies each Wave 1 gap against the current
 > corpus and says which still stand.
 
+## Wave 3 — 2026-08-06 — Wave 2's Finding 1 was wrong; the whole practice lane was dead
+
+**Read this before Wave 2's Finding 1.** That finding said a Spanish-speaking student
+"reads the question, the hints and the explanation in Spanish, then analyzes math work that
+is only in English," and concluded the fix was a 257-item job to author `workedExampleEs`.
+The premise is false for core lessons, and acting on it would have paid for translations of
+257 worked examples while **2,900+ already-authored Spanish strings sat undisplayed**.
+
+### What is actually true
+
+A module-graph walk from `engine/core/lesson-renderer.js` (99 modules) finds a consumer for
+the *vocabulary* Spanish only. The practice lane had none:
+
+| `*Es` key | occurrences in the 64 core configs | reachable consumer before this wave |
+| --- | --- | --- |
+| `explanationEs` | 1,308 | **none** |
+| `hintsEs` | 860 | **none** |
+| `stemEs` | 538 | none on the practice path (only `vocab-learn-panel.js`, a different surface) |
+| `instructionsEs` | 170 | **none** |
+| `choicesEs` | 162 | **none — consumed nowhere in the repo at all** |
+| `promptEs` | 54 | **none** |
+| `termEs` / `definitionEs` | 417 each | 11–13 modules — vocabulary was always bilingual |
+
+4,355 `*Es` occurrences in total; 1,308 of 1,965 practice items carry at least one. The
+reason this looked like "prose translated, steps not" is that vocabulary *is* fully
+bilingual, so the Spanish a reviewer happens to click on usually renders. Practice items
+never did. `engine/components/multiple-choice.js` contained the string `Es` zero times.
+
+The small-group renderer had a complete bilingual lane the entire time — `bi()` in
+`small-group-ui.js`, used by the 148 generated variants. Only the core renderer lacked one.
+Two separate paths, one of which nobody had wired.
+
+### Fixed this wave (engine)
+
+The core practice lane now renders the Spanish that was already authored. English is always
+drawn; Spanish stacks beneath it inside `.i18n-es`, which `design-system.css` keeps at
+`display:none` until `<html lang="es">` — so this is **opt-in behind the existing ES/EN
+toggle and changes nothing for a student who never touches it**.
+
+- `engine/core/i18n.js` — new `stackContent` / `stackContentHtml`. Unlike `stackHtml` (built
+  for fixed chrome, which always has both lanes), these return English *alone* when the
+  Spanish is blank or identical. Emitting an empty `.i18n-es` would print a blank italic
+  line under every untranslated item, which reads as a missing translation.
+- `problem-shell.js` + `lesson-renderer.js` — problem stems (`stemEs`, falling back through
+  the same `prompt`/`label` chain the English side uses, so the two lanes cannot desync).
+- `content-enrichment.js` + `hint-ladder.js` — hint rungs. The ladder's *header* has been
+  bilingual since it shipped, so a student in Spanish mode opened a Spanish-labelled hint
+  and read English. Pairing is by raw index: `hints` is filtered for blanks before mapping
+  and `hintsEs` is not, so pairing after the filter hands a rung the wrong translation.
+- `multiple-choice.js` — choices, explanation, the retry coach, and the misconception chip.
+- `misconceptions.js` — new `misconceptionLabel(id, lang)`, mirroring the existing
+  `studentExplanation`. Callers must not reach into `diagnoseChoice(...).labelEs`: that
+  spread is typed from the entries carrying no Spanish, so it is both a type error and a
+  silent `undefined` on any untranslated entry.
+- `error-analysis.js` — title, per-step `labelEs`/`workEs`, `correctWorkEs`, and its two
+  hardcoded English UI lines.
+
+### What is still a content job
+
+Wave 2 was right that the worked steps themselves have no Spanish — `workedExampleEs` /
+`correctWorkEs` do not exist in any config. That part stands, and it is still ~257 items.
+The difference is that the renderer now supports it, so authoring produces visible student
+support rather than dead data. Author per-step `labelEs` / `workEs` and `correctWorkEs`.
+
+Sequencing note for the next pass: `instructionsEs` (170) and `promptEs` (54) are still
+unrendered — they belong to `drag-sort` / `fill-table` / open-response components that this
+wave did not touch. Same fix shape, same helper.
+
+### Gates run
+
+`npm run validate` (exit 0), `npm test` (127/127, plus the new
+`engine/core/bilingual-practice.test.mjs`, 8/8), `npm run typecheck` (clean — it caught the
+`diagnoseChoice(...).labelEs` mistake above), `npx biome check` (clean), `npm run build`, and
+a real-Chromium probe over `1-2`, `1-3`, `1-4`, `2-2`: in `es` mode 21 Spanish spans visible
+per lesson across stems and hint rungs with **0 blank** ES spans; in `en` mode the same 21
+spans present and **0 visible**. English text identical in both modes.
+
 ## Wave 2 — 2026-08-06 — Re-verification + detector sweep (64 core lessons)
 
 Scope: the 64 core lessons (`lessons/*/config.json`, excluding the 148 `-group*`/`-catchup`
@@ -29,6 +106,14 @@ both browser-backed gates run against a real Chromium.
 | 2-1 graphic-novel `desc` mismatch | **Fixed this wave** (finding 3). |
 
 ### Finding 1 — ESOL: worked-example steps are English-only, corpus-wide (schema gap)
+
+> **Superseded by Wave 3 — its premise is wrong.** This finding assumes the surrounding
+> prose (`stemEs`, `explanationEs`, `hintsEs`, `choicesEs`) was being *displayed* to
+> students. It was not: the core lesson renderer had no consumer for any of those keys, so
+> the practice lane was English-only end to end, not just its worked steps. The conclusion
+> below — "author `workedExampleEs` on 257 items" — would have added translations to a
+> renderer that could not show them while 2,900+ existing Spanish strings stayed dark. Wave 3
+> wired the renderer. Keep reading only for the worked-step gap itself, which is real.
 
 **All 257 error-analysis / worked-example items across all 64 lessons** carry translated prose
 — `stemEs`, `explanationEs`, `hintsEs`, `choicesEs` — while the worked steps the student is

@@ -2,13 +2,7 @@
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 import { deriveHintLadder } from "./content-enrichment.js";
-import { hintLabel, stackHtml, t } from "./i18n.js";
-
-function esc(s) {
-  const d = document.createElement("div");
-  d.textContent = s ?? "";
-  return d.innerHTML;
-}
+import { hintLabel, stackContent, stackHtml, t } from "./i18n.js";
 
 /**
  * Mount a 3-rung progressive hint ladder before first answer attempt.
@@ -50,7 +44,11 @@ export function mountHintLadder(host, { problem, state, onHintUsed } = {}) {
     body.id = `hint-body-${idx}`;
     body.className = "hint-ladder-body";
     body.hidden = true;
-    body.innerHTML = `<p>${esc(hint.text)}</p>`;
+    // The ladder's own header has been bilingual since it shipped; the hint
+    // TEXT was not, so a student in Spanish mode opened a Spanish-labelled
+    // hint and read English. `hintsEs` was already authored on 860 core-lesson
+    // hints — it just had no renderer.
+    body.innerHTML = `<p>${stackContent(hint.text, hint.textEs)}</p>`;
 
     btn.addEventListener("click", () => {
       if (idx > revealed) return;

@@ -345,6 +345,39 @@ export function stackHtml(en, es) {
   return `<span class="i18n-stack"><span class="i18n-en" lang="en">${esc(en)}</span><span class="i18n-es" lang="es">${esc(es)}</span></span>`;
 }
 
+/**
+ * Bilingual stack for AUTHORED CONTENT (stems, hints, explanations, choices) —
+ * as opposed to `stackHtml`, which is for fixed UI chrome.
+ *
+ * The difference is what happens when there is no Spanish. Chrome always has
+ * both lanes, so `stackHtml` can emit the `.i18n-es` span unconditionally.
+ * Content does not: hint ladders fall back to generic English strings, and not
+ * every practice item was translated. Emitting an empty `.i18n-es` for those
+ * puts a blank italic line under the English whenever a student is in Spanish
+ * mode, which reads as "the translation is missing" on items that never had
+ * one. So a blank/whitespace `es` returns the English alone, unstacked.
+ *
+ * Spanish stays opt-in: `.i18n-es` is `display:none` until `setPreferredLang`
+ * stamps `<html lang="es">` (see design-system.css). A student who never
+ * touches the toggle sees exactly what they saw before.
+ */
+export function stackContent(en, es) {
+  return stackContentHtml(esc(en), esc(es));
+}
+
+/**
+ * Pre-rendered variant of `stackContent`. Both lanes must ALREADY be escaped or
+ * intentionally-trusted markup — problem stems run through `renderMathText`,
+ * which emits real tags, so escaping here would print them as literal text.
+ * Callers passing raw config text want `stackContent` instead.
+ */
+export function stackContentHtml(enHtml, esHtml) {
+  const en = String(enHtml ?? "");
+  const es = String(esHtml ?? "");
+  if (!es.trim() || es === en) return en;
+  return `<span class="i18n-stack"><span class="i18n-en" lang="en">${en}</span><span class="i18n-es" lang="es">${es}</span></span>`;
+}
+
 function esc(s) {
   if (typeof document === "undefined") return String(s ?? "");
   const d = document.createElement("div");

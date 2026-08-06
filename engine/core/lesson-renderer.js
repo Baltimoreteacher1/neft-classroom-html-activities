@@ -996,6 +996,14 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
       tier: shellOpts.tier,
       typeLabel: problemTypeLabel(problemDef),
       stem: problemDef.stem || problemDef.prompt || problemDef.label,
+      // Mirror the English fallback chain exactly — a lesson that authored
+      // `prompt`/`promptEs` rather than `stem`/`stemEs` must not end up showing
+      // the English prompt above the Spanish translation of a different field.
+      stemEs: problemDef.stem
+        ? problemDef.stemEs
+        : problemDef.prompt
+          ? problemDef.promptEs
+          : problemDef.labelEs,
     });
     container.append(shell.card);
     body = shell.body;
