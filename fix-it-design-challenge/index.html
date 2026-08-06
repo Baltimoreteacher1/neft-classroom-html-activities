@@ -1795,6 +1795,13 @@
         .save-pill {
           display: none !important;
         }
+        /* Paired with the beforeprint handler that expands each field to its
+           content: without these a long answer prints clipped to the box with
+           a scrollbar stub. */
+        textarea {
+          overflow: hidden !important;
+          resize: none !important;
+        }
       }
 
       /* ---- Page-local GameFX opt-out ---------------------------------------
@@ -5096,6 +5103,45 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
       const downloadButton = $("#downloadResponses");
       if (downloadButton)
         downloadButton.addEventListener("click", downloadResponses);
+
+      /* A textarea paints only its visible box, so any answer longer than the
+         field came out truncated on paper - the part a teacher most wants to
+         keep. Expand every field to its content for the print, then put it
+         back. Both beforeprint and the matchMedia("print") change fire on some
+         browsers, hence the guard. */
+      let printExpanded = false;
+
+      function expandForPrint() {
+        if (printExpanded) return;
+        printExpanded = true;
+        flushRender();
+        $$("textarea").forEach((field) => {
+          field.dataset.printHeight = field.style.height || "";
+          field.style.height = "auto";
+          field.style.height = `${field.scrollHeight}px`;
+        });
+      }
+
+      function restoreAfterPrint() {
+        if (!printExpanded) return;
+        printExpanded = false;
+        $$("textarea").forEach((field) => {
+          field.style.height = field.dataset.printHeight || "";
+          delete field.dataset.printHeight;
+        });
+      }
+
+      window.addEventListener("beforeprint", expandForPrint);
+      window.addEventListener("afterprint", restoreAfterPrint);
+      if (window.matchMedia) {
+        const printQuery = window.matchMedia("print");
+        if (printQuery.addEventListener) {
+          printQuery.addEventListener("change", (event) => {
+            if (event.matches) expandForPrint();
+            else restoreAfterPrint();
+          });
+        }
+      }
 
       /* Nothing may sit unwritten when the tab goes away. */
       window.addEventListener("beforeunload", flushSave);
