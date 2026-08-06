@@ -689,11 +689,74 @@ function showIdentityScreen(root, config) {
     } catch {
       /* identity is an enhancement — never block launching the lesson */
     }
-    screen.remove();
-    initMainApp(root, config, studentId, name, period);
+    playLessonEntrance(config, name, () => {
+      screen.remove();
+      initMainApp(root, config, studentId, name, period);
+    });
   }
 
   setTimeout(() => nameInput.focus(), 100);
+}
+
+// ── Lesson entrance: the "ID badge" beat between the name gate and the lesson.
+//
+// After the student starts, a badge card stamps in over the cover — their name,
+// the lesson title, and a bilingual "let's go" — while the real lesson boots
+// UNDERNEATH it, so the entrance also hides first-render jank. Three hard
+// rules keep it classroom-safe: reduced-motion students skip it entirely (no
+// delay, not a still frame); it plays at most once per lesson per day per
+// device (30 students log in daily — anything that replays every time gets
+// old by Tuesday); and a tap anywhere lifts it early. The lesson must launch
+// even if every line of this fails, so the boot callback runs first-class and
+// the overlay is pure chrome on top.
+function playLessonEntrance(config, name, boot) {
+  let overlay = null;
+  const lift = () => {
+    if (!overlay) return;
+    const o = overlay;
+    overlay = null;
+    o.classList.add("leaving");
+    setTimeout(() => o.remove(), 420);
+  };
+  try {
+    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    const key = `nt-entrance:${config.lessonId}`;
+    const today = new Date().toISOString().slice(0, 10);
+    let seen = null;
+    try {
+      seen = localStorage.getItem(key);
+    } catch {
+      /* storage blocked — treat as unseen, it just won't persist */
+    }
+    if (reduced || seen === today) return boot();
+    try {
+      localStorage.setItem(key, today);
+    } catch {
+      /* storage blocked — the entrance simply replays next time */
+    }
+    overlay = document.createElement("div");
+    overlay.className = "nt-entrance-overlay";
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.innerHTML = `
+      <div class="nt-entrance-badge">
+        <div class="nt-entrance-emoji">${config.themeEmoji || "📐"}</div>
+        <p class="nt-entrance-welcome">${stackHtml(`${t("entranceWelcome", "en")} ${name}!`, `${t("entranceWelcome", "es")} ${name}!`)}</p>
+        <p class="nt-entrance-title">${escHtml(config.title)}</p>
+        <p class="nt-entrance-go">${stackHtml(t("entranceGo", "en"), t("entranceGo", "es"))}</p>
+      </div>`;
+    overlay.addEventListener("click", lift);
+    document.body.append(overlay);
+    setTimeout(lift, 1600);
+  } catch {
+    lift();
+  }
+  try {
+    boot();
+  } catch (e) {
+    // Never leave a broken lesson hidden behind the entrance card.
+    lift();
+    throw e;
+  }
 }
 
 function initMainApp(root, config, studentId, studentName, studentPeriod) {
@@ -1150,7 +1213,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       }
       phaseContainer.innerHTML = "";
       const el = document.createElement("div");
-      el.className = "phase active phase-enter";
+      // Direction-aware slide: moving forward enters from the right, jumping
+      // back (sidebar, minimap) enters from the left — the content moves the
+      // way the student moved along the phase strip, so the transition reads
+      // as travel instead of decoration. Same 0.45s, same reduced-motion off
+      // switch as the original single-direction phase-enter.
+      const backward = this._lastRenderedPhase != null && index < this._lastRenderedPhase;
+      this._lastRenderedPhase = index;
+      el.className = `phase active phase-enter${backward ? " phase-enter-back" : ""}`;
       el.setAttribute("role", "region");
       el.setAttribute("aria-label", phaseConfigs[index]?.name || `Phase ${index + 1}`);
       phaseContainer.append(el);
@@ -1176,7 +1246,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // and matching/optional activities mount their own markup after this
       // point — keep underlining that dynamically-added content too.
       this._vocabObserver = observeVocabTerms(el, glossaryVocab);
-      el.addEventListener("animationend", () => el.classList.remove("phase-enter"), { once: true });
+      el.addEventListener(
+        "animationend",
+        () => el.classList.remove("phase-enter", "phase-enter-back"),
+        { once: true },
+      );
     },
 
     navigateTo(index) {

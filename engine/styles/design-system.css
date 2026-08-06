@@ -3436,6 +3436,12 @@ body:has(.identity-screen) .export-toolbar {
   animation: phaseSlideIn 0.45s var(--ease-out);
 }
 
+/* Jumping BACK along the phase strip enters from the left — the content moves
+   the way the student moved, so the slide reads as travel, not decoration. */
+.phase-enter.phase-enter-back {
+  animation: phaseSlideInBack 0.45s var(--ease-out);
+}
+
 @keyframes phaseSlideIn {
   from {
     opacity: 0;
@@ -3444,6 +3450,90 @@ body:has(.identity-screen) .export-toolbar {
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@keyframes phaseSlideInBack {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Lesson entrance badge ──────────────────────────────────────────────────
+   The "ID badge" beat between the name gate and the lesson (app.js
+   playLessonEntrance). The overlay covers first-render jank while the lesson
+   boots underneath; the badge stamps in like a card hitting a desk. JS skips
+   the whole thing under prefers-reduced-motion, and the animation-none rules
+   below are the belt to that suspenders. */
+.nt-entrance-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-5);
+  background: linear-gradient(135deg, var(--navy, #12355b), #1c4d7a);
+  cursor: pointer;
+}
+.nt-entrance-overlay.leaving {
+  animation: ntEntranceOut 0.4s ease-in forwards;
+}
+.nt-entrance-badge {
+  max-width: 420px;
+  width: 100%;
+  padding: var(--sp-6) var(--sp-5);
+  background: var(--surface, #fff);
+  border-radius: var(--radius-lg, 18px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  text-align: center;
+  animation: ntBadgeStamp 0.5s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) both;
+}
+.nt-entrance-emoji {
+  font-size: 2.6rem;
+  margin-bottom: var(--sp-2);
+}
+.nt-entrance-welcome {
+  margin: 0 0 var(--sp-1);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--navy, #12355b);
+}
+.nt-entrance-title {
+  margin: 0 0 var(--sp-3);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--muted, #5b6773);
+}
+.nt-entrance-go {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--teal-ink, #0f766e);
+}
+@keyframes ntBadgeStamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.5) rotate(-3deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.97) rotate(0.5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+@keyframes ntEntranceOut {
+  to {
+    opacity: 0;
+    transform: translateY(-16px);
   }
 }
 
@@ -4239,6 +4329,10 @@ html[lang^="es"] .i18n-es {
 @media (prefers-reduced-motion: reduce) {
   .lesson-cover-art .theme-hero-svg.cover-svg-animate,
   .phase-enter,
+  .phase-enter.phase-enter-back,
+  .nt-entrance-overlay,
+  .nt-entrance-overlay.leaving,
+  .nt-entrance-badge,
   .story-beat-reveal {
     animation: none !important;
   }
