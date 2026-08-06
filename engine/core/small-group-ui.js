@@ -1,3 +1,5 @@
+import { getPreferredLang } from "./i18n.js";
+
 //
 // These are the SITE brand values, not a private small-group palette. Until
 // 2026-07-31 the studio shipped its own cold slate (#33568f) and a separate
@@ -125,11 +127,13 @@ export const LEVEL_VOICE = {
 };
 export const voiceFor = (variant) => LEVEL_VOICE[variant] || LEVEL_VOICE.catchup;
 
-// Device-wide Spanish lane: chosen from the vocabulary language bar, read at
-// render time anywhere student text is drawn.
+// Device-wide Spanish lane: chosen from the vocabulary language bar OR from the
+// lesson engine's ES/EN toggle — they are the same preference now. The studio
+// used to keep its own key, so the two surfaces disagreed and a student had to
+// set Spanish twice. Read at render time anywhere student text is drawn.
 export const esLane = () => {
   try {
-    return window.localStorage.getItem("nt-sg-lang") === "es";
+    return getPreferredLang() === "es";
   } catch {
     return false;
   }
