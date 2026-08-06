@@ -1813,6 +1813,22 @@
          before they could touch anything, and Esc opened a game-pause card.
          The rest of the kit (parallax, polish) is still wanted here, so this
          hides just those two overlays. The shared kit is untouched. ---------- */
+      /* ---- No Math Workbench on this page ---------------------------------
+         The mwb-injected sentinel block below is intentionally EMPTY - the
+         injector decided this page gets no Math Workbench - but a stray
+         <script src="/assets/math-workbench-launcher.js"> outside that block
+         was loading it anyway, floating a "Math Workbench" link over a teacher
+         PD worksheet. That tag is now removed.
+         Removing it alone is not enough: save-resume-engine.js only skips its
+         own Math Workbench chip when it finds #mwb-launcher, so with the
+         launcher gone it renders #nsr-workbench instead. Hide both, which also
+         covers the case where either script returns later. ------------------ */
+      #mwb-launcher,
+      .mwb-launcher-nav,
+      #nsr-workbench {
+        display: none !important;
+      }
+
       #gfx-mission-brief,
       #gfx-pause-overlay {
         display: none !important;
@@ -5380,7 +5396,6 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->
-    <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
 </body>
 </html>
