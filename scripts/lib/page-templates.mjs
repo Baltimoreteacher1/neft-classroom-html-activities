@@ -152,6 +152,11 @@ export const TEMPLATES = [
   {
     id: "unit-project-answer-key",
     name: "Unit project answer key",
+    // Teacher surface: functions/_middleware.js Basic-Auths every answer-key
+    // path, so 401 is the HEALTHY production answer — this flag was missing
+    // when the template landed, and Verify Deploy went red on a correct
+    // deployment because the smoke expected 200 from a gate doing its job.
+    authGated: true,
     resolve: () => {
       const k = first("math/unit-1/projects", (n) => n === "answer-key");
       return k && `/math/unit-1/projects/${k}/`;
