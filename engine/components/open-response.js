@@ -1,3 +1,5 @@
+import { stackContent } from "../core/i18n.js";
+
 const ORP_STYLE_ID = "orp-polish-styles";
 
 /**
@@ -148,7 +150,7 @@ function fireConfetti(anchorEl) {
 
 export function renderOpenResponse(
   container,
-  { prompt, sentenceFrame, keywords, minLength, onSubmit },
+  { prompt, promptEs, sentenceFrame, keywords, minLength, onSubmit },
 ) {
   ensureOpenResponseStyles();
 
@@ -161,7 +163,12 @@ export function renderOpenResponse(
     "font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
   // Let students mark up the prompt text (highlight / underline / bold).
   promptEl.setAttribute("data-annotate", "word-problem");
-  promptEl.textContent = prompt;
+  // `promptEs` is authored on 54 items and had no renderer: a written-response
+  // task asked its question in English only, to the students least able to
+  // answer it in English. The textarea's aria-label below stays the English
+  // prompt — stacking two languages into an accessible name makes screen-reader
+  // output worse, not more inclusive.
+  promptEl.innerHTML = stackContent(prompt, promptEs);
   wrapper.append(promptEl);
 
   if (sentenceFrame) {

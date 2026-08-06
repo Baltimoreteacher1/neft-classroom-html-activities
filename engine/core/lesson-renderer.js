@@ -49,7 +49,7 @@ import { createGoDeeper } from "./go-deeper.js";
 import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
 import { mountHintLadder } from "./hint-ladder.js";
-import { badgeName, getPreferredLang, phaseName, stackHtml, t } from "./i18n.js";
+import { badgeName, getPreferredLang, phaseName, stackContent, stackHtml, t } from "./i18n.js";
 import { attachImageZoom, isLightboxOpen } from "./image-zoom.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { mountLevel3Launch } from "./level3-launch.js";
@@ -1049,7 +1049,10 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
       if (problemDef.instructions) {
         const p = document.createElement("p");
         p.style.cssText = "font-weight:600; margin-bottom:var(--sp-3);";
-        p.textContent = problemDef.instructions;
+        // `instructionsEs` is authored on 170 items and had no renderer at all
+        // until now — the sort task told a Spanish-speaking student what to do
+        // only in English, directly above a set of cards they then had to sort.
+        p.innerHTML = stackContent(problemDef.instructions, problemDef.instructionsEs);
         body.append(p);
       }
       renderDragSort(body, {
