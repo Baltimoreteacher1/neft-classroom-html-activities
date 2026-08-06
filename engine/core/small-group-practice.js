@@ -35,9 +35,31 @@ function streakNote(events) {
   )}</b> `;
 }
 
-// Bilingual correct-answer lead shared by every checkable card.
-const correctLead = () =>
-  `✅ <b>${biHtml("Your reasoning landed.", "¡Tu razonamiento dio en el blanco!")}</b>`;
+// Bilingual correct-answer leads shared by every checkable card.
+//
+// This was a single constant — "✅ Your reasoning landed." — which meant a
+// student working an 18-item set read the identical sentence up to 18 times in
+// one rotation. Praise that never varies stops reading as a response to what
+// the student did and starts reading as machinery. The voice rule stays the
+// same across all of these: name the METHOD working, never rate the child.
+//
+// Rotation is a plain counter, not Math.random: successive corrects walk the
+// list in order, so no two consecutive answers repeat and the sequence is
+// deterministic for tests and replays.
+export const CORRECT_LEADS = [
+  ["Your reasoning landed.", "¡Tu razonamiento dio en el blanco!"],
+  ["That's your method working.", "Así funciona tu método."],
+  ["Clean thinking — it held up.", "Pensamiento claro: se sostuvo."],
+  ["You checked it, and it checks out.", "Lo comprobaste, y cuadra."],
+  ["Right — and you could explain why.", "Correcto, y podrías explicar por qué."],
+  ["Solid step. Keep that strategy.", "Paso sólido. Conserva esa estrategia."],
+];
+let correctLeadCursor = 0;
+const correctLead = () => {
+  const [en, es] = CORRECT_LEADS[correctLeadCursor % CORRECT_LEADS.length];
+  correctLeadCursor += 1;
+  return `✅ <b>${biHtml(en, es)}</b>`;
+};
 
 function itemStem(item) {
   return item.stem || item.title || item.instructions || item.prompt || "Try this problem.";
