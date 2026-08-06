@@ -1,4 +1,5 @@
 import { isRight } from "../core/answer-match.js";
+import { stackContent } from "../core/i18n.js";
 
 const FT_STYLE_ID = "ft-engine-styles";
 
@@ -270,7 +271,12 @@ function renderFillTableFallback(wrapper, config = {}) {
   if (config.instructions || config.label) {
     const p = document.createElement("p");
     p.style.cssText = "font-weight:600; margin-bottom:var(--sp-3);";
-    p.textContent = config.instructions || config.label;
+    // Mirror the English fallback chain exactly, so a config that authored
+    // `label`/`labelEs` cannot end up showing the English label above the
+    // Spanish translation of a different field.
+    p.innerHTML = config.instructions
+      ? stackContent(config.instructions, config.instructionsEs)
+      : stackContent(config.label, config.labelEs);
     wrapper.append(p);
   }
 
