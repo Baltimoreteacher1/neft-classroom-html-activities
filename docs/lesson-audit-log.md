@@ -42,8 +42,22 @@ en lugar de multiplicar por 3`). That quoting is *correct* — it names what is 
 screen. Translating those quotes without translating the steps would break the reference.
 The steps are the thing to fix, not the quotes.
 
-Largest single ESOL gap in the curriculum, and a content job (257 items) that needs Joel's
-review, not an autonomous rewrite.
+**This is engine work before it is content work.** `engine/components/error-analysis.js`
+destructures `{ title, workedExample, errorStep, correctWork, hints, onAnswer }` and renders
+`step.label` and `step.work` raw; the call site in `engine/core/lesson-renderer.js` (~line
+1062) spreads `...problemDef` straight through. There is no `…Es` lookup and no
+`getPreferredLang()` call anywhere in that path. Authoring `workedExampleEs` on 257 items
+today would produce **dead data the engine cannot display** — a large content effort for zero
+student benefit.
+
+Sequence it the other way round: teach the component the Spanish lane first, following the
+pattern the other bilingual components already use (`twr-writing.js`, `discourse.js`,
+`misconceptions.js` — English always rendered, Spanish added beneath it, gated on
+`getPreferredLang()`), then author the content against a renderer that can show it. The
+engine change is small and additive; the content job after it is the large one, and both
+need Joel's review.
+
+Largest single ESOL gap in the curriculum.
 
 ### Finding 2 — 41 unreferenced `reveal-assets/` files, 6.58 MB, all shipped to production
 
