@@ -5,7 +5,12 @@
 // hidden card (or from a previous page). Tap a term, tap its match — correct
 // pairs lock in; wrong tries give immediate feedback. Same data contract as
 // before — { pairs:[{term, match}], columns, label, onComplete } — so all
-// lessons keep working without any config changes.
+// lessons keep working without any config changes. Bilingual lane: `labelEs`
+// on the config and `termEs`/`matchEs` on each pair render stacked under the
+// English (CSS-gated on <html lang="es">, same contract as every other
+// practice component); the fixed chrome strings are stacked unconditionally.
+import { STRINGS, stackContent, stackHtml, stackT } from "../core/i18n.js";
+
 let MG_STYLE_INJECTED = false;
 
 function injectStyle() {
@@ -43,7 +48,7 @@ function injectStyle() {
   document.head.append(style);
 }
 
-export function renderMatchingGame(container, { pairs, columns, label, onComplete }) {
+export function renderMatchingGame(container, { pairs, columns, label, labelEs, onComplete }) {
   injectStyle();
 
   const wrapper = document.createElement("div");
@@ -52,28 +57,38 @@ export function renderMatchingGame(container, { pairs, columns, label, onComplet
   if (label) {
     const lbl = document.createElement("p");
     lbl.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
-    lbl.textContent = label;
+    lbl.innerHTML = stackContent(label, labelEs);
     wrapper.append(lbl);
   }
 
   const hint = document.createElement("p");
   hint.style.cssText = "font-size:0.85rem; color:var(--muted); margin:0 0 var(--sp-3);";
-  hint.textContent = "Tap an item on the left, then its match on the right.";
+  hint.innerHTML = stackT("mgTap");
   wrapper.append(hint);
 
   const statsBar = document.createElement("div");
   statsBar.style.cssText =
     "display:flex; justify-content:space-between; margin-bottom:var(--sp-3); font-size:0.85rem; font-weight:700; color:var(--muted);";
   const matchCount = document.createElement("span");
-  matchCount.textContent = `0 / ${pairs.length} matched`;
+  const setMatchCount = (n) =>
+    (matchCount.innerHTML = stackHtml(
+      `${n} / ${pairs.length} ${STRINGS.mgMatched.en}`,
+      `${n} / ${pairs.length} ${STRINGS.mgMatched.es}`,
+    ));
+  setMatchCount(0);
   const attempts = document.createElement("span");
-  attempts.textContent = "Attempts: 0";
+  const setAttempts = (n) =>
+    (attempts.innerHTML = stackHtml(
+      `${STRINGS.mgAttempts.en}: ${n}`,
+      `${STRINGS.mgAttempts.es}: ${n}`,
+    ));
+  setAttempts(0);
   statsBar.append(matchCount, attempts);
   wrapper.append(statsBar);
 
   // Left column keeps prompt order; right column is shuffled.
-  const left = pairs.map((p, i) => ({ pairId: i, text: p.term, side: "L" }));
-  const right = pairs.map((p, i) => ({ pairId: i, text: p.match, side: "R" }));
+  const left = pairs.map((p, i) => ({ pairId: i, text: p.term, textEs: p.termEs, side: "L" }));
+  const right = pairs.map((p, i) => ({ pairId: i, text: p.match, textEs: p.matchEs, side: "R" }));
   for (let i = right.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [right[i], right[j]] = [right[j], right[i]];
@@ -86,18 +101,18 @@ export function renderMatchingGame(container, { pairs, columns, label, onComplet
   let attemptCount = 0;
   let selected = null; // { el, card }
 
-  function makeColumn(items, headText) {
+  function makeColumn(items, headKey) {
     const col = document.createElement("div");
     col.className = "mg-col";
     const head = document.createElement("p");
     head.className = "mg-col-head";
-    head.textContent = headText;
+    head.innerHTML = stackT(headKey);
     col.append(head);
     items.forEach((card) => {
       const el = document.createElement("button");
       el.type = "button";
       el.className = "mg-item";
-      el.textContent = card.text;
+      el.innerHTML = stackContent(card.text, card.textEs);
       el.addEventListener("click", () => pick(el, card));
       card.el = el;
       col.append(el);
@@ -126,7 +141,7 @@ export function renderMatchingGame(container, { pairs, columns, label, onComplet
     const b = { el, card };
     clearSelection();
     attemptCount++;
-    attempts.textContent = `Attempts: ${attemptCount}`;
+    setAttempts(attemptCount);
 
     // Accept the match by VALUE, not pairId identity: when a config has
     // duplicate match values (e.g. "at most" and "no more than" both → "≤"),
@@ -142,7 +157,7 @@ export function renderMatchingGame(container, { pairs, columns, label, onComplet
         delete node.dataset.selected;
       });
       matched.add(leftCard.pairId);
-      matchCount.textContent = `${matched.size} / ${pairs.length} matched`;
+      setMatchCount(matched.size);
       if (matched.size === pairs.length) finishGame();
     } else {
       [a.el, b.el].forEach((node) => {
@@ -152,7 +167,7 @@ export function renderMatchingGame(container, { pairs, columns, label, onComplet
     }
   }
 
-  board.append(makeColumn(left, "Match these…"), makeColumn(right, "…with these"));
+  board.append(makeColumn(left, "mgMatchThese"), makeColumn(right, "mgWithThese"));
   wrapper.append(board);
 
   const feedbackSlot = document.createElement("div");
@@ -162,13 +177,9 @@ export function renderMatchingGame(container, { pairs, columns, label, onComplet
   function finishGame() {
     const efficiency = pairs.length / Math.max(attemptCount, 1);
     const stars = efficiency >= 0.9 ? 3 : efficiency >= 0.65 ? 2 : 1;
-    showFb(
-      feedbackSlot,
-      "success",
-      `All matched in ${attemptCount} attempt${attemptCount === 1 ? "" : "s"}! ${
-        stars === 3 ? "Flawless!" : stars === 2 ? "Nice work!" : "Keep practicing!"
-      }`,
-    );
+    const doneKey = attemptCount === 1 ? "mgDoneOne" : "mgDoneMany";
+    const gradeKey = stars === 3 ? "mgFlawless" : stars === 2 ? "mgNice" : "mgKeep";
+    showFb(feedbackSlot, "success", `${stackT(doneKey, { n: attemptCount })} ${stackT(gradeKey)}`);
     // finishGame only runs once every pair is correctly matched, so completion
     // always means success. Report correct === total; the wrong-attempt count
     // only drives the star/efficiency message above, not the grade. (Passing

@@ -199,6 +199,46 @@ const STRINGS = {
   mathematician: { en: "Mathematician", es: "Matemático" },
   ofComplete: { en: "of", es: "de" },
   complete: { en: "complete", es: "completadas" },
+  // Matching-game chrome (engine/components/matching-game.js).
+  mgTap: {
+    en: "Tap an item on the left, then its match on the right.",
+    es: "Toca un elemento a la izquierda y luego su pareja a la derecha.",
+  },
+  mgMatched: { en: "matched", es: "emparejados" },
+  mgAttempts: { en: "Attempts", es: "Intentos" },
+  mgMatchThese: { en: "Match these…", es: "Empareja estos…" },
+  mgWithThese: { en: "…with these", es: "…con estos" },
+  mgDoneOne: { en: "All matched in 1 attempt!", es: "¡Todo emparejado en 1 intento!" },
+  mgDoneMany: {
+    en: "All matched in {n} attempts!",
+    es: "¡Todo emparejado en {n} intentos!",
+  },
+  mgFlawless: { en: "Flawless!", es: "¡Impecable!" },
+  mgNice: { en: "Nice work!", es: "¡Buen trabajo!" },
+  mgKeep: { en: "Keep practicing!", es: "¡Sigue practicando!" },
+  // Drag-sort chrome (engine/components/drag-sort.js).
+  dsBank: {
+    en: "Drag items into the correct category",
+    es: "Arrastra cada tarjeta a su categoría",
+  },
+  dsCheckSorting: { en: "Check Sorting", es: "Revisar clasificación" },
+  dsCheckOrder: { en: "Check Order", es: "Revisar orden" },
+  dsOrderRight: {
+    en: "Correct order! Nicely sequenced.",
+    es: "¡Orden correcto! Bien secuenciado.",
+  },
+  dsOrderPartial: {
+    en: "{n} of {t} in the right spot. Use ▲ ▼ to rearrange, then check again.",
+    es: "{n} de {t} en el lugar correcto. Usa ▲ ▼ para reordenar y revisa otra vez.",
+  },
+  dsAllSorted: {
+    en: "All {t} items sorted correctly!",
+    es: "¡Las {t} tarjetas están clasificadas correctamente!",
+  },
+  dsPartialSorted: {
+    en: "{n} of {t} correct. Drag the highlighted items to the right category.",
+    es: "{n} de {t} correctas. Arrastra las tarjetas marcadas a la categoría correcta.",
+  },
 };
 
 const PHASE_NAMES = {
@@ -374,6 +414,19 @@ export function hintLabel(index) {
 
 export function stackHtml(en, es) {
   return `<span class="i18n-stack"><span class="i18n-en" lang="en">${esc(en)}</span><span class="i18n-es" lang="es">${esc(es)}</span></span>`;
+}
+
+/**
+ * Stacked chrome string with `{placeholder}` interpolation — for the fixed UI
+ * strings that need a live number in them ("3 of 8 correct"). Same escaping
+ * and CSS-switch contract as `stackHtml`; values are interpolated into BOTH
+ * lanes before escaping.
+ */
+export function stackT(key, vars = {}) {
+  const entry = STRINGS[key];
+  if (!entry) return esc(key);
+  const fill = (s) => String(s).replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ""));
+  return stackHtml(fill(entry.en), fill(entry.es));
 }
 
 /**
