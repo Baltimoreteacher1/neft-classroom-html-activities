@@ -7,6 +7,8 @@
 // ask for reduced motion get the original, calm experience with no spring,
 // parallax, glow, or rotation. Mobile single-column reflow (a layout aid, not
 // motion) is the only rule outside that guard.
+import { stackContent, stackT } from "../core/i18n.js";
+
 const DRAG_SORT_STYLE_ID = "ds-polish-styles";
 function injectDragSortStyles() {
   if (typeof document === "undefined") return;
@@ -78,6 +80,9 @@ export function renderDragSort(container, config) {
     const cats = categories.map(toCat);
     const resolved = config.cards.map((c) => ({
       text: c.text != null ? String(c.text) : String(c.label ?? ""),
+      // Mirror the English fallback chain so a card authored as {label,labelEs}
+      // keeps its Spanish, not just one authored as {text,textEs}.
+      textEs: c.text != null ? c.textEs : (c.labelEs ?? c.textEs),
       category:
         typeof c.category === "string"
           ? c.category
@@ -121,9 +126,13 @@ export function renderDragSort(container, config) {
     }
     if (nested.length > 1) {
       const flatItems = nested.flatMap((c) =>
-        c.items.map((t) => ({ text: String(t), category: c.label })),
+        c.items.map((t, i) => ({
+          text: String(t),
+          textEs: Array.isArray(c.itemsEs) ? c.itemsEs[i] : undefined,
+          category: c.label,
+        })),
       );
-      const flatCats = nested.map((c) => ({ id: c.label, label: c.label }));
+      const flatCats = nested.map((c) => ({ id: c.label, label: c.label, labelEs: c.labelEs }));
       return renderDragSortCore(container, {
         items: flatItems,
         categories: flatCats,
@@ -219,7 +228,7 @@ function renderDragOrder(container, { steps, label, onComplete }) {
 
   const checkBtn = document.createElement("button");
   checkBtn.className = "btn btn-primary mt-4";
-  checkBtn.textContent = "Check Order";
+  checkBtn.innerHTML = stackT("dsCheckOrder");
   let done = false;
   checkBtn.addEventListener("click", () => {
     if (done) return;
@@ -228,15 +237,11 @@ function renderDragOrder(container, { steps, label, onComplete }) {
     if (right) {
       done = true;
       checkBtn.style.display = "none";
-      showFb(feedbackSlot, "success", "Correct order! Nicely sequenced.");
+      showFb(feedbackSlot, "success", stackT("dsOrderRight"));
       if (onComplete) onComplete(order.length, order.length);
     } else {
       const numRight = order.filter((s, i) => s === correct[i]).length;
-      showFb(
-        feedbackSlot,
-        "hint",
-        `${numRight} of ${order.length} in the right spot. Use ▲ ▼ to rearrange, then check again.`,
-      );
+      showFb(feedbackSlot, "hint", stackT("dsOrderPartial", { n: numRight, t: order.length }));
     }
   });
 
@@ -250,7 +255,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
 
   const bankLabel = document.createElement("div");
   bankLabel.className = "badge badge-navy mb-4";
-  bankLabel.textContent = "Drag items into the correct category";
+  bankLabel.innerHTML = stackT("dsBank");
   wrapper.append(bankLabel);
 
   const bank = document.createElement("div");
@@ -282,7 +287,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
 
     const label = document.createElement("div");
     label.className = "badge badge-teal mb-4";
-    label.textContent = cat.label;
+    label.innerHTML = stackContent(cat.label, cat.labelEs);
     col.append(label);
 
     const zone = document.createElement("div");
@@ -326,7 +331,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
 
   const checkBtn = document.createElement("button");
   checkBtn.className = "btn btn-primary mt-4";
-  checkBtn.textContent = "Check Sorting";
+  checkBtn.innerHTML = stackT("dsCheckSorting");
   checkBtn.addEventListener("click", () => {
     let correct = 0;
     let total = items.length;
@@ -352,8 +357,8 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
     const fb = document.createElement("div");
     const fbType = allCorrect ? "success" : "hint";
     const fbMsg = allCorrect
-      ? `All ${total} items sorted correctly!`
-      : `${correct} of ${total} correct. Drag the highlighted items to the right category.`;
+      ? stackT("dsAllSorted", { t: total })
+      : stackT("dsPartialSorted", { n: correct, t: total });
 
     fb.className = `feedback feedback-${fbType} visible`;
     fb.setAttribute("role", "alert");
@@ -431,7 +436,7 @@ function createDragItem(item) {
     "display:inline-flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 14px; gap:4px; text-align:center; min-width:80px;";
 
   const labelSpan = document.createElement("span");
-  labelSpan.textContent = item.text;
+  labelSpan.innerHTML = stackContent(item.text, item.textEs);
   labelSpan.style.cssText = "font-weight:700; font-size:1.1rem; line-height:1.2;";
   el.append(labelSpan);
 

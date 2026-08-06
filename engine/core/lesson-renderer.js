@@ -1100,14 +1100,24 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
       });
       break;
     case "matching": {
+      // The Es lanes mirror the English fallback chains field-for-field, so a
+      // pair authored as {left,leftEs} cannot end up pairing English `left`
+      // with the Spanish of a different field.
       const pairs = (problemDef.pairs || []).map((p) => ({
         term: p.left || p.term || p.prompt || "",
+        termEs: p.left ? p.leftEs : p.term ? p.termEs : p.promptEs,
         match: p.right || p.match || p.answer || "",
+        matchEs: p.right ? p.rightEs : p.match ? p.matchEs : p.answerEs,
       }));
       renderMatchingGame(body, {
         pairs,
         columns: problemDef.columns || 2,
         label: problemDef.hideStem ? problemDef.label : problemDef.stem || problemDef.label,
+        labelEs: problemDef.hideStem
+          ? problemDef.labelEs
+          : problemDef.stem
+            ? problemDef.stemEs
+            : problemDef.labelEs,
         onComplete: (c, t) => wrappedOnAnswer(c === t),
       });
       break;

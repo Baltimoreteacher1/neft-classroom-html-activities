@@ -121,3 +121,60 @@ test("misconception accessors return Spanish when it exists, English when it doe
   assert.equal(misconceptionLabel("no-such-id", "es"), "");
   assert.equal(studentExplanation("no-such-id", "es"), "");
 });
+
+test("deriveHintLadder: generic rungs carry Spanish for every practice type", () => {
+  // Items with no authored hints fall back to the generic type ladder. That
+  // ladder was English-only, which in practice meant every GAME item — no
+  // drag-sort or matching-game authored hints — had zero Spanish support at
+  // the exact moment a student was stuck. Every generic rung now carries both
+  // lanes.
+  for (const type of [
+    "multiple-choice",
+    "drag-sort",
+    "matching-game",
+    "matching",
+    "fill-table",
+    "error-analysis",
+    "anything-unknown-falls-to-default",
+  ]) {
+    const ladder = deriveHintLadder({ type });
+    assert.equal(ladder.length, 3, type);
+    for (const rung of ladder) {
+      assert.ok(rung.text.length > 0, `${type}: EN rung present`);
+      assert.ok(
+        typeof rung.textEs === "string" && rung.textEs.length > 0,
+        `${type}: ES rung present`,
+      );
+      assert.notEqual(rung.text, rung.textEs, `${type}: lanes differ`);
+    }
+  }
+});
+
+test("deriveHintLadder: matching alias and matching-game share one ladder", () => {
+  assert.deepEqual(deriveHintLadder({ type: "matching" }), deriveHintLadder({ type: "matching-game" }));
+});
+
+test("deriveHintLadder: drag-sort category names appear in BOTH lanes", () => {
+  // The interpolated names are authored lesson text and must survive into the
+  // Spanish rung — a translated sentence pointing at untranslated-but-visible
+  // category labels beats dropping the anchor the student needs to find.
+  const ladder = deriveHintLadder({
+    type: "drag-sort",
+    categories: [{ label: "Ratio" }, { label: "Rate" }],
+  });
+  assert.match(ladder[0].text, /Ratio · Rate/);
+  assert.match(ladder[0].textEs ?? "", /Ratio · Rate/);
+});
+
+test("deriveHintLadder: authored scaffold keeps its rung, Spanish from scaffoldEs", () => {
+  const ladder = deriveHintLadder({
+    type: "drag-sort",
+    scaffold: "Check the units first.",
+    scaffoldEs: "Primero revisa las unidades.",
+  });
+  assert.equal(ladder[2].text, "Check the units first.");
+  assert.equal(ladder[2].textEs, "Primero revisa las unidades.");
+  // No authored Spanish → English alone (undefined), never an empty string.
+  const bare = deriveHintLadder({ type: "drag-sort", scaffold: "Check the units first." });
+  assert.equal(bare[2].textEs, undefined);
+});
