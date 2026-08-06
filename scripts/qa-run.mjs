@@ -105,8 +105,12 @@ const COVERAGE = [
       "validate:practice",
       "validate:scope",
       "audit:homework",
+      // a config edit is how an image stops being referenced
+      "validate:reveal-assets",
     ],
   ],
+  // must precede the generic /^lessons\// rule below — first match wins
+  [/^lessons\/[^/]+\/reveal-assets\//, ["validate:reveal-assets"]],
   [
     /^lessons\//,
     ["validate:static", "validate:save-resume", "validate:lesson-boot", "audit:links"],
