@@ -264,6 +264,33 @@ const AUTHORED_TAGS = {
   "distributive-partial": "algebra-distributive-partial",
 };
 
+/**
+ * Resolve an authored distractor tag to a MISCONCEPTIONS key.
+ *
+ * Two accepted forms, in priority order:
+ *   1. a short alias from AUTHORED_TAGS above (kept for the 111 items already
+ *      authored against them, and for genuinely nicer shorthand)
+ *   2. a taxonomy id verbatim ("ratio-inverted")
+ *
+ * Form 2 exists because the alias map covered only 6 of the 22 taxonomy
+ * entries, which quietly made the other 16 UNAUTHORABLE. That matters more
+ * than it sounds: the numeric predictor can only infer an error from a stem it
+ * can parse as arithmetic, and 82% of this curriculum's multiple-choice items
+ * are prose word problems (see reports/misconception-coverage.md). For those,
+ * an authored tag is the ONLY detection path — so an author who wanted to name
+ * "flipped the ratio" on a distractor had no way to say it, and the tag they
+ * wrote resolved to nothing at all with no warning.
+ *
+ * Unknown strings still resolve to null and fall through to the predictor,
+ * so a typo degrades to today's behaviour rather than inventing a diagnosis.
+ */
+export function resolveAuthoredTag(tag) {
+  const key = typeof tag === "string" ? tag.trim() : "";
+  if (!key) return null;
+  if (AUTHORED_TAGS[key]) return AUTHORED_TAGS[key];
+  return MISCONCEPTIONS[key] ? key : null;
+}
+
 /** Split "3/4" into parts. Returns null unless the whole string is a fraction. */
 function fractionParts(text) {
   const match = String(text ?? "")
@@ -621,7 +648,7 @@ export function detectMisconception(item, typed, choiceIndex = null) {
   // more than any predictor can.
   const it = /** @type {any} */ (item);
   if (Number.isInteger(choiceIndex) && Array.isArray(it?.misconceptionTags)) {
-    const authored = AUTHORED_TAGS[it.misconceptionTags[choiceIndex]];
+    const authored = resolveAuthoredTag(it.misconceptionTags[choiceIndex]);
     if (authored) return authored;
   }
   const answer = numberOf(correctAnswerText(item));
