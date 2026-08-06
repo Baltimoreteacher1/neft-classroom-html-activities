@@ -18,7 +18,7 @@
  * ========================================================================== */
 
 const KEY = "warmup_seconds";
-const DEFAULT_SECONDS = 180;
+const DEFAULT_SECONDS = 300;
 const MIN_SECONDS = 15;
 const MAX_SECONDS = 3600;
 

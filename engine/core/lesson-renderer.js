@@ -2353,7 +2353,7 @@ function renderNoticeWonderSupport(host, support, config, fieldRoot = host) {
 // the last-known value so the timer renders instantly and still works offline
 // or when the shared backend is unavailable. Editing is Teacher-Mode only.
 const WARMUP_TIME_KEY = "nt-warmup-seconds";
-const WARMUP_TIME_DEFAULT = 180;
+const WARMUP_TIME_DEFAULT = 300;
 const WARMUP_TIME_MIN = 15;
 const WARMUP_TIME_MAX = 3600;
 const WARMUP_SETTINGS_URL = "/api/settings/warmup";
