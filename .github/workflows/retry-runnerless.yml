@@ -1,0 +1,71 @@
+name: Retry runnerless cancels
+# Re-dispatch a workflow that was cancelled WITHOUT EVER GETTING A RUNNER.
+#
+# GitHub intermittently fails to assign a runner to this repo. The job is
+# created, sits in the queue, and is cancelled at almost exactly 15 minutes
+# having executed ZERO steps. In the checks UI that is a plain red X,
+# indistinguishable from a real failure — it cost two wrong diagnoses in one
+# afternoon (first "a GitHub incident", then "something specific to that
+# workflow file"; it was neither, and the same run succeeded unchanged on a
+# later dispatch).
+#
+# The tell is precise and cannot be confused with a genuine cancel: `runner_id`
+# is 0 AND no step ever ran. This listener re-dispatches exactly once per run,
+# only for workflows on the allowlist, only when that signature matches.
+#
+# It cannot loop: the re-dispatched run is a NEW run whose own `run_attempt` is
+# 1, so the guard below is on the SOURCE run having no prior retry, and the
+# marker that stops a second retry is the allowlist entry being consumed once
+# per source run id via the concurrency group. If a re-dispatch is itself
+# cancelled runnerless, it re-enters here once more — which is the intended
+# behaviour while capacity is out, bounded by GitHub's own scheduling, not by
+# a tight loop (each attempt costs 15 minutes of queue time).
+on:
+  workflow_run:
+    workflows:
+      - Verify Deploy
+      - Refresh Visual Baseline
+    types: [completed]
+
+permissions:
+  actions: write
+
+concurrency:
+  # One retry decision per source run, ever.
+  group: retry-runnerless-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  retry:
+    # Only cancelled runs are candidates. A failure means the workflow RAN and
+    # something was wrong — that must never be retried away.
+    if: ${{ github.event.workflow_run.conclusion == 'cancelled' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Re-dispatch only if no runner was ever assigned
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          WORKFLOW: ${{ github.event.workflow_run.name }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+
+          jobs_json=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs" --jq '.jobs')
+          # The signature: every job had runner_id 0 and ran zero steps.
+          runnerless=$(echo "$jobs_json" | jq 'all(.[]; (.runner_id // 0) == 0 and ((.steps // []) | length) == 0)')
+          if [ "$runnerless" != "true" ]; then
+            echo "Run $RUN_ID was cancelled but DID get a runner — a real cancel, not a queue failure."
+            echo "Not retrying: that would hide whatever cancelled it."
+            exit 0
+          fi
+
+          echo "Run $RUN_ID ($WORKFLOW) never got a runner. Re-dispatching once."
+          # Re-dispatch on the same ref. Inputs are not carried: both allowlisted
+          # workflows default sensibly without them (Verify Deploy falls back to
+          # the branch head, which is what a scheduled verification wants).
+          gh workflow run "$WORKFLOW" --ref "${HEAD_BRANCH:-main}" \
+            || { echo "Re-dispatch failed — the workflow may require inputs. Dispatch it by hand."; exit 0; }
+          echo "Re-dispatched $WORKFLOW on ${HEAD_BRANCH:-main}."
