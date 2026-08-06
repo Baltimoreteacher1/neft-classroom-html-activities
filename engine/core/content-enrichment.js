@@ -107,11 +107,22 @@ export function countPracticeProblems(config) {
 export function deriveHintLadder(prob) {
   if (!prob) return [];
   const authored = Array.isArray(prob.hints) ? prob.hints.filter(Boolean) : [];
+  // `hintsEs` is indexed against the RAW `hints` array, so it must be read
+  // before `filter(Boolean)` shifts the positions — a blank hint in the middle
+  // would otherwise pair every later hint with the wrong translation.
+  const authoredEs = Array.isArray(prob.hintsEs) ? prob.hintsEs : [];
+  const esFor = (h) => {
+    const at = Array.isArray(prob.hints) ? prob.hints.indexOf(h) : -1;
+    return at >= 0 ? authoredEs[at] : undefined;
+  };
   if (authored.length >= 3) {
     return authored.slice(0, 3).map((h, i) => ({
       level: i + 1,
       label: ["💡 Tip", "🧭 Strategy", "👀 Show me how"][i],
       text: String(h),
+      // Undefined when this item has no Spanish; the ladder renders English
+      // alone in that case rather than an empty second line.
+      textEs: esFor(h) ? String(esFor(h)) : undefined,
     }));
   }
 

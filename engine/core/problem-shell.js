@@ -3,6 +3,7 @@
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 
 import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
+import { stackContentHtml } from "./i18n.js";
 import { renderMathText } from "./math-typography.js";
 import { renderToolChip } from "./tool-drawer.js";
 
@@ -134,6 +135,7 @@ export function createProblemCard({
   tier,
   typeLabel,
   stem,
+  stemEs,
   hasConversionChart,
 } = {}) {
   const card = document.createElement("article");
@@ -194,7 +196,10 @@ export function createProblemCard({
     stemEl.className = "problem-stem";
     // Let students mark up the problem text (highlight / underline / bold).
     stemEl.setAttribute("data-annotate", "word-problem");
-    stemEl.innerHTML = renderMathText(stem);
+    // Both lanes go through renderMathText — the Spanish stem carries the same
+    // numbers and math markup as the English one, so escaping it instead would
+    // print the markup literally on exactly the students who need it readable.
+    stemEl.innerHTML = stackContentHtml(renderMathText(stem), stemEs ? renderMathText(stemEs) : "");
     card.append(stemEl);
   }
 

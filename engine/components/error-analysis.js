@@ -8,9 +8,11 @@
 // caller spreads `...problemDef`, so a lesson may still author `diagram`; it is
 // simply ignored here, exactly as it has been since the file shipped. Wiring it
 // up is a content decision, not a lint fix.
+import { stackContent, stackContentHtml } from "../core/i18n.js";
+
 export function renderErrorAnalysis(
   container,
-  { title, workedExample, errorStep, correctWork, hints, onAnswer },
+  { title, titleEs, workedExample, errorStep, correctWork, correctWorkEs, hints, onAnswer },
 ) {
   injectErrorAnalysisStyles();
 
@@ -22,8 +24,11 @@ export function renderErrorAnalysis(
   header.innerHTML = `
     <div class="section-icon section-icon-coral">🔎</div>
     <div>
-      <div class="section-title" style="font-size:1.2rem;">${escHtml(title || "Find the Error")}</div>
-      <div class="section-desc">A student solved this problem. Something went wrong — can you find it?</div>
+      <div class="section-title" style="font-size:1.2rem;">${stackContent(title || "Find the Error", title ? titleEs : "Encuentra el error")}</div>
+      <div class="section-desc">${stackContent(
+        "A student solved this problem. Something went wrong — can you find it?",
+        "Un estudiante resolvió este problema. Algo salió mal — ¿puedes encontrarlo?",
+      )}</div>
     </div>
   `;
   wrapper.append(header);
@@ -49,9 +54,9 @@ export function renderErrorAnalysis(
           background:var(--navy); color:white; font-weight:900; font-size:0.82rem;
         ">S${i + 1}</span>
         <div>
-          <div style="font-weight:600; font-size:0.95rem;">${escHtml(step.label)}</div>
+          <div style="font-weight:600; font-size:0.95rem;">${stackContent(step.label, step.labelEs)}</div>
           <div style="font-family:var(--font-mono); font-size:1.05rem; margin-top:2px; color:var(--navy);">
-            ${escHtml(step.work)}
+            ${stackContent(step.work, step.workEs)}
           </div>
         </div>
       </div>
@@ -65,7 +70,10 @@ export function renderErrorAnalysis(
   const instruction = document.createElement("p");
   instruction.style.cssText =
     "font-weight:700; margin:var(--sp-4) 0 var(--sp-2); color:var(--navy);";
-  instruction.textContent = "Click the step that contains the error:";
+  instruction.innerHTML = stackContent(
+    "Click the step that contains the error:",
+    "Haz clic en el paso que contiene el error:",
+  );
   wrapper.append(instruction);
 
   const explainLabel = document.createElement("p");
@@ -270,7 +278,12 @@ export function renderErrorAnalysis(
       showFb(
         repairFb,
         "hint",
-        `Close. The correct step is: <strong>${escHtml(correctWork)}</strong>. Compare it with what you wrote.`,
+        stackContentHtml(
+          `Close. The correct step is: <strong>${escHtml(correctWork)}</strong>. Compare it with what you wrote.`,
+          correctWorkEs
+            ? `Casi. El paso correcto es: <strong>${escHtml(correctWorkEs)}</strong>. Compáralo con lo que escribiste.`
+            : "",
+        ),
       );
       finalize();
       return;

@@ -675,6 +675,22 @@ export function studentExplanation(id, lang = "en") {
 }
 
 /**
+ * The short diagnosis chip ("Added the denominators") in the requested
+ * language. Mirrors `studentExplanation` — same fallback rule, so a partially
+ * translated taxonomy degrades to readable English, never to blank.
+ *
+ * Callers want this rather than `diagnoseChoice(...).labelEs`: that spread is
+ * typed from the entries that carry no Spanish, so reaching into it is both a
+ * type error and a silent `undefined` on any entry that was never translated.
+ */
+export function misconceptionLabel(id, lang = "en") {
+  const entry = MISCONCEPTIONS[id];
+  if (!entry) return "";
+  if (lang === "es") return entry.labelEs || entry.label || "";
+  return entry.label || "";
+}
+
+/**
  * Persist a misconception hit on this device. Counts only — never the typed
  * text, never a name. The aggregate is what a teacher can act on; the raw
  * response is what would make this surface a privacy problem.
