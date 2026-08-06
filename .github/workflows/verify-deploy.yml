@@ -1,0 +1,55 @@
+name: Verify Deploy
+# On-demand proof that production is serving a specific commit.
+#
+# Why this exists as a WORKFLOW rather than just `npm run ship:verify`:
+# ship.sh polls eduwonderlab.com from the operator's machine. When that machine
+# cannot reach the public site — a sandboxed or network-restricted agent
+# environment, a locked-down corporate network — every poll is refused and the
+# ship exits non-zero with "Deploy NOT confirmed live". That failure is
+# indistinguishable from a genuinely stuck Cloudflare build, and the deploy
+# gets reported as broken when it may have promoted perfectly. A GitHub runner
+# has unrestricted egress, so asking CI to look is the way to tell the two
+# apart.
+#
+# This is the ASSERTING check. `Production Observability` also touches the live
+# site, but it runs `smoke:live` with no `--expect`, and its route-monitor
+# freshness verdict downgrades a commit mismatch to `warn` inside the grace
+# window — and route-monitor exits non-zero only on `fail`. So a stale
+# production can pass that workflow green. Passing `--expect` here is what
+# turns "the site is up" into "the site is serving THIS commit", and
+# smoke-live.mjs re-polls for up to 120s first so ordinary edge-propagation lag
+# is not reported as a failure.
+#
+# Read-only: no build, no deploy, no commit.
+on:
+  workflow_dispatch:
+    inputs:
+      expect:
+        description: "Commit production must be serving (blank = this ref's HEAD)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-deploy
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Production serves the expected commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Assert the live build stamp reports the expected commit
+        env:
+          EXPECT_INPUT: ${{ inputs.expect }}
+        run: npm run smoke:live -- --expect "${EXPECT_INPUT:-$GITHUB_SHA}"
