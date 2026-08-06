@@ -773,6 +773,117 @@ export function orderItemsForAdaptivePath(items = [], pathId = "connect") {
 }
 
 /**
+ * Spread the FORMATS through the set instead of serving them in blocks.
+ *
+ * Every one of the 148 generated small-group lessons opened with twelve
+ * consecutive `guided-fill` items — the whole `parallelPractice` bank — and
+ * only reached its multiple-choice / error-analysis variety at item 13. In a
+ * 15-minute station rotation a lot of students never got there, so the variety
+ * that was authored for them was, in practice, for nobody. Measured across the
+ * fleet: longest single-format run 12.1 items on average, and the guided-fill
+ * block was contiguous in 148 of 148 lessons.
+ *
+ * The dominant format is dealt into evenly sized gaps around the others, so 12
+ * fills and 5 others render as `GF GF · GF GF · GF GF …` — runs of 2, the
+ * arithmetic best for those counts.
+ *
+ * Two tempting versions are both wrong, and were both measured on this fleet
+ * before this one:
+ *   - Strict alternation ("most remaining format that is not the last one")
+ *     pairs 1-to-1, exhausts the minority at the halfway point, and leaves the
+ *     whole remainder of the majority in a tail block. Still left runs of 9.
+ *   - Spreading every format independently across [0,1] by its own (k+0.5)/c
+ *     fraction looks right and is close, but the separators land on their own
+ *     fractions rather than on the block's, so the gaps come out uneven. Left
+ *     runs of 3 where 2 was achievable, on 84 of 148 lessons.
+ *
+ * Ties break on the item's incoming position, so the output is deterministic:
+ * the same config always renders the same order, which matters because these
+ * lessons are generated and diffed.
+ *
+ * DISPLAY ONLY. `_practiceIndex` rides along on each item untouched, because
+ * that — not display position — is the Save/Resume key (see
+ * `orderItemsForAdaptivePath`, which established the same contract). A student
+ * mid-lesson keeps every saved answer attached to the problem they answered.
+ */
+export function interleaveByFormat(items = []) {
+  if (!Array.isArray(items) || items.length < 3) return (items || []).slice();
+  const buckets = new Map();
+  items.forEach((item, index) => {
+    const key = item?.type || "?";
+    if (!buckets.has(key)) buckets.set(key, []);
+    buckets.get(key).push({ item, index });
+  });
+  // One format present means there is nothing to interleave, and returning the
+  // input untouched keeps single-format sets in their authored order.
+  if (buckets.size < 2) return items.slice();
+
+  // The dominant format is the one that forms the block; everything else is a
+  // separator. Ties resolve to whichever appeared first, so this is stable.
+  let dominantType = null;
+  for (const [type, list] of buckets) {
+    if (!dominantType || list.length > buckets.get(dominantType).length) dominantType = type;
+  }
+  const dominant = buckets.get(dominantType).slice();
+
+  // Separators are themselves spread across their own formats, so a lesson with
+  // three multiple-choice and two error-analysis alternates them instead of
+  // emitting MC MC MC EA EA between the fills.
+  const separators = [];
+  for (const [type, list] of buckets) {
+    if (type === dominantType) continue;
+    list.forEach((entry, k) => separators.push({ ...entry, at: (k + 0.5) / list.length }));
+  }
+  separators.sort((a, b) => a.at - b.at || a.index - b.index);
+  if (!separators.length) return items.slice();
+
+  // Deal the dominant items into the gaps AROUND the separators, as evenly as
+  // the counts allow. Spreading each format independently is not enough: the
+  // separators land on their own fractions rather than on the block's, so the
+  // gaps come out uneven and a run of 3 survives where 2 was achievable.
+  const gaps = separators.length + 1;
+  const base = Math.floor(dominant.length / gaps);
+  const extra = dominant.length % gaps;
+  const out = [];
+  let cursor = 0;
+  for (let gap = 0; gap < gaps; gap += 1) {
+    const take = base + (gap < extra ? 1 : 0);
+    for (let n = 0; n < take; n += 1) out.push(dominant[cursor++].item);
+    if (gap < separators.length) out.push(separators[gap].item);
+  }
+  return out;
+}
+
+/**
+ * The order a practice set is actually drawn in: adaptive priority first, then
+ * written responses pushed to the close, then formats interleaved within the
+ * checkable group.
+ *
+ * Extracted so the variety gate can exercise the REAL ordering instead of a
+ * copy of it — a re-implementation in the test would keep passing after this
+ * pipeline changed underneath it.
+ *
+ * Interleaving runs after the adaptive sort rather than before it, because the
+ * adaptive score groups by tier and type and would otherwise re-cluster what
+ * this just spread. Priority is not lost: each format bucket keeps its incoming
+ * order, so the highest-scored item of a format is still the first of that
+ * format to appear.
+ */
+export function practiceDisplayOrder(collected = [], pathId = "connect") {
+  const ordered = orderItemsForAdaptivePath(collected, pathId);
+  // Only a genuine WRITTEN response closes the set. This used to be "anything
+  // `answerOf` cannot score", which swept the manipulatives out with the
+  // essays: across the fleet that stranded 19 fill-table, 13 drag-sort, 5
+  // matching-game, 3 number-line and 3 coordinate-grid items behind the whole
+  // practice bank, where the students who ran out of time never reached them.
+  // Position never affected whether those widgets RENDER — only whether anyone
+  // got to them — so they belong in the flow with everything else.
+  const written = ordered.filter((item) => item.type === "open-response");
+  const interactive = ordered.filter((item) => item.type !== "open-response");
+  return [...interleaveByFormat(interactive), ...written];
+}
+
+/**
  * Additive stretch: ensure authored extending items appear in the More Practice
  * set when the stretch path is chosen. Never removes existing items; tags new
  * arrivals with fresh `_practiceIndex` values past the current max so prior
@@ -844,13 +955,7 @@ export function createPracticeSection(
     collected = bringInExtendingItems(collected, config);
   }
   const pathId = options.adaptivePath || "connect";
-  const ordered = orderItemsForAdaptivePath(collected, pathId);
-  // Interactive, checkable problems first; written responses close the set
-  // (stable partition — relative order inside each group is preserved).
-  const items = [
-    ...ordered.filter((item) => answerOf(item) != null || item.type === "error-analysis"),
-    ...ordered.filter((item) => answerOf(item) == null && item.type !== "error-analysis"),
-  ];
+  const items = practiceDisplayOrder(collected, pathId);
   if (!items.length) return null;
   const section = el("section", "sg-sec");
   section.id = options.id || "sg-practice";
@@ -1034,7 +1139,9 @@ export function createPracticeSection(
       }
       displayItems = enriched;
     }
-    const reordered = orderItemsForAdaptivePath(displayItems, nextPath || "connect");
+    // Same ordering as the first render, so switching adaptive path does not
+    // hand the student back the twelve-in-a-row block this exists to break up.
+    const reordered = practiceDisplayOrder(displayItems, nextPath || "connect");
     const nav = section.querySelector(":scope > .sg-problem-nav");
     const anchor = nav || null;
     reordered.forEach((item) => {

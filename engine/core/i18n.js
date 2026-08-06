@@ -231,6 +231,37 @@ const HINT_LABELS = [
 const LANG_LS = "nt-lang";
 
 /**
+ * Legacy key: the small-group studio used to persist its own Spanish lane
+ * separately from the lesson engine's. Two keys meant two switches — a student
+ * who chose Español in a lesson walked into the studio and got English back,
+ * and had to find a second control they had no reason to know existed. The
+ * studio now reads and writes `nt-lang` like everything else.
+ *
+ * This adopts the old value ONCE, and only when the student has never made a
+ * choice under the new key, so a device already set to Spanish in the studio
+ * stays in Spanish instead of silently reverting on the day this shipped. A
+ * later explicit "English" writes `nt-lang` and wins permanently — the legacy
+ * key is removed here rather than left to out-vote it on the next load.
+ */
+const LEGACY_STUDIO_LANG_LS = "nt-sg-lang";
+
+function adoptLegacyStudioLang() {
+  try {
+    const legacy = localStorage.getItem(LEGACY_STUDIO_LANG_LS);
+    if (legacy === null) return;
+    const saved = localStorage.getItem(LANG_LS);
+    if (saved !== "es" && saved !== "en" && (legacy === "es" || legacy === "en")) {
+      localStorage.setItem(LANG_LS, legacy);
+    }
+    localStorage.removeItem(LEGACY_STUDIO_LANG_LS);
+  } catch {
+    /* storage blocked — nothing to migrate, and nothing breaks without it */
+  }
+}
+
+if (typeof localStorage !== "undefined") adoptLegacyStudioLang();
+
+/**
  * The student's language, which is ENGLISH until they say otherwise.
  *
  * This used to auto-detect: no saved choice meant falling through to

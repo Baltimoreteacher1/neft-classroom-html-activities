@@ -1,3 +1,4 @@
+import { getPreferredLang, setPreferredLang } from "./i18n.js";
 import { renderLaunchStoryBeats } from "./premium.js";
 import { figureBlock } from "./small-group-labs.js";
 import {
@@ -518,9 +519,11 @@ export function createVocabularySection(config, variant, onDone, store = null) {
     // switching it must re-render the whole studio. We persist the studio's
     // structural state, so a reload lands the student back in place — now in
     // the chosen lane. Boot lane is captured so a no-op re-pick doesn't reload.
+    // Reads the SHARED preference (`nt-lang`), not a studio-private key — a
+    // student who picked Español in a lesson arrives here already in Spanish.
     let bootLane = "en";
     try {
-      bootLane = window.localStorage.getItem("nt-sg-lang") === "es" ? "es" : "en";
+      bootLane = getPreferredLang() === "es" ? "es" : "en";
     } catch {
       /* private mode */
     }
@@ -530,8 +533,11 @@ export function createVocabularySection(config, variant, onDone, store = null) {
       store?.set("vocabLang", nextLane);
       let laneChanged = false;
       try {
-        laneChanged = window.localStorage.getItem("nt-sg-lang") !== nextLane;
-        window.localStorage.setItem("nt-sg-lang", nextLane);
+        // Writing the shared preference also stamps <html lang>, which is what
+        // switches the lesson engine's CSS-gated bilingual spans — so the
+        // choice carries back out of the studio as well as into it.
+        laneChanged = getPreferredLang() !== nextLane;
+        setPreferredLang(nextLane);
       } catch {
         /* private mode — vocab cards still switch below */
       }

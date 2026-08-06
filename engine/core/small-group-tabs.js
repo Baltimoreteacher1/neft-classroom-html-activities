@@ -10,6 +10,10 @@ export function mountSmallGroupTabs(
   tabs.setAttribute("aria-label", "Lesson steps");
   const buttons = new Map();
   const activeSteps = steps.filter((step) => step.panel);
+  // The stylesheet cannot count the parts a lesson actually shipped, and both
+  // CSS-only answers are wrong: a fixed track count strands an empty column,
+  // and auto-fit sizes to the minimum and truncates the labels.
+  tabs.style.setProperty("--sg-tab-count", String(Math.max(activeSteps.length, 1)));
 
   function markDone(id) {
     const button = buttons.get(id);
@@ -47,10 +51,18 @@ export function mountSmallGroupTabs(
     step.panel.classList.add("sg-tabpanel");
     step.panel.setAttribute("role", "tabpanel");
     step.panel.setAttribute("aria-labelledby", `sg-tab-${step.id}`);
+    // Two lines, like the participant-page tab strip this borrows from: the
+    // part's NAME, and under it what the student actually does there. A row of
+    // bare nouns ("Guided", "More Practice") tells a student where they are but
+    // not what it is, and these are the primary navigation for the whole
+    // lesson. The sub-line is decorative for assistive tech — the button's
+    // accessible name stays the part name alone.
     const button = el(
       "button",
       "sg-step",
-      `<span class="dot">${index + 1}</span><span class="lbl">${step.label}</span>`,
+      `<span class="dot">${index + 1}</span><span class="lbl">${step.label}` +
+        (step.sub ? `<small aria-hidden="true">${step.sub}</small>` : "") +
+        `</span>`,
     );
     button.id = `sg-tab-${step.id}`;
     button.type = "button";

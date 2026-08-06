@@ -915,15 +915,22 @@ function renderStudio(config) {
     return panel;
   };
   const tabSteps = [
-    { id: "sg-tab-vocab", label: "Vocabulary", panel: makePanel("sg-tab-vocab", [vocab]) },
+    {
+      id: "sg-tab-vocab",
+      label: "Vocabulary",
+      sub: "The words",
+      panel: makePanel("sg-tab-vocab", [vocab]),
+    },
     {
       id: "sg-tab-learn",
       label: "Learn It",
+      sub: "Worked example",
       panel: makePanel("sg-tab-learn", [pulseCard, build, explore, model]),
     },
     {
       id: "sg-tab-guided",
       label: "Guided",
+      sub: "Together",
       panel: makePanel("sg-tab-guided", [guided, createAdaptiveCoach(variant, state, store)]),
     },
     {
@@ -934,6 +941,7 @@ function renderStudio(config) {
       // finish the reflection.
       id: "sg-tab-practice",
       label: "Practice & Check",
+      sub: "On your own",
       // practiceLab: the same optional practice.diagram slot the full lesson
       // honors (step-solver, box-plot-builder, equation-balance-lab, …),
       // mounted first so students can rehearse the skill with the tool before
@@ -957,12 +965,14 @@ function renderStudio(config) {
     {
       id: "sg-tab-more",
       label: "More Practice",
+      sub: "Stretch",
       panel: makePanel("sg-tab-more", [masteryLadder, morePractice, mission, apply, goDeeper]),
     },
     // Group 2 only — keep the stable id for saved-tab compatibility.
     {
       id: "sg-tab-prove",
       label: "Math Check",
+      sub: "Show it",
       panel: makePanel("sg-tab-prove", [mathCheck]),
     },
   ];
