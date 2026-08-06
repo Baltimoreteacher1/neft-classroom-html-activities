@@ -37,17 +37,17 @@ function titleCase(slug) {
 }
 
 /**
- * True when the student has the Spanish lane on. Two keys because the two
- * renderers own different language controls: the full lesson engine writes
- * `nt-lang` (i18n.js) and the small-group studio writes `nt-sg-lang` from its
- * vocabulary language bar. A tools page reached from either must honour it.
+ * True when the student has the Spanish lane on.
+ *
+ * This used to check two keys, because the lesson engine wrote `nt-lang` while
+ * the small-group studio wrote its own `nt-sg-lang`, and a tools page reached
+ * from either had to honour both. That fallback was a symptom: the two
+ * surfaces disagreed about the student's own language. The studio now writes
+ * the shared preference, so there is one key and one answer. (i18n.js adopts
+ * any lingering legacy value on load, so devices set in the old studio keep
+ * their Spanish.)
  */
 function esOn() {
-  try {
-    if (window.localStorage.getItem("nt-sg-lang") === "es") return true;
-  } catch {
-    /* storage blocked — fall through to the engine preference */
-  }
   try {
     return getPreferredLang() === "es";
   } catch {
