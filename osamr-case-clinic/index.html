@@ -203,12 +203,6 @@
     .prompt-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:900;color:var(--teal);margin:14px 0 6px}
 
     .gallery-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start;margin-top:18px}
-    .gallery-list{display:grid;gap:12px}
-    .gallery-item{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--soft)}
-    .gallery-item h3{margin:0 0 8px;color:var(--navy);font-size:18px}
-    .gallery-item pre{white-space:pre-wrap;font-family:var(--font);font-size:14px;line-height:1.42;color:#2c3b49;background:#f8fbf9;border-radius:14px;padding:12px;margin:0}
-    .gallery-item .status{font-size:12px;font-weight:900;color:var(--muted);margin:0 0 8px}
-    .gallery-item .status.done{color:var(--teal)}
     .side-note{padding:20px}
     .side-note.fits{position:sticky;top:calc(var(--top-h) + 14px)}
     .side-note p{color:var(--muted);line-height:1.45;margin:0 0 12px}
@@ -236,6 +230,11 @@
 
     @media(max-width:1040px){
       .cards,.model-grid,.group-menu,.workspace-grid,.gallery-grid,.protocol-grid,.osamr-mini-grid{grid-template-columns:1fr}
+      .gallery-list{grid-template-columns:1fr}
+      /* 7 tiles will not fit across a tablet; wrap to two rows of four. */
+      .ratings-row{grid-template-columns:repeat(4,minmax(0,1fr))}
+      .present-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .present-detail .pd-row{grid-template-columns:1fr;gap:4px}
       /* Single column here, so nothing may be sticky — .fits must lose. */
       .scenario-card.fits,.side-note.fits{position:static}
       .brand{align-items:flex-start;flex-direction:column}
@@ -251,12 +250,100 @@
       .page-head{align-items:flex-start;flex-direction:column}
       .osamr-mini-grid{grid-template-columns:1fr}
       .token-row .token{flex:1 1 calc(50% - 8px)}
+      .ratings-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .present-grid{grid-template-columns:1fr}
+      .present{padding:14px}
+      .gi-row{grid-template-columns:1fr;gap:2px}
       /* The three motto chips wrap to three rows on a phone and cost ~60px of
          sticky header for text that is repeated on the Start page anyway.
          The save-state pill stays — that one is live feedback. */
       .rule .chip:not(.save-pill){display:none}
       .brand{margin-bottom:6px}
     }
+
+    /* ===== Gallery board =================================================
+       The old board printed each group's FULL ruling — case story and teacher
+       AI input included — into a <pre>. Seven of those ran 4,603px, so nothing
+       could be compared and an unstarted group rendered a skeleton of "[proof
+       detail]" placeholders. This layer shows only what the protocol asks each
+       group to share, and puts all seven ratings on one line. ============== */
+
+    /* One letter per group, the whole room on a single line. */
+    .ratings-strip{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--soft);padding:18px;margin-top:18px}
+    .ratings-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    .ratings-head h3{margin:0;color:var(--navy);font-size:19px}
+    .ratings-head p{margin:0;color:var(--muted);font-weight:800;font-size:14px}
+    .ratings-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+    .rating-tile{border:1px solid var(--line);border-radius:16px;padding:12px 10px;text-align:center;background:linear-gradient(180deg,#fff,#fbf8f0);min-width:0}
+    .rating-tile .g{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+    .rating-tile .letter{width:46px;height:46px;margin:8px auto 6px;border-radius:14px;display:grid;place-items:center;font-size:22px;font-weight:900;background:var(--sage);color:var(--navy)}
+    .rating-tile .name{font-size:11.5px;font-weight:800;color:#33424f;line-height:1.25;overflow-wrap:anywhere}
+    .rating-tile.lvl-o .letter{background:rgba(201,104,74,.2);color:#8a3d2a}
+    .rating-tile.lvl-o{border-color:rgba(201,104,74,.4);background:rgba(201,104,74,.05)}
+    .rating-tile.lvl-none{opacity:.55}
+    .rating-tile.lvl-none .letter{background:rgba(16,40,63,.07);color:var(--muted);font-size:16px}
+
+    .board-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:18px 0 0}
+    .board-controls-label{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+    .view-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:999px;padding:8px 14px;font-weight:900;font-size:13px;cursor:pointer}
+    .view-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .board-hint{color:var(--muted);font-weight:800;font-size:13px;margin-left:4px}
+
+    .ruling-group-head{grid-column:1/-1;margin:14px 0 2px;color:var(--navy);font-size:16px;font-weight:900;display:flex;align-items:center;gap:9px}
+    .ruling-group-head .letter{width:30px;height:30px;border-radius:10px;background:var(--sage);display:grid;place-items:center;font-size:15px}
+    .ruling-group-head.lvl-o .letter{background:rgba(201,104,74,.2);color:#8a3d2a}
+    .ruling-group-head small{color:var(--muted);font-weight:800;font-size:12.5px}
+
+    .gallery-item{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--soft)}
+    .gallery-item .gi-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .gallery-item h3{margin:0;color:var(--navy);font-size:17px;line-height:1.2}
+    .gallery-item h3 small{display:block;color:var(--muted);font-weight:800;font-size:12px;margin-top:2px}
+    .gi-level{flex:0 0 auto;display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:5px 11px 5px 6px;font-weight:900;font-size:12.5px;color:var(--navy);white-space:nowrap}
+    .gi-level b{width:24px;height:24px;border-radius:8px;background:var(--sage);display:grid;place-items:center;font-size:13px}
+    .gi-level.lvl-o{border-color:rgba(201,104,74,.4);background:rgba(201,104,74,.06);color:#8a3d2a}
+    .gi-level.lvl-o b{background:rgba(201,104,74,.2);color:#8a3d2a}
+    .gi-level.lvl-none{color:var(--muted)}
+    .gi-level.lvl-none b{background:rgba(16,40,63,.07);color:var(--muted)}
+    /* Only the three things the protocol asks a group to share. */
+    .gi-rows{display:grid;gap:9px}
+    .gi-row{display:grid;grid-template-columns:86px minmax(0,1fr);gap:10px;align-items:start;font-size:14.5px;line-height:1.45}
+    .gi-row dt{font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:3px}
+    .gi-row.flag dt{color:var(--terracotta)}
+    .gi-row dd{margin:0;color:#2f4050;overflow-wrap:anywhere}
+    .gi-waiting{color:var(--muted);font-weight:800;font-size:14px;padding:6px 0 2px}
+    .gi-full{margin-top:12px}
+    .gi-full summary{font-size:13px}
+    .gi-full pre{white-space:pre-wrap;font-family:var(--font);font-size:13.5px;line-height:1.42;color:#2c3b49;background:#f8fbf9;border-radius:14px;padding:12px;margin:8px 0 0}
+    .gallery-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-content:start}
+
+    /* ---- Present mode: what goes on the projector. --------------------- */
+    /* Above the shared Save/Resume launcher, which pins itself at
+       z-index 2147483000 and would otherwise float over the projection. */
+    .present{position:fixed;inset:0;z-index:2147483600;background:linear-gradient(135deg,#0d2236,#123f45);color:#fff;display:flex;flex-direction:column;padding:22px 26px 26px}
+    /* Hide the site-wide floating chrome entirely while projecting. */
+    body.presenting .nsr-launcher,body.presenting #nsr-launcher,body.presenting .gfx-specular-glare{display:none!important}
+    .present[hidden]{display:none}
+    .present-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+    .present-kicker{margin:0 0 2px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:rgba(255,255,255,.6)}
+    .present-bar h2{margin:0;color:#fff;font-size:clamp(24px,3vw,38px)}
+    .present-actions{display:flex;align-items:center;gap:8px}
+    .present-page{font-weight:900;color:rgba(255,255,255,.8);min-width:104px;text-align:center;font-size:14px}
+    .present-body{flex:1;overflow:auto;min-height:0;display:grid;align-content:center}
+    .present-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:14px;height:100%}
+    .present-tile{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:18px;display:flex;flex-direction:column;justify-content:center;min-height:0}
+    .present-tile .g{font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+    .present-tile h4{margin:4px 0 12px;font-size:clamp(15px,1.35vw,20px);line-height:1.2}
+    .present-tile .letter{width:clamp(56px,5.5vw,86px);height:clamp(56px,5.5vw,86px);border-radius:20px;display:grid;place-items:center;font-size:clamp(26px,3vw,42px);font-weight:900;background:rgba(255,255,255,.9);color:#10283f}
+    .present-tile.lvl-o .letter{background:#e8a690;color:#5c2113}
+    .present-tile.lvl-none{opacity:.5}
+    .present-tile.lvl-none .letter{background:rgba(255,255,255,.2);color:#fff;font-size:20px}
+    .present-detail{display:grid;gap:16px;max-width:1500px;margin:0 auto}
+    .present-detail .pd-row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;align-items:start}
+    .present-detail dt{font-size:14px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#8fd6d2;padding-top:6px}
+    .present-detail dd{margin:0;font-size:clamp(18px,1.9vw,28px);line-height:1.35}
+    .present-detail .pd-row.flag dt{color:#f0a488}
+    .present-empty{font-size:clamp(18px,2vw,26px);color:rgba(255,255,255,.72)}
+
     .board-status{margin:8px 0 0;font-weight:900;font-size:13px;color:var(--muted)}
     .board-status.on{color:var(--teal)}
     .board-status.off{color:#8a6412}
@@ -276,7 +363,9 @@
     #nsr-workbench{display:none!important}
 
     @media print{
-      .top,.toast,.action-row,.tabs,.skip-link{display:none!important}
+      .top,.toast,.action-row,.tabs,.skip-link,.board-controls,.present{display:none!important}
+      .gallery-list{grid-template-columns:1fr}
+      .gi-full{display:none}
       html.js .page{display:block!important}
       textarea{overflow:hidden!important;resize:none!important;border:1px solid #999}
     }
@@ -1603,13 +1692,32 @@
         <div>
           <p class="kicker">Gallery Board</p>
           <h2>Compare the rulings.</h2>
-          <p class="subline">Each group shares one clear rating, one evidence detail, one red flag, and one fix.</p>
+          <p class="subline">One rating, one evidence detail, one red flag, one fix — from every group.</p>
           <p class="board-status" id="boardStatus">● Connecting to the shared board…</p>
         </div>
         <div class="action-row top-actions">
-          <button class="btn secondary" type="button" id="downloadResponses">Download all rulings</button>
-          <button class="btn secondary" type="button" id="printBoard">Print board</button>
+          <button class="btn primary" type="button" id="presentBoard">▶ Present board</button>
+          <button class="btn secondary" type="button" id="downloadResponses">Download</button>
+          <button class="btn secondary" type="button" id="printBoard">Print</button>
         </div>
+      </div>
+
+      <!-- The compare view. Seven ratings on one line is the point of a gallery
+           board: the room sees agreement and disagreement at a glance, which is
+           exactly what the discussion prompt then asks about. -->
+      <section class="ratings-strip" aria-label="Every group's ruling at a glance">
+        <div class="ratings-head">
+          <h3>Where the room landed</h3>
+          <p id="postedCount">No rulings posted yet</p>
+        </div>
+        <div class="ratings-row" id="ratingsRow"></div>
+      </section>
+
+      <div class="board-controls" role="group" aria-label="Board view">
+        <span class="board-controls-label">View</span>
+        <button class="view-btn active" type="button" data-view="group">By group</button>
+        <button class="view-btn" type="button" data-view="ruling">By ruling</button>
+        <span class="board-hint" id="viewHint">Groups 1-7 in order</span>
       </div>
 
       <div class="gallery-grid">
@@ -1618,22 +1726,29 @@
           <h3>Discussion prompt</h3>
           <p><strong>What evidence changed your mind?</strong></p>
           <p>Bottom line: helpful support keeps the thinking with students.</p>
-          <h3 style="margin-top:16px">Label bank</h3>
-          <div class="label-bank">
-            <span>Barrier removed</span>
-            <span>Thinking preserved</span>
-            <span>Evidence before label</span>
-            <span>Red flag named</span>
-            <span>Fix-it move</span>
-            <span>OSAMR: Substitute</span>
-            <span>OSAMR: Augment</span>
-            <span>OSAMR: Modify</span>
-            <span>OSAMR: Redefine</span>
-            <span>OSAMR: Overreliance</span>
-          </div>
+          <h3 style="margin-top:16px">Reading the board</h3>
+          <p>Switch to <strong>By ruling</strong> to see which cases the room disagreed on. Two groups landing on different letters is the most useful conversation in the session.</p>
         </aside>
       </div>
     </section>
+
+    <!-- Projection view: large type, no page chrome, refreshes itself. -->
+    <div class="present" id="presentOverlay" hidden>
+      <div class="present-bar">
+        <div>
+          <p class="present-kicker">OSAMR Case Clinic · Gallery Board</p>
+          <h2 id="presentTitle">Where the room landed</h2>
+        </div>
+        <div class="present-actions">
+          <button class="btn secondary" type="button" id="presentPrev">‹</button>
+          <span class="present-page" id="presentPage">Overview</span>
+          <button class="btn secondary" type="button" id="presentNext">›</button>
+          <button class="btn secondary" type="button" id="presentClose">Close ✕</button>
+        </div>
+      </div>
+      <div class="present-body" id="presentBody"></div>
+    </div>
+
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite">Copied</div>
@@ -1938,30 +2053,187 @@ OSAMR level: ${v("osamr", "[level]")}
 We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} while students still ${v("thinking", "___")}. Red flag: ${v("redflag", "___")}. Fix: ${v("fix", "___")}.`;
     }
 
-    function renderGallery() {
-      const list = $("#galleryList");
-      if (!list) return;
-      list.innerHTML = CASES.map((c) => {
+    /* A ruling is reduced to a letter for the compare views. Unset stays
+       visually distinct rather than being guessed at. */
+    const LEVELS = [
+      { key: "S", match: "S —", label: "Substitute" },
+      { key: "A", match: "A —", label: "Augment" },
+      { key: "M", match: "M —", label: "Modify" },
+      { key: "R", match: "R —", label: "Redefine" },
+      { key: "!", match: "Overreliance", label: "Overreliance", warn: true },
+    ];
+    function levelOf(osamr) {
+      const v = (osamr || "").trim();
+      if (!v) return null;
+      return LEVELS.find((l) => v.startsWith(l.match)) || null;
+    }
+    const levelClass = (lvl) => (!lvl ? "lvl-none" : lvl.warn ? "lvl-o" : "lvl-" + lvl.key.toLowerCase());
+
+    function boardRows() {
+      return CASES.map((c) => {
         const fields = fieldsFor(c.id);
-        const done = FIELDS.filter((f) => (fields[f] || "").trim()).length;
-        const total = FIELDS.length;
-        const cls = done === total ? "status done" : "status";
-        const remote = board[String(c.id)];
-        const when = remote?.updatedAt
-          ? new Date(remote.updatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+        const filled = FIELDS.filter((f) => (fields[f] || "").trim()).length;
+        return { c, fields, filled, lvl: levelOf(fields.osamr), posted: filled > 0 };
+      });
+    }
+
+    /* Seven ratings on one line — the compare view the board exists for. */
+    function renderRatings(rows) {
+      const row = $("#ratingsRow");
+      const count = $("#postedCount");
+      if (!row) return;
+      row.innerHTML = rows
+        .map(({ c, lvl, posted }) => `
+        <div class="rating-tile ${levelClass(lvl)}">
+          <div class="g">Group ${c.id}</div>
+          <div class="letter">${lvl ? escapeHtml(lvl.key) : "·"}</div>
+          <div class="name">${escapeHtml(lvl ? lvl.label : posted ? "In progress" : "Not started")}</div>
+        </div>`)
+        .join("");
+      if (count) {
+        const ruled = rows.filter((r) => r.lvl).length;
+        count.textContent = ruled === 0
+          ? "No rulings posted yet"
+          : `${ruled} of ${rows.length} groups have posted a ruling`;
+      }
+    }
+
+    /* Only the four things the protocol asks a group to share. The case story
+       and the teacher AI input are deliberately NOT repeated here — every
+       participant already read them in the case room, and repeating them is
+       what buried the actual rulings. The full text stays one click away. */
+    function galleryCard({ c, fields, lvl, posted }) {
+      const row = (label, field, cls = "") =>
+        (fields[field] || "").trim()
+          ? `<div class="gi-row ${cls}"><dt>${label}</dt><dd>${escapeHtml(fields[field].trim())}</dd></div>`
           : "";
-        const stamp = done === 0 ? "Not started" : (when ? `Updated ${when}` : "On this device");
-        return `
+      const body = posted
+        ? `<dl class="gi-rows">
+             ${row("Evidence", "evidence")}
+             ${row("Red flag", "redflag", "flag")}
+             ${row("Fix-it", "fix")}
+           </dl>`
+        : `<p class="gi-waiting">Waiting for this group…</p>`;
+      return `
         <article class="gallery-item">
-          <h3>Group ${c.id} — ${escapeHtml(c.short)} · ${escapeHtml(c.band)}</h3>
-          <p class="${cls}">${done} of ${total} fields complete · ${escapeHtml(stamp)}</p>
-          <pre>${escapeHtml(postFromFields(c, fields))}</pre>
+          <div class="gi-head">
+            <h3>Group ${c.id} — ${escapeHtml(c.short)}<small>${escapeHtml(c.band)}</small></h3>
+            <span class="gi-level ${levelClass(lvl)}"><b>${lvl ? escapeHtml(lvl.key) : "·"}</b>${escapeHtml(lvl ? lvl.label : "No ruling yet")}</span>
+          </div>
+          ${body}
+          ${posted ? `<details class="gi-full"><summary>Full ruling</summary><pre>${escapeHtml(postFromFields(c, fields))}</pre></details>` : ""}
           <div class="action-row">
             <button class="btn secondary" type="button" data-open-page="group-${c.id}">Open Group ${c.id}</button>
-            <button class="btn primary" type="button" data-copy-post="${c.id}">Copy ruling</button>
+            ${posted ? `<button class="btn primary" type="button" data-copy-post="${c.id}">Copy ruling</button>` : ""}
           </div>
         </article>`;
-      }).join("");
+    }
+
+    let boardView = "group";
+
+    function renderGallery() {
+      const rows = boardRows();
+      renderRatings(rows);
+      if (presentOpen) renderPresent();
+
+      const list = $("#galleryList");
+      if (!list) return;
+
+      if (boardView === "ruling") {
+        /* Clustering by letter is what makes disagreement visible — two groups
+           on different letters is the most useful conversation in the room. */
+        const buckets = [...LEVELS.map((l) => ({ lvl: l, rows: [] })), { lvl: null, rows: [] }];
+        for (const r of rows) {
+          const b = buckets.find((x) => (x.lvl?.key || null) === (r.lvl?.key || null));
+          (b || buckets[buckets.length - 1]).rows.push(r);
+        }
+        list.innerHTML = buckets
+          .filter((b) => b.rows.length)
+          .map((b) => `
+            <h3 class="ruling-group-head ${levelClass(b.lvl)}">
+              <span class="letter">${b.lvl ? escapeHtml(b.lvl.key) : "·"}</span>
+              ${escapeHtml(b.lvl ? b.lvl.label : "No ruling yet")}
+              <small>${b.rows.length} group${b.rows.length === 1 ? "" : "s"}</small>
+            </h3>
+            ${b.rows.map(galleryCard).join("")}`)
+          .join("");
+      } else {
+        list.innerHTML = rows.map(galleryCard).join("");
+      }
+    }
+
+    /* ---- Present mode ----------------------------------------------------
+       A projector needs large type and no page chrome. Page 0 is the overview
+       (all seven ratings); pages 1..7 are one group each, big enough to read
+       from the back of a room. Arrow keys and the on-screen arrows move; Esc
+       closes. It re-renders on every poll, so the projected board stays live.
+       ------------------------------------------------------------------- */
+    let presentOpen = false;
+    let presentIndex = 0;
+
+    function renderPresent() {
+      const body = $("#presentBody");
+      if (!body) return;
+      const rows = boardRows();
+      const title = $("#presentTitle");
+      const pager = $("#presentPage");
+
+      if (presentIndex === 0) {
+        if (title) title.textContent = "Where the room landed";
+        if (pager) pager.textContent = "Overview";
+        body.innerHTML = `<div class="present-grid">${rows
+          .map(({ c, lvl, posted }) => `
+            <div class="present-tile ${levelClass(lvl)}">
+              <div class="g">Group ${c.id}</div>
+              <h4>${escapeHtml(c.short)}</h4>
+              <div class="letter">${lvl ? escapeHtml(lvl.key) : "·"}</div>
+              <p style="margin:10px 0 0;font-weight:800">${escapeHtml(lvl ? lvl.label : posted ? "In progress" : "Not started")}</p>
+            </div>`)
+          .join("")}</div>`;
+        return;
+      }
+
+      const { c, fields, lvl, posted } = rows[presentIndex - 1];
+      if (title) title.textContent = `Group ${c.id} — ${c.short}`;
+      if (pager) pager.textContent = `Group ${c.id} of ${rows.length}`;
+      if (!posted) {
+        body.innerHTML = `<p class="present-empty">This group has not posted a ruling yet.</p>`;
+        return;
+      }
+      const row = (label, field, cls = "") =>
+        (fields[field] || "").trim()
+          ? `<div class="pd-row ${cls}"><dt>${label}</dt><dd>${escapeHtml(fields[field].trim())}</dd></div>`
+          : "";
+      body.innerHTML = `<dl class="present-detail">
+          <div class="pd-row"><dt>Ruling</dt><dd><strong>${escapeHtml(lvl ? lvl.label : fields.osamr || "—")}</strong></dd></div>
+          ${row("Barrier", "barrier")}
+          ${row("Thinking", "thinking")}
+          ${row("Evidence", "evidence")}
+          ${row("Red flag", "redflag", "flag")}
+          ${row("Fix-it", "fix")}
+        </dl>`;
+    }
+
+    function openPresent() {
+      presentOpen = true;
+      presentIndex = 0;
+      const overlay = $("#presentOverlay");
+      if (overlay) overlay.hidden = false;
+      document.body.classList.add("presenting");
+      document.body.style.overflow = "hidden";
+      renderPresent();
+      pollBoard();
+    }
+    function closePresent() {
+      presentOpen = false;
+      const overlay = $("#presentOverlay");
+      if (overlay) overlay.hidden = true;
+      document.body.classList.remove("presenting");
+      document.body.style.overflow = "";
+    }
+    function movePresent(step) {
+      presentIndex = (presentIndex + step + (CASES.length + 1)) % (CASES.length + 1);
+      renderPresent();
     }
 
     function downloadResponses() {
@@ -2012,6 +2284,32 @@ We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} whi
     window.addEventListener("hashchange", () => openPage(location.hash.replace("#", ""), false));
 
     $("#downloadResponses")?.addEventListener("click", downloadResponses);
+
+    // View toggle: by group (1-7 in order) or clustered by ruling.
+    for (const btn of $$(".view-btn")) {
+      btn.addEventListener("click", () => {
+        boardView = btn.dataset.view;
+        for (const b of $$(".view-btn")) b.classList.toggle("active", b === btn);
+        const hint = $("#viewHint");
+        if (hint) {
+          hint.textContent = boardView === "ruling"
+            ? "Grouped by the letter each room chose"
+            : "Groups 1-7 in order";
+        }
+        renderGallery();
+      });
+    }
+
+    $("#presentBoard")?.addEventListener("click", openPresent);
+    $("#presentClose")?.addEventListener("click", closePresent);
+    $("#presentPrev")?.addEventListener("click", () => movePresent(-1));
+    $("#presentNext")?.addEventListener("click", () => movePresent(1));
+    document.addEventListener("keydown", (e) => {
+      if (!presentOpen) return;
+      if (e.key === "Escape") closePresent();
+      else if (e.key === "ArrowRight" || e.key === "PageDown") movePresent(1);
+      else if (e.key === "ArrowLeft" || e.key === "PageUp") movePresent(-1);
+    });
     $("#printBoard")?.addEventListener("click", () => window.print());
 
     // Every sticky offset and anchor scroll-margin derives from the REAL header
