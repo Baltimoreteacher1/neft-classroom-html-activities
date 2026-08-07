@@ -40,10 +40,25 @@
 import { badRequest, handler, unauthorized } from "../_lib/http.js";
 
 /** Bump to start a fresh board; old rows stay behind under the old id. */
-const BOARD_ID = "2026-osamr-clinic";
+const BOARD_ID = "2026-osamr-sort";
 
 const GROUP_IDS = [1, 2, 3, 4, 5, 6, 7];
-const FIELDS = ["barrier", "thinking", "action", "osamr", "evidence", "redflag", "fix"];
+/* The clinic is a sorting activity: one placement per card, the card the
+   group argued about with a one-line reason, and the closing takeaway every
+   group posts at once. BOARD_ID is bumped alongside this list, so old rulings
+   stay behind under the old id instead of half-populating the new board. */
+const FIELDS = [
+  "card1",
+  "card2",
+  "card3",
+  "card4",
+  "card5",
+  "card6",
+  "card7",
+  "contested",
+  "why",
+  "takeaway",
+];
 
 /** Per-field cap. Generous for a paragraph, small enough to bound the table. */
 const MAX_FIELD = 1200;

@@ -1,2510 +1,1224 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="OSAMR Case Clinic — review one classroom AI use and decide whether AI removed an access barrier while preserving student thinking." />
-  <title>OSAMR Case Clinic | AI for Accessible Instruction</title>
-  <style>
-    :root{
-      --navy:#10283f; --navy2:#173a5b; --teal:#247c7f; --teal2:#4fb6b3;
-      --cream:#fff8ed; --paper:#fffdf8; --gold:#e0a93c; --terracotta:#c9684a;
-      --sage:#dce8df; --ink:#17212b; --muted:#5b6b7a;
-      --line:rgba(16,40,63,.16);
-      --shadow:0 18px 38px rgba(16,40,63,.12);
-      --soft:0 8px 20px rgba(16,40,63,.08);
-      --radius:22px;
-      --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-      /* Measured at runtime from the real header box. Every sticky offset,
-         anchor scroll-margin and sidebar max-height derives from this, so the
-         layout stays correct when the header re-wraps at any width. */
-      --top-h:132px;
-    }
-
-    *{box-sizing:border-box}
-    /* NOT smooth: openPage() also scrolls, so the two animated together and
-       slid unrelated content past the reader for ~600ms on every tab click. */
-    html{scroll-behavior:auto;min-height:100%}
-    body{
-      margin:0; font-family:var(--font); color:var(--ink);
-      background:
-        radial-gradient(circle at top left, rgba(79,182,179,.16), transparent 28rem),
-        linear-gradient(135deg,#f6fbfb 0%,#fff8ed 72%,#f8efe7 100%);
-      min-height:100vh; overflow-x:hidden; padding-bottom:48px;
-    }
-    button,textarea,select,input{font-family:inherit}
-    a{color:inherit}
-
-    .skip-link{position:absolute;left:-9999px;top:0;z-index:60;background:var(--navy);color:#fff;padding:10px 16px;border-radius:0 0 12px 0;font-weight:900}
-    .skip-link:focus{left:0}
-
-    .top{
-      position:sticky; top:0; z-index:20;
-      background:rgba(255,253,248,.97); backdrop-filter:blur(14px);
-      border-bottom:1px solid var(--line); box-shadow:0 2px 10px rgba(16,40,63,.06);
-    }
-    .top-inner{max-width:1260px;margin:auto;padding:10px 20px 8px}
-    .brand{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:8px}
-    .brand-left{display:flex;align-items:center;gap:12px;min-width:0}
-    .mark{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff;display:grid;place-items:center;font-weight:900;box-shadow:var(--soft);letter-spacing:-.03em;flex:0 0 auto}
-    h1{font-size:19px;line-height:1.05;margin:0;color:var(--navy);letter-spacing:-.02em}
-    .brand small{display:block;color:var(--muted);font-weight:700;margin-top:2px;font-size:12px}
-    .rule{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-    .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:900;color:var(--navy);white-space:nowrap}
-    .save-pill{border-color:rgba(36,124,127,.4);color:var(--teal)}
-
-    /* ONE scrolling row. A wrapping tab grid grew the sticky header to ~570px
-       on a phone, which left almost no room for the actual work. */
-    .tabs{
-      display:flex; gap:8px; overflow-x:auto; overflow-y:hidden;
-      scrollbar-width:thin; padding-bottom:4px; scroll-snap-type:x proximity;
-      -webkit-overflow-scrolling:touch;
-    }
-    .tabs::-webkit-scrollbar{height:6px}
-    .tabs::-webkit-scrollbar-thumb{background:rgba(16,40,63,.22);border-radius:999px}
-    .tab-btn{
-      flex:0 0 auto; scroll-snap-align:start;
-      border:1px solid var(--line); background:#fff; color:var(--navy);
-      border-radius:12px; padding:7px 12px; text-align:left; cursor:pointer;
-      box-shadow:0 4px 10px rgba(16,40,63,.04); text-decoration:none; display:block;
-      transition:background .15s ease,color .15s ease,border-color .15s ease;
-    }
-    .tab-btn span{display:block;font-weight:900;font-size:13px;white-space:nowrap}
-    .tab-btn small{display:block;color:var(--muted);font-size:11px;margin-top:1px;white-space:nowrap}
-    .tab-btn:hover{border-color:var(--teal)}
-    .tab-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-    .tab-btn.active small{color:rgba(255,255,255,.78)}
-
-    .wrap{max-width:1260px;margin:0 auto;padding:24px 20px 90px}
-    .page{display:block;scroll-margin-top:calc(var(--top-h) + 12px);animation:rise .18s ease both;padding-bottom:40px}
-    html.js .page{display:none}
-    html.js .page.active{display:block}
-    @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-    @media(prefers-reduced-motion:reduce){
-      html{scroll-behavior:auto}
-      *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
-    }
-
-    .hero{border-radius:30px;background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff;padding:34px;box-shadow:var(--shadow);overflow:hidden;position:relative}
-    .hero:after{content:"";position:absolute;right:-80px;bottom:-105px;width:260px;height:260px;border:36px solid rgba(255,255,255,.09);border-radius:50%}
-    .kicker{margin:0 0 8px;text-transform:uppercase;letter-spacing:.13em;font-size:12px;font-weight:900;color:var(--teal)}
-    .hero .kicker{color:rgba(255,255,255,.76)}
-    h2{font-size:clamp(28px,3.6vw,44px);line-height:1.04;margin:0;color:var(--navy);letter-spacing:-.032em}
-    .hero h2{color:#fff;max-width:860px}
-    .hero p{font-size:18px;line-height:1.45;color:rgba(255,255,255,.9);max-width:850px;margin:14px 0 0}
-    .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:18px}
-    .page-head.compact h2{font-size:clamp(26px,2.8vw,36px)}
-    .subline{margin:8px 0 0;color:var(--muted);font-weight:800}
-
-    .btn,.text-link{border:0;border-radius:13px;padding:10px 14px;min-height:42px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;justify-content:center;transition:transform .15s ease}
-    .btn.primary{background:linear-gradient(135deg,var(--gold),#f1ca6b);color:var(--navy)}
-    .btn.secondary{background:#fff;color:var(--navy);border:1px solid var(--line)}
-    .btn:hover,.text-link:hover{transform:translateY(-1px)}
-    .btn:active{transform:scale(.98)}
-    .text-link{background:transparent;color:var(--teal);padding:0;min-height:auto;font-weight:900}
-    .action-row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
-    .top-actions{justify-content:flex-end;margin:0}
-
-    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}
-    .card,.group-card,.scenario-card,.work-card,.post-card,.osamr-card{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--soft)}
-    .card{padding:20px}
-    .card h3,.group-card h3,.scenario-card h3,.post-card h3,.osamr-card h3{margin:0 0 8px;color:var(--navy);font-size:20px}
-    .card p,.group-card p,.osamr-card p{margin:0;color:var(--muted);line-height:1.45;font-size:15px}
-    .mini-list{display:grid;gap:10px;margin:18px 0 0;padding:0;list-style:none}
-    .mini-list li{display:flex;gap:10px;align-items:flex-start;background:rgba(220,232,223,.42);border-radius:16px;padding:12px;line-height:1.4}
-    .num{width:28px;height:28px;border-radius:10px;background:var(--gold);display:grid;place-items:center;font-weight:900;color:var(--navy);flex:0 0 auto}
-
-    .group-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}
-    .group-card{display:grid;grid-template-columns:50px 1fr;gap:14px;padding:18px;align-items:start}
-    .group-num{width:50px;height:50px;border-radius:16px;background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff;display:grid;place-items:center;font-size:22px;font-weight:900}
-    .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:900;color:var(--teal)!important;margin:0 0 3px!important}
-    .group-card .text-link{margin-top:10px;display:inline-block}
-
-
-    /* Guided wizard — one step on screen, big obvious Next. */
-    .wiz{margin-top:4px}
-    .wiz-dots{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0 0 14px;padding:0}
-    .wiz-dot{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 14px 7px 7px;font:inherit;font-size:13px;font-weight:700;color:#5a6577;cursor:pointer}
-    .wiz-dot span{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#eef2f7;color:#5a6577;font-size:12px;font-weight:800}
-    .wiz-dot.past{color:var(--navy)}
-    .wiz-dot.past span{background:var(--sage);color:var(--navy);font-size:0}
-    .wiz-dot.past span::after{content:"✓";font-size:13px}
-    .wiz-dot.current{background:var(--navy);border-color:var(--navy);color:#fff}
-    .wiz-dot.current span{background:#fff;color:var(--navy)}
-    .wiz-pane{display:none;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--soft);padding:22px 24px}
-    .wiz-pane.on{display:block}
-    html:not(.js) .wiz-pane{display:block}
-    .wiz-pane:focus-visible{outline:3px solid var(--navy);outline-offset:3px}
-    .wiz-head{margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line)}
-    .wiz-of{margin:0;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#6b7688}
-    .wiz-title{margin:2px 0 8px;font-size:30px;line-height:1.15;color:var(--navy)}
-    .wiz-todo{margin:0;font-size:17px;line-height:1.5;color:#2c3a4a;max-width:62ch}
-    .wiz-pane .scenario-card,.wiz-pane .post-card,.wiz-pane li{background:none;border:0;box-shadow:none;padding:0;margin:0 0 6px;list-style:none;position:static;max-height:none;overflow:visible}
-    .wiz-pane .scenario-card>h3{font-size:20px;margin:0 0 6px}
-    .wiz-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
-    .wiz-nav .btn.primary{font-size:17px;padding:12px 22px}
-    .mini-stack.given{display:block;border-left:5px solid var(--navy);border-radius:0;padding:2px 0 2px 14px;margin-top:14px}
-    .mini-stack .given-title{margin:0 0 8px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--navy)}
-    .mini-stack.given div{background:none;border:0;border-radius:0;padding:0 0 7px;font-size:14.5px;line-height:1.45}
-    .mini-stack.given div:last-child{padding-bottom:0}
-    .case-strip-list{margin:0;padding-left:20px}
-    .case-strip-list li{margin-bottom:6px;font-size:15px;line-height:1.45;color:#33424f;font-weight:600}
-    .case-strip-list li:last-child{margin-bottom:0}
-    .chip-picker-title{margin:0 0 8px;font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#6b7688}
-    .pick-row{margin:0 0 12px}
-    .pick-line{display:block;width:100%;text-align:left;background:#f7fafc;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px;font:inherit;font-size:15px;color:#2c3a4a;cursor:pointer;line-height:1.4}
-    .pick-line:hover{border-color:var(--navy);background:#fff}
-
-    .wiz-question{margin:0 0 10px}
-    .wiz-question h3{margin:0;font-size:19px;color:var(--navy)}
-    .wiz-pane li+li{margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}    .case-strip{background:#fffdf6;border:1px solid var(--line);border-left:5px solid var(--gold,#d8a13a);border-radius:12px;padding:12px 16px;margin:0 0 14px}
-    .case-strip>summary{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#6b7688;cursor:pointer}
-    .case-strip-body{margin-top:8px}
-    .case-strip-body .quote{margin:0;font-size:15px;line-height:1.5}
-    .purpose-bar{background:var(--sage);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px}
-    .purpose-bar p{margin:0 0 6px;color:var(--navy);line-height:1.45}
-    .purpose-bar .purpose-steps{margin:8px 0 0;font-weight:800}
-    .wiz-split{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
-    .wiz-ref{background:#fffdf6;border:1px solid var(--line);border-left:5px solid var(--terracotta);border-radius:12px;padding:14px 16px;position:sticky;top:calc(var(--top-h,140px) + 16px)}
-    .wiz-ref-title{margin:0 0 10px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#6b7688}
-    .wiz-ref .case-strip-list{padding-left:18px}
-    .wiz-ref .case-strip-list li{font-size:14px}
-    @media (max-width:900px){.wiz-split{grid-template-columns:1fr}.wiz-ref{position:static;order:-1}}
-
-    .ai-move{color:var(--navy);font-weight:800}
-    .workspace-grid{display:grid;grid-template-columns:380px minmax(0,1fr);gap:18px;align-items:start}
-    /* NO INNER SCROLLER, EVER. sticky + max-height + overflow-y:auto is the
-       conventional tall-sidebar pattern and it is what made scrolling feel
-       wonky: the browser latches a wheel gesture to the innermost scroller
-       under the cursor, so the page moved at a different speed over the brief
-       than over the form. Sticky only when the card genuinely fits (.fits is
-       set by measureBrief from real measurements); otherwise it scrolls away
-       with the page. Either way the page has exactly ONE scroller. */
-    .scenario-card{padding:20px}
-    .scenario-card.fits{position:sticky;top:calc(var(--top-h) + 14px)}
-    .scenario-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-    .scenario-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:900;color:var(--teal)}
-    .scenario-card p{font-size:15px;color:#2f4050;line-height:1.5;margin:0}
-    .mini-stack{display:grid;gap:8px;margin-top:14px}
-    .mini-stack div{border-radius:14px;background:rgba(220,232,223,.5);padding:11px 12px;color:#243645;line-height:1.42;border:1px solid rgba(36,124,127,.1);font-size:14px}
-    .ai-input-card{margin-top:14px;border-radius:16px;padding:14px;border:1px solid rgba(16,40,63,.14);border-left:6px solid var(--terracotta);background:rgba(201,104,74,.05)}
-    .ai-input-card h4{margin:0 0 7px;color:var(--navy);font-size:15px}
-    .ai-input-card .quote{font-weight:700;color:#33424f;font-size:14.5px}
-
-    .osamr-strip{display:grid;gap:6px;margin-top:14px}
-    .osamr-strip div{display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:7px 10px;font-size:13px;color:#33424f}
-    .osamr-strip strong{width:26px;height:26px;border-radius:9px;background:var(--sage);display:grid;place-items:center;color:var(--navy)}
-    .osamr-strip .warn strong{background:rgba(201,104,74,.18);color:#8a3d2a}
-
-    .work-card{padding:0;overflow:hidden}
-    .steps{list-style:none;margin:0;padding:0}
-    .steps li{padding:18px 20px;border-bottom:1px solid var(--line)}
-    .steps li:last-child{border-bottom:0}
-    .step-head{display:flex;gap:10px;align-items:center;margin-bottom:4px}
-    .step-head span{width:30px;height:30px;border-radius:11px;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:900;flex:0 0 auto}
-    .step-head h3{margin:0;color:var(--navy);font-size:19px}
-    .hint{margin:0 0 10px;color:var(--muted);font-weight:700;line-height:1.4;font-size:14px}
-    textarea,select,input{width:100%;border:1px solid rgba(16,40,63,.22);border-radius:14px;background:#fff;padding:11px 12px;font-size:15px;color:var(--ink);outline:none}
-    textarea{min-height:76px;resize:vertical;line-height:1.4}
-    textarea.post-output{min-height:230px;background:#f8fbf9;font-size:14px;line-height:1.45}
-    textarea:focus,select:focus,input:focus,.tab-btn:focus-visible,.btn:focus-visible,.token:focus-visible{box-shadow:0 0 0 4px rgba(79,182,179,.28);border-color:var(--teal)}
-    label{display:grid;gap:6px;font-weight:900;color:var(--navy)}
-    details{margin:10px 0}
-    summary{cursor:pointer;font-weight:900;color:var(--teal);margin-bottom:8px}
-
-    .ruling-step{background:linear-gradient(135deg,rgba(220,232,223,.4),rgba(255,248,237,.6))}
-    .token-row{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
-    .token{
-      display:flex;align-items:center;gap:8px;cursor:pointer;
-      border:1px solid var(--line);background:#fff;border-radius:14px;
-      padding:9px 12px;font-weight:900;color:var(--navy);font-size:14px;
-      transition:transform .12s ease,border-color .12s ease;
-    }
-    .token b{width:26px;height:26px;border-radius:9px;background:var(--sage);display:grid;place-items:center;color:var(--navy)}
-    .token.warn b{background:rgba(201,104,74,.18);color:#8a3d2a}
-    .token:hover{transform:translateY(-1px);border-color:var(--teal)}
-    .token.selected{background:var(--navy);color:#fff;border-color:var(--navy)}
-    .token.selected b{background:rgba(255,255,255,.2);color:#fff}
-    .ruling-select{margin-top:4px}
-
-    .post-card{margin-top:18px;padding:20px}
-    .post-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px}
-    .label-pills{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
-    .label-pills span,.label-bank span{background:#fff;border:1px solid var(--line);color:var(--navy);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:900}
-    .frame-line{margin:0 0 12px;padding:12px 14px;border-radius:14px;background:rgba(224,169,60,.12);border:1px solid rgba(224,169,60,.35);color:#33424f;line-height:1.5;font-size:15px}
-
-    .osamr-display{display:grid;gap:14px;margin-top:18px}
-    .osamr-card{padding:20px;border-left:8px solid var(--teal)}
-    .osamr-card.o{border-left-color:var(--terracotta);background:rgba(201,104,74,.05)}
-    .osamr-card h3{font-size:21px}
-    .osamr-card .definition{font-weight:900;color:var(--navy);margin-bottom:6px}
-    .callout{margin-top:18px;background:#fff;border:1px solid var(--line);border-left:8px solid var(--gold);border-radius:18px;padding:18px;box-shadow:var(--soft);line-height:1.5}
-    .callout strong{color:var(--navy)}
-
-    .model-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
-    .model-box{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--soft);padding:22px}
-    .model-box h3{margin:0 0 8px;color:var(--navy);font-size:20px}
-    .model-box p{margin:0;color:#33424f;line-height:1.5}
-    .model-box.good{border-left:8px solid var(--teal)}
-    .model-box.bad{border-left:8px solid var(--terracotta)}
-    .prompt-text{white-space:pre-wrap;margin:0;background:#f8fbf9;border:1px solid var(--line);border-radius:14px;padding:13px;color:#243645;font-family:var(--font);font-size:15px;line-height:1.42}
-    .prompt-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:900;color:var(--teal);margin:14px 0 6px}
-
-    .gallery-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start;margin-top:18px}
-    .side-note{padding:20px}
-    .side-note.fits{position:sticky;top:calc(var(--top-h) + 14px)}
-    .side-note p{color:var(--muted);line-height:1.45;margin:0 0 12px}
-    .label-bank{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
-
-    .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:12px 16px;border-radius:999px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.2s;z-index:50;font-weight:900}
-    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-    .osamr-mini{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--soft);padding:18px;margin-top:18px}
-    .osamr-mini h3{margin:0 0 6px;color:var(--navy);font-size:20px}
-    .osamr-mini p{margin:0 0 12px;color:var(--muted);font-size:15px;line-height:1.4}
-    .osamr-mini-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
-    .osamr-mini-card{border:1px solid var(--line);border-radius:15px;background:linear-gradient(180deg,#fff,#fbf8f0);padding:12px}
-    .osamr-mini-card .letter{width:32px;height:32px;border-radius:11px;background:var(--sage);color:var(--navy);display:grid;place-items:center;font-weight:900;margin-bottom:8px}
-    .osamr-mini-card h4{margin:0 0 5px;color:var(--navy);font-size:15px}
-    .osamr-mini-card p{margin:0;color:#33424f;font-size:13px;line-height:1.34}
-    .osamr-mini-card.warn{border-color:rgba(201,104,74,.35);background:rgba(201,104,74,.06)}
-    .osamr-mini-card.warn .letter{background:rgba(201,104,74,.18);color:#8a3d2a}
-
-    .protocol-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}
-    .protocol-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--soft)}
-    .protocol-card .num{margin-bottom:10px}
-    .protocol-card h3{margin:0 0 5px;color:var(--navy);font-size:17px}
-    .protocol-card p{margin:0;color:var(--muted);font-size:14px;line-height:1.4}
-
-    @media(max-width:1040px){
-      .cards,.model-grid,.group-menu,.workspace-grid,.gallery-grid,.protocol-grid,.osamr-mini-grid{grid-template-columns:1fr}
-      .gallery-list{grid-template-columns:1fr}
-      /* 7 tiles will not fit across a tablet; wrap to two rows of four. */
-      .ratings-row{grid-template-columns:repeat(4,minmax(0,1fr))}
-      .present-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .present-detail .pd-row{grid-template-columns:1fr;gap:4px}
-      /* Single column here, so nothing may be sticky — .fits must lose. */
-      .scenario-card.fits,.side-note.fits{position:static}
-      .brand{align-items:flex-start;flex-direction:column}
-      .rule{justify-content:flex-start}
-      .post-head{display:block}
-      .label-pills{justify-content:flex-start;margin-top:10px}
-      .osamr-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-    }
-    @media(max-width:640px){
-      .wrap{padding:18px 14px 40px}
-      .top-inner{padding:10px 14px 6px}
-      .hero{padding:22px}
-      .page-head{align-items:flex-start;flex-direction:column}
-      .osamr-mini-grid{grid-template-columns:1fr}
-      .token-row .token{flex:1 1 calc(50% - 8px)}
-      .ratings-row{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .present-grid{grid-template-columns:1fr}
-      .present{padding:14px}
-      .gi-row{grid-template-columns:1fr;gap:2px}
-      /* The three motto chips wrap to three rows on a phone and cost ~60px of
-         sticky header for text that is repeated on the Start page anyway.
-         The save-state pill stays — that one is live feedback. */
-      .rule .chip:not(.save-pill){display:none}
-      .brand{margin-bottom:6px}
-    }
-
-    /* ===== Gallery board =================================================
-       The old board printed each group's FULL ruling — case story and teacher
-       AI input included — into a <pre>. Seven of those ran 4,603px, so nothing
-       could be compared and an unstarted group rendered a skeleton of "[proof
-       detail]" placeholders. This layer shows only what the protocol asks each
-       group to share, and puts all seven ratings on one line. ============== */
-
-    /* One letter per group, the whole room on a single line. */
-    .ratings-strip{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--soft);padding:18px;margin-top:18px}
-    .ratings-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-    .ratings-head h3{margin:0;color:var(--navy);font-size:19px}
-    .ratings-head p{margin:0;color:var(--muted);font-weight:800;font-size:14px}
-    .ratings-row{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
-    .rating-tile{border:1px solid var(--line);border-radius:16px;padding:12px 10px;text-align:center;background:linear-gradient(180deg,#fff,#fbf8f0);min-width:0}
-    .rating-tile .g{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-    .rating-tile .letter{width:46px;height:46px;margin:8px auto 6px;border-radius:14px;display:grid;place-items:center;font-size:22px;font-weight:900;background:var(--sage);color:var(--navy)}
-    .rating-tile .name{font-size:11.5px;font-weight:800;color:#33424f;line-height:1.25;overflow-wrap:anywhere}
-    .rating-tile.lvl-o .letter{background:rgba(201,104,74,.2);color:#8a3d2a}
-    .rating-tile.lvl-o{border-color:rgba(201,104,74,.4);background:rgba(201,104,74,.05)}
-    .rating-tile.lvl-none{opacity:.55}
-    .rating-tile.lvl-none .letter{background:rgba(16,40,63,.07);color:var(--muted);font-size:16px}
-
-    .board-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:18px 0 0}
-    .board-controls-label{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-    .view-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:999px;padding:8px 14px;font-weight:900;font-size:13px;cursor:pointer}
-    .view-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-    .board-hint{color:var(--muted);font-weight:800;font-size:13px;margin-left:4px}
-
-    .ruling-group-head{grid-column:1/-1;margin:14px 0 2px;color:var(--navy);font-size:16px;font-weight:900;display:flex;align-items:center;gap:9px}
-    .ruling-group-head .letter{width:30px;height:30px;border-radius:10px;background:var(--sage);display:grid;place-items:center;font-size:15px}
-    .ruling-group-head.lvl-o .letter{background:rgba(201,104,74,.2);color:#8a3d2a}
-    .ruling-group-head small{color:var(--muted);font-weight:800;font-size:12.5px}
-
-    .gallery-item{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--soft)}
-    .gallery-item .gi-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
-    .gallery-item h3{margin:0;color:var(--navy);font-size:17px;line-height:1.2}
-    .gallery-item h3 small{display:block;color:var(--muted);font-weight:800;font-size:12px;margin-top:2px}
-    .gi-level{flex:0 0 auto;display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:5px 11px 5px 6px;font-weight:900;font-size:12.5px;color:var(--navy);white-space:nowrap}
-    .gi-level b{width:24px;height:24px;border-radius:8px;background:var(--sage);display:grid;place-items:center;font-size:13px}
-    .gi-level.lvl-o{border-color:rgba(201,104,74,.4);background:rgba(201,104,74,.06);color:#8a3d2a}
-    .gi-level.lvl-o b{background:rgba(201,104,74,.2);color:#8a3d2a}
-    .gi-level.lvl-none{color:var(--muted)}
-    .gi-level.lvl-none b{background:rgba(16,40,63,.07);color:var(--muted)}
-    /* Only the three things the protocol asks a group to share. */
-    .gi-rows{display:grid;gap:9px}
-    .gi-row{display:grid;grid-template-columns:86px minmax(0,1fr);gap:10px;align-items:start;font-size:14.5px;line-height:1.45}
-    .gi-row dt{font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding-top:3px}
-    .gi-row.flag dt{color:var(--terracotta)}
-    .gi-row dd{margin:0;color:#2f4050;overflow-wrap:anywhere}
-    .gi-waiting{color:var(--muted);font-weight:800;font-size:14px;padding:6px 0 2px}
-    .gi-full{margin-top:12px}
-    .gi-full summary{font-size:13px}
-    .gi-full pre{white-space:pre-wrap;font-family:var(--font);font-size:13.5px;line-height:1.42;color:#2c3b49;background:#f8fbf9;border-radius:14px;padding:12px;margin:8px 0 0}
-    .gallery-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-content:start}
-
-    /* ---- Present mode: what goes on the projector. --------------------- */
-    /* Above the shared Save/Resume launcher, which pins itself at
-       z-index 2147483000 and would otherwise float over the projection. */
-    .present{position:fixed;inset:0;z-index:2147483600;background:linear-gradient(135deg,#0d2236,#123f45);color:#fff;display:flex;flex-direction:column;padding:22px 26px 26px}
-    /* Hide the site-wide floating chrome entirely while projecting. */
-    body.presenting .nsr-launcher,body.presenting #nsr-launcher,body.presenting .gfx-specular-glare{display:none!important}
-    .present[hidden]{display:none}
-    .present-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
-    .present-kicker{margin:0 0 2px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:rgba(255,255,255,.6)}
-    .present-bar h2{margin:0;color:#fff;font-size:clamp(24px,3vw,38px)}
-    .present-actions{display:flex;align-items:center;gap:8px}
-    .present-page{font-weight:900;color:rgba(255,255,255,.8);min-width:104px;text-align:center;font-size:14px}
-    .present-body{flex:1;overflow:auto;min-height:0;display:grid;align-content:center}
-    .present-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:14px;height:100%}
-    .present-tile{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:18px;display:flex;flex-direction:column;justify-content:center;min-height:0}
-    .present-tile .g{font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.62)}
-    .present-tile h4{margin:4px 0 12px;font-size:clamp(15px,1.35vw,20px);line-height:1.2}
-    .present-tile .letter{width:clamp(56px,5.5vw,86px);height:clamp(56px,5.5vw,86px);border-radius:20px;display:grid;place-items:center;font-size:clamp(26px,3vw,42px);font-weight:900;background:rgba(255,255,255,.9);color:#10283f}
-    .present-tile.lvl-o .letter{background:#e8a690;color:#5c2113}
-    .present-tile.lvl-none{opacity:.5}
-    .present-tile.lvl-none .letter{background:rgba(255,255,255,.2);color:#fff;font-size:20px}
-    .present-detail{display:grid;gap:16px;max-width:1500px;margin:0 auto}
-    .present-detail .pd-row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;align-items:start}
-    .present-detail dt{font-size:14px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#8fd6d2;padding-top:6px}
-    .present-detail dd{margin:0;font-size:clamp(18px,1.9vw,28px);line-height:1.35}
-    .present-detail .pd-row.flag dt{color:#f0a488}
-    .present-empty{font-size:clamp(18px,2vw,26px);color:rgba(255,255,255,.72)}
-
-    .board-status{margin:8px 0 0;font-weight:900;font-size:13px;color:var(--muted)}
-    .board-status.on{color:var(--teal)}
-    .board-status.off{color:#8a6412}
-
-    /* ---- No Math Workbench on this page ---------------------------------
-       This is an adult professional-learning worksheet, not a student math
-       activity, so the site-wide scratch-space launcher does not belong here.
-       Two separate things can render it: the injected launcher (#mwb-launcher)
-       and save-resume-engine.js, which renders its OWN #nsr-workbench chip
-       whenever it does NOT find #mwb-launcher — so suppressing one summons the
-       other. Hide both. tools/inject-math-workbench.js also skips this
-       directory, which stops the launcher being injected in the first place;
-       this rule is the belt to that braces. Matches the same block on the
-       Fix-It Design Challenge. -------------------------------------------- */
-    #mwb-launcher,
-    .mwb-launcher-nav,
-    #nsr-workbench{display:none!important}
-
-    @media print{
-      .top,.toast,.action-row,.tabs,.skip-link,.board-controls,.present{display:none!important}
-      .gallery-list{grid-template-columns:1fr}
-      .gi-full{display:none}
-      html.js .page{display:block!important}
-      textarea{overflow:hidden!important;resize:none!important;border:1px solid #999}
-    }
-  </style>
-</head>
-<body>
-  <a class="skip-link" href="#main">Skip to content</a>
-  <header class="top">
-    <div class="top-inner">
-      <div class="brand">
-        <div class="brand-left">
-          <div class="mark">AI</div>
-          <div>
-            <h1>OSAMR Case Clinic</h1>
-            <small>AI for Accessible Instruction · Participant Pages</small>
-          </div>
-        </div>
-        <div class="rule" aria-label="Core test">
-          <span class="chip save-pill" id="savePill">● Saved on this device</span>
-          <span class="chip">Barrier removed</span>
-          <span class="chip">Thinking preserved</span>
-          <span class="chip">Evidence before label</span>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <main class="wrap" id="main">
-    <section class="page active" id="launch" role="region" aria-label="Start page">
-      <div class="hero">
-        <p class="kicker">Start Here</p>
-        <h2>Did AI help students get in — or did AI do the work for them?</h2>
-        <p><strong>Why we are doing this:</strong> AI help can open a task up — or quietly do it for students. Telling those two apart is the skill.</p>
-        <p><strong>What you produce:</strong> one decision on the board — an OSAMR level, why you chose it, and one change that would make it better. Four short steps, about 15 minutes. The page writes it up for you.</p>
-        <div class="action-row">
-          <a class="btn primary" href="#model" data-open-page="model">See the model case</a>
-          <a class="btn secondary" href="#menu" data-open-page="menu">Choose your case room</a>
-        </div>
-      </div>
-
-      <div class="cards">
-        <article class="card">
-          <h3>What your group does</h3>
-          <ul class="mini-list">
-            <li><span class="num">1</span><div><strong>Read the case</strong><br>We already wrote out the goal, the barrier and what students still do.</div></li>
-            <li><span class="num">2</span><div><strong>Choose the OSAMR level</strong><br>Tap the one that matches what AI actually did.</div></li>
-            <li><span class="num">3</span><div><strong>Say why</strong><br>Tap a reason and a fix, or write your own.</div></li>
-            <li><span class="num">4</span><div><strong>Post it</strong><br>Copy your ruling to the board.</div></li>
-          </ul>
-        </article>
-        <article class="card">
-          <h3>Core test</h3>
-          <p><strong>Did AI clear the way, or did AI do the thinking?</strong></p>
-          <p style="margin-top:10px">Good support clears what was in the way. Overreliance means the thinking is gone.</p>
-          <div class="action-row">
-            <a class="btn secondary" href="#reference" data-open-page="reference">OSAMR quick reference</a>
-          </div>
-        </article>
-      </div>
-
-      <section class="osamr-mini" aria-label="OSAMR at a glance">
-        <h3>OSAMR at a glance</h3>
-        <p>The goal is not the highest letter. The goal is the honest one.</p>
-        <div class="osamr-mini-grid">
-          <article class="osamr-mini-card"><div class="letter">S</div><h4>Substitute</h4><p>AI swaps in one support. Students still do the thinking.</p></article>
-          <article class="osamr-mini-card"><div class="letter">A</div><h4>Augment</h4><p>AI adds help. The task gets clearer. AI does not solve it.</p></article>
-          <article class="osamr-mini-card"><div class="letter">M</div><h4>Modify</h4><p>AI changes how the task works. Students still learn the same thing.</p></article>
-          <article class="osamr-mini-card"><div class="letter">R</div><h4>Redefine</h4><p>AI opens up work students could not do before. The thinking is still theirs.</p></article>
-          <article class="osamr-mini-card warn"><div class="letter">O</div><h4>Overreliance</h4><p>AI does the thinking. There is nothing left for students to figure out.</p></article>
-        </div>
-      </section>
-    </section>
-
-    <section class="page" id="protocol" role="region" aria-label="Protocol page">
-      <div class="page-head">
-        <div>
-          <p class="kicker">Protocol</p>
-          <h2>How this works.</h2>
-          <p class="subline">Every group does the same four steps.</p>
-        </div>
-        <a class="btn secondary" href="#reference" data-open-page="reference">OSAMR reference</a>
-      </div>
-      <div class="protocol-grid">
-        <article class="protocol-card"><div class="num">1</div><h3>Read the case</h3><p>What happened, and what the teacher asked AI to do. Nothing to type.</p></article>
-        <article class="protocol-card"><div class="num">2</div><h3>Choose the OSAMR level</h3><p>Substitute, Augment, Modify, Redefine, or Overreliance.</p></article>
-        <article class="protocol-card"><div class="num">3</div><h3>Say why</h3><p>One reason from the case, and one fix.</p></article>
-        <article class="protocol-card"><div class="num">4</div><h3>Post it</h3><p>Copy your decision to the board.</p></article>
-      </div>
-      <div class="callout"><strong>Find your proof before you choose a level.</strong> If your group cannot point to the line in the case that shows it, you are not ready to choose.</div>
-    </section>
-
-    <section class="page" id="reference" role="region" aria-label="OSAMR reference page">
-      <div class="page-head">
-        <div>
-          <p class="kicker">Quick Reference</p>
-          <h2>The five OSAMR levels.</h2>
-          <p class="subline">Good support clears the way. It does not do the work.</p>
-        </div>
-        <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
-      </div>
-
-      <div class="osamr-display">
-        <article class="osamr-card"><h3>S — Substitute</h3><p class="definition">AI swaps in one support.</p><p>The task is the same. Students still do the thinking.</p></article>
-        <article class="osamr-card"><h3>A — Augment</h3><p class="definition">AI adds help.</p><p>The task gets clearer. AI does not solve it.</p></article>
-        <article class="osamr-card"><h3>M — Modify</h3><p class="definition">AI changes how the task works.</p><p>Students still learn the same thing.</p></article>
-        <article class="osamr-card"><h3>R — Redefine</h3><p class="definition">AI opens up something new.</p><p>Students can now do work they could not do before.</p></article>
-        <article class="osamr-card o"><h3>O — Overreliance</h3><p class="definition">AI does the thinking.</p><p>There is nothing left for students to figure out.</p></article>
-      </div>
-
-      <div class="callout">
-        <strong>Two questions, in this order.</strong> The case already tells you the barrier and
-        what students still do, so your group only answers these:
-        <strong>1. What did AI actually hand over?</strong>
-        <strong>2. Which line in the case proves our letter?</strong>
-      </div>
-
-      <div class="callout">
-        <strong>Say it like this:</strong> “We called it ___. Here is why ___. Our fix is ___.”
-        One level, one reason, one fix.
-      </div>
-    </section>
-
-
-    <section class="page group-page" id="model" role="region" aria-label="Model case room">
-      <div class="page-head compact">
-        <div>
-          <p class="kicker">Model Case · 6–8 Math</p>
-          <h2>Proportional Relationships Directions</h2>
-          <p class="subline">Grade 6 Math · Dense-directions barrier · AI rewrote directions in plain language</p>
-        </div>
-        <div class="action-row top-actions">
-          <a class="btn primary" href="#menu" data-open-page="menu">Choose your case room</a>
-        </div>
-      </div>
-
-      <div class="callout" style="margin-top:0;margin-bottom:18px">
-        <strong>Worked example.</strong> This is the same case room your group will use, already filled in. Walk the same four steps to see how a ruling is built from the case — evidence first, letter last.
-      </div>
-
-      <div class="purpose-bar">
-        <p>
-          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
-          way for students, or did AI do the work for them?
-        </p>
-        <p>
-          <strong>What you produce:</strong> one decision — an OSAMR level, why you chose it, and
-          one change that would make it better. This page writes it up for you.
-        </p>
-        <p class="purpose-steps">Read the case → Choose the OSAMR level → Say why → Post it</p>
-      </div>
-
-      <div class="workspace-grid">
-        <aside class="scenario-card">
-          <div class="scenario-head">
-            <div class="scenario-label">The case</div>
-          </div>
-          <h3>What happened</h3>
-          <p>Sixth-grade students decide whether a table shows a proportional relationship. Several multilingual learners understand the math, but the directions are dense and the word “ratio” is unfamiliar. The teacher uses AI to rewrite the directions in plain language and add a short vocabulary note. Students still calculate ratios, decide whether they are equal, and explain their answer.</p>
-
-          <div class="ai-input-card">
-            <h4>What the teacher asked AI to do</h4>
-            <p class="quote">“Rewrite these directions in plain language. Add one short note for “ratio.” Do not solve, name the operation, or tell students if the table is proportional.”</p>
-          </div>
-
-          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
-            <div><strong>What students must learn:</strong> Decide whether a table shows a proportional relationship and justify the decision.</div>
-            <div><strong>What was in their way:</strong> Dense directions and unfamiliar vocabulary made it hard to start.</div>
-            <div><strong>What students still do:</strong> Students still calculate ratios, decide proportional or not, and explain why.</div>
-          </div>
-
-              <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
-                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
-                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
-                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
-              </div>
-        </aside>
-
-        <main class="work-card">
-          <ol class="steps">
-
-
-
-            <li class="ruling-step">
-              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
-              <p class="hint">Do not debate the label until your group has named the evidence above.</p>
-              <div class="token-row" role="group" aria-label="OSAMR decision tokens">
-                <button class="token" type="button" data-value="S — Substitute"><b>S</b>Substitute</button>
-                <button class="token selected" type="button" data-value="A — Augment" aria-pressed="true"><b>A</b>Augment</button>
-                <button class="token" type="button" data-value="M — Modify"><b>M</b>Modify</button>
-                <button class="token" type="button" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
-              </div>
-              <label class="ruling-select">OSAMR level
-                <select id="gm-osamr" data-field="osamr" disabled>                    <option value="">Choose one</option>
-                    <option>S — Substitute</option>
-                    <option selected>A — Augment</option>
-                    <option>M — Modify</option>
-                    <option>R — Redefine</option>
-                    <option>Overreliance — AI did the thinking</option>
-                </select>
-              </label>
-            </li>
-
-            <li>
-              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
-              <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
-              <textarea id="gm-evidence" data-field="evidence" readonly placeholder="The detail that proves our rating is…">AI never finds the constant ratio. The rewritten directions still leave students to compute both ratios and compare them, so the mathematical decision is untouched.</textarea>
-            </li>
-
-
-            <li>
-              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
-              <p class="hint">One change that keeps the access but returns the thinking to students.</p>
-              <textarea id="gm-fix" data-field="fix" readonly placeholder="One safer fix would be…">Keep the plain-language directions and the vocabulary note, and add a blank ratio table students fill in themselves — never a worked example.</textarea>
-            </li>
-
-          </ol>
-        </main>
-      </div>
-
-      <section class="post-card">
-        <div class="post-head">
-          <div>
-            <p class="kicker">Ready to post</p>
-            <h3>Model case ruling</h3>
-          </div>
-          <div class="label-pills">
-            <span>Model Case — Proportional Directions</span>
-            <span>6–8 Math</span>
-          </div>
-        </div>
-        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>A — Augment</strong>; our evidence is <strong>AI never finds the constant ratio</strong>; our fix is <strong>a blank ratio table instead of a worked example</strong>.</p>
-        <textarea id="gm-post" class="post-output" readonly aria-label="Model case ruling"></textarea>
-        <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="m">Copy our decision</button>
-          <button class="btn secondary" type="button" data-open-page="menu">Choose your case room</button>
-        </div>
-      </section>
-    </section>
-
-    <section class="page" id="menu" role="region" aria-label="Case room menu">
-      <div class="page-head">
-        <div>
-          <p class="kicker">Case Rooms</p>
-          <h2>Choose your group’s case.</h2>
-          <p class="subline">One room, one case. Read it, choose the OSAMR level, say why, post it.</p>
-        </div>
-      </div>
-      <div class="group-menu">
-        <article class="group-card">
-          <div class="group-num">1</div>
-          <div>
-            <p class="eyebrow">Group 1 · K–2</p>
-            <h3>Story Structure</h3>
-            <p>Students cannot read directions independently.</p>
-            <a class="text-link" href="#group-1" data-open-page="group-1">Open case room →</a>
-          </div>
-        </article>
-
-        <article class="group-card">
-          <div class="group-num">2</div>
-          <div>
-            <p class="eyebrow">Group 2 · 3–5 Math</p>
-            <h3>Multi-Step Problem Entry</h3>
-            <p>Students struggle to start and organize information.</p>
-            <a class="text-link" href="#group-2" data-open-page="group-2">Open case room →</a>
-          </div>
-        </article>
-
-        <article class="group-card">
-          <div class="group-num">3</div>
-          <div>
-            <p class="eyebrow">Group 3 · 3–5 ELA</p>
-            <h3>Mentor Paragraph</h3>
-            <p>Students need help organizing a body paragraph.</p>
-            <a class="text-link" href="#group-3" data-open-page="group-3">Open case room →</a>
-          </div>
-        </article>
-
-        <article class="group-card">
-          <div class="group-num">4</div>
-          <div>
-            <p class="eyebrow">Group 4 · 6–8 Science</p>
-            <h3>Tiered Reading</h3>
-            <p>Dense textbook language blocks access to the science analysis.</p>
-            <a class="text-link" href="#group-4" data-open-page="group-4">Open case room →</a>
-          </div>
-        </article>
-
-        <article class="group-card">
-          <div class="group-num">5</div>
-          <div>
-            <p class="eyebrow">Group 5 · 6–8 Math</p>
-            <h3>AI Feedback on Work</h3>
-            <p>Students may need feedback or a way to check reasoning.</p>
-            <a class="text-link" href="#group-5" data-open-page="group-5">Open case room →</a>
-          </div>
-        </article>
-
-        <article class="group-card">
-          <div class="group-num">6</div>
-          <div>
-            <p class="eyebrow">Group 6 · 9–12 Science</p>
-            <h3>Data Summarized for CER</h3>
-            <p>The full dataset may be too large or dense to analyze efficiently.</p>
-            <a class="text-link" href="#group-6" data-open-page="group-6">Open case room →</a>
-          </div>
-        </article>
-
-        <article class="group-card">
-          <div class="group-num">7</div>
-          <div>
-            <p class="eyebrow">Group 7 · 9–12 History/SS</p>
-            <h3>Primary Source Access</h3>
-            <p>19th-century language blocks access to the original source.</p>
-            <a class="text-link" href="#group-7" data-open-page="group-7">Open case room →</a>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="page group-page" id="group-1" role="region" aria-label="Group 1 case room">
-      <div class="page-head compact">
-        <div>
-          <p class="kicker">Group 1 Case Room · K–2</p>
-          <h2>Story Structure</h2>
-          <p class="subline">K–2 ELA · Reading-directions barrier · AI made a picture direction card</p>
-        </div>
-        <div class="action-row top-actions">
-          <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
-          <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
-        </div>
-      </div>
-
-      <div class="purpose-bar">
-        <p>
-          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
-          way for students, or did AI do the work for them?
-        </p>
-        <p>
-          <strong>What you produce:</strong> one decision — an OSAMR level, why you chose it, and
-          one change that would make it better. This page writes it up for you.
-        </p>
-        <p class="purpose-steps">Read the case → Choose the OSAMR level → Say why → Post it</p>
-      </div>
-
-      <div class="workspace-grid">
-        <aside class="scenario-card">
-          <div class="scenario-head">
-            <div class="scenario-label">The case</div>
-          </div>
-          <h3>What happened</h3>
-          <p>A kindergarten teacher introduces story structure. Students listen to a read-aloud and retell the beginning, middle, and end. Several students cannot read directions yet, so AI creates a three-panel direction card with simple icons and one-word labels. Students still listen, sequence events, and retell verbally to a partner.</p>
-
-          <div class="ai-input-card">
-            <h4>What the teacher asked AI to do</h4>
-            <p class="quote">“Create a three-panel direction card with simple icons and one-word labels: beginning, middle, end. Do not retell the story or sequence events for students.”</p>
-          </div>
-
-          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
-            <div><strong>What students must learn:</strong> Sequence and retell the beginning, middle, and end of a story.</div>
-            <div><strong>What was in their way:</strong> Students cannot read directions independently.</div>
-            <div><strong>What students still do:</strong> Students still listen, sequence events, and retell beginning/middle/end.</div>
-          </div>
-
-              <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
-                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
-                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
-                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
-              </div>
-        </aside>
-
-        <main class="work-card">
-          <ol class="steps">
-
-
-
-            <li class="ruling-step">
-              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
-              <p class="hint">Do not debate the label until your group has named the evidence above.</p>
-              <div class="token-row" role="group" aria-label="OSAMR decision tokens">
-                <button class="token" type="button" data-token="1" data-value="S — Substitute"><b>S</b>Substitute</button>
-                <button class="token" type="button" data-token="1" data-value="A — Augment"><b>A</b>Augment</button>
-                <button class="token" type="button" data-token="1" data-value="M — Modify"><b>M</b>Modify</button>
-                <button class="token" type="button" data-token="1" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="1" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
-              </div>
-              <label class="ruling-select">OSAMR level
-                <select id="g1-osamr" data-field="osamr" data-group="1">                    <option value="">Choose one</option>
-                    <option>S — Substitute</option>
-                    <option>A — Augment</option>
-                    <option>M — Modify</option>
-                    <option>R — Redefine</option>
-                    <option>Overreliance — AI did the thinking</option>
-                </select>
-              </label>
-            </li>
-
-            <li>
-              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
-              <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
-              <textarea id="g1-evidence" data-field="evidence" data-group="1" placeholder="The detail that proves our rating is…"></textarea>
-            </li>
-
-
-            <li>
-              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
-              <p class="hint">One change that keeps the access but returns the thinking to students.</p>
-              <textarea id="g1-fix" data-field="fix" data-group="1" placeholder="One safer fix would be…"></textarea>
-            </li>
-
-          </ol>
-        </main>
-      </div>
-
-      <section class="post-card">
-        <div class="post-head">
-          <div>
-            <p class="kicker">Ready to post</p>
-            <h3>Group 1 decision</h3>
-          </div>
-          <div class="label-pills">
-            <span>Group 1 — Story Structure</span>
-            <span>K–2</span>
-          </div>
-        </div>
-        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
-        <textarea id="g1-post" class="post-output" readonly aria-label="Generated case ruling for Group 1"></textarea>
-        <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="1">Copy our decision</button>
-          <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
-        </div>
-      </section>
-    </section>
-
-
-    <section class="page group-page" id="group-2" role="region" aria-label="Group 2 case room">
-      <div class="page-head compact">
-        <div>
-          <p class="kicker">Group 2 Case Room · 3–5 Math</p>
-          <h2>Multi-Step Problem Entry</h2>
-          <p class="subline">Grade 4 Math · Getting-started barrier · AI built an entry scaffold</p>
-        </div>
-        <div class="action-row top-actions">
-          <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
-          <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
-        </div>
-      </div>
-
-      <div class="purpose-bar">
-        <p>
-          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
-          way for students, or did AI do the work for them?
-        </p>
-        <p>
-          <strong>What you produce:</strong> one decision — an OSAMR level, why you chose it, and
-          one change that would make it better. This page writes it up for you.
-        </p>
-        <p class="purpose-steps">Read the case → Choose the OSAMR level → Say why → Post it</p>
-      </div>
-
-      <div class="workspace-grid">
-        <aside class="scenario-card">
-          <div class="scenario-head">
-            <div class="scenario-label">The case</div>
-          </div>
-          <h3>What happened</h3>
-          <p>A fourth-grade math teacher teaches multi-digit multiplication with: “A school orders 24 boxes of crayons. Each box has 16 crayons. How many crayons are there in all?” Several students with IEPs struggle to know where to start. AI creates a problem-entry scaffold and sentence frame. Students set up and solve independently.</p>
-
-          <div class="ai-input-card">
-            <h4>What the teacher asked AI to do</h4>
-            <p class="quote">“Create a three-step entry scaffold: circle the numbers, underline the question, and draw a quick sketch. Add this frame: “I need to find ___ because ___.” Do not name the operation or solve.”</p>
-          </div>
-
-          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
-            <div><strong>What students must learn:</strong> Choose an operation, set up the problem, solve, and explain the reasoning.</div>
-            <div><strong>What was in their way:</strong> Students struggle to start and organize information.</div>
-            <div><strong>What students still do:</strong> Students still choose a strategy, set up the problem, compute, and explain.</div>
-          </div>
-
-              <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
-                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
-                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
-                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
-              </div>
-        </aside>
-
-        <main class="work-card">
-          <ol class="steps">
-
-
-
-            <li class="ruling-step">
-              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
-              <p class="hint">Do not debate the label until your group has named the evidence above.</p>
-              <div class="token-row" role="group" aria-label="OSAMR decision tokens">
-                <button class="token" type="button" data-token="2" data-value="S — Substitute"><b>S</b>Substitute</button>
-                <button class="token" type="button" data-token="2" data-value="A — Augment"><b>A</b>Augment</button>
-                <button class="token" type="button" data-token="2" data-value="M — Modify"><b>M</b>Modify</button>
-                <button class="token" type="button" data-token="2" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="2" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
-              </div>
-              <label class="ruling-select">OSAMR level
-                <select id="g2-osamr" data-field="osamr" data-group="2">                    <option value="">Choose one</option>
-                    <option>S — Substitute</option>
-                    <option>A — Augment</option>
-                    <option>M — Modify</option>
-                    <option>R — Redefine</option>
-                    <option>Overreliance — AI did the thinking</option>
-                </select>
-              </label>
-            </li>
-
-            <li>
-              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
-              <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
-              <textarea id="g2-evidence" data-field="evidence" data-group="2" placeholder="The detail that proves our rating is…"></textarea>
-            </li>
-
-
-            <li>
-              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
-              <p class="hint">One change that keeps the access but returns the thinking to students.</p>
-              <textarea id="g2-fix" data-field="fix" data-group="2" placeholder="One safer fix would be…"></textarea>
-            </li>
-
-          </ol>
-        </main>
-      </div>
-
-      <section class="post-card">
-        <div class="post-head">
-          <div>
-            <p class="kicker">Ready to post</p>
-            <h3>Group 2 decision</h3>
-          </div>
-          <div class="label-pills">
-            <span>Group 2 — Multi-Step Problem Entry</span>
-            <span>3–5 Math</span>
-          </div>
-        </div>
-        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
-        <textarea id="g2-post" class="post-output" readonly aria-label="Generated case ruling for Group 2"></textarea>
-        <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="2">Copy our decision</button>
-          <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
-        </div>
-      </section>
-    </section>
-
-
-    <section class="page group-page" id="group-3" role="region" aria-label="Group 3 case room">
-      <div class="page-head compact">
-        <div>
-          <p class="kicker">Group 3 Case Room · 3–5 ELA</p>
-          <h2>Mentor Paragraph</h2>
-          <p class="subline">Grade 5 ELA · Writing-structure barrier · AI wrote the paragraph</p>
-        </div>
-        <div class="action-row top-actions">
-          <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
-          <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
-        </div>
-      </div>
-
-      <div class="purpose-bar">
-        <p>
-          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
-          way for students, or did AI do the work for them?
-        </p>
-        <p>
-          <strong>What you produce:</strong> one decision — an OSAMR level, why you chose it, and
-          one change that would make it better. This page writes it up for you.
-        </p>
-        <p class="purpose-steps">Read the case → Choose the OSAMR level → Say why → Post it</p>
-      </div>
-
-      <div class="workspace-grid">
-        <aside class="scenario-card">
-          <div class="scenario-head">
-            <div class="scenario-label">The case</div>
-          </div>
-          <h3>What happened</h3>
-          <p>A fifth-grade ELA teacher teaches students to cite textual evidence for a claim about a character’s motivation. Several students struggle to write a body paragraph. AI generates a mentor paragraph for each student. Students write a similar paragraph, but most copy the structure and change only a few words.</p>
-
-          <div class="ai-input-card">
-            <h4>What the teacher asked AI to do</h4>
-            <p class="quote">“Write a mentor paragraph about the character’s motivation with a claim, evidence, and reasoning.”</p>
-          </div>
-
-          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
-            <div><strong>What students must learn:</strong> Make a claim about motivation, choose textual evidence, and explain the reasoning.</div>
-            <div><strong>What was in their way:</strong> Students need help organizing a body paragraph.</div>
-            <div><strong>What students still do:</strong> AI weakens target thinking by giving too much of the analysis.</div>
-          </div>
-
-              <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
-                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
-                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
-                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
-              </div>
-        </aside>
-
-        <main class="work-card">
-          <ol class="steps">
-
-
-
-            <li class="ruling-step">
-              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
-              <p class="hint">Do not debate the label until your group has named the evidence above.</p>
-              <div class="token-row" role="group" aria-label="OSAMR decision tokens">
-                <button class="token" type="button" data-token="3" data-value="S — Substitute"><b>S</b>Substitute</button>
-                <button class="token" type="button" data-token="3" data-value="A — Augment"><b>A</b>Augment</button>
-                <button class="token" type="button" data-token="3" data-value="M — Modify"><b>M</b>Modify</button>
-                <button class="token" type="button" data-token="3" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="3" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
-              </div>
-              <label class="ruling-select">OSAMR level
-                <select id="g3-osamr" data-field="osamr" data-group="3">                    <option value="">Choose one</option>
-                    <option>S — Substitute</option>
-                    <option>A — Augment</option>
-                    <option>M — Modify</option>
-                    <option>R — Redefine</option>
-                    <option>Overreliance — AI did the thinking</option>
-                </select>
-              </label>
-            </li>
-
-            <li>
-              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
-              <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
-              <textarea id="g3-evidence" data-field="evidence" data-group="3" placeholder="The detail that proves our rating is…"></textarea>
-            </li>
-
-
-            <li>
-              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
-              <p class="hint">One change that keeps the access but returns the thinking to students.</p>
-              <textarea id="g3-fix" data-field="fix" data-group="3" placeholder="One safer fix would be…"></textarea>
-            </li>
-
-          </ol>
-        </main>
-      </div>
-
-      <section class="post-card">
-        <div class="post-head">
-          <div>
-            <p class="kicker">Ready to post</p>
-            <h3>Group 3 decision</h3>
-          </div>
-          <div class="label-pills">
-            <span>Group 3 — Mentor Paragraph</span>
-            <span>3–5 ELA</span>
-          </div>
-        </div>
-        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
-        <textarea id="g3-post" class="post-output" readonly aria-label="Generated case ruling for Group 3"></textarea>
-        <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="3">Copy our decision</button>
-          <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
-        </div>
-      </section>
-    </section>
-
-
-    <section class="page group-page" id="group-4" role="region" aria-label="Group 4 case room">
-      <div class="page-head compact">
-        <div>
-          <p class="kicker">Group 4 Case Room · 6–8 Science</p>
-          <h2>Tiered Reading</h2>
-          <p class="subline">Grade 7 Science · Dense-text barrier · AI made three access versions</p>
-        </div>
-        <div class="action-row top-actions">
-          <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
-          <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
-        </div>
-      </div>
-
-      <div class="purpose-bar">
-        <p>
-          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
-          way for students, or did AI do the work for them?
-        </p>
-        <p>
-          <strong>What you produce:</strong> one decision — an OSAMR level, why you chose it, and
-          one change that would make it better. This page writes it up for you.
-        </p>
-        <p class="purpose-steps">Read the case → Choose the OSAMR level → Say why → Post it</p>
-      </div>
-
-      <div class="workspace-grid">
-        <aside class="scenario-card">
-          <div class="scenario-head">
-            <div class="scenario-label">The case</div>
-          </div>
-          <h3>What happened</h3>
-          <p>A seventh-grade science teacher teaches force and motion. Students answer analysis questions about Newton’s Second Law, but many multilingual learners struggle with dense textbook language. AI creates reading supports: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. All students answer the same analysis questions.</p>
-
-          <div class="ai-input-card">
-            <h4>What the teacher asked AI to do</h4>
-            <p class="quote">“Make three access versions: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. Keep the same three analysis questions for everyone. Do not answer them.”</p>
-          </div>
-
-          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
-            <div><strong>What students must learn:</strong> Analyze Newton’s Second Law and answer the same three analysis questions.</div>
-            <div><strong>What was in their way:</strong> Dense textbook language blocks access to the science analysis.</div>
-            <div><strong>What students still do:</strong> All students still answer the same analysis questions.</div>
-          </div>
-
-              <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
-                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
-                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
-                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
-              </div>
-        </aside>
-
-        <main class="work-card">
-          <ol class="steps">
-
-
-
-            <li class="ruling-step">
-              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
-              <p class="hint">Do not debate the label until your group has named the evidence above.</p>
-              <div class="token-row" role="group" aria-label="OSAMR decision tokens">
-                <button class="token" type="button" data-token="4" data-value="S — Substitute"><b>S</b>Substitute</button>
-                <button class="token" type="button" data-token="4" data-value="A — Augment"><b>A</b>Augment</button>
-                <button class="token" type="button" data-token="4" data-value="M — Modify"><b>M</b>Modify</button>
-                <button class="token" type="button" data-token="4" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="4" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
-              </div>
-              <label class="ruling-select">OSAMR level
-                <select id="g4-osamr" data-field="osamr" data-group="4">                    <option value="">Choose one</option>
-                    <option>S — Substitute</option>
-                    <option>A — Augment</option>
-                    <option>M — Modify</option>
-                    <option>R — Redefine</option>
-                    <option>Overreliance — AI did the thinking</option>
-                </select>
-              </label>
-            </li>
-
-            <li>
-              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
-              <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
-              <textarea id="g4-evidence" data-field="evidence" data-group="4" placeholder="The detail that proves our rating is…"></textarea>
-            </li>
-
-
-            <li>
-              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
-              <p class="hint">One change that keeps the access but returns the thinking to students.</p>
-              <textarea id="g4-fix" data-field="fix" data-group="4" placeholder="One safer fix would be…"></textarea>
-            </li>
-
-          </ol>
-        </main>
-      </div>
-
-      <section class="post-card">
-        <div class="post-head">
-          <div>
-            <p class="kicker">Ready to post</p>
-            <h3>Group 4 decision</h3>
-          </div>
-          <div class="label-pills">
-            <span>Group 4 — Tiered Reading</span>
-            <span>6–8 Science</span>
-          </div>
-        </div>
-        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
-        <textarea id="g4-post" class="post-output" readonly aria-label="Generated case ruling for Group 4"></textarea>
-        <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="4">Copy our decision</button>
-          <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
-        </div>
-      </section>
-    </section>
-
-
-    <section class="page group-page" id="group-5" role="region" aria-label="Group 5 case room">
-      <div class="page-head compact">
-        <div>
-          <p class="kicker">Group 5 Case Room · 6–8 Math</p>
-          <h2>AI Feedback on Work</h2>
-          <p class="subline">Grade 6 Math · Feedback barrier · AI gave answers and unit rates</p>
-        </div>
-        <div class="action-row top-actions">
-          <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
-          <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
-        </div>
-      </div>
-
-      <div class="purpose-bar">
-        <p>
-          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
-          way for students, or did AI do the work for them?
-        </p>
-        <p>
-          <strong>What you produce:</strong> one decision — an OSAMR level, why you chose it, and
-          one change that would make it better. This page writes it up for you.
-        </p>
-        <p class="purpose-steps">Read the case → Choose the OSAMR level → Say why → Post it</p>
-      </div>
-
-      <div class="workspace-grid">
-        <aside class="scenario-card">
-          <div class="scenario-head">
-            <div class="scenario-label">The case</div>
-          </div>
-          <h3>What happened</h3>
-          <p>A sixth-grade math teacher teaches proportional relationships. Students practice deciding whether tables are proportional. During independent practice, AI gives correct answers, explains the constant ratio, and identifies the unit rate. Students use AI feedback to mark their work correct or incorrect.</p>
-
-          <div class="ai-input-card">
-            <h4>What the teacher asked AI to do</h4>
-            <p class="quote">“Check each student’s proportional relationship work. Give the correct answer, constant ratio, unit rate, and whether the student is correct.”</p>
-          </div>
-
-          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
-            <div><strong>What students must learn:</strong> Decide whether a table is proportional and justify it using the constant ratio.</div>
-            <div><strong>What was in their way:</strong> Students may need feedback or a way to check reasoning.</div>
-            <div><strong>What students still do:</strong> AI performs the target thinking by giving the answer, ratio, and unit rate.</div>
-          </div>
-
-              <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
-                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
-                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
-                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
-              </div>
-        </aside>
-
-        <main class="work-card">
-          <ol class="steps">
-
-
-
-            <li class="ruling-step">
-              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
-              <p class="hint">Do not debate the label until your group has named the evidence above.</p>
-              <div class="token-row" role="group" aria-label="OSAMR decision tokens">
-                <button class="token" type="button" data-token="5" data-value="S — Substitute"><b>S</b>Substitute</button>
-                <button class="token" type="button" data-token="5" data-value="A — Augment"><b>A</b>Augment</button>
-                <button class="token" type="button" data-token="5" data-value="M — Modify"><b>M</b>Modify</button>
-                <button class="token" type="button" data-token="5" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="5" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
-              </div>
-              <label class="ruling-select">OSAMR level
-                <select id="g5-osamr" data-field="osamr" data-group="5">                    <option value="">Choose one</option>
-                    <option>S — Substitute</option>
-                    <option>A — Augment</option>
-                    <option>M — Modify</option>
-                    <option>R — Redefine</option>
-                    <option>Overreliance — AI did the thinking</option>
-                </select>
-              </label>
-            </li>
-
-            <li>
-              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
-              <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
-              <textarea id="g5-evidence" data-field="evidence" data-group="5" placeholder="The detail that proves our rating is…"></textarea>
-            </li>
-
-
-            <li>
-              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
-              <p class="hint">One change that keeps the access but returns the thinking to students.</p>
-              <textarea id="g5-fix" data-field="fix" data-group="5" placeholder="One safer fix would be…"></textarea>
-            </li>
-
-          </ol>
-        </main>
-      </div>
-
-      <section class="post-card">
-        <div class="post-head">
-          <div>
-            <p class="kicker">Ready to post</p>
-            <h3>Group 5 decision</h3>
-          </div>
-          <div class="label-pills">
-            <span>Group 5 — AI Feedback on Work</span>
-            <span>6–8 Math</span>
-          </div>
-        </div>
-        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
-        <textarea id="g5-post" class="post-output" readonly aria-label="Generated case ruling for Group 5"></textarea>
-        <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="5">Copy our decision</button>
-          <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
-        </div>
-      </section>
-    </section>
-
-
-    <section class="page group-page" id="group-6" role="region" aria-label="Group 6 case room">
-      <div class="page-head compact">
-        <div>
-          <p class="kicker">Group 6 Case Room · 9–12 Science</p>
-          <h2>Data Summarized for CER</h2>
-          <p class="subline">Grade 9–12 Science · Large-dataset barrier · AI chose the evidence</p>
-        </div>
-        <div class="action-row top-actions">
-          <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
-          <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
-        </div>
-      </div>
-
-      <div class="purpose-bar">
-        <p>
-          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
-          way for students, or did AI do the work for them?
-        </p>
-        <p>
-          <strong>What you produce:</strong> one decision — an OSAMR level, why you chose it, and
-          one change that would make it better. This page writes it up for you.
-        </p>
-        <p class="purpose-steps">Read the case → Choose the OSAMR level → Say why → Post it</p>
-      </div>
-
-      <div class="workspace-grid">
-        <aside class="scenario-card">
-          <div class="scenario-head">
-            <div class="scenario-label">The case</div>
-          </div>
-          <h3>What happened</h3>
-          <p>Students analyze a local air-quality dataset to write a claim-evidence-reasoning paragraph. The teacher uses AI to summarize the dataset into three key findings. Students use those AI findings as evidence. They write their own claim and reasoning, but they do not examine the full dataset or choose evidence themselves.</p>
-
-          <div class="ai-input-card">
-            <h4>What the teacher asked AI to do</h4>
-            <p class="quote">“Summarize this local air-quality dataset into three key findings students can use as evidence in CER paragraphs.”</p>
-          </div>
-
-          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
-            <div><strong>What students must learn:</strong> Analyze data, select evidence, and write a claim with supporting reasoning.</div>
-            <div><strong>What was in their way:</strong> The full dataset may be too large or dense to analyze efficiently.</div>
-            <div><strong>What students still do:</strong> AI removes too much target thinking by choosing the evidence.</div>
-          </div>
-
-              <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
-                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
-                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
-                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
-              </div>
-        </aside>
-
-        <main class="work-card">
-          <ol class="steps">
-
-
-
-            <li class="ruling-step">
-              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
-              <p class="hint">Do not debate the label until your group has named the evidence above.</p>
-              <div class="token-row" role="group" aria-label="OSAMR decision tokens">
-                <button class="token" type="button" data-token="6" data-value="S — Substitute"><b>S</b>Substitute</button>
-                <button class="token" type="button" data-token="6" data-value="A — Augment"><b>A</b>Augment</button>
-                <button class="token" type="button" data-token="6" data-value="M — Modify"><b>M</b>Modify</button>
-                <button class="token" type="button" data-token="6" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="6" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
-              </div>
-              <label class="ruling-select">OSAMR level
-                <select id="g6-osamr" data-field="osamr" data-group="6">                    <option value="">Choose one</option>
-                    <option>S — Substitute</option>
-                    <option>A — Augment</option>
-                    <option>M — Modify</option>
-                    <option>R — Redefine</option>
-                    <option>Overreliance — AI did the thinking</option>
-                </select>
-              </label>
-            </li>
-
-            <li>
-              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
-              <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
-              <textarea id="g6-evidence" data-field="evidence" data-group="6" placeholder="The detail that proves our rating is…"></textarea>
-            </li>
-
-
-            <li>
-              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
-              <p class="hint">One change that keeps the access but returns the thinking to students.</p>
-              <textarea id="g6-fix" data-field="fix" data-group="6" placeholder="One safer fix would be…"></textarea>
-            </li>
-
-          </ol>
-        </main>
-      </div>
-
-      <section class="post-card">
-        <div class="post-head">
-          <div>
-            <p class="kicker">Ready to post</p>
-            <h3>Group 6 decision</h3>
-          </div>
-          <div class="label-pills">
-            <span>Group 6 — Data Summarized for CER</span>
-            <span>9–12 Science</span>
-          </div>
-        </div>
-        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
-        <textarea id="g6-post" class="post-output" readonly aria-label="Generated case ruling for Group 6"></textarea>
-        <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="6">Copy our decision</button>
-          <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
-        </div>
-      </section>
-    </section>
-
-
-    <section class="page group-page" id="group-7" role="region" aria-label="Group 7 case room">
-      <div class="page-head compact">
-        <div>
-          <p class="kicker">Group 7 Case Room · 9–12 History/SS</p>
-          <h2>Primary Source Access</h2>
-          <p class="subline">Grade 10 World History · Archaic-language barrier · AI added footnotes</p>
-        </div>
-        <div class="action-row top-actions">
-          <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
-          <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
-        </div>
-      </div>
-
-      <div class="purpose-bar">
-        <p>
-          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
-          way for students, or did AI do the work for them?
-        </p>
-        <p>
-          <strong>What you produce:</strong> one decision — an OSAMR level, why you chose it, and
-          one change that would make it better. This page writes it up for you.
-        </p>
-        <p class="purpose-steps">Read the case → Choose the OSAMR level → Say why → Post it</p>
-      </div>
-
-      <div class="workspace-grid">
-        <aside class="scenario-card">
-          <div class="scenario-head">
-            <div class="scenario-label">The case</div>
-          </div>
-          <h3>What happened</h3>
-          <p>A tenth-grade World History teacher teaches students to analyze a primary source for bias, perspective, and historical context. Some students struggle with 19th-century language and reading demands. AI creates plain-language footnotes, background questions, and a blank SOAPS organizer. Students still read the original source and complete the analysis independently.</p>
-
-          <div class="ai-input-card">
-            <h4>What the teacher asked AI to do</h4>
-            <p class="quote">“Add plain-language footnotes for difficult phrases, background questions, and a blank SOAPS organizer. Do not answer or analyze the source for students.”</p>
-          </div>
-
-          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
-            <div><strong>What students must learn:</strong> Analyze a primary source for bias, perspective, and historical context.</div>
-            <div><strong>What was in their way:</strong> 19th-century language blocks access to the original source.</div>
-            <div><strong>What students still do:</strong> Students still read the original and analyze bias, perspective, and context.</div>
-          </div>
-
-              <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
-                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
-                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
-                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
-              </div>
-        </aside>
-
-        <main class="work-card">
-          <ol class="steps">
-
-
-
-            <li class="ruling-step">
-              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
-              <p class="hint">Do not debate the label until your group has named the evidence above.</p>
-              <div class="token-row" role="group" aria-label="OSAMR decision tokens">
-                <button class="token" type="button" data-token="7" data-value="S — Substitute"><b>S</b>Substitute</button>
-                <button class="token" type="button" data-token="7" data-value="A — Augment"><b>A</b>Augment</button>
-                <button class="token" type="button" data-token="7" data-value="M — Modify"><b>M</b>Modify</button>
-                <button class="token" type="button" data-token="7" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="7" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
-              </div>
-              <label class="ruling-select">OSAMR level
-                <select id="g7-osamr" data-field="osamr" data-group="7">                    <option value="">Choose one</option>
-                    <option>S — Substitute</option>
-                    <option>A — Augment</option>
-                    <option>M — Modify</option>
-                    <option>R — Redefine</option>
-                    <option>Overreliance — AI did the thinking</option>
-                </select>
-              </label>
-            </li>
-
-            <li>
-              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
-              <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
-              <textarea id="g7-evidence" data-field="evidence" data-group="7" placeholder="The detail that proves our rating is…"></textarea>
-            </li>
-
-
-            <li>
-              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
-              <p class="hint">One change that keeps the access but returns the thinking to students.</p>
-              <textarea id="g7-fix" data-field="fix" data-group="7" placeholder="One safer fix would be…"></textarea>
-            </li>
-
-          </ol>
-        </main>
-      </div>
-
-      <section class="post-card">
-        <div class="post-head">
-          <div>
-            <p class="kicker">Ready to post</p>
-            <h3>Group 7 decision</h3>
-          </div>
-          <div class="label-pills">
-            <span>Group 7 — Primary Source Access</span>
-            <span>9–12 History/SS</span>
-          </div>
-        </div>
-        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
-        <textarea id="g7-post" class="post-output" readonly aria-label="Generated case ruling for Group 7"></textarea>
-        <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="7">Copy our decision</button>
-          <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
-        </div>
-      </section>
-    </section>
-
-    <section class="page" id="gallery" role="region" aria-label="Gallery board">
-      <div class="page-head">
-        <div>
-          <p class="kicker">Gallery Board</p>
-          <h2>Compare the rulings.</h2>
-          <p class="subline">One rating, one evidence detail, one fix — from every group.</p>
-          <p class="board-status" id="boardStatus">● Connecting to the shared board…</p>
-        </div>
-        <div class="action-row top-actions">
-          <button class="btn primary" type="button" id="presentBoard">▶ Present board</button>
-          <button class="btn secondary" type="button" id="downloadResponses">Download</button>
-          <button class="btn secondary" type="button" id="printBoard">Print</button>
-        </div>
-      </div>
-
-      <!-- The compare view. Seven ratings on one line is the point of a gallery
-           board: the room sees agreement and disagreement at a glance, which is
-           exactly what the discussion prompt then asks about. -->
-      <section class="ratings-strip" aria-label="Every group's ruling at a glance">
-        <div class="ratings-head">
-          <h3>Where the room landed</h3>
-          <p id="postedCount">No rulings posted yet</p>
-        </div>
-        <div class="ratings-row" id="ratingsRow"></div>
-      </section>
-
-      <div class="board-controls" role="group" aria-label="Board view">
-        <span class="board-controls-label">View</span>
-        <button class="view-btn active" type="button" data-view="group">By group</button>
-        <button class="view-btn" type="button" data-view="ruling">By ruling</button>
-        <span class="board-hint" id="viewHint">Groups 1-7 in order</span>
-      </div>
-
-      <div class="gallery-grid">
-        <div class="gallery-list" id="galleryList"></div>
-        <aside class="card side-note">
-          <h3>Discussion prompt</h3>
-          <p><strong>What evidence changed your mind?</strong></p>
-          <p>Bottom line: helpful support keeps the thinking with students.</p>
-          <h3 style="margin-top:16px">Reading the board</h3>
-          <p>Switch to <strong>By ruling</strong> to see which cases the room disagreed on. Two groups landing on different letters is the most useful conversation in the session.</p>
-        </aside>
-      </div>
-    </section>
-
-    <!-- Projection view: large type, no page chrome, refreshes itself. -->
-    <div class="present" id="presentOverlay" hidden>
-      <div class="present-bar">
-        <div>
-          <p class="present-kicker">OSAMR Case Clinic · Gallery Board</p>
-          <h2 id="presentTitle">Where the room landed</h2>
-        </div>
-        <div class="present-actions">
-          <button class="btn secondary" type="button" id="presentPrev">‹</button>
-          <span class="present-page" id="presentPage">Overview</span>
-          <button class="btn secondary" type="button" id="presentNext">›</button>
-          <button class="btn secondary" type="button" id="presentClose">Close ✕</button>
-        </div>
-      </div>
-      <div class="present-body" id="presentBody"></div>
-    </div>
-
-  </main>
-
-  <div class="toast" id="toast" role="status" aria-live="polite">Copied</div>
-
-  <script>
-    document.documentElement.classList.add("js");
-
-    const CASES = [{"id":1,"title":"Story Structure","short":"Story Structure","band":"K–2","meta":"K–2 ELA · Reading-directions barrier · AI made a picture direction card","story":"A kindergarten teacher introduces story structure. Students listen to a read-aloud and retell the beginning, middle, and end. Several students cannot read directions yet, so AI creates a three-panel direction card with simple icons and one-word labels. Students still listen, sequence events, and retell verbally to a partner.","ai_input":"Create a three-panel direction card with simple icons and one-word labels: beginning, middle, end. Do not retell the story or sequence events for students.","barrier_clue":"Students cannot read directions independently.","thinking_clue":"Students still listen, sequence events, and retell beginning/middle/end.","target":"Sequence and retell the beginning, middle, and end of a story."},{"id":2,"title":"Multi-Step Problem Entry","short":"Multi-Step Problem Entry","band":"3–5 Math","meta":"Grade 4 Math · Getting-started barrier · AI built an entry scaffold","story":"A fourth-grade math teacher teaches multi-digit multiplication with: “A school orders 24 boxes of crayons. Each box has 16 crayons. How many crayons are there in all?” Several students with IEPs struggle to know where to start. AI creates a problem-entry scaffold and sentence frame. Students set up and solve independently.","ai_input":"Create a three-step entry scaffold: circle the numbers, underline the question, and draw a quick sketch. Add this frame: “I need to find ___ because ___.” Do not name the operation or solve.","barrier_clue":"Students struggle to start and organize information.","thinking_clue":"Students still choose a strategy, set up the problem, compute, and explain.","target":"Choose an operation, set up the problem, solve, and explain the reasoning."},{"id":3,"title":"Mentor Paragraph","short":"Mentor Paragraph","band":"3–5 ELA","meta":"Grade 5 ELA · Writing-structure barrier · AI wrote the paragraph","story":"A fifth-grade ELA teacher teaches students to cite textual evidence for a claim about a character’s motivation. Several students struggle to write a body paragraph. AI generates a mentor paragraph for each student. Students write a similar paragraph, but most copy the structure and change only a few words.","ai_input":"Write a mentor paragraph about the character’s motivation with a claim, evidence, and reasoning.","barrier_clue":"Students need help organizing a body paragraph.","thinking_clue":"Students should make the claim, choose the evidence, and explain the reasoning — but AI did most of it for them.","target":"Make a claim about motivation, choose textual evidence, and explain the reasoning."},{"id":4,"title":"Tiered Reading","short":"Tiered Reading","band":"6–8 Science","meta":"Grade 7 Science · Dense-text barrier · AI made three access versions","story":"A seventh-grade science teacher teaches force and motion. Students answer analysis questions about Newton’s Second Law, but many multilingual learners struggle with dense textbook language. AI creates reading supports: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. All students answer the same analysis questions.","ai_input":"Make three access versions: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. Keep the same three analysis questions for everyone. Do not answer them.","barrier_clue":"Dense textbook language blocks access to the science analysis.","thinking_clue":"All students still answer the same analysis questions.","target":"Analyze Newton’s Second Law and answer the same three analysis questions."},{"id":5,"title":"AI Feedback on Work","short":"AI Feedback on Work","band":"6–8 Math","meta":"Grade 6 Math · Feedback barrier · AI gave answers and unit rates","story":"A sixth-grade math teacher teaches proportional relationships. Students practice deciding whether tables are proportional. During independent practice, AI gives correct answers, explains the constant ratio, and identifies the unit rate. Students use AI feedback to mark their work correct or incorrect.","ai_input":"Check each student’s proportional relationship work. Give the correct answer, constant ratio, unit rate, and whether the student is correct.","barrier_clue":"Students may need feedback or a way to check reasoning.","thinking_clue":"Students should decide whether the table is proportional and justify it — but AI handed over the answer, the ratio and the unit rate.","target":"Decide whether a table is proportional and justify it using the constant ratio."},{"id":6,"title":"Data Summarized for CER","short":"Data Summarized for CER","band":"9–12 Science","meta":"Grade 9–12 Science · Large-dataset barrier · AI chose the evidence","story":"Students analyze a local air-quality dataset to write a claim-evidence-reasoning paragraph. The teacher uses AI to summarize the dataset into three key findings. Students use those AI findings as evidence. They write their own claim and reasoning, but they do not examine the full dataset or choose evidence themselves.","ai_input":"Summarize this local air-quality dataset into three key findings students can use as evidence in CER paragraphs.","barrier_clue":"The full dataset may be too large or dense to analyze efficiently.","thinking_clue":"Students should read the data and choose their own evidence — but AI chose it for them.","target":"Analyze data, select evidence, and write a claim with supporting reasoning."},{"id":7,"title":"Primary Source Access","short":"Primary Source Access","band":"9–12 History/SS","meta":"Grade 10 World History · Archaic-language barrier · AI added footnotes","story":"A tenth-grade World History teacher teaches students to analyze a primary source for bias, perspective, and historical context. Some students struggle with 19th-century language and reading demands. AI creates plain-language footnotes, background questions, and a blank SOAPS organizer. Students still read the original source and complete the analysis independently.","ai_input":"Add plain-language footnotes for difficult phrases, background questions, and a blank SOAPS organizer. Do not answer or analyze the source for students.","barrier_clue":"19th-century language blocks access to the original source.","thinking_clue":"Students still read the original and analyze bias, perspective, and context.","target":"Analyze a primary source for bias, perspective, and historical context."}];
-    // The model case is data too, so its prompt/ruling boxes fill from exactly
-    // the same functions the groups use — one code path, no second version of
-    // the wording to drift.
-    const MODEL_CASE = {"id":"m","title":"Proportional Relationships Directions","short":"Proportional Directions","band":"6–8 Math","meta":"Grade 6 Math · Dense-directions barrier · AI rewrote directions in plain language","story":"Sixth-grade students decide whether a table shows a proportional relationship. Several multilingual learners understand the math, but the directions are dense and the word “ratio” is unfamiliar. The teacher uses AI to rewrite the directions in plain language and add a short vocabulary note. Students still calculate ratios, decide whether they are equal, and explain their answer.","ai_input":"Rewrite these directions in plain language. Add one short note for “ratio.” Do not solve, name the operation, or tell students if the table is proportional.","barrier_clue":"Dense directions and unfamiliar vocabulary made it hard to start.","thinking_clue":"Students still calculate ratios, decide proportional or not, and explain why.","target":"Decide whether a table shows a proportional relationship and justify the decision.","answers":{"osamr":"A — Augment","evidence":"AI never finds the constant ratio. The rewritten directions still leave students to compute both ratios and compare them, so the mathematical decision is untouched.","fix":"Keep the plain-language directions and the vocabulary note, and add a blank ratio table students fill in themselves — never a worked example."}};
-    const STORE = "osamr_case_clinic_v1";
-    const FIELDS = ["osamr","evidence","fix"];
-
-    let state = {};
-    try { state = JSON.parse(localStorage.getItem(STORE) || "{}"); } catch { state = {}; }
-
-    const $ = (s, r = document) => r.querySelector(s);
-    const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-    const key = (g, f) => `g${g}_${f}`;
-    const isModel = (g) => String(g) === "m";
-    // The model reads its answers straight off its own data; groups read the
-    // participant's saved work. Everything downstream (postFor) is
-    // then identical for both.
-    const getValue = (g, f) =>
-      isModel(g) ? (MODEL_CASE.answers[f] || "") : (state[key(g, f)] || "");
-    const caseById = (g) => (isModel(g) ? MODEL_CASE : CASES.find((c) => c.id === Number(g)));
-
-    function save() {
-      try {
-        localStorage.setItem(STORE, JSON.stringify(state));
-        flashSaved();
-      } catch {
-        const pill = $("#savePill");
-        if (pill) { pill.textContent = "● Not saved (storage blocked)"; pill.style.color = "#8a3d2a"; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="OSAMR Sort — place seven real classroom AI uses on the OSAMR scale, then see where the room disagrees."
+    />
+    <title>OSAMR Sort | AI for Accessible Instruction</title>
+    <style>
+      :root {
+        --navy: #10283f;
+        --navy2: #173a5b;
+        --teal: #247c7f;
+        --teal2: #4fb6b3;
+        --cream: #fff8ed;
+        --paper: #fffdf8;
+        --gold: #e0a93c;
+        --terracotta: #c9684a;
+        --sage: #dce8df;
+        --ink: #17212b;
+        --muted: #5b6b7a;
+        --line: rgba(16, 40, 63, 0.16);
+        --soft: 0 8px 20px rgba(16, 40, 63, 0.08);
+        --radius: 20px;
+        --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       }
-    }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: auto;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(79, 182, 179, 0.16), transparent 28rem),
+          linear-gradient(135deg, #f6fbfb 0%, #fff8ed 72%, #f8efe7 100%);
+        min-height: 100vh;
+        padding-bottom: 64px;
+      }
+      button,
+      select,
+      input,
+      textarea {
+        font-family: inherit;
+      }
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        z-index: 60;
+        background: var(--navy);
+        color: #fff;
+        padding: 10px 16px;
+        font-weight: 900;
+      }
+      .skip-link:focus {
+        left: 0;
+      }
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
 
-    let savedTimer;
-    function flashSaved() {
-      const pill = $("#savePill");
-      if (!pill) return;
-      pill.textContent = "● Saving…";
-      clearTimeout(savedTimer);
-      savedTimer = setTimeout(() => { pill.textContent = "● Saved on this device"; }, 600);
-    }
+      header.top {
+        background: rgba(255, 253, 248, 0.95);
+        border-bottom: 1px solid var(--line);
+        padding: 14px 0;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .brand .mark {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: var(--navy);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+      }
+      .brand h1 {
+        margin: 0;
+        font-size: 21px;
+        color: var(--navy);
+      }
+      .brand p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .brand .spacer {
+        flex: 1;
+      }
+      .who {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--navy);
+        background: var(--sage);
+        border-radius: 999px;
+        padding: 7px 14px;
+      }
 
-    function setValue(g, f, v) {
-      state[key(g, f)] = v;
-      save();
-      syncTokens(g);
-      updateGroup(g);
-      renderGallery();
-      schedulePublish(g);
-    }
+      .page {
+        display: none;
+      }
+      .page.active {
+        display: block;
+        padding-top: 22px;
+      }
 
-    function showToast(msg = "Copied") {
-      const t = $("#toast");
-      if (!t) return;
-      t.textContent = msg;
-      t.classList.add("show");
-      setTimeout(() => t.classList.remove("show"), 1600);
-    }
+      .hero {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+        color: #fff;
+        border-radius: var(--radius);
+        padding: 26px 28px;
+        margin-bottom: 20px;
+      }
+      .hero .kicker {
+        margin: 0 0 6px;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        opacity: 0.85;
+      }
+      .hero h2 {
+        margin: 0 0 14px;
+        font-size: clamp(26px, 4vw, 38px);
+        line-height: 1.12;
+      }
+      .hero p {
+        margin: 0 0 7px;
+        font-size: 17px;
+        line-height: 1.5;
+      }
 
-    async function copyText(text) {
-      try {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(text);
-          return true;
+      .card {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--soft);
+        padding: 22px 24px;
+        margin-bottom: 18px;
+      }
+      .card h3 {
+        margin: 0 0 10px;
+        font-size: 22px;
+        color: var(--navy);
+      }
+      .card p {
+        margin: 0 0 10px;
+        line-height: 1.55;
+      }
+
+      .how {
+        margin: 0;
+        padding-left: 22px;
+      }
+      .how li {
+        margin-bottom: 8px;
+        line-height: 1.5;
+        font-size: 16px;
+      }
+
+      .btn {
+        appearance: none;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--navy);
+        border-radius: 999px;
+        padding: 11px 20px;
+        font-size: 15px;
+        font-weight: 800;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn.primary {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: var(--navy);
+      }
+      .btn.dark {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: #fff;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-top: 14px;
+      }
+
+      /* ---- OSAMR key ---- */
+      .key {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 10px;
+        margin: 14px 0 0;
+      }
+      .key div {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 11px 13px;
+        background: #fff;
+      }
+      .key strong {
+        display: inline-grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--sage);
+        color: var(--navy);
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+      .key span {
+        display: block;
+        font-size: 14px;
+        line-height: 1.4;
+        color: #33424f;
+      }
+      .key .warn strong {
+        background: rgba(201, 104, 74, 0.18);
+        color: #8a3d2a;
+      }
+
+      /* ---- group picker ---- */
+      .group-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+        margin-top: 6px;
+      }
+      .group-btn {
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 16px;
+        padding: 16px 12px;
+        font-size: 17px;
+        font-weight: 900;
+        color: var(--navy);
+        cursor: pointer;
+      }
+      .group-btn:hover {
+        border-color: var(--navy);
+      }
+      .group-btn.on {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: #fff;
+      }
+
+      /* ---- the sort ---- */
+      .sort-head {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .progress {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        color: var(--navy);
+        font-size: 15px;
+      }
+      .track {
+        width: 150px;
+        height: 9px;
+        border-radius: 999px;
+        background: var(--sage);
+        overflow: hidden;
+      }
+      .fill {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: var(--teal);
+        transition: width 0.2s;
+      }
+
+      .deck {
+        display: grid;
+        gap: 14px;
+      }
+      .deck-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        box-shadow: var(--soft);
+        padding: 18px 20px;
+      }
+      .deck-card.placed {
+        border-left: 6px solid var(--teal);
+      }
+      .dc-num {
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 4px;
+      }
+      .deck-card h4 {
+        margin: 0 0 4px;
+        font-size: 20px;
+        color: var(--navy);
+      }
+      .dc-meta {
+        margin: 0 0 10px;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .dc-body {
+        margin: 0 0 6px;
+        line-height: 1.55;
+        font-size: 16px;
+      }
+      .dc-body .ai-move {
+        color: var(--navy);
+        font-weight: 800;
+      }
+      .dc-ask {
+        margin: 0 0 14px;
+        font-size: 14.5px;
+        line-height: 1.5;
+        color: #33424f;
+        background: #fffdf6;
+        border-left: 4px solid var(--gold);
+        border-radius: 0 10px 10px 0;
+        padding: 9px 12px;
+      }
+      .dc-ask strong {
+        color: var(--navy);
+      }
+
+      .levels {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .lvl {
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 999px;
+        padding: 9px 16px 9px 9px;
+        font-size: 14.5px;
+        font-weight: 700;
+        color: #33424f;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .lvl b {
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #eef2f7;
+        font-size: 13px;
+      }
+      .lvl:hover {
+        border-color: var(--navy);
+      }
+      .lvl.on {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: #fff;
+      }
+      .lvl.on b {
+        background: #fff;
+        color: var(--navy);
+      }
+      .lvl.warn.on {
+        background: #8a3d2a;
+        border-color: #8a3d2a;
+      }
+
+      /* ---- final steps ---- */
+      .field {
+        margin-top: 14px;
+      }
+      .field label {
+        display: block;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 6px;
+      }
+      .field select,
+      .field input[type="text"] {
+        width: 100%;
+        max-width: 640px;
+        padding: 11px 13px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        font-size: 16px;
+        background: #fff;
+      }
+      .hint {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 14.5px;
+        line-height: 1.5;
+      }
+      .count {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 5px;
+      }
+
+      /* ---- board ---- */
+      .board-status {
+        display: inline-block;
+        font-size: 13px;
+        font-weight: 800;
+        border-radius: 999px;
+        padding: 6px 13px;
+        margin-bottom: 12px;
+      }
+      .board-status.on {
+        background: var(--sage);
+        color: var(--navy);
+      }
+      .board-status.off {
+        background: rgba(201, 104, 74, 0.14);
+        color: #8a3d2a;
+      }
+      .view-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .view-btn {
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-weight: 800;
+        color: var(--navy);
+        cursor: pointer;
+      }
+      .view-btn.on {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: #fff;
+      }
+
+      .grid-scroll {
+        overflow-x: auto;
+      }
+      table.board {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 640px;
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      table.board th,
+      table.board td {
+        border: 1px solid var(--line);
+        padding: 9px 10px;
+        text-align: center;
+        font-size: 14px;
+      }
+      table.board th {
+        background: var(--sage);
+        color: var(--navy);
+        font-weight: 800;
+      }
+      table.board th.case {
+        text-align: left;
+        min-width: 190px;
+      }
+      table.board td.case {
+        text-align: left;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      table.board td.split {
+        background: rgba(224, 169, 60, 0.18);
+      }
+      .cell-lvl {
+        font-weight: 900;
+      }
+      .cell-lvl.o {
+        color: #8a3d2a;
+      }
+      .split-tag {
+        display: inline-block;
+        margin-left: 8px;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #8a3d2a;
+      }
+
+      .waterfall {
+        display: grid;
+        gap: 10px;
+      }
+      .drop {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--teal);
+        border-radius: 14px;
+        padding: 14px 16px;
+        opacity: 0;
+        transform: translateY(-8px);
+        animation: fall 0.45s ease forwards;
+      }
+      .drop .g {
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 4px;
+      }
+      .drop p {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.5;
+      }
+      @keyframes fall {
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
-      } catch { /* fall through */ }
-      const helper = document.createElement("textarea");
-      helper.value = text;
-      helper.setAttribute("readonly", "");
-      helper.style.cssText = "position:fixed;left:-9999px;top:0";
-      document.body.appendChild(helper);
-      helper.select();
-      let ok = false;
-      try { ok = document.execCommand("copy"); } catch { ok = false; }
-      helper.remove();
-      return ok;
-    }
-
-    function openPage(pageId, updateHash = true) {
-      const page = document.getElementById(pageId) ? pageId : "launch";
-      $$(".page").forEach((s) => s.classList.toggle("active", s.id === page));
-      $$(".tab-btn").forEach((b) => {
-        const on = b.dataset.page === page;
-        b.classList.toggle("active", on);
-        b.setAttribute("aria-selected", String(on));
-        if (on) b.scrollIntoView({ block: "nearest", inline: "nearest" });
-      });
-      if (page === "gallery") pollBoard();
-      setTimeout(measureBrief, 60);
-      if (updateHash && location.hash !== "#" + page) history.replaceState(null, "", "#" + page);
-      // Instant: the panel content already swapped, so animating the scroll
-      // only slides unrelated content past the reader.
-      window.scrollTo({ top: 0, behavior: "auto" });
-    }
-
-
-    function postFor(g) {
-      const c = caseById(g);
-      const v = (f, fallback) => getValue(g, f) || fallback;
-      const heading = isModel(g) ? "Model case" : `Group ${c.id}`;
-      return `${heading} — ${c.short} (${c.band})
-
-CASE
-${c.story}
-
-TEACHER AI INPUT
-"${c.ai_input}"
-
-RULING
-OSAMR level: ${v("osamr", "[level]")}
-
-1. Barrier removed: ${c.barrier_clue}
-2. Thinking preserved: ${c.thinking_clue}
-3. Evidence: ${v("evidence", "[proof detail]")}
-4. Fix-it move: ${v("fix", "[safer fix]")}
-
-60-SECOND DEFENSE
-We rated this ${v("osamr", "___")}.
-Barrier AI removed: ${c.barrier_clue}
-Students still: ${c.thinking_clue}
-Our evidence: ${v("evidence", "___")}
-Our fix: ${v("fix", "___")}`;
-    }
-
-    function completion(g) {
-      const done = FIELDS.filter((f) => getValue(g, f).trim()).length;
-      return { done, total: FIELDS.length };
-    }
-
-    function updateGroup(g) {
-      const post = $("#g" + g + "-post");
-      if (post) post.value = postFor(g);
-    }
-
-    function syncTokens(g) {
-      const current = getValue(g, "osamr");
-      $$('[data-token="' + g + '"]').forEach((btn) => {
-        const on = btn.dataset.value === current;
-        btn.classList.toggle("selected", on);
-        btn.setAttribute("aria-pressed", String(on));
-      });
-    }
-
-    function hydrate() {
-      $$("[data-group][data-field]").forEach((input) => {
-        const { group, field } = input.dataset;
-        input.value = getValue(group, field);
-        input.addEventListener("input", (e) => setValue(group, field, e.target.value));
-        input.addEventListener("change", (e) => setValue(group, field, e.target.value));
-      });
-      CASES.forEach((c) => { updateGroup(c.id); syncTokens(c.id); });
-      // The model is not wired to storage, but its prompt and ruling boxes are
-      // generated by the same functions, so fill them once here.
-      updateGroup("m");
-    }
-
-    function escapeHtml(v) {
-      return String(v)
-        .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
-    }
-
-    /* ---- Shared board ----------------------------------------------------
-       Each group works on its own device, so a gallery that only read this
-       browser's localStorage would show one group's work to one group. Every
-       edit is published to /api/osamr-board (debounced), and every device polls
-       it, so the Gallery tab is the room's board rather than a private copy.
-
-       Fails SOFT and silently: if the endpoint is unreachable the page keeps
-       working exactly as before from local state. A PD session must never stop
-       because a network call failed. `board` holds the last good remote read.
-       -------------------------------------------------------------------- */
-    const BOARD_API = "/api/osamr-board";
-    let board = {};        // { "1": { fields, updatedAt }, ... }
-    let boardOk = null;    // null = not tried yet, true/false = last result
-    let lastPoll = 0;
-
-    // Local edits win for the group being typed in, so typing never flickers
-    // against an in-flight poll; every other group reads from the board.
-    function fieldsFor(g) {
-      const local = {};
-      let anyLocal = false;
-      for (const f of FIELDS) {
-        const v = getValue(g, f);
-        if (v) { local[f] = v; anyLocal = true; }
       }
-      if (anyLocal) return local;
-      return board[String(g)]?.fields || {};
-    }
-
-    async function publishGroup(g) {
-      if (isModel(g)) return;
-      const fields = {};
-      for (const f of FIELDS) {
-        const v = getValue(g, f);
-        if (v) fields[f] = v;
+      @media (prefers-reduced-motion: reduce) {
+        .drop {
+          animation: none;
+          opacity: 1;
+          transform: none;
+        }
       }
+      .empty {
+        color: var(--muted);
+        font-style: italic;
+      }
+
+      @media (max-width: 720px) {
+        .hero {
+          padding: 20px;
+        }
+        .card {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="top">
+      <div class="wrap brand">
+        <div class="mark">AI</div>
+        <div>
+          <h1>OSAMR Sort</h1>
+          <p>AI for Accessible Instruction</p>
+        </div>
+        <div class="spacer"></div>
+        <span class="who" id="whoChip" hidden></span>
+        <button class="btn" type="button" data-go="board">Room board</button>
+      </div>
+    </header>
+
+    <main class="wrap" id="main">
+      <!-- ================= START ================= -->
+      <section class="page active" id="start" aria-label="Start">
+        <div class="hero">
+          <p class="kicker">OSAMR Sort</p>
+          <h2>Seven real AI moves. Where does each one land?</h2>
+          <p><strong>What you do:</strong> as a group, place all seven cards on the OSAMR scale.</p>
+          <p>
+            <strong>What you produce:</strong> your group's sorted board, the one card you argued
+            about, and a takeaway everyone posts at the end.
+          </p>
+          <p><strong>How long:</strong> about 15 minutes. No writing until the last two steps.</p>
+        </div>
+
+        <div class="card">
+          <h3>How it works</h3>
+          <ol class="how">
+            <li><strong>Pick your group number</strong> below.</li>
+            <li>
+              <strong>Sort the seven cards.</strong> Read what AI actually did, then tap one letter
+              for each card.
+            </li>
+            <li><strong>Name the card you argued about</strong> and say why in one line.</li>
+            <li>
+              <strong>Post your takeaway.</strong> Every group's line drops onto the room board at
+              once.
+            </li>
+          </ol>
+          <p style="margin-top: 12px">
+            <strong>There is no answer key.</strong> The point is where the room disagrees — the
+            board marks every card groups split on, and those are the ones we talk about.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>The OSAMR scale</h3>
+          <p>Not a ranking. The goal is the honest letter, not the highest one.</p>
+          <div class="key" id="startKey"></div>
+        </div>
+
+        <div class="card">
+          <h3>Which group are you?</h3>
+          <p class="hint">Tap your number so your sort lands on the room board.</p>
+          <div class="group-grid" id="groupGrid"></div>
+          <div class="action-row">
+            <button class="btn primary" type="button" id="startSort" disabled>
+              Start sorting →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SORT ================= -->
+      <section class="page" id="sort" aria-label="Sort the cards">
+        <div class="card">
+          <div class="sort-head">
+            <div>
+              <h3 style="margin: 0">Sort all seven cards</h3>
+              <p class="hint" style="margin: 4px 0 0">
+                Read what AI did, then tap the letter your group agrees on. Change it any time.
+              </p>
+            </div>
+            <div class="progress">
+              <span class="track"><span class="fill" id="sortFill"></span></span>
+              <span id="sortCount">0 of 7 placed</span>
+            </div>
+          </div>
+          <details>
+            <summary style="font-weight: 800; color: var(--navy); cursor: pointer">
+              Show the OSAMR scale
+            </summary>
+            <div class="key" id="sortKey"></div>
+          </details>
+        </div>
+
+        <div class="deck" id="deck"></div>
+
+        <div class="card" id="sortNext">
+          <h3>When all seven are placed</h3>
+          <p class="hint">
+            You do not have to agree with the group next to you. You do have to be able to say why.
+          </p>
+          <div class="action-row">
+            <button class="btn primary" type="button" data-go="defend" id="toDefend" disabled>
+              Next: the card we argued about →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= DEFEND ================= -->
+      <section class="page" id="defend" aria-label="The card you argued about">
+        <div class="card">
+          <h3>The card we argued about</h3>
+          <p class="hint">
+            Every group has one. Pick it, then say what the disagreement was in a single line.
+          </p>
+          <div class="field">
+            <label for="contested">Which card split your group?</label>
+            <select id="contested">
+              <option value="">Choose one</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="why">Why? One line.</label>
+            <input
+              type="text"
+              id="why"
+              maxlength="180"
+              placeholder="Half of us said it only clears the way, half said it does the thinking."
+            />
+            <p class="count" id="whyCount">0 / 180</p>
+          </div>
+          <div class="action-row">
+            <button class="btn" type="button" data-go="sort">← Back to the cards</button>
+            <button class="btn primary" type="button" data-go="waterfall">
+              Next: the waterfall →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= WATERFALL ================= -->
+      <section class="page" id="waterfall" aria-label="Post your takeaway">
+        <div class="card">
+          <h3>The waterfall</h3>
+          <p>
+            One line from every group, all at once. Type yours, post it, and watch the room's land
+            on the board together.
+          </p>
+          <div class="field">
+            <label for="takeaway"
+              >What is the one thing you will check before your next AI request?</label
+            >
+            <input
+              type="text"
+              id="takeaway"
+              maxlength="180"
+              placeholder="I will ask whether the support does the part I am actually grading."
+            />
+            <p class="count" id="takeawayCount">0 / 180</p>
+          </div>
+          <div class="action-row">
+            <button class="btn primary" type="button" id="postAll">
+              Post our group to the board
+            </button>
+            <button class="btn" type="button" data-go="board">Open the room board</button>
+          </div>
+          <p class="hint" id="postState" style="margin-top: 10px"></p>
+        </div>
+      </section>
+
+      <!-- ================= BOARD ================= -->
+      <section class="page" id="board" aria-label="Room board">
+        <div class="card">
+          <h3>Room board</h3>
+          <span class="board-status" id="boardStatus">● Checking the room board…</span>
+          <div class="view-row">
+            <button class="view-btn on" type="button" data-view="grid">Where we landed</button>
+            <button class="view-btn" type="button" data-view="drops">The waterfall</button>
+          </div>
+          <div id="boardBody"></div>
+          <div class="action-row">
+            <button class="btn" type="button" data-go="sort">← Back to our cards</button>
+            <button class="btn" type="button" id="replayDrops">Replay the waterfall</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      /* =============================================================================
+       * OSAMR Sort
+       * -----------------------------------------------------------------------------
+       * Seven groups, one deck, one shared board. Each group places every card on the
+       * OSAMR scale, names the card it argued about, and posts a closing line.
+       *
+       * There is deliberately no answer key. Several of these cards are genuinely
+       * arguable, and the disagreement between rooms is the content of the session —
+       * so the board's job is to make splits visible, not to score anyone.
+       *
+       * Every write goes to /api/osamr-board (debounced) and every device polls it.
+       * It fails SOFT: if the endpoint is unreachable the activity still works from
+       * localStorage and only the shared views go quiet. A PD session must never stop
+       * because a network call failed.
+       * ========================================================================== */
+
+      const LEVELS = [
+        { key: "S", label: "Substitute", blurb: "AI swaps in one support. The task is the same." },
+        { key: "A", label: "Augment", blurb: "AI adds help. The task gets clearer, not solved." },
+        {
+          key: "M",
+          label: "Modify",
+          blurb: "The task works differently. Students learn the same thing.",
+        },
+        {
+          key: "R",
+          label: "Redefine",
+          blurb: "Students can now do work they could not do before.",
+        },
+        {
+          key: "O",
+          label: "Overreliance",
+          blurb: "AI did the thinking. Nothing is left to figure out.",
+          warn: true,
+        },
+      ];
+
+      /* Card text is deliberately short and concrete: what the teacher asked for, and
+   what AI actually handed back. The AI move is the sentence groups argue over,
+   so it is marked in the data rather than left for the reader to find. */
+      const CARDS = [
+        {
+          id: 1,
+          title: "The picture direction card",
+          meta: "K–2 ELA · Story structure",
+          ask: "Make a three-panel direction card with icons and one-word labels: beginning, middle, end. Do not retell the story.",
+          did: "AI made the card. Students listen to the read-aloud, sequence the events themselves, and retell to a partner.",
+        },
+        {
+          id: 2,
+          title: "The getting-started steps",
+          meta: "Grade 4 Math · Multi-step problems",
+          ask: "Make a three-step entry scaffold: circle the numbers, underline the question, sketch it. Do not name the operation or solve.",
+          did: "AI made the steps and a sentence frame. Students still choose the operation, set the problem up, solve it, and explain.",
+        },
+        {
+          id: 3,
+          title: "The model paragraph",
+          meta: "Grade 5 ELA · Citing evidence",
+          ask: "Write a mentor paragraph about the character's motivation with a claim, evidence, and reasoning.",
+          did: "AI wrote a complete paragraph for each student. Most students kept the structure and swapped a few words.",
+        },
+        {
+          id: 4,
+          title: "The three reading versions",
+          meta: "Grade 7 Science · Force and motion",
+          ask: "Make three access versions of the text at different language levels. Keep the same three analysis questions for everyone.",
+          did: "AI wrote the three versions. Every student answers the same analysis questions from the same lesson.",
+        },
+        {
+          id: 5,
+          title: "The answer checker",
+          meta: "Grade 6 Math · Proportional relationships",
+          ask: "Check each student's work. Give the correct answer, the constant ratio, the unit rate, and whether they are right.",
+          did: "AI told students the answer and the ratio during practice. Students used it to mark their own work right or wrong.",
+        },
+        {
+          id: 6,
+          title: "The three key findings",
+          meta: "Grades 9–12 Science · CER writing",
+          ask: "Summarize this air-quality dataset into three key findings students can use as evidence.",
+          did: "AI picked the three findings. Students wrote their own claim and reasoning, but never opened the full dataset.",
+        },
+        {
+          id: 7,
+          title: "The footnotes and the blank organizer",
+          meta: "Grade 10 History · Primary source",
+          ask: "Add plain-language footnotes for hard phrases, background questions, and a blank SOAPS organizer. Do not analyze the source.",
+          did: "AI added the footnotes and the empty organizer. Students still read the original and analyze bias and perspective.",
+        },
+      ];
+
+      const GROUP_IDS = [1, 2, 3, 4, 5, 6, 7];
+      const STORE = "osamr_sort_v1";
+      const BOARD_API = "/api/osamr-board";
+
+      const $ = (sel, root = document) => root.querySelector(sel);
+      const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+      let state = {};
       try {
-        const res = await fetch(BOARD_API, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ group: Number(g), fields }),
+        state = JSON.parse(localStorage.getItem(STORE) || "{}");
+      } catch {
+        state = {};
+      }
+
+      function save() {
+        try {
+          localStorage.setItem(STORE, JSON.stringify(state));
+        } catch {
+          /* private window: keep going */
+        }
+      }
+
+      const myGroup = () => state.group || null;
+      const placement = (cardId) => state["card" + cardId] || "";
+      const placedCount = () => CARDS.filter((c) => placement(c.id)).length;
+
+      function escapeHtml(v) {
+        return String(v)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      /* ---- pages ------------------------------------------------------------- */
+      function openPage(id) {
+        const target = document.getElementById(id) ? id : "start";
+        $$(".page").forEach((p) => p.classList.toggle("active", p.id === target));
+        if (location.hash !== "#" + target) history.replaceState(null, "", "#" + target);
+        if (target === "board") {
+          renderBoard();
+          pollBoard();
+        }
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }
+
+      /* ---- static bits ------------------------------------------------------- */
+      function keyHtml() {
+        return LEVELS.map(
+          (l) =>
+            `<div class="${l.warn ? "warn" : ""}"><strong>${l.key}</strong><span><b>${l.label}.</b> ${l.blurb}</span></div>`,
+        ).join("");
+      }
+
+      function buildStart() {
+        $("#startKey").innerHTML = keyHtml();
+        $("#sortKey").innerHTML = keyHtml();
+        $("#groupGrid").innerHTML = GROUP_IDS.map(
+          (g) => `<button type="button" class="group-btn" data-group="${g}">Group ${g}</button>`,
+        ).join("");
+        $("#contested").innerHTML =
+          '<option value="">Choose one</option>' +
+          CARDS.map(
+            (c) => `<option value="${c.id}">Card ${c.id} — ${escapeHtml(c.title)}</option>`,
+          ).join("");
+        syncGroup();
+      }
+
+      function syncGroup() {
+        const g = myGroup();
+        $$(".group-btn").forEach((b) => b.classList.toggle("on", Number(b.dataset.group) === g));
+        $("#startSort").disabled = !g;
+        const chip = $("#whoChip");
+        chip.hidden = !g;
+        chip.textContent = g ? `You are Group ${g}` : "";
+      }
+
+      /* ---- the deck ---------------------------------------------------------- */
+      function buildDeck() {
+        $("#deck").innerHTML = CARDS.map(
+          (c) => `
+      <article class="deck-card" data-card="${c.id}">
+        <p class="dc-num">Card ${c.id} of ${CARDS.length}</p>
+        <h4>${escapeHtml(c.title)}</h4>
+        <p class="dc-meta">${escapeHtml(c.meta)}</p>
+        <p class="dc-ask"><strong>The teacher asked AI:</strong> “${escapeHtml(c.ask)}”</p>
+        <p class="dc-body"><span class="ai-move">${escapeHtml(c.did)}</span></p>
+        <div class="levels" role="group" aria-label="Place card ${c.id}">
+          ${LEVELS.map(
+            (l) =>
+              `<button type="button" class="lvl ${l.warn ? "warn" : ""}" data-place="${c.id}" data-level="${l.key}" aria-pressed="false"><b>${l.key}</b>${l.label}</button>`,
+          ).join("")}
+        </div>
+      </article>`,
+        ).join("");
+        syncDeck();
+      }
+
+      function syncDeck() {
+        CARDS.forEach((c) => {
+          const chosen = placement(c.id);
+          const card = $(`.deck-card[data-card="${c.id}"]`);
+          if (card) card.classList.toggle("placed", Boolean(chosen));
+          $$(`[data-place="${c.id}"]`).forEach((btn) => {
+            const on = btn.dataset.level === chosen;
+            btn.classList.toggle("on", on);
+            btn.setAttribute("aria-pressed", String(on));
+          });
         });
-        const data = await res.json().catch(() => null);
-        setBoardStatus(data?.ok === true);
-      } catch { setBoardStatus(false); }
-    }
+        const done = placedCount();
+        $("#sortCount").textContent =
+          done === CARDS.length
+            ? `All ${CARDS.length} placed`
+            : `${done} of ${CARDS.length} placed`;
+        $("#sortFill").style.width = Math.round((done / CARDS.length) * 100) + "%";
+        $("#toDefend").disabled = done < CARDS.length;
+      }
 
-    const publishTimers = {};
-    function schedulePublish(g) {
-      clearTimeout(publishTimers[g]);
-      publishTimers[g] = setTimeout(() => publishGroup(g), 900);
-    }
+      /* ---- the shared board -------------------------------------------------- */
+      let board = {};
+      let boardOk = null;
+      let boardView = "grid";
 
-    async function pollBoard() {
-      try {
-        const res = await fetch(BOARD_API, { headers: { accept: "application/json" } });
-        const data = await res.json();
-        if (data?.ok && data.groups) {
-          board = data.groups;
-          setBoardStatus(true);
-          renderGallery();
-        } else {
+      function fieldsForMe() {
+        const out = {};
+        CARDS.forEach((c) => {
+          const v = placement(c.id);
+          if (v) out["card" + c.id] = v;
+        });
+        ["contested", "why", "takeaway"].forEach((f) => {
+          if (state[f]) out[f] = state[f];
+        });
+        return out;
+      }
+
+      async function publish() {
+        const g = myGroup();
+        if (!g) return;
+        try {
+          const res = await fetch(BOARD_API, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ group: Number(g), fields: fieldsForMe() }),
+          });
+          const data = await res.json().catch(() => null);
+          setBoardStatus(data?.ok === true);
+          return data?.ok === true;
+        } catch {
+          setBoardStatus(false);
+          return false;
+        }
+      }
+
+      let publishTimer = null;
+      function schedulePublish() {
+        clearTimeout(publishTimer);
+        publishTimer = setTimeout(publish, 800);
+      }
+
+      async function pollBoard() {
+        try {
+          const res = await fetch(BOARD_API, { headers: { accept: "application/json" } });
+          const data = await res.json();
+          if (data?.ok && data.groups) {
+            board = data.groups;
+            setBoardStatus(true);
+            if ($("#board").classList.contains("active")) renderBoard();
+          } else {
+            setBoardStatus(false);
+          }
+        } catch {
           setBoardStatus(false);
         }
-      } catch { setBoardStatus(false); }
-    }
-
-    function setBoardStatus(ok) {
-      if (boardOk === ok) return;
-      boardOk = ok;
-      const el = $("#boardStatus");
-      if (!el) return;
-      el.textContent = ok
-        ? "● Shared board connected — every group's ruling appears here"
-        : "● Shared board offline — showing this device's work only";
-      el.className = ok ? "board-status on" : "board-status off";
-    }
-
-    /* Build a ruling from an arbitrary field bag, so the gallery can render a
-       group's work whether it came from this device or from the board. */
-    function postFromFields(c, fields) {
-      const v = (f, fallback) => (fields[f] || "").trim() || fallback;
-      return `Group ${c.id} — ${c.short} (${c.band})
-
-CASE
-${c.story}
-
-TEACHER AI INPUT
-"${c.ai_input}"
-
-RULING
-OSAMR level: ${v("osamr", "[level]")}
-
-1. Barrier removed: ${c.barrier_clue}
-2. Thinking preserved: ${c.thinking_clue}
-3. Evidence: ${v("evidence", "[proof detail]")}
-4. Fix-it move: ${v("fix", "[safer fix]")}
-
-60-SECOND DEFENSE
-We rated this ${v("osamr", "___")}.
-Barrier AI removed: ${c.barrier_clue}
-Students still: ${c.thinking_clue}
-Our evidence: ${v("evidence", "___")}
-Our fix: ${v("fix", "___")}`;
-    }
-
-    /* A ruling is reduced to a letter for the compare views. Unset stays
-       visually distinct rather than being guessed at. */
-    const LEVELS = [
-      { key: "S", match: "S —", label: "Substitute" },
-      { key: "A", match: "A —", label: "Augment" },
-      { key: "M", match: "M —", label: "Modify" },
-      { key: "R", match: "R —", label: "Redefine" },
-      { key: "O", match: "Overreliance", label: "Overreliance", warn: true },
-    ];
-    function levelOf(osamr) {
-      const v = (osamr || "").trim();
-      if (!v) return null;
-      return LEVELS.find((l) => v.startsWith(l.match)) || null;
-    }
-    const levelClass = (lvl) => (!lvl ? "lvl-none" : lvl.warn ? "lvl-o" : "lvl-" + lvl.key.toLowerCase());
-
-    function boardRows() {
-      return CASES.map((c) => {
-        const fields = fieldsFor(c.id);
-        const filled = FIELDS.filter((f) => (fields[f] || "").trim()).length;
-        return { c, fields, filled, lvl: levelOf(fields.osamr), posted: filled > 0 };
-      });
-    }
-
-    /* Seven ratings on one line — the compare view the board exists for. */
-    function renderRatings(rows) {
-      const row = $("#ratingsRow");
-      const count = $("#postedCount");
-      if (!row) return;
-      row.innerHTML = rows
-        .map(({ c, lvl, posted }) => `
-        <div class="rating-tile ${levelClass(lvl)}">
-          <div class="g">Group ${c.id}</div>
-          <div class="letter">${lvl ? escapeHtml(lvl.key) : "·"}</div>
-          <div class="name">${escapeHtml(lvl ? lvl.label : posted ? "In progress" : "Not started")}</div>
-        </div>`)
-        .join("");
-      if (count) {
-        const ruled = rows.filter((r) => r.lvl).length;
-        count.textContent = ruled === 0
-          ? "No rulings posted yet"
-          : `${ruled} of ${rows.length} groups have posted a ruling`;
-      }
-    }
-
-    /* Only the four things the protocol asks a group to share. The case story
-       and the teacher AI input are deliberately NOT repeated here — every
-       participant already read them in the case room, and repeating them is
-       what buried the actual rulings. The full text stays one click away. */
-    function galleryCard({ c, fields, lvl, posted }) {
-      const row = (label, field, cls = "") =>
-        (fields[field] || "").trim()
-          ? `<div class="gi-row ${cls}"><dt>${label}</dt><dd>${escapeHtml(fields[field].trim())}</dd></div>`
-          : "";
-      const body = posted
-        ? `<dl class="gi-rows">
-             ${row("Evidence", "evidence")}
-             ${row("Fix-it", "fix")}
-           </dl>`
-        : `<p class="gi-waiting">Waiting for this group…</p>`;
-      return `
-        <article class="gallery-item">
-          <div class="gi-head">
-            <h3>Group ${c.id} — ${escapeHtml(c.short)}<small>${escapeHtml(c.band)}</small></h3>
-            <span class="gi-level ${levelClass(lvl)}"><b>${lvl ? escapeHtml(lvl.key) : "·"}</b>${escapeHtml(lvl ? lvl.label : "No ruling yet")}</span>
-          </div>
-          ${body}
-          ${posted ? `<details class="gi-full"><summary>Full ruling</summary><pre>${escapeHtml(postFromFields(c, fields))}</pre></details>` : ""}
-          <div class="action-row">
-            <button class="btn secondary" type="button" data-open-page="group-${c.id}">Open Group ${c.id}</button>
-            ${posted ? `<button class="btn primary" type="button" data-copy-post="${c.id}">Copy ruling</button>` : ""}
-          </div>
-        </article>`;
-    }
-
-    let boardView = "group";
-
-    function renderGallery() {
-      const rows = boardRows();
-      renderRatings(rows);
-      if (presentOpen) renderPresent();
-
-      const list = $("#galleryList");
-      if (!list) return;
-
-      if (boardView === "ruling") {
-        /* Clustering by letter is what makes disagreement visible — two groups
-           on different letters is the most useful conversation in the room. */
-        const buckets = [...LEVELS.map((l) => ({ lvl: l, rows: [] })), { lvl: null, rows: [] }];
-        for (const r of rows) {
-          const b = buckets.find((x) => (x.lvl?.key || null) === (r.lvl?.key || null));
-          (b || buckets[buckets.length - 1]).rows.push(r);
-        }
-        list.innerHTML = buckets
-          .filter((b) => b.rows.length)
-          .map((b) => `
-            <h3 class="ruling-group-head ${levelClass(b.lvl)}">
-              <span class="letter">${b.lvl ? escapeHtml(b.lvl.key) : "·"}</span>
-              ${escapeHtml(b.lvl ? b.lvl.label : "No ruling yet")}
-              <small>${b.rows.length} group${b.rows.length === 1 ? "" : "s"}</small>
-            </h3>
-            ${b.rows.map(galleryCard).join("")}`)
-          .join("");
-      } else {
-        list.innerHTML = rows.map(galleryCard).join("");
-      }
-    }
-
-    /* ---- Present mode ----------------------------------------------------
-       A projector needs large type and no page chrome. Page 0 is the overview
-       (all seven ratings); pages 1..7 are one group each, big enough to read
-       from the back of a room. Arrow keys and the on-screen arrows move; Esc
-       closes. It re-renders on every poll, so the projected board stays live.
-       ------------------------------------------------------------------- */
-    let presentOpen = false;
-    let presentIndex = 0;
-
-    function renderPresent() {
-      const body = $("#presentBody");
-      if (!body) return;
-      const rows = boardRows();
-      const title = $("#presentTitle");
-      const pager = $("#presentPage");
-
-      if (presentIndex === 0) {
-        if (title) title.textContent = "Where the room landed";
-        if (pager) pager.textContent = "Overview";
-        body.innerHTML = `<div class="present-grid">${rows
-          .map(({ c, lvl, posted }) => `
-            <div class="present-tile ${levelClass(lvl)}">
-              <div class="g">Group ${c.id}</div>
-              <h4>${escapeHtml(c.short)}</h4>
-              <div class="letter">${lvl ? escapeHtml(lvl.key) : "·"}</div>
-              <p style="margin:10px 0 0;font-weight:800">${escapeHtml(lvl ? lvl.label : posted ? "In progress" : "Not started")}</p>
-            </div>`)
-          .join("")}</div>`;
-        return;
       }
 
-      const { c, fields, lvl, posted } = rows[presentIndex - 1];
-      if (title) title.textContent = `Group ${c.id} — ${c.short}`;
-      if (pager) pager.textContent = `Group ${c.id} of ${rows.length}`;
-      if (!posted) {
-        body.innerHTML = `<p class="present-empty">This group has not posted a ruling yet.</p>`;
-        return;
-      }
-      const row = (label, field, cls = "") =>
-        (fields[field] || "").trim()
-          ? `<div class="pd-row ${cls}"><dt>${label}</dt><dd>${escapeHtml(fields[field].trim())}</dd></div>`
-          : "";
-      body.innerHTML = `<dl class="present-detail">
-          <div class="pd-row"><dt>Ruling</dt><dd><strong>${escapeHtml(lvl ? lvl.label : fields.osamr || "—")}</strong></dd></div>
-          <div class="pd-row"><dt>Barrier</dt><dd>${escapeHtml(c.barrier_clue)}</dd></div>
-          <div class="pd-row"><dt>Thinking</dt><dd>${escapeHtml(c.thinking_clue)}</dd></div>
-          ${row("Evidence", "evidence")}
-          ${row("Fix-it", "fix")}
-        </dl>`;
-    }
-
-    function openPresent() {
-      presentOpen = true;
-      presentIndex = 0;
-      const overlay = $("#presentOverlay");
-      if (overlay) overlay.hidden = false;
-      document.body.classList.add("presenting");
-      document.body.style.overflow = "hidden";
-      renderPresent();
-      pollBoard();
-    }
-    function closePresent() {
-      presentOpen = false;
-      const overlay = $("#presentOverlay");
-      if (overlay) overlay.hidden = true;
-      document.body.classList.remove("presenting");
-      document.body.style.overflow = "";
-    }
-    function movePresent(step) {
-      presentIndex = (presentIndex + step + (CASES.length + 1)) % (CASES.length + 1);
-      renderPresent();
-    }
-
-    function downloadResponses() {
-      const content = CASES.map((c) => postFor(c.id)).join("\n\n" + "=".repeat(60) + "\n\n");
-      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "osamr-case-clinic-rulings.txt";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    document.addEventListener("click", async (e) => {
-      const token = e.target.closest("[data-token]");
-      if (token) {
-        const g = token.dataset.token;
-        const next = getValue(g, "osamr") === token.dataset.value ? "" : token.dataset.value;
-        const select = $("#g" + g + "-osamr");
-        if (select) select.value = next;
-        setValue(g, "osamr", next);
-        return;
+      function setBoardStatus(ok) {
+        if (boardOk === ok) return;
+        boardOk = ok;
+        const el = $("#boardStatus");
+        if (!el) return;
+        el.textContent = ok
+          ? "● Room board connected — every group appears here"
+          : "● Room board offline — showing this device only";
+        el.className = ok ? "board-status on" : "board-status off";
       }
 
-      const pageLink = e.target.closest("[data-open-page], .tab-btn[data-page]");
-      if (pageLink) {
-        e.preventDefault();
-        openPage(pageLink.dataset.openPage || pageLink.dataset.page);
-        return;
-      }
-
-
-      const postBtn = e.target.closest("[data-copy-post]");
-      if (postBtn) {
-        const ok = await copyText(postFor(postBtn.dataset.copyPost));
-        showToast(ok ? "Case ruling copied" : "Ruling ready to copy");
-      }
-    });
-
-    window.addEventListener("hashchange", () => openPage(location.hash.replace("#", ""), false));
-
-    $("#downloadResponses")?.addEventListener("click", downloadResponses);
-
-    // View toggle: by group (1-7 in order) or clustered by ruling.
-    for (const btn of $$(".view-btn")) {
-      btn.addEventListener("click", () => {
-        boardView = btn.dataset.view;
-        for (const b of $$(".view-btn")) b.classList.toggle("active", b === btn);
-        const hint = $("#viewHint");
-        if (hint) {
-          hint.textContent = boardView === "ruling"
-            ? "Grouped by the letter each room chose"
-            : "Groups 1-7 in order";
-        }
-        renderGallery();
-      });
-    }
-
-    $("#presentBoard")?.addEventListener("click", openPresent);
-    $("#presentClose")?.addEventListener("click", closePresent);
-    $("#presentPrev")?.addEventListener("click", () => movePresent(-1));
-    $("#presentNext")?.addEventListener("click", () => movePresent(1));
-    document.addEventListener("keydown", (e) => {
-      if (!presentOpen) return;
-      if (e.key === "Escape") closePresent();
-      else if (e.key === "ArrowRight" || e.key === "PageDown") movePresent(1);
-      else if (e.key === "ArrowLeft" || e.key === "PageUp") movePresent(-1);
-    });
-    $("#printBoard")?.addEventListener("click", () => window.print());
-
-    // Every sticky offset and anchor scroll-margin derives from the REAL header
-    // box. Hardcoded offsets were what pinned the case brief under the header
-    // at any width where the header re-wrapped.
-    const header = $(".top");
-    function measureHeader() {
-      if (!header) return;
-      document.documentElement.style.setProperty("--top-h", Math.round(header.getBoundingClientRect().height) + "px");
-    }
-    /* A sidebar is sticky ONLY if it fits beside the form. Capping its height
-       and adding overflow-y:auto would make it a second scroller, and the
-       browser latches the wheel to whichever scroller is under the cursor —
-       scroll speed would depend on mouse position. A card that does not fit
-       scrolls away with the page instead. */
-    function measureBrief() {
-      const topH = parseInt(
-        getComputedStyle(document.documentElement).getPropertyValue("--top-h") || "0", 10);
-      const available = window.innerHeight - topH - 34;
-      for (const card of $$(".scenario-card, .side-note")) {
-        // Measure with the class OFF, so the test cannot read back a height
-        // the class itself produced.
-        card.classList.remove("fits");
-        card.classList.toggle("fits", card.getBoundingClientRect().height <= available);
-      }
-    }
-    window.addEventListener("resize", measureBrief);
-    window.addEventListener("load", measureBrief);
-    document.fonts?.ready.then(measureBrief);
-    setTimeout(measureBrief, 1300);
-    measureBrief();
-
-    if (header && "ResizeObserver" in window) {
-      // border-box, NOT the default content-box: site-wide toolbars add their
-      // clearance to .top as PADDING, and a padding-only change never alters
-      // contentRect, so a default observer misses it and --top-h stays short.
-      new ResizeObserver(measureHeader).observe(header, { box: "border-box" });
-    }
-    window.addEventListener("resize", measureHeader);
-    // Injected toolbars mount after this script; re-measure once settled.
-    window.addEventListener("load", measureHeader);
-    document.fonts?.ready.then(measureHeader);
-    setTimeout(measureHeader, 1200);
-    measureHeader();
-
-    // Print expands every field to its content: otherwise a long answer prints
-    // clipped to the box with a scrollbar stub.
-    window.addEventListener("beforeprint", () => {
-      $$("textarea").forEach((t) => {
-        t.dataset.h = t.style.height;
-        t.style.height = "auto";
-        t.style.height = t.scrollHeight + "px";
-      });
-    });
-    window.addEventListener("afterprint", () => {
-      $$("textarea").forEach((t) => { t.style.height = t.dataset.h || ""; });
-    });
-
-    /* ---------------------------------------------------------------
-       Guided wizard: one step on screen at a time.
-
-       A case room holds the brief, the OSAMR key, the ruling tokens and
-       two write-ups. All of it at once is what made the room feel like
-       homework. Nothing is removed here — the same nodes are re-parented
-       into four panes with Back/Next, so a group only ever sees the one
-       thing they are doing right now.
-
-       Built from the existing DOM, so each case stays authored once and
-       the no-JS page still shows everything in order.
-    --------------------------------------------------------------- */
-    const WIZ_STEPS = [
-      {
-        title: "Read the case",
-        todo: "Read what happened and what the teacher asked AI to do. Nothing to type here.",
-        next: "We read it — go to step 2 →",
-      },
-      {
-        title: "Choose the OSAMR level",
-        todo: "As a group, tap the OSAMR level that matches what AI actually did — Substitute, Augment, Modify, Redefine, or Overreliance.",
-        next: "Level chosen — go to step 3 →",
-      },
-      {
-        title: "Say why",
-        todo: "Two quick answers. Tap one of the choices under each question, or write your own.",
-        next: "Done — go to step 4 →",
-      },
-      {
-        title: "Post it",
-        todo: "Everything is written up below. Tap “Copy our decision”, then put it on the board.",
-        next: "",
-      },
-    ];
-
-
-    /* ---------------------------------------------------------------
-       Tap-to-build. Step 3 asks for two sentences, which is the slowest
-       thing in a 15-minute clinic. These write a true sentence for THIS
-       case in one tap; the group edits it if they want to say it better.
-       The textareas stay the source of truth, so typing still works.
-    --------------------------------------------------------------- */
-    /* Plain sentences a group can tap and mean. Earlier versions spliced the
-       learning target into the sentence, which lower-cased "Newton's Second
-       Law" and printed a double period; the target is already stated in the
-       case brief two taps away, so it does not need repeating here. */
-    function evidencePicks() {
-      return [
-        "AI cleared what was in the way. Students still do the real work.",
-        "AI changed how students get into the task, not what they have to figure out.",
-        "AI did the real work for them. There was nothing left to figure out.",
-      ];
-    }
-
-    function fixPicks() {
-      return [
-        "Blank out the part AI filled in and let students complete it.",
-        "Keep the access support, but remove any example that shows the answer.",
-        "Add a check that makes students explain their reasoning in their own words.",
-      ];
-    }
-
-    function buildPickRows() {
-      [...CASES, MODEL_CASE].forEach((c) => {
-        [
-          ["evidence", evidencePicks()],
-          ["fix", fixPicks()],
-        ].forEach(([field, options]) => {
-          const box = $(`#g${c.id}-${field}`);
-          if (!box || box.readOnly || box.previousElementSibling?.classList.contains("pick-row")) return;
-          const row = document.createElement("div");
-          row.className = "pick-row";
-          row.innerHTML = `
-            <p class="chip-picker-title">Tap one, or write your own below</p>
-            ${options
-              .map(
-                (text) =>
-                  `<button type="button" class="pick-line" data-pick="${c.id}" data-field="${field}" data-text="${text.replaceAll('"', "&quot;")}">${text}</button>`,
-              )
-              .join("")}`;
-          box.parentNode.insertBefore(row, box);
+      /* This device's own work always wins over the poll, so a group never watches
+   its own answers flicker against an in-flight read. */
+      function rowsForBoard() {
+        const rows = {};
+        GROUP_IDS.forEach((g) => {
+          rows[g] = board[String(g)]?.fields || {};
         });
-      });
-    }
-
-    document.addEventListener("click", (event) => {
-      const pick = event.target.closest("[data-pick]");
-      if (!pick) return;
-      const { pick: group, field, text } = pick.dataset;
-      const box = $(`#g${group}-${field}`);
-      if (!box) return;
-      box.value = text;
-      setValue(group, field, text);
-      updateGroup(group);
-      if (typeof refreshProgress === "function") refreshProgress(group);
-    });
-
-    function buildWizards() {
-      $$(".group-page").forEach((page) => {
-        if ($(".wiz", page)) return;
-        const grid = $(".workspace-grid", page);
-        const items = $$(".steps > li", page);
-        const post = $(".post-card", page);
-        if (!grid || items.length !== 3 || !post) return;
-        const id = page.id.replace("group-", "");
-
-        const wiz = document.createElement("div");
-        wiz.className = "wiz";
-        wiz.dataset.group = id;
-        wiz.innerHTML = `
-          <ol class="wiz-dots" aria-label="Steps">
-            ${WIZ_STEPS.map(
-              (step, i) =>
-                `<li><button type="button" class="wiz-dot" data-wiz-go="${i}" data-group="${id}"><span>${i + 1}</span>${step.title}</button></li>`,
-            ).join("")}
-          </ol>
-          <div class="wiz-panes"></div>`;
-        grid.parentNode.insertBefore(wiz, grid);
-
-        /* The teacher's AI request is the evidence every step argues about, so
-           it is lifted out of the case brief and pinned above the panes —
-           visible on all four steps instead of only the first. Moving it (not
-           copying it) keeps one copy on the page. */
-        /* In the case story the AI move is one sentence buried among four.
-           Bold it: it is the thing the whole ruling turns on. Matches only a
-           standalone "AI" so "explAIn"-style substrings cannot trigger. */
-        const story = $(".scenario-card p", page);
-        if (story && !$("strong", story)) {
-          story.innerHTML = story.textContent
-            .split(/(?<=[.?!])\s+/)
-            .map((sentence) =>
-              /\bAI\b/.test(sentence) ? `<strong class="ai-move">${sentence}</strong>` : sentence,
-            )
-            .join(" ");
+        const me = myGroup();
+        if (me) {
+          const mine = fieldsForMe();
+          if (Object.keys(mine).length) rows[me] = { ...rows[me], ...mine };
         }
+        return rows;
+      }
 
-        const aiCard = $(".ai-input-card", page);
-        if (aiCard) {
-          const strip = document.createElement("details");
-          strip.className = "case-strip";
-          strip.open = true;
-          strip.innerHTML = '<summary>What the teacher asked AI to do</summary>';
-          const body = document.createElement("div");
-          body.className = "case-strip-body";
-          const quote = $(".quote", aiCard);
-          const raw = (quote ? quote.textContent : "").trim().replace(/^[“"]|[”"]$/g, "");
-          /* Split on sentence ends and on the colon-led lists these prompts
-             use, then drop the empties a trailing period leaves behind. */
-          const parts = raw
-            .split(/(?<=[.?!])\s+/)
-            .map((part) => part.trim())
-            .filter(Boolean);
-          body.innerHTML =
-            parts.length > 1
-              ? `<ul class="case-strip-list">${parts.map((part) => `<li>${escapeHtml(part)}</li>`).join("")}</ul>`
-              : `<p class="quote">${escapeHtml(raw)}</p>`;
-          strip.appendChild(body);
-          aiCard.remove();
-          wiz.insertBefore(strip, $(".wiz-panes", wiz));
-        }
+      function renderBoard() {
+        const body = $("#boardBody");
+        const rows = rowsForBoard();
+        const active = GROUP_IDS.filter((g) => Object.keys(rows[g]).length);
 
-        const panes = $(".wiz-panes", wiz);
-
-        const makePane = (index, nodes, reference = null) => {
-          const step = WIZ_STEPS[index];
-          const pane = document.createElement("section");
-          pane.className = "wiz-pane";
-          pane.dataset.pane = index;
-          pane.setAttribute("aria-label", `Step ${index + 1}: ${step.title}`);
-          pane.tabIndex = -1;
-          const head = document.createElement("div");
-          head.className = "wiz-head";
-          head.innerHTML = `
-            <p class="wiz-of">Step ${index + 1} of ${WIZ_STEPS.length}</p>
-            <h3 class="wiz-title">${step.title}</h3>
-            <p class="wiz-todo">${step.todo}</p>`;
-          pane.appendChild(head);
-          if (reference) {
-            const split = document.createElement("div");
-            split.className = "wiz-split";
-            const main = document.createElement("div");
-            nodes.forEach((node) => node && main.appendChild(node));
-            split.appendChild(main);
-            split.appendChild(reference);
-            pane.appendChild(split);
-          } else {
-            nodes.forEach((node) => node && pane.appendChild(node));
-          }
-          const nav = document.createElement("div");
-          nav.className = "wiz-nav";
-          nav.innerHTML = `
-            ${index > 0 ? `<button type="button" class="btn secondary" data-wiz-back="${index}" data-group="${id}">← Back to step ${index}</button>` : "<span></span>"}
-            ${step.next ? `<button type="button" class="btn primary" data-wiz-next="${index}" data-group="${id}">${step.next}</button>` : `<a class="btn secondary" href="#menu" data-open-page="menu">Back to case rooms</a>`}`;
-          pane.appendChild(nav);
-          panes.appendChild(pane);
-        };
-
-        /* Each work step carries its own number, title and hint — all three
-           now duplicate the pane header, so they come off. One instruction
-           per screen is the whole point. */
-        const QUESTIONS = [
-          null, // the ruling step's title is the pane title
-          "Why did you choose that level?",
-          "What one change would make this better?",
-        ];
-        items.forEach((li, i) => {
-          const head = $(".step-head", li);
-          const hint = $(".hint", li);
-          if (hint) hint.remove();
-          if (!QUESTIONS[i]) {
-            if (head) head.remove();
+        if (boardView === "grid") {
+          if (!active.length) {
+            body.innerHTML =
+              '<p class="empty">No group has posted yet. Sorted cards appear here as they land.</p>';
             return;
           }
-          /* Two bare textareas under one instruction read as "type twice and
-             hope" — each question gets its own plain heading. */
-          if (head) {
-            const badge = $("span", head);
-            if (badge) badge.remove();
-            const h = $("h3", head);
-            if (h) h.textContent = QUESTIONS[i];
-            head.classList.add("wiz-question");
-          }
+          const header = active.map((g) => `<th>G${g}</th>`).join("");
+          const lines = CARDS.map((c) => {
+            const picks = active.map((g) => rows[g]["card" + c.id] || "");
+            const seen = new Set(picks.filter(Boolean));
+            const split = seen.size > 1;
+            const cells = picks
+              .map(
+                (p) =>
+                  `<td class="${split ? "split" : ""}"><span class="cell-lvl ${p === "O" ? "o" : ""}">${p || "·"}</span></td>`,
+              )
+              .join("");
+            return `<tr><td class="case">Card ${c.id} — ${escapeHtml(c.title)}${
+              split ? '<span class="split-tag">split</span>' : ""
+            }</td>${cells}</tr>`;
+          }).join("");
+          const splits = CARDS.filter((c) => {
+            const seen = new Set(active.map((g) => rows[g]["card" + c.id]).filter(Boolean));
+            return seen.size > 1;
+          });
+          const argued = active
+            .filter((g) => rows[g].contested && rows[g].why)
+            .map((g) => {
+              const card = CARDS.find((c) => String(c.id) === String(rows[g].contested));
+              return `<li><strong>Group ${g}</strong> argued about <strong>${escapeHtml(card ? card.title : "a card")}</strong> — ${escapeHtml(rows[g].why)}</li>`;
+            })
+            .join("");
+          body.innerHTML = `
+      <div class="grid-scroll"><table class="board">
+        <thead><tr><th class="case">Card</th>${header}</tr></thead>
+        <tbody>${lines}</tbody>
+      </table></div>
+      <p style="margin-top:14px">${
+        splits.length
+          ? `<strong>The room split on ${splits.length} card${splits.length === 1 ? "" : "s"}:</strong> ${splits
+              .map((c) => escapeHtml(c.title))
+              .join(", ")}. Those are the ones worth the conversation.`
+          : "<strong>Every group agrees so far.</strong> Wait for the rest, or push on the card that felt closest."
+      }</p>
+      ${argued ? `<ul style="margin-top:10px;line-height:1.55">${argued}</ul>` : ""}`;
+          return;
+        }
+
+        const drops = active.filter((g) => rows[g].takeaway);
+        if (!drops.length) {
+          body.innerHTML =
+            '<p class="empty">No takeaways yet. They drop in together as groups post.</p>';
+          return;
+        }
+        body.innerHTML = `<div class="waterfall">${drops
+          .map(
+            (g, i) =>
+              `<article class="drop" style="animation-delay:${i * 140}ms"><p class="g">Group ${g}</p><p>${escapeHtml(rows[g].takeaway)}</p></article>`,
+          )
+          .join("")}</div>`;
+      }
+
+      /* ---- wiring ------------------------------------------------------------ */
+      document.addEventListener("click", (event) => {
+        const groupBtn = event.target.closest("[data-group]");
+        if (groupBtn) {
+          state.group = Number(groupBtn.dataset.group);
+          save();
+          syncGroup();
+          return;
+        }
+
+        const place = event.target.closest("[data-place]");
+        if (place) {
+          const cardId = place.dataset.place;
+          // Tapping the chosen letter again clears it, so a group can undo without
+          // guessing which button un-picks.
+          state["card" + cardId] =
+            placement(cardId) === place.dataset.level ? "" : place.dataset.level;
+          save();
+          syncDeck();
+          schedulePublish();
+          return;
+        }
+
+        const go = event.target.closest("[data-go]");
+        if (go) {
+          openPage(go.dataset.go);
+          return;
+        }
+
+        const view = event.target.closest("[data-view]");
+        if (view) {
+          boardView = view.dataset.view;
+          $$(".view-btn").forEach((b) => b.classList.toggle("on", b === view));
+          renderBoard();
+          return;
+        }
+
+        if (event.target.closest("#replayDrops")) {
+          boardView = "drops";
+          $$(".view-btn").forEach((b) => b.classList.toggle("on", b.dataset.view === "drops"));
+          renderBoard();
+        }
+      });
+
+      $("#startSort").addEventListener("click", () => openPage("sort"));
+
+      function bindText(id, field, counterId) {
+        const el = $("#" + id);
+        const counter = $("#" + counterId);
+        el.value = state[field] || "";
+        const sync = () => {
+          counter.textContent = `${el.value.length} / ${el.maxLength}`;
+        };
+        sync();
+        el.addEventListener("input", () => {
+          state[field] = el.value;
+          save();
+          sync();
+          schedulePublish();
         });
+      }
 
-        /* The OSAMR key is only used to answer step 2, so it travels there
-           rather than padding out the reading step. */
-        const key = $(".osamr-strip", page);
-
-        /* Choosing a level means arguing about what AI actually did, so the
-           request sits beside the tokens rather than above the fold. The
-           pinned strip hides on this step so the same text is not on screen
-           twice. */
-        const askAside = document.createElement("aside");
-        askAside.className = "wiz-ref";
-        askAside.innerHTML = `
-          <p class="wiz-ref-title">What the teacher asked AI to do</p>
-          ${$(".case-strip-body", wiz)?.innerHTML || ""}`;
-
-        makePane(0, [$(".scenario-card", page)]);
-        makePane(1, [items[0], key], askAside);
-        makePane(2, [items[1], items[2]]);
-        makePane(3, [post]);
-
-        grid.remove();
-        page.classList.add("wiz-on");
-        showWizPane(id, 0);
+      $("#contested").addEventListener("change", (event) => {
+        state.contested = event.target.value;
+        save();
+        schedulePublish();
       });
-    }
 
-    function showWizPane(groupId, index) {
-      const wiz = $(`.wiz[data-group="${groupId}"]`);
-      if (!wiz) return;
-      const target = Math.min(Math.max(index, 0), WIZ_STEPS.length - 1);
-      $$(".wiz-pane", wiz).forEach((pane) => {
-        const on = Number(pane.dataset.pane) === target;
-        pane.classList.toggle("on", on);
-        pane.hidden = !on;
+      $("#postAll").addEventListener("click", async () => {
+        const note = $("#postState");
+        if (!myGroup()) {
+          note.textContent = "Pick your group number on the start page first.";
+          return;
+        }
+        note.textContent = "Posting…";
+        const ok = await publish();
+        note.textContent = ok
+          ? "Posted. Your line is on the room board."
+          : "The room board is not reachable, so your work stayed on this device. Read your line out instead.";
+        if (ok) openPage("board");
       });
-      const strip = $(".case-strip", wiz);
-      if (strip) strip.hidden = target === 1;
-      $$(".wiz-dot", wiz).forEach((dot) => {
-        const i = Number(dot.dataset.wizGo);
-        dot.classList.toggle("current", i === target);
-        dot.classList.toggle("past", i < target);
-        dot.setAttribute("aria-current", i === target ? "step" : "false");
-      });
-    }
 
-    function moveWizPane(groupId, index) {
-      showWizPane(groupId, index);
-      const pane = $(`.wiz[data-group="${groupId}"] .wiz-pane.on`);
-      if (!pane) return;
-      /* Measured, never assumed: the header re-wraps at narrow widths and a
-         hardcoded offset parks the step title underneath it. */
-      const headerH =
-        Number.parseInt(getComputedStyle(document.documentElement).getPropertyValue("--top-h"), 10) ||
-        140;
-      window.scrollTo({
-        top: Math.max(pane.getBoundingClientRect().top + window.scrollY - headerH - 24, 0),
-        behavior: "auto",
-      });
-      pane.focus({ preventScroll: true });
-    }
+      buildStart();
+      buildDeck();
+      $("#contested").value = state.contested || "";
+      bindText("why", "why", "whyCount");
+      bindText("takeaway", "takeaway", "takeawayCount");
+      openPage(location.hash.replace("#", "") || "start");
 
-    document.addEventListener("click", (event) => {
-      const next = event.target.closest("[data-wiz-next]");
-      if (next) return moveWizPane(next.dataset.group, Number(next.dataset.wizNext) + 1);
-      const back = event.target.closest("[data-wiz-back]");
-      if (back) return moveWizPane(back.dataset.group, Number(back.dataset.wizBack) - 1);
-      const go = event.target.closest("[data-wiz-go]");
-      if (go) moveWizPane(go.dataset.group, Number(go.dataset.wizGo));
-    });
-
-    hydrate();
-    buildPickRows();
-    buildWizards();
-    renderGallery();
-
-    // Read the board once on load, then keep it fresh. 6s while the gallery is
-    // on screen (that is when staleness is visible), 20s otherwise, and an
-    // immediate read whenever the tab regains focus.
-    pollBoard();
-    setInterval(() => {
-      const galleryOpen = document.getElementById("gallery")?.classList.contains("active");
-      if (galleryOpen || Date.now() - lastPoll > 20000) { lastPoll = Date.now(); pollBoard(); }
-    }, 6000);
-    document.addEventListener("visibilitychange", () => { if (!document.hidden) pollBoard(); });
-    openPage(location.hash.replace("#", "") || "launch", false);
-  </script>
+      pollBoard();
+      setInterval(() => {
+        if ($("#board").classList.contains("active")) pollBoard();
+      }, 6000);
+      window.addEventListener("focus", pollBoard);
+    </script>
   </body>
 </html>
