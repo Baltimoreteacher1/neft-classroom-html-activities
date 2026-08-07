@@ -4,6 +4,7 @@
 
 import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { createGoDeeper } from "./go-deeper.js";
+import { enableKeyboardScrolling } from "./keyboard-scroll.js";
 import {
   detectMisconception,
   MISCONCEPTIONS,
@@ -1206,6 +1207,8 @@ export async function resolveAssignedVariant(config) {
 }
 
 export function bootSmallGroup(config) {
+  // Arrow / Page keys scroll the studio panels, not just the mouse wheel.
+  enableKeyboardScrolling();
   const params = new URLSearchParams(window.location.search);
 
   // ?mode=tools deep-link: render the standalone Interactive Tools page instead

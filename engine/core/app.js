@@ -13,6 +13,7 @@ import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import { mountExportToolbar } from "./export.js";
 import { completeLesson, reportExitTicketScore } from "./grade-emit.js";
 import { getPreferredLang, phaseName, setPreferredLang, stackHtml, t } from "./i18n.js";
+import { enableKeyboardScrolling } from "./keyboard-scroll.js";
 import {
   linkifyObjectiveTerms,
   observeVocabTerms,
@@ -49,6 +50,11 @@ export function createApp(config) {
   const root = document.getElementById("app");
   root.innerHTML = "";
   root.className = "app";
+
+  // Arrow / Page / Home / End keys scroll the lesson — including the Vocab,
+  // Learn It and Guided Notes takeovers, which lock the document scroller and
+  // scroll inside their own panel.
+  enableKeyboardScrolling();
 
   // Device-local learning signals (assets/nt-signal.js → window.NTSignal).
   // Lazy-loaded so lesson launchers need no HTML change; every consumer
@@ -821,6 +827,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
   // Named indices for the phases the pre-lesson tabs hand off to. The tabs
   // used to hardcode raw numbers (3, 2) that no longer matched this list.
+  const PHASE_WARMUP = 0;
   const PHASE_LAUNCH = 2;
   const PHASE_EXPLORE = 3;
 
@@ -1343,6 +1350,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         phaseContainer.innerHTML = "";
         const el = document.createElement("div");
         el.className = "phase active extra-panel extra-panel--fullpage";
+        // Focusable (never in the tab order) so the takeover — which scrolls
+        // inside itself while the document scroller is locked — responds to the
+        // keyboard as soon as it opens.
+        el.tabIndex = -1;
         el.setAttribute("role", "region");
         el.setAttribute("aria-label", "Vocabulary");
         phaseContainer.append(el);
@@ -1363,6 +1374,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         if (vocabGames.childNodes.length) el.append(vocabGames);
         el.append(chainContinueButton("Continue to Learn It 📖 →", () => this.openExtra("learn")));
         el.scrollIntoView({ block: "start" });
+        el.focus?.({ preventScroll: true });
         return;
       }
 
@@ -1371,6 +1383,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         phaseContainer.innerHTML = "";
         const el = document.createElement("div");
         el.className = "phase active extra-panel extra-panel--fullpage";
+        // Focusable (never in the tab order) so the takeover — which scrolls
+        // inside itself while the document scroller is locked — responds to the
+        // keyboard as soon as it opens.
+        el.tabIndex = -1;
         el.setAttribute("role", "region");
         el.setAttribute("aria-label", "Learn It");
         phaseContainer.append(el);
@@ -1386,6 +1402,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           chainContinueButton("Continue to Explore 🔍 →", () => this.navigateTo(PHASE_EXPLORE)),
         );
         el.scrollIntoView({ block: "start" });
+        el.focus?.({ preventScroll: true });
         return;
       }
       const id = encodeURIComponent(config.lessonId);
@@ -1443,6 +1460,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       phaseContainer.innerHTML = "";
       const el = document.createElement("div");
       el.className = "phase active extra-panel" + (fullPage ? " extra-panel--fullpage" : "");
+      el.tabIndex = -1;
       el.setAttribute("role", "region");
       el.setAttribute("aria-label", meta.title);
       const frameStyle = fullPage
@@ -1520,7 +1538,30 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // (skipping Learn It entirely) and Learn It used to go back to Launch, so
       // neither button did what its position implied. Guided Notes is a side
       // tab, not a link in the chain, so it still returns to Launch.
-      if (kind === "vocab") {
+      if (kind === "readiness") {
+        // Get Ready is the on-ramp to the Warm-Up, so finishing it moves the
+        // student on WITHOUT leaving the page: the embedded readiness page
+        // posts `nt-readiness-complete` when its exit ticket is done (or when
+        // the student presses "Continue to Warm-Up"), and we swap the panel
+        // for the Warm-Up phase in place. The button below is the same door
+        // for anyone who wants to move on early.
+        const toWarmup = () => {
+          window.removeEventListener("message", onReadinessMessage);
+          this.navigateTo(PHASE_WARMUP);
+        };
+        const onReadinessMessage = (e) => {
+          if (!document.body.contains(el)) {
+            window.removeEventListener("message", onReadinessMessage);
+            return;
+          }
+          if (e.origin !== window.location.origin) return;
+          if (e.source !== frame.contentWindow) return;
+          if (e.data?.type !== "nt-readiness-complete") return;
+          toWarmup();
+        };
+        window.addEventListener("message", onReadinessMessage);
+        addContinue("Continue to Warm-Up ⚡ →", toWarmup);
+      } else if (kind === "vocab") {
         addContinue("Continue to Learn It 📖 →", () => this.openExtra("learn"));
       } else if (kind === "learn") {
         this.renderLearnItExtras?.(el);
@@ -1540,6 +1581,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       }
 
       el.scrollIntoView({ block: "start" });
+      el.focus?.({ preventScroll: true });
     },
 
     // Objectives: a non-graded pre-lesson page (between Get Ready and Notes)
@@ -1650,6 +1692,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       });
 
       el.scrollIntoView({ block: "start" });
+      el.focus?.({ preventScroll: true });
     },
 
     // Bonus Activity: the lesson's named TPT-style activity
@@ -1689,6 +1732,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         host.append(done);
       });
       el.scrollIntoView({ block: "start" });
+      el.focus?.({ preventScroll: true });
     },
 
     // Projects: a non-graded "extend" tab present on every lesson. Filled in
@@ -1763,6 +1807,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       `;
       phaseContainer.append(el);
       el.scrollIntoView({ block: "start" });
+      el.focus?.({ preventScroll: true });
     },
 
     // Printables: a non-graded "extra" tab listing this lesson's print-ready
@@ -1832,6 +1877,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         });
       });
       el.scrollIntoView({ block: "start" });
+      el.focus?.({ preventScroll: true });
     },
 
     start() {

@@ -8,6 +8,7 @@ import { mountReasoningReader } from "./small-group-reasoning.js";
 import { createRubricDetails } from "./small-group-rubric.js";
 import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
+import { mountSymbolPad, needsSymbolPad } from "./symbol-pad.js";
 import { renderToolChip } from "./tool-drawer.js";
 
 const firstHint = (item) => item.hints?.[0] || item.hint || null;
@@ -447,6 +448,9 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
     if (item.unit) line.appendChild(el("span", "fillunit", esc(item.unit)));
     box.appendChild(line);
   }
+  // Inequality answers: ≤ and ≥ are not on the keyboard, so offer them as
+  // buttons that type themselves into the box.
+  if (needsSymbolPad(answer)) mountSymbolPad(input, { force: true });
   // The bank always exists (hidden when unscaffolded) so the adaptive coach's
   // "stabilize" move can open it later without rebuilding the card.
   let bank = null;

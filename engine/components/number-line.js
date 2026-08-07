@@ -1,3 +1,4 @@
+import { mountSymbolPad } from "../core/symbol-pad.js";
 export function renderNumberLine(container, config) {
   // Shape adapter, applied BEFORE anything reads the config: several lessons
   // author the plot-these-values task as `items:[{label,value}]` + `range:
@@ -698,6 +699,8 @@ function renderInequalityGraphs(container, config) {
     checkBtn.className = "btn btn-primary";
     checkBtn.textContent = "Check";
     controls.append(input, checkBtn);
+    // ≤ and ≥ are not on the keyboard — offer them as buttons.
+    mountSymbolPad(input, { force: true });
 
     const fb = document.createElement("div");
     fb.className = "mt-3";

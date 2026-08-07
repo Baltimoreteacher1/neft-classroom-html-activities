@@ -76,6 +76,7 @@ import { mountReadingProgress } from "./reading-progress.js";
 import { mountRetrievalOpener } from "./retrieval.js";
 import { mountQuestionLadderReader } from "./socratic.js";
 import { mountStuckSupport } from "./stuck-support.js";
+import { mountSymbolPad, needsSymbolPad } from "./symbol-pad.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
 import { toolMeta } from "./tool-catalog.js";
@@ -3549,11 +3550,19 @@ function openWorkPair(host) {
 function workPairCaption(step, text) {
   const p = document.createElement("p");
   p.className = "nt-work-caption";
+  // One horizontal line across the full width of its column: the badge and the
+  // sentence used to wrap onto separate lines in the narrower column, which read
+  // as two headings instead of one instruction.
   p.style.cssText =
-    "display:flex; align-items:center; gap:10px; margin:0 0 var(--sp-3,12px); font-size:var(--fs-xl,1.4rem); font-weight:800; color:var(--navy,#12355b);";
+    "display:flex; align-items:center; flex-wrap:nowrap; width:100%; gap:10px; " +
+    "margin:0 0 var(--sp-3,12px); font-size:var(--fs-lg,1.15rem); font-weight:800; color:var(--navy,#12355b);";
   const badge = document.createElement("span");
+  // Darker green and no uppercase/letter-spacing: the old pill printed small
+  // wide-tracked caps in white on a light teal, which is the hardest thing on
+  // the page to read.
   badge.style.cssText =
-    "flex:0 0 auto; padding:6px 16px; border-radius:999px; background:var(--teal,#1fa6a2); color:#fff; font-size:var(--fs-lg,1.15rem); font-weight:900; letter-spacing:0.03em; text-transform:uppercase;";
+    "flex:0 0 auto; padding:6px 16px; border-radius:999px; background:#0f766e; color:#fff; " +
+    "font-size:var(--fs-lg,1.15rem); font-weight:900;";
   badge.textContent = step;
   const txt = document.createElement("span");
   txt.textContent = text;
@@ -3635,6 +3644,9 @@ function renderSkillPractice(host, config, state) {
 
     const workEl = wrap.querySelector(".sp-work");
     const ansEl = wrap.querySelector(".sp-answer");
+    // Inequality answers get one-tap ≤ / ≥ buttons — those symbols are not on a
+    // Chromebook keyboard, so typing them is the barrier, not the maths.
+    if (needsSymbolPad(it.answer)) mountSymbolPad(ansEl, { force: true });
     const reveal = wrap.querySelector(".sp-reveal");
     workEl.value = state.getResponse(2, `sp-work-${i}`) || "";
     ansEl.value = state.getResponse(2, `sp-ans-${i}`) || "";
@@ -4135,6 +4147,7 @@ function renderConnectFrame(cfg, state) {
   frame.className = "sentence-frame sentence-frame-live";
 
   const inputs = [];
+  const padTargets = [];
   segments.forEach((text, i) => {
     if (text) frame.append(document.createTextNode(text.replace(/\s+/g, " ")));
     if (i >= blankCount) return;
@@ -4149,8 +4162,12 @@ function renderConnectFrame(cfg, state) {
       input.classList.remove("is-correct", "is-wrong");
     });
     frame.append(input);
+    if (needsSymbolPad(answers[i])) padTargets.push(input);
     inputs.push(input);
   });
+
+  // Inequality blanks get their ≤ / ≥ keys BELOW the sentence, not inline.
+  for (const target of padTargets) mountSymbolPad(target, { force: true, host: frame });
 
   // Fill the frame in with what the student typed, so the saved response reads
   // as a complete sentence rather than a bag of fragments.
@@ -4446,30 +4463,10 @@ function renderReflectPhase(el, state, ctx, config) {
   // of which question stopped them belongs here rather than behind another tab.
   if (isTeacherMode()) mountQuestionLadderReader(el, state);
 
-  // 3-2-1
-  const rCard = document.createElement("div");
-  rCard.className = "card";
-  rCard.innerHTML = `<div class="badge badge-teal mb-4">${stackHtml(t("reflection321", "en"), t("reflection321", "es"))}</div>`;
-  [
-    { n: 3, color: "teal", label: t("thingsLearned"), icon: "📝" },
-    { n: 2, color: "amber", label: t("connectionsMade"), icon: "🔗" },
-    { n: 1, color: "coral", label: t("questionStillHave"), icon: "❓" },
-  ].forEach((r) => {
-    const row = document.createElement("div");
-    row.style.cssText =
-      "display:grid; grid-template-columns:auto 1fr; gap:var(--sp-3); align-items:start; margin-bottom:var(--sp-3);";
-    row.innerHTML = `<span class="badge badge-${r.color}">${r.icon} ${r.n}</span>`;
-    const ta = document.createElement("textarea");
-    ta.className = "text-input";
-    ta.rows = r.n > 1 ? 2 : 1;
-    ta.placeholder = `${r.n} ${r.label}...`;
-    ta.value = state.getResponse(4, `reflect_${r.n}`) || "";
-    ta.addEventListener("input", () => state.saveResponse(4, `reflect_${r.n}`, ta.value));
-    row.append(ta);
-    rCard.append(row);
-  });
-  el.append(rCard);
-
+  // The 3-2-1 reflection grid was removed (2026-08-07): three open textareas
+  // asking for three things, two connections and one question sat directly
+  // above "One thing I learned" and the confidence check, which ask the same
+  // thing more simply. Reflect now opens on the single prompt students answer.
   // One thing I learned (exit ticket prep)
   const learnedCard = document.createElement("div");
   learnedCard.className = "card card-amber";

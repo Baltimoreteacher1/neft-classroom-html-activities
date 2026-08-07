@@ -9,7 +9,6 @@
 // Save/Resume also lives here (per Joel 2026-07-14): the menu item drives the
 // hidden #nsr-launcher, whose panel still opens in its usual spot.
 
-import { applyPlainLanguage, isPlainLanguageOn, setPlainLanguage } from "./plain-language.js";
 import { isTeacherMode } from "./teacher-mode.js";
 
 export function mountUtilityMenu() {
@@ -70,31 +69,6 @@ export function mountUtilityMenu() {
   });
   actions.appendChild(clearAnswers);
 
-  // Plain words — the same problems at a lower reading level. A student choice,
-  // not a teacher one: reading level is an access need and the student is the
-  // one who knows whether they can read the sentence. The numbers never change
-  // (see plain-language.js, which verifies that before showing a rewrite).
-  const plainWords = document.createElement("button");
-  plainWords.type = "button";
-  plainWords.className = "nt-utility-item";
-  const paintPlain = () => {
-    plainWords.innerHTML = `<span aria-hidden="true">🔤</span><span>Plain words${
-      isPlainLanguageOn() ? " ✓" : ""
-    }</span>`;
-    plainWords.setAttribute("aria-pressed", isPlainLanguageOn() ? "true" : "false");
-  };
-  paintPlain();
-  plainWords.addEventListener("click", () => {
-    const next = !isPlainLanguageOn();
-    setPlainLanguage(next);
-    paintPlain();
-    // The lesson re-applies on every phase render (see app.js renderPhase); this
-    // covers the phase already on screen.
-    applyPlainLanguage(document, next, window.__ntProtectedTerms || []);
-    close();
-  });
-  actions.appendChild(plainWords);
-
   // Save / Resume — drives the save-resume engine's launcher (hidden by the
   // menu's CSS on lesson pages); its panel opens in its usual corner.
   const saveResume = document.createElement("button");
@@ -123,26 +97,6 @@ export function mountUtilityMenu() {
   });
   actions.appendChild(workbench);
 
-  // Learning-supports dock (reading & focus tools) — shown only when the
-  // supports script mounted its dock on this page.
-  const supports = document.createElement("button");
-  supports.type = "button";
-  supports.className = "nt-utility-item";
-  supports.innerHTML = '<span aria-hidden="true">🛠️</span><span>Reading &amp; focus tools</span>';
-  supports.addEventListener("click", () => {
-    const dock = document.querySelector(".ewl-supports-tools-dock");
-    if (!dock) return;
-    const reopen = dock.querySelector(".ewl-supports-dock-reopen");
-    const collapse = dock.querySelector(".ewl-supports-dock-collapse");
-    if (dock.classList.contains("is-collapsed")) {
-      if (reopen) reopen.click();
-    } else if (collapse) {
-      collapse.click();
-    }
-    close();
-  });
-  actions.appendChild(supports);
-
   function adopt() {
     const exportBar = document.querySelector(".export-toolbar");
     const exportSlot = pop.querySelector('[data-slot="export"]');
@@ -150,7 +104,6 @@ export function mountUtilityMenu() {
     const pill = document.querySelector(".mode-toggle-pill");
     const modeSlot = pop.querySelector('[data-slot="mode"]');
     if (pill && pill.parentElement !== modeSlot) modeSlot.appendChild(pill);
-    supports.style.display = document.querySelector(".ewl-supports-tools-dock") ? "" : "none";
     saveResume.style.display = document.getElementById("nsr-launcher") ? "" : "none";
     // Clear answers is a teacher affordance only — never expose it to students.
     clearAnswers.style.display = isTeacherMode() ? "" : "none";

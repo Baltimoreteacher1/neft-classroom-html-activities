@@ -631,10 +631,14 @@
         </div>
       </section>
 
-      <div class="handoff">
+      <div class="handoff" id="handoff">
         <h2>🎉 You're warmed up!</h2>
         <p>You've practiced exactly what Lesson 1-3 uses. Time to dive in.</p>
         <a class="go" href="/lessons/1-3/">Start Lesson 1-3 →</a>
+        <!-- Shown only when this page runs inside the lesson shell's Get Ready
+             tab: finishing here hands off to the Warm-Up on the SAME screen
+             instead of navigating to the lesson URL. -->
+        <button class="go" id="toWarmup" type="button" style="display:none; border:0; cursor:pointer; font-size:1rem;">Continue to Warm-Up ⚡ →</button>
       </div>
 
       <div style="text-align:center;">
@@ -694,6 +698,46 @@
         var pct = Math.min(100, Math.round((Object.keys(done).length / TOTAL_ITEMS) * 100));
         document.getElementById("pfill").style.width = pct + "%";
         document.getElementById("pct").textContent = pct;
+        checkExitComplete();
+      }
+
+      // ---- hand-off to the lesson Warm-Up -------------------------------
+      // When this page is embedded in the lesson shell's "Get Ready" tab, a
+      // student who finishes the exit ticket should slide straight into the
+      // Warm-Up on the same screen — not be told to "Start Lesson" (a link
+      // that, inside the iframe, would load a whole second lesson shell).
+      var EXIT_KEYS = ["x1","x2"];
+      var EMBEDDED = window.parent !== window;
+      var handedOff = false;
+
+      function handOffToWarmup() {
+        if (handedOff) return;
+        handedOff = true;
+        try {
+          window.parent.postMessage(
+            { type: "nt-readiness-complete", lessonId: "1-3" },
+            window.location.origin,
+          );
+        } catch (e) {}
+      }
+
+      function checkExitComplete() {
+        if (!EMBEDDED || handedOff) return;
+        if (!EXIT_KEYS.every(function (k) { return done[k]; })) return;
+        var h = document.getElementById("handoff");
+        if (h) h.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Give the student a beat to read the ✅ before the screen changes.
+        setTimeout(handOffToWarmup, 1200);
+      }
+
+      if (EMBEDDED) {
+        var goLink = document.querySelector(".handoff .go[href]");
+        if (goLink) goLink.style.display = "none";
+        var warmBtn = document.getElementById("toWarmup");
+        if (warmBtn) {
+          warmBtn.style.display = "inline-block";
+          warmBtn.addEventListener("click", handOffToWarmup);
+        }
       }
 
       function scorePath() {

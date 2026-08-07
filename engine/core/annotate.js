@@ -199,15 +199,20 @@ function attach(host) {
 export function enableWordProblemAnnotation(root = document) {
   ensureGlobalListeners();
   const scope = root && root.querySelectorAll ? root : document;
-  scope.querySelectorAll('[data-annotate="word-problem"]').forEach((el) => attach(el));
+  scope.querySelectorAll(ANNOTATABLE).forEach((el) => attach(el));
 }
+
+// What counts as annotatable. `data-annotate="word-problem"` is the explicit
+// opt-in, but every rendered problem stem is text a student may need to mark up
+// and only some renderers set the attribute — so the stem classes count too
+// (the same set plain-language.js rewrites).
+const ANNOTATABLE = '[data-annotate="word-problem"], .problem-stem, .sp-stem-text';
 
 // Attach a toolbar to `node` (and any annotatable descendants) if it qualifies.
 function attachWithin(node) {
   if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
-  if (node.matches && node.matches('[data-annotate="word-problem"]')) attach(node);
-  if (node.querySelectorAll)
-    node.querySelectorAll('[data-annotate="word-problem"]').forEach((el) => attach(el));
+  if (node.matches?.(ANNOTATABLE)) attach(node);
+  if (node.querySelectorAll) node.querySelectorAll(ANNOTATABLE).forEach((el) => attach(el));
 }
 
 let observerReady = false;

@@ -340,23 +340,9 @@ export function initPresentMode({ app, phaseConfigs, state } = {}) {
     setActive(!active);
   });
 
-  let tries = 0;
-  (function mountToolsItem() {
-    const slot = document.querySelector('.nt-utility-pop [data-slot="actions"]');
-    if (!slot) {
-      if (tries++ < 40) setTimeout(mountToolsItem, 250);
-      return;
-    }
-    if (slot.querySelector("[data-pm-toggle]")) return;
-    const item = document.createElement("button");
-    item.type = "button";
-    item.className = "nt-utility-item";
-    item.setAttribute("data-pm-toggle", "");
-    item.innerHTML = '<span aria-hidden="true">📽️</span><span data-pm-toggle-label>📽️ Present</span>';
-    item.addEventListener("click", () => setActive(!active));
-    slot.appendChild(item);
-  })();
-
+  // Present lives on the page itself (the present widget below) — it used to
+  // ALSO sit in the Tools menu, which is not where a teacher reaches for it
+  // mid-class.
   if (new URLSearchParams(window.location.search).get("present") === "1") {
     const tick = setInterval(() => {
       if (document.querySelector(".phase") || document.querySelector(".sg-tabs")) {
