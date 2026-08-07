@@ -95,6 +95,14 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // Routing: data/routes.json is the source of truth for BOTH _redirects and
+  // functions/_lib/redirect-map.js, and the middleware replays the map on a 404.
+  // validate:routes catches a half-applied edit (the map generated but the
+  // static file not, or vice versa); the test run pins the fallback behaviour.
+  [
+    /^(data\/routes\.json|_redirects|functions\/_lib\/redirect-map\.js|functions\/_middleware\.js|tools\/generate-route-files\.mjs)$/,
+    ["validate:routes", "test", "validate:static", "validate:js-syntax", "audit:links"],
+  ],
   // Plan Notes owns a page, an API route, a generated vocabulary and a write
   // gate. All four are covered by the one surface validator plus the test run,
   // which is what makes an edit here cheap instead of a full-gate escalation.

@@ -16,6 +16,59 @@
 // Teachers sign in with ANY username plus the shared password. This is a casual
 // gate to keep students/public out of teacher material, not strong security.
 
+import { EXACT, PREFIX } from "./_lib/redirect-map.js";
+
+// Resolve a path against the generated redirect map. Returns a Response or null.
+//
+// Cloudflare honours only the FIRST 100 rules of `_redirects` on this project —
+// measured against production: rules at positions 90/95/100 return 301, and
+// 101/102/105/110/150/200 return 404. The documented Pages limit is 2,000 static
+// + 100 dynamic and this file holds 333 rules of which 12 are dynamic, so the
+// cutoff is not what the docs describe; it is, however, exact and repeatable,
+// and it had silently killed 231 short links including /unit-5-practice.
+//
+// This runs ONLY on a 404, so it cannot shadow anything that already resolves,
+// and the first 100 rules still redirect through Pages before this is reached.
+// Reordering the file was rejected as the fix: inserting a rule into the live
+// first 100 pushes a different one off the end and kills it.
+function redirectFor(url) {
+  const path = url.pathname;
+  // Match with and without the trailing slash: routes.json authors both forms
+  // for most aliases, but not all, and a student typing the other one should
+  // still land. Lowercase last — typed URLs are frequently mis-cased.
+  const candidates = [
+    path,
+    path.endsWith("/") ? path.slice(0, -1) : `${path}/`,
+    path.toLowerCase(),
+  ];
+  for (const key of candidates) {
+    const hit = EXACT[key];
+    if (hit) return { to: hit[0], status: hit[1] };
+  }
+  for (const [prefix, destination, status, takesSplat] of PREFIX) {
+    if (!path.startsWith(prefix)) continue;
+    const splat = path.slice(prefix.length);
+    return { to: takesSplat ? destination.replace(":splat", splat) : destination, status };
+  }
+  return null;
+}
+
+// Serve the asset, and fall back to the redirect map when Pages 404s.
+// Only GET/HEAD: replaying a POST to a new URL would silently drop its body.
+async function nextWithRedirectFallback(next, request, url) {
+  const response = await next();
+  if (response.status !== 404) return response;
+  if (request.method !== "GET" && request.method !== "HEAD") return response;
+  // An /api/ 404 is an endpoint answering "no such resource" — never a route
+  // alias, and turning it into a 301 would corrupt the API's own contract.
+  if (url.pathname.startsWith("/api/")) return response;
+  const hit = redirectFor(url);
+  if (!hit) return response;
+  const target = new URL(hit.to, url);
+  target.search = url.search;
+  return Response.redirect(target.toString(), hit.status);
+}
+
 function toStudentConfig(value) {
   if (Array.isArray(value)) return value.map(toStudentConfig);
   if (!value || typeof value !== "object") return value;
@@ -98,7 +151,7 @@ export async function onRequest(context) {
     if (isTeacherSurface) {
       return new Response("Teacher access is not configured.", { status: 503 });
     }
-    return next();
+    return nextWithRedirectFallback(next, request, url);
   }
 
   // APIs and lesson config JSON have their own auth / are fetched by external
@@ -122,7 +175,7 @@ export async function onRequest(context) {
   //   teacher-data-dashboard, dashboard, */dashboard (class/curriculum/games),
   //   math/unit-N/projects/answer-key, and any /admin surface.
   // Everything else is student-facing -> open, no password.
-  if (!isTeacherSurface) return next();
+  if (!isTeacherSurface) return nextWithRedirectFallback(next, request, url);
 
   // Teacher surface -> require the shared password.
   const header = request.headers.get("Authorization") || "";
