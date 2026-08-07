@@ -74,6 +74,11 @@ export const SKIP_TOPLEVEL = new Set([
   "ar-measure", // stateless WebXR AR measuring tool — nothing to save
   "class-manip", // shared class dot plot — state lives in the room, not save/resume
   "mentor-lab", // Unit 0 mentor choice — durable in `nt_mentor`, nothing partial to resume
+  "fix-it-design-challenge", // teacher PD worksheet — self-persists to its own
+  // localStorage key and hands off via a copied Padlet post; the generic
+  // "save your work" bar sat on top of the wizard and meant nothing here
+  "osamr-case-clinic", // same teacher PD model: local state plus a shared board
+  // via /api/osamr-board, so there is no student work for the widget to hold
 ]);
 
 // Filename patterns that are not student-facing activities.

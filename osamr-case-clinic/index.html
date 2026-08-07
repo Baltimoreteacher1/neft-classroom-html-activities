@@ -99,7 +99,6 @@
     .btn,.text-link{border:0;border-radius:13px;padding:10px 14px;min-height:42px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;justify-content:center;transition:transform .15s ease}
     .btn.primary{background:linear-gradient(135deg,var(--gold),#f1ca6b);color:var(--navy)}
     .btn.secondary{background:#fff;color:var(--navy);border:1px solid var(--line)}
-    .btn.gemini{background:linear-gradient(135deg,#1a73e8,#7b61ff);color:#fff}
     .btn:hover,.text-link:hover{transform:translateY(-1px)}
     .btn:active{transform:scale(.98)}
     .text-link{background:transparent;color:var(--teal);padding:0;min-height:auto;font-weight:900}
@@ -122,6 +121,38 @@
     .group-card .text-link{margin-top:10px;display:inline-block}
 
 
+    /* Guided wizard — one step on screen, big obvious Next. */
+    .wiz{margin-top:4px}
+    .wiz-dots{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0 0 14px;padding:0}
+    .wiz-dot{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 14px 7px 7px;font:inherit;font-size:13px;font-weight:700;color:#5a6577;cursor:pointer}
+    .wiz-dot span{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#eef2f7;color:#5a6577;font-size:12px;font-weight:800}
+    .wiz-dot.past{color:var(--navy)}
+    .wiz-dot.past span{background:var(--sage);color:var(--navy);font-size:0}
+    .wiz-dot.past span::after{content:"✓";font-size:13px}
+    .wiz-dot.current{background:var(--navy);border-color:var(--navy);color:#fff}
+    .wiz-dot.current span{background:#fff;color:var(--navy)}
+    .wiz-pane{display:none;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--soft);padding:22px 24px}
+    .wiz-pane.on{display:block}
+    html:not(.js) .wiz-pane{display:block}
+    .wiz-pane:focus-visible{outline:3px solid var(--navy);outline-offset:3px}
+    .wiz-head{margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+    .wiz-of{margin:0;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#6b7688}
+    .wiz-title{margin:2px 0 8px;font-size:30px;line-height:1.15;color:var(--navy)}
+    .wiz-todo{margin:0;font-size:17px;line-height:1.5;color:#2c3a4a;max-width:62ch}
+    .wiz-pane .scenario-card,.wiz-pane .post-card,.wiz-pane li{background:none;border:0;box-shadow:none;padding:0;margin:0 0 6px;list-style:none;position:static;max-height:none;overflow:visible}
+    .wiz-pane .scenario-card>h3{font-size:20px;margin:0 0 6px}
+    .wiz-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+    .wiz-nav .btn.primary{font-size:17px;padding:12px 22px}
+    .mini-stack.given{border-left:5px solid var(--navy);padding-left:14px}
+    .mini-stack .given-title{margin:0 0 8px;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--navy)}
+    .chip-picker-title{margin:0 0 8px;font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#6b7688}
+    .pick-row{margin:0 0 12px}
+    .pick-line{display:block;width:100%;text-align:left;background:#f7fafc;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px;font:inherit;font-size:15px;color:#2c3a4a;cursor:pointer;line-height:1.4}
+    .pick-line:hover{border-color:var(--navy);background:#fff}
+
+    .wiz-question{margin:0 0 10px}
+    .wiz-question h3{margin:0;font-size:19px;color:var(--navy)}
+    .wiz-pane li+li{margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}
     .workspace-grid{display:grid;grid-template-columns:380px minmax(0,1fr);gap:18px;align-items:start}
     /* NO INNER SCROLLER, EVER. sticky + max-height + overflow-y:auto is the
        conventional tall-sidebar pattern and it is what made scrolling feel
@@ -156,7 +187,6 @@
     .hint{margin:0 0 10px;color:var(--muted);font-weight:700;line-height:1.4;font-size:14px}
     textarea,select,input{width:100%;border:1px solid rgba(16,40,63,.22);border-radius:14px;background:#fff;padding:11px 12px;font-size:15px;color:var(--ink);outline:none}
     textarea{min-height:76px;resize:vertical;line-height:1.4}
-    textarea.prompt-preview{min-height:200px;background:#f7faf8;font-size:13px;color:#33424f}
     textarea.post-output{min-height:230px;background:#f8fbf9;font-size:14px;line-height:1.45}
     textarea:focus,select:focus,input:focus,.tab-btn:focus-visible,.btn:focus-visible,.token:focus-visible{box-shadow:0 0 0 4px rgba(79,182,179,.28);border-color:var(--teal)}
     label{display:grid;gap:6px;font-weight:900;color:var(--navy)}
@@ -164,7 +194,6 @@
     summary{cursor:pointer;font-weight:900;color:var(--teal);margin-bottom:8px}
 
     .ruling-step{background:linear-gradient(135deg,rgba(220,232,223,.4),rgba(255,248,237,.6))}
-    .coach-step{background:rgba(247,250,248,.7)}
     .token-row{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
     .token{
       display:flex;align-items:center;gap:8px;cursor:pointer;
@@ -370,9 +399,6 @@
       textarea{overflow:hidden!important;resize:none!important;border:1px solid #999}
     }
   </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -415,8 +441,9 @@
     <section class="page active" id="launch" role="tabpanel" aria-label="Start page">
       <div class="hero">
         <p class="kicker">Start Here</p>
-        <h2>Did AI make the task clearer — or did AI do the student thinking?</h2>
-        <p>Review one classroom AI use. Decide whether AI removes an access barrier while preserving student thinking. Your group produces one case ruling: barrier removed, thinking preserved, OSAMR level, evidence, red flag, and a fix-it move.</p>
+        <h2>Did AI help students get in — or did AI do the work for them?</h2>
+        <p><strong>Why we are doing this:</strong> AI help can open a task up — or quietly do it for students. Telling those two apart is the skill.</p>
+        <p><strong>What you make:</strong> one ruling — a letter, your reason, and one fix. Four short steps, about 15 minutes. The page writes it up for you.</p>
         <div class="action-row">
           <a class="btn primary" href="#model" data-open-page="model">See the model case</a>
           <a class="btn secondary" href="#menu" data-open-page="menu">Choose your case room</a>
@@ -425,17 +452,18 @@
 
       <div class="cards">
         <article class="card">
-          <h3>Your role</h3>
+          <h3>What your group does</h3>
           <ul class="mini-list">
-            <li><span class="num">1</span><div><strong>Read the case and the AI input</strong><br>What happened, and what did the teacher ask AI to do?</div></li>
-            <li><span class="num">2</span><div><strong>Find the evidence first</strong><br>Name the detail that proves your rating before anyone says a letter.</div></li>
-            <li><span class="num">3</span><div><strong>Rule and defend</strong><br>60 seconds: rating + evidence + red flag + fix.</div></li>
+            <li><span class="num">1</span><div><strong>Read the case</strong><br>We already wrote out the goal, the barrier and what students still do.</div></li>
+            <li><span class="num">2</span><div><strong>Pick a letter</strong><br>Tap the one that matches what AI actually did.</div></li>
+            <li><span class="num">3</span><div><strong>Say why</strong><br>Tap a reason and a fix, or write your own.</div></li>
+            <li><span class="num">4</span><div><strong>Post it</strong><br>Copy your ruling to the board.</div></li>
           </ul>
         </article>
         <article class="card">
           <h3>Core test</h3>
-          <p><strong>Does AI remove a barrier while students still do the target thinking?</strong></p>
-          <p style="margin-top:10px">Access support removes a barrier while preserving the learning target. Overreliance removes the learning demand itself.</p>
+          <p><strong>Did AI clear the way, or did AI do the thinking?</strong></p>
+          <p style="margin-top:10px">Good support clears what was in the way. Too far means the thinking is gone.</p>
           <div class="action-row">
             <a class="btn secondary" href="#reference" data-open-page="reference">OSAMR quick reference</a>
           </div>
@@ -459,52 +487,48 @@
       <div class="page-head">
         <div>
           <p class="kicker">Protocol</p>
-          <h2>How the case clinic works.</h2>
-          <p class="subline">Use the same quick protocol in every room.</p>
+          <h2>How this works.</h2>
+          <p class="subline">Every group does the same four steps.</p>
         </div>
         <a class="btn secondary" href="#reference" data-open-page="reference">OSAMR reference</a>
       </div>
       <div class="protocol-grid">
-        <article class="protocol-card"><div class="num">1</div><h3>Read the case</h3><p>What happened?</p></article>
-        <article class="protocol-card"><div class="num">2</div><h3>Read the AI input</h3><p>What did the teacher ask AI to do?</p></article>
-        <article class="protocol-card"><div class="num">3</div><h3>Find evidence</h3><p>What detail proves your rating?</p></article>
-        <article class="protocol-card"><div class="num">4</div><h3>Choose the level</h3><p>S, A, M, R, or Overreliance.</p></article>
-        <article class="protocol-card"><div class="num">5</div><h3>Name the red flag</h3><p>Where could support cross the line?</p></article>
-        <article class="protocol-card"><div class="num">6</div><h3>Share a defense</h3><p>60 seconds: rating + evidence + fix.</p></article>
+        <article class="protocol-card"><div class="num">1</div><h3>Read the case</h3><p>What happened, and what the teacher asked AI to do. Nothing to type.</p></article>
+        <article class="protocol-card"><div class="num">2</div><h3>Pick a letter</h3><p>S, A, M, R, or Too far.</p></article>
+        <article class="protocol-card"><div class="num">3</div><h3>Say why</h3><p>One reason from the case, and one fix.</p></article>
+        <article class="protocol-card"><div class="num">4</div><h3>Post it</h3><p>Copy your ruling to the board.</p></article>
       </div>
-      <div class="callout"><strong>Evidence before label.</strong> Do not debate the letter until the group can name the detail in the case that proves it.</div>
+      <div class="callout"><strong>Reason first, letter second.</strong> Do not argue about the letter until your group can point at the line in the case that proves it.</div>
     </section>
 
     <section class="page" id="reference" role="tabpanel" aria-label="OSAMR reference page">
       <div class="page-head">
         <div>
           <p class="kicker">Quick Reference</p>
-          <h2>OSAMR levels and evidence tokens.</h2>
-          <p class="subline">Access support removes a barrier while preserving the learning target.</p>
+          <h2>The five OSAMR levels.</h2>
+          <p class="subline">Good support clears the way. It does not do the work.</p>
         </div>
         <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
       </div>
 
       <div class="osamr-display">
-        <article class="osamr-card"><h3>S — Substitute</h3><p class="definition">AI substitutes one access support.</p><p>Students still do the target thinking.</p></article>
-        <article class="osamr-card"><h3>A — Augment</h3><p class="definition">AI adds helpful support.</p><p>The task becomes clearer without being solved.</p></article>
-        <article class="osamr-card"><h3>M — Modify</h3><p class="definition">AI meaningfully changes the experience.</p><p>The learning target stays the same.</p></article>
-        <article class="osamr-card"><h3>R — Redefine</h3><p class="definition">AI makes a previously inaccessible experience possible.</p><p>Rigor is preserved.</p></article>
-        <article class="osamr-card o"><h3>! — Overreliance</h3><p class="definition">AI performs the target thinking.</p><p>The learning demand is removed.</p></article>
+        <article class="osamr-card"><h3>S — Substitute</h3><p class="definition">AI swaps in one support.</p><p>The task is the same. Students still do the thinking.</p></article>
+        <article class="osamr-card"><h3>A — Augment</h3><p class="definition">AI adds help.</p><p>The task gets clearer. AI does not solve it.</p></article>
+        <article class="osamr-card"><h3>M — Modify</h3><p class="definition">AI changes how the task works.</p><p>Students still learn the same thing.</p></article>
+        <article class="osamr-card"><h3>R — Redefine</h3><p class="definition">AI opens up something new.</p><p>Students can now do work they could not do before.</p></article>
+        <article class="osamr-card o"><h3>! — Overreliance</h3><p class="definition">AI does the thinking.</p><p>There is nothing left for students to figure out.</p></article>
       </div>
 
       <div class="callout">
-        <strong>Evidence tokens.</strong> Use these five labels to keep discussion grounded:
-        <strong>1. Barrier</strong> — what blocked access?
-        <strong>2. Thinking</strong> — what did students still do?
-        <strong>3. AI Action</strong> — what did AI provide?
-        <strong>4. Red Flag</strong> — what would cross the line?
-        <strong>5. Fix-It</strong> — how could support improve?
+        <strong>Two questions, in this order.</strong> The case already tells you the barrier and
+        what students still do, so your group only answers these:
+        <strong>1. What did AI actually hand over?</strong>
+        <strong>2. Which line in the case proves our letter?</strong>
       </div>
 
       <div class="callout">
-        <strong>Group answer frame:</strong> “We rated this as ___ because AI removed ___ while students still had to ___. The red flag would be ___.”
-        Keep it simple: one rating, one proof detail, one red flag, one fix.
+        <strong>Say it like this:</strong> “We said ___. Here is why ___. Our fix is ___.”
+        One letter, one reason, one fix.
       </div>
     </section>
 
@@ -522,59 +546,44 @@
       </div>
 
       <div class="callout" style="margin-top:0;margin-bottom:18px">
-        <strong>Worked example.</strong> This is the same case room your group will use, already filled in. Read down the eight steps to see how the ruling is built from the case — evidence first, letter last.
+        <strong>Worked example.</strong> This is the same case room your group will use, already filled in. Walk the same four steps to see how a ruling is built from the case — evidence first, letter last.
       </div>
 
       <div class="workspace-grid">
         <aside class="scenario-card">
           <div class="scenario-head">
-            <div class="scenario-label">Case brief</div>
+            <div class="scenario-label">The case</div>
           </div>
-          <h3>1. Case story</h3>
+          <h3>What happened</h3>
           <p>Sixth-grade students decide whether a table shows a proportional relationship. Several multilingual learners understand the math, but the directions are dense and the word “ratio” is unfamiliar. The teacher uses AI to rewrite the directions in plain language and add a short vocabulary note. Students still calculate ratios, decide whether they are equal, and explain their answer.</p>
 
           <div class="ai-input-card">
-            <h4>2. Teacher AI input</h4>
+            <h4>What the teacher asked AI to do</h4>
             <p class="quote">“Rewrite these directions in plain language. Add one short note for “ratio.” Do not solve, name the operation, or tell students if the table is proportional.”</p>
           </div>
 
-          <div class="mini-stack">
-            <div><strong>Learning target:</strong> Decide whether a table shows a proportional relationship and justify the decision.</div>
-            <div><strong>Barrier clue:</strong> Dense directions and unfamiliar vocabulary made it hard to start.</div>
-            <div><strong>Student thinking:</strong> Students still calculate ratios, decide proportional or not, and explain why.</div>
+          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
+            <div><strong>What students must learn:</strong> Decide whether a table shows a proportional relationship and justify the decision.</div>
+            <div><strong>What was in their way:</strong> Dense directions and unfamiliar vocabulary made it hard to start.</div>
+            <div><strong>What students still do:</strong> Students still calculate ratios, decide proportional or not, and explain why.</div>
           </div>
 
               <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI substitutes one access support</span></div>
-                <div><strong>A</strong><span>AI adds support; task is clearer, not solved</span></div>
-                <div><strong>M</strong><span>Experience changes; target stays the same</span></div>
-                <div><strong>R</strong><span>Makes the previously inaccessible possible</span></div>
-                <div class="warn"><strong>!</strong><span>Overreliance — AI does the target thinking</span></div>
+                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
+                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
+                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
+                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
+                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
         <main class="work-card">
           <ol class="steps">
-            <li>
-              <div class="step-head"><span>1</span><h3>Barrier removed</h3></div>
-              <p class="hint">What blocked access to the task?</p>
-              <textarea id="gm-barrier" data-field="barrier" readonly placeholder="Type one clear barrier.">Dense directions and the unfamiliar word “ratio” made it hard for multilingual learners to start a task they already understood mathematically.</textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>2</span><h3>Thinking preserved</h3></div>
-              <p class="hint">What must students still do themselves?</p>
-              <textarea id="gm-thinking" data-field="thinking" readonly placeholder="Type what students still think or do.">Students still calculate the ratios, decide whether they are equal, and explain how they know.</textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>3</span><h3>AI action</h3></div>
-              <p class="hint">What did AI actually provide? Stay literal — quote the AI input if it helps.</p>
-              <textarea id="gm-action" data-field="action" readonly placeholder="What did AI actually provide?">AI rewrote the directions in plain language and added one short note defining “ratio.” It did not solve anything, name an operation, or say whether the table is proportional.</textarea>
-            </li>
 
             <li class="ruling-step">
-              <div class="step-head"><span>4</span><h3>Final ruling</h3></div>
+              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
               <p class="hint">Do not debate the label until your group has named the evidence above.</p>
               <div class="token-row" role="group" aria-label="OSAMR decision tokens">
                 <button class="token" type="button" data-value="S — Substitute"><b>S</b>Substitute</button>
@@ -595,35 +604,18 @@
             </li>
 
             <li>
-              <div class="step-head"><span>5</span><h3>Evidence</h3></div>
+              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
               <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
               <textarea id="gm-evidence" data-field="evidence" readonly placeholder="The detail that proves our rating is…">AI never finds the constant ratio. The rewritten directions still leave students to compute both ratios and compare them, so the mathematical decision is untouched.</textarea>
             </li>
 
-            <li>
-              <div class="step-head"><span>6</span><h3>Red flag</h3></div>
-              <p class="hint">Where could this support cross the line into doing the thinking?</p>
-              <textarea id="gm-redflag" data-field="redflag" readonly placeholder="This would cross the line if…">It would cross the line if AI gave the answer, told students which operation to use, or pointed out that both ratios simplify to the same thing.</textarea>
-            </li>
 
             <li>
-              <div class="step-head"><span>7</span><h3>Fix-it move</h3></div>
+              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
               <p class="hint">One change that keeps the access but returns the thinking to students.</p>
               <textarea id="gm-fix" data-field="fix" readonly placeholder="One safer fix would be…">Keep the plain-language directions and the vocabulary note, and add a blank ratio table students fill in themselves — never a worked example.</textarea>
             </li>
 
-            <li class="coach-step">
-              <div class="step-head"><span>8</span><h3>Pressure-test your ruling</h3></div>
-              <p class="hint">Optional for your group: copy the prompt, paste it into an AI assistant, and see whether your evidence holds up.</p>
-              <div class="action-row">
-                <button class="btn primary" type="button" data-copy-prompt="m">Copy pressure-test prompt</button>
-                <a class="btn gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Open Gemini ↗</a>
-              </div>
-              <details>
-                <summary>Preview the pressure-test prompt</summary>
-                <textarea class="prompt-preview" id="gm-prompt" readonly></textarea>
-              </details>
-            </li>
           </ol>
         </main>
       </div>
@@ -639,7 +631,7 @@
             <span>6–8 Math</span>
           </div>
         </div>
-        <p class="frame-line">We rated this <strong>A — Augment</strong> because AI removed <strong>the dense directions and unfamiliar vocabulary</strong> while students still <strong>calculated the ratios and decided</strong>. Red flag: <strong>AI names the operation or gives the answer</strong>. Fix: <strong>a blank ratio table instead of a worked example</strong>.</p>
+        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>A — Augment</strong>; our evidence is <strong>AI never finds the constant ratio</strong>; our fix is <strong>a blank ratio table instead of a worked example</strong>.</p>
         <textarea id="gm-post" class="post-output" readonly aria-label="Model case ruling"></textarea>
         <div class="action-row">
           <button class="btn primary" type="button" data-copy-post="m">Copy case ruling</button>
@@ -745,53 +737,38 @@
       <div class="workspace-grid">
         <aside class="scenario-card">
           <div class="scenario-head">
-            <div class="scenario-label">Case brief</div>
+            <div class="scenario-label">The case</div>
           </div>
-          <h3>1. Case story</h3>
+          <h3>What happened</h3>
           <p>A kindergarten teacher introduces story structure. Students listen to a read-aloud and retell the beginning, middle, and end. Several students cannot read directions yet, so AI creates a three-panel direction card with simple icons and one-word labels. Students still listen, sequence events, and retell verbally to a partner.</p>
 
           <div class="ai-input-card">
-            <h4>2. Teacher AI input</h4>
+            <h4>What the teacher asked AI to do</h4>
             <p class="quote">“Create a three-panel direction card with simple icons and one-word labels: beginning, middle, end. Do not retell the story or sequence events for students.”</p>
           </div>
 
-          <div class="mini-stack">
-            <div><strong>Learning target:</strong> Sequence and retell the beginning, middle, and end of a story.</div>
-            <div><strong>Barrier clue:</strong> Students cannot read directions independently.</div>
-            <div><strong>Student thinking:</strong> Students still listen, sequence events, and retell beginning/middle/end.</div>
+          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
+            <div><strong>What students must learn:</strong> Sequence and retell the beginning, middle, and end of a story.</div>
+            <div><strong>What was in their way:</strong> Students cannot read directions independently.</div>
+            <div><strong>What students still do:</strong> Students still listen, sequence events, and retell beginning/middle/end.</div>
           </div>
 
               <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI substitutes one access support</span></div>
-                <div><strong>A</strong><span>AI adds support; task is clearer, not solved</span></div>
-                <div><strong>M</strong><span>Experience changes; target stays the same</span></div>
-                <div><strong>R</strong><span>Makes the previously inaccessible possible</span></div>
-                <div class="warn"><strong>!</strong><span>Overreliance — AI does the target thinking</span></div>
+                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
+                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
+                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
+                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
+                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
         <main class="work-card">
           <ol class="steps">
-            <li>
-              <div class="step-head"><span>1</span><h3>Barrier removed</h3></div>
-              <p class="hint">What blocked access to the task?</p>
-              <textarea id="g1-barrier" data-field="barrier" data-group="1" placeholder="Type one clear barrier."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>2</span><h3>Thinking preserved</h3></div>
-              <p class="hint">What must students still do themselves?</p>
-              <textarea id="g1-thinking" data-field="thinking" data-group="1" placeholder="Type what students still think or do."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>3</span><h3>AI action</h3></div>
-              <p class="hint">What did AI actually provide? Stay literal — quote the AI input if it helps.</p>
-              <textarea id="g1-action" data-field="action" data-group="1" placeholder="What did AI actually provide?"></textarea>
-            </li>
 
             <li class="ruling-step">
-              <div class="step-head"><span>4</span><h3>Final ruling</h3></div>
+              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
               <p class="hint">Do not debate the label until your group has named the evidence above.</p>
               <div class="token-row" role="group" aria-label="OSAMR decision tokens">
                 <button class="token" type="button" data-token="1" data-value="S — Substitute"><b>S</b>Substitute</button>
@@ -812,35 +789,18 @@
             </li>
 
             <li>
-              <div class="step-head"><span>5</span><h3>Evidence</h3></div>
+              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
               <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
               <textarea id="g1-evidence" data-field="evidence" data-group="1" placeholder="The detail that proves our rating is…"></textarea>
             </li>
 
-            <li>
-              <div class="step-head"><span>6</span><h3>Red flag</h3></div>
-              <p class="hint">Where could this support cross the line into doing the thinking?</p>
-              <textarea id="g1-redflag" data-field="redflag" data-group="1" placeholder="This would cross the line if…"></textarea>
-            </li>
 
             <li>
-              <div class="step-head"><span>7</span><h3>Fix-it move</h3></div>
+              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
               <p class="hint">One change that keeps the access but returns the thinking to students.</p>
               <textarea id="g1-fix" data-field="fix" data-group="1" placeholder="One safer fix would be…"></textarea>
             </li>
 
-            <li class="coach-step">
-              <div class="step-head"><span>8</span><h3>Pressure-test your ruling</h3></div>
-              <p class="hint">Optional. Copy the prompt, paste it into an AI assistant, and see whether your evidence holds up. Revise only if the evidence changes.</p>
-              <div class="action-row">
-                <button class="btn primary" type="button" data-copy-prompt="1">Copy pressure-test prompt</button>
-                <a class="btn gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Open Gemini ↗</a>
-              </div>
-              <details>
-                <summary>Preview the pressure-test prompt</summary>
-                <textarea class="prompt-preview" id="g1-prompt" readonly></textarea>
-              </details>
-            </li>
           </ol>
         </main>
       </div>
@@ -856,7 +816,7 @@
             <span>K–2</span>
           </div>
         </div>
-        <p class="frame-line">We rated this <strong>___</strong> because AI removed <strong>___</strong> while students still <strong>___</strong>. Red flag: <strong>___</strong>. Fix: <strong>___</strong>.</p>
+        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g1-post" class="post-output" readonly aria-label="Generated case ruling for Group 1"></textarea>
         <div class="action-row">
           <button class="btn primary" type="button" data-copy-post="1">Copy case ruling</button>
@@ -882,53 +842,38 @@
       <div class="workspace-grid">
         <aside class="scenario-card">
           <div class="scenario-head">
-            <div class="scenario-label">Case brief</div>
+            <div class="scenario-label">The case</div>
           </div>
-          <h3>1. Case story</h3>
+          <h3>What happened</h3>
           <p>A fourth-grade math teacher teaches multi-digit multiplication with: “A school orders 24 boxes of crayons. Each box has 16 crayons. How many crayons are there in all?” Several students with IEPs struggle to know where to start. AI creates a problem-entry scaffold and sentence frame. Students set up and solve independently.</p>
 
           <div class="ai-input-card">
-            <h4>2. Teacher AI input</h4>
+            <h4>What the teacher asked AI to do</h4>
             <p class="quote">“Create a three-step entry scaffold: circle the numbers, underline the question, and draw a quick sketch. Add this frame: “I need to find ___ because ___.” Do not name the operation or solve.”</p>
           </div>
 
-          <div class="mini-stack">
-            <div><strong>Learning target:</strong> Choose an operation, set up the problem, solve, and explain the reasoning.</div>
-            <div><strong>Barrier clue:</strong> Students struggle to start and organize information.</div>
-            <div><strong>Student thinking:</strong> Students still choose a strategy, set up the problem, compute, and explain.</div>
+          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
+            <div><strong>What students must learn:</strong> Choose an operation, set up the problem, solve, and explain the reasoning.</div>
+            <div><strong>What was in their way:</strong> Students struggle to start and organize information.</div>
+            <div><strong>What students still do:</strong> Students still choose a strategy, set up the problem, compute, and explain.</div>
           </div>
 
               <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI substitutes one access support</span></div>
-                <div><strong>A</strong><span>AI adds support; task is clearer, not solved</span></div>
-                <div><strong>M</strong><span>Experience changes; target stays the same</span></div>
-                <div><strong>R</strong><span>Makes the previously inaccessible possible</span></div>
-                <div class="warn"><strong>!</strong><span>Overreliance — AI does the target thinking</span></div>
+                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
+                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
+                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
+                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
+                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
         <main class="work-card">
           <ol class="steps">
-            <li>
-              <div class="step-head"><span>1</span><h3>Barrier removed</h3></div>
-              <p class="hint">What blocked access to the task?</p>
-              <textarea id="g2-barrier" data-field="barrier" data-group="2" placeholder="Type one clear barrier."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>2</span><h3>Thinking preserved</h3></div>
-              <p class="hint">What must students still do themselves?</p>
-              <textarea id="g2-thinking" data-field="thinking" data-group="2" placeholder="Type what students still think or do."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>3</span><h3>AI action</h3></div>
-              <p class="hint">What did AI actually provide? Stay literal — quote the AI input if it helps.</p>
-              <textarea id="g2-action" data-field="action" data-group="2" placeholder="What did AI actually provide?"></textarea>
-            </li>
 
             <li class="ruling-step">
-              <div class="step-head"><span>4</span><h3>Final ruling</h3></div>
+              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
               <p class="hint">Do not debate the label until your group has named the evidence above.</p>
               <div class="token-row" role="group" aria-label="OSAMR decision tokens">
                 <button class="token" type="button" data-token="2" data-value="S — Substitute"><b>S</b>Substitute</button>
@@ -949,35 +894,18 @@
             </li>
 
             <li>
-              <div class="step-head"><span>5</span><h3>Evidence</h3></div>
+              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
               <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
               <textarea id="g2-evidence" data-field="evidence" data-group="2" placeholder="The detail that proves our rating is…"></textarea>
             </li>
 
-            <li>
-              <div class="step-head"><span>6</span><h3>Red flag</h3></div>
-              <p class="hint">Where could this support cross the line into doing the thinking?</p>
-              <textarea id="g2-redflag" data-field="redflag" data-group="2" placeholder="This would cross the line if…"></textarea>
-            </li>
 
             <li>
-              <div class="step-head"><span>7</span><h3>Fix-it move</h3></div>
+              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
               <p class="hint">One change that keeps the access but returns the thinking to students.</p>
               <textarea id="g2-fix" data-field="fix" data-group="2" placeholder="One safer fix would be…"></textarea>
             </li>
 
-            <li class="coach-step">
-              <div class="step-head"><span>8</span><h3>Pressure-test your ruling</h3></div>
-              <p class="hint">Optional. Copy the prompt, paste it into an AI assistant, and see whether your evidence holds up. Revise only if the evidence changes.</p>
-              <div class="action-row">
-                <button class="btn primary" type="button" data-copy-prompt="2">Copy pressure-test prompt</button>
-                <a class="btn gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Open Gemini ↗</a>
-              </div>
-              <details>
-                <summary>Preview the pressure-test prompt</summary>
-                <textarea class="prompt-preview" id="g2-prompt" readonly></textarea>
-              </details>
-            </li>
           </ol>
         </main>
       </div>
@@ -993,7 +921,7 @@
             <span>3–5 Math</span>
           </div>
         </div>
-        <p class="frame-line">We rated this <strong>___</strong> because AI removed <strong>___</strong> while students still <strong>___</strong>. Red flag: <strong>___</strong>. Fix: <strong>___</strong>.</p>
+        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g2-post" class="post-output" readonly aria-label="Generated case ruling for Group 2"></textarea>
         <div class="action-row">
           <button class="btn primary" type="button" data-copy-post="2">Copy case ruling</button>
@@ -1019,53 +947,38 @@
       <div class="workspace-grid">
         <aside class="scenario-card">
           <div class="scenario-head">
-            <div class="scenario-label">Case brief</div>
+            <div class="scenario-label">The case</div>
           </div>
-          <h3>1. Case story</h3>
+          <h3>What happened</h3>
           <p>A fifth-grade ELA teacher teaches students to cite textual evidence for a claim about a character’s motivation. Several students struggle to write a body paragraph. AI generates a mentor paragraph for each student. Students write a similar paragraph, but most copy the structure and change only a few words.</p>
 
           <div class="ai-input-card">
-            <h4>2. Teacher AI input</h4>
+            <h4>What the teacher asked AI to do</h4>
             <p class="quote">“Write a mentor paragraph about the character’s motivation with a claim, evidence, and reasoning.”</p>
           </div>
 
-          <div class="mini-stack">
-            <div><strong>Learning target:</strong> Make a claim about motivation, choose textual evidence, and explain the reasoning.</div>
-            <div><strong>Barrier clue:</strong> Students need help organizing a body paragraph.</div>
-            <div><strong>Student thinking:</strong> AI weakens target thinking by giving too much of the analysis.</div>
+          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
+            <div><strong>What students must learn:</strong> Make a claim about motivation, choose textual evidence, and explain the reasoning.</div>
+            <div><strong>What was in their way:</strong> Students need help organizing a body paragraph.</div>
+            <div><strong>What students still do:</strong> AI weakens target thinking by giving too much of the analysis.</div>
           </div>
 
               <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI substitutes one access support</span></div>
-                <div><strong>A</strong><span>AI adds support; task is clearer, not solved</span></div>
-                <div><strong>M</strong><span>Experience changes; target stays the same</span></div>
-                <div><strong>R</strong><span>Makes the previously inaccessible possible</span></div>
-                <div class="warn"><strong>!</strong><span>Overreliance — AI does the target thinking</span></div>
+                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
+                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
+                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
+                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
+                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
         <main class="work-card">
           <ol class="steps">
-            <li>
-              <div class="step-head"><span>1</span><h3>Barrier removed</h3></div>
-              <p class="hint">What blocked access to the task?</p>
-              <textarea id="g3-barrier" data-field="barrier" data-group="3" placeholder="Type one clear barrier."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>2</span><h3>Thinking preserved</h3></div>
-              <p class="hint">What must students still do themselves?</p>
-              <textarea id="g3-thinking" data-field="thinking" data-group="3" placeholder="Type what students still think or do."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>3</span><h3>AI action</h3></div>
-              <p class="hint">What did AI actually provide? Stay literal — quote the AI input if it helps.</p>
-              <textarea id="g3-action" data-field="action" data-group="3" placeholder="What did AI actually provide?"></textarea>
-            </li>
 
             <li class="ruling-step">
-              <div class="step-head"><span>4</span><h3>Final ruling</h3></div>
+              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
               <p class="hint">Do not debate the label until your group has named the evidence above.</p>
               <div class="token-row" role="group" aria-label="OSAMR decision tokens">
                 <button class="token" type="button" data-token="3" data-value="S — Substitute"><b>S</b>Substitute</button>
@@ -1086,35 +999,18 @@
             </li>
 
             <li>
-              <div class="step-head"><span>5</span><h3>Evidence</h3></div>
+              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
               <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
               <textarea id="g3-evidence" data-field="evidence" data-group="3" placeholder="The detail that proves our rating is…"></textarea>
             </li>
 
-            <li>
-              <div class="step-head"><span>6</span><h3>Red flag</h3></div>
-              <p class="hint">Where could this support cross the line into doing the thinking?</p>
-              <textarea id="g3-redflag" data-field="redflag" data-group="3" placeholder="This would cross the line if…"></textarea>
-            </li>
 
             <li>
-              <div class="step-head"><span>7</span><h3>Fix-it move</h3></div>
+              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
               <p class="hint">One change that keeps the access but returns the thinking to students.</p>
               <textarea id="g3-fix" data-field="fix" data-group="3" placeholder="One safer fix would be…"></textarea>
             </li>
 
-            <li class="coach-step">
-              <div class="step-head"><span>8</span><h3>Pressure-test your ruling</h3></div>
-              <p class="hint">Optional. Copy the prompt, paste it into an AI assistant, and see whether your evidence holds up. Revise only if the evidence changes.</p>
-              <div class="action-row">
-                <button class="btn primary" type="button" data-copy-prompt="3">Copy pressure-test prompt</button>
-                <a class="btn gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Open Gemini ↗</a>
-              </div>
-              <details>
-                <summary>Preview the pressure-test prompt</summary>
-                <textarea class="prompt-preview" id="g3-prompt" readonly></textarea>
-              </details>
-            </li>
           </ol>
         </main>
       </div>
@@ -1130,7 +1026,7 @@
             <span>3–5 ELA</span>
           </div>
         </div>
-        <p class="frame-line">We rated this <strong>___</strong> because AI removed <strong>___</strong> while students still <strong>___</strong>. Red flag: <strong>___</strong>. Fix: <strong>___</strong>.</p>
+        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g3-post" class="post-output" readonly aria-label="Generated case ruling for Group 3"></textarea>
         <div class="action-row">
           <button class="btn primary" type="button" data-copy-post="3">Copy case ruling</button>
@@ -1156,53 +1052,38 @@
       <div class="workspace-grid">
         <aside class="scenario-card">
           <div class="scenario-head">
-            <div class="scenario-label">Case brief</div>
+            <div class="scenario-label">The case</div>
           </div>
-          <h3>1. Case story</h3>
+          <h3>What happened</h3>
           <p>A seventh-grade science teacher teaches force and motion. Students answer analysis questions about Newton’s Second Law, but many multilingual learners struggle with dense textbook language. AI creates reading supports: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. All students answer the same analysis questions.</p>
 
           <div class="ai-input-card">
-            <h4>2. Teacher AI input</h4>
+            <h4>What the teacher asked AI to do</h4>
             <p class="quote">“Make three access versions: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. Keep the same three analysis questions for everyone. Do not answer them.”</p>
           </div>
 
-          <div class="mini-stack">
-            <div><strong>Learning target:</strong> Analyze Newton’s Second Law and answer the same three analysis questions.</div>
-            <div><strong>Barrier clue:</strong> Dense textbook language blocks access to the science analysis.</div>
-            <div><strong>Student thinking:</strong> All students still answer the same analysis questions.</div>
+          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
+            <div><strong>What students must learn:</strong> Analyze Newton’s Second Law and answer the same three analysis questions.</div>
+            <div><strong>What was in their way:</strong> Dense textbook language blocks access to the science analysis.</div>
+            <div><strong>What students still do:</strong> All students still answer the same analysis questions.</div>
           </div>
 
               <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI substitutes one access support</span></div>
-                <div><strong>A</strong><span>AI adds support; task is clearer, not solved</span></div>
-                <div><strong>M</strong><span>Experience changes; target stays the same</span></div>
-                <div><strong>R</strong><span>Makes the previously inaccessible possible</span></div>
-                <div class="warn"><strong>!</strong><span>Overreliance — AI does the target thinking</span></div>
+                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
+                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
+                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
+                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
+                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
         <main class="work-card">
           <ol class="steps">
-            <li>
-              <div class="step-head"><span>1</span><h3>Barrier removed</h3></div>
-              <p class="hint">What blocked access to the task?</p>
-              <textarea id="g4-barrier" data-field="barrier" data-group="4" placeholder="Type one clear barrier."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>2</span><h3>Thinking preserved</h3></div>
-              <p class="hint">What must students still do themselves?</p>
-              <textarea id="g4-thinking" data-field="thinking" data-group="4" placeholder="Type what students still think or do."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>3</span><h3>AI action</h3></div>
-              <p class="hint">What did AI actually provide? Stay literal — quote the AI input if it helps.</p>
-              <textarea id="g4-action" data-field="action" data-group="4" placeholder="What did AI actually provide?"></textarea>
-            </li>
 
             <li class="ruling-step">
-              <div class="step-head"><span>4</span><h3>Final ruling</h3></div>
+              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
               <p class="hint">Do not debate the label until your group has named the evidence above.</p>
               <div class="token-row" role="group" aria-label="OSAMR decision tokens">
                 <button class="token" type="button" data-token="4" data-value="S — Substitute"><b>S</b>Substitute</button>
@@ -1223,35 +1104,18 @@
             </li>
 
             <li>
-              <div class="step-head"><span>5</span><h3>Evidence</h3></div>
+              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
               <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
               <textarea id="g4-evidence" data-field="evidence" data-group="4" placeholder="The detail that proves our rating is…"></textarea>
             </li>
 
-            <li>
-              <div class="step-head"><span>6</span><h3>Red flag</h3></div>
-              <p class="hint">Where could this support cross the line into doing the thinking?</p>
-              <textarea id="g4-redflag" data-field="redflag" data-group="4" placeholder="This would cross the line if…"></textarea>
-            </li>
 
             <li>
-              <div class="step-head"><span>7</span><h3>Fix-it move</h3></div>
+              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
               <p class="hint">One change that keeps the access but returns the thinking to students.</p>
               <textarea id="g4-fix" data-field="fix" data-group="4" placeholder="One safer fix would be…"></textarea>
             </li>
 
-            <li class="coach-step">
-              <div class="step-head"><span>8</span><h3>Pressure-test your ruling</h3></div>
-              <p class="hint">Optional. Copy the prompt, paste it into an AI assistant, and see whether your evidence holds up. Revise only if the evidence changes.</p>
-              <div class="action-row">
-                <button class="btn primary" type="button" data-copy-prompt="4">Copy pressure-test prompt</button>
-                <a class="btn gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Open Gemini ↗</a>
-              </div>
-              <details>
-                <summary>Preview the pressure-test prompt</summary>
-                <textarea class="prompt-preview" id="g4-prompt" readonly></textarea>
-              </details>
-            </li>
           </ol>
         </main>
       </div>
@@ -1267,7 +1131,7 @@
             <span>6–8 Science</span>
           </div>
         </div>
-        <p class="frame-line">We rated this <strong>___</strong> because AI removed <strong>___</strong> while students still <strong>___</strong>. Red flag: <strong>___</strong>. Fix: <strong>___</strong>.</p>
+        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g4-post" class="post-output" readonly aria-label="Generated case ruling for Group 4"></textarea>
         <div class="action-row">
           <button class="btn primary" type="button" data-copy-post="4">Copy case ruling</button>
@@ -1293,53 +1157,38 @@
       <div class="workspace-grid">
         <aside class="scenario-card">
           <div class="scenario-head">
-            <div class="scenario-label">Case brief</div>
+            <div class="scenario-label">The case</div>
           </div>
-          <h3>1. Case story</h3>
+          <h3>What happened</h3>
           <p>A sixth-grade math teacher teaches proportional relationships. Students practice deciding whether tables are proportional. During independent practice, AI gives correct answers, explains the constant ratio, and identifies the unit rate. Students use AI feedback to mark their work correct or incorrect.</p>
 
           <div class="ai-input-card">
-            <h4>2. Teacher AI input</h4>
+            <h4>What the teacher asked AI to do</h4>
             <p class="quote">“Check each student’s proportional relationship work. Give the correct answer, constant ratio, unit rate, and whether the student is correct.”</p>
           </div>
 
-          <div class="mini-stack">
-            <div><strong>Learning target:</strong> Decide whether a table is proportional and justify it using the constant ratio.</div>
-            <div><strong>Barrier clue:</strong> Students may need feedback or a way to check reasoning.</div>
-            <div><strong>Student thinking:</strong> AI performs the target thinking by giving the answer, ratio, and unit rate.</div>
+          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
+            <div><strong>What students must learn:</strong> Decide whether a table is proportional and justify it using the constant ratio.</div>
+            <div><strong>What was in their way:</strong> Students may need feedback or a way to check reasoning.</div>
+            <div><strong>What students still do:</strong> AI performs the target thinking by giving the answer, ratio, and unit rate.</div>
           </div>
 
               <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI substitutes one access support</span></div>
-                <div><strong>A</strong><span>AI adds support; task is clearer, not solved</span></div>
-                <div><strong>M</strong><span>Experience changes; target stays the same</span></div>
-                <div><strong>R</strong><span>Makes the previously inaccessible possible</span></div>
-                <div class="warn"><strong>!</strong><span>Overreliance — AI does the target thinking</span></div>
+                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
+                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
+                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
+                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
+                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
         <main class="work-card">
           <ol class="steps">
-            <li>
-              <div class="step-head"><span>1</span><h3>Barrier removed</h3></div>
-              <p class="hint">What blocked access to the task?</p>
-              <textarea id="g5-barrier" data-field="barrier" data-group="5" placeholder="Type one clear barrier."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>2</span><h3>Thinking preserved</h3></div>
-              <p class="hint">What must students still do themselves?</p>
-              <textarea id="g5-thinking" data-field="thinking" data-group="5" placeholder="Type what students still think or do."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>3</span><h3>AI action</h3></div>
-              <p class="hint">What did AI actually provide? Stay literal — quote the AI input if it helps.</p>
-              <textarea id="g5-action" data-field="action" data-group="5" placeholder="What did AI actually provide?"></textarea>
-            </li>
 
             <li class="ruling-step">
-              <div class="step-head"><span>4</span><h3>Final ruling</h3></div>
+              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
               <p class="hint">Do not debate the label until your group has named the evidence above.</p>
               <div class="token-row" role="group" aria-label="OSAMR decision tokens">
                 <button class="token" type="button" data-token="5" data-value="S — Substitute"><b>S</b>Substitute</button>
@@ -1360,35 +1209,18 @@
             </li>
 
             <li>
-              <div class="step-head"><span>5</span><h3>Evidence</h3></div>
+              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
               <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
               <textarea id="g5-evidence" data-field="evidence" data-group="5" placeholder="The detail that proves our rating is…"></textarea>
             </li>
 
-            <li>
-              <div class="step-head"><span>6</span><h3>Red flag</h3></div>
-              <p class="hint">Where could this support cross the line into doing the thinking?</p>
-              <textarea id="g5-redflag" data-field="redflag" data-group="5" placeholder="This would cross the line if…"></textarea>
-            </li>
 
             <li>
-              <div class="step-head"><span>7</span><h3>Fix-it move</h3></div>
+              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
               <p class="hint">One change that keeps the access but returns the thinking to students.</p>
               <textarea id="g5-fix" data-field="fix" data-group="5" placeholder="One safer fix would be…"></textarea>
             </li>
 
-            <li class="coach-step">
-              <div class="step-head"><span>8</span><h3>Pressure-test your ruling</h3></div>
-              <p class="hint">Optional. Copy the prompt, paste it into an AI assistant, and see whether your evidence holds up. Revise only if the evidence changes.</p>
-              <div class="action-row">
-                <button class="btn primary" type="button" data-copy-prompt="5">Copy pressure-test prompt</button>
-                <a class="btn gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Open Gemini ↗</a>
-              </div>
-              <details>
-                <summary>Preview the pressure-test prompt</summary>
-                <textarea class="prompt-preview" id="g5-prompt" readonly></textarea>
-              </details>
-            </li>
           </ol>
         </main>
       </div>
@@ -1404,7 +1236,7 @@
             <span>6–8 Math</span>
           </div>
         </div>
-        <p class="frame-line">We rated this <strong>___</strong> because AI removed <strong>___</strong> while students still <strong>___</strong>. Red flag: <strong>___</strong>. Fix: <strong>___</strong>.</p>
+        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g5-post" class="post-output" readonly aria-label="Generated case ruling for Group 5"></textarea>
         <div class="action-row">
           <button class="btn primary" type="button" data-copy-post="5">Copy case ruling</button>
@@ -1430,53 +1262,38 @@
       <div class="workspace-grid">
         <aside class="scenario-card">
           <div class="scenario-head">
-            <div class="scenario-label">Case brief</div>
+            <div class="scenario-label">The case</div>
           </div>
-          <h3>1. Case story</h3>
+          <h3>What happened</h3>
           <p>Students analyze a local air-quality dataset to write a claim-evidence-reasoning paragraph. The teacher uses AI to summarize the dataset into three key findings. Students use those AI findings as evidence. They write their own claim and reasoning, but they do not examine the full dataset or choose evidence themselves.</p>
 
           <div class="ai-input-card">
-            <h4>2. Teacher AI input</h4>
+            <h4>What the teacher asked AI to do</h4>
             <p class="quote">“Summarize this local air-quality dataset into three key findings students can use as evidence in CER paragraphs.”</p>
           </div>
 
-          <div class="mini-stack">
-            <div><strong>Learning target:</strong> Analyze data, select evidence, and write a claim with supporting reasoning.</div>
-            <div><strong>Barrier clue:</strong> The full dataset may be too large or dense to analyze efficiently.</div>
-            <div><strong>Student thinking:</strong> AI removes too much target thinking by choosing the evidence.</div>
+          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
+            <div><strong>What students must learn:</strong> Analyze data, select evidence, and write a claim with supporting reasoning.</div>
+            <div><strong>What was in their way:</strong> The full dataset may be too large or dense to analyze efficiently.</div>
+            <div><strong>What students still do:</strong> AI removes too much target thinking by choosing the evidence.</div>
           </div>
 
               <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI substitutes one access support</span></div>
-                <div><strong>A</strong><span>AI adds support; task is clearer, not solved</span></div>
-                <div><strong>M</strong><span>Experience changes; target stays the same</span></div>
-                <div><strong>R</strong><span>Makes the previously inaccessible possible</span></div>
-                <div class="warn"><strong>!</strong><span>Overreliance — AI does the target thinking</span></div>
+                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
+                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
+                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
+                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
+                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
         <main class="work-card">
           <ol class="steps">
-            <li>
-              <div class="step-head"><span>1</span><h3>Barrier removed</h3></div>
-              <p class="hint">What blocked access to the task?</p>
-              <textarea id="g6-barrier" data-field="barrier" data-group="6" placeholder="Type one clear barrier."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>2</span><h3>Thinking preserved</h3></div>
-              <p class="hint">What must students still do themselves?</p>
-              <textarea id="g6-thinking" data-field="thinking" data-group="6" placeholder="Type what students still think or do."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>3</span><h3>AI action</h3></div>
-              <p class="hint">What did AI actually provide? Stay literal — quote the AI input if it helps.</p>
-              <textarea id="g6-action" data-field="action" data-group="6" placeholder="What did AI actually provide?"></textarea>
-            </li>
 
             <li class="ruling-step">
-              <div class="step-head"><span>4</span><h3>Final ruling</h3></div>
+              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
               <p class="hint">Do not debate the label until your group has named the evidence above.</p>
               <div class="token-row" role="group" aria-label="OSAMR decision tokens">
                 <button class="token" type="button" data-token="6" data-value="S — Substitute"><b>S</b>Substitute</button>
@@ -1497,35 +1314,18 @@
             </li>
 
             <li>
-              <div class="step-head"><span>5</span><h3>Evidence</h3></div>
+              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
               <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
               <textarea id="g6-evidence" data-field="evidence" data-group="6" placeholder="The detail that proves our rating is…"></textarea>
             </li>
 
-            <li>
-              <div class="step-head"><span>6</span><h3>Red flag</h3></div>
-              <p class="hint">Where could this support cross the line into doing the thinking?</p>
-              <textarea id="g6-redflag" data-field="redflag" data-group="6" placeholder="This would cross the line if…"></textarea>
-            </li>
 
             <li>
-              <div class="step-head"><span>7</span><h3>Fix-it move</h3></div>
+              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
               <p class="hint">One change that keeps the access but returns the thinking to students.</p>
               <textarea id="g6-fix" data-field="fix" data-group="6" placeholder="One safer fix would be…"></textarea>
             </li>
 
-            <li class="coach-step">
-              <div class="step-head"><span>8</span><h3>Pressure-test your ruling</h3></div>
-              <p class="hint">Optional. Copy the prompt, paste it into an AI assistant, and see whether your evidence holds up. Revise only if the evidence changes.</p>
-              <div class="action-row">
-                <button class="btn primary" type="button" data-copy-prompt="6">Copy pressure-test prompt</button>
-                <a class="btn gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Open Gemini ↗</a>
-              </div>
-              <details>
-                <summary>Preview the pressure-test prompt</summary>
-                <textarea class="prompt-preview" id="g6-prompt" readonly></textarea>
-              </details>
-            </li>
           </ol>
         </main>
       </div>
@@ -1541,7 +1341,7 @@
             <span>9–12 Science</span>
           </div>
         </div>
-        <p class="frame-line">We rated this <strong>___</strong> because AI removed <strong>___</strong> while students still <strong>___</strong>. Red flag: <strong>___</strong>. Fix: <strong>___</strong>.</p>
+        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g6-post" class="post-output" readonly aria-label="Generated case ruling for Group 6"></textarea>
         <div class="action-row">
           <button class="btn primary" type="button" data-copy-post="6">Copy case ruling</button>
@@ -1567,53 +1367,38 @@
       <div class="workspace-grid">
         <aside class="scenario-card">
           <div class="scenario-head">
-            <div class="scenario-label">Case brief</div>
+            <div class="scenario-label">The case</div>
           </div>
-          <h3>1. Case story</h3>
+          <h3>What happened</h3>
           <p>A tenth-grade World History teacher teaches students to analyze a primary source for bias, perspective, and historical context. Some students struggle with 19th-century language and reading demands. AI creates plain-language footnotes, background questions, and a blank SOAPS organizer. Students still read the original source and complete the analysis independently.</p>
 
           <div class="ai-input-card">
-            <h4>2. Teacher AI input</h4>
+            <h4>What the teacher asked AI to do</h4>
             <p class="quote">“Add plain-language footnotes for difficult phrases, background questions, and a blank SOAPS organizer. Do not answer or analyze the source for students.”</p>
           </div>
 
-          <div class="mini-stack">
-            <div><strong>Learning target:</strong> Analyze a primary source for bias, perspective, and historical context.</div>
-            <div><strong>Barrier clue:</strong> 19th-century language blocks access to the original source.</div>
-            <div><strong>Student thinking:</strong> Students still read the original and analyze bias, perspective, and context.</div>
+          <div class="mini-stack given"><p class="given-title">Already worked out for you</p>
+            <div><strong>What students must learn:</strong> Analyze a primary source for bias, perspective, and historical context.</div>
+            <div><strong>What was in their way:</strong> 19th-century language blocks access to the original source.</div>
+            <div><strong>What students still do:</strong> Students still read the original and analyze bias, perspective, and context.</div>
           </div>
 
               <div class="osamr-strip" aria-label="OSAMR quick reference">
-                <div><strong>S</strong><span>AI substitutes one access support</span></div>
-                <div><strong>A</strong><span>AI adds support; task is clearer, not solved</span></div>
-                <div><strong>M</strong><span>Experience changes; target stays the same</span></div>
-                <div><strong>R</strong><span>Makes the previously inaccessible possible</span></div>
-                <div class="warn"><strong>!</strong><span>Overreliance — AI does the target thinking</span></div>
+                <div><strong>S</strong><span>AI swaps in one support. Task is the same.</span></div>
+                <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
+                <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
+                <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
+                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
         <main class="work-card">
           <ol class="steps">
-            <li>
-              <div class="step-head"><span>1</span><h3>Barrier removed</h3></div>
-              <p class="hint">What blocked access to the task?</p>
-              <textarea id="g7-barrier" data-field="barrier" data-group="7" placeholder="Type one clear barrier."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>2</span><h3>Thinking preserved</h3></div>
-              <p class="hint">What must students still do themselves?</p>
-              <textarea id="g7-thinking" data-field="thinking" data-group="7" placeholder="Type what students still think or do."></textarea>
-            </li>
 
-            <li>
-              <div class="step-head"><span>3</span><h3>AI action</h3></div>
-              <p class="hint">What did AI actually provide? Stay literal — quote the AI input if it helps.</p>
-              <textarea id="g7-action" data-field="action" data-group="7" placeholder="What did AI actually provide?"></textarea>
-            </li>
 
             <li class="ruling-step">
-              <div class="step-head"><span>4</span><h3>Final ruling</h3></div>
+              <div class="step-head"><span>1</span><h3>Final ruling</h3></div>
               <p class="hint">Do not debate the label until your group has named the evidence above.</p>
               <div class="token-row" role="group" aria-label="OSAMR decision tokens">
                 <button class="token" type="button" data-token="7" data-value="S — Substitute"><b>S</b>Substitute</button>
@@ -1634,35 +1419,18 @@
             </li>
 
             <li>
-              <div class="step-head"><span>5</span><h3>Evidence</h3></div>
+              <div class="step-head"><span>2</span><h3>Evidence</h3></div>
               <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
               <textarea id="g7-evidence" data-field="evidence" data-group="7" placeholder="The detail that proves our rating is…"></textarea>
             </li>
 
-            <li>
-              <div class="step-head"><span>6</span><h3>Red flag</h3></div>
-              <p class="hint">Where could this support cross the line into doing the thinking?</p>
-              <textarea id="g7-redflag" data-field="redflag" data-group="7" placeholder="This would cross the line if…"></textarea>
-            </li>
 
             <li>
-              <div class="step-head"><span>7</span><h3>Fix-it move</h3></div>
+              <div class="step-head"><span>3</span><h3>Fix-it move</h3></div>
               <p class="hint">One change that keeps the access but returns the thinking to students.</p>
               <textarea id="g7-fix" data-field="fix" data-group="7" placeholder="One safer fix would be…"></textarea>
             </li>
 
-            <li class="coach-step">
-              <div class="step-head"><span>8</span><h3>Pressure-test your ruling</h3></div>
-              <p class="hint">Optional. Copy the prompt, paste it into an AI assistant, and see whether your evidence holds up. Revise only if the evidence changes.</p>
-              <div class="action-row">
-                <button class="btn primary" type="button" data-copy-prompt="7">Copy pressure-test prompt</button>
-                <a class="btn gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Open Gemini ↗</a>
-              </div>
-              <details>
-                <summary>Preview the pressure-test prompt</summary>
-                <textarea class="prompt-preview" id="g7-prompt" readonly></textarea>
-              </details>
-            </li>
           </ol>
         </main>
       </div>
@@ -1678,7 +1446,7 @@
             <span>9–12 History/SS</span>
           </div>
         </div>
-        <p class="frame-line">We rated this <strong>___</strong> because AI removed <strong>___</strong> while students still <strong>___</strong>. Red flag: <strong>___</strong>. Fix: <strong>___</strong>.</p>
+        <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g7-post" class="post-output" readonly aria-label="Generated case ruling for Group 7"></textarea>
         <div class="action-row">
           <button class="btn primary" type="button" data-copy-post="7">Copy case ruling</button>
@@ -1692,7 +1460,7 @@
         <div>
           <p class="kicker">Gallery Board</p>
           <h2>Compare the rulings.</h2>
-          <p class="subline">One rating, one evidence detail, one red flag, one fix — from every group.</p>
+          <p class="subline">One rating, one evidence detail, one fix — from every group.</p>
           <p class="board-status" id="boardStatus">● Connecting to the shared board…</p>
         </div>
         <div class="action-row top-actions">
@@ -1760,9 +1528,9 @@
     // The model case is data too, so its prompt/ruling boxes fill from exactly
     // the same functions the groups use — one code path, no second version of
     // the wording to drift.
-    const MODEL_CASE = {"id":"m","title":"Proportional Relationships Directions","short":"Proportional Directions","band":"6–8 Math","meta":"Grade 6 Math · Dense-directions barrier · AI rewrote directions in plain language","story":"Sixth-grade students decide whether a table shows a proportional relationship. Several multilingual learners understand the math, but the directions are dense and the word “ratio” is unfamiliar. The teacher uses AI to rewrite the directions in plain language and add a short vocabulary note. Students still calculate ratios, decide whether they are equal, and explain their answer.","ai_input":"Rewrite these directions in plain language. Add one short note for “ratio.” Do not solve, name the operation, or tell students if the table is proportional.","barrier_clue":"Dense directions and unfamiliar vocabulary made it hard to start.","thinking_clue":"Students still calculate ratios, decide proportional or not, and explain why.","target":"Decide whether a table shows a proportional relationship and justify the decision.","answers":{"barrier":"Dense directions and the unfamiliar word “ratio” made it hard for multilingual learners to start a task they already understood mathematically.","thinking":"Students still calculate the ratios, decide whether they are equal, and explain how they know.","action":"AI rewrote the directions in plain language and added one short note defining “ratio.” It did not solve anything, name an operation, or say whether the table is proportional.","osamr":"A — Augment","evidence":"AI never finds the constant ratio. The rewritten directions still leave students to compute both ratios and compare them, so the mathematical decision is untouched.","redflag":"It would cross the line if AI gave the answer, told students which operation to use, or pointed out that both ratios simplify to the same thing.","fix":"Keep the plain-language directions and the vocabulary note, and add a blank ratio table students fill in themselves — never a worked example."}};
+    const MODEL_CASE = {"id":"m","title":"Proportional Relationships Directions","short":"Proportional Directions","band":"6–8 Math","meta":"Grade 6 Math · Dense-directions barrier · AI rewrote directions in plain language","story":"Sixth-grade students decide whether a table shows a proportional relationship. Several multilingual learners understand the math, but the directions are dense and the word “ratio” is unfamiliar. The teacher uses AI to rewrite the directions in plain language and add a short vocabulary note. Students still calculate ratios, decide whether they are equal, and explain their answer.","ai_input":"Rewrite these directions in plain language. Add one short note for “ratio.” Do not solve, name the operation, or tell students if the table is proportional.","barrier_clue":"Dense directions and unfamiliar vocabulary made it hard to start.","thinking_clue":"Students still calculate ratios, decide proportional or not, and explain why.","target":"Decide whether a table shows a proportional relationship and justify the decision.","answers":{"osamr":"A — Augment","evidence":"AI never finds the constant ratio. The rewritten directions still leave students to compute both ratios and compare them, so the mathematical decision is untouched.","fix":"Keep the plain-language directions and the vocabulary note, and add a blank ratio table students fill in themselves — never a worked example."}};
     const STORE = "osamr_case_clinic_v1";
-    const FIELDS = ["barrier","thinking","action","osamr","evidence","redflag","fix"];
+    const FIELDS = ["osamr","evidence","fix"];
 
     let state = {};
     try { state = JSON.parse(localStorage.getItem(STORE) || "{}"); } catch { state = {}; }
@@ -1772,7 +1540,7 @@
     const key = (g, f) => `g${g}_${f}`;
     const isModel = (g) => String(g) === "m";
     // The model reads its answers straight off its own data; groups read the
-    // participant's saved work. Everything downstream (promptFor, postFor) is
+    // participant's saved work. Everything downstream (postFor) is
     // then identical for both.
     const getValue = (g, f) =>
       isModel(g) ? (MODEL_CASE.answers[f] || "") : (state[key(g, f)] || "");
@@ -1850,39 +1618,6 @@
       window.scrollTo({ top: 0, behavior: "auto" });
     }
 
-    function promptFor(g) {
-      const c = caseById(g);
-      const v = (f, fallback) => getValue(g, f) || fallback;
-      return `You are helping a teacher team pressure-test an OSAMR case ruling during professional learning.
-
-Do NOT tell us the "right" answer outright. Challenge our evidence.
-
-Classroom case:
-${c.story}
-
-Teacher AI input:
-"${c.ai_input}"
-
-Learning target that must survive:
-${c.target}
-
-Our ruling so far:
-- Barrier removed: ${v("barrier", "[not named yet]")}
-- Thinking preserved: ${v("thinking", "[not named yet]")}
-- AI action: ${v("action", "[not named yet]")}
-- OSAMR level: ${v("osamr", "[not chosen yet]")}
-- Evidence: ${v("evidence", "[not named yet]")}
-- Red flag: ${v("redflag", "[not named yet]")}
-- Fix-it move: ${v("fix", "[not named yet]")}
-
-Please respond with:
-1. The strongest counter-argument to our OSAMR level.
-2. One place our evidence is a restatement of the label rather than a detail from the case.
-3. One question that would tell us whether students still do the target thinking.
-4. Whether our fix-it move actually returns thinking to students, or just adds more support.
-
-Keep it under 200 words.`;
-    }
 
     function postFor(g) {
       const c = caseById(g);
@@ -1899,15 +1634,17 @@ TEACHER AI INPUT
 RULING
 OSAMR level: ${v("osamr", "[level]")}
 
-1. Barrier removed: ${v("barrier", "[barrier]")}
-2. Thinking preserved: ${v("thinking", "[thinking]")}
-3. AI action: ${v("action", "[what AI provided]")}
-4. Evidence: ${v("evidence", "[proof detail]")}
-5. Red flag: ${v("redflag", "[what would cross the line]")}
-6. Fix-it move: ${v("fix", "[safer fix]")}
+1. Barrier removed: ${c.barrier_clue}
+2. Thinking preserved: ${c.thinking_clue}
+3. Evidence: ${v("evidence", "[proof detail]")}
+4. Fix-it move: ${v("fix", "[safer fix]")}
 
 60-SECOND DEFENSE
-We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} while students still ${v("thinking", "___")}. Red flag: ${v("redflag", "___")}. Fix: ${v("fix", "___")}.`;
+We rated this ${v("osamr", "___")}.
+Barrier AI removed: ${c.barrier_clue}
+Students still: ${c.thinking_clue}
+Our evidence: ${v("evidence", "___")}
+Our fix: ${v("fix", "___")}`;
     }
 
     function completion(g) {
@@ -1916,9 +1653,7 @@ We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} whi
     }
 
     function updateGroup(g) {
-      const prompt = $("#g" + g + "-prompt");
       const post = $("#g" + g + "-post");
-      if (prompt) prompt.value = promptFor(g);
       if (post) post.value = postFor(g);
     }
 
@@ -2042,15 +1777,17 @@ TEACHER AI INPUT
 RULING
 OSAMR level: ${v("osamr", "[level]")}
 
-1. Barrier removed: ${v("barrier", "[barrier]")}
-2. Thinking preserved: ${v("thinking", "[thinking]")}
-3. AI action: ${v("action", "[what AI provided]")}
-4. Evidence: ${v("evidence", "[proof detail]")}
-5. Red flag: ${v("redflag", "[what would cross the line]")}
-6. Fix-it move: ${v("fix", "[safer fix]")}
+1. Barrier removed: ${c.barrier_clue}
+2. Thinking preserved: ${c.thinking_clue}
+3. Evidence: ${v("evidence", "[proof detail]")}
+4. Fix-it move: ${v("fix", "[safer fix]")}
 
 60-SECOND DEFENSE
-We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} while students still ${v("thinking", "___")}. Red flag: ${v("redflag", "___")}. Fix: ${v("fix", "___")}.`;
+We rated this ${v("osamr", "___")}.
+Barrier AI removed: ${c.barrier_clue}
+Students still: ${c.thinking_clue}
+Our evidence: ${v("evidence", "___")}
+Our fix: ${v("fix", "___")}`;
     }
 
     /* A ruling is reduced to a letter for the compare views. Unset stays
@@ -2110,7 +1847,6 @@ We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} whi
       const body = posted
         ? `<dl class="gi-rows">
              ${row("Evidence", "evidence")}
-             ${row("Red flag", "redflag", "flag")}
              ${row("Fix-it", "fix")}
            </dl>`
         : `<p class="gi-waiting">Waiting for this group…</p>`;
@@ -2206,10 +1942,9 @@ We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} whi
           : "";
       body.innerHTML = `<dl class="present-detail">
           <div class="pd-row"><dt>Ruling</dt><dd><strong>${escapeHtml(lvl ? lvl.label : fields.osamr || "—")}</strong></dd></div>
-          ${row("Barrier", "barrier")}
-          ${row("Thinking", "thinking")}
+          <div class="pd-row"><dt>Barrier</dt><dd>${escapeHtml(c.barrier_clue)}</dd></div>
+          <div class="pd-row"><dt>Thinking</dt><dd>${escapeHtml(c.thinking_clue)}</dd></div>
           ${row("Evidence", "evidence")}
-          ${row("Red flag", "redflag", "flag")}
           ${row("Fix-it", "fix")}
         </dl>`;
     }
@@ -2267,12 +2002,6 @@ We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} whi
         return;
       }
 
-      const promptBtn = e.target.closest("[data-copy-prompt]");
-      if (promptBtn) {
-        const ok = await copyText(promptFor(promptBtn.dataset.copyPrompt));
-        showToast(ok ? "Pressure-test prompt copied" : "Prompt ready to copy");
-        return;
-      }
 
       const postBtn = e.target.closest("[data-copy-post]");
       if (postBtn) {
@@ -2368,7 +2097,237 @@ We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} whi
       $$("textarea").forEach((t) => { t.style.height = t.dataset.h || ""; });
     });
 
+    /* ---------------------------------------------------------------
+       Guided wizard: one step on screen at a time.
+
+       A case room holds the brief, the OSAMR key, the ruling tokens and
+       two write-ups. All of it at once is what made the room feel like
+       homework. Nothing is removed here — the same nodes are re-parented
+       into four panes with Back/Next, so a group only ever sees the one
+       thing they are doing right now.
+
+       Built from the existing DOM, so each case stays authored once and
+       the no-JS page still shows everything in order.
+    --------------------------------------------------------------- */
+    const WIZ_STEPS = [
+      {
+        title: "Read the case",
+        todo: "Read what happened and what the teacher asked AI to do. Nothing to type here.",
+        next: "We read it — go to step 2 →",
+      },
+      {
+        title: "Pick a letter",
+        todo: "As a group, tap the one letter that matches what AI actually did.",
+        next: "Letter picked — go to step 3 →",
+      },
+      {
+        title: "Say why",
+        todo: "Two quick answers. Tap one of the choices under each question, or write your own.",
+        next: "Done — go to step 4 →",
+      },
+      {
+        title: "Post it",
+        todo: "Your ruling is already written below. Tap “Copy case ruling”, then put it on the board.",
+        next: "",
+      },
+    ];
+
+
+    /* ---------------------------------------------------------------
+       Tap-to-build. Step 3 asks for two sentences, which is the slowest
+       thing in a 15-minute clinic. These write a true sentence for THIS
+       case in one tap; the group edits it if they want to say it better.
+       The textareas stay the source of truth, so typing still works.
+    --------------------------------------------------------------- */
+    /* Plain sentences a group can tap and mean. Earlier versions spliced the
+       learning target into the sentence, which lower-cased "Newton's Second
+       Law" and printed a double period; the target is already stated in the
+       case brief two taps away, so it does not need repeating here. */
+    function evidencePicks() {
+      return [
+        "AI cleared what was in the way. Students still do the real work.",
+        "AI changed how students get into the task, not what they have to figure out.",
+        "AI did the real work for them. There was nothing left to figure out.",
+      ];
+    }
+
+    function fixPicks() {
+      return [
+        "Blank out the part AI filled in and let students complete it.",
+        "Keep the access support, but remove any example that shows the answer.",
+        "Add a check that makes students explain their reasoning in their own words.",
+      ];
+    }
+
+    function buildPickRows() {
+      [...CASES, MODEL_CASE].forEach((c) => {
+        [
+          ["evidence", evidencePicks()],
+          ["fix", fixPicks()],
+        ].forEach(([field, options]) => {
+          const box = $(`#g${c.id}-${field}`);
+          if (!box || box.readOnly || box.previousElementSibling?.classList.contains("pick-row")) return;
+          const row = document.createElement("div");
+          row.className = "pick-row";
+          row.innerHTML = `
+            <p class="chip-picker-title">Tap one, or write your own below</p>
+            ${options
+              .map(
+                (text) =>
+                  `<button type="button" class="pick-line" data-pick="${c.id}" data-field="${field}" data-text="${text.replaceAll('"', "&quot;")}">${text}</button>`,
+              )
+              .join("")}`;
+          box.parentNode.insertBefore(row, box);
+        });
+      });
+    }
+
+    document.addEventListener("click", (event) => {
+      const pick = event.target.closest("[data-pick]");
+      if (!pick) return;
+      const { pick: group, field, text } = pick.dataset;
+      const box = $(`#g${group}-${field}`);
+      if (!box) return;
+      box.value = text;
+      setValue(group, field, text);
+      updateGroup(group);
+      if (typeof refreshProgress === "function") refreshProgress(group);
+    });
+
+    function buildWizards() {
+      $$(".group-page").forEach((page) => {
+        if ($(".wiz", page)) return;
+        const grid = $(".workspace-grid", page);
+        const items = $$(".steps > li", page);
+        const post = $(".post-card", page);
+        if (!grid || items.length !== 3 || !post) return;
+        const id = page.id.replace("group-", "");
+
+        const wiz = document.createElement("div");
+        wiz.className = "wiz";
+        wiz.dataset.group = id;
+        wiz.innerHTML = `
+          <ol class="wiz-dots" aria-label="Steps">
+            ${WIZ_STEPS.map(
+              (step, i) =>
+                `<li><button type="button" class="wiz-dot" data-wiz-go="${i}" data-group="${id}"><span>${i + 1}</span>${step.title}</button></li>`,
+            ).join("")}
+          </ol>
+          <div class="wiz-panes"></div>`;
+        grid.parentNode.insertBefore(wiz, grid);
+        const panes = $(".wiz-panes", wiz);
+
+        const makePane = (index, nodes) => {
+          const step = WIZ_STEPS[index];
+          const pane = document.createElement("section");
+          pane.className = "wiz-pane";
+          pane.dataset.pane = index;
+          pane.setAttribute("aria-label", `Step ${index + 1}: ${step.title}`);
+          pane.tabIndex = -1;
+          const head = document.createElement("div");
+          head.className = "wiz-head";
+          head.innerHTML = `
+            <p class="wiz-of">Step ${index + 1} of ${WIZ_STEPS.length}</p>
+            <h3 class="wiz-title">${step.title}</h3>
+            <p class="wiz-todo">${step.todo}</p>`;
+          pane.appendChild(head);
+          nodes.forEach((node) => node && pane.appendChild(node));
+          const nav = document.createElement("div");
+          nav.className = "wiz-nav";
+          nav.innerHTML = `
+            ${index > 0 ? `<button type="button" class="btn secondary" data-wiz-back="${index}" data-group="${id}">← Back to step ${index}</button>` : "<span></span>"}
+            ${step.next ? `<button type="button" class="btn primary" data-wiz-next="${index}" data-group="${id}">${step.next}</button>` : `<a class="btn secondary" href="#menu" data-open-page="menu">Back to case rooms</a>`}`;
+          pane.appendChild(nav);
+          panes.appendChild(pane);
+        };
+
+        /* Each work step carries its own number, title and hint — all three
+           now duplicate the pane header, so they come off. One instruction
+           per screen is the whole point. */
+        const QUESTIONS = [
+          null, // the ruling step's title is the pane title
+          "Why did you pick that letter?",
+          "What one change would make this better?",
+        ];
+        items.forEach((li, i) => {
+          const head = $(".step-head", li);
+          const hint = $(".hint", li);
+          if (hint) hint.remove();
+          if (!QUESTIONS[i]) {
+            if (head) head.remove();
+            return;
+          }
+          /* Two bare textareas under one instruction read as "type twice and
+             hope" — each question gets its own plain heading. */
+          if (head) {
+            const badge = $("span", head);
+            if (badge) badge.remove();
+            const h = $("h3", head);
+            if (h) h.textContent = QUESTIONS[i];
+            head.classList.add("wiz-question");
+          }
+        });
+
+        /* The OSAMR key is only used to answer step 2, so it travels there
+           rather than padding out the reading step. */
+        const key = $(".osamr-strip", page);
+
+        makePane(0, [$(".scenario-card", page)]);
+        makePane(1, [items[0], key]);
+        makePane(2, [items[1], items[2]]);
+        makePane(3, [post]);
+
+        grid.remove();
+        page.classList.add("wiz-on");
+        showWizPane(id, 0);
+      });
+    }
+
+    function showWizPane(groupId, index) {
+      const wiz = $(`.wiz[data-group="${groupId}"]`);
+      if (!wiz) return;
+      const target = Math.min(Math.max(index, 0), WIZ_STEPS.length - 1);
+      $$(".wiz-pane", wiz).forEach((pane) => {
+        const on = Number(pane.dataset.pane) === target;
+        pane.classList.toggle("on", on);
+        pane.hidden = !on;
+      });
+      $$(".wiz-dot", wiz).forEach((dot) => {
+        const i = Number(dot.dataset.wizGo);
+        dot.classList.toggle("current", i === target);
+        dot.classList.toggle("past", i < target);
+        dot.setAttribute("aria-current", i === target ? "step" : "false");
+      });
+    }
+
+    function moveWizPane(groupId, index) {
+      showWizPane(groupId, index);
+      const pane = $(`.wiz[data-group="${groupId}"] .wiz-pane.on`);
+      if (!pane) return;
+      /* Measured, never assumed: the header re-wraps at narrow widths and a
+         hardcoded offset parks the step title underneath it. */
+      const headerH =
+        Number.parseInt(getComputedStyle(document.documentElement).getPropertyValue("--top-h"), 10) ||
+        140;
+      window.scrollTo({
+        top: Math.max(pane.getBoundingClientRect().top + window.scrollY - headerH - 24, 0),
+        behavior: "auto",
+      });
+      pane.focus({ preventScroll: true });
+    }
+
+    document.addEventListener("click", (event) => {
+      const next = event.target.closest("[data-wiz-next]");
+      if (next) return moveWizPane(next.dataset.group, Number(next.dataset.wizNext) + 1);
+      const back = event.target.closest("[data-wiz-back]");
+      if (back) return moveWizPane(back.dataset.group, Number(back.dataset.wizBack) - 1);
+      const go = event.target.closest("[data-wiz-go]");
+      if (go) moveWizPane(go.dataset.group, Number(go.dataset.wizGo));
+    });
+
     hydrate();
+    buildPickRows();
+    buildWizards();
     renderGallery();
 
     // Read the board once on load, then keep it fresh. 6s while the gallery is
@@ -2382,8 +2341,5 @@ We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} whi
     document.addEventListener("visibilitychange", () => { if (!document.hidden) pollBoard(); });
     openPage(location.hash.replace("#", "") || "launch", false);
   </script>
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
   </body>
 </html>

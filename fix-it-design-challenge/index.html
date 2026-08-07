@@ -962,7 +962,7 @@
          nested card chrome so it does not read as a box inside a box. */
       .wiz-pane .scenario-card,
       .wiz-pane .post-card,
-      .wiz-pane > li {
+      .wiz-pane li {
         background: none;
         border: 0;
         box-shadow: none;
@@ -1002,6 +1002,134 @@
       }
       .wiz-pane textarea.tall {
         min-height: 190px;
+      }
+
+      /* Step 2 keeps the AI request in view beside the writing box. */
+      .wiz-split {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 20px;
+        align-items: start;
+      }
+      .wiz-ref {
+        background: #f7fafc;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 16px;
+        position: sticky;
+        top: calc(var(--top-h, 140px) + 16px);
+      }
+      .wiz-ref-title {
+        margin: 0 0 10px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #6b7688;
+      }
+      .wiz-ref .ai-input-card,
+      .wiz-ref .given-card {
+        margin: 0 0 12px;
+        padding: 12px 14px;
+        font-size: 14px;
+      }
+      .wiz-ref .given-card:last-child,
+      .wiz-ref .ai-input-card:last-child {
+        margin-bottom: 0;
+      }
+      .wiz-ref .quote {
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      @media (max-width: 900px) {
+        .wiz-split {
+          grid-template-columns: 1fr;
+        }
+        .wiz-ref {
+          position: static;
+          order: -1;
+        }
+      }
+
+      /* Tap-to-build pickers: taps instead of typing. */
+      .chip-picker {
+        margin: 0 0 14px;
+      }
+      .chip-picker-title {
+        margin: 0 0 8px;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #6b7688;
+      }
+      .chip-picker-note {
+        margin: 8px 0 0;
+        font-size: 13px;
+        color: #6b7688;
+      }
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .pick-chip {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 9px 15px;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        color: #33424f;
+        cursor: pointer;
+        line-height: 1.2;
+      }
+      .pick-chip:hover {
+        border-color: var(--navy);
+      }
+      .pick-chip.on {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: #fff;
+        font-weight: 700;
+      }
+      .pick-chip.on::before {
+        content: "✓ ";
+      }
+      .pick-row {
+        margin: 0 0 12px;
+      }
+      .pick-line {
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: #f7fafc;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        font: inherit;
+        font-size: 15px;
+        color: #2c3a4a;
+        cursor: pointer;
+        line-height: 1.4;
+      }
+      .pick-line:hover {
+        border-color: var(--navy);
+        background: #fff;
+      }
+
+      .ai-problem {
+        margin: 10px 0 0;
+        padding-top: 10px;
+        border-top: 1px dashed var(--line);
+        font-size: 14px;
+        line-height: 1.45;
+        color: #8a3d2a;
+      }
+      .ai-problem strong {
+        color: #7a3423;
       }
 
       .given-card {
@@ -2112,9 +2240,6 @@
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (fix-it-design-challenge): supports Level 4 conditions on T2, T3, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
-    <!-- nsr-injected:end -->
     <script>
       /* Opt out of the shared GameFX mission brief using the kit's own
          once-per-session key, so the dialog is never built rather than built
@@ -4136,7 +4261,7 @@
           grid.parentNode.insertBefore(wiz, grid);
           const panes = $(".wiz-panes", wiz);
 
-          const makePane = (index, nodes) => {
+          const makePane = (index, nodes, reference = null) => {
             const step = WIZ_STEPS[index];
             const pane = document.createElement("section");
             pane.className = "wiz-pane";
@@ -4150,7 +4275,17 @@
               <h3 class="wiz-title">${step.title}</h3>
               <p class="wiz-todo">${step.todo}</p>`;
             pane.appendChild(head);
-            nodes.forEach((node) => node && pane.appendChild(node));
+            if (reference) {
+              const split = document.createElement("div");
+              split.className = "wiz-split";
+              const main = document.createElement("div");
+              nodes.forEach((node) => node && main.appendChild(node));
+              split.appendChild(main);
+              split.appendChild(reference);
+              pane.appendChild(split);
+            } else {
+              nodes.forEach((node) => node && pane.appendChild(node));
+            }
             const nav = document.createElement("div");
             nav.className = "wiz-nav";
             nav.innerHTML = `
@@ -4174,8 +4309,30 @@
              step 3 instead of padding out the reading step. */
           const osamrKey = $(".osamr-strip", page);
 
-          makePane(0, [$(".scenario-card", page), $(".given-card", page)]);
-          makePane(1, [items[0]]);
+          /* Step 2 asks groups to write against a prompt that was two screens
+             back. A copy of the AI request and the guardrails rides along
+             beside the writing box so nobody has to page backwards to
+             remember what they are fixing. */
+          const reference = document.createElement("aside");
+          reference.className = "wiz-ref";
+          const aiCard = $(".ai-input-card", page);
+          /* The AI requests read as perfectly reasonable teacher asks — that is
+             exactly why they slipped through. Print what came back next to the
+             request, so the flaw is visible instead of inferred. */
+          if (aiCard && !$(".ai-problem", aiCard)) {
+            const problem = document.createElement("p");
+            problem.className = "ai-problem";
+            problem.innerHTML = `<strong>What came back:</strong> ${group.ai_problem}`;
+            aiCard.appendChild(problem);
+          }
+          const givenCard = $(".given-card", page);
+          reference.innerHTML = `
+            <p class="wiz-ref-title">Keep this in view</p>
+            ${aiCard ? aiCard.outerHTML : ""}
+            ${givenCard ? givenCard.outerHTML : ""}`;
+
+          makePane(0, [$(".scenario-card", page), givenCard]);
+          makePane(1, [items[0]], reference);
           makePane(2, [items[1], osamrKey]);
           makePane(3, [post]);
 
@@ -4240,6 +4397,109 @@
         const go = event.target.closest("[data-wiz-go]");
         if (go) moveWizPane(go.dataset.group, Number(go.dataset.wizGo));
       });
+
+
+      /* ---------------------------------------------------------------
+         Tap-to-build.
+
+         Even with a starter sentence, step 2 was still "write a paragraph
+         in a box", which is the slowest thing we ask of a group in a
+         20-minute session. These are the scaffold moves teachers actually
+         reach for; tapping one writes its line into the box and tapping it
+         again takes it out. The textarea stays the single source of truth,
+         so anything typed by hand survives and nothing needs new state.
+      --------------------------------------------------------------- */
+      const FIX_MOVES = [
+        "Vocabulary bank (words only, no answers)",
+        "Sentence frames",
+        "Chunk the text with headings",
+        "Guiding questions for each part",
+        "A blank organizer students fill in",
+        "A step-by-step checklist",
+        "Plain-language or translated directions",
+        "Visual cues, icons or labels",
+        "A word bank with pictures",
+        "A partner-talk prompt",
+      ];
+
+      function fixLines(groupId) {
+        const box = $(`#g${groupId}-before`);
+        return box ? box.value.split("\n").filter((line) => line.trim()) : [];
+      }
+
+      function buildFixChips() {
+        GROUPS.forEach((group) => {
+          const box = $(`#g${group.id}-before`);
+          if (!box || $(`.chip-picker[data-group="${group.id}"]`)) return;
+          const picker = document.createElement("div");
+          picker.className = "chip-picker";
+          picker.dataset.group = group.id;
+          picker.innerHTML = `
+            <p class="chip-picker-title">Tap everything you want in your fix</p>
+            <div class="chip-row">
+              ${FIX_MOVES.map(
+                (move) =>
+                  `<button type="button" class="pick-chip" data-fix-move="${group.id}" data-move="${move}">${move}</button>`,
+              ).join("")}
+            </div>
+            <p class="chip-picker-note">Add anything else in the box below — you can edit every line.</p>`;
+          box.parentNode.insertBefore(picker, box);
+          syncFixChips(group.id);
+        });
+      }
+
+      function syncFixChips(groupId) {
+        const lines = fixLines(groupId).map((line) => line.replace(/^•\s*/, "").trim());
+        $$(`[data-fix-move="${groupId}"]`).forEach((chip) => {
+          const on = lines.includes(chip.dataset.move);
+          chip.classList.toggle("on", on);
+          chip.setAttribute("aria-pressed", String(on));
+        });
+      }
+
+      function toggleFixMove(groupId, move) {
+        const box = $(`#g${groupId}-before`);
+        if (!box) return;
+        const lines = fixLines(groupId);
+        const index = lines.findIndex((line) => line.replace(/^•\s*/, "").trim() === move);
+        if (index >= 0) lines.splice(index, 1);
+        else lines.push(`• ${move}`);
+        box.value = lines.join("\n");
+        setValue(groupId, "before", box.value);
+        updateGroup(groupId);
+        refreshProgress(groupId);
+        syncFixChips(groupId);
+      }
+
+      /* Step 3 asks for one sentence. These write a true one for this case in
+         a tap; the group edits it if they want to say it better. */
+      function evidenceOptions(group) {
+        const thinking = group.thinking.replace(/^Students must\s*/i, "").replace(/\.$/, "");
+        return [
+          `Students still have to ${thinking}.`,
+          "Our support gives words and structure, never the answer or the reasoning.",
+          "Nothing we added states the final answer, so the thinking stays with students.",
+        ];
+      }
+
+      function buildEvidencePicks() {
+        GROUPS.forEach((group) => {
+          const box = $(`#g${group.id}-evidence`);
+          if (!box || $(`.pick-row[data-group="${group.id}"]`)) return;
+          const row = document.createElement("div");
+          row.className = "pick-row";
+          row.dataset.group = group.id;
+          row.innerHTML = `
+            <p class="chip-picker-title">Tap one, or write your own below</p>
+            ${evidenceOptions(group)
+              .map(
+                (text) =>
+                  `<button type="button" class="pick-line" data-evidence="${group.id}" data-text="${text.replaceAll('"', "&quot;")}">${text}</button>`,
+              )
+              .join("")}`;
+          box.parentNode.insertBefore(row, box);
+        });
+      }
 
       function resetGroup(groupId) {
         const group = groupById(groupId);
@@ -4663,6 +4923,25 @@ Group ${group.id} — ${group.short}; Fix-It; Rigor Preserved; ${osamrLabel}`;
           return;
         }
 
+        const moveChip = event.target.closest("[data-fix-move]");
+        if (moveChip) {
+          toggleFixMove(moveChip.dataset.fixMove, moveChip.dataset.move);
+          return;
+        }
+
+        const evidencePick = event.target.closest("[data-evidence]");
+        if (evidencePick) {
+          const groupId = evidencePick.dataset.evidence;
+          const box = $(`#g${groupId}-evidence`);
+          if (box) {
+            box.value = evidencePick.dataset.text;
+            setValue(groupId, "evidence", box.value);
+            updateGroup(groupId);
+            refreshProgress(groupId);
+          }
+          return;
+        }
+
         /* One tap fills the draft box with this group's starter idea, so nobody
            has to face a blank textarea. It never overwrites real work. */
         const starterButton = event.target.closest("[data-starter]");
@@ -4676,6 +4955,7 @@ Group ${group.id} — ${group.short}; Fix-It; Rigor Preserved; ${osamrLabel}`;
             setValue(groupId, "before", box.value);
             updateGroup(groupId);
             refreshProgress(groupId);
+            syncFixChips(groupId);
             box.focus();
             showToast("Starter idea added — edit it to make it yours");
           }
@@ -4776,6 +5056,8 @@ Group ${group.id} — ${group.short}; Fix-It; Rigor Preserved; ${osamrLabel}`;
       });
 
       hydrateInputs();
+      buildFixChips();
+      buildEvidencePicks();
       buildProgressHeaders();
       buildMenuBadges();
       buildReadyChecks();
@@ -5014,9 +5296,6 @@ Group ${group.id} — ${group.short}; Fix-It; Rigor Preserved; ${osamrLabel}`;
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-    <!-- nsr-injected:end -->
     <script src="/assets/formula-popup.js" defer></script>
   </body>
 </html>
