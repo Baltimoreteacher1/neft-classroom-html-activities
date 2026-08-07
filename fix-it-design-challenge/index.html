@@ -1200,6 +1200,71 @@
         color: #8a3d2a;
       }
 
+      .hero-facts {
+        margin: 14px 0 0;
+      }
+      .hero-facts p {
+        margin: 0 0 6px;
+        font-size: 17px;
+        line-height: 1.5;
+      }
+
+      /* The model: the same four steps, already answered. */
+      .model-walk {
+        display: grid;
+        gap: 14px;
+        margin-top: 16px;
+      }
+      .model-pane {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 18px 20px;
+      }
+      .model-pane .wiz-title {
+        font-size: 22px;
+        margin: 2px 0 8px;
+      }
+      .model-note {
+        margin: 0 0 14px;
+        line-height: 1.5;
+        color: #2c3a4a;
+      }
+      .model-output {
+        background: #f7fafc;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 16px;
+      }
+      .model-output-label {
+        margin: 0 0 6px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #6b7688;
+      }
+      .model-output-label + .model-answer {
+        margin: 0 0 14px;
+      }
+      .model-answer {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.5;
+        color: #2c3a4a;
+      }
+      .model-output pre {
+        margin: 0;
+        white-space: pre-wrap;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: #33424f;
+      }
+      .model-pane .prompt-original {
+        margin-bottom: 14px;
+      }
+
       .given-card {
         background: #f7fafc;
         border: 1px solid var(--line);
@@ -2414,11 +2479,22 @@
         <!-- Step 1: Welcome -->
         <div class="hero">
           <p class="kicker">Fix-It Design Challenge</p>
-          <h2>Rewrite one AI prompt so it helps students without doing their thinking.</h2>
+          <h2>Your group rewrites one broken AI prompt.</h2>
+          <div class="hero-facts">
+            <p>
+              <strong>What happened:</strong> a teacher asked AI for help making a task reachable.
+              What came back did the students' thinking for them.
+            </p>
+            <p><strong>What you do:</strong> rewrite that request so it cannot happen again.</p>
+            <p>
+              <strong>What you turn in:</strong> your rewritten prompt, posted to Padlet. The page
+              writes the post — you tap Copy.
+            </p>
+          </div>
           <p class="why-line">
-            <strong>Why we are doing this:</strong> we all ask AI for materials that make work
-            reachable. Ask the wrong way and AI hands students the answer instead. The difference
-            is usually one or two lines in the prompt.
+            <strong>Why:</strong> we all ask AI for materials that open a task up. Ask the wrong way
+            and AI hands students the answer instead — and the difference is usually one or two
+            lines in the prompt.
           </p>
         </div>
 
@@ -2488,32 +2564,110 @@
           </div>
         </div>
 
-        <!-- Step 3: One finished example, collapsed -->
+        <!-- Step 3: The model, walked step by step and already finished -->
         <div class="walkthrough-section">
           <div class="walkthrough-number">3</div>
           <div>
-            <h3>See one finished example</h3>
-            <p>Optional. Open it if you want to see what a good fix looks like before you start.</p>
+            <h3>Watch one group do it</h3>
+            <p>
+              Here is a real case, finished. Same four steps you are about to do, with a Grade 7 ELA
+              group's answers already filled in.
+            </p>
 
-            <details class="model-example">
-              <summary>Example: Grade 7 ELA — AI named the claim and evidence</summary>
-              <div class="model-example-body">
-                <p>
-                  <strong>The problem:</strong> a teacher asked AI to “summarize this article and
-                  tell students the central claim and two pieces of evidence.” The article got
-                  easier — and the close reading disappeared.
+            <div class="model-walk">
+              <section class="model-pane">
+                <p class="wiz-of">Step 1 of 4</p>
+                <h4 class="wiz-title">Read the problem</h4>
+                <p class="model-note">They read what the teacher sent and what came back.</p>
+                <div class="prompt-original">
+                  <p class="prompt-original-title">The prompt they were fixing</p>
+                  <p class="quote">
+                    “Summarize this article for 7th graders and tell students the author's central
+                    claim and two pieces of evidence they should use in their response.”
+                  </p>
+                  <p class="ai-problem">
+                    <strong>What came back:</strong> the AI named the claim and picked the evidence.
+                    Students could answer from the summary without ever reading the article.
+                  </p>
+                </div>
+                <div class="given-card">
+                  <p class="given-title">The test their new prompt had to pass</p>
+                  <ul class="test-list">
+                    <li class="ok"><strong>AI may help with</strong> dense text and close-reading load.</li>
+                    <li class="no"><strong>AI must never</strong> name the claim or choose the evidence.</li>
+                    <li class="ok">
+                      <strong>Students still</strong> identify the claim, select evidence, and explain
+                      the connection.
+                    </li>
+                  </ul>
+                </div>
+              </section>
+
+              <section class="model-pane">
+                <p class="wiz-of">Step 2 of 4</p>
+                <h4 class="wiz-title">Rewrite the teacher's prompt</h4>
+                <p class="model-note">
+                  They loaded the real request, deleted the line that gave the answer away
+                  (<em>“tell students the author's central claim and two pieces of evidence”</em>),
+                  then tapped chips to add what AI should build and what it must never do.
                 </p>
-                <p>
-                  <strong>The fix they wrote:</strong> chunk headings, five vocabulary supports, one
-                  focus question per chunk, and a blank evidence organizer that sends students back
-                  into the original article.
+                <div class="model-output">
+                  <p class="model-output-label">Their rewritten prompt</p>
+                  <pre>Create access supports for 7th graders reading this article.
+• Chunk the text with headings.
+• Include a vocabulary bank with words only.
+• Add one guiding question per part.
+• Include a blank organizer for students to fill in.
+• Do not summarize or replace the text.
+• Do not choose the evidence for students.
+• Do not explain the reasoning.</pre>
+                </div>
+              </section>
+
+              <section class="model-pane">
+                <p class="wiz-of">Step 3 of 4</p>
+                <h4 class="wiz-title">Rate your new prompt</h4>
+                <p class="model-note">One level, one sentence.</p>
+                <div class="model-output">
+                  <p class="model-output-label">OSAMR level</p>
+                  <p class="model-answer">Augmentation</p>
+                  <p class="model-output-label">Students still have to…</p>
+                  <p class="model-answer">
+                    Students still have to identify the claim, select their own evidence, and
+                    explain how it supports the claim.
+                  </p>
+                </div>
+              </section>
+
+              <section class="model-pane">
+                <p class="wiz-of">Step 4 of 4</p>
+                <h4 class="wiz-title">Post it to Padlet</h4>
+                <p class="model-note">
+                  The page wrote this for them. They ticked the box and tapped Copy.
                 </p>
-                <p>
-                  <strong>Rated:</strong> Augmentation. Students still read the text, name the
-                  claim, pick their own evidence, and explain the connection.
-                </p>
-              </div>
-            </details>
+                <div class="model-output">
+                  <p class="model-output-label">Their Padlet post</p>
+                  <pre>Group — ELA Evidence
+
+Problem AI Input:
+"Summarize this article for 7th graders and tell students the author's
+central claim and two pieces of evidence they should use."
+
+Our fixed AI prompt:
+Create access supports for 7th graders reading this article.
+• Chunk the text with headings.
+• Include a vocabulary bank with words only.
+• Do not choose the evidence for students.
+
+OSAMR rating:
+Augmentation
+
+Rigor evidence:
+Students still have to identify the claim, select their own evidence,
+and explain how it supports the claim.</pre>
+                </div>
+              </section>
+            </div>
 
             <div class="callout" style="margin-top: 18px">
               <strong>The one rule:</strong> ask AI for supports — vocabulary, questions, structure,
