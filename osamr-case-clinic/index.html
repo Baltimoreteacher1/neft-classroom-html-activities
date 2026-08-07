@@ -5,17 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="OSAMR Sort — place seven real classroom AI uses on the OSAMR scale, then see where the room disagrees."
+      content="AI for Accessible Instruction — the OSAMR scale, and where each part of today's session happens."
     />
-    <title>OSAMR Sort | AI for Accessible Instruction</title>
+    <title>OSAMR Reference | AI for Accessible Instruction</title>
     <style>
       :root {
         --navy: #10283f;
-        --navy2: #173a5b;
         --teal: #247c7f;
-        --teal2: #4fb6b3;
-        --cream: #fff8ed;
-        --paper: #fffdf8;
         --gold: #e0a93c;
         --terracotta: #c9684a;
         --sage: #dce8df;
@@ -29,9 +25,6 @@
       * {
         box-sizing: border-box;
       }
-      html {
-        scroll-behavior: auto;
-      }
       body {
         margin: 0;
         font-family: var(--font);
@@ -40,13 +33,10 @@
           radial-gradient(circle at top left, rgba(79, 182, 179, 0.16), transparent 28rem),
           linear-gradient(135deg, #f6fbfb 0%, #fff8ed 72%, #f8efe7 100%);
         min-height: 100vh;
-        padding-bottom: 64px;
+        padding-bottom: 56px;
       }
-      button,
-      select,
-      input,
-      textarea {
-        font-family: inherit;
+      a {
+        color: inherit;
       }
       .skip-link {
         position: absolute;
@@ -62,7 +52,7 @@
         left: 0;
       }
       .wrap {
-        max-width: 1080px;
+        max-width: 1000px;
         margin: 0 auto;
         padding: 0 20px;
       }
@@ -99,32 +89,13 @@
         color: var(--muted);
         font-weight: 600;
       }
-      .brand .spacer {
-        flex: 1;
-      }
-      .who {
-        font-size: 13px;
-        font-weight: 800;
-        color: var(--navy);
-        background: var(--sage);
-        border-radius: 999px;
-        padding: 7px 14px;
-      }
-
-      .page {
-        display: none;
-      }
-      .page.active {
-        display: block;
-        padding-top: 22px;
-      }
 
       .hero {
         background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
         color: #fff;
         border-radius: var(--radius);
         padding: 26px 28px;
-        margin-bottom: 20px;
+        margin: 22px 0 20px;
       }
       .hero .kicker {
         margin: 0 0 6px;
@@ -135,12 +106,12 @@
         opacity: 0.85;
       }
       .hero h2 {
-        margin: 0 0 14px;
-        font-size: clamp(26px, 4vw, 38px);
-        line-height: 1.12;
+        margin: 0 0 12px;
+        font-size: clamp(25px, 3.6vw, 34px);
+        line-height: 1.14;
       }
       .hero p {
-        margin: 0 0 7px;
+        margin: 0;
         font-size: 17px;
         line-height: 1.5;
       }
@@ -154,426 +125,126 @@
         margin-bottom: 18px;
       }
       .card h3 {
-        margin: 0 0 10px;
-        font-size: 22px;
+        margin: 0 0 8px;
+        font-size: 21px;
         color: var(--navy);
       }
       .card p {
         margin: 0 0 10px;
         line-height: 1.55;
       }
-
-      .how {
-        margin: 0;
-        padding-left: 22px;
+      .card p:last-child {
+        margin-bottom: 0;
       }
-      .how li {
-        margin-bottom: 8px;
-        line-height: 1.5;
+
+      .levels {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .lvl {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 13px 15px;
+        background: #fff;
+      }
+      .lvl b {
+        flex: none;
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--sage);
+        color: var(--navy);
+        font-size: 15px;
+      }
+      .lvl.warn {
+        background: #fffaf1;
+        border-color: rgba(201, 104, 74, 0.35);
+      }
+      .lvl.warn b {
+        background: rgba(201, 104, 74, 0.18);
+        color: #8a3d2a;
+      }
+      .lvl h4 {
+        margin: 0 0 3px;
         font-size: 16px;
+        color: var(--navy);
+      }
+      .lvl p {
+        margin: 0;
+        font-size: 14.5px;
+        line-height: 1.45;
+        color: #33424f;
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+        margin-top: 6px;
+      }
+      .step {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px 18px;
+        background: #fff;
+      }
+      .step .num {
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--navy);
+        color: #fff;
+        font-weight: 900;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+      .step h4 {
+        margin: 0 0 6px;
+        font-size: 17px;
+        color: var(--navy);
+      }
+      .step p {
+        margin: 0 0 12px;
+        font-size: 14.5px;
+        line-height: 1.5;
+        color: #33424f;
       }
 
       .btn {
-        appearance: none;
+        display: inline-block;
         border: 1px solid var(--line);
         background: #fff;
         color: var(--navy);
         border-radius: 999px;
-        padding: 11px 20px;
+        padding: 10px 18px;
         font-size: 15px;
         font-weight: 800;
-        cursor: pointer;
         text-decoration: none;
-        display: inline-block;
       }
       .btn.primary {
         background: var(--gold);
         border-color: var(--gold);
-        color: var(--navy);
-      }
-      .btn.dark {
-        background: var(--navy);
-        border-color: var(--navy);
-        color: #fff;
-      }
-      .btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .action-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        align-items: center;
-        margin-top: 14px;
       }
 
-      /* ---- OSAMR key ---- */
-      .key {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-        gap: 10px;
-        margin: 14px 0 0;
-      }
-      .key div {
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 11px 13px;
-        background: #fff;
-      }
-      .key strong {
-        display: inline-grid;
-        place-items: center;
-        width: 26px;
-        height: 26px;
-        border-radius: 50%;
-        background: var(--sage);
-        color: var(--navy);
-        font-size: 13px;
-        margin-bottom: 6px;
-      }
-      .key span {
-        display: block;
-        font-size: 14px;
-        line-height: 1.4;
-        color: #33424f;
-      }
-      .key .warn strong {
-        background: rgba(201, 104, 74, 0.18);
-        color: #8a3d2a;
-      }
-
-      /* ---- group picker ---- */
-      .group-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 10px;
-        margin-top: 6px;
-      }
-      .group-btn {
-        border: 1px solid var(--line);
-        background: #fff;
-        border-radius: 16px;
-        padding: 16px 12px;
-        font-size: 17px;
-        font-weight: 900;
-        color: var(--navy);
-        cursor: pointer;
-      }
-      .group-btn:hover {
-        border-color: var(--navy);
-      }
-      .group-btn.on {
-        background: var(--navy);
-        border-color: var(--navy);
-        color: #fff;
-      }
-
-      /* ---- the sort ---- */
-      .sort-head {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 14px;
-      }
-      .progress {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-weight: 800;
-        color: var(--navy);
-        font-size: 15px;
-      }
-      .track {
-        width: 150px;
-        height: 9px;
-        border-radius: 999px;
-        background: var(--sage);
-        overflow: hidden;
-      }
-      .fill {
-        display: block;
-        height: 100%;
-        width: 0;
-        background: var(--teal);
-        transition: width 0.2s;
-      }
-
-      .deck {
-        display: grid;
-        gap: 14px;
-      }
-      .deck-card {
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        box-shadow: var(--soft);
-        padding: 18px 20px;
-      }
-      .deck-card.placed {
-        border-left: 6px solid var(--teal);
-      }
-      .dc-num {
-        font-size: 12px;
-        font-weight: 900;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin: 0 0 4px;
-      }
-      .deck-card h4 {
-        margin: 0 0 4px;
-        font-size: 20px;
-        color: var(--navy);
-      }
-      .dc-meta {
-        margin: 0 0 10px;
-        font-size: 13.5px;
-        font-weight: 700;
-        color: var(--muted);
-      }
-      .dc-body {
-        margin: 0 0 6px;
-        line-height: 1.55;
-        font-size: 16px;
-      }
-      .dc-body .ai-move {
-        color: var(--navy);
-        font-weight: 800;
-      }
-      .dc-ask {
-        margin: 0 0 14px;
-        font-size: 14.5px;
-        line-height: 1.5;
-        color: #33424f;
+      .rule {
         background: #fffdf6;
-        border-left: 4px solid var(--gold);
-        border-radius: 0 10px 10px 0;
-        padding: 9px 12px;
-      }
-      .dc-ask strong {
-        color: var(--navy);
-      }
-
-      .levels {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .lvl {
         border: 1px solid var(--line);
-        background: #fff;
-        border-radius: 999px;
-        padding: 9px 16px 9px 9px;
-        font-size: 14.5px;
-        font-weight: 700;
-        color: #33424f;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .lvl b {
-        display: grid;
-        place-items: center;
-        width: 26px;
-        height: 26px;
-        border-radius: 50%;
-        background: #eef2f7;
-        font-size: 13px;
-      }
-      .lvl:hover {
-        border-color: var(--navy);
-      }
-      .lvl.on {
-        background: var(--navy);
-        border-color: var(--navy);
-        color: #fff;
-      }
-      .lvl.on b {
-        background: #fff;
-        color: var(--navy);
-      }
-      .lvl.warn.on {
-        background: #8a3d2a;
-        border-color: #8a3d2a;
-      }
-
-      /* ---- final steps ---- */
-      .field {
-        margin-top: 14px;
-      }
-      .field label {
-        display: block;
-        font-weight: 800;
-        color: var(--navy);
-        margin-bottom: 6px;
-      }
-      .field select,
-      .field input[type="text"] {
-        width: 100%;
-        max-width: 640px;
-        padding: 11px 13px;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        font-size: 16px;
-        background: #fff;
-      }
-      .hint {
-        margin: 0 0 10px;
-        color: var(--muted);
-        font-size: 14.5px;
-        line-height: 1.5;
-      }
-      .count {
-        font-size: 13px;
-        color: var(--muted);
-        margin-top: 5px;
-      }
-
-      /* ---- board ---- */
-      .board-status {
-        display: inline-block;
-        font-size: 13px;
-        font-weight: 800;
-        border-radius: 999px;
-        padding: 6px 13px;
-        margin-bottom: 12px;
-      }
-      .board-status.on {
-        background: var(--sage);
-        color: var(--navy);
-      }
-      .board-status.off {
-        background: rgba(201, 104, 74, 0.14);
-        color: #8a3d2a;
-      }
-      .view-row {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
-      }
-      .view-btn {
-        border: 1px solid var(--line);
-        background: #fff;
-        border-radius: 999px;
-        padding: 9px 18px;
-        font-weight: 800;
-        color: var(--navy);
-        cursor: pointer;
-      }
-      .view-btn.on {
-        background: var(--navy);
-        border-color: var(--navy);
-        color: #fff;
-      }
-
-      .grid-scroll {
-        overflow-x: auto;
-      }
-      table.board {
-        border-collapse: collapse;
-        width: 100%;
-        min-width: 640px;
-        background: #fff;
+        border-left: 5px solid var(--gold);
         border-radius: 14px;
-        overflow: hidden;
+        padding: 14px 18px;
+        margin-top: 6px;
+        line-height: 1.55;
       }
-      table.board th,
-      table.board td {
-        border: 1px solid var(--line);
-        padding: 9px 10px;
-        text-align: center;
-        font-size: 14px;
-      }
-      table.board th {
-        background: var(--sage);
+      .rule strong {
         color: var(--navy);
-        font-weight: 800;
-      }
-      table.board th.case {
-        text-align: left;
-        min-width: 190px;
-      }
-      table.board td.case {
-        text-align: left;
-        font-weight: 700;
-        color: var(--navy);
-      }
-      table.board td.split {
-        background: rgba(224, 169, 60, 0.18);
-      }
-      .cell-lvl {
-        font-weight: 900;
-      }
-      .cell-lvl.o {
-        color: #8a3d2a;
-      }
-      .split-tag {
-        display: inline-block;
-        margin-left: 8px;
-        font-size: 11px;
-        font-weight: 900;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: #8a3d2a;
-      }
-
-      .waterfall {
-        display: grid;
-        gap: 10px;
-      }
-      .drop {
-        background: #fff;
-        border: 1px solid var(--line);
-        border-left: 5px solid var(--teal);
-        border-radius: 14px;
-        padding: 14px 16px;
-        opacity: 0;
-        transform: translateY(-8px);
-        animation: fall 0.45s ease forwards;
-      }
-      .drop .g {
-        font-size: 12px;
-        font-weight: 900;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin: 0 0 4px;
-      }
-      .drop p {
-        margin: 0;
-        font-size: 17px;
-        line-height: 1.5;
-      }
-      @keyframes fall {
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .drop {
-          animation: none;
-          opacity: 1;
-          transform: none;
-        }
-      }
-      .empty {
-        color: var(--muted);
-        font-style: italic;
-      }
-
-      @media (max-width: 720px) {
-        .hero {
-          padding: 20px;
-        }
-        .card {
-          padding: 18px;
-        }
       }
     </style>
   </head>
@@ -584,641 +255,100 @@
       <div class="wrap brand">
         <div class="mark">AI</div>
         <div>
-          <h1>OSAMR Sort</h1>
-          <p>AI for Accessible Instruction</p>
+          <h1>AI for Accessible Instruction</h1>
+          <p>OSAMR reference · where each part happens</p>
         </div>
-        <div class="spacer"></div>
-        <span class="who" id="whoChip" hidden></span>
-        <button class="btn" type="button" data-go="board">Room board</button>
       </div>
     </header>
 
     <main class="wrap" id="main">
-      <!-- ================= START ================= -->
-      <section class="page active" id="start" aria-label="Start">
-        <div class="hero">
-          <p class="kicker">OSAMR Sort</p>
-          <h2>Seven real AI moves. Where does each one land?</h2>
-          <p><strong>What you do:</strong> as a group, place all seven cards on the OSAMR scale.</p>
-          <p>
-            <strong>What you produce:</strong> your group's sorted board, the one card you argued
-            about, and a takeaway everyone posts at the end.
-          </p>
-          <p><strong>How long:</strong> about 15 minutes. No writing until the last two steps.</p>
-        </div>
+      <div class="hero">
+        <p class="kicker">Keep this open</p>
+        <h2>Did AI clear the way — or did AI do the work?</h2>
+        <p>
+          That is the only question behind both halves of today. This page holds the scale and says
+          where each part happens.
+        </p>
+      </div>
 
-        <div class="card">
-          <h3>How it works</h3>
-          <ol class="how">
-            <li><strong>Pick your group number</strong> below.</li>
-            <li>
-              <strong>Sort the seven cards.</strong> Read what AI actually did, then tap one letter
-              for each card.
-            </li>
-            <li><strong>Name the card you argued about</strong> and say why in one line.</li>
-            <li>
-              <strong>Post your takeaway.</strong> Every group's line drops onto the room board at
-              once.
-            </li>
-          </ol>
-          <p style="margin-top: 12px">
-            <strong>There is no answer key.</strong> The point is where the room disagrees — the
-            board marks every card groups split on, and those are the ones we talk about.
-          </p>
+      <div class="card">
+        <h3>Today, in two parts</h3>
+        <div class="steps">
+          <article class="step">
+            <div class="num">1</div>
+            <h4>Sort — on the slides</h4>
+            <p>
+              I show one real classroom AI move at a time. Your table decides which letter it lands
+              on and drops just that letter in the chat. Nothing to open — watch the screen.
+            </p>
+          </article>
+          <article class="step">
+            <div class="num">2</div>
+            <h4>Build — on your device</h4>
+            <p>
+              A teacher tells you what they need. Your group writes the AI prompt that gets it, at
+              one level of the scale, then posts it to Padlet.
+            </p>
+            <a class="btn primary" href="/fix-it-design-challenge/">Open the build activity →</a>
+          </article>
         </div>
+      </div>
 
-        <div class="card">
-          <h3>The OSAMR scale</h3>
-          <p>Not a ranking. The goal is the honest letter, not the highest one.</p>
-          <div class="key" id="startKey"></div>
-        </div>
-
-        <div class="card">
-          <h3>Which group are you?</h3>
-          <p class="hint">Tap your number so your sort lands on the room board.</p>
-          <div class="group-grid" id="groupGrid"></div>
-          <div class="action-row">
-            <button class="btn primary" type="button" id="startSort" disabled>
-              Start sorting →
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ================= SORT ================= -->
-      <section class="page" id="sort" aria-label="Sort the cards">
-        <div class="card">
-          <div class="sort-head">
+      <div class="card">
+        <h3>The OSAMR scale</h3>
+        <p>Not a ranking. The goal is the honest letter, not the highest one.</p>
+        <div class="levels">
+          <div class="lvl warn">
+            <b>O</b>
             <div>
-              <h3 style="margin: 0">Sort all seven cards</h3>
-              <p class="hint" style="margin: 4px 0 0">
-                Read what AI did, then tap the letter your group agrees on. Change it any time.
+              <h4>Overreliance</h4>
+              <p>
+                AI did the thinking students were supposed to do. Nothing is left to figure out.
               </p>
             </div>
-            <div class="progress">
-              <span class="track"><span class="fill" id="sortFill"></span></span>
-              <span id="sortCount">0 of 7 placed</span>
+          </div>
+          <div class="lvl">
+            <b>S</b>
+            <div>
+              <h4>Substitution</h4>
+              <p>AI swaps in one support. The task itself is unchanged.</p>
             </div>
           </div>
-          <details>
-            <summary style="font-weight: 800; color: var(--navy); cursor: pointer">
-              Show the OSAMR scale
-            </summary>
-            <div class="key" id="sortKey"></div>
-          </details>
-        </div>
-
-        <div class="deck" id="deck"></div>
-
-        <div class="card" id="sortNext">
-          <h3>When all seven are placed</h3>
-          <p class="hint">
-            You do not have to agree with the group next to you. You do have to be able to say why.
-          </p>
-          <div class="action-row">
-            <button class="btn primary" type="button" data-go="defend" id="toDefend" disabled>
-              Next: the card we argued about →
-            </button>
+          <div class="lvl">
+            <b>A</b>
+            <div>
+              <h4>Augmentation</h4>
+              <p>AI adds help. The task gets clearer — it does not get solved.</p>
+            </div>
+          </div>
+          <div class="lvl">
+            <b>M</b>
+            <div>
+              <h4>Modification</h4>
+              <p>The task works differently now. Students still learn the same thing.</p>
+            </div>
+          </div>
+          <div class="lvl">
+            <b>R</b>
+            <div>
+              <h4>Redefinition</h4>
+              <p>Students can do work that was not possible before.</p>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <!-- ================= DEFEND ================= -->
-      <section class="page" id="defend" aria-label="The card you argued about">
-        <div class="card">
-          <h3>The card we argued about</h3>
-          <p class="hint">
-            Every group has one. Pick it, then say what the disagreement was in a single line.
-          </p>
-          <div class="field">
-            <label for="contested">Which card split your group?</label>
-            <select id="contested">
-              <option value="">Choose one</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="why">Why? One line.</label>
-            <input
-              type="text"
-              id="why"
-              maxlength="180"
-              placeholder="Half of us said it only clears the way, half said it does the thinking."
-            />
-            <p class="count" id="whyCount">0 / 180</p>
-          </div>
-          <div class="action-row">
-            <button class="btn" type="button" data-go="sort">← Back to the cards</button>
-            <button class="btn primary" type="button" data-go="waterfall">
-              Next: the waterfall →
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ================= WATERFALL ================= -->
-      <section class="page" id="waterfall" aria-label="Post your takeaway">
-        <div class="card">
-          <h3>The waterfall</h3>
-          <p>
-            One line from every group, all at once. Type yours, post it, and watch the room's land
-            on the board together.
-          </p>
-          <div class="field">
-            <label for="takeaway"
-              >What is the one thing you will check before your next AI request?</label
-            >
-            <input
-              type="text"
-              id="takeaway"
-              maxlength="180"
-              placeholder="I will ask whether the support does the part I am actually grading."
-            />
-            <p class="count" id="takeawayCount">0 / 180</p>
-          </div>
-          <div class="action-row">
-            <button class="btn primary" type="button" id="postAll">
-              Post our group to the board
-            </button>
-            <button class="btn" type="button" data-go="board">Open the room board</button>
-          </div>
-          <p class="hint" id="postState" style="margin-top: 10px"></p>
-        </div>
-      </section>
-
-      <!-- ================= BOARD ================= -->
-      <section class="page" id="board" aria-label="Room board">
-        <div class="card">
-          <h3>Room board</h3>
-          <span class="board-status" id="boardStatus">● Checking the room board…</span>
-          <div class="view-row">
-            <button class="view-btn on" type="button" data-view="grid">Where we landed</button>
-            <button class="view-btn" type="button" data-view="drops">The waterfall</button>
-          </div>
-          <div id="boardBody"></div>
-          <div class="action-row">
-            <button class="btn" type="button" data-go="sort">← Back to our cards</button>
-            <button class="btn" type="button" id="replayDrops">Replay the waterfall</button>
-          </div>
-        </div>
-      </section>
+      <div class="card">
+        <h3>The test that settles most arguments</h3>
+        <p class="rule">
+          <strong>Does the support do the part you are actually grading?</strong> If yes, it is
+          Overreliance — however good the materials look. If no, the only question left is how far
+          the task itself moved.
+        </p>
+        <p style="margin-top: 14px">
+          <strong>Barrier removed. Thinking preserved. Target unchanged.</strong>
+        </p>
+      </div>
     </main>
-
-    <script>
-      /* =============================================================================
-       * OSAMR Sort
-       * -----------------------------------------------------------------------------
-       * Seven groups, one deck, one shared board. Each group places every card on the
-       * OSAMR scale, names the card it argued about, and posts a closing line.
-       *
-       * There is deliberately no answer key. Several of these cards are genuinely
-       * arguable, and the disagreement between rooms is the content of the session —
-       * so the board's job is to make splits visible, not to score anyone.
-       *
-       * Every write goes to /api/osamr-board (debounced) and every device polls it.
-       * It fails SOFT: if the endpoint is unreachable the activity still works from
-       * localStorage and only the shared views go quiet. A PD session must never stop
-       * because a network call failed.
-       * ========================================================================== */
-
-      const LEVELS = [
-        { key: "S", label: "Substitute", blurb: "AI swaps in one support. The task is the same." },
-        { key: "A", label: "Augment", blurb: "AI adds help. The task gets clearer, not solved." },
-        {
-          key: "M",
-          label: "Modify",
-          blurb: "The task works differently. Students learn the same thing.",
-        },
-        {
-          key: "R",
-          label: "Redefine",
-          blurb: "Students can now do work they could not do before.",
-        },
-        {
-          key: "O",
-          label: "Overreliance",
-          blurb: "AI did the thinking. Nothing is left to figure out.",
-          warn: true,
-        },
-      ];
-
-      /* Card text is deliberately short and concrete: what the teacher asked for, and
-   what AI actually handed back. The AI move is the sentence groups argue over,
-   so it is marked in the data rather than left for the reader to find. */
-      const CARDS = [
-        {
-          id: 1,
-          title: "The picture direction card",
-          meta: "K–2 ELA · Story structure",
-          ask: "Make a three-panel direction card with icons and one-word labels: beginning, middle, end. Do not retell the story.",
-          did: "AI made the card. Students listen to the read-aloud, sequence the events themselves, and retell to a partner.",
-        },
-        {
-          id: 2,
-          title: "The getting-started steps",
-          meta: "Grade 4 Math · Multi-step problems",
-          ask: "Make a three-step entry scaffold: circle the numbers, underline the question, sketch it. Do not name the operation or solve.",
-          did: "AI made the steps and a sentence frame. Students still choose the operation, set the problem up, solve it, and explain.",
-        },
-        {
-          id: 3,
-          title: "The model paragraph",
-          meta: "Grade 5 ELA · Citing evidence",
-          ask: "Write a mentor paragraph about the character's motivation with a claim, evidence, and reasoning.",
-          did: "AI wrote a complete paragraph for each student. Most students kept the structure and swapped a few words.",
-        },
-        {
-          id: 4,
-          title: "The three reading versions",
-          meta: "Grade 7 Science · Force and motion",
-          ask: "Make three access versions of the text at different language levels. Keep the same three analysis questions for everyone.",
-          did: "AI wrote the three versions. Every student answers the same analysis questions from the same lesson.",
-        },
-        {
-          id: 5,
-          title: "The answer checker",
-          meta: "Grade 6 Math · Proportional relationships",
-          ask: "Check each student's work. Give the correct answer, the constant ratio, the unit rate, and whether they are right.",
-          did: "AI told students the answer and the ratio during practice. Students used it to mark their own work right or wrong.",
-        },
-        {
-          id: 6,
-          title: "The three key findings",
-          meta: "Grades 9–12 Science · CER writing",
-          ask: "Summarize this air-quality dataset into three key findings students can use as evidence.",
-          did: "AI picked the three findings. Students wrote their own claim and reasoning, but never opened the full dataset.",
-        },
-        {
-          id: 7,
-          title: "The footnotes and the blank organizer",
-          meta: "Grade 10 History · Primary source",
-          ask: "Add plain-language footnotes for hard phrases, background questions, and a blank SOAPS organizer. Do not analyze the source.",
-          did: "AI added the footnotes and the empty organizer. Students still read the original and analyze bias and perspective.",
-        },
-      ];
-
-      const GROUP_IDS = [1, 2, 3, 4, 5, 6, 7];
-      const STORE = "osamr_sort_v1";
-      const BOARD_API = "/api/osamr-board";
-
-      const $ = (sel, root = document) => root.querySelector(sel);
-      const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-
-      let state = {};
-      try {
-        state = JSON.parse(localStorage.getItem(STORE) || "{}");
-      } catch {
-        state = {};
-      }
-
-      function save() {
-        try {
-          localStorage.setItem(STORE, JSON.stringify(state));
-        } catch {
-          /* private window: keep going */
-        }
-      }
-
-      const myGroup = () => state.group || null;
-      const placement = (cardId) => state["card" + cardId] || "";
-      const placedCount = () => CARDS.filter((c) => placement(c.id)).length;
-
-      function escapeHtml(v) {
-        return String(v)
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
-      /* ---- pages ------------------------------------------------------------- */
-      function openPage(id) {
-        const target = document.getElementById(id) ? id : "start";
-        $$(".page").forEach((p) => p.classList.toggle("active", p.id === target));
-        if (location.hash !== "#" + target) history.replaceState(null, "", "#" + target);
-        if (target === "board") {
-          renderBoard();
-          pollBoard();
-        }
-        window.scrollTo({ top: 0, behavior: "auto" });
-      }
-
-      /* ---- static bits ------------------------------------------------------- */
-      function keyHtml() {
-        return LEVELS.map(
-          (l) =>
-            `<div class="${l.warn ? "warn" : ""}"><strong>${l.key}</strong><span><b>${l.label}.</b> ${l.blurb}</span></div>`,
-        ).join("");
-      }
-
-      function buildStart() {
-        $("#startKey").innerHTML = keyHtml();
-        $("#sortKey").innerHTML = keyHtml();
-        $("#groupGrid").innerHTML = GROUP_IDS.map(
-          (g) => `<button type="button" class="group-btn" data-group="${g}">Group ${g}</button>`,
-        ).join("");
-        $("#contested").innerHTML =
-          '<option value="">Choose one</option>' +
-          CARDS.map(
-            (c) => `<option value="${c.id}">Card ${c.id} — ${escapeHtml(c.title)}</option>`,
-          ).join("");
-        syncGroup();
-      }
-
-      function syncGroup() {
-        const g = myGroup();
-        $$(".group-btn").forEach((b) => b.classList.toggle("on", Number(b.dataset.group) === g));
-        $("#startSort").disabled = !g;
-        const chip = $("#whoChip");
-        chip.hidden = !g;
-        chip.textContent = g ? `You are Group ${g}` : "";
-      }
-
-      /* ---- the deck ---------------------------------------------------------- */
-      function buildDeck() {
-        $("#deck").innerHTML = CARDS.map(
-          (c) => `
-      <article class="deck-card" data-card="${c.id}">
-        <p class="dc-num">Card ${c.id} of ${CARDS.length}</p>
-        <h4>${escapeHtml(c.title)}</h4>
-        <p class="dc-meta">${escapeHtml(c.meta)}</p>
-        <p class="dc-ask"><strong>The teacher asked AI:</strong> “${escapeHtml(c.ask)}”</p>
-        <p class="dc-body"><span class="ai-move">${escapeHtml(c.did)}</span></p>
-        <div class="levels" role="group" aria-label="Place card ${c.id}">
-          ${LEVELS.map(
-            (l) =>
-              `<button type="button" class="lvl ${l.warn ? "warn" : ""}" data-place="${c.id}" data-level="${l.key}" aria-pressed="false"><b>${l.key}</b>${l.label}</button>`,
-          ).join("")}
-        </div>
-      </article>`,
-        ).join("");
-        syncDeck();
-      }
-
-      function syncDeck() {
-        CARDS.forEach((c) => {
-          const chosen = placement(c.id);
-          const card = $(`.deck-card[data-card="${c.id}"]`);
-          if (card) card.classList.toggle("placed", Boolean(chosen));
-          $$(`[data-place="${c.id}"]`).forEach((btn) => {
-            const on = btn.dataset.level === chosen;
-            btn.classList.toggle("on", on);
-            btn.setAttribute("aria-pressed", String(on));
-          });
-        });
-        const done = placedCount();
-        $("#sortCount").textContent =
-          done === CARDS.length
-            ? `All ${CARDS.length} placed`
-            : `${done} of ${CARDS.length} placed`;
-        $("#sortFill").style.width = Math.round((done / CARDS.length) * 100) + "%";
-        $("#toDefend").disabled = done < CARDS.length;
-      }
-
-      /* ---- the shared board -------------------------------------------------- */
-      let board = {};
-      let boardOk = null;
-      let boardView = "grid";
-
-      function fieldsForMe() {
-        const out = {};
-        CARDS.forEach((c) => {
-          const v = placement(c.id);
-          if (v) out["card" + c.id] = v;
-        });
-        ["contested", "why", "takeaway"].forEach((f) => {
-          if (state[f]) out[f] = state[f];
-        });
-        return out;
-      }
-
-      async function publish() {
-        const g = myGroup();
-        if (!g) return;
-        try {
-          const res = await fetch(BOARD_API, {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({ group: Number(g), fields: fieldsForMe() }),
-          });
-          const data = await res.json().catch(() => null);
-          setBoardStatus(data?.ok === true);
-          return data?.ok === true;
-        } catch {
-          setBoardStatus(false);
-          return false;
-        }
-      }
-
-      let publishTimer = null;
-      function schedulePublish() {
-        clearTimeout(publishTimer);
-        publishTimer = setTimeout(publish, 800);
-      }
-
-      async function pollBoard() {
-        try {
-          const res = await fetch(BOARD_API, { headers: { accept: "application/json" } });
-          const data = await res.json();
-          if (data?.ok && data.groups) {
-            board = data.groups;
-            setBoardStatus(true);
-            if ($("#board").classList.contains("active")) renderBoard();
-          } else {
-            setBoardStatus(false);
-          }
-        } catch {
-          setBoardStatus(false);
-        }
-      }
-
-      function setBoardStatus(ok) {
-        if (boardOk === ok) return;
-        boardOk = ok;
-        const el = $("#boardStatus");
-        if (!el) return;
-        el.textContent = ok
-          ? "● Room board connected — every group appears here"
-          : "● Room board offline — showing this device only";
-        el.className = ok ? "board-status on" : "board-status off";
-      }
-
-      /* This device's own work always wins over the poll, so a group never watches
-   its own answers flicker against an in-flight read. */
-      function rowsForBoard() {
-        const rows = {};
-        GROUP_IDS.forEach((g) => {
-          rows[g] = board[String(g)]?.fields || {};
-        });
-        const me = myGroup();
-        if (me) {
-          const mine = fieldsForMe();
-          if (Object.keys(mine).length) rows[me] = { ...rows[me], ...mine };
-        }
-        return rows;
-      }
-
-      function renderBoard() {
-        const body = $("#boardBody");
-        const rows = rowsForBoard();
-        const active = GROUP_IDS.filter((g) => Object.keys(rows[g]).length);
-
-        if (boardView === "grid") {
-          if (!active.length) {
-            body.innerHTML =
-              '<p class="empty">No group has posted yet. Sorted cards appear here as they land.</p>';
-            return;
-          }
-          const header = active.map((g) => `<th>G${g}</th>`).join("");
-          const lines = CARDS.map((c) => {
-            const picks = active.map((g) => rows[g]["card" + c.id] || "");
-            const seen = new Set(picks.filter(Boolean));
-            const split = seen.size > 1;
-            const cells = picks
-              .map(
-                (p) =>
-                  `<td class="${split ? "split" : ""}"><span class="cell-lvl ${p === "O" ? "o" : ""}">${p || "·"}</span></td>`,
-              )
-              .join("");
-            return `<tr><td class="case">Card ${c.id} — ${escapeHtml(c.title)}${
-              split ? '<span class="split-tag">split</span>' : ""
-            }</td>${cells}</tr>`;
-          }).join("");
-          const splits = CARDS.filter((c) => {
-            const seen = new Set(active.map((g) => rows[g]["card" + c.id]).filter(Boolean));
-            return seen.size > 1;
-          });
-          const argued = active
-            .filter((g) => rows[g].contested && rows[g].why)
-            .map((g) => {
-              const card = CARDS.find((c) => String(c.id) === String(rows[g].contested));
-              return `<li><strong>Group ${g}</strong> argued about <strong>${escapeHtml(card ? card.title : "a card")}</strong> — ${escapeHtml(rows[g].why)}</li>`;
-            })
-            .join("");
-          body.innerHTML = `
-      <div class="grid-scroll"><table class="board">
-        <thead><tr><th class="case">Card</th>${header}</tr></thead>
-        <tbody>${lines}</tbody>
-      </table></div>
-      <p style="margin-top:14px">${
-        splits.length
-          ? `<strong>The room split on ${splits.length} card${splits.length === 1 ? "" : "s"}:</strong> ${splits
-              .map((c) => escapeHtml(c.title))
-              .join(", ")}. Those are the ones worth the conversation.`
-          : "<strong>Every group agrees so far.</strong> Wait for the rest, or push on the card that felt closest."
-      }</p>
-      ${argued ? `<ul style="margin-top:10px;line-height:1.55">${argued}</ul>` : ""}`;
-          return;
-        }
-
-        const drops = active.filter((g) => rows[g].takeaway);
-        if (!drops.length) {
-          body.innerHTML =
-            '<p class="empty">No takeaways yet. They drop in together as groups post.</p>';
-          return;
-        }
-        body.innerHTML = `<div class="waterfall">${drops
-          .map(
-            (g, i) =>
-              `<article class="drop" style="animation-delay:${i * 140}ms"><p class="g">Group ${g}</p><p>${escapeHtml(rows[g].takeaway)}</p></article>`,
-          )
-          .join("")}</div>`;
-      }
-
-      /* ---- wiring ------------------------------------------------------------ */
-      document.addEventListener("click", (event) => {
-        const groupBtn = event.target.closest("[data-group]");
-        if (groupBtn) {
-          state.group = Number(groupBtn.dataset.group);
-          save();
-          syncGroup();
-          return;
-        }
-
-        const place = event.target.closest("[data-place]");
-        if (place) {
-          const cardId = place.dataset.place;
-          // Tapping the chosen letter again clears it, so a group can undo without
-          // guessing which button un-picks.
-          state["card" + cardId] =
-            placement(cardId) === place.dataset.level ? "" : place.dataset.level;
-          save();
-          syncDeck();
-          schedulePublish();
-          return;
-        }
-
-        const go = event.target.closest("[data-go]");
-        if (go) {
-          openPage(go.dataset.go);
-          return;
-        }
-
-        const view = event.target.closest("[data-view]");
-        if (view) {
-          boardView = view.dataset.view;
-          $$(".view-btn").forEach((b) => b.classList.toggle("on", b === view));
-          renderBoard();
-          return;
-        }
-
-        if (event.target.closest("#replayDrops")) {
-          boardView = "drops";
-          $$(".view-btn").forEach((b) => b.classList.toggle("on", b.dataset.view === "drops"));
-          renderBoard();
-        }
-      });
-
-      $("#startSort").addEventListener("click", () => openPage("sort"));
-
-      function bindText(id, field, counterId) {
-        const el = $("#" + id);
-        const counter = $("#" + counterId);
-        el.value = state[field] || "";
-        const sync = () => {
-          counter.textContent = `${el.value.length} / ${el.maxLength}`;
-        };
-        sync();
-        el.addEventListener("input", () => {
-          state[field] = el.value;
-          save();
-          sync();
-          schedulePublish();
-        });
-      }
-
-      $("#contested").addEventListener("change", (event) => {
-        state.contested = event.target.value;
-        save();
-        schedulePublish();
-      });
-
-      $("#postAll").addEventListener("click", async () => {
-        const note = $("#postState");
-        if (!myGroup()) {
-          note.textContent = "Pick your group number on the start page first.";
-          return;
-        }
-        note.textContent = "Posting…";
-        const ok = await publish();
-        note.textContent = ok
-          ? "Posted. Your line is on the room board."
-          : "The room board is not reachable, so your work stayed on this device. Read your line out instead.";
-        if (ok) openPage("board");
-      });
-
-      buildStart();
-      buildDeck();
-      $("#contested").value = state.contested || "";
-      bindText("why", "why", "whyCount");
-      bindText("takeaway", "takeaway", "takeawayCount");
-      openPage(location.hash.replace("#", "") || "start");
-
-      pollBoard();
-      setInterval(() => {
-        if ($("#board").classList.contains("active")) pollBoard();
-      }, 6000);
-      window.addEventListener("focus", pollBoard);
-    </script>
   </body>
 </html>

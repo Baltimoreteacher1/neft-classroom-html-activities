@@ -1404,6 +1404,57 @@
         font-weight: 700;
       }
 
+      .example-card {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 20px 22px;
+        margin-top: 14px;
+      }
+      .example-need {
+        margin: 0 0 14px;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      .example-picks {
+        margin: 0 0 16px;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 7px;
+      }
+      .example-picks li {
+        font-size: 15.5px;
+        line-height: 1.45;
+      }
+      .example-picks span {
+        display: inline-block;
+        min-width: 96px;
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #6b7688;
+        margin-right: 8px;
+      }
+      .example-label {
+        margin: 0 0 6px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #6b7688;
+      }
+      .example-prompt {
+        margin: 0;
+        background: #f4f9f6;
+        border-left: 5px solid #1f7a5c;
+        border-radius: 0 12px 12px 0;
+        padding: 14px 16px;
+        font-size: 16px;
+        line-height: 1.55;
+      }
+
       .given-card {
         background: #f7fafc;
         border: 1px solid var(--line);
@@ -2646,18 +2697,17 @@
           <div>
             <h3>Four short steps. About 15 minutes.</h3>
             <ol class="task-steps">
-              <li><strong>Read the problem.</strong> Your scenario is already written.</li>
+              <li><strong>Read the need.</strong> The teacher and the problem are already written.</li>
               <li><strong>Write the prompt.</strong> Four rows, one tap each.</li>
               <li><strong>Rate it.</strong> Pick an OSAMR level, finish one sentence.</li>
               <li><strong>Post it.</strong> Tap Copy, paste into Padlet.</li>
             </ol>
             <p class="produce-line">
-              <strong>What you produce:</strong> one rewritten prompt, posted to Padlet beside the
-              broken one. The page writes the post — you just tap Copy.
+              <strong>What you produce:</strong> one prompt a teacher could paste into AI today,
+              posted to Padlet. The page writes the post — you just tap Copy.
             </p>
             <p class="produce-note">
-              Everything else is written for you. The only thing your group writes is the new
-              prompt.
+              Everything else is written for you. Your group only chooses the four pieces.
             </p>
             <div class="core-test-bar">
               <span>Barrier removed</span>
@@ -2706,115 +2756,30 @@
           </div>
         </div>
 
-        <!-- Step 3: The model, walked step by step and already finished -->
+        <!-- Step 3: One finished example, small on purpose -->
         <div class="walkthrough-section">
           <div class="walkthrough-number">3</div>
           <div>
-            <h3>Watch one group do it</h3>
-            <p>
-              Here is a real case, finished. Same four steps you are about to do, with a Grade 7 ELA
-              group's answers already filled in.
-            </p>
+            <h3>One finished example</h3>
+            <p>This is the whole job. Four picks, one prompt.</p>
 
-            <div class="model-walk">
-              <section class="model-pane">
-                <p class="wiz-of">Step 1 of 4</p>
-                <h4 class="wiz-title">Read the problem</h4>
-                <p class="model-note">They read what the teacher sent and what came back.</p>
-                <div class="prompt-original">
-                  <p class="prompt-original-title">The prompt they were fixing</p>
-                  <p class="quote">
-                    “Summarize this article for 7th graders and tell students the author's central
-                    claim and two pieces of evidence they should use in their response.”
-                  </p>
-                  <p class="ai-problem">
-                    <strong>What came back:</strong> the AI named the claim and picked the evidence.
-                    Students could answer from the summary without ever reading the article.
-                  </p>
-                </div>
-                <div class="given-card">
-                  <p class="given-title">The test their new prompt had to pass</p>
-                  <ul class="test-list">
-                    <li class="ok"><strong>AI may help with</strong> dense text and close-reading load.</li>
-                    <li class="no"><strong>AI must never</strong> name the claim or choose the evidence.</li>
-                    <li class="ok">
-                      <strong>Students still</strong> identify the claim, select evidence, and explain
-                      the connection.
-                    </li>
-                  </ul>
-                </div>
-              </section>
-
-              <section class="model-pane">
-                <p class="wiz-of">Step 2 of 4</p>
-                <h4 class="wiz-title">Rewrite the teacher's prompt</h4>
-                <p class="model-note">
-                  They loaded the real request, deleted the line that gave the answer away
-                  (<em>“tell students the author's central claim and two pieces of evidence”</em>),
-                  then tapped chips to add what AI should build and what it must never do.
-                </p>
-                <div class="model-output">
-                  <p class="model-output-label">Their rewritten prompt</p>
-                  <pre>Create access supports for 7th graders reading this article.
-• Chunk the text with headings.
-• Include a vocabulary bank with words only.
-• Add one guiding question per part.
-• Include a blank organizer for students to fill in.
-• Do not summarize or replace the text.
-• Do not choose the evidence for students.
-• Do not explain the reasoning.</pre>
-                </div>
-              </section>
-
-              <section class="model-pane">
-                <p class="wiz-of">Step 3 of 4</p>
-                <h4 class="wiz-title">Rate your new prompt</h4>
-                <p class="model-note">One level, one sentence.</p>
-                <div class="model-output">
-                  <p class="model-output-label">OSAMR level</p>
-                  <p class="model-answer">Augmentation</p>
-                  <p class="model-output-label">Students still have to…</p>
-                  <p class="model-answer">
-                    Students still have to identify the claim, select their own evidence, and
-                    explain how it supports the claim.
-                  </p>
-                </div>
-              </section>
-
-              <section class="model-pane">
-                <p class="wiz-of">Step 4 of 4</p>
-                <h4 class="wiz-title">Post it to Padlet</h4>
-                <p class="model-note">
-                  The page wrote this for them. They ticked the box and tapped Copy.
-                </p>
-                <div class="model-output">
-                  <p class="model-output-label">Their Padlet post</p>
-                  <pre>Group — ELA Evidence
-
-Problem AI Input:
-"Summarize this article for 7th graders and tell students the author's
-central claim and two pieces of evidence they should use."
-
-Our fixed AI prompt:
-Create access supports for 7th graders reading this article.
-• Chunk the text with headings.
-• Include a vocabulary bank with words only.
-• Do not choose the evidence for students.
-
-OSAMR rating:
-Augmentation
-
-Rigor evidence:
-Students still have to identify the claim, select their own evidence,
-and explain how it supports the claim.</pre>
-                </div>
-              </section>
-            </div>
-
-            <div class="callout" style="margin-top: 18px">
-              <strong>The one rule:</strong> ask AI for supports — vocabulary, questions, structure,
-              frames, checklists. Never ask it for the answer, the claim, the evidence, the
-              reasoning, or a filled-in organizer.
+            <div class="example-card">
+              <p class="example-need">
+                <strong>Ms. Reyes needs:</strong> “My students can explain ratios out loud, but the
+                academic vocabulary stops them cold when they have to write it down.”
+              </p>
+              <ul class="example-picks">
+                <li><span>Make</span> a vocabulary bank with student-friendly definitions</li>
+                <li><span>For</span> Grade 6 Math students blocked by academic vocabulary</li>
+                <li><span>Students still</span> decide equivalence and justify why</li>
+                <li><span>Never</span> give the answer</li>
+              </ul>
+              <p class="example-label">The prompt that writes itself</p>
+              <p class="example-prompt">
+                “Create a vocabulary bank with student-friendly definitions for Grade 6 Math
+                students blocked by academic vocabulary. Students must still decide equivalence and
+                justify why. Do not give the answer.”
+              </p>
             </div>
           </div>
         </div>
@@ -2825,8 +2790,8 @@ and explain how it supports the claim.</pre>
           <div>
             <h3>Now it is your turn</h3>
             <p>
-              Open your group page. Each group gets a different AI request that went wrong — the
-              four steps are the same on every page.
+              Open your group page. Each group gets a different teacher, a different need, and a
+              different level to build at — the four steps are the same on every page.
             </p>
             <div class="action-row">
               <a class="btn primary" href="#menu" data-open-page="menu">Choose your group</a>
