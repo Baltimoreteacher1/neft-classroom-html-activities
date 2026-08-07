@@ -1265,6 +1265,145 @@
         margin-bottom: 14px;
       }
 
+      /* Step 2: the prompt as strikeable sentences. */
+      .cut-list {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 18px;
+      }
+      .cut-line {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-align: left;
+        width: 100%;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font: inherit;
+        font-size: 15.5px;
+        line-height: 1.45;
+        color: #2c3a4a;
+        cursor: pointer;
+      }
+      .cut-line:hover {
+        border-color: #8a3d2a;
+      }
+      .cut-mark {
+        flex: none;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #8a3d2a;
+        background: rgba(201, 104, 74, 0.12);
+        border-radius: 999px;
+        padding: 4px 10px;
+        margin-top: 1px;
+      }
+      .cut-line.on {
+        background: #faf3f1;
+        border-color: rgba(201, 104, 74, 0.45);
+      }
+      .cut-line.on .cut-text {
+        text-decoration: line-through;
+        color: #96a1ac;
+      }
+      .cut-line.on .cut-mark::after {
+        content: "\2009✓";
+      }
+
+      .prompt-preview-out {
+        background: #f4f9f6;
+        border: 1px solid var(--line);
+        border-left: 5px solid #1f7a5c;
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-size: 15.5px;
+        line-height: 1.55;
+        color: #2c3a4a;
+      }
+      .prompt-preview-out .added {
+        color: #14603f;
+        font-weight: 700;
+      }
+      .prompt-preview-out .muted {
+        color: var(--muted, #6b7688);
+        font-style: italic;
+      }
+      .hand-edit {
+        margin-top: 12px;
+      }
+      .hand-edit > summary {
+        cursor: pointer;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #6b7688;
+      }
+
+      /* Step 2: the teacher's need, then the four slots. */
+      .need-card {
+        background: #fffdf6;
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--gold, #e0a93c);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 20px;
+      }
+      .need-title {
+        margin: 0 0 6px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #6b7688;
+      }
+      .need-quote {
+        margin: 0 0 10px;
+        font-size: 17px;
+        line-height: 1.5;
+        color: var(--navy);
+        font-weight: 600;
+      }
+      .need-level {
+        margin: 0;
+        font-size: 14.5px;
+        line-height: 1.5;
+        color: #33424f;
+      }
+      .lvl-badge {
+        display: inline-grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--navy);
+        color: #fff;
+        font-weight: 900;
+        font-size: 13px;
+        margin-right: 8px;
+        vertical-align: -6px;
+      }
+      .slot {
+        margin-bottom: 18px;
+      }
+      .slot-label {
+        margin: 0 0 2px;
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--navy);
+      }
+      .slot-hint {
+        margin: 0 0 8px;
+        font-size: 13.5px;
+        color: #6b7688;
+      }
+      .prompt-preview-out .gap {
+        color: #8a3d2a;
+        font-weight: 700;
+      }
+
       .given-card {
         background: #f7fafc;
         border: 1px solid var(--line);
@@ -2479,25 +2618,25 @@
         <!-- Step 1: Welcome -->
         <div class="hero">
           <p class="kicker">Fix-It Design Challenge</p>
-          <h2>Your group rewrites one broken AI prompt.</h2>
+          <h2>A teacher needs a prompt. Your group writes it.</h2>
           <div class="hero-facts">
             <p>
               <strong>What happened:</strong> a teacher asked AI for help making a task reachable.
               What came back did the students' thinking for them.
             </p>
             <p>
-              <strong>What you do:</strong> rewrite that request so AI builds the support students
-              need and leaves the thinking to them.
+              <strong>What you do:</strong> write the AI prompt for them — by choosing one option
+              in each of four rows.
             </p>
             <p>
-              <strong>What you turn in:</strong> your rewritten prompt, posted to Padlet. The page
-              writes the post — you tap Copy.
+              <strong>What you turn in:</strong> that prompt, posted to Padlet. The page writes
+              the post — you tap Copy.
             </p>
           </div>
           <p class="why-line">
             <strong>Why:</strong> a well-worded prompt is the difference between AI opening a task
-            up and AI doing it for students. Getting it right usually takes one or two extra lines —
-            and once you have written them, you can reuse them all year.
+            up and AI doing it for students. The four pieces you pick today are the four pieces
+            every good request needs — reusable all year.
           </p>
         </div>
 
@@ -2508,7 +2647,7 @@
             <h3>Four short steps. About 15 minutes.</h3>
             <ol class="task-steps">
               <li><strong>Read the problem.</strong> Your scenario is already written.</li>
-              <li><strong>Rewrite the prompt.</strong> The teacher's real request loads into a box — edit it.</li>
+              <li><strong>Write the prompt.</strong> Four rows, one tap each.</li>
               <li><strong>Rate it.</strong> Pick an OSAMR level, finish one sentence.</li>
               <li><strong>Post it.</strong> Tap Copy, paste into Padlet.</li>
             </ol>
@@ -2837,29 +2976,18 @@ and explain how it supports the claim.</pre>
             <h2>Math Reasoning Support</h2>
             <p class="subline">Grade 6 Math · Vocabulary barrier · AI gave full solution</p>
           </div>
-          <div class="action-row top-actions">
-            <a class="btn secondary" href="#menu" data-open-page="menu">Group menu</a>
-            <a
-              class="btn primary"
-              href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Open Padlet ↗</a
-            >
-            <a class="btn secondary" href="#gallery" data-open-page="gallery">Post Builder</a>
-          </div>
         </div>
 
         <div class="purpose-bar">
           <p>
-            <strong>Your job:</strong> a teacher sent AI a request, and what came back did the
-            students' thinking for them. You rewrite that request.
+            <strong>Your job:</strong> a teacher has told you exactly what they need. Write the AI
+            request that gets it — at your group's SAMR level.
           </p>
           <p>
-            <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
-            giving anything away — posted to Padlet. This page writes the post for you.
+            <strong>What you produce:</strong> one prompt a teacher could paste into AI today,
+            posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Rewrite the prompt → Rate it → Post it</p>
+          <p class="purpose-steps">Read the need → Write the prompt → Check the level → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -2993,29 +3121,18 @@ and explain how it supports the claim.</pre>
             <h2>ELA Evidence Support</h2>
             <p class="subline">Grade 7 ELA · Dense text barrier · AI named claim/evidence</p>
           </div>
-          <div class="action-row top-actions">
-            <a class="btn secondary" href="#menu" data-open-page="menu">Group menu</a>
-            <a
-              class="btn primary"
-              href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Open Padlet ↗</a
-            >
-            <a class="btn secondary" href="#gallery" data-open-page="gallery">Post Builder</a>
-          </div>
         </div>
 
         <div class="purpose-bar">
           <p>
-            <strong>Your job:</strong> a teacher sent AI a request, and what came back did the
-            students' thinking for them. You rewrite that request.
+            <strong>Your job:</strong> a teacher has told you exactly what they need. Write the AI
+            request that gets it — at your group's SAMR level.
           </p>
           <p>
-            <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
-            giving anything away — posted to Padlet. This page writes the post for you.
+            <strong>What you produce:</strong> one prompt a teacher could paste into AI today,
+            posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Rewrite the prompt → Rate it → Post it</p>
+          <p class="purpose-steps">Read the need → Write the prompt → Check the level → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -3151,29 +3268,18 @@ and explain how it supports the claim.</pre>
             <h2>Science Model Support</h2>
             <p class="subline">Grade 7 Science · Language access barrier · AI labeled the model</p>
           </div>
-          <div class="action-row top-actions">
-            <a class="btn secondary" href="#menu" data-open-page="menu">Group menu</a>
-            <a
-              class="btn primary"
-              href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Open Padlet ↗</a
-            >
-            <a class="btn secondary" href="#gallery" data-open-page="gallery">Post Builder</a>
-          </div>
         </div>
 
         <div class="purpose-bar">
           <p>
-            <strong>Your job:</strong> a teacher sent AI a request, and what came back did the
-            students' thinking for them. You rewrite that request.
+            <strong>Your job:</strong> a teacher has told you exactly what they need. Write the AI
+            request that gets it — at your group's SAMR level.
           </p>
           <p>
-            <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
-            giving anything away — posted to Padlet. This page writes the post for you.
+            <strong>What you produce:</strong> one prompt a teacher could paste into AI today,
+            posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Rewrite the prompt → Rate it → Post it</p>
+          <p class="purpose-steps">Read the need → Write the prompt → Check the level → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -3311,29 +3417,18 @@ and explain how it supports the claim.</pre>
               Grade 8 Social Studies · Writing structure barrier · AI gave claim/reasons
             </p>
           </div>
-          <div class="action-row top-actions">
-            <a class="btn secondary" href="#menu" data-open-page="menu">Group menu</a>
-            <a
-              class="btn primary"
-              href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Open Padlet ↗</a
-            >
-            <a class="btn secondary" href="#gallery" data-open-page="gallery">Post Builder</a>
-          </div>
         </div>
 
         <div class="purpose-bar">
           <p>
-            <strong>Your job:</strong> a teacher sent AI a request, and what came back did the
-            students' thinking for them. You rewrite that request.
+            <strong>Your job:</strong> a teacher has told you exactly what they need. Write the AI
+            request that gets it — at your group's SAMR level.
           </p>
           <p>
-            <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
-            giving anything away — posted to Padlet. This page writes the post for you.
+            <strong>What you produce:</strong> one prompt a teacher could paste into AI today,
+            posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Rewrite the prompt → Rate it → Post it</p>
+          <p class="purpose-steps">Read the need → Write the prompt → Check the level → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -3469,29 +3564,18 @@ and explain how it supports the claim.</pre>
             <h2>MLL Language Access Support</h2>
             <p class="subline">MLL · Complex directions barrier · AI changed the task</p>
           </div>
-          <div class="action-row top-actions">
-            <a class="btn secondary" href="#menu" data-open-page="menu">Group menu</a>
-            <a
-              class="btn primary"
-              href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Open Padlet ↗</a
-            >
-            <a class="btn secondary" href="#gallery" data-open-page="gallery">Post Builder</a>
-          </div>
         </div>
 
         <div class="purpose-bar">
           <p>
-            <strong>Your job:</strong> a teacher sent AI a request, and what came back did the
-            students' thinking for them. You rewrite that request.
+            <strong>Your job:</strong> a teacher has told you exactly what they need. Write the AI
+            request that gets it — at your group's SAMR level.
           </p>
           <p>
-            <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
-            giving anything away — posted to Padlet. This page writes the post for you.
+            <strong>What you produce:</strong> one prompt a teacher could paste into AI today,
+            posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Rewrite the prompt → Rate it → Post it</p>
+          <p class="purpose-steps">Read the need → Write the prompt → Check the level → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -3627,29 +3711,18 @@ and explain how it supports the claim.</pre>
             <h2>Executive Function Support</h2>
             <p class="subline">SPED / Accessibility · Planning barrier · AI filled organizer</p>
           </div>
-          <div class="action-row top-actions">
-            <a class="btn secondary" href="#menu" data-open-page="menu">Group menu</a>
-            <a
-              class="btn primary"
-              href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Open Padlet ↗</a
-            >
-            <a class="btn secondary" href="#gallery" data-open-page="gallery">Post Builder</a>
-          </div>
         </div>
 
         <div class="purpose-bar">
           <p>
-            <strong>Your job:</strong> a teacher sent AI a request, and what came back did the
-            students' thinking for them. You rewrite that request.
+            <strong>Your job:</strong> a teacher has told you exactly what they need. Write the AI
+            request that gets it — at your group's SAMR level.
           </p>
           <p>
-            <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
-            giving anything away — posted to Padlet. This page writes the post for you.
+            <strong>What you produce:</strong> one prompt a teacher could paste into AI today,
+            posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Rewrite the prompt → Rate it → Post it</p>
+          <p class="purpose-steps">Read the need → Write the prompt → Check the level → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -3786,18 +3859,6 @@ and explain how it supports the claim.</pre>
               Use your fix, OSAMR rating, evidence sentence, and suggested Padlet labels.
             </p>
           </div>
-          <div class="action-row top-actions">
-            <button class="btn secondary" type="button" id="downloadResponses">
-              Download responses
-            </button>
-            <a
-              class="btn primary"
-              href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Open Padlet ↗</a
-            >
-          </div>
         </div>
 
         <div class="padlet-callout">
@@ -3864,6 +3925,11 @@ and explain how it supports the claim.</pre>
           avoid: "Do not provide the final equivalent-ratio explanation.",
           starter_fix:
             "Vocabulary bank, sentence frames, and a reasoning checklist that prompt students to compare, simplify, or scale ratios without giving the answer.",
+          level_key: "S",
+          level: "Substitution",
+          level_blurb: "Swap in one support. The task itself does not change.",
+          teacher: "Ms. Reyes",
+          need: "“My students can explain ratios out loud, but the academic vocabulary stops them cold when they have to write it down.”",
         },
         {
           id: 2,
@@ -3884,6 +3950,11 @@ and explain how it supports the claim.</pre>
           avoid: "Do not replace the article or name the evidence for students.",
           starter_fix:
             "Chunk headings, vocabulary support, margin questions, and evidence-finding frames that require students to return to the original text.",
+          level_key: "A",
+          level: "Augmentation",
+          level_blurb: "Add support that makes the task clearer without solving it.",
+          teacher: "Mr. Ellis",
+          need: "“My readers can handle the ideas in this article. The sentence density is what is stopping them.”",
         },
         {
           id: 3,
@@ -3903,6 +3974,11 @@ and explain how it supports the claim.</pre>
           avoid: "Do not show a completed labeled water-cycle model.",
           starter_fix:
             "Translated directions, a word bank, unlabeled arrows, and guiding questions that help students decide which process belongs where.",
+          level_key: "M",
+          level: "Modification",
+          level_blurb: "Redesign how students work the task. Same learning target.",
+          teacher: "Ms. Novak",
+          need: "“My multilingual learners know the water cycle. They cannot get through the directions to show me.”",
         },
         {
           id: 4,
@@ -3922,6 +3998,11 @@ and explain how it supports the claim.</pre>
           avoid: "Do not give the claim position or source-based reasons.",
           starter_fix:
             "Neutral sentence frames, source-analysis prompts, and a claim-planning organizer with blank spaces for students’ own evidence and reasoning.",
+          level_key: "A",
+          level: "Augmentation",
+          level_blurb: "Add support that makes the task clearer without solving it.",
+          teacher: "Mr. Okafor",
+          need: "“My students have opinions about this source set. They freeze when it is time to structure the argument.”",
         },
         {
           id: 5,
@@ -3941,6 +4022,11 @@ and explain how it supports the claim.</pre>
           avoid: "Do not reduce the task to noticing only one representation.",
           starter_fix:
             "Simple directions, bilingual vocabulary, visual cues for table/graph, and sentence frames that still require comparison.",
+          level_key: "M",
+          level: "Modification",
+          level_blurb: "Redesign how students work the task. Same learning target.",
+          teacher: "Ms. Duval",
+          need: "“My newcomers can compare a table and a graph. The wording of the task is what blocks them.”",
         },
         {
           id: 6,
@@ -3960,6 +4046,11 @@ and explain how it supports the claim.</pre>
           avoid: "Do not fill in the topic sentence, evidence, or explanation for students.",
           starter_fix:
             "A blank organizer, step-by-step checklist, question prompts, and sentence frames that guide planning without pre-filling the response.",
+          level_key: "R",
+          level: "Redefinition",
+          level_blurb: "Make possible a learning move students could not do before.",
+          teacher: "Mr. Hart",
+          need: "“My students can explain their thinking out loud but fall apart planning a written response.”",
         },
       ];
       const STORE = "fixit_design_challenge_participant_pages_v5_repaired";
@@ -4267,22 +4358,22 @@ and explain how it supports the claim.</pre>
       const WIZ_STEPS = [
         {
           title: "Read the problem",
-          todo: "Read what the teacher wanted, the request they sent AI, and what came back. Nothing to type here.",
+          todo: "Here is what went wrong when this was tried without guardrails. Read it, then go write a better request.",
           next: "I read it — go to step 2 →",
         },
         {
-          title: "Rewrite the teacher's prompt",
-          todo: "You are editing the actual words the teacher sent to AI. Do these three things:",
+          title: "Write the prompt for them",
+          todo: "Your teacher's need is below, and so is the SAMR level your group is building at. Choose one option in each row — the prompt writes itself.",
           steps: [
-            "Tap <strong>Load the teacher's prompt</strong>. The real request appears in the box.",
-            "In the box, <strong>delete the part that gives the answer away</strong> — that is the line that caused the problem.",
-            "Tap chips to add <strong>what AI should build</strong> and <strong>what it must never do</strong>.",
+            "Pick <strong>what AI should make</strong>, and <strong>who it is for</strong>.",
+            "Pick <strong>what students must still do</strong> — that line protects the learning.",
+            "Pick <strong>what AI must never do</strong>. Read your finished prompt at the bottom.",
           ],
-          next: "Prompt rewritten — go to step 3 →",
+          next: "Prompt written — go to step 3 →",
         },
         {
           title: "Rate your new prompt",
-          todo: "Pick the letter that matches your rewritten prompt, then finish the one sentence below it.",
+          todo: "Check your own work: does the prompt you wrote actually sit at your group\u2019s level? Pick the letter it really lands on, then finish the sentence.",
           next: "Done rating — go to step 4 →",
         },
         {
@@ -4384,19 +4475,8 @@ and explain how it supports the claim.</pre>
             aiCard.appendChild(problem);
           }
           const givenCard = $(".given-card", page);
-          /* The prompt being fixed leads the work column — it is the thing
-             the group is editing, not a reference in the margin. The rules it
-             has to respect stay pinned beside it. */
-          const promptCard = document.createElement("div");
-          promptCard.className = "prompt-original";
-          promptCard.innerHTML = `
-            <p class="prompt-original-title">The prompt you are fixing</p>
-            ${aiCard ? aiCard.innerHTML : ""}`;
-
           const reference = document.createElement("aside");
           reference.className = "wiz-ref";
-          /* The clone keeps the card's list but not its heading — the aside
-             already has one, and two stacked labels read as a mistake. */
           reference.innerHTML = `
             <p class="wiz-ref-title">Rules your prompt must follow</p>
             ${givenCard ? givenCard.outerHTML : ""}`;
@@ -4404,7 +4484,7 @@ and explain how it supports the claim.</pre>
           if (clonedTitle) clonedTitle.remove();
 
           makePane(0, [$(".scenario-card", page), givenCard]);
-          makePane(1, [promptCard, items[0]], reference);
+          makePane(1, [items[0]], reference);
           makePane(2, [items[1], osamrKey]);
           makePane(3, [post]);
 
@@ -4481,88 +4561,179 @@ and explain how it supports the claim.</pre>
          again takes it out. The textarea stays the single source of truth,
          so anything typed by hand survives and nothing needs new state.
       --------------------------------------------------------------- */
-      /* Two chip groups, because a fixed prompt is two moves: ask for the
-         support, then fence off the thinking. Both write a real line into the
-         prompt, so the box always reads as something you could paste into AI. */
-      const ASK_FOR = [
-        "Include a vocabulary bank with words only.",
-        "Include sentence frames.",
-        "Chunk the text with headings.",
-        "Add one guiding question per part.",
-        "Include a blank organizer for students to fill in.",
-        "Include a step-by-step checklist.",
-        "Write the directions in plain language.",
-        "Add visual cues, icons or labels.",
-        "Add a partner-talk prompt.",
-      ];
-      const GUARDRAILS = [
-        "Do not give the answer.",
-        "Do not explain the reasoning.",
-        "Do not choose the evidence for students.",
-        "Do not name the operation or strategy.",
-        "Do not fill in the organizer.",
-        "Do not summarize or replace the text.",
-      ];
-      const FIX_MOVES = [...ASK_FOR, ...GUARDRAILS];
+      /* ---------------------------------------------------------------
+         Step 2: write the teacher's prompt by choosing its pieces.
 
-      function fixLines(groupId) {
+         A real teacher states a real need; the group writes the AI request
+         that meets it, at the one SAMR level their group was given. The
+         prompt is four slots — the support, who it is for, what students must
+         still do, and what AI must never do — and each slot is a row of
+         options. Nobody faces a blank box, every group produces something a
+         teacher could paste into AI, and the level is learned by building at
+         it rather than by labelling someone else's work.
+
+         The assembled sentence is written into `before`, so the post, the
+         progress bar and the download keep reading one value as before.
+      --------------------------------------------------------------- */
+      const SLOTS = [
+        {
+          field: "s_support",
+          label: "1 · What should AI make?",
+          hint: "The support itself. Pick the one this teacher needs.",
+          options: [
+            "a vocabulary bank with student-friendly definitions",
+            "sentence frames for explaining reasoning",
+            "the same directions rewritten in plain language",
+            "the text chunked with headings and one focus question per chunk",
+            "a blank organizer students fill in themselves",
+            "a step-by-step checklist for the process",
+            "a visual glossary with icons for key terms",
+            "a partner-talk protocol with roles and prompts",
+          ],
+        },
+        {
+          field: "s_who",
+          label: "2 · Who is it for?",
+          hint: "Name the students and the barrier in the teacher's own words.",
+          options: [], // filled per group from the case
+        },
+        {
+          field: "s_keep",
+          label: "3 · What must students still do themselves?",
+          hint: "This is the line that protects the learning target.",
+          options: [], // filled per group from the case
+        },
+        {
+          field: "s_never",
+          label: "4 · What must AI never do?",
+          hint: "One guardrail. Be blunt with it.",
+          options: [
+            "give the answer",
+            "explain the reasoning",
+            "choose the evidence",
+            "name the operation or strategy",
+            "fill in the organizer",
+            "summarize or replace the text",
+            "model a completed example",
+          ],
+        },
+      ];
+
+      function slotOptions(group, slot) {
+        if (slot.field === "s_who") {
+          return [
+            `${group.meta.split(" · ")[0]} students who struggle with ${group.barrier.toLowerCase()}`,
+            `students who understand the content but are blocked by ${group.barrier.toLowerCase()}`,
+            "multilingual learners in this class",
+            "students with IEPs who need a way into this task",
+          ];
+        }
+        if (slot.field === "s_keep") {
+          const thinking = group.thinking.replace(/^Students must\s*/i, "").replace(/\.$/, "");
+          return [
+            thinking,
+            "do the reasoning and explain it in their own words",
+            "make the decision and justify it",
+            "choose and defend their own evidence",
+          ];
+        }
+        return slot.options;
+      }
+
+      /* One prompt from four choices, in the order a teacher would say it. */
+      function assemblePrompt(groupId) {
+        const group = groupById(groupId);
+        if (!group) return "";
+        const pick = (f) => getValue(groupId, f);
+        const support = pick("s_support");
+        const who = pick("s_who");
+        const keep = pick("s_keep");
+        const never = pick("s_never");
+        if (!support && !who && !keep && !never) return "";
+        return (
+          `Create ${support || "[what AI should make]"} for ${who || "[who it is for]"}. ` +
+          `Students must still ${keep || "[what students still do]"}. ` +
+          `Do not ${never || "[what AI must never do]"}.`
+        );
+      }
+
+      function rebuildPrompt(groupId) {
+        const value = assemblePrompt(groupId);
+        setValue(groupId, "before", value);
         const box = $(`#g${groupId}-before`);
-        return box ? box.value.split("\n").filter((line) => line.trim()) : [];
+        if (box) box.value = value;
+        const out = $(`.prompt-preview-out[data-group="${groupId}"]`);
+        if (out) {
+          out.innerHTML = value
+            ? escapeHtml(value).replace(/\[(.*?)\]/g, '<span class="gap">[$1]</span>')
+            : '<span class="muted">Choose an option in each row and your prompt appears here.</span>';
+        }
+        updateGroup(groupId);
+        refreshProgress(groupId);
       }
 
       function buildFixChips() {
         GROUPS.forEach((group) => {
           const box = $(`#g${group.id}-before`);
-          if (!box || $(`.chip-picker[data-group="${group.id}"]`)) return;
-          const picker = document.createElement("div");
-          picker.className = "chip-picker";
-          picker.dataset.group = group.id;
-          const chipRow = (moves, kind) => `
-            <div class="chip-row">
-              ${moves
-                .map(
-                  (move) =>
-                    `<button type="button" class="pick-chip ${kind}" data-fix-move="${group.id}" data-move="${move}">${move}</button>`,
-                )
-                .join("")}
-            </div>`;
-          picker.innerHTML = `
-            <div class="action-row">
-              <button class="btn secondary" type="button" data-starter="${group.id}">
-                Load the teacher's prompt
-              </button>
+          if (!box || $(`.slot-builder[data-group="${group.id}"]`)) return;
+
+          const builder = document.createElement("div");
+          builder.className = "slot-builder";
+          builder.dataset.group = group.id;
+          builder.innerHTML = `
+            <div class="need-card">
+              <p class="need-title">${escapeHtml(group.teacher)} needs your help</p>
+              <p class="need-quote">${escapeHtml(group.need)}</p>
+              <p class="need-level">
+                <span class="lvl-badge">${group.level_key}</span>
+                Your group writes this prompt at <strong>${escapeHtml(group.level)}</strong> —
+                ${escapeHtml(group.level_blurb)}
+              </p>
             </div>
-            <p class="chip-picker-title">1 · Ask AI for the support students need</p>
-            ${chipRow(ASK_FOR, "ask")}
-            <p class="chip-picker-title">2 · Fence off the thinking</p>
-            ${chipRow(GUARDRAILS, "guard")}
-            <p class="chip-picker-note">Every chip adds a line to the prompt below. Edit any wording — it is your prompt.</p>`;
-          box.parentNode.insertBefore(picker, box);
-          syncFixChips(group.id);
+            ${SLOTS.map(
+              (slot) => `
+              <div class="slot" data-slot="${slot.field}">
+                <p class="slot-label">${slot.label}</p>
+                <p class="slot-hint">${slot.hint}</p>
+                <div class="chip-row">
+                  ${slotOptions(group, slot)
+                    .map(
+                      (opt) =>
+                        `<button type="button" class="pick-chip" data-slot-pick="${group.id}" data-field="${slot.field}" data-value="${escapeHtml(opt)}">${escapeHtml(opt)}</button>`,
+                    )
+                    .join("")}
+                </div>
+              </div>`,
+            ).join("")}
+            <p class="chip-picker-title" style="margin-top:18px">The prompt you just wrote</p>
+            <div class="prompt-preview-out" data-group="${group.id}"></div>
+            <details class="hand-edit">
+              <summary>Edit the wording by hand</summary>
+            </details>`;
+
+          box.parentNode.insertBefore(builder, box);
+          $(".hand-edit", builder).appendChild(box);
+          syncFixUi(group.id);
         });
       }
 
-      function syncFixChips(groupId) {
-        const lines = fixLines(groupId).map((line) => line.replace(/^•\s*/, "").trim());
-        $$(`[data-fix-move="${groupId}"]`).forEach((chip) => {
-          const on = lines.includes(chip.dataset.move);
-          chip.classList.toggle("on", on);
-          chip.setAttribute("aria-pressed", String(on));
+      function syncFixUi(groupId) {
+        SLOTS.forEach((slot) => {
+          const chosen = getValue(groupId, slot.field);
+          $$(`[data-slot-pick="${groupId}"][data-field="${slot.field}"]`).forEach((chip) => {
+            const on = chip.dataset.value === chosen;
+            chip.classList.toggle("on", on);
+            chip.setAttribute("aria-pressed", String(on));
+          });
         });
+        rebuildPrompt(groupId);
       }
 
-      function toggleFixMove(groupId, move) {
-        const box = $(`#g${groupId}-before`);
-        if (!box) return;
-        const lines = fixLines(groupId);
-        const index = lines.findIndex((line) => line.replace(/^•\s*/, "").trim() === move);
-        if (index >= 0) lines.splice(index, 1);
-        else lines.push(`• ${move}`);
-        box.value = lines.join("\n");
-        setValue(groupId, "before", box.value);
-        updateGroup(groupId);
-        refreshProgress(groupId);
-        syncFixChips(groupId);
+      function pickSlot(groupId, field, value) {
+        // Tapping the chosen option again clears it, so a group can undo
+        // without hunting for a reset.
+        setValue(groupId, field, getValue(groupId, field) === value ? "" : value);
+        syncFixUi(groupId);
       }
 
       /* Step 3 asks for one sentence. These write a true one for this case in
@@ -5017,9 +5188,10 @@ Group ${group.id} — ${group.short}; Fix-It; Rigor Preserved; ${osamrLabel}`;
           return;
         }
 
-        const moveChip = event.target.closest("[data-fix-move]");
-        if (moveChip) {
-          toggleFixMove(moveChip.dataset.fixMove, moveChip.dataset.move);
+
+        const slotChip = event.target.closest("[data-slot-pick]");
+        if (slotChip) {
+          pickSlot(slotChip.dataset.slotPick, slotChip.dataset.field, slotChip.dataset.value);
           return;
         }
 
@@ -5036,25 +5208,6 @@ Group ${group.id} — ${group.short}; Fix-It; Rigor Preserved; ${osamrLabel}`;
           return;
         }
 
-        /* One tap fills the draft box with this group's starter idea, so nobody
-           has to face a blank textarea. It never overwrites real work. */
-        const starterButton = event.target.closest("[data-starter]");
-        if (starterButton) {
-          const groupId = starterButton.dataset.starter;
-          const group = groupById(groupId);
-          const box = $(`#g${groupId}-before`);
-          if (group && box) {
-            if (box.value.trim() && !window.confirm("Replace what you have written?")) return;
-            box.value = group.ai_input;
-            setValue(groupId, "before", box.value);
-            updateGroup(groupId);
-            refreshProgress(groupId);
-            syncFixChips(groupId);
-            box.focus();
-            showToast("Teacher's prompt loaded — now fix it");
-          }
-          return;
-        }
 
         const postButton = event.target.closest("[data-copy-post]");
         if (postButton) {
