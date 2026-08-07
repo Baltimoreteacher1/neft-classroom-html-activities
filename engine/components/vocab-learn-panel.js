@@ -21,11 +21,11 @@ function openVisualLightbox(imgSrc, captionText) {
   modal.style.cssText = `
     position: fixed; inset: 0; z-index: 99999;
     background: rgba(11, 15, 25, 0.95); backdrop-filter: blur(12px);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 24px; cursor: zoom-out;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    padding: 24px; cursor: zoom-out; overflow-y: auto; overscroll-behavior: contain;
   `;
   modal.innerHTML = `
-    <div style="max-width: 92vw; max-height: 90vh; text-align: center; color: white;" onclick="event.stopPropagation()">
+    <div style="max-width: 92vw; margin: auto; flex: 0 0 auto; text-align: center; color: white;" onclick="event.stopPropagation()">
       <div style="background: #0f172a; padding: 20px; border-radius: 24px; border: 2.5px solid #38bdf8; box-shadow: 0 25px 60px rgba(0,0,0,0.75);">
         <img src="${imgSrc}" style="max-width: 100%; max-height: 68vh; border-radius: 14px; background: white; padding: 14px; display: inline-block;" />
         <div style="margin-top: 18px; font-size: 1.15rem; font-weight: 800; line-height: 1.5; color: #f8fafc; max-width: 680px; margin-left: auto; margin-right: auto;">

@@ -227,6 +227,11 @@ trap cleanup EXIT
 
 # The pre-push QA loop builds from the worktree root; share node_modules.
 [ -d "$ROOT/node_modules" ] && ln -s "$ROOT/node_modules" "$WT/node_modules"
+# …and reports/, for the same reason. It is gitignored generated output, so a
+# fresh worktree never has it, and tools/a11y-ratchet.test.mjs asserts on
+# reports/a11y-audit.md — which failed the QA gate on every ship regardless of
+# what was being deployed.
+[ -d "$ROOT/reports" ] && ln -s "$ROOT/reports" "$WT/reports"
 
 # --- Assemble the deploy commit(s) ----------------------------------------------------
 if [ "$MODE" = "rebuild" ]; then

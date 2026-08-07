@@ -819,9 +819,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     state.set({ studentName, studentPeriod });
   }
 
-  // Named index for the one phase the pre-lesson tabs hand off to. The tabs
+  // Named indices for the phases the pre-lesson tabs hand off to. The tabs
   // used to hardcode raw numbers (3, 2) that no longer matched this list.
-  const PHASE_PRACTICE = 4;
+  const PHASE_LAUNCH = 2;
+  const PHASE_EXPLORE = 3;
 
   const phaseConfigs = [
     { name: phaseName(0), icon: "⚡" }, // Warmup (Phase 1)
@@ -1374,16 +1375,15 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         el.setAttribute("aria-label", "Learn It");
         phaseContainer.append(el);
         renderLearnItPanel(el, config, {
-          // Learn It hands off to PRACTICE (phase index 4 in phaseConfigs).
-          // This used to be navigateTo(3), which is Explore — so the button
-          // that said it was moving you forward dropped you into a phase you
-          // had already done, and the pre-lesson chain Vocab → Learn It →
-          // Practice quietly broke at its last link.
+          // Canonical lesson order: Launch → Vocab → Learn It → Explore.
+          // Learn It is pre-work for Explore, so it hands off to EXPLORE
+          // (phase index 3), not Practice — sending a student straight to
+          // Practice skipped the Explore phase entirely.
           state,
-          onComplete: () => this.navigateTo(PHASE_PRACTICE),
+          onComplete: () => this.navigateTo(PHASE_EXPLORE),
         });
         el.append(
-          chainContinueButton("Continue to Practice ✏️ →", () => this.navigateTo(PHASE_PRACTICE)),
+          chainContinueButton("Continue to Explore 🔍 →", () => this.navigateTo(PHASE_EXPLORE)),
         );
         el.scrollIntoView({ block: "start" });
         return;
@@ -1515,8 +1515,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         el.append(wrap);
       };
 
-      // Each tab's bottom button moves to the NEXT thing in the pre-lesson
-      // chain: Vocab → Learn It → Practice. Vocab used to jump to Guided Notes
+      // Each tab's bottom button moves to the NEXT thing in the lesson chain:
+      // Launch → Vocab → Learn It → Explore. Vocab used to jump to Guided Notes
       // (skipping Learn It entirely) and Learn It used to go back to Launch, so
       // neither button did what its position implied. Guided Notes is a side
       // tab, not a link in the chain, so it still returns to Launch.
@@ -1524,18 +1524,18 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         addContinue("Continue to Learn It 📖 →", () => this.openExtra("learn"));
       } else if (kind === "learn") {
         this.renderLearnItExtras?.(el);
-        addContinue("Continue to Practice ✏️ →", () => {
+        addContinue("Continue to Explore 🔍 →", () => {
           try {
             state.set({ notesVisited: true });
           } catch (_) {}
-          this.navigateTo(PHASE_PRACTICE);
+          this.navigateTo(PHASE_EXPLORE);
         });
       } else if (kind === "notes") {
         addContinue("Continue to Launch 🚀 →", () => {
           try {
             state.set({ notesVisited: true });
           } catch (_) {}
-          this.navigateTo(2);
+          this.navigateTo(PHASE_LAUNCH);
         });
       }
 
@@ -1876,6 +1876,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   // the Save/Resume launcher; hidden on the final phase and while a full-page
   // pre-lesson tab (Vocab / Learn It / Notes) is open.
   (function mountNextButton() {
+    const hasVocab = Array.isArray(config.vocabulary) && config.vocabulary.length > 0;
     const nextBtn = document.createElement("button");
     nextBtn.type = "button";
     nextBtn.className = "nt-next-phase-btn";
@@ -1897,7 +1898,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const cur = st.currentPhase ?? 0;
       const total = config.phases.length;
       const onExtra = document.documentElement.classList.contains("nt-extra-fullpage-open");
-      const nextName = phaseConfigs[cur + 1]?.name || "Next";
+      // Canonical order is Launch → Vocab → Learn It → Explore. Vocab and
+      // Learn It are full-page extras, not entries in `phases`, so stepping
+      // cur+1 from Launch skipped straight past both of them and landed on
+      // Explore — the opposite of what the lesson chain says. From Launch the
+      // control therefore points at Vocab (when the lesson has vocabulary);
+      // everywhere else it is still the next phase.
+      const toVocab = cur === PHASE_LAUNCH && hasVocab;
+      const nextName = toVocab ? "Vocabulary" : phaseConfigs[cur + 1]?.name || "Next";
       const hide = cur >= total - 1 || onExtra;
       nextBtn.innerHTML = `Next: ${nextName} <span aria-hidden="true">→</span>`;
       nextBtn.hidden = hide;
@@ -1910,6 +1918,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     }
     nextBtn.addEventListener("click", () => {
       const cur = state.get().currentPhase ?? 0;
+      if (cur === PHASE_LAUNCH && hasVocab) {
+        app.openExtra("vocab");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
       if (cur < config.phases.length - 1) {
         app.navigateTo(cur + 1);
         window.scrollTo({ top: 0, behavior: "smooth" });

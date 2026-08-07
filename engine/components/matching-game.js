@@ -23,7 +23,7 @@ function injectStyle() {
      the page a horizontal scrollbar. */
   .mg-board { display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); gap:var(--sp-3, 12px); align-items:start; }
   .mg-col { display:flex; flex-direction:column; gap:var(--sp-2, 8px); min-width:0; }
-  .mg-col-head { font-size:0.78rem; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted, #5b6773); margin:0 0 2px 2px; }
+  .mg-col-head { font-size:0.95rem; font-weight:800; letter-spacing:0.03em; text-transform:uppercase; color:var(--navy, #1f2a44); margin:0 0 2px 2px; }
   .mg-item { width:100%; min-width:0; text-align:left; font:inherit; font-weight:700; font-size:1rem; line-height:1.3;
     min-height:54px; padding:12px 14px; border:2px solid var(--line, #d8dfdc); border-radius:var(--radius-md, 12px);
     background:var(--surface, #fff); color:var(--ink, #17202a); cursor:pointer; display:flex; align-items:center;
@@ -39,7 +39,7 @@ function injectStyle() {
   /* Narrow / zoomed-in: tighten the gutter and padding, keep BOTH columns and a
      44px+ tap target. Never collapse to one column — a matcher that stacks the
      answers under the prompts stops being a matcher. */
-  @media (max-width:520px){ .mg-board{ grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); gap:8px; } .mg-item{ font-size:0.9rem; min-height:48px; padding:10px; } }
+  @media (max-width:520px){ .mg-board{ grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); gap:8px; } .mg-item{ font-size:1rem; min-height:52px; padding:10px; } }
   @media (prefers-reduced-motion:reduce){ .mg-item{ transition:none } .mg-item[data-wrong]{ animation:none } }
   `;
   const style = document.createElement("style");
@@ -62,13 +62,13 @@ export function renderMatchingGame(container, { pairs, columns, label, labelEs, 
   }
 
   const hint = document.createElement("p");
-  hint.style.cssText = "font-size:0.85rem; color:var(--muted); margin:0 0 var(--sp-3);";
+  hint.style.cssText = "font-size:1.05rem; color:var(--navy, #1f2a44); margin:0 0 var(--sp-3);";
   hint.innerHTML = stackT("mgTap");
   wrapper.append(hint);
 
   const statsBar = document.createElement("div");
   statsBar.style.cssText =
-    "display:flex; justify-content:space-between; margin-bottom:var(--sp-3); font-size:0.85rem; font-weight:700; color:var(--muted);";
+    "display:flex; justify-content:space-between; margin-bottom:var(--sp-3); font-size:1rem; font-weight:700; color:var(--navy, #1f2a44);";
   const matchCount = document.createElement("span");
   const setMatchCount = (n) =>
     (matchCount.innerHTML = stackHtml(

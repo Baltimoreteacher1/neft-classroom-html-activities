@@ -128,13 +128,13 @@ export function renderVocabSort(container, { terms, onComplete }) {
 
   const progress = document.createElement("div");
   progress.style.cssText =
-    "font-size:0.85rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-4);";
+    "font-size:1.05rem; font-weight:700; color:var(--navy, #1f2a44); margin-bottom:var(--sp-4);";
   progress.textContent = `0 / ${total} sorted`;
   wrapper.append(progress);
 
   const bankLabel = document.createElement("div");
   bankLabel.style.cssText =
-    "font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin-bottom:var(--sp-2);";
+    "font-size:0.95rem; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; color:var(--navy, #1f2a44); margin-bottom:var(--sp-2);";
   bankLabel.textContent = "Examples to Sort";
   wrapper.append(bankLabel);
 
@@ -197,13 +197,13 @@ export function renderVocabSort(container, { terms, onComplete }) {
     labelRow.append(vocabImageEl(t));
 
     const bucketLabel = document.createElement("div");
-    bucketLabel.style.cssText = "font-weight:800; font-size:0.95rem; color:var(--navy);";
+    bucketLabel.style.cssText = "font-weight:800; font-size:1.1rem; color:var(--navy);";
     bucketLabel.textContent = t.term;
     if (t.termEs) {
       const es = document.createElement("span");
       es.lang = "es";
       es.style.cssText =
-        "display:block; font-size:0.78rem; font-weight:600; font-style:italic; color:var(--muted);";
+        "display:block; font-size:1rem; font-weight:600; font-style:italic; color:var(--gray-700, #45566b);";
       es.textContent = t.termEs;
       bucketLabel.append(es);
     }
@@ -212,7 +212,7 @@ export function renderVocabSort(container, { terms, onComplete }) {
 
     const bucketHint = document.createElement("div");
     bucketHint.style.cssText =
-      "font-size:0.8rem; color:var(--muted); font-style:italic; margin-bottom:var(--sp-2);";
+      "font-size:1rem; color:var(--gray-700, #45566b); font-style:italic; margin-bottom:var(--sp-2);";
     bucketHint.textContent = t.definition;
     if (t.definitionEs) {
       const es = document.createElement("span");

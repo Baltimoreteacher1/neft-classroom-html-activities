@@ -3322,7 +3322,15 @@ function renderExplorePhase(el, state, ctx, config) {
   // affordance is built into the button flow so it never blocks progress.
   // An optional `ttPrompt` overrides the generic explore prompt — used to run
   // the authored post-activity discussion as a SPOKEN follow-up (see below).
+  // Interactive components report completion more than once (a re-check, a
+  // reset-and-retry, a per-problem callback that fires again on the last item),
+  // and every call appended ANOTHER Turn & Talk card plus another Continue
+  // button — lesson 1-5 showed the same discussion three times in a row. This
+  // hand-off happens once per phase render.
+  let turnTalkShown = false;
   const showTurnTalkThenComplete = (ttPrompt) => {
+    if (turnTalkShown) return;
+    turnTalkShown = true;
     renderTurnAndTalk(
       el,
       ttPrompt || resolveTurnTalk("explore", config),
@@ -3350,8 +3358,11 @@ function renderExplorePhase(el, state, ctx, config) {
     // assignments, so each column says plainly what it is and what order to
     // work in.
     const pair = openWorkPair(el);
-    pair.main.prepend(workPairCaption("Step 1", "Do this"));
-    pair.tool.prepend(workPairCaption("Step 2", "Use this to see why"));
+    // "Do this" / "Use this to see why" read as one instruction split across two
+    // columns, so students tried to follow Step 1's caption while looking at
+    // Step 2's widget. Each caption now names what its OWN column is for.
+    pair.main.prepend(workPairCaption("Step 1", "Work the task below."));
+    pair.tool.prepend(workPairCaption("Step 2", "Then use this model to check your thinking."));
     pair.main.append(exploreShell);
     pair.tool.append(exploreFig);
     // Explore is where the building happens, so this is the mount that most

@@ -1,4 +1,12 @@
 export function renderNumberLine(container, config) {
+  // Shape adapter, applied BEFORE anything reads the config: several lessons
+  // author the plot-these-values task as `items:[{label,value}]` + `range:
+  // {min,max,step}` (see lessons/1-5) rather than `targets` + flat min/max/step.
+  // Nothing consumed that shape, so those Explore phases fell through to the
+  // "unavailable" stub — which printed the directions a SECOND time under the
+  // problem card and then reported a completion the student never earned.
+  // Normalising here fixes every lesson written that way, not just one.
+  config = adaptNumberLineShape(config);
   const { min, max, step, targets, snapToTick, label, onComplete } = config;
   injectNumberLineStyles();
 
@@ -23,12 +31,17 @@ export function renderNumberLine(container, config) {
       return renderJumpNumberLine(container, config);
     }
     // Guard malformed config: with no targets, the original "correct === targets.length"
-    // check is 0 === 0 on the first click and fires a false success.
+    // check is 0 === 0 on the first click and fires a false success. The stub no
+    // longer echoes the directions (the problem card above already printed them
+    // — `hideStem`) and no longer calls onComplete, which used to hand the
+    // surrounding phase a completion, a green "correct" card and a Turn & Talk
+    // for a task the student was never actually shown.
     const warn = document.createElement("p");
     warn.className = "problem-stem";
-    warn.textContent = label || config.instructions || "This number-line task is unavailable.";
+    warn.textContent = config.hideStem
+      ? "This number-line task is unavailable."
+      : label || config.instructions || "This number-line task is unavailable.";
     container.append(warn);
-    if (onComplete) onComplete(0, 0);
     return;
   }
 
@@ -321,6 +334,36 @@ export function renderNumberLine(container, config) {
   container.append(wrapper);
 }
 
+// `items` + `range` → `targets` + flat min/max/step, the shape every renderer in
+// this file reads. Returns the config untouched when it is already canonical, so
+// this is a no-op for the lessons that author `targets`.
+//
+// A plot-these-values list is worked ONE dot at a time (`sequential`): the
+// authored items are an ordered walk ("Start: 3.4" → "Add 1.25 → land at 4.65"),
+// which reads as nonsense when four dots start bunched together on the line.
+function adaptNumberLineShape(config) {
+  if (!config || (Array.isArray(config.targets) && config.targets.length)) return config;
+  const items = Array.isArray(config.items) ? config.items : null;
+  if (!items || !items.length) return config;
+  const targets = items
+    .filter((it) => it && Number.isFinite(Number(it.value)))
+    .map((it) => ({ value: Number(it.value), label: it.label }));
+  if (!targets.length) return config;
+  const range = config.range || {};
+  const values = targets.map((t) => t.value);
+  return {
+    ...config,
+    targets,
+    sequential: config.sequential !== false,
+    min:
+      config.min ??
+      (Number.isFinite(Number(range.min)) ? Number(range.min) : Math.min(...values, 0)),
+    max:
+      config.max ?? (Number.isFinite(Number(range.max)) ? Number(range.max) : Math.max(...values)),
+    step: config.step ?? (Number.isFinite(Number(range.step)) ? Number(range.step) : 1),
+  };
+}
+
 // One dot, moved to each value in turn. Snaps to tenths when the values are
 // decimals (so 3.4 is actually reachable — integer snapping was the "weird" part),
 // shows the current target and progress, and advances on a correct placement.
@@ -347,7 +390,11 @@ function renderSequentialNumberLine(container, config) {
 
   const wrapper = document.createElement("div");
   wrapper.className = "card";
-  const lead = label || instructions;
+  // `hideStem` means the surrounding problem shell already printed the task
+  // sentence. Without honouring it the student read the SAME directions twice —
+  // once in the card header, once again immediately below it (see
+  // coordinate-grid.js, which already did this).
+  const lead = config.hideStem ? label : label || instructions;
   if (lead) {
     const p = document.createElement("p");
     p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
@@ -610,10 +657,13 @@ function renderInequalityGraphs(container, config) {
   const wrapper = document.createElement("div");
   wrapper.className = "card";
 
-  if (instructions || label) {
+  // `hideStem`: the problem shell already printed this sentence — see the
+  // sequential renderer above.
+  const lead = config.hideStem ? label : instructions || label;
+  if (lead) {
     const p = document.createElement("p");
     p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
-    p.textContent = instructions || label;
+    p.textContent = lead;
     wrapper.append(p);
   }
 
@@ -719,10 +769,13 @@ function renderJumpNumberLine(container, config) {
   const wrapper = document.createElement("div");
   wrapper.className = "card";
 
-  if (instructions || label) {
+  // `hideStem`: the problem shell already printed this sentence — see the
+  // sequential renderer above.
+  const lead = config.hideStem ? label : instructions || label;
+  if (lead) {
     const p = document.createElement("p");
     p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
-    p.textContent = instructions || label;
+    p.textContent = lead;
     wrapper.append(p);
   }
 

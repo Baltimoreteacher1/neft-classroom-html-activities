@@ -133,7 +133,7 @@ export function renderVocabBuilder(container, { terms, onComplete }) {
 
   const progressText = document.createElement("div");
   progressText.style.cssText =
-    "font-size:0.85rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-2);";
+    "font-size:1.05rem; font-weight:700; color:var(--navy, #1f2a44); margin-bottom:var(--sp-2);";
   wrapper.append(progressText);
 
   const progressTrack = document.createElement("div");
@@ -184,8 +184,7 @@ export function renderVocabBuilder(container, { terms, onComplete }) {
     if (term.termEs) {
       const es = document.createElement("div");
       es.lang = "es";
-      es.style.cssText =
-        "font-size:0.95rem; font-weight:600; font-style:italic; opacity:0.85; margin-top:4px;";
+      es.style.cssText = "font-size:1.05rem; font-weight:600; font-style:italic; margin-top:4px;";
       es.textContent = term.termEs;
       termDisplay.append(es);
     }
@@ -212,7 +211,7 @@ export function renderVocabBuilder(container, { terms, onComplete }) {
       btn.style.animationDelay = `${0.08 + optIndex * 0.07}s`;
       btn.style.cssText += `
         text-align:left; padding:14px 18px; border:2px solid var(--line);
-        border-radius:var(--radius-md); background:white; font-size:0.95rem;
+        border-radius:var(--radius-md); background:white; font-size:1.05rem;
         transition:all var(--duration-fast) ease; min-height:48px; width:100%;
         font-weight:600; cursor:pointer;
       `;
@@ -283,7 +282,7 @@ export function renderVocabBuilder(container, { terms, onComplete }) {
     summary.innerHTML = `
       <div class="badge badge-success" style="margin-bottom:var(--sp-3)">Vocabulary Complete</div>
       <h3 style="margin-bottom:var(--sp-2)">${correct} of ${total} correct on first try</h3>
-      <p style="color:var(--muted);">Review the terms below for reference.</p>
+      <p style="color:var(--gray-700, #45566b);">Review the terms below for reference.</p>
     `;
 
     const table = document.createElement("table");

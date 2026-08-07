@@ -24,15 +24,21 @@ export function openVocabPopOut(t) {
 
   const modal = document.createElement("div");
   modal.className = "vocab-popout-modal";
+  // `justify-content: center` on a SCROLLING flex container clips the overflow
+  // at BOTH ends: a card taller than the viewport (long definition, Spanish
+  // definition and an example all at once) had its header pushed above the
+  // scroll origin, so the term itself was unreachable — you could never scroll
+  // back up to it. `flex-start` + `margin: auto` on the card centres it while
+  // it fits and lets it scroll normally, whole, once it does not.
   modal.style.cssText = `
     position: fixed; inset: 0; z-index: 99999;
     background: rgba(11, 15, 25, 0.94); backdrop-filter: blur(12px);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 20px; cursor: zoom-out; overflow-y: auto;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    padding: 20px; cursor: zoom-out; overflow-y: auto; overscroll-behavior: contain;
   `;
 
   modal.innerHTML = `
-    <div class="vocab-popout-content" style="max-width: 680px; width: 100%; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.6); cursor: default; border: 2.5px solid #cbd5e1;" onclick="event.stopPropagation()">
+    <div class="vocab-popout-content" style="max-width: 680px; width: 100%; margin: auto; flex: 0 0 auto; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.6); cursor: default; border: 2.5px solid #cbd5e1;" onclick="event.stopPropagation()">
       <div style="background: linear-gradient(135deg, #0f2b48 0%, #134074 100%); padding: 22px 26px; color: #ffffff; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
         <div>
           <div style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; color: #38bdf8; margin-bottom: 4px;">📖 Math Vocabulary Pop-Out</div>
@@ -54,7 +60,7 @@ export function openVocabPopOut(t) {
 
         <!-- ENGLISH DEFINITION -->
         <div style="background: #f8fbff; border: 1.5px solid #cbd5e1; border-left: 5px solid #0369a1; border-radius: 14px; padding: 16px 18px; margin-bottom: 14px;">
-          <div style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #0369a1; margin-bottom: 4px;">🇺🇸 English Definition</div>
+          <div style="font-size: 0.95rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: #0369a1; margin-bottom: 4px;">🇺🇸 English Definition</div>
           <div style="font-size: 1.1rem; font-weight: 700; color: #0f172a; line-height: 1.55;">${_esc(defEn)}</div>
         </div>
 
@@ -63,7 +69,7 @@ export function openVocabPopOut(t) {
           defEs
             ? `
         <div style="background: #fffdf5; border: 1.5px solid #fed7aa; border-left: 5px solid #ea580c; border-radius: 14px; padding: 16px 18px; margin-bottom: 14px;">
-          <div style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #c2410c; margin-bottom: 4px;">🇲🇽 Definición en Español</div>
+          <div style="font-size: 0.95rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: #c2410c; margin-bottom: 4px;">🇲🇽 Definición en Español</div>
           <div style="font-size: 1.1rem; font-weight: 700; color: #431407; line-height: 1.55;">${_esc(defEs)}</div>
         </div>`
             : ""
@@ -74,7 +80,7 @@ export function openVocabPopOut(t) {
           example
             ? `
         <div style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-left: 5px solid #16a34a; border-radius: 14px; padding: 14px 18px; margin-bottom: 18px;">
-          <div style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #15803d; margin-bottom: 4px;">💡 Example & Visual Note</div>
+          <div style="font-size: 0.95rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: #15803d; margin-bottom: 4px;">💡 Example & Visual Note</div>
           <div style="font-size: 1.02rem; font-weight: 600; color: #14532d; line-height: 1.5;">${_esc(example)}</div>
         </div>`
             : ""

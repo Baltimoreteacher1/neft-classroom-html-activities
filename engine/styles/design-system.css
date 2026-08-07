@@ -1036,9 +1036,16 @@ h4 {
      [hidden] below sets display:none, so it captures nothing once closed. */
   z-index: 2147483001;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  /* The card centres via `margin: auto` on .obj-popup, NOT via align/justify
+     center. Centring a flex item inside a scrolling container clips it at both
+     ends once it is taller than the viewport, so on a short window (or a
+     projector at 125%) the term heading and close button were pushed off the
+     top with no way to scroll back to them. */
+  align-items: flex-start;
+  justify-content: flex-start;
   padding: var(--sp-4, 18px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: rgba(15, 23, 42, 0.55);
   animation: objFadeIn var(--duration-fast) ease;
 }
@@ -1049,8 +1056,9 @@ h4 {
 .obj-popup {
   position: relative;
   width: min(420px, 100%);
-  max-height: 90vh;
-  overflow-y: auto;
+  margin: auto;
+  flex: 0 0 auto;
+  overflow-y: visible;
   background: var(--white, #fff);
   border-radius: var(--radius-lg, 16px);
   box-shadow: 0 18px 50px rgba(15, 23, 42, 0.3);
@@ -1116,21 +1124,14 @@ h4 {
   margin: 0 auto var(--sp-2, 10px);
 }
 /* The wording under the vocabulary picture — the worked example that explains
-   what the picture shows. It was body-size and unbounded, so a long example
-   either read too small for a newcomer or pushed the picture off the top of the
-   popup on a short screen.
-   Now: one step up the type scale, in a box that scrolls on its OWN.
-   The cap is in `em`, not `vh`, deliberately — it must be the same box at the
-   same size on a phone, a laptop and a projector, and a vh cap collapses to two
-   lines on a short window. `overflow-y: auto` is unconditional (no media query
-   gates it), and `overscroll-behavior: contain` keeps a flick inside the box
-   from scrolling the lesson behind the modal. */
+   what the picture shows. One step up the type scale so it reads for a
+   newcomer. */
 .obj-popup-example {
-  max-height: 9em;
+  /* No inner scroller. The whole card scrolls now (see .obj-popup-backdrop), so
+     a second nested scroll box just hid the tail of the worked example behind a
+     scrollbar students did not notice. */
   margin: 0;
   padding: var(--sp-2, 10px) var(--sp-3, 14px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
   border: 1px solid var(--gray-200, #e2e8f0);
   border-radius: var(--radius-md, 12px);
   background: var(--cream, #f4f1ea);
@@ -1139,7 +1140,6 @@ h4 {
   font-weight: 600;
   line-height: 1.6;
   text-align: left;
-  -webkit-overflow-scrolling: touch;
 }
 .obj-popup-example[hidden] {
   display: none;
