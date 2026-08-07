@@ -73,6 +73,11 @@ export async function onRequest(context) {
       p.includes("teacher") ||
       p.includes("dashboard") ||
       p.includes("answer-key") ||
+      // Plan Notes is a teacher surface whose path contains none of the
+      // substrings above, so it would otherwise serve to anyone. Matched as an
+      // exact path PREFIX, never as a substring — a loose "plan" match would
+      // 401 lesson-plan pages students legitimately open.
+      p.startsWith("/curriculum/plan-notes") ||
       p.startsWith("/admin"));
 
   // Student small-group configs never include facilitation fields. The

@@ -14,6 +14,19 @@ binding = "DB"
 database_name = "neft-student-progress"
 database_id = "b6de897c-2cde-4f47-9c59-db39844396ea"
 
+# Lesson plan documents for /curriculum/plan-notes/ (functions/api/plan-notes).
+# Teacher-authored and district-authored plan files, keyed by content hash.
+#
+# KV rather than R2: R2 is not enabled on this account, and the access pattern
+# here — write once, read on open, well under the 25 MB value ceiling — is one
+# KV serves correctly. Swap to R2 if plans ever outgrow it.
+#
+# Optional: if this binding is absent, repo-lesson annotation still works and
+# document upload is refused with a reason instead of failing silently.
+[[kv_namespaces]]
+binding = "PLAN_DOCS"
+id = "e674aa1d3e9f4c75883d6d72f808557a"
+
 [[services]]
 binding = "FAMILY_MEETING_EMAIL_SERVICE"
 service = "neft-family-meeting-email"

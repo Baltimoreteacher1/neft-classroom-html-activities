@@ -95,6 +95,13 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // Plan Notes owns a page, an API route, a generated vocabulary and a write
+  // gate. All four are covered by the one surface validator plus the test run,
+  // which is what makes an edit here cheap instead of a full-gate escalation.
+  [
+    /^(curriculum\/plan-notes\/|functions\/_lib\/plan-(notes-validate|vocab)\.js|functions\/api\/plan-notes\/|scripts\/generate-plan-vocab\.mjs|tools\/validate-plan-notes\.mjs)/,
+    ["validate:plan-notes", "test", "validate:static", "validate:js-syntax"],
+  ],
   [
     /^lessons\/[^/]+\/config\.json$/,
     [
