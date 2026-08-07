@@ -2,6 +2,7 @@
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 
+import { detectConceptTool } from "./concept-tool.js";
 import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
 import { stackContentHtml } from "./i18n.js";
 import { renderMathText } from "./math-typography.js";
@@ -27,103 +28,6 @@ const TYPE_LABELS = {
 
 export function problemTypeLabel(def = {}) {
   return TYPE_LABELS[def.type] || "Practice";
-}
-
-function detectConceptTool(stemText) {
-  if (!stemText || typeof stemText !== "string") return null;
-  const str = stemText.toLowerCase();
-
-  // "base" alone is NOT an exponent signal: every geometry stem says "base 12
-  // and height 8", which was offering the Powers & Exponents lab on the Area of
-  // Triangles lesson. Require it to sit next to actual exponent language.
-  const geometryBase = /\b(height|area|triangle|parallelogram|trapezoid|prism)\b/.test(str);
-  if (
-    str.includes("exponent") ||
-    str.includes("squared") ||
-    str.includes("cubed") ||
-    (str.includes("power") && !geometryBase) ||
-    (str.includes("base") && !geometryBase && str.includes("power"))
-  ) {
-    return { kind: "power-builder", icon: "⚡", label: "Powers & Exponents" };
-  }
-  if (str.includes("factor tree") || str.includes("prime factor")) {
-    return { kind: "factor-tree-lab", icon: "🌳", label: "Factor Tree Lab" };
-  }
-  if (str.includes("lcm") || str.includes("least common multiple")) {
-    return { kind: "lcm-lab", icon: "🔢", label: "LCM Lab" };
-  }
-  if (
-    str.includes("fraction") &&
-    (str.includes("divide") ||
-      str.includes("÷") ||
-      str.includes("kcf") ||
-      str.includes("reciprocal"))
-  ) {
-    return { kind: "fraction-divide", icon: "🥞", label: "Divide Fractions Lab" };
-  }
-  if (str.includes("decimal") && (str.includes("multiply") || str.includes("product"))) {
-    return { kind: "decimal-product", icon: "🔢", label: "Multiply Decimals Lab" };
-  }
-  if (str.includes("decimal") && (str.includes("divide") || str.includes("quotient"))) {
-    return { kind: "decimal-quotient", icon: "🔢", label: "Divide Decimals Lab" };
-  }
-  if (
-    str.includes("decimal") &&
-    (str.includes("add") || str.includes("subtract") || str.includes("column"))
-  ) {
-    return { kind: "decimal-columns", icon: "🔢", label: "Decimal Column Lab" };
-  }
-  if (
-    (str.includes("divide") || str.includes("quotient") || str.includes("long division")) &&
-    str.includes("remainder")
-  ) {
-    return { kind: "long-division-builder", icon: "🧮", label: "Long Division Lab" };
-  }
-  if (str.includes("equation") || str.includes("balance scale")) {
-    return { kind: "algebra-balance-scale", icon: "⚖️", label: "Balance Scale" };
-  }
-  if (
-    str.includes("inequality") ||
-    str.includes("greater than") ||
-    str.includes("less than") ||
-    str.includes("≤") ||
-    str.includes("≥")
-  ) {
-    return { kind: "neon-inequality", icon: "📈", label: "Inequality Lab" };
-  }
-  if (str.includes("surface area") || str.includes("net") || str.includes("prism")) {
-    return { kind: "surface-area-packer", icon: "📦", label: "Surface Area Packer" };
-  }
-  if (str.includes("area of") || str.includes("parallelogram") || str.includes("trapezoid")) {
-    // Name the figure the STEM is about; area-morph defaults to a parallelogram
-    // otherwise, which would demonstrate the wrong formula for a triangle stem.
-    const figure = str.includes("trapezoid")
-      ? "trapezoid"
-      : str.includes("triangle")
-        ? "triangle"
-        : str.includes("composite") || str.includes("l-shaped")
-          ? "composite"
-          : "parallelogram";
-    return { kind: "area-morph", figure, icon: "📐", label: "Area Lab" };
-  }
-  if (
-    str.includes("coordinate") ||
-    str.includes("quadrant") ||
-    str.includes("ordered pair") ||
-    str.includes("x-axis")
-  ) {
-    return { kind: "coordinate-navigator", icon: "📍", label: "Coordinate Navigator" };
-  }
-  if (str.includes("box plot") || str.includes("quartile") || str.includes("interquartile")) {
-    return { kind: "box-plot-detective", icon: "📊", label: "Box Plot Detective" };
-  }
-  if (str.includes("histogram") || str.includes("frequency table")) {
-    return { kind: "histogram-master-lab", icon: "📊", label: "Histogram Lab" };
-  }
-  if (str.includes("mean absolute deviation") || str.includes("mad")) {
-    return { kind: "mad-balance-sandbox", icon: "⚖️", label: "MAD Balance Lab" };
-  }
-  return null;
 }
 
 /**

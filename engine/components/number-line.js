@@ -94,15 +94,35 @@ export function renderNumberLine(container, config) {
   fadeInOnMount(arrowL, 380);
   fadeInOnMount(arrowR, 380);
 
-  // Ticks and labels (labels fade in with a slight left-to-right stagger)
+  // Ticks and labels (labels fade in with a slight left-to-right stagger).
+  //
+  // Every tick used to carry a label. That capped how fine a line could be: a
+  // lesson whose points sit on halves or quarters needs quarter ticks, and 25
+  // labels across 600px collide into an unreadable smear — so lessons authored
+  // a coarse step instead and their own points ended up BETWEEN ticks, where a
+  // snapping dot can never land. Minor ticks are drawn shorter and unlabelled,
+  // so a fine step stays readable and the points stay reachable.
+  const tickCount = Math.max(1, Math.round((max - min) / step));
+  const labelEvery = Math.max(1, Math.ceil(tickCount / 12));
   let tickIdx = 0;
   for (let v = min; v <= max; v = round(v + step)) {
     const x = toX(v);
-    line(svg, x, TICK_Y - 10, x, TICK_Y + 10, "#12355b", 2.5);
-    const txt = text(svg, x, TICK_Y + 26, formatNum(v), "17px", "#12355b");
-    txt.setAttribute("text-anchor", "middle");
-    txt.setAttribute("font-weight", "700");
-    fadeInOnMount(txt, 140 + tickIdx * 35);
+    const isMajor = tickIdx % labelEvery === 0;
+    line(
+      svg,
+      x,
+      TICK_Y - (isMajor ? 10 : 6),
+      x,
+      TICK_Y + (isMajor ? 10 : 6),
+      "#12355b",
+      isMajor ? 2.5 : 1.5,
+    );
+    if (isMajor) {
+      const txt = text(svg, x, TICK_Y + 26, formatNum(v), "17px", "#12355b");
+      txt.setAttribute("text-anchor", "middle");
+      txt.setAttribute("font-weight", "700");
+      fadeInOnMount(txt, 140 + tickIdx * 35);
+    }
     tickIdx += 1;
   }
 
