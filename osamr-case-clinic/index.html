@@ -261,6 +261,9 @@
       textarea{overflow:hidden!important;resize:none!important;border:1px solid #999}
     }
   </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -1786,8 +1789,17 @@ We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} whi
       if (!header) return;
       document.documentElement.style.setProperty("--top-h", Math.round(header.getBoundingClientRect().height) + "px");
     }
-    if (header && "ResizeObserver" in window) new ResizeObserver(measureHeader).observe(header);
+    if (header && "ResizeObserver" in window) {
+      // border-box, NOT the default content-box: site-wide toolbars add their
+      // clearance to .top as PADDING, and a padding-only change never alters
+      // contentRect, so a default observer misses it and --top-h stays short.
+      new ResizeObserver(measureHeader).observe(header, { box: "border-box" });
+    }
     window.addEventListener("resize", measureHeader);
+    // Injected toolbars mount after this script; re-measure once settled.
+    window.addEventListener("load", measureHeader);
+    document.fonts?.ready.then(measureHeader);
+    setTimeout(measureHeader, 1200);
     measureHeader();
 
     // Print expands every field to its content: otherwise a long answer prints
@@ -1807,5 +1819,8 @@ We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} whi
     renderGallery();
     openPage(location.hash.replace("#", "") || "launch", false);
   </script>
-</body>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
 </html>

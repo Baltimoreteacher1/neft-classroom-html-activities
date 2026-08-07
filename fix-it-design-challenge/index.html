@@ -4932,9 +4932,18 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
         document.documentElement.style.setProperty("--top-h", h + "px");
       }
       if (headerEl && "ResizeObserver" in window) {
-        new ResizeObserver(measureHeader).observe(headerEl);
+        // border-box, NOT the default content-box: the site-wide toolbars add
+        // their clearance to .top as PADDING (--gfx-bar-clear), and a
+        // padding-only change never alters contentRect, so a default observer
+        // silently misses it and --top-h stays ~55px short of the real header.
+        new ResizeObserver(measureHeader).observe(headerEl, { box: "border-box" });
       }
       window.addEventListener("resize", measureHeader);
+      // The injected toolbars mount after this script, so measure again once
+      // they and the webfonts have settled.
+      window.addEventListener("load", measureHeader);
+      document.fonts?.ready.then(measureHeader);
+      setTimeout(measureHeader, 1200);
       measureHeader();
 
       openPage(location.hash.replace("#", "") || "launch", false);
