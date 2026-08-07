@@ -1132,6 +1132,62 @@
         color: #7a3423;
       }
 
+      /* The prompt under repair leads step 2. */
+      .prompt-original {
+        background: #fffdf6;
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--terracotta, #c2703f);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin: 0 0 18px;
+      }
+      .prompt-original-title {
+        margin: 0 0 8px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #6b7688;
+      }
+      .prompt-original .quote {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .prompt-original h4 {
+        display: none;
+      }
+      .pick-chip.guard.on {
+        background: #8a3d2a;
+        border-color: #8a3d2a;
+      }
+
+      .test-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .test-list li {
+        position: relative;
+        padding-left: 26px;
+        margin-bottom: 6px;
+        line-height: 1.5;
+      }
+      .test-list li::before {
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-weight: 800;
+      }
+      .test-list li.ok::before {
+        content: "✓";
+        color: #1f7a5c;
+      }
+      .test-list li.no::before {
+        content: "✕";
+        color: #8a3d2a;
+      }
+
       .given-card {
         background: #f7fafc;
         border: 1px solid var(--line);
@@ -2332,107 +2388,6 @@
             >
           </div>
         </div>
-        <nav class="tabs" role="tablist" aria-label="Challenge pages">
-          <a
-            class="tab-btn active"
-            role="tab"
-            aria-selected="true"
-            href="#launch"
-            data-page="launch"
-            id="tab-launch"
-            aria-controls="launch"
-            tabindex="0"
-            ><span>Start</span><small>Walkthrough</small></a
-          >
-          <a
-            class="tab-btn"
-            role="tab"
-            aria-selected="false"
-            href="#menu"
-            data-page="menu"
-            id="tab-menu"
-            aria-controls="menu"
-            tabindex="-1"
-            ><span>Groups</span><small>Choose page</small></a
-          >
-          <a
-            class="tab-btn group-tab"
-            role="tab"
-            aria-selected="false"
-            href="#group-1"
-            data-page="group-1"
-            id="tab-group-1"
-            aria-controls="group-1"
-            tabindex="-1"
-            ><span>Group 1</span><small>Math Reasoning</small></a
-          >
-          <a
-            class="tab-btn group-tab"
-            role="tab"
-            aria-selected="false"
-            href="#group-2"
-            data-page="group-2"
-            id="tab-group-2"
-            aria-controls="group-2"
-            tabindex="-1"
-            ><span>Group 2</span><small>ELA Evidence</small></a
-          >
-          <a
-            class="tab-btn group-tab"
-            role="tab"
-            aria-selected="false"
-            href="#group-3"
-            data-page="group-3"
-            id="tab-group-3"
-            aria-controls="group-3"
-            tabindex="-1"
-            ><span>Group 3</span><small>Science Model</small></a
-          >
-          <a
-            class="tab-btn group-tab"
-            role="tab"
-            aria-selected="false"
-            href="#group-4"
-            data-page="group-4"
-            id="tab-group-4"
-            aria-controls="group-4"
-            tabindex="-1"
-            ><span>Group 4</span><small>Social Studies Claim</small></a
-          >
-          <a
-            class="tab-btn group-tab"
-            role="tab"
-            aria-selected="false"
-            href="#group-5"
-            data-page="group-5"
-            id="tab-group-5"
-            aria-controls="group-5"
-            tabindex="-1"
-            ><span>Group 5</span><small>MLL Language Access</small></a
-          >
-          <a
-            class="tab-btn group-tab"
-            role="tab"
-            aria-selected="false"
-            href="#group-6"
-            data-page="group-6"
-            id="tab-group-6"
-            aria-controls="group-6"
-            tabindex="-1"
-            ><span>Group 6</span><small>Executive Function</small></a
-          >
-          <a
-            class="tab-btn"
-            role="tab"
-            aria-selected="false"
-            href="#gallery"
-            data-page="gallery"
-            id="tab-gallery"
-            aria-controls="gallery"
-            tabindex="-1"
-            ><span>Padlet</span><small>Post builder</small></a
-          >
-        </nav>
       </div>
     </header>
 
@@ -2440,18 +2395,18 @@
       <section
         class="page active"
         id="launch"
-        role="tabpanel"
-        aria-labelledby="tab-launch"
+        role="region"
+        aria-label="Launch"
         tabindex="-1"
       >
         <!-- Step 1: Welcome -->
         <div class="hero">
           <p class="kicker">Fix-It Design Challenge</p>
-          <h2>Fix one AI scaffold so it helps students without doing their thinking.</h2>
+          <h2>Rewrite one AI prompt so it helps students without doing their thinking.</h2>
           <p class="why-line">
-            <strong>Why we are doing this:</strong> we all use AI to make work accessible. The risk
-            is that the “support” quietly does the task for students. Today you practice catching
-            that — and fixing it — on one real scenario.
+            <strong>Why we are doing this:</strong> we all ask AI for materials that make work
+            reachable. Ask the wrong way and AI hands students the answer instead. The difference
+            is usually one or two lines in the prompt.
           </p>
         </div>
 
@@ -2462,7 +2417,7 @@
             <h3>Four short steps. About 15 minutes.</h3>
             <ol class="task-steps">
               <li><strong>Read the problem.</strong> Your scenario is already written.</li>
-              <li><strong>Write your fix.</strong> A starter is on the page — edit it.</li>
+              <li><strong>Fix the prompt.</strong> Load the teacher's real prompt and edit it.</li>
               <li><strong>Rate it.</strong> Pick an OSAMR level, finish one sentence.</li>
               <li><strong>Post it.</strong> Tap Copy, paste into Padlet.</li>
             </ol>
@@ -2472,7 +2427,7 @@
             </p>
             <p class="produce-note">
               Your scenario, the barrier, and the thinking to protect are already written for you.
-              You only write the fix.
+              You only rewrite the prompt.
             </p>
             <div class="core-test-bar">
               <span>Barrier removed</span>
@@ -2579,7 +2534,7 @@
         </div>
       </section>
 
-      <section class="page" id="menu" role="tabpanel" aria-labelledby="tab-menu" tabindex="-1">
+      <section class="page" id="menu" role="region" aria-label="Menu" tabindex="-1">
         <div class="page-head">
           <div>
             <p class="kicker">Group Menu</p>
@@ -2703,8 +2658,8 @@
       <section
         class="page group-page"
         id="group-1"
-        role="tabpanel"
-        aria-labelledby="tab-group-1"
+        role="region"
+        aria-label="Group 1"
         tabindex="-1"
       >
         <div class="page-head compact">
@@ -2728,14 +2683,14 @@
 
         <div class="purpose-bar">
           <p>
-            <strong>What you are doing:</strong> fixing the AI support below so it removes the
-            barrier without doing the students' thinking.
+            <strong>Your job:</strong> a teacher sent AI a request, and what came back did the
+            students' thinking for them. You rewrite that request.
           </p>
           <p>
-            <strong>What you hand in:</strong> one Padlet post — this page writes it for you at the
-            bottom.
+            <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
+            giving anything away — posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Write your fix → Rate it → Post it</p>
+          <p class="purpose-steps">Read the problem → Fix the prompt → Rate it → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -2771,19 +2726,11 @@
 
           <div class="work-card">
             <div class="given-card">
-              <p class="given-title">Decided for you — you do not have to write these</p>
-              <ul>
-                <li>
-                  <strong>Barrier to remove:</strong> Academic vocabulary in explaining equivalent
-                  ratios
-                </li>
-                <li>
-                  <strong>Thinking students must still do:</strong> Students must decide equivalence
-                  and justify why.
-                </li>
-                <li>
-                  <strong>Do not:</strong> Do not provide the final equivalent-ratio explanation.
-                </li>
+              <p class="given-title">Your fixed prompt has to pass this test</p>
+              <ul class="test-list">
+                <li class="ok"><strong>AI may help with</strong> academic vocabulary in explaining equivalent ratios.</li>
+                <li class="no"><strong>AI must never</strong> provide the final equivalent-ratio explanation.</li>
+                <li class="ok"><strong>Students still</strong> decide equivalence and justify why.</li>
               </ul>
             </div>
 
@@ -2797,17 +2744,12 @@
                   One box. What support would you actually hand students? Tap the starter and edit
                   it — you never have to begin from blank.
                 </p>
-                <div class="action-row">
-                  <button class="btn secondary" type="button" data-starter="1">
-                    Insert starter idea
-                  </button>
-                </div>
                 <textarea
                   class="tall"
                   id="g1-before"
                   data-field="before"
                   data-group="1"
-                  placeholder="Vocabulary bank, sentence frames, and a reasoning checklist that prompt students to compare, simplify, or scale ratios without giving the answer."
+                  placeholder="Paste or edit the teacher&#39;s prompt here, then add your lines."
                 ></textarea>
               </li>
 
@@ -2872,8 +2814,8 @@
       <section
         class="page group-page"
         id="group-2"
-        role="tabpanel"
-        aria-labelledby="tab-group-2"
+        role="region"
+        aria-label="Group 2"
         tabindex="-1"
       >
         <div class="page-head compact">
@@ -2897,14 +2839,14 @@
 
         <div class="purpose-bar">
           <p>
-            <strong>What you are doing:</strong> fixing the AI support below so it removes the
-            barrier without doing the students' thinking.
+            <strong>Your job:</strong> a teacher sent AI a request, and what came back did the
+            students' thinking for them. You rewrite that request.
           </p>
           <p>
-            <strong>What you hand in:</strong> one Padlet post — this page writes it for you at the
-            bottom.
+            <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
+            giving anything away — posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Write your fix → Rate it → Post it</p>
+          <p class="purpose-steps">Read the problem → Fix the prompt → Rate it → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -2942,17 +2884,11 @@
 
           <div class="work-card">
             <div class="given-card">
-              <p class="given-title">Decided for you — you do not have to write these</p>
-              <ul>
-                <li><strong>Barrier to remove:</strong> Dense text and close-reading load</li>
-                <li>
-                  <strong>Thinking students must still do:</strong> Students must identify the
-                  claim, select evidence, and explain the connection.
-                </li>
-                <li>
-                  <strong>Do not:</strong> Do not replace the article or name the evidence for
-                  students.
-                </li>
+              <p class="given-title">Your fixed prompt has to pass this test</p>
+              <ul class="test-list">
+                <li class="ok"><strong>AI may help with</strong> dense text and close-reading load.</li>
+                <li class="no"><strong>AI must never</strong> replace the article or name the evidence for students.</li>
+                <li class="ok"><strong>Students still</strong> identify the claim, select evidence, and explain the connection.</li>
               </ul>
             </div>
 
@@ -2966,17 +2902,12 @@
                   One box. What support would you actually hand students? Tap the starter and edit
                   it — you never have to begin from blank.
                 </p>
-                <div class="action-row">
-                  <button class="btn secondary" type="button" data-starter="2">
-                    Insert starter idea
-                  </button>
-                </div>
                 <textarea
                   class="tall"
                   id="g2-before"
                   data-field="before"
                   data-group="2"
-                  placeholder="Chunk headings, vocabulary support, margin questions, and evidence-finding frames that require students to return to the original text."
+                  placeholder="Paste or edit the teacher&#39;s prompt here, then add your lines."
                 ></textarea>
               </li>
 
@@ -3041,8 +2972,8 @@
       <section
         class="page group-page"
         id="group-3"
-        role="tabpanel"
-        aria-labelledby="tab-group-3"
+        role="region"
+        aria-label="Group 3"
         tabindex="-1"
       >
         <div class="page-head compact">
@@ -3066,14 +2997,14 @@
 
         <div class="purpose-bar">
           <p>
-            <strong>What you are doing:</strong> fixing the AI support below so it removes the
-            barrier without doing the students' thinking.
+            <strong>Your job:</strong> a teacher sent AI a request, and what came back did the
+            students' thinking for them. You rewrite that request.
           </p>
           <p>
-            <strong>What you hand in:</strong> one Padlet post — this page writes it for you at the
-            bottom.
+            <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
+            giving anything away — posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Write your fix → Rate it → Post it</p>
+          <p class="purpose-steps">Read the problem → Fix the prompt → Rate it → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -3111,17 +3042,11 @@
 
           <div class="work-card">
             <div class="given-card">
-              <p class="given-title">Decided for you — you do not have to write these</p>
-              <ul>
-                <li>
-                  <strong>Barrier to remove:</strong> Directions and academic language for a diagram
-                  task
-                </li>
-                <li>
-                  <strong>Thinking students must still do:</strong> Students must identify processes
-                  and label the model.
-                </li>
-                <li><strong>Do not:</strong> Do not show a completed labeled water-cycle model.</li>
+              <p class="given-title">Your fixed prompt has to pass this test</p>
+              <ul class="test-list">
+                <li class="ok"><strong>AI may help with</strong> directions and academic language for a diagram task.</li>
+                <li class="no"><strong>AI must never</strong> show a completed labeled water-cycle model.</li>
+                <li class="ok"><strong>Students still</strong> identify processes and label the model.</li>
               </ul>
             </div>
 
@@ -3135,17 +3060,12 @@
                   One box. What support would you actually hand students? Tap the starter and edit
                   it — you never have to begin from blank.
                 </p>
-                <div class="action-row">
-                  <button class="btn secondary" type="button" data-starter="3">
-                    Insert starter idea
-                  </button>
-                </div>
                 <textarea
                   class="tall"
                   id="g3-before"
                   data-field="before"
                   data-group="3"
-                  placeholder="Translated directions, a word bank, unlabeled arrows, and guiding questions that help students decide which process belongs where."
+                  placeholder="Paste or edit the teacher&#39;s prompt here, then add your lines."
                 ></textarea>
               </li>
 
@@ -3210,8 +3130,8 @@
       <section
         class="page group-page"
         id="group-4"
-        role="tabpanel"
-        aria-labelledby="tab-group-4"
+        role="region"
+        aria-label="Group 4"
         tabindex="-1"
       >
         <div class="page-head compact">
@@ -3237,14 +3157,14 @@
 
         <div class="purpose-bar">
           <p>
-            <strong>What you are doing:</strong> fixing the AI support below so it removes the
-            barrier without doing the students' thinking.
+            <strong>Your job:</strong> a teacher sent AI a request, and what came back did the
+            students' thinking for them. You rewrite that request.
           </p>
           <p>
-            <strong>What you hand in:</strong> one Padlet post — this page writes it for you at the
-            bottom.
+            <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
+            giving anything away — posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Write your fix → Rate it → Post it</p>
+          <p class="purpose-steps">Read the problem → Fix the prompt → Rate it → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -3282,18 +3202,11 @@
 
           <div class="work-card">
             <div class="given-card">
-              <p class="given-title">Decided for you — you do not have to write these</p>
-              <ul>
-                <li>
-                  <strong>Barrier to remove:</strong> Writing structure for an argument response
-                </li>
-                <li>
-                  <strong>Thinking students must still do:</strong> Students must make the judgment,
-                  choose reasons, and interpret sources.
-                </li>
-                <li>
-                  <strong>Do not:</strong> Do not give the claim position or source-based reasons.
-                </li>
+              <p class="given-title">Your fixed prompt has to pass this test</p>
+              <ul class="test-list">
+                <li class="ok"><strong>AI may help with</strong> writing structure for an argument response.</li>
+                <li class="no"><strong>AI must never</strong> give the claim position or source-based reasons.</li>
+                <li class="ok"><strong>Students still</strong> make the judgment, choose reasons, and interpret sources.</li>
               </ul>
             </div>
 
@@ -3307,17 +3220,12 @@
                   One box. What support would you actually hand students? Tap the starter and edit
                   it — you never have to begin from blank.
                 </p>
-                <div class="action-row">
-                  <button class="btn secondary" type="button" data-starter="4">
-                    Insert starter idea
-                  </button>
-                </div>
                 <textarea
                   class="tall"
                   id="g4-before"
                   data-field="before"
                   data-group="4"
-                  placeholder="Neutral sentence frames, source-analysis prompts, and a claim-planning organizer with blank spaces for students’ own evidence and reasoning."
+                  placeholder="Paste or edit the teacher&#39;s prompt here, then add your lines."
                 ></textarea>
               </li>
 
@@ -3382,8 +3290,8 @@
       <section
         class="page group-page"
         id="group-5"
-        role="tabpanel"
-        aria-labelledby="tab-group-5"
+        role="region"
+        aria-label="Group 5"
         tabindex="-1"
       >
         <div class="page-head compact">
@@ -3407,14 +3315,14 @@
 
         <div class="purpose-bar">
           <p>
-            <strong>What you are doing:</strong> fixing the AI support below so it removes the
-            barrier without doing the students' thinking.
+            <strong>Your job:</strong> a teacher sent AI a request, and what came back did the
+            students' thinking for them. You rewrite that request.
           </p>
           <p>
-            <strong>What you hand in:</strong> one Padlet post — this page writes it for you at the
-            bottom.
+            <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
+            giving anything away — posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Write your fix → Rate it → Post it</p>
+          <p class="purpose-steps">Read the problem → Fix the prompt → Rate it → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -3452,20 +3360,11 @@
 
           <div class="work-card">
             <div class="given-card">
-              <p class="given-title">Decided for you — you do not have to write these</p>
-              <ul>
-                <li>
-                  <strong>Barrier to remove:</strong> Complex directions for comparing
-                  representations
-                </li>
-                <li>
-                  <strong>Thinking students must still do:</strong> Students must compare both
-                  representations and explain the relationship.
-                </li>
-                <li>
-                  <strong>Do not:</strong> Do not reduce the task to noticing only one
-                  representation.
-                </li>
+              <p class="given-title">Your fixed prompt has to pass this test</p>
+              <ul class="test-list">
+                <li class="ok"><strong>AI may help with</strong> complex directions for comparing representations.</li>
+                <li class="no"><strong>AI must never</strong> reduce the task to noticing only one representation.</li>
+                <li class="ok"><strong>Students still</strong> compare both representations and explain the relationship.</li>
               </ul>
             </div>
 
@@ -3479,17 +3378,12 @@
                   One box. What support would you actually hand students? Tap the starter and edit
                   it — you never have to begin from blank.
                 </p>
-                <div class="action-row">
-                  <button class="btn secondary" type="button" data-starter="5">
-                    Insert starter idea
-                  </button>
-                </div>
                 <textarea
                   class="tall"
                   id="g5-before"
                   data-field="before"
                   data-group="5"
-                  placeholder="Simple directions, bilingual vocabulary, visual cues for table/graph, and sentence frames that still require comparison."
+                  placeholder="Paste or edit the teacher&#39;s prompt here, then add your lines."
                 ></textarea>
               </li>
 
@@ -3554,8 +3448,8 @@
       <section
         class="page group-page"
         id="group-6"
-        role="tabpanel"
-        aria-labelledby="tab-group-6"
+        role="region"
+        aria-label="Group 6"
         tabindex="-1"
       >
         <div class="page-head compact">
@@ -3579,14 +3473,14 @@
 
         <div class="purpose-bar">
           <p>
-            <strong>What you are doing:</strong> fixing the AI support below so it removes the
-            barrier without doing the students' thinking.
+            <strong>Your job:</strong> a teacher sent AI a request, and what came back did the
+            students' thinking for them. You rewrite that request.
           </p>
           <p>
-            <strong>What you hand in:</strong> one Padlet post — this page writes it for you at the
-            bottom.
+            <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
+            giving anything away — posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Write your fix → Rate it → Post it</p>
+          <p class="purpose-steps">Read the problem → Fix the prompt → Rate it → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -3623,19 +3517,11 @@
 
           <div class="work-card">
             <div class="given-card">
-              <p class="given-title">Decided for you — you do not have to write these</p>
-              <ul>
-                <li>
-                  <strong>Barrier to remove:</strong> Multi-step planning for a constructed response
-                </li>
-                <li>
-                  <strong>Thinking students must still do:</strong> Students must choose evidence
-                  and explain how it supports the response.
-                </li>
-                <li>
-                  <strong>Do not:</strong> Do not fill in the topic sentence, evidence, or
-                  explanation for students.
-                </li>
+              <p class="given-title">Your fixed prompt has to pass this test</p>
+              <ul class="test-list">
+                <li class="ok"><strong>AI may help with</strong> multi-step planning for a constructed response.</li>
+                <li class="no"><strong>AI must never</strong> fill in the topic sentence, evidence, or explanation for students.</li>
+                <li class="ok"><strong>Students still</strong> choose evidence and explain how it supports the response.</li>
               </ul>
             </div>
 
@@ -3649,17 +3535,12 @@
                   One box. What support would you actually hand students? Tap the starter and edit
                   it — you never have to begin from blank.
                 </p>
-                <div class="action-row">
-                  <button class="btn secondary" type="button" data-starter="6">
-                    Insert starter idea
-                  </button>
-                </div>
                 <textarea
                   class="tall"
                   id="g6-before"
                   data-field="before"
                   data-group="6"
-                  placeholder="A blank organizer, step-by-step checklist, question prompts, and sentence frames that guide planning without pre-filling the response."
+                  placeholder="Paste or edit the teacher&#39;s prompt here, then add your lines."
                 ></textarea>
               </li>
 
@@ -3724,8 +3605,8 @@
       <section
         class="page"
         id="gallery"
-        role="tabpanel"
-        aria-labelledby="tab-gallery"
+        role="region"
+        aria-label="Gallery"
         tabindex="-1"
       >
         <div class="page-head">
@@ -4221,9 +4102,9 @@
           next: "I read it — go to step 2 →",
         },
         {
-          title: "Write your fix",
-          todo: "Write the support you would actually hand students. Tap “Insert starter idea”, then change it to fit your fix.",
-          next: "Done writing — go to step 3 →",
+          title: "Fix the prompt",
+          todo: "Tap “Load the teacher's prompt” — the real request drops into the box. Delete the part that gives the answer away, then tap chips to add what AI should build and what it must not do.",
+          next: "Prompt fixed — go to step 3 →",
         },
         {
           title: "Rate your fix",
@@ -4313,8 +4194,6 @@
              back. A copy of the AI request and the guardrails rides along
              beside the writing box so nobody has to page backwards to
              remember what they are fixing. */
-          const reference = document.createElement("aside");
-          reference.className = "wiz-ref";
           const aiCard = $(".ai-input-card", page);
           /* The AI requests read as perfectly reasonable teacher asks — that is
              exactly why they slipped through. Print what came back next to the
@@ -4326,13 +4205,27 @@
             aiCard.appendChild(problem);
           }
           const givenCard = $(".given-card", page);
+          /* The prompt being fixed leads the work column — it is the thing
+             the group is editing, not a reference in the margin. The rules it
+             has to respect stay pinned beside it. */
+          const promptCard = document.createElement("div");
+          promptCard.className = "prompt-original";
+          promptCard.innerHTML = `
+            <p class="prompt-original-title">The prompt you are fixing</p>
+            ${aiCard ? aiCard.innerHTML : ""}`;
+
+          const reference = document.createElement("aside");
+          reference.className = "wiz-ref";
+          /* The clone keeps the card's list but not its heading — the aside
+             already has one, and two stacked labels read as a mistake. */
           reference.innerHTML = `
-            <p class="wiz-ref-title">Keep this in view</p>
-            ${aiCard ? aiCard.outerHTML : ""}
+            <p class="wiz-ref-title">Rules your prompt must follow</p>
             ${givenCard ? givenCard.outerHTML : ""}`;
+          const clonedTitle = $(".given-title", reference);
+          if (clonedTitle) clonedTitle.remove();
 
           makePane(0, [$(".scenario-card", page), givenCard]);
-          makePane(1, [items[0]], reference);
+          makePane(1, [promptCard, items[0]], reference);
           makePane(2, [items[1], osamrKey]);
           makePane(3, [post]);
 
@@ -4409,18 +4302,29 @@
          again takes it out. The textarea stays the single source of truth,
          so anything typed by hand survives and nothing needs new state.
       --------------------------------------------------------------- */
-      const FIX_MOVES = [
-        "Vocabulary bank (words only, no answers)",
-        "Sentence frames",
-        "Chunk the text with headings",
-        "Guiding questions for each part",
-        "A blank organizer students fill in",
-        "A step-by-step checklist",
-        "Plain-language or translated directions",
-        "Visual cues, icons or labels",
-        "A word bank with pictures",
-        "A partner-talk prompt",
+      /* Two chip groups, because a fixed prompt is two moves: ask for the
+         support, then fence off the thinking. Both write a real line into the
+         prompt, so the box always reads as something you could paste into AI. */
+      const ASK_FOR = [
+        "Include a vocabulary bank with words only.",
+        "Include sentence frames.",
+        "Chunk the text with headings.",
+        "Add one guiding question per part.",
+        "Include a blank organizer for students to fill in.",
+        "Include a step-by-step checklist.",
+        "Write the directions in plain language.",
+        "Add visual cues, icons or labels.",
+        "Add a partner-talk prompt.",
       ];
+      const GUARDRAILS = [
+        "Do not give the answer.",
+        "Do not explain the reasoning.",
+        "Do not choose the evidence for students.",
+        "Do not name the operation or strategy.",
+        "Do not fill in the organizer.",
+        "Do not summarize or replace the text.",
+      ];
+      const FIX_MOVES = [...ASK_FOR, ...GUARDRAILS];
 
       function fixLines(groupId) {
         const box = $(`#g${groupId}-before`);
@@ -4434,15 +4338,26 @@
           const picker = document.createElement("div");
           picker.className = "chip-picker";
           picker.dataset.group = group.id;
-          picker.innerHTML = `
-            <p class="chip-picker-title">Tap everything you want in your fix</p>
+          const chipRow = (moves, kind) => `
             <div class="chip-row">
-              ${FIX_MOVES.map(
-                (move) =>
-                  `<button type="button" class="pick-chip" data-fix-move="${group.id}" data-move="${move}">${move}</button>`,
-              ).join("")}
+              ${moves
+                .map(
+                  (move) =>
+                    `<button type="button" class="pick-chip ${kind}" data-fix-move="${group.id}" data-move="${move}">${move}</button>`,
+                )
+                .join("")}
+            </div>`;
+          picker.innerHTML = `
+            <div class="action-row">
+              <button class="btn secondary" type="button" data-starter="${group.id}">
+                Load the teacher's prompt
+              </button>
             </div>
-            <p class="chip-picker-note">Add anything else in the box below — you can edit every line.</p>`;
+            <p class="chip-picker-title">1 · Ask AI for the support students need</p>
+            ${chipRow(ASK_FOR, "ask")}
+            <p class="chip-picker-title">2 · Fence off the thinking</p>
+            ${chipRow(GUARDRAILS, "guard")}
+            <p class="chip-picker-note">Every chip adds a line to the prompt below. Edit any wording — it is your prompt.</p>`;
           box.parentNode.insertBefore(picker, box);
           syncFixChips(group.id);
         });
@@ -4610,7 +4525,7 @@
            uses them directly instead of asking anyone to retype them. */
         const barrier = getValue(groupId, "barrier") || group.barrier;
         const thinking = getValue(groupId, "thinking") || group.thinking;
-        const fix = getValue(groupId, "before") || "[Step 2: your fix]";
+        const fix = getValue(groupId, "before") || "[Step 2: your fixed prompt]";
         const osamr = getValue(groupId, "osamr") || "[OSAMR level]";
         const evidence = getValue(groupId, "evidence") || "[Students still have to...]";
 
@@ -4632,7 +4547,7 @@ ${barrier}
 Student thinking we protected:
 ${thinking}
 
-Our fix:
+Our fixed AI prompt:
 ${fix}
 
 OSAMR rating:
@@ -4951,13 +4866,13 @@ Group ${group.id} — ${group.short}; Fix-It; Rigor Preserved; ${osamrLabel}`;
           const box = $(`#g${groupId}-before`);
           if (group && box) {
             if (box.value.trim() && !window.confirm("Replace what you have written?")) return;
-            box.value = group.starter_fix;
+            box.value = group.ai_input;
             setValue(groupId, "before", box.value);
             updateGroup(groupId);
             refreshProgress(groupId);
             syncFixChips(groupId);
             box.focus();
-            showToast("Starter idea added — edit it to make it yours");
+            showToast("Teacher's prompt loaded — now fix it");
           }
           return;
         }

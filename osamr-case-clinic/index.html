@@ -143,8 +143,13 @@
     .wiz-pane .scenario-card>h3{font-size:20px;margin:0 0 6px}
     .wiz-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
     .wiz-nav .btn.primary{font-size:17px;padding:12px 22px}
-    .mini-stack.given{border-left:5px solid var(--navy);padding-left:14px}
-    .mini-stack .given-title{margin:0 0 8px;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--navy)}
+    .mini-stack.given{display:block;border-left:5px solid var(--navy);border-radius:0;padding:2px 0 2px 14px;margin-top:14px}
+    .mini-stack .given-title{margin:0 0 8px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--navy)}
+    .mini-stack.given div{background:none;border:0;border-radius:0;padding:0 0 7px;font-size:14.5px;line-height:1.45}
+    .mini-stack.given div:last-child{padding-bottom:0}
+    .case-strip-list{margin:0;padding-left:20px}
+    .case-strip-list li{margin-bottom:6px;font-size:15px;line-height:1.45;color:#33424f;font-weight:600}
+    .case-strip-list li:last-child{margin-bottom:0}
     .chip-picker-title{margin:0 0 8px;font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#6b7688}
     .pick-row{margin:0 0 12px}
     .pick-line{display:block;width:100%;text-align:left;background:#f7fafc;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px;font:inherit;font-size:15px;color:#2c3a4a;cursor:pointer;line-height:1.4}
@@ -152,7 +157,14 @@
 
     .wiz-question{margin:0 0 10px}
     .wiz-question h3{margin:0;font-size:19px;color:var(--navy)}
-    .wiz-pane li+li{margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}
+    .wiz-pane li+li{margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}    .case-strip{background:#fffdf6;border:1px solid var(--line);border-left:5px solid var(--gold,#d8a13a);border-radius:12px;padding:12px 16px;margin:0 0 14px}
+    .case-strip>summary{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#6b7688;cursor:pointer}
+    .case-strip-body{margin-top:8px}
+    .case-strip-body .quote{margin:0;font-size:15px;line-height:1.5}
+    .purpose-bar{background:var(--sage);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px}
+    .purpose-bar p{margin:0 0 6px;color:var(--navy);line-height:1.45}
+    .purpose-bar .purpose-steps{margin:8px 0 0;font-weight:800}
+
     .workspace-grid{display:grid;grid-template-columns:380px minmax(0,1fr);gap:18px;align-items:start}
     /* NO INNER SCROLLER, EVER. sticky + max-height + overflow-y:auto is the
        conventional tall-sidebar pattern and it is what made scrolling feel
@@ -419,26 +431,11 @@
           <span class="chip">Evidence before label</span>
         </div>
       </div>
-      <nav class="tabs" role="tablist" aria-label="Case clinic pages">
-        <a class="tab-btn active" role="tab" aria-selected="true" href="#launch" data-page="launch"><span>Start</span><small>Begin here</small></a>
-        <a class="tab-btn" role="tab" aria-selected="false" href="#protocol" data-page="protocol"><span>Protocol</span><small>How it works</small></a>
-        <a class="tab-btn" role="tab" aria-selected="false" href="#reference" data-page="reference"><span>OSAMR</span><small>Quick reference</small></a>
-        <a class="tab-btn" role="tab" aria-selected="false" href="#model" data-page="model"><span>Model Case</span><small>Watch one</small></a>
-        <a class="tab-btn" role="tab" aria-selected="false" href="#menu" data-page="menu"><span>Case Rooms</span><small>Choose group</small></a>
-        <a class="tab-btn group-tab" role="tab" aria-selected="false" href="#group-1" data-page="group-1"><span>Group 1</span><small>Story Structure</small></a>
-        <a class="tab-btn group-tab" role="tab" aria-selected="false" href="#group-2" data-page="group-2"><span>Group 2</span><small>Multi-Step Problem Entry</small></a>
-        <a class="tab-btn group-tab" role="tab" aria-selected="false" href="#group-3" data-page="group-3"><span>Group 3</span><small>Mentor Paragraph</small></a>
-        <a class="tab-btn group-tab" role="tab" aria-selected="false" href="#group-4" data-page="group-4"><span>Group 4</span><small>Tiered Reading</small></a>
-        <a class="tab-btn group-tab" role="tab" aria-selected="false" href="#group-5" data-page="group-5"><span>Group 5</span><small>AI Feedback on Work</small></a>
-        <a class="tab-btn group-tab" role="tab" aria-selected="false" href="#group-6" data-page="group-6"><span>Group 6</span><small>Data Summarized for CER</small></a>
-        <a class="tab-btn group-tab" role="tab" aria-selected="false" href="#group-7" data-page="group-7"><span>Group 7</span><small>Primary Source Access</small></a>
-        <a class="tab-btn" role="tab" aria-selected="false" href="#gallery" data-page="gallery"><span>Gallery</span><small>Compare rulings</small></a>
-      </nav>
     </div>
   </header>
 
   <main class="wrap" id="main">
-    <section class="page active" id="launch" role="tabpanel" aria-label="Start page">
+    <section class="page active" id="launch" role="region" aria-label="Start page">
       <div class="hero">
         <p class="kicker">Start Here</p>
         <h2>Did AI help students get in — or did AI do the work for them?</h2>
@@ -478,12 +475,12 @@
           <article class="osamr-mini-card"><div class="letter">A</div><h4>Augment</h4><p>AI adds helpful support. The task becomes clearer without being solved.</p></article>
           <article class="osamr-mini-card"><div class="letter">M</div><h4>Modify</h4><p>AI meaningfully changes the experience. The learning target stays the same.</p></article>
           <article class="osamr-mini-card"><div class="letter">R</div><h4>Redefine</h4><p>AI makes a previously inaccessible experience possible. Rigor is preserved.</p></article>
-          <article class="osamr-mini-card warn"><div class="letter">!</div><h4>Overreliance</h4><p>AI performs the target thinking. The learning demand is removed.</p></article>
+          <article class="osamr-mini-card warn"><div class="letter">O</div><h4>Overreliance</h4><p>AI does the thinking. There is nothing left for students to figure out.</p></article>
         </div>
       </section>
     </section>
 
-    <section class="page" id="protocol" role="tabpanel" aria-label="Protocol page">
+    <section class="page" id="protocol" role="region" aria-label="Protocol page">
       <div class="page-head">
         <div>
           <p class="kicker">Protocol</p>
@@ -494,14 +491,14 @@
       </div>
       <div class="protocol-grid">
         <article class="protocol-card"><div class="num">1</div><h3>Read the case</h3><p>What happened, and what the teacher asked AI to do. Nothing to type.</p></article>
-        <article class="protocol-card"><div class="num">2</div><h3>Pick a letter</h3><p>S, A, M, R, or Too far.</p></article>
+        <article class="protocol-card"><div class="num">2</div><h3>Pick a letter</h3><p>S, A, M, R, or O.</p></article>
         <article class="protocol-card"><div class="num">3</div><h3>Say why</h3><p>One reason from the case, and one fix.</p></article>
         <article class="protocol-card"><div class="num">4</div><h3>Post it</h3><p>Copy your ruling to the board.</p></article>
       </div>
-      <div class="callout"><strong>Reason first, letter second.</strong> Do not argue about the letter until your group can point at the line in the case that proves it.</div>
+      <div class="callout"><strong>Find your proof before you pick a letter.</strong> If your group cannot point to the line in the case that shows it, you are not ready to choose.</div>
     </section>
 
-    <section class="page" id="reference" role="tabpanel" aria-label="OSAMR reference page">
+    <section class="page" id="reference" role="region" aria-label="OSAMR reference page">
       <div class="page-head">
         <div>
           <p class="kicker">Quick Reference</p>
@@ -516,7 +513,7 @@
         <article class="osamr-card"><h3>A — Augment</h3><p class="definition">AI adds help.</p><p>The task gets clearer. AI does not solve it.</p></article>
         <article class="osamr-card"><h3>M — Modify</h3><p class="definition">AI changes how the task works.</p><p>Students still learn the same thing.</p></article>
         <article class="osamr-card"><h3>R — Redefine</h3><p class="definition">AI opens up something new.</p><p>Students can now do work they could not do before.</p></article>
-        <article class="osamr-card o"><h3>! — Overreliance</h3><p class="definition">AI does the thinking.</p><p>There is nothing left for students to figure out.</p></article>
+        <article class="osamr-card o"><h3>O — Overreliance</h3><p class="definition">AI does the thinking.</p><p>There is nothing left for students to figure out.</p></article>
       </div>
 
       <div class="callout">
@@ -533,7 +530,7 @@
     </section>
 
 
-    <section class="page group-page" id="model" role="tabpanel" aria-label="Model case room">
+    <section class="page group-page" id="model" role="region" aria-label="Model case room">
       <div class="page-head compact">
         <div>
           <p class="kicker">Model Case · 6–8 Math</p>
@@ -547,6 +544,18 @@
 
       <div class="callout" style="margin-top:0;margin-bottom:18px">
         <strong>Worked example.</strong> This is the same case room your group will use, already filled in. Walk the same four steps to see how a ruling is built from the case — evidence first, letter last.
+      </div>
+
+      <div class="purpose-bar">
+        <p>
+          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
+          way for students, or did AI do the work for them?
+        </p>
+        <p>
+          <strong>What you produce:</strong> one decision — a letter, why you picked it, and one
+          change that would make it better. This page writes it up for you.
+        </p>
+        <p class="purpose-steps">Read the case → Pick a letter → Say why → Post it</p>
       </div>
 
       <div class="workspace-grid">
@@ -573,7 +582,7 @@
                 <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
                 <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
                 <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
+                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
@@ -590,7 +599,7 @@
                 <button class="token selected" type="button" data-value="A — Augment" aria-pressed="true"><b>A</b>Augment</button>
                 <button class="token" type="button" data-value="M — Modify"><b>M</b>Modify</button>
                 <button class="token" type="button" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
+                <button class="token warn" type="button" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
                 <select id="gm-osamr" data-field="osamr" disabled>                    <option value="">Choose one</option>
@@ -623,7 +632,7 @@
       <section class="post-card">
         <div class="post-head">
           <div>
-            <p class="kicker">60-second defense</p>
+            <p class="kicker">Ready to post</p>
             <h3>Model case ruling</h3>
           </div>
           <div class="label-pills">
@@ -634,13 +643,13 @@
         <p class="frame-line">Read this out in 60 seconds: we rated this <strong>A — Augment</strong>; our evidence is <strong>AI never finds the constant ratio</strong>; our fix is <strong>a blank ratio table instead of a worked example</strong>.</p>
         <textarea id="gm-post" class="post-output" readonly aria-label="Model case ruling"></textarea>
         <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="m">Copy case ruling</button>
+          <button class="btn primary" type="button" data-copy-post="m">Copy our decision</button>
           <button class="btn secondary" type="button" data-open-page="menu">Choose your case room</button>
         </div>
       </section>
     </section>
 
-    <section class="page" id="menu" role="tabpanel" aria-label="Case room menu">
+    <section class="page" id="menu" role="region" aria-label="Case room menu">
       <div class="page-head">
         <div>
           <p class="kicker">Case Rooms</p>
@@ -721,7 +730,7 @@
       </div>
     </section>
 
-    <section class="page group-page" id="group-1" role="tabpanel" aria-label="Group 1 case room">
+    <section class="page group-page" id="group-1" role="region" aria-label="Group 1 case room">
       <div class="page-head compact">
         <div>
           <p class="kicker">Group 1 Case Room · K–2</p>
@@ -732,6 +741,18 @@
           <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
           <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
         </div>
+      </div>
+
+      <div class="purpose-bar">
+        <p>
+          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
+          way for students, or did AI do the work for them?
+        </p>
+        <p>
+          <strong>What you produce:</strong> one decision — a letter, why you picked it, and one
+          change that would make it better. This page writes it up for you.
+        </p>
+        <p class="purpose-steps">Read the case → Pick a letter → Say why → Post it</p>
       </div>
 
       <div class="workspace-grid">
@@ -758,7 +779,7 @@
                 <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
                 <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
                 <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
+                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
@@ -775,7 +796,7 @@
                 <button class="token" type="button" data-token="1" data-value="A — Augment"><b>A</b>Augment</button>
                 <button class="token" type="button" data-token="1" data-value="M — Modify"><b>M</b>Modify</button>
                 <button class="token" type="button" data-token="1" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="1" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
+                <button class="token warn" type="button" data-token="1" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
                 <select id="g1-osamr" data-field="osamr" data-group="1">                    <option value="">Choose one</option>
@@ -808,8 +829,8 @@
       <section class="post-card">
         <div class="post-head">
           <div>
-            <p class="kicker">60-second defense</p>
-            <h3>Group 1 case ruling</h3>
+            <p class="kicker">Ready to post</p>
+            <h3>Group 1 decision</h3>
           </div>
           <div class="label-pills">
             <span>Group 1 — Story Structure</span>
@@ -819,14 +840,14 @@
         <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g1-post" class="post-output" readonly aria-label="Generated case ruling for Group 1"></textarea>
         <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="1">Copy case ruling</button>
+          <button class="btn primary" type="button" data-copy-post="1">Copy our decision</button>
           <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
         </div>
       </section>
     </section>
 
 
-    <section class="page group-page" id="group-2" role="tabpanel" aria-label="Group 2 case room">
+    <section class="page group-page" id="group-2" role="region" aria-label="Group 2 case room">
       <div class="page-head compact">
         <div>
           <p class="kicker">Group 2 Case Room · 3–5 Math</p>
@@ -837,6 +858,18 @@
           <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
           <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
         </div>
+      </div>
+
+      <div class="purpose-bar">
+        <p>
+          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
+          way for students, or did AI do the work for them?
+        </p>
+        <p>
+          <strong>What you produce:</strong> one decision — a letter, why you picked it, and one
+          change that would make it better. This page writes it up for you.
+        </p>
+        <p class="purpose-steps">Read the case → Pick a letter → Say why → Post it</p>
       </div>
 
       <div class="workspace-grid">
@@ -863,7 +896,7 @@
                 <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
                 <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
                 <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
+                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
@@ -880,7 +913,7 @@
                 <button class="token" type="button" data-token="2" data-value="A — Augment"><b>A</b>Augment</button>
                 <button class="token" type="button" data-token="2" data-value="M — Modify"><b>M</b>Modify</button>
                 <button class="token" type="button" data-token="2" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="2" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
+                <button class="token warn" type="button" data-token="2" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
                 <select id="g2-osamr" data-field="osamr" data-group="2">                    <option value="">Choose one</option>
@@ -913,8 +946,8 @@
       <section class="post-card">
         <div class="post-head">
           <div>
-            <p class="kicker">60-second defense</p>
-            <h3>Group 2 case ruling</h3>
+            <p class="kicker">Ready to post</p>
+            <h3>Group 2 decision</h3>
           </div>
           <div class="label-pills">
             <span>Group 2 — Multi-Step Problem Entry</span>
@@ -924,14 +957,14 @@
         <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g2-post" class="post-output" readonly aria-label="Generated case ruling for Group 2"></textarea>
         <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="2">Copy case ruling</button>
+          <button class="btn primary" type="button" data-copy-post="2">Copy our decision</button>
           <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
         </div>
       </section>
     </section>
 
 
-    <section class="page group-page" id="group-3" role="tabpanel" aria-label="Group 3 case room">
+    <section class="page group-page" id="group-3" role="region" aria-label="Group 3 case room">
       <div class="page-head compact">
         <div>
           <p class="kicker">Group 3 Case Room · 3–5 ELA</p>
@@ -942,6 +975,18 @@
           <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
           <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
         </div>
+      </div>
+
+      <div class="purpose-bar">
+        <p>
+          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
+          way for students, or did AI do the work for them?
+        </p>
+        <p>
+          <strong>What you produce:</strong> one decision — a letter, why you picked it, and one
+          change that would make it better. This page writes it up for you.
+        </p>
+        <p class="purpose-steps">Read the case → Pick a letter → Say why → Post it</p>
       </div>
 
       <div class="workspace-grid">
@@ -968,7 +1013,7 @@
                 <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
                 <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
                 <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
+                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
@@ -985,7 +1030,7 @@
                 <button class="token" type="button" data-token="3" data-value="A — Augment"><b>A</b>Augment</button>
                 <button class="token" type="button" data-token="3" data-value="M — Modify"><b>M</b>Modify</button>
                 <button class="token" type="button" data-token="3" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="3" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
+                <button class="token warn" type="button" data-token="3" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
                 <select id="g3-osamr" data-field="osamr" data-group="3">                    <option value="">Choose one</option>
@@ -1018,8 +1063,8 @@
       <section class="post-card">
         <div class="post-head">
           <div>
-            <p class="kicker">60-second defense</p>
-            <h3>Group 3 case ruling</h3>
+            <p class="kicker">Ready to post</p>
+            <h3>Group 3 decision</h3>
           </div>
           <div class="label-pills">
             <span>Group 3 — Mentor Paragraph</span>
@@ -1029,14 +1074,14 @@
         <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g3-post" class="post-output" readonly aria-label="Generated case ruling for Group 3"></textarea>
         <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="3">Copy case ruling</button>
+          <button class="btn primary" type="button" data-copy-post="3">Copy our decision</button>
           <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
         </div>
       </section>
     </section>
 
 
-    <section class="page group-page" id="group-4" role="tabpanel" aria-label="Group 4 case room">
+    <section class="page group-page" id="group-4" role="region" aria-label="Group 4 case room">
       <div class="page-head compact">
         <div>
           <p class="kicker">Group 4 Case Room · 6–8 Science</p>
@@ -1047,6 +1092,18 @@
           <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
           <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
         </div>
+      </div>
+
+      <div class="purpose-bar">
+        <p>
+          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
+          way for students, or did AI do the work for them?
+        </p>
+        <p>
+          <strong>What you produce:</strong> one decision — a letter, why you picked it, and one
+          change that would make it better. This page writes it up for you.
+        </p>
+        <p class="purpose-steps">Read the case → Pick a letter → Say why → Post it</p>
       </div>
 
       <div class="workspace-grid">
@@ -1073,7 +1130,7 @@
                 <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
                 <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
                 <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
+                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
@@ -1090,7 +1147,7 @@
                 <button class="token" type="button" data-token="4" data-value="A — Augment"><b>A</b>Augment</button>
                 <button class="token" type="button" data-token="4" data-value="M — Modify"><b>M</b>Modify</button>
                 <button class="token" type="button" data-token="4" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="4" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
+                <button class="token warn" type="button" data-token="4" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
                 <select id="g4-osamr" data-field="osamr" data-group="4">                    <option value="">Choose one</option>
@@ -1123,8 +1180,8 @@
       <section class="post-card">
         <div class="post-head">
           <div>
-            <p class="kicker">60-second defense</p>
-            <h3>Group 4 case ruling</h3>
+            <p class="kicker">Ready to post</p>
+            <h3>Group 4 decision</h3>
           </div>
           <div class="label-pills">
             <span>Group 4 — Tiered Reading</span>
@@ -1134,14 +1191,14 @@
         <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g4-post" class="post-output" readonly aria-label="Generated case ruling for Group 4"></textarea>
         <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="4">Copy case ruling</button>
+          <button class="btn primary" type="button" data-copy-post="4">Copy our decision</button>
           <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
         </div>
       </section>
     </section>
 
 
-    <section class="page group-page" id="group-5" role="tabpanel" aria-label="Group 5 case room">
+    <section class="page group-page" id="group-5" role="region" aria-label="Group 5 case room">
       <div class="page-head compact">
         <div>
           <p class="kicker">Group 5 Case Room · 6–8 Math</p>
@@ -1152,6 +1209,18 @@
           <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
           <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
         </div>
+      </div>
+
+      <div class="purpose-bar">
+        <p>
+          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
+          way for students, or did AI do the work for them?
+        </p>
+        <p>
+          <strong>What you produce:</strong> one decision — a letter, why you picked it, and one
+          change that would make it better. This page writes it up for you.
+        </p>
+        <p class="purpose-steps">Read the case → Pick a letter → Say why → Post it</p>
       </div>
 
       <div class="workspace-grid">
@@ -1178,7 +1247,7 @@
                 <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
                 <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
                 <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
+                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
@@ -1195,7 +1264,7 @@
                 <button class="token" type="button" data-token="5" data-value="A — Augment"><b>A</b>Augment</button>
                 <button class="token" type="button" data-token="5" data-value="M — Modify"><b>M</b>Modify</button>
                 <button class="token" type="button" data-token="5" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="5" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
+                <button class="token warn" type="button" data-token="5" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
                 <select id="g5-osamr" data-field="osamr" data-group="5">                    <option value="">Choose one</option>
@@ -1228,8 +1297,8 @@
       <section class="post-card">
         <div class="post-head">
           <div>
-            <p class="kicker">60-second defense</p>
-            <h3>Group 5 case ruling</h3>
+            <p class="kicker">Ready to post</p>
+            <h3>Group 5 decision</h3>
           </div>
           <div class="label-pills">
             <span>Group 5 — AI Feedback on Work</span>
@@ -1239,14 +1308,14 @@
         <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g5-post" class="post-output" readonly aria-label="Generated case ruling for Group 5"></textarea>
         <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="5">Copy case ruling</button>
+          <button class="btn primary" type="button" data-copy-post="5">Copy our decision</button>
           <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
         </div>
       </section>
     </section>
 
 
-    <section class="page group-page" id="group-6" role="tabpanel" aria-label="Group 6 case room">
+    <section class="page group-page" id="group-6" role="region" aria-label="Group 6 case room">
       <div class="page-head compact">
         <div>
           <p class="kicker">Group 6 Case Room · 9–12 Science</p>
@@ -1257,6 +1326,18 @@
           <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
           <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
         </div>
+      </div>
+
+      <div class="purpose-bar">
+        <p>
+          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
+          way for students, or did AI do the work for them?
+        </p>
+        <p>
+          <strong>What you produce:</strong> one decision — a letter, why you picked it, and one
+          change that would make it better. This page writes it up for you.
+        </p>
+        <p class="purpose-steps">Read the case → Pick a letter → Say why → Post it</p>
       </div>
 
       <div class="workspace-grid">
@@ -1283,7 +1364,7 @@
                 <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
                 <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
                 <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
+                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
@@ -1300,7 +1381,7 @@
                 <button class="token" type="button" data-token="6" data-value="A — Augment"><b>A</b>Augment</button>
                 <button class="token" type="button" data-token="6" data-value="M — Modify"><b>M</b>Modify</button>
                 <button class="token" type="button" data-token="6" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="6" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
+                <button class="token warn" type="button" data-token="6" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
                 <select id="g6-osamr" data-field="osamr" data-group="6">                    <option value="">Choose one</option>
@@ -1333,8 +1414,8 @@
       <section class="post-card">
         <div class="post-head">
           <div>
-            <p class="kicker">60-second defense</p>
-            <h3>Group 6 case ruling</h3>
+            <p class="kicker">Ready to post</p>
+            <h3>Group 6 decision</h3>
           </div>
           <div class="label-pills">
             <span>Group 6 — Data Summarized for CER</span>
@@ -1344,14 +1425,14 @@
         <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g6-post" class="post-output" readonly aria-label="Generated case ruling for Group 6"></textarea>
         <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="6">Copy case ruling</button>
+          <button class="btn primary" type="button" data-copy-post="6">Copy our decision</button>
           <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
         </div>
       </section>
     </section>
 
 
-    <section class="page group-page" id="group-7" role="tabpanel" aria-label="Group 7 case room">
+    <section class="page group-page" id="group-7" role="region" aria-label="Group 7 case room">
       <div class="page-head compact">
         <div>
           <p class="kicker">Group 7 Case Room · 9–12 History/SS</p>
@@ -1362,6 +1443,18 @@
           <a class="btn secondary" href="#menu" data-open-page="menu">Case rooms</a>
           <a class="btn secondary" href="#gallery" data-open-page="gallery">Gallery board</a>
         </div>
+      </div>
+
+      <div class="purpose-bar">
+        <p>
+          <strong>Your job:</strong> read one real classroom use of AI and decide — did AI clear the
+          way for students, or did AI do the work for them?
+        </p>
+        <p>
+          <strong>What you produce:</strong> one decision — a letter, why you picked it, and one
+          change that would make it better. This page writes it up for you.
+        </p>
+        <p class="purpose-steps">Read the case → Pick a letter → Say why → Post it</p>
       </div>
 
       <div class="workspace-grid">
@@ -1388,7 +1481,7 @@
                 <div><strong>A</strong><span>AI makes it clearer. It does not solve it.</span></div>
                 <div><strong>M</strong><span>The task looks different. Students learn the same thing.</span></div>
                 <div><strong>R</strong><span>Students can now do something they could not before.</span></div>
-                <div class="warn"><strong>!</strong><span>Too far — AI did the thinking for them.</span></div>
+                <div class="warn"><strong>O</strong><span>Overreliance — AI did the thinking for them.</span></div>
               </div>
         </aside>
 
@@ -1405,7 +1498,7 @@
                 <button class="token" type="button" data-token="7" data-value="A — Augment"><b>A</b>Augment</button>
                 <button class="token" type="button" data-token="7" data-value="M — Modify"><b>M</b>Modify</button>
                 <button class="token" type="button" data-token="7" data-value="R — Redefine"><b>R</b>Redefine</button>
-                <button class="token warn" type="button" data-token="7" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
+                <button class="token warn" type="button" data-token="7" data-value="Overreliance — AI did the thinking"><b>O</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
                 <select id="g7-osamr" data-field="osamr" data-group="7">                    <option value="">Choose one</option>
@@ -1438,8 +1531,8 @@
       <section class="post-card">
         <div class="post-head">
           <div>
-            <p class="kicker">60-second defense</p>
-            <h3>Group 7 case ruling</h3>
+            <p class="kicker">Ready to post</p>
+            <h3>Group 7 decision</h3>
           </div>
           <div class="label-pills">
             <span>Group 7 — Primary Source Access</span>
@@ -1449,13 +1542,13 @@
         <p class="frame-line">Read this out in 60 seconds: we rated this <strong>___</strong>; our evidence is <strong>___</strong>; our fix is <strong>___</strong>.</p>
         <textarea id="g7-post" class="post-output" readonly aria-label="Generated case ruling for Group 7"></textarea>
         <div class="action-row">
-          <button class="btn primary" type="button" data-copy-post="7">Copy case ruling</button>
+          <button class="btn primary" type="button" data-copy-post="7">Copy our decision</button>
           <button class="btn secondary" type="button" data-open-page="gallery">Go to gallery board</button>
         </div>
       </section>
     </section>
 
-    <section class="page" id="gallery" role="tabpanel" aria-label="Gallery board">
+    <section class="page" id="gallery" role="region" aria-label="Gallery board">
       <div class="page-head">
         <div>
           <p class="kicker">Gallery Board</p>
@@ -1524,7 +1617,7 @@
   <script>
     document.documentElement.classList.add("js");
 
-    const CASES = [{"id":1,"title":"Story Structure","short":"Story Structure","band":"K–2","meta":"K–2 ELA · Reading-directions barrier · AI made a picture direction card","story":"A kindergarten teacher introduces story structure. Students listen to a read-aloud and retell the beginning, middle, and end. Several students cannot read directions yet, so AI creates a three-panel direction card with simple icons and one-word labels. Students still listen, sequence events, and retell verbally to a partner.","ai_input":"Create a three-panel direction card with simple icons and one-word labels: beginning, middle, end. Do not retell the story or sequence events for students.","barrier_clue":"Students cannot read directions independently.","thinking_clue":"Students still listen, sequence events, and retell beginning/middle/end.","target":"Sequence and retell the beginning, middle, and end of a story."},{"id":2,"title":"Multi-Step Problem Entry","short":"Multi-Step Problem Entry","band":"3–5 Math","meta":"Grade 4 Math · Getting-started barrier · AI built an entry scaffold","story":"A fourth-grade math teacher teaches multi-digit multiplication with: “A school orders 24 boxes of crayons. Each box has 16 crayons. How many crayons are there in all?” Several students with IEPs struggle to know where to start. AI creates a problem-entry scaffold and sentence frame. Students set up and solve independently.","ai_input":"Create a three-step entry scaffold: circle the numbers, underline the question, and draw a quick sketch. Add this frame: “I need to find ___ because ___.” Do not name the operation or solve.","barrier_clue":"Students struggle to start and organize information.","thinking_clue":"Students still choose a strategy, set up the problem, compute, and explain.","target":"Choose an operation, set up the problem, solve, and explain the reasoning."},{"id":3,"title":"Mentor Paragraph","short":"Mentor Paragraph","band":"3–5 ELA","meta":"Grade 5 ELA · Writing-structure barrier · AI wrote the paragraph","story":"A fifth-grade ELA teacher teaches students to cite textual evidence for a claim about a character’s motivation. Several students struggle to write a body paragraph. AI generates a mentor paragraph for each student. Students write a similar paragraph, but most copy the structure and change only a few words.","ai_input":"Write a mentor paragraph about the character’s motivation with a claim, evidence, and reasoning.","barrier_clue":"Students need help organizing a body paragraph.","thinking_clue":"AI weakens target thinking by giving too much of the analysis.","target":"Make a claim about motivation, choose textual evidence, and explain the reasoning."},{"id":4,"title":"Tiered Reading","short":"Tiered Reading","band":"6–8 Science","meta":"Grade 7 Science · Dense-text barrier · AI made three access versions","story":"A seventh-grade science teacher teaches force and motion. Students answer analysis questions about Newton’s Second Law, but many multilingual learners struggle with dense textbook language. AI creates reading supports: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. All students answer the same analysis questions.","ai_input":"Make three access versions: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. Keep the same three analysis questions for everyone. Do not answer them.","barrier_clue":"Dense textbook language blocks access to the science analysis.","thinking_clue":"All students still answer the same analysis questions.","target":"Analyze Newton’s Second Law and answer the same three analysis questions."},{"id":5,"title":"AI Feedback on Work","short":"AI Feedback on Work","band":"6–8 Math","meta":"Grade 6 Math · Feedback barrier · AI gave answers and unit rates","story":"A sixth-grade math teacher teaches proportional relationships. Students practice deciding whether tables are proportional. During independent practice, AI gives correct answers, explains the constant ratio, and identifies the unit rate. Students use AI feedback to mark their work correct or incorrect.","ai_input":"Check each student’s proportional relationship work. Give the correct answer, constant ratio, unit rate, and whether the student is correct.","barrier_clue":"Students may need feedback or a way to check reasoning.","thinking_clue":"AI performs the target thinking by giving the answer, ratio, and unit rate.","target":"Decide whether a table is proportional and justify it using the constant ratio."},{"id":6,"title":"Data Summarized for CER","short":"Data Summarized for CER","band":"9–12 Science","meta":"Grade 9–12 Science · Large-dataset barrier · AI chose the evidence","story":"Students analyze a local air-quality dataset to write a claim-evidence-reasoning paragraph. The teacher uses AI to summarize the dataset into three key findings. Students use those AI findings as evidence. They write their own claim and reasoning, but they do not examine the full dataset or choose evidence themselves.","ai_input":"Summarize this local air-quality dataset into three key findings students can use as evidence in CER paragraphs.","barrier_clue":"The full dataset may be too large or dense to analyze efficiently.","thinking_clue":"AI removes too much target thinking by choosing the evidence.","target":"Analyze data, select evidence, and write a claim with supporting reasoning."},{"id":7,"title":"Primary Source Access","short":"Primary Source Access","band":"9–12 History/SS","meta":"Grade 10 World History · Archaic-language barrier · AI added footnotes","story":"A tenth-grade World History teacher teaches students to analyze a primary source for bias, perspective, and historical context. Some students struggle with 19th-century language and reading demands. AI creates plain-language footnotes, background questions, and a blank SOAPS organizer. Students still read the original source and complete the analysis independently.","ai_input":"Add plain-language footnotes for difficult phrases, background questions, and a blank SOAPS organizer. Do not answer or analyze the source for students.","barrier_clue":"19th-century language blocks access to the original source.","thinking_clue":"Students still read the original and analyze bias, perspective, and context.","target":"Analyze a primary source for bias, perspective, and historical context."}];
+    const CASES = [{"id":1,"title":"Story Structure","short":"Story Structure","band":"K–2","meta":"K–2 ELA · Reading-directions barrier · AI made a picture direction card","story":"A kindergarten teacher introduces story structure. Students listen to a read-aloud and retell the beginning, middle, and end. Several students cannot read directions yet, so AI creates a three-panel direction card with simple icons and one-word labels. Students still listen, sequence events, and retell verbally to a partner.","ai_input":"Create a three-panel direction card with simple icons and one-word labels: beginning, middle, end. Do not retell the story or sequence events for students.","barrier_clue":"Students cannot read directions independently.","thinking_clue":"Students still listen, sequence events, and retell beginning/middle/end.","target":"Sequence and retell the beginning, middle, and end of a story."},{"id":2,"title":"Multi-Step Problem Entry","short":"Multi-Step Problem Entry","band":"3–5 Math","meta":"Grade 4 Math · Getting-started barrier · AI built an entry scaffold","story":"A fourth-grade math teacher teaches multi-digit multiplication with: “A school orders 24 boxes of crayons. Each box has 16 crayons. How many crayons are there in all?” Several students with IEPs struggle to know where to start. AI creates a problem-entry scaffold and sentence frame. Students set up and solve independently.","ai_input":"Create a three-step entry scaffold: circle the numbers, underline the question, and draw a quick sketch. Add this frame: “I need to find ___ because ___.” Do not name the operation or solve.","barrier_clue":"Students struggle to start and organize information.","thinking_clue":"Students still choose a strategy, set up the problem, compute, and explain.","target":"Choose an operation, set up the problem, solve, and explain the reasoning."},{"id":3,"title":"Mentor Paragraph","short":"Mentor Paragraph","band":"3–5 ELA","meta":"Grade 5 ELA · Writing-structure barrier · AI wrote the paragraph","story":"A fifth-grade ELA teacher teaches students to cite textual evidence for a claim about a character’s motivation. Several students struggle to write a body paragraph. AI generates a mentor paragraph for each student. Students write a similar paragraph, but most copy the structure and change only a few words.","ai_input":"Write a mentor paragraph about the character’s motivation with a claim, evidence, and reasoning.","barrier_clue":"Students need help organizing a body paragraph.","thinking_clue":"Students should make the claim, choose the evidence, and explain the reasoning — but AI did most of it for them.","target":"Make a claim about motivation, choose textual evidence, and explain the reasoning."},{"id":4,"title":"Tiered Reading","short":"Tiered Reading","band":"6–8 Science","meta":"Grade 7 Science · Dense-text barrier · AI made three access versions","story":"A seventh-grade science teacher teaches force and motion. Students answer analysis questions about Newton’s Second Law, but many multilingual learners struggle with dense textbook language. AI creates reading supports: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. All students answer the same analysis questions.","ai_input":"Make three access versions: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. Keep the same three analysis questions for everyone. Do not answer them.","barrier_clue":"Dense textbook language blocks access to the science analysis.","thinking_clue":"All students still answer the same analysis questions.","target":"Analyze Newton’s Second Law and answer the same three analysis questions."},{"id":5,"title":"AI Feedback on Work","short":"AI Feedback on Work","band":"6–8 Math","meta":"Grade 6 Math · Feedback barrier · AI gave answers and unit rates","story":"A sixth-grade math teacher teaches proportional relationships. Students practice deciding whether tables are proportional. During independent practice, AI gives correct answers, explains the constant ratio, and identifies the unit rate. Students use AI feedback to mark their work correct or incorrect.","ai_input":"Check each student’s proportional relationship work. Give the correct answer, constant ratio, unit rate, and whether the student is correct.","barrier_clue":"Students may need feedback or a way to check reasoning.","thinking_clue":"Students should decide whether the table is proportional and justify it — but AI handed over the answer, the ratio and the unit rate.","target":"Decide whether a table is proportional and justify it using the constant ratio."},{"id":6,"title":"Data Summarized for CER","short":"Data Summarized for CER","band":"9–12 Science","meta":"Grade 9–12 Science · Large-dataset barrier · AI chose the evidence","story":"Students analyze a local air-quality dataset to write a claim-evidence-reasoning paragraph. The teacher uses AI to summarize the dataset into three key findings. Students use those AI findings as evidence. They write their own claim and reasoning, but they do not examine the full dataset or choose evidence themselves.","ai_input":"Summarize this local air-quality dataset into three key findings students can use as evidence in CER paragraphs.","barrier_clue":"The full dataset may be too large or dense to analyze efficiently.","thinking_clue":"Students should read the data and choose their own evidence — but AI chose it for them.","target":"Analyze data, select evidence, and write a claim with supporting reasoning."},{"id":7,"title":"Primary Source Access","short":"Primary Source Access","band":"9–12 History/SS","meta":"Grade 10 World History · Archaic-language barrier · AI added footnotes","story":"A tenth-grade World History teacher teaches students to analyze a primary source for bias, perspective, and historical context. Some students struggle with 19th-century language and reading demands. AI creates plain-language footnotes, background questions, and a blank SOAPS organizer. Students still read the original source and complete the analysis independently.","ai_input":"Add plain-language footnotes for difficult phrases, background questions, and a blank SOAPS organizer. Do not answer or analyze the source for students.","barrier_clue":"19th-century language blocks access to the original source.","thinking_clue":"Students still read the original and analyze bias, perspective, and context.","target":"Analyze a primary source for bias, perspective, and historical context."}];
     // The model case is data too, so its prompt/ruling boxes fill from exactly
     // the same functions the groups use — one code path, no second version of
     // the wording to drift.
@@ -1797,7 +1890,7 @@ Our fix: ${v("fix", "___")}`;
       { key: "A", match: "A —", label: "Augment" },
       { key: "M", match: "M —", label: "Modify" },
       { key: "R", match: "R —", label: "Redefine" },
-      { key: "!", match: "Overreliance", label: "Overreliance", warn: true },
+      { key: "O", match: "Overreliance", label: "Overreliance", warn: true },
     ];
     function levelOf(osamr) {
       const v = (osamr || "").trim();
@@ -2117,7 +2210,7 @@ Our fix: ${v("fix", "___")}`;
       },
       {
         title: "Pick a letter",
-        todo: "As a group, tap the one letter that matches what AI actually did.",
+        todo: "As a group, tap the one letter that matches what AI actually did: S, A, M, R or O.",
         next: "Letter picked — go to step 3 →",
       },
       {
@@ -2127,7 +2220,7 @@ Our fix: ${v("fix", "___")}`;
       },
       {
         title: "Post it",
-        todo: "Your ruling is already written below. Tap “Copy case ruling”, then put it on the board.",
+        todo: "Everything is written up below. Tap “Copy our decision”, then put it on the board.",
         next: "",
       },
     ];
@@ -2215,6 +2308,36 @@ Our fix: ${v("fix", "___")}`;
           </ol>
           <div class="wiz-panes"></div>`;
         grid.parentNode.insertBefore(wiz, grid);
+
+        /* The teacher's AI request is the evidence every step argues about, so
+           it is lifted out of the case brief and pinned above the panes —
+           visible on all four steps instead of only the first. Moving it (not
+           copying it) keeps one copy on the page. */
+        const aiCard = $(".ai-input-card", page);
+        if (aiCard) {
+          const strip = document.createElement("details");
+          strip.className = "case-strip";
+          strip.open = true;
+          strip.innerHTML = '<summary>What the teacher asked AI to do</summary>';
+          const body = document.createElement("div");
+          body.className = "case-strip-body";
+          const quote = $(".quote", aiCard);
+          const raw = (quote ? quote.textContent : "").trim().replace(/^[“"]|[”"]$/g, "");
+          /* Split on sentence ends and on the colon-led lists these prompts
+             use, then drop the empties a trailing period leaves behind. */
+          const parts = raw
+            .split(/(?<=[.?!])\s+/)
+            .map((part) => part.trim())
+            .filter(Boolean);
+          body.innerHTML =
+            parts.length > 1
+              ? `<ul class="case-strip-list">${parts.map((part) => `<li>${escapeHtml(part)}</li>`).join("")}</ul>`
+              : `<p class="quote">${escapeHtml(raw)}</p>`;
+          strip.appendChild(body);
+          aiCard.remove();
+          wiz.insertBefore(strip, $(".wiz-panes", wiz));
+        }
+
         const panes = $(".wiz-panes", wiz);
 
         const makePane = (index, nodes) => {
