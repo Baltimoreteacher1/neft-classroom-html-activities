@@ -53,6 +53,12 @@ const SKIP_TOPLEVEL = new Set([
   // focus-school (Noam planner) offers the Workbench only inside its Academic
   // Help view, so it opts out of the global floating launcher.
   "focus-school",
+  // Adult professional-learning worksheets, not student math activities — a
+  // scratch-space launcher floating over a PD case study is noise. (Fix-It had
+  // to have a stray launcher tag removed by hand for exactly this reason; these
+  // entries stop it being re-injected.)
+  "fix-it-design-challenge",
+  "osamr-case-clinic",
 ]);
 
 // student-board is a teacher-authored class display (not a lesson/activity), so

@@ -255,6 +255,24 @@
       .rule .chip:not(.save-pill){display:none}
       .brand{margin-bottom:6px}
     }
+    .board-status{margin:8px 0 0;font-weight:900;font-size:13px;color:var(--muted)}
+    .board-status.on{color:var(--teal)}
+    .board-status.off{color:#8a6412}
+
+    /* ---- No Math Workbench on this page ---------------------------------
+       This is an adult professional-learning worksheet, not a student math
+       activity, so the site-wide scratch-space launcher does not belong here.
+       Two separate things can render it: the injected launcher (#mwb-launcher)
+       and save-resume-engine.js, which renders its OWN #nsr-workbench chip
+       whenever it does NOT find #mwb-launcher — so suppressing one summons the
+       other. Hide both. tools/inject-math-workbench.js also skips this
+       directory, which stops the launcher being injected in the first place;
+       this rule is the belt to that braces. Matches the same block on the
+       Fix-It Design Challenge. -------------------------------------------- */
+    #mwb-launcher,
+    .mwb-launcher-nav,
+    #nsr-workbench{display:none!important}
+
     @media print{
       .top,.toast,.action-row,.tabs,.skip-link{display:none!important}
       html.js .page{display:block!important}
@@ -399,39 +417,145 @@
       </div>
     </section>
 
-    <section class="page" id="model" role="tabpanel" aria-label="Model case page">
-      <div class="page-head">
+
+    <section class="page group-page" id="model" role="tabpanel" aria-label="Model case room">
+      <div class="page-head compact">
         <div>
-          <p class="kicker">Model Case</p>
-          <h2>Watch how the decision is made.</h2>
-          <p class="subline">Grade 6 Math · Proportional relationships · Directions rewritten in plain language</p>
+          <p class="kicker">Model Case · 6–8 Math</p>
+          <h2>Proportional Relationships Directions</h2>
+          <p class="subline">Grade 6 Math · Dense-directions barrier · AI rewrote directions in plain language</p>
         </div>
-        <a class="btn primary" href="#menu" data-open-page="menu">Go to case rooms</a>
+        <div class="action-row top-actions">
+          <a class="btn primary" href="#menu" data-open-page="menu">Choose your case room</a>
+        </div>
       </div>
 
-      <div class="model-grid">
-        <article class="model-box">
-          <h3>The case</h3>
-          <p>Sixth-grade students decide whether a table shows a proportional relationship. Several multilingual learners understand the math, but the directions are dense and the word <em>ratio</em> is unfamiliar. The teacher uses AI to rewrite the directions in plain language and add a short vocabulary note. Students still calculate ratios, decide whether they are equal, and explain their answer.</p>
-          <p class="prompt-label">Teacher AI input</p>
-          <pre class="prompt-text">Rewrite these directions in plain language. Add one short note for “ratio.” Do not solve, name the operation, or tell students if the table is proportional.</pre>
-        </article>
-        <article class="model-box good">
-          <h3>The analysis</h3>
-          <p class="prompt-label">Barrier removed</p>
-          <p>Dense directions and unfamiliar vocabulary made it hard to start.</p>
-          <p class="prompt-label">Thinking preserved</p>
-          <p>Students still calculate ratios, decide proportional or not, and explain why.</p>
-          <p class="prompt-label">OSAMR level</p>
-          <p><strong>A — Augment.</strong> AI makes the task clearer without solving it.</p>
-          <p class="prompt-label">Evidence</p>
-          <p>AI does not find the constant ratio.</p>
-          <p class="prompt-label">Red flag</p>
-          <p>AI gives the answer or tells students which operation to use.</p>
-        </article>
+      <div class="callout" style="margin-top:0;margin-bottom:18px">
+        <strong>Worked example.</strong> This is the same case room your group will use, already filled in. Read down the eight steps to see how the ruling is built from the case — evidence first, letter last.
       </div>
 
-      <div class="callout"><strong>Model takeaway:</strong> the support changes access to the task, not the math thinking.</div>
+      <div class="workspace-grid">
+        <aside class="scenario-card">
+          <div class="scenario-head">
+            <div class="scenario-label">Case brief</div>
+            <span class="risk-badge low">LOW RISK</span>
+          </div>
+          <h3>1. Case story</h3>
+          <p>Sixth-grade students decide whether a table shows a proportional relationship. Several multilingual learners understand the math, but the directions are dense and the word “ratio” is unfamiliar. The teacher uses AI to rewrite the directions in plain language and add a short vocabulary note. Students still calculate ratios, decide whether they are equal, and explain their answer.</p>
+
+          <div class="ai-input-card">
+            <h4>2. Teacher AI input</h4>
+            <p class="quote">“Rewrite these directions in plain language. Add one short note for “ratio.” Do not solve, name the operation, or tell students if the table is proportional.”</p>
+          </div>
+
+          <div class="mini-stack">
+            <div><strong>Learning target:</strong> Decide whether a table shows a proportional relationship and justify the decision.</div>
+            <div><strong>Barrier clue:</strong> Dense directions and unfamiliar vocabulary made it hard to start.</div>
+            <div><strong>Student thinking:</strong> Students still calculate ratios, decide proportional or not, and explain why.</div>
+          </div>
+
+              <div class="osamr-strip" aria-label="OSAMR quick reference">
+                <div><strong>S</strong><span>AI substitutes one access support</span></div>
+                <div><strong>A</strong><span>AI adds support; task is clearer, not solved</span></div>
+                <div><strong>M</strong><span>Experience changes; target stays the same</span></div>
+                <div><strong>R</strong><span>Makes the previously inaccessible possible</span></div>
+                <div class="warn"><strong>!</strong><span>Overreliance — AI does the target thinking</span></div>
+              </div>
+        </aside>
+
+        <main class="work-card">
+          <ol class="steps">
+            <li>
+              <div class="step-head"><span>1</span><h3>Barrier removed</h3></div>
+              <p class="hint">What blocked access to the task?</p>
+              <textarea id="gm-barrier" data-field="barrier" readonly placeholder="Type one clear barrier.">Dense directions and the unfamiliar word “ratio” made it hard for multilingual learners to start a task they already understood mathematically.</textarea>
+            </li>
+
+            <li>
+              <div class="step-head"><span>2</span><h3>Thinking preserved</h3></div>
+              <p class="hint">What must students still do themselves?</p>
+              <textarea id="gm-thinking" data-field="thinking" readonly placeholder="Type what students still think or do.">Students still calculate the ratios, decide whether they are equal, and explain how they know.</textarea>
+            </li>
+
+            <li>
+              <div class="step-head"><span>3</span><h3>AI action</h3></div>
+              <p class="hint">What did AI actually provide? Stay literal — quote the AI input if it helps.</p>
+              <textarea id="gm-action" data-field="action" readonly placeholder="What did AI actually provide?">AI rewrote the directions in plain language and added one short note defining “ratio.” It did not solve anything, name an operation, or say whether the table is proportional.</textarea>
+            </li>
+
+            <li class="ruling-step">
+              <div class="step-head"><span>4</span><h3>Final ruling</h3></div>
+              <p class="hint">Do not debate the label until your group has named the evidence above.</p>
+              <div class="token-row" role="group" aria-label="OSAMR decision tokens">
+                <button class="token" type="button" data-value="S — Substitute"><b>S</b>Substitute</button>
+                <button class="token selected" type="button" data-value="A — Augment" aria-pressed="true"><b>A</b>Augment</button>
+                <button class="token" type="button" data-value="M — Modify"><b>M</b>Modify</button>
+                <button class="token" type="button" data-value="R — Redefine"><b>R</b>Redefine</button>
+                <button class="token warn" type="button" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
+              </div>
+              <label class="ruling-select">OSAMR level
+                <select id="gm-osamr" data-field="osamr" disabled>                    <option value="">Choose one</option>
+                    <option>S — Substitute</option>
+                    <option selected>A — Augment</option>
+                    <option>M — Modify</option>
+                    <option>R — Redefine</option>
+                    <option>Overreliance — AI did the thinking</option>
+                </select>
+              </label>
+            </li>
+
+            <li>
+              <div class="step-head"><span>5</span><h3>Evidence</h3></div>
+              <p class="hint">One detail from the case that proves your rating. Evidence before label.</p>
+              <textarea id="gm-evidence" data-field="evidence" readonly placeholder="The detail that proves our rating is…">AI never finds the constant ratio. The rewritten directions still leave students to compute both ratios and compare them, so the mathematical decision is untouched.</textarea>
+            </li>
+
+            <li>
+              <div class="step-head"><span>6</span><h3>Red flag</h3></div>
+              <p class="hint">Where could this support cross the line into doing the thinking?</p>
+              <textarea id="gm-redflag" data-field="redflag" readonly placeholder="This would cross the line if…">It would cross the line if AI gave the answer, told students which operation to use, or pointed out that both ratios simplify to the same thing.</textarea>
+            </li>
+
+            <li>
+              <div class="step-head"><span>7</span><h3>Fix-it move</h3></div>
+              <p class="hint">One change that keeps the access but returns the thinking to students.</p>
+              <textarea id="gm-fix" data-field="fix" readonly placeholder="One safer fix would be…">Keep the plain-language directions and the vocabulary note, and add a blank ratio table students fill in themselves — never a worked example.</textarea>
+            </li>
+
+            <li class="coach-step">
+              <div class="step-head"><span>8</span><h3>Pressure-test your ruling</h3></div>
+              <p class="hint">Optional for your group: copy the prompt, paste it into an AI assistant, and see whether your evidence holds up.</p>
+              <div class="action-row">
+                <button class="btn primary" type="button" data-copy-prompt="m">Copy pressure-test prompt</button>
+                <a class="btn gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Open Gemini ↗</a>
+              </div>
+              <details>
+                <summary>Preview the pressure-test prompt</summary>
+                <textarea class="prompt-preview" id="gm-prompt" readonly></textarea>
+              </details>
+            </li>
+          </ol>
+        </main>
+      </div>
+
+      <section class="post-card">
+        <div class="post-head">
+          <div>
+            <p class="kicker">60-second defense</p>
+            <h3>Model case ruling</h3>
+          </div>
+          <div class="label-pills">
+            <span>Model Case — Proportional Directions</span>
+            <span>6–8 Math</span>
+          </div>
+        </div>
+        <p class="frame-line">We rated this <strong>A — Augment</strong> because AI removed <strong>the dense directions and unfamiliar vocabulary</strong> while students still <strong>calculated the ratios and decided</strong>. Red flag: <strong>AI names the operation or gives the answer</strong>. Fix: <strong>a blank ratio table instead of a worked example</strong>.</p>
+        <textarea id="gm-post" class="post-output" readonly aria-label="Model case ruling"></textarea>
+        <div class="action-row">
+          <button class="btn primary" type="button" data-copy-post="m">Copy case ruling</button>
+          <button class="btn secondary" type="button" data-open-page="menu">Choose your case room</button>
+        </div>
+      </section>
     </section>
 
     <section class="page" id="menu" role="tabpanel" aria-label="Case room menu">
@@ -595,8 +719,7 @@
                 <button class="token warn" type="button" data-token="1" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
-                <select id="g1-osamr" data-field="osamr" data-group="1">
-                    <option value="">Choose one</option>
+                <select id="g1-osamr" data-field="osamr" data-group="1">                    <option value="">Choose one</option>
                     <option>S — Substitute</option>
                     <option>A — Augment</option>
                     <option>M — Modify</option>
@@ -734,8 +857,7 @@
                 <button class="token warn" type="button" data-token="2" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
-                <select id="g2-osamr" data-field="osamr" data-group="2">
-                    <option value="">Choose one</option>
+                <select id="g2-osamr" data-field="osamr" data-group="2">                    <option value="">Choose one</option>
                     <option>S — Substitute</option>
                     <option>A — Augment</option>
                     <option>M — Modify</option>
@@ -873,8 +995,7 @@
                 <button class="token warn" type="button" data-token="3" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
-                <select id="g3-osamr" data-field="osamr" data-group="3">
-                    <option value="">Choose one</option>
+                <select id="g3-osamr" data-field="osamr" data-group="3">                    <option value="">Choose one</option>
                     <option>S — Substitute</option>
                     <option>A — Augment</option>
                     <option>M — Modify</option>
@@ -1012,8 +1133,7 @@
                 <button class="token warn" type="button" data-token="4" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
-                <select id="g4-osamr" data-field="osamr" data-group="4">
-                    <option value="">Choose one</option>
+                <select id="g4-osamr" data-field="osamr" data-group="4">                    <option value="">Choose one</option>
                     <option>S — Substitute</option>
                     <option>A — Augment</option>
                     <option>M — Modify</option>
@@ -1151,8 +1271,7 @@
                 <button class="token warn" type="button" data-token="5" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
-                <select id="g5-osamr" data-field="osamr" data-group="5">
-                    <option value="">Choose one</option>
+                <select id="g5-osamr" data-field="osamr" data-group="5">                    <option value="">Choose one</option>
                     <option>S — Substitute</option>
                     <option>A — Augment</option>
                     <option>M — Modify</option>
@@ -1290,8 +1409,7 @@
                 <button class="token warn" type="button" data-token="6" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
-                <select id="g6-osamr" data-field="osamr" data-group="6">
-                    <option value="">Choose one</option>
+                <select id="g6-osamr" data-field="osamr" data-group="6">                    <option value="">Choose one</option>
                     <option>S — Substitute</option>
                     <option>A — Augment</option>
                     <option>M — Modify</option>
@@ -1429,8 +1547,7 @@
                 <button class="token warn" type="button" data-token="7" data-value="Overreliance — AI did the thinking"><b>!</b>Overreliance</button>
               </div>
               <label class="ruling-select">OSAMR level
-                <select id="g7-osamr" data-field="osamr" data-group="7">
-                    <option value="">Choose one</option>
+                <select id="g7-osamr" data-field="osamr" data-group="7">                    <option value="">Choose one</option>
                     <option>S — Substitute</option>
                     <option>A — Augment</option>
                     <option>M — Modify</option>
@@ -1500,6 +1617,7 @@
           <p class="kicker">Gallery Board</p>
           <h2>Compare the rulings.</h2>
           <p class="subline">Each group shares one clear rating, one evidence detail, one red flag, and one fix.</p>
+          <p class="board-status" id="boardStatus">● Connecting to the shared board…</p>
         </div>
         <div class="action-row top-actions">
           <button class="btn secondary" type="button" id="downloadResponses">Download all rulings</button>
@@ -1537,6 +1655,10 @@
     document.documentElement.classList.add("js");
 
     const CASES = [{"id":1,"title":"Story Structure","short":"Story Structure","band":"K–2","meta":"K–2 ELA · Reading-directions barrier · AI made a picture direction card","risk":"LOW RISK","riskClass":"low","story":"A kindergarten teacher introduces story structure. Students listen to a read-aloud and retell the beginning, middle, and end. Several students cannot read directions yet, so AI creates a three-panel direction card with simple icons and one-word labels. Students still listen, sequence events, and retell verbally to a partner.","ai_input":"Create a three-panel direction card with simple icons and one-word labels: beginning, middle, end. Do not retell the story or sequence events for students.","barrier_clue":"Students cannot read directions independently.","thinking_clue":"Students still listen, sequence events, and retell beginning/middle/end.","target":"Sequence and retell the beginning, middle, and end of a story."},{"id":2,"title":"Multi-Step Problem Entry","short":"Multi-Step Problem Entry","band":"3–5 Math","meta":"Grade 4 Math · Getting-started barrier · AI built an entry scaffold","risk":"LOW / MEDIUM RISK","riskClass":"low","story":"A fourth-grade math teacher teaches multi-digit multiplication with: “A school orders 24 boxes of crayons. Each box has 16 crayons. How many crayons are there in all?” Several students with IEPs struggle to know where to start. AI creates a problem-entry scaffold and sentence frame. Students set up and solve independently.","ai_input":"Create a three-step entry scaffold: circle the numbers, underline the question, and draw a quick sketch. Add this frame: “I need to find ___ because ___.” Do not name the operation or solve.","barrier_clue":"Students struggle to start and organize information.","thinking_clue":"Students still choose a strategy, set up the problem, compute, and explain.","target":"Choose an operation, set up the problem, solve, and explain the reasoning."},{"id":3,"title":"Mentor Paragraph","short":"Mentor Paragraph","band":"3–5 ELA","meta":"Grade 5 ELA · Writing-structure barrier · AI wrote the paragraph","risk":"HIGH RISK","riskClass":"high","story":"A fifth-grade ELA teacher teaches students to cite textual evidence for a claim about a character’s motivation. Several students struggle to write a body paragraph. AI generates a mentor paragraph for each student. Students write a similar paragraph, but most copy the structure and change only a few words.","ai_input":"Write a mentor paragraph about the character’s motivation with a claim, evidence, and reasoning.","barrier_clue":"Students need help organizing a body paragraph.","thinking_clue":"AI weakens target thinking by giving too much of the analysis.","target":"Make a claim about motivation, choose textual evidence, and explain the reasoning."},{"id":4,"title":"Tiered Reading","short":"Tiered Reading","band":"6–8 Science","meta":"Grade 7 Science · Dense-text barrier · AI made three access versions","risk":"LOW / MEDIUM RISK","riskClass":"low","story":"A seventh-grade science teacher teaches force and motion. Students answer analysis questions about Newton’s Second Law, but many multilingual learners struggle with dense textbook language. AI creates reading supports: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. All students answer the same analysis questions.","ai_input":"Make three access versions: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. Keep the same three analysis questions for everyone. Do not answer them.","barrier_clue":"Dense textbook language blocks access to the science analysis.","thinking_clue":"All students still answer the same analysis questions.","target":"Analyze Newton’s Second Law and answer the same three analysis questions."},{"id":5,"title":"AI Feedback on Work","short":"AI Feedback on Work","band":"6–8 Math","meta":"Grade 6 Math · Feedback barrier · AI gave answers and unit rates","risk":"HIGH RISK","riskClass":"high","story":"A sixth-grade math teacher teaches proportional relationships. Students practice deciding whether tables are proportional. During independent practice, AI gives correct answers, explains the constant ratio, and identifies the unit rate. Students use AI feedback to mark their work correct or incorrect.","ai_input":"Check each student’s proportional relationship work. Give the correct answer, constant ratio, unit rate, and whether the student is correct.","barrier_clue":"Students may need feedback or a way to check reasoning.","thinking_clue":"AI performs the target thinking by giving the answer, ratio, and unit rate.","target":"Decide whether a table is proportional and justify it using the constant ratio."},{"id":6,"title":"Data Summarized for CER","short":"Data Summarized for CER","band":"9–12 Science","meta":"Grade 9–12 Science · Large-dataset barrier · AI chose the evidence","risk":"HIGH RISK","riskClass":"high","story":"Students analyze a local air-quality dataset to write a claim-evidence-reasoning paragraph. The teacher uses AI to summarize the dataset into three key findings. Students use those AI findings as evidence. They write their own claim and reasoning, but they do not examine the full dataset or choose evidence themselves.","ai_input":"Summarize this local air-quality dataset into three key findings students can use as evidence in CER paragraphs.","barrier_clue":"The full dataset may be too large or dense to analyze efficiently.","thinking_clue":"AI removes too much target thinking by choosing the evidence.","target":"Analyze data, select evidence, and write a claim with supporting reasoning."},{"id":7,"title":"Primary Source Access","short":"Primary Source Access","band":"9–12 History/SS","meta":"Grade 10 World History · Archaic-language barrier · AI added footnotes","risk":"MEDIUM RISK","riskClass":"medium","story":"A tenth-grade World History teacher teaches students to analyze a primary source for bias, perspective, and historical context. Some students struggle with 19th-century language and reading demands. AI creates plain-language footnotes, background questions, and a blank SOAPS organizer. Students still read the original source and complete the analysis independently.","ai_input":"Add plain-language footnotes for difficult phrases, background questions, and a blank SOAPS organizer. Do not answer or analyze the source for students.","barrier_clue":"19th-century language blocks access to the original source.","thinking_clue":"Students still read the original and analyze bias, perspective, and context.","target":"Analyze a primary source for bias, perspective, and historical context."}];
+    // The model case is data too, so its prompt/ruling boxes fill from exactly
+    // the same functions the groups use — one code path, no second version of
+    // the wording to drift.
+    const MODEL_CASE = {"id":"m","title":"Proportional Relationships Directions","short":"Proportional Directions","band":"6–8 Math","meta":"Grade 6 Math · Dense-directions barrier · AI rewrote directions in plain language","risk":"LOW RISK","riskClass":"low","story":"Sixth-grade students decide whether a table shows a proportional relationship. Several multilingual learners understand the math, but the directions are dense and the word “ratio” is unfamiliar. The teacher uses AI to rewrite the directions in plain language and add a short vocabulary note. Students still calculate ratios, decide whether they are equal, and explain their answer.","ai_input":"Rewrite these directions in plain language. Add one short note for “ratio.” Do not solve, name the operation, or tell students if the table is proportional.","barrier_clue":"Dense directions and unfamiliar vocabulary made it hard to start.","thinking_clue":"Students still calculate ratios, decide proportional or not, and explain why.","target":"Decide whether a table shows a proportional relationship and justify the decision.","answers":{"barrier":"Dense directions and the unfamiliar word “ratio” made it hard for multilingual learners to start a task they already understood mathematically.","thinking":"Students still calculate the ratios, decide whether they are equal, and explain how they know.","action":"AI rewrote the directions in plain language and added one short note defining “ratio.” It did not solve anything, name an operation, or say whether the table is proportional.","osamr":"A — Augment","evidence":"AI never finds the constant ratio. The rewritten directions still leave students to compute both ratios and compare them, so the mathematical decision is untouched.","redflag":"It would cross the line if AI gave the answer, told students which operation to use, or pointed out that both ratios simplify to the same thing.","fix":"Keep the plain-language directions and the vocabulary note, and add a blank ratio table students fill in themselves — never a worked example."}};
     const STORE = "osamr_case_clinic_v1";
     const FIELDS = ["barrier","thinking","action","osamr","evidence","redflag","fix"];
 
@@ -1546,8 +1668,13 @@
     const $ = (s, r = document) => r.querySelector(s);
     const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
     const key = (g, f) => `g${g}_${f}`;
-    const getValue = (g, f) => state[key(g, f)] || "";
-    const caseById = (g) => CASES.find((c) => c.id === Number(g));
+    const isModel = (g) => String(g) === "m";
+    // The model reads its answers straight off its own data; groups read the
+    // participant's saved work. Everything downstream (promptFor, postFor) is
+    // then identical for both.
+    const getValue = (g, f) =>
+      isModel(g) ? (MODEL_CASE.answers[f] || "") : (state[key(g, f)] || "");
+    const caseById = (g) => (isModel(g) ? MODEL_CASE : CASES.find((c) => c.id === Number(g)));
 
     function save() {
       try {
@@ -1574,6 +1701,7 @@
       syncTokens(g);
       updateGroup(g);
       renderGallery();
+      schedulePublish(g);
     }
 
     function showToast(msg = "Copied") {
@@ -1612,6 +1740,7 @@
         b.setAttribute("aria-selected", String(on));
         if (on) b.scrollIntoView({ block: "nearest", inline: "nearest" });
       });
+      if (page === "gallery") pollBoard();
       if (updateHash && location.hash !== "#" + page) history.replaceState(null, "", "#" + page);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -1653,7 +1782,8 @@ Keep it under 200 words.`;
     function postFor(g) {
       const c = caseById(g);
       const v = (f, fallback) => getValue(g, f) || fallback;
-      return `Group ${c.id} — ${c.short} (${c.band})
+      const heading = isModel(g) ? "Model case" : `Group ${c.id}`;
+      return `${heading} — ${c.short} (${c.band})
 
 CASE
 ${c.story}
@@ -1704,6 +1834,9 @@ We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} whi
         input.addEventListener("change", (e) => setValue(group, field, e.target.value));
       });
       CASES.forEach((c) => { updateGroup(c.id); syncTokens(c.id); });
+      // The model is not wired to storage, but its prompt and ruling boxes are
+      // generated by the same functions, so fill them once here.
+      updateGroup("m");
     }
 
     function escapeHtml(v) {
@@ -1712,17 +1845,127 @@ We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} whi
         .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
     }
 
+    /* ---- Shared board ----------------------------------------------------
+       Each group works on its own device, so a gallery that only read this
+       browser's localStorage would show one group's work to one group. Every
+       edit is published to /api/osamr-board (debounced), and every device polls
+       it, so the Gallery tab is the room's board rather than a private copy.
+
+       Fails SOFT and silently: if the endpoint is unreachable the page keeps
+       working exactly as before from local state. A PD session must never stop
+       because a network call failed. `board` holds the last good remote read.
+       -------------------------------------------------------------------- */
+    const BOARD_API = "/api/osamr-board";
+    let board = {};        // { "1": { fields, updatedAt }, ... }
+    let boardOk = null;    // null = not tried yet, true/false = last result
+    let lastPoll = 0;
+
+    // Local edits win for the group being typed in, so typing never flickers
+    // against an in-flight poll; every other group reads from the board.
+    function fieldsFor(g) {
+      const local = {};
+      let anyLocal = false;
+      for (const f of FIELDS) {
+        const v = getValue(g, f);
+        if (v) { local[f] = v; anyLocal = true; }
+      }
+      if (anyLocal) return local;
+      return board[String(g)]?.fields || {};
+    }
+
+    async function publishGroup(g) {
+      if (isModel(g)) return;
+      const fields = {};
+      for (const f of FIELDS) {
+        const v = getValue(g, f);
+        if (v) fields[f] = v;
+      }
+      try {
+        const res = await fetch(BOARD_API, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ group: Number(g), fields }),
+        });
+        const data = await res.json().catch(() => null);
+        setBoardStatus(data?.ok === true);
+      } catch { setBoardStatus(false); }
+    }
+
+    const publishTimers = {};
+    function schedulePublish(g) {
+      clearTimeout(publishTimers[g]);
+      publishTimers[g] = setTimeout(() => publishGroup(g), 900);
+    }
+
+    async function pollBoard() {
+      try {
+        const res = await fetch(BOARD_API, { headers: { accept: "application/json" } });
+        const data = await res.json();
+        if (data?.ok && data.groups) {
+          board = data.groups;
+          setBoardStatus(true);
+          renderGallery();
+        } else {
+          setBoardStatus(false);
+        }
+      } catch { setBoardStatus(false); }
+    }
+
+    function setBoardStatus(ok) {
+      if (boardOk === ok) return;
+      boardOk = ok;
+      const el = $("#boardStatus");
+      if (!el) return;
+      el.textContent = ok
+        ? "● Shared board connected — every group's ruling appears here"
+        : "● Shared board offline — showing this device's work only";
+      el.className = ok ? "board-status on" : "board-status off";
+    }
+
+    /* Build a ruling from an arbitrary field bag, so the gallery can render a
+       group's work whether it came from this device or from the board. */
+    function postFromFields(c, fields) {
+      const v = (f, fallback) => (fields[f] || "").trim() || fallback;
+      return `Group ${c.id} — ${c.short} (${c.band})
+
+CASE
+${c.story}
+
+TEACHER AI INPUT
+"${c.ai_input}"
+
+RULING
+OSAMR level: ${v("osamr", "[level]")}
+
+1. Barrier removed: ${v("barrier", "[barrier]")}
+2. Thinking preserved: ${v("thinking", "[thinking]")}
+3. AI action: ${v("action", "[what AI provided]")}
+4. Evidence: ${v("evidence", "[proof detail]")}
+5. Red flag: ${v("redflag", "[what would cross the line]")}
+6. Fix-it move: ${v("fix", "[safer fix]")}
+
+60-SECOND DEFENSE
+We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} while students still ${v("thinking", "___")}. Red flag: ${v("redflag", "___")}. Fix: ${v("fix", "___")}.`;
+    }
+
     function renderGallery() {
       const list = $("#galleryList");
       if (!list) return;
       list.innerHTML = CASES.map((c) => {
-        const { done, total } = completion(c.id);
+        const fields = fieldsFor(c.id);
+        const done = FIELDS.filter((f) => (fields[f] || "").trim()).length;
+        const total = FIELDS.length;
         const cls = done === total ? "status done" : "status";
+        const remote = board[String(c.id)];
+        const when = remote?.updatedAt
+          ? new Date(remote.updatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+          : "";
+        const stamp = done === 0 ? "Not started" : (when ? `Updated ${when}` : "On this device");
         return `
         <article class="gallery-item">
           <h3>Group ${c.id} — ${escapeHtml(c.short)} · ${escapeHtml(c.band)}</h3>
-          <p class="${cls}">${done} of ${total} fields complete</p>
-          <pre>${escapeHtml(postFor(c.id))}</pre>
+          <p class="${cls}">${done} of ${total} fields complete · ${escapeHtml(stamp)}</p>
+          <pre>${escapeHtml(postFromFields(c, fields))}</pre>
           <div class="action-row">
             <button class="btn secondary" type="button" data-open-page="group-${c.id}">Open Group ${c.id}</button>
             <button class="btn primary" type="button" data-copy-post="${c.id}">Copy ruling</button>
@@ -1817,6 +2060,16 @@ We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} whi
 
     hydrate();
     renderGallery();
+
+    // Read the board once on load, then keep it fresh. 6s while the gallery is
+    // on screen (that is when staleness is visible), 20s otherwise, and an
+    // immediate read whenever the tab regains focus.
+    pollBoard();
+    setInterval(() => {
+      const galleryOpen = document.getElementById("gallery")?.classList.contains("active");
+      if (galleryOpen || Date.now() - lastPoll > 20000) { lastPoll = Date.now(); pollBoard(); }
+    }, 6000);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) pollBoard(); });
     openPage(location.hash.replace("#", "") || "launch", false);
   </script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
