@@ -951,6 +951,18 @@
         line-height: 1.15;
         color: var(--navy);
       }
+      .wiz-do {
+        margin: 12px 0 0;
+        padding-left: 22px;
+        max-width: 70ch;
+      }
+      .wiz-do li {
+        margin-bottom: 6px;
+        font-size: 16px;
+        line-height: 1.5;
+        color: #2c3a4a;
+      }
+
       .wiz-todo {
         margin: 0;
         font-size: 17px;
@@ -2417,7 +2429,7 @@
             <h3>Four short steps. About 15 minutes.</h3>
             <ol class="task-steps">
               <li><strong>Read the problem.</strong> Your scenario is already written.</li>
-              <li><strong>Fix the prompt.</strong> Load the teacher's real prompt and edit it.</li>
+              <li><strong>Rewrite the prompt.</strong> The teacher's real request loads into a box — edit it.</li>
               <li><strong>Rate it.</strong> Pick an OSAMR level, finish one sentence.</li>
               <li><strong>Post it.</strong> Tap Copy, paste into Padlet.</li>
             </ol>
@@ -2690,7 +2702,7 @@
             <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
             giving anything away — posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Fix the prompt → Rate it → Post it</p>
+          <p class="purpose-steps">Read the problem → Rewrite the prompt → Rate it → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -2846,7 +2858,7 @@
             <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
             giving anything away — posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Fix the prompt → Rate it → Post it</p>
+          <p class="purpose-steps">Read the problem → Rewrite the prompt → Rate it → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -3004,7 +3016,7 @@
             <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
             giving anything away — posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Fix the prompt → Rate it → Post it</p>
+          <p class="purpose-steps">Read the problem → Rewrite the prompt → Rate it → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -3164,7 +3176,7 @@
             <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
             giving anything away — posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Fix the prompt → Rate it → Post it</p>
+          <p class="purpose-steps">Read the problem → Rewrite the prompt → Rate it → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -3322,7 +3334,7 @@
             <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
             giving anything away — posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Fix the prompt → Rate it → Post it</p>
+          <p class="purpose-steps">Read the problem → Rewrite the prompt → Rate it → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -3480,7 +3492,7 @@
             <strong>What you produce:</strong> one fixed prompt — a request AI could answer without
             giving anything away — posted to Padlet. This page writes the post for you.
           </p>
-          <p class="purpose-steps">Read the problem → Fix the prompt → Rate it → Post it</p>
+          <p class="purpose-steps">Read the problem → Rewrite the prompt → Rate it → Post it</p>
         </div>
 
         <div class="workspace-grid">
@@ -4102,9 +4114,14 @@
           next: "I read it — go to step 2 →",
         },
         {
-          title: "Fix the prompt",
-          todo: "Tap “Load the teacher's prompt” — the real request drops into the box. Delete the part that gives the answer away, then tap chips to add what AI should build and what it must not do.",
-          next: "Prompt fixed — go to step 3 →",
+          title: "Rewrite the teacher's prompt",
+          todo: "You are editing the actual words the teacher sent to AI. Do these three things:",
+          steps: [
+            "Tap <strong>Load the teacher's prompt</strong>. The real request appears in the box.",
+            "In the box, <strong>delete the part that gives the answer away</strong> — that is the line that caused the problem.",
+            "Tap chips to add <strong>what AI should build</strong> and <strong>what it must never do</strong>.",
+          ],
+          next: "Prompt rewritten — go to step 3 →",
         },
         {
           title: "Rate your fix",
@@ -4154,7 +4171,12 @@
             head.innerHTML = `
               <p class="wiz-of">Step ${index + 1} of ${WIZ_STEPS.length}</p>
               <h3 class="wiz-title">${step.title}</h3>
-              <p class="wiz-todo">${step.todo}</p>`;
+              <p class="wiz-todo">${step.todo}</p>
+              ${
+                step.steps
+                  ? `<ol class="wiz-do">${step.steps.map((line) => `<li>${line}</li>`).join("")}</ol>`
+                  : ""
+              }`;
             pane.appendChild(head);
             if (reference) {
               const split = document.createElement("div");
