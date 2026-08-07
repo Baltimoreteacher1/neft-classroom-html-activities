@@ -252,11 +252,10 @@ ratchet).
   folders or routes, restructure curriculum/pages, or replace working content
   with placeholders. These are enforced by `permissions.deny` in
   `.claude/settings.json` — 11 rules covering `wrangler deploy`, `npm run
-  deploy`, force-push, `git reset --hard`, `git clean -fd` and `rm -rf`.
-  `npm run qa:danger` runs the same checks on a command by hand. (This used to
-  claim a `pre-bash-guard.sh` PreToolUse hook enforced them too. That file has
-  never existed in this repo's history, so the claim described protection that
-  was not running — see the note under **Stop rule**.)
+  deploy`, force-push, `git reset --hard`, `git clean -fd` and `rm -rf` — and,
+  since 2026-08-06, by the `pre-bash-guard.sh` PreToolUse/Bash hook, which is
+  now written, wired and verified running (see the note under **Stop rule**).
+  `npm run qa:danger` runs the same checks on a command by hand.
 - **Deploy rule:** push to `main` is the only deploy path (Cloudflare Git
   integration), and `ALLOW_DEPLOY=1 npm run ship -- <sha>` is the only supported
   way to push it. **Never** run `wrangler` / `npm run deploy` manually — it is
@@ -268,13 +267,27 @@ ratchet).
   be a risky structural change — then produce the final report described in
   [`docs/closed-loop-qa-checklist.md`](docs/closed-loop-qa-checklist.md).
 
-> **Hooks — what is actually wired.** `.claude/settings.json` declares one hook,
-> `SessionStart → .claude/hooks/session-start.sh`, and that file exists. It also
-> used to declare three more — `pre-bash-guard.sh` (PreToolUse/Bash),
-> `post-edit-format.sh` (PostToolUse/Edit) and `stop-qa-reminder.sh` (Stop) —
-> none of which have ever existed in git history. A hook pointing at a missing
-> script does not announce itself; it simply never runs, so the repo documented
-> three safety behaviours that were not happening. The dead declarations were
-> removed on 2026-08-05 so the config states only what is real. If you want any
-> of them, write the script first, test it standalone, and wire it after —
-> `scripts/check-dangerous-commands.sh` is ready-made for the Bash guard.
+> **Hooks — what is actually wired.** `.claude/settings.json` declares two:
+> `SessionStart → .claude/hooks/session-start.sh` and `PreToolUse(Bash) →
+> .claude/hooks/pre-bash-guard.sh`. Both scripts exist and both were verified by
+> execution, not by reading the config.
+>
+> History worth keeping: the config once declared three hooks whose scripts did
+> not exist. A hook pointing at a missing script does not announce itself — it
+> simply never runs — so the repo documented three safety behaviours that were
+> not happening, and the dead declarations were removed on 2026-08-05. The Bash
+> guard was then written for real and wired on 2026-08-06, after
+> `git update-ref -d refs/heads/<x>` was found to delete a branch straight past
+> the `git branch -D` entry in `permissions.deny`. **Verify a hook by running
+> it** (`echo '{"tool_input":{"command":"…"}}' | bash .claude/hooks/pre-bash-guard.sh`;
+> exit 2 means blocked), never by trusting this file.
+>
+> The guard delegates to `scripts/check-dangerous-commands.sh`, which is tracked
+> and covered by `scripts/check-dangerous-commands.test.mjs` — that test pins
+> both halves, what must block AND what must stay allowed, because the first
+> attempt at the ref-deletion rules also blocked the safe `git branch -d`.
+>
+> **Caveat:** `.claude/` is excluded via `.git/info/exclude`, so the hook scripts
+> and `settings.json` hook block are machine-local — a fresh clone gets the
+> blocklist script and its test but not the wiring. Re-add the `PreToolUse` block
+> after cloning.
