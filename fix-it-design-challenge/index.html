@@ -314,10 +314,6 @@
         color: var(--navy);
         border: 1px solid var(--line);
       }
-      .btn.gemini {
-        background: linear-gradient(135deg, #1a73e8, #7b61ff);
-        color: #fff;
-      }
       .btn:hover,
       .text-link:hover {
         transform: translateY(-1px);
@@ -679,9 +675,6 @@
         box-shadow: 0 0 0 4px rgba(79, 182, 179, 0.25);
         border-color: var(--teal);
       }
-      .gemini-step {
-        background: linear-gradient(135deg, rgba(220, 232, 223, 0.32), rgba(255, 248, 237, 0.55));
-      }
       details {
         margin: 10px 0;
       }
@@ -819,6 +812,239 @@
         font-weight: 800;
       }
 
+      /* Purpose copy: what this is for, what you make. Kept visually loud on
+         purpose — the old page opened with six blank boxes and no answer to
+         "what am I producing?" */
+      .why-line,
+      .produce-line {
+        margin: 10px 0 0;
+        line-height: 1.5;
+      }
+      .produce-note {
+        margin: 6px 0 14px;
+        color: #4a5568;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .task-steps {
+        margin: 4px 0 14px;
+        padding-left: 22px;
+        line-height: 1.6;
+      }
+      .task-steps li {
+        margin-bottom: 4px;
+      }
+
+      .purpose-bar {
+        background: var(--sage);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 16px;
+      }
+      .purpose-bar p {
+        margin: 0 0 6px;
+        color: var(--navy);
+        line-height: 1.45;
+      }
+      .purpose-bar .purpose-steps {
+        margin: 8px 0 0;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+      }
+
+      /* Guided wizard — one step on screen, big obvious Next. */
+      .wiz {
+        margin-top: 4px;
+      }
+      .wiz-dots {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        list-style: none;
+        margin: 0 0 14px;
+        padding: 0;
+      }
+      .wiz-dot {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 7px 14px 7px 7px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        color: #5a6577;
+        cursor: pointer;
+      }
+      .wiz-dot span {
+        display: grid;
+        place-items: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #eef2f7;
+        color: #5a6577;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .wiz-dot.past {
+        color: var(--navy);
+      }
+      .wiz-dot.past span {
+        background: var(--sage);
+        color: var(--navy);
+        font-size: 0;
+      }
+      .wiz-dot.past span::after {
+        content: "✓";
+        font-size: 13px;
+      }
+      .wiz-dot.current {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: #fff;
+      }
+      .wiz-dot.current span {
+        background: #fff;
+        color: var(--navy);
+      }
+      .wiz-pane {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--soft);
+        padding: 22px 24px;
+      }
+      .wiz-pane {
+        display: none;
+      }
+      .wiz-pane.on {
+        display: block;
+      }
+      /* No-JS fallback: the wizard never builds, so nothing may be hidden. */
+      html:not(.js) .wiz-pane {
+        display: block;
+      }
+      .wiz-pane:focus-visible {
+        outline: 3px solid var(--navy);
+        outline-offset: 3px;
+      }
+      .wiz-head {
+        margin: 0 0 18px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--line);
+      }
+      .wiz-of {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #6b7688;
+      }
+      .wiz-title {
+        margin: 2px 0 8px;
+        font-size: 30px;
+        line-height: 1.15;
+        color: var(--navy);
+      }
+      .wiz-todo {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.5;
+        color: #2c3a4a;
+        max-width: 62ch;
+      }
+      /* Inside a pane the moved nodes are already the whole screen — drop the
+         nested card chrome so it does not read as a box inside a box. */
+      .wiz-pane .scenario-card,
+      .wiz-pane .post-card,
+      .wiz-pane > li {
+        background: none;
+        border: 0;
+        box-shadow: none;
+        padding: 0;
+        margin: 0 0 6px;
+        list-style: none;
+        position: static;
+        max-height: none;
+        overflow: visible;
+      }
+      .wiz-pane .scenario-card > h3 {
+        font-size: 20px;
+        margin: 0 0 6px;
+      }
+      .wiz-pane .post-head h3 {
+        font-size: 20px;
+      }
+      .wiz-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 22px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+      .wiz-nav .btn.primary {
+        font-size: 17px;
+        padding: 12px 22px;
+      }
+      .wiz .gp-reset {
+        margin-bottom: 12px;
+      }
+      .wiz-pane textarea {
+        min-height: 130px;
+      }
+      .wiz-pane textarea.tall {
+        min-height: 190px;
+      }
+
+      .given-card {
+        background: #f7fafc;
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--navy);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 18px;
+      }
+      .given-card .given-title {
+        margin: 0 0 8px;
+        font-weight: 800;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--navy);
+      }
+      .given-card ul {
+        margin: 0;
+        padding-left: 20px;
+        line-height: 1.55;
+      }
+      .given-card li {
+        margin-bottom: 4px;
+      }
+
+      .model-example {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+      }
+      .model-example > summary {
+        font-weight: 800;
+        cursor: pointer;
+        color: var(--navy);
+      }
+      .model-example-body p {
+        margin: 10px 0 0;
+        line-height: 1.55;
+      }
+
       .model-scenario {
         background: rgba(255, 255, 255, 0.92);
         border: 1px solid var(--line);
@@ -845,9 +1071,6 @@
       }
       .model-step:last-child {
         border-bottom: 0;
-      }
-      .model-step.gemini-step {
-        background: linear-gradient(135deg, rgba(220, 232, 223, 0.32), rgba(255, 248, 237, 0.55));
       }
       .model-step-head {
         display: flex;
@@ -1433,20 +1656,6 @@
       }
       .save-pill.blocked .dot {
         background: var(--terracotta);
-      }
-
-      /* ---- "Gemini is blocked" fallback note ---- */
-      .tool-note {
-        margin: 10px 0 0;
-        font-size: 13px;
-        line-height: 1.45;
-        color: #3a4a58;
-        background: rgba(220, 232, 223, 0.5);
-        border-radius: 12px;
-        padding: 10px 12px;
-      }
-      .tool-note strong {
-        color: var(--navy);
       }
 
       /* ---- Padlet QR ---- */
@@ -2113,19 +2322,32 @@
         <!-- Step 1: Welcome -->
         <div class="hero">
           <p class="kicker">Fix-It Design Challenge</p>
-          <h2>Fix the scaffold without lowering the thinking.</h2>
-          <p>Walk through the model below, then choose your group to apply it yourself.</p>
+          <h2>Fix one AI scaffold so it helps students without doing their thinking.</h2>
+          <p class="why-line">
+            <strong>Why we are doing this:</strong> we all use AI to make work accessible. The risk
+            is that the “support” quietly does the task for students. Today you practice catching
+            that — and fixing it — on one real scenario.
+          </p>
         </div>
 
-        <!-- Step 2: Your task -->
+        <!-- Step 2: What you do and what you hand in -->
         <div class="walkthrough-section">
           <div class="walkthrough-number">1</div>
           <div>
-            <h3>Your task today</h3>
-            <p>
-              You will diagnose a problematic AI request, redesign the scaffold so it supports
-              students without doing the thinking for them, test your fix in Gemini, and post a
-              before/after comparison to Padlet.
+            <h3>Four short steps. About 15 minutes.</h3>
+            <ol class="task-steps">
+              <li><strong>Read the problem.</strong> Your scenario is already written.</li>
+              <li><strong>Write your fix.</strong> A starter is on the page — edit it.</li>
+              <li><strong>Rate it.</strong> Pick an OSAMR level, finish one sentence.</li>
+              <li><strong>Post it.</strong> Tap Copy, paste into Padlet.</li>
+            </ol>
+            <p class="produce-line">
+              <strong>What you produce:</strong> one Padlet post showing the AI problem your group
+              got and the fix you wrote. The page writes the post for you — you just tap Copy.
+            </p>
+            <p class="produce-note">
+              Your scenario, the barrier, and the thinking to protect are already written for you.
+              You only write the fix.
             </p>
             <div class="core-test-bar">
               <span>Barrier removed</span>
@@ -2174,188 +2396,36 @@
           </div>
         </div>
 
-        <!-- Step 3: Model walkthrough — mirrors exact group steps -->
+        <!-- Step 3: One finished example, collapsed -->
         <div class="walkthrough-section">
           <div class="walkthrough-number">3</div>
           <div>
-            <h3>Walk through the model</h3>
-            <p>
-              Here is one example, already finished, that uses the exact same six steps your group
-              will do. Read each step and the short
-              <strong>“What's happening”</strong> note so you know what to do when it is your turn.
-            </p>
+            <h3>See one finished example</h3>
+            <p>Optional. Open it if you want to see what a good fix looks like before you start.</p>
 
-            <div class="workspace-grid model-workspace">
-              <aside class="scenario-card">
-                <div class="scenario-label">Model scenario · Grade 7 ELA</div>
-                <h3>What went wrong?</h3>
+            <details class="model-example">
+              <summary>Example: Grade 7 ELA — AI named the claim and evidence</summary>
+              <div class="model-example-body">
                 <p>
-                  Students read a challenging article and identify the author’s central claim with
-                  two pieces of evidence. The AI support made the article easier, but it also did
-                  the close-reading work.
+                  <strong>The problem:</strong> a teacher asked AI to “summarize this article and
+                  tell students the central claim and two pieces of evidence.” The article got
+                  easier — and the close reading disappeared.
                 </p>
-
-                <div class="ai-input-card">
-                  <h4>Problem AI Input</h4>
-                  <p class="quote">
-                    “Summarize this article for 7th graders and tell students the author’s central
-                    claim and two pieces of evidence they should use in their response.”
-                  </p>
-                </div>
-                <div class="mini-stack">
-                  <div>
-                    <strong>Protect:</strong> Students must read the article, identify the claim,
-                    select evidence, and explain the connection.
-                  </div>
-                </div>
-
-                <div class="osamr-strip" aria-label="OSAMR quick reference">
-                  <div><strong>S</strong><span>Same task, tech swap</span></div>
-                  <div><strong>A</strong><span>Same task, useful improvement</span></div>
-                  <div><strong>M</strong><span>Task redesigned for stronger access</span></div>
-                  <div><strong>R</strong><span>New learning move not otherwise possible</span></div>
-                  <div class="warn"><strong>O</strong><span>AI takes over the thinking</span></div>
-                </div>
-              </aside>
-
-              <div class="work-card">
-                <ol class="steps">
-                  <li class="done">
-                    <div class="step-head">
-                      <span>1</span>
-                      <h3>Name the access barrier</h3>
-                    </div>
-                    <p class="hint">What issue are you fixing without lowering the task?</p>
-                    <textarea readonly>
-The article is hard to read, so students struggle to find the claim and evidence on their own.</textarea>
-                  </li>
-
-                  <li class="done">
-                    <div class="step-head">
-                      <span>2</span>
-                      <h3>Protect the student thinking</h3>
-                    </div>
-                    <p class="hint">What must students still do on their own?</p>
-                    <textarea readonly>
-Students must read the article closely, identify the central claim themselves, select their own evidence, and explain how the evidence supports the claim.</textarea>
-                  </li>
-
-                  <li class="done">
-                    <div class="step-head">
-                      <span>3</span>
-                      <h3>Draft the fix before Gemini</h3>
-                    </div>
-                    <p class="hint">
-                      Write the scaffold you would try first. Do not use AI to complete the student
-                      task.
-                    </p>
-                    <textarea class="tall" readonly>
-Create an access scaffold for students reading a challenging article. Do not summarize the article, name the central claim, or choose evidence for students. Instead, create chunk headings, 5 student-friendly vocabulary supports, one focus question per chunk, and a blank evidence organizer that requires students to return to the original article and choose their own evidence.</textarea>
-                  </li>
-
-                  <li class="gemini-step done">
-                    <div class="step-head">
-                      <span>4</span>
-                      <h3>Use Gemini as a coach</h3>
-                    </div>
-                    <p class="hint">
-                      Copy the coach prompt, open Gemini, paste it, then revise your scaffold based
-                      on useful feedback.
-                    </p>
-                    <div class="action-row">
-                      <button class="btn primary" type="button" data-copy-el="#model-prompt">
-                        Copy Gemini coach prompt
-                      </button>
-                      <a
-                        class="btn gemini"
-                        href="https://gemini.google.com/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        >Open Gemini ↗</a
-                      >
-                    </div>
-                    <details>
-                      <summary>Preview the Gemini coach prompt</summary>
-                      <textarea class="prompt-preview" id="model-prompt" readonly>
-You are coaching teachers during an AI for Accessible Instruction design challenge.
-
-Do NOT solve the student task. Do NOT write the final answer for students.
-
-Scenario:
-Students read a challenging article and identify the author's central claim with two pieces of evidence.
-
-Original AI input that caused the problem:
-"Summarize this article for 7th graders and tell students the author's central claim and two pieces of evidence they should use in their response."
-
-Access barrier we are trying to fix:
-The article is hard to read, so students struggle to find the claim and evidence on their own.
-
-Student thinking that must stay with students:
-Students must read the article, identify the claim, select evidence, and explain the connection.
-
-Our first redesigned scaffold:
-Chunk headings, 5 vocabulary supports, one focus question per chunk, and a blank evidence organizer.
-
-Please give:
-1. One strength of the redesign.
-2. One risk where the scaffold might still do too much thinking for students.
-3. One specific revision that improves access while preserving rigor.
-4. A suggested OSAMR rating: Substitution, Augmentation, Modification, Redefinition, or Overreliance.
-
-Keep your feedback concise.</textarea>
-                    </details>
-                    <textarea readonly>
-Gemini suggested adding a sentence-starter bank for the written response so students who struggle with academic writing can still engage with the evidence — without the sentence starters giving away which evidence to choose.</textarea>
-                  </li>
-
-                  <li class="done">
-                    <div class="step-head">
-                      <span>5</span>
-                      <h3>Final after-Gemini version</h3>
-                    </div>
-                    <p class="hint">
-                      Revise the scaffold only if the learning target and student thinking stay
-                      intact.
-                    </p>
-                    <textarea class="tall" readonly>
-Create an access scaffold for students reading a challenging article. Do not summarize the article, name the central claim, or choose evidence for students. Instead, create:
-1. chunk headings,
-2. 5 student-friendly vocabulary supports,
-3. one focus question per chunk,
-4. a blank evidence organizer that requires students to return to the original article and choose their own evidence, and
-5. a sentence-starter bank for the written response that does not reference specific evidence from the text.</textarea>
-                  </li>
-
-                  <li class="done">
-                    <div class="step-head">
-                      <span>6</span>
-                      <h3>Prove rigor stayed intact</h3>
-                    </div>
-                    <div class="prove-row">
-                      <label
-                        >OSAMR level
-                        <select aria-label="Model OSAMR level (example)">
-                          <option>Substitution</option>
-                          <option selected>Augmentation</option>
-                          <option>Modification</option>
-                          <option>Redefinition</option>
-                          <option>Overreliance — still needs revision</option>
-                        </select>
-                      </label>
-                      <label
-                        >Rigor evidence
-                        <textarea readonly>
-Students still read the original text, identify the central claim, select their own evidence, and explain the connection. AI only removed vocabulary and organization barriers.</textarea>
-                      </label>
-                    </div>
-                  </li>
-                </ol>
+                <p>
+                  <strong>The fix they wrote:</strong> chunk headings, five vocabulary supports, one
+                  focus question per chunk, and a blank evidence organizer that sends students back
+                  into the original article.
+                </p>
+                <p>
+                  <strong>Rated:</strong> Augmentation. Students still read the text, name the
+                  claim, pick their own evidence, and explain the connection.
+                </p>
               </div>
-            </div>
+            </details>
 
             <div class="callout" style="margin-top: 18px">
-              <strong>Design rule:</strong> Ask AI for scaffolds, questions, vocabulary, structure,
-              and checks — not the answer, claim, evidence, reasoning, model, or completed
+              <strong>The one rule:</strong> ask AI for scaffolds, questions, vocabulary, structure,
+              and checks — never for the answer, claim, evidence, reasoning, model, or completed
               organizer.
             </div>
           </div>
@@ -2367,18 +2437,11 @@ Students still read the original text, identify the central claim, select their 
           <div>
             <h3>Now it is your turn</h3>
             <p>
-              Choose your group page below. Each group has a different scenario where AI
-              overstepped. You will follow the same 6 steps you just saw in the model.
+              Open your group page. Each group has its own scenario where AI overstepped — the three
+              steps are the same on every page.
             </p>
             <div class="action-row">
               <a class="btn primary" href="#menu" data-open-page="menu">Choose your group</a>
-              <a
-                class="btn gemini"
-                href="https://gemini.google.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                >Open Gemini ↗</a
-              >
               <a
                 class="btn secondary"
                 href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
@@ -2538,6 +2601,18 @@ Students still read the original text, identify the central claim, select their 
           </div>
         </div>
 
+        <div class="purpose-bar">
+          <p>
+            <strong>What you are doing:</strong> fixing the AI support below so it removes the
+            barrier without doing the students' thinking.
+          </p>
+          <p>
+            <strong>What you hand in:</strong> one Padlet post — this page writes it for you at the
+            bottom.
+          </p>
+          <p class="purpose-steps">Read the problem → Write your fix → Rate it → Post it</p>
+        </div>
+
         <div class="workspace-grid">
           <aside class="scenario-card">
             <div class="scenario-label">Scenario page reference</div>
@@ -2552,20 +2627,8 @@ Students still read the original text, identify the central claim, select their 
               <h4>Problem AI Input</h4>
               <p class="quote">
                 “Create vocabulary support for 6th graders explaining equivalent ratios. Include an
-                example answer for this
-                <span
-                  class="vocab-word"
-                  data-vocab="ratio"
-                  style="
-                    border-bottom: 2px dotted #0284c7;
-                    color: #0284c7;
-                    font-weight: 800;
-                    cursor: pointer;
-                  "
-                  onclick="openVocabModal('ratio')"
-                  >ratio</span
-                >
-                problem: Are 6:8 and 9:12 equivalent? Explain how you know.”
+                example answer for this ratio problem: Are 6:8 and 9:12 equivalent? Explain how you
+                know.”
               </p>
             </div>
             <div class="mini-stack">
@@ -2582,108 +2645,53 @@ Students still read the original text, identify the central claim, select their 
           </aside>
 
           <div class="work-card">
+            <div class="given-card">
+              <p class="given-title">Decided for you — you do not have to write these</p>
+              <ul>
+                <li>
+                  <strong>Barrier to remove:</strong> Academic vocabulary in explaining equivalent
+                  ratios
+                </li>
+                <li>
+                  <strong>Thinking students must still do:</strong> Students must decide equivalence
+                  and justify why.
+                </li>
+                <li>
+                  <strong>Do not:</strong> Do not provide the final equivalent-ratio explanation.
+                </li>
+              </ul>
+            </div>
+
             <ol class="steps">
               <li>
                 <div class="step-head">
                   <span>1</span>
-                  <h3>Name the access barrier</h3>
+                  <h3>Write your fix</h3>
                 </div>
-                <p class="hint">What issue are you fixing without lowering the task?</p>
+                <p class="hint">
+                  One box. What support would you actually hand students? Tap the starter and edit
+                  it — you never have to begin from blank.
+                </p>
+                <div class="action-row">
+                  <button class="btn secondary" type="button" data-starter="1">
+                    Insert starter idea
+                  </button>
+                </div>
                 <textarea
-                  id="g1-barrier"
-                  data-field="barrier"
+                  class="tall"
+                  id="g1-before"
+                  data-field="before"
                   data-group="1"
-                  placeholder="Example: Academic vocabulary in explaining equivalent ratios"
+                  placeholder="Vocabulary bank, sentence frames, and a reasoning checklist that prompt students to compare, simplify, or scale ratios without giving the answer."
                 ></textarea>
               </li>
 
               <li>
                 <div class="step-head">
                   <span>2</span>
-                  <h3>Protect the student thinking</h3>
+                  <h3>Rate it, then post</h3>
                 </div>
-                <p class="hint">What must students still do on their own?</p>
-                <textarea
-                  id="g1-thinking"
-                  data-field="thinking"
-                  data-group="1"
-                  placeholder="Example: Students must decide equivalence and justify why."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>3</span>
-                  <h3>Draft the fix before Gemini</h3>
-                </div>
-                <p class="hint">
-                  Write the scaffold you would try first. Do not use AI to complete the student
-                  task.
-                </p>
-                <textarea
-                  class="tall"
-                  id="g1-before"
-                  data-field="before"
-                  data-group="1"
-                  placeholder="Possible direction: Vocabulary bank, sentence frames, and a reasoning checklist that prompt students to compare, simplify, or scale ratios without giving the answer."
-                ></textarea>
-              </li>
-
-              <li class="gemini-step">
-                <div class="step-head">
-                  <span>4</span>
-                  <h3>Use Gemini as a coach</h3>
-                </div>
-                <p class="hint">
-                  Copy the coach prompt, open Gemini, paste it, then revise your scaffold based on
-                  useful feedback.
-                </p>
-                <div class="action-row">
-                  <button class="btn primary" type="button" data-copy-prompt="1">
-                    Copy Gemini coach prompt
-                  </button>
-                  <a
-                    class="btn gemini"
-                    href="https://gemini.google.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >Open Gemini ↗</a
-                  >
-                </div>
-                <details>
-                  <summary>Preview the Gemini coach prompt</summary>
-                  <textarea class="prompt-preview" id="g1-prompt" readonly></textarea>
-                </details>
-                <textarea
-                  id="g1-feedback"
-                  data-field="feedback"
-                  data-group="1"
-                  placeholder="Paste 1–2 useful Gemini suggestions here."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>5</span>
-                  <h3>Final after-Gemini version</h3>
-                </div>
-                <p class="hint">
-                  Revise the scaffold only if the learning target and student thinking stay intact.
-                </p>
-                <textarea
-                  class="tall"
-                  id="g1-after"
-                  data-field="after"
-                  data-group="1"
-                  placeholder="After Gemini: Type the final redesigned support."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>6</span>
-                  <h3>Prove rigor stayed intact</h3>
-                </div>
+                <p class="hint">Two quick answers and your Padlet post below writes itself.</p>
                 <div class="prove-row">
                   <label
                     >OSAMR level
@@ -2697,12 +2705,12 @@ Students still read the original text, identify the central claim, select their 
                     </select>
                   </label>
                   <label
-                    >Rigor evidence
+                    >Finish this sentence: students still have to…
                     <textarea
                       id="g1-evidence"
                       data-field="evidence"
                       data-group="1"
-                      placeholder="Students still..."
+                      placeholder="Students still have to..."
                     ></textarea>
                   </label>
                 </div>
@@ -2719,8 +2727,7 @@ Students still read the original text, identify the central claim, select their 
             </div>
             <div class="label-pills">
               <span>Group 1 — Math Reasoning</span>
-              <span>Before/After Fix</span>
-              <span>Tested in Gemini</span>
+              <span>Fix-It</span>
             </div>
           </div>
           <textarea id="g1-post" class="post-output" readonly></textarea>
@@ -2763,6 +2770,18 @@ Students still read the original text, identify the central claim, select their 
           </div>
         </div>
 
+        <div class="purpose-bar">
+          <p>
+            <strong>What you are doing:</strong> fixing the AI support below so it removes the
+            barrier without doing the students' thinking.
+          </p>
+          <p>
+            <strong>What you hand in:</strong> one Padlet post — this page writes it for you at the
+            bottom.
+          </p>
+          <p class="purpose-steps">Read the problem → Write your fix → Rate it → Post it</p>
+        </div>
+
         <div class="workspace-grid">
           <aside class="scenario-card">
             <div class="scenario-label">Scenario page reference</div>
@@ -2797,108 +2816,51 @@ Students still read the original text, identify the central claim, select their 
           </aside>
 
           <div class="work-card">
+            <div class="given-card">
+              <p class="given-title">Decided for you — you do not have to write these</p>
+              <ul>
+                <li><strong>Barrier to remove:</strong> Dense text and close-reading load</li>
+                <li>
+                  <strong>Thinking students must still do:</strong> Students must identify the
+                  claim, select evidence, and explain the connection.
+                </li>
+                <li>
+                  <strong>Do not:</strong> Do not replace the article or name the evidence for
+                  students.
+                </li>
+              </ul>
+            </div>
+
             <ol class="steps">
               <li>
                 <div class="step-head">
                   <span>1</span>
-                  <h3>Name the access barrier</h3>
+                  <h3>Write your fix</h3>
                 </div>
-                <p class="hint">What issue are you fixing without lowering the task?</p>
+                <p class="hint">
+                  One box. What support would you actually hand students? Tap the starter and edit
+                  it — you never have to begin from blank.
+                </p>
+                <div class="action-row">
+                  <button class="btn secondary" type="button" data-starter="2">
+                    Insert starter idea
+                  </button>
+                </div>
                 <textarea
-                  id="g2-barrier"
-                  data-field="barrier"
+                  class="tall"
+                  id="g2-before"
+                  data-field="before"
                   data-group="2"
-                  placeholder="Example: Dense text and close-reading load"
+                  placeholder="Chunk headings, vocabulary support, margin questions, and evidence-finding frames that require students to return to the original text."
                 ></textarea>
               </li>
 
               <li>
                 <div class="step-head">
                   <span>2</span>
-                  <h3>Protect the student thinking</h3>
+                  <h3>Rate it, then post</h3>
                 </div>
-                <p class="hint">What must students still do on their own?</p>
-                <textarea
-                  id="g2-thinking"
-                  data-field="thinking"
-                  data-group="2"
-                  placeholder="Example: Students must identify the claim, select evidence, and explain the connection."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>3</span>
-                  <h3>Draft the fix before Gemini</h3>
-                </div>
-                <p class="hint">
-                  Write the scaffold you would try first. Do not use AI to complete the student
-                  task.
-                </p>
-                <textarea
-                  class="tall"
-                  id="g2-before"
-                  data-field="before"
-                  data-group="2"
-                  placeholder="Possible direction: Chunk headings, vocabulary support, margin questions, and evidence-finding frames that require students to return to the original text."
-                ></textarea>
-              </li>
-
-              <li class="gemini-step">
-                <div class="step-head">
-                  <span>4</span>
-                  <h3>Use Gemini as a coach</h3>
-                </div>
-                <p class="hint">
-                  Copy the coach prompt, open Gemini, paste it, then revise your scaffold based on
-                  useful feedback.
-                </p>
-                <div class="action-row">
-                  <button class="btn primary" type="button" data-copy-prompt="2">
-                    Copy Gemini coach prompt
-                  </button>
-                  <a
-                    class="btn gemini"
-                    href="https://gemini.google.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >Open Gemini ↗</a
-                  >
-                </div>
-                <details>
-                  <summary>Preview the Gemini coach prompt</summary>
-                  <textarea class="prompt-preview" id="g2-prompt" readonly></textarea>
-                </details>
-                <textarea
-                  id="g2-feedback"
-                  data-field="feedback"
-                  data-group="2"
-                  placeholder="Paste 1–2 useful Gemini suggestions here."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>5</span>
-                  <h3>Final after-Gemini version</h3>
-                </div>
-                <p class="hint">
-                  Revise the scaffold only if the learning target and student thinking stay intact.
-                </p>
-                <textarea
-                  class="tall"
-                  id="g2-after"
-                  data-field="after"
-                  data-group="2"
-                  placeholder="After Gemini: Type the final redesigned support."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>6</span>
-                  <h3>Prove rigor stayed intact</h3>
-                </div>
+                <p class="hint">Two quick answers and your Padlet post below writes itself.</p>
                 <div class="prove-row">
                   <label
                     >OSAMR level
@@ -2912,12 +2874,12 @@ Students still read the original text, identify the central claim, select their 
                     </select>
                   </label>
                   <label
-                    >Rigor evidence
+                    >Finish this sentence: students still have to…
                     <textarea
                       id="g2-evidence"
                       data-field="evidence"
                       data-group="2"
-                      placeholder="Students still..."
+                      placeholder="Students still have to..."
                     ></textarea>
                   </label>
                 </div>
@@ -2934,8 +2896,7 @@ Students still read the original text, identify the central claim, select their 
             </div>
             <div class="label-pills">
               <span>Group 2 — ELA Evidence</span>
-              <span>Before/After Fix</span>
-              <span>Tested in Gemini</span>
+              <span>Fix-It</span>
             </div>
           </div>
           <textarea id="g2-post" class="post-output" readonly></textarea>
@@ -2978,6 +2939,18 @@ Students still read the original text, identify the central claim, select their 
           </div>
         </div>
 
+        <div class="purpose-bar">
+          <p>
+            <strong>What you are doing:</strong> fixing the AI support below so it removes the
+            barrier without doing the students' thinking.
+          </p>
+          <p>
+            <strong>What you hand in:</strong> one Padlet post — this page writes it for you at the
+            bottom.
+          </p>
+          <p class="purpose-steps">Read the problem → Write your fix → Rate it → Post it</p>
+        </div>
+
         <div class="workspace-grid">
           <aside class="scenario-card">
             <div class="scenario-label">Scenario page reference</div>
@@ -3012,108 +2985,51 @@ Students still read the original text, identify the central claim, select their 
           </aside>
 
           <div class="work-card">
+            <div class="given-card">
+              <p class="given-title">Decided for you — you do not have to write these</p>
+              <ul>
+                <li>
+                  <strong>Barrier to remove:</strong> Directions and academic language for a diagram
+                  task
+                </li>
+                <li>
+                  <strong>Thinking students must still do:</strong> Students must identify processes
+                  and label the model.
+                </li>
+                <li><strong>Do not:</strong> Do not show a completed labeled water-cycle model.</li>
+              </ul>
+            </div>
+
             <ol class="steps">
               <li>
                 <div class="step-head">
                   <span>1</span>
-                  <h3>Name the access barrier</h3>
+                  <h3>Write your fix</h3>
                 </div>
-                <p class="hint">What issue are you fixing without lowering the task?</p>
+                <p class="hint">
+                  One box. What support would you actually hand students? Tap the starter and edit
+                  it — you never have to begin from blank.
+                </p>
+                <div class="action-row">
+                  <button class="btn secondary" type="button" data-starter="3">
+                    Insert starter idea
+                  </button>
+                </div>
                 <textarea
-                  id="g3-barrier"
-                  data-field="barrier"
+                  class="tall"
+                  id="g3-before"
+                  data-field="before"
                   data-group="3"
-                  placeholder="Example: Directions and academic language for a diagram task"
+                  placeholder="Translated directions, a word bank, unlabeled arrows, and guiding questions that help students decide which process belongs where."
                 ></textarea>
               </li>
 
               <li>
                 <div class="step-head">
                   <span>2</span>
-                  <h3>Protect the student thinking</h3>
+                  <h3>Rate it, then post</h3>
                 </div>
-                <p class="hint">What must students still do on their own?</p>
-                <textarea
-                  id="g3-thinking"
-                  data-field="thinking"
-                  data-group="3"
-                  placeholder="Example: Students must identify processes and label the model."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>3</span>
-                  <h3>Draft the fix before Gemini</h3>
-                </div>
-                <p class="hint">
-                  Write the scaffold you would try first. Do not use AI to complete the student
-                  task.
-                </p>
-                <textarea
-                  class="tall"
-                  id="g3-before"
-                  data-field="before"
-                  data-group="3"
-                  placeholder="Possible direction: Translated directions, a word bank, unlabeled arrows, and guiding questions that help students decide which process belongs where."
-                ></textarea>
-              </li>
-
-              <li class="gemini-step">
-                <div class="step-head">
-                  <span>4</span>
-                  <h3>Use Gemini as a coach</h3>
-                </div>
-                <p class="hint">
-                  Copy the coach prompt, open Gemini, paste it, then revise your scaffold based on
-                  useful feedback.
-                </p>
-                <div class="action-row">
-                  <button class="btn primary" type="button" data-copy-prompt="3">
-                    Copy Gemini coach prompt
-                  </button>
-                  <a
-                    class="btn gemini"
-                    href="https://gemini.google.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >Open Gemini ↗</a
-                  >
-                </div>
-                <details>
-                  <summary>Preview the Gemini coach prompt</summary>
-                  <textarea class="prompt-preview" id="g3-prompt" readonly></textarea>
-                </details>
-                <textarea
-                  id="g3-feedback"
-                  data-field="feedback"
-                  data-group="3"
-                  placeholder="Paste 1–2 useful Gemini suggestions here."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>5</span>
-                  <h3>Final after-Gemini version</h3>
-                </div>
-                <p class="hint">
-                  Revise the scaffold only if the learning target and student thinking stay intact.
-                </p>
-                <textarea
-                  class="tall"
-                  id="g3-after"
-                  data-field="after"
-                  data-group="3"
-                  placeholder="After Gemini: Type the final redesigned support."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>6</span>
-                  <h3>Prove rigor stayed intact</h3>
-                </div>
+                <p class="hint">Two quick answers and your Padlet post below writes itself.</p>
                 <div class="prove-row">
                   <label
                     >OSAMR level
@@ -3127,12 +3043,12 @@ Students still read the original text, identify the central claim, select their 
                     </select>
                   </label>
                   <label
-                    >Rigor evidence
+                    >Finish this sentence: students still have to…
                     <textarea
                       id="g3-evidence"
                       data-field="evidence"
                       data-group="3"
-                      placeholder="Students still..."
+                      placeholder="Students still have to..."
                     ></textarea>
                   </label>
                 </div>
@@ -3149,8 +3065,7 @@ Students still read the original text, identify the central claim, select their 
             </div>
             <div class="label-pills">
               <span>Group 3 — Science Model</span>
-              <span>Before/After Fix</span>
-              <span>Tested in Gemini</span>
+              <span>Fix-It</span>
             </div>
           </div>
           <textarea id="g3-post" class="post-output" readonly></textarea>
@@ -3195,6 +3110,18 @@ Students still read the original text, identify the central claim, select their 
           </div>
         </div>
 
+        <div class="purpose-bar">
+          <p>
+            <strong>What you are doing:</strong> fixing the AI support below so it removes the
+            barrier without doing the students' thinking.
+          </p>
+          <p>
+            <strong>What you hand in:</strong> one Padlet post — this page writes it for you at the
+            bottom.
+          </p>
+          <p class="purpose-steps">Read the problem → Write your fix → Rate it → Post it</p>
+        </div>
+
         <div class="workspace-grid">
           <aside class="scenario-card">
             <div class="scenario-label">Scenario page reference</div>
@@ -3229,108 +3156,52 @@ Students still read the original text, identify the central claim, select their 
           </aside>
 
           <div class="work-card">
+            <div class="given-card">
+              <p class="given-title">Decided for you — you do not have to write these</p>
+              <ul>
+                <li>
+                  <strong>Barrier to remove:</strong> Writing structure for an argument response
+                </li>
+                <li>
+                  <strong>Thinking students must still do:</strong> Students must make the judgment,
+                  choose reasons, and interpret sources.
+                </li>
+                <li>
+                  <strong>Do not:</strong> Do not give the claim position or source-based reasons.
+                </li>
+              </ul>
+            </div>
+
             <ol class="steps">
               <li>
                 <div class="step-head">
                   <span>1</span>
-                  <h3>Name the access barrier</h3>
+                  <h3>Write your fix</h3>
                 </div>
-                <p class="hint">What issue are you fixing without lowering the task?</p>
+                <p class="hint">
+                  One box. What support would you actually hand students? Tap the starter and edit
+                  it — you never have to begin from blank.
+                </p>
+                <div class="action-row">
+                  <button class="btn secondary" type="button" data-starter="4">
+                    Insert starter idea
+                  </button>
+                </div>
                 <textarea
-                  id="g4-barrier"
-                  data-field="barrier"
+                  class="tall"
+                  id="g4-before"
+                  data-field="before"
                   data-group="4"
-                  placeholder="Example: Writing structure for an argument response"
+                  placeholder="Neutral sentence frames, source-analysis prompts, and a claim-planning organizer with blank spaces for students’ own evidence and reasoning."
                 ></textarea>
               </li>
 
               <li>
                 <div class="step-head">
                   <span>2</span>
-                  <h3>Protect the student thinking</h3>
+                  <h3>Rate it, then post</h3>
                 </div>
-                <p class="hint">What must students still do on their own?</p>
-                <textarea
-                  id="g4-thinking"
-                  data-field="thinking"
-                  data-group="4"
-                  placeholder="Example: Students must make the judgment, choose reasons, and interpret sources."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>3</span>
-                  <h3>Draft the fix before Gemini</h3>
-                </div>
-                <p class="hint">
-                  Write the scaffold you would try first. Do not use AI to complete the student
-                  task.
-                </p>
-                <textarea
-                  class="tall"
-                  id="g4-before"
-                  data-field="before"
-                  data-group="4"
-                  placeholder="Possible direction: Neutral sentence frames, source-analysis prompts, and a claim-planning organizer with blank spaces for students’ own evidence and reasoning."
-                ></textarea>
-              </li>
-
-              <li class="gemini-step">
-                <div class="step-head">
-                  <span>4</span>
-                  <h3>Use Gemini as a coach</h3>
-                </div>
-                <p class="hint">
-                  Copy the coach prompt, open Gemini, paste it, then revise your scaffold based on
-                  useful feedback.
-                </p>
-                <div class="action-row">
-                  <button class="btn primary" type="button" data-copy-prompt="4">
-                    Copy Gemini coach prompt
-                  </button>
-                  <a
-                    class="btn gemini"
-                    href="https://gemini.google.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >Open Gemini ↗</a
-                  >
-                </div>
-                <details>
-                  <summary>Preview the Gemini coach prompt</summary>
-                  <textarea class="prompt-preview" id="g4-prompt" readonly></textarea>
-                </details>
-                <textarea
-                  id="g4-feedback"
-                  data-field="feedback"
-                  data-group="4"
-                  placeholder="Paste 1–2 useful Gemini suggestions here."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>5</span>
-                  <h3>Final after-Gemini version</h3>
-                </div>
-                <p class="hint">
-                  Revise the scaffold only if the learning target and student thinking stay intact.
-                </p>
-                <textarea
-                  class="tall"
-                  id="g4-after"
-                  data-field="after"
-                  data-group="4"
-                  placeholder="After Gemini: Type the final redesigned support."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>6</span>
-                  <h3>Prove rigor stayed intact</h3>
-                </div>
+                <p class="hint">Two quick answers and your Padlet post below writes itself.</p>
                 <div class="prove-row">
                   <label
                     >OSAMR level
@@ -3344,12 +3215,12 @@ Students still read the original text, identify the central claim, select their 
                     </select>
                   </label>
                   <label
-                    >Rigor evidence
+                    >Finish this sentence: students still have to…
                     <textarea
                       id="g4-evidence"
                       data-field="evidence"
                       data-group="4"
-                      placeholder="Students still..."
+                      placeholder="Students still have to..."
                     ></textarea>
                   </label>
                 </div>
@@ -3366,8 +3237,7 @@ Students still read the original text, identify the central claim, select their 
             </div>
             <div class="label-pills">
               <span>Group 4 — Social Studies Claim</span>
-              <span>Before/After Fix</span>
-              <span>Tested in Gemini</span>
+              <span>Fix-It</span>
             </div>
           </div>
           <textarea id="g4-post" class="post-output" readonly></textarea>
@@ -3410,6 +3280,18 @@ Students still read the original text, identify the central claim, select their 
           </div>
         </div>
 
+        <div class="purpose-bar">
+          <p>
+            <strong>What you are doing:</strong> fixing the AI support below so it removes the
+            barrier without doing the students' thinking.
+          </p>
+          <p>
+            <strong>What you hand in:</strong> one Padlet post — this page writes it for you at the
+            bottom.
+          </p>
+          <p class="purpose-steps">Read the problem → Write your fix → Rate it → Post it</p>
+        </div>
+
         <div class="workspace-grid">
           <aside class="scenario-card">
             <div class="scenario-label">Scenario page reference</div>
@@ -3444,108 +3326,54 @@ Students still read the original text, identify the central claim, select their 
           </aside>
 
           <div class="work-card">
+            <div class="given-card">
+              <p class="given-title">Decided for you — you do not have to write these</p>
+              <ul>
+                <li>
+                  <strong>Barrier to remove:</strong> Complex directions for comparing
+                  representations
+                </li>
+                <li>
+                  <strong>Thinking students must still do:</strong> Students must compare both
+                  representations and explain the relationship.
+                </li>
+                <li>
+                  <strong>Do not:</strong> Do not reduce the task to noticing only one
+                  representation.
+                </li>
+              </ul>
+            </div>
+
             <ol class="steps">
               <li>
                 <div class="step-head">
                   <span>1</span>
-                  <h3>Name the access barrier</h3>
+                  <h3>Write your fix</h3>
                 </div>
-                <p class="hint">What issue are you fixing without lowering the task?</p>
+                <p class="hint">
+                  One box. What support would you actually hand students? Tap the starter and edit
+                  it — you never have to begin from blank.
+                </p>
+                <div class="action-row">
+                  <button class="btn secondary" type="button" data-starter="5">
+                    Insert starter idea
+                  </button>
+                </div>
                 <textarea
-                  id="g5-barrier"
-                  data-field="barrier"
+                  class="tall"
+                  id="g5-before"
+                  data-field="before"
                   data-group="5"
-                  placeholder="Example: Complex directions for comparing representations"
+                  placeholder="Simple directions, bilingual vocabulary, visual cues for table/graph, and sentence frames that still require comparison."
                 ></textarea>
               </li>
 
               <li>
                 <div class="step-head">
                   <span>2</span>
-                  <h3>Protect the student thinking</h3>
+                  <h3>Rate it, then post</h3>
                 </div>
-                <p class="hint">What must students still do on their own?</p>
-                <textarea
-                  id="g5-thinking"
-                  data-field="thinking"
-                  data-group="5"
-                  placeholder="Example: Students must compare both representations and explain the relationship."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>3</span>
-                  <h3>Draft the fix before Gemini</h3>
-                </div>
-                <p class="hint">
-                  Write the scaffold you would try first. Do not use AI to complete the student
-                  task.
-                </p>
-                <textarea
-                  class="tall"
-                  id="g5-before"
-                  data-field="before"
-                  data-group="5"
-                  placeholder="Possible direction: Simple directions, bilingual vocabulary, visual cues for table/graph, and sentence frames that still require comparison."
-                ></textarea>
-              </li>
-
-              <li class="gemini-step">
-                <div class="step-head">
-                  <span>4</span>
-                  <h3>Use Gemini as a coach</h3>
-                </div>
-                <p class="hint">
-                  Copy the coach prompt, open Gemini, paste it, then revise your scaffold based on
-                  useful feedback.
-                </p>
-                <div class="action-row">
-                  <button class="btn primary" type="button" data-copy-prompt="5">
-                    Copy Gemini coach prompt
-                  </button>
-                  <a
-                    class="btn gemini"
-                    href="https://gemini.google.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >Open Gemini ↗</a
-                  >
-                </div>
-                <details>
-                  <summary>Preview the Gemini coach prompt</summary>
-                  <textarea class="prompt-preview" id="g5-prompt" readonly></textarea>
-                </details>
-                <textarea
-                  id="g5-feedback"
-                  data-field="feedback"
-                  data-group="5"
-                  placeholder="Paste 1–2 useful Gemini suggestions here."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>5</span>
-                  <h3>Final after-Gemini version</h3>
-                </div>
-                <p class="hint">
-                  Revise the scaffold only if the learning target and student thinking stay intact.
-                </p>
-                <textarea
-                  class="tall"
-                  id="g5-after"
-                  data-field="after"
-                  data-group="5"
-                  placeholder="After Gemini: Type the final redesigned support."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>6</span>
-                  <h3>Prove rigor stayed intact</h3>
-                </div>
+                <p class="hint">Two quick answers and your Padlet post below writes itself.</p>
                 <div class="prove-row">
                   <label
                     >OSAMR level
@@ -3559,12 +3387,12 @@ Students still read the original text, identify the central claim, select their 
                     </select>
                   </label>
                   <label
-                    >Rigor evidence
+                    >Finish this sentence: students still have to…
                     <textarea
                       id="g5-evidence"
                       data-field="evidence"
                       data-group="5"
-                      placeholder="Students still..."
+                      placeholder="Students still have to..."
                     ></textarea>
                   </label>
                 </div>
@@ -3581,8 +3409,7 @@ Students still read the original text, identify the central claim, select their 
             </div>
             <div class="label-pills">
               <span>Group 5 — MLL Language Access</span>
-              <span>Before/After Fix</span>
-              <span>Tested in Gemini</span>
+              <span>Fix-It</span>
             </div>
           </div>
           <textarea id="g5-post" class="post-output" readonly></textarea>
@@ -3625,6 +3452,18 @@ Students still read the original text, identify the central claim, select their 
           </div>
         </div>
 
+        <div class="purpose-bar">
+          <p>
+            <strong>What you are doing:</strong> fixing the AI support below so it removes the
+            barrier without doing the students' thinking.
+          </p>
+          <p>
+            <strong>What you hand in:</strong> one Padlet post — this page writes it for you at the
+            bottom.
+          </p>
+          <p class="purpose-steps">Read the problem → Write your fix → Rate it → Post it</p>
+        </div>
+
         <div class="workspace-grid">
           <aside class="scenario-card">
             <div class="scenario-label">Scenario page reference</div>
@@ -3658,108 +3497,53 @@ Students still read the original text, identify the central claim, select their 
           </aside>
 
           <div class="work-card">
+            <div class="given-card">
+              <p class="given-title">Decided for you — you do not have to write these</p>
+              <ul>
+                <li>
+                  <strong>Barrier to remove:</strong> Multi-step planning for a constructed response
+                </li>
+                <li>
+                  <strong>Thinking students must still do:</strong> Students must choose evidence
+                  and explain how it supports the response.
+                </li>
+                <li>
+                  <strong>Do not:</strong> Do not fill in the topic sentence, evidence, or
+                  explanation for students.
+                </li>
+              </ul>
+            </div>
+
             <ol class="steps">
               <li>
                 <div class="step-head">
                   <span>1</span>
-                  <h3>Name the access barrier</h3>
+                  <h3>Write your fix</h3>
                 </div>
-                <p class="hint">What issue are you fixing without lowering the task?</p>
+                <p class="hint">
+                  One box. What support would you actually hand students? Tap the starter and edit
+                  it — you never have to begin from blank.
+                </p>
+                <div class="action-row">
+                  <button class="btn secondary" type="button" data-starter="6">
+                    Insert starter idea
+                  </button>
+                </div>
                 <textarea
-                  id="g6-barrier"
-                  data-field="barrier"
+                  class="tall"
+                  id="g6-before"
+                  data-field="before"
                   data-group="6"
-                  placeholder="Example: Multi-step planning for a constructed response"
+                  placeholder="A blank organizer, step-by-step checklist, question prompts, and sentence frames that guide planning without pre-filling the response."
                 ></textarea>
               </li>
 
               <li>
                 <div class="step-head">
                   <span>2</span>
-                  <h3>Protect the student thinking</h3>
+                  <h3>Rate it, then post</h3>
                 </div>
-                <p class="hint">What must students still do on their own?</p>
-                <textarea
-                  id="g6-thinking"
-                  data-field="thinking"
-                  data-group="6"
-                  placeholder="Example: Students must choose evidence and explain how it supports the response."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>3</span>
-                  <h3>Draft the fix before Gemini</h3>
-                </div>
-                <p class="hint">
-                  Write the scaffold you would try first. Do not use AI to complete the student
-                  task.
-                </p>
-                <textarea
-                  class="tall"
-                  id="g6-before"
-                  data-field="before"
-                  data-group="6"
-                  placeholder="Possible direction: A blank organizer, step-by-step checklist, question prompts, and sentence frames that guide planning without pre-filling the response."
-                ></textarea>
-              </li>
-
-              <li class="gemini-step">
-                <div class="step-head">
-                  <span>4</span>
-                  <h3>Use Gemini as a coach</h3>
-                </div>
-                <p class="hint">
-                  Copy the coach prompt, open Gemini, paste it, then revise your scaffold based on
-                  useful feedback.
-                </p>
-                <div class="action-row">
-                  <button class="btn primary" type="button" data-copy-prompt="6">
-                    Copy Gemini coach prompt
-                  </button>
-                  <a
-                    class="btn gemini"
-                    href="https://gemini.google.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >Open Gemini ↗</a
-                  >
-                </div>
-                <details>
-                  <summary>Preview the Gemini coach prompt</summary>
-                  <textarea class="prompt-preview" id="g6-prompt" readonly></textarea>
-                </details>
-                <textarea
-                  id="g6-feedback"
-                  data-field="feedback"
-                  data-group="6"
-                  placeholder="Paste 1–2 useful Gemini suggestions here."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>5</span>
-                  <h3>Final after-Gemini version</h3>
-                </div>
-                <p class="hint">
-                  Revise the scaffold only if the learning target and student thinking stay intact.
-                </p>
-                <textarea
-                  class="tall"
-                  id="g6-after"
-                  data-field="after"
-                  data-group="6"
-                  placeholder="After Gemini: Type the final redesigned support."
-                ></textarea>
-              </li>
-
-              <li>
-                <div class="step-head">
-                  <span>6</span>
-                  <h3>Prove rigor stayed intact</h3>
-                </div>
+                <p class="hint">Two quick answers and your Padlet post below writes itself.</p>
                 <div class="prove-row">
                   <label
                     >OSAMR level
@@ -3773,12 +3557,12 @@ Students still read the original text, identify the central claim, select their 
                     </select>
                   </label>
                   <label
-                    >Rigor evidence
+                    >Finish this sentence: students still have to…
                     <textarea
                       id="g6-evidence"
                       data-field="evidence"
                       data-group="6"
-                      placeholder="Students still..."
+                      placeholder="Students still have to..."
                     ></textarea>
                   </label>
                 </div>
@@ -3795,8 +3579,7 @@ Students still read the original text, identify the central claim, select their 
             </div>
             <div class="label-pills">
               <span>Group 6 — Executive Function</span>
-              <span>Before/After Fix</span>
-              <span>Tested in Gemini</span>
+              <span>Fix-It</span>
             </div>
           </div>
           <textarea id="g6-post" class="post-output" readonly></textarea>
@@ -3825,8 +3608,7 @@ Students still read the original text, identify the central claim, select their 
             <p class="kicker">Padlet Post Builder</p>
             <h2>Copy your final fix into Padlet.</h2>
             <p class="subline">
-              Use the after-Gemini version, OSAMR rating, evidence sentence, and suggested Padlet
-              labels.
+              Use your fix, OSAMR rating, evidence sentence, and suggested Padlet labels.
             </p>
           </div>
           <div class="action-row top-actions">
@@ -3869,8 +3651,7 @@ Students still read the original text, identify the central claim, select their 
               <span>Group 4 — Social Studies Claim</span>
               <span>Group 5 — MLL Language Access</span>
               <span>Group 6 — Executive Function</span>
-              <span>Before/After Fix</span>
-              <span>Tested in Gemini</span>
+              <span>Fix-It</span>
               <span>Rigor Preserved</span>
               <span>Needs Feedback</span>
               <span>Ready to Try</span>
@@ -4130,14 +3911,7 @@ Students still read the original text, identify the central claim, select their 
       }
 
       /* Which fields count as "complete" for each numbered step. */
-      const STEP_FIELDS = [
-        ["barrier"],
-        ["thinking"],
-        ["before"],
-        ["feedback"],
-        ["after"],
-        ["osamr", "evidence"],
-      ];
+      const STEP_FIELDS = [["before"], ["osamr", "evidence"]];
       const TOTAL_STEPS = STEP_FIELDS.length;
 
       function stepDone(groupId, index) {
@@ -4207,11 +3981,7 @@ Students still read the original text, identify the central claim, select their 
           badge.classList.toggle("complete", done === TOTAL_STEPS);
           badge.classList.toggle("empty", done === 0);
           badge.textContent =
-            done === 0
-              ? "Not started"
-              : done === TOTAL_STEPS
-                ? "All 6 steps done"
-                : `${done} of ${TOTAL_STEPS} steps`;
+            done === 0 ? "Not started" : done === TOTAL_STEPS ? "Finished" : "In progress";
         }
       }
 
@@ -4234,11 +4004,12 @@ Students still read the original text, identify the central claim, select their 
       }
 
       /* Pre-post readiness self-check (the three core-test confirmations). */
-      const READY_CHECKS = ["barrier", "thinking", "target"];
+      /* One confirmation, not three. The three-part core test is stated in the
+         label so the thinking still happens — it just costs one tap. */
+      const READY_CHECKS = ["coretest"];
       const CHECK_LABELS = {
-        barrier: "Barrier removed",
-        thinking: "Thinking preserved",
-        target: "Target unchanged",
+        coretest:
+          "Our fix removes the barrier, students still do the thinking, and the learning target is unchanged.",
       };
 
       function checkKey(groupId, name) {
@@ -4256,7 +4027,7 @@ Students still read the original text, identify the central claim, select their 
           block.className = "ready-check-group";
           block.dataset.group = group.id;
           block.innerHTML = `
-            <p class="rc-title">Before you post — confirm your fix passes the core test:</p>
+            <p class="rc-title">Last check before you post:</p>
             <div class="rc-options">
               ${READY_CHECKS.map(
                 (name) => `
@@ -4280,8 +4051,8 @@ Students still read the original text, identify the central claim, select their 
         const status = $(".rc-status", block);
         if (status) {
           status.textContent = passed
-            ? "✓ Passes the core test — ready to share."
-            : `${checked.length} of ${READY_CHECKS.length} confirmed.`;
+            ? "✓ Passes the core test — ready to post."
+            : "Tick the box once your group agrees.";
         }
       }
 
@@ -4302,6 +4073,173 @@ Students still read the original text, identify the central claim, select their 
         });
         GROUPS.forEach((group) => refreshReadyChecks(group.id));
       }
+
+      /* ---------------------------------------------------------------
+         Guided wizard: one screen at a time.
+
+         The group page holds everything a group needs, which is exactly why
+         it read as overwhelming — scenario, framework, three inputs and a
+         post builder all landed at once. Nothing is removed here; the same
+         nodes are re-parented into five panes with Back/Next, so a group
+         only ever sees the one thing they are doing right now.
+
+         Built from the existing DOM rather than authored five times over:
+         one source of truth per group, and the no-JS page still shows the
+         whole thing in order.
+      --------------------------------------------------------------- */
+      /* Each step says its number, its name, and — in one plain sentence —
+         exactly what to do. Nothing else competes for attention. */
+      const WIZ_STEPS = [
+        {
+          title: "Read the problem",
+          todo: "Read the scenario and the AI request that caused it. Nothing to type — tap the button when your group has read it.",
+          next: "I read it — go to step 2 →",
+        },
+        {
+          title: "Write your fix",
+          todo: "Write the support you would actually hand students. Tap “Insert starter idea”, then change it to fit your fix.",
+          next: "Done writing — go to step 3 →",
+        },
+        {
+          title: "Rate your fix",
+          todo: "Pick the OSAMR level that matches your fix, then finish the one sentence.",
+          next: "Done rating — go to step 4 →",
+        },
+        {
+          title: "Post it to Padlet",
+          todo: "Your post is already written below. Tick the box, tap “Copy gallery post”, then open Padlet and paste.",
+          next: "",
+        },
+      ];
+      const wizPane = {};
+
+      function buildWizards() {
+        GROUPS.forEach((group) => {
+          const page = document.getElementById(`group-${group.id}`);
+          if (!page || $(".wiz", page)) return;
+          const grid = $(".workspace-grid", page);
+          const items = $$(".steps > li", page);
+          const post = $(".post-card", page);
+          if (!grid || items.length !== 2 || !post) return;
+
+          const wiz = document.createElement("div");
+          wiz.className = "wiz";
+          wiz.dataset.group = group.id;
+          wiz.innerHTML = `
+            <ol class="wiz-dots" aria-label="Steps">
+              ${WIZ_STEPS.map(
+                (step, i) =>
+                  `<li><button type="button" class="wiz-dot" data-wiz-go="${i}" data-group="${group.id}"><span>${i + 1}</span>${step.title}</button></li>`,
+              ).join("")}
+            </ol>
+            <div class="wiz-panes"></div>`;
+          grid.parentNode.insertBefore(wiz, grid);
+          const panes = $(".wiz-panes", wiz);
+
+          const makePane = (index, nodes) => {
+            const step = WIZ_STEPS[index];
+            const pane = document.createElement("section");
+            pane.className = "wiz-pane";
+            pane.dataset.pane = index;
+            pane.setAttribute("aria-label", `Step ${index + 1}: ${step.title}`);
+            pane.tabIndex = -1;
+            const head = document.createElement("div");
+            head.className = "wiz-head";
+            head.innerHTML = `
+              <p class="wiz-of">Step ${index + 1} of ${WIZ_STEPS.length}</p>
+              <h3 class="wiz-title">${step.title}</h3>
+              <p class="wiz-todo">${step.todo}</p>`;
+            pane.appendChild(head);
+            nodes.forEach((node) => node && pane.appendChild(node));
+            const nav = document.createElement("div");
+            nav.className = "wiz-nav";
+            nav.innerHTML = `
+              ${index > 0 ? `<button type="button" class="btn secondary" data-wiz-back="${index}" data-group="${group.id}">← Back to step ${index}</button>` : "<span></span>"}
+              ${step.next ? `<button type="button" class="btn primary" data-wiz-next="${index}" data-group="${group.id}">${step.next}</button>` : `<a class="btn secondary" href="#menu" data-open-page="menu">Back to group menu</a>`}`;
+            pane.appendChild(nav);
+            panes.appendChild(pane);
+          };
+
+          /* The moved work steps carry their own number badge, title and hint —
+             all three now duplicate the pane header, so they come off. One
+             instruction per screen is the whole point of the wizard. */
+          items.forEach((li) => {
+            const head = $(".step-head", li);
+            if (head) head.remove();
+            const hint = $(".hint", li);
+            if (hint) hint.remove();
+          });
+
+          /* The OSAMR key is only used to answer step 3, so it rides along to
+             step 3 instead of padding out the reading step. */
+          const osamrKey = $(".osamr-strip", page);
+
+          makePane(0, [$(".scenario-card", page), $(".given-card", page)]);
+          makePane(1, [items[0]]);
+          makePane(2, [items[1], osamrKey]);
+          makePane(3, [post]);
+
+          grid.remove();
+          // The old 3-of-3 field bar would contradict the 4 wizard steps, so
+          // the bar goes and its reset button moves up beside the dots.
+          const oldBar = $(".group-progress", page);
+          const reset = oldBar && $(".gp-reset", oldBar);
+          if (reset) $(".wiz-dots", wiz).parentNode.insertBefore(reset, $(".wiz-panes", wiz));
+          if (oldBar) oldBar.remove();
+          page.classList.add("wiz-on");
+          showWizPane(group.id, 0);
+        });
+      }
+
+      function showWizPane(groupId, index) {
+        const wiz = $(`.wiz[data-group="${groupId}"]`);
+        if (!wiz) return;
+        const max = WIZ_STEPS.length - 1;
+        const target = Math.min(Math.max(index, 0), max);
+        wizPane[groupId] = target;
+        $$(".wiz-pane", wiz).forEach((pane) => {
+          const on = Number(pane.dataset.pane) === target;
+          pane.classList.toggle("on", on);
+          pane.hidden = !on;
+        });
+        $$(".wiz-dot", wiz).forEach((dot) => {
+          const i = Number(dot.dataset.wizGo);
+          dot.classList.toggle("current", i === target);
+          dot.classList.toggle("past", i < target);
+          dot.setAttribute("aria-current", i === target ? "step" : "false");
+        });
+      }
+
+      function moveWizPane(groupId, index, focus = true) {
+        showWizPane(groupId, index);
+        const pane = $(`.wiz[data-group="${groupId}"] .wiz-pane.on`);
+        if (!pane) return;
+        /* Measured, never assumed: the header re-wraps at narrow widths, and a
+           hardcoded offset parks the step title underneath it. */
+        const headerH =
+          Number.parseInt(
+            getComputedStyle(document.documentElement).getPropertyValue("--top-h"),
+            10,
+          ) || 140;
+        const top = pane.getBoundingClientRect().top + window.scrollY - headerH - 24;
+        window.scrollTo({ top: Math.max(top, 0), behavior: "auto" });
+        if (focus) pane.focus({ preventScroll: true });
+      }
+
+      document.addEventListener("click", (event) => {
+        const next = event.target.closest("[data-wiz-next]");
+        if (next) {
+          moveWizPane(next.dataset.group, Number(next.dataset.wizNext) + 1);
+          return;
+        }
+        const back = event.target.closest("[data-wiz-back]");
+        if (back) {
+          moveWizPane(back.dataset.group, Number(back.dataset.wizBack) - 1);
+          return;
+        }
+        const go = event.target.closest("[data-wiz-go]");
+        if (go) moveWizPane(go.dataset.group, Number(go.dataset.wizGo));
+      });
 
       function resetGroup(groupId) {
         const group = groupById(groupId);
@@ -4406,65 +4344,15 @@ Students still read the original text, identify the central claim, select their 
         window.scrollTo({ top: 0, behavior: "auto" });
       }
 
-      function promptFor(groupId) {
-        const group = groupById(groupId);
-        const barrier = getValue(groupId, "barrier") || group.barrier;
-        const thinking = getValue(groupId, "thinking") || group.thinking;
-        const before =
-          getValue(groupId, "before") ||
-          "[Paste your first redesigned support or teacher prompt here]";
-
-        return `You are an OSAMR coach for teachers using AI to design accessible, rigorous instruction.
-
-Your job is to coach the teacher's prompt or scaffold — not to complete the student task.
-
-Use this rule as the anchor:
-Barrier removed. Thinking preserved. Learning target unchanged.
-
-Review the teacher's draft through OSAMR:
-- Substitution: AI replaces a basic tool, but the task is mostly unchanged.
-- Augmentation: AI improves access or efficiency while the same learning task remains.
-- Modification: AI helps redesign the task structure while students still do the target thinking.
-- Redefinition: AI enables a meaningfully new learning move that was not practical before.
-- Overreliance: AI gives students the answer, claim, evidence, reasoning, model, explanation, or completed product.
-
-Teacher context:
-Scenario:
-${group.scenario}
-
-Original AI request that caused concern:
-"${group.ai_input}"
-
-Access barrier the teacher is trying to remove:
-${barrier}
-
-Student thinking that must stay with students:
-${thinking}
-
-Teacher's current draft prompt/scaffold:
-${before}
-
-Coach my draft. Do not rewrite it as a final student-facing product yet.
-
-Please return:
-1. OSAMR diagnosis: Which level is the current draft closest to, and why?
-2. Overreliance check: Where might AI still be doing the student thinking?
-3. Revision moves: 3 concrete ways to improve the teacher prompt/scaffold so access increases while the learning target stays intact.
-4. Stronger prompt: A revised teacher-facing prompt I can paste back into Gemini. It should ask Gemini to build out the support I requested, but it must include guardrails that prevent Gemini from giving away answers, evidence, reasoning, labels, claims, explanations, or completed organizers.
-5. Quick rigor check: Finish this sentence — "Students still have to..."
-
-Keep the response practical, concise, and ready for a teacher to use.`;
-      }
-
       function postFor(groupId) {
         const group = groupById(groupId);
-        const barrier = getValue(groupId, "barrier") || "[Name the access barrier]";
-        const thinking = getValue(groupId, "thinking") || "[Name the student thinking to protect]";
-        const before = getValue(groupId, "before") || "[Before-Gemini scaffold]";
-        const feedback = getValue(groupId, "feedback") || "[Useful Gemini feedback]";
-        const after = getValue(groupId, "after") || "[Final after-Gemini scaffold]";
+        /* Barrier and thinking are given to the group on the page, so the post
+           uses them directly instead of asking anyone to retype them. */
+        const barrier = getValue(groupId, "barrier") || group.barrier;
+        const thinking = getValue(groupId, "thinking") || group.thinking;
+        const fix = getValue(groupId, "before") || "[Step 2: your fix]";
         const osamr = getValue(groupId, "osamr") || "[OSAMR level]";
-        const evidence = getValue(groupId, "evidence") || "[Students still...]";
+        const evidence = getValue(groupId, "evidence") || "[Students still have to...]";
 
         const osamrLabel = osamr.includes("Overreliance")
           ? "OSAMR: Overreliance Check"
@@ -4484,14 +4372,8 @@ ${barrier}
 Student thinking we protected:
 ${thinking}
 
-Before Gemini:
-${before}
-
-Gemini feedback we used:
-${feedback}
-
-Final after-Gemini fix:
-${after}
+Our fix:
+${fix}
 
 OSAMR rating:
 ${osamr}
@@ -4500,13 +4382,11 @@ Rigor evidence:
 ${evidence}
 
 Suggested Padlet labels:
-Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor Preserved; ${osamrLabel}`;
+Group ${group.id} — ${group.short}; Fix-It; Rigor Preserved; ${osamrLabel}`;
       }
 
       function updateGroup(groupId) {
-        const prompt = $(`#g${groupId}-prompt`);
         const post = $(`#g${groupId}-post`);
-        if (prompt) prompt.value = promptFor(groupId);
         if (post) post.value = postFor(groupId);
       }
 
@@ -4560,15 +4440,7 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
           .replaceAll("'", "&#039;");
       }
 
-      const ANSWER_FIELDS = [
-        "barrier",
-        "thinking",
-        "before",
-        "feedback",
-        "after",
-        "osamr",
-        "evidence",
-      ];
+      const ANSWER_FIELDS = ["before", "osamr", "evidence"];
 
       function groupHasWork(groupId) {
         return ANSWER_FIELDS.some((field) => getValue(groupId, field).trim());
@@ -4587,8 +4459,8 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
       }
 
       /* Only export groups that actually have work. Exporting all six meant a
-         group's own record was buried in five blocks of "[Before-Gemini
-         scaffold]" placeholders. */
+         group's own record was buried in five blocks of
+         "[Step 2: your fix]" placeholders. */
       function downloadResponses() {
         flushRender();
         flushSave();
@@ -4712,21 +4584,6 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
         showRestoreBanner(payload);
       }
 
-      /* Gemini is blocked on plenty of district staff accounts. The clipboard
-         still holds the coach prompt, so say where else it can go. */
-      function buildToolNotes() {
-        $$("[data-copy-prompt]").forEach((button) => {
-          const row = button.closest(".action-row");
-          if (!row || !row.parentNode) return;
-          if (row.parentNode.querySelector(".tool-note")) return;
-          const note = document.createElement("p");
-          note.className = "tool-note";
-          note.innerHTML =
-            "<strong>If Gemini is blocked on your account:</strong> the prompt is already on your clipboard \u2014 paste it into whichever AI tool your district has approved. The coach prompt works the same anywhere.";
-          row.parentNode.insertBefore(note, row.nextSibling);
-        });
-      }
-
       function buildGroupActions() {
         GROUPS.forEach((group) => {
           const page = document.getElementById(`group-${group.id}`);
@@ -4806,22 +4663,22 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
           return;
         }
 
-        const copyElButton = event.target.closest("[data-copy-el]");
-        if (copyElButton) {
-          flushRender();
-          const source = $(copyElButton.dataset.copyEl);
-          const copied = source ? await copyText(source.value) : false;
-          showToast(copied ? "Coach prompt copied" : "Prompt ready to copy");
-          if (copied) flashCopied(copyElButton);
-          return;
-        }
-
-        const promptButton = event.target.closest("[data-copy-prompt]");
-        if (promptButton) {
-          const groupId = promptButton.dataset.copyPrompt;
-          const copied = await copyText(promptFor(groupId));
-          showToast(copied ? "Gemini coach prompt copied" : "Prompt ready to copy");
-          if (copied) flashCopied(promptButton);
+        /* One tap fills the draft box with this group's starter idea, so nobody
+           has to face a blank textarea. It never overwrites real work. */
+        const starterButton = event.target.closest("[data-starter]");
+        if (starterButton) {
+          const groupId = starterButton.dataset.starter;
+          const group = groupById(groupId);
+          const box = $(`#g${groupId}-before`);
+          if (group && box) {
+            if (box.value.trim() && !window.confirm("Replace what you have written?")) return;
+            box.value = group.starter_fix;
+            setValue(groupId, "before", box.value);
+            updateGroup(groupId);
+            refreshProgress(groupId);
+            box.focus();
+            showToast("Starter idea added — edit it to make it yours");
+          }
           return;
         }
 
@@ -4922,8 +4779,8 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
       buildProgressHeaders();
       buildMenuBadges();
       buildReadyChecks();
+      buildWizards();
       hydrateReadyChecks();
-      buildToolNotes();
       buildGroupActions();
       buildPadletQr();
       GROUPS.forEach((group) => refreshProgress(group.id));
@@ -4996,45 +4853,6 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
       openPage(location.hash.replace("#", "") || "launch", false);
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
-    <script>
-      // Add a plain "What's happening" explanation under every step head
-      // (the model walkthrough and all six group pages share these step titles).
-      (function () {
-        const WHY = {
-          "Name the access barrier":
-            "We name the one thing making the task hard to reach — like dense text or tough vocabulary — without changing what the task asks students to do.",
-          "Protect the student thinking":
-            "We list the thinking students must still do themselves, so any support we add never does that work for them.",
-          "Draft the fix before Gemini":
-            "We write our own first version of the support before asking AI, so the idea starts with the teacher — not the tool.",
-          "Use Gemini as a coach":
-            "We ask Gemini to critique and improve our draft — strengths, risks, one revision — not to do the student task or hand over the answer.",
-          "Final after-Gemini version":
-            "We keep only the feedback that protects the learning target and student thinking, then finalize the support.",
-          "Prove rigor stayed intact":
-            "We check our work — rate it on OSAMR and point to evidence that students are still doing the real thinking.",
-        };
-        function addExplanations() {
-          document.querySelectorAll(".step-head").forEach((head) => {
-            const h = head.querySelector("h3");
-            if (!h) return;
-            const why = WHY[h.textContent.trim()];
-            if (!why) return;
-            const li = head.closest("li");
-            if (!li || li.querySelector(".step-why")) return;
-            const p = document.createElement("p");
-            p.className = "step-why";
-            p.innerHTML = "<strong>What's happening:</strong> " + why;
-            head.insertAdjacentElement("afterend", p);
-          });
-        }
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", addExplanations);
-        } else {
-          addExplanations();
-        }
-      })();
-    </script>
     <script>
       // A11y: announce that external links open in a new tab.
       document.querySelectorAll('a[target="_blank"]').forEach(function (a) {
