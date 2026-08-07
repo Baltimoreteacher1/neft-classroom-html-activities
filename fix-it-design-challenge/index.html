@@ -33,7 +33,11 @@
         box-sizing: border-box;
       }
       html {
-        scroll-behavior: smooth;
+        /* NOT smooth. Every tab click also calls scrollTo, so the two animated
+           together: scrollY glided 1280 -> 334 -> 86 -> 5 -> 0 over ~600ms
+           while the page content swapped instantly underneath it. An instant
+           jump is what makes switching pages feel solid rather than floaty. */
+        scroll-behavior: auto;
         min-height: 100%;
       }
       body {
@@ -445,16 +449,25 @@
         gap: 18px;
         align-items: start;
       }
+      /* NO INNER SCROLLER, EVER.
+         This card used to be `sticky` + `max-height` + `overflow-y:auto`. That
+         is the conventional tall-sidebar pattern, and on this page it was the
+         single biggest cause of "wonky" scrolling: the browser latches a wheel
+         gesture to the innermost scroller under the cursor, so six identical
+         wheel ticks moved the page 800px over the sidebar and 1200px over the
+         form. Scroll speed depended on where the mouse happened to be.
+
+         Instead the card is sticky ONLY when it genuinely fits in the space
+         beside the form (.fits, set by measureBrief() from real measurements).
+         When it does not fit it is a normal block that scrolls away with the
+         page. Either way there is exactly ONE scroller on the page, so the
+         wheel always does the same thing everywhere. */
       .scenario-card {
         padding: 20px;
+      }
+      .scenario-card.fits {
         position: sticky;
-        /* Offsets track the REAL header box. Hardcoded 150px/170px assumed a
-           header that only exists near 1440px wide; at every other width the
-           card tucked underneath the bar and gained a needless inner
-           scrollbar. */
         top: calc(var(--top-h) + 14px);
-        max-height: calc(100vh - var(--top-h) - 34px);
-        overflow-y: auto;
       }
       .scenario-label {
         font-size: 12px;
@@ -951,12 +964,14 @@
         padding: 12px;
         margin: 0;
       }
+      /* Same rule as .scenario-card above: sticky only when it fits, never an
+         inner scroller. */
       .side-note {
         padding: 20px;
+      }
+      .side-note.fits {
         position: sticky;
         top: calc(var(--top-h) + 14px);
-        max-height: calc(100vh - var(--top-h) - 34px);
-        overflow-y: auto;
       }
       .side-note p {
         color: var(--muted);
@@ -1157,14 +1172,11 @@
         .prompt-compare {
           grid-template-columns: 1fr;
         }
-        /* Un-sticking alone left the height cap and inner scrollbar in place,
-           so on a tablet the brief became a short box you had to scroll
-           INSIDE while the page scrolled around it. Release all three. */
-        .scenario-card,
-        .side-note {
+        /* Single column below this width, so nothing can be sticky — the
+           `.fits` class must lose to this rule. */
+        .scenario-card.fits,
+        .side-note.fits {
           position: static;
-          max-height: none;
-          overflow: visible;
         }
         .brand {
           align-items: flex-start;
@@ -4388,10 +4400,10 @@ Students still read the original text, identify the central claim, select their 
           if (panel) panel.focus({ preventScroll: true });
         }
 
-        window.scrollTo({
-          top: 0,
-          behavior: prefersReducedMotion.matches ? "auto" : "smooth",
-        });
+        // Instant, always. Switching pages is a jump-cut, not a journey: the
+        // panel's content has already been swapped, so animating the scroll
+        // just slides unrelated content past the reader for ~600ms.
+        window.scrollTo({ top: 0, behavior: "auto" });
       }
 
       function promptFor(groupId) {
@@ -4945,6 +4957,41 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
       document.fonts?.ready.then(measureHeader);
       setTimeout(measureHeader, 1200);
       measureHeader();
+
+      /* A sidebar is sticky ONLY if it fits in the space beside the form.
+         The alternative — capping its height and giving it overflow-y:auto —
+         creates a second scroller, and the browser latches the wheel to
+         whichever scroller is under the cursor. That made scroll speed depend
+         on mouse position, which is what "wonky" meant here. A card that does
+         not fit simply scrolls away with the page, which costs a little
+         convenience and buys a page where the wheel always does one thing. */
+      function measureBrief() {
+        const available =
+          window.innerHeight -
+          parseInt(
+            getComputedStyle(document.documentElement).getPropertyValue("--top-h") || "0",
+            10,
+          ) -
+          34;
+        for (const card of document.querySelectorAll(".scenario-card, .side-note")) {
+          // Measure the natural height with the class off, so the test does not
+          // read back a height the class itself produced.
+          card.classList.remove("fits");
+          const natural = card.getBoundingClientRect().height;
+          card.classList.toggle("fits", natural <= available);
+        }
+      }
+      window.addEventListener("resize", measureBrief);
+      window.addEventListener("load", measureBrief);
+      document.fonts?.ready.then(measureBrief);
+      setTimeout(measureBrief, 1300);
+      // Page switches reveal different sidebars, so re-test after each one.
+      document.addEventListener("click", (event) => {
+        if (event.target.closest("[data-open-page], .tab-btn[data-page]")) {
+          setTimeout(measureBrief, 60);
+        }
+      });
+      measureBrief();
 
       openPage(location.hash.replace("#", "") || "launch", false);
     </script>

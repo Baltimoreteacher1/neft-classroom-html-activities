@@ -22,7 +22,9 @@
     }
 
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth;min-height:100%}
+    /* NOT smooth: openPage() also scrolls, so the two animated together and
+       slid unrelated content past the reader for ~600ms on every tab click. */
+    html{scroll-behavior:auto;min-height:100%}
     body{
       margin:0; font-family:var(--font); color:var(--ink);
       background:
@@ -119,19 +121,19 @@
     .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:900;color:var(--teal)!important;margin:0 0 3px!important}
     .group-card .text-link{margin-top:10px;display:inline-block}
 
-    .risk-badge{display:inline-block;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:900;letter-spacing:.05em;margin-top:10px}
-    .risk-badge.low{background:rgba(36,124,127,.12);color:#1c6164}
-    .risk-badge.medium{background:rgba(224,169,60,.2);color:#8a6412}
-    .risk-badge.high{background:rgba(201,104,74,.16);color:#8a3d2a}
 
     .workspace-grid{display:grid;grid-template-columns:380px minmax(0,1fr);gap:18px;align-items:start}
-    .scenario-card{
-      padding:20px; position:sticky; top:calc(var(--top-h) + 14px);
-      max-height:calc(100vh - var(--top-h) - 34px); overflow-y:auto;
-    }
+    /* NO INNER SCROLLER, EVER. sticky + max-height + overflow-y:auto is the
+       conventional tall-sidebar pattern and it is what made scrolling feel
+       wonky: the browser latches a wheel gesture to the innermost scroller
+       under the cursor, so the page moved at a different speed over the brief
+       than over the form. Sticky only when the card genuinely fits (.fits is
+       set by measureBrief from real measurements); otherwise it scrolls away
+       with the page. Either way the page has exactly ONE scroller. */
+    .scenario-card{padding:20px}
+    .scenario-card.fits{position:sticky;top:calc(var(--top-h) + 14px)}
     .scenario-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
     .scenario-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:900;color:var(--teal)}
-    .scenario-head .risk-badge{margin-top:0}
     .scenario-card p{font-size:15px;color:#2f4050;line-height:1.5;margin:0}
     .mini-stack{display:grid;gap:8px;margin-top:14px}
     .mini-stack div{border-radius:14px;background:rgba(220,232,223,.5);padding:11px 12px;color:#243645;line-height:1.42;border:1px solid rgba(36,124,127,.1);font-size:14px}
@@ -207,7 +209,8 @@
     .gallery-item pre{white-space:pre-wrap;font-family:var(--font);font-size:14px;line-height:1.42;color:#2c3b49;background:#f8fbf9;border-radius:14px;padding:12px;margin:0}
     .gallery-item .status{font-size:12px;font-weight:900;color:var(--muted);margin:0 0 8px}
     .gallery-item .status.done{color:var(--teal)}
-    .side-note{padding:20px;position:sticky;top:calc(var(--top-h) + 14px);max-height:calc(100vh - var(--top-h) - 34px);overflow-y:auto}
+    .side-note{padding:20px}
+    .side-note.fits{position:sticky;top:calc(var(--top-h) + 14px)}
     .side-note p{color:var(--muted);line-height:1.45;margin:0 0 12px}
     .label-bank{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
 
@@ -233,9 +236,8 @@
 
     @media(max-width:1040px){
       .cards,.model-grid,.group-menu,.workspace-grid,.gallery-grid,.protocol-grid,.osamr-mini-grid{grid-template-columns:1fr}
-      /* A sticky brief above a tall form traps the participant in a nested
-         scroller on tablets, so it becomes a normal block that scrolls away. */
-      .scenario-card,.side-note{position:static;max-height:none;overflow:visible}
+      /* Single column here, so nothing may be sticky — .fits must lose. */
+      .scenario-card.fits,.side-note.fits{position:static}
       .brand{align-items:flex-start;flex-direction:column}
       .rule{justify-content:flex-start}
       .post-head{display:block}
@@ -438,7 +440,6 @@
         <aside class="scenario-card">
           <div class="scenario-head">
             <div class="scenario-label">Case brief</div>
-            <span class="risk-badge low">LOW RISK</span>
           </div>
           <h3>1. Case story</h3>
           <p>Sixth-grade students decide whether a table shows a proportional relationship. Several multilingual learners understand the math, but the directions are dense and the word “ratio” is unfamiliar. The teacher uses AI to rewrite the directions in plain language and add a short vocabulary note. Students still calculate ratios, decide whether they are equal, and explain their answer.</p>
@@ -573,7 +574,6 @@
             <p class="eyebrow">Group 1 · K–2</p>
             <h3>Story Structure</h3>
             <p>Students cannot read directions independently.</p>
-            <span class="risk-badge low">LOW RISK</span>
             <a class="text-link" href="#group-1" data-open-page="group-1">Open case room →</a>
           </div>
         </article>
@@ -584,7 +584,6 @@
             <p class="eyebrow">Group 2 · 3–5 Math</p>
             <h3>Multi-Step Problem Entry</h3>
             <p>Students struggle to start and organize information.</p>
-            <span class="risk-badge low">LOW / MEDIUM RISK</span>
             <a class="text-link" href="#group-2" data-open-page="group-2">Open case room →</a>
           </div>
         </article>
@@ -595,7 +594,6 @@
             <p class="eyebrow">Group 3 · 3–5 ELA</p>
             <h3>Mentor Paragraph</h3>
             <p>Students need help organizing a body paragraph.</p>
-            <span class="risk-badge high">HIGH RISK</span>
             <a class="text-link" href="#group-3" data-open-page="group-3">Open case room →</a>
           </div>
         </article>
@@ -606,7 +604,6 @@
             <p class="eyebrow">Group 4 · 6–8 Science</p>
             <h3>Tiered Reading</h3>
             <p>Dense textbook language blocks access to the science analysis.</p>
-            <span class="risk-badge low">LOW / MEDIUM RISK</span>
             <a class="text-link" href="#group-4" data-open-page="group-4">Open case room →</a>
           </div>
         </article>
@@ -617,7 +614,6 @@
             <p class="eyebrow">Group 5 · 6–8 Math</p>
             <h3>AI Feedback on Work</h3>
             <p>Students may need feedback or a way to check reasoning.</p>
-            <span class="risk-badge high">HIGH RISK</span>
             <a class="text-link" href="#group-5" data-open-page="group-5">Open case room →</a>
           </div>
         </article>
@@ -628,7 +624,6 @@
             <p class="eyebrow">Group 6 · 9–12 Science</p>
             <h3>Data Summarized for CER</h3>
             <p>The full dataset may be too large or dense to analyze efficiently.</p>
-            <span class="risk-badge high">HIGH RISK</span>
             <a class="text-link" href="#group-6" data-open-page="group-6">Open case room →</a>
           </div>
         </article>
@@ -639,7 +634,6 @@
             <p class="eyebrow">Group 7 · 9–12 History/SS</p>
             <h3>Primary Source Access</h3>
             <p>19th-century language blocks access to the original source.</p>
-            <span class="risk-badge medium">MEDIUM RISK</span>
             <a class="text-link" href="#group-7" data-open-page="group-7">Open case room →</a>
           </div>
         </article>
@@ -663,7 +657,6 @@
         <aside class="scenario-card">
           <div class="scenario-head">
             <div class="scenario-label">Case brief</div>
-            <span class="risk-badge low">LOW RISK</span>
           </div>
           <h3>1. Case story</h3>
           <p>A kindergarten teacher introduces story structure. Students listen to a read-aloud and retell the beginning, middle, and end. Several students cannot read directions yet, so AI creates a three-panel direction card with simple icons and one-word labels. Students still listen, sequence events, and retell verbally to a partner.</p>
@@ -801,7 +794,6 @@
         <aside class="scenario-card">
           <div class="scenario-head">
             <div class="scenario-label">Case brief</div>
-            <span class="risk-badge low">LOW / MEDIUM RISK</span>
           </div>
           <h3>1. Case story</h3>
           <p>A fourth-grade math teacher teaches multi-digit multiplication with: “A school orders 24 boxes of crayons. Each box has 16 crayons. How many crayons are there in all?” Several students with IEPs struggle to know where to start. AI creates a problem-entry scaffold and sentence frame. Students set up and solve independently.</p>
@@ -939,7 +931,6 @@
         <aside class="scenario-card">
           <div class="scenario-head">
             <div class="scenario-label">Case brief</div>
-            <span class="risk-badge high">HIGH RISK</span>
           </div>
           <h3>1. Case story</h3>
           <p>A fifth-grade ELA teacher teaches students to cite textual evidence for a claim about a character’s motivation. Several students struggle to write a body paragraph. AI generates a mentor paragraph for each student. Students write a similar paragraph, but most copy the structure and change only a few words.</p>
@@ -1077,7 +1068,6 @@
         <aside class="scenario-card">
           <div class="scenario-head">
             <div class="scenario-label">Case brief</div>
-            <span class="risk-badge low">LOW / MEDIUM RISK</span>
           </div>
           <h3>1. Case story</h3>
           <p>A seventh-grade science teacher teaches force and motion. Students answer analysis questions about Newton’s Second Law, but many multilingual learners struggle with dense textbook language. AI creates reading supports: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. All students answer the same analysis questions.</p>
@@ -1215,7 +1205,6 @@
         <aside class="scenario-card">
           <div class="scenario-head">
             <div class="scenario-label">Case brief</div>
-            <span class="risk-badge high">HIGH RISK</span>
           </div>
           <h3>1. Case story</h3>
           <p>A sixth-grade math teacher teaches proportional relationships. Students practice deciding whether tables are proportional. During independent practice, AI gives correct answers, explains the constant ratio, and identifies the unit rate. Students use AI feedback to mark their work correct or incorrect.</p>
@@ -1353,7 +1342,6 @@
         <aside class="scenario-card">
           <div class="scenario-head">
             <div class="scenario-label">Case brief</div>
-            <span class="risk-badge high">HIGH RISK</span>
           </div>
           <h3>1. Case story</h3>
           <p>Students analyze a local air-quality dataset to write a claim-evidence-reasoning paragraph. The teacher uses AI to summarize the dataset into three key findings. Students use those AI findings as evidence. They write their own claim and reasoning, but they do not examine the full dataset or choose evidence themselves.</p>
@@ -1491,7 +1479,6 @@
         <aside class="scenario-card">
           <div class="scenario-head">
             <div class="scenario-label">Case brief</div>
-            <span class="risk-badge medium">MEDIUM RISK</span>
           </div>
           <h3>1. Case story</h3>
           <p>A tenth-grade World History teacher teaches students to analyze a primary source for bias, perspective, and historical context. Some students struggle with 19th-century language and reading demands. AI creates plain-language footnotes, background questions, and a blank SOAPS organizer. Students still read the original source and complete the analysis independently.</p>
@@ -1654,11 +1641,11 @@
   <script>
     document.documentElement.classList.add("js");
 
-    const CASES = [{"id":1,"title":"Story Structure","short":"Story Structure","band":"K–2","meta":"K–2 ELA · Reading-directions barrier · AI made a picture direction card","risk":"LOW RISK","riskClass":"low","story":"A kindergarten teacher introduces story structure. Students listen to a read-aloud and retell the beginning, middle, and end. Several students cannot read directions yet, so AI creates a three-panel direction card with simple icons and one-word labels. Students still listen, sequence events, and retell verbally to a partner.","ai_input":"Create a three-panel direction card with simple icons and one-word labels: beginning, middle, end. Do not retell the story or sequence events for students.","barrier_clue":"Students cannot read directions independently.","thinking_clue":"Students still listen, sequence events, and retell beginning/middle/end.","target":"Sequence and retell the beginning, middle, and end of a story."},{"id":2,"title":"Multi-Step Problem Entry","short":"Multi-Step Problem Entry","band":"3–5 Math","meta":"Grade 4 Math · Getting-started barrier · AI built an entry scaffold","risk":"LOW / MEDIUM RISK","riskClass":"low","story":"A fourth-grade math teacher teaches multi-digit multiplication with: “A school orders 24 boxes of crayons. Each box has 16 crayons. How many crayons are there in all?” Several students with IEPs struggle to know where to start. AI creates a problem-entry scaffold and sentence frame. Students set up and solve independently.","ai_input":"Create a three-step entry scaffold: circle the numbers, underline the question, and draw a quick sketch. Add this frame: “I need to find ___ because ___.” Do not name the operation or solve.","barrier_clue":"Students struggle to start and organize information.","thinking_clue":"Students still choose a strategy, set up the problem, compute, and explain.","target":"Choose an operation, set up the problem, solve, and explain the reasoning."},{"id":3,"title":"Mentor Paragraph","short":"Mentor Paragraph","band":"3–5 ELA","meta":"Grade 5 ELA · Writing-structure barrier · AI wrote the paragraph","risk":"HIGH RISK","riskClass":"high","story":"A fifth-grade ELA teacher teaches students to cite textual evidence for a claim about a character’s motivation. Several students struggle to write a body paragraph. AI generates a mentor paragraph for each student. Students write a similar paragraph, but most copy the structure and change only a few words.","ai_input":"Write a mentor paragraph about the character’s motivation with a claim, evidence, and reasoning.","barrier_clue":"Students need help organizing a body paragraph.","thinking_clue":"AI weakens target thinking by giving too much of the analysis.","target":"Make a claim about motivation, choose textual evidence, and explain the reasoning."},{"id":4,"title":"Tiered Reading","short":"Tiered Reading","band":"6–8 Science","meta":"Grade 7 Science · Dense-text barrier · AI made three access versions","risk":"LOW / MEDIUM RISK","riskClass":"low","story":"A seventh-grade science teacher teaches force and motion. Students answer analysis questions about Newton’s Second Law, but many multilingual learners struggle with dense textbook language. AI creates reading supports: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. All students answer the same analysis questions.","ai_input":"Make three access versions: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. Keep the same three analysis questions for everyone. Do not answer them.","barrier_clue":"Dense textbook language blocks access to the science analysis.","thinking_clue":"All students still answer the same analysis questions.","target":"Analyze Newton’s Second Law and answer the same three analysis questions."},{"id":5,"title":"AI Feedback on Work","short":"AI Feedback on Work","band":"6–8 Math","meta":"Grade 6 Math · Feedback barrier · AI gave answers and unit rates","risk":"HIGH RISK","riskClass":"high","story":"A sixth-grade math teacher teaches proportional relationships. Students practice deciding whether tables are proportional. During independent practice, AI gives correct answers, explains the constant ratio, and identifies the unit rate. Students use AI feedback to mark their work correct or incorrect.","ai_input":"Check each student’s proportional relationship work. Give the correct answer, constant ratio, unit rate, and whether the student is correct.","barrier_clue":"Students may need feedback or a way to check reasoning.","thinking_clue":"AI performs the target thinking by giving the answer, ratio, and unit rate.","target":"Decide whether a table is proportional and justify it using the constant ratio."},{"id":6,"title":"Data Summarized for CER","short":"Data Summarized for CER","band":"9–12 Science","meta":"Grade 9–12 Science · Large-dataset barrier · AI chose the evidence","risk":"HIGH RISK","riskClass":"high","story":"Students analyze a local air-quality dataset to write a claim-evidence-reasoning paragraph. The teacher uses AI to summarize the dataset into three key findings. Students use those AI findings as evidence. They write their own claim and reasoning, but they do not examine the full dataset or choose evidence themselves.","ai_input":"Summarize this local air-quality dataset into three key findings students can use as evidence in CER paragraphs.","barrier_clue":"The full dataset may be too large or dense to analyze efficiently.","thinking_clue":"AI removes too much target thinking by choosing the evidence.","target":"Analyze data, select evidence, and write a claim with supporting reasoning."},{"id":7,"title":"Primary Source Access","short":"Primary Source Access","band":"9–12 History/SS","meta":"Grade 10 World History · Archaic-language barrier · AI added footnotes","risk":"MEDIUM RISK","riskClass":"medium","story":"A tenth-grade World History teacher teaches students to analyze a primary source for bias, perspective, and historical context. Some students struggle with 19th-century language and reading demands. AI creates plain-language footnotes, background questions, and a blank SOAPS organizer. Students still read the original source and complete the analysis independently.","ai_input":"Add plain-language footnotes for difficult phrases, background questions, and a blank SOAPS organizer. Do not answer or analyze the source for students.","barrier_clue":"19th-century language blocks access to the original source.","thinking_clue":"Students still read the original and analyze bias, perspective, and context.","target":"Analyze a primary source for bias, perspective, and historical context."}];
+    const CASES = [{"id":1,"title":"Story Structure","short":"Story Structure","band":"K–2","meta":"K–2 ELA · Reading-directions barrier · AI made a picture direction card","story":"A kindergarten teacher introduces story structure. Students listen to a read-aloud and retell the beginning, middle, and end. Several students cannot read directions yet, so AI creates a three-panel direction card with simple icons and one-word labels. Students still listen, sequence events, and retell verbally to a partner.","ai_input":"Create a three-panel direction card with simple icons and one-word labels: beginning, middle, end. Do not retell the story or sequence events for students.","barrier_clue":"Students cannot read directions independently.","thinking_clue":"Students still listen, sequence events, and retell beginning/middle/end.","target":"Sequence and retell the beginning, middle, and end of a story."},{"id":2,"title":"Multi-Step Problem Entry","short":"Multi-Step Problem Entry","band":"3–5 Math","meta":"Grade 4 Math · Getting-started barrier · AI built an entry scaffold","story":"A fourth-grade math teacher teaches multi-digit multiplication with: “A school orders 24 boxes of crayons. Each box has 16 crayons. How many crayons are there in all?” Several students with IEPs struggle to know where to start. AI creates a problem-entry scaffold and sentence frame. Students set up and solve independently.","ai_input":"Create a three-step entry scaffold: circle the numbers, underline the question, and draw a quick sketch. Add this frame: “I need to find ___ because ___.” Do not name the operation or solve.","barrier_clue":"Students struggle to start and organize information.","thinking_clue":"Students still choose a strategy, set up the problem, compute, and explain.","target":"Choose an operation, set up the problem, solve, and explain the reasoning."},{"id":3,"title":"Mentor Paragraph","short":"Mentor Paragraph","band":"3–5 ELA","meta":"Grade 5 ELA · Writing-structure barrier · AI wrote the paragraph","story":"A fifth-grade ELA teacher teaches students to cite textual evidence for a claim about a character’s motivation. Several students struggle to write a body paragraph. AI generates a mentor paragraph for each student. Students write a similar paragraph, but most copy the structure and change only a few words.","ai_input":"Write a mentor paragraph about the character’s motivation with a claim, evidence, and reasoning.","barrier_clue":"Students need help organizing a body paragraph.","thinking_clue":"AI weakens target thinking by giving too much of the analysis.","target":"Make a claim about motivation, choose textual evidence, and explain the reasoning."},{"id":4,"title":"Tiered Reading","short":"Tiered Reading","band":"6–8 Science","meta":"Grade 7 Science · Dense-text barrier · AI made three access versions","story":"A seventh-grade science teacher teaches force and motion. Students answer analysis questions about Newton’s Second Law, but many multilingual learners struggle with dense textbook language. AI creates reading supports: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. All students answer the same analysis questions.","ai_input":"Make three access versions: WIDA 2 summary, WIDA 3–4 notes, and WIDA 5 support. Keep the same three analysis questions for everyone. Do not answer them.","barrier_clue":"Dense textbook language blocks access to the science analysis.","thinking_clue":"All students still answer the same analysis questions.","target":"Analyze Newton’s Second Law and answer the same three analysis questions."},{"id":5,"title":"AI Feedback on Work","short":"AI Feedback on Work","band":"6–8 Math","meta":"Grade 6 Math · Feedback barrier · AI gave answers and unit rates","story":"A sixth-grade math teacher teaches proportional relationships. Students practice deciding whether tables are proportional. During independent practice, AI gives correct answers, explains the constant ratio, and identifies the unit rate. Students use AI feedback to mark their work correct or incorrect.","ai_input":"Check each student’s proportional relationship work. Give the correct answer, constant ratio, unit rate, and whether the student is correct.","barrier_clue":"Students may need feedback or a way to check reasoning.","thinking_clue":"AI performs the target thinking by giving the answer, ratio, and unit rate.","target":"Decide whether a table is proportional and justify it using the constant ratio."},{"id":6,"title":"Data Summarized for CER","short":"Data Summarized for CER","band":"9–12 Science","meta":"Grade 9–12 Science · Large-dataset barrier · AI chose the evidence","story":"Students analyze a local air-quality dataset to write a claim-evidence-reasoning paragraph. The teacher uses AI to summarize the dataset into three key findings. Students use those AI findings as evidence. They write their own claim and reasoning, but they do not examine the full dataset or choose evidence themselves.","ai_input":"Summarize this local air-quality dataset into three key findings students can use as evidence in CER paragraphs.","barrier_clue":"The full dataset may be too large or dense to analyze efficiently.","thinking_clue":"AI removes too much target thinking by choosing the evidence.","target":"Analyze data, select evidence, and write a claim with supporting reasoning."},{"id":7,"title":"Primary Source Access","short":"Primary Source Access","band":"9–12 History/SS","meta":"Grade 10 World History · Archaic-language barrier · AI added footnotes","story":"A tenth-grade World History teacher teaches students to analyze a primary source for bias, perspective, and historical context. Some students struggle with 19th-century language and reading demands. AI creates plain-language footnotes, background questions, and a blank SOAPS organizer. Students still read the original source and complete the analysis independently.","ai_input":"Add plain-language footnotes for difficult phrases, background questions, and a blank SOAPS organizer. Do not answer or analyze the source for students.","barrier_clue":"19th-century language blocks access to the original source.","thinking_clue":"Students still read the original and analyze bias, perspective, and context.","target":"Analyze a primary source for bias, perspective, and historical context."}];
     // The model case is data too, so its prompt/ruling boxes fill from exactly
     // the same functions the groups use — one code path, no second version of
     // the wording to drift.
-    const MODEL_CASE = {"id":"m","title":"Proportional Relationships Directions","short":"Proportional Directions","band":"6–8 Math","meta":"Grade 6 Math · Dense-directions barrier · AI rewrote directions in plain language","risk":"LOW RISK","riskClass":"low","story":"Sixth-grade students decide whether a table shows a proportional relationship. Several multilingual learners understand the math, but the directions are dense and the word “ratio” is unfamiliar. The teacher uses AI to rewrite the directions in plain language and add a short vocabulary note. Students still calculate ratios, decide whether they are equal, and explain their answer.","ai_input":"Rewrite these directions in plain language. Add one short note for “ratio.” Do not solve, name the operation, or tell students if the table is proportional.","barrier_clue":"Dense directions and unfamiliar vocabulary made it hard to start.","thinking_clue":"Students still calculate ratios, decide proportional or not, and explain why.","target":"Decide whether a table shows a proportional relationship and justify the decision.","answers":{"barrier":"Dense directions and the unfamiliar word “ratio” made it hard for multilingual learners to start a task they already understood mathematically.","thinking":"Students still calculate the ratios, decide whether they are equal, and explain how they know.","action":"AI rewrote the directions in plain language and added one short note defining “ratio.” It did not solve anything, name an operation, or say whether the table is proportional.","osamr":"A — Augment","evidence":"AI never finds the constant ratio. The rewritten directions still leave students to compute both ratios and compare them, so the mathematical decision is untouched.","redflag":"It would cross the line if AI gave the answer, told students which operation to use, or pointed out that both ratios simplify to the same thing.","fix":"Keep the plain-language directions and the vocabulary note, and add a blank ratio table students fill in themselves — never a worked example."}};
+    const MODEL_CASE = {"id":"m","title":"Proportional Relationships Directions","short":"Proportional Directions","band":"6–8 Math","meta":"Grade 6 Math · Dense-directions barrier · AI rewrote directions in plain language","story":"Sixth-grade students decide whether a table shows a proportional relationship. Several multilingual learners understand the math, but the directions are dense and the word “ratio” is unfamiliar. The teacher uses AI to rewrite the directions in plain language and add a short vocabulary note. Students still calculate ratios, decide whether they are equal, and explain their answer.","ai_input":"Rewrite these directions in plain language. Add one short note for “ratio.” Do not solve, name the operation, or tell students if the table is proportional.","barrier_clue":"Dense directions and unfamiliar vocabulary made it hard to start.","thinking_clue":"Students still calculate ratios, decide proportional or not, and explain why.","target":"Decide whether a table shows a proportional relationship and justify the decision.","answers":{"barrier":"Dense directions and the unfamiliar word “ratio” made it hard for multilingual learners to start a task they already understood mathematically.","thinking":"Students still calculate the ratios, decide whether they are equal, and explain how they know.","action":"AI rewrote the directions in plain language and added one short note defining “ratio.” It did not solve anything, name an operation, or say whether the table is proportional.","osamr":"A — Augment","evidence":"AI never finds the constant ratio. The rewritten directions still leave students to compute both ratios and compare them, so the mathematical decision is untouched.","redflag":"It would cross the line if AI gave the answer, told students which operation to use, or pointed out that both ratios simplify to the same thing.","fix":"Keep the plain-language directions and the vocabulary note, and add a blank ratio table students fill in themselves — never a worked example."}};
     const STORE = "osamr_case_clinic_v1";
     const FIELDS = ["barrier","thinking","action","osamr","evidence","redflag","fix"];
 
@@ -1741,8 +1728,11 @@
         if (on) b.scrollIntoView({ block: "nearest", inline: "nearest" });
       });
       if (page === "gallery") pollBoard();
+      setTimeout(measureBrief, 60);
       if (updateHash && location.hash !== "#" + page) history.replaceState(null, "", "#" + page);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      // Instant: the panel content already swapped, so animating the scroll
+      // only slides unrelated content past the reader.
+      window.scrollTo({ top: 0, behavior: "auto" });
     }
 
     function promptFor(g) {
@@ -2032,6 +2022,28 @@ We rated this ${v("osamr", "___")} because AI removed ${v("barrier", "___")} whi
       if (!header) return;
       document.documentElement.style.setProperty("--top-h", Math.round(header.getBoundingClientRect().height) + "px");
     }
+    /* A sidebar is sticky ONLY if it fits beside the form. Capping its height
+       and adding overflow-y:auto would make it a second scroller, and the
+       browser latches the wheel to whichever scroller is under the cursor —
+       scroll speed would depend on mouse position. A card that does not fit
+       scrolls away with the page instead. */
+    function measureBrief() {
+      const topH = parseInt(
+        getComputedStyle(document.documentElement).getPropertyValue("--top-h") || "0", 10);
+      const available = window.innerHeight - topH - 34;
+      for (const card of $$(".scenario-card, .side-note")) {
+        // Measure with the class OFF, so the test cannot read back a height
+        // the class itself produced.
+        card.classList.remove("fits");
+        card.classList.toggle("fits", card.getBoundingClientRect().height <= available);
+      }
+    }
+    window.addEventListener("resize", measureBrief);
+    window.addEventListener("load", measureBrief);
+    document.fonts?.ready.then(measureBrief);
+    setTimeout(measureBrief, 1300);
+    measureBrief();
+
     if (header && "ResizeObserver" in window) {
       // border-box, NOT the default content-box: site-wide toolbars add their
       // clearance to .top as PADDING, and a padding-only change never alters
