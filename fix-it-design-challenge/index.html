@@ -21,8 +21,12 @@
         --shadow: 0 18px 38px rgba(16, 40, 63, 0.12);
         --soft: 0 8px 20px rgba(16, 40, 63, 0.08);
         --radius: 22px;
-        --font: system-ui, -apple-system, "Segoe UI", Roboto,
-        "Helvetica Neue", Arial, sans-serif;
+        --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        /* Measured at runtime from the real header box (measureHeader below).
+           Every sticky offset, anchor scroll-margin and sidebar height cap
+           derives from it, so the layout stays correct when the header
+           re-wraps at any width. The literal is only a pre-JS fallback. */
+        --top-h: 150px;
       }
 
       * {
@@ -37,11 +41,7 @@
         font-family: var(--font);
         color: var(--ink);
         background:
-          radial-gradient(
-            circle at top left,
-            rgba(79, 182, 179, 0.16),
-            transparent 28rem
-          ),
+          radial-gradient(circle at top left, rgba(79, 182, 179, 0.16), transparent 28rem),
           linear-gradient(135deg, #f6fbfb 0%, #fff8ed 72%, #f8efe7 100%);
         min-height: 100vh;
         overflow-x: hidden;
@@ -125,19 +125,35 @@
         color: var(--navy);
       }
 
+      /* ONE horizontally-scrolling row. As a wrapping grid this bar grew the
+         sticky header to 299px at 1024 and 571px at 390 — on a phone the
+         header ate two thirds of the viewport and clipped tab labels, which
+         is what made the pages feel like they would not scroll. */
       .tabs {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(116px, 1fr));
+        display: flex;
         gap: 8px;
-        overflow: visible;
-        padding-bottom: 2px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: thin;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
+      }
+      .tabs::-webkit-scrollbar {
+        height: 6px;
+      }
+      .tabs::-webkit-scrollbar-thumb {
+        background: rgba(16, 40, 63, 0.22);
+        border-radius: 999px;
       }
       .tab-btn {
+        flex: 0 0 auto;
+        scroll-snap-align: start;
         border: 1px solid var(--line);
         background: #fff;
         color: var(--navy);
         border-radius: 14px;
-        padding: 9px 10px;
+        padding: 8px 12px;
         min-width: 0;
         text-align: left;
         cursor: pointer;
@@ -150,6 +166,7 @@
         display: block;
         font-weight: 900;
         font-size: 13px;
+        white-space: nowrap;
       }
       .tab-btn small {
         display: block;
@@ -181,7 +198,10 @@
       }
       .page {
         display: block;
-        scroll-margin-top: 230px;
+        /* Derived from the measured header (see measureHeader below). The old
+           hardcoded 230px matched no actual header height at any width, so
+           anchor jumps landed either short or behind the sticky bar. */
+        scroll-margin-top: calc(var(--top-h) + 12px);
         animation: rise 0.18s ease both;
         padding-bottom: 48px;
       }
@@ -428,10 +448,12 @@
       .scenario-card {
         padding: 20px;
         position: sticky;
-        top: 150px;
-        /* Cap to the viewport so a tall left card can scroll internally
-           instead of having its bottom pinned below the fold. */
-        max-height: calc(100vh - 170px);
+        /* Offsets track the REAL header box. Hardcoded 150px/170px assumed a
+           header that only exists near 1440px wide; at every other width the
+           card tucked underneath the bar and gained a needless inner
+           scrollbar. */
+        top: calc(var(--top-h) + 14px);
+        max-height: calc(100vh - var(--top-h) - 34px);
         overflow-y: auto;
       }
       .scenario-label {
@@ -645,11 +667,7 @@
         border-color: var(--teal);
       }
       .gemini-step {
-        background: linear-gradient(
-          135deg,
-          rgba(220, 232, 223, 0.32),
-          rgba(255, 248, 237, 0.55)
-        );
+        background: linear-gradient(135deg, rgba(220, 232, 223, 0.32), rgba(255, 248, 237, 0.55));
       }
       details {
         margin: 10px 0;
@@ -816,11 +834,7 @@
         border-bottom: 0;
       }
       .model-step.gemini-step {
-        background: linear-gradient(
-          135deg,
-          rgba(220, 232, 223, 0.32),
-          rgba(255, 248, 237, 0.55)
-        );
+        background: linear-gradient(135deg, rgba(220, 232, 223, 0.32), rgba(255, 248, 237, 0.55));
       }
       .model-step-head {
         display: flex;
@@ -940,8 +954,8 @@
       .side-note {
         padding: 20px;
         position: sticky;
-        top: 150px;
-        max-height: calc(100vh - 170px);
+        top: calc(var(--top-h) + 14px);
+        max-height: calc(100vh - var(--top-h) - 34px);
         overflow-y: auto;
       }
       .side-note p {
@@ -1143,9 +1157,14 @@
         .prompt-compare {
           grid-template-columns: 1fr;
         }
+        /* Un-sticking alone left the height cap and inner scrollbar in place,
+           so on a tablet the brief became a short box you had to scroll
+           INSIDE while the page scrolled around it. Release all three. */
         .scenario-card,
         .side-note {
           position: static;
+          max-height: none;
+          overflow: visible;
         }
         .brand {
           align-items: flex-start;
@@ -1179,14 +1198,11 @@
           align-items: flex-start;
           flex-direction: column;
         }
-        .tabs {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-        .tab-btn {
-          min-width: 0;
-        }
-        .group-tab {
-          min-width: 0;
+        /* The motto chips wrap to three rows on a phone and cost ~60px of
+           sticky header for text the Start page already carries. The live
+           save-state pill stays. */
+        .rule .chip:not(.save-pill) {
+          display: none;
         }
         .osamr-mini-grid {
           grid-template-columns: 1fr;
@@ -1314,11 +1330,7 @@
         transition: background 0.2s ease;
       }
       .steps li.done {
-        background: linear-gradient(
-          90deg,
-          rgba(79, 182, 179, 0.08),
-          transparent 60%
-        );
+        background: linear-gradient(90deg, rgba(79, 182, 179, 0.08), transparent 60%);
       }
       .steps li.done .step-head span {
         background: var(--teal);
@@ -1702,12 +1714,7 @@
       @media (prefers-reduced-motion: no-preference) {
         .group-progress.complete .gp-fill {
           background-size: 200% 100%;
-          background-image: linear-gradient(
-            100deg,
-            var(--gold),
-            #f8dd9a 45%,
-            var(--gold) 70%
-          );
+          background-image: linear-gradient(100deg, var(--gold), #f8dd9a 45%, var(--gold) 70%);
           animation: sweep 2.4s linear infinite;
         }
       }
@@ -1878,16 +1885,15 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
 
-  
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (fix-it-design-challenge): supports Level 4 conditions on T2, T3, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
     <script>
       /* Opt out of the shared GameFX mission brief using the kit's own
          once-per-session key, so the dialog is never built rather than built
@@ -1966,8 +1972,7 @@
               role="status"
               aria-live="polite"
               title="Your work saves automatically in this browser"
-              ><span class="dot"></span
-              ><span class="save-text">Saved</span></span
+              ><span class="dot"></span><span class="save-text">Saved</span></span
             >
             <span class="chip">Barrier removed</span>
             <span class="chip">Thinking preserved</span>
@@ -2097,10 +2102,7 @@
         <div class="hero">
           <p class="kicker">Fix-It Design Challenge</p>
           <h2>Fix the scaffold without lowering the thinking.</h2>
-          <p>
-            Walk through the model below, then choose your group to apply it
-            yourself.
-          </p>
+          <p>Walk through the model below, then choose your group to apply it yourself.</p>
         </div>
 
         <!-- Step 2: Your task -->
@@ -2109,9 +2111,9 @@
           <div>
             <h3>Your task today</h3>
             <p>
-              You will diagnose a problematic AI request, redesign the scaffold
-              so it supports students without doing the thinking for them, test
-              your fix in Gemini, and post a before/after comparison to Padlet.
+              You will diagnose a problematic AI request, redesign the scaffold so it supports
+              students without doing the thinking for them, test your fix in Gemini, and post a
+              before/after comparison to Padlet.
             </p>
             <div class="core-test-bar">
               <span>Barrier removed</span>
@@ -2127,8 +2129,8 @@
           <div>
             <h3>The OSAMR framework</h3>
             <p>
-              Use this to evaluate any AI scaffold. The goal is not the highest
-              level — it is the right level for the learning target.
+              Use this to evaluate any AI scaffold. The goal is not the highest level — it is the
+              right level for the learning target.
             </p>
             <div class="osamr-mini-grid">
               <article class="osamr-mini-card">
@@ -2149,18 +2151,12 @@
               <article class="osamr-mini-card">
                 <div class="letter">R</div>
                 <h4>Redefinition</h4>
-                <p>
-                  AI enables a new learning move students could not easily do
-                  before.
-                </p>
+                <p>AI enables a new learning move students could not easily do before.</p>
               </article>
               <article class="osamr-mini-card warn">
                 <div class="letter">O</div>
                 <h4>Overreliance</h4>
-                <p>
-                  AI does the thinking, answer, evidence, or product for
-                  students.
-                </p>
+                <p>AI does the thinking, answer, evidence, or product for students.</p>
               </article>
             </div>
           </div>
@@ -2172,10 +2168,9 @@
           <div>
             <h3>Walk through the model</h3>
             <p>
-              Here is one example, already finished, that uses the exact same
-              six steps your group will do. Read each step and the short
-              <strong>“What's happening”</strong> note so you know what to do
-              when it is your turn.
+              Here is one example, already finished, that uses the exact same six steps your group
+              will do. Read each step and the short
+              <strong>“What's happening”</strong> note so you know what to do when it is your turn.
             </p>
 
             <div class="workspace-grid model-workspace">
@@ -2183,43 +2178,31 @@
                 <div class="scenario-label">Model scenario · Grade 7 ELA</div>
                 <h3>What went wrong?</h3>
                 <p>
-                  Students read a challenging article and identify the author’s
-                  central claim with two pieces of evidence. The AI support made
-                  the article easier, but it also did the close-reading work.
+                  Students read a challenging article and identify the author’s central claim with
+                  two pieces of evidence. The AI support made the article easier, but it also did
+                  the close-reading work.
                 </p>
 
                 <div class="ai-input-card">
                   <h4>Problem AI Input</h4>
                   <p class="quote">
-                    “Summarize this article for 7th graders and tell students
-                    the author’s central claim and two pieces of evidence they
-                    should use in their response.”
+                    “Summarize this article for 7th graders and tell students the author’s central
+                    claim and two pieces of evidence they should use in their response.”
                   </p>
                 </div>
                 <div class="mini-stack">
                   <div>
-                    <strong>Protect:</strong> Students must read the article,
-                    identify the claim, select evidence, and explain the
-                    connection.
+                    <strong>Protect:</strong> Students must read the article, identify the claim,
+                    select evidence, and explain the connection.
                   </div>
                 </div>
 
                 <div class="osamr-strip" aria-label="OSAMR quick reference">
                   <div><strong>S</strong><span>Same task, tech swap</span></div>
-                  <div>
-                    <strong>A</strong><span>Same task, useful improvement</span>
-                  </div>
-                  <div>
-                    <strong>M</strong
-                    ><span>Task redesigned for stronger access</span>
-                  </div>
-                  <div>
-                    <strong>R</strong
-                    ><span>New learning move not otherwise possible</span>
-                  </div>
-                  <div class="warn">
-                    <strong>O</strong><span>AI takes over the thinking</span>
-                  </div>
+                  <div><strong>A</strong><span>Same task, useful improvement</span></div>
+                  <div><strong>M</strong><span>Task redesigned for stronger access</span></div>
+                  <div><strong>R</strong><span>New learning move not otherwise possible</span></div>
+                  <div class="warn"><strong>O</strong><span>AI takes over the thinking</span></div>
                 </div>
               </aside>
 
@@ -2230,12 +2213,9 @@
                       <span>1</span>
                       <h3>Name the access barrier</h3>
                     </div>
-                    <p class="hint">
-                      What issue are you fixing without lowering the task?
-                    </p>
+                    <p class="hint">What issue are you fixing without lowering the task?</p>
                     <textarea readonly>
-The article is hard to read, so students struggle to find the claim and evidence on their own.</textarea
-                    >
+The article is hard to read, so students struggle to find the claim and evidence on their own.</textarea>
                   </li>
 
                   <li class="done">
@@ -2243,12 +2223,9 @@ The article is hard to read, so students struggle to find the claim and evidence
                       <span>2</span>
                       <h3>Protect the student thinking</h3>
                     </div>
-                    <p class="hint">
-                      What must students still do on their own?
-                    </p>
+                    <p class="hint">What must students still do on their own?</p>
                     <textarea readonly>
-Students must read the article closely, identify the central claim themselves, select their own evidence, and explain how the evidence supports the claim.</textarea
-                    >
+Students must read the article closely, identify the central claim themselves, select their own evidence, and explain how the evidence supports the claim.</textarea>
                   </li>
 
                   <li class="done">
@@ -2257,12 +2234,11 @@ Students must read the article closely, identify the central claim themselves, s
                       <h3>Draft the fix before Gemini</h3>
                     </div>
                     <p class="hint">
-                      Write the scaffold you would try first. Do not use AI to
-                      complete the student task.
+                      Write the scaffold you would try first. Do not use AI to complete the student
+                      task.
                     </p>
                     <textarea class="tall" readonly>
-Create an access scaffold for students reading a challenging article. Do not summarize the article, name the central claim, or choose evidence for students. Instead, create chunk headings, 5 student-friendly vocabulary supports, one focus question per chunk, and a blank evidence organizer that requires students to return to the original article and choose their own evidence.</textarea
-                    >
+Create an access scaffold for students reading a challenging article. Do not summarize the article, name the central claim, or choose evidence for students. Instead, create chunk headings, 5 student-friendly vocabulary supports, one focus question per chunk, and a blank evidence organizer that requires students to return to the original article and choose their own evidence.</textarea>
                   </li>
 
                   <li class="gemini-step done">
@@ -2271,15 +2247,11 @@ Create an access scaffold for students reading a challenging article. Do not sum
                       <h3>Use Gemini as a coach</h3>
                     </div>
                     <p class="hint">
-                      Copy the coach prompt, open Gemini, paste it, then revise
-                      your scaffold based on useful feedback.
+                      Copy the coach prompt, open Gemini, paste it, then revise your scaffold based
+                      on useful feedback.
                     </p>
                     <div class="action-row">
-                      <button
-                        class="btn primary"
-                        type="button"
-                        data-copy-el="#model-prompt"
-                      >
+                      <button class="btn primary" type="button" data-copy-el="#model-prompt">
                         Copy Gemini coach prompt
                       </button>
                       <a
@@ -2292,11 +2264,7 @@ Create an access scaffold for students reading a challenging article. Do not sum
                     </div>
                     <details>
                       <summary>Preview the Gemini coach prompt</summary>
-                      <textarea
-                        class="prompt-preview"
-                        id="model-prompt"
-                        readonly
-                      >
+                      <textarea class="prompt-preview" id="model-prompt" readonly>
 You are coaching teachers during an AI for Accessible Instruction design challenge.
 
 Do NOT solve the student task. Do NOT write the final answer for students.
@@ -2322,12 +2290,10 @@ Please give:
 3. One specific revision that improves access while preserving rigor.
 4. A suggested OSAMR rating: Substitution, Augmentation, Modification, Redefinition, or Overreliance.
 
-Keep your feedback concise.</textarea
-                      >
+Keep your feedback concise.</textarea>
                     </details>
                     <textarea readonly>
-Gemini suggested adding a sentence-starter bank for the written response so students who struggle with academic writing can still engage with the evidence — without the sentence starters giving away which evidence to choose.</textarea
-                    >
+Gemini suggested adding a sentence-starter bank for the written response so students who struggle with academic writing can still engage with the evidence — without the sentence starters giving away which evidence to choose.</textarea>
                   </li>
 
                   <li class="done">
@@ -2336,8 +2302,8 @@ Gemini suggested adding a sentence-starter bank for the written response so stud
                       <h3>Final after-Gemini version</h3>
                     </div>
                     <p class="hint">
-                      Revise the scaffold only if the learning target and
-                      student thinking stay intact.
+                      Revise the scaffold only if the learning target and student thinking stay
+                      intact.
                     </p>
                     <textarea class="tall" readonly>
 Create an access scaffold for students reading a challenging article. Do not summarize the article, name the central claim, or choose evidence for students. Instead, create:
@@ -2345,8 +2311,7 @@ Create an access scaffold for students reading a challenging article. Do not sum
 2. 5 student-friendly vocabulary supports,
 3. one focus question per chunk,
 4. a blank evidence organizer that requires students to return to the original article and choose their own evidence, and
-5. a sentence-starter bank for the written response that does not reference specific evidence from the text.</textarea
-                    >
+5. a sentence-starter bank for the written response that does not reference specific evidence from the text.</textarea>
                   </li>
 
                   <li class="done">
@@ -2368,8 +2333,7 @@ Create an access scaffold for students reading a challenging article. Do not sum
                       <label
                         >Rigor evidence
                         <textarea readonly>
-Students still read the original text, identify the central claim, select their own evidence, and explain the connection. AI only removed vocabulary and organization barriers.</textarea
-                        >
+Students still read the original text, identify the central claim, select their own evidence, and explain the connection. AI only removed vocabulary and organization barriers.</textarea>
                       </label>
                     </div>
                   </li>
@@ -2378,9 +2342,9 @@ Students still read the original text, identify the central claim, select their 
             </div>
 
             <div class="callout" style="margin-top: 18px">
-              <strong>Design rule:</strong> Ask AI for scaffolds, questions,
-              vocabulary, structure, and checks — not the answer, claim,
-              evidence, reasoning, model, or completed organizer.
+              <strong>Design rule:</strong> Ask AI for scaffolds, questions, vocabulary, structure,
+              and checks — not the answer, claim, evidence, reasoning, model, or completed
+              organizer.
             </div>
           </div>
         </div>
@@ -2391,14 +2355,11 @@ Students still read the original text, identify the central claim, select their 
           <div>
             <h3>Now it is your turn</h3>
             <p>
-              Choose your group page below. Each group has a different scenario
-              where AI overstepped. You will follow the same 6 steps you just
-              saw in the model.
+              Choose your group page below. Each group has a different scenario where AI
+              overstepped. You will follow the same 6 steps you just saw in the model.
             </p>
             <div class="action-row">
-              <a class="btn primary" href="#menu" data-open-page="menu"
-                >Choose your group</a
-              >
+              <a class="btn primary" href="#menu" data-open-page="menu">Choose your group</a>
               <a
                 class="btn gemini"
                 href="https://gemini.google.com/"
@@ -2418,20 +2379,13 @@ Students still read the original text, identify the central claim, select their 
         </div>
       </section>
 
-      <section
-        class="page"
-        id="menu"
-        role="tabpanel"
-        aria-labelledby="tab-menu"
-        tabindex="-1"
-      >
+      <section class="page" id="menu" role="tabpanel" aria-labelledby="tab-menu" tabindex="-1">
         <div class="page-head">
           <div>
             <p class="kicker">Group Menu</p>
             <h2>Choose your separate group page.</h2>
             <p class="subline">
-              Each page names the exact AI input that caused the problem, then
-              guides the redesign.
+              Each page names the exact AI input that caused the problem, then guides the redesign.
             </p>
           </div>
         </div>
@@ -2557,14 +2511,10 @@ Students still read the original text, identify the central claim, select their 
           <div>
             <p class="kicker">Group 1 Separate Page</p>
             <h2>Math Reasoning Support</h2>
-            <p class="subline">
-              Grade 6 Math · Vocabulary barrier · AI gave full solution
-            </p>
+            <p class="subline">Grade 6 Math · Vocabulary barrier · AI gave full solution</p>
           </div>
           <div class="action-row top-actions">
-            <a class="btn secondary" href="#menu" data-open-page="menu"
-              >Group menu</a
-            >
+            <a class="btn secondary" href="#menu" data-open-page="menu">Group menu</a>
             <a
               class="btn primary"
               href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
@@ -2572,9 +2522,7 @@ Students still read the original text, identify the central claim, select their 
               rel="noopener noreferrer"
               >Open Padlet ↗</a
             >
-            <a class="btn secondary" href="#gallery" data-open-page="gallery"
-              >Post Builder</a
-            >
+            <a class="btn secondary" href="#gallery" data-open-page="gallery">Post Builder</a>
           </div>
         </div>
 
@@ -2583,42 +2531,41 @@ Students still read the original text, identify the central claim, select their 
             <div class="scenario-label">Scenario page reference</div>
             <h3>What went wrong?</h3>
             <p>
-              Students solve ratio problems and explain how they know two ratios
-              are equivalent. The teacher wanted vocabulary support, but the
-              AI-generated support gave away the final mathematical explanation.
+              Students solve ratio problems and explain how they know two ratios are equivalent. The
+              teacher wanted vocabulary support, but the AI-generated support gave away the final
+              mathematical explanation.
             </p>
 
             <div class="ai-input-card">
               <h4>Problem AI Input</h4>
               <p class="quote">
-                “Create vocabulary support for 6th graders explaining equivalent
-                ratios. Include an example answer for this <span class="vocab-word" data-vocab="ratio" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('ratio')">ratio</span> problem: Are
-                6:8 and 9:12 equivalent? Explain how you know.”
+                “Create vocabulary support for 6th graders explaining equivalent ratios. Include an
+                example answer for this
+                <span
+                  class="vocab-word"
+                  data-vocab="ratio"
+                  style="
+                    border-bottom: 2px dotted #0284c7;
+                    color: #0284c7;
+                    font-weight: 800;
+                    cursor: pointer;
+                  "
+                  onclick="openVocabModal('ratio')"
+                  >ratio</span
+                >
+                problem: Are 6:8 and 9:12 equivalent? Explain how you know.”
               </p>
             </div>
             <div class="mini-stack">
-              <div>
-                <strong>Protect:</strong> Students must decide equivalence and
-                justify why.
-              </div>
+              <div><strong>Protect:</strong> Students must decide equivalence and justify why.</div>
             </div>
 
             <div class="osamr-strip" aria-label="OSAMR quick reference">
               <div><strong>S</strong><span>Same task, tech swap</span></div>
-              <div>
-                <strong>A</strong><span>Same task, useful improvement</span>
-              </div>
-              <div>
-                <strong>M</strong
-                ><span>Task redesigned for stronger access</span>
-              </div>
-              <div>
-                <strong>R</strong
-                ><span>New learning move not otherwise possible</span>
-              </div>
-              <div class="warn">
-                <strong>O</strong><span>AI takes over the thinking</span>
-              </div>
+              <div><strong>A</strong><span>Same task, useful improvement</span></div>
+              <div><strong>M</strong><span>Task redesigned for stronger access</span></div>
+              <div><strong>R</strong><span>New learning move not otherwise possible</span></div>
+              <div class="warn"><strong>O</strong><span>AI takes over the thinking</span></div>
             </div>
           </aside>
 
@@ -2629,9 +2576,7 @@ Students still read the original text, identify the central claim, select their 
                   <span>1</span>
                   <h3>Name the access barrier</h3>
                 </div>
-                <p class="hint">
-                  What issue are you fixing without lowering the task?
-                </p>
+                <p class="hint">What issue are you fixing without lowering the task?</p>
                 <textarea
                   id="g1-barrier"
                   data-field="barrier"
@@ -2660,8 +2605,8 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Draft the fix before Gemini</h3>
                 </div>
                 <p class="hint">
-                  Write the scaffold you would try first. Do not use AI to
-                  complete the student task.
+                  Write the scaffold you would try first. Do not use AI to complete the student
+                  task.
                 </p>
                 <textarea
                   class="tall"
@@ -2678,15 +2623,11 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Use Gemini as a coach</h3>
                 </div>
                 <p class="hint">
-                  Copy the coach prompt, open Gemini, paste it, then revise your
-                  scaffold based on useful feedback.
+                  Copy the coach prompt, open Gemini, paste it, then revise your scaffold based on
+                  useful feedback.
                 </p>
                 <div class="action-row">
-                  <button
-                    class="btn primary"
-                    type="button"
-                    data-copy-prompt="1"
-                  >
+                  <button class="btn primary" type="button" data-copy-prompt="1">
                     Copy Gemini coach prompt
                   </button>
                   <a
@@ -2699,11 +2640,7 @@ Students still read the original text, identify the central claim, select their 
                 </div>
                 <details>
                   <summary>Preview the Gemini coach prompt</summary>
-                  <textarea
-                    class="prompt-preview"
-                    id="g1-prompt"
-                    readonly
-                  ></textarea>
+                  <textarea class="prompt-preview" id="g1-prompt" readonly></textarea>
                 </details>
                 <textarea
                   id="g1-feedback"
@@ -2719,8 +2656,7 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Final after-Gemini version</h3>
                 </div>
                 <p class="hint">
-                  Revise the scaffold only if the learning target and student
-                  thinking stay intact.
+                  Revise the scaffold only if the learning target and student thinking stay intact.
                 </p>
                 <textarea
                   class="tall"
@@ -2777,9 +2713,7 @@ Students still read the original text, identify the central claim, select their 
           </div>
           <textarea id="g1-post" class="post-output" readonly></textarea>
           <div class="action-row">
-            <button class="btn primary" type="button" data-copy-post="1">
-              Copy gallery post
-            </button>
+            <button class="btn primary" type="button" data-copy-post="1">Copy gallery post</button>
             <a
               class="btn secondary"
               href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
@@ -2802,14 +2736,10 @@ Students still read the original text, identify the central claim, select their 
           <div>
             <p class="kicker">Group 2 Separate Page</p>
             <h2>ELA Evidence Support</h2>
-            <p class="subline">
-              Grade 7 ELA · Dense text barrier · AI named claim/evidence
-            </p>
+            <p class="subline">Grade 7 ELA · Dense text barrier · AI named claim/evidence</p>
           </div>
           <div class="action-row top-actions">
-            <a class="btn secondary" href="#menu" data-open-page="menu"
-              >Group menu</a
-            >
+            <a class="btn secondary" href="#menu" data-open-page="menu">Group menu</a>
             <a
               class="btn primary"
               href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
@@ -2817,9 +2747,7 @@ Students still read the original text, identify the central claim, select their 
               rel="noopener noreferrer"
               >Open Padlet ↗</a
             >
-            <a class="btn secondary" href="#gallery" data-open-page="gallery"
-              >Post Builder</a
-            >
+            <a class="btn secondary" href="#gallery" data-open-page="gallery">Post Builder</a>
           </div>
         </div>
 
@@ -2828,42 +2756,31 @@ Students still read the original text, identify the central claim, select their 
             <div class="scenario-label">Scenario page reference</div>
             <h3>What went wrong?</h3>
             <p>
-              Students read a challenging article and identify the author’s
-              central claim with two pieces of evidence. The AI support made the
-              article easier, but it also did the close-reading work.
+              Students read a challenging article and identify the author’s central claim with two
+              pieces of evidence. The AI support made the article easier, but it also did the
+              close-reading work.
             </p>
 
             <div class="ai-input-card">
               <h4>Problem AI Input</h4>
               <p class="quote">
-                “Summarize this article for 7th graders and tell students the
-                author’s central claim and two pieces of evidence they should
-                use in their response.”
+                “Summarize this article for 7th graders and tell students the author’s central claim
+                and two pieces of evidence they should use in their response.”
               </p>
             </div>
             <div class="mini-stack">
               <div>
-                <strong>Protect:</strong> Students must identify the claim,
-                select evidence, and explain the connection.
+                <strong>Protect:</strong> Students must identify the claim, select evidence, and
+                explain the connection.
               </div>
             </div>
 
             <div class="osamr-strip" aria-label="OSAMR quick reference">
               <div><strong>S</strong><span>Same task, tech swap</span></div>
-              <div>
-                <strong>A</strong><span>Same task, useful improvement</span>
-              </div>
-              <div>
-                <strong>M</strong
-                ><span>Task redesigned for stronger access</span>
-              </div>
-              <div>
-                <strong>R</strong
-                ><span>New learning move not otherwise possible</span>
-              </div>
-              <div class="warn">
-                <strong>O</strong><span>AI takes over the thinking</span>
-              </div>
+              <div><strong>A</strong><span>Same task, useful improvement</span></div>
+              <div><strong>M</strong><span>Task redesigned for stronger access</span></div>
+              <div><strong>R</strong><span>New learning move not otherwise possible</span></div>
+              <div class="warn"><strong>O</strong><span>AI takes over the thinking</span></div>
             </div>
           </aside>
 
@@ -2874,9 +2791,7 @@ Students still read the original text, identify the central claim, select their 
                   <span>1</span>
                   <h3>Name the access barrier</h3>
                 </div>
-                <p class="hint">
-                  What issue are you fixing without lowering the task?
-                </p>
+                <p class="hint">What issue are you fixing without lowering the task?</p>
                 <textarea
                   id="g2-barrier"
                   data-field="barrier"
@@ -2905,8 +2820,8 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Draft the fix before Gemini</h3>
                 </div>
                 <p class="hint">
-                  Write the scaffold you would try first. Do not use AI to
-                  complete the student task.
+                  Write the scaffold you would try first. Do not use AI to complete the student
+                  task.
                 </p>
                 <textarea
                   class="tall"
@@ -2923,15 +2838,11 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Use Gemini as a coach</h3>
                 </div>
                 <p class="hint">
-                  Copy the coach prompt, open Gemini, paste it, then revise your
-                  scaffold based on useful feedback.
+                  Copy the coach prompt, open Gemini, paste it, then revise your scaffold based on
+                  useful feedback.
                 </p>
                 <div class="action-row">
-                  <button
-                    class="btn primary"
-                    type="button"
-                    data-copy-prompt="2"
-                  >
+                  <button class="btn primary" type="button" data-copy-prompt="2">
                     Copy Gemini coach prompt
                   </button>
                   <a
@@ -2944,11 +2855,7 @@ Students still read the original text, identify the central claim, select their 
                 </div>
                 <details>
                   <summary>Preview the Gemini coach prompt</summary>
-                  <textarea
-                    class="prompt-preview"
-                    id="g2-prompt"
-                    readonly
-                  ></textarea>
+                  <textarea class="prompt-preview" id="g2-prompt" readonly></textarea>
                 </details>
                 <textarea
                   id="g2-feedback"
@@ -2964,8 +2871,7 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Final after-Gemini version</h3>
                 </div>
                 <p class="hint">
-                  Revise the scaffold only if the learning target and student
-                  thinking stay intact.
+                  Revise the scaffold only if the learning target and student thinking stay intact.
                 </p>
                 <textarea
                   class="tall"
@@ -3022,9 +2928,7 @@ Students still read the original text, identify the central claim, select their 
           </div>
           <textarea id="g2-post" class="post-output" readonly></textarea>
           <div class="action-row">
-            <button class="btn primary" type="button" data-copy-post="2">
-              Copy gallery post
-            </button>
+            <button class="btn primary" type="button" data-copy-post="2">Copy gallery post</button>
             <a
               class="btn secondary"
               href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
@@ -3047,14 +2951,10 @@ Students still read the original text, identify the central claim, select their 
           <div>
             <p class="kicker">Group 3 Separate Page</p>
             <h2>Science Model Support</h2>
-            <p class="subline">
-              Grade 7 Science · Language access barrier · AI labeled the model
-            </p>
+            <p class="subline">Grade 7 Science · Language access barrier · AI labeled the model</p>
           </div>
           <div class="action-row top-actions">
-            <a class="btn secondary" href="#menu" data-open-page="menu"
-              >Group menu</a
-            >
+            <a class="btn secondary" href="#menu" data-open-page="menu">Group menu</a>
             <a
               class="btn primary"
               href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
@@ -3062,9 +2962,7 @@ Students still read the original text, identify the central claim, select their 
               rel="noopener noreferrer"
               >Open Padlet ↗</a
             >
-            <a class="btn secondary" href="#gallery" data-open-page="gallery"
-              >Post Builder</a
-            >
+            <a class="btn secondary" href="#gallery" data-open-page="gallery">Post Builder</a>
           </div>
         </div>
 
@@ -3073,43 +2971,31 @@ Students still read the original text, identify the central claim, select their 
             <div class="scenario-label">Scenario page reference</div>
             <h3>What went wrong?</h3>
             <p>
-              Multilingual learners need support understanding directions for a
-              water-cycle diagram. The AI-generated support helped with language
-              access, but the labeled example showed the expected scientific
-              model.
+              Multilingual learners need support understanding directions for a water-cycle diagram.
+              The AI-generated support helped with language access, but the labeled example showed
+              the expected scientific model.
             </p>
 
             <div class="ai-input-card">
               <h4>Problem AI Input</h4>
               <p class="quote">
-                “Translate these water-cycle diagram directions for multilingual
-                learners and include a labeled example diagram showing
-                evaporation, condensation, and precipitation.”
+                “Translate these water-cycle diagram directions for multilingual learners and
+                include a labeled example diagram showing evaporation, condensation, and
+                precipitation.”
               </p>
             </div>
             <div class="mini-stack">
               <div>
-                <strong>Protect:</strong> Students must identify processes and
-                label the model.
+                <strong>Protect:</strong> Students must identify processes and label the model.
               </div>
             </div>
 
             <div class="osamr-strip" aria-label="OSAMR quick reference">
               <div><strong>S</strong><span>Same task, tech swap</span></div>
-              <div>
-                <strong>A</strong><span>Same task, useful improvement</span>
-              </div>
-              <div>
-                <strong>M</strong
-                ><span>Task redesigned for stronger access</span>
-              </div>
-              <div>
-                <strong>R</strong
-                ><span>New learning move not otherwise possible</span>
-              </div>
-              <div class="warn">
-                <strong>O</strong><span>AI takes over the thinking</span>
-              </div>
+              <div><strong>A</strong><span>Same task, useful improvement</span></div>
+              <div><strong>M</strong><span>Task redesigned for stronger access</span></div>
+              <div><strong>R</strong><span>New learning move not otherwise possible</span></div>
+              <div class="warn"><strong>O</strong><span>AI takes over the thinking</span></div>
             </div>
           </aside>
 
@@ -3120,9 +3006,7 @@ Students still read the original text, identify the central claim, select their 
                   <span>1</span>
                   <h3>Name the access barrier</h3>
                 </div>
-                <p class="hint">
-                  What issue are you fixing without lowering the task?
-                </p>
+                <p class="hint">What issue are you fixing without lowering the task?</p>
                 <textarea
                   id="g3-barrier"
                   data-field="barrier"
@@ -3151,8 +3035,8 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Draft the fix before Gemini</h3>
                 </div>
                 <p class="hint">
-                  Write the scaffold you would try first. Do not use AI to
-                  complete the student task.
+                  Write the scaffold you would try first. Do not use AI to complete the student
+                  task.
                 </p>
                 <textarea
                   class="tall"
@@ -3169,15 +3053,11 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Use Gemini as a coach</h3>
                 </div>
                 <p class="hint">
-                  Copy the coach prompt, open Gemini, paste it, then revise your
-                  scaffold based on useful feedback.
+                  Copy the coach prompt, open Gemini, paste it, then revise your scaffold based on
+                  useful feedback.
                 </p>
                 <div class="action-row">
-                  <button
-                    class="btn primary"
-                    type="button"
-                    data-copy-prompt="3"
-                  >
+                  <button class="btn primary" type="button" data-copy-prompt="3">
                     Copy Gemini coach prompt
                   </button>
                   <a
@@ -3190,11 +3070,7 @@ Students still read the original text, identify the central claim, select their 
                 </div>
                 <details>
                   <summary>Preview the Gemini coach prompt</summary>
-                  <textarea
-                    class="prompt-preview"
-                    id="g3-prompt"
-                    readonly
-                  ></textarea>
+                  <textarea class="prompt-preview" id="g3-prompt" readonly></textarea>
                 </details>
                 <textarea
                   id="g3-feedback"
@@ -3210,8 +3086,7 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Final after-Gemini version</h3>
                 </div>
                 <p class="hint">
-                  Revise the scaffold only if the learning target and student
-                  thinking stay intact.
+                  Revise the scaffold only if the learning target and student thinking stay intact.
                 </p>
                 <textarea
                   class="tall"
@@ -3268,9 +3143,7 @@ Students still read the original text, identify the central claim, select their 
           </div>
           <textarea id="g3-post" class="post-output" readonly></textarea>
           <div class="action-row">
-            <button class="btn primary" type="button" data-copy-post="3">
-              Copy gallery post
-            </button>
+            <button class="btn primary" type="button" data-copy-post="3">Copy gallery post</button>
             <a
               class="btn secondary"
               href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
@@ -3294,14 +3167,11 @@ Students still read the original text, identify the central claim, select their 
             <p class="kicker">Group 4 Separate Page</p>
             <h2>Social Studies Claim Support</h2>
             <p class="subline">
-              Grade 8 Social Studies · Writing structure barrier · AI gave
-              claim/reasons
+              Grade 8 Social Studies · Writing structure barrier · AI gave claim/reasons
             </p>
           </div>
           <div class="action-row top-actions">
-            <a class="btn secondary" href="#menu" data-open-page="menu"
-              >Group menu</a
-            >
+            <a class="btn secondary" href="#menu" data-open-page="menu">Group menu</a>
             <a
               class="btn primary"
               href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
@@ -3309,9 +3179,7 @@ Students still read the original text, identify the central claim, select their 
               rel="noopener noreferrer"
               >Open Padlet ↗</a
             >
-            <a class="btn secondary" href="#gallery" data-open-page="gallery"
-              >Post Builder</a
-            >
+            <a class="btn secondary" href="#gallery" data-open-page="gallery">Post Builder</a>
           </div>
         </div>
 
@@ -3320,42 +3188,31 @@ Students still read the original text, identify the central claim, select their 
             <div class="scenario-label">Scenario page reference</div>
             <h3>What went wrong?</h3>
             <p>
-              Students evaluate whether a historical decision was justified. The
-              teacher wanted writing support, but the AI-generated support moved
-              into claim-making and interpretation.
+              Students evaluate whether a historical decision was justified. The teacher wanted
+              writing support, but the AI-generated support moved into claim-making and
+              interpretation.
             </p>
 
             <div class="ai-input-card">
               <h4>Problem AI Input</h4>
               <p class="quote">
-                “Give students sentence starters for this historical argument
-                prompt and include possible reasons from the source set that
-                they could use.”
+                “Give students sentence starters for this historical argument prompt and include
+                possible reasons from the source set that they could use.”
               </p>
             </div>
             <div class="mini-stack">
               <div>
-                <strong>Protect:</strong> Students must make the judgment,
-                choose reasons, and interpret sources.
+                <strong>Protect:</strong> Students must make the judgment, choose reasons, and
+                interpret sources.
               </div>
             </div>
 
             <div class="osamr-strip" aria-label="OSAMR quick reference">
               <div><strong>S</strong><span>Same task, tech swap</span></div>
-              <div>
-                <strong>A</strong><span>Same task, useful improvement</span>
-              </div>
-              <div>
-                <strong>M</strong
-                ><span>Task redesigned for stronger access</span>
-              </div>
-              <div>
-                <strong>R</strong
-                ><span>New learning move not otherwise possible</span>
-              </div>
-              <div class="warn">
-                <strong>O</strong><span>AI takes over the thinking</span>
-              </div>
+              <div><strong>A</strong><span>Same task, useful improvement</span></div>
+              <div><strong>M</strong><span>Task redesigned for stronger access</span></div>
+              <div><strong>R</strong><span>New learning move not otherwise possible</span></div>
+              <div class="warn"><strong>O</strong><span>AI takes over the thinking</span></div>
             </div>
           </aside>
 
@@ -3366,9 +3223,7 @@ Students still read the original text, identify the central claim, select their 
                   <span>1</span>
                   <h3>Name the access barrier</h3>
                 </div>
-                <p class="hint">
-                  What issue are you fixing without lowering the task?
-                </p>
+                <p class="hint">What issue are you fixing without lowering the task?</p>
                 <textarea
                   id="g4-barrier"
                   data-field="barrier"
@@ -3397,8 +3252,8 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Draft the fix before Gemini</h3>
                 </div>
                 <p class="hint">
-                  Write the scaffold you would try first. Do not use AI to
-                  complete the student task.
+                  Write the scaffold you would try first. Do not use AI to complete the student
+                  task.
                 </p>
                 <textarea
                   class="tall"
@@ -3415,15 +3270,11 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Use Gemini as a coach</h3>
                 </div>
                 <p class="hint">
-                  Copy the coach prompt, open Gemini, paste it, then revise your
-                  scaffold based on useful feedback.
+                  Copy the coach prompt, open Gemini, paste it, then revise your scaffold based on
+                  useful feedback.
                 </p>
                 <div class="action-row">
-                  <button
-                    class="btn primary"
-                    type="button"
-                    data-copy-prompt="4"
-                  >
+                  <button class="btn primary" type="button" data-copy-prompt="4">
                     Copy Gemini coach prompt
                   </button>
                   <a
@@ -3436,11 +3287,7 @@ Students still read the original text, identify the central claim, select their 
                 </div>
                 <details>
                   <summary>Preview the Gemini coach prompt</summary>
-                  <textarea
-                    class="prompt-preview"
-                    id="g4-prompt"
-                    readonly
-                  ></textarea>
+                  <textarea class="prompt-preview" id="g4-prompt" readonly></textarea>
                 </details>
                 <textarea
                   id="g4-feedback"
@@ -3456,8 +3303,7 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Final after-Gemini version</h3>
                 </div>
                 <p class="hint">
-                  Revise the scaffold only if the learning target and student
-                  thinking stay intact.
+                  Revise the scaffold only if the learning target and student thinking stay intact.
                 </p>
                 <textarea
                   class="tall"
@@ -3514,9 +3360,7 @@ Students still read the original text, identify the central claim, select their 
           </div>
           <textarea id="g4-post" class="post-output" readonly></textarea>
           <div class="action-row">
-            <button class="btn primary" type="button" data-copy-post="4">
-              Copy gallery post
-            </button>
+            <button class="btn primary" type="button" data-copy-post="4">Copy gallery post</button>
             <a
               class="btn secondary"
               href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
@@ -3539,14 +3383,10 @@ Students still read the original text, identify the central claim, select their 
           <div>
             <p class="kicker">Group 5 Separate Page</p>
             <h2>MLL Language Access Support</h2>
-            <p class="subline">
-              MLL · Complex directions barrier · AI changed the task
-            </p>
+            <p class="subline">MLL · Complex directions barrier · AI changed the task</p>
           </div>
           <div class="action-row top-actions">
-            <a class="btn secondary" href="#menu" data-open-page="menu"
-              >Group menu</a
-            >
+            <a class="btn secondary" href="#menu" data-open-page="menu">Group menu</a>
             <a
               class="btn primary"
               href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
@@ -3554,9 +3394,7 @@ Students still read the original text, identify the central claim, select their 
               rel="noopener noreferrer"
               >Open Padlet ↗</a
             >
-            <a class="btn secondary" href="#gallery" data-open-page="gallery"
-              >Post Builder</a
-            >
+            <a class="btn secondary" href="#gallery" data-open-page="gallery">Post Builder</a>
           </div>
         </div>
 
@@ -3565,42 +3403,31 @@ Students still read the original text, identify the central claim, select their 
             <div class="scenario-label">Scenario page reference</div>
             <h3>What went wrong?</h3>
             <p>
-              Students must compare two representations of the same
-              relationship: a table and a graph. The teacher wanted
-              newcomer-friendly directions, but the AI changed the task target.
+              Students must compare two representations of the same relationship: a table and a
+              graph. The teacher wanted newcomer-friendly directions, but the AI changed the task
+              target.
             </p>
 
             <div class="ai-input-card">
               <h4>Problem AI Input</h4>
               <p class="quote">
-                “Rewrite these directions for newcomers: Compare the table and
-                graph to explain the relationship. Make the task very simple and
-                easy to understand.”
+                “Rewrite these directions for newcomers: Compare the table and graph to explain the
+                relationship. Make the task very simple and easy to understand.”
               </p>
             </div>
             <div class="mini-stack">
               <div>
-                <strong>Protect:</strong> Students must compare both
-                representations and explain the relationship.
+                <strong>Protect:</strong> Students must compare both representations and explain the
+                relationship.
               </div>
             </div>
 
             <div class="osamr-strip" aria-label="OSAMR quick reference">
               <div><strong>S</strong><span>Same task, tech swap</span></div>
-              <div>
-                <strong>A</strong><span>Same task, useful improvement</span>
-              </div>
-              <div>
-                <strong>M</strong
-                ><span>Task redesigned for stronger access</span>
-              </div>
-              <div>
-                <strong>R</strong
-                ><span>New learning move not otherwise possible</span>
-              </div>
-              <div class="warn">
-                <strong>O</strong><span>AI takes over the thinking</span>
-              </div>
+              <div><strong>A</strong><span>Same task, useful improvement</span></div>
+              <div><strong>M</strong><span>Task redesigned for stronger access</span></div>
+              <div><strong>R</strong><span>New learning move not otherwise possible</span></div>
+              <div class="warn"><strong>O</strong><span>AI takes over the thinking</span></div>
             </div>
           </aside>
 
@@ -3611,9 +3438,7 @@ Students still read the original text, identify the central claim, select their 
                   <span>1</span>
                   <h3>Name the access barrier</h3>
                 </div>
-                <p class="hint">
-                  What issue are you fixing without lowering the task?
-                </p>
+                <p class="hint">What issue are you fixing without lowering the task?</p>
                 <textarea
                   id="g5-barrier"
                   data-field="barrier"
@@ -3642,8 +3467,8 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Draft the fix before Gemini</h3>
                 </div>
                 <p class="hint">
-                  Write the scaffold you would try first. Do not use AI to
-                  complete the student task.
+                  Write the scaffold you would try first. Do not use AI to complete the student
+                  task.
                 </p>
                 <textarea
                   class="tall"
@@ -3660,15 +3485,11 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Use Gemini as a coach</h3>
                 </div>
                 <p class="hint">
-                  Copy the coach prompt, open Gemini, paste it, then revise your
-                  scaffold based on useful feedback.
+                  Copy the coach prompt, open Gemini, paste it, then revise your scaffold based on
+                  useful feedback.
                 </p>
                 <div class="action-row">
-                  <button
-                    class="btn primary"
-                    type="button"
-                    data-copy-prompt="5"
-                  >
+                  <button class="btn primary" type="button" data-copy-prompt="5">
                     Copy Gemini coach prompt
                   </button>
                   <a
@@ -3681,11 +3502,7 @@ Students still read the original text, identify the central claim, select their 
                 </div>
                 <details>
                   <summary>Preview the Gemini coach prompt</summary>
-                  <textarea
-                    class="prompt-preview"
-                    id="g5-prompt"
-                    readonly
-                  ></textarea>
+                  <textarea class="prompt-preview" id="g5-prompt" readonly></textarea>
                 </details>
                 <textarea
                   id="g5-feedback"
@@ -3701,8 +3518,7 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Final after-Gemini version</h3>
                 </div>
                 <p class="hint">
-                  Revise the scaffold only if the learning target and student
-                  thinking stay intact.
+                  Revise the scaffold only if the learning target and student thinking stay intact.
                 </p>
                 <textarea
                   class="tall"
@@ -3759,9 +3575,7 @@ Students still read the original text, identify the central claim, select their 
           </div>
           <textarea id="g5-post" class="post-output" readonly></textarea>
           <div class="action-row">
-            <button class="btn primary" type="button" data-copy-post="5">
-              Copy gallery post
-            </button>
+            <button class="btn primary" type="button" data-copy-post="5">Copy gallery post</button>
             <a
               class="btn secondary"
               href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
@@ -3784,14 +3598,10 @@ Students still read the original text, identify the central claim, select their 
           <div>
             <p class="kicker">Group 6 Separate Page</p>
             <h2>Executive Function Support</h2>
-            <p class="subline">
-              SPED / Accessibility · Planning barrier · AI filled organizer
-            </p>
+            <p class="subline">SPED / Accessibility · Planning barrier · AI filled organizer</p>
           </div>
           <div class="action-row top-actions">
-            <a class="btn secondary" href="#menu" data-open-page="menu"
-              >Group menu</a
-            >
+            <a class="btn secondary" href="#menu" data-open-page="menu">Group menu</a>
             <a
               class="btn primary"
               href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
@@ -3799,9 +3609,7 @@ Students still read the original text, identify the central claim, select their 
               rel="noopener noreferrer"
               >Open Padlet ↗</a
             >
-            <a class="btn secondary" href="#gallery" data-open-page="gallery"
-              >Post Builder</a
-            >
+            <a class="btn secondary" href="#gallery" data-open-page="gallery">Post Builder</a>
           </div>
         </div>
 
@@ -3810,42 +3618,30 @@ Students still read the original text, identify the central claim, select their 
             <div class="scenario-label">Scenario page reference</div>
             <h3>What went wrong?</h3>
             <p>
-              Students plan a constructed response. The teacher wanted planning
-              support, but the AI completed the response structure and evidence
-              choices for students.
+              Students plan a constructed response. The teacher wanted planning support, but the AI
+              completed the response structure and evidence choices for students.
             </p>
 
             <div class="ai-input-card">
               <h4>Problem AI Input</h4>
               <p class="quote">
-                “Create a graphic organizer for this constructed response and
-                fill in a sample topic sentence, evidence, and explanation so
-                students know what to write.”
+                “Create a graphic organizer for this constructed response and fill in a sample topic
+                sentence, evidence, and explanation so students know what to write.”
               </p>
             </div>
             <div class="mini-stack">
               <div>
-                <strong>Protect:</strong> Students must choose evidence and
-                explain how it supports the response.
+                <strong>Protect:</strong> Students must choose evidence and explain how it supports
+                the response.
               </div>
             </div>
 
             <div class="osamr-strip" aria-label="OSAMR quick reference">
               <div><strong>S</strong><span>Same task, tech swap</span></div>
-              <div>
-                <strong>A</strong><span>Same task, useful improvement</span>
-              </div>
-              <div>
-                <strong>M</strong
-                ><span>Task redesigned for stronger access</span>
-              </div>
-              <div>
-                <strong>R</strong
-                ><span>New learning move not otherwise possible</span>
-              </div>
-              <div class="warn">
-                <strong>O</strong><span>AI takes over the thinking</span>
-              </div>
+              <div><strong>A</strong><span>Same task, useful improvement</span></div>
+              <div><strong>M</strong><span>Task redesigned for stronger access</span></div>
+              <div><strong>R</strong><span>New learning move not otherwise possible</span></div>
+              <div class="warn"><strong>O</strong><span>AI takes over the thinking</span></div>
             </div>
           </aside>
 
@@ -3856,9 +3652,7 @@ Students still read the original text, identify the central claim, select their 
                   <span>1</span>
                   <h3>Name the access barrier</h3>
                 </div>
-                <p class="hint">
-                  What issue are you fixing without lowering the task?
-                </p>
+                <p class="hint">What issue are you fixing without lowering the task?</p>
                 <textarea
                   id="g6-barrier"
                   data-field="barrier"
@@ -3887,8 +3681,8 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Draft the fix before Gemini</h3>
                 </div>
                 <p class="hint">
-                  Write the scaffold you would try first. Do not use AI to
-                  complete the student task.
+                  Write the scaffold you would try first. Do not use AI to complete the student
+                  task.
                 </p>
                 <textarea
                   class="tall"
@@ -3905,15 +3699,11 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Use Gemini as a coach</h3>
                 </div>
                 <p class="hint">
-                  Copy the coach prompt, open Gemini, paste it, then revise your
-                  scaffold based on useful feedback.
+                  Copy the coach prompt, open Gemini, paste it, then revise your scaffold based on
+                  useful feedback.
                 </p>
                 <div class="action-row">
-                  <button
-                    class="btn primary"
-                    type="button"
-                    data-copy-prompt="6"
-                  >
+                  <button class="btn primary" type="button" data-copy-prompt="6">
                     Copy Gemini coach prompt
                   </button>
                   <a
@@ -3926,11 +3716,7 @@ Students still read the original text, identify the central claim, select their 
                 </div>
                 <details>
                   <summary>Preview the Gemini coach prompt</summary>
-                  <textarea
-                    class="prompt-preview"
-                    id="g6-prompt"
-                    readonly
-                  ></textarea>
+                  <textarea class="prompt-preview" id="g6-prompt" readonly></textarea>
                 </details>
                 <textarea
                   id="g6-feedback"
@@ -3946,8 +3732,7 @@ Students still read the original text, identify the central claim, select their 
                   <h3>Final after-Gemini version</h3>
                 </div>
                 <p class="hint">
-                  Revise the scaffold only if the learning target and student
-                  thinking stay intact.
+                  Revise the scaffold only if the learning target and student thinking stay intact.
                 </p>
                 <textarea
                   class="tall"
@@ -4004,9 +3789,7 @@ Students still read the original text, identify the central claim, select their 
           </div>
           <textarea id="g6-post" class="post-output" readonly></textarea>
           <div class="action-row">
-            <button class="btn primary" type="button" data-copy-post="6">
-              Copy gallery post
-            </button>
+            <button class="btn primary" type="button" data-copy-post="6">Copy gallery post</button>
             <a
               class="btn secondary"
               href="https://padlet.com/jdneft/fix-it-gallery-and-peer-showcase-q0xnwh8svcnlcfyi"
@@ -4030,8 +3813,8 @@ Students still read the original text, identify the central claim, select their 
             <p class="kicker">Padlet Post Builder</p>
             <h2>Copy your final fix into Padlet.</h2>
             <p class="subline">
-              Use the after-Gemini version, OSAMR rating, evidence sentence, and
-              suggested Padlet labels.
+              Use the after-Gemini version, OSAMR rating, evidence sentence, and suggested Padlet
+              labels.
             </p>
           </div>
           <div class="action-row top-actions">
@@ -4051,10 +3834,7 @@ Students still read the original text, identify the central claim, select their 
         <div class="padlet-callout">
           <div>
             <h3>Padlet link</h3>
-            <p>
-              Click here to open the shared Padlet, then paste your copied group
-              post.
-            </p>
+            <p>Click here to open the shared Padlet, then paste your copied group post.</p>
           </div>
           <a
             class="btn primary"
@@ -4069,10 +3849,7 @@ Students still read the original text, identify the central claim, select their 
           <div class="gallery-list" id="galleryList"></div>
           <aside class="card side-note">
             <h3>Padlet label bank</h3>
-            <p>
-              Use the group label first. Add one process label and one
-              status/OSAMR label.
-            </p>
+            <p>Use the group label first. Add one process label and one status/OSAMR label.</p>
             <div class="label-bank">
               <span>Group 1 — Math Reasoning</span>
               <span>Group 2 — ELA Evidence</span>
@@ -4136,8 +3913,7 @@ Students still read the original text, identify the central claim, select their 
           goal: "Make the article more accessible while students still read, choose evidence, and explain how it supports the claim.",
           thinking:
             "Students must identify the claim, select evidence, and explain the connection.",
-          avoid:
-            "Do not replace the article or name the evidence for students.",
+          avoid: "Do not replace the article or name the evidence for students.",
           starter_fix:
             "Chunk headings, vocabulary support, margin questions, and evidence-finding frames that require students to return to the original text.",
         },
@@ -4174,8 +3950,7 @@ Students still read the original text, identify the central claim, select their 
           scenario:
             "Students evaluate whether a historical decision was justified. The teacher wanted writing support, but the AI-generated support moved into claim-making and interpretation.",
           goal: "Provide writing structure without giving the claim, reasons, or interpretation.",
-          thinking:
-            "Students must make the judgment, choose reasons, and interpret sources.",
+          thinking: "Students must make the judgment, choose reasons, and interpret sources.",
           avoid: "Do not give the claim position or source-based reasons.",
           starter_fix:
             "Neutral sentence frames, source-analysis prompts, and a claim-planning organizer with blank spaces for students’ own evidence and reasoning.",
@@ -4194,8 +3969,7 @@ Students still read the original text, identify the central claim, select their 
           scenario:
             "Students must compare two representations of the same relationship: a table and a graph. The teacher wanted newcomer-friendly directions, but the AI changed the task target.",
           goal: "Clarify language while students still compare the table and graph.",
-          thinking:
-            "Students must compare both representations and explain the relationship.",
+          thinking: "Students must compare both representations and explain the relationship.",
           avoid: "Do not reduce the task to noticing only one representation.",
           starter_fix:
             "Simple directions, bilingual vocabulary, visual cues for table/graph, and sentence frames that still require comparison.",
@@ -4214,10 +3988,8 @@ Students still read the original text, identify the central claim, select their 
           scenario:
             "Students plan a constructed response. The teacher wanted planning support, but the AI completed the response structure and evidence choices for students.",
           goal: "Structure the work while students still choose evidence and explain their thinking.",
-          thinking:
-            "Students must choose evidence and explain how it supports the response.",
-          avoid:
-            "Do not fill in the topic sentence, evidence, or explanation for students.",
+          thinking: "Students must choose evidence and explain how it supports the response.",
+          avoid: "Do not fill in the topic sentence, evidence, or explanation for students.",
           starter_fix:
             "A blank organizer, step-by-step checklist, question prompts, and sentence frames that guide planning without pre-filling the response.",
         },
@@ -4232,8 +4004,7 @@ Students still read the original text, identify the central claim, select their 
       }
 
       const $ = (selector, root = document) => root.querySelector(selector);
-      const $$ = (selector, root = document) =>
-        Array.from(root.querySelectorAll(selector));
+      const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
       let savePillTimer = null;
       function flagSaved() {
@@ -4303,9 +4074,7 @@ Students still read the original text, identify the central claim, select their 
         if (saveTimer !== null) writeState();
       }
 
-      const prefersReducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      );
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
       function key(groupId, field) {
         return `g${groupId}_${field}`;
@@ -4360,9 +4129,7 @@ Students still read the original text, identify the central claim, select their 
       const TOTAL_STEPS = STEP_FIELDS.length;
 
       function stepDone(groupId, index) {
-        return STEP_FIELDS[index].every((field) =>
-          getValue(groupId, field).trim(),
-        );
+        return STEP_FIELDS[index].every((field) => getValue(groupId, field).trim());
       }
 
       function completedSteps(groupId) {
@@ -4495,9 +4262,7 @@ Students still read the original text, identify the central claim, select their 
       function refreshReadyChecks(groupId) {
         const block = $(`.ready-check-group[data-group="${groupId}"]`);
         if (!block) return;
-        const checked = READY_CHECKS.filter(
-          (name) => state[checkKey(groupId, name)],
-        );
+        const checked = READY_CHECKS.filter((name) => state[checkKey(groupId, name)]);
         const passed = checked.length === READY_CHECKS.length;
         block.classList.toggle("passed", passed);
         const status = $(".rc-status", block);
@@ -4533,17 +4298,11 @@ Students still read the original text, identify the central claim, select their 
           `Clear all of your answers on the Group ${groupId} page? This cannot be undone.`,
         );
         if (!ok) return;
-        [
-          "barrier",
-          "thinking",
-          "before",
-          "feedback",
-          "after",
-          "osamr",
-          "evidence",
-        ].forEach((field) => {
-          delete state[key(groupId, field)];
-        });
+        ["barrier", "thinking", "before", "feedback", "after", "osamr", "evidence"].forEach(
+          (field) => {
+            delete state[key(groupId, field)];
+          },
+        );
         READY_CHECKS.forEach((name) => delete state[checkKey(groupId, name)]);
         save();
         $$(`[data-group="${groupId}"][data-field]`).forEach((input) => {
@@ -4687,17 +4446,11 @@ Keep the response practical, concise, and ready for a teacher to use.`;
 
       function postFor(groupId) {
         const group = groupById(groupId);
-        const barrier =
-          getValue(groupId, "barrier") || "[Name the access barrier]";
-        const thinking =
-          getValue(groupId, "thinking") ||
-          "[Name the student thinking to protect]";
-        const before =
-          getValue(groupId, "before") || "[Before-Gemini scaffold]";
-        const feedback =
-          getValue(groupId, "feedback") || "[Useful Gemini feedback]";
-        const after =
-          getValue(groupId, "after") || "[Final after-Gemini scaffold]";
+        const barrier = getValue(groupId, "barrier") || "[Name the access barrier]";
+        const thinking = getValue(groupId, "thinking") || "[Name the student thinking to protect]";
+        const before = getValue(groupId, "before") || "[Before-Gemini scaffold]";
+        const feedback = getValue(groupId, "feedback") || "[Useful Gemini feedback]";
+        const after = getValue(groupId, "after") || "[Final after-Gemini scaffold]";
         const osamr = getValue(groupId, "osamr") || "[OSAMR level]";
         const evidence = getValue(groupId, "evidence") || "[Students still...]";
 
@@ -4750,12 +4503,8 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
           const groupId = input.dataset.group;
           const field = input.dataset.field;
           input.value = getValue(groupId, field);
-          input.addEventListener("input", (event) =>
-            setValue(groupId, field, event.target.value),
-          );
-          input.addEventListener("change", (event) =>
-            setValue(groupId, field, event.target.value),
-          );
+          input.addEventListener("input", (event) => setValue(groupId, field, event.target.value));
+          input.addEventListener("change", (event) => setValue(groupId, field, event.target.value));
         });
 
         GROUPS.forEach((group) => updateGroup(group.id));
@@ -4853,10 +4602,7 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
         const group = groupById(groupId);
         if (!group) return;
         const slug = group.short.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-        downloadText(
-          `fix-it-group-${group.id}-${slug}.txt`,
-          postFor(group.id),
-        );
+        downloadText(`fix-it-group-${group.id}-${slug}.txt`, postFor(group.id));
         showToast(`Group ${group.id} work downloaded`);
       }
 
@@ -4877,10 +4623,7 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
         bytes.forEach((byte) => {
           binary += String.fromCharCode(byte);
         });
-        return btoa(binary)
-          .replace(/\+/g, "-")
-          .replace(/\//g, "_")
-          .replace(/=+$/, "");
+        return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
       }
 
       function decodeShare(token) {
@@ -4993,7 +4736,8 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
         });
       }
 
-      const PADLET_QR = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MSA0MSIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIiByb2xlPSJpbWciPjxyZWN0IHdpZHRoPSI0MSIgaGVpZ2h0PSI0MSIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0yIDJoN3YxaC03ek0xMSAyaDJ2MWgtMnpNMTQgMmg1djFoLTV6TTIwIDJoMXYxaC0xek0yMiAyaDR2MWgtNHpNMzIgMmg3djFoLTd6TTIgM2gxdjFoLTF6TTggM2gxdjFoLTF6TTExIDNoMXYxaC0xek0xMyAzaDN2MWgtM3pNMTcgM2gxdjFoLTF6TTE5IDNoMXYxaC0xek0yMSAzaDF2MWgtMXpNMjMgM2gydjFoLTJ6TTI3IDNoMXYxaC0xek0yOSAzaDJ2MWgtMnpNMzIgM2gxdjFoLTF6TTM4IDNoMXYxaC0xek0yIDRoMXYxaC0xek00IDRoM3YxaC0zek04IDRoMXYxaC0xek0xMCA0aDF2MWgtMXpNMTIgNGgxdjFoLTF6TTE0IDRoMnYxaC0yek0yMSA0aDN2MWgtM3pNMjUgNGgydjFoLTJ6TTI4IDRoM3YxaC0zek0zMiA0aDF2MWgtMXpNMzQgNGgzdjFoLTN6TTM4IDRoMXYxaC0xek0yIDVoMXYxaC0xek00IDVoM3YxaC0zek04IDVoMXYxaC0xek0xMCA1aDF2MWgtMXpNMTIgNWgxdjFoLTF6TTE4IDVoMnYxaC0yek0yMSA1aDF2MWgtMXpNMjcgNWgzdjFoLTN6TTMyIDVoMXYxaC0xek0zNCA1aDN2MWgtM3pNMzggNWgxdjFoLTF6TTIgNmgxdjFoLTF6TTQgNmgzdjFoLTN6TTggNmgxdjFoLTF6TTEwIDZoNHYxaC00ek0xNiA2aDN2MWgtM3pNMjAgNmg0djFoLTR6TTI1IDZoMXYxaC0xek0yNyA2aDF2MWgtMXpNMzAgNmgxdjFoLTF6TTMyIDZoMXYxaC0xek0zNCA2aDN2MWgtM3pNMzggNmgxdjFoLTF6TTIgN2gxdjFoLTF6TTggN2gxdjFoLTF6TTEwIDdoMXYxaC0xek0xMiA3aDJ2MWgtMnpNMTYgN2gxdjFoLTF6TTE4IDdoMXYxaC0xek0yMCA3aDF2MWgtMXpNMjIgN2gxdjFoLTF6TTI0IDdoMXYxaC0xek0yNiA3aDF2MWgtMXpNMjggN2gydjFoLTJ6TTMyIDdoMXYxaC0xek0zOCA3aDF2MWgtMXpNMiA4aDd2MWgtN3pNMTAgOGgxdjFoLTF6TTEyIDhoMXYxaC0xek0xNCA4aDF2MWgtMXpNMTYgOGgxdjFoLTF6TTE4IDhoMXYxaC0xek0yMCA4aDF2MWgtMXpNMjIgOGgxdjFoLTF6TTI0IDhoMXYxaC0xek0yNiA4aDF2MWgtMXpNMjggOGgxdjFoLTF6TTMwIDhoMXYxaC0xek0zMiA4aDd2MWgtN3pNMTAgOWgxdjFoLTF6TTEyIDloMXYxaC0xek0xNSA5aDJ2MWgtMnpNMjIgOWgydjFoLTJ6TTI1IDloMXYxaC0xek0yOCA5aDF2MWgtMXpNMzAgOWgxdjFoLTF6TTIgMTBoMXYxaC0xek00IDEwaDV2MWgtNXpNMTIgMTBoNHYxaC00ek0yMCAxMGgydjFoLTJ6TTI0IDEwaDF2MWgtMXpNMjcgMTBoMnYxaC0yek0zMiAxMGg1djFoLTV6TTIgMTFoMnYxaC0yek03IDExaDF2MWgtMXpNMTAgMTFoMXYxaC0xek0xNSAxMWg0djFoLTR6TTI1IDExaDF2MWgtMXpNMjcgMTFoMnYxaC0yek0zMCAxMWgxdjFoLTF6TTMzIDExaDF2MWgtMXpNMzYgMTFoMnYxaC0yek0yIDEyaDd2MWgtN3pNMTEgMTJoNnYxaC02ek0yMCAxMmgxdjFoLTF6TTIyIDEyaDF2MWgtMXpNMjQgMTJoMXYxaC0xek0yNiAxMmg1djFoLTV6TTMyIDEyaDN2MWgtM3pNMzcgMTJoMnYxaC0yek0zIDEzaDV2MWgtNXpNOSAxM2gzdjFoLTN6TTE0IDEzaDN2MWgtM3pNMTggMTNoMXYxaC0xek0yMyAxM2gydjFoLTJ6TTI2IDEzaDF2MWgtMXpNMjggMTNoMXYxaC0xek0zMiAxM2gxdjFoLTF6TTM4IDEzaDF2MWgtMXpNMiAxNGgxdjFoLTF6TTUgMTRoMXYxaC0xek04IDE0aDF2MWgtMXpNMTAgMTRoMXYxaC0xek0xMiAxNGgxdjFoLTF6TTE5IDE0aDF2MWgtMXpNMjEgMTRoMXYxaC0xek0yNCAxNGg2djFoLTZ6TTMxIDE0aDR2MWgtNHpNMzYgMTRoM3YxaC0zek0yIDE1aDJ2MWgtMnpNNSAxNWgxdjFoLTF6TTEwIDE1aDF2MWgtMXpNMTQgMTVoMnYxaC0yek0xOCAxNWg0djFoLTR6TTIzIDE1aDF2MWgtMXpNMjUgMTVoMXYxaC0xek0zMyAxNWgxdjFoLTF6TTIgMTZoMXYxaC0xek03IDE2aDJ2MWgtMnpNMTIgMTZoMXYxaC0xek0xNyAxNmgzdjFoLTN6TTI5IDE2aDF2MWgtMXpNMzMgMTZoM3YxaC0zek0zOCAxNmgxdjFoLTF6TTMgMTdoMXYxaC0xek01IDE3aDF2MWgtMXpNOSAxN2gxdjFoLTF6TTEyIDE3aDN2MWgtM3pNMTYgMTdoNXYxaC01ek0yMiAxN2gzdjFoLTN6TTI4IDE3aDN2MWgtM3pNMzIgMTdoM3YxaC0zek0zOCAxN2gxdjFoLTF6TTIgMThoMXYxaC0xek00IDE4aDN2MWgtM3pNOCAxOGg0djFoLTR6TTEzIDE4aDJ2MWgtMnpNMTYgMThoMXYxaC0xek0xOCAxOGgxdjFoLTF6TTI0IDE4aDF2MWgtMXpNMjcgMThoMXYxaC0xek0yOSAxOGg2djFoLTZ6TTM2IDE4aDN2MWgtM3pNMiAxOWgxdjFoLTF6TTcgMTloMXYxaC0xek0xMSAxOWg3djFoLTd6TTE5IDE5aDV2MWgtNXpNMjUgMTloNHYxaC00ek0zMCAxOWgxdjFoLTF6TTMzIDE5aDF2MWgtMXpNMzUgMTloMXYxaC0xek0zNyAxOWgxdjFoLTF6TTIgMjBoMXYxaC0xek00IDIwaDJ2MWgtMnpNOCAyMGgxdjFoLTF6TTEwIDIwaDF2MWgtMXpNMTUgMjBoMXYxaC0xek0xNyAyMGgydjFoLTJ6TTIyIDIwaDF2MWgtMXpNMjQgMjBoMXYxaC0xek0yNiAyMGgxdjFoLTF6TTI4IDIwaDN2MWgtM3pNMzIgMjBoMnYxaC0yek0zNSAyMGgxdjFoLTF6TTM3IDIwaDJ2MWgtMnpNNSAyMWgxdjFoLTF6TTkgMjFoNnYxaC02ek0xNyAyMWgxdjFoLTF6TTIwIDIxaDF2MWgtMXpNMjMgMjFoMXYxaC0xek0yNiAyMWgxdjFoLTF6TTI4IDIxaDJ2MWgtMnpNMzEgMjFoNHYxaC00ek0zOCAyMWgxdjFoLTF6TTQgMjJoMnYxaC0yek04IDIyaDF2MWgtMXpNMTAgMjJoMXYxaC0xek0xNiAyMmgydjFoLTJ6TTE5IDIyaDF2MWgtMXpNMjEgMjJoMnYxaC0yek0yNCAyMmg0djFoLTR6TTI5IDIyaDR2MWgtNHpNMzQgMjJoM3YxaC0zek0yIDIzaDF2MWgtMXpNNyAyM2gxdjFoLTF6TTkgMjNoMXYxaC0xek0xMyAyM2gzdjFoLTN6TTIwIDIzaDN2MWgtM3pNMjUgMjNoMXYxaC0xek0zMCAyM2gxdjFoLTF6TTM1IDIzaDF2MWgtMXpNMyAyNGgxdjFoLTF6TTUgMjRoMXYxaC0xek04IDI0aDJ2MWgtMnpNMTMgMjRoNnYxaC02ek0yMCAyNGgxdjFoLTF6TTIyIDI0aDF2MWgtMXpNMjQgMjRoMXYxaC0xek0yNiAyNGgxdjFoLTF6TTI5IDI0aDN2MWgtM3pNMzMgMjRoM3YxaC0zek0zNyAyNGgydjFoLTJ6TTUgMjVoMnYxaC0yek0xMSAyNWgydjFoLTJ6TTE3IDI1aDF2MWgtMXpNMjMgMjVoMXYxaC0xek0yNSAyNWgxdjFoLTF6TTI5IDI1aDN2MWgtM3pNMzMgMjVoMnYxaC0yek0yIDI2aDF2MWgtMXpNNiAyNmg4djFoLTh6TTIwIDI2aDN2MWgtM3pNMjQgMjZoNnYxaC02ek0zMSAyNmgydjFoLTJ6TTM0IDI2aDF2MWgtMXpNMzYgMjZoMnYxaC0yek0yIDI3aDJ2MWgtMnpNNSAyN2gxdjFoLTF6TTcgMjdoMXYxaC0xek05IDI3aDd2MWgtN3pNMTcgMjdoM3YxaC0zek0yMSAyN2gydjFoLTJ6TTI1IDI3aDF2MWgtMXpNMjcgMjdoMnYxaC0yek0zMCAyN2gydjFoLTJ6TTIgMjhoMXYxaC0xek00IDI4aDF2MWgtMXpNNiAyOGgxdjFoLTF6TTggMjhoMXYxaC0xek0xMyAyOGgxdjFoLTF6TTE1IDI4aDJ2MWgtMnpNMjMgMjhoMXYxaC0xek0yNyAyOGg2djFoLTZ6TTM0IDI4aDF2MWgtMXpNMzcgMjhoMnYxaC0yek0yIDI5aDF2MWgtMXpNNCAyOWgydjFoLTJ6TTcgMjloMXYxaC0xek0xMCAyOWgydjFoLTJ6TTEzIDI5aDN2MWgtM3pNMTggMjloMXYxaC0xek0yMCAyOWg2djFoLTZ6TTI4IDI5aDF2MWgtMXpNMzIgMjloMXYxaC0xek0zNyAyOWgxdjFoLTF6TTIgMzBoMXYxaC0xek00IDMwaDF2MWgtMXpNNiAzMGgzdjFoLTN6TTExIDMwaDF2MWgtMXpNMTggMzBoMnYxaC0yek0yNCAzMGgxdjFoLTF6TTI2IDMwaDExdjFoLTExek0xMCAzMWgxdjFoLTF6TTEyIDMxaDF2MWgtMXpNMTQgMzFoMnYxaC0yek0xOCAzMWg1djFoLTV6TTI0IDMxaDJ2MWgtMnpNMjcgMzFoMXYxaC0xek0yOSAzMWgydjFoLTJ6TTM0IDMxaDJ2MWgtMnpNMiAzMmg3djFoLTd6TTExIDMyaDN2MWgtM3pNMTcgMzJoMXYxaC0xek0xOSAzMmgxdjFoLTF6TTIyIDMyaDN2MWgtM3pNMjYgMzJoMXYxaC0xek0zMCAzMmgxdjFoLTF6TTMyIDMyaDF2MWgtMXpNMzQgMzJoMXYxaC0xek0zNiAzMmgzdjFoLTN6TTIgMzNoMXYxaC0xek04IDMzaDF2MWgtMXpNMTAgMzNoMXYxaC0xek0xNiAzM2gxdjFoLTF6TTE5IDMzaDJ2MWgtMnpNMjIgMzNoMnYxaC0yek0zMCAzM2gxdjFoLTF6TTM0IDMzaDJ2MWgtMnpNMzcgMzNoMnYxaC0yek0yIDM0aDF2MWgtMXpNNCAzNGgzdjFoLTN6TTggMzRoMXYxaC0xek0xMCAzNGgxdjFoLTF6TTEyIDM0aDF2MWgtMXpNMTQgMzRoMXYxaC0xek0xNyAzNGgydjFoLTJ6TTIxIDM0aDF2MWgtMXpNMjQgMzRoMXYxaC0xek0yNyAzNGg4djFoLTh6TTM2IDM0aDF2MWgtMXpNMzggMzRoMXYxaC0xek0yIDM1aDF2MWgtMXpNNCAzNWgzdjFoLTN6TTggMzVoMXYxaC0xek0xMCAzNWgxdjFoLTF6TTEzIDM1aDN2MWgtM3pNMTcgMzVoMXYxaC0xek0yMCAzNWgzdjFoLTN6TTI1IDM1aDF2MWgtMXpNMjcgMzVoMXYxaC0xek0yOSAzNWgxdjFoLTF6TTMxIDM1aDJ2MWgtMnpNMzQgMzVoMXYxaC0xek0zOCAzNWgxdjFoLTF6TTIgMzZoMXYxaC0xek00IDM2aDN2MWgtM3pNOCAzNmgxdjFoLTF6TTEwIDM2aDJ2MWgtMnpNMTUgMzZoMXYxaC0xek0xNyAzNmgydjFoLTJ6TTIyIDM2aDJ2MWgtMnpNMjYgMzZoMnYxaC0yek0zMCAzNmgxdjFoLTF6TTM3IDM2aDJ2MWgtMnpNMiAzN2gxdjFoLTF6TTggMzdoMXYxaC0xek0xMSAzN2gydjFoLTJ6TTE2IDM3aDJ2MWgtMnpNMjEgMzdoMXYxaC0xek0yMyAzN2gxdjFoLTF6TTI1IDM3aDF2MWgtMXpNMjkgMzdoNHYxaC00ek0zNCAzN2gxdjFoLTF6TTM4IDM3aDF2MWgtMXpNMiAzOGg3djFoLTd6TTEwIDM4aDN2MWgtM3pNMTYgMzhoNHYxaC00ek0yNSAzOGg0djFoLTR6TTMxIDM4aDF2MWgtMXpNMzQgMzhoMXYxaC0xek0zNiAzOGgzdjFoLTN6IiBmaWxsPSIjMTAyODNmIi8+PC9zdmc+";
+      const PADLET_QR =
+        "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MSA0MSIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIiByb2xlPSJpbWciPjxyZWN0IHdpZHRoPSI0MSIgaGVpZ2h0PSI0MSIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0yIDJoN3YxaC03ek0xMSAyaDJ2MWgtMnpNMTQgMmg1djFoLTV6TTIwIDJoMXYxaC0xek0yMiAyaDR2MWgtNHpNMzIgMmg3djFoLTd6TTIgM2gxdjFoLTF6TTggM2gxdjFoLTF6TTExIDNoMXYxaC0xek0xMyAzaDN2MWgtM3pNMTcgM2gxdjFoLTF6TTE5IDNoMXYxaC0xek0yMSAzaDF2MWgtMXpNMjMgM2gydjFoLTJ6TTI3IDNoMXYxaC0xek0yOSAzaDJ2MWgtMnpNMzIgM2gxdjFoLTF6TTM4IDNoMXYxaC0xek0yIDRoMXYxaC0xek00IDRoM3YxaC0zek04IDRoMXYxaC0xek0xMCA0aDF2MWgtMXpNMTIgNGgxdjFoLTF6TTE0IDRoMnYxaC0yek0yMSA0aDN2MWgtM3pNMjUgNGgydjFoLTJ6TTI4IDRoM3YxaC0zek0zMiA0aDF2MWgtMXpNMzQgNGgzdjFoLTN6TTM4IDRoMXYxaC0xek0yIDVoMXYxaC0xek00IDVoM3YxaC0zek04IDVoMXYxaC0xek0xMCA1aDF2MWgtMXpNMTIgNWgxdjFoLTF6TTE4IDVoMnYxaC0yek0yMSA1aDF2MWgtMXpNMjcgNWgzdjFoLTN6TTMyIDVoMXYxaC0xek0zNCA1aDN2MWgtM3pNMzggNWgxdjFoLTF6TTIgNmgxdjFoLTF6TTQgNmgzdjFoLTN6TTggNmgxdjFoLTF6TTEwIDZoNHYxaC00ek0xNiA2aDN2MWgtM3pNMjAgNmg0djFoLTR6TTI1IDZoMXYxaC0xek0yNyA2aDF2MWgtMXpNMzAgNmgxdjFoLTF6TTMyIDZoMXYxaC0xek0zNCA2aDN2MWgtM3pNMzggNmgxdjFoLTF6TTIgN2gxdjFoLTF6TTggN2gxdjFoLTF6TTEwIDdoMXYxaC0xek0xMiA3aDJ2MWgtMnpNMTYgN2gxdjFoLTF6TTE4IDdoMXYxaC0xek0yMCA3aDF2MWgtMXpNMjIgN2gxdjFoLTF6TTI0IDdoMXYxaC0xek0yNiA3aDF2MWgtMXpNMjggN2gydjFoLTJ6TTMyIDdoMXYxaC0xek0zOCA3aDF2MWgtMXpNMiA4aDd2MWgtN3pNMTAgOGgxdjFoLTF6TTEyIDhoMXYxaC0xek0xNCA4aDF2MWgtMXpNMTYgOGgxdjFoLTF6TTE4IDhoMXYxaC0xek0yMCA4aDF2MWgtMXpNMjIgOGgxdjFoLTF6TTI0IDhoMXYxaC0xek0yNiA4aDF2MWgtMXpNMjggOGgxdjFoLTF6TTMwIDhoMXYxaC0xek0zMiA4aDd2MWgtN3pNMTAgOWgxdjFoLTF6TTEyIDloMXYxaC0xek0xNSA5aDJ2MWgtMnpNMjIgOWgydjFoLTJ6TTI1IDloMXYxaC0xek0yOCA5aDF2MWgtMXpNMzAgOWgxdjFoLTF6TTIgMTBoMXYxaC0xek00IDEwaDV2MWgtNXpNMTIgMTBoNHYxaC00ek0yMCAxMGgydjFoLTJ6TTI0IDEwaDF2MWgtMXpNMjcgMTBoMnYxaC0yek0zMiAxMGg1djFoLTV6TTIgMTFoMnYxaC0yek03IDExaDF2MWgtMXpNMTAgMTFoMXYxaC0xek0xNSAxMWg0djFoLTR6TTI1IDExaDF2MWgtMXpNMjcgMTFoMnYxaC0yek0zMCAxMWgxdjFoLTF6TTMzIDExaDF2MWgtMXpNMzYgMTFoMnYxaC0yek0yIDEyaDd2MWgtN3pNMTEgMTJoNnYxaC02ek0yMCAxMmgxdjFoLTF6TTIyIDEyaDF2MWgtMXpNMjQgMTJoMXYxaC0xek0yNiAxMmg1djFoLTV6TTMyIDEyaDN2MWgtM3pNMzcgMTJoMnYxaC0yek0zIDEzaDV2MWgtNXpNOSAxM2gzdjFoLTN6TTE0IDEzaDN2MWgtM3pNMTggMTNoMXYxaC0xek0yMyAxM2gydjFoLTJ6TTI2IDEzaDF2MWgtMXpNMjggMTNoMXYxaC0xek0zMiAxM2gxdjFoLTF6TTM4IDEzaDF2MWgtMXpNMiAxNGgxdjFoLTF6TTUgMTRoMXYxaC0xek04IDE0aDF2MWgtMXpNMTAgMTRoMXYxaC0xek0xMiAxNGgxdjFoLTF6TTE5IDE0aDF2MWgtMXpNMjEgMTRoMXYxaC0xek0yNCAxNGg2djFoLTZ6TTMxIDE0aDR2MWgtNHpNMzYgMTRoM3YxaC0zek0yIDE1aDJ2MWgtMnpNNSAxNWgxdjFoLTF6TTEwIDE1aDF2MWgtMXpNMTQgMTVoMnYxaC0yek0xOCAxNWg0djFoLTR6TTIzIDE1aDF2MWgtMXpNMjUgMTVoMXYxaC0xek0zMyAxNWgxdjFoLTF6TTIgMTZoMXYxaC0xek03IDE2aDJ2MWgtMnpNMTIgMTZoMXYxaC0xek0xNyAxNmgzdjFoLTN6TTI5IDE2aDF2MWgtMXpNMzMgMTZoM3YxaC0zek0zOCAxNmgxdjFoLTF6TTMgMTdoMXYxaC0xek01IDE3aDF2MWgtMXpNOSAxN2gxdjFoLTF6TTEyIDE3aDN2MWgtM3pNMTYgMTdoNXYxaC01ek0yMiAxN2gzdjFoLTN6TTI4IDE3aDN2MWgtM3pNMzIgMTdoM3YxaC0zek0zOCAxN2gxdjFoLTF6TTIgMThoMXYxaC0xek00IDE4aDN2MWgtM3pNOCAxOGg0djFoLTR6TTEzIDE4aDJ2MWgtMnpNMTYgMThoMXYxaC0xek0xOCAxOGgxdjFoLTF6TTI0IDE4aDF2MWgtMXpNMjcgMThoMXYxaC0xek0yOSAxOGg2djFoLTZ6TTM2IDE4aDN2MWgtM3pNMiAxOWgxdjFoLTF6TTcgMTloMXYxaC0xek0xMSAxOWg3djFoLTd6TTE5IDE5aDV2MWgtNXpNMjUgMTloNHYxaC00ek0zMCAxOWgxdjFoLTF6TTMzIDE5aDF2MWgtMXpNMzUgMTloMXYxaC0xek0zNyAxOWgxdjFoLTF6TTIgMjBoMXYxaC0xek00IDIwaDJ2MWgtMnpNOCAyMGgxdjFoLTF6TTEwIDIwaDF2MWgtMXpNMTUgMjBoMXYxaC0xek0xNyAyMGgydjFoLTJ6TTIyIDIwaDF2MWgtMXpNMjQgMjBoMXYxaC0xek0yNiAyMGgxdjFoLTF6TTI4IDIwaDN2MWgtM3pNMzIgMjBoMnYxaC0yek0zNSAyMGgxdjFoLTF6TTM3IDIwaDJ2MWgtMnpNNSAyMWgxdjFoLTF6TTkgMjFoNnYxaC02ek0xNyAyMWgxdjFoLTF6TTIwIDIxaDF2MWgtMXpNMjMgMjFoMXYxaC0xek0yNiAyMWgxdjFoLTF6TTI4IDIxaDJ2MWgtMnpNMzEgMjFoNHYxaC00ek0zOCAyMWgxdjFoLTF6TTQgMjJoMnYxaC0yek04IDIyaDF2MWgtMXpNMTAgMjJoMXYxaC0xek0xNiAyMmgydjFoLTJ6TTE5IDIyaDF2MWgtMXpNMjEgMjJoMnYxaC0yek0yNCAyMmg0djFoLTR6TTI5IDIyaDR2MWgtNHpNMzQgMjJoM3YxaC0zek0yIDIzaDF2MWgtMXpNNyAyM2gxdjFoLTF6TTkgMjNoMXYxaC0xek0xMyAyM2gzdjFoLTN6TTIwIDIzaDN2MWgtM3pNMjUgMjNoMXYxaC0xek0zMCAyM2gxdjFoLTF6TTM1IDIzaDF2MWgtMXpNMyAyNGgxdjFoLTF6TTUgMjRoMXYxaC0xek04IDI0aDJ2MWgtMnpNMTMgMjRoNnYxaC02ek0yMCAyNGgxdjFoLTF6TTIyIDI0aDF2MWgtMXpNMjQgMjRoMXYxaC0xek0yNiAyNGgxdjFoLTF6TTI5IDI0aDN2MWgtM3pNMzMgMjRoM3YxaC0zek0zNyAyNGgydjFoLTJ6TTUgMjVoMnYxaC0yek0xMSAyNWgydjFoLTJ6TTE3IDI1aDF2MWgtMXpNMjMgMjVoMXYxaC0xek0yNSAyNWgxdjFoLTF6TTI5IDI1aDN2MWgtM3pNMzMgMjVoMnYxaC0yek0yIDI2aDF2MWgtMXpNNiAyNmg4djFoLTh6TTIwIDI2aDN2MWgtM3pNMjQgMjZoNnYxaC02ek0zMSAyNmgydjFoLTJ6TTM0IDI2aDF2MWgtMXpNMzYgMjZoMnYxaC0yek0yIDI3aDJ2MWgtMnpNNSAyN2gxdjFoLTF6TTcgMjdoMXYxaC0xek05IDI3aDd2MWgtN3pNMTcgMjdoM3YxaC0zek0yMSAyN2gydjFoLTJ6TTI1IDI3aDF2MWgtMXpNMjcgMjdoMnYxaC0yek0zMCAyN2gydjFoLTJ6TTIgMjhoMXYxaC0xek00IDI4aDF2MWgtMXpNNiAyOGgxdjFoLTF6TTggMjhoMXYxaC0xek0xMyAyOGgxdjFoLTF6TTE1IDI4aDJ2MWgtMnpNMjMgMjhoMXYxaC0xek0yNyAyOGg2djFoLTZ6TTM0IDI4aDF2MWgtMXpNMzcgMjhoMnYxaC0yek0yIDI5aDF2MWgtMXpNNCAyOWgydjFoLTJ6TTcgMjloMXYxaC0xek0xMCAyOWgydjFoLTJ6TTEzIDI5aDN2MWgtM3pNMTggMjloMXYxaC0xek0yMCAyOWg2djFoLTZ6TTI4IDI5aDF2MWgtMXpNMzIgMjloMXYxaC0xek0zNyAyOWgxdjFoLTF6TTIgMzBoMXYxaC0xek00IDMwaDF2MWgtMXpNNiAzMGgzdjFoLTN6TTExIDMwaDF2MWgtMXpNMTggMzBoMnYxaC0yek0yNCAzMGgxdjFoLTF6TTI2IDMwaDExdjFoLTExek0xMCAzMWgxdjFoLTF6TTEyIDMxaDF2MWgtMXpNMTQgMzFoMnYxaC0yek0xOCAzMWg1djFoLTV6TTI0IDMxaDJ2MWgtMnpNMjcgMzFoMXYxaC0xek0yOSAzMWgydjFoLTJ6TTM0IDMxaDJ2MWgtMnpNMiAzMmg3djFoLTd6TTExIDMyaDN2MWgtM3pNMTcgMzJoMXYxaC0xek0xOSAzMmgxdjFoLTF6TTIyIDMyaDN2MWgtM3pNMjYgMzJoMXYxaC0xek0zMCAzMmgxdjFoLTF6TTMyIDMyaDF2MWgtMXpNMzQgMzJoMXYxaC0xek0zNiAzMmgzdjFoLTN6TTIgMzNoMXYxaC0xek04IDMzaDF2MWgtMXpNMTAgMzNoMXYxaC0xek0xNiAzM2gxdjFoLTF6TTE5IDMzaDJ2MWgtMnpNMjIgMzNoMnYxaC0yek0zMCAzM2gxdjFoLTF6TTM0IDMzaDJ2MWgtMnpNMzcgMzNoMnYxaC0yek0yIDM0aDF2MWgtMXpNNCAzNGgzdjFoLTN6TTggMzRoMXYxaC0xek0xMCAzNGgxdjFoLTF6TTEyIDM0aDF2MWgtMXpNMTQgMzRoMXYxaC0xek0xNyAzNGgydjFoLTJ6TTIxIDM0aDF2MWgtMXpNMjQgMzRoMXYxaC0xek0yNyAzNGg4djFoLTh6TTM2IDM0aDF2MWgtMXpNMzggMzRoMXYxaC0xek0yIDM1aDF2MWgtMXpNNCAzNWgzdjFoLTN6TTggMzVoMXYxaC0xek0xMCAzNWgxdjFoLTF6TTEzIDM1aDN2MWgtM3pNMTcgMzVoMXYxaC0xek0yMCAzNWgzdjFoLTN6TTI1IDM1aDF2MWgtMXpNMjcgMzVoMXYxaC0xek0yOSAzNWgxdjFoLTF6TTMxIDM1aDJ2MWgtMnpNMzQgMzVoMXYxaC0xek0zOCAzNWgxdjFoLTF6TTIgMzZoMXYxaC0xek00IDM2aDN2MWgtM3pNOCAzNmgxdjFoLTF6TTEwIDM2aDJ2MWgtMnpNMTUgMzZoMXYxaC0xek0xNyAzNmgydjFoLTJ6TTIyIDM2aDJ2MWgtMnpNMjYgMzZoMnYxaC0yek0zMCAzNmgxdjFoLTF6TTM3IDM2aDJ2MWgtMnpNMiAzN2gxdjFoLTF6TTggMzdoMXYxaC0xek0xMSAzN2gydjFoLTJ6TTE2IDM3aDJ2MWgtMnpNMjEgMzdoMXYxaC0xek0yMyAzN2gxdjFoLTF6TTI1IDM3aDF2MWgtMXpNMjkgMzdoNHYxaC00ek0zNCAzN2gxdjFoLTF6TTM4IDM3aDF2MWgtMXpNMiAzOGg3djFoLTd6TTEwIDM4aDN2MWgtM3pNMTYgMzhoNHYxaC00ek0yNSAzOGg0djFoLTR6TTMxIDM4aDF2MWgtMXpNMzQgMzhoMXYxaC0xek0zNiAzOGgzdjFoLTN6IiBmaWxsPSIjMTAyODNmIi8+PC9zdmc+";
 
       function buildPadletQr() {
         const callout = $("#gallery .padlet-callout");
@@ -5024,9 +4768,7 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
           return;
         }
 
-        const pageLink = event.target.closest(
-          "[data-open-page], .tab-btn[data-page]",
-        );
+        const pageLink = event.target.closest("[data-open-page], .tab-btn[data-page]");
         if (pageLink) {
           event.preventDefault();
           const target = pageLink.dataset.openPage || pageLink.dataset.page;
@@ -5040,9 +4782,7 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
         if (shareButton) {
           flushRender();
           flushSave();
-          const copied = await copyText(
-            shareUrlFor(shareButton.dataset.shareGroup),
-          );
+          const copied = await copyText(shareUrlFor(shareButton.dataset.shareGroup));
           showToast(copied ? "Share link copied" : "Share link ready to copy");
           if (copied) flashCopied(shareButton);
           return;
@@ -5068,9 +4808,7 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
         if (promptButton) {
           const groupId = promptButton.dataset.copyPrompt;
           const copied = await copyText(promptFor(groupId));
-          showToast(
-            copied ? "Gemini coach prompt copied" : "Prompt ready to copy",
-          );
+          showToast(copied ? "Gemini coach prompt copied" : "Prompt ready to copy");
           if (copied) flashCopied(promptButton);
           return;
         }
@@ -5117,8 +4855,7 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
       });
 
       const downloadButton = $("#downloadResponses");
-      if (downloadButton)
-        downloadButton.addEventListener("click", downloadResponses);
+      if (downloadButton) downloadButton.addEventListener("click", downloadResponses);
 
       /* A textarea paints only its visible box, so any answer longer than the
          field came out truncated on paper - the part a teacher most wants to
@@ -5182,6 +4919,24 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
       renderGallery();
       initTabKeyboardNav();
       initSharedLoad();
+
+      // Publish the REAL header height so the sticky offsets, anchor
+      // scroll-margins and sidebar height caps in the stylesheet stay correct
+      // at every width. The header re-wraps (brand row, chip row, tab row) and
+      // the site-wide toolbars above it change height too, so this is measured
+      // rather than assumed.
+      const headerEl = document.querySelector(".top");
+      function measureHeader() {
+        if (!headerEl) return;
+        const h = Math.round(headerEl.getBoundingClientRect().height);
+        document.documentElement.style.setProperty("--top-h", h + "px");
+      }
+      if (headerEl && "ResizeObserver" in window) {
+        new ResizeObserver(measureHeader).observe(headerEl);
+      }
+      window.addEventListener("resize", measureHeader);
+      measureHeader();
+
       openPage(location.hash.replace("#", "") || "launch", false);
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
@@ -5243,8 +4998,7 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
       (function () {
         "use strict";
         var reduce =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
         // ---- 1. Hero parallax glow (leverages shared GameFX [data-parallax]) ----
         function initHeroParallax() {
@@ -5264,59 +5018,52 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
         // ---- 2. Step checkmark bounce: replay when a step newly turns .done ----
         function initStepBounce() {
           if (reduce) return;
-          document
-            .querySelectorAll(".group-page .steps")
-            .forEach(function (ol) {
-              ol.querySelectorAll(":scope > li").forEach(function (li) {
-                // Seed initial state so already-complete steps don't bounce on load.
-                li.dataset.wasDone = li.classList.contains("done") ? "1" : "0";
-              });
-              var obs = new MutationObserver(function (records) {
-                records.forEach(function (rec) {
-                  var li = rec.target;
-                  if (li.tagName !== "LI") return;
-                  var nowDone = li.classList.contains("done");
-                  var wasDone = li.dataset.wasDone === "1";
-                  if (nowDone && !wasDone) {
-                    li.classList.remove("just-done");
-                    // reflow to restart the animation reliably
-                    void li.offsetWidth;
-                    li.classList.add("just-done");
-                    if (
-                      window.GameFX &&
-                      typeof window.GameFX.celebrate === "function"
-                    ) {
-                      var badge = li.querySelector(".step-head span");
-                      if (badge) window.GameFX.celebrate(badge);
-                    }
-                    li.addEventListener(
-                      "animationend",
-                      function handler() {
-                        li.classList.remove("just-done");
-                        li.removeEventListener("animationend", handler);
-                      },
-                      { once: true },
-                    );
+          document.querySelectorAll(".group-page .steps").forEach(function (ol) {
+            ol.querySelectorAll(":scope > li").forEach(function (li) {
+              // Seed initial state so already-complete steps don't bounce on load.
+              li.dataset.wasDone = li.classList.contains("done") ? "1" : "0";
+            });
+            var obs = new MutationObserver(function (records) {
+              records.forEach(function (rec) {
+                var li = rec.target;
+                if (li.tagName !== "LI") return;
+                var nowDone = li.classList.contains("done");
+                var wasDone = li.dataset.wasDone === "1";
+                if (nowDone && !wasDone) {
+                  li.classList.remove("just-done");
+                  // reflow to restart the animation reliably
+                  void li.offsetWidth;
+                  li.classList.add("just-done");
+                  if (window.GameFX && typeof window.GameFX.celebrate === "function") {
+                    var badge = li.querySelector(".step-head span");
+                    if (badge) window.GameFX.celebrate(badge);
                   }
-                  li.dataset.wasDone = nowDone ? "1" : "0";
-                });
-              });
-              ol.querySelectorAll(":scope > li").forEach(function (li) {
-                obs.observe(li, {
-                  attributes: true,
-                  attributeFilter: ["class"],
-                });
+                  li.addEventListener(
+                    "animationend",
+                    function handler() {
+                      li.classList.remove("just-done");
+                      li.removeEventListener("animationend", handler);
+                    },
+                    { once: true },
+                  );
+                }
+                li.dataset.wasDone = nowDone ? "1" : "0";
               });
             });
+            ol.querySelectorAll(":scope > li").forEach(function (li) {
+              obs.observe(li, {
+                attributes: true,
+                attributeFilter: ["class"],
+              });
+            });
+          });
         }
 
         // ---- 3. Tab-panel entrance: replay fade+slide when a page activates ----
         function initPanelEntrance() {
           if (reduce) return;
           document.querySelectorAll(".page").forEach(function (page) {
-            page.dataset.wasActive = page.classList.contains("active")
-              ? "1"
-              : "0";
+            page.dataset.wasActive = page.classList.contains("active") ? "1" : "0";
           });
           var obs = new MutationObserver(function (records) {
             records.forEach(function (rec) {
@@ -5387,15 +5134,15 @@ Group ${group.id} — ${group.short}; Before/After Fix; Tested in Gemini; Rigor 
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  
-  <!-- mwb-injected:end -->
-  <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
-  <script src="/assets/formula-popup.js" defer></script>
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+
+    <!-- mwb-injected:end -->
+    <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
+    <script src="/assets/formula-popup.js" defer></script>
+  </body>
 </html>
