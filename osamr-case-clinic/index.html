@@ -164,7 +164,14 @@
     .purpose-bar{background:var(--sage);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px}
     .purpose-bar p{margin:0 0 6px;color:var(--navy);line-height:1.45}
     .purpose-bar .purpose-steps{margin:8px 0 0;font-weight:800}
+    .wiz-split{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
+    .wiz-ref{background:#fffdf6;border:1px solid var(--line);border-left:5px solid var(--terracotta);border-radius:12px;padding:14px 16px;position:sticky;top:calc(var(--top-h,140px) + 16px)}
+    .wiz-ref-title{margin:0 0 10px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#6b7688}
+    .wiz-ref .case-strip-list{padding-left:18px}
+    .wiz-ref .case-strip-list li{font-size:14px}
+    @media (max-width:900px){.wiz-split{grid-template-columns:1fr}.wiz-ref{position:static;order:-1}}
 
+    .ai-move{color:var(--navy);font-weight:800}
     .workspace-grid{display:grid;grid-template-columns:380px minmax(0,1fr);gap:18px;align-items:start}
     /* NO INNER SCROLLER, EVER. sticky + max-height + overflow-y:auto is the
        conventional tall-sidebar pattern and it is what made scrolling feel
@@ -2313,6 +2320,19 @@ Our fix: ${v("fix", "___")}`;
            it is lifted out of the case brief and pinned above the panes —
            visible on all four steps instead of only the first. Moving it (not
            copying it) keeps one copy on the page. */
+        /* In the case story the AI move is one sentence buried among four.
+           Bold it: it is the thing the whole ruling turns on. Matches only a
+           standalone "AI" so "explAIn"-style substrings cannot trigger. */
+        const story = $(".scenario-card p", page);
+        if (story && !$("strong", story)) {
+          story.innerHTML = story.textContent
+            .split(/(?<=[.?!])\s+/)
+            .map((sentence) =>
+              /\bAI\b/.test(sentence) ? `<strong class="ai-move">${sentence}</strong>` : sentence,
+            )
+            .join(" ");
+        }
+
         const aiCard = $(".ai-input-card", page);
         if (aiCard) {
           const strip = document.createElement("details");
@@ -2340,7 +2360,7 @@ Our fix: ${v("fix", "___")}`;
 
         const panes = $(".wiz-panes", wiz);
 
-        const makePane = (index, nodes) => {
+        const makePane = (index, nodes, reference = null) => {
           const step = WIZ_STEPS[index];
           const pane = document.createElement("section");
           pane.className = "wiz-pane";
@@ -2354,7 +2374,17 @@ Our fix: ${v("fix", "___")}`;
             <h3 class="wiz-title">${step.title}</h3>
             <p class="wiz-todo">${step.todo}</p>`;
           pane.appendChild(head);
-          nodes.forEach((node) => node && pane.appendChild(node));
+          if (reference) {
+            const split = document.createElement("div");
+            split.className = "wiz-split";
+            const main = document.createElement("div");
+            nodes.forEach((node) => node && main.appendChild(node));
+            split.appendChild(main);
+            split.appendChild(reference);
+            pane.appendChild(split);
+          } else {
+            nodes.forEach((node) => node && pane.appendChild(node));
+          }
           const nav = document.createElement("div");
           nav.className = "wiz-nav";
           nav.innerHTML = `
@@ -2395,8 +2425,18 @@ Our fix: ${v("fix", "___")}`;
            rather than padding out the reading step. */
         const key = $(".osamr-strip", page);
 
+        /* Choosing a level means arguing about what AI actually did, so the
+           request sits beside the tokens rather than above the fold. The
+           pinned strip hides on this step so the same text is not on screen
+           twice. */
+        const askAside = document.createElement("aside");
+        askAside.className = "wiz-ref";
+        askAside.innerHTML = `
+          <p class="wiz-ref-title">What the teacher asked AI to do</p>
+          ${$(".case-strip-body", wiz)?.innerHTML || ""}`;
+
         makePane(0, [$(".scenario-card", page)]);
-        makePane(1, [items[0], key]);
+        makePane(1, [items[0], key], askAside);
         makePane(2, [items[1], items[2]]);
         makePane(3, [post]);
 
@@ -2415,6 +2455,8 @@ Our fix: ${v("fix", "___")}`;
         pane.classList.toggle("on", on);
         pane.hidden = !on;
       });
+      const strip = $(".case-strip", wiz);
+      if (strip) strip.hidden = target === 1;
       $$(".wiz-dot", wiz).forEach((dot) => {
         const i = Number(dot.dataset.wizGo);
         dot.classList.toggle("current", i === target);
