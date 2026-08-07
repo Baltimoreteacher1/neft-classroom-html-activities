@@ -5418,3 +5418,68 @@ body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-doc
     order: -1;
   }
 }
+
+/* ── Vocabulary activities — legibility & completion layer (2026-08-07) ──────
+   The word games (Fill the Blanks, Term Match, Example Sort, Word Builder) had
+   drifted to small type, tight lines and thin drop targets: readable to an
+   adult reading a screenshot, hard to actually DO on a Chromebook. This is one
+   layer over all four so they read and behave as one publisher-grade set —
+   bigger words, one comfortable column, and targets you can hit.
+   Scoped to the activity roots so no other surface inherits it. */
+.vocab-cloze-root,
+.vdm-board,
+.vs-bank,
+.vs-buckets,
+.vocab-explore-panel {
+  font-size: 1.12rem;
+  line-height: 1.65;
+}
+.vocab-cloze-root p,
+.vocab-cloze-root li,
+.vdm-board p,
+.vs-buckets p {
+  line-height: 1.7;
+}
+/* Word chips and definition cards: the words ARE the content, so they get the
+   largest comfortable size and never truncate. */
+.vocab-sort-item,
+.vocab-dm-term,
+.vocab-dm-def,
+.drag-item.vocab-sort-item {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.45;
+  min-height: 48px;
+  padding: 12px 16px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+/* Drop zones sized to be aimed at, with a visible "put it here" edge. */
+.vocab-sort-zone,
+.vs-bank {
+  min-height: 92px;
+  padding: 14px;
+  border-radius: 14px;
+}
+.vocab-cloze-blank {
+  min-width: 168px;
+  min-height: 52px;
+  font-size: 1.12rem;
+}
+/* One readable column on every screen; the sort buckets stack rather than
+   squeezing three columns of clipped words onto a laptop. */
+.vocab-cloze-root,
+.vdm-board,
+.vs-buckets {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 860px) {
+  .vs-buckets,
+  .vdm-board {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-3, 12px);
+  }
+}

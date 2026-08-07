@@ -98,9 +98,10 @@ export function renderNumberLine(container, config) {
   let tickIdx = 0;
   for (let v = min; v <= max; v = round(v + step)) {
     const x = toX(v);
-    line(svg, x, TICK_Y - 8, x, TICK_Y + 8, "#12355b", 1.5);
-    const txt = text(svg, x, TICK_Y + 24, formatNum(v), "11px", "#21313f");
+    line(svg, x, TICK_Y - 10, x, TICK_Y + 10, "#12355b", 2.5);
+    const txt = text(svg, x, TICK_Y + 26, formatNum(v), "17px", "#12355b");
     txt.setAttribute("text-anchor", "middle");
+    txt.setAttribute("font-weight", "700");
     fadeInOnMount(txt, 140 + tickIdx * 35);
     tickIdx += 1;
   }
@@ -131,7 +132,7 @@ export function renderNumberLine(container, config) {
     const dot = circle(g, 0, 0, DOT_R, "#f2c15b", "#12355b", 2.5);
     // Class enables the smooth fill/stroke color transition (check feedback).
     dot.setAttribute("class", "nl-dot");
-    const dotLabel = text(g, 0, -18, t.label || "?", "11px", "#12355b");
+    const dotLabel = text(g, 0, -20, t.label || "?", "16px", "#12355b");
     dotLabel.setAttribute("text-anchor", "middle");
     dotLabel.setAttribute("font-weight", "700");
 
@@ -452,11 +453,12 @@ function renderSequentialNumberLine(container, config) {
       x,
       TICK_Y + (isMajor ? 8 : 5),
       "#12355b",
-      isMajor ? 1.5 : 1,
+      isMajor ? 2.5 : 1.5,
     );
     if (isMajor) {
-      const t = text(svg, x, TICK_Y + 24, formatNum(v), "11px", "#21313f");
+      const t = text(svg, x, TICK_Y + 26, formatNum(v), "17px", "#12355b");
       t.setAttribute("text-anchor", "middle");
+      t.setAttribute("font-weight", "700");
       fadeInOnMount(t, 140 + seqTickIdx * 35);
       seqTickIdx += 1;
     }
@@ -470,7 +472,7 @@ function renderSequentialNumberLine(container, config) {
   const shadow = circle(g, 0, 0, DOT_R + 2, "rgba(18,53,91,0.12)", "none", 0);
   const dot = circle(g, 0, 0, DOT_R, "#f2c15b", "#12355b", 2.5);
   dot.setAttribute("class", "nl-dot");
-  const valLabel = text(g, 0, -18, "", "12px", "#12355b");
+  const valLabel = text(g, 0, -20, "", "16px", "#12355b");
   valLabel.setAttribute("text-anchor", "middle");
   valLabel.setAttribute("font-weight", "800");
   g.append(shadow, dot, valLabel);
@@ -606,7 +608,7 @@ function normalizeIneq(s) {
 // a fresh number line centered on the boundary. Used by renderInequalityGraphs.
 function drawInequalityLine(boundary, circleType, direction) {
   const PAD = 40;
-  const TICK_Y = 55;
+  const TICK_Y = 58;
   const W = 600;
   const usable = W - PAD * 2;
   const bmin = boundary - 5;
@@ -622,31 +624,41 @@ function drawInequalityLine(boundary, circleType, direction) {
     `Number line: ${circleType} circle at ${boundary}, shaded ${direction}`,
   );
 
-  line(svg, PAD, TICK_Y, W - PAD, TICK_Y, "#1fa6a2", 3);
-  poly(svg, `${PAD - 6},${TICK_Y} ${PAD + 4},${TICK_Y - 5} ${PAD + 4},${TICK_Y + 5}`, "#1fa6a2");
+  // Legibility on a projector and on a Chromebook at arm's length: the axis was
+  // a 3px mid-teal line with 1.5px ticks and 11px labels, which is the faintest
+  // thing on the page and the part students actually have to read. Dark ink,
+  // thicker rules, larger labels.
+  line(svg, PAD, TICK_Y, W - PAD, TICK_Y, "#12355b", 4);
+  poly(svg, `${PAD - 8},${TICK_Y} ${PAD + 5},${TICK_Y - 7} ${PAD + 5},${TICK_Y + 7}`, "#12355b");
   poly(
     svg,
-    `${W - PAD + 6},${TICK_Y} ${W - PAD - 4},${TICK_Y - 5} ${W - PAD - 4},${TICK_Y + 5}`,
-    "#1fa6a2",
+    `${W - PAD + 8},${TICK_Y} ${W - PAD - 5},${TICK_Y - 7} ${W - PAD - 5},${TICK_Y + 7}`,
+    "#12355b",
   );
 
   for (let v = bmin; v <= bmax; v += 1) {
     const x = toX(v);
-    line(svg, x, TICK_Y - 7, x, TICK_Y + 7, "#12355b", 1.5);
-    const t = text(svg, x, TICK_Y + 22, formatNum(v), "11px", "#21313f");
+    line(svg, x, TICK_Y - 10, x, TICK_Y + 10, "#12355b", 2.5);
+    const t = text(svg, x, TICK_Y + 30, formatNum(v), "18px", "#12355b");
     t.setAttribute("text-anchor", "middle");
+    t.setAttribute("font-weight", "800");
   }
 
   // Shaded ray from the boundary toward `direction`.
   const bx = toX(boundary);
   const endX = direction === "left" ? PAD + 6 : W - PAD - 6;
-  const ray = line(svg, bx, TICK_Y, endX, TICK_Y, "#d9795d", 6);
+  const ray = line(svg, bx, TICK_Y, endX, TICK_Y, "#d9542f", 9);
   ray.setAttribute("stroke-linecap", "round");
-  ray.setAttribute("opacity", "0.85");
 
   // Boundary circle: closed = filled, open = hollow.
-  const filled = circleType === "closed";
-  circle(svg, bx, TICK_Y, 9, filled ? "#12355b" : "#ffffff", "#12355b", 3);
+  // Case-insensitive: configs have authored "Closed" as well as "closed", and a
+  // strict compare silently drew an OPEN circle for an inclusive inequality —
+  // the one detail the whole graph turns on.
+  const filled =
+    String(circleType ?? "")
+      .trim()
+      .toLowerCase() === "closed";
+  circle(svg, bx, TICK_Y, 12, filled ? "#12355b" : "#ffffff", "#12355b", 4);
   return svg;
 }
 
@@ -797,13 +809,14 @@ function renderJumpNumberLine(container, config) {
   svg.setAttribute("role", "img");
   svg.setAttribute("aria-label", `Number line from ${lo} to ${hi} with ${jumps} equal jumps`);
 
-  line(svg, PAD, TICK_Y, W - PAD, TICK_Y, "#1fa6a2", 3);
+  line(svg, PAD, TICK_Y, W - PAD, TICK_Y, "#12355b", 4);
   const st = Number(step) || (hi - lo) / jumps;
   for (let v = lo; v <= hi + 1e-9; v = round(v + st)) {
     const x = toX(v);
-    line(svg, x, TICK_Y - 7, x, TICK_Y + 7, "#12355b", 1.5);
-    const t = text(svg, x, TICK_Y + 22, formatNum(v), "11px", "#21313f");
+    line(svg, x, TICK_Y - 10, x, TICK_Y + 10, "#12355b", 2.5);
+    const t = text(svg, x, TICK_Y + 26, formatNum(v), "17px", "#12355b");
     t.setAttribute("text-anchor", "middle");
+    t.setAttribute("font-weight", "700");
   }
 
   // Jump arcs above the line.

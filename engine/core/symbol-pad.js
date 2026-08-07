@@ -5,6 +5,8 @@
 // a maths mistake it is not. Wherever an expected answer uses an inequality
 // symbol, this puts the symbols on screen as buttons that insert at the caret.
 
+import { mountInequalityKeyButton } from "./inequality-reference.js";
+
 const INEQUALITY_SYMBOLS = ["<", "≤", ">", "≥"];
 
 const LABELS = {
@@ -74,6 +76,10 @@ export function mountSymbolPad(input, opts = {}) {
     btn.addEventListener("click", () => insertAtCaret(input, sym));
     pad.append(btn);
   }
+
+  // The reference lives beside the keys: the moment a student wonders which
+  // symbol "at most" means is the moment they are looking at this row.
+  mountInequalityKeyButton(pad);
 
   // `host` keeps the pad out of the flow of text when the box is an inline
   // blank inside a sentence — a flex row dropped mid-sentence reads as part of
