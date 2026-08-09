@@ -4583,9 +4583,24 @@
         );
       }
 
-      function rebuildPrompt(groupId) {
-        const value = assemblePrompt(groupId);
-        setValue(groupId, "before", value);
+      /* `preserveStored` is for the first paint only.
+
+         assemblePrompt() knows nothing but the four slot picks, so it returns
+         "" for a group that wrote its fix by hand in the "Edit the wording by
+         hand" pane. buildFixChips() runs on every load, and writing that ""
+         back through setValue() erased the group's saved work on every
+         refresh — silently, while the pill still read "Saved". Slot-built
+         prompts survived only because they get re-derived from the slot
+         fields, which persist on their own.
+
+         On first paint the stored answer therefore outranks what the slots
+         would regenerate. A later pick still regenerates, which is the
+         intended behavior of tapping a chip. */
+      function rebuildPrompt(groupId, { preserveStored = false } = {}) {
+        const stored = getValue(groupId, "before");
+        const assembled = assemblePrompt(groupId);
+        const value = preserveStored && stored ? stored : assembled;
+        if (value !== stored) setValue(groupId, "before", value);
         const box = $(`#g${groupId}-before`);
         if (box) box.value = value;
         const out = $(`.prompt-preview-out[data-group="${groupId}"]`);
@@ -4630,11 +4645,11 @@
 
           box.parentNode.insertBefore(builder, box);
           $(".hand-edit", builder).appendChild(box);
-          syncFixUi(group.id);
+          syncFixUi(group.id, { preserveStored: true });
         });
       }
 
-      function syncFixUi(groupId) {
+      function syncFixUi(groupId, options) {
         SLOTS.forEach((slot) => {
           const chosen = getValue(groupId, slot.field);
           $$(`[data-slot-pick="${groupId}"][data-field="${slot.field}"]`).forEach((chip) => {
@@ -4643,7 +4658,7 @@
             chip.setAttribute("aria-pressed", String(on));
           });
         });
-        rebuildPrompt(groupId);
+        rebuildPrompt(groupId, options);
       }
 
       function pickSlot(groupId, field, value) {
