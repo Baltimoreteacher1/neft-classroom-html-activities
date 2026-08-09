@@ -756,6 +756,56 @@
         color: var(--navy);
       }
 
+      /* "Where the line runs inside vocabulary support" — the compare block
+         under the walkthrough example. Reuses .model-grid/.model-box, which
+         already collapse to one column at 1040px. */
+      .line-check {
+        margin-top: 26px;
+      }
+      .line-check h4 {
+        margin: 0 0 6px;
+        color: var(--navy);
+        font-size: 17px;
+        letter-spacing: -0.01em;
+      }
+      .line-check > p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15.5px;
+        line-height: 1.5;
+      }
+      .def-list {
+        margin: 0 0 12px;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 8px;
+      }
+      .def-list li {
+        color: var(--ink);
+        font-size: 15px;
+        line-height: 1.45;
+      }
+      .def-list strong {
+        color: var(--navy);
+      }
+      /* Both need to outrank `.model-box p`, which is more specific than a
+         bare class would be. */
+      .line-check .def-label {
+        margin: 0 0 10px;
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #6b7688;
+      }
+      .line-check .def-note {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14.5px;
+        line-height: 1.5;
+      }
+
       .walkthrough-section {
         display: grid;
         grid-template-columns: 52px 1fr;
@@ -2795,6 +2845,57 @@
                 justify why. Do not give the answer.”
               </p>
             </div>
+
+            <div class="line-check">
+              <h4>Where the line runs inside vocabulary support</h4>
+              <p>
+                A vocabulary bank looks like the safe pick — it never states an answer. But when the
+                thing students have to produce <em>is</em> the explanation, a definition can be the
+                explanation.
+              </p>
+              <div class="model-grid">
+                <div class="model-box bad">
+                  <p class="def-label">Hands over the strategy</p>
+                  <ul class="def-list">
+                    <li>
+                      <strong>Equivalent ratios</strong> — ratios that simplify to the same lowest
+                      terms.
+                    </li>
+                    <li>
+                      <strong>Justify</strong> — give the reason two ratios match, such as showing
+                      that both reduce to 3:4.
+                    </li>
+                  </ul>
+                  <p class="def-note">
+                    A student can copy either line into the answer blank and be substantially done.
+                    Nobody asked the AI for an answer. The definition supplied one anyway.
+                  </p>
+                </div>
+                <div class="model-box good">
+                  <p class="def-label">Names the term only</p>
+                  <ul class="def-list">
+                    <li>
+                      <strong>Equivalent ratios</strong> — two ratios that describe the same
+                      relationship. Whether a given pair does is yours to decide.
+                    </li>
+                    <li>
+                      <strong>Justify</strong> — explain your reasoning so a reader can follow how
+                      you decided.
+                    </li>
+                  </ul>
+                  <p class="def-note">
+                    Same words, same reading level, same help for Ms. Reyes's students. They still
+                    have to compare 6:8 and 9:12 themselves.
+                  </p>
+                </div>
+              </div>
+              <div class="callout">
+                <strong>The test that transfers:</strong> if a student could copy your definition
+                into the answer blank and be substantially done, the definition is doing the
+                thinking. Run that check on every support you ask AI to build — this is how
+                Overreliance shows up wearing a vocabulary bank's clothes.
+              </div>
+            </div>
           </div>
         </div>
 
@@ -2974,7 +3075,7 @@
               <ul class="test-list">
                 <li class="ok">
                   <strong>AI may help with</strong> academic vocabulary in explaining equivalent
-                  ratios.
+                  ratios — definitions that name the terms, not ones that supply the comparison.
                 </li>
                 <li class="no">
                   <strong>AI must never</strong> provide the final equivalent-ratio explanation.
