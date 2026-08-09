@@ -29,6 +29,17 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const graph = JSON.parse(readFileSync(join(root, "data/content-graph.json"), "utf8"));
 const tax = JSON.parse(readFileSync(join(root, "data/standards-taxonomy.json"), "utf8"));
+// Bridge lessons that PREPARE a student for a standard. Kept in its own column
+// rather than folded into l0: these are prerequisites, not level-0 versions of
+// the standard, and counting them as level-0 content would swap one
+// overstatement for another. See data/foundational-support-map.json.
+const foundational = JSON.parse(
+  readFileSync(join(root, "data/foundational-support-map.json"), "utf8"),
+);
+const foundationalByStandard = {};
+for (const row of foundational.supports) {
+  (foundationalByStandard[row.standard] = foundationalByStandard[row.standard] || []).push(row.url);
+}
 
 // 1 — collapse the crosswalk collisions, keeping every old label.
 const byId = new Map();
@@ -61,9 +72,13 @@ for (const s of byId.values()) {
     else levels[e.level] = (levels[e.level] || 0) + 1;
   });
   const total = urls.length;
+  const bridge = foundationalByStandard[s.id] || [];
   const flags = [];
   if (total === 0) flags.push("NO_CONTENT");
   if (levels[0] === 0) flags.push("no-level-0");
+  // The gap that actually leaves a student with nothing: no level-0 content on
+  // the standard AND no bridge lesson leading into it.
+  if (levels[0] === 0 && bridge.length === 0) flags.push("no-entry-for-strugglers");
   if (levels[2] === 0) flags.push("no-enrichment");
   // Say so when the picture rests on material nobody has levelled.
   if (untagged > 0 && untagged >= total / 2) flags.push("mostly-unlevelled");
@@ -77,6 +92,8 @@ for (const s of byId.values()) {
     l1: levels[1],
     l2: levels[2],
     untagged,
+    bridge: bridge.length,
+    bridgeUrls: bridge,
     flags,
   });
   if (flags.length) gaps.push({ standard: s.id, label: s.labels.join(" / "), flags });
@@ -98,6 +115,8 @@ const totals = {
   l1: rows.reduce((n, r) => n + r.l1, 0),
   l2: rows.reduce((n, r) => n + r.l2, 0),
   untagged: rows.reduce((n, r) => n + r.untagged, 0),
+  standardsWithBridgeOnly: rows.filter((r) => r.l0 === 0 && r.bridge > 0).length,
+  standardsWithNoEntry: rows.filter((r) => r.l0 === 0 && r.bridge === 0).length,
   graphEntries: graph.total,
   graphUntagged: graph.entries.filter((e) => e.levelTagged === false).length,
   level0Unmapped: unmappedLevel0.length,
@@ -112,7 +131,7 @@ writeFileSync(
   ),
 );
 
-console.log("\nSTANDARD      TOT  L0  L1  L2  UNL  FLAGS");
+console.log("\nSTANDARD      TOT  L0  L1  L2  UNL  BRDG  FLAGS");
 rows.forEach((r) => {
   console.log(
     r.standard.padEnd(13) +
@@ -121,6 +140,7 @@ rows.forEach((r) => {
       String(r.l1).padStart(4) +
       String(r.l2).padStart(4) +
       String(r.untagged).padStart(5) +
+      String(r.bridge).padStart(6) +
       "  " +
       r.flags.join(","),
   );
@@ -136,6 +156,11 @@ console.log(
 );
 console.log(
   `Repo-wide, ${totals.graphUntagged} of ${totals.graphEntries} activities are unlevelled.`,
+);
+console.log(
+  `${totals.standardsWithBridgeOnly} standard(s) have no level-0 of their own but DO have a ` +
+    `bridge lesson leading in; ${totals.standardsWithNoEntry} have neither — those are where a ` +
+    `struggling student has no entry point at all.`,
 );
 if (totals.level0Unmapped) {
   console.log(
