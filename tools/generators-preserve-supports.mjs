@@ -85,9 +85,10 @@ const SUPPORT = [
  * gets WORSE, or if a generator not on this list starts stripping. Fixing one
  * means dropping its entry — the list should only ever shrink.
  *
- * There are four. An earlier pass that counted removed LINES said thirteen,
- * and was wrong about nine of them: those generators replace support markup
- * rather than remove it, and a line count cannot see the difference.
+ * There is one. An earlier pass that counted removed LINES said thirteen, and
+ * was wrong about nine of them: those generators replace support markup rather
+ * than remove it, and a line count cannot see the difference. Three of the
+ * remaining four were fixed by adopting writeGenerated().
  *
  * The pattern that fixes them is the one applied to generate-unit0: write only
  * what is missing, never overwrite a page that has moved on, and put the
@@ -96,11 +97,13 @@ const SUPPORT = [
 const KNOWN = {
   "generate-lesson-shells": {
     lost: 148,
-    why: '148 files come out without any accessibility markup they had (aria-*, role="tab", skip links)',
+    why:
+      "148 files lose @media(prefers-reduced-motion:reduce){.sg-boot{animation:none}}. " +
+      "Unlike the others this is NOT an injected block, so writeGenerated() cannot " +
+      "preserve it: the rule comes from tools/lib/compact-shell.mjs, a second shell " +
+      "builder that also writes these pages. Fixing it means reconciling the two " +
+      "builders, not adopting the helper",
   },
-  "generate-mcap": { lost: 1, why: "mcap-review/packets/index.html loses the shared kit" },
-  "generate-mcap-index": { lost: 5, why: "5 files lose the shared kit entirely" },
-  "generate-reveal-math-hub": { lost: 1, why: "reveal-math/index.html loses the shared kit" },
 };
 
 const pkg = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf8"));

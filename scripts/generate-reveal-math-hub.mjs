@@ -22,6 +22,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -199,7 +200,7 @@ function main() {
   const unitsSorted = [...byUnit.entries()].sort((a, b) => Number(a[0]) - Number(b[0]));
 
   fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(path.join(outDir, "index.html"), page(unitsSorted, total), "utf8");
+  writeGenerated(path.join(outDir, "index.html"), page(unitsSorted, total));
 
   console.log(
     `Generated reveal-math/index.html — ${total} lessons across ${unitsSorted.length} units.`,
