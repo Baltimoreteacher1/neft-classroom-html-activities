@@ -35,7 +35,9 @@ const WATCHED = [{ file: "fix-it-design-challenge/index.html", literal: "GROUPS"
 function extractLiteral(source, name) {
   const start = source.search(new RegExp(`\\bconst\\s+${name}\\s*=\\s*[[{]`));
   if (start === -1) return null;
-  const open = source.search(new RegExp(`\\bconst\\s+${name}\\s*=\\s*`)) + source.slice(start).match(new RegExp(`\\bconst\\s+${name}\\s*=\\s*`))[0].length;
+  const open =
+    source.search(new RegExp(`\\bconst\\s+${name}\\s*=\\s*`)) +
+    source.slice(start).match(new RegExp(`\\bconst\\s+${name}\\s*=\\s*`))[0].length;
 
   const openChar = source[open];
   const closeChar = openChar === "[" ? "]" : "}";
@@ -69,9 +71,18 @@ function keysIn(body) {
       else if (ch === inString) inString = null;
       continue;
     }
-    if (ch === '"' || ch === "'" || ch === "`") { inString = ch; continue; }
-    if (ch === "{" || ch === "[") { depth++; continue; }
-    if (ch === "}" || ch === "]") { depth--; continue; }
+    if (ch === '"' || ch === "'" || ch === "`") {
+      inString = ch;
+      continue;
+    }
+    if (ch === "{" || ch === "[") {
+      depth++;
+      continue;
+    }
+    if (ch === "}" || ch === "]") {
+      depth--;
+      continue;
+    }
     // Object entries sit at depth 2 inside `[ { ... } ]`, depth 1 inside `{ ... }`.
     if (depth <= 2) {
       const rest = body.slice(i);

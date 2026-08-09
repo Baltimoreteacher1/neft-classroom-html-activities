@@ -14,7 +14,9 @@ import { fileURLToPath } from "node:url";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const graph = JSON.parse(readFileSync(resolve(HERE, "deploy-graph.json"), "utf8"));
 
-const lines = ["Deploy graph (tools/graph/deploy-graph.json — run `npm run validate:graph` to check it):"];
+const lines = [
+  "Deploy graph (tools/graph/deploy-graph.json — run `npm run validate:graph` to check it):",
+];
 
 for (const [name, repo] of Object.entries(graph.repos)) {
   const role = repo.deploys ? `deploys via ${repo.deploys}` : "DEPLOYS NOTHING";
@@ -33,7 +35,9 @@ const debt = Object.entries(graph.deadDataBaseline ?? {}).flatMap(([file, litera
   Object.entries(literals).map(([name, keys]) => `${file} ${name}: ${keys.join(", ")}`),
 );
 if (debt.length) {
-  lines.push("  Known-dead data fields (present in the literal, read by no JS — editing them changes nothing):");
+  lines.push(
+    "  Known-dead data fields (present in the literal, read by no JS — editing them changes nothing):",
+  );
   for (const entry of debt) lines.push(`    · ${entry}`);
 }
 
