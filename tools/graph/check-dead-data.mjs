@@ -59,6 +59,23 @@ function extractLiteral(source, name) {
   return null;
 }
 
+/**
+ * Strip comments before reads are counted.
+ *
+ * Backported from the sibling sweep, where this exact bug was found and fixed
+ * and then not carried here — so the GATE kept the flaw the AUDIT had already
+ * shed. A comment mentioning `group.foo` matches the property-read pattern, so
+ * prose vouches for code: remove a renderer, leave a comment behind, and the
+ * field reads as live forever. The comments in this very file explaining that
+ * ai_problem and starter_fix are dead were doing precisely that.
+ */
+function stripNonCode(text) {
+  return text
+    .replace(/\/\*[\s\S]*?\*\//g, " ")
+    .replace(/(^|[^:"'`\\])\/\/[^\n]*/g, "$1 ")
+    .replace(/<!--[\s\S]*?-->/g, " ");
+}
+
 /** Top-level keys of the objects inside the literal. */
 function keysIn(body) {
   const keys = new Set();
@@ -117,8 +134,9 @@ for (const { file, literal } of targets) {
     process.exit(1);
   }
 
-  // Everything except the literal itself is where a read could live.
-  const elsewhere = source.slice(0, found.start) + source.slice(found.end);
+  // Everything except the literal itself is where a read could live — minus
+  // comments, which are prose and must not count as usage.
+  const elsewhere = stripNonCode(source.slice(0, found.start) + source.slice(found.end));
   const keys = [...keysIn(found.body)].sort();
   const dead = keys.filter((key) => {
     const read = new RegExp(

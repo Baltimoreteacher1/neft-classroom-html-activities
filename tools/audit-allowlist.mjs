@@ -36,6 +36,9 @@ import { fileURLToPath } from "node:url";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, "..");
 const BLOCKING = new Set(["high", "critical"]);
+/* A real calendar date, not merely a string that sorts. "9999-99-99" matches
+   the shape but Date.parse rejects it, so both tests have to pass. */
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 const allowlist = JSON.parse(readFileSync(resolve(HERE, "audit-allowlist.json"), "utf8"));
 const accepted = new Map(allowlist.accepted.map((a) => [a.id, a]));
@@ -90,7 +93,20 @@ for (const [name, v] of Object.entries(vulns)) {
       stale.push({ id: via.source, why: `a fix is now available (${JSON.stringify(fix)})` });
       continue;
     }
-    if (entry.reviewBy && entry.reviewBy < today) {
+    // The date must be real before it can be compared. `entry.reviewBy &&`
+    // meant a missing date skipped the check entirely and accepted the
+    // advisory forever, and a malformed string can sort after every ISO date
+    // and do the same — either way the "expires by itself" guarantee this file
+    // advertises would be quietly void. An entry without a valid date is not a
+    // decision with an expiry; it is a permanent pass, so it fails.
+    if (!ISO_DATE.test(entry.reviewBy ?? "") || !Number.isFinite(Date.parse(entry.reviewBy))) {
+      stale.push({
+        id: via.source,
+        why: `reviewBy is ${JSON.stringify(entry.reviewBy)} — must be a real YYYY-MM-DD date`,
+      });
+      continue;
+    }
+    if (entry.reviewBy < today) {
       stale.push({ id: via.source, why: `reviewBy ${entry.reviewBy} has passed` });
       continue;
     }
