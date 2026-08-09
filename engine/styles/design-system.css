@@ -2486,6 +2486,16 @@ body:has(.identity-screen) .export-toolbar {
   pointer-events: none;
 }
 
+/* The radio is visually hidden so `.custom-radio` can stand in for it. That
+   also swallows the global `:focus-visible` outline, which lands on a
+   zero-opacity element and paints nothing: a student tabbing the choices could
+   operate the group (arrow keys work) but had no way to see WHICH option they
+   were on. Move the ring to the label — the thing actually on screen. */
+.mc-option-label:has(input[type="radio"]:focus-visible) {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+
 .custom-radio {
   width: 22px;
   height: 22px;

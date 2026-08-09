@@ -231,6 +231,12 @@ export function renderFillTable(container, config) {
 
       input.style.borderColor = isMatch ? "var(--success)" : "var(--error)";
       input.style.background = isMatch ? "var(--success-bg)" : "var(--error-bg)";
+      // Which CELLS were wrong is otherwise carried by red-vs-green alone: the
+      // summary line says "3 of 5 correct" but never which 2. `aria-invalid`
+      // puts that verdict on the field itself, so a student on a screen reader
+      // (or anyone who cannot separate the two colors) can find the cells to
+      // fix by tabbing them. Set on both branches so a corrected cell clears.
+      input.setAttribute("aria-invalid", isMatch ? "false" : "true");
 
       if (isMatch) {
         correct++;

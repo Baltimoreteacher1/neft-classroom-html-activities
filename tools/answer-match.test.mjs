@@ -55,6 +55,18 @@ accepts("0.50", "1/2", "trailing zero");
 accepts("1 1/2", "1.5", "mixed number");
 accepts("-3", "−3", "unicode minus");
 
+// ── A dropped leading zero, inside a COMPOSITE answer ──
+// `numberOf` accepted a bare ".5" from the start, but only when that number was
+// the ENTIRE answer. 39 authored answers across the decimal/percent lessons are
+// written as an equation ("0.5 = 50%"), where the whole-string numeric parse
+// never applies — so a student who typed ".5 = 50%" got a red X for exactly the
+// habit the matcher already set out to forgive.
+accepts(".5 = 50%", "0.5 = 50%", "leading zero dropped inside an equation");
+accepts("0.5 = 50%", ".5 = 50%", "and in the other direction");
+accepts(".25 = 25%", "0.25 = 25%", "same, two decimal places");
+accepts("2.5", "2.5", "an interior decimal point is left alone");
+rejects("5 = 50%", "0.5 = 50%", "dropping the POINT is a different number, not a typo");
+
 // ── Multiple accepted forms ──
 accepts("7", ["m = 7", "7 mice"], "any listed form counts");
 accepts("7 mice", ["m = 7", "7 mice"], "any listed form counts");
