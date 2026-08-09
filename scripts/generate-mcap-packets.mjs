@@ -34,6 +34,7 @@ import {
   WidthType,
 } from "docx";
 import { ALL_SKILLS, DOMAINS, skillFileSlug } from "../mcap-review/data/mcap-skills.mjs";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -1136,7 +1137,9 @@ async function main() {
       docs++;
 
       // per-skill HTML
-      writeFileSync(join(dir, `${slug}.html`), htmlPacket(skill));
+      // HTML goes through writeGenerated so an injected layer already on the
+      // page survives; the .docx writes below have no injected blocks to keep.
+      writeGenerated(join(dir, `${slug}.html`), htmlPacket(skill));
       htmls++;
     }
 
@@ -1211,7 +1214,7 @@ async function main() {
 
   // hub index
   if (!existsSync(outRoot)) mkdirSync(outRoot, { recursive: true });
-  writeFileSync(join(outRoot, "index.html"), hubIndex());
+  writeGenerated(join(outRoot, "index.html"), hubIndex());
 
   console.log(`✓ MCAP packets generated: ${docs} DOCX, ${htmls} HTML pages, 1 hub index`);
 }
