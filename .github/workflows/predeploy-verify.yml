@@ -13,11 +13,27 @@ name: Pre-Deploy Gate
 #      validation, production build, and focused real-browser journeys
 #   2. claude-predeploy-verify — read-only Claude deploy-readiness review
 #
-# Claude `needs` the validate-and-build job, and within that job a failing step
-# aborts the rest, so the strict order still holds: nothing builds unless
-# validation passed, and Claude never runs unless both did. The gate only goes
-# green if every stage passes. Kept to two jobs on purpose — GitHub bills each
-# job rounded up to a whole minute, so extra jobs cost real allowance.
+# Claude `needs` the validate-and-build job and never runs unless it went green,
+# so the strict order between the two jobs holds. The gate only goes green if
+# every stage passes. Kept to two jobs on purpose — GitHub bills each job rounded
+# up to a whole minute, so extra jobs cost real allowance.
+#
+# Inside validate-and-build the steps deliberately do NOT abort each other. They
+# used to: a failing step skipped everything after it, so one run reported one
+# problem and you learned about the next only after fixing the first. That went
+# badly wrong when the dependency audit sat at the front of the chain — it
+# failed on advisories against an unchanged lockfile and skipped Biome, the
+# tests, validation, the build and the browser journeys, for as long as the
+# advisories stood. The gate looked like it was gating and was checking nothing.
+#
+# So the independent checks each carry `if: !cancelled()` and all report in one
+# run. Two things are still hard gates, because past them the rest is noise:
+#   - `npm ci`, since nothing can run without node_modules;
+#   - the Vite build, for the browser journeys only — with no dist/ there is
+#     nothing to serve, and the chain would cascade-fail for a reason already
+#     reported one line above.
+# Every failure still fails the job. This buys information, not leniency; the
+# cost is that a broken run does more work than it used to before going red.
 #
 # Wire these as REQUIRED
 # status checks on `main` (branch protection) so a failing gate blocks the merge
@@ -62,20 +78,44 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-      - run: npm ci
+      # HARD GATE. Nothing below can mean anything without node_modules, so this
+      # one is deliberately still allowed to abort the rest.
+      - name: Install dependencies
+        id: install
+        run: npm ci
+
+      # ── Independent checks — each reports even if an earlier one failed ──────
+      # `steps.install.outcome` guards them all: !cancelled() alone would run
+      # them with no node_modules and bury the real error under module-not-found.
       - name: Biome check
+        id: biome
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: npm run check
       - name: Unit and contract tests
+        id: tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: npm test
       - name: Static + reveal-math + hub-lock validation
+        id: validate
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: npm run validate
       - name: Vite production build
+        id: build
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: npm run build
+
+      # ── Browser journeys — gated on the build, not on the checks above ───────
+      # With no dist/ there is nothing to serve, so this chain would cascade-fail
+      # for a reason already reported one line up. That is noise, not a finding.
       - name: Install Chromium
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: npx playwright install --with-deps chromium
       - name: Serve the verified production build
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: npx vite preview --host 127.0.0.1 --port 4178 --strictPort &
       - name: Wait for preview
+        id: preview
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: |
           for i in $(seq 1 60); do
             curl -fsS -o /dev/null http://127.0.0.1:4178/ && exit 0
@@ -84,20 +124,25 @@ jobs:
           echo "preview server never came up on :4178" >&2
           exit 1
       - name: Focused browser journeys
+        id: journeys
+        if: ${{ !cancelled() && steps.preview.outcome == 'success' }}
         env:
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4178
         run: npm run e2e:pr
-      # Runs LAST, on purpose. It used to run first, and when new advisories
-      # landed against an unchanged lockfile it failed in ~20s and every step
-      # below it was skipped — so for as long as that lasted, no PR was getting
+
+      # Runs last on purpose. It used to run FIRST, and when new advisories
+      # landed against an unchanged lockfile it failed in ~20s and skipped
+      # everything below — so for as long as that lasted, no PR was getting
       # Biome, tests, validation, the build, or the browser journeys, and the
       # gate's red only ever meant "a dependency has an advisory".
       #
-      # Still fails the job: this is not a downgrade to a warning. It just no
-      # longer decides whether the functional checks are allowed to run.
+      # Still fails the job: not a downgrade to a warning. It just no longer
+      # decides whether the functional checks are allowed to run.
       - name: Dependency audit (high severity)
-        if: ${{ !cancelled() }}
+        id: audit
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: npm audit --audit-level=high
+
       - name: Upload browser report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -105,6 +150,37 @@ jobs:
           name: predeploy-playwright-report
           path: playwright-report/
           retention-days: 7
+
+      # One table beats reading seven collapsed step logs to find which failed.
+      - name: Gate summary
+        if: ${{ !cancelled() }}
+        env:
+          OUTCOMES: |
+            Biome check|${{ steps.biome.outcome }}
+            Unit and contract tests|${{ steps.tests.outcome }}
+            Repository validation|${{ steps.validate.outcome }}
+            Vite production build|${{ steps.build.outcome }}
+            Browser journeys|${{ steps.journeys.outcome }}
+            Dependency audit|${{ steps.audit.outcome }}
+        run: |
+          {
+            echo "### Pre-deploy gate"
+            echo
+            echo "| check | result |"
+            echo "| --- | --- |"
+            printf '%s\n' "$OUTCOMES" | while IFS='|' read -r name outcome; do
+              [ -z "$name" ] && continue
+              case "$outcome" in
+                success) icon="✅ pass" ;;
+                failure) icon="❌ fail" ;;
+                skipped|"") icon="⏭️ skipped" ;;
+                *) icon="$outcome" ;;
+              esac
+              echo "| $name | $icon |"
+            done
+            echo
+            echo "Steps run independently, so this is every problem in the change, not just the first."
+          } >> "$GITHUB_STEP_SUMMARY"
 
   # ── Stage 2: Claude deploy-readiness review (only after validate + build) ────
   # Deliberately still its own job: it needs `id-token: write` and
