@@ -287,7 +287,21 @@ ratchet).
 > both halves, what must block AND what must stay allowed, because the first
 > attempt at the ref-deletion rules also blocked the safe `git branch -d`.
 >
-> **Caveat:** `.claude/` is excluded via `.git/info/exclude`, so the hook scripts
-> and `settings.json` hook block are machine-local — a fresh clone gets the
-> blocklist script and its test but not the wiring. Re-add the `PreToolUse` block
-> after cloning.
+> **Resolved 2026-08-09.** This used to read: "`.claude/` is excluded via
+> `.git/info/exclude`, so the hook scripts and `settings.json` hook block are
+> machine-local — a fresh clone gets the blocklist script and its test but not
+> the wiring. Re-add the `PreToolUse` block after cloning."
+>
+> Half of that had stopped being true, in the worse direction. `.gitignore`
+> un-ignores `.claude/settings.json` and `.claude/hooks/`, so the **wiring** was
+> tracked while `pre-bash-guard.sh` was **not** — a fresh clone got a
+> `PreToolUse` hook pointing at a missing script. That is exactly the failure
+> described two paragraphs up, and this file asserted "both scripts exist" while
+> it was happening. Reading could never have caught it: a hook that never runs
+> looks identical to a hook that allows everything.
+>
+> `pre-bash-guard.sh` is now committed, so the wiring resolves on a fresh clone.
+> `npm run validate:graph` checks every hook command in `settings.json` against
+> the filesystem, so the next time config and repo disagree it fails a build
+> instead of silently disarming the guard. Still verify by running it, never by
+> trusting this file.

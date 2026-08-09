@@ -4,12 +4,23 @@
 # work in Claude Code on the web. Idempotent and non-interactive.
 set -euo pipefail
 
-# Only run in the remote (Claude Code on the web) environment.
+cd "${CLAUDE_PROJECT_DIR:-.}"
+
+# Deploy-graph summary, in EVERY session (not just remote ones).
+#
+# The edges between these repos are not discoverable by reading this one. A
+# session that does not know fix-it-design-challenge is an unserved mirror can
+# spend an hour editing a file that reaches nobody — which is exactly what
+# happened. Printing it costs nothing and puts the map in context up front.
+if [ -f tools/graph/deploy-graph.json ]; then
+  node tools/graph/summarize-graph.mjs 2>/dev/null || true
+fi
+
+# Everything below installs dependencies, which only makes sense in the remote
+# (Claude Code on the web) environment.
 if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
   exit 0
 fi
-
-cd "${CLAUDE_PROJECT_DIR:-.}"
 
 # Install dependencies. Use `npm install` (not `npm ci`) so the cached
 # container state is reused on later runs instead of wiping node_modules.

@@ -3258,9 +3258,17 @@ function renderLaunchPhase(el, state, ctx, config) {
   // two students sitting next to each other.
   //
   // The label is "Continue to Vocab →" for the same reason the rest of the
-  // chain reads that way ("Continue to Learn It", "Continue to Practice"): the
-  // old "🔑 Vocabulary 🚀 →" named a destination without saying it was the next
-  // step, so it read as a side trip rather than the way forward.
+  // chain reads that way ("Continue to Learn It", "Continue to Explore",
+  // "Continue to Practice"): the old "🔑 Vocabulary 🚀 →" named a destination
+  // without saying it was the next step, so it read as a side trip rather than
+  // the way forward.
+  //
+  // Explore is named here because this list used to skip it, which is not
+  // harmless in a comment that documents the chain — tests/lesson-reflow.spec.ts
+  // asserted Learn It → Practice on the strength of exactly that reading and
+  // failed against a shell that was behaving correctly. The order is Launch →
+  // Vocab → Learn It → Explore → Practice; openExtra("learn") in
+  // engine/core/app.js is where the Learn It → Explore hand-off is defined.
   btn.textContent = isEs ? "Continuar a Vocabulario →" : "Continue to Vocab →";
 
   btn.addEventListener("click", async () => {

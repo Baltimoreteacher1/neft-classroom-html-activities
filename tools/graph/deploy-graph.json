@@ -1,0 +1,110 @@
+{
+  "$schema": "./deploy-graph.schema.md",
+  "$comment": [
+    "The edges nobody wrote down, made checkable.",
+    "",
+    "Written after a pedagogy change was merged into fix-it-design-challenge —",
+    "a repo that deploys nothing — and never reached a teacher. The fact that",
+    "the repo was a mirror, and of what, existed only in people's heads. Every",
+    "entry here is an edge that was previously implicit.",
+    "",
+    "Validated by tools/graph/validate-graph.mjs (npm run validate:graph).",
+    "Keep it small. This is a map of relationships that cross a boundary a",
+    "grep cannot follow — not an inventory of the site. /directory/ and",
+    "data/catalog.json already do inventory."
+  ],
+
+  "repos": {
+    "neft-classroom-html-activities": {
+      "role": "source-of-truth",
+      "deploys": "cloudflare-pages",
+      "note": "This repo. Everything served on eduwonderlab.com except the apex root."
+    },
+    "eduwonderlab-home": {
+      "role": "source-of-truth",
+      "deploys": "cloudflare-worker",
+      "note": "Serves ONLY the apex root. Every other path is this repo's Pages project."
+    },
+    "fix-it-design-challenge": {
+      "role": "mirror",
+      "deploys": null,
+      "note": "Serves nothing. Editing it reaches nobody — see mirrors[] below."
+    }
+  },
+
+  "artifacts": [
+    {
+      "id": "fix-it-participant-page",
+      "repo": "neft-classroom-html-activities",
+      "path": "fix-it-design-challenge/index.html",
+      "servedAt": "https://eduwonderlab.com/fix-it-design-challenge/",
+      "pipeline": "cloudflare-pages"
+    },
+    {
+      "id": "fix-it-facilitator-page",
+      "repo": "neft-classroom-html-activities",
+      "path": "fix-it-design-challenge/facilitator.html",
+      "servedAt": "https://eduwonderlab.com/fix-it-design-challenge/facilitator.html",
+      "pipeline": "cloudflare-pages"
+    },
+    {
+      "id": "apex-homepage",
+      "repo": "eduwonderlab-home",
+      "path": "src/home.html",
+      "servedAt": "https://eduwonderlab.com/",
+      "pipeline": "cloudflare-worker",
+      "gate": "tools/verify-live.mjs",
+      "note": "Drifted behind production twice before the gate existed."
+    }
+  ],
+
+  "mirrors": [
+    {
+      "id": "fix-it-mirror",
+      "repo": "fix-it-design-challenge",
+      "path": "index.html",
+      "mirrorOf": "fix-it-participant-page",
+      "gate": "tools/verify-live.mjs",
+      "note": "PR #2 there edited this believing it shipped. It did not."
+    },
+    {
+      "id": "fix-it-facilitator-mirror",
+      "repo": "fix-it-design-challenge",
+      "path": "facilitator.html",
+      "mirrorOf": "fix-it-facilitator-page",
+      "gate": "tools/verify-live.mjs"
+    }
+  ],
+
+  "$deadDataComment": [
+    "Fields present in a page's data literal that no JS reads. Checked by",
+    "tools/graph/check-dead-data.mjs.",
+    "",
+    "These are a standing debt, not a passing grade: the check reports them",
+    "on every run and fails only on fields NOT listed here, so the count can",
+    "go down but never quietly up. Removing an entry from this list after",
+    "deleting the field is the intended direction.",
+    "",
+    "Left in place rather than deleted here because whether these should be",
+    "removed or re-rendered is a content decision, and fix-it's copy is in",
+    "use for a live session."
+  ],
+  "deadDataBaseline": {
+    "fix-it-design-challenge/index.html": {
+      "GROUPS": ["ai_input", "ai_move", "ai_problem", "avoid", "starter_fix"]
+    }
+  },
+
+  "routeOwnership": [
+    {
+      "pattern": "eduwonderlab.com/",
+      "ownedBy": "eduwonderlab-home",
+      "note": "Apex root ONLY. The worker answers with an x-eduwonderlab-root header; that header is how the drift gate knows it reached the worker and not Pages."
+    },
+    {
+      "pattern": "eduwonderlab.com/*",
+      "ownedBy": "neft-classroom-html-activities",
+      "note": "Everything else, including /classroom (301 -> /curriculum/ via data/routes.json, which is authoritative — the worker's /classroom route was removed 2026-06-25 to match)."
+    }
+  ]
+}
