@@ -19,7 +19,8 @@ import { fileURLToPath } from "url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const MARK = "mwb-injected";
-const SCRIPT_TAG = '<script src="/assets/math-workbench-launcher.js" defer></script>';
+const LAUNCHER_SRC = "/assets/math-workbench-launcher.js";
+const SCRIPT_TAG = `<script src="${LAUNCHER_SRC}" defer></script>`;
 const BEGIN = `<!-- ${MARK}:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->`;
 const END = `<!-- ${MARK}:end -->`;
 
@@ -73,6 +74,7 @@ const report = {
   scanned: 0,
   injected: 0,
   alreadyInjected: 0,
+  alreadyPresent: 0,
   reverted: 0,
   skippedNoBody: [],
   skippedFile: [],
@@ -124,6 +126,17 @@ function handleFile(file) {
     report.alreadyInjected++;
     return;
   }
+  // The sentinel alone cannot decide this. The launcher reached these pages by
+  // more than one route over time, so the committed HTML carries it in three
+  // shapes: inside a current sentinel block; inside an EMPTY sentinel block
+  // with the tag outside it; and, on ~140 pages, with no sentinel at all.
+  // Keying only on the marker treats that last group as uninjected and appends
+  // a SECOND launcher tag, so the script is fetched twice and its floating
+  // button mounted twice. The tag itself is the proof that matters.
+  if (html.includes(LAUNCHER_SRC)) {
+    report.alreadyPresent++;
+    return;
+  }
   if (!/<\/body>/i.test(html)) {
     report.skippedNoBody.push(rel);
     return;
@@ -155,5 +168,5 @@ console.log(
 );
 walk(ROOT, null);
 console.log(
-  `scanned:${report.scanned} injected:${report.injected} already:${report.alreadyInjected} reverted:${report.reverted} skippedNoBody:${report.skippedNoBody.length} skippedFile:${report.skippedFile.length}`,
+  `scanned:${report.scanned} injected:${report.injected} already:${report.alreadyInjected} alreadyUnmarked:${report.alreadyPresent} reverted:${report.reverted} skippedNoBody:${report.skippedNoBody.length} skippedFile:${report.skippedFile.length}`,
 );
