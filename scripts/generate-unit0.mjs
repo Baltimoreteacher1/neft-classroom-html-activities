@@ -16,12 +16,13 @@
  * taxonomy.json). When the revised 2025 Maryland MCCRS codes become available,
  * these will be re-coded along with the rest of the curriculum.
  */
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(root, "math", "unit-0");
+const FORCE = process.argv.includes("--force");
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -677,6 +678,44 @@ function keyList(L) {
   return `<ol>\n      ${items}\n      <li><b>Exit ticket:</b> answers will vary — look for correct reasoning about ${esc(L.standard)} (see the worked example and teaching tip).</li>\n    </ol>`;
 }
 
+/* The shared kit these pages carry in the committed tree: the mobile
+ * accessibility layer, the multi-day save/resume engine, the Math Workbench
+ * launcher and the formula popup.
+ *
+ * These templates own it because a bare regeneration used to DELETE it. The
+ * pages are rewritten wholesale from the strings below, so anything the
+ * templates did not emit was silently dropped — 528 lines across 33 Unit 0
+ * pages, on the foundational unit, which is exactly where the most-supported
+ * students are. `npm run validate:injection` catches it, but only after the
+ * damage is already in the tree.
+ *
+ * Re-running the injectors afterwards is NOT sufficient: no injector owns
+ * /assets/formula-popup.js, so that one can only come from here.
+ *
+ * The markup is reproduced byte-for-byte as committed, including the empty
+ * mwb sentinel block with the launcher tag outside it — a legacy shape, kept
+ * so regeneration stays a true no-op. Normalising it is a separate change.
+ * If an injector's version query changes, this must follow; the idempotency
+ * test (tools/build-injectors-idempotent.test.mjs) is what will catch drift.
+ */
+const SHARED_KIT_HEAD = `  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+`;
+
+const SHARED_KIT_BODY = `  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  
+  <!-- mwb-injected:end -->
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+  <script src="/assets/formula-popup.js" defer></script>
+`;
+
 function printPage(L) {
   const probs = L.practice
     .map((p) => {
@@ -693,7 +732,8 @@ function printPage(L) {
 <html lang="en"><head><meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>${esc(L.title)} — Worksheet (${esc(L.standard)})</title>
-<style>${PRINT_CSS}</style></head>
+<style>${PRINT_CSS}</style>
+${SHARED_KIT_HEAD}</head>
 <body>
   <h1>${esc(L.title)}</h1>
   <div class="meta">Grade 6 Math · Unit 0 · Standard ${esc(L.standard)}</div>
@@ -708,7 +748,7 @@ function printPage(L) {
     <h2>Answer key</h2>
     ${keyList(L)}
   </div>
-</body></html>
+${SHARED_KIT_BODY}</body></html>
 `;
 }
 
@@ -719,7 +759,8 @@ function teacherPage(L) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>${esc(L.title)} — Teacher Notes (${esc(L.standard)})</title>
 <link rel="stylesheet" href="/assets/shared.css" />
-<style>${DOC_CSS}</style></head>
+<style>${DOC_CSS}</style>
+${SHARED_KIT_HEAD}</head>
 <body>
   <a class="back" href="./">← Back to lesson</a>
   <span class="tag">${esc(L.standard)} · Teacher notes</span>
@@ -735,7 +776,7 @@ function teacherPage(L) {
   </section>
   <section><h2>Answer key</h2>${keyList(L)}</section>
   <section><h2>Print</h2><p><a href="./print.html">Open the printable worksheet + key →</a></p></section>
-</body></html>
+${SHARED_KIT_BODY}</body></html>
 `;
 }
 
@@ -746,7 +787,8 @@ function familyPage(L) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>${esc(L.title)} — Family Page (${esc(L.standard)})</title>
 <link rel="stylesheet" href="/assets/shared.css" />
-<style>${DOC_CSS}</style></head>
+<style>${DOC_CSS}</style>
+${SHARED_KIT_HEAD}</head>
 <body>
   <a class="back" href="./">← Back to lesson</a>
   <span class="tag">${esc(L.standard)} · For families</span>
@@ -756,7 +798,7 @@ function familyPage(L) {
   <section class="vocab"><h2>Words to know</h2>
     <ul>${L.vocab.map(([t, d]) => `<li><b>${esc(t)}:</b> ${esc(d)}</li>`).join("")}</ul>
   </section>
-</body></html>
+${SHARED_KIT_BODY}</body></html>
 `;
 }
 
@@ -791,7 +833,7 @@ function lessonPage(L) {
 <title>${esc(L.title)} · Unit 0 · Grade 6 Math</title>
 <link rel="stylesheet" href="/assets/shared.css" />
 <style>${PAGE_CSS}</style>
-</head>
+${SHARED_KIT_HEAD}</head>
 <body>
 <div class="wrap">
   <a class="back" href="/math/unit-0/">← Unit 0 hub</a>
@@ -903,7 +945,7 @@ function lessonPage(L) {
   render();
 })();
 </script>
-</body>
+${SHARED_KIT_BODY}</body>
 </html>
 `;
 }
@@ -945,7 +987,7 @@ function hubPage() {
   .lo{color:var(--muted);font-size:13px}
   footer{color:var(--muted);font-size:13px;text-align:center;margin:26px 0}
 </style>
-</head>
+${SHARED_KIT_HEAD}</head>
 <body>
 <div class="wrap">
   <a class="back" href="/math/">← Math hub</a>
@@ -959,23 +1001,66 @@ ${cards}
   </div>
   <footer>Grade 6 Math · Unit 0 · ${LESSONS.length} lessons</footer>
 </div>
-</body>
+${SHARED_KIT_BODY}</body>
 </html>
 `;
 }
 
+/* This generator scaffolded Unit 0 once. Its output has been enriched since, by
+ * hands and tools that cannot reproduce it:
+ *
+ *   - interactive vocabulary scaffolding (`vocab-word` spans wired to
+ *     openVocabModal), applied by one-off scripts/*_vocab*.py migrations — the
+ *     single most load-bearing support on these pages for ESOL and Level 0
+ *     students, and reproducible by nothing in the npm pipeline;
+ *   - plain-language rewrites of the vocabulary ("the number in front of a
+ *     letter" where the template still says "the number multiplied by a
+ *     variable");
+ *   - extra cards on the hub, e.g. the Math RPG readiness entry.
+ *
+ * A bare run used to overwrite all of it — 33 files, and separately it dropped
+ * the shared kit (mobile a11y, save/resume, workbench, formula popup) because
+ * the templates below did not emit it. Unit 0 is the foundational unit, so this
+ * lands on exactly the students with the least margin.
+ *
+ * So: never overwrite an existing page. Writing only what is missing keeps the
+ * tool useful for adding a lesson while making the destructive case impossible
+ * by default. `--force` restores the old behaviour for anyone who genuinely
+ * wants a reset, and says what it is about to cost.
+ */
+let skipped = 0;
+function writePage(file, html) {
+  if (existsSync(file) && !FORCE) {
+    if (readFileSync(file, "utf8") !== html) skipped++;
+    return;
+  }
+  writeFileSync(file, html);
+}
+
 // --- write everything ---
 mkdirSync(outDir, { recursive: true });
-writeFileSync(join(outDir, "index.html"), hubPage());
+writePage(join(outDir, "index.html"), hubPage());
 let count = 0;
 for (const L of LESSONS) {
   const dir = join(outDir, L.slug);
   mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, "index.html"), lessonPage(L));
-  writeFileSync(join(dir, "print.html"), printPage(L));
-  writeFileSync(join(dir, "teacher.html"), teacherPage(L));
-  writeFileSync(join(dir, "family.html"), familyPage(L));
+  writePage(join(dir, "index.html"), lessonPage(L));
+  writePage(join(dir, "print.html"), printPage(L));
+  writePage(join(dir, "teacher.html"), teacherPage(L));
+  writePage(join(dir, "family.html"), familyPage(L));
   count++;
 }
-console.log(`Unit 0: wrote hub + ${count} lessons to math/unit-0/`);
+console.log(
+  FORCE
+    ? `Unit 0: OVERWROTE hub + ${count} lessons in math/unit-0/ (--force)`
+    : `Unit 0: hub + ${count} lessons checked in math/unit-0/`,
+);
+if (skipped) {
+  console.log(
+    `\n  ${skipped} existing page(s) left untouched because their committed content\n` +
+      `  differs from these templates — vocabulary scaffolding, plain-language\n` +
+      `  rewrites and hub cards that nothing here can regenerate. Re-run with\n` +
+      `  --force ONLY if you intend to discard that.`,
+  );
+}
 for (const L of LESSONS) console.log(`  ${L.standard}  →  /math/unit-0/${L.slug}/`);
