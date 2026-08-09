@@ -138,10 +138,19 @@ jobs:
       #
       # Still fails the job: not a downgrade to a warning. It just no longer
       # decides whether the functional checks are allowed to run.
+      # Was `npm audit --audit-level=high`, which is binary. Two image-size
+      # advisories have NO fixed version — the whole published range is affected
+      # and npm's "fix" is a three-major downgrade of pptxgenjs — so that form
+      # could not go green by any action available, and a required check that
+      # cannot pass stops being read.
+      #
+      # tools/audit-allowlist.mjs still fails on everything not written down.
+      # Accepted advisories carry a reason and a reviewBy date, and the run fails
+      # if a real fix appears, if the date passes, or if an entry goes stale.
       - name: Dependency audit (high severity)
         id: audit
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: npm audit --audit-level=high
+        run: npm run audit:deps
 
       - name: Upload browser report
         if: ${{ !cancelled() }}
