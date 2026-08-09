@@ -49,15 +49,33 @@ test.describe("shared lesson shell reflow", () => {
       await page.locator("#nw-notice").fill("I notice a math pattern in the example.");
       await page.locator("#nw-wonder").fill("I wonder how the pattern will help me solve it.");
 
-      // The taught order: Launch → Vocab → Learn It → Practice. Every hop is a
-      // real button a student can press, which is the point — Vocab and Learn It
-      // used to advance ONLY by completing their activity, so a student who read
-      // the page without finishing it had no way forward.
+      // The taught order: Launch → Vocab → Learn It → Explore → Practice. Every
+      // hop is a real button a student can press, which is the point — Vocab and
+      // Learn It used to advance ONLY by completing their activity, so a student
+      // who read the page without finishing it had no way forward.
+      //
+      // Explore belongs in that chain, and this spec used to leave it out: it
+      // went Learn It → Practice and then failed waiting for a "Continue to
+      // Practice" button that is not on the Learn It panel and should not be.
+      // Learn It is pre-work FOR Explore, so it hands off to Explore — see the
+      // canonical-order comment in openExtra("learn") in engine/core/app.js —
+      // and jumping straight to Practice is the skipped-phase bug that hand-off
+      // exists to prevent. The spec was pinning the old behaviour, so the shell
+      // was reported broken for doing the right thing.
       await page.getByRole("button", { name: "Continue to Vocab →" }).click();
       await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Vocabulary");
       await page.getByRole("button", { name: "Continue to Learn It" }).click();
       await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Learn It");
-      await page.getByRole("button", { name: "Continue to Practice" }).click();
+      await page.getByRole("button", { name: "Continue to Explore" }).click();
+      await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Explore");
+
+      // Explore is the first GRADED phase in the chain, so it is the first hop
+      // with no labelled "Continue to …" of its own on these lessons: that
+      // button is rendered on the Turn & Talk path, and 1-1 and 10-3 open on an
+      // interactive activity instead. The shell's own next control is what a
+      // student who has read the phase without finishing the activity uses, and
+      // the no-dead-ends property this spec is really about is that it works.
+      await page.getByRole("button", { name: "Go to the next part of the lesson" }).click();
       await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Practice");
     });
   }
