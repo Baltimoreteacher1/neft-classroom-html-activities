@@ -175,6 +175,28 @@ function toStudentConfig(value) {
 
 // ---------------------------------------------------------------- Group 1
 // Extra Support — teacher-led re-teach + heavily scaffolded practice.
+/**
+ * The base lesson's interactive tool, wherever it was authored. Mirrors the
+ * precedence in scripts/generate-homework-html.mjs `lessonModelCandidates`:
+ * practice first, then explore, connect and the launch visual. Reading only
+ * `practice.diagram` left every small group of a lesson whose tool sits in
+ * connect/explore with no put-your-own-numbers-in tool at all — which is
+ * exactly what lesson-tool-coverage checks for.
+ */
+function baseDiagram(base) {
+  const first = (value) => {
+    const arr = Array.isArray(value) ? value : [value];
+    return arr.find((x) => x && typeof x === "object" && typeof x.kind === "string") || null;
+  };
+  return (
+    first(base?.practice?.diagram) ||
+    first(base?.explore?.diagram) ||
+    first(base?.connect?.diagram) ||
+    first(base?.launch?.visual) ||
+    undefined
+  );
+}
+
 function buildGroup1(base, u, m) {
   const out = clone(base);
   const id = `${u}-${m}-group1`;
@@ -233,7 +255,7 @@ function buildGroup1(base, u, m) {
     // `practice.diagram` at the top of the Practice & Check tab; rebuilding
     // `out.practice` from scratch used to drop it, so every small group lost
     // the one put-your-own-numbers-in tool the full lesson gives students.
-    diagram: p.diagram,
+    diagram: baseDiagram(base),
     approaching: practice.slice(0, 6),
     onLevel: practice.slice(6),
     extending: [],
@@ -345,7 +367,7 @@ function buildGroup2(base, u, m) {
   ).slice(0, 12);
   out.practice = {
     // Same rehearsal tool the full lesson mounts — see buildGroup1.
-    diagram: p.diagram,
+    diagram: baseDiagram(base),
     approaching: [],
     onLevel: practice.slice(0, 4),
     extending: practice.slice(4),
