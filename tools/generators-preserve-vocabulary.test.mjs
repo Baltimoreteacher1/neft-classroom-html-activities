@@ -118,10 +118,10 @@ try {
   // "Term3C" is third in its lesson, past the top-2 cut. This is the shape of
   // the 56 real terms that were being dropped.
   const CURATED = "CuratedOnlyTerm";
-  const catchupDir = join(lessons, "6-12-catchup");
+  const catchupDir = join(lessons, "1-3-catchup");
   mkdirSync(catchupDir, { recursive: true });
   const prior = lessonConfig(1, 3, ["Term1A", CURATED, "Term3C"]);
-  prior.lessonId = "6-12-catchup";
+  prior.lessonId = "1-3-catchup";
   writeFileSync(join(catchupDir, "config.json"), JSON.stringify(prior, null, 2));
 
   execFileSync("node", [GENERATOR], {
@@ -158,10 +158,10 @@ try {
      lesson 5-1's, so a re-run stripped "Composite figure" and "Formula" from
      both. Same fixture, same property. */
   const SG_CURATED = "CuratedGroupTerm";
-  const groupDir = join(lessons, "6-13-group1");
+  const groupDir = join(lessons, "1-1-group1");
   mkdirSync(groupDir, { recursive: true });
   const priorGroup = lessonConfig(1, 1, ["Term1A", SG_CURATED]);
-  priorGroup.lessonId = "6-13-group1";
+  priorGroup.lessonId = "1-1-group1";
   writeFileSync(join(groupDir, "config.json"), JSON.stringify(priorGroup, null, 2));
 
   execFileSync("node", [join(ROOT, "tools/generate-small-group-lessons.mjs"), "--configs-only"], {

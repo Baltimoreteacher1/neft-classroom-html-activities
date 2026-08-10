@@ -185,7 +185,7 @@ test("an assigned lesson the hub data does not know still gets a usable name", a
   const w = await boot({
     sections: { 601: ["JN"] },
     identity: { section: "601", initials: "JN" },
-    forLessons: ["3-2"],
+    forLessons: ["3-3"],
   });
   const link = card(w).querySelector(".nt-sup-picked__link");
   assert.equal(link.textContent, "Dividing Fractions", "falls back to the anchor label");
