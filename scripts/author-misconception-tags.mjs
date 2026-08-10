@@ -72,6 +72,9 @@ const CHECK = process.argv.includes("--check");
 /** --sample prints every prose-derived tag next to the sentence it came from,
  *  so the pattern table can be spot-audited by a person rather than trusted. */
 const SAMPLE = process.argv.includes("--sample");
+/** --unmatched lists authored feedback no pattern reads yet, most common first. */
+const UNMATCHED = process.argv.includes("--unmatched");
+const unmatched = new Map();
 const sampled = [];
 
 /* ------------------------------------------------------------------ numbers */
@@ -259,6 +262,14 @@ const PROSE_PATTERNS = [
     /that'?s multiplication|multiplies .* instead of dividing|multiplied .* instead of dividing|try multiplying instead/i,
     "op-multiplied-instead-of-divided",
   ],
+  // The measurement-model phrasings this curriculum uses for the same error.
+  // "Division asks 'how many fit', not multiplication" is a direct statement
+  // that the student multiplied — it is not the coaching form ("find the unit
+  // rate first"), which stays excluded.
+  [
+    /asks '?how many[^']*'?,? not multiplication|not the right operation\. division|uses the wrong operation\. division|"divided" means division, not multiplication/i,
+    "op-multiplied-instead-of-divided",
+  ],
   [
     /"times" means multiply, not add|did you add .* instead of multiplying|formula multiplies|means multiply, not add/i,
     "op-added-instead-of-multiplied",
@@ -306,6 +317,13 @@ function proseTag(item, choiceIndex) {
   const fb = Array.isArray(item.choiceFeedback) ? item.choiceFeedback[choiceIndex] : null;
   const text = typeof fb === "string" ? fb.trim() : "";
   if (!text) return null;
+  // --unmatched drives authoring: the pattern table is the only lever that
+  // reaches prose word problems, so the question that matters is which
+  // already-written feedback it still cannot read. Recorded before matching so
+  // a string that matches nothing is counted exactly once.
+  if (UNMATCHED && !PROSE_PATTERNS.some(([p]) => p.test(text))) {
+    unmatched.set(text, (unmatched.get(text) || 0) + 1);
+  }
   for (const [pattern, id] of PROSE_PATTERNS) {
     if (!pattern.test(text)) continue;
     if (!MISCONCEPTIONS[id]) return null;
@@ -532,6 +550,13 @@ console.log(
   `misconception tagging: ${stats.choicesTagged} distractors · ${stats.itemsTagged} items · ${stats.lessonsTouched} lessons · ${conflicts.length} contradictions · ${incoherent.length} rejected as impossible · ${repaired.length} repaired`,
 );
 console.log("→ reports/misconception-tagging.md");
+
+if (UNMATCHED) {
+  const rows = [...unmatched].sort((a, b) => b[1] - a[1]);
+  const total = rows.reduce((sum, [, n]) => sum + n, 0);
+  for (const [text, n] of rows.slice(0, 120)) console.log(`${n}\t${text}`);
+  console.log(`\n${rows.length} distinct unmatched strings · ${total} distractors`);
+}
 
 if (SAMPLE) {
   const seen = new Set();
