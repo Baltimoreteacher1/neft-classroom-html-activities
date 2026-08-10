@@ -21,15 +21,15 @@
 
 | Lesson | Standard | Domain | Title |
 | ------ | -------- | ------ | ----- |
-| 2-1 | `6.DS.1` (Statistical Questions) | Reasoning with Data and Statistics | Statistical Questions and Data |
-| 2-2 | `6.DS.5` (Data Displays) | Reasoning with Data and Statistics | Display Data: Histograms |
-| 2-3 | `6.DS.4` (Measures of Center & Variability) | Reasoning with Data and Statistics | Mean, Median, and Mode |
-| 2-4 | `6.DS.5` (Data Displays) | Reasoning with Data and Statistics | Display Data: Box Plots |
-| 2-5 | `6.DS.3` (Distributions) | Reasoning with Data and Statistics | Shape of Data Distributions |
-| 2-6 | `6.NOS.2` (Multi-Digit Division) | Number and Operation Sense | Divide Multi-Digit Numbers |
-| 2-7 | `6.NOS.3` (Decimal Operations) | Number and Operation Sense | Divide Decimals |
-| 2-9 | `6.DS.6c` (Summarizing Data Sets) | Reasoning with Data and Statistics | Mean Absolute Deviation |
-| 2-10 | `6.DS.6d` (Relating Measures to Context) | Reasoning with Data and Statistics | Appropriate Measures |
+| 2-1 | `6.DS.1` (Statistical Questions) | Reasoning with Data and Statistics | Understand Statistical Questions |
+| 2-2 | `6.DS.5` (Data Displays) | Reasoning with Data and Statistics | Represent and Describe Data in a Histogram |
+| 2-3 | `6.DS.4` (Measures of Center & Variability) | Reasoning with Data and Statistics | Describe the Data Using the Median |
+| 2-4 | `6.DS.5` (Data Displays) | Reasoning with Data and Statistics | Represent and Describe Data in a Box Plot |
+| 2-5 | `6.DS.3` (Distributions) | Reasoning with Data and Statistics | Describe Data by Range and Interquartile Range |
+| 2-6 | `6.NOS.2` (Multi-Digit Division) | Number and Operation Sense | Divide Multi-Digit Numbers Using an Algorithm |
+| 2-7 | `6.NOS.3` (Decimal Operations) | Number and Operation Sense | Divide Decimals Using an Algorithm |
+| 2-9 | `6.DS.6c` (Summarizing Data Sets) | Reasoning with Data and Statistics | Describe Data by Mean Absolute Deviation |
+| 2-10 | `6.DS.6d` (Relating Measures to Context) | Reasoning with Data and Statistics | Choose Appropriate Measures |
 | 2-11 | `6.NOS.3` (Decimal Operations) | Number and Operation Sense | Add and Subtract Decimals |
 | 2-12 | `6.NOS.3` (Decimal Operations) | Number and Operation Sense | Multiply Decimals |
 
@@ -38,12 +38,12 @@
 | Lesson | Standard | Domain | Title |
 | ------ | -------- | ------ | ----- |
 | 3-1 | `6.AT.1` (Ratio Concept) | Algebraic Thinking | Understand Ratios |
-| 3-2 | `6.AT.2` (Unit Rate) | Algebraic Thinking | Rates and Unit Rates |
-| 3-3 | `6.AT.3a` (Ratio Tables) | Algebraic Thinking | Ratio Tables |
-| 3-4 | `6.AT.3a` (Ratio Tables) | Algebraic Thinking | Graph Ratio Tables |
-| 3-5 | `6.AT.3` (Ratio & Rate Reasoning) | Algebraic Thinking | Compare Ratios |
-| 3-6 | `6.AT.3` (Ratio & Rate Reasoning) | Algebraic Thinking | Use Ratio Reasoning |
-| 3-7 | `6.AT.3` (Ratio & Rate Reasoning) | Algebraic Thinking | Ratio and Rate Problem Solving |
+| 3-2 | `6.AT.2` (Unit Rate) | Algebraic Thinking | Understand Rates and Unit Rates |
+| 3-3 | `6.AT.3a` (Ratio Tables) | Algebraic Thinking | Determine Equivalent Ratios Using Tables |
+| 3-4 | `6.AT.3a` (Ratio Tables) | Algebraic Thinking | Determine Equivalent Ratios Using Graphs |
+| 3-5 | `6.AT.3` (Ratio & Rate Reasoning) | Algebraic Thinking | Compare Ratio Relationships |
+| 3-6 | `6.AT.3` (Ratio & Rate Reasoning) | Algebraic Thinking | Ratio Reasoning: Convert Measurements within the Same System |
+| 3-7 | `6.AT.3` (Ratio & Rate Reasoning) | Algebraic Thinking | Ratio Reasoning: Convert Measurements Between Systems |
 | 3-8 | `6.AT.2` (Unit Rate) | Algebraic Thinking | Solve Problems with Unit Rates |
 | 3-9 | `6.AT.3` (Ratio & Rate Reasoning) | Algebraic Thinking | Equivalent Ratios |
 | 3-10 | `6.AT.3c` (Measurement Conversion) | Algebraic Thinking | Convert Measurement Units |
@@ -52,24 +52,24 @@
 
 | Lesson | Standard | Domain | Title |
 | ------ | -------- | ------ | ----- |
-| 4-1 | `6.AT.4` (Percent of a Quantity) | Algebraic Thinking | Percents Greater Than 100% and Less Than 1% |
-| 4-2 | `6.AT.4` (Percent of a Quantity) | Algebraic Thinking | Relate Fractions, Decimals, and Percents |
+| 4-1 | `6.AT.4` (Percent of a Quantity) | Algebraic Thinking | Understand Percent |
+| 4-2 | `6.AT.4` (Percent of a Quantity) | Algebraic Thinking | Relate Fractions, Decimals, and Percentages |
 | 4-3 | `6.AT.4` (Percent of a Quantity) | Algebraic Thinking | Estimate the Percent of a Number |
-| 4-4 | `6.AT.4` (Percent of a Quantity) | Algebraic Thinking | Find the Percent of a Number |
-| 4-5 | `6.AT.4` (Percent of a Quantity) | Algebraic Thinking | Use Percent to Solve Problems |
+| 4-4 | `6.AT.4` (Percent of a Quantity) | Algebraic Thinking | Find and Compare with Percentages |
+| 4-5 | `6.AT.4` (Percent of a Quantity) | Algebraic Thinking | Determine the Whole Given the Part and Percent |
 
 ## Unit 5
 
 | Lesson | Standard | Domain | Title |
 | ------ | -------- | ------ | ----- |
-| 5-1 | `6.GR.1` (Area) | Geometric Reasoning and Measurement | Area of Parallelograms |
-| 5-2 | `6.GR.1` (Area) | Geometric Reasoning and Measurement | Area of Triangles |
-| 5-3 | `6.GR.1` (Area) | Geometric Reasoning and Measurement | Area of Trapezoids |
-| 5-4 | `6.GR.1` (Area) | Geometric Reasoning and Measurement | Area of Composite Figures |
-| 5-5 | `6.GR.2` (Volume) | Geometric Reasoning and Measurement | Volume with Whole Number Edges |
-| 5-6 | `6.GR.4` (Surface Area & Nets) | Geometric Reasoning and Measurement | Surface Area Using Nets |
-| 5-7 | `6.GR.4` (Surface Area & Nets) | Geometric Reasoning and Measurement | Surface Area of Prisms |
-| 5-8 | `6.GR.4` (Surface Area & Nets) | Geometric Reasoning and Measurement | Surface Area of Pyramids |
+| 5-1 | `6.GR.1` (Area) | Geometric Reasoning and Measurement | Determine the Area of Parallelograms and Rhombuses |
+| 5-2 | `6.GR.1` (Area) | Geometric Reasoning and Measurement | Determine the Area of Triangles |
+| 5-3 | `6.GR.1` (Area) | Geometric Reasoning and Measurement | Determine the Area of Trapezoids |
+| 5-4 | `6.GR.1` (Area) | Geometric Reasoning and Measurement | Apply Area Concepts to Solve Problems |
+| 5-5 | `6.GR.2` (Volume) | Geometric Reasoning and Measurement | Determine the Volume of Rectangular Prisms |
+| 5-6 | `6.GR.4` (Surface Area & Nets) | Geometric Reasoning and Measurement | Represent Three-Dimensional Figures in Two Dimensions |
+| 5-7 | `6.GR.4` (Surface Area & Nets) | Geometric Reasoning and Measurement | Determine Surface Area of Prisms |
+| 5-8 | `6.GR.4` (Surface Area & Nets) | Geometric Reasoning and Measurement | Determine Surface Area of Pyramids |
 | 5-9 | `6.GR.1` (Area) | Geometric Reasoning and Measurement | Area of Regular Polygons |
 | 5-10 | `6.GR.2` (Volume) | Geometric Reasoning and Measurement | Volume of Rectangular Prisms |
 
@@ -77,14 +77,14 @@
 
 | Lesson | Standard | Domain | Title |
 | ------ | -------- | ------ | ----- |
-| 6-1 | `6.NOS.1` (Dividing Fractions) | Number and Operation Sense | Interpret Division of Fractions |
-| 6-2 | `6.NOS.1` (Dividing Fractions) | Number and Operation Sense | Divide Fractions |
-| 6-3 | `6.AT.5` (Exponents) | Algebraic Thinking | Powers and Exponents |
-| 6-4 | `6.AT.6c` (Evaluating Expressions) | Algebraic Thinking | Evaluate Expressions |
-| 6-5 | `6.AT.6a` (Writing Expressions) | Algebraic Thinking | Write Algebraic Expressions |
-| 6-6 | `6.AT.7` (Equivalent Expressions) | Algebraic Thinking | Equivalent Expressions |
-| 6-7 | `6.NOS.4` (GCF & LCM) | Number and Operation Sense | Greatest Common Factor |
-| 6-8 | `6.AT.7` (Equivalent Expressions) | Algebraic Thinking | Properties of Operations |
+| 6-1 | `6.NOS.1` (Dividing Fractions) | Number and Operation Sense | Division Expressions with Fractions and Whole Numbers |
+| 6-2 | `6.NOS.1` (Dividing Fractions) | Number and Operation Sense | Division Expressions with Fractions and Mixed Numbers |
+| 6-3 | `6.AT.5` (Exponents) | Algebraic Thinking | Explore Numerical Expressions with Exponents |
+| 6-4 | `6.AT.6c` (Evaluating Expressions) | Algebraic Thinking | Write and Evaluate Numerical Expressions with Exponents |
+| 6-5 | `6.AT.6a` (Writing Expressions) | Algebraic Thinking | Write and Evaluate Algebraic Expressions |
+| 6-6 | `6.AT.7` (Equivalent Expressions) | Algebraic Thinking | Identify Equivalent Algebraic Expressions |
+| 6-7 | `6.NOS.4` (GCF & LCM) | Number and Operation Sense | Find Factors and Multiples |
+| 6-8 | `6.AT.7` (Equivalent Expressions) | Algebraic Thinking | Generate Equivalent Expressions |
 | 6-9 | `6.NOS.1` (Dividing Fractions) | Number and Operation Sense | Divide Whole Numbers by Fractions |
 | 6-10 | `6.NOS.1` (Dividing Fractions) | Number and Operation Sense | Divide Mixed Numbers |
 | 6-11 | `6.NOS.1` (Dividing Fractions) | Number and Operation Sense | Fraction Division Problem Solving |
@@ -97,11 +97,11 @@
 
 | Lesson | Standard | Domain | Title |
 | ------ | -------- | ------ | ----- |
-| 7-2 | `6.NOS.6` (Rational Numbers on the Line) | Number and Operation Sense | Rational Numbers on the Number Line |
-| 7-3 | `6.NOS.8` (Ordering & Absolute Value) | Number and Operation Sense | Integers and Absolute Value |
-| 7-4 | `6.NOS.8` (Ordering & Absolute Value) | Number and Operation Sense | Compare and Order Integers |
-| 7-5 | `6.NOS.6` (Rational Numbers on the Line) | Number and Operation Sense | Graph on the Coordinate Plane |
-| 7-6 | `6.NOS.9` (Coordinate Plane Problems) | Number and Operation Sense | Distance on the Coordinate Plane |
+| 7-2 | `6.NOS.6` (Rational Numbers on the Line) | Number and Operation Sense | Represent Rational Numbers and Their Opposites on the Number Line |
+| 7-3 | `6.NOS.8` (Ordering & Absolute Value) | Number and Operation Sense | Understand Absolute Value of Rational Numbers |
+| 7-4 | `6.NOS.8` (Ordering & Absolute Value) | Number and Operation Sense | Compare and Order Integers and Rational Numbers |
+| 7-5 | `6.NOS.6` (Rational Numbers on the Line) | Number and Operation Sense | Represent Rational Numbers on the Coordinate Plane |
+| 7-6 | `6.NOS.9` (Coordinate Plane Problems) | Number and Operation Sense | Determine Distance on the Coordinate Plane |
 | 7-7 | `6.NOS.9` (Coordinate Plane Problems) | Number and Operation Sense | Represent Polygons on the Coordinate Plane |
 | 7-8 | `6.NOS.7` (Reflections in Coordinates) | Number and Operation Sense | Ordered Pairs in All Four Quadrants |
 | 7-9 | `6.NOS.7` (Reflections in Coordinates) | Number and Operation Sense | Reflect Points Across Axes |
@@ -110,11 +110,11 @@
 
 | Lesson | Standard | Domain | Title |
 | ------ | -------- | ------ | ----- |
-| 8-1 | `6.AT.8` (Solutions of Equations & Inequalities) | Algebraic Thinking | Write Equations |
-| 8-2 | `6.AT.8` (Solutions of Equations & Inequalities) | Algebraic Thinking | Solve One-Step Addition and Subtraction Equations |
-| 8-3 | `6.AT.8` (Solutions of Equations & Inequalities) | Algebraic Thinking | Solve Multiplication and Division Equations |
-| 8-4 | `6.AT.9` (Inequalities) | Algebraic Thinking | Write Inequalities |
-| 8-5 | `6.AT.9` (Inequalities) | Algebraic Thinking | Graph Inequalities |
+| 8-1 | `6.AT.8` (Solutions of Equations & Inequalities) | Algebraic Thinking | Understand Equations and Their Solutions |
+| 8-2 | `6.AT.8` (Solutions of Equations & Inequalities) | Algebraic Thinking | Write and Solve Equations Using Addition or Subtraction |
+| 8-3 | `6.AT.8` (Solutions of Equations & Inequalities) | Algebraic Thinking | Write and Solve Equations Using Multiplication or Division |
+| 8-4 | `6.AT.9` (Inequalities) | Algebraic Thinking | Write and Represent Inequalities |
+| 8-5 | `6.AT.9` (Inequalities) | Algebraic Thinking | Understand Inequalities and Their Solutions |
 | 8-6 | `6.AT.8` (Solutions of Equations & Inequalities) | Algebraic Thinking | Solve and Graph Inequalities |
 | 8-7 | `6.AT.8` (Solutions of Equations & Inequalities) | Algebraic Thinking | Equations and Inequalities Problem Solving |
 
