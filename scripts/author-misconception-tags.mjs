@@ -193,6 +193,19 @@ const PROSE_PATTERNS = [
     "geom-triangle-area-no-half",
   ],
   [/add(?:ing|ed)? the dimensions|volume multiplies all edges/i, "geom-volume-added-dimensions"],
+  // Surface area vs volume is NOT the area/perimeter swap — different pair of
+  // quantities, different repair — so it is matched first and kept separate.
+  // "square units, not cubic" is the tell; "square units, not plain units" is
+  // the area/perimeter one below.
+  // The claim is "you computed VOLUME when SURFACE AREA was asked", so the
+  // sentence must contrast the two. Bare "that's the volume" also appears on
+  // solve-for-height items ("that's the volume given, not the height"), and
+  // bare "six faces" appears on miscounted-faces items ("a cube net has six
+  // faces, not four") — neither is this error.
+  [
+    /square units, not cubic|not cubic units|(?:that'?s|that is) the volume[^.]*surface area|volume calculation[^.]*surface area|surface area needs the sum of all six face/i,
+    "geom-surface-area-as-volume",
+  ],
   [
     /(?:area|perimeter) (?:and|vs\.?) (?:perimeter|area)|square units, not (?:plain )?units|measures? (?:a )?(?:distance|length)(?:[^.]*)but area/i,
     "measure-area-perimeter-swap",

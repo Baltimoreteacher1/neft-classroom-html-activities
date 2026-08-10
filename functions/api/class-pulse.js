@@ -55,6 +55,10 @@ const TAG_LABELS = {
     "Found base × height but forgot the half",
     "Calculó base × altura pero olvidó la mitad",
   ],
+  "geom-surface-area-as-volume": [
+    "Found the volume instead of the surface area",
+    "Halló el volumen en vez del área total",
+  ],
   "geom-volume-added-dimensions": [
     "Added the dimensions instead of multiplying",
     "Sumó las dimensiones en vez de multiplicarlas",
@@ -118,6 +122,7 @@ const TAG_STANDARDS = {
   "fraction-no-reciprocal": ["6.NOS.1"],
   "fraction-straight-across-division": ["6.NOS.1"],
   "geom-triangle-area-no-half": ["6.GR.1"],
+  "geom-surface-area-as-volume": ["6.GR.4"],
   "geom-volume-added-dimensions": ["6.GR.2"],
   "algebra-distributive-partial": ["6.AT.7"],
   "measure-area-perimeter-swap": ["6.GR.1"],

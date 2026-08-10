@@ -162,6 +162,8 @@ const WATCH_ES = {
     "Vuelve a pensar la división como “¿cuántos de estos caben en aquello?”",
   "geom-triangle-area-no-half":
     "Dibuja el rectángulo alrededor del triángulo: el triángulo es la mitad.",
+  "geom-surface-area-as-volume":
+    "Pregunta cuál debe ser la unidad: las cuadradas cubren, las cúbicas llenan.",
   "geom-volume-added-dimensions":
     "Arma primero una capa de cubos unitarios y luego cuenta las capas.",
   "algebra-distributive-partial":

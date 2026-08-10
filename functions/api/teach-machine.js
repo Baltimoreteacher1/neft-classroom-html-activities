@@ -72,6 +72,7 @@ const ALLOWED_TAGS = [
   "fraction-added-denominators",
   "fraction-no-reciprocal",
   "fraction-straight-across-division",
+  "geom-surface-area-as-volume",
   "geom-triangle-area-no-half",
   "geom-volume-added-dimensions",
   "measure-area-perimeter-swap",

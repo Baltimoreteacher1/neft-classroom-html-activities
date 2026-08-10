@@ -217,6 +217,20 @@ export const MISCONCEPTIONS = {
     studentEs:
       "Multiplicaste base × altura, pero eso da el rectángulo completo. Un triángulo es la mitad de ese rectángulo: toma la mitad de tu respuesta.",
   },
+  // Authored-only, deliberately: there is no honest numeric predictor here.
+  // The error is answering the WRONG QUESTION (volume when surface area was
+  // asked), and l·w·h is a perfectly correct computation — nothing about the
+  // value alone reveals the mistake. Only the item's own distractor knows.
+  "geom-surface-area-as-volume": {
+    label: "Found the volume instead of the surface area",
+    labelEs: "Halló el volumen en vez del área total",
+    watchFor:
+      "Ask what the unit has to be — square units cover a surface, cubic units fill a space.",
+    student:
+      "That is the volume — the space inside. Surface area is the wrapping: find the area of all six faces and add them. Check your unit, too — a surface is measured in square units, not cubic.",
+    studentEs:
+      "Eso es el volumen: el espacio de adentro. El área total es la envoltura: halla el área de las seis caras y súmalas. Revisa también la unidad: una superficie se mide en unidades cuadradas, no cúbicas.",
+  },
   "geom-volume-added-dimensions": {
     label: "Added the dimensions instead of multiplying",
     labelEs: "Sumó las dimensiones en vez de multiplicarlas",

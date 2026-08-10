@@ -31,6 +31,11 @@ export const MISCONCEPTIONS = {
     label: "Divided numerators and denominators straight across",
     watchFor: "Reground division as “how many of these fit into that?”",
   },
+  "geom-surface-area-as-volume": {
+    label: "Found the volume instead of the surface area",
+    watchFor:
+      "Ask what the unit has to be — square units cover a surface, cubic units fill a space.",
+  },
   "geom-triangle-area-no-half": {
     label: "Found base × height but forgot the half",
     watchFor: "Draw the rectangle around the triangle — the triangle is half of it.",

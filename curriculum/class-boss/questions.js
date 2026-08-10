@@ -31,6 +31,7 @@ export const BOSS_TAGS = [
   "fraction-no-reciprocal",
   "fraction-straight-across-division",
   "geom-triangle-area-no-half",
+  "geom-surface-area-as-volume",
   "geom-volume-added-dimensions",
   "measure-area-perimeter-swap",
   "op-added-instead-of-multiplied",
@@ -852,6 +853,71 @@ export const QUESTION_BANK = {
   ],
 
   /* --- Added the dimensions instead of multiplying ----------------------- */
+  /* --- Found the volume instead of the surface area ---------------------- */
+  "geom-surface-area-as-volume": [
+    T("sa-gift", (r) => {
+      const l = r.int(3, 8);
+      const w = r.int(2, 6);
+      let h = r.int(2, 6);
+      // The distractor must be WRONG. On a 2×2×2-style box the surface area and
+      // the volume can coincide, and a distractor equal to the answer makes the
+      // question unanswerable.
+      if (2 * (l * w + l * h + w * h) === l * w * h) h += 1;
+      return {
+        values: { l, w, h },
+        correct: 2 * (l * w + l * h + w * h),
+        distractor: l * w * h,
+        prompt: {
+          en: `A gift box is ${l} in by ${w} in by ${h} in. How many square inches of wrapping paper cover it exactly?`,
+          es: `Una caja de regalo mide ${l} por ${w} por ${h} pulgadas. ¿Cuántas pulgadas cuadradas de papel la cubren exactamente?`,
+        },
+      };
+    }),
+    T("sa-crate", (r) => {
+      const l = r.int(4, 9);
+      const w = r.int(3, 7);
+      let h = r.int(2, 5);
+      if (2 * (l * w + l * h + w * h) === l * w * h) h += 1;
+      return {
+        values: { l, w, h },
+        correct: 2 * (l * w + l * h + w * h),
+        distractor: l * w * h,
+        prompt: {
+          en: `A crate measures ${l} ft by ${w} ft by ${h} ft. How many square feet of paint would cover all six faces?`,
+          es: `Un cajón mide ${l} por ${w} por ${h} pies. ¿Cuántos pies cuadrados de pintura cubrirían las seis caras?`,
+        },
+      };
+    }),
+    T("sa-cube", (r) => {
+      let s = r.int(2, 7);
+      if (6 * s * s === s * s * s) s += 1; // s = 6 makes them equal
+      return {
+        values: { s },
+        correct: 6 * s * s,
+        distractor: s * s * s,
+        prompt: {
+          en: `A number cube has edges ${s} cm long. What is its surface area, in square cm?`,
+          es: `Un cubo tiene aristas de ${s} cm. ¿Cuál es su área total, en cm cuadrados?`,
+        },
+      };
+    }),
+    T("sa-net", (r) => {
+      const l = r.int(3, 7);
+      const w = r.int(2, 6);
+      let h = r.int(2, 6);
+      if (2 * (l * w + l * h + w * h) === l * w * h) h += 1;
+      return {
+        values: { l, w, h },
+        correct: 2 * (l * w + l * h + w * h),
+        distractor: l * w * h,
+        prompt: {
+          en: `A net folds into a ${l} by ${w} by ${h} unit prism. What is the total area of the net, in square units?`,
+          es: `Una plantilla se dobla en un prisma de ${l} por ${w} por ${h} unidades. ¿Cuál es el área total de la plantilla, en unidades cuadradas?`,
+        },
+      };
+    }),
+  ],
+
   "geom-volume-added-dimensions": [
     T("vol-box", (r) => {
       const l = r.int(3, 8);

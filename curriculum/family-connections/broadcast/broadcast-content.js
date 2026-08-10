@@ -90,6 +90,12 @@ export const STANDARDS = Object.freeze({
     family: "describing a whole set of numbers with one fair number",
     familyEs: "describir todo un conjunto de números con un solo número justo",
   },
+  "6.GR.4": {
+    label: "Surface area & nets",
+    labelEs: "Área total y plantillas",
+    family: "measuring the paper it would take to wrap the outside of a box",
+    familyEs: "medir el papel que haría falta para envolver el exterior de una caja",
+  },
   "6.GR.2": {
     label: "Volume",
     labelEs: "Volumen",
@@ -244,6 +250,18 @@ export const ASSETS = Object.freeze({
       path: "/math/unit-8/projects/",
     },
   ],
+  "6.GR.4": [
+    {
+      title: "10-3 Surface Area Using Nets",
+      titleEs: "10-3 Área total con plantillas",
+      path: "/lessons/10-3/",
+    },
+    {
+      title: "10-4 Surface Area of Prisms",
+      titleEs: "10-4 Área total de prismas",
+      path: "/lessons/10-4/",
+    },
+  ],
   "6.GR.2": [
     {
       title: "10-1 Volume with Whole Number Edges",
@@ -367,6 +385,11 @@ export const BRIDGES = Object.freeze({
     en: "An average is a division. A slip in the arithmetic looks like a mix-up about averages.",
     es: "Un promedio es una división. Un desliz en la aritmética parece una confusión sobre promedios.",
   },
+  "6.GR.4": {
+    from: "6.GR.1",
+    en: "Surface area is the area of flat shapes, added up — the net turns a solid back into rectangles and triangles.",
+    es: "El área total es la suma de áreas de figuras planas: la plantilla convierte un sólido otra vez en rectángulos y triángulos.",
+  },
   "6.GR.2": {
     from: "6.NOS.1",
     en: "Volume with fractional edges is fraction multiplication stacked in three directions.",
@@ -446,6 +469,15 @@ export const TAGS = Object.freeze({
     watchFor: "Draw the rectangle around the triangle — the triangle is half of it.",
     watchForEs: "Dibuje el rectángulo alrededor del triángulo: el triángulo es la mitad.",
     standards: ["6.GR.1"],
+  },
+  "geom-surface-area-as-volume": {
+    label: "Found the volume instead of the surface area",
+    labelEs: "Halló el volumen en vez del área total",
+    watchFor:
+      "Ask what the unit has to be — square units cover a surface, cubic units fill a space.",
+    watchForEs:
+      "Pregunte cuál debe ser la unidad: las unidades cuadradas cubren una superficie, las cúbicas llenan un espacio.",
+    standards: ["6.GR.4"],
   },
   "geom-volume-added-dimensions": {
     label: "Added the dimensions instead of multiplying",
@@ -702,7 +734,30 @@ export const KITCHEN_TABLE = Object.freeze({
       "Pregunte: si el rectángulo era de 24 cuadrados, ¿cuánto mide cada triángulo? Digan por qué en voz alta.",
     ],
     why: "Seeing the two matching halves is the whole formula — the ½ stops being a rule to memorize.",
-    whyEs: "Ver las dos mitades idénticas es toda la fórmula: el ½ deja de ser una regla de memoria.",
+    whyEs:
+      "Ver las dos mitades idénticas es toda la fórmula: el ½ deja de ser una regla de memoria.",
+  },
+  "geom-surface-area-as-volume": {
+    minutes: 5,
+    title: "Unfold the cereal box",
+    titleEs: "Desdoblen la caja de cereal",
+    materials: "An empty cereal or cracker box, and scissors.",
+    materialsEs: "Una caja vacía de cereal o galletas, y tijeras.",
+    steps: [
+      "Cut along the edges and flatten the box out until it lies completely flat.",
+      "Count the rectangles. Ask which ones are the same size as each other, and why.",
+      "Point at the flat shape and ask: is this the paper AROUND the box, or the cereal INSIDE it?",
+      "Ask: if we wanted to know how much cereal fits, would we measure this flat paper — or something else?",
+    ],
+    stepsEs: [
+      "Corten por los bordes y aplanen la caja hasta que quede completamente plana.",
+      "Cuenten los rectángulos. Pregunte cuáles son del mismo tamaño y por qué.",
+      "Señale la figura plana y pregunte: ¿esto es el papel de AFUERA o el cereal de ADENTRO?",
+      "Pregunte: si quisiéramos saber cuánto cereal cabe, ¿mediríamos este papel plano u otra cosa?",
+    ],
+    why: "Surface area is the flattened box; volume is what fills it. Cutting one open makes them two different things instead of two formulas to mix up.",
+    whyEs:
+      "El área total es la caja desdoblada; el volumen es lo que la llena. Abrir una las convierte en dos cosas distintas y no en dos fórmulas que se confunden.",
   },
   "geom-volume-added-dimensions": {
     minutes: 5,
@@ -723,7 +778,8 @@ export const KITCHEN_TABLE = Object.freeze({
       "Pregunte: ¿por qué sumar los tres lados NO nos dice cuánto cabe adentro?",
     ],
     why: "Volume is filling, not measuring edges. One layer, times the number of layers, is the formula.",
-    whyEs: "El volumen es llenar, no medir bordes. Una capa, por el número de capas, es la fórmula.",
+    whyEs:
+      "El volumen es llenar, no medir bordes. Una capa, por el número de capas, es la fórmula.",
   },
   "algebra-distributive-partial": {
     minutes: 5,

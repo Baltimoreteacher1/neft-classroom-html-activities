@@ -46,6 +46,7 @@
     "stat-summed-instead-of-averaged": "Added the data set instead of averaging it",
     "measure-area-perimeter-swap": "Swapped area and perimeter",
     "geom-triangle-area-no-half": "Found base × height but forgot the half",
+    "geom-surface-area-as-volume": "Found the volume instead of the surface area",
     "geom-volume-added-dimensions": "Added the dimensions instead of multiplying",
     "algebra-distributive-partial": "Distributed to the first term only",
   };
@@ -77,6 +78,8 @@
     "measure-area-perimeter-swap": "Ask what the unit should be — units or square units?",
     "geom-triangle-area-no-half":
       "Draw the rectangle around the triangle — the triangle is half of it.",
+    "geom-surface-area-as-volume":
+      "Unfold the net and count the faces before anyone computes anything.",
     "geom-volume-added-dimensions": "Build one layer of unit cubes first, then count the layers.",
     "algebra-distributive-partial": "Draw the area model — the outside factor touches BOTH terms.",
   };

@@ -45,6 +45,7 @@ export const TAGS = [
   "fraction-no-reciprocal",
   "fraction-straight-across-division",
   "geom-triangle-area-no-half",
+  "geom-surface-area-as-volume",
   "geom-volume-added-dimensions",
   "measure-area-perimeter-swap",
   "op-added-instead-of-multiplied",
@@ -542,6 +543,64 @@ export const PERSONAS = {
       "Base por altura da el rectángulo donde vive el triángulo, y el triángulo cubre exactamente la mitad. Dos copias del triángulo llenan el rectángulo por completo. El rectángulo es 6 × 4 = 24, y la vela es 24 ÷ 2 = 12.",
     wordBank: ["base", "height", "half", "rectangle", "square units", "compose"],
     wordBankEs: ["base", "altura", "mitad", "rectángulo", "unidades cuadradas", "componer"],
+  },
+
+  "geom-surface-area-as-volume": {
+    tag: "geom-surface-area-as-volume",
+    standards: ["6.GR.4"],
+    persona: {
+      name: "Wrapper",
+      blurb: "Multiplies all three edges no matter which question was asked.",
+      blurbEs: "Multiplica las tres aristas sin importar qué se preguntó.",
+    },
+    wrongIdea:
+      "surface area and volume are the same calculation, because a box only has one set of measurements",
+    wrongIdeaEs:
+      "el área total y el volumen son el mismo cálculo, porque una caja solo tiene un conjunto de medidas",
+    // Must NOT recite the method — the validator rejects an opening line that
+    // hands over the answer. It states the wrong belief and invites challenge.
+    openingLine:
+      "The box is 2 by 3 by 4, so I need 24 square inches of wrapping paper. Length times width times height — that is the box, is it not?",
+    openingLineEs:
+      "La caja mide 2 por 3 por 4, así que necesito 24 pulgadas cuadradas de papel. Largo por ancho por alto: eso es la caja, ¿no?",
+    probes: [
+      "If I unfold the box flat, how many faces am I looking at?",
+      "My answer came out in square inches, but I multiplied three lengths together. What unit does that actually give me?",
+      "Would wrapping paper ever go INSIDE the box? My rule seems to be measuring the inside.",
+    ],
+    probesEs: [
+      "Si desdoblo la caja, ¿cuántas caras estoy viendo?",
+      "Mi respuesta salió en pulgadas cuadradas, pero multipliqué tres largos. ¿Qué unidad da eso en realidad?",
+      "¿El papel de regalo iría ADENTRO de la caja? Mi regla parece medir lo de adentro.",
+    ],
+    mustAddress: [
+      A(
+        "surface-is-the-faces",
+        "Surface area adds the areas of the faces — the outside, not the inside",
+        "El área total suma las áreas de las caras: lo de afuera, no lo de adentro",
+        [["face"], ["outside"], ["net"], ["cara"], ["afuera"], ["plantilla"]],
+      ),
+      A(
+        "square-vs-cubic",
+        "A surface is measured in square units; a filled space is measured in cubic units",
+        "Una superficie se mide en unidades cuadradas; un espacio lleno, en unidades cúbicas",
+        [["square"], ["cubic"], ["unit"], ["cuadrad"], ["cúbic"], ["unidad"]],
+      ),
+    ],
+    giveawayPhrases: ["2(lw + lh + wh)", "six faces add", "área total es 2", "sum the six faces"],
+    worked:
+      "Unfold the 2 by 3 by 4 box and you get six rectangles in matching pairs: two 2×3 = 6, two 2×4 = 8, two 3×4 = 12. Added, that is 2(6 + 8 + 12) = 52 square inches of paper. The 24 I found was l × w × h — how much FILLS the box, in cubic inches.",
+    workedEs:
+      "Desdobla la caja de 2 por 3 por 4 y salen seis rectángulos en pares: dos de 2×3 = 6, dos de 2×4 = 8, dos de 3×4 = 12. Sumados, son 2(6 + 8 + 12) = 52 pulgadas cuadradas de papel. Las 24 que hallé eran l × a × h: lo que LLENA la caja, en pulgadas cúbicas.",
+    wordBank: ["surface area", "face", "net", "square units", "cubic units", "volume"],
+    wordBankEs: [
+      "área total",
+      "cara",
+      "plantilla",
+      "unidades cuadradas",
+      "unidades cúbicas",
+      "volumen",
+    ],
   },
 
   "geom-volume-added-dimensions": {

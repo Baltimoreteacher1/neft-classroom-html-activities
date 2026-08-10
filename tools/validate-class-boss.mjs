@@ -126,6 +126,15 @@ const EXPECT = {
   "tri-garden": (v) => [(v.b * v.h) / 2, v.b * v.h],
   "tri-ramp": (v) => [(v.b * v.h) / 2, v.b * v.h],
   "tri-flag": (v) => [(v.b * v.h) / 2, v.b * v.h],
+  // geom-surface-area-as-volume — the wrong answer is the VOLUME, which is a
+  // correct computation of the wrong quantity. Written out independently here
+  // (2(lw + lh + wh)) rather than copied from the bank, which is the point of
+  // the double entry: a typo in the bank's formula has to survive being
+  // re-derived from the geometry to pass.
+  "sa-gift": (v) => [2 * (v.l * v.w + v.l * v.h + v.w * v.h), v.l * v.w * v.h],
+  "sa-crate": (v) => [2 * (v.l * v.w + v.l * v.h + v.w * v.h), v.l * v.w * v.h],
+  "sa-cube": (v) => [6 * v.s * v.s, v.s * v.s * v.s],
+  "sa-net": (v) => [2 * (v.l * v.w + v.l * v.h + v.w * v.h), v.l * v.w * v.h],
   "vol-box": (v) => [v.l * v.w * v.h, v.l + v.w + v.h],
   "vol-tank": (v) => [v.l * v.w * v.h, v.l + v.w + v.h],
   "vol-locker": (v) => [v.l * v.w * v.h, v.l + v.w + v.h],
