@@ -278,6 +278,68 @@ export const STANDARDS = {
     fullText:
       "Relate the choice of measures of center and variability to the shape of the data distribution and the context in which the data were gathered.",
   },
+  "MPP.3": {
+    shortLabel: "Construct Arguments & Critique Reasoning",
+    unit: 1,
+    fullText: "Construct viable arguments and critique the reasoning of others.",
+  },
+  "MPP.4": {
+    shortLabel: "Model with Mathematics",
+    unit: 10,
+    fullText: "Model with mathematics.",
+  },
+  "MPP.7": {
+    shortLabel: "Look For and Make Use of Structure",
+    unit: 10,
+    fullText: "Look for and make use of structure.",
+  },
+  "5.NF.B.4": {
+    shortLabel: "Multiply Fractions (Gr 5 review)",
+    unit: 1,
+    fullText:
+      "Apply and extend previous understandings of multiplication to multiply a fraction or whole number by a fraction.",
+  },
+  "5.NBT.B.7": {
+    shortLabel: "Decimal Operations (Gr 5 review)",
+    unit: 1,
+    fullText: "Add, subtract, multiply, and divide decimals to hundredths.",
+  },
+  "5.G.A.2": {
+    shortLabel: "Graph Points in Quadrant I (Gr 5 review)",
+    unit: 1,
+    fullText:
+      "Represent real world and mathematical problems by graphing points in the first quadrant of the coordinate plane.",
+  },
+  "5.MD.A.1": {
+    shortLabel: "Convert Measurement Units (Gr 5 review)",
+    unit: 1,
+    fullText:
+      "Convert among different-sized standard measurement units within a given measurement system.",
+  },
+  "5.MD.C.5": {
+    shortLabel: "Volume of Right Rectangular Prisms (Gr 5 review)",
+    unit: 1,
+    fullText:
+      "Relate volume to the operations of multiplication and addition and solve real world and mathematical problems involving volume.",
+  },
+  "5.MD.C.5.c": {
+    shortLabel: "Additive Volume (Gr 5 review)",
+    unit: 1,
+    fullText:
+      "Recognize volume as additive; find volumes of solid figures composed of two non-overlapping right rectangular prisms.",
+  },
+  "5.OA.A.2": {
+    shortLabel: "Write Numerical Expressions (Gr 5 review)",
+    unit: 1,
+    fullText:
+      "Write simple expressions that record calculations with numbers, and interpret numerical expressions without evaluating them.",
+  },
+  "5.OA.B.3": {
+    shortLabel: "Numerical Patterns (Gr 5 review)",
+    unit: 1,
+    fullText:
+      "Generate two numerical patterns using two given rules; identify apparent relationships between corresponding terms.",
+  },
 };
 
 export const ACTIVITIES = [
