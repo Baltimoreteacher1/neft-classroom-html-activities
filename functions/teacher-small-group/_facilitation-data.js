@@ -180,7 +180,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -224,7 +224,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -268,7 +268,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -312,7 +312,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided fractions without inverting. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -354,7 +354,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided in the wrong order. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -396,7 +396,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided fractions without inverting; Divided in the wrong order. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -438,7 +438,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided in the wrong order; Divided fractions without inverting. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -480,7 +480,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided in the wrong order; Divided fractions without inverting; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -522,7 +522,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Flipped the ratio. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -606,7 +606,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Flipped the ratio. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -648,7 +648,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Flipped the ratio; Gave the total instead of the unit rate. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -774,7 +774,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Gave the total instead of the unit rate; Divided in the wrong order. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -816,7 +816,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Gave the total instead of the unit rate. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -1110,7 +1110,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Multiplied when the problem divides; Swapped area and perimeter. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -1152,7 +1152,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found base × height but forgot the half. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -1194,7 +1194,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found base × height but forgot the half. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -1236,7 +1236,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found base × height but forgot the half. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -1278,7 +1278,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Swapped area and perimeter. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -1320,7 +1320,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Worked left to right instead of by operation order. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -1362,7 +1362,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Worked left to right instead of by operation order. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -1614,7 +1614,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem adds; Added when the problem multiplies; Divided when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -2524,7 +2524,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added the dimensions instead of multiplying. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -2568,7 +2568,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added the dimensions instead of multiplying. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
