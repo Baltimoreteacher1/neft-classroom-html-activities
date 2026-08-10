@@ -150,6 +150,10 @@ h4 {
   display: flex;
   flex-direction: column;
   gap: var(--sp-4);
+  /* Clearance for the teacher-only "Clear answers" FAB parked in the bottom-left
+     corner (`.nt-teacher-clear`, 40px + 16px inset): the rail scrolls, so
+     without this a phase button can come to rest underneath it. */
+  padding-bottom: 72px;
 }
 
 .sidebar-header {
@@ -5190,15 +5194,13 @@ html.nt-extra-fullpage-open body {
   bottom: 16px;
   z-index: 9998;
 }
-/* `--nt-rail-w` is declared on :root, so it stayed 300px on pages that have NO
-   phase rail (small-group lessons, catch-up stations). The FAB then docked
-   316px in from the left — floating over the middle of the lesson text instead
-   of in a corner. Offset by the rail ONLY where a rail actually exists; the
-   `.app` shell is the element that owns it. */
-body:has(.app) .nt-teacher-clear {
-  left: calc(var(--nt-rail-w, 0px) + 16px);
-  bottom: 72px;
-}
+/* Per Joel 2026-08-10: park it in the TRUE bottom-left corner, out of the way —
+   it previously docked beside the rail (left: rail + 16, bottom: 72), which put
+   it over the lesson text. It now sits at 16/16 on every surface, including
+   Reveal lessons, so the only rule needed is the base one above.
+   The 2026-08-01 complaint that a corner FAB hid a phase button is handled by
+   reserving space at the bottom of the scrolling rail (see `.app .sidebar`
+   padding-bottom) rather than by pushing the button back over the content. */
 .nt-teacher-clear-fab {
   width: 40px;
   height: 40px;
