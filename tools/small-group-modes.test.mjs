@@ -100,19 +100,22 @@ for (const lessonId of readdirSync(new URL("../lessons", import.meta.url)).filte
       `${lessonId}/${word.term} is missing ${imagePath}`,
     );
   }
-  if (parentId === "10-3") {
+  // Surface Area Using Nets — 10-3 under the old numbering.
+  if (parentId === "5-6") {
     assert.ok(
       config.parallelPractice.every((item) => /net.*length.*width.*height/i.test(item.stem)),
       `${lessonId} net practice needs explicit dimensions`,
     );
   }
-  if (parentId === "10-4") {
+  // Surface Area of Prisms — 10-4 under the old numbering.
+  if (parentId === "5-7") {
     assert.ok(
       config.parallelPractice.some((item) => /triangular prism/i.test(item.stem)),
       `${lessonId} needs triangular-prism surface-area practice`,
     );
   }
-  if (parentId === "10-5") {
+  // Surface Area of Pyramids — 10-5 under the old numbering.
+  if (parentId === "5-8") {
     assert.ok(
       config.parallelPractice.every((item) => /base edge.*slant height/i.test(item.stem)),
       `${lessonId} pyramid practice needs explicit base and slant height`,

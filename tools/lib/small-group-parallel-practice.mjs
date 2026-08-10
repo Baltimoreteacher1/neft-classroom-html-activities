@@ -1046,9 +1046,118 @@ function unit6or7(context) {
   });
 }
 
+/* ── Which practice strand a lesson belongs to ──────────────────────────────
+ * The builders below are organised by the ORIGINAL unit numbering, because
+ * that is what their arithmetic is about — unit1 is number-system fluency,
+ * unit6or7 is expressions and equations, and so on.
+ *
+ * The book-TOC renumbering broke the assumption that a lesson's unit number
+ * names its topic: Prime Factorization moved from 1-1 to 6-13, so dispatching
+ * on the new unit handed it unit 6's ALGEBRA practice ("Simplify 4x + 2x + 5"
+ * under a factor-tree lesson). Parallel practice is generated, so nothing
+ * per-file could see it.
+ *
+ * LEGACY_TOPIC maps each lesson to the (unit, lesson) coordinates whose strand
+ * it actually teaches. Moved lessons keep exactly the practice they had before
+ * the renumbering. The 20 lessons authored for the book get the closest strand:
+ * the "Math Is..." units are mixed-fluency, so unit 1 for the opening unit and
+ * the measurement strand for the closing one; 2-8 is statistics; 4-3 percents;
+ * 7-1 and 7-7 the integer/coordinate strand; and Unit 9's two-variable lessons
+ * the ratio-table strand, which is the same two-column reasoning.
+ */
+const LEGACY_TOPIC = {
+  // ── moved lessons: new id -> the coordinates they had before ──
+  "6-13": [1, 1],
+  "6-7": [1, 2],
+  "6-12": [1, 3],
+  "2-6": [1, 4],
+  "2-11": [1, 5],
+  "2-12": [1, 6],
+  "2-7": [1, 7],
+  "6-1": [2, 1],
+  "6-9": [2, 2],
+  "6-2": [2, 3],
+  "6-10": [2, 4],
+  "6-11": [2, 5],
+  "3-1": [3, 1],
+  "3-3": [3, 2],
+  "3-4": [3, 3],
+  "3-9": [3, 4],
+  "3-5": [3, 5],
+  "3-6": [3, 6],
+  "3-7": [3, 7],
+  "3-2": [4, 1],
+  "4-2": [4, 2],
+  "4-1": [4, 3],
+  "4-4": [4, 4],
+  "4-5": [4, 5],
+  "3-10": [4, 6],
+  "3-8": [4, 7],
+  "5-1": [5, 1],
+  "5-3": [5, 2],
+  "5-2": [5, 3],
+  "5-9": [5, 4],
+  "5-4": [5, 5],
+  "6-3": [6, 1],
+  "6-4": [6, 2],
+  "6-5": [6, 3],
+  "6-8": [6, 4],
+  "6-14": [6, 5],
+  "6-6": [6, 6],
+  "6-15": [6, 7],
+  "8-1": [7, 1],
+  "8-2": [7, 2],
+  "8-3": [7, 3],
+  "8-4": [7, 4],
+  "8-5": [7, 5],
+  "8-6": [7, 6],
+  "8-7": [7, 7],
+  "2-1": [8, 1],
+  "2-3": [8, 2],
+  "2-9": [8, 3],
+  "2-10": [8, 4],
+  "2-4": [8, 5],
+  "2-2": [8, 6],
+  "2-5": [8, 7],
+  "7-5": [9, 1],
+  "7-3": [9, 2],
+  "7-4": [9, 3],
+  "7-2": [9, 4],
+  "7-8": [9, 5],
+  "7-6": [9, 6],
+  "7-9": [9, 7],
+  "5-5": [10, 1],
+  "5-10": [10, 2],
+  "5-6": [10, 3],
+  "5-7": [10, 4],
+  "5-8": [10, 5],
+  // ── authored for the book ──
+  "1-1": [1, 1],
+  "1-2": [1, 2],
+  "1-3": [1, 3],
+  "1-4": [1, 4],
+  "1-5": [1, 5],
+  "1-6": [1, 6],
+  "10-1": [10, 1],
+  "10-2": [10, 3],
+  "10-3": [10, 2],
+  "10-4": [10, 4],
+  "10-5": [10, 5],
+  "10-6": [10, 1],
+  "2-8": [8, 2],
+  "4-3": [4, 3],
+  "7-1": [9, 2],
+  "7-7": [9, 5],
+  "9-1": [3, 2],
+  "9-2": [3, 3],
+  "9-3": [3, 4],
+  "9-4": [3, 7],
+};
+
 export function buildParallelPractice(base, lessonId, group) {
   const parentId = lessonId.replace(/-group[12]$/, "");
-  const [unit, lesson] = parentId.split("-").map(Number);
+  // Dispatch on the lesson's TOPIC, not its book number — see LEGACY_TOPIC.
+  const [unit, lesson] = LEGACY_TOPIC[parentId] ?? parentId.split("-").map(Number);
   const context = { base, lessonId, parentId, unit, lesson, group };
   let items;
   if (unit === 1) items = unit1(context);
