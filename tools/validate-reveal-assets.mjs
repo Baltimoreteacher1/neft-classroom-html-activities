@@ -26,7 +26,7 @@
  * The obvious implementation — "does lessons/<id>/config.json mention this
  * file?" — is WRONG here, and wrong in the dangerous direction: it reports live
  * files as garbage. The 148 generated group/catch-up lessons reference the CORE
- * lesson's assets (lessons/1-7-group2/config.json points at
+ * lesson's assets (lessons/2-7-group2/config.json points at
  * /lessons/2-7/reveal-assets/notice-wonder.png), and learn.html embeds them
  * directly. A per-lesson check calls those orphans, and acting on it deletes
  * images that are on screen in a classroom. This gate builds the reference set
@@ -81,19 +81,19 @@ function referencesIn(files, read) {
  * ------------------------------------------------------------------------- */
 function selfTest() {
   const fixtures = {
-    "lessons/1-7/config.json": '{"image":"/lessons/2-7/reveal-assets/notice-wonder.png"}',
+    "lessons/2-7/config.json": '{"image":"/lessons/2-7/reveal-assets/notice-wonder.png"}',
     // The case the naive per-lesson implementation gets wrong: a GENERATED
-    // lesson citing a CORE lesson's asset. 1-7's png is live because of this.
-    "lessons/1-7-group2/config.json": '{"image":"/lessons/2-7/reveal-assets/word-problem.png"}',
-    "lessons/8-2/learn.html": '<img src="../../lessons/2-3/reveal-assets/notice-wonder.jpg" />',
+    // lesson citing a CORE lesson's asset. 2-7's png is live because of this.
+    "lessons/2-7-group2/config.json": '{"image":"/lessons/2-7/reveal-assets/word-problem.png"}',
+    "lessons/2-3/learn.html": '<img src="../../lessons/2-3/reveal-assets/notice-wonder.jpg" />',
     "lessons/3-1/config.json": '{"image":"/lessons/3-1/reveal-assets/notice-wonder.svg"}',
   };
   const refs = referencesIn(Object.keys(fixtures), (f) => fixtures[f]);
 
   const cases = [
-    ["1-7/notice-wonder.png", true, "same-lesson config reference"],
-    ["1-7/word-problem.png", true, "CROSS-LESSON reference from a generated group lesson"],
-    ["8-2/notice-wonder.jpg", true, "relative <img src> in learn.html"],
+    ["2-7/notice-wonder.png", true, "same-lesson config reference"],
+    ["2-7/word-problem.png", true, "CROSS-LESSON reference from a generated group lesson"],
+    ["2-3/notice-wonder.jpg", true, "relative <img src> in learn.html"],
     ["3-1/notice-wonder.svg", true, "svg reference"],
     ["3-1/notice-wonder.png", false, "superseded raster nothing points at"],
     ["9-9/anything.png", false, "file in a lesson no source mentions"],
