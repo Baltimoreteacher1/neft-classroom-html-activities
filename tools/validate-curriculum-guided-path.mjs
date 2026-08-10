@@ -107,11 +107,11 @@ const resolveFamily = (lesson) => {
 };
 const lessonsById = new Map(launchData.lessons.map((lesson) => [lesson.id, lesson]));
 check(
-  resolveFamily(lessonsById.get("1-1")) === "numberTheory",
+  resolveFamily(lessonsById.get("6-13")) === "numberTheory",
   "Prime Factorization no longer receives decimal guidance",
 );
 check(
-  resolveFamily(lessonsById.get("1-5")) === "decimals",
+  resolveFamily(lessonsById.get("2-11")) === "decimals",
   "decimal lesson keeps decimal guidance",
 );
 check(

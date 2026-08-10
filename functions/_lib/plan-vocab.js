@@ -1464,6 +1464,13 @@ export const LESSONS = [
     standard: "6.NOS.3",
   },
   {
+    id: "2-8",
+    unit: 2,
+    lesson: 8,
+    title: "Describe Data Using the Mean",
+    standard: "6.DS.4",
+  },
+  {
     id: "2-9",
     unit: 2,
     lesson: 9,
@@ -1770,6 +1777,13 @@ export const LESSONS = [
     lesson: 15,
     title: "Simplify Algebraic Expressions",
     standard: "6.AT.7",
+  },
+  {
+    id: "7-1",
+    unit: 7,
+    lesson: 1,
+    title: "Explore Integers and Their Opposites",
+    standard: "6.NOS.6",
   },
   {
     id: "7-2",

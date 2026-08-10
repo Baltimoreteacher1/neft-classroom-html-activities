@@ -23,7 +23,7 @@
 // legitimately have none yet, so they render without a resource row rather than
 // with someone else's.
 
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -32,7 +32,6 @@ const DRY = process.argv.includes("--dry-run");
 const FILE = join(ROOT, "curriculum", "index.html");
 
 const toc = JSON.parse(readFileSync(join(ROOT, "data/reveal-toc-2025.json"), "utf8"));
-const migration = JSON.parse(readFileSync(join(ROOT, "data/toc-migration.json"), "utf8"));
 
 const UNIT_META = {
   1: { name: "Math Is...", blurb: "Who we are as mathematicians" },
@@ -115,23 +114,6 @@ function resourceRow(unitText) {
     } else depth++;
   }
   return "";
-}
-
-/** The band-game promo, if present — it belongs to the unit's content too. */
-function bandGame(unitText) {
-  const i = unitText.indexOf('<div class="band-game">');
-  if (i === -1) return "";
-  const close = unitText.indexOf("</div>", unitText.lastIndexOf("</a>", unitText.length));
-  const re = /<\/?div\b/gi;
-  re.lastIndex = i;
-  let depth = 0;
-  for (let m = re.exec(unitText); m; m = re.exec(unitText)) {
-    if (m[0][1] === "/") {
-      depth--;
-      if (depth === 0) return unitText.slice(i, unitText.indexOf(">", m.index) + 1);
-    } else depth++;
-  }
-  return close === -1 ? "" : "";
 }
 
 /* ---------------------------------------------------------------- new blocks */
@@ -244,7 +226,14 @@ for (const list of byUnit.values())
 const bookCluster = {};
 for (const u of toc.units) {
   const ids = byUnit.get(u.unit) || [];
-  const doms = ids.map((id) => (cfgOf(id).standard || "").split(".").slice(0, 2).join("."));
+  // The DOMAIN, not a specific standard: "6.DS.4" -> "6.DS", "MPP.3" -> "MPP".
+  // Units 1 and 10 are the book's practice-standard "Math Is..." units, so their
+  // domain is MPP rather than a Grade 6 content cluster.
+  const doms = ids.map((id) => {
+    const std = cfgOf(id).standard || "";
+    const parts = std.split(".");
+    return /^\d/.test(parts[0]) ? parts.slice(0, 2).join(".") : parts[0];
+  });
   bookCluster[u.unit] =
     doms.sort(
       (a, b) => doms.filter((x) => x === b).length - doms.filter((x) => x === a).length,

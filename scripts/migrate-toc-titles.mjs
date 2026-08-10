@@ -16,8 +16,7 @@
 // Those are listed in data/toc-migration.json under `titleScopeFollowUps`: the
 // title now matches the book, but the CONTENT still needs aligning.
 
-import { readFileSync, writeFileSync } from "node:fs";
-import { readdirSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 

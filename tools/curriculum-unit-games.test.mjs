@@ -71,7 +71,9 @@ for (const unit of units) {
   // Shape parity: 78063af11 replaced the blurb + cluster badge with links on
   // Units 7-9. All ten summaries carry the same three pieces.
   assert.ok(unit.blurb, `${where}: missing unit blurb`);
-  assert.match(unit.badge, /^6\.[A-Z]+$/, `${where}: missing cluster badge`);
+  // MPP is a real domain here: the book's Unit 1 and Unit 10 are the "Math Is..."
+  // practice-standard units, so a badge of MPP is correct, not a missing cluster.
+  assert.match(unit.badge, /^(6\.[A-Z]+|MPP)$/, `${where}: missing cluster badge`);
   assert.match(unit.count, /^\d+ lessons$/, `${where}: missing lesson count`);
   assert.ok(
     !unit.studioInSummary,

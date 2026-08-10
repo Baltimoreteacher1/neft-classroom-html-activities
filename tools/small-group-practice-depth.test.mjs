@@ -38,7 +38,7 @@ const summarize = (id) => {
   return { items, types, kinds: Object.keys(types).length };
 };
 
-for (const id of ["1-1-group1", "5-3-group1", "9-4-group1"]) {
+for (const id of ["6-13-group1", "5-2-group1", "7-2-group1"]) {
   const { items, types, kinds } = summarize(id);
   check(
     `${id} gains format variety`,
@@ -52,7 +52,7 @@ for (const id of ["1-1-group1", "5-3-group1", "9-4-group1"]) {
   );
 }
 
-for (const id of ["1-3-catchup", "10-5-catchup"]) {
+for (const id of ["6-12-catchup", "5-8-catchup"]) {
   const { items, types, kinds } = summarize(id);
   check(
     `${id} gains format variety`,
@@ -62,14 +62,14 @@ for (const id of ["1-3-catchup", "10-5-catchup"]) {
 }
 
 // Level 2 must be untouched by the variety append (it has its own extending path).
-for (const id of ["1-1-group2", "5-3-group2"]) {
+for (const id of ["6-13-group2", "5-2-group2"]) {
   const { items, types } = summarize(id);
   check(`${id} keeps its extending append`, items.length === 20, `${items.length} items`);
   check(`${id} untouched by variety slice`, Object.keys(types).length >= 2, JSON.stringify(types));
 }
 
 // Save/Resume contract: _practiceIndex must stay dense and ordered.
-const { items } = summarize("1-1-group1");
+const { items } = summarize("6-13-group1");
 check(
   "practice indices stay dense + ordered",
   items.every((item, index) => item._practiceIndex === index),
@@ -82,7 +82,7 @@ check("no duplicate items after append", dupes.length === 0, dupes.join(" | "));
 
 // The exit ticket must actually render, and carry a second independent item.
 const { createCheckSection } = await import("../engine/core/small-group-practice.js");
-for (const id of ["1-1-group1", "1-1-group2", "1-3-catchup"]) {
+for (const id of ["6-13-group1", "6-13-group2", "6-12-catchup"]) {
   const memory = new Map();
   const store = { get: (k) => memory.get(k), set: (k, v) => memory.set(k, v) };
   const tally = { total: 0, solved: 0, update() {} };

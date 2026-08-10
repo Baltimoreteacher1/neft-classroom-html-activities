@@ -135,11 +135,11 @@ if (workflowData && supportData && launchData) {
   };
   const lessonsById = new Map((launchData.lessons || []).map((lesson) => [lesson.id, lesson]));
   check(
-    resolveFamily(lessonsById.get("1-1")) === "numberTheory",
+    resolveFamily(lessonsById.get("6-13")) === "numberTheory",
     "Prime Factorization uses number-theory readiness",
   );
   check(
-    resolveFamily(lessonsById.get("1-5")) === "decimals",
+    resolveFamily(lessonsById.get("2-11")) === "decimals",
     "decimal operations use decimal readiness",
   );
   check(

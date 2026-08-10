@@ -135,8 +135,26 @@ test("no small-group lesson serves a long single-format block", () => {
     const config = JSON.parse(
       fs.readFileSync(path.join(LESSONS, id, "config.json"), "utf8"),
     );
-    const types = practiceDisplayOrder(collectPracticeItems(config)).map((i) => i.type || "?");
+    const shown = practiceDisplayOrder(collectPracticeItems(config));
+    const allTypes = shown.map((i) => i.type || "?");
+    if (!allTypes.length) continue;
+
+    // practiceDisplayOrder deliberately holds every open-response item back and
+    // appends them as a block at the end — written reflection belongs after the
+    // interactive work, and only the interactive items are passed through
+    // interleaveByFormat. So the trailing written block is the design, not a
+    // clustering defect, and measuring across it fails a lesson for having
+    // three things to write about. Judge the part the interleaver owns, and
+    // pin the design separately below.
+    const writtenAtTail = allTypes.filter((t) => t === "open-response").length;
+    const tail = allTypes.slice(allTypes.length - writtenAtTail);
+    assert.ok(
+      tail.every((t) => t === "open-response"),
+      `${id}: open-response items must be the trailing block (practiceDisplayOrder's contract)`,
+    );
+    const types = allTypes.slice(0, allTypes.length - writtenAtTail);
     if (!types.length) continue;
+
     const run = longestRun(types);
     if (run > worst) worst = run;
 

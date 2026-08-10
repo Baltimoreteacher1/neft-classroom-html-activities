@@ -8,7 +8,7 @@ const root = new URL("../../", import.meta.url).pathname;
 const launchData = JSON.parse(readFileSync(join(root, "data/curriculum-launch-manifest.json"), "utf8"));
 const workflow = JSON.parse(readFileSync(join(root, "data/curriculum-teacher-workflow.json"), "utf8"));
 const supports = JSON.parse(readFileSync(join(root, "data/curriculum-supports.json"), "utf8"));
-const lesson = findLesson(launchData.lessons, "1-1");
+const lesson = findLesson(launchData.lessons, "6-13");
 
 assert.deepEqual(RUNTIME_CONFIG.languages.map(({ code }) => code), ["en", "es"]);
 assert.equal(validateConfig().length, 0);

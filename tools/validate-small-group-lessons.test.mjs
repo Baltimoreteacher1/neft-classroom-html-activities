@@ -8,8 +8,8 @@ const readLessonConfig = (lessonId) =>
   JSON.parse(readFileSync(new URL(`../lessons/${lessonId}/config.json`, import.meta.url), "utf8"));
 
 const ok = validateSmallGroups({ html, rows });
-assert.equal(ok.parents, 64);
-assert.equal(ok.variants, 128);
+assert.equal(ok.parents, 84);
+assert.equal(ok.variants, 168);
 
 assert.throws(
   () => validateSmallGroups({ html, rows: rows.slice(0, -1) }),
@@ -31,7 +31,7 @@ assert.throws(
   "reordered variants must fail",
 );
 
-for (const lessonId of ["2-3", "2-3-group1", "2-3-group2"]) {
+for (const lessonId of ["6-2", "6-2-group1", "6-2-group2"]) {
   const config = readLessonConfig(lessonId);
   const exitTicket = config.reflect.exitTicket;
   assert.match(config.connect.scenario, /5\/6/);

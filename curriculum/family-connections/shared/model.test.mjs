@@ -23,9 +23,9 @@ assert.equal(COPY_KEYS.includes("findHomework"), false);
 assert.match(translationsEs.homeworkTitle, /Práctica familiar opcional/i);
 assert.match(translationsEs.homeworkIntro, /aparte de la tarea regular/i);
 
-assert.equal(lessons.length, 64, "every curriculum lesson should be available");
+assert.equal(lessons.length, 84, "every curriculum lesson should be available");
 assert.equal(lessons[0].id, "1-1");
-assert.equal(lessons.at(-1).id, "10-5");
+assert.equal(lessons.at(-1).id, "10-6");
 
 const snapshot = createDefaultSnapshot();
 assert.equal(snapshot.sections.length, 1);
