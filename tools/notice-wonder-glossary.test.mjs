@@ -26,8 +26,8 @@ for (const id of ids) {
   }
 }
 
-assert.equal(ids.length, 64);
-assert.equal(occurrences, 446);
+assert.equal(ids.length, 84);
+assert.equal(occurrences, 459);
 
 const renderer = readFileSync(
   new URL("../engine/core/lesson-renderer.js", import.meta.url),
