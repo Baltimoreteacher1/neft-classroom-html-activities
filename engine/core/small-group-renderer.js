@@ -320,6 +320,33 @@ function teacherPanel(config, accent, talk) {
   return wrapper;
 }
 
+/**
+ * The headline a STUDENT sees, which is not the same string as the lesson's
+ * catalog identity.
+ *
+ * `config.title` is "5.3 Small Group · Group 1". That string is load-bearing
+ * elsewhere — the playlist builder, the Canvas library, the registry, the launch
+ * manifests and the search index all carry it — so it is not the thing to
+ * rewrite. But on the page itself it sat directly under a badge reading
+ * "SMALL GROUP · FOUNDATIONS", so the same lesson announced itself two
+ * different ways in adjacent lines, and the louder one was an ability label.
+ *
+ * Students do not need to know they are in "Group 1". The badge already names
+ * the work; this makes the headline agree with it and drops the group number.
+ * Only the rendered text changes — no id, url, config field or manifest moves.
+ */
+function studentTitle(config, badge) {
+  const raw = String(config.title || "").trim();
+  if (!raw) return "Small-Group Math Studio";
+  // Take the purpose word straight from the badge so the two can never drift.
+  const purpose = String(badge || "")
+    .split("·")
+    .pop()
+    .trim();
+  const renamed = raw.replace(/\s*·\s*Group\s*[12]\s*$/i, "");
+  return purpose && renamed !== raw ? `${renamed} · ${purpose}` : raw;
+}
+
 function hero(config, accent, voice) {
   const container = el("div", "sg-hero");
   markScene(container, "hero");
@@ -328,7 +355,7 @@ function hero(config, accent, voice) {
   copy.classList.add("sg-scene-enter");
   const badge = config.launch?.badge || `Small Group · ${accent.name}`;
   copy.appendChild(el("div", null, `<span class="sg-kicker">${accent.emoji} ${esc(badge)}</span>`));
-  copy.appendChild(el("h1", null, esc(config.title || "Small-Group Math Studio")));
+  copy.appendChild(el("h1", null, esc(studentTitle(config, badge))));
   if (config.contentObjective) {
     // One crisp kid-facing line up top; full content + language objectives fold
     // into a collapsible detail so the hero stays readable for Level 1 students.
