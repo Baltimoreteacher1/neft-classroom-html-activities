@@ -81,6 +81,14 @@ export function restoreState(host, snapshot) {
   /** @type {HTMLElement} */ (host).dataset.ivRestoring = "1";
   try {
     const controls = host.querySelectorAll("input, select, textarea");
+    // Count what was actually WRITTEN, and report that. Returning a flat `true`
+    // whenever the snapshot merely HAD fields was the whole bug: the registry
+    // mounts asynchronously, so at the caller's first attempt the host is still
+    // empty, this loop matched nothing, and "true" told the caller the restore
+    // had landed. The retries below it — the entire async-mount recovery this
+    // module documents — were therefore never scheduled, and a student's saved
+    // model was read out of storage and then dropped on the floor.
+    let applied = 0;
     controls.forEach((el, i) => {
       const key = el.name || el.id || el.dataset.ivField || `f${i}`;
       if (!(key in snapshot.fields)) return;
@@ -94,15 +102,23 @@ export function restoreState(host, snapshot) {
       // work without every component knowing about persistence.
       el.dispatchEvent(new Event("input", { bubbles: true }));
       el.dispatchEvent(new Event("change", { bubbles: true }));
+      applied += 1;
     });
     if (snapshot.fields.__published != null) {
       host.setAttribute("data-iv-state", snapshot.fields.__published);
+      applied += 1;
     }
-    return true;
+    return applied > 0;
   } finally {
     delete (/** @type {HTMLElement} */ (host).dataset.ivRestoring);
   }
 }
+
+// How long to keep trying to put a saved model back. A manipulative arrives via
+// a dynamic import, so "not yet" is the normal answer for the first few hundred
+// milliseconds — on a cold load, past the 250ms the old code allowed. The ladder
+// stops at the first attempt that actually applies something.
+const RESTORE_RETRY_MS = [0, 120, 300, 600, 1200, 2500, 5000];
 
 /**
  * Wire persistence for every mounted visual inside `root`.
@@ -135,8 +151,15 @@ export function attachManipulativePersistence(root, { state, phaseId } = {}) {
 
     const key = manipulativeKey(host, ordinal);
 
+    // Set once the saved model is back in place, OR as soon as the student
+    // touches this host. Both mean "stop trying to restore": a pending retry
+    // that fired after the student started working would wipe out what they
+    // had just done, which is a worse failure than not restoring at all.
+    let settled = false;
+
     const save = () => {
       if (/** @type {HTMLElement} */ (host).dataset.ivRestoring) return;
+      settled = true; // a real edit — never overwrite it with an older snapshot
       const snapshot = captureState(host);
       if (snapshot) state.saveResponse(phaseId, key, snapshot);
     };
@@ -155,11 +178,19 @@ export function attachManipulativePersistence(root, { state, phaseId } = {}) {
 
     const saved = state.getResponse(phaseId, key);
     if (saved) {
-      // The registry mounts asynchronously. Try now (cheap, usually a miss),
-      // then once the microtask queue and one frame have drained.
-      if (!restoreState(host, saved)) {
-        setTimeout(() => restoreState(host, saved), 0);
-        setTimeout(() => restoreState(host, saved), 250);
+      // The registry mounts asynchronously, so the host is usually still empty
+      // right now and there is nothing to fill. Keep trying until an attempt
+      // actually applies a value (or the student starts working) instead of
+      // taking the first attempt's word for it.
+      if (restoreState(host, saved)) {
+        settled = true;
+      } else {
+        for (const delay of RESTORE_RETRY_MS) {
+          setTimeout(() => {
+            if (settled) return;
+            if (restoreState(host, saved)) settled = true;
+          }, delay);
+        }
       }
     }
   }
