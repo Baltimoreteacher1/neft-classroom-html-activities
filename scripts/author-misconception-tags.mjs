@@ -270,13 +270,56 @@ const PROSE_PATTERNS = [
   [/divided when .* multipl|means multiply, not divide/i, "op-divided-instead-of-multiplied"],
 ];
 
+/**
+ * Does this tag even make sense for this item?
+ *
+ * The prose signal trusts `choiceFeedback`, and that trust breaks when the
+ * feedback was copy-pasted from a neighbouring item. Real case: 2-3's
+ * "What is the reciprocal of 3/5?" carries the division-item feedback
+ * ("You have the dividend and divisor backward"), which is meaningless there —
+ * and tagging it shipped a diagnosis claiming the student reversed a division
+ * they were never asked to perform.
+ *
+ * An `op-*` tag asserts the student applied the WRONG OPERATION to two
+ * operands. That claim is only coherent if the stem actually presents two
+ * numbers to combine. A one-number stem ("the reciprocal of 3/5", "what is 40%
+ * of it") cannot support it, whatever the feedback says. This is a floor, not a
+ * full coherence check: it rejects the class of mismatch that is provably
+ * impossible rather than trying to judge whether prose fits a stem.
+ */
+function tagIsPossible(item, id) {
+  if (!id.startsWith("op-")) return true;
+  // Two operands written as digits in the stem ("8 quarts … 4/5 of a quart").
+  if (stemNumbers(item.stem || item.title || "").length >= 2) return true;
+  // …or an operation the student picks between, which is how the equation-
+  // writing items work: 7-1 asks "Which equation represents 'Three times a
+  // number equals 21'?" and offers `n + 3 = 21` / `n / 3 = 21`. Its operand is
+  // the WORD "three", so a digit count alone wrongly called those impossible —
+  // and "added when the problem multiplies" is exactly right there.
+  // A SPACED operator or an equals sign — never a bare "/", which is the
+  // fraction bar in choices like "5/3" and would wave everything through.
+  return (item.choices || []).some((c) => /(?:\s[+\-×÷*/]\s)|=/.test(String(c)));
+}
+
 /** Signal B: what the authored feedback for this distractor says the error is. */
 function proseTag(item, choiceIndex) {
   const fb = Array.isArray(item.choiceFeedback) ? item.choiceFeedback[choiceIndex] : null;
   const text = typeof fb === "string" ? fb.trim() : "";
   if (!text) return null;
   for (const [pattern, id] of PROSE_PATTERNS) {
-    if (pattern.test(text)) return MISCONCEPTIONS[id] ? id : null;
+    if (!pattern.test(text)) continue;
+    if (!MISCONCEPTIONS[id]) return null;
+    if (!tagIsPossible(item, id)) {
+      incoherent.push({
+        lesson: item.__lessonId,
+        stem: item.stem || item.title || "",
+        choice: item.choices?.[choiceIndex],
+        tag: id,
+        text,
+      });
+      return null;
+    }
+    return id;
   }
   return null;
 }
@@ -302,6 +345,11 @@ const stats = {
   byTag: new Map(),
 };
 const conflicts = [];
+/* Feedback prose that names an error the item cannot possibly show — the
+   copy-pasted-feedback class. Reported so the CONTENT gets fixed. */
+const incoherent = [];
+/* Impossible tags found already written and removed by the repair pass. */
+const repaired = [];
 
 for (const id of lessonIds) {
   const file = join(LESSONS, id, "config.json");
@@ -318,6 +366,7 @@ for (const id of lessonIds) {
   for (const [, list] of practiceGroups(config)) {
     for (const item of list) {
       if (!item || typeof item !== "object" || !Array.isArray(item.choices)) continue;
+      item.__lessonId = id; // transient, stripped before write
       const correct = valueOf(item.choices[item.correctIndex]);
       const existing = Array.isArray(item.misconceptionTags) ? item.misconceptionTags : null;
       const tags = item.choices.map((_, i) => (existing ? (existing[i] ?? null) : null));
@@ -379,8 +428,29 @@ for (const id of lessonIds) {
         stats.byTag.set(tag, (stats.byTag.get(tag) || 0) + 1);
       }
 
+      // Repair pass. The possibility guard was added AFTER a first run had
+      // already written tags, so tags this script can now prove are impossible
+      // are still sitting in configs — 2-3's reciprocal item claimed a reversed
+      // division. A wrong diagnosis is worse than none: it routes a student to
+      // the wrong clinic and pollutes the heatmap. Removing them is not
+      // second-guessing an author, because the guard only rejects claims the
+      // item structurally cannot support.
+      for (let i = 0; i < tags.length; i++) {
+        if (!tags[i] || tagIsPossible(item, tags[i])) continue;
+        repaired.push({
+          lesson: id,
+          stem: item.stem || item.title || "",
+          choice: item.choices[i],
+          tag: tags[i],
+        });
+        tags[i] = null;
+        itemChanged = true;
+      }
+
+      delete item.__lessonId; // transient — never serialise it
       if (itemChanged) {
-        item.misconceptionTags = tags;
+        item.misconceptionTags = tags.some(Boolean) ? tags : undefined;
+        if (!tags.some(Boolean)) delete item.misconceptionTags;
         stats.itemsTagged += 1;
         changed = true;
       }
@@ -418,6 +488,26 @@ const lines = [
   "",
 ];
 
+if (repaired.length) {
+  lines.push(
+    "## Removed — the item cannot support this claim",
+    "",
+    "An `op-*` tag asserts the student applied the wrong OPERATION to two",
+    "operands. On a stem with fewer than two numbers that claim is impossible,",
+    "whatever the authored feedback says. These were almost certainly caused by",
+    "feedback copy-pasted from a neighbouring item — **fix the feedback**, which",
+    "students are still being shown.",
+    "",
+    "| Lesson | Stem | Distractor | Removed tag |",
+    "| --- | --- | --- | --- |",
+    ...repaired.map(
+      (r) =>
+        `| ${r.lesson} | ${r.stem.slice(0, 70).replace(/\|/g, "\\|")} | \`${r.choice}\` | ${r.tag} |`,
+    ),
+    "",
+  );
+}
+
 if (conflicts.length) {
   lines.push(
     "## Contradictions — a human should look at these",
@@ -439,7 +529,7 @@ mkdirSync(REPORTS, { recursive: true });
 writeFileSync(join(REPORTS, "misconception-tagging.md"), lines.join("\n"));
 
 console.log(
-  `misconception tagging: ${stats.choicesTagged} distractors · ${stats.itemsTagged} items · ${stats.lessonsTouched} lessons · ${conflicts.length} contradictions`,
+  `misconception tagging: ${stats.choicesTagged} distractors · ${stats.itemsTagged} items · ${stats.lessonsTouched} lessons · ${conflicts.length} contradictions · ${incoherent.length} rejected as impossible · ${repaired.length} repaired`,
 );
 console.log("→ reports/misconception-tagging.md");
 
