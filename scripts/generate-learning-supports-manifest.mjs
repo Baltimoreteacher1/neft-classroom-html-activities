@@ -148,8 +148,8 @@ function main() {
       return au !== bu ? au - bu : al - bl;
     });
 
-  if (canonicalLessonIds.length !== 82) {
-    console.error(`Error: Expected 82 canonical lessons, found ${canonicalLessonIds.length}`);
+  if (canonicalLessonIds.length !== 84) {
+    console.error(`Error: Expected 84 canonical lessons, found ${canonicalLessonIds.length}`);
     process.exit(1);
   }
 

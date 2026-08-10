@@ -4,7 +4,7 @@
 > Source of truth: each `lessons/<id>/config.json` (`unit`, `lesson`, `standard`, `title`).
 > To change the sequence, edit those configs then run `npm run curriculum:rebuild`.
 
-**82 lessons** across **10 units**.
+**84 lessons** across **10 units**.
 
 ## Unit 1
 
@@ -28,6 +28,7 @@
 | 2-5 | `6.DS.3` (Distributions) | Reasoning with Data and Statistics | Describe Data by Range and Interquartile Range |
 | 2-6 | `6.NOS.2` (Multi-Digit Division) | Number and Operation Sense | Divide Multi-Digit Numbers Using an Algorithm |
 | 2-7 | `6.NOS.3` (Decimal Operations) | Number and Operation Sense | Divide Decimals Using an Algorithm |
+| 2-8 | `6.DS.4` (Measures of Center & Variability) | Reasoning with Data and Statistics | Describe Data Using the Mean |
 | 2-9 | `6.DS.6c` (Summarizing Data Sets) | Reasoning with Data and Statistics | Describe Data by Mean Absolute Deviation |
 | 2-10 | `6.DS.6d` (Relating Measures to Context) | Reasoning with Data and Statistics | Choose Appropriate Measures |
 | 2-11 | `6.NOS.3` (Decimal Operations) | Number and Operation Sense | Add and Subtract Decimals |
@@ -97,6 +98,7 @@
 
 | Lesson | Standard | Domain | Title |
 | ------ | -------- | ------ | ----- |
+| 7-1 | `6.NOS.6` (Rational Numbers on the Line) | Number and Operation Sense | Explore Integers and Their Opposites |
 | 7-2 | `6.NOS.6` (Rational Numbers on the Line) | Number and Operation Sense | Represent Rational Numbers and Their Opposites on the Number Line |
 | 7-3 | `6.NOS.8` (Ordering & Absolute Value) | Number and Operation Sense | Understand Absolute Value of Rational Numbers |
 | 7-4 | `6.NOS.8` (Ordering & Absolute Value) | Number and Operation Sense | Compare and Order Integers and Rational Numbers |

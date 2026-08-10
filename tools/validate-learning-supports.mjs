@@ -3,7 +3,7 @@
  * validate-learning-supports.mjs — validate the learning supports manifest.
  *
  * Checks:
- *   - Verifies there are exactly 82 canonical lesson directories (matching /^\d+-\d+$/).
+ *   - Verifies there are exactly 84 canonical lesson directories (matching /^\d+-\d+$/).
  *   - Verifies the manifest file exists and is valid JSON.
  *   - Verifies every canonical lesson has an entry in the manifest.
  *   - Verifies the structure of each entry (lessonId, title, standard, etc.).
@@ -96,9 +96,9 @@ function runValidation() {
 
   console.log(`Found ${canonicalLessonIds.length} canonical lesson directories.`);
 
-  if (canonicalLessonIds.length !== 82) {
+  if (canonicalLessonIds.length !== 84) {
     console.error(
-      `Error: Expected exactly 82 canonical lesson directories, but found ${canonicalLessonIds.length}.`,
+      `Error: Expected exactly 84 canonical lesson directories, but found ${canonicalLessonIds.length}.`,
     );
     process.exit(1);
   }
@@ -300,7 +300,7 @@ function runValidation() {
   }
 
   // 6. Lesson integration checks (Task 4 Step 1)
-  console.log("Checking integration in 82 canonical lesson launchers...");
+  console.log("Checking integration in 84 canonical lesson launchers...");
   for (const lessonId of canonicalLessonIds) {
     const indexPath = join(LESSONS_DIR, lessonId, "index.html");
     if (!existsSync(indexPath)) {
@@ -351,7 +351,7 @@ function runValidation() {
       process.exit(1);
     }
   }
-  console.log("PASS: All 82 canonical lesson launchers have correct supports injected.");
+  console.log("PASS: All 84 canonical lesson launchers have correct supports injected.");
 
   // 7. Curriculum Hub checks (Task 5 Step 1)
   console.log("Checking Curriculum Hub integration...");
@@ -458,7 +458,7 @@ function runValidation() {
     `PASS: v2.3 lockstep — ${new Set(schemaTools).size} tools have dock buttons, ${new Set(adaptiveKeys).size} adaptive keys handled.`,
   );
 
-  console.log(`PASS: 82/82 canonical lessons covered, schema, route, and privacy checks passed.`);
+  console.log(`PASS: 84/84 canonical lessons covered, schema, route, and privacy checks passed.`);
   process.exit(0);
 }
 
