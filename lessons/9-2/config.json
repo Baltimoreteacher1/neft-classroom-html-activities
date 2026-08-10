@@ -60,6 +60,96 @@
       "example": "The coordinates of the tram point (5, 6000) are 5 minutes and 6,000 feet."
     }
   ],
+  "turnAndTalk": [
+    {
+      "phase": "launch",
+      "question": "Football tickets cost $45 each: 1 ticket is $45, 2 tickets are $90, 3 tickets are $135. When you write the ordered pair for 3 tickets, which number goes first — 3 or 135 — and why?",
+      "kernel": "The number of tickets is the independent variable, and the independent variable always comes first in an ordered pair, so the point is (3, 135), not (135, 3).",
+      "stems": [
+        {
+          "en": "The ordered pair is (___, ___) because ___ comes first.",
+          "es": "El par ordenado es (___, ___) porque ___ va primero."
+        },
+        {
+          "en": "If I wrote (135, 3) instead, that would mean ___.",
+          "es": "Si escribiera (135, 3) en cambio, eso significaría ___."
+        }
+      ],
+      "wordBank": ["ordered pair", "independent variable", "axis"],
+      "listenFor": "A strong answer names tickets as independent and explains that independent always goes first, then checks the arithmetic (3 × 45 = 135). A weak answer just says 'because that's the order' without connecting it to independent/dependent.",
+      "extend": "The Sandia Peak tram travels 1,200 feet each minute. Justify why the point for 5 minutes is (5, 6000) and not (6000, 5), using the same rule you used for the tickets.",
+      "extendStems": [
+        "Minutes is independent because ___, so it goes ___ in the pair.",
+        "(6000, 5) would be wrong because it would mean ___."
+      ]
+    },
+    {
+      "phase": "explore",
+      "question": "You sorted cards like '(4, 190) is a point on the graph' into matches and non-matches for cost = 45 × tickets. How did you check each one?",
+      "kernel": "A point (tickets, cost) matches the relationship only if cost equals 45 times the number of tickets.",
+      "stems": [
+        {
+          "en": "I checked (___, ___) by multiplying ___ × 45 and comparing it to ___.",
+          "es": "Comprobé (___, ___) multiplicando ___ × 45 y comparándolo con ___."
+        },
+        {
+          "en": "(4, 190) does NOT match because 4 × 45 = ___, not 190.",
+          "es": "(4, 190) NO coincide porque 4 × 45 = ___, no 190."
+        }
+      ],
+      "wordBank": ["ordered pair", "coordinates", "matches"],
+      "listenFor": "Listen for students actually multiplying to verify rather than guessing by how 'close' the numbers looked. A strong answer catches that 4 × 45 = 180, not 190, so the point is off by exactly $10.",
+      "extend": "Card '(1, 55) is a point on the graph' was also NOT a match. What single mistake would produce 55 instead of the correct value — and how is that different from the mistake in (4, 190)?",
+      "extendStems": [
+        "55 could come from ___ instead of multiplying, while 190 looks like a different kind of error: ___.",
+        "Both are wrong, but for different reasons: ___ versus ___."
+      ]
+    },
+    {
+      "phase": "connect",
+      "question": "Nakai's account starts with $750 and earns the same $26.25 every year. Why does the interest graph rise in a straight line instead of curving upward more steeply each year?",
+      "kernel": "Simple interest is calculated only on the original $750 principal, so the SAME amount, $26.25, is added every year — a constant increase makes a straight line, not a curve.",
+      "stems": [
+        {
+          "en": "The graph is straight because every year adds exactly $___.",
+          "es": "La gráfica es recta porque cada año se suman exactamente $___."
+        },
+        {
+          "en": "If the interest grew faster each year, that would mean ___ instead of simple interest.",
+          "es": "Si el interés creciera más rápido cada año, eso significaría ___ en lugar de interés simple."
+        }
+      ],
+      "wordBank": ["simple interest", "principal", "graph"],
+      "listenFor": "A strong answer connects the constant $26.25/year to the straight-line shape and can compute it (3.5% of $750). A weak answer says 'it just goes up' without explaining WHY the increase stays constant.",
+      "extend": "A point on Nakai's graph is (4, x). Find x, and explain how you know your answer is NOT the account's total balance after 4 years.",
+      "extendStems": [
+        "x = ___ because 4 years of $26.25 each is 4 × ___.",
+        "That is not the total balance because the balance would also include the ___ of $750."
+      ]
+    },
+    {
+      "phase": "practice",
+      "question": "Look back at a problem where you found coordinates for a point. What was your process from the rate to the final ordered pair?",
+      "kernel": "Every ordered pair on a rate graph comes from multiplying the rate by the independent variable's value, then writing (independent, dependent).",
+      "stems": [
+        {
+          "en": "I started with the rate, $___ per ___, then multiplied by ___ to get the total.",
+          "es": "Empecé con la tasa, $___ por ___, luego multipliqué por ___ para obtener el total."
+        },
+        {
+          "en": "I know my ordered pair is correct because ___.",
+          "es": "Sé que mi par ordenado es correcto porque ___."
+        }
+      ],
+      "wordBank": ["rate", "ordered pair", "coordinates"],
+      "listenFor": "Listen for students naming BOTH steps — computing the total AND placing the independent variable first — not just stating the final pair.",
+      "extend": "A classmate wrote the point for 4 tickets as (4, 49) instead of (4, 180). What operation mistake would produce 49, and how would you help them catch it?",
+      "extendStems": [
+        "49 looks like they ___ instead of multiplying 4 × 45.",
+        "I'd tell them to check by ___ before trusting the answer."
+      ]
+    }
+  ],
   "launch": {
     "badge": "Unit 9 · Lesson 2",
     "narrative": "Tickets to a college football game cost $45 each. A table can pair each number of tickets with its total cost, and a graph can show the same pairs as points on a coordinate plane. The Sandia Peak tram in Albuquerque, New Mexico gives a second example: it travels 1,200 feet each minute, and the ascent takes 15 minutes.",
@@ -97,10 +187,7 @@
   "explore": {
     "type": "drag-sort",
     "label": "Tickets cost $45 each, so the total cost is 45 times the number of tickets. Sort each statement: does it MATCH the ticket relationship, or NOT?",
-    "categories": [
-      "Matches cost = 45 × tickets",
-      "Does NOT match"
-    ],
+    "categories": ["Matches cost = 45 × tickets", "Does NOT match"],
     "cards": [
       {
         "text": "(2, 90) is a point on the graph",
@@ -141,22 +228,11 @@
     "scenario": "Nakai opened a savings account with an initial deposit, or principal, of $750. The account earns 3.5% simple interest each year — interest is the amount earned for the use of the principal. A graph shows the interest Nakai has earned over a period of years, with points rising steadily.",
     "promptQuestion": "What observations can you make about the data using the graph?",
     "prompt": "___ is the independent variable, while ___ is the dependent variable. As the years go by, the interest earned ___, because each year adds $___ to the total.",
-    "keywords": [
-      "interest",
-      "years",
-      "independent",
-      "dependent",
-      "increases"
-    ],
+    "keywords": ["interest", "years", "independent", "dependent", "increases"],
     "check": [
       {
         "stem": "On Nakai's graph, which variable is plotted on the independent axis (x-axis)?",
-        "choices": [
-          "years",
-          "interest earned",
-          "principal amount",
-          "account balance"
-        ],
+        "choices": ["years", "interest earned", "principal amount", "account balance"],
         "answer": 0,
         "explanation": "Years is the independent variable because interest earned changes as a result of how many years have passed, not the other way around. Interest earned is dependent; the principal ($750) is a fixed starting value, not a changing quantity being graphed; account balance combines principal and interest, which isn't what this graph plots."
       },
@@ -173,22 +249,12 @@
       },
       {
         "stem": "A point on the graph is located at (4, x). Based on the interest rate, what value of x makes this point correct?",
-        "choices": [
-          "$105",
-          "$78.75",
-          "$855",
-          "$131.25"
-        ],
+        "choices": ["$105", "$78.75", "$855", "$131.25"],
         "answer": 0,
         "explanation": "After 4 years Nakai has earned 4 × $26.25 = $105 in interest. $78.75 is only 3 years' worth of interest, $855 confuses interest earned with the total account balance (principal plus interest), and $131.25 is 5 years' worth."
       }
     ],
-    "answers": [
-      "years",
-      "interest",
-      "increases",
-      "26.25"
-    ],
+    "answers": ["years", "interest", "increases", "26.25"],
     "modelAnswer": "The number of years is the independent variable and the interest earned is the dependent variable. The graph rises steadily because Nakai earns the same amount every year — 3.5% of $750 is $26.25. A point like (2, 52.50) means that after 2 years Nakai has earned $52.50 in interest, since 2 × 26.25 = 52.50."
   },
   "reflect": {
@@ -215,12 +281,7 @@
       {
         "type": "multiple-choice",
         "stem": "Football tickets cost $45 each. What is the total cost of 3 tickets?",
-        "choices": [
-          "$135",
-          "$48",
-          "$90",
-          "$45"
-        ],
+        "choices": ["$135", "$48", "$90", "$45"],
         "correctIndex": 0,
         "explanation": "The total cost is 45 times the number of tickets, and 3 × 45 = 135.",
         "choiceFeedback": [
@@ -238,12 +299,7 @@
       {
         "type": "multiple-choice",
         "stem": "Which ordered pair belongs on the ticket graph for 2 tickets?",
-        "choices": [
-          "(2, 90)",
-          "(90, 2)",
-          "(2, 45)",
-          "(2, 47)"
-        ],
+        "choices": ["(2, 90)", "(90, 2)", "(2, 45)", "(2, 47)"],
         "correctIndex": 0,
         "explanation": "The number of tickets goes first, and 2 tickets cost 2 × 45 = 90 dollars, so the point is (2, 90).",
         "choiceFeedback": [
@@ -284,12 +340,7 @@
       {
         "type": "multiple-choice",
         "stem": "The Sandia Peak tram travels 1,200 feet each minute. How far has it traveled after 3 minutes?",
-        "choices": [
-          "3,600 feet",
-          "1,203 feet",
-          "2,400 feet",
-          "1,200 feet"
-        ],
+        "choices": ["3,600 feet", "1,203 feet", "2,400 feet", "1,200 feet"],
         "correctIndex": 0,
         "explanation": "The tram covers 1,200 feet every minute, so after 3 minutes it has gone 3 × 1,200 = 3,600 feet.",
         "choiceFeedback": [
@@ -307,12 +358,7 @@
       {
         "type": "multiple-choice",
         "stem": "A table shows a train traveling 48 kilometers every hour: 1 hour, 48 km; 5 hours, 240 km. How many kilometers does it travel in 2 hours?",
-        "choices": [
-          "96 km",
-          "50 km",
-          "48 km",
-          "144 km"
-        ],
+        "choices": ["96 km", "50 km", "48 km", "144 km"],
         "correctIndex": 0,
         "explanation": "At 48 kilometers per hour, 2 hours gives 2 × 48 = 96 kilometers.",
         "choiceFeedback": [
@@ -321,21 +367,12 @@
           "48 km is the distance for 1 hour, not 2.",
           "144 km is the distance for 3 hours, not 2."
         ],
-        "hints": [
-          "How far in ONE hour?",
-          "Each hour adds another 48 km.",
-          "Multiply 48 by 2."
-        ]
+        "hints": ["How far in ONE hour?", "Each hour adds another 48 km.", "Multiply 48 by 2."]
       },
       {
         "type": "multiple-choice",
         "stem": "As the number of tickets purchased increases, the total cost…",
-        "choices": [
-          "increases",
-          "decreases",
-          "stays the same",
-          "cannot be determined"
-        ],
+        "choices": ["increases", "decreases", "stays the same", "cannot be determined"],
         "correctIndex": 0,
         "explanation": "Every extra ticket adds another $45, so the total cost rises as the number of tickets rises.",
         "choiceFeedback": [
@@ -355,12 +392,7 @@
       {
         "type": "multiple-choice",
         "stem": "The Sandia Peak tram travels 1,200 feet each minute and the ascent takes 15 minutes. How long is the whole ascent in feet?",
-        "choices": [
-          "18,000 feet",
-          "1,215 feet",
-          "12,000 feet",
-          "16,800 feet"
-        ],
+        "choices": ["18,000 feet", "1,215 feet", "12,000 feet", "16,800 feet"],
         "correctIndex": 0,
         "explanation": "The total distance is 15 × 1,200 = 18,000 feet.",
         "choiceFeedback": [
@@ -378,12 +410,7 @@
       {
         "type": "multiple-choice",
         "stem": "On the tram graph with minutes on the horizontal axis and feet on the vertical axis, which ordered pair lies on the graph?",
-        "choices": [
-          "(5, 6000)",
-          "(6000, 5)",
-          "(5, 1200)",
-          "(5, 5000)"
-        ],
+        "choices": ["(5, 6000)", "(6000, 5)", "(5, 1200)", "(5, 5000)"],
         "correctIndex": 0,
         "explanation": "After 5 minutes the tram has traveled 5 × 1,200 = 6,000 feet, so the point is (5, 6000).",
         "choiceFeedback": [
@@ -401,12 +428,7 @@
       {
         "type": "multiple-choice",
         "stem": "A table pairs hours with kilometers: (1, 48), (2, 96), (5, 240). How many kilometers are traveled each hour?",
-        "choices": [
-          "48",
-          "96",
-          "240",
-          "24"
-        ],
+        "choices": ["48", "96", "240", "24"],
         "correctIndex": 0,
         "explanation": "Each row is 48 times the number of hours: 2 × 48 = 96 and 5 × 48 = 240, so the rate is 48 kilometers per hour.",
         "choiceFeedback": [
@@ -470,12 +492,7 @@
       {
         "type": "multiple-choice",
         "stem": "Using the ticket table, what are the coordinates of the point for 4 tickets?",
-        "choices": [
-          "(4, 180)",
-          "(4, 160)",
-          "(180, 4)",
-          "(4, 49)"
-        ],
+        "choices": ["(4, 180)", "(4, 160)", "(180, 4)", "(4, 49)"],
         "correctIndex": 0,
         "explanation": "4 tickets cost 4 × 45 = 180 dollars, and tickets come first, so the point is (4, 180).",
         "choiceFeedback": [
@@ -495,12 +512,7 @@
       {
         "type": "multiple-choice",
         "stem": "Nakai's savings account has a principal of $750 and earns 3.5% simple interest each year. How much interest does Nakai earn in one year?",
-        "choices": [
-          "$26.25",
-          "$262.50",
-          "$3.50",
-          "$75.00"
-        ],
+        "choices": ["$26.25", "$262.50", "$3.50", "$75.00"],
         "correctIndex": 0,
         "explanation": "One year of interest is 3.5% of $750: 0.035 × 750 = 26.25.",
         "choiceFeedback": [
@@ -509,21 +521,12 @@
           "That treats 3.5% as $3.50 flat instead of taking 3.5% OF the $750 principal.",
           "That is 10% of $750, not 3.5%."
         ],
-        "hints": [
-          "Write 3.5% as a decimal.",
-          "3.5% = 0.035.",
-          "Multiply 0.035 by 750."
-        ]
+        "hints": ["Write 3.5% as a decimal.", "3.5% = 0.035.", "Multiply 0.035 by 750."]
       },
       {
         "type": "multiple-choice",
         "stem": "Nakai earns $26.25 in simple interest every year. On the graph of years vs. interest earned, which point represents 4 years?",
-        "choices": [
-          "(4, 105)",
-          "(4, 26.25)",
-          "(4, 78.75)",
-          "(4, 750)"
-        ],
+        "choices": ["(4, 105)", "(4, 26.25)", "(4, 78.75)", "(4, 750)"],
         "correctIndex": 0,
         "explanation": "After 4 years the interest earned is 4 × 26.25 = 105 dollars, so the point is (4, 105).",
         "choiceFeedback": [
@@ -541,12 +544,7 @@
       {
         "type": "multiple-choice",
         "stem": "After 10 minutes, the Sandia Peak tram has traveled 12,000 feet. The whole ascent is 18,000 feet. How much farther must it travel to reach the top?",
-        "choices": [
-          "6,000 feet",
-          "12,000 feet",
-          "5,000 feet",
-          "1,200 feet"
-        ],
+        "choices": ["6,000 feet", "12,000 feet", "5,000 feet", "1,200 feet"],
         "correctIndex": 0,
         "explanation": "The remaining distance is 18,000 − 12,000 = 6,000 feet — which matches the last 5 minutes at 1,200 feet per minute.",
         "choiceFeedback": [
