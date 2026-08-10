@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>9.1–9.3 Catch-Up — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/7-4-catchup/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — 9.1–9.3 Catch-Up — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="9.1–9.3 Catch-Up — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — 9.1–9.3 Catch-Up — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/7-4-catchup/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">9.1–9.3 Catch-Up</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Graph on the Coordinate Plane</span><span class="ws-bankword">Coordinate plane</span><span class="ws-bankword">Integers and Absolute Value</span><span class="ws-bankword">Integer</span><span class="ws-bankword">Compare and Order Integers</span><span class="ws-bankword">Number line</span><span class="ws-bankword">Ordered pair</span><span class="ws-bankword">Positive</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Ordered pair:</b> (7, 3)</li><li><b>Move along the x-axis:</b> Start at the origin (0, 0) and count 7 units to the right.</li><li><b>Move along the y-axis:</b> Count up from the x-axis: 1, 2, 3, 4 — stop on 4.</li><li><b>Plot the point:</b> Place the dot at (7, 4).</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) Which ordered pair names a point 3 units right and 7 units up from the origin?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>(3, 7)</li><li class="ws-opt"><span class="ws-bub">B</span>(7, 3)</li><li class="ws-opt"><span class="ws-bub">C</span>(3, 3)</li><li class="ws-opt"><span class="ws-bub">D</span>(0, 7)</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) What are the coordinates of the origin?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>(0, 0)</li><li class="ws-opt"><span class="ws-bub">B</span>(1, 1)</li><li class="ws-opt"><span class="ws-bub">C</span>(0, 1)</li><li class="ws-opt"><span class="ws-bub">D</span>(1, 0)</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) What is the absolute value of -9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>-9</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>1</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) Which integer has the GREATEST absolute value: -3, 7, -5, 2?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>7</li><li class="ws-opt"><span class="ws-bub">B</span>-5</li><li class="ws-opt"><span class="ws-bub">C</span>-3</li><li class="ws-opt"><span class="ws-bub">D</span>2</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">9.1–9.3 Catch-Up</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Graph on the Coordinate Plane</span><span class="ws-bankword">Coordinate plane</span><span class="ws-bankword">Integers and Absolute Value</span><span class="ws-bankword">Integer</span><span class="ws-bankword">Compare and Order Integers</span><span class="ws-bankword">Number line</span><span class="ws-bankword">Ordered pair</span><span class="ws-bankword">Positive</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Ordered pair:</b> (7, 3)</li><li><b>Move along the x-axis:</b> Start at the origin (0, 0) and count 7 units to the right.</li><li><b>Move along the y-axis:</b> Count up from the x-axis: 1, 2, 3, 4 — stop on 4.</li><li><b>Plot the point:</b> Place the dot at (7, 4).</li></ol>
+  </section>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) Which ordered pair names a point 3 units right and 7 units up from the origin?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>(3, 7)</li><li class="ws-opt"><span class="ws-bub">B</span>(7, 3)</li><li class="ws-opt"><span class="ws-bub">C</span>(3, 3)</li><li class="ws-opt"><span class="ws-bub">D</span>(0, 7)</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) What are the coordinates of the origin?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>(0, 0)</li><li class="ws-opt"><span class="ws-bub">B</span>(1, 1)</li><li class="ws-opt"><span class="ws-bub">C</span>(0, 1)</li><li class="ws-opt"><span class="ws-bub">D</span>(1, 0)</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) What is the absolute value of -9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>-9</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>1</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) Which integer has the GREATEST absolute value: -3, 7, -5, 2?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>7</li><li class="ws-opt"><span class="ws-bub">B</span>-5</li><li class="ws-opt"><span class="ws-bub">C</span>-3</li><li class="ws-opt"><span class="ws-bub">D</span>2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.3) Which statement is TRUE?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-3 &gt; -1</li><li class="ws-opt"><span class="ws-bub">B</span>-5 &lt; -2</li><li class="ws-opt"><span class="ws-bub">C</span>-4 &gt; 0</li><li class="ws-opt"><span class="ws-bub">D</span>-1 &lt; -6</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.3) Which integer is the LEAST: -3, 5, -8, 2, 0?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-8</li><li class="ws-opt"><span class="ws-bub">B</span>-3</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>5</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">9.1–9.3 Catch-Up</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Clue</span><span class="ws-step-w">Plot the point (4, 0).</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Move right</span><span class="ws-step-w">Move 4 units to the right along the x-axis. Good.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Move up</span><span class="ws-step-w">Move 4 units up, because the pair has a 4 in it.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Plot the point</span><span class="ws-step-w">Place the dot at (4, 4).</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) Plot these points to reveal a hidden shape: (1, 1), (1, 5), (6, 5), (6, 1)</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) Which statement about absolute value is TRUE?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>|-4| = |4| because both are 4 units from zero</li><li class="ws-opt"><span class="ws-bub">B</span>|-4| = -4 because the number is negative</li><li class="ws-opt"><span class="ws-bub">C</span>|4| &gt; |-4| because positive is always bigger</li><li class="ws-opt"><span class="ws-bub">D</span>|-4| = 0 because negatives cancel out</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) Confusing Opposite with Absolute Value</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Complete the table for the integer 9: find its absolute value and its opposite.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student's thinking</span><span class="ws-step-w">Absolute value and opposite both just make a number positive, so they should give the same answer as each other.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student's answer</span><span class="ws-step-w">Absolute value of 9 = 9, and opposite of 9 = 9.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.3) Three cities have temperatures of -12°F, -5°F, and 3°F. Which city is warmest?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>3°F</li><li class="ws-opt"><span class="ws-bub">B</span>-5°F</li><li class="ws-opt"><span class="ws-bub">C</span>-12°F</li><li class="ws-opt"><span class="ws-bub">D</span>They are equal</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.3) Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">Order -8 and -15 from least to greatest.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">The student wrote -8, -15, because 8 is smaller than 15.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">-15 is farther left than -8 on the number line, so -15 is the least. The correct order is -15, -8.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">9.1–9.3 Catch-Up</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) Miscounted Grid Lines</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Ordered pair</span><span class="ws-step-w">(7, 3)</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Move along the x-axis</span><span class="ws-step-w">Start at the origin (0, 0) and count 7 units to the right.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Move along the y-axis</span><span class="ws-step-w">Count up from the x-axis: 1, 2, 3, 4 — stop on 4.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Plot the point</span><span class="ws-step-w">Place the dot at (7, 4).</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) Find the Absolute Value Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Find |-6|</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">The number is -6, and absolute value makes it the opposite</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">|-6| = 6, and since we take the opposite, the answer is -6</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.3) Find the Comparison Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Compare -3 and -8. Which is greater?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">8 is bigger than 3, so -8 must be greater than -3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">-8 &gt; -3</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">9.1–9.3 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) Which ordered pair names a point 3 units right and 7 units up from the origin?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>(3, 7)</li><li class="ws-opt"><span class="ws-bub">B</span>(7, 3)</li><li class="ws-opt"><span class="ws-bub">C</span>(3, 3)</li><li class="ws-opt"><span class="ws-bub">D</span>(0, 7)</li></ol><p class="ws-keynote">The first coordinate is horizontal (right 3), the second is vertical (up 7). So (3, 7).</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) What are the coordinates of the origin?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>(0, 0)</li><li class="ws-opt"><span class="ws-bub">B</span>(1, 1)</li><li class="ws-opt"><span class="ws-bub">C</span>(0, 1)</li><li class="ws-opt"><span class="ws-bub">D</span>(1, 0)</li></ol><p class="ws-keynote">The origin is where the x-axis and y-axis cross, at (0, 0).</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) What is the absolute value of -9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>-9</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>1</li></ol><p class="ws-keynote">Absolute value is the distance from zero. -9 is 9 units from zero, so |-9| = 9.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) Which integer has the GREATEST absolute value: -3, 7, -5, 2?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>7</li><li class="ws-opt"><span class="ws-bub">B</span>-5</li><li class="ws-opt"><span class="ws-bub">C</span>-3</li><li class="ws-opt"><span class="ws-bub">D</span>2</li></ol><p class="ws-keynote">|-3| = 3, |7| = 7, |-5| = 5, |2| = 2. The greatest absolute value is 7.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">9.1–9.3 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) Which ordered pair names a point 3 units right and 7 units up from the origin?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>(3, 7)</li><li class="ws-opt"><span class="ws-bub">B</span>(7, 3)</li><li class="ws-opt"><span class="ws-bub">C</span>(3, 3)</li><li class="ws-opt"><span class="ws-bub">D</span>(0, 7)</li></ol><p class="ws-keynote">The first coordinate is horizontal (right 3), the second is vertical (up 7). So (3, 7).</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) What are the coordinates of the origin?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>(0, 0)</li><li class="ws-opt"><span class="ws-bub">B</span>(1, 1)</li><li class="ws-opt"><span class="ws-bub">C</span>(0, 1)</li><li class="ws-opt"><span class="ws-bub">D</span>(1, 0)</li></ol><p class="ws-keynote">The origin is where the x-axis and y-axis cross, at (0, 0).</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) What is the absolute value of -9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>-9</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>1</li></ol><p class="ws-keynote">Absolute value is the distance from zero. -9 is 9 units from zero, so |-9| = 9.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) Which integer has the GREATEST absolute value: -3, 7, -5, 2?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>7</li><li class="ws-opt"><span class="ws-bub">B</span>-5</li><li class="ws-opt"><span class="ws-bub">C</span>-3</li><li class="ws-opt"><span class="ws-bub">D</span>2</li></ol><p class="ws-keynote">|-3| = 3, |7| = 7, |-5| = 5, |2| = 2. The greatest absolute value is 7.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.3) Which statement is TRUE?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-3 &gt; -1</li><li class="ws-opt ws-correct"><span class="ws-bub">B</span>-5 &lt; -2</li><li class="ws-opt"><span class="ws-bub">C</span>-4 &gt; 0</li><li class="ws-opt"><span class="ws-bub">D</span>-1 &lt; -6</li></ol><p class="ws-keynote">-5 is farther to the left on the number line than -2, so -5 &lt; -2 is true.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.3) Which integer is the LEAST: -3, 5, -8, 2, 0?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>-8</li><li class="ws-opt"><span class="ws-bub">B</span>-3</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>5</li></ol><p class="ws-keynote">-8 is farthest to the left on the number line, making it the least (smallest) integer.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">9.1–9.3 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Clue</span><span class="ws-step-w">Plot the point (4, 0).</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Move right</span><span class="ws-step-w">Move 4 units to the right along the x-axis. Good.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Move up</span><span class="ws-step-w">Move 4 units up, because the pair has a 4 in it.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Plot the point</span><span class="ws-step-w">Place the dot at (4, 4).</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: The y-coordinate is 0, not 4. After moving 4 right, the up move is 0 units, so the point stays on the x-axis at (4, 0). The student reused the x-value instead of reading the second number (0). The up move comes from the SECOND number, and the second number in (4, 0) is 0. Reusing the 4 pushes the point off the axis to (4, 4). With a y-coordinate of 0 there is no upward move at all, so the point stays right on the x-axis at (4, 0).</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) Plot these points to reveal a hidden shape: (1, 1), (1, 5), (6, 5), (6, 1)</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) Which statement about absolute value is TRUE?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>|-4| = |4| because both are 4 units from zero</li><li class="ws-opt"><span class="ws-bub">B</span>|-4| = -4 because the number is negative</li><li class="ws-opt"><span class="ws-bub">C</span>|4| &gt; |-4| because positive is always bigger</li><li class="ws-opt"><span class="ws-bub">D</span>|-4| = 0 because negatives cancel out</li></ol><p class="ws-keynote">Absolute value measures distance from zero. Both -4 and 4 are 4 units from zero, so |-4| = |4| = 4.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) Confusing Opposite with Absolute Value</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Complete the table for the integer 9: find its absolute value and its opposite.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student's thinking</span><span class="ws-step-w">Absolute value and opposite both just make a number positive, so they should give the same answer as each other.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student's answer</span><span class="ws-step-w">Absolute value of 9 = 9, and opposite of 9 = 9.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Absolute value and opposite are different operations. Absolute value measures distance from zero and is never negative: |9| = 9. Opposite reflects a number to the other side of zero, flipping its sign: the opposite of 9 is -9, not 9. The two operations only give the same result for the number 0 — every other number has a different absolute value and opposite. The student's thinking step treats absolute value and opposite as the same operation, but they are not. Absolute value gives the distance from zero, so |9| = 9, while the opposite reflects the number across zero, so the opposite of 9 is -9 — the two only agree for the number 0.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.3) Three cities have temperatures of -12°F, -5°F, and 3°F. Which city is warmest?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3°F</li><li class="ws-opt"><span class="ws-bub">B</span>-5°F</li><li class="ws-opt"><span class="ws-bub">C</span>-12°F</li><li class="ws-opt"><span class="ws-bub">D</span>They are equal</li></ol><p class="ws-keynote">3°F is the greatest because it is farthest to the right on the number line. The order from coldest to warmest is -12, -5, 3.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.3) Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">Order -8 and -15 from least to greatest.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">The student wrote -8, -15, because 8 is smaller than 15.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">-15 is farther left than -8 on the number line, so -15 is the least. The correct order is -15, -8.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Least to greatest: -15, -8. The more negative a number is, the less its value — so -15 &lt; -8. The reasoning treats -8 and -15 like 8 and 15, so it puts -8 first. On the number line -15 sits farther left than -8, which makes it the smaller value, so least to greatest is -15, -8.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">9.1–9.3 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.1) Miscounted Grid Lines</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Ordered pair</span><span class="ws-step-w">(7, 3)</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Move along the x-axis</span><span class="ws-step-w">Start at the origin (0, 0) and count 7 units to the right.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Move along the y-axis</span><span class="ws-step-w">Count up from the x-axis: 1, 2, 3, 4 — stop on 4.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Plot the point</span><span class="ws-step-w">Place the dot at (7, 4).</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: The x-axis itself is 0, not 1. Counting up correctly: 1, 2, 3 — the third count lands on y = 3, so the point is (7, 3), not (7, 4). The student started counting one gridline too high by treating the x-axis as unit 1 instead of unit 0. Counting up has to start with the x-axis as 0, not 1. The first line above the x-axis is 1, the second is 2, and the third is 3, so 3 units up lands on y = 3. Treating the axis itself as unit 1 pushes every count one gridline too high, which is how (7, 3) turned into (7, 4).</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.2) Find the Absolute Value Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Find |-6|</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">The number is -6, and absolute value makes it the opposite</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">|-6| = 6, and since we take the opposite, the answer is -6</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: Absolute value gives the DISTANCE from zero, which is always positive or zero. |-6| = 6. The student incorrectly applied 'opposite' a second time. The student found |-6| = 6 correctly and then took the opposite a second time, landing back on -6. Absolute value is a distance from zero, so it stops at 6 — there is no extra sign flip after the bars come off.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.3) Find the Comparison Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Compare -3 and -8. Which is greater?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">8 is bigger than 3, so -8 must be greater than -3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">-8 &gt; -3</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: With negative numbers, the number closer to zero is GREATER. -3 is closer to zero than -8, so -3 &gt; -8. The student compared the digits without considering that negatives work in the opposite direction. The student's reasoning stops at the digits: because 8 &gt; 3, they concluded -8 &gt; -3. Distance from zero works in the opposite direction for negatives, so -3, which is only 3 units below zero, is greater than -8, which is 8 units below, making the correct statement -3 &gt; -8.</p></div></li></ol>
+  </section>
+</main>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  
+  <!-- mwb-injected:end -->
+</body>
+</html>

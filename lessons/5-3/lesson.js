@@ -1,3 +1,3 @@
-import { bootFlagship } from "@engine/templates/flagship/flagship.js";
+import { bootLesson } from "@engine/core/lesson-renderer.js";
 import config from "./config.json";
-bootFlagship(config);
+bootLesson(config);

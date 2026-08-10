@@ -141,7 +141,7 @@ test("routes the group to the lesson the error actually happened on", () => {
     ev("Cam L", "ratio-inverted", { lesson: "3-2" }),
   ]);
   assert.equal(p.groups[0].lesson.base, "1-2", "majority lesson wins");
-  assert.equal(p.groups[0].lesson.url, "/lessons/1-2-group1/");
+  assert.equal(p.groups[0].lesson.url, "/lessons/6-7-group1/");
   assert.equal(p.groups[0].lesson.title, "Greatest Common Factor");
 });
 

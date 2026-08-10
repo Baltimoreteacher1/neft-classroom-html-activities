@@ -138,7 +138,7 @@ const interactiveConfig = JSON.parse(readFileSync(join(lessonsDir, "2-2", "confi
 const dom = new JSDOM(
   "<!doctype html><html><head></head><body><main id=app></main></body></html>",
   {
-    url: "https://example.test/lessons/2-2/",
+    url: "https://example.test/lessons/6-9/",
   },
 );
 globalThis.window = dom.window;

@@ -1176,7 +1176,7 @@ function baseLessonId(id) {
 
 // Rewrite a variant URL path to a sibling variant's path, preserving the
 // trailing slash. Exported so the redirect can be unit-tested without a
-// navigable window. "/lessons/1-1-group1/" + "1-1-group2" → "/lessons/1-1-group2/".
+// navigable window. "/lessons/6-13-group1/" + "1-1-group2" → "/lessons/6-13-group2/".
 export function variantPath(pathname, currentId, targetId) {
   const suffix = targetId.slice(baseLessonId(currentId).length + 1); // "group2" | "catchup"
   return String(pathname).replace(/-(?:group[12]|catchup)(\/|$)/, `-${suffix}$1`);

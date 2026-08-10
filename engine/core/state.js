@@ -1,3 +1,5 @@
+import { migrateSavedWork } from "./toc-save-migration.js";
+
 const STORAGE_PREFIX = "rma_";
 
 // PRIVACY: Student progress is local-first only. Remote sync was removed because
@@ -80,6 +82,11 @@ export function findSavedStudents(lessonId) {
 }
 
 export function createState(lessonId, studentId) {
+  // Before the first key is computed: the book-TOC renumbering reused 48 old
+  // lesson numbers for different lessons, so stale keys must be remapped or a
+  // student sees the previous occupant's work restored into the new lesson.
+  // Idempotent and flag-guarded — a no-op on every load after the first.
+  migrateSavedWork();
   const key = buildStorageKey(lessonId, studentId);
   const listeners = new Set();
 

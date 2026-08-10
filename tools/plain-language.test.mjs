@@ -23,7 +23,7 @@ import { JSDOM } from "jsdom";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", {
-  url: "https://eduwonderlab.com/lessons/1-1/",
+  url: "https://eduwonderlab.com/lessons/6-13/",
 });
 globalThis.window = dom.window;
 globalThis.document = dom.window.document;

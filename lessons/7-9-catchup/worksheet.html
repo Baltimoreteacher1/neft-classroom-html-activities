@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>9.4–9.7 Catch-Up — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/7-9-catchup/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — 9.4–9.7 Catch-Up — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="9.4–9.7 Catch-Up — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — 9.4–9.7 Catch-Up — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/7-9-catchup/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.7</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">9.4–9.7 Catch-Up</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Rational Numbers on the Number Line</span><span class="ws-bankword">Rational number</span><span class="ws-bankword">Ordered Pairs in All Four Quadrants</span><span class="ws-bankword">Quadrant</span><span class="ws-bankword">Distance on the Coordinate Plane</span><span class="ws-bankword">Distance</span><span class="ws-bankword">Reflect Points Across Axes</span><span class="ws-bankword">Reflection</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Problem:</b> Plot -3/4 on the number line</li><li><b>Student thinking:</b> -3/4 has a 3 and a 4, so I go to -3 on the number line and then count 4 more to the left</li><li><b>Student answer:</b> Point plotted at -7</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Which point is located between -1 and -2 on the number line?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-0.5</li><li class="ws-opt"><span class="ws-bub">B</span>-1.5</li><li class="ws-opt"><span class="ws-bub">C</span>-2.5</li><li class="ws-opt"><span class="ws-bub">D</span>1.5</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Which fraction is equivalent to 0.25?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>1/4</li><li class="ws-opt"><span class="ws-bub">B</span>1/2</li><li class="ws-opt"><span class="ws-bub">C</span>2/5</li><li class="ws-opt"><span class="ws-bub">D</span>1/3</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) In which quadrant is the point (-4, 5)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Quadrant I</li><li class="ws-opt"><span class="ws-bub">B</span>Quadrant II</li><li class="ws-opt"><span class="ws-bub">C</span>Quadrant III</li><li class="ws-opt"><span class="ws-bub">D</span>Quadrant IV</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) A point has a positive x-coordinate and a negative y-coordinate. Which quadrant is it in?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Quadrant I</li><li class="ws-opt"><span class="ws-bub">B</span>Quadrant II</li><li class="ws-opt"><span class="ws-bub">C</span>Quadrant III</li><li class="ws-opt"><span class="ws-bub">D</span>Quadrant IV</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.7</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">9.4–9.7 Catch-Up</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Rational Numbers on the Number Line</span><span class="ws-bankword">Rational number</span><span class="ws-bankword">Ordered Pairs in All Four Quadrants</span><span class="ws-bankword">Quadrant</span><span class="ws-bankword">Distance on the Coordinate Plane</span><span class="ws-bankword">Distance</span><span class="ws-bankword">Reflect Points Across Axes</span><span class="ws-bankword">Reflection</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Problem:</b> Plot -3/4 on the number line</li><li><b>Student thinking:</b> -3/4 has a 3 and a 4, so I go to -3 on the number line and then count 4 more to the left</li><li><b>Student answer:</b> Point plotted at -7</li></ol>
+  </section>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Which point is located between -1 and -2 on the number line?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-0.5</li><li class="ws-opt"><span class="ws-bub">B</span>-1.5</li><li class="ws-opt"><span class="ws-bub">C</span>-2.5</li><li class="ws-opt"><span class="ws-bub">D</span>1.5</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Which fraction is equivalent to 0.25?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>1/4</li><li class="ws-opt"><span class="ws-bub">B</span>1/2</li><li class="ws-opt"><span class="ws-bub">C</span>2/5</li><li class="ws-opt"><span class="ws-bub">D</span>1/3</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) In which quadrant is the point (-4, 5)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Quadrant I</li><li class="ws-opt"><span class="ws-bub">B</span>Quadrant II</li><li class="ws-opt"><span class="ws-bub">C</span>Quadrant III</li><li class="ws-opt"><span class="ws-bub">D</span>Quadrant IV</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) A point has a positive x-coordinate and a negative y-coordinate. Which quadrant is it in?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Quadrant I</li><li class="ws-opt"><span class="ws-bub">B</span>Quadrant II</li><li class="ws-opt"><span class="ws-bub">C</span>Quadrant III</li><li class="ws-opt"><span class="ws-bub">D</span>Quadrant IV</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.6) What is the distance between (-4, 3) and (2, 3)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2 units</li><li class="ws-opt"><span class="ws-bub">B</span>4 units</li><li class="ws-opt"><span class="ws-bub">C</span>6 units</li><li class="ws-opt"><span class="ws-bub">D</span>8 units</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.6) What is the distance between (5, -2) and (5, 4)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2 units</li><li class="ws-opt"><span class="ws-bub">B</span>4 units</li><li class="ws-opt"><span class="ws-bub">C</span>6 units</li><li class="ws-opt"><span class="ws-bub">D</span>10 units</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">7</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.7) What is the reflection of (4, -3) over the x-axis?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>(-4, -3)</li><li class="ws-opt"><span class="ws-bub">B</span>(4, 3)</li><li class="ws-opt"><span class="ws-bub">C</span>(-4, 3)</li><li class="ws-opt"><span class="ws-bub">D</span>(3, -4)</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">8</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.7) What is the reflection of (-2, 6) over the y-axis?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>(2, 6)</li><li class="ws-opt"><span class="ws-bub">B</span>(-2, -6)</li><li class="ws-opt"><span class="ws-bub">C</span>(2, -6)</li><li class="ws-opt"><span class="ws-bub">D</span>(6, -2)</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.7</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">9.4–9.7 Catch-Up</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Which rational number is closest to 0 on the number line?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-1/4</li><li class="ws-opt"><span class="ws-bub">B</span>0.5</li><li class="ws-opt"><span class="ws-bub">C</span>-2</li><li class="ws-opt"><span class="ws-bub">D</span>1.75</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Spot the Mistake: Plotting -2.25</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Plot -2.25 on the number line.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">It is negative, so I go past -2. The .25 is one quarter, so I count toward 0 (to the right) by a quarter unit and land between -2 and -1.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">Point plotted at -1.75, between -2 and -1.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) Point A is at (-5, 3). If you move 8 units to the right, what are the new coordinates?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>(3, 3)</li><li class="ws-opt"><span class="ws-bub">B</span>(-13, 3)</li><li class="ws-opt"><span class="ws-bub">C</span>(-5, 11)</li><li class="ws-opt"><span class="ws-bub">D</span>(-5, -5)</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Name the quadrant for the point (6, -1).</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">I'll read the coordinates as (y, x), so I treat this like (-1, 6): the first number -1 is negative (left) and the second number 6 is positive (up).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">(6, -1) is in Quadrant II.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.6) Two points are at (-3, -7) and (-3, 5). What is the distance between them?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12 units</li><li class="ws-opt"><span class="ws-bub">B</span>2 units</li><li class="ws-opt"><span class="ws-bub">C</span>7 units</li><li class="ws-opt"><span class="ws-bub">D</span>8 units</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.6) Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Find the distance between (-5, 2) and (3, 2).</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">Both share y = 2, so subtract the x-values: 5 - 3 = 2.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">The distance is 2 units.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">7</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.7) Point A is at (-3, 5). It is reflected over the x-axis to A', then A' is reflected over the y-axis to A''. What are the coordinates of A''?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>(3, -5)</li><li class="ws-opt"><span class="ws-bub">B</span>(-3, -5)</li><li class="ws-opt"><span class="ws-bub">C</span>(3, 5)</li><li class="ws-opt"><span class="ws-bub">D</span>(-3, 5)</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">8</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.7) Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Reflect the point (-3, -8) over the x-axis.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">Both coordinates are negative, so I will flip the x-coordinate: -3 becomes 3. The answer is (3, -8).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">Folding over the horizontal x-axis should send the point up across the axis, but this answer kept it below the axis.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.7</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">9.4–9.7 Catch-Up</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Find the Plotting Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Plot -3/4 on the number line</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">-3/4 has a 3 and a 4, so I go to -3 on the number line and then count 4 more to the left</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">Point plotted at -7</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) Find the Quadrant Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Identify the quadrant for (-3, -5)</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">The x is -3, so I go left 3. The y is -5, so I go up 5.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">(-3, -5) is in Quadrant II</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.6) Find the Distance Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Find the distance between (-3, 4) and (5, 4)</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">Subtract: 5 - 3 = 2</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">The distance is 2 units</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.7) Find the Reflection Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Reflect (-3, 5) over the y-axis</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">The y-axis is vertical, so I change the y-coordinate</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">(-3, -5)</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.7</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">9.4–9.7 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Which point is located between -1 and -2 on the number line?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-0.5</li><li class="ws-opt ws-correct"><span class="ws-bub">B</span>-1.5</li><li class="ws-opt"><span class="ws-bub">C</span>-2.5</li><li class="ws-opt"><span class="ws-bub">D</span>1.5</li></ol><p class="ws-keynote">-1.5 is between -1 and -2 because it is 0.5 units to the left of -1 (or 0.5 units to the right of -2).</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Which fraction is equivalent to 0.25?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>1/4</li><li class="ws-opt"><span class="ws-bub">B</span>1/2</li><li class="ws-opt"><span class="ws-bub">C</span>2/5</li><li class="ws-opt"><span class="ws-bub">D</span>1/3</li></ol><p class="ws-keynote">0.25 means 25 hundredths = 25/100 = 1/4.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) In which quadrant is the point (-4, 5)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Quadrant I</li><li class="ws-opt ws-correct"><span class="ws-bub">B</span>Quadrant II</li><li class="ws-opt"><span class="ws-bub">C</span>Quadrant III</li><li class="ws-opt"><span class="ws-bub">D</span>Quadrant IV</li></ol><p class="ws-keynote">The x-coordinate is negative (left) and the y-coordinate is positive (up). Left and up is Quadrant II.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) A point has a positive x-coordinate and a negative y-coordinate. Which quadrant is it in?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Quadrant I</li><li class="ws-opt"><span class="ws-bub">B</span>Quadrant II</li><li class="ws-opt"><span class="ws-bub">C</span>Quadrant III</li><li class="ws-opt ws-correct"><span class="ws-bub">D</span>Quadrant IV</li></ol><p class="ws-keynote">Positive x (right) and negative y (down) = Quadrant IV (bottom-right).</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.7</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">9.4–9.7 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Which point is located between -1 and -2 on the number line?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-0.5</li><li class="ws-opt ws-correct"><span class="ws-bub">B</span>-1.5</li><li class="ws-opt"><span class="ws-bub">C</span>-2.5</li><li class="ws-opt"><span class="ws-bub">D</span>1.5</li></ol><p class="ws-keynote">-1.5 is between -1 and -2 because it is 0.5 units to the left of -1 (or 0.5 units to the right of -2).</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Which fraction is equivalent to 0.25?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>1/4</li><li class="ws-opt"><span class="ws-bub">B</span>1/2</li><li class="ws-opt"><span class="ws-bub">C</span>2/5</li><li class="ws-opt"><span class="ws-bub">D</span>1/3</li></ol><p class="ws-keynote">0.25 means 25 hundredths = 25/100 = 1/4.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) In which quadrant is the point (-4, 5)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Quadrant I</li><li class="ws-opt ws-correct"><span class="ws-bub">B</span>Quadrant II</li><li class="ws-opt"><span class="ws-bub">C</span>Quadrant III</li><li class="ws-opt"><span class="ws-bub">D</span>Quadrant IV</li></ol><p class="ws-keynote">The x-coordinate is negative (left) and the y-coordinate is positive (up). Left and up is Quadrant II.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) A point has a positive x-coordinate and a negative y-coordinate. Which quadrant is it in?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Quadrant I</li><li class="ws-opt"><span class="ws-bub">B</span>Quadrant II</li><li class="ws-opt"><span class="ws-bub">C</span>Quadrant III</li><li class="ws-opt ws-correct"><span class="ws-bub">D</span>Quadrant IV</li></ol><p class="ws-keynote">Positive x (right) and negative y (down) = Quadrant IV (bottom-right).</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.6) What is the distance between (-4, 3) and (2, 3)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2 units</li><li class="ws-opt"><span class="ws-bub">B</span>4 units</li><li class="ws-opt ws-correct"><span class="ws-bub">C</span>6 units</li><li class="ws-opt"><span class="ws-bub">D</span>8 units</li></ol><p class="ws-keynote">Both points have y = 3, so this is a horizontal distance. |2 - (-4)| = |2 + 4| = 6 units.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.6) What is the distance between (5, -2) and (5, 4)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2 units</li><li class="ws-opt"><span class="ws-bub">B</span>4 units</li><li class="ws-opt ws-correct"><span class="ws-bub">C</span>6 units</li><li class="ws-opt"><span class="ws-bub">D</span>10 units</li></ol><p class="ws-keynote">Both points have x = 5, so this is a vertical distance. |4 - (-2)| = |4 + 2| = 6 units.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">7</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.7) What is the reflection of (4, -3) over the x-axis?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>(-4, -3)</li><li class="ws-opt ws-correct"><span class="ws-bub">B</span>(4, 3)</li><li class="ws-opt"><span class="ws-bub">C</span>(-4, 3)</li><li class="ws-opt"><span class="ws-bub">D</span>(3, -4)</li></ol><p class="ws-keynote">Reflecting over the x-axis changes the sign of the y-coordinate. The x stays the same (4), and the y changes from -3 to 3. The answer is (4, 3).</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">8</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.7) What is the reflection of (-2, 6) over the y-axis?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>(2, 6)</li><li class="ws-opt"><span class="ws-bub">B</span>(-2, -6)</li><li class="ws-opt"><span class="ws-bub">C</span>(2, -6)</li><li class="ws-opt"><span class="ws-bub">D</span>(6, -2)</li></ol><p class="ws-keynote">Reflecting over the y-axis changes the sign of the x-coordinate. x goes from -2 to 2, and y stays 6. The answer is (2, 6).</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.7</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">9.4–9.7 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Which rational number is closest to 0 on the number line?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>-1/4</li><li class="ws-opt"><span class="ws-bub">B</span>0.5</li><li class="ws-opt"><span class="ws-bub">C</span>-2</li><li class="ws-opt"><span class="ws-bub">D</span>1.75</li></ol><p class="ws-keynote">|-1/4| = 0.25, |0.5| = 0.5, |-2| = 2, |1.75| = 1.75. Since 0.25 is the smallest absolute value, -1/4 is closest to zero.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Spot the Mistake: Plotting -2.25</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Plot -2.25 on the number line.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">It is negative, so I go past -2. The .25 is one quarter, so I count toward 0 (to the right) by a quarter unit and land between -2 and -1.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">Point plotted at -1.75, between -2 and -1.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Going more negative means moving LEFT, not right. -2.25 is between -2 and -3 (it is a quarter of a unit to the LEFT of -2), not between -2 and -1. I split the space from -2 to -3 into 4 equal parts and place the dot at the first mark past -2, at -2.25. The &quot;Student thinking&quot; step moves right from −2, back toward zero, which makes the number less negative instead of more. The extra .25 has to be added to the negative direction, so −2.25 sits a quarter of a unit to the left of −2, between −2 and −3. Splitting that space into 4 equal parts and marking the first one past −2 puts the dot in the right place.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) Point A is at (-5, 3). If you move 8 units to the right, what are the new coordinates?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>(3, 3)</li><li class="ws-opt"><span class="ws-bub">B</span>(-13, 3)</li><li class="ws-opt"><span class="ws-bub">C</span>(-5, 11)</li><li class="ws-opt"><span class="ws-bub">D</span>(-5, -5)</li></ol><p class="ws-keynote">Moving right means adding to the x-coordinate: -5 + 8 = 3. The y stays the same. New point: (3, 3).</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Name the quadrant for the point (6, -1).</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">I'll read the coordinates as (y, x), so I treat this like (-1, 6): the first number -1 is negative (left) and the second number 6 is positive (up).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">(6, -1) is in Quadrant II.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: The order was reversed. In an ordered pair (x, y), x ALWAYS comes first. Here x = 6 (positive → right) and y = -1 (negative → down). Right and down is Quadrant IV, not Quadrant II. An ordered pair is always (x, y), so the first number is the horizontal move and the order cannot be swapped. Here x = 6 sends you right and y = -1 sends you down, which is the bottom-right region — Quadrant IV. Reading it as (-1, 6) described a completely different point.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.6) Two points are at (-3, -7) and (-3, 5). What is the distance between them?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12 units</li><li class="ws-opt"><span class="ws-bub">B</span>2 units</li><li class="ws-opt"><span class="ws-bub">C</span>7 units</li><li class="ws-opt"><span class="ws-bub">D</span>8 units</li></ol><p class="ws-keynote">Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.6) Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Find the distance between (-5, 2) and (3, 2).</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">Both share y = 2, so subtract the x-values: 5 - 3 = 2.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">The distance is 2 units.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: The student dropped the negative sign and used 5 instead of -5. The point is at x = -5, so the two points sit on opposite sides of zero. Add the absolute values: |-5| + |3| = 5 + 3 = 8 units. (You can also write |3 - (-5)| = |3 + 5| = 8.) The correct distance is 8 units, not 2. The student-thinking step dropped the negative sign and treated -5 as 5. Because the points really sit on opposite sides of the y-axis, the distance is |-5| + |3| = 8 units, which matches |3 - (-5)| = |3 + 5| = 8.</p></div></li><li class="ws-problem"><span class="ws-pnum">7</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.7) Point A is at (-3, 5). It is reflected over the x-axis to A', then A' is reflected over the y-axis to A''. What are the coordinates of A''?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>(3, -5)</li><li class="ws-opt"><span class="ws-bub">B</span>(-3, -5)</li><li class="ws-opt"><span class="ws-bub">C</span>(3, 5)</li><li class="ws-opt"><span class="ws-bub">D</span>(-3, 5)</li></ol><p class="ws-keynote">Over x-axis: (-3, 5) → (-3, -5). Then over y-axis: (-3, -5) → (3, -5). Both coordinates changed sign.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Reflect Points Across Axes is flipping the sign of the wrong coordinate — changing the x-coordinate when reflecting over the x-axis, instead of the y-coordinate (or vice versa for the y-axis). For example, to reflect (3, -5) over the x-axis, a student might flip the x-coordinate and write (-3, -5), but reflecting over the x-axis only changes the sign of the y-coordinate: (3, -5) becomes (3, 5). Before you submit, ask: 'Did I flip the sign of the coordinate that matches the axis I'm reflecting over — y for the x-axis, x for the y-axis?'</p></div></li><li class="ws-problem"><span class="ws-pnum">8</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.7) Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Reflect the point (-3, -8) over the x-axis.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">Both coordinates are negative, so I will flip the x-coordinate: -3 becomes 3. The answer is (3, -8).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">Folding over the horizontal x-axis should send the point up across the axis, but this answer kept it below the axis.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Reflecting over the x-axis changes the y-coordinate, not the x-coordinate. The rule is (x, y) -&gt; (x, -y). For (-3, -8), keep x as -3 and flip y: -8 becomes 8. The correct reflection is (-3, 8), not (3, -8). The negative signs do not change which coordinate flips — the axis does. The Attempt step flips the x-coordinate because both numbers are negative, but the signs of the coordinates never decide which one flips — the axis does. Over the x-axis the rule is (x, y) → (x, -y), so (-3, -8) reflects to (-3, 8), moving up across the horizontal axis.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.7</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">9.4–9.7 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.4) Find the Plotting Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Plot -3/4 on the number line</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">-3/4 has a 3 and a 4, so I go to -3 on the number line and then count 4 more to the left</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">Point plotted at -7</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: -3/4 means negative three-fourths, which is 3/4 of the way from 0 toward -1. It should be plotted between 0 and -1, not at -7. The student treated the numerator and denominator as separate whole numbers. The &quot;Student thinking&quot; step splits −3/4 into the whole numbers 3 and 4 instead of reading it as one value. The bar in a fraction means division, so −3/4 is three fourths of a single unit taken in the negative direction: it belongs between 0 and −1, three quarters of the way to −1. A fraction whose numerator is smaller than its denominator can never reach even one whole unit, let alone −7.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.5) Find the Quadrant Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Identify the quadrant for (-3, -5)</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">The x is -3, so I go left 3. The y is -5, so I go up 5.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">(-3, -5) is in Quadrant II</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: A negative y-coordinate means DOWN, not up. Go left 3 and DOWN 5. The point (-3, -5) is in Quadrant III (both negative), not Quadrant II. A negative y-coordinate means down, not up. From the origin you go left 3 and DOWN 5, landing in the bottom-left region. Both coordinates are negative, and (-, -) is Quadrant III, not Quadrant II.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.6) Find the Distance Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Find the distance between (-3, 4) and (5, 4)</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">Subtract: 5 - 3 = 2</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">The distance is 2 units</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: The student subtracted 5 - 3, but the first x-coordinate is -3, not 3. The correct calculation is |5 - (-3)| = |5 + 3| = 8 units. When points span opposite sides of an axis, you must add the absolute values: |-3| + |5| = 3 + 5 = 8. The subtraction step used 3 in place of -3, so the negative sign disappeared. Keeping it gives |5 - (-3)| = |5 + 3| = 8 units, which is the same as adding the absolute values |-3| + |5| = 3 + 5 = 8 because the points straddle the y-axis.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 9.7) Find the Reflection Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Reflect (-3, 5) over the y-axis</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">The y-axis is vertical, so I change the y-coordinate</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">(-3, -5)</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Reflecting over the y-axis changes the x-coordinate, not the y-coordinate. The correct reflection of (-3, 5) over the y-axis is (3, 5). The student confused which coordinate changes for each axis. The student's thinking step says the vertical y-axis changes the y-coordinate, but the axis name tells you which coordinate stays the same. Over the y-axis the rule is (x, y) → (-x, y), so (-3, 5) reflects to (3, 5), not (-3, -5).</p></div></li></ol>
+  </section>
+</main>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  
+  <!-- mwb-injected:end -->
+</body>
+</html>

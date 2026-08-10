@@ -174,16 +174,16 @@ export const ASSETS = Object.freeze({
     {
       title: "4-1 Rates and Unit Rates",
       titleEs: "4-1 Tasas y tasas unitarias",
-      path: "/lessons/4-1/",
+      path: "/lessons/3-2/",
     },
     {
       title: "4-7 Solve Problems with Unit Rates",
       titleEs: "4-7 Resolver problemas con tasas unitarias",
-      path: "/lessons/4-7/",
+      path: "/lessons/3-8/",
     },
   ],
   "6.AT.3": [
-    { title: "3-4 Equivalent Ratios", titleEs: "3-4 Razones equivalentes", path: "/lessons/3-4/" },
+    { title: "3-4 Equivalent Ratios", titleEs: "3-4 Razones equivalentes", path: "/lessons/3-9/" },
     {
       title: "3-7 Ratio and Rate Problem Solving",
       titleEs: "3-7 Resolver problemas de razones y tasas",
@@ -206,7 +206,7 @@ export const ASSETS = Object.freeze({
     {
       title: "6-1 Powers and Exponents",
       titleEs: "6-1 Potencias y exponentes",
-      path: "/lessons/6-1/",
+      path: "/lessons/6-3/",
     },
     {
       title: "Unit 6 Culminating Projects",
@@ -218,31 +218,31 @@ export const ASSETS = Object.freeze({
     {
       title: "6-3 Write Algebraic Expressions",
       titleEs: "6-3 Escribir expresiones algebraicas",
-      path: "/lessons/6-3/",
+      path: "/lessons/6-5/",
     },
     {
       title: "6-3 Get Ready: Write Algebraic Expressions",
       titleEs: "6-3 Prepárese: Escribir expresiones algebraicas",
-      path: "/lessons/6-3/readiness/",
+      path: "/lessons/6-5/readiness/",
     },
   ],
   "6.AT.6c": [
     {
       title: "6-2 Evaluate Expressions",
       titleEs: "6-2 Evaluar expresiones",
-      path: "/lessons/6-2/",
+      path: "/lessons/6-4/",
     },
     {
       title: "6-2 Get Ready: Evaluate Expressions",
       titleEs: "6-2 Prepárese: Evaluar expresiones",
-      path: "/lessons/6-2/readiness/",
+      path: "/lessons/6-4/readiness/",
     },
   ],
   "6.DS.4": [
     {
       title: "8-2 Mean, Median, and Mode",
       titleEs: "8-2 Media, mediana y moda",
-      path: "/lessons/8-2/",
+      path: "/lessons/2-3/",
     },
     {
       title: "Unit 8 Culminating Projects",
@@ -254,19 +254,19 @@ export const ASSETS = Object.freeze({
     {
       title: "10-3 Surface Area Using Nets",
       titleEs: "10-3 Área total con plantillas",
-      path: "/lessons/10-3/",
+      path: "/lessons/5-6/",
     },
     {
       title: "10-4 Surface Area of Prisms",
       titleEs: "10-4 Área total de prismas",
-      path: "/lessons/10-4/",
+      path: "/lessons/5-7/",
     },
   ],
   "6.GR.2": [
     {
       title: "10-1 Volume with Whole Number Edges",
       titleEs: "10-1 Volumen con aristas de números enteros",
-      path: "/lessons/10-1/",
+      path: "/lessons/5-5/",
     },
   ],
   "6.AT.7": [
@@ -280,48 +280,48 @@ export const ASSETS = Object.freeze({
     {
       title: "5-3 Area of Triangles",
       titleEs: "5-3 Área de los triángulos",
-      path: "/lessons/5-3/",
+      path: "/lessons/5-2/",
     },
     {
       title: "5-5 Area of Composite Figures",
       titleEs: "5-5 Área de figuras compuestas",
-      path: "/lessons/5-5/",
+      path: "/lessons/5-4/",
     },
   ],
   "6.NOS.1": [
-    { title: "2-3 Divide Fractions", titleEs: "2-3 Dividir fracciones", path: "/lessons/2-3/" },
+    { title: "2-3 Divide Fractions", titleEs: "2-3 Dividir fracciones", path: "/lessons/6-2/" },
     {
       title: "2-5 Fraction Division Problem Solving",
       titleEs: "2-5 Resolver problemas de división de fracciones",
-      path: "/lessons/2-5/",
+      path: "/lessons/6-11/",
     },
   ],
   "6.NOS.2": [
     {
       title: "1-4 Divide Multi-Digit Numbers",
       titleEs: "1-4 Dividir números de varios dígitos",
-      path: "/lessons/1-4/",
+      path: "/lessons/2-6/",
     },
     {
       title: "1-4 Get Ready: Divide Multi-Digit Numbers",
       titleEs: "1-4 Prepárese: Dividir números de varios dígitos",
-      path: "/lessons/1-4/readiness/",
+      path: "/lessons/2-6/readiness/",
     },
   ],
   "6.NOS.3": [
-    { title: "1-6 Multiply Decimals", titleEs: "1-6 Multiplicar decimales", path: "/lessons/1-6/" },
-    { title: "1-7 Divide Decimals", titleEs: "1-7 Dividir decimales", path: "/lessons/1-7/" },
+    { title: "1-6 Multiply Decimals", titleEs: "1-6 Multiplicar decimales", path: "/lessons/2-12/" },
+    { title: "1-7 Divide Decimals", titleEs: "1-7 Dividir decimales", path: "/lessons/2-7/" },
   ],
   "6.NOS.4": [
     {
       title: "1-2 Greatest Common Factor",
       titleEs: "1-2 Máximo común divisor",
-      path: "/lessons/1-2/",
+      path: "/lessons/6-7/",
     },
     {
       title: "1-3 Least Common Multiple",
       titleEs: "1-3 Mínimo común múltiplo",
-      path: "/lessons/1-3/",
+      path: "/lessons/6-12/",
     },
   ],
   // 6.NOS.5 / 6.NOS.6c carry no assets of their own in the concept map, so the
@@ -330,19 +330,19 @@ export const ASSETS = Object.freeze({
     {
       title: "9-4 Rational Numbers on the Number Line",
       titleEs: "9-4 Números racionales en la recta numérica",
-      path: "/lessons/9-4/",
+      path: "/lessons/7-2/",
     },
   ],
   "6.NOS.6c": [
     {
       title: "9-4 Rational Numbers on the Number Line",
       titleEs: "9-4 Números racionales en la recta numérica",
-      path: "/lessons/9-4/",
+      path: "/lessons/7-2/",
     },
     {
       title: "9-5 Ordered Pairs in All Four Quadrants",
       titleEs: "9-5 Pares ordenados en los cuatro cuadrantes",
-      path: "/lessons/9-5/",
+      path: "/lessons/7-8/",
     },
   ],
 });

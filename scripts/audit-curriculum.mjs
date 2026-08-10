@@ -97,7 +97,7 @@ function readJson(rel) {
 }
 
 /**
- * Resolve a site path ("/lessons/2-4/", "./downloads/x.pdf") to an absolute
+ * Resolve a site path ("/lessons/6-10/", "./downloads/x.pdf") to an absolute
  * disk path. fromFile is the HTML file the link lives in (for relative links).
  * Returns { abs, kind } or null if the link type is external/unresolvable.
  */

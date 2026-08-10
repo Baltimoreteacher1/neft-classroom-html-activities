@@ -130,7 +130,7 @@
     }
   }
 
-  /** "/lessons/1-1/" -> "1-1", the manifest key. */
+  /** "/lessons/6-13/" -> "1-1", the manifest key. */
   function lessonIdFromHref(href) {
     var m = /\/lessons\/([^/?#]+)/.exec(href || "");
     return m ? m[1] : "";

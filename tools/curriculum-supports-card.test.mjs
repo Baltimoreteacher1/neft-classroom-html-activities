@@ -39,8 +39,8 @@ const HUB = `<!doctype html><html><body>
     <nav class="curriculum-guide__actions"><a href="#interactive-hub">Explore by unit</a></nav>
   </header>
   <main>
-    <a href="/lessons/1-1/">Ratios and Rates</a>
-    <a href="/lessons/3-2/">Dividing Fractions</a>
+    <a href="/lessons/6-13/">Ratios and Rates</a>
+    <a href="/lessons/3-3/">Dividing Fractions</a>
   </main>
 </body></html>`;
 

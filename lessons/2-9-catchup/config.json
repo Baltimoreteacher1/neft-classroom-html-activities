@@ -1,0 +1,1556 @@
+{
+  "lessonId": "2-9-catchup",
+  "standard": "6.DS.6c",
+  "unit": 2,
+  "projects": [
+    {
+      "emoji": "🏆",
+      "title": "Unit 8 Project — Statistics in Action",
+      "desc": "Capstone: describe how your data varies using measures of spread like MAD.",
+      "href": "/math/statistics/projects/"
+    },
+    {
+      "emoji": "📈",
+      "title": "Data Studio Master",
+      "desc": "Analytics studio that computes spread and mean absolute deviation (MAD) for your data (6.DS.6c).",
+      "href": "/neft-data-studio/"
+    },
+    {
+      "emoji": "🕵️",
+      "title": "Distribution Detective",
+      "desc": "Investigate how data spreads out around the center.",
+      "href": "/math/statistics/distribution-detective/"
+    }
+  ],
+  "lesson": 9,
+  "title": "8.1–8.3 Catch-Up",
+  "theme": "sports-analytics",
+  "themeEmoji": "🧭",
+  "contentObjective": "I can show I am caught up on Lessons 8.1–8.3 by using each lesson's big idea in mixed practice.",
+  "languageObjective": "I can explain which lesson's big idea I used and how, using key vocabulary from Lessons 8.1–8.3.",
+  "revealWordProblem": {
+    "title": "Apply: Water Parks",
+    "text": "Andrew and his friends want to visit a waterpark, but Andrew must take his younger sister who is 8 years old and can only ride waterslides that are less than 100 feet high. Which waterpark should they visit? Include the heights of the slides at the two parks in your recommendation.",
+    "image": "/lessons/2-9/reveal-assets/word-problem.png",
+    "sampleAnswer": "Splash Lagoon's slides are 135 ft, 105 ft, 100 ft, 80 ft, and 75 ft. Only 80 ft and 75 ft are less than 100 ft, so 2 of its 5 slides work for Andrew's sister. Wild Bay Waterpark's slides are 128 ft, 120 ft, 108 ft, and 68 ft. Only 68 ft is less than 100 ft, so just 1 of its 4 slides works for her. Since Splash Lagoon has more slides Andrew's sister is allowed to ride (2 versus 1), Andrew and his friends should visit Splash Lagoon."
+  },
+  "vocabMode": "matching",
+  "vocabulary": [
+    {
+      "term": "Statistical Questions and Data",
+      "termEs": "Preguntas estadísticas y datos",
+      "definition": "A statistical question expects varied answers that can be collected as data.",
+      "definitionEs": "Una pregunta estadística espera respuestas variadas que se pueden recopilar como datos.",
+      "visual": "How many minutes do students in our class read each night?",
+      "image": "/assets/vocab-images/concept-statistical-questions-and-data.svg"
+    },
+    {
+      "term": "Statistical Question",
+      "termEs": "Pregunta estadística",
+      "definition": "A question where the answers will be different for different people.",
+      "definitionEs": "Una pregunta cuyas respuestas serán distintas para distintas personas.",
+      "visual": "\"How tall are the players on the team?\" → answers vary: 60 in, 63 in, 58 in, 65 in",
+      "cloze": "A question that expects a variety of answers and is answered by collecting data is a ___.",
+      "examples": [
+        {
+          "text": "How tall are the students in my class?",
+          "isExample": true,
+          "why": "The answers vary, so data must be collected."
+        },
+        {
+          "text": "How tall am I?",
+          "isExample": false,
+          "why": "It has one fixed answer, so it is not statistical."
+        }
+      ]
+    },
+    {
+      "term": "Mean, Median, and Mode",
+      "termEs": "Media, mediana y moda",
+      "definition": "Measures that describe a data set's center: average, middle value, and most frequent value.",
+      "definitionEs": "Medidas que describen el centro de un conjunto de datos: promedio, valor central y valor más frecuente.",
+      "visual": "For 2, 3, 3, 8: mean = 4, median = 3, mode = 3.",
+      "image": "/assets/vocab-images/concept-mean-median-and-mode.svg"
+    },
+    {
+      "term": "Mean",
+      "termEs": "Media",
+      "definition": "The average. Add all the numbers, then divide by how many there are.",
+      "definitionEs": "El promedio. Suma todos los números y divide entre cuántos hay.",
+      "visual": "Mean of 2, 4, 6: add them (2+4+6=12), divide by 3 → mean = 4",
+      "cloze": "The average found by adding all values and dividing by how many there are is the ___."
+    },
+    {
+      "term": "Mean Absolute Deviation",
+      "termEs": "Desviación media absoluta",
+      "definition": "The average distance of data values from the mean; it describes spread.",
+      "definitionEs": "La distancia promedio de los valores de datos respecto a la media; describe la dispersión.",
+      "visual": "MAD = sum of absolute distances from the mean ÷ number of values.",
+      "cloze": "The average distance of each value from the mean is the ___."
+    },
+    {
+      "term": "Deviation",
+      "termEs": "Desviación",
+      "definition": "How far a number is from the mean.",
+      "definitionEs": "Qué tan lejos está un número de la media.",
+      "visual": "If mean = 20 and value = 17, deviation = 17 − 20 = −3 (3 below the mean)",
+      "cloze": "How far a single value is from the mean is its ___."
+    },
+    {
+      "term": "Non-statistical Question",
+      "termEs": "Pregunta no estadística",
+      "definition": "A question that has just one fixed answer that is the same no matter who you ask, so there is no data to collect.",
+      "definitionEs": "Una pregunta que tiene una sola respuesta fija, igual sin importar a quién le preguntes, por lo que no hay datos que recolectar.",
+      "visual": "\"How tall am I?\" → one answer: 60 in. Everyone who measures gets the same number.",
+      "cloze": "A question that has one fixed answer and does not need data collection is a ___.",
+      "examples": [
+        {
+          "text": "How many days are in a week?",
+          "isExample": true,
+          "why": "The answer is always 7 — it never varies, so there is no data to collect."
+        },
+        {
+          "text": "How tall are the students in my class?",
+          "isExample": false,
+          "why": "Different students have different heights, so the answers vary — that makes it statistical."
+        }
+      ],
+      "image": "/assets/vocab-images/concept-non-statistical-question.svg"
+    },
+    {
+      "term": "Median",
+      "termEs": "Mediana",
+      "definition": "The middle number when you put them in order.",
+      "definitionEs": "El número del medio cuando los pones en orden.",
+      "visual": "Data: 1, 3, 5, 7, 9 → the middle (3rd) value is 5, so median = 5",
+      "cloze": "The middle value of a data set when the numbers are in order is the ___."
+    }
+  ],
+  "launch": {
+    "badge": "Catch-Up Station",
+    "narrative": "Missed a lesson — or just want a refresher? This catch-up station reviews Lessons 8.1–8.3: 8.1 Statistical Questions and Data, 8.2 Mean, Median, and Mode, 8.3 Mean Absolute Deviation. Read the Big Ideas, warm up with the review problem, then prove you're caught up in the mixed practice.",
+    "conceptIntro": {
+      "heading": "The Big Ideas — Lessons 8.1–8.3",
+      "intro": "Here is the one thing to remember from each lesson, plus a quick guided example. If one of these feels shaky, that lesson is right above this one in the menu — you can open it any time.",
+      "keyIdea": "8.1: If you expect the answers to vary, it is a statistical question. • 8.2: Mean = add then divide, median = the middle of the ordered numbers, mode = the value that shows up most. • 8.3: MAD = the average of how far each number is from the mean (always a positive distance).",
+      "iDo": {
+        "title": "The Big Ideas (one per lesson)",
+        "lines": [
+          "Lesson 8.1 — Statistical Questions and Data: If you expect the answers to vary, it is a statistical question.",
+          "Lesson 8.2 — Mean, Median, and Mode: Mean = add then divide, median = the middle of the ordered numbers, mode = the value that shows up most.",
+          "Lesson 8.3 — Mean Absolute Deviation: MAD = the average of how far each number is from the mean (always a positive distance)."
+        ]
+      },
+      "weDo": {
+        "title": "Quick guided checks — one from each lesson",
+        "lines": [
+          "From 8.1: New question: \"How many pets does each student in our class have?\" Will every student give the same answer, or different answers?",
+          "From 8.2: New data set, in order: 3, 7, 7, 10, 13. First, what is the mean? Add all five, then divide by 5.",
+          "From 8.3: New data set: 9, 10, 11. First, what is the mean? Add the three numbers and divide by 3."
+        ]
+      },
+      "youDo": {
+        "title": "Show you're caught up",
+        "lines": [
+          "The practice below mixes problems from Lessons 8.1–8.3. Each problem is tagged with its lesson number.",
+          "Stuck on one lesson's problems? Open that lesson from the curriculum menu for the full re-teach."
+        ]
+      }
+    }
+  },
+  "explore": {
+    "diagram": {
+      "kind": "stat-towers",
+      "mode": "spread",
+      "values": [
+        9,
+        11,
+        10,
+        12,
+        8
+      ],
+      "unit": "points"
+    },
+    "type": "fill-table",
+    "label": "Calculate the Mean Absolute Deviation (MAD) for Player A's scores: 18, 22, 20, 24, 16. Follow each step.",
+    "headers": [
+      "Score",
+      "Deviation (Score − Mean)",
+      "Absolute Deviation"
+    ],
+    "rows": [
+      [
+        "18",
+        "",
+        ""
+      ],
+      [
+        "22",
+        "",
+        ""
+      ],
+      [
+        "20",
+        "",
+        ""
+      ],
+      [
+        "24",
+        "",
+        ""
+      ],
+      [
+        "16",
+        "",
+        ""
+      ]
+    ],
+    "editableCells": [
+      {
+        "row": 0,
+        "col": 1,
+        "answer": "-2"
+      },
+      {
+        "row": 0,
+        "col": 2,
+        "answer": "2"
+      },
+      {
+        "row": 1,
+        "col": 1,
+        "answer": "2"
+      },
+      {
+        "row": 1,
+        "col": 2,
+        "answer": "2"
+      },
+      {
+        "row": 2,
+        "col": 1,
+        "answer": "0"
+      },
+      {
+        "row": 2,
+        "col": 2,
+        "answer": "0"
+      },
+      {
+        "row": 3,
+        "col": 1,
+        "answer": "4"
+      },
+      {
+        "row": 3,
+        "col": 2,
+        "answer": "4"
+      },
+      {
+        "row": 4,
+        "col": 1,
+        "answer": "-4"
+      },
+      {
+        "row": 4,
+        "col": 2,
+        "answer": "4"
+      }
+    ],
+    "summaryRow": {
+      "label": "MAD = Sum of Absolute Deviations ÷ Number of Values",
+      "answer": "2.4"
+    },
+    "discourse": {
+      "prompt": "Player A's MAD is 2.4 points. If Player B's MAD is 7.2 points, what does that tell you about their consistency?",
+      "sentenceFrame": "Player A has a ___ MAD, which means their scores are ___ to the mean. Player B has a ___ MAD, which means their scores are ___ from the mean. The more consistent player is ___ because ___.",
+      "keywords": [
+        "lower",
+        "higher",
+        "closer",
+        "farther",
+        "consistent",
+        "spread",
+        "Player A"
+      ]
+    }
+  },
+  "practice": {
+    "diagram": {
+      "kind": "stats-data-lab",
+      "focus": "spread",
+      "unit": "points",
+      "data": [
+        18,
+        22,
+        20,
+        24,
+        16
+      ],
+      "presets": [
+        {
+          "label": "Player A scores",
+          "data": [
+            18,
+            22,
+            20,
+            24,
+            16
+          ],
+          "unit": "points"
+        },
+        {
+          "label": "Tightly clustered",
+          "data": [
+            20,
+            21,
+            20,
+            19,
+            20
+          ],
+          "unit": "points"
+        }
+      ]
+    },
+    "optional": [
+      {
+        "type": "multiple-choice",
+        "stem": "(Lesson 8.1) The team analyst writes four questions for the scouting report. Which one is a statistical question?",
+        "choices": [
+          "How many rebounds does each player grab per game?",
+          "How many points is a single free throw worth?",
+          "What is the height of the basketball rim?",
+          "How many timeouts does each team get per half?"
+        ],
+        "correctIndex": 0,
+        "explanation": "\"How many rebounds does each player grab per game?\" anticipates variability — different players grab different numbers of rebounds, so you must collect data. The other three each have one fixed answer.",
+        "choiceFeedback": [
+          "",
+          "Numbers alone don't make it statistical—does this have variation across cases, or one fixed answer?",
+          "This measures one thing—would different answers come from different cases?",
+          "This follows a fixed rule for all teams—would you get different answers?"
+        ],
+        "stemEs": "El analista del equipo escribe cuatro preguntas para el informe de exploración. ¿Cuál es una pregunta estadística?",
+        "explanationEs": "«¿Cuántos rebotes atrapa cada jugador por partido?» anticipa variabilidad: distintos jugadores atrapan distintos números de rebotes, así que hay que recolectar datos. Las otras tres tienen una sola respuesta fija.",
+        "hints": [
+          "A statistical question expects the answers to vary; a non-statistical question has one fixed answer.",
+          "Read each choice and decide whether it would give you one answer or many different answers.",
+          "Check the rule-based choices first: things set by the rules of the game cannot vary, so rule those out and look at what is left."
+        ],
+        "hintsEs": [
+          "Una pregunta estadística espera que las respuestas varíen; una pregunta no estadística tiene una sola respuesta fija.",
+          "Lee cada opción y decide si te daría una sola respuesta o muchas respuestas distintas.",
+          "Revisa primero las opciones basadas en reglas: lo que fijan las reglas del juego no puede variar, así que descarta esas y mira lo que queda."
+        ],
+        "choicesEs": [
+          "¿Cuántos rebotes atrapa cada jugador por partido?",
+          "¿Cuántos puntos vale un tiro libre?",
+          "¿Cuál es la altura del aro de baloncesto?",
+          "¿Cuántos tiempos fuera tiene cada equipo por mitad?"
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "(Lesson 8.2) A player scored 4, 8, 6, 10, and 2 points across five quarters. What is the MEAN number of points?",
+        "choices": [
+          "6",
+          "8",
+          "30",
+          "10"
+        ],
+        "correctIndex": 0,
+        "explanation": "Add the points: 4 + 8 + 6 + 10 + 2 = 30. Divide by 5 quarters: 30 ÷ 5 = 6.",
+        "choiceFeedback": [
+          "",
+          "Did you divide by something other than the number of quarters?",
+          "This is the sum—does the mean equal the sum?",
+          "The highest score is 10—is that the average of all the scores?"
+        ],
+        "stemEs": "Un jugador anotó 4, 8, 6, 10 y 2 puntos en cinco cuartos. ¿Cuál es la MEDIA de puntos?",
+        "explanationEs": "Suma los puntos: 4 + 8 + 6 + 10 + 2 = 30. Divide entre 5 cuartos: 30 ÷ 5 = 6.",
+        "hints": [
+          "The mean is the amount each quarter would have if the points were shared out evenly.",
+          "Add all five scores together first, then divide by how many quarters there were.",
+          "Start the sum: 4 + 8 + 6 + 10 + 2. Once you have that total, divide it by 5."
+        ],
+        "hintsEs": [
+          "La media es la cantidad que tendría cada cuarto si los puntos se repartieran por igual.",
+          "Suma primero los cinco puntajes y luego divide entre la cantidad de cuartos.",
+          "Empieza la suma: 4 + 8 + 6 + 10 + 2. Cuando tengas ese total, divídelo entre 5."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "(Lesson 8.3) A guard scored 2, 4, 6, 8 points in four scrimmages, so the mean is 5 points. The distances from the mean are 3, 1, 1, 3. What is the mean absolute deviation (MAD)?",
+        "choices": [
+          "1",
+          "2",
+          "5",
+          "8"
+        ],
+        "correctIndex": 1,
+        "explanation": "Add the distances: 3 + 1 + 1 + 3 = 8. Divide by the 4 games: 8 ÷ 4 = 2. The MAD is 2 points.",
+        "choiceFeedback": [
+          "Check the total before you divide — all four distances go into the sum, including both of the larger ones. Then divide that full total by the number of games.",
+          "",
+          "Mean is 5, not the distances—use the distances for MAD.",
+          "Did you divide by the number of values (4)?"
+        ],
+        "stemEs": "Un base anotó 2, 4, 6 y 8 puntos en cuatro partidos de práctica, así que la media es 5 puntos. Las distancias a la media son 3, 1, 1 y 3. ¿Cuál es la desviación absoluta media (MAD)?",
+        "explanationEs": "Suma las distancias: 3 + 1 + 1 + 3 = 8. Divide entre los 4 partidos: 8 ÷ 4 = 2. La MAD es 2 puntos.",
+        "hints": [
+          "MAD is the average of the distances from the mean, so it is built from those four distances rather than from the scores themselves.",
+          "Add all of the distances together, then divide by how many games there were.",
+          "Add 3 + 1 + 1 + 3 to get the total distance, then divide that total by the 4 scrimmages."
+        ],
+        "hintsEs": [
+          "La MAD es el promedio de las distancias a la media, así que se construye con esas cuatro distancias y no con los puntajes mismos.",
+          "Suma todas las distancias y luego divide entre la cantidad de partidos.",
+          "Suma 3 + 1 + 1 + 3 para obtener la distancia total y luego divide ese total entre los 4 partidos de práctica."
+        ]
+      }
+    ],
+    "approaching": [
+      {
+        "type": "multiple-choice",
+        "stem": "(Lesson 8.1) Which of the following is a statistical question?",
+        "choices": [
+          "How many points did each player score this season?",
+          "How many points are scored for a free throw?",
+          "What sport does this team play?",
+          "How many halves are in a soccer game?"
+        ],
+        "correctIndex": 0,
+        "explanation": "\"How many points did each player score?\" is statistical because different players will have different scores — there is variability in the data.",
+        "choiceFeedback": [
+          "",
+          "A free throw's points are fixed—does this question ask about variation?",
+          "What sport is played doesn't vary—do different people answer this differently?",
+          "Halves in a game is a rule—does it change from one observation to another?"
+        ],
+        "hints": [
+          "Re-read each question and ask: would different people or games give different answers, or is there just one fixed answer?",
+          "A statistical question expects variability — many answers that differ. Sort each choice into 'one fixed answer' or 'answers that vary'.",
+          "Test one: 'How many halves are in a soccer game?' Every game has the same number — no variability there. Check the other three the same way."
+        ],
+        "stemEs": "¿Cuál de las siguientes es una pregunta estadística?",
+        "explanationEs": "«¿Cuántos puntos anotó cada jugador?» es estadística porque distintos jugadores tendrán puntajes distintos: hay variabilidad en los datos."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "(Lesson 8.1) Which question is NOT a statistical question?",
+        "choices": [
+          "How many innings are in a baseball game?",
+          "How many home runs did each player hit this year?",
+          "How many miles does each runner train per week?",
+          "How tall is each player on the basketball team?"
+        ],
+        "correctIndex": 0,
+        "explanation": "\"How many innings are in a baseball game?\" has one fixed answer (9) — no variability. The other questions all produce different answers for different people.",
+        "choiceFeedback": [
+          "",
+          "Each player hit a different number of home runs—would the answer vary?",
+          "Different runners train different miles—would the data vary?",
+          "Each player has a different height—would the answers vary?"
+        ],
+        "hints": [
+          "Careful — this asks for the question that is NOT statistical: the one with a single fixed answer instead of varying data.",
+          "For each choice ask: 'Would each player or runner give a different number?' The odd one out is a rule of the game, not data you collect.",
+          "Start with 'How tall is each player?' — heights differ player to player, so that one IS statistical. Keep testing until one has just one answer."
+        ],
+        "stemEs": "¿Cuál pregunta NO es una pregunta estadística?",
+        "explanationEs": "«¿Cuántas entradas tiene un partido de béisbol?» tiene una sola respuesta fija (9): no hay variabilidad. Las otras preguntas dan respuestas distintas para distintas personas.",
+        "choicesEs": [
+          "¿Cuántas entradas tiene un partido de béisbol?",
+          "¿Cuántos jonrones bateó cada jugador este año?",
+          "¿Cuántas millas entrena cada corredor por semana?",
+          "¿Cuánto mide cada jugador del equipo de baloncesto?"
+        ],
+        "hintsEs": [
+          "Cuidado: se pide la pregunta que NO es estadística, la que tiene una sola respuesta fija en lugar de datos que varían.",
+          "En cada opción pregunta: '¿daría cada jugador o corredor un número distinto?' La que sobra es una regla del juego, no datos que recolectas.",
+          "Empieza con '¿Cuánto mide cada jugador?': las estaturas cambian de jugador a jugador, así que esa SÍ es estadística. Sigue probando hasta hallar una con una sola respuesta."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "(Lesson 8.2) Find the mean of: 10, 14, 8, 12, 16",
+        "choices": [
+          "12",
+          "14",
+          "10",
+          "60"
+        ],
+        "correctIndex": 0,
+        "explanation": "Sum = 10 + 14 + 8 + 12 + 16 = 60. Mean = 60 ÷ 5 = 12.",
+        "choiceFeedback": [
+          "",
+          "Add the numbers first—does 14 equal the sum divided by 5?",
+          "Did you forget to divide by the count of numbers?",
+          "Is 60 the mean, or the sum?"
+        ],
+        "hints": [
+          "Mean means the average of all five numbers — you'll need both a total and how many numbers there are.",
+          "Use the formula: mean = sum of the values ÷ how many values. Count first: there are 5 numbers here.",
+          "Step 1: add 10 + 14 + 8 + 12 + 16 to get the total. Then divide that total by 5 — the result is the mean."
+        ],
+        "stemEs": "Halla la media de: 10, 14, 8, 12, 16",
+        "explanationEs": "Suma = 10 + 14 + 8 + 12 + 16 = 60. Media = 60 ÷ 5 = 12.",
+        "hintsEs": [
+          "La media es el promedio de los cinco números: necesitarás tanto un total como cuántos números hay.",
+          "Usa la fórmula: media = suma de los valores ÷ cuántos valores hay. Cuenta primero: aquí hay 5 números.",
+          "Paso 1: suma 10 + 14 + 8 + 12 + 16 para obtener el total. Luego divide ese total entre 5: el resultado es la media."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "(Lesson 8.2) Find the median of: 3, 7, 2, 9, 5",
+        "choices": [
+          "5",
+          "3",
+          "7",
+          "5.2"
+        ],
+        "correctIndex": 0,
+        "explanation": "Ordered: 2, 3, 5, 7, 9. The middle value is 5.",
+        "choiceFeedback": [
+          "",
+          "Did you order them first? What's the middle value after ordering?",
+          "The lowest is 3—is median always the lowest?",
+          "7 is not the middle value—order them first."
+        ],
+        "hints": [
+          "Median = the middle number, but only AFTER the list is in order. Don't pick the middle of the unsorted list.",
+          "Rewrite 3, 7, 2, 9, 5 from least to greatest, then count in from both ends until you reach the one value in the exact middle.",
+          "Start ordering: the smallest is 2, then 3... finish the ordered list of all five values, then circle the 3rd one — that's the median."
+        ],
+        "stemEs": "Halla la mediana de: 3, 7, 2, 9, 5",
+        "explanationEs": "Ordenados: 2, 3, 5, 7, 9. El valor del medio es 5.",
+        "hintsEs": [
+          "La mediana es el número del medio, pero solo DESPUÉS de ordenar la lista. No elijas el del medio de la lista sin ordenar.",
+          "Reescribe 3, 7, 2, 9, 5 de menor a mayor y luego cuenta desde ambos extremos hasta llegar al único valor que queda justo en el medio.",
+          "Empieza a ordenar: el menor es 2, luego 3… termina la lista ordenada de los cinco valores y luego encierra el 3.º: esa es la mediana."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "(Lesson 8.3) The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?",
+        "choices": [
+          "4",
+          "−4",
+          "26",
+          "11"
+        ],
+        "correctIndex": 0,
+        "misconceptionTags": [
+          null,
+          "sign-error",
+          null,
+          null
+        ],
+        "explanation": "Deviation = 11 − 15 = −4. Absolute deviation = |−4| = 4.",
+        "choiceFeedback": [
+          "",
+          "Absolute deviation is always positive—take the absolute value of 11 − 15.",
+          "The deviation is negative; absolute deviation is the positive version.",
+          "Absolute means positive—what's |11 − 15|?"
+        ],
+        "hints": [
+          "Absolute deviation asks: how FAR is the value 11 from the mean of 15? A distance is always a positive number.",
+          "Subtract: value − mean gives the deviation. Then take the absolute value (drop any negative sign) to get the absolute deviation.",
+          "Step 1: set up 11 − 15 (the result will be negative). Step 2 is turning that result into a positive distance."
+        ],
+        "stemEs": "La media de un conjunto de datos es 15. Uno de los valores es 11. ¿Cuál es la desviación absoluta de ese valor respecto a la media?",
+        "explanationEs": "Desviación = 11 − 15 = −4. Desviación absoluta = |−4| = 4.",
+        "hintsEs": [
+          "La desviación absoluta pregunta: ¿qué tan LEJOS está el valor 11 de la media de 15? Una distancia siempre es un número positivo.",
+          "Resta: valor − media da la desviación. Luego toma el valor absoluto (quita el signo negativo) para obtener la desviación absoluta.",
+          "Paso 1: plantea 11 − 15 (el resultado será negativo). El paso 2 es convertir ese resultado en una distancia positiva."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "(Lesson 8.3) A data set has absolute deviations of 3, 1, 5, 2, 4. What is the MAD?",
+        "choices": [
+          "3",
+          "5",
+          "15",
+          "1"
+        ],
+        "correctIndex": 0,
+        "explanation": "Sum of absolute deviations = 3 + 1 + 5 + 2 + 4 = 15. MAD = 15 ÷ 5 = 3.",
+        "choiceFeedback": [
+          "",
+          "Did you find the largest deviation instead of the average?",
+          "Add them all and divide by the count of values, not just sum them.",
+          "The largest is 5—is MAD the maximum deviation?"
+        ],
+        "hints": [
+          "You're given the five absolute deviations already — no subtracting needed. MAD is their average.",
+          "MAD = (sum of the absolute deviations) ÷ (how many there are). Count them: there are 5 deviations listed.",
+          "Step 1: add 3 + 1 + 5 + 2 + 4. Step 2: divide that total by 5. Don't stop after adding — the sum alone is not the MAD."
+        ],
+        "stemEs": "Un conjunto de datos tiene desviaciones absolutas de 3, 1, 5, 2 y 4. ¿Cuál es la desviación absoluta media (MAD)?",
+        "explanationEs": "Suma de las desviaciones absolutas = 3 + 1 + 5 + 2 + 4 = 15. MAD = 15 ÷ 5 = 3.",
+        "hintsEs": [
+          "Ya te dan las cinco desviaciones absolutas: no hay que restar. La DMA es su promedio.",
+          "DMA = (suma de las desviaciones absolutas) ÷ (cuántas hay). Cuéntalas: aquí hay 5 desviaciones.",
+          "Paso 1: suma 3 + 1 + 5 + 2 + 4. Paso 2: divide ese total entre 5. No te detengas después de sumar: la suma sola no es la DMA."
+        ]
+      }
+    ],
+    "onLevel": [
+      {
+        "type": "multiple-choice",
+        "stem": "(Lesson 8.1) A coach asks: \"How many hours does each athlete on the track team sleep the night before a meet?\" Why is this a statistical question?",
+        "choices": [
+          "Because the answers will vary from athlete to athlete",
+          "Because it is about sports",
+          "Because it has a numerical answer",
+          "Because the coach asked it"
+        ],
+        "correctIndex": 0,
+        "explanation": "A statistical question anticipates variability. Different athletes sleep different amounts, so the data collected will vary.",
+        "choiceFeedback": [
+          "",
+          "Sports is a topic—what specific part makes this statistical?",
+          "Numbers can appear in fixed-answer questions too—why is this different?",
+          "Who asks the question doesn't determine if it's statistical—look deeper."
+        ],
+        "hints": [
+          "Notice the words 'each athlete' — the coach plans to collect one number from every runner on the team.",
+          "Ask: will all athletes report the same hours of sleep? What we call it when collected answers differ is the key to this question.",
+          "Imagine the coach's list: 8, 6.5, 9, 7 hours from different athletes. The first step is naming what a changing list like that shows."
+        ],
+        "stemEs": "Un entrenador pregunta: «¿Cuántas horas duerme cada atleta del equipo de atletismo la noche antes de una competencia?» ¿Por qué es una pregunta estadística?",
+        "explanationEs": "Una pregunta estadística anticipa variabilidad. Distintos atletas duermen cantidades distintas, así que los datos recolectados van a variar.",
+        "choicesEs": [
+          "Porque las respuestas variarán de un atleta a otro",
+          "Porque es sobre deportes",
+          "Porque tiene una respuesta numérica",
+          "Porque la hizo el entrenador"
+        ],
+        "hintsEs": [
+          "Fíjate en las palabras 'cada atleta': el entrenador planea recolectar un número de cada corredor del equipo.",
+          "Pregunta: ¿todos los atletas reportarán las mismas horas de sueño? Cómo se llama cuando las respuestas recolectadas difieren es la clave de esta pregunta.",
+          "Imagina la lista del entrenador: 8, 6.5, 9, 7 horas de distintos atletas. El primer paso es nombrar lo que muestra una lista que cambia así."
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "(Lesson 8.1) Spot the Common Mistake",
+        "workedExample": [
+          {
+            "label": "Question",
+            "work": "How many points does the team need to win a game?"
+          },
+          {
+            "label": "Student decision",
+            "work": "This IS a statistical question."
+          },
+          {
+            "label": "Student reason",
+            "work": "It is about basketball and the answer is a number, so it must be statistical."
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "The reason is wrong. Being about basketball or having a number does not make a question statistical. \"How many points does the team need to win a game?\" has one fixed answer — you only need to score more than the other team — so the answers do not vary. This is NOT a statistical question.",
+        "hints": [
+          "Numbers and a sports topic do not automatically make a question statistical.",
+          "Ask whether the answers would VARY. If there is one fixed answer, it is not statistical."
+        ],
+        "titleEs": "Descubre el error común",
+        "explanation": "The reasoning step says a basketball topic and a numerical answer make a question statistical, but neither one does. The points needed to win has a single fixed answer — more than the other team — so nothing varies, and the question is not statistical.",
+        "explanationEs": "El paso del razonamiento dice que hablar de básquetbol y tener una respuesta numérica hacen que una pregunta sea estadística, pero ninguna de las dos cosas lo hace. Los puntos que se necesitan para ganar tienen una sola respuesta fija —más que el otro equipo—, así que nada varía y la pregunta no es estadística."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "(Lesson 8.2) Data set: 4, 6, 6, 8, 10, 12. What is the median?",
+        "choices": [
+          "7",
+          "6",
+          "8",
+          "7.67"
+        ],
+        "correctIndex": 0,
+        "explanation": "With 6 values, the median is the average of the 3rd and 4th values: (6 + 8) ÷ 2 = 7.",
+        "choiceFeedback": [
+          "",
+          "With an even count, take the average of the two middle values.",
+          "The two middle values are 6 and 8—what's their average?",
+          "Don't add all values and divide—find the middle two values."
+        ],
+        "hints": [
+          "Count the values: there are 6, an even number — so no single value sits exactly in the middle.",
+          "With an even count, the median is the average of the TWO middle values. In an ordered list of 6, those are the 3rd and 4th.",
+          "The list is already ordered. Step 1: circle the 3rd and 4th values. Step 2: add them and divide by 2 — that result is the median."
+        ],
+        "stemEs": "Conjunto de datos: 4, 6, 6, 8, 10, 12. ¿Cuál es la mediana?",
+        "explanationEs": "Con 6 valores, la mediana es el promedio del 3.º y el 4.º valor: (6 + 8) ÷ 2 = 7.",
+        "hintsEs": [
+          "Cuenta los valores: hay 6, un número par, así que ningún valor queda exactamente en el medio.",
+          "Con una cantidad par, la mediana es el promedio de los DOS valores centrales. En una lista ordenada de 6, esos son el 3.º y el 4.º.",
+          "La lista ya está ordenada. Paso 1: encierra el 3.º y el 4.º valor. Paso 2: súmalos y divide entre 2; ese resultado es la mediana."
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "(Lesson 8.2) The Even-Count Median Mistake",
+        "workedExample": [
+          {
+            "label": "Data set",
+            "work": "Points per game, in order: 3, 8, 10, 14, 16, 20 (6 values)"
+          },
+          {
+            "label": "Goal",
+            "work": "Find the MEDIAN number of points."
+          },
+          {
+            "label": "Pick the middle",
+            "work": "With 6 values the student grabs a single middle number and says median = 10."
+          },
+          {
+            "label": "Answer",
+            "work": "Median = 10"
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "When a data set has an EVEN number of values there is no single middle number. You must average the TWO middle values. Here the 3rd and 4th values are 10 and 14, so the median = (10 + 14) ÷ 2 = 12, not 10.",
+        "hints": [
+          "With an even number of values, there are two numbers in the middle — average them.",
+          "The two middle values are 10 and 14: (10 + 14) ÷ 2 = 12."
+        ],
+        "titleEs": "El error de la mediana con cantidad par",
+        "explanation": "With 6 values there is no single number sitting in the middle — positions 3 and 4 tie for the center. The 3rd and 4th values are 10 and 14, so the median is their average, (10 + 14) ÷ 2 = 12, not just the lower one.",
+        "explanationEs": "Con 6 valores no hay un solo número en el centro: las posiciones 3 y 4 empatan en el medio. El 3.º y el 4.º valor son 10 y 14, así que la mediana es su promedio, (10 + 14) ÷ 2 = 12, y no solo el menor de los dos."
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "(Lesson 8.3) Two runners have the same average time of 60 seconds. Runner A's MAD is 1.2 seconds. Runner B's MAD is 5.8 seconds. Which runner is the coach more likely to pick for a relay race that needs a reliable time?",
+        "choices": [
+          "Runner A — lower MAD means more consistent times",
+          "Runner B — higher MAD means faster potential",
+          "Either — they have the same average",
+          "Neither — MAD doesn't matter for relay races"
+        ],
+        "correctIndex": 0,
+        "explanation": "Runner A's MAD of 1.2 means times are usually within 1.2 seconds of 60. Runner B's times vary more widely. For reliability, pick Runner A.",
+        "choiceFeedback": [
+          "",
+          "Bigger MAD means times vary more, not faster potential.",
+          "Same average doesn't tell you consistency—MAD does.",
+          "MAD directly measures consistency—use it."
+        ],
+        "hints": [
+          "'Reliable' is the key word — the coach wants times that barely change from race to race, not just a good average.",
+          "Both runners average 60 seconds, so the average can't decide this. MAD tells you how much each runner's times swing around 60.",
+          "First step: read each MAD as a sentence — a MAD of 1.2 means times usually stay within about 1.2 seconds of 60. Do the same for 5.8, then decide."
+        ],
+        "stemEs": "Dos corredores tienen el mismo tiempo promedio de 60 segundos. La MAD del corredor A es de 1.2 segundos y la del corredor B es de 5.8 segundos. ¿Qué corredor es más probable que el entrenador elija para una carrera de relevos que necesita un tiempo confiable?",
+        "explanationEs": "La MAD de 1.2 del corredor A significa que sus tiempos suelen estar dentro de 1.2 segundos de 60. Los tiempos del corredor B varían mucho más. Para tener confiabilidad, se elige al corredor A.",
+        "choicesEs": [
+          "Corredor A — una DMA menor significa tiempos más consistentes",
+          "Corredor B — una DMA mayor significa más potencial de velocidad",
+          "Cualquiera — tienen el mismo promedio",
+          "Ninguno — la DMA no importa en las carreras de relevos"
+        ],
+        "hintsEs": [
+          "'Confiable' es la palabra clave: el entrenador quiere tiempos que casi no cambien de carrera a carrera, no solo un buen promedio.",
+          "Ambos corredores promedian 60 segundos, así que el promedio no puede decidir. La DMA te dice cuánto oscilan los tiempos de cada uno alrededor de 60.",
+          "Primer paso: lee cada DMA como una oración: una DMA de 1.2 significa que los tiempos suelen quedarse a unos 1.2 segundos de 60. Haz lo mismo con 5.8 y decide."
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "(Lesson 8.3) Spot the Common Mistake",
+        "workedExample": [
+          {
+            "label": "Data set",
+            "work": "A swimmer's lap times: 2, 5, 8, 9. Mean = (2 + 5 + 8 + 9) ÷ 4 = 24 ÷ 4 = 6."
+          },
+          {
+            "label": "Find each absolute deviation",
+            "work": "|2 − 6| = 4, |5 − 6| = 1, |8 − 6| = 2, |9 − 6| = 3"
+          },
+          {
+            "label": "Find the MAD",
+            "work": "Sum of absolute deviations = 4 + 1 + 2 + 3 = 10. MAD = 10 ÷ 3 ≈ 3.33"
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "Divide by the NUMBER OF VALUES, not one less. There are 4 values, so MAD = 10 ÷ 4 = 2.5. The student divided by 3 instead of 4.",
+        "hints": [
+          "Count the data values: 2, 5, 8, 9 — that's 4 values, so you divide by 4.",
+          "MAD = (sum of absolute deviations) ÷ (number of values). Here that is 10 ÷ 4 = 2.5, not 10 ÷ 3."
+        ],
+        "titleEs": "Encuentra el error común",
+        "explanation": "The absolute deviations 4, 1, 2, and 3 are all correct, and they total 10. The mistake is in the \"Find the MAD\" step, which divides by 3 instead of by the 4 values in the data set. MAD = 10 ÷ 4 = 2.5, so the swimmer's times sit an average of 2.5 away from the mean of 6.",
+        "explanationEs": "Las desviaciones absolutas 4, 1, 2 y 3 son correctas y suman 10. El error está en el paso \"Find the MAD\", que divide entre 3 en lugar de entre los 4 valores del conjunto de datos. MAD = 10 ÷ 4 = 2.5, así que los tiempos del nadador están en promedio a 2.5 de la media de 6."
+      }
+    ],
+    "extending": [
+      {
+        "type": "error-analysis",
+        "title": "(Lesson 8.1) Find the Reasoning Error",
+        "workedExample": [
+          {
+            "label": "Question",
+            "work": "How many touchdowns did the quarterback throw this season?"
+          },
+          {
+            "label": "Student says",
+            "work": "This is NOT a statistical question."
+          },
+          {
+            "label": "Reason",
+            "work": "It only asks about one player, so there is no variability."
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "Even though it asks about one player, \"this season\" means multiple games. The number of touchdowns per game varies, so there IS variability in the data. This IS a statistical question.",
+        "hints": [
+          "Think about whether the data collected would have different values across games.",
+          "The question asks about performance over a whole season — each game can have a different result."
+        ],
+        "titleEs": "Encuentra el error de razonamiento",
+        "explanation": "The reasoning step assumes one player means no variability, but 'this season' covers many games and the touchdown count changes from game to game. That game-to-game variation is real data variability, so the question is statistical.",
+        "explanationEs": "El paso del razonamiento supone que un solo jugador significa que no hay variabilidad, pero 'esta temporada' abarca muchos partidos y la cantidad de anotaciones cambia de un partido a otro. Esa variación de partido a partido es variabilidad real en los datos, así que la pregunta sí es estadística."
+      },
+      {
+        "type": "error-analysis",
+        "title": "(Lesson 8.2) Find the Stats Error",
+        "workedExample": [
+          {
+            "label": "Data set",
+            "work": "12, 15, 18, 15, 20"
+          },
+          {
+            "label": "Find mean",
+            "work": "Sum = 80, Count = 5, Mean = 80 ÷ 5 = 16"
+          },
+          {
+            "label": "Find median",
+            "work": "Ordered: 12, 15, 15, 18, 20 → Median = 15"
+          },
+          {
+            "label": "Find mode",
+            "work": "Mode = 18 (the biggest number)"
+          }
+        ],
+        "errorStep": 3,
+        "correctWork": "Mode = 15 (appears twice, more than any other value). Mode is the most frequent value, not the largest.",
+        "hints": [
+          "Mode means 'most often,' not 'most.' Which number appears the most times?",
+          "15 appears twice. No other number repeats. So the mode is 15, not 18."
+        ],
+        "titleEs": "Encuentra el error de estadística",
+        "explanation": "The mean and median steps are both correct; the mode step picks 18 because it is the biggest number. Mode means most often, not most, and in 12, 15, 15, 18, 20 only 15 repeats, so the mode is 15.",
+        "explanationEs": "Los pasos de la media y la mediana están correctos; el paso de la moda elige 18 porque es el número más grande. Moda significa el más frecuente, no el mayor, y en 12, 15, 15, 18, 20 solo 15 se repite, así que la moda es 15."
+      },
+      {
+        "type": "error-analysis",
+        "title": "(Lesson 8.3) Find the MAD Error",
+        "workedExample": [
+          {
+            "label": "Data set",
+            "work": "5, 10, 15, 20, 25"
+          },
+          {
+            "label": "Find mean",
+            "work": "Sum = 75, Count = 5, Mean = 15"
+          },
+          {
+            "label": "Find deviations",
+            "work": "−10, −5, 0, 5, 10"
+          },
+          {
+            "label": "Find MAD",
+            "work": "MAD = (−10 + −5 + 0 + 5 + 10) ÷ 5 = 0"
+          }
+        ],
+        "errorStep": 3,
+        "correctWork": "You must use absolute values of the deviations: |−10| = 10, |−5| = 5, |0| = 0, |5| = 5, |10| = 10. MAD = (10 + 5 + 0 + 5 + 10) ÷ 5 = 30 ÷ 5 = 6.",
+        "hints": [
+          "MAD stands for Mean ABSOLUTE Deviation. What does 'absolute' mean you need to do?",
+          "Take the absolute value of each deviation before adding them: |−10| = 10, |−5| = 5, etc."
+        ],
+        "titleEs": "Encuentra el error del MAD",
+        "explanation": "The mean of 15 and the deviations −10, −5, 0, 5, 10 are all correct. The \"Find MAD\" step is where it breaks: adding signed deviations always gives 0, because the values below the mean exactly balance the ones above. Use absolute values instead — 10, 5, 0, 5, 10 — which sum to 30, so MAD = 30 ÷ 5 = 6.",
+        "explanationEs": "La media de 15 y las desviaciones −10, −5, 0, 5, 10 están correctas. El paso \"Find MAD\" es donde falla: sumar desviaciones con signo siempre da 0, porque los valores por debajo de la media equilibran exactamente a los que están por encima. Usa valores absolutos: 10, 5, 0, 5, 10, que suman 30, así que MAD = 30 ÷ 5 = 6."
+      }
+    ],
+    "optionalActivity": {
+      "name": "Catch-Up Challenge",
+      "emoji": "🧭",
+      "intro": "Mix it up: pick the right lesson's big idea for each problem — that's the real catch-up skill.",
+      "stepLabel": "Review"
+    },
+    "commonMistake": "A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean."
+  },
+  "connect": {
+    "diagram": {
+      "kind": "bar-chart",
+      "title": "Same Mean, Different Spread — MAD of Goals Allowed",
+      "caption": "Both keepers average 1.67 goals per game. Keeper A's smaller MAD (0.67) means each game stays closer to that average — Keeper B swings between shutouts and 4-goal games.",
+      "bars": [
+        {
+          "label": "Keeper A (MAD)",
+          "value": 0.67
+        },
+        {
+          "label": "Keeper B (MAD)",
+          "value": 1.33
+        }
+      ]
+    },
+    "scenario": "Two soccer goalkeepers track goals allowed per game over 6 games. Keeper A: 1, 2, 1, 3, 2, 1 (mean = 1.67, MAD ≈ 0.67). Keeper B: 0, 4, 1, 3, 0, 2 (mean = 1.67, MAD ≈ 1.33). The coach needs to pick a starter for the championship game.",
+    "promptQuestion": "Both keepers allow the same average goals. Which should the coach pick and why?",
+    "prompt": "Both keepers have a mean of ___. Keeper A's MAD is ___, which means ___. Keeper B's MAD is ___, which means ___. The coach should pick ___ because ___.",
+    "keywords": [
+      "1.67",
+      "lower",
+      "higher",
+      "consistent",
+      "spread",
+      "reliable",
+      "MAD",
+      "Keeper A"
+    ],
+    "check": [
+      {
+        "stem": "What is each keeper's mean goals allowed per game?",
+        "choices": [
+          "about 1.67",
+          "10",
+          "6",
+          "2"
+        ],
+        "answer": 0,
+        "explanation": "Both keepers allowed 10 goals in 6 games: 10 ÷ 6 ≈ 1.67 goals per game."
+      },
+      {
+        "stem": "What does a smaller MAD tell you?",
+        "choices": [
+          "The values stay closer to the mean — the keeper is more consistent",
+          "The keeper allowed fewer goals overall",
+          "The keeper played fewer games",
+          "The mean is wrong"
+        ],
+        "answer": 0,
+        "explanation": "MAD is the mean absolute deviation — the average distance from the mean. A smaller MAD means the game-to-game results cluster tightly around that average."
+      },
+      {
+        "stem": "Which keeper should the coach start, and why?",
+        "choices": [
+          "Keeper A, because the smaller MAD (0.67) means more consistent performance",
+          "Keeper B, because two shutouts is best",
+          "Either one, because the means are equal",
+          "Keeper B, because a larger MAD means more skill"
+        ],
+        "answer": 0,
+        "explanation": "The means are identical, so the tiebreaker is spread. Keeper A's MAD of 0.67 means most games land near 1.67 goals. Keeper B swings from shutouts to 4-goal games — riskier when one bad game ends the season."
+      }
+    ],
+    "answers": [
+      [
+        "1.67",
+        "1.6667"
+      ],
+      [
+        "0.67",
+        ".67"
+      ],
+      null,
+      [
+        "1.33"
+      ],
+      null,
+      [
+        "keeper a",
+        "a"
+      ],
+      null
+    ],
+    "modelAnswer": "Both keepers have a mean of about 1.67 goals allowed. The difference is spread: Keeper A's MAD is about 0.67, so their games stay close to that average, while Keeper B's MAD is about 1.33 — twice as variable, swinging between shutouts and 4-goal games. The coach should start Keeper A, because consistency is more reliable when one bad game ends the season."
+  },
+  "reflect": {
+    "exitTicket": {
+      "stem": "(Catch-up check, from Lesson 8.2) Data set: 4, 7, 10, 7, 12. What is the median?",
+      "choices": [
+        "7",
+        "8",
+        "10",
+        "4"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ordered: 4, 7, 7, 10, 12. The middle (3rd) value is 7.",
+      "choiceFeedback": [
+        "",
+        "Order the values first, then find the exact middle one.",
+        "The median is the middle of the ORDERED list, not the largest.",
+        "Sort the numbers and pick the center — 4 is the smallest."
+      ],
+      "hints": [
+        "Median means middle — but the list 4, 7, 10, 7, 12 isn't in order yet. That's your first job.",
+        "Rewrite the five values from least to greatest, then count in one value at a time from each end until you meet in the middle.",
+        "Start the ordered list: 4 is the smallest value. Keep placing values least to greatest, then circle the 3rd of the 5 — that position is the median."
+      ]
+    }
+  },
+  "readiness": false,
+  "timeEstimate": "~20 min",
+  "warmup": {
+    "title": "Warmup: Previous Lesson Check",
+    "prevLessonId": "8-2",
+    "prevLessonTitle": "Mean, Median, and Mode",
+    "questions": [
+      {
+        "id": "warmup-8-3-1",
+        "stem": "Find the mean of: 10, 14, 8, 12, 16",
+        "choices": [
+          "14",
+          "12",
+          "10",
+          "60"
+        ],
+        "correctIndex": 1,
+        "explanation": "Sum = 10 + 14 + 8 + 12 + 16 = 60. Mean = 60 ÷ 5 = 12."
+      },
+      {
+        "id": "warmup-8-3-2",
+        "stem": "Find the median of: 3, 7, 2, 9, 5",
+        "choices": [
+          "3",
+          "5",
+          "7",
+          "5.2"
+        ],
+        "correctIndex": 1,
+        "explanation": "Ordered: 2, 3, 5, 7, 9. The middle value is 5."
+      },
+      {
+        "id": "warmup-8-3-3",
+        "stem": "Find the mode of: 4, 7, 4, 9, 2, 4, 8",
+        "choices": [
+          "7",
+          "9",
+          "4",
+          "2"
+        ],
+        "correctIndex": 2,
+        "explanation": "4 appears three times — more than any other value. Mode = 4."
+      }
+    ]
+  },
+  "variant": "catchup",
+  "parallelPractice": [
+    {
+      "id": "8-3-catchup-parallel-01",
+      "type": "guided-fill",
+      "stem": "(Lesson 8.1) Classify: “How many minutes did Maya read yesterday?”",
+      "answer": "not statistical",
+      "visual": {
+        "kind": "survey-cards",
+        "values": [
+          2,
+          4,
+          5,
+          7,
+          8
+        ]
+      },
+      "steps": [
+        {
+          "prompt": "Does the question expect different answers? ___.",
+          "promptEs": "¿La pregunta espera respuestas diferentes? ___.",
+          "answer": "no"
+        },
+        {
+          "prompt": "Classify the question: ___.",
+          "promptEs": "Clasifica la pregunta: ___.",
+          "answer": "not statistical"
+        }
+      ],
+      "hints": [
+        "Use the visual model, then complete one step at a time."
+      ],
+      "explanation": "Does the question expect different answers? no. Classify the question: not statistical.",
+      "stemEs": "Clasifica: “¿Cuántos minutos Maya read ayer?”",
+      "hintsEs": [
+        "Usa el modelo visual y completa un paso a la vez."
+      ],
+      "explanationEs": "¿La pregunta espera respuestas diferentes? no. Clasifica la pregunta: not statistical."
+    },
+    {
+      "id": "8-3-catchup-parallel-02",
+      "type": "guided-fill",
+      "stem": "(Lesson 8.1) Classify: “How many minutes did each student practiced music yesterday?”",
+      "answer": "statistical",
+      "visual": {
+        "kind": "survey-cards",
+        "values": [
+          3,
+          5,
+          6,
+          8,
+          9
+        ]
+      },
+      "steps": [
+        {
+          "prompt": "Does the question expect different answers? ___.",
+          "promptEs": "¿La pregunta espera respuestas diferentes? ___.",
+          "answer": "yes"
+        },
+        {
+          "prompt": "Classify the question: ___.",
+          "promptEs": "Clasifica la pregunta: ___.",
+          "answer": "statistical"
+        }
+      ],
+      "hints": [
+        "Use the visual model, then complete one step at a time."
+      ],
+      "explanation": "Does the question expect different answers? yes. Classify the question: statistical.",
+      "stemEs": "Clasifica: “¿Cuántos minutos practiced music cada estudiante ayer?”",
+      "hintsEs": [
+        "Usa el modelo visual y completa un paso a la vez."
+      ],
+      "explanationEs": "¿La pregunta espera respuestas diferentes? yes. Clasifica la pregunta: statistical."
+    },
+    {
+      "id": "8-3-catchup-parallel-03",
+      "type": "guided-fill",
+      "stem": "(Lesson 8.1) Classify: “How many minutes did Amina walked yesterday?”",
+      "answer": "not statistical",
+      "visual": {
+        "kind": "survey-cards",
+        "values": [
+          4,
+          6,
+          7,
+          7,
+          10
+        ]
+      },
+      "steps": [
+        {
+          "prompt": "Does the question expect different answers? ___.",
+          "promptEs": "¿La pregunta espera respuestas diferentes? ___.",
+          "answer": "no"
+        },
+        {
+          "prompt": "Classify the question: ___.",
+          "promptEs": "Clasifica la pregunta: ___.",
+          "answer": "not statistical"
+        }
+      ],
+      "hints": [
+        "Use the visual model, then complete one step at a time."
+      ],
+      "explanation": "Does the question expect different answers? no. Classify the question: not statistical.",
+      "stemEs": "Clasifica: “¿Cuántos minutos Amina walked ayer?”",
+      "hintsEs": [
+        "Usa el modelo visual y completa un paso a la vez."
+      ],
+      "explanationEs": "¿La pregunta espera respuestas diferentes? no. Clasifica la pregunta: not statistical."
+    },
+    {
+      "id": "8-3-catchup-parallel-04",
+      "type": "guided-fill",
+      "stem": "(Lesson 8.1) Classify: “How many minutes did each student played outside yesterday?”",
+      "answer": "statistical",
+      "visual": {
+        "kind": "survey-cards",
+        "values": [
+          4,
+          5,
+          8,
+          8,
+          11
+        ]
+      },
+      "steps": [
+        {
+          "prompt": "Does the question expect different answers? ___.",
+          "promptEs": "¿La pregunta espera respuestas diferentes? ___.",
+          "answer": "yes"
+        },
+        {
+          "prompt": "Classify the question: ___.",
+          "promptEs": "Clasifica la pregunta: ___.",
+          "answer": "statistical"
+        }
+      ],
+      "hints": [
+        "Use the visual model, then complete one step at a time."
+      ],
+      "explanation": "Does the question expect different answers? yes. Classify the question: statistical.",
+      "stemEs": "Clasifica: “¿Cuántos minutos played outside cada estudiante ayer?”",
+      "hintsEs": [
+        "Usa el modelo visual y completa un paso a la vez."
+      ],
+      "explanationEs": "¿La pregunta espera respuestas diferentes? yes. Clasifica la pregunta: statistical."
+    },
+    {
+      "id": "8-3-catchup-parallel-05",
+      "type": "guided-fill",
+      "stem": "(Lesson 8.2) Find the mean, median, and mode of the new data set: 2, 4, 5, 7, 8.",
+      "answer": "mean 5.2; median 5; mode none",
+      "visual": {
+        "kind": "data-dots",
+        "values": [
+          2,
+          4,
+          5,
+          7,
+          8
+        ]
+      },
+      "steps": [
+        {
+          "prompt": "Add all values: ___.",
+          "promptEs": "Suma todos los valores: ___.",
+          "answer": "26"
+        },
+        {
+          "prompt": "Divide by 5 for the mean: ___.",
+          "promptEs": "Divide entre 5 para la media: ___.",
+          "answer": "5.2"
+        },
+        {
+          "prompt": "Find the middle value: ___.",
+          "promptEs": "Encuentra el valor del medio: ___.",
+          "answer": "5"
+        },
+        {
+          "prompt": "Name the value that repeats most, or write none: ___.",
+          "promptEs": "Nombra el valor que más se repite, o escribe none: ___.",
+          "answer": "none"
+        }
+      ],
+      "hints": [
+        "Use the visual model, then complete one step at a time."
+      ],
+      "explanation": "Add all values: 26. Divide by 5 for the mean: 5.2. Find the middle value: 5. Name the value that repeats most, or write none: none.",
+      "stemEs": "Encuentra la media, la mediana y la moda del nuevo conjunto de datos: 2, 4, 5, 7, 8.",
+      "hintsEs": [
+        "Usa el modelo visual y completa un paso a la vez."
+      ],
+      "explanationEs": "Suma todos los valores: 26. Divide entre 5 para la media: 5.2. Encuentra el valor del medio: 5. Nombra el valor que más se repite, o escribe none: none."
+    },
+    {
+      "id": "8-3-catchup-parallel-06",
+      "type": "guided-fill",
+      "stem": "(Lesson 8.2) Find the mean, median, and mode of the new data set: 3, 5, 6, 8, 9.",
+      "answer": "mean 6.2; median 6; mode none",
+      "visual": {
+        "kind": "data-dots",
+        "values": [
+          3,
+          5,
+          6,
+          8,
+          9
+        ]
+      },
+      "steps": [
+        {
+          "prompt": "Add all values: ___.",
+          "promptEs": "Suma todos los valores: ___.",
+          "answer": "31"
+        },
+        {
+          "prompt": "Divide by 5 for the mean: ___.",
+          "promptEs": "Divide entre 5 para la media: ___.",
+          "answer": "6.2"
+        },
+        {
+          "prompt": "Find the middle value: ___.",
+          "promptEs": "Encuentra el valor del medio: ___.",
+          "answer": "6"
+        },
+        {
+          "prompt": "Name the value that repeats most, or write none: ___.",
+          "promptEs": "Nombra el valor que más se repite, o escribe none: ___.",
+          "answer": "none"
+        }
+      ],
+      "hints": [
+        "Use the visual model, then complete one step at a time."
+      ],
+      "explanation": "Add all values: 31. Divide by 5 for the mean: 6.2. Find the middle value: 6. Name the value that repeats most, or write none: none.",
+      "stemEs": "Encuentra la media, la mediana y la moda del nuevo conjunto de datos: 3, 5, 6, 8, 9.",
+      "hintsEs": [
+        "Usa el modelo visual y completa un paso a la vez."
+      ],
+      "explanationEs": "Suma todos los valores: 31. Divide entre 5 para la media: 6.2. Encuentra el valor del medio: 6. Nombra el valor que más se repite, o escribe none: none."
+    },
+    {
+      "id": "8-3-catchup-parallel-07",
+      "type": "guided-fill",
+      "stem": "(Lesson 8.2) Find the mean, median, and mode of the new data set: 4, 6, 7, 7, 10.",
+      "answer": "mean 6.8; median 7; mode 7",
+      "visual": {
+        "kind": "data-dots",
+        "values": [
+          4,
+          6,
+          7,
+          7,
+          10
+        ]
+      },
+      "steps": [
+        {
+          "prompt": "Add all values: ___.",
+          "promptEs": "Suma todos los valores: ___.",
+          "answer": "34"
+        },
+        {
+          "prompt": "Divide by 5 for the mean: ___.",
+          "promptEs": "Divide entre 5 para la media: ___.",
+          "answer": "6.8"
+        },
+        {
+          "prompt": "Find the middle value: ___.",
+          "promptEs": "Encuentra el valor del medio: ___.",
+          "answer": "7"
+        },
+        {
+          "prompt": "Name the value that repeats most, or write none: ___.",
+          "promptEs": "Nombra el valor que más se repite, o escribe none: ___.",
+          "answer": "7"
+        }
+      ],
+      "hints": [
+        "Use the visual model, then complete one step at a time."
+      ],
+      "explanation": "Add all values: 34. Divide by 5 for the mean: 6.8. Find the middle value: 7. Name the value that repeats most, or write none: 7.",
+      "stemEs": "Encuentra la media, la mediana y la moda del nuevo conjunto de datos: 4, 6, 7, 7, 10.",
+      "hintsEs": [
+        "Usa el modelo visual y completa un paso a la vez."
+      ],
+      "explanationEs": "Suma todos los valores: 34. Divide entre 5 para la media: 6.8. Encuentra el valor del medio: 7. Nombra el valor que más se repite, o escribe none: 7."
+    },
+    {
+      "id": "8-3-catchup-parallel-08",
+      "type": "guided-fill",
+      "stem": "(Lesson 8.2) Find the mean, median, and mode of the new data set: 4, 5, 8, 8, 11.",
+      "answer": "mean 7.2; median 8; mode 8",
+      "visual": {
+        "kind": "data-dots",
+        "values": [
+          4,
+          5,
+          8,
+          8,
+          11
+        ]
+      },
+      "steps": [
+        {
+          "prompt": "Add all values: ___.",
+          "promptEs": "Suma todos los valores: ___.",
+          "answer": "36"
+        },
+        {
+          "prompt": "Divide by 5 for the mean: ___.",
+          "promptEs": "Divide entre 5 para la media: ___.",
+          "answer": "7.2"
+        },
+        {
+          "prompt": "Find the middle value: ___.",
+          "promptEs": "Encuentra el valor del medio: ___.",
+          "answer": "8"
+        },
+        {
+          "prompt": "Name the value that repeats most, or write none: ___.",
+          "promptEs": "Nombra el valor que más se repite, o escribe none: ___.",
+          "answer": "8"
+        }
+      ],
+      "hints": [
+        "Use the visual model, then complete one step at a time."
+      ],
+      "explanation": "Add all values: 36. Divide by 5 for the mean: 7.2. Find the middle value: 8. Name the value that repeats most, or write none: 8.",
+      "stemEs": "Encuentra la media, la mediana y la moda del nuevo conjunto de datos: 4, 5, 8, 8, 11.",
+      "hintsEs": [
+        "Usa el modelo visual y completa un paso a la vez."
+      ],
+      "explanationEs": "Suma todos los valores: 36. Divide entre 5 para la media: 7.2. Encuentra el valor del medio: 8. Nombra el valor que más se repite, o escribe none: 8."
+    },
+    {
+      "id": "8-3-catchup-parallel-09",
+      "type": "guided-fill",
+      "stem": "(Lesson 8.3) Find the MAD of the new data set: 2, 4, 5, 7, 8.",
+      "answer": "1.84",
+      "visual": {
+        "kind": "deviation-plot",
+        "values": [
+          2,
+          4,
+          5,
+          7,
+          8
+        ],
+        "mean": 5.2
+      },
+      "steps": [
+        {
+          "prompt": "Find the mean: ___.",
+          "promptEs": "Encuentra la media: ___.",
+          "answer": "5.2"
+        },
+        {
+          "prompt": "List absolute deviations: ___.",
+          "promptEs": "Escribe las desviaciones absolutas: ___.",
+          "answer": "3.2, 1.2, 0.2, 1.8, 2.8"
+        },
+        {
+          "prompt": "Average the deviations: ___.",
+          "promptEs": "Calcula el promedio de las desviaciones: ___.",
+          "answer": "1.84"
+        }
+      ],
+      "hints": [
+        "Use the visual model, then complete one step at a time."
+      ],
+      "explanation": "Find the mean: 5.2. List absolute deviations: 3.2, 1.2, 0.2, 1.8, 2.8. Average the deviations: 1.84.",
+      "stemEs": "Encuentra la desviación media absoluta (MAD) del nuevo conjunto de datos: 2, 4, 5, 7, 8.",
+      "hintsEs": [
+        "Usa el modelo visual y completa un paso a la vez."
+      ],
+      "explanationEs": "Encuentra la media: 5.2. Escribe las desviaciones absolutas: 3.2, 1.2, 0.2, 1.8, 2.8. Calcula el promedio de las desviaciones: 1.84."
+    },
+    {
+      "id": "8-3-catchup-parallel-10",
+      "type": "guided-fill",
+      "stem": "(Lesson 8.3) Find the MAD of the new data set: 3, 5, 6, 8, 9.",
+      "answer": "1.84",
+      "visual": {
+        "kind": "deviation-plot",
+        "values": [
+          3,
+          5,
+          6,
+          8,
+          9
+        ],
+        "mean": 6.2
+      },
+      "steps": [
+        {
+          "prompt": "Find the mean: ___.",
+          "promptEs": "Encuentra la media: ___.",
+          "answer": "6.2"
+        },
+        {
+          "prompt": "List absolute deviations: ___.",
+          "promptEs": "Escribe las desviaciones absolutas: ___.",
+          "answer": "3.2, 1.2, 0.2, 1.8, 2.8"
+        },
+        {
+          "prompt": "Average the deviations: ___.",
+          "promptEs": "Calcula el promedio de las desviaciones: ___.",
+          "answer": "1.84"
+        }
+      ],
+      "hints": [
+        "Use the visual model, then complete one step at a time."
+      ],
+      "explanation": "Find the mean: 6.2. List absolute deviations: 3.2, 1.2, 0.2, 1.8, 2.8. Average the deviations: 1.84.",
+      "stemEs": "Encuentra la desviación media absoluta (MAD) del nuevo conjunto de datos: 3, 5, 6, 8, 9.",
+      "hintsEs": [
+        "Usa el modelo visual y completa un paso a la vez."
+      ],
+      "explanationEs": "Encuentra la media: 6.2. Escribe las desviaciones absolutas: 3.2, 1.2, 0.2, 1.8, 2.8. Calcula el promedio de las desviaciones: 1.84."
+    },
+    {
+      "id": "8-3-catchup-parallel-11",
+      "type": "guided-fill",
+      "stem": "(Lesson 8.3) Find the MAD of the new data set: 4, 6, 7, 7, 10.",
+      "answer": "1.44",
+      "visual": {
+        "kind": "deviation-plot",
+        "values": [
+          4,
+          6,
+          7,
+          7,
+          10
+        ],
+        "mean": 6.8
+      },
+      "steps": [
+        {
+          "prompt": "Find the mean: ___.",
+          "promptEs": "Encuentra la media: ___.",
+          "answer": "6.8"
+        },
+        {
+          "prompt": "List absolute deviations: ___.",
+          "promptEs": "Escribe las desviaciones absolutas: ___.",
+          "answer": "2.8, 0.8, 0.2, 0.2, 3.2"
+        },
+        {
+          "prompt": "Average the deviations: ___.",
+          "promptEs": "Calcula el promedio de las desviaciones: ___.",
+          "answer": "1.44"
+        }
+      ],
+      "hints": [
+        "Use the visual model, then complete one step at a time."
+      ],
+      "explanation": "Find the mean: 6.8. List absolute deviations: 2.8, 0.8, 0.2, 0.2, 3.2. Average the deviations: 1.44.",
+      "stemEs": "Encuentra la desviación media absoluta (MAD) del nuevo conjunto de datos: 4, 6, 7, 7, 10.",
+      "hintsEs": [
+        "Usa el modelo visual y completa un paso a la vez."
+      ],
+      "explanationEs": "Encuentra la media: 6.8. Escribe las desviaciones absolutas: 2.8, 0.8, 0.2, 0.2, 3.2. Calcula el promedio de las desviaciones: 1.44."
+    },
+    {
+      "id": "8-3-catchup-parallel-12",
+      "type": "guided-fill",
+      "stem": "(Lesson 8.3) Find the MAD of the new data set: 4, 5, 8, 8, 11.",
+      "answer": "2.16",
+      "visual": {
+        "kind": "deviation-plot",
+        "values": [
+          4,
+          5,
+          8,
+          8,
+          11
+        ],
+        "mean": 7.2
+      },
+      "steps": [
+        {
+          "prompt": "Find the mean: ___.",
+          "promptEs": "Encuentra la media: ___.",
+          "answer": "7.2"
+        },
+        {
+          "prompt": "List absolute deviations: ___.",
+          "promptEs": "Escribe las desviaciones absolutas: ___.",
+          "answer": "3.2, 2.2, 0.8, 0.8, 3.8"
+        },
+        {
+          "prompt": "Average the deviations: ___.",
+          "promptEs": "Calcula el promedio de las desviaciones: ___.",
+          "answer": "2.16"
+        }
+      ],
+      "hints": [
+        "Use the visual model, then complete one step at a time."
+      ],
+      "explanation": "Find the mean: 7.2. List absolute deviations: 3.2, 2.2, 0.8, 0.8, 3.8. Average the deviations: 2.16.",
+      "stemEs": "Encuentra la desviación media absoluta (MAD) del nuevo conjunto de datos: 4, 5, 8, 8, 11.",
+      "hintsEs": [
+        "Usa el modelo visual y completa un paso a la vez."
+      ],
+      "explanationEs": "Encuentra la media: 7.2. Escribe las desviaciones absolutas: 3.2, 2.2, 0.8, 0.8, 3.8. Calcula el promedio de las desviaciones: 2.16."
+    }
+  ]
+}

@@ -126,7 +126,7 @@ const publicConfig = {
   connect: { talk: { prompt: "Student prompt", listenFor: "private checkpoint" } },
 };
 const publicResponse = await middleware({
-  request: new Request("https://example.test/lessons/1-1-group1/config.json"),
+  request: new Request("https://example.test/lessons/6-13-group1/config.json"),
   env: {},
   next: async () => Response.json(publicConfig),
 });
@@ -165,7 +165,7 @@ assert.ok(teacherPayload.facilitation.listenFor.length >= 1);
 const dom = new JSDOM(
   '<!doctype html><html><head></head><body><div id="app"></div></body></html>',
   {
-    url: "https://example.test/lessons/1-1-group1/",
+    url: "https://example.test/lessons/6-13-group1/",
   },
 );
 for (const key of [
@@ -186,7 +186,7 @@ dom.window.HTMLDialogElement.prototype.showModal = function showModal() {
   this.setAttribute("open", "");
 };
 const runtimeConfig = JSON.parse(
-  readFileSync(new URL("../lessons/1-1-group1/config.json", import.meta.url), "utf8"),
+  readFileSync(new URL("../lessons/6-13-group1/config.json", import.meta.url), "utf8"),
 );
 const { bootSmallGroup } = await import("../engine/core/small-group-renderer.js");
 bootSmallGroup(runtimeConfig);

@@ -22,7 +22,7 @@ const dom = new JSDOM(
   </div>
 </body>
 </html>`,
-  { runScripts: "dangerously", url: "https://eduwonderlab.com/lessons/1-1/" },
+  { runScripts: "dangerously", url: "https://eduwonderlab.com/lessons/6-13/" },
 );
 
 const win = dom.window;

@@ -48,7 +48,7 @@ const ANCHORS = [
   { path: "/", name: "Home portal" },
   { path: "/curriculum/", name: "Curriculum hub" },
   { path: "/directory/", name: "Activity directory" },
-  { path: "/lessons/1-1/", name: "Lesson 1-1 launcher" },
+  { path: "/lessons/6-13/", name: "Lesson 1-1 launcher" },
   { path: "/math/student-board/", name: "Class board" },
   { path: "/access-practice-lab/", name: "ACCESS practice lab" },
   { path: "/practice-engine/", name: "Practice engine" },

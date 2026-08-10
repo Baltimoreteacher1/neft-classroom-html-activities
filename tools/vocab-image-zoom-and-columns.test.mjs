@@ -36,7 +36,7 @@ const read = (rel) => readFileSync(new URL(`../${rel}`, import.meta.url), "utf8"
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", {
   pretendToBeVisual: true,
-  url: "https://example.test/lessons/1-1/",
+  url: "https://example.test/lessons/6-13/",
 });
 globalThis.window = dom.window;
 globalThis.document = dom.window.document;

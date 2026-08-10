@@ -1,0 +1,1472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mean Absolute Deviation — Notes Packet (Teacher Copy — Answer Key)</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
+:root{
+  --navy:#12355b;--teal:#1fa6a2;--teal-ink:#0c6f6b;--teal-light:#dff2ee;--amber:#f2c15b;
+  --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Calibri,"Segoe UI",system-ui,sans-serif;line-height:1.5;}
+.sheet{max-width:8.5in;margin:0 auto;background:var(--card);padding:0.6in;}
+.topbar{position:sticky;top:0;background:var(--navy);color:#fff;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 18px;}
+.topbar .brand{font-weight:700;font-family:Outfit,system-ui,sans-serif;}
+@media (max-width:760px){
+  .topbar{flex-wrap:wrap;row-gap:8px;}
+  .topbar .level-selector{flex-wrap:wrap;row-gap:4px;}
+  .topbar .pill-group{flex-wrap:wrap;}
+  main.sheet{padding:28px 18px;}
+}
+.print-btn{background:var(--amber);color:var(--navy);border:0;border-radius:8px;
+  padding:9px 16px;font-weight:700;cursor:pointer;font-size:15px;}
+header.packet{border-bottom:3px solid var(--teal);padding-bottom:14px;margin-bottom:18px;}
+header.packet .eyebrow{color:var(--teal-ink);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:13px;margin:0;}
+header.packet h1{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  margin:6px 0 4px;font-size:26px;}
+header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
+.name-line{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-size:14px;}
+.nl-field{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;}
+.nl-label{font-weight:700;color:var(--navy);white-space:nowrap;}
+.nl-input{flex:1;min-width:80px;border:none;border-bottom:1.5px solid var(--ink);background:transparent;
+  font:inherit;font-size:15px;color:var(--navy);padding:4px 4px;border-radius:4px 4px 0 0;}
+.nl-input:focus{outline:none;background:#fff7e6;}
+@media print{.nl-input{border-bottom:1px solid #000;color:#000;}}
+.section{margin:0 0 22px;page-break-inside:avoid;}
+.section>h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;
+  border-left:5px solid var(--teal);padding-left:10px;margin:0 0 12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,280px));justify-content:center;gap:14px;}
+.vocab-card{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  page-break-inside:avoid;}
+.vocab-term{margin:0 0 4px;color:var(--navy);font-size:16px;}
+.vocab-def{margin:0 0 8px;font-size:14px;}
+.vocab-figure{text-align:center;background:var(--teal-light);border-radius:8px;padding:8px;}
+.vocab-figure img{max-width:100%;max-height:120px;}
+.vocab-caption{margin:6px 0 0;font-size:12.5px;color:var(--muted);font-style:italic;}
+.notes-bullets,.prompt-list{margin:0 0 10px;padding-left:20px;}
+.notes-bullets li,.prompt-list li{margin:5px 0;}
+.think-block{background:var(--amber-light,#fef7e0);border-radius:8px;padding:10px 14px;margin:10px 0;}
+.think-block h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
+/* Guided notes — learning line, visual steps, gradual-release frame */
+.notes-learning{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
+  border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 14px;page-break-inside:avoid;}
+.notes-learning-icon{font-size:22px;line-height:1;flex:0 0 auto;}
+.notes-learning-label{margin:0 0 2px;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--teal-ink);}
+.notes-learning-text{margin:0;font-size:15px;font-weight:600;color:var(--navy);}
+/* Learn It — textbook-style concept teaching block (explains the math first) */
+.learnit{border:1.5px solid var(--teal);border-radius:14px;background:#fff;
+  padding:18px 20px;margin:0 0 18px;page-break-inside:avoid;
+  box-shadow:0 1px 0 var(--teal-light);}
+.learnit-eyebrow{margin:0 0 4px;font-size:12px;font-weight:800;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--teal-ink);}
+.learnit-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);
+  font-size:21px;margin:0 0 10px;line-height:1.25;}
+.learnit-intro{font-size:17px;line-height:1.7;color:var(--ink);margin:0 0 12px;font-weight:500;}
+.learnit-key{display:flex;gap:10px;align-items:baseline;background:#fff7e6;
+  border:1px solid var(--amber);border-radius:10px;padding:12px 14px;margin:0 0 14px;}
+.learnit-key-label{flex:0 0 auto;font-weight:800;color:var(--navy);font-size:13px;
+  white-space:nowrap;}
+.learnit-key-text{font-size:16px;line-height:1.6;color:var(--navy);font-weight:600;}
+.learnit-stage{border-radius:10px;padding:12px 14px;margin:0 0 12px;border:1px solid var(--line);}
+.learnit-watch{background:var(--teal-light);border-color:var(--teal);}
+.learnit-we{background:#fff7e6;border-color:var(--amber);}
+.learnit-you{background:#eef3fb;border-color:var(--navy);}
+.learnit-stage-head{margin:0 0 8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.learnit-tag{display:inline-block;background:var(--navy);color:#fff;font-weight:800;
+  font-size:13px;border-radius:999px;padding:4px 12px;}
+.learnit-watch .learnit-tag{background:var(--teal);}
+.learnit-we .learnit-tag{background:var(--amber);color:var(--navy);}
+.learnit-you .learnit-tag{background:var(--navy);}
+.learnit-stage-title{font-weight:700;color:var(--navy);font-size:14.5px;}
+.learnit-lines{margin:0;padding:0;list-style:none;}
+.learnit-step{display:flex;gap:10px;align-items:flex-start;margin:0 0 9px;
+  font-size:16px;line-height:1.6;}
+.learnit-steplabel{flex:0 0 auto;background:var(--navy);color:#fff;font-weight:800;
+  font-size:12px;border-radius:6px;padding:3px 9px;margin-top:1px;white-space:nowrap;}
+.learnit-watch .learnit-steplabel{background:var(--teal);}
+.learnit-step-text{flex:1;}
+.learnit-point{position:relative;padding-left:22px;margin:0 0 8px;font-size:16px;line-height:1.6;}
+.learnit-point::before{content:"→";position:absolute;left:0;color:var(--teal);font-weight:800;}
+.learnit-bridge{margin:8px 0 0;font-size:14.5px;font-weight:700;color:var(--navy);background:var(--teal-light);border-radius:10px;padding:10px 14px;}
+.gn-subhead-note{margin:-4px 0 12px;font-size:14px;color:var(--muted);}
+/* Learn It — clean, publisher-style teaching page (single accent, lots of air) */
+.li{max-width:none;}
+.li-kicker{margin:0 0 6px;font-size:13.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-ink);}
+.li-title{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:32px;line-height:1.22;margin:0 0 16px;}
+.li-intro{font-size:20px;line-height:1.75;color:var(--ink);margin:0 0 22px;max-width:62ch;}
+.li-keyidea{border-left:6px solid var(--teal);background:var(--teal-light);border-radius:0 12px 12px 0;
+  padding:18px 22px;margin:0 0 26px;}
+.li-keyidea-label{display:block;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--teal-ink);margin-bottom:6px;}
+.li-keyidea p{margin:0;font-size:21px;line-height:1.6;color:var(--navy);font-weight:600;}
+/* The formula, pulled out of the Key Idea and printed big — the one thing a
+   student should be able to find on this page in under a second. */
+/* Specificity note: a bare .li-formula loses to .li-keyidea p and gets shrunk
+   back to body size — the formula is the one line that must be unmissable. */
+.li-keyidea .li-formula,.li-formula{margin:16px 0 0;padding:16px 20px;background:#fff;border:2.5px dashed var(--teal);
+  border-radius:12px;text-align:center;font-family:Outfit,system-ui,sans-serif;
+  font-size:clamp(25px,2.6vw,34px);line-height:1.3;font-weight:800;color:var(--navy);
+  font-variant-numeric:tabular-nums;letter-spacing:.01em;}
+.li-seeit{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
+.li-figure{margin:0 0 18px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fff;}
+.li-seeit .li-figure{margin:0 0 16px;}
+/* Real-world photograph of the concept — the page's first visual anchor. */
+.li-photo{margin:0 0 20px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;}
+.li-photo img{display:block;width:100%;max-height:360px;object-fit:cover;}
+.li-photo figcaption{padding:14px 18px;font-size:17px;line-height:1.6;color:var(--ink);background:#fbfdfc;}
+.li-photo-label{display:block;font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--teal-ink);margin-bottom:5px;}
+.li-graphics{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;}
+.li-graphic{margin:0;display:flex;flex-direction:column;text-align:center;border:1px solid var(--line);
+  border-radius:14px;background:#fff;padding:14px;}
+.li-graphic img{display:block;width:100%;max-height:190px;object-fit:contain;}
+.li-graphic figcaption{margin-top:10px;display:flex;flex-direction:column;gap:5px;}
+.li-graphic-term{display:block;font-weight:800;color:var(--navy);font-size:18px;}
+.li-graphic-def{display:block;margin-top:5px;font-size:15.5px;line-height:1.5;color:var(--ink);}
+.li-wordrows{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px;}
+.li-wordrows>li{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:6px 16px;align-items:baseline;
+  padding:12px 16px;background:#fff;border:1px solid var(--line);border-radius:12px;}
+.li-wordrow-term{font-weight:800;color:var(--navy);font-size:18px;}
+.li-wordrow-def{font-size:16.5px;line-height:1.55;color:var(--ink);}
+@media (max-width:560px){.li-wordrows>li{grid-template-columns:1fr;}}
+/* Worked-example figure — the picture of the problem being solved. */
+.li-fig{margin:0 0 20px;padding:16px 18px 12px;border:1.5px solid var(--teal);border-radius:14px;background:#fbfdfc;}
+.li-fig-cap{margin:0 0 10px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-ink);}
+.li-fig-svg{display:block;width:100%;max-width:520px;height:auto;margin:0 auto;}
+@media print{.li-fig{background:#fff;border-color:#000;page-break-inside:avoid;}.li-fig-cap{color:#000;}}
+.li-visual-title{font-weight:700;color:var(--navy);margin:0 0 10px;font-size:16px;}
+.li-chips{display:flex;flex-wrap:wrap;gap:10px;}
+.li-chip{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:10px 16px;
+  border:2px solid var(--teal);border-radius:10px;background:#fff;font-weight:800;color:var(--navy);font-size:18px;}
+.li-visual-unit{font-size:16px;color:var(--ink);margin-top:10px;font-weight:600;}
+.li-block{margin:0 0 28px;}
+.li-eyebrow{margin:0 0 12px;font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--teal-ink);border-bottom:2px solid var(--line);padding-bottom:6px;}
+.li-lead{margin:0 0 16px;font-size:17.5px;line-height:1.6;color:var(--ink);}
+.li-steps{margin:0;padding:0;list-style:none;counter-reset:li-step;}
+.li-steps>li{position:relative;counter-increment:li-step;padding:2px 0 26px 60px;font-size:21px;line-height:1.75;color:var(--ink);}
+.li-steps>li::before{content:counter(li-step);position:absolute;left:0;top:0;width:42px;height:42px;border-radius:50%;
+  background:var(--teal-ink);color:#fff;font-size:20px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.li-steps>li:not(:last-child)::after{content:"";position:absolute;left:20px;top:46px;bottom:2px;width:2px;background:var(--line);}
+.li-step-text{display:block;}
+/* The math from a step, echoed as a large display line so the numbers never
+   hide inside the sentence. */
+.li-math{display:block;margin:12px 0 0;padding:12px 18px;background:var(--teal-light);
+  border-left:5px solid var(--teal);border-radius:10px;font-family:Outfit,system-ui,sans-serif;
+  font-size:clamp(22px,2.4vw,30px);line-height:1.3;font-weight:800;color:var(--navy);
+  font-variant-numeric:tabular-nums;letter-spacing:.01em;overflow-x:auto;}
+/* A step that builds a diagram carries its own snapshot of it. */
+.li-stepfig{margin:14px 0 0;padding:12px 14px 10px;border:1.5px solid var(--teal);
+  border-radius:14px;background:#fbfdfc;}
+.li-stepfig svg{display:block;width:100%;max-width:440px;height:auto;margin:0 auto;}
+.li-stepfig-cap{margin:8px 0 0;text-align:center;font-size:13px;font-weight:800;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--teal-ink);}
+@media print{.li-stepfig{background:#fff;border-color:#000;page-break-inside:avoid;}
+  .li-stepfig-cap{color:#000;}}
+/* Paced worked example — one step at a time, so the page never opens as a wall. */
+.li-steps-paced>li[hidden]{display:none;}
+.li-pace{display:flex;flex-wrap:wrap;gap:12px;margin:4px 0 0;}
+.li-pace-next{background:var(--teal-ink);color:#fff;border:0;border-radius:999px;padding:13px 24px;
+  font-weight:800;font-size:17px;cursor:pointer;}
+.li-pace-next:hover{background:var(--navy);}
+.li-pace-all{background:#fff;color:var(--teal-ink);border:2px solid var(--teal);border-radius:999px;
+  padding:11px 20px;font-weight:800;font-size:16px;cursor:pointer;}
+.li-pace-all:hover{background:var(--teal-light);}
+/* Per-section read-aloud — big ESOL support, one section at a time. */
+.li-say{position:absolute;top:18px;right:18px;margin:0;background:#fff;border:2px solid var(--teal);
+  color:var(--teal-ink);border-radius:999px;width:40px;height:40px;font-size:18px;line-height:1;
+  cursor:pointer;flex:0 0 auto;z-index:1;}
+.li-say:hover{background:var(--teal-light);}
+.li-say[data-speaking="1"]{background:var(--teal-ink);color:#fff;border-color:var(--teal-ink);}
+.li-block-practice{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:22px 24px;}
+.li-block-practice .li-eyebrow{border-bottom-color:var(--teal);}
+.li-pop{display:inline;border:0;background:transparent;padding:0;font:inherit;font-size:inherit;color:var(--teal-ink);
+  font-weight:700;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer;}
+.li-pop:hover{color:var(--navy);}
+.li-pop-i{font-size:.7em;vertical-align:super;margin-left:1px;opacity:.8;}
+.li-pop-demo{color:var(--teal-ink);font-weight:700;text-decoration:underline;text-decoration-style:dotted;}
+.nt-popover-overlay{position:fixed;inset:0;z-index:9998;background:rgba(18,53,91,0.4);opacity:0;transition:opacity 0.2s ease;pointer-events:none;}
+.nt-popover-overlay.active{opacity:1;pointer-events:auto;}
+.nt-popover{position:fixed;z-index:9999;max-width:290px;background:rgba(255,255,255,0.96);border:1.5px solid rgba(31,166,162,0.45);
+  border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.18), 0 1px 3px rgba(0,0,0,0.05);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  padding:16px;opacity:0;transform:scale(0.95) translateY(5px);transition:opacity 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);pointer-events:none;}
+.nt-popover.open{opacity:1;transform:scale(1) translateY(0);pointer-events:auto;}
+.nt-popover img{display:block;width:100%;max-height:150px;object-fit:contain;border-radius:8px;background:#f0faf8;margin-bottom:10px;}
+.nt-popover h4{margin:0 0 6px;color:var(--navy);font-size:18px;font-family:Outfit,system-ui,sans-serif;}
+.nt-popover h4 .es-term{font-weight:400;color:var(--muted);font-size:0.95em;}
+.nt-popover p{margin:0;font-size:15px;line-height:1.5;color:var(--ink);}
+.nt-popover p .def-en{display:block;}
+.nt-popover p .def-es{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-style:italic;color:var(--muted);font-size:14px;}
+.nt-popover .nt-pop-close{position:absolute;top:6px;right:8px;border:none;background:transparent;font-size:20px;line-height:1;color:var(--muted);cursor:pointer;}
+@media (max-width: 640px) {
+  .nt-popover {
+    position: fixed; bottom: 0; left: 0 !important; right: 0 !important; top: auto !important;
+    max-width: 100% !important; width: 100% !important; border-radius: 20px 20px 0 0 !important;
+    border: none !important; border-top: 1.5px solid rgba(31, 166, 162, 0.3) !important;
+    box-shadow: 0 -8px 30px rgba(18, 53, 91, 0.15) !important;
+    transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.32, 0.94, 0.6, 1);
+    background: #ffffff; padding: 24px 20px 30px;
+  }
+  .nt-popover.open { transform: translateY(0); }
+}
+@media print{.li-pop{color:#000;}.li-pop-i,.nt-popover,.nt-popover-overlay{display:none!important;}}
+.li-steps-fill>li{padding-bottom:24px;}
+.li-input{display:block;width:100%;margin-top:12px;border:0;border-bottom:2.5px solid var(--teal);
+  padding:10px 6px;font:inherit;font-size:19px;color:var(--navy);background:#fff;min-height:48px;}
+.li-input::placeholder{color:#8aa2b2;font-style:italic;font-size:17px;}
+.li-input:focus{outline:none;border-bottom-color:var(--amber);background:#fffdf5;}
+/* Per-step answer reveal — the page asks, the student answers, THEN checks. */
+.li-stepcheck{margin-top:10px;}
+.li-stepcheck>summary{cursor:pointer;display:inline-block;list-style:none;font-size:15.5px;font-weight:800;
+  color:var(--teal-ink);background:#fff;border:2px solid var(--teal);border-radius:999px;padding:7px 16px;}
+.li-stepcheck>summary::-webkit-details-marker{display:none;}
+.li-stepcheck>summary::before{content:"👁️ ";}
+.li-stepcheck>summary:hover{background:var(--teal-light);}
+.li-stepcheck-body{margin-top:10px;padding:12px 16px;background:var(--teal-light);border:1px solid var(--teal);
+  border-radius:10px;font-size:19px;line-height:1.65;color:var(--navy);}
+.li-stepcheck-body .li-math{margin-top:10px;background:#fff;}
+.li-work{margin:10px 0 18px;border:1.5px dashed var(--line);border-radius:12px;background:#fff;padding:12px 14px;}
+.li-work-label{display:block;margin:0 0 8px;font-size:14px;font-weight:800;color:var(--teal-ink);
+  letter-spacing:.03em;text-transform:uppercase;}
+.li-work-area{display:block;width:100%;min-height:104px;resize:vertical;border:0;background:transparent;
+  font:inherit;font-size:19px;line-height:1.6;color:var(--navy);padding:0;}
+.li-work-area:focus{outline:none;}
+.li-work:focus-within{border-color:var(--teal);border-style:solid;background:#fbfdfc;}
+.li-work-area::placeholder{color:#8aa2b2;font-style:italic;font-size:17px;}
+.li-answer{display:flex;align-items:center;gap:12px;margin:4px 0 0;flex-wrap:wrap;}
+.li-answer-label{flex:0 0 auto;font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-ink);}
+.li-input-answer{flex:1;min-width:180px;margin-top:0;}
+.li-list{margin:0 0 16px;padding-left:24px;}
+.li-list>li{font-size:19.5px;line-height:1.7;margin:0 0 8px;color:var(--ink);}
+/* The lesson's own practice table, typeable in place. Scrolls inside its own
+   box so a wide table never pushes the page sideways on a Chromebook. */
+.li-table-wrap{margin:10px 0 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.li-table{width:100%;border-collapse:collapse;background:#fff;border:1.5px solid var(--line);
+  border-radius:10px;overflow:hidden;font-size:18.5px;}
+.li-table th{background:var(--teal-light);color:var(--navy);font-weight:800;text-align:left;
+  padding:12px 14px;border-bottom:2px solid var(--teal);white-space:nowrap;}
+.li-table td{padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:middle;}
+.li-table tr:last-child td{border-bottom:0;}
+.li-table-input{margin-top:0;min-width:120px;font-size:18.5px;}
+@media print{.li-table-wrap{overflow:visible;}.li-table th{background:#fff;border-bottom-color:#000;}
+  .li-table,.li-table td{border-color:#000;}.li-table-input{border-bottom-color:#000;}}
+.li-problem-q{font-size:21px;line-height:1.65;font-weight:600;color:var(--navy);margin:8px 0 14px;
+  padding:16px 20px;background:#fff;border:1px solid var(--line);border-left:6px solid var(--navy);border-radius:0 10px 10px 0;}
+/* Earned hint ladder — one hint at a time, never the answer. */
+.li-hints{margin:14px 0 0;padding:14px 18px;background:#fffdf7;border:1.5px dashed var(--amber);border-radius:12px;}
+.li-hints-label{margin:0 0 10px;font-size:16px;font-weight:800;color:#8a5a00;}
+.li-hint{margin:0 0 8px;}
+.li-hint>summary{cursor:pointer;list-style:none;display:inline-block;font-size:15.5px;font-weight:800;
+  color:#8a5a00;background:#fff;border:2px solid var(--amber);border-radius:999px;padding:7px 16px;}
+.li-hint>summary::-webkit-details-marker{display:none;}
+.li-hint>summary::before{content:"💡 ";}
+.li-hint>p{margin:8px 0 0;font-size:18px;line-height:1.65;color:var(--ink);}
+/* Common mistakes — built from the lesson's own wrong-answer explanations. */
+.li-mistakes{border:1.5px solid var(--amber);border-left-width:6px;background:#fffdf7;border-radius:12px;
+  padding:18px 22px;margin:-8px 0 28px;}
+.li-mistakes-head{margin:0 0 10px;font-size:19px;font-weight:800;color:#8a5a00;}
+.li-mistakes ul{margin:0;padding-left:24px;}
+.li-mistakes li{font-size:18px;line-height:1.65;color:var(--ink);margin:0 0 8px;}
+.li-mistakes-note{margin:10px 0 0;font-size:16px;font-weight:600;color:var(--ink);}
+.li-check{margin-top:14px;}
+.li-check>summary{cursor:pointer;display:inline-block;font-weight:800;color:var(--teal-ink);font-size:17px;
+  list-style:none;background:#fff;border:2px solid var(--teal);border-radius:999px;padding:9px 18px;}
+.li-check>summary::-webkit-details-marker{display:none;}
+.li-check>summary::before{content:"👁️ ";}
+.li-check>summary:hover{background:var(--teal-light);}
+.li-check-body{margin-top:10px;padding:14px 18px;background:var(--teal-light);border:1px solid var(--teal);
+  border-radius:10px;font-size:19px;line-height:1.65;color:var(--navy);}
+.li-check-why{color:var(--ink);font-size:17px;}
+@media print{.li-check>summary{color:#000;}.li-check-body{background:#fff;border-color:#000;}}
+.li-ready{margin:8px 0 0;padding:14px 18px;background:var(--teal-light);border-radius:10px;
+  font-size:17px;font-weight:600;color:var(--navy);}
+@media print{
+  .li-keyidea,.li-figure,.li-block-practice,.li-ready{background:#fff;border-color:#000;}
+  .li-steps>li::before{background:#000;}
+  .li-steps-paced>li[hidden]{display:list-item!important;}
+  .li-pace,.li-say,.li-hints{display:none!important;}
+  .li-math,.li-formula{background:#fff;border-color:#000;color:#000;}
+  .li-photo figcaption{background:#fff;}
+  .li-mistakes{background:#fff;border-color:#000;}
+  .li-mistakes-head,.li-hints-label{color:#000;}
+  .li-stepcheck-body{background:#fff;border-color:#000;}
+  .li-input{border-bottom-color:#000;}
+  .li-work{min-height:130px;border-color:#000;background:#fff;}
+  .li-work-label{color:#000;}
+  .li-work-area{min-height:110px;color:#000;}
+  .li-chip{border-color:#000;}
+}
+/* Vocab Explorer — interactive vocab home (Word Wall, Match, Fill-in, Use it) */
+.vx-section{margin:0 0 30px;}
+.vx-eyebrow{margin:0 0 6px;font-size:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--navy);padding-bottom:6px;border-bottom:2px solid var(--line);}
+.vx-lead{margin:0 0 14px;font-size:15px;color:var(--muted);}
+.vx-wall{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,280px));justify-content:center;gap:16px;}
+.vx-card{border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px;page-break-inside:avoid;}
+.vx-figure{background:var(--teal-light);border-radius:10px;text-align:center;padding:10px;margin-bottom:10px;}
+.vx-figure img{max-width:100%;max-height:120px;}
+.vx-termline{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.vx-term{font-family:Outfit,system-ui,sans-serif;font-weight:800;color:var(--navy);font-size:18px;}
+.vx-say{border:1.5px solid var(--teal);background:#fff;border-radius:999px;width:32px;height:32px;cursor:pointer;
+  font-size:15px;line-height:1;flex:0 0 auto;}
+.vx-say:hover{background:var(--teal-light);}
+.vx-def{margin:0;font-size:15px;line-height:1.55;color:var(--ink);}
+.vx-langs{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;margin:0 0 8px;font-size:13px;color:var(--muted);}
+.vx-lang b{color:var(--teal-ink);font-size:10px;font-weight:800;letter-spacing:.04em;margin-right:3px;}
+.vx-langsep{color:var(--line);}
+.vx-def-es{margin:6px 0 0;padding-left:10px;border-left:2px solid var(--teal-light);
+  font-size:13.5px;line-height:1.5;color:var(--muted);font-style:italic;}
+.vx-match{margin-top:6px;}
+/* "Match it" is a two-sided word ↔ meaning activity: words on the left, meanings
+   on the right, ALWAYS. Two explicit tracks (never auto-fit, never a media-query
+   collapse) so it survives a 390px phone and a 200% browser zoom, which shrinks
+   the effective viewport exactly the way a narrow screen does. minmax(0, …) on
+   both tracks lets a long word wrap instead of widening its column and pushing
+   the page sideways. */
+.vx-mcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:12px;}
+.vx-mcol{display:flex;flex-direction:column;gap:10px;min-width:0;}
+.vx-mterm,.vx-mdef{text-align:left;border:2px solid var(--line);background:#fff;border-radius:10px;
+  padding:11px 14px;font:inherit;font-size:15px;color:var(--ink);cursor:pointer;min-width:0;min-height:44px;
+  overflow-wrap:anywhere;hyphens:auto;transition:border-color .12s,background .12s;}
+/* Narrow / zoomed: tighter, but still two columns and still a 44px tap target. */
+@media (max-width:560px){
+  .vx-mcols{gap:8px;}
+  .vx-mterm,.vx-mdef{padding:10px;font-size:14px;}
+}
+.vx-mterm{font-weight:800;color:var(--navy);}
+.vx-mterm:hover,.vx-mdef:hover{border-color:var(--teal);}
+.vx-sel{border-color:var(--teal)!important;background:var(--teal-light)!important;}
+.vx-done{border-color:#2e9e5b!important;background:#f1faf2!important;color:#2e7d46!important;cursor:default;}
+.vx-wrong{border-color:#d9534f!important;background:#fdf2f1!important;}
+.vx-mfeedback{margin:12px 0 0;font-size:15px;font-weight:700;}
+.vx-mfeedback.vx-ok{color:#2e9e5b;}
+.vx-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:16px;}
+.vx-bank-label{display:block;font-weight:800;color:var(--teal-ink);font-size:12px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;}
+.vx-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.vx-bankword{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px;}
+.vx-clozelist{list-style:none;margin:0;padding:0;}
+.vx-clozeline{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;border:1px solid var(--line);
+  border-radius:10px;margin-bottom:10px;background:#fff;page-break-inside:avoid;}
+.vx-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;
+  font-size:13px;display:flex;align-items:center;justify-content:center;}
+.vx-clozetext{flex:1;font-size:16px;line-height:1.9;color:var(--ink);}
+.vx-blank{border:0;border-bottom:2px solid var(--teal);min-width:90px;font:inherit;font-size:15px;
+  color:var(--navy);background:transparent;padding:2px 4px;margin:0 2px;}
+.vx-blank:focus{outline:none;border-bottom-color:var(--amber);background:#fffdf5;}
+.vx-stem{font-size:17px;line-height:2;color:var(--ink);margin:0 0 12px;}
+.vx-blank-word{min-width:120px;}
+.vx-blank-wide{min-width:220px;}
+.vx-area{display:block;width:100%;border:1.5px solid var(--teal);border-radius:10px;padding:10px;
+  font:inherit;font-size:15px;color:var(--navy);background:#fff;resize:vertical;}
+.vx-area:focus{outline:none;border-color:var(--amber);background:#fffdf5;}
+@media print{
+  .vx-say,.vx-mfeedback{display:none;}
+  .vx-card,.vx-figure,.vx-bank,.vx-clozeline,.vx-mterm,.vx-mdef,.vx-area{background:#fff;border-color:#000;}
+  .vx-num{background:#000;}
+  .vx-blank{border-bottom-color:#000;}
+}
+@media print{
+  .learnit{border-color:#000;box-shadow:none;}
+  .learnit-watch,.learnit-we,.learnit-you,.learnit-key{background:#fff;}
+}
+.notes-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;}
+.notes-step{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;
+  border-top:5px solid var(--teal);page-break-inside:avoid;}
+.notes-step-2{border-top-color:var(--amber);}
+.notes-step-3{border-top-color:var(--navy);}
+.notes-step-head{display:flex;align-items:center;gap:8px;margin:0 0 6px;}
+.notes-step-num{font-size:18px;line-height:1;}
+.notes-step-title{margin:0;font-size:14.5px;color:var(--navy);}
+.notes-step-text{margin:0;font-size:13.5px;line-height:1.4;}
+.notes-word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.notes-word-chip{display:inline-block;font-size:12.5px;font-weight:600;color:var(--navy);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:2px 10px;}
+.notes-gradual{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 0;}
+.notes-gr-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:10px 12px;background:#fff;page-break-inside:avoid;}
+.notes-gr-we{border-left-color:var(--amber);}
+.notes-gr-you{border-left-color:var(--navy);}
+.notes-gr-tag{display:inline-block;font-size:12.5px;font-weight:700;color:var(--navy);
+  background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:0 0 6px;}
+.notes-gr-cue{margin:0 0 6px;font-size:13px;color:var(--muted);}
+/* Worked-along frame — real problems with simple labeled steps */
+.notes-gr-intro{margin:0 0 10px;font-size:13px;color:var(--muted);font-style:italic;}
+.wk-problem{margin:6px 0;font-size:13.5px;line-height:1.45;}
+.wk-plabel{font-weight:700;color:var(--navy);}
+.wk-steps{margin:6px 0 8px;padding-left:0;list-style:none;}
+.wk-step{margin:5px 0;font-size:13.5px;line-height:1.45;}
+.wk-steplabel{display:inline-block;font-weight:700;color:var(--teal-ink);background:var(--teal-light);
+  border-radius:6px;padding:1px 8px;margin-right:8px;font-size:12px;}
+.wk-step-blank{display:flex;align-items:center;gap:8px;}
+.wk-step-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+.wk-answer{margin:6px 0 0;font-size:13.5px;}
+.wk-anslabel{font-weight:700;color:var(--navy);}
+.wk-answer-blank{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:13.5px;}
+.wk-answer-blank .writeline{flex:1;height:0;border-bottom:1px solid #b9c6d3;}
+/* Turn & Talk — optional hint + optional starters label */
+.tt-hint-toggle{margin:6px 0;border:1px solid var(--teal);background:#fff;border-radius:8px;
+  padding:6px 10px;}
+.tt-hint-toggle>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--teal);list-style:none;}
+.tt-hint-toggle>summary::-webkit-details-marker{display:none;}
+.tt-hint-text{margin:6px 0 0;font-size:13.5px;color:var(--ink);}
+.tt-stems-label{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--navy);
+  text-transform:none;letter-spacing:0;}
+.my-notes h3,.work-space .ws-label{font-size:14px;color:var(--muted);}
+.writeline{border-bottom:1px solid #b9c6d3;height:26px;}
+/* Typeable, auto-saved guided-notes fields (replace the print-only blank lines) */
+textarea.writeline-area{display:block;width:100%;box-sizing:border-box;border:none;resize:vertical;
+  font:inherit;color:var(--navy);line-height:26px;padding:0 2px;background-color:transparent;
+  background-image:repeating-linear-gradient(transparent,transparent 25px,#b9c6d3 25px,#b9c6d3 26px);
+  min-height:26px;border-radius:4px;}
+textarea.writeline-area:focus{outline:none;background-color:#fff7e6;}
+input.writeline{border:none;border-bottom:1px solid #b9c6d3;background:transparent;font:inherit;
+  color:var(--navy);padding:1px 4px;min-width:60px;border-radius:3px 3px 0 0;}
+.wk-step-blank input.writeline,.wk-answer-blank input.writeline{height:24px;}
+input.gn-blank{background:transparent;font:inherit;font-weight:700;color:var(--navy);text-align:center;
+  padding:1px 6px;border-radius:4px;}
+input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6;}
+.nt-save{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--teal-ink);
+  background:var(--teal-light);border:1px solid var(--teal);border-radius:999px;padding:5px 12px;white-space:nowrap;}
+.nt-clear{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;
+  font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
+.nt-clear:hover{border-color:var(--navy);color:var(--navy);}
+.example{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;}
+.example-head{margin:0 0 6px;color:var(--navy);font-size:16px;}
+.ex-problem{margin:0 0 8px;font-weight:600;}
+.ex-steps{margin:0 0 8px;padding-left:20px;}
+.step-label{color:var(--teal);font-weight:700;}
+.ex-solution,.ex-answer{margin:6px 0 0;font-size:14.5px;}
+.tryit{margin:0 0 14px;page-break-inside:avoid;}
+.tryit-num,.reflect-stem{font-weight:600;margin:0 0 6px;}
+.try-choices{margin:0 0 8px;padding-left:24px;}
+.try-choices li{margin:3px 0;}
+.work-space{margin-top:6px;}
+.muted{color:var(--muted);font-size:14px;}
+.teacher-banner{background:#fff3cd;border:1.5px solid #e0a800;color:#7a5b00;border-radius:10px;
+  padding:10px 14px;margin:0 0 14px;font-weight:800;font-size:14px;text-align:center;}
+.answer-key{page-break-before:always;border-top:3px solid var(--navy);margin-top:24px;padding-top:14px;}
+.answer-key h2{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:19px;}
+.ak-list{padding-left:22px;}
+.ak-list li{margin:8px 0;}
+.ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
+.ak-why{color:var(--muted);font-style:italic;}
+.ak-distractors{margin:4px 0 0;padding-left:18px;list-style:none;}
+.ak-distractors li{margin:3px 0;font-size:13.5px;color:var(--muted);}
+footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
+  color:var(--muted);font-size:12px;text-align:center;}
+.level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
+  font-weight:700;letter-spacing:.02em;padding:2px 9px;border-radius:999px;vertical-align:middle;
+  margin-left:8px;text-transform:none;}
+.level-1{background:var(--teal-light);color:var(--teal-ink);border:1px solid var(--teal);}
+.level-2{background:#fef0d8;color:#7a540e;border:1px solid var(--amber);}
+.level-note{margin:-4px 0 12px;font-size:13.5px;color:var(--muted);}
+.flagship-badge{display:inline-block;font-size:13px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:3px 12px;vertical-align:middle;font-family:Calibri,system-ui,sans-serif;}
+.mission{background:linear-gradient(135deg,var(--navy),#1b4a7a);color:#fff;border-radius:12px;
+  padding:16px 20px;margin:0 0 22px;}
+.mission-eyebrow{margin:0 0 4px;color:var(--amber);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;font-size:12px;}
+.mission-title{font-family:Outfit,system-ui,sans-serif;margin:0 0 8px;font-size:20px;border:0;padding:0;color:#fff;}
+.mission-story{margin:0;font-size:14px;line-height:1.55;}
+.enrich-block{border:1px dashed var(--amber);background:#fffaf0;border-radius:10px;
+  padding:12px 14px;margin:14px 0 0;page-break-inside:avoid;}
+.enrich-block h3{margin:0 0 4px;font-size:15px;color:var(--navy);}
+.sentence-frame{font-size:13.5px;color:var(--muted);font-style:italic;margin:4px 0 8px;}
+/* The Writing Revolution (TWR) */
+.section.twr>h2{border-left-color:var(--amber);}
+.twr-method{display:inline-block;font-size:11.5px;font-weight:700;background:var(--amber);
+  color:var(--navy);border-radius:999px;padding:2px 10px;vertical-align:middle;margin-left:8px;}
+.twr-block{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.twr-block h3{margin:0 0 8px;color:var(--navy);font-size:15.5px;}
+.twr-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);
+  background:var(--teal-light);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:middle;}
+.twr-model{background:var(--teal-light);border-radius:6px;padding:8px 10px;margin:0 0 8px;font-size:14px;}
+.twr-label{font-weight:700;color:var(--teal-ink);margin-right:4px;}
+.twr-frame{margin:4px 0 4px;font-size:14px;}
+.twr-en{font-weight:600;}
+.twr-es{display:block;color:var(--muted);font-style:italic;font-size:13px;}
+.twr-exp-row,.twr-type-row{display:grid;grid-template-columns:96px 1fr;gap:10px;
+  align-items:start;margin:8px 0;}
+.twr-conj,.twr-type-name{font-weight:700;color:var(--navy);background:#fef0d8;
+  border-radius:6px;padding:4px 8px;font-size:13.5px;text-align:center;}
+.twr-conj-es{display:block;font-weight:600;color:var(--muted);font-style:italic;font-size:11.5px;}
+.twr-exp-lines{min-width:0;}
+.twr-hint{margin:0 0 4px;font-size:13px;color:var(--muted);}
+.twr-stems{margin:0 0 8px;}
+.twr-guide-step{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:10px;
+  padding:14px 16px;margin:0 0 14px;break-inside:avoid;page-break-inside:avoid;}
+.twr-guide-step>h3{margin:0 0 9px;color:var(--navy);font-size:17px;}
+.twr-focus-question{background:var(--teal-light);border-radius:8px;padding:11px 13px;margin:0 0 8px;
+  font-size:16px;font-weight:800;line-height:1.45;}
+.twr-job{margin:7px 0;line-height:1.5;}
+.twr-action{display:inline-block;background:#fef0d8;border:1px solid var(--amber);border-radius:999px;
+  padding:2px 9px;font-size:12px;font-weight:800;text-transform:uppercase;color:var(--navy);}
+.twr-word-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin:8px 0 12px;}
+.twr-word{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:9px;
+  min-height:48px;font-size:13.5px;line-height:1.4;}
+.twr-word input,.twr-check input{width:18px;height:18px;flex:0 0 auto;margin-top:2px;}
+.twr-rehearse{border:1px dashed var(--teal);border-radius:8px;padding:10px 12px;margin:8px 0;background:#f7fffd;}
+.twr-model-parts{background:#f7fafc;border-radius:8px;padding:10px 13px;margin:8px 0 12px;}
+.twr-model-parts p{margin:4px 0;font-size:13.5px;line-height:1.45;}
+.twr-level-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.twr-level-card{border:1px solid var(--line);border-top:4px solid var(--teal);border-radius:8px;padding:10px;min-width:0;}
+.twr-level-card h4{margin:0 0 3px;color:var(--navy);font-size:15px;}
+.twr-level-support{margin:0 0 7px;color:var(--muted);font-size:12px;font-weight:700;}
+.twr-level-card ul{margin:7px 0;padding-left:18px;font-size:13px;line-height:1.45;}
+.twr-level-card .writeline-area{min-height:78px;}
+.twr-checklist{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.twr-check{display:flex;gap:8px;align-items:flex-start;min-height:44px;padding:7px 9px;border:1px solid var(--line);
+  border-radius:8px;font-size:13.5px;line-height:1.4;}
+.twr-es-support{display:block;color:var(--muted);font-style:italic;font-size:12.5px;margin-top:2px;}
+@media(max-width:760px){.twr-level-grid{grid-template-columns:1fr}.twr-checklist{grid-template-columns:1fr}}
+/* Turn & Talk — Discussion Points */
+.section.turn-and-talk>h2{border-left-color:var(--teal);}
+.tt-card{border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:8px;
+  padding:12px 14px;margin:0 0 12px;page-break-inside:avoid;background:#fff;}
+.tt-phase{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:#fff;background:var(--navy);border-radius:999px;
+  padding:2px 10px;margin:0 0 8px;}
+.tt-question{font-weight:600;color:var(--navy);font-size:15px;margin:6px 0 10px;}
+.tt-support{background:var(--teal-light);border:1px solid var(--teal);border-radius:8px;
+  padding:10px 12px;margin:0 0 10px;}
+.tt-extend{background:#fffaf0;border:1px dashed var(--amber);border-radius:8px;
+  padding:10px 12px;margin:0;}
+.tt-support .level-tag,.tt-extend .level-tag{margin:0 0 6px;}
+.tt-kernel{margin:6px 0;font-size:14px;}
+.tt-kernel-label{font-weight:700;color:var(--teal-ink);margin-right:4px;}
+.tt-stems{margin:6px 0;}
+.tt-mini-label{font-weight:700;color:var(--navy);margin-right:4px;}
+.tt-wordbank{margin:6px 0;font-size:13.5px;}
+.tt-word{display:inline-block;font-weight:600;color:var(--teal);background:#fff;
+  border:1px solid var(--teal);border-radius:999px;padding:1px 9px;margin:2px 4px 2px 0;font-size:12.5px;}
+.tt-listen{margin:6px 0 0;font-size:13px;color:var(--muted);font-style:italic;}
+.tt-extend-q{font-weight:600;color:#9a6b12;margin:4px 0 6px;font-size:14px;}
+.tt-extend-stems{margin:4px 0 0;padding-left:20px;font-size:13.5px;}
+.tt-extend-stems li{margin:3px 0;}
+/* Projects Section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.project-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(18, 53, 91, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  page-break-inside: avoid;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(18, 53, 91, 0.08);
+}
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.project-emoji {
+  font-size: 24px;
+}
+.project-title {
+  margin: 0;
+  color: var(--navy);
+  font-size: 16.5px;
+  font-family: Outfit, system-ui, sans-serif;
+}
+.project-desc {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.project-link-btn {
+  display: block;
+  text-align: center;
+  background: var(--cream);
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.project-link-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.project-link-btn.project-link-main:hover {
+  background: #198e8a;
+  border-color: #198e8a;
+}
+/* Download menu */
+.dl-wrap{position:relative;display:inline-block;margin-left:10px;}
+.dl-menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 8px 24px rgba(18,53,91,.18);padding:6px;min-width:210px;z-index:20;}
+.dl-menu[hidden]{display:none;}
+.dl-menu a{display:block;padding:9px 12px;color:var(--ink);text-decoration:none;border-radius:6px;
+  font-size:14px;font-weight:600;}
+.dl-menu a:hover,.dl-menu a:focus{background:var(--teal-light);}
+.dl-menu .dl-sub{display:block;font-weight:400;color:var(--muted);font-size:12px;}
+
+/* Leveled display settings */
+.l1-only, .l2-only, .l3-only { display: none !important; }
+.l2-only-block { display: block !important; }
+
+html.level-l1 .l1-only { display: block !important; }
+html.level-l1 span.l1-only { display: inline !important; }
+html.level-l1 div.l1-only-flex { display: flex !important; }
+html.level-l1 .l2-only, html.level-l1 .l3-only, html.level-l1 .l2-only-block { display: none !important; }
+
+html.level-l2 .l2-only { display: block !important; }
+html.level-l2 .l2-only-block { display: block !important; }
+html.level-l2 span.l2-only { display: inline !important; }
+html.level-l2 div.l2-only-flex { display: flex !important; }
+html.level-l2 .l1-only, html.level-l2 .l3-only { display: none !important; }
+
+html.level-l3 .l3-only { display: block !important; }
+html.level-l3 span.l3-only { display: inline !important; }
+html.level-l3 div.l3-only-flex { display: flex !important; }
+html.level-l3 .l1-only, html.level-l3 .l2-only, html.level-l3 .l2-only-block { display: none !important; }
+
+/* Level Selector Styling */
+.level-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.selector-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pill-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 2px;
+  gap: 2px;
+}
+.pill-btn {
+  position: relative;
+  cursor: pointer;
+}
+.pill-btn input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.pill-btn span {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 18px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.65);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.pill-btn input[type="radio"]:checked + span {
+  background: var(--amber);
+  color: var(--navy);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.pill-btn:hover span {
+  color: #fff;
+}
+.pill-btn input[type="radio"]:checked:hover span {
+  color: var(--navy);
+}
+@media(max-width:640px){.topbar{position:static;display:grid;grid-template-columns:1fr;gap:10px;padding:12px;}
+  .topbar .brand{text-align:center;}.level-selector{width:100%;justify-content:center;flex-wrap:wrap;}
+  .selector-label{width:100%;text-align:center;}.pill-group{display:grid;grid-template-columns:repeat(3,1fr);width:100%;}
+  .pill-btn span{display:block;padding:8px 6px;text-align:center;white-space:nowrap;}
+  .topbar-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;}
+  .topbar-actions>*{min-width:0;}.topbar-actions .print-btn{width:100%;height:100%;padding:10px 6px;font-size:13px;}
+  .sheet{padding:28px 18px;}.name-line{gap:12px;}}
+
+/* Leveled component details */
+.vocab-def-prompt, .notes-step-prompt {
+  font-size: 13.5px;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 4px 0 6px;
+}
+.scratchpad {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background-color: #fafbfc;
+  background-image: radial-gradient(var(--line) 1px, transparent 0);
+  background-size: 16px 16px;
+  height: 110px;
+  margin: 10px 0;
+  position: relative;
+}
+.scratchpad-label {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid var(--line);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.wk-checkboxes {
+  background: rgba(31, 166, 162, 0.05);
+  border: 1px dashed var(--teal);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0;
+}
+.wk-checkbox-label {
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.wk-checkbox-label input {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* Turn & Talk Leveling */
+html.level-l1 .tt-support { display: block !important; }
+html.level-l1 .tt-extend { display: none !important; }
+html.level-l2 .tt-support { display: block !important; }
+html.level-l2 .tt-extend { display: block !important; }
+html.level-l3 .tt-support { display: none !important; }
+html.level-l3 .tt-extend { display: block !important; }
+
+/* Vocab def leveling styling */
+html.level-l1 .vocab-def-l1 { display: block !important; }
+html.level-l1 .vocab-def-l2, html.level-l1 .vocab-def-l3 { display: none !important; }
+html.level-l2 .vocab-def-l2 { display: block !important; }
+html.level-l2 .vocab-def-l1, html.level-l2 .vocab-def-l3 { display: none !important; }
+html.level-l3 .vocab-def-l3 { display: block !important; }
+html.level-l3 .vocab-def-l1, html.level-l3 .vocab-def-l2 { display: none !important; }
+
+/* Notes step body leveling */
+html.level-l1 .notes-step-body-l1 { display: block !important; }
+html.level-l1 .notes-step-body-l2, html.level-l1 .notes-step-body-l3 { display: none !important; }
+html.level-l2 .notes-step-body-l2 { display: block !important; }
+html.level-l2 .notes-step-body-l1, html.level-l2 .notes-step-body-l3 { display: none !important; }
+html.level-l3 .notes-step-body-l3 { display: block !important; }
+html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: none !important; }
+
+@media print{
+  @page{
+    size:letter;margin:0.7in 0.7in 0.85in;
+    @bottom-left{content:"Neft Teacher";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-center{content:"Mean Absolute Deviation · Standard 6.DS.6c";font-family:Georgia,serif;font-size:9pt;color:#444;}
+    @bottom-right{content:"Page " counter(page) " of " counter(pages);font-family:Georgia,serif;font-size:9pt;color:#444;}
+  }
+  @page:first{
+    @top-center{content:"";}
+  }
+  body{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;font-size:11.5pt;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .topbar,.print-btn,.no-print,.dl-wrap,.level-selector{display:none !important;}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;}
+  .section{margin-bottom:16px;}
+  .section>h2,header.packet h1,header.packet .eyebrow,.example-head,
+  .answer-key h2,.vocab-term,.twr-block h3{color:#000;}
+  .vocab-figure{background:#fff;border:1px solid #000;}
+  .think-block{background:#fff;border:1px solid #000;}
+  .notes-learning{background:#fff;border:1px solid #000;}
+  .notes-learning-label,.notes-learning-text,.notes-step-title{color:#000;}
+  .notes-step{background:#fff;border:1px solid #000;border-top:2px solid #000;}
+  .notes-step-2,.notes-step-3{border-top:2px solid #000;}
+  .notes-word-chip{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-step{background:#fff;border:1px solid #000;border-left:2px solid #000;}
+  .notes-gr-we,.notes-gr-you{border-left:2px solid #000;}
+  .notes-gr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .notes-gr-cue{color:#222;}
+  .notes-gr-intro{color:#222;}
+  .wk-steplabel{background:#fff;color:#000;border:1px solid #000;}
+  .wk-plabel,.wk-anslabel{color:#000;}
+  .wk-step-blank .writeline,.wk-answer-blank .writeline{border-bottom:1px solid #000;}
+  .tt-hint-toggle{background:#fff;border:1px solid #000;}
+  .tt-hint-toggle>summary{color:#000;}
+  .tt-hint-toggle[open]>summary{margin-bottom:2px;}
+  .tt-hint-toggle>summary{list-style:none;}
+  .tt-hint-toggle>.tt-hint-text{display:block !important;}
+  .tt-hint-text{color:#000;}
+  .tt-stems-label{color:#000;}
+  header.packet{border-bottom:2px solid #000;}
+  .section>h2{border-left:4px solid #000;}
+  .example{border-left:3px solid #000;}
+  .answer-key{border-top:2px solid #000;}
+  .vocab-card{border:1px solid #000;}
+  .writeline{border-bottom:1px solid #000;}
+  textarea.writeline-area{color:#000;background-image:repeating-linear-gradient(transparent,transparent 25px,#000 25px,#000 26px);}
+  input.writeline{border-bottom:1px solid #000;color:#000;}
+  input.gn-blank{color:#000;}
+  textarea.writeline-area:focus,input.writeline:focus,input.gn-blank:focus{background-color:transparent;}
+  .nt-save,.nt-clear{display:none !important;}
+  .mission{background:#fff;color:#000;border:1px solid #000;}
+  .mission-title,.mission-eyebrow{color:#000;}
+  .level-tag,.flagship-badge,.twr-method,.twr-tag{background:#fff;color:#000;border:1px solid #000;}
+  .enrich-block{background:#fff;border:1px dashed #000;}
+  .twr-block{border:1px solid #000;border-left:3px solid #000;}
+  .twr-model{background:#fff;border:1px solid #000;}
+  .twr-conj,.twr-type-name{background:#fff;border:1px solid #000;color:#000;}
+  .twr-es,.twr-conj-es{color:#222;}
+  .tt-card{border:1px solid #000;border-left:3px solid #000;}
+  .tt-question,.section.turn-and-talk>h2{color:#000;}
+  .tt-phase{background:#fff;color:#000;border:1px solid #000;}
+  .tt-support{background:#fff;border:1px solid #000;}
+  .tt-extend{background:#fff;border:1px dashed #000;}
+  .tt-kernel-label,.tt-mini-label,.tt-extend-q{color:#000;}
+  .tt-word{background:#fff;color:#000;border:1px solid #000;}
+  .tt-listen{color:#222;}
+  footer.packet{display:none;}
+  .scratchpad {
+    border: 1px solid #000 !important;
+    background-color: #fff !important;
+    background-image: radial-gradient(#000 1px, transparent 0) !important;
+  }
+  .scratchpad-label {
+    background: #fff !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+  }
+  .wk-checkboxes {
+    background: #fff !important;
+    border: 1px dashed #000 !important;
+  }
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+<style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
+<style>
+  /* Fill-in-the-blank guided notes */
+  .gn-directions{margin:14px 0 6px;font-weight:700;color:var(--navy);font-size:15px;}
+  .gn-pointer{margin:10px 0 14px;padding:10px 14px;background:var(--teal-light);border-radius:10px;font-size:14px;color:var(--navy);}
+  .gn-fill{margin:6px 0 4px;}
+  .gn-bank{border:2px dashed var(--teal);border-radius:12px;background:#f0faf8;padding:12px 14px;margin-bottom:14px;}
+  .gn-bank-label{display:block;font-weight:800;color:var(--teal-ink);font-size:13px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px;}
+  .gn-bank-words{display:flex;flex-wrap:wrap;gap:8px;}
+  .gn-bank-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:5px 14px;font-weight:700;font-size:14px;}
+  .gn-bank-hint{margin:8px 0 0;font-size:12px;color:#5a6b78;font-style:italic;}
+  .gn-lines{list-style:none;margin:0;padding:0;counter-reset:none;}
+  .gn-line{display:flex;align-items:flex-start;gap:12px;padding:11px 12px;border:1px solid #e3e8ec;border-radius:10px;margin-bottom:10px;background:#fff;break-inside:avoid;page-break-inside:avoid;}
+  .gn-num{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .gn-sentence{flex:1;font-size:16px;line-height:1.9;color:#1c2b36;}
+  .gn-blank{display:inline-block;min-width:120px;border-bottom:2px solid var(--navy);height:1.25em;margin:0 4px;vertical-align:bottom;}
+  .gn-subhead{margin:20px 0 8px;color:var(--navy);font-size:16px;font-weight:800;}
+  /* Tap-to-define word-bank pop-ups (with picture) */
+  .gn-bank-word{cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .gn-info{font-size:12px;color:var(--teal);font-weight:700;}
+  .nt-popover-overlay{position:fixed;inset:0;z-index:9998;background:rgba(18,53,91,0.4);opacity:0;transition:opacity 0.2s ease;pointer-events:none;}
+  .nt-popover-overlay.active{opacity:1;pointer-events:auto;}
+  .nt-popover{position:fixed;z-index:9999;max-width:290px;background:rgba(255,255,255,0.96);border:1.5px solid rgba(31,166,162,0.45);
+    border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.18), 0 1px 3px rgba(0,0,0,0.05);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    padding:16px;opacity:0;transform:scale(0.95) translateY(5px);transition:opacity 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);pointer-events:none;}
+  .nt-popover.open{opacity:1;transform:scale(1) translateY(0);pointer-events:auto;}
+  .nt-popover img{display:block;width:100%;max-height:150px;object-fit:contain;border-radius:8px;
+    background:#f0faf8;margin-bottom:10px;}
+  .nt-popover h4{margin:0 0 6px;color:var(--navy);font-size:17px;font-family:Outfit,system-ui,sans-serif;}
+  .nt-popover h4 .es-term{font-weight:400;color:var(--muted);font-size:0.95em;}
+  .nt-popover p{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink);}
+  .nt-popover p .def-en{display:block;}
+  .nt-popover p .def-es{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-style:italic;color:var(--muted);font-size:14px;}
+  .nt-popover .nt-pop-close{position:absolute;top:6px;right:8px;border:none;background:transparent;
+    font-size:20px;line-height:1;color:var(--muted);cursor:pointer;}
+  @media (max-width: 640px) {
+    .nt-popover {
+      position: fixed; bottom: 0; left: 0 !important; right: 0 !important; top: auto !important;
+      max-width: 100% !important; width: 100% !important; border-radius: 20px 20px 0 0 !important;
+      border: none !important; border-top: 1.5px solid rgba(31, 166, 162, 0.3) !important;
+      box-shadow: 0 -8px 30px rgba(18, 53, 91, 0.15) !important;
+      transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.32, 0.94, 0.6, 1);
+      background: #ffffff; padding: 24px 20px 30px;
+    }
+    .nt-popover.open { transform: translateY(0); }
+  }
+  /* Larger, clearer Watch & Try worked visuals */
+  .notes-gr-step .wk-problem{font-size:15.5px;line-height:1.6;background:#f7fafc;border-radius:8px;padding:8px 12px;}
+  .notes-gr-step .wk-steps .wk-step{font-size:15px;line-height:1.7;margin:7px 0;}
+  .notes-gr-step .wk-steplabel{font-size:13px;padding:2px 10px;}
+  /* Drag-and-drop "put the steps in order" */
+  .ss-step{border-left-color:var(--teal)!important;}
+  .step-sorter{margin-top:8px;}
+  .ss-list{list-style:none;margin:0;padding:0;counter-reset:ss;}
+  .ss-item{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);
+    border-left:5px solid var(--teal);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:15px;
+    line-height:1.5;cursor:grab;transition:box-shadow .12s,border-color .12s;}
+  .ss-item:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+  .ss-item.ss-dragging{opacity:.5;cursor:grabbing;}
+  .ss-item.ss-over{border-color:var(--teal);box-shadow:0 4px 14px rgba(31,166,162,.25);}
+  .ss-item.ss-right{border-left-color:#2e9e5b;background:#f1faf2;}
+  .ss-item.ss-wrong{border-left-color:#d9534f;background:#fdf2f1;}
+  .ss-grip{color:var(--muted);font-size:18px;cursor:grab;flex:0 0 auto;}
+  .ss-text{flex:1;}
+  .ss-move{display:inline-flex;flex-direction:column;gap:2px;flex:0 0 auto;}
+  .ss-move button{border:1px solid var(--line);background:#f7fafc;border-radius:6px;width:30px;height:22px;
+    font-size:11px;line-height:1;color:var(--navy);cursor:pointer;padding:0;}
+  .ss-move button:hover{border-color:var(--teal);}
+  .ss-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .ss-check,.ss-shuffle{border:none;border-radius:999px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer;}
+  .ss-check{background:var(--teal);color:#fff;}
+  .ss-shuffle{background:#fff;color:var(--navy);border:1.5px solid var(--line);}
+  .ss-feedback{font-size:14px;font-weight:700;}
+  .ss-feedback.ok{color:#2e9e5b;}
+  .ss-feedback.no{color:#d9534f;}
+  /* Tap-to-pair vocabulary match-up */
+  .match-up{margin:12px 0 6px;background:#f0faf8;border:1.5px dashed var(--teal);border-radius:12px;padding:12px 14px;}
+  .mu-head{margin:0 0 10px;font-size:14px;color:var(--navy);}
+  .mu-cols{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;}
+  .mu-col{display:flex;flex-direction:column;gap:8px;}
+  .mu-term,.mu-def{text-align:left;border:2px solid var(--line);background:#fff;border-radius:10px;
+    padding:9px 12px;font:inherit;font-size:14.5px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s;}
+  .mu-term{font-weight:700;color:var(--navy);}
+  .mu-term:hover,.mu-def:hover{border-color:var(--teal);}
+  .mu-term.sel,.mu-def.sel{border-color:var(--teal);background:#e6f7f4;}
+  .mu-term.done,.mu-def.done{border-color:#2e9e5b;background:#f1faf2;color:#2e7d46;cursor:default;}
+  .mu-term.miss,.mu-def.miss{border-color:#d9534f;background:#fdf2f1;}
+  .mu-feedback{margin:10px 0 0;font-size:14px;font-weight:700;}
+  .mu-feedback.ok{color:#2e9e5b;}
+  @media (prefers-reduced-motion:reduce){.ss-item,.mu-term,.mu-def{transition:none;}}
+  @media print{
+    .gn-bank{border:1.5px dashed #000;background:#fff;}
+    .gn-bank-label{color:#000;}
+    .gn-bank-word{border-color:#000;color:#000;}
+    .gn-info{display:none;}
+    .gn-line{border-color:#000;}
+    .gn-num{background:#000;}
+    .gn-blank{border-bottom-color:#000;}
+    .gn-subhead,.gn-directions{color:#000;}
+    .nt-popover,.nt-popover-overlay{display:none!important;}
+    .ss-item{border-color:#000;border-left-color:#000;break-inside:avoid;}
+    .ss-grip,.ss-move{display:none;}
+  }
+</style>
+<script>
+  if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
+  (function() {
+    const savedLevel = localStorage.getItem('notes-level') || 'l2';
+    document.documentElement.classList.add('level-' + savedLevel);
+  })();
+</script>
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/2-9/notes-teacher.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Mean Absolute Deviation — Notes Packet (Teacher Copy — Answer Key).">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="Mean Absolute Deviation — Notes Packet (Teacher Copy — Answer Key)">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Mean Absolute Deviation — Notes Packet (Teacher Copy — Answer Key).">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/2-9/notes-teacher.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+<div class="topbar no-print">
+  <span class="brand">Neft Teacher · Notes Packet · Teacher Copy</span>
+  <div class="level-selector no-print">
+    <span class="selector-label">Leveled Mode:</span>
+    <div class="pill-group">
+      <label class="pill-btn">
+        <input type="radio" name="notes-level" value="l1" onclick="setLevel('l1')" />
+        <span>L1 Support</span>
+      </label>
+      <label class="pill-btn">
+        <input type="radio" name="notes-level" value="l2" onclick="setLevel('l2')" />
+        <span>L2 Standard</span>
+      </label>
+      <label class="pill-btn">
+        <input type="radio" name="notes-level" value="l3" onclick="setLevel('l3')" />
+        <span>L3 Enrichment</span>
+      </label>
+    </div>
+  </div>
+  <div class="topbar-actions" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <button class="nt-clear no-print" type="button" id="nt-clear-btn">Clear my work</button>
+    <button class="print-btn" type="button" onclick="window.print()">Print / Save as PDF</button>
+    <div class="dl-wrap">
+      <button class="print-btn" type="button" aria-haspopup="true" aria-expanded="false"
+        onclick="(function(b){var m=b.parentNode.querySelector('.dl-menu');var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden');}else{m.setAttribute('hidden','');}b.setAttribute('aria-expanded',String(o));})(this)">Download ▾</button>
+      <div class="dl-menu" hidden role="menu">
+        <a href="./notes-teacher.html" download="2-9-notes-teacher.html" role="menuitem">Self-contained HTML<span class="dl-sub">Open or save the full packet</span></a>
+        <a href="./downloads/2-9-notes-teacher.pdf" role="menuitem">PDF<span class="dl-sub">Print-ready, branded</span></a>
+        <a href="./downloads/2-9-notes-teacher.docx" role="menuitem">Word (DOCX)<span class="dl-sub">Editable document</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function setLevel(lvl) {
+    document.documentElement.classList.remove('level-l1', 'level-l2', 'level-l3');
+    document.documentElement.classList.add('level-' + lvl);
+    localStorage.setItem('notes-level', lvl);
+    const radios = document.querySelectorAll('input[name="notes-level"]');
+    radios.forEach(r => {
+      r.checked = (r.value === lvl);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedLevel = localStorage.getItem('notes-level') || 'l2';
+    setLevel(savedLevel);
+  });
+</script>
+<script>
+  (function () {
+    var KEY = 'nt-notes:2-9';
+    var statusEl, clearBtn, fields = [], saveTimer = null;
+    function collectFields() {
+      var list = [];
+      var typed = document.querySelectorAll('[data-nt-field]');
+      for (var i = 0; i < typed.length; i++) list.push(typed[i]);
+      var boxes = document.querySelectorAll('main input[type=checkbox]');
+      for (var j = 0; j < boxes.length; j++) list.push(boxes[j]);
+      return list;
+    }
+    // Positional keys scramble the moment a field is added or removed, so a
+    // field may name itself with data-nt-key. Restore still falls back to the
+    // old positional key, so work typed before a layout change survives.
+    function fieldKey(el, i) {
+      var k = el.getAttribute && el.getAttribute('data-nt-key');
+      if (k) return (el.type === 'checkbox' ? 'c:' : 'f:') + k;
+      return legacyKey(el, i);
+    }
+    function legacyKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
+    function setStatus(text) { if (statusEl) statusEl.textContent = text; }
+    function readStore() {
+      try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
+      catch (e) { return {}; }
+    }
+    function save() {
+      var data = {};
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (el.type === 'checkbox') { if (el.checked) data[k] = 1; }
+        else if (el.value && el.value.trim() !== '') { data[k] = el.value; }
+      }
+      try { localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Saved ✓'); }
+      catch (e) { setStatus('Could not save (storage off)'); }
+    }
+    function queueSave() {
+      setStatus('Saving…');
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(save, 400);
+    }
+    function restore() {
+      var data = readStore();
+      for (var i = 0; i < fields.length; i++) {
+        var el = fields[i], k = fieldKey(el, i);
+        if (!(k in data)) k = legacyKey(el, i);
+        if (!(k in data)) continue;
+        if (el.type === 'checkbox') el.checked = !!data[k];
+        else el.value = data[k];
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      statusEl = document.getElementById('nt-save-status');
+      clearBtn = document.getElementById('nt-clear-btn');
+      fields = collectFields();
+      if (!fields.length) {
+        if (statusEl) statusEl.style.display = 'none';
+        if (clearBtn) clearBtn.style.display = 'none';
+        return;
+      }
+      restore();
+      for (var i = 0; i < fields.length; i++) {
+        fields[i].addEventListener('input', queueSave);
+        fields[i].addEventListener('change', queueSave);
+      }
+      if (clearBtn) clearBtn.addEventListener('click', function () {
+        if (!confirm('Clear all of your typing on this lesson? This cannot be undone.')) return;
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        for (var j = 0; j < fields.length; j++) {
+          if (fields[j].type === 'checkbox') fields[j].checked = false;
+          else fields[j].value = '';
+        }
+        setStatus('Cleared');
+      });
+    });
+  })();
+</script>
+<script>
+  // Tap-to-define word-bank pop-ups (term + plain meaning + picture).
+  (function () {
+    var pop = null;
+    var overlay = null;
+    function ensurePop() {
+      if (pop) return pop;
+      pop = document.createElement('div');
+      pop.className = 'nt-popover';
+      pop.innerHTML = '<button type="button" class="nt-pop-close" aria-label="Close">×</button>' +
+        '<img alt="" /><h4></h4><p></p>';
+      overlay = document.createElement('div');
+      overlay.className = 'nt-popover-overlay';
+      document.body.appendChild(overlay);
+      document.body.appendChild(pop);
+      pop.querySelector('.nt-pop-close').addEventListener('click', hidePop);
+      overlay.addEventListener('click', hidePop);
+      return pop;
+    }
+    function hidePop() { 
+      if (pop) pop.classList.remove('open'); 
+      if (overlay) overlay.classList.remove('active');
+    }
+    function showPop(btn) {
+      var p = ensurePop();
+      var img = p.querySelector('img');
+      var src = btn.getAttribute('data-img') || '';
+      if (src) { img.src = src; img.style.display = ''; img.onerror = function () { img.style.display = 'none'; }; }
+      else { img.style.display = 'none'; }
+      var term = btn.getAttribute('data-term') || '';
+      var termEs = btn.getAttribute('data-term-es') || '';
+      var def = btn.getAttribute('data-def') || '';
+      var defEs = btn.getAttribute('data-def-es') || '';
+      p.querySelector('h4').innerHTML = term + (termEs ? ' <span class="es-term">/ ' + termEs + '</span>' : '');
+      p.querySelector('p').innerHTML = '<span class="def-en">' + def + '</span>' + (defEs ? '<span class="def-es">' + defEs + '</span>' : '');
+      p.classList.add('open');
+      if (window.innerWidth <= 640) {
+        if (overlay) overlay.classList.add('active');
+      } else {
+        if (overlay) overlay.classList.remove('active');
+        var r = btn.getBoundingClientRect();
+        var top = r.bottom + 8, left = r.left;
+        var pw = p.offsetWidth, ph = p.offsetHeight;
+        if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+        if (left < 8) left = 8;
+        if (top + ph > window.innerHeight - 8) top = r.top - ph - 8;
+        if (top < 8) top = 8;
+        p.style.left = left + 'px';
+        p.style.top = top + 'px';
+      }
+    }
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('[data-popover]') : null;
+      if (btn) { e.preventDefault(); showPop(btn); return; }
+      if (pop && !e.target.closest('.nt-popover')) hidePop();
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hidePop(); });
+    window.addEventListener('resize', hidePop);
+    window.addEventListener('scroll', hidePop, { passive: true });
+  })();
+
+  // Interactive "put the steps in order" — drag, ▲▼ buttons, or keyboard.
+  (function () {
+    function shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+      }
+      return arr;
+    }
+    function items(list) { return Array.prototype.slice.call(list.children); }
+    function clearMarks(list) {
+      items(list).forEach(function (li) { li.classList.remove('ss-right', 'ss-wrong'); });
+    }
+    function init(sorter) {
+      var list = sorter.querySelector('.ss-list');
+      var order = shuffle(items(list));
+      // Avoid starting already-solved.
+      var solved = order.every(function (li, i) { return +li.getAttribute('data-correct') === i; });
+      if (solved && order.length > 1) { order.push(order.shift()); }
+      order.forEach(function (li) { list.appendChild(li); });
+
+      var dragEl = null;
+      list.addEventListener('dragstart', function (e) {
+        dragEl = e.target.closest('.ss-item');
+        if (dragEl) dragEl.classList.add('ss-dragging');
+      });
+      list.addEventListener('dragend', function () {
+        if (dragEl) dragEl.classList.remove('ss-dragging');
+        items(list).forEach(function (li) { li.classList.remove('ss-over'); });
+        dragEl = null;
+      });
+      list.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        var over = e.target.closest('.ss-item');
+        if (!over || over === dragEl) return;
+        items(list).forEach(function (li) { li.classList.remove('ss-over'); });
+        over.classList.add('ss-over');
+        var r = over.getBoundingClientRect();
+        var after = (e.clientY - r.top) > r.height / 2;
+        list.insertBefore(dragEl, after ? over.nextSibling : over);
+      });
+      list.addEventListener('click', function (e) {
+        var li = e.target.closest('.ss-item'); if (!li) return;
+        if (e.target.classList.contains('ss-up') && li.previousElementSibling) {
+          list.insertBefore(li, li.previousElementSibling); clearMarks(list); li.focus();
+        } else if (e.target.classList.contains('ss-down') && li.nextElementSibling) {
+          list.insertBefore(li.nextElementSibling, li); clearMarks(list); li.focus();
+        }
+      });
+
+      var fb = sorter.querySelector('.ss-feedback');
+      sorter.querySelector('.ss-check').addEventListener('click', function () {
+        var ok = true;
+        items(list).forEach(function (li, i) {
+          var right = +li.getAttribute('data-correct') === i;
+          li.classList.toggle('ss-right', right);
+          li.classList.toggle('ss-wrong', !right);
+          if (!right) ok = false;
+        });
+        fb.textContent = ok ? '✅ Perfect — that is the right order!' : '❌ Not yet — move the red cards and check again.';
+        fb.className = 'ss-feedback ' + (ok ? 'ok' : 'no');
+      });
+      sorter.querySelector('.ss-shuffle').addEventListener('click', function () {
+        clearMarks(list);
+        shuffle(items(list)).forEach(function (li) { list.appendChild(li); });
+        fb.textContent = ''; fb.className = 'ss-feedback';
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var sorters = document.querySelectorAll('[data-step-sorter]');
+      for (var i = 0; i < sorters.length; i++) init(sorters[i]);
+    });
+  })();
+
+  // Tap-to-pair vocabulary match-up.
+  (function () {
+    function shuffleChildren(col) {
+      var nodes = Array.prototype.slice.call(col.children);
+      for (var i = nodes.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        col.insertBefore(nodes[j], nodes[i]);
+        var t = nodes[i]; nodes[i] = nodes[j]; nodes[j] = t;
+      }
+    }
+    function init(mu) {
+      var cols = mu.querySelectorAll('.mu-col');
+      if (cols.length === 2) shuffleChildren(cols[1]);
+      var fb = mu.querySelector('.mu-feedback');
+      var total = mu.querySelectorAll('.mu-term').length;
+      var done = 0, selTerm = null;
+      function clearSel() {
+        var s = mu.querySelectorAll('.sel');
+        for (var i = 0; i < s.length; i++) s[i].classList.remove('sel', 'miss');
+      }
+      mu.addEventListener('click', function (e) {
+        var term = e.target.closest('.mu-term');
+        var def = e.target.closest('.mu-def');
+        if (term && !term.classList.contains('done')) {
+          clearSel(); selTerm = term; term.classList.add('sel'); return;
+        }
+        if (def && !def.classList.contains('done') && selTerm) {
+          if (def.getAttribute('data-mu') === selTerm.getAttribute('data-mu')) {
+            def.classList.add('done'); selTerm.classList.add('done');
+            selTerm.classList.remove('sel'); selTerm = null; done++;
+            if (done === total) { fb.textContent = '✅ All matched — great job!'; fb.className = 'mu-feedback ok'; }
+          } else {
+            def.classList.add('miss');
+            var bad = selTerm;
+            setTimeout(function () {
+              def.classList.remove('miss'); if (bad) bad.classList.remove('sel', 'miss');
+            }, 600);
+            selTerm = null;
+          }
+        }
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var mus = document.querySelectorAll('[data-match-up]');
+      for (var i = 0; i < mus.length; i++) init(mus[i]);
+    });
+  })();
+</script>
+<main class="sheet">
+  <div class="teacher-banner">👩‍🏫 Teacher Copy — includes the Answer Key &amp; Teacher Guide. Do not distribute to students.</div>
+  <header class="packet">
+    <p class="eyebrow">Unit 2 · Standard 6.DS.6c</p>
+    <h1>Mean Absolute Deviation </h1>
+    <p class="meta">Lesson 2-9 · Teacher Copy</p>
+    <div class="name-line">
+      <label class="nl-field"><span class="nl-label">Name:</span><input class="nl-input" type="text" data-nt-field placeholder="Type your name" aria-label="Your name" /></label>
+      <label class="nl-field"><span class="nl-label">Date:</span><input class="nl-input" type="text" data-nt-field placeholder="Today's date" aria-label="Date" /></label>
+      <label class="nl-field"><span class="nl-label">Class:</span><input class="nl-input" type="text" data-nt-field placeholder="Class period" aria-label="Class" /></label>
+    </div>
+  </header>
+  
+  <section class="section notes">
+  <h2>My Notes
+    <span class="level-tag level-1 l1-only">Level 1 Support</span>
+    <span class="level-tag level-2 l2-only">Level 2 Standard</span>
+    <span class="level-tag level-3 l3-only">Level 3 Enrichment</span>
+  </h2>
+  <div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">Today's objectives</p>
+        <p class="notes-learning-text"><strong>Content Objective:</strong> I can find the mean absolute deviation (MAD) to describe how spread out data is.</p>
+        <p class="notes-learning-text"><strong>Language Objective:</strong> I can explain my work using the words mean absolute deviation, deviation, absolute value, and spread.</p>
+      </div>
+    </div>
+  <p class="gn-pointer">📖 See <strong>Learn It</strong> for the explanation and worked examples, and the <strong>Vocab</strong> tab for the words. These are your notes to fill in and keep.</p>
+  <p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p><div class="gn-fill">
+    <div class="gn-bank">
+      <span class="gn-bank-label">📚 Word Bank — fill each blank with the best word</span>
+      <div class="gn-bank-words"><button type="button" class="gn-bank-word" data-popover data-term="Mean Absolute Deviation" data-term-es="Desviación media absoluta" data-def="The average distance of data values from the mean; it describes spread." data-def-es="La distancia promedio de los valores de datos respecto a la media; describe la dispersión." data-img="../../assets/vocab-images/mean-absolute-deviation.svg" aria-label="Show the meaning and picture for Mean Absolute Deviation">Mean Absolute Deviation<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Deviation" data-term-es="Desviación" data-def="How far a number is from the mean." data-def-es="Qué tan lejos está un número de la media." data-img="../../assets/vocab-images/mean-absolute-deviation.svg" aria-label="Show the meaning and picture for Deviation">Deviation<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Absolute Value" data-term-es="Valor absoluto" data-def="How far a number is from zero. It is never negative." data-def-es="Qué tan lejos está un número de cero. Nunca es negativo." data-img="../../assets/vocab-images/absolute-value.svg" aria-label="Show the meaning and picture for Absolute Value">Absolute Value<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Spread" data-term-es="Dispersión" data-def="How far apart the numbers are." data-def-es="Qué tan separados están los números." data-img="../../assets/vocab-images/spread.svg" aria-label="Show the meaning and picture for Spread">Spread<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Data distribution" data-term-es="Distribución de datos" data-def="How the data looks: where it sits and how spread out it is." data-def-es="Cómo se ven los datos: dónde están y qué tan separados están." data-img="../../assets/vocab-images/distribution.svg" aria-label="Show the meaning and picture for Data distribution">Data distribution<span class="gn-info" aria-hidden="true">ⓘ</span></button><button type="button" class="gn-bank-word" data-popover data-term="Variability" data-term-es="Variabilidad" data-def="How spread out the numbers are." data-def-es="Qué tan separados están los números." data-img="../../assets/vocab-images/spread.svg" aria-label="Show the meaning and picture for Variability">Variability<span class="gn-info" aria-hidden="true">ⓘ</span></button></div>
+      <p class="gn-bank-hint">👆 Tap any word to see what it means and a picture.</p>
+      <p class="gn-bank-hint l3-only">Level 3: try the blanks from memory first, then check the bank.</p>
+    </div>
+    <ol class="gn-lines"><li class="gn-line"><span class="gn-num">1</span><span class="gn-sentence">The average distance of each value from the mean is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">2</span><span class="gn-sentence">How far a single value is from the mean is its <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">3</span><span class="gn-sentence">The distance of a number from zero, always positive, is its <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">4</span><span class="gn-sentence">How far apart the data values are from each other is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">5</span><span class="gn-sentence">The way data values are spread out is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li><li class="gn-line"><span class="gn-num">6</span><span class="gn-sentence">How much the data values differ is the <input class="gn-blank" type="text" data-nt-field aria-label="Fill in the blank" />.</span></li></ol>
+  </div>
+</section>
+  <section class="section twr">
+  <h2>Write About the Math <span class="twr-method">Guided ESOL writing</span></h2>
+  <p class="level-note">Use the support level you need. Every level answers the same math question.</p>
+  <div class="twr-guide-step">
+    <h3>1. Understand the Question</h3>
+    <span class="twr-action">compare</span>
+    <p class="twr-focus-question">Both keepers allow the same average goals. Which should the coach pick and why?</p>
+    <p class="twr-job"><strong>Your job:</strong> Answer the question. Use math evidence. Explain how the evidence proves your answer.<span class="twr-es-support" lang="es">Responde la pregunta. Usa evidencia matemática. Explica cómo la evidencia demuestra tu respuesta.</span></p>
+  </div>
+  <div class="twr-guide-step">
+    <h3>2. Plan Your Math Words</h3>
+    <p>Check at least two words you will use.</p>
+    <div class="twr-word-grid"><label class="twr-word">
+      <input type="checkbox" data-nt-field aria-label="Use Mean Absolute Deviation in my explanation" />
+      <span><strong>Mean Absolute Deviation</strong> — The average distance of data values from the mean; it describes spread.<span class="twr-es-support" lang="es">Desviación media absoluta — La distancia promedio de los valores de datos respecto a la media; describe la dispersión.</span></span>
+    </label><label class="twr-word">
+      <input type="checkbox" data-nt-field aria-label="Use Deviation in my explanation" />
+      <span><strong>Deviation</strong> — How far a number is from the mean.<span class="twr-es-support" lang="es">Desviación — Qué tan lejos está un número de la media.</span></span>
+    </label><label class="twr-word">
+      <input type="checkbox" data-nt-field aria-label="Use Absolute Value in my explanation" />
+      <span><strong>Absolute Value</strong> — How far a number is from zero. It is never negative.<span class="twr-es-support" lang="es">Valor absoluto — Qué tan lejos está un número de cero. Nunca es negativo.</span></span>
+    </label><label class="twr-word">
+      <input type="checkbox" data-nt-field aria-label="Use Spread in my explanation" />
+      <span><strong>Spread</strong> — How far apart the numbers are.<span class="twr-es-support" lang="es">Dispersión — Qué tan separados están los números.</span></span>
+    </label><label class="twr-word">
+      <input type="checkbox" data-nt-field aria-label="Use Data distribution in my explanation" />
+      <span><strong>Data distribution</strong> — How the data looks: where it sits and how spread out it is.<span class="twr-es-support" lang="es">Distribución de datos — Cómo se ven los datos: dónde están y qué tan separados están.</span></span>
+    </label></div>
+    <div class="twr-rehearse"><strong>Say it first:</strong> Say your idea to a partner or quietly to yourself before you write.<span class="twr-es-support" lang="es">Di tu idea a un compañero o en voz baja antes de escribir.</span><p><strong>Both keepers have a mean of ___. Keeper A's MAD is ___, which means ___. Keeper B's MAD is ___, which means ___. The coach should pick ___ because ___.</strong><span class="twr-es-support" lang="es">Di tu respuesta primero: Mi respuesta es ___ porque ___.</span></p></div>
+  </div>
+  <div class="twr-guide-step">
+    <h3>3. Build Your Explanation</h3>
+    <div class="twr-model-parts">
+      <p><strong>Model the parts:</strong> This model shows the parts of an explanation. It does not answer your writing question.</p>
+      <p><strong>Claim:</strong> Two data sets can share a mean but differ in how spread out they are.</p>
+      <p><strong>Evidence:</strong> Students choose Player A as more consistent and recognize that equal means hide different spreads.</p>
+      <p><strong>Reasoning:</strong> This evidence connects the definition of mean absolute deviation to the mathematical claim.</p>
+    </div>
+    <div class="twr-level-grid"><div class="twr-level-card" data-support-level="start">
+      <h4>Start</h4>
+      <p class="twr-level-support">Most language support</p>
+      <p>Complete the frames. Use the word bank.<span class="twr-es-support" lang="es">Completa las oraciones. Usa el banco de palabras.</span></p>
+      <ul><li><strong>Both keepers have a mean of ___. Keeper A's MAD is ___, which means ___. Keeper B's MAD is ___, which means ___. The coach should pick ___ because ___.</strong></li><li><strong>My answer is ___.</strong><span class="twr-es-support" lang="es">Mi respuesta es ___.</span></li></ul>
+      <textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea>
+    </div><div class="twr-level-card" data-support-level="build">
+      <h4>Build</h4>
+      <p class="twr-level-support">Some language support</p>
+      <p>Write two connected sentences. Use because, so, or but.<span class="twr-es-support" lang="es">Escribe dos oraciones conectadas. Usa porque, entonces o pero.</span></p>
+      <ul><li><strong>My claim is ___.</strong><span class="twr-es-support" lang="es">Mi afirmación es ___.</span></li><li><strong>I know because ___.</strong><span class="twr-es-support" lang="es">Lo sé porque ___.</span></li><li><strong>So ___.</strong><span class="twr-es-support" lang="es">Entonces ___.</span></li></ul>
+      <textarea class="writeline-area" rows="3" data-nt-field aria-label="Write your response here"></textarea>
+    </div><div class="twr-level-card" data-support-level="explain">
+      <h4>Explain</h4>
+      <p class="twr-level-support">Light language support</p>
+      <p>Write a claim, give math evidence, and explain your reasoning.<span class="twr-es-support" lang="es">Escribe una afirmación, da evidencia matemática y explica tu razonamiento.</span></p>
+      <ul><li><strong>My claim is ___.</strong><span class="twr-es-support" lang="es">Mi afirmación es ___.</span></li><li><strong>My math evidence is ___.</strong><span class="twr-es-support" lang="es">Mi evidencia matemática es ___.</span></li><li><strong>This proves ___ because ___.</strong><span class="twr-es-support" lang="es">Esto demuestra ___ porque ___.</span></li></ul>
+      <textarea class="writeline-area" rows="5" data-nt-field aria-label="Write your response here"></textarea>
+    </div></div>
+  </div>
+  <div class="twr-guide-step">
+    <h3>4. Check Your Explanation</h3>
+    <div class="twr-checklist"><label class="twr-check">
+      <input type="checkbox" data-nt-field />
+      <span>I answered the question.<span class="twr-es-support" lang="es">Respondí la pregunta.</span></span>
+    </label><label class="twr-check">
+      <input type="checkbox" data-nt-field />
+      <span>I used math evidence: numbers, an equation, a model, or a comparison.<span class="twr-es-support" lang="es">Usé evidencia matemática: números, una ecuación, un modelo o una comparación.</span></span>
+    </label><label class="twr-check">
+      <input type="checkbox" data-nt-field />
+      <span>I explained how the evidence proves my answer.<span class="twr-es-support" lang="es">Expliqué cómo la evidencia demuestra mi respuesta.</span></span>
+    </label><label class="twr-check">
+      <input type="checkbox" data-nt-field />
+      <span>I used at least two math words.<span class="twr-es-support" lang="es">Usé por lo menos dos palabras matemáticas.</span></span>
+    </label><label class="twr-check">
+      <input type="checkbox" data-nt-field />
+      <span>I reread complete sentences and punctuation.<span class="twr-es-support" lang="es">Volví a leer mis oraciones completas y la puntuación.</span></span>
+    </label></div>
+  </div>
+</section><section class="answer-key twr-teacher-guide">
+  <h2>Writing Guide — Teacher Copy</h2>
+  <p>The support level changes the amount of language scaffolding, not the mathematical expectation. Look for the same five features in every response.</p>
+  <ul class="ak-list"><li>I answered the question.</li><li>I used math evidence: numbers, an equation, a model, or a comparison.</li><li>I explained how the evidence proves my answer.</li><li>I used at least two math words.</li><li>I reread complete sentences and punctuation.</li></ul>
+</section>
+  <section class="answer-key">
+  <h2>Answer Key &amp; Teacher Guide</h2>
+  <ol class="ak-list"><li><strong>Notes 1:</strong> Mean Absolute Deviation</li><li><strong>Notes 2:</strong> Deviation</li><li><strong>Notes 3:</strong> Absolute Value</li><li><strong>Notes 4:</strong> Spread</li><li><strong>Notes 5:</strong> Data distribution</li><li><strong>Notes 6:</strong> Variability</li><li><strong>Watch for this mistake:</strong> <span class="ak-why">A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</span></li><li><strong>Try It 1:</strong> B. 2 <span class="ak-why">— Add the distances: 3 + 1 + 1 + 3 = 8. Divide by the 4 games: 8 ÷ 4 = 2. The MAD is 2 points.</span></li><li><strong>Try It 2:</strong> A. Shooter A, because a smaller MAD means scores stay closer to the average <span class="ak-why">— A smaller MAD means the scores hug the mean. Shooter A's MAD of 2 is smaller than Shooter B's 6, so Shooter A is more consistent.</span></li></ol>
+</section>
+  <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 2-9 · Standard 6.DS.6c · Teacher Copy</footer>
+</main>
+<!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  
+  <!-- mwb-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

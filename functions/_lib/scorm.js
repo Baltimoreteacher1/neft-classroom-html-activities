@@ -78,7 +78,7 @@ function slug(s) {
 
 /**
  * Resolve a target into the live activity URL + a stable id.
- *   - "1-3"      → SITE/lessons/1-3/      (bare lesson id)
+ *   - "1-3"      → SITE/lessons/6-12/      (bare lesson id)
  *   - "/x/"      → SITE/x/                 (site-relative path)
  *   - full URL   → used as-is (must be on an allowed host)
  */

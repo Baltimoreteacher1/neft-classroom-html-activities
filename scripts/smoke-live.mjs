@@ -36,7 +36,7 @@ const EXTERNAL_TIMEOUT_MS = 30000;
 const PAGES = [
   { path: "/", marker: /<title|<body/i, name: "home portal" },
   { path: "/curriculum/", marker: /curriculum|lesson/i, name: "curriculum hub" },
-  { path: "/lessons/1-1/", marker: /<title/i, name: "lesson 1-1 launcher" },
+  { path: "/lessons/6-13/", marker: /<title/i, name: "lesson 1-1 launcher" },
   { path: "/directory/", marker: /<title/i, name: "activity directory" },
   { path: "/access-practice-lab/", marker: /<title/i, name: "ACCESS practice lab" },
   // Teacher surfaces sit behind Basic Auth, so 401 is the healthy answer —

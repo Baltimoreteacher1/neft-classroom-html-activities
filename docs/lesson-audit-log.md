@@ -153,7 +153,7 @@ tracked source, and all 41 are copied into `dist/` and served. Largest: `2-3` 1.
 
 Verify with the whole-repo reference set, not the owning lesson's config — the generated
 group/catch-up lessons reference the *core* lesson's assets (`1-7-group2` →
-`/lessons/1-7/reveal-assets/notice-wonder.png`), so a per-lesson check reports live files as
+`/lessons/2-7/reveal-assets/notice-wonder.png`), so a per-lesson check reports live files as
 orphans. Four lessons (`8-2`, `8-4`, `9-1`, `9-5`) still legitimately use a raster.
 
 Reported, not deleted — same posture as `audit:dead-code` and `audit:duplicates`.

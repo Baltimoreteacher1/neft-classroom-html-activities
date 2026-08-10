@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>2.7 Small Group · Group 2 — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/2-7-group2/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — 1.7 Small Group · Group 2 — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="1.7 Small Group · Group 2 — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — 1.7 Small Group · Group 2 — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/2-7-group2/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.3</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">2.7 Small Group · Group 2</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A water tank holds 19.2 liters. It is poured into bottles that each hold 1.6 liters. How many bottles can be filled?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12 bottles</li><li class="ws-opt"><span class="ws-bub">B</span>11 bottles</li><li class="ws-opt"><span class="ws-bub">C</span>13 bottles</li><li class="ws-opt"><span class="ws-bub">D</span>1.2 bottles</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Solve 9.6 ÷ 0.12.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Count how far to move</span><span class="ws-step-w">0.12 has 2 decimal places, so BOTH numbers move 2 places right. The divisor: 0.12 → 12.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Move the dividend the same 2 places</span><span class="ws-step-w">9.6 only has one digit after the point, so the student moved it just 1 place: 9.6 → 96. New problem: 96 ÷ 12 = 8.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Find Derek's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">7.2 ÷ 0.45</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Multiply divisor by 10</span><span class="ws-step-w">0.45 × 10 = 4.5</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply dividend by 10</span><span class="ws-step-w">7.2 × 10 = 72</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Divide</span><span class="ws-step-w">72 ÷ 4.5 = 16</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A gas station sells fuel at $3.45 per gallon. A customer pays $27.60 total. How many gallons did the customer buy? Set up the decimal division, show how to convert it to whole-number division, and solve.</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.3</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">2.7 Small Group · Group 2</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 4.8 ÷ 0.6?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>8</li><li class="ws-opt"><span class="ws-bub">B</span>0.8</li><li class="ws-opt"><span class="ws-bub">C</span>80</li><li class="ws-opt"><span class="ws-bub">D</span>4.2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 9.45 ÷ 0.9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>10.5</li><li class="ws-opt"><span class="ws-bub">B</span>1.05</li><li class="ws-opt"><span class="ws-bub">C</span>105</li><li class="ws-opt"><span class="ws-bub">D</span>9.5</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A ribbon is 7.2 meters long and is cut into 0.8-meter pieces. How many pieces are there?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>8</li><li class="ws-opt"><span class="ws-bub">C</span>7</li><li class="ws-opt"><span class="ws-bub">D</span>10</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is 15 ÷ 0.25?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>60</li><li class="ws-opt"><span class="ws-bub">B</span>6</li><li class="ws-opt"><span class="ws-bub">C</span>1.5</li><li class="ws-opt"><span class="ws-bub">D</span>0.6</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Table 1 splits a $15.00 lunch bill equally among 4 friends. How much does each friend pay?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$3.75</li><li class="ws-opt"><span class="ws-bub">B</span>$3.05</li><li class="ws-opt"><span class="ws-bub">C</span>$5.30</li><li class="ws-opt"><span class="ws-bub">D</span>$37.50</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 9.6 cups of flour to make 3 equal batches of muffins. How many cups of flour go in each batch?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>3.2 cups</li><li class="ws-opt"><span class="ws-bub">B</span>2.3 cups</li><li class="ws-opt"><span class="ws-bub">C</span>32 cups</li><li class="ws-opt"><span class="ws-bub">D</span>6.6 cups</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">7</span><div class="ws-pbody"><p class="ws-stem">The arcade corner has 8.1 meters of token ribbon, cut into 0.9-meter prize strips. How many strips can the cafe make?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>9 strips</li><li class="ws-opt"><span class="ws-bub">B</span>0.9 strips</li><li class="ws-opt"><span class="ws-bub">C</span>90 strips</li><li class="ws-opt"><span class="ws-bub">D</span>8.1 strips</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">8</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — The Misplaced Decimal at the Register</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Order</span><span class="ws-step-w">A $13.50 catering tray is split into 0.45-pound scoops. How many scoops?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Set up the division</span><span class="ws-step-w">13.50 ÷ 0.45</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Move both decimal points 2 places</span><span class="ws-step-w">1350 ÷ 45</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Divide and place the decimal</span><span class="ws-step-w">1350 ÷ 45 = 3.0 scoops</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.3</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">2.7 Small Group · Group 2</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A water tank holds 19.2 liters. It is poured into bottles that each hold 1.6 liters. How many bottles can be filled?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12 bottles</li><li class="ws-opt"><span class="ws-bub">B</span>11 bottles</li><li class="ws-opt"><span class="ws-bub">C</span>13 bottles</li><li class="ws-opt"><span class="ws-bub">D</span>1.2 bottles</li></ol><p class="ws-keynote">19.2 ÷ 1.6: multiply both by 10 → 192 ÷ 16 = 12 bottles.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is moving the decimal point in the divisor but forgetting to move it the same number of places in the dividend. For example, in 6.4 ÷ 0.8 a student changes 0.8 to 8 but leaves the dividend as 6.4, then divides 6.4 ÷ 8 = 0.8 instead of moving both points to get 64 ÷ 8 = 8. A second version of this mistake happens when the divisor has two decimal places, like 0.12: students move both points only 1 place instead of 2, turning 9.6 ÷ 0.12 into 96 ÷ 1.2 instead of the correct 960 ÷ 12. Count the divisor's decimal places first, then move BOTH points that same number of places.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Solve 9.6 ÷ 0.12.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Count how far to move</span><span class="ws-step-w">0.12 has 2 decimal places, so BOTH numbers move 2 places right. The divisor: 0.12 → 12.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Move the dividend the same 2 places</span><span class="ws-step-w">9.6 only has one digit after the point, so the student moved it just 1 place: 9.6 → 96. New problem: 96 ÷ 12 = 8.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: Both numbers must move the SAME number of places — 2, not 1. 9.6 runs out of digits after one place, so you add a placeholder zero to move the second place: 9.6 → 96 → 960. The real problem is 960 ÷ 12 = 80, so 9.6 ÷ 0.12 = 80. Estimate to confirm: 0.12 is tiny, so many of them fit in 9.6 — the quotient must be large, not 8. Check: 80 × 0.12 = 9.6. ✓ In the last step the dividend moved only 1 place while the divisor moved 2, so the two numbers no longer match. Adding a placeholder zero lets 9.6 move both places to 960, making the real problem 960 ÷ 12 = 80. That size is reasonable, because a great many 0.12s fit inside 9.6.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Find Derek's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">7.2 ÷ 0.45</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Multiply divisor by 10</span><span class="ws-step-w">0.45 × 10 = 4.5</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply dividend by 10</span><span class="ws-step-w">7.2 × 10 = 72</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Divide</span><span class="ws-step-w">72 ÷ 4.5 = 16</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Derek only multiplied by 10, but the divisor 0.45 has two decimal places. He should multiply both numbers by 100: 720 ÷ 45 = 16. He got the right answer by luck this time, but his method is unreliable because the divisor is still a decimal (4.5). In the step where Derek multiplied by 10, the divisor only became 4.5 — still a decimal, so the setup was never finished. Because 0.45 has two decimal places, both numbers need ×100, giving 720 ÷ 45 = 16. The quotient does not change, but leaving a decimal divisor makes the long division far harder than it needs to be.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A gas station sells fuel at $3.45 per gallon. A customer pays $27.60 total. How many gallons did the customer buy? Set up the decimal division, show how to convert it to whole-number division, and solve.</p><p class="ws-keynote">Look for: divide, decimal, quotient, multiply by 100, 8, whole number, equivalent.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.3</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">2.7 Small Group · Group 2</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 4.8 ÷ 0.6?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>8</li><li class="ws-opt"><span class="ws-bub">B</span>0.8</li><li class="ws-opt"><span class="ws-bub">C</span>80</li><li class="ws-opt"><span class="ws-bub">D</span>4.2</li></ol><p class="ws-keynote">Multiply both by 10: 48 ÷ 6 = 8.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is moving the decimal point in the divisor but forgetting to move it the same number of places in the dividend. For example, in 6.4 ÷ 0.8 a student changes 0.8 to 8 but leaves the dividend as 6.4, then divides 6.4 ÷ 8 = 0.8 instead of moving both points to get 64 ÷ 8 = 8. A second version of this mistake happens when the divisor has two decimal places, like 0.12: students move both points only 1 place instead of 2, turning 9.6 ÷ 0.12 into 96 ÷ 1.2 instead of the correct 960 ÷ 12. Count the divisor's decimal places first, then move BOTH points that same number of places.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 9.45 ÷ 0.9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>10.5</li><li class="ws-opt"><span class="ws-bub">B</span>1.05</li><li class="ws-opt"><span class="ws-bub">C</span>105</li><li class="ws-opt"><span class="ws-bub">D</span>9.5</li></ol><p class="ws-keynote">Multiply both by 10: 94.5 ÷ 9 = 10.5.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is moving the decimal point in the divisor but forgetting to move it the same number of places in the dividend. For example, in 6.4 ÷ 0.8 a student changes 0.8 to 8 but leaves the dividend as 6.4, then divides 6.4 ÷ 8 = 0.8 instead of moving both points to get 64 ÷ 8 = 8. A second version of this mistake happens when the divisor has two decimal places, like 0.12: students move both points only 1 place instead of 2, turning 9.6 ÷ 0.12 into 96 ÷ 1.2 instead of the correct 960 ÷ 12. Count the divisor's decimal places first, then move BOTH points that same number of places.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A ribbon is 7.2 meters long and is cut into 0.8-meter pieces. How many pieces are there?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>8</li><li class="ws-opt"><span class="ws-bub">C</span>7</li><li class="ws-opt"><span class="ws-bub">D</span>10</li></ol><p class="ws-keynote">7.2 ÷ 0.8 = 72 ÷ 8 = 9 pieces.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is moving the decimal point in the divisor but forgetting to move it the same number of places in the dividend. For example, in 6.4 ÷ 0.8 a student changes 0.8 to 8 but leaves the dividend as 6.4, then divides 6.4 ÷ 8 = 0.8 instead of moving both points to get 64 ÷ 8 = 8. A second version of this mistake happens when the divisor has two decimal places, like 0.12: students move both points only 1 place instead of 2, turning 9.6 ÷ 0.12 into 96 ÷ 1.2 instead of the correct 960 ÷ 12. Count the divisor's decimal places first, then move BOTH points that same number of places.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is 15 ÷ 0.25?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>60</li><li class="ws-opt"><span class="ws-bub">B</span>6</li><li class="ws-opt"><span class="ws-bub">C</span>1.5</li><li class="ws-opt"><span class="ws-bub">D</span>0.6</li></ol><p class="ws-keynote">Dividing by 0.25 is like multiplying by 4: 15 × 4 = 60.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is moving the decimal point in the divisor but forgetting to move it the same number of places in the dividend. For example, in 6.4 ÷ 0.8 a student changes 0.8 to 8 but leaves the dividend as 6.4, then divides 6.4 ÷ 8 = 0.8 instead of moving both points to get 64 ÷ 8 = 8. A second version of this mistake happens when the divisor has two decimal places, like 0.12: students move both points only 1 place instead of 2, turning 9.6 ÷ 0.12 into 96 ÷ 1.2 instead of the correct 960 ÷ 12. Count the divisor's decimal places first, then move BOTH points that same number of places.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Table 1 splits a $15.00 lunch bill equally among 4 friends. How much does each friend pay?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$3.75</li><li class="ws-opt"><span class="ws-bub">B</span>$3.05</li><li class="ws-opt"><span class="ws-bub">C</span>$5.30</li><li class="ws-opt"><span class="ws-bub">D</span>$37.50</li></ol><p class="ws-keynote">$15.00 ÷ 4 = $3.75. Each friend pays $3.75.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is moving the decimal point in the divisor but forgetting to move it the same number of places in the dividend. For example, in 6.4 ÷ 0.8 a student changes 0.8 to 8 but leaves the dividend as 6.4, then divides 6.4 ÷ 8 = 0.8 instead of moving both points to get 64 ÷ 8 = 8. A second version of this mistake happens when the divisor has two decimal places, like 0.12: students move both points only 1 place instead of 2, turning 9.6 ÷ 0.12 into 96 ÷ 1.2 instead of the correct 960 ÷ 12. Count the divisor's decimal places first, then move BOTH points that same number of places.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 9.6 cups of flour to make 3 equal batches of muffins. How many cups of flour go in each batch?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3.2 cups</li><li class="ws-opt"><span class="ws-bub">B</span>2.3 cups</li><li class="ws-opt"><span class="ws-bub">C</span>32 cups</li><li class="ws-opt"><span class="ws-bub">D</span>6.6 cups</li></ol><p class="ws-keynote">9.6 ÷ 3 = 3.2 cups in each batch.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is moving the decimal point in the divisor but forgetting to move it the same number of places in the dividend. For example, in 6.4 ÷ 0.8 a student changes 0.8 to 8 but leaves the dividend as 6.4, then divides 6.4 ÷ 8 = 0.8 instead of moving both points to get 64 ÷ 8 = 8. A second version of this mistake happens when the divisor has two decimal places, like 0.12: students move both points only 1 place instead of 2, turning 9.6 ÷ 0.12 into 96 ÷ 1.2 instead of the correct 960 ÷ 12. Count the divisor's decimal places first, then move BOTH points that same number of places.</p></div></li><li class="ws-problem"><span class="ws-pnum">7</span><div class="ws-pbody"><p class="ws-stem">The arcade corner has 8.1 meters of token ribbon, cut into 0.9-meter prize strips. How many strips can the cafe make?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9 strips</li><li class="ws-opt"><span class="ws-bub">B</span>0.9 strips</li><li class="ws-opt"><span class="ws-bub">C</span>90 strips</li><li class="ws-opt"><span class="ws-bub">D</span>8.1 strips</li></ol><p class="ws-keynote">Multiply both by 10: 81 ÷ 9 = 9 strips.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Decimals is moving the decimal point in the divisor but forgetting to move it the same number of places in the dividend. For example, in 6.4 ÷ 0.8 a student changes 0.8 to 8 but leaves the dividend as 6.4, then divides 6.4 ÷ 8 = 0.8 instead of moving both points to get 64 ÷ 8 = 8. A second version of this mistake happens when the divisor has two decimal places, like 0.12: students move both points only 1 place instead of 2, turning 9.6 ÷ 0.12 into 96 ÷ 1.2 instead of the correct 960 ÷ 12. Count the divisor's decimal places first, then move BOTH points that same number of places.</p></div></li><li class="ws-problem"><span class="ws-pnum">8</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — The Misplaced Decimal at the Register</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Order</span><span class="ws-step-w">A $13.50 catering tray is split into 0.45-pound scoops. How many scoops?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Set up the division</span><span class="ws-step-w">13.50 ÷ 0.45</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Move both decimal points 2 places</span><span class="ws-step-w">1350 ÷ 45</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Divide and place the decimal</span><span class="ws-step-w">1350 ÷ 45 = 3.0 scoops</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 4. Correct work: Moving both points 2 places gives 1350 ÷ 45, which equals 30, not 3.0 — the decimal point was placed one spot too far left. So 13.50 ÷ 0.45 = 30 scoops. Check: 30 × 0.45 = 13.50. ✓ The rewrite to 1350 ÷ 45 was done correctly, but the final step placed the decimal point one spot too far left. Since 45 × 30 = 1,350, the answer is 30 scoops, not 3.0, and 30 × 0.45 = 13.50 confirms it.</p></div></li></ol>
+  </section>
+</main>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  
+  <!-- mwb-injected:end -->
+</body>
+</html>

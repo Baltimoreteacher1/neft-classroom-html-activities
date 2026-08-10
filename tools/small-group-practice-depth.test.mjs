@@ -3,7 +3,7 @@ import fs from "node:fs";
 import { JSDOM } from "jsdom";
 
 const dom = new JSDOM("<!doctype html><html><body><div id=app></div></body></html>", {
-  url: "https://eduwonderlab.com/lessons/1-1-group1/",
+  url: "https://eduwonderlab.com/lessons/6-13-group1/",
 });
 global.window = dom.window;
 global.document = dom.window.document;

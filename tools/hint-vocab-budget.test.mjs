@@ -20,7 +20,7 @@ import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", {
-  url: "https://eduwonderlab.com/lessons/1-2-group1/",
+  url: "https://eduwonderlab.com/lessons/6-7-group1/",
 });
 globalThis.window = dom.window;
 globalThis.document = dom.window.document;

@@ -107,7 +107,7 @@ opens readiness → diagnostic routes to tier → practices → hand-off link �
 
 - **Pilot:** open `lessons/1-2/readiness/` in a browser — diagnostic routes
   correctly; every `checkMC`/`checkNum` grades correctly; progress bar reaches
-  100%; print layout is clean; hand-off link resolves to `/lessons/1-2/`.
+  100%; print layout is clean; hand-off link resolves to `/lessons/6-7/`.
 - **Renderer:** lesson 1-2 shows the banner; a lesson without `readiness`
   shows no banner (no regression, no 404s).
 - **DOCX:** opens in Word; answer key matches the page.

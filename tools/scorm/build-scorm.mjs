@@ -47,7 +47,7 @@ const SITE = (process.env.NEFT_SITE || "https://eduwonderlab.com").replace(/\/$/
 const origin = new URL(SITE).origin;
 
 // Accept three target forms:
-//   - a bare lesson id ("1-3")        → /lessons/1-3/   (back-compat)
+//   - a bare lesson id ("1-3")        → /lessons/6-12/   (back-compat)
 //   - a site-relative path ("/x/")    → SITE + /x/
 //   - a full URL                      → used as-is
 // A "lesson id" is the legacy shorthand: no slash and no scheme.

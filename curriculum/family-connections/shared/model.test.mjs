@@ -97,8 +97,8 @@ assert.deepEqual(moduleLinks[0], {
   day: "Monday",
   lessonId: "1-1",
   title: "Lesson 1-1 · Prime Factorization",
-  lessonUrl: "https://eduwonderlab.com/lessons/1-1/",
-  homeworkUrl: "https://eduwonderlab.com/lessons/1-1/homework.html",
+  lessonUrl: "https://eduwonderlab.com/lessons/6-13/",
+  homeworkUrl: "https://eduwonderlab.com/lessons/6-13/homework.html",
 });
 
 const canvasExport = buildCanvasExport(snapshot, lessons, snapshot.sections[0].id);

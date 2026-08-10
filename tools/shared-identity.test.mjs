@@ -168,15 +168,15 @@ test("clear() forgets the roster identity but keeps the student's name", () => {
 // ---- identity in a link -------------------------------------------------------
 
 test("fromUrl() reads ?me= and #me=, and rejects junk", () => {
-  deepEqualAcrossRealms(load("https://x.test/lessons/1-1/?me=601.jn").NTIdentity.fromUrl(), {
+  deepEqualAcrossRealms(load("https://x.test/lessons/6-13/?me=601.jn").NTIdentity.fromUrl(), {
     section: "601",
     initials: "JN",
   });
-  deepEqualAcrossRealms(load("https://x.test/lessons/1-1/#me=602.AB").NTIdentity.fromUrl(), {
+  deepEqualAcrossRealms(load("https://x.test/lessons/6-13/#me=602.AB").NTIdentity.fromUrl(), {
     section: "602",
     initials: "AB",
   });
-  assert.equal(load("https://x.test/lessons/1-1/").NTIdentity.fromUrl(), null);
+  assert.equal(load("https://x.test/lessons/6-13/").NTIdentity.fromUrl(), null);
   assert.equal(load("https://x.test/?me=601").NTIdentity.fromUrl(), null, "needs both halves");
   assert.equal(load("https://x.test/?me=.JN").NTIdentity.fromUrl(), null, "empty section");
 });

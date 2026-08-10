@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>2.9 Small Group · Group 2 — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/2-9-group2/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — 8.3 Small Group · Group 2 — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="8.3 Small Group · Group 2 — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — 8.3 Small Group · Group 2 — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/2-9-group2/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.DS.6c</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">2.9 Small Group · Group 2</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Two runners have the same average time of 60 seconds. Runner A's MAD is 1.2 seconds. Runner B's MAD is 5.8 seconds. Which runner is the coach more likely to pick for a relay race that needs a reliable time?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Runner A — lower MAD means more consistent times</li><li class="ws-opt"><span class="ws-bub">B</span>Runner B — higher MAD means faster potential</li><li class="ws-opt"><span class="ws-bub">C</span>Either — they have the same average</li><li class="ws-opt"><span class="ws-bub">D</span>Neither — MAD doesn't matter for relay races</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data set</span><span class="ws-step-w">A swimmer's lap times: 2, 5, 8, 9. Mean = (2 + 5 + 8 + 9) ÷ 4 = 24 ÷ 4 = 6.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find each absolute deviation</span><span class="ws-step-w">|2 − 6| = 4, |5 − 6| = 1, |8 − 6| = 2, |9 − 6| = 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the MAD</span><span class="ws-step-w">Sum of absolute deviations = 4 + 1 + 2 + 3 = 10. MAD = 10 ÷ 3 ≈ 3.33</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Find the MAD Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data set</span><span class="ws-step-w">5, 10, 15, 20, 25</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find mean</span><span class="ws-step-w">Sum = 75, Count = 5, Mean = 15</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find deviations</span><span class="ws-step-w">−10, −5, 0, 5, 10</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find MAD</span><span class="ws-step-w">MAD = (−10 + −5 + 0 + 5 + 10) ÷ 5 = 0</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Two basketball teams both average 75 points per game. Team A's last 5 scores: 73, 76, 74, 77, 75. Team B's last 5 scores: 60, 90, 65, 85, 75. Calculate the MAD for each team and explain which team a coach would prefer if they need predictable scoring.</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.DS.6c</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">2.9 Small Group · Group 2</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A guard scored 2, 4, 6, 8 points in four scrimmages, so the mean is 5 points. The distances from the mean are 3, 1, 1, 3. What is the mean absolute deviation (MAD)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>1</li><li class="ws-opt"><span class="ws-bub">B</span>2</li><li class="ws-opt"><span class="ws-bub">C</span>5</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Two shooters average 11 points a game. Shooter A's MAD is 2 points and Shooter B's MAD is 6 points. Which shooter is MORE consistent?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Shooter A, because a smaller MAD means scores stay closer to the average</li><li class="ws-opt"><span class="ws-bub">B</span>Shooter B, because a bigger MAD means a bigger average</li><li class="ws-opt"><span class="ws-bub">C</span>They are equally consistent because they have the same mean</li><li class="ws-opt"><span class="ws-bub">D</span>You cannot tell consistency from MAD</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — The Deviations That Vanished</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data set</span><span class="ws-step-w">A center's rebounds: 3, 7, 11, 15, 19</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the mean</span><span class="ws-step-w">Sum = 55, Count = 5, Mean = 55 ÷ 5 = 11</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find each deviation (value − mean)</span><span class="ws-step-w">−8, −4, 0, 4, 8</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find the MAD</span><span class="ws-step-w">MAD = (−8 + −4 + 0 + 4 + 8) ÷ 5 = 0 ÷ 5 = 0</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>4</li><li class="ws-opt"><span class="ws-bub">B</span>−4</li><li class="ws-opt"><span class="ws-bub">C</span>26</li><li class="ws-opt"><span class="ws-bub">D</span>11</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">A data set has absolute deviations of 3, 1, 5, 2, 4. What is the MAD?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>3</li><li class="ws-opt"><span class="ws-bub">B</span>5</li><li class="ws-opt"><span class="ws-bub">C</span>15</li><li class="ws-opt"><span class="ws-bub">D</span>1</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">The mean of a data set is 20. A value is 26. What is the absolute deviation?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6</li><li class="ws-opt"><span class="ws-bub">B</span>−6</li><li class="ws-opt"><span class="ws-bub">C</span>46</li><li class="ws-opt"><span class="ws-bub">D</span>26</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">7</span><div class="ws-pbody"><p class="ws-stem">Team A has MAD = 2.1 points. Team B has MAD = 6.8 points. Which team is more consistent?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Team A — lower MAD means scores are closer to the mean</li><li class="ws-opt"><span class="ws-bub">B</span>Team B — higher MAD means better performance</li><li class="ws-opt"><span class="ws-bub">C</span>Both are equally consistent</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot tell from MAD alone</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">8</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>12</td><td></td><td></td></tr><tr><td>8</td><td></td><td></td></tr><tr><td>10</td><td></td><td></td></tr><tr><td>14</td><td></td><td></td></tr><tr><td>6</td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.DS.6c</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">2.9 Small Group · Group 2</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Two runners have the same average time of 60 seconds. Runner A's MAD is 1.2 seconds. Runner B's MAD is 5.8 seconds. Which runner is the coach more likely to pick for a relay race that needs a reliable time?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Runner A — lower MAD means more consistent times</li><li class="ws-opt"><span class="ws-bub">B</span>Runner B — higher MAD means faster potential</li><li class="ws-opt"><span class="ws-bub">C</span>Either — they have the same average</li><li class="ws-opt"><span class="ws-bub">D</span>Neither — MAD doesn't matter for relay races</li></ol><p class="ws-keynote">Runner A's MAD of 1.2 means times are usually within 1.2 seconds of 60. Runner B's times vary more widely. For reliability, pick Runner A.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data set</span><span class="ws-step-w">A swimmer's lap times: 2, 5, 8, 9. Mean = (2 + 5 + 8 + 9) ÷ 4 = 24 ÷ 4 = 6.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find each absolute deviation</span><span class="ws-step-w">|2 − 6| = 4, |5 − 6| = 1, |8 − 6| = 2, |9 − 6| = 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the MAD</span><span class="ws-step-w">Sum of absolute deviations = 4 + 1 + 2 + 3 = 10. MAD = 10 ÷ 3 ≈ 3.33</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: Divide by the NUMBER OF VALUES, not one less. There are 4 values, so MAD = 10 ÷ 4 = 2.5. The student divided by 3 instead of 4. The absolute deviations 4, 1, 2, and 3 are all correct, and they total 10. The mistake is in the &quot;Find the MAD&quot; step, which divides by 3 instead of by the 4 values in the data set. MAD = 10 ÷ 4 = 2.5, so the swimmer's times sit an average of 2.5 away from the mean of 6.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Find the MAD Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data set</span><span class="ws-step-w">5, 10, 15, 20, 25</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find mean</span><span class="ws-step-w">Sum = 75, Count = 5, Mean = 15</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find deviations</span><span class="ws-step-w">−10, −5, 0, 5, 10</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find MAD</span><span class="ws-step-w">MAD = (−10 + −5 + 0 + 5 + 10) ÷ 5 = 0</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 4. Correct work: You must use absolute values of the deviations: |−10| = 10, |−5| = 5, |0| = 0, |5| = 5, |10| = 10. MAD = (10 + 5 + 0 + 5 + 10) ÷ 5 = 30 ÷ 5 = 6. The mean of 15 and the deviations −10, −5, 0, 5, 10 are all correct. The &quot;Find MAD&quot; step is where it breaks: adding signed deviations always gives 0, because the values below the mean exactly balance the ones above. Use absolute values instead — 10, 5, 0, 5, 10 — which sum to 30, so MAD = 30 ÷ 5 = 6.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Two basketball teams both average 75 points per game. Team A's last 5 scores: 73, 76, 74, 77, 75. Team B's last 5 scores: 60, 90, 65, 85, 75. Calculate the MAD for each team and explain which team a coach would prefer if they need predictable scoring.</p><p class="ws-keynote">Look for: MAD, consistent, spread, lower, higher, predictable, absolute deviation.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.DS.6c</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">2.9 Small Group · Group 2</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A guard scored 2, 4, 6, 8 points in four scrimmages, so the mean is 5 points. The distances from the mean are 3, 1, 1, 3. What is the mean absolute deviation (MAD)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>1</li><li class="ws-opt ws-correct"><span class="ws-bub">B</span>2</li><li class="ws-opt"><span class="ws-bub">C</span>5</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol><p class="ws-keynote">Add the distances: 3 + 1 + 1 + 3 = 8. Divide by the 4 games: 8 ÷ 4 = 2. The MAD is 2 points.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Two shooters average 11 points a game. Shooter A's MAD is 2 points and Shooter B's MAD is 6 points. Which shooter is MORE consistent?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Shooter A, because a smaller MAD means scores stay closer to the average</li><li class="ws-opt"><span class="ws-bub">B</span>Shooter B, because a bigger MAD means a bigger average</li><li class="ws-opt"><span class="ws-bub">C</span>They are equally consistent because they have the same mean</li><li class="ws-opt"><span class="ws-bub">D</span>You cannot tell consistency from MAD</li></ol><p class="ws-keynote">A smaller MAD means the scores hug the mean. Shooter A's MAD of 2 is smaller than Shooter B's 6, so Shooter A is more consistent.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — The Deviations That Vanished</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data set</span><span class="ws-step-w">A center's rebounds: 3, 7, 11, 15, 19</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the mean</span><span class="ws-step-w">Sum = 55, Count = 5, Mean = 55 ÷ 5 = 11</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find each deviation (value − mean)</span><span class="ws-step-w">−8, −4, 0, 4, 8</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find the MAD</span><span class="ws-step-w">MAD = (−8 + −4 + 0 + 4 + 8) ÷ 5 = 0 ÷ 5 = 0</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 4. Correct work: MAD uses the ABSOLUTE value (the distance) of each deviation, so the positives and negatives can't cancel out. |−8| = 8, |−4| = 4, |0| = 0, |4| = 4, |8| = 8. MAD = (8 + 4 + 0 + 4 + 8) ÷ 5 = 24 ÷ 5 = 4.8 rebounds. The mean of 11 and the deviations −8, −4, 0, 4, 8 are correct, but the &quot;Find the MAD&quot; step adds them with their signs, so every negative cancels a matching positive and the total is forced to 0. Signed deviations always sum to zero, which is exactly why MAD uses distances: 8, 4, 0, 4, 8 total 24, so MAD = 24 ÷ 5 = 4.8 rebounds.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>4</li><li class="ws-opt"><span class="ws-bub">B</span>−4</li><li class="ws-opt"><span class="ws-bub">C</span>26</li><li class="ws-opt"><span class="ws-bub">D</span>11</li></ol><p class="ws-keynote">Deviation = 11 − 15 = −4. Absolute deviation = |−4| = 4.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">A data set has absolute deviations of 3, 1, 5, 2, 4. What is the MAD?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3</li><li class="ws-opt"><span class="ws-bub">B</span>5</li><li class="ws-opt"><span class="ws-bub">C</span>15</li><li class="ws-opt"><span class="ws-bub">D</span>1</li></ol><p class="ws-keynote">Sum of absolute deviations = 3 + 1 + 5 + 2 + 4 = 15. MAD = 15 ÷ 5 = 3.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">The mean of a data set is 20. A value is 26. What is the absolute deviation?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6</li><li class="ws-opt"><span class="ws-bub">B</span>−6</li><li class="ws-opt"><span class="ws-bub">C</span>46</li><li class="ws-opt"><span class="ws-bub">D</span>26</li></ol><p class="ws-keynote">Deviation = 26 − 20 = 6. Absolute deviation = |6| = 6.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</p></div></li><li class="ws-problem"><span class="ws-pnum">7</span><div class="ws-pbody"><p class="ws-stem">Team A has MAD = 2.1 points. Team B has MAD = 6.8 points. Which team is more consistent?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Team A — lower MAD means scores are closer to the mean</li><li class="ws-opt"><span class="ws-bub">B</span>Team B — higher MAD means better performance</li><li class="ws-opt"><span class="ws-bub">C</span>Both are equally consistent</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot tell from MAD alone</li></ol><p class="ws-keynote">Lower MAD means less spread — Team A's scores stay closer to their average, making them more consistent.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a positive distance: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</p></div></li><li class="ws-problem"><span class="ws-pnum">8</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>12</td><td></td><td></td></tr><tr><td>8</td><td></td><td></td></tr><tr><td>10</td><td></td><td></td></tr><tr><td>14</td><td></td><td></td></tr><tr><td>6</td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
+</main>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  
+  <!-- mwb-injected:end -->
+</body>
+</html>

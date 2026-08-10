@@ -77,7 +77,7 @@ npm run library-cartridge -- --section=esol       # urls under /esol…/
 npm run library-cartridge -- --mode=graded        # completion-code assignments
 npm run library-cartridge -- --limit=25           # small smoke-test package
 npm run library-cartridge -- --select=canvas-selection.json   # exact picks from the Studio
-npm run library-cartridge -- --select-urls=/lessons/1-1/,/netfold-3d/   # inline picks
+npm run library-cartridge -- --select-urls=/lessons/6-13/,/netfold-3d/   # inline picks
 npm run library-cartridge -- --split             # one importable package PER section
 ```
 

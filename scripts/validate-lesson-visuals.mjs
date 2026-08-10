@@ -251,7 +251,7 @@ const collectHosts = (page) =>
       mountedFlag: el.dataset.ivMounted === "1",
       // Real, student-facing output — not just any child node.
       hasContent: !!el.querySelector("svg, canvas, input, button, select, model-viewer"),
-      // A tool can render perfectly and still be broken. /lessons/1-5/ mounted
+      // A tool can render perfectly and still be broken. /lessons/2-11/ mounted
       // the Decimal Columns lab with no operands, so Number(undefined) became
       // NaN and the digit cells spelled "N a N" down the column — a host that
       // rendered, was interactive, and passed every check we had. Anything that
@@ -348,7 +348,7 @@ async function probeLesson(browser, id) {
       // The eight graded phases are not the whole lesson. The Learn It tab mounts
       // its OWN interactive visual, chosen by resolveInteractiveVisual() rather
       // than authored in the config — and because this walk stopped at the phases,
-      // that tool went unchecked. It is where /lessons/1-5/ was serving a Decimal
+      // that tool went unchecked. It is where /lessons/2-11/ was serving a Decimal
       // Columns lab with no operands, printing "N a N" down the column while this
       // gate reported the whole site clean.
       for (const kind of ["vocab", "learn"]) {

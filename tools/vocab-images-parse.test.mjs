@@ -7,7 +7,7 @@
 //
 // and its body drew the label `x > 2`. SVG is XML, so a raw "<" or ">" in text
 // content is a fatal parse error: the browser refuses to render the image and
-// silently falls back to the img alt text. On /lessons/7-4/ that meant five of
+// silently falls back to the img alt text. On /lessons/8-4/ that meant five of
 // the seven word-wall cards showed a paragraph of alt text where the diagram
 // should be, and the same file is the picture for "compare", "inequality",
 // "greater than", "less than", "at least / at most", "no more than" and
