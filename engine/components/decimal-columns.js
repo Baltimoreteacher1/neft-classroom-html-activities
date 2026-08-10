@@ -441,6 +441,22 @@ function renderProblem(wrap, problem, { typeIn }) {
   });
 
   const equation = `${a} ${opSym} ${b} = ${neg ? "−" : ""}${fmt(absAns)}`;
+
+  // The lab announces a finished problem so a host phase can sequence work
+  // around it — Explore uses this to unlock the number line only AFTER the
+  // student has actually computed the sum in columns (see lesson-renderer's
+  // `explore.solveFirst`). Bubbles, because the listener sits on the phase
+  // shell, not on this block. `revealed` distinguishes "I solved it" from
+  // "I pressed Show me" so a gate can open without scoring it as solved.
+  function announceSolved(revealed) {
+    block.dispatchEvent(
+      new CustomEvent("nt:decimal-columns-solved", {
+        bubbles: true,
+        detail: { a, b, op, answer: neg ? -absAns : absAns, revealed },
+      }),
+    );
+  }
+
   function showEquation() {
     result.hidden = false;
     result.textContent = equation;
@@ -502,6 +518,7 @@ function renderProblem(wrap, problem, { typeIn }) {
       status.textContent = "That's it — decimals lined up perfectly! 🎉";
       status.className = "dccols-status ok";
       showEquation();
+      announceSolved(false);
       return;
     }
     if (allCorrect && rgIssue) {
@@ -538,6 +555,7 @@ function renderProblem(wrap, problem, { typeIn }) {
     status.textContent = "Here's the lined-up work, regroups and all.";
     status.className = "dccols-status ok";
     showEquation();
+    announceSolved(true);
   }
 
   function clear() {

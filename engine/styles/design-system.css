@@ -5186,9 +5186,18 @@ html.nt-extra-fullpage-open body {
    module never mounts it for students. See engine/core/teacher-clear.js. */
 .nt-teacher-clear {
   position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 9998;
+}
+/* `--nt-rail-w` is declared on :root, so it stayed 300px on pages that have NO
+   phase rail (small-group lessons, catch-up stations). The FAB then docked
+   316px in from the left — floating over the middle of the lesson text instead
+   of in a corner. Offset by the rail ONLY where a rail actually exists; the
+   `.app` shell is the element that owns it. */
+body:has(.app) .nt-teacher-clear {
   left: calc(var(--nt-rail-w, 0px) + 16px);
   bottom: 72px;
-  z-index: 9998;
 }
 .nt-teacher-clear-fab {
   width: 40px;
@@ -5417,6 +5426,38 @@ body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-doc
     position: static;
     order: -1;
   }
+}
+
+/* `solveFirst` Explore: the TOOL is Step 1, so it leads on wide screens too.
+   (Narrow screens already stack it first.) The task column stays the wider of
+   the two — a number line needs the room — so only the ORDER flips. */
+.nt-work-pair--tool-first .nt-work-tool {
+  order: -1;
+}
+
+/* Step 2 held closed until Step 1 reports a solved problem. The activity is
+   built and mounted underneath; this only covers it. See lockUntilSolved(). */
+.nt-solve-gated {
+  pointer-events: none;
+  opacity: 0.35;
+  filter: grayscale(0.6);
+}
+.nt-solve-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3, 12px);
+  margin-bottom: var(--sp-3, 12px);
+  padding: var(--sp-4, 16px);
+  border: 2px dashed #94a3b8;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+.nt-solve-gate-line {
+  margin: 0;
+  font-size: var(--fs-md, 1rem);
+  font-weight: 800;
+  color: var(--navy, #12355b);
 }
 
 /* ── Vocabulary activities — legibility & completion layer (2026-08-07) ──────

@@ -3367,13 +3367,34 @@ function renderExplorePhase(el, state, ctx, config) {
     // assignments, so each column says plainly what it is and what order to
     // work in.
     const pair = openWorkPair(el);
-    // "Do this" / "Use this to see why" read as one instruction split across two
-    // columns, so students tried to follow Step 1's caption while looking at
-    // Step 2's widget. Each caption now names what its OWN column is for.
-    pair.main.prepend(workPairCaption("Step 1", "Work the task below."));
-    pair.tool.prepend(workPairCaption("Step 2", "Then use this model to check your thinking."));
+    // `solveFirst` inverts the pair: the TOOL is the assignment and the activity
+    // is what you do with the result. Authored for the decimal labs, where the
+    // number line was being worked as a standalone "drag to the number we told
+    // you" task — the arithmetic the lesson is actually about happened in an
+    // optional widget beside it, or not at all. Now the student computes the sum
+    // in columns first, and the number line stays locked until they have one.
+    const solveFirst = cfg.solveFirst === true;
+    if (solveFirst) {
+      pair.main.parentElement?.classList.add("nt-work-pair--tool-first");
+      pair.tool.prepend(
+        workPairCaption("Step 1", cfg.solveFirstToolCaption || "Solve the problem here first."),
+      );
+      pair.main.prepend(
+        workPairCaption(
+          "Step 2",
+          cfg.solveFirstTaskCaption || "Then show that move on the number line.",
+        ),
+      );
+    } else {
+      // "Do this" / "Use this to see why" read as one instruction split across two
+      // columns, so students tried to follow Step 1's caption while looking at
+      // Step 2's widget. Each caption now names what its OWN column is for.
+      pair.main.prepend(workPairCaption("Step 1", "Work the task below."));
+      pair.tool.prepend(workPairCaption("Step 2", "Then use this model to check your thinking."));
+    }
     pair.main.append(exploreShell);
     pair.tool.append(exploreFig);
+    if (solveFirst) lockUntilSolved(pair.main, exploreShell);
     // Explore is where the building happens, so this is the mount that most
     // needs to remember. phaseId 1 = Explore.
     mountInteractiveVisuals(exploreFig, { state, phaseId: 1 });
@@ -3551,6 +3572,51 @@ function openWorkPair(host) {
   pair.append(main, tool);
   host.append(pair);
   return { main, tool };
+}
+
+// Hold the Step 2 activity closed until the Step 1 tool reports a solved
+// problem (`nt:decimal-columns-solved`, dispatched by the columns lab and
+// bubbling up through the pair). The lock is a cover over the activity, not a
+// removal: the widget below it is fully built and mounted, so unlocking is
+// instant and nothing has to re-render.
+//
+// It is never a dead end. The cover carries its own "Skip ahead" control, so a
+// student who worked the problem on paper — or who hits a tool that will not
+// load — is one click from the number line. The point is the ORDER (compute,
+// then model), not a checkpoint to enforce.
+function lockUntilSolved(scope, gated) {
+  const cover = document.createElement("div");
+  cover.className = "nt-solve-gate";
+  cover.setAttribute("role", "status");
+
+  const line = document.createElement("p");
+  line.className = "nt-solve-gate-line";
+  line.textContent = "🔒 Finish Step 1 first — solve the problem in columns.";
+
+  const skip = document.createElement("button");
+  skip.type = "button";
+  skip.className = "btn btn-secondary nt-solve-gate-skip";
+  skip.textContent = "I already solved it — open the number line";
+
+  cover.append(line, skip);
+  gated.setAttribute("aria-hidden", "true");
+  gated.classList.add("nt-solve-gated");
+  gated.before(cover);
+
+  // The tool lives in the SIBLING column, so the solved event is only visible
+  // on the shared ancestor — listening on `scope` itself would never fire.
+  const listenOn = scope.parentElement || scope;
+  let open = false;
+  const unlock = () => {
+    if (open) return;
+    open = true;
+    cover.remove();
+    gated.classList.remove("nt-solve-gated");
+    gated.removeAttribute("aria-hidden");
+    listenOn.removeEventListener("nt:decimal-columns-solved", unlock);
+  };
+  skip.addEventListener("click", unlock);
+  listenOn.addEventListener("nt:decimal-columns-solved", unlock);
 }
 
 // Small "Step 1 · Do this" caption that sits above one column of a work pair,

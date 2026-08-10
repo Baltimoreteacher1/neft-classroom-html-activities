@@ -702,6 +702,12 @@ export function injectSmallGroupStyles(accent) {
     .sg-lab{--sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:20px;--sp-6:24px;--radius-sm:8px;--radius:12px;--teal:var(--sg);--teal-light:var(--sg-soft);--teal-dark:var(--sg-deep);--navy:var(--sg-deep);--coral:#d9795d;--cream:#fdf9f0;--muted:var(--sg-muted);--ink:var(--sg-text)}
     .sg-lab-note{padding:11px 14px;border-radius:12px;background:var(--sg-soft);color:var(--sg-ink);font-weight:700}
     .sg-lab-loading{padding:14px;color:var(--sg-muted);font-weight:700}
+    .sg-lab-step{margin:16px 0 6px;color:var(--sg-deep);font-family:var(--sg-display);font-size:18px;font-weight:900}
+    .sg-solve-gated{opacity:.35;filter:grayscale(.6);pointer-events:none}
+    .sg-solve-gate{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:12px 0;padding:14px 16px;border:2px dashed var(--sg-line);border-radius:16px;background:var(--sg-soft)}
+    .sg-solve-gate-line{margin:0;color:var(--sg-ink);font-weight:800}
+    .sg-solve-gate-skip{min-height:44px;padding:8px 16px;border:2px solid var(--sg-line);border-radius:999px;color:var(--sg-ink);background:var(--sg-card);font:inherit;font-weight:800;font-size:14px;cursor:pointer}
+    .sg-solve-gate-skip:hover{border-color:var(--sg);background:var(--sg-soft)}
     .sg-lab-mount{margin:12px 0}
     .sg-lab-mount .card{border:1px solid var(--sg-line);border-radius:16px;background:var(--sg-card);padding:16px;box-shadow:0 8px 24px rgba(23,32,51,.07)}
     .sg-figure{margin:12px 0;padding:14px;border:1px solid var(--sg-line);border-radius:16px;background:var(--sg-card);box-shadow:0 8px 24px rgba(23,32,51,.07)}
