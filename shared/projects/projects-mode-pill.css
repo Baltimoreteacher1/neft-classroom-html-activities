@@ -1,0 +1,190 @@
+/* ==========================================================================
+   Neft Teacher — Projects TEACHER/STUDENT MODE chip (shared)
+
+   Top-RIGHT on purpose. The bottom dock on a project page is full and its
+   spacing is a documented contract (projects-coach.css: Save/Resume pill at
+   bottom:16, Math Workbench FAB at bottom:72, .ntf-fab moved bottom-left,
+   coach launcher at bottom:132). Adding a fifth floating control down there
+   would collide with one of them at some viewport width. The top-right corner
+   is empty on every project page.
+
+   Sizes follow WCAG 2.2 target guidance (24×24 minimum) with a comfortable
+   44px floor on the primary action, because these pages are used on
+   Chromebooks and tablets.
+   ========================================================================== */
+
+.ntmp {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 9003; /* above the coach launcher (9002), below the zoom overlay */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+@media print {
+  .ntmp {
+    display: none !important;
+  }
+}
+
+/* Stand down while the support-level gate is up. projects-gold.css states the
+   contract explicitly — "while a student is choosing a support level nothing
+   should float over the gate" — so this chip waits rather than raising its
+   z-index above it. The overlay is REMOVED from the DOM once a level is
+   chosen (projects-gold.js), not just faded, so the chip reappears on its own. */
+body:has(#gold-level-overlay) .ntmp {
+  display: none;
+}
+
+/* ---- the chip itself ---- */
+.ntmp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 6px 12px;
+  border: 1px solid rgba(15, 43, 60, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #525f6e;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: 0 1px 6px rgba(15, 43, 60, 0.12);
+  backdrop-filter: blur(4px);
+}
+
+.ntmp-chip:hover {
+  background: #fff;
+  color: #1a2633;
+}
+
+.ntmp-chip:focus-visible {
+  outline: 3px solid #1a6fb5;
+  outline-offset: 2px;
+}
+
+/* Teacher mode ON — deliberately loud. A teacher who does not notice they are
+   still in teacher mode is how an answer key ends up on a projector. */
+.ntmp-chip.is-teacher {
+  min-height: 44px;
+  padding: 8px 14px;
+  border-color: #8a5f0a;
+  background: #fdf3e0;
+  color: #6b4a08;
+  font-size: 0.88rem;
+  cursor: default;
+}
+
+.ntmp-exit {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid #8a5f0a;
+  border-radius: 999px;
+  background: #8a5f0a;
+  color: #fff;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: 0 1px 6px rgba(15, 43, 60, 0.18);
+}
+
+.ntmp-exit:hover {
+  background: #6b4a08;
+}
+
+.ntmp-exit:focus-visible {
+  outline: 3px solid #1a2633;
+  outline-offset: 2px;
+}
+
+/* ---- PIN form (entry only) ---- */
+.ntmp-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid rgba(15, 43, 60, 0.18);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(15, 43, 60, 0.18);
+}
+
+.ntmp-form input[type="password"] {
+  width: 148px;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid #cfd8e0;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.ntmp-form button {
+  min-height: 40px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #1a6fb5;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ntmp-form button:hover {
+  background: #14588f;
+}
+
+/* The username field exists ONLY so password managers recognise this as a
+   credential form and offer to save/autofill the PIN. It must stay in the
+   accessibility tree and must NEVER be display:none — managers skip those.
+   Same technique and same reason as .nt-credential-user in
+   engine/styles/design-system.css. */
+.ntmp-cred-user {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ntmp-err {
+  margin-left: 4px;
+  color: #a8442a;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .ntmp {
+    top: 8px;
+    right: 8px;
+  }
+  .ntmp-chip,
+  .ntmp-exit {
+    font-size: 0.78rem;
+  }
+  .ntmp-form input[type="password"] {
+    width: 112px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ntmp-chip,
+  .ntmp-exit {
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+}
