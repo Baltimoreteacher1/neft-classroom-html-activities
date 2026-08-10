@@ -377,6 +377,14 @@ export const CARDS = [
     caption: "both sides equal 6 when x = 3",
   },
   {
+    // Lesson 9-3 writes equations for two-variable relationships: the gym's
+    // c = 24.95m is the one its `example` states, so that is what the card draws.
+    slug: "equation-c-equals-24-95m",
+    title: "Equation: c equals 24.95 times m",
+    rows: [[{ t: "c " }, { t: "=", accent: true }, { t: " 24.95m" }]],
+    caption: "total cost = monthly rate × months",
+  },
+  {
     slug: "equation-x-plus-8",
     title: "Equation: x plus 8 equals 15",
     rows: [[{ t: "x + 8 " }, { t: "=", accent: true }, { t: " 15" }]],
