@@ -208,35 +208,61 @@ export function boxPlotSVG(cfg) {
 }
 
 // Categorical bar chart (bars have GAPS — contrast with a histogram).
+//
+// Handles NEGATIVE values. The baseline used to be pinned to the bottom of the
+// plot with the height computed as (v / maxV) * plotH, so a below-zero bar got
+// a negative `height` — which SVG rejects outright ("attribute height: A
+// negative value is not valid"), dropping the bar entirely. That hit exactly
+// the lessons that need it most: 9-2 "Integers and Absolute Value" and 9-3
+// "Compare and Order Integers" each open on a chart whose whole point is that
+// some markers sit below sea level, and every below-zero bar was missing while
+// the Notice & Wonder prompts asked students what they noticed about it.
+//
+// Now the domain spans min..max, the zero line sits inside the plot, and bars
+// are drawn from that line with an absolute height. For all-positive data minV
+// is 0, which puts the zero line back on the bottom and reproduces the old
+// geometry exactly — so every existing chart renders unchanged.
 export function barChartSVG(cfg) {
   const bars = Array.isArray(cfg.bars) ? cfg.bars : [];
   if (!bars.length) return "";
+  const values = bars.map((b) => Number(b.value) || 0);
+  const maxV = Math.max(...values, 0);
+  const minV = Math.min(...values, 0);
+  const hasNegative = minV < 0;
   const W = 520,
-    H = 260,
     padL = 40,
     padR = 16,
-    padT = 24,
-    padB = 50;
+    padT = 24;
+  // A downward bar needs a lane for its value label beneath the deepest bar.
+  const padB = hasNegative ? 68 : 50;
+  const H = hasNegative ? 278 : 260;
   const plotW = W - padL - padR,
     plotH = H - padT - padB;
-  const maxV = Math.max(...bars.map((b) => Number(b.value) || 0), 1);
+  // With no negative value the geometry is the ORIGINAL one, reproduced exactly
+  // — including the all-zero case, where the old max-of-1 floor kept the
+  // baseline on the bottom rather than letting 0/0 lift it to the top.
+  const span = hasNegative ? maxV - minV : Math.max(maxV, 1);
+  const zeroY = hasNegative ? padT + (maxV / span) * plotH : padT + plotH;
+  const baseY = padT + plotH;
   const slot = plotW / bars.length,
-    bw = slot * 0.6,
-    baseY = padT + plotH;
+    bw = slot * 0.6;
   const rects = bars
     .map((b, i) => {
-      const v = Number(b.value) || 0;
-      const h = (v / maxV) * plotH;
+      const v = values[i];
+      const h = (Math.abs(v) / span) * plotH;
       const x = padL + i * slot + (slot - bw) / 2;
-      const y = baseY - h;
+      // Positive bars rise from the zero line; negative ones hang beneath it.
+      const y = v >= 0 ? zeroY - h : zeroY;
+      const valueY = v >= 0 ? y - 6 : y + h + 14;
       return (
         `<rect class="bar-rect" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${DATA_1}"/>` +
-        `<text class="bar-val" x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${v}</text>` +
+        `<text class="bar-val" x="${(x + bw / 2).toFixed(1)}" y="${valueY.toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${v}</text>` +
         `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 18).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${esc(b.label ?? "")}</text>`
       );
     })
     .join("");
-  const axis = `<line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>`;
+  // The axis is the ZERO line, wherever zero falls in the domain.
+  const axis = `<line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${W - padR}" y2="${zeroY.toFixed(1)}" stroke="var(--ink,#333)" stroke-width="1.5"/>`;
   return svgFigure(cfg, `${axis}${rects}`, W, H, padT, "bar-chart-figure");
 }
 
