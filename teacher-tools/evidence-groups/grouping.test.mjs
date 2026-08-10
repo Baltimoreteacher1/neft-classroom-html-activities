@@ -37,8 +37,8 @@ const TAXONOMY = {
 };
 
 const VARIANTS = {
-  "3-2": { title: "Ratio Tables", variants: ["group1", "group2"] },
-  "1-2": { title: "Greatest Common Factor", variants: ["group1", "group2", "catchup"] },
+  "3-3": { title: "Ratio Tables", variants: ["group1", "group2"] },
+  "6-7": { title: "Greatest Common Factor", variants: ["group1", "group2", "catchup"] },
   "9-9": { title: "No Variants Lesson", variants: [] },
 };
 
@@ -46,7 +46,7 @@ const VARIANTS = {
 const ev = (student, tag, opts = {}) => ({
   studentName: student,
   section: opts.section ?? "3",
-  lessonSlug: opts.lesson ?? "3-2",
+  lessonSlug: opts.lesson ?? "3-3",
   type: opts.type ?? "misconception",
   props: { tag },
   at: opts.at ?? daysAgo(1),
@@ -136,11 +136,11 @@ test("oversized clusters split into BALANCED parts with parallel variants", () =
 
 test("routes the group to the lesson the error actually happened on", () => {
   const p = plan([
-    ev("Ana R", "ratio-inverted", { lesson: "1-2" }),
-    ev("Ben T", "ratio-inverted", { lesson: "1-2" }),
-    ev("Cam L", "ratio-inverted", { lesson: "3-2" }),
+    ev("Ana R", "ratio-inverted", { lesson: "6-7" }),
+    ev("Ben T", "ratio-inverted", { lesson: "6-7" }),
+    ev("Cam L", "ratio-inverted", { lesson: "3-3" }),
   ]);
-  assert.equal(p.groups[0].lesson.base, "1-2", "majority lesson wins");
+  assert.equal(p.groups[0].lesson.base, "6-7", "majority lesson wins");
   assert.equal(p.groups[0].lesson.url, "/lessons/6-7-group1/");
   assert.equal(p.groups[0].lesson.title, "Greatest Common Factor");
 });
@@ -264,8 +264,8 @@ test("balancedChunks distributes the remainder instead of stranding it", () => {
 });
 
 test("baseLessonOf strips variant suffixes and rejects non-lessons", () => {
-  assert.equal(baseLessonOf("3-2"), "3-2");
-  assert.equal(baseLessonOf("3-2-group1"), "3-2");
+  assert.equal(baseLessonOf("3-3"), "3-3");
+  assert.equal(baseLessonOf("3-3-group1"), "3-3");
   assert.equal(baseLessonOf("10-5-catchup"), "10-5");
   assert.equal(baseLessonOf("access-practice-lab"), "");
   assert.equal(baseLessonOf(""), "");

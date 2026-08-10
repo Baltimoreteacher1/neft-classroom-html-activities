@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>4.4–4.5 Catch-Up — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.4</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">4.4–4.5 Catch-Up</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Percent of a Number</span><span class="ws-bankword">Percent</span><span class="ws-bankword">Percent Problem Solving</span><span class="ws-bankword">Discount</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Find 30% of 90:</b> 30% of 90</li><li><b>Convert percent to decimal:</b> 30% = 3.0</li><li><b>Multiply:</b> 3.0 × 90 = 270</li><li><b>Final answer:</b> 30% of 90 = 270</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) What is 20% of 150?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>30</li><li class="ws-opt"><span class="ws-bub">B</span>20</li><li class="ws-opt"><span class="ws-bub">C</span>35</li><li class="ws-opt"><span class="ws-bub">D</span>75</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) What is 50% of 84?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>42</li><li class="ws-opt"><span class="ws-bub">B</span>50</li><li class="ws-opt"><span class="ws-bub">C</span>34</li><li class="ws-opt"><span class="ws-bub">D</span>168</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) A prize costs 120 tickets and is 25% off. What is the sale price?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>90 tickets</li><li class="ws-opt"><span class="ws-bub">B</span>95 tickets</li><li class="ws-opt"><span class="ws-bub">C</span>100 tickets</li><li class="ws-opt"><span class="ws-bub">D</span>30 tickets</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) A meal costs $20. You leave a 15% tip. How much is the tip?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$3.00</li><li class="ws-opt"><span class="ws-bub">B</span>$1.50</li><li class="ws-opt"><span class="ws-bub">C</span>$5.00</li><li class="ws-opt"><span class="ws-bub">D</span>$0.15</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.4</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">4.4–4.5 Catch-Up</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Percent of a Number</span><span class="ws-bankword">Percent</span><span class="ws-bankword">Percent Problem Solving</span><span class="ws-bankword">Discount</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Find 30% of 90:</b> 30% of 90</li><li><b>Convert percent to decimal:</b> 30% = 3.0</li><li><b>Multiply:</b> 3.0 × 90 = 270</li><li><b>Final answer:</b> 30% of 90 = 270</li></ol>
+  </section>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) What is 20% of 150?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>30</li><li class="ws-opt"><span class="ws-bub">B</span>20</li><li class="ws-opt"><span class="ws-bub">C</span>35</li><li class="ws-opt"><span class="ws-bub">D</span>75</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) What is 50% of 84?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>42</li><li class="ws-opt"><span class="ws-bub">B</span>50</li><li class="ws-opt"><span class="ws-bub">C</span>34</li><li class="ws-opt"><span class="ws-bub">D</span>168</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) A prize costs 120 tickets and is 25% off. What is the sale price?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>90 tickets</li><li class="ws-opt"><span class="ws-bub">B</span>95 tickets</li><li class="ws-opt"><span class="ws-bub">C</span>100 tickets</li><li class="ws-opt"><span class="ws-bub">D</span>30 tickets</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) A meal costs $20. You leave a 15% tip. How much is the tip?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$3.00</li><li class="ws-opt"><span class="ws-bub">B</span>$1.50</li><li class="ws-opt"><span class="ws-bub">C</span>$5.00</li><li class="ws-opt"><span class="ws-bub">D</span>$0.15</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.4</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">4.4–4.5 Catch-Up</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) An arcade prize costs 240 tickets. If you have a coupon for 15% off, how many tickets do you save?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>36 tickets</li><li class="ws-opt"><span class="ws-bub">B</span>24 tickets</li><li class="ws-opt"><span class="ws-bub">C</span>15 tickets</li><li class="ws-opt"><span class="ws-bub">D</span>204 tickets</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) A student scored 72 out of 90 on a test. What percent did they score?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>80%</li><li class="ws-opt"><span class="ws-bub">B</span>72%</li><li class="ws-opt"><span class="ws-bub">C</span>75%</li><li class="ws-opt"><span class="ws-bub">D</span>90%</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) A store marks up a $30 item by 40%, then a customer gets 10% off. What is the final price?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$37.80</li><li class="ws-opt"><span class="ws-bub">B</span>$39.00</li><li class="ws-opt"><span class="ws-bub">C</span>$42.00</li><li class="ws-opt"><span class="ws-bub">D</span>$36.00</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) A restaurant bill is $35. You want to leave a 20% tip. What is the total amount you pay?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$42.00</li><li class="ws-opt"><span class="ws-bub">B</span>$40.00</li><li class="ws-opt"><span class="ws-bub">C</span>$38.50</li><li class="ws-opt"><span class="ws-bub">D</span>$55.00</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.4</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">4.4–4.5 Catch-Up</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) Find the Percent Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Find 30% of 90</span><span class="ws-step-w">30% of 90</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Convert percent to decimal</span><span class="ws-step-w">30% = 3.0</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply</span><span class="ws-step-w">3.0 × 90 = 270</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">30% of 90 = 270</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) Find the Discount Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">A prize costs 160 tickets at 25% off. Find the sale price.</span><span class="ws-step-w">160 tickets, 25% off</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find 25% of 160</span><span class="ws-step-w">25 × 160 = 4,000</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Subtract discount</span><span class="ws-step-w">160 − 4,000 = −3,840</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">Sale price is −3,840 tickets</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.4</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">4.4–4.5 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) What is 20% of 150?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>30</li><li class="ws-opt"><span class="ws-bub">B</span>20</li><li class="ws-opt"><span class="ws-bub">C</span>35</li><li class="ws-opt"><span class="ws-bub">D</span>75</li></ol><p class="ws-keynote">20% = 0.20. Multiply: 0.20 × 150 = 30.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Use Percent to Solve Problems is combining the discount and tax into one single percent change instead of applying them one after another. For a $40 item with a 25% discount and 8% sales tax, a student might compute 40 × (1 − 0.25 + 0.08) = 40 × 0.83 = $33.20, treating the tax as if it applies to the original price. But tax is charged on the discounted price, not the original price: first take 25% off $40 to get $40 × 0.75 = $30, then add 8% tax on that $30: $30 × 1.08 = $32.40. The correct final price is $32.40, not $33.20 — always compute the discount first, then apply tax to the new lower price.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) What is 50% of 84?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>42</li><li class="ws-opt"><span class="ws-bub">B</span>50</li><li class="ws-opt"><span class="ws-bub">C</span>34</li><li class="ws-opt"><span class="ws-bub">D</span>168</li></ol><p class="ws-keynote">50% = 0.50. Multiply: 0.50 × 84 = 42. (Or simply divide by 2: 84 ÷ 2 = 42.)</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Use Percent to Solve Problems is combining the discount and tax into one single percent change instead of applying them one after another. For a $40 item with a 25% discount and 8% sales tax, a student might compute 40 × (1 − 0.25 + 0.08) = 40 × 0.83 = $33.20, treating the tax as if it applies to the original price. But tax is charged on the discounted price, not the original price: first take 25% off $40 to get $40 × 0.75 = $30, then add 8% tax on that $30: $30 × 1.08 = $32.40. The correct final price is $32.40, not $33.20 — always compute the discount first, then apply tax to the new lower price.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) A prize costs 120 tickets and is 25% off. What is the sale price?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>90 tickets</li><li class="ws-opt"><span class="ws-bub">B</span>95 tickets</li><li class="ws-opt"><span class="ws-bub">C</span>100 tickets</li><li class="ws-opt"><span class="ws-bub">D</span>30 tickets</li></ol><p class="ws-keynote">25% of 120 = 0.25 × 120 = 30. Sale price: 120 − 30 = 90 tickets.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Use Percent to Solve Problems is combining the discount and tax into one single percent change instead of applying them one after another. For a $40 item with a 25% discount and 8% sales tax, a student might compute 40 × (1 − 0.25 + 0.08) = 40 × 0.83 = $33.20, treating the tax as if it applies to the original price. But tax is charged on the discounted price, not the original price: first take 25% off $40 to get $40 × 0.75 = $30, then add 8% tax on that $30: $30 × 1.08 = $32.40. The correct final price is $32.40, not $33.20 — always compute the discount first, then apply tax to the new lower price.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) A meal costs $20. You leave a 15% tip. How much is the tip?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$3.00</li><li class="ws-opt"><span class="ws-bub">B</span>$1.50</li><li class="ws-opt"><span class="ws-bub">C</span>$5.00</li><li class="ws-opt"><span class="ws-bub">D</span>$0.15</li></ol><p class="ws-keynote">15% of $20 = 0.15 × 20 = $3.00.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Use Percent to Solve Problems is combining the discount and tax into one single percent change instead of applying them one after another. For a $40 item with a 25% discount and 8% sales tax, a student might compute 40 × (1 − 0.25 + 0.08) = 40 × 0.83 = $33.20, treating the tax as if it applies to the original price. But tax is charged on the discounted price, not the original price: first take 25% off $40 to get $40 × 0.75 = $30, then add 8% tax on that $30: $30 × 1.08 = $32.40. The correct final price is $32.40, not $33.20 — always compute the discount first, then apply tax to the new lower price.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.4</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">4.4–4.5 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) What is 20% of 150?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>30</li><li class="ws-opt"><span class="ws-bub">B</span>20</li><li class="ws-opt"><span class="ws-bub">C</span>35</li><li class="ws-opt"><span class="ws-bub">D</span>75</li></ol><p class="ws-keynote">20% = 0.20. Multiply: 0.20 × 150 = 30.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Use Percent to Solve Problems is combining the discount and tax into one single percent change instead of applying them one after another. For a $40 item with a 25% discount and 8% sales tax, a student might compute 40 × (1 − 0.25 + 0.08) = 40 × 0.83 = $33.20, treating the tax as if it applies to the original price. But tax is charged on the discounted price, not the original price: first take 25% off $40 to get $40 × 0.75 = $30, then add 8% tax on that $30: $30 × 1.08 = $32.40. The correct final price is $32.40, not $33.20 — always compute the discount first, then apply tax to the new lower price.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) What is 50% of 84?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>42</li><li class="ws-opt"><span class="ws-bub">B</span>50</li><li class="ws-opt"><span class="ws-bub">C</span>34</li><li class="ws-opt"><span class="ws-bub">D</span>168</li></ol><p class="ws-keynote">50% = 0.50. Multiply: 0.50 × 84 = 42. (Or simply divide by 2: 84 ÷ 2 = 42.)</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Use Percent to Solve Problems is combining the discount and tax into one single percent change instead of applying them one after another. For a $40 item with a 25% discount and 8% sales tax, a student might compute 40 × (1 − 0.25 + 0.08) = 40 × 0.83 = $33.20, treating the tax as if it applies to the original price. But tax is charged on the discounted price, not the original price: first take 25% off $40 to get $40 × 0.75 = $30, then add 8% tax on that $30: $30 × 1.08 = $32.40. The correct final price is $32.40, not $33.20 — always compute the discount first, then apply tax to the new lower price.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) A prize costs 120 tickets and is 25% off. What is the sale price?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>90 tickets</li><li class="ws-opt"><span class="ws-bub">B</span>95 tickets</li><li class="ws-opt"><span class="ws-bub">C</span>100 tickets</li><li class="ws-opt"><span class="ws-bub">D</span>30 tickets</li></ol><p class="ws-keynote">25% of 120 = 0.25 × 120 = 30. Sale price: 120 − 30 = 90 tickets.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Use Percent to Solve Problems is combining the discount and tax into one single percent change instead of applying them one after another. For a $40 item with a 25% discount and 8% sales tax, a student might compute 40 × (1 − 0.25 + 0.08) = 40 × 0.83 = $33.20, treating the tax as if it applies to the original price. But tax is charged on the discounted price, not the original price: first take 25% off $40 to get $40 × 0.75 = $30, then add 8% tax on that $30: $30 × 1.08 = $32.40. The correct final price is $32.40, not $33.20 — always compute the discount first, then apply tax to the new lower price.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) A meal costs $20. You leave a 15% tip. How much is the tip?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$3.00</li><li class="ws-opt"><span class="ws-bub">B</span>$1.50</li><li class="ws-opt"><span class="ws-bub">C</span>$5.00</li><li class="ws-opt"><span class="ws-bub">D</span>$0.15</li></ol><p class="ws-keynote">15% of $20 = 0.15 × 20 = $3.00.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Use Percent to Solve Problems is combining the discount and tax into one single percent change instead of applying them one after another. For a $40 item with a 25% discount and 8% sales tax, a student might compute 40 × (1 − 0.25 + 0.08) = 40 × 0.83 = $33.20, treating the tax as if it applies to the original price. But tax is charged on the discounted price, not the original price: first take 25% off $40 to get $40 × 0.75 = $30, then add 8% tax on that $30: $30 × 1.08 = $32.40. The correct final price is $32.40, not $33.20 — always compute the discount first, then apply tax to the new lower price.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.4</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">4.4–4.5 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) An arcade prize costs 240 tickets. If you have a coupon for 15% off, how many tickets do you save?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>36 tickets</li><li class="ws-opt"><span class="ws-bub">B</span>24 tickets</li><li class="ws-opt"><span class="ws-bub">C</span>15 tickets</li><li class="ws-opt"><span class="ws-bub">D</span>204 tickets</li></ol><p class="ws-keynote">15% of 240 = 0.15 × 240 = 36 tickets saved.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Use Percent to Solve Problems is combining the discount and tax into one single percent change instead of applying them one after another. For a $40 item with a 25% discount and 8% sales tax, a student might compute 40 × (1 − 0.25 + 0.08) = 40 × 0.83 = $33.20, treating the tax as if it applies to the original price. But tax is charged on the discounted price, not the original price: first take 25% off $40 to get $40 × 0.75 = $30, then add 8% tax on that $30: $30 × 1.08 = $32.40. The correct final price is $32.40, not $33.20 — always compute the discount first, then apply tax to the new lower price.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) A student scored 72 out of 90 on a test. What percent did they score?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>80%</li><li class="ws-opt"><span class="ws-bub">B</span>72%</li><li class="ws-opt"><span class="ws-bub">C</span>75%</li><li class="ws-opt"><span class="ws-bub">D</span>90%</li></ol><p class="ws-keynote">72/90 simplifies to 8/10, and 10 × 10 = 100, so 8 × 10 = 80. That makes 72/90 = 80/100 = 80%.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Use Percent to Solve Problems is combining the discount and tax into one single percent change instead of applying them one after another. For a $40 item with a 25% discount and 8% sales tax, a student might compute 40 × (1 − 0.25 + 0.08) = 40 × 0.83 = $33.20, treating the tax as if it applies to the original price. But tax is charged on the discounted price, not the original price: first take 25% off $40 to get $40 × 0.75 = $30, then add 8% tax on that $30: $30 × 1.08 = $32.40. The correct final price is $32.40, not $33.20 — always compute the discount first, then apply tax to the new lower price.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) A store marks up a $30 item by 40%, then a customer gets 10% off. What is the final price?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$37.80</li><li class="ws-opt"><span class="ws-bub">B</span>$39.00</li><li class="ws-opt"><span class="ws-bub">C</span>$42.00</li><li class="ws-opt"><span class="ws-bub">D</span>$36.00</li></ol><p class="ws-keynote">Markup: $30 × 1.40 = $42. Discount: $42 × 0.10 = $4.20. Final: $42 − $4.20 = $37.80.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Use Percent to Solve Problems is combining the discount and tax into one single percent change instead of applying them one after another. For a $40 item with a 25% discount and 8% sales tax, a student might compute 40 × (1 − 0.25 + 0.08) = 40 × 0.83 = $33.20, treating the tax as if it applies to the original price. But tax is charged on the discounted price, not the original price: first take 25% off $40 to get $40 × 0.75 = $30, then add 8% tax on that $30: $30 × 1.08 = $32.40. The correct final price is $32.40, not $33.20 — always compute the discount first, then apply tax to the new lower price.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) A restaurant bill is $35. You want to leave a 20% tip. What is the total amount you pay?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$42.00</li><li class="ws-opt"><span class="ws-bub">B</span>$40.00</li><li class="ws-opt"><span class="ws-bub">C</span>$38.50</li><li class="ws-opt"><span class="ws-bub">D</span>$55.00</li></ol><p class="ws-keynote">Tip: 0.20 × $35 = $7.00. Total: $35 + $7 = $42.00.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Use Percent to Solve Problems is combining the discount and tax into one single percent change instead of applying them one after another. For a $40 item with a 25% discount and 8% sales tax, a student might compute 40 × (1 − 0.25 + 0.08) = 40 × 0.83 = $33.20, treating the tax as if it applies to the original price. But tax is charged on the discounted price, not the original price: first take 25% off $40 to get $40 × 0.75 = $30, then add 8% tax on that $30: $30 × 1.08 = $32.40. The correct final price is $32.40, not $33.20 — always compute the discount first, then apply tax to the new lower price.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.4</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">4.4–4.5 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.4) Find the Percent Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Find 30% of 90</span><span class="ws-step-w">30% of 90</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Convert percent to decimal</span><span class="ws-step-w">30% = 3.0</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply</span><span class="ws-step-w">3.0 × 90 = 270</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">30% of 90 = 270</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: 30% = 0.30 (divide by 100, not by 10). 0.30 × 90 = 27. The correct answer is 27. The conversion step is where it goes wrong: the student moved the decimal only one place and wrote 30% = 3.0. A percent is divided by 100, which moves the decimal two places, so 30% = 0.30 and 0.30 × 90 = 27.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 4.5) Find the Discount Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">A prize costs 160 tickets at 25% off. Find the sale price.</span><span class="ws-step-w">160 tickets, 25% off</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find 25% of 160</span><span class="ws-step-w">25 × 160 = 4,000</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Subtract discount</span><span class="ws-step-w">160 − 4,000 = −3,840</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">Sale price is −3,840 tickets</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: 25% = 0.25 (not 25). 0.25 × 160 = 40. Sale price: 160 − 40 = 120 tickets. The &quot;Find 25% of 160&quot; step multiplies by 25 instead of by 0.25, which is 100 times too big. Rewrite the percent as a decimal first: 25% = 0.25, so the discount is 0.25 × 160 = 40 tickets and the sale price is 160 − 40 = 120 tickets. A negative sale price is a signal that the percent was never converted.</p></div></li></ol>
+  </section>
+</main>
+</body>
+</html>
