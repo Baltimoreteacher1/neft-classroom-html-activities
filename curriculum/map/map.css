@@ -543,6 +543,11 @@ input[type="range"] {
   backdrop-filter: blur(9px);
   pointer-events: none;
 }
+/* `display: grid` outranks the UA `[hidden]` rule — without this the chip for
+   the last-hovered standard never goes away. */
+.hover-chip[hidden] {
+  display: none;
+}
 .hover-chip strong {
   font-family: var(--font-display);
   font-size: 14px;
@@ -1158,6 +1163,12 @@ input[type="range"] {
   text-align: center;
   background: var(--field);
   color: var(--on-field);
+}
+/* `display: grid` above outranks the UA `[hidden] { display: none }` rule, so
+   the loading overlay must opt out explicitly — otherwise it stays painted over
+   the finished graph forever. Same pattern as `.panel[hidden]`. */
+.boot[hidden] {
+  display: none;
 }
 .boot h2 {
   margin: 0;
