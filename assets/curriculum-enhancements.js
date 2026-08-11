@@ -338,7 +338,18 @@
     var btn = document.getElementById("hub-mode-toggle");
     if (btn) {
       btn.setAttribute("aria-pressed", teacherMode ? "true" : "false");
-      btn.textContent = teacherMode ? "👩‍🏫 Teacher Mode" : "🎒 Student Mode";
+      // State AND action, both spelled out. This used to print the bare current
+      // mode ("🎒 Student Mode"), which reads equally as "you are in student
+      // mode" and "click to switch to student mode" — so the one control that
+      // answers "which mode am I in?" was the reason nobody could tell. The
+      // teacher-only panels render nothing in student mode, so an ambiguous
+      // label here looks exactly like a broken or un-deployed page.
+      btn.textContent = teacherMode
+        ? "👩‍🏫 You're in Teacher view — switch to Student"
+        : "🎒 You're in Student view — switch to Teacher";
+      btn.title = teacherMode
+        ? "Teacher view: pacing console and command center are visible. Click to switch to the student view."
+        : "Student view: teacher-only panels are hidden. Click to switch to the teacher view.";
     }
     updateStudentHint();
     refreshHub();
