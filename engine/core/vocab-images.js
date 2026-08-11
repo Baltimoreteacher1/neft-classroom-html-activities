@@ -35,6 +35,21 @@ const DEDICATED = new Set([
   "profession",
   "math-biography",
   "math-story",
+  // Unit 1's process vocabulary used to be routed to whichever tile was closest:
+  // `quantity` borrowed VARIABLE (an orange x captioned "stands for a number"),
+  // `relationship` and `table of values` both borrowed the juice/water RATIO
+  // TABLE, and `pattern`, `pattern rule` and `generalization` shared one picture,
+  // so three of lesson 1-5's five word-wall cards showed the same image. Each now
+  // has its own tile from scripts/gen-mindset-vocab-art.mjs, so the synonyms below
+  // are gone on purpose — do not "restore" them.
+  "quantity",
+  "relationship",
+  "representation",
+  "round-trip",
+  "pattern-rule",
+  "generalization",
+  "table-of-values",
+  "reasonableness",
   "ingenuity",
   "ratio",
   // Both have art on disk but were never listed, so anything aliased to them
@@ -190,12 +205,9 @@ const SYNONYMS = {
   "mirror-image": "reflection",
   coordinates: "ordered-pair",
   "distance-between-vertices": "distance",
-  "round-trip": "distance",
   "double-number-line": "number-line",
-  "table-of-values": "ratio-table",
   "tape-diagram": "bar-model",
   represent: "bar-model",
-  representation: "bar-model",
   "negative-number": "negative",
   "positive-number": "positive",
   polygon: "regular-polygon",
@@ -203,15 +215,11 @@ const SYNONYMS = {
   "dependent-variable": "variable",
   "depends-on": "variable",
   "define-the-variables": "variable",
-  quantity: "variable",
-  relationship: "ratio-table",
-  "pattern-rule": "pattern",
   "pattern-unit": "pattern",
   repetition: "pattern",
   rhythm: "pattern",
   predictability: "pattern",
   predict: "pattern",
-  generalization: "pattern",
   // "rotation" and "gear" used to borrow reflection.svg and ratio.svg — a turn
   // drawn as a mirror image, and a toothed wheel drawn as a colon ratio. Each
   // now has its own diagram (Unit 10 bicycle-gear lesson depends on both).
@@ -416,7 +424,6 @@ const SYNONYMS = {
   property: "operation",
   simplify: "fraction",
   equivalent: "fraction",
-  reasonableness: "number",
   "problem-solving": "number",
 };
 
