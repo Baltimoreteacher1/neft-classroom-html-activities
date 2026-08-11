@@ -7,6 +7,7 @@ import { pickWorkedModel } from "./small-group-adaptive.js";
 import { figureBlock } from "./small-group-labs.js";
 import { mountReasoningReader } from "./small-group-reasoning.js";
 import { createRubricDetails } from "./small-group-rubric.js";
+import { appendTryAnotherWay } from "./small-group-strategies.js";
 import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
 import { mountSymbolPad, needsSymbolPad } from "./symbol-pad.js";
@@ -90,10 +91,16 @@ function questionCard(index, stem, stemEs, item = {}) {
     `<button type="button" class="sg-strat-btn" data-strat="manip">🧱 Manipulatives</button>` +
     `<button type="button" class="sg-strat-btn" data-strat="talk">💬 Talk Step-by-Step</button>`;
 
-  [...stratBar.querySelectorAll(".sg-strat-btn")].forEach((btn) => {
+  const strategyButtons = [...stratBar.querySelectorAll(".sg-strat-btn")];
+  strategyButtons.forEach((btn) => {
+    btn.setAttribute("aria-pressed", String(btn.classList.contains("active")));
     btn.onclick = () => {
-      [...stratBar.querySelectorAll(".sg-strat-btn")].forEach((b) => b.classList.remove("active"));
+      strategyButtons.forEach((button) => {
+        button.classList.remove("active");
+        button.setAttribute("aria-pressed", "false");
+      });
       btn.classList.add("active");
+      btn.setAttribute("aria-pressed", "true");
     };
   });
   card.appendChild(stratBar);
@@ -893,12 +900,30 @@ export function bringInExtendingItems(items = [], config = {}) {
   return out;
 }
 
-function problemCard(item, index, variant, onSolved, scaffold, events = {}) {
-  if (item.type === "multiple-choice" && item.choices?.length)
-    return multipleChoiceCard(item, index, onSolved, events);
-  if (item.type === "error-analysis" && item.workedExample?.length)
-    return errorAnalysisCard(item, index, onSolved, events);
-  return responseCard(item, index, variant, onSolved, scaffold, events);
+function problemCard(item, index, variant, onSolved, scaffold, events = {}, strategyContext = {}) {
+  let revealAlternative = () => {};
+  const cardEvents = {
+    ...events,
+    onAttempt(payload) {
+      events.onAttempt?.(payload);
+      revealAlternative();
+    },
+  };
+  const card =
+    item.type === "multiple-choice" && item.choices?.length
+      ? multipleChoiceCard(item, index, onSolved, cardEvents)
+      : item.type === "error-analysis" && item.workedExample?.length
+        ? errorAnalysisCard(item, index, onSolved, cardEvents)
+        : responseCard(item, index, variant, onSolved, scaffold, cardEvents);
+  revealAlternative = appendTryAnotherWay(card, {
+    config: strategyContext.config,
+    item,
+    originalStrategy: strategyContext.getOriginalStrategy,
+    storageKey: strategyContext.storageKey,
+    store: strategyContext.store,
+  });
+  card.__showTryAnotherWay = revealAlternative;
+  return card;
 }
 
 function paginateProblems(section) {
@@ -1050,7 +1075,11 @@ export function createPracticeSection(
         card?.after(bridge);
       }
     };
-    card = problemCard(item, index, config.variant, solve, scaffold, events);
+    card = problemCard(item, index, config.variant, solve, scaffold, events, {
+      config,
+      storageKey: `practice-${storeIndex}`,
+      store,
+    });
     card.dataset.practiceIndex = String(storeIndex);
     card.dataset.tier = item._tier || "";
     cardsByIndex.set(storeIndex, card);
@@ -1065,8 +1094,11 @@ export function createPracticeSection(
       );
       // Freeze the restored card so an already-counted problem reads as
       // finished instead of inviting a confusing re-solve.
-      for (const control of card.querySelectorAll("input, textarea, .choice, .btn:not(.ghost)"))
+      for (const control of card.querySelectorAll(
+        "input, textarea:not(.sg-another-notes), .choice, .btn:not(.ghost)",
+      ))
         control.disabled = true;
+      card.__showTryAnotherWay?.();
       solveItem(storeIndex);
     }
     section.appendChild(card);
@@ -1116,6 +1148,7 @@ export function createPracticeSection(
           },
           false,
           events,
+          { config, storageKey: `practice-${storeIndex}`, store },
         );
         card.dataset.practiceIndex = String(storeIndex);
         card.dataset.tier = "extending";
@@ -1405,8 +1438,20 @@ export function createCheckSection(config, onSolved, tally, events = {}, store =
     },
   };
   const card = ticket.choices?.length
-    ? multipleChoiceCard({ ...ticket, type: "multiple-choice" }, 0, finish, ticketEvents)
-    : responseCard(ticket, 0, config.variant, finish, config.variant !== "group2", ticketEvents);
+    ? problemCard(
+        { ...ticket, type: "multiple-choice" },
+        0,
+        config.variant,
+        finish,
+        config.variant !== "group2",
+        ticketEvents,
+        { config, storageKey: "check", store },
+      )
+    : problemCard(ticket, 0, config.variant, finish, config.variant !== "group2", ticketEvents, {
+        config,
+        storageKey: "check",
+        store,
+      });
   if (store?.get("checkSolved")) {
     card.prepend(
       el(
@@ -1415,6 +1460,7 @@ export function createCheckSection(config, onSolved, tally, events = {}, store =
         "✓ Exit ticket completed last session — prove it again if you want.",
       ),
     );
+    card.__showTryAnotherWay?.();
     finish();
   }
   section.appendChild(card);
@@ -1496,11 +1542,14 @@ function createTransferCheck(config, ticket, events = {}, store = null) {
     },
   };
   wrap.appendChild(
-    multipleChoiceCard(
+    problemCard(
       { ...pick, type: "multiple-choice" },
       1,
+      config.variant,
       () => settle(firstTryCorrect),
+      config.variant !== "group2",
       scoped,
+      { config, storageKey: "check-transfer", store },
     ),
   );
   wrap.appendChild(banner);
