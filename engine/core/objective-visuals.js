@@ -64,6 +64,7 @@ export { MANIPULATIVES, OBJECTIVE_IMAGES } from "./objective-art-catalog.js";
  * problem.
  */
 export const TOPICS = {
+  mathPractice: { content: "mathPracticeContent", language: "mathPracticeTalk" },
   factors: { content: "factorsContent", language: "factorsTalk" },
   division: { content: "divisionContent", language: "divisionTalk" },
   decimalSum: { content: "decimalSumContent", language: "decimalSumTalk" },
@@ -102,6 +103,14 @@ export const TOPICS = {
  * @type {Record<string, { topic: string, rules?: [RegExp, string][] }>}
  */
 const BY_STANDARD = {
+  // The book's "Math Is..." units (1 and 10) are placed by their practice
+  // standard, and its Grade 5 review lessons by the Grade 5 code they revisit.
+  // Without these they fell through to the hard default, which this module
+  // treats as a failure: a lesson would inherit a stranger's picture.
+  "MPP.3": { topic: "mathPractice" },
+  "MPP.4": { topic: "mathPractice" },
+  "MPP.7": { topic: "mathPractice" },
+  "5.OA.B.3": { topic: "mathPractice" },
   "6.NOS.1": { topic: "fractionDivision" },
   "6.NOS.2": { topic: "division" },
   "6.NOS.3": {
@@ -171,15 +180,33 @@ const BY_WORDING = [
 ];
 
 // Last resort before the hard default: keep a lesson inside its own strand.
-const BY_FAMILY = { NOS: "rationalNumberLine", AT: "expressions", DS: "centre", GR: "planeArea" };
+const BY_FAMILY = {
+  NOS: "rationalNumberLine",
+  AT: "expressions",
+  DS: "centre",
+  GR: "planeArea",
+  // The book's "Math Is..." units carry practice standards, and its Grade 5
+  // review lessons carry Grade 5 codes. Both are placed on the practice picture.
+  MPP: "mathPractice",
+  G5: "mathPractice",
+};
 
 function normaliseStandard(standard) {
-  const m = String(standard || "")
-    .trim()
-    .match(/^6\.(NOS|AT|DS|GR)\.(\d+)\s*([a-z]?)/i);
-  if (!m) return null;
-  const family = m[1].toUpperCase();
-  return { family, key: `6.${family}.${m[2]}${m[3].toLowerCase()}`, base: `6.${family}.${m[2]}` };
+  const raw = String(standard || "").trim();
+  const m = raw.match(/^6\.(NOS|AT|DS|GR)\.(\d+)\s*([a-z]?)/i);
+  if (m) {
+    const family = m[1].toUpperCase();
+    return { family, key: `6.${family}.${m[2]}${m[3].toLowerCase()}`, base: `6.${family}.${m[2]}` };
+  }
+  // MPP.3 / MPP.4 / MPP.7 — the mathematical-practice standards the book's
+  // "Math Is..." units are built on. Returning null here sent all twelve of
+  // them to the hard default.
+  const mpp = raw.match(/^MPP\.(\d+)/i);
+  if (mpp) return { family: "MPP", key: `MPP.${mpp[1]}`, base: `MPP.${mpp[1]}` };
+  // Grade 5 review codes (5.NF.B.4, 5.OA.B.3, …) carried by unit 1's lessons.
+  const g5 = raw.match(/^5\.[A-Z]+(?:\.[A-Z0-9.]+)?/i);
+  if (g5) return { family: "G5", key: g5[0].toUpperCase(), base: g5[0].toUpperCase() };
+  return null;
 }
 
 function lessonText(config) {

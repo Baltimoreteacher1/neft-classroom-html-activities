@@ -165,7 +165,7 @@ assert.ok(weSummary.includes("green"), "strong warmup score (100%) colored green
 assert.ok(weSummary.includes("red"), "weak warmup score (50%) colored red");
 assert.ok(weSummary.includes("orange"), "approaching warmup score (60%) colored orange");
 assert.ok(weSummary.includes("Mr. Neft"), "teacher name in metadata");
-assert.ok(weSummary.includes("/lessons/3-4/family/"), "home activity links weakest warmup lesson");
+assert.ok(weSummary.includes("/lessons/3-3/family/"), "home activity links weakest warmup lesson");
 
 // empty lessons edge case
 const emptyWE = buildWeeklyWarmupExitSummary({

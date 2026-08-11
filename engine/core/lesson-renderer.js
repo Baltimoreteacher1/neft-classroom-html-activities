@@ -4495,11 +4495,23 @@ function renderConnectPhase(el, state, ctx, config) {
       return;
     }
 
+    // The Spanish resolution rides directly under the English rather than behind
+    // a toggle: this card appears once, at the moment the answer is revealed, so
+    // a newcomer who has to find and press a control has already lost the beat.
+    // Only shown when it is actually authored AND differs from the English.
+    const modelTextEs =
+      cfg.modelAnswerEs && String(cfg.modelAnswerEs).trim() !== String(modelText).trim()
+        ? String(cfg.modelAnswerEs)
+        : "";
     const reveal = document.createElement("div");
     reveal.className = "connect-reveal";
     reveal.innerHTML = `
       <div class="connect-reveal-title">✅ The answer</div>
-      <p class="connect-reveal-body">${renderMathText(String(modelText))}</p>`;
+      <p class="connect-reveal-body">${renderMathText(String(modelText))}</p>${
+        modelTextEs
+          ? `\n      <p class="connect-reveal-body connect-reveal-es" lang="es">${renderMathText(modelTextEs)}</p>`
+          : ""
+      }`;
     const continueBtn = document.createElement("button");
     continueBtn.type = "button";
     continueBtn.className = "btn btn-primary mt-4";
