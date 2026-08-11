@@ -484,11 +484,17 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
 
   // Slide 2 Narrative Launch Bindings
   const launchBadge = data.launch ? data.launch.badge || "Scenario Launch" : "Scenario Launch";
-  const launchNarrative = data.launch
-    ? data.launch.narrative || "Solve the problem and record observations."
-    : "Solve the problem and record observations.";
-  const noticePrompts = data.launch ? data.launch.noticePrompts || [] : [];
-  const wonderPrompts = data.launch ? data.launch.wonderPrompts || [] : [];
+  const launchNarrative =
+    (data.launch && data.launch.narrative) ||
+    (data.noticeAndWonder && data.noticeAndWonder.context) ||
+    "Solve the problem and record observations.";
+  // Two schemas exist for Notice & Wonder and only one was ever read here:
+  // `launch.noticePrompts` (66 lessons) and `noticeAndWonder.noticeStarters`
+  // (18 lessons, all of Unit 1 and Unit 10). Lessons authored in the second
+  // shape rendered a Be Curious slide with no stems at all, silently.
+  const nwBlock = data.noticeAndWonder || {};
+  const noticePrompts = (data.launch && data.launch.noticePrompts) || nwBlock.noticeStarters || [];
+  const wonderPrompts = (data.launch && data.launch.wonderPrompts) || nwBlock.wonderStarters || [];
   const noticeStemsHtml = noticePrompts.map((p) => `<div>🔹 ${esc(p)}</div>`).join("");
   const wonderStemsHtml = wonderPrompts.map((p) => `<div>🔹 ${esc(p)}</div>`).join("");
 
@@ -824,6 +830,18 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
   const svgVisual = generateMathVisualSvg(lessonId, data);
   const interactiveWidget = generateInteractiveWidgetHtml(lessonId, standard);
 
+  // The authored Be Curious artwork. `noticeAndWonder.image` is set on 64
+  // lessons and resolves on disk for every one of them — and none of it ever
+  // reached a slide, because the Be Curious slide only ever drew the generic
+  // grid SVG from `launch.visual`. Where a real picture exists, it wins.
+  const nwImage = (data.noticeAndWonder && data.noticeAndWonder.image) || "";
+  const noticeWonderVisual = nwImage
+    ? `<div class="nw-figure"><img src="${esc(nwImage)}" alt="${esc(
+        (data.noticeAndWonder && data.noticeAndWonder.imageAlt) ||
+          "Notice and wonder scene for this lesson",
+      )}" /></div>`
+    : svgVisual;
+
   const drawingToolbarHtml = `
               <div>
                 <p class="card-desc" style="font-size:12px; line-height:1.4; margin:0;">Use the drawing tray below to annotate the visual model. Teacher: say &quot;Click to reveal&quot; on key steps.</p>
@@ -922,6 +940,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
     exitTicketHtml,
     exitOpenStem,
     svgVisual,
+    noticeWonderVisual,
     interactiveWidget,
     drawingToolbarHtml,
     googleSlidesUrl,
