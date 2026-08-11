@@ -79,8 +79,7 @@ const has = (text, re) => re.test(String(text ?? ""));
 function pairs(numbers) {
   const out = [];
   for (let i = 0; i < numbers.length; i++)
-    for (let j = 0; j < numbers.length; j++)
-      if (i !== j) out.push([numbers[i], numbers[j]]);
+    for (let j = 0; j < numbers.length; j++) if (i !== j) out.push([numbers[i], numbers[j]]);
   return out;
 }
 
@@ -152,8 +151,7 @@ function structuralTags(numbers, correct, wrong, stem) {
       if (c === a && c === b) continue;
       const volume = a * b * c;
       const surface = 2 * (a * b + a * c + b * c);
-      if (near(volume, correct) && near(a + b + c, wrong))
-        hits.add("geom-volume-added-dimensions");
+      if (near(volume, correct) && near(a + b + c, wrong)) hits.add("geom-volume-added-dimensions");
       if (has(stem, /surface area/i) && near(surface, correct) && near(volume, wrong))
         hits.add("geom-surface-area-as-volume");
     }

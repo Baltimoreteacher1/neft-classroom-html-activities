@@ -23,6 +23,8 @@
 // and a generator re-run converges on the identical result.
 
 import { globSync, readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { deriveOperandTags } from "./lib/operand-misconception-tagger.mjs";
 
 const DRY = process.argv.includes("--dry-run");
@@ -124,10 +126,34 @@ function walk(node, visit) {
    magnitude or sign twins. Most of this curriculum is prose word problems, and
    for those the operand reconstruction in tools/lib/operand-misconception-tagger.mjs
    is the honest path — it recovers the problem's arithmetic model from the
-   stem's own numbers and refuses every ambiguous reading. Exact rules win where
-   both apply; the operand family fills what they leave untagged. */
-function tagsFor(node) {
-  return deriveTags(node) || deriveOperandTags(node);
+   stem's own numbers and refuses every ambiguous reading.
+   The two families are merged PER CHOICE, not per item: an item whose ×10
+   distractor is a place-value error can also have an "added instead of
+   multiplied" distractor beside it, and letting the exact family claim the whole
+   array would leave that second distractor silent. */
+const untagged = (node) => ({ ...node, misconceptionTags: undefined });
+
+function merge(exact, operand) {
+  return exact.map((tag, index) => tag || operand[index] || null);
+}
+
+const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+export function tagsFor(node) {
+  const existing = node.misconceptionTags;
+  const exact = deriveTags(node.misconceptionTags ? untagged(node) : node);
+  const operand = deriveOperandTags(untagged(node));
+
+  if (!existing) {
+    if (exact && operand) return merge(exact, operand);
+    return exact || operand;
+  }
+  /* Already tagged. Filling a null is only safe when the whole array is this
+     tool's own machine output — a null a human authored is a deliberate refusal
+     to name the error, and derivation must not talk over it. */
+  if (!Array.isArray(existing) || !exact || !same(exact, existing) || !operand) return null;
+  const merged = merge(existing, operand);
+  return same(merged, existing) ? null : merged;
 }
 
 function main() {
@@ -156,4 +182,6 @@ function main() {
   );
 }
 
-main();
+/* Importing this module (the tests do) must never rewrite 288 lesson configs as
+   a side effect — run only when invoked as the entry point. */
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) main();

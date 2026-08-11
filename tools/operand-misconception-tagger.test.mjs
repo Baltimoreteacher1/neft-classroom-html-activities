@@ -9,6 +9,7 @@
  * stay silent. The silent cases are the ones that matter.
  */
 import { MISCONCEPTIONS, resolveAuthoredTag } from "../engine/core/misconceptions.js";
+import { tagsFor } from "./author-misconception-tags.mjs";
 import {
   binaryModel,
   deriveOperandTags,
@@ -152,11 +153,45 @@ check(
   null,
 );
 
+// --------------------------------------------- per-choice family merging
+// 12.5 × 10 = 125: the ×10 twins are place-value, and 12.5 + 10 = 22.5 is the
+// added-instead-of-multiplied distractor sitting beside them. Both must survive.
+const tramItem = {
+  stem: "One tram ride takes 12.5 minutes. How many minutes do 10 rides take?",
+  choices: ["125 minutes", "22.5 minutes", "1.25 minutes", "1,250 minutes"],
+  correctIndex: 0,
+};
+check("merges both families per choice", tagsFor(tramItem), [
+  null,
+  "op-added-instead-of-multiplied",
+  "place-value",
+  "place-value",
+]);
+check(
+  "fills nulls left by this tool's own earlier output",
+  tagsFor({ ...tramItem, misconceptionTags: [null, null, "place-value", "place-value"] }),
+  [null, "op-added-instead-of-multiplied", "place-value", "place-value"],
+);
+check(
+  "never talks over a human's deliberate silence",
+  tagsFor({ ...tramItem, misconceptionTags: [null, null, null, null] }),
+  null,
+);
+check(
+  "idempotent once merged",
+  tagsFor({ ...tramItem, misconceptionTags: tagsFor(tramItem) }),
+  null,
+);
+
 // ------------------------------------------------- every tag must be real
 const emitted = new Set();
 for (const item of [
   { stem: "6 rows of 7 apples?", choices: ["42", "13"], correctIndex: 0 },
-  { stem: "3 notebooks cost 12 dollars. Cost per notebook?", choices: ["4", "36", "12"], correctIndex: 0 },
+  {
+    stem: "3 notebooks cost 12 dollars. Cost per notebook?",
+    choices: ["4", "36", "12"],
+    correctIndex: 0,
+  },
   { stem: "Fell from 9 to 4 degrees. Drop?", choices: ["5", "-5"], correctIndex: 0 },
   { stem: "Ratio of 8 cups flour to 2 cups sugar?", choices: ["4", "0.25"], correctIndex: 0 },
   { stem: "Scores 8, 6, 10. Mean?", choices: ["8", "24"], correctIndex: 0 },
