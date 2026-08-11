@@ -168,6 +168,8 @@ const DEDICATED = new Set([
   "height",
   "substitute",
   "like-terms",
+  "rotation",
+  "gear",
 ]);
 
 const SYNONYMS = {
@@ -210,8 +212,11 @@ const SYNONYMS = {
   predictability: "pattern",
   predict: "pattern",
   generalization: "pattern",
-  rotation: "reflection",
-  gear: "ratio",
+  // "rotation" and "gear" used to borrow reflection.svg and ratio.svg — a turn
+  // drawn as a mirror image, and a toothed wheel drawn as a colon ratio. Each
+  // now has its own diagram (Unit 10 bicycle-gear lesson depends on both).
+  rotations: "rotation",
+  gears: "gear",
   growth: "rate",
   vertex: "ordered-pair",
   "unit-rate": "unit-rate",

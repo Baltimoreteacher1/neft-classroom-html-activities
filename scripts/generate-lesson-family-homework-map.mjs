@@ -80,10 +80,14 @@ const begin = "        // BEGIN_LESSON_FAMILY_HOMEWORK_MAP";
 const end = "        // END_LESSON_FAMILY_HOMEWORK_MAP";
 const start = hub.indexOf(begin);
 const stop = hub.indexOf(end);
+// The hub used to inline a second copy of the map between these markers; it now
+// loads /curriculum/lesson-family-homework.js with a <script> tag instead, so the
+// markers are gone. Throwing here made the script exit non-zero AFTER it had
+// already written the real output — which reads as "the map failed to build"
+// when the map built fine. Absent markers are now simply nothing to patch.
 if (start === -1 || stop === -1 || stop <= start) {
-  throw new Error(
-    "curriculum/index.html is missing BEGIN_LESSON_FAMILY_HOMEWORK_MAP / END_LESSON_FAMILY_HOMEWORK_MAP markers",
-  );
+  console.log(`Wrote ${outFile} (hub loads it via <script>; no inline map to patch).`);
+  process.exit(0);
 }
 const injected =
   begin +
