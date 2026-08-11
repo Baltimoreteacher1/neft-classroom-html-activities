@@ -18,10 +18,16 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const HUB = resolve(ROOT, "curriculum/index.html");
+/* The units-and-lessons browser moved to its own page so the hub could stop
+   being 6,000 lines of unit markup. The clobber invariants moved with it — a
+   stripped units page is the same incident this gate was built for, and the hub
+   keeps its own landmarks below. Both files are checked on every run. */
+const UNITS_PAGE = resolve(ROOT, "curriculum/units/index.html");
 const HEADERS = resolve(ROOT, "_headers");
 
-const MIN_BYTES = 150000; // hub is ~286KB; a clobber/stub is far smaller
-const MIN_UNITS = 10; // all 10 math units must be present
+const MIN_BYTES = 100000; // hub is ~170KB after the units split; a stub is far smaller
+const MIN_UNITS_PAGE_BYTES = 250000; // units page is ~330KB
+const MIN_UNITS = 10; // all 10 math units must be present, on the units page
 const MIN_LESSON_LINKS = 200; // ~925 today; a floor well clear of real edits
 
 const failures = [];
@@ -34,9 +40,16 @@ if (!existsSync(HUB)) {
   process.exit(1);
 }
 
+if (!existsSync(UNITS_PAGE)) {
+  console.error("✗ units browser missing: curriculum/units/index.html");
+  process.exit(1);
+}
+
 const html = readFileSync(HUB, "utf8");
+const unitsHtml = readFileSync(UNITS_PAGE, "utf8");
 const headers = readFileSync(HEADERS, "utf8");
 const bytes = statSync(HUB).size;
+const unitsBytes = statSync(UNITS_PAGE).size;
 
 // The hub's behaviour is no longer entirely inline. Its three biggest inline
 // <script> blocks were extracted to /assets/curriculum-hub-*.js (and the base
@@ -67,12 +80,20 @@ for (const name of HUB_ASSETS) {
 }
 /** Hub HTML plus the code it loads from its own extracted assets. */
 const behaviour = html + assetSource;
-const units = (html.match(/class="unit"/g) || []).length;
-const lessonLinks = (html.match(/\/lessons\//g) || []).length;
+const units = (unitsHtml.match(/class="unit"/g) || []).length;
+const lessonLinks = (unitsHtml.match(/\/lessons\//g) || []).length;
 
 check(bytes >= MIN_BYTES, `hub too small: ${bytes} bytes (< ${MIN_BYTES}) — possible clobber/stub`);
 check(/Curriculum Hub/.test(html), 'missing the "Curriculum Hub" title');
-check(units >= MIN_UNITS, `only ${units} unit sections (expected >= ${MIN_UNITS})`);
+check(
+  unitsBytes >= MIN_UNITS_PAGE_BYTES,
+  `units page too small: ${unitsBytes} bytes (< ${MIN_UNITS_PAGE_BYTES}) — possible clobber/stub`,
+);
+check(units >= MIN_UNITS, `only ${units} unit sections on the units page (expected >= ${MIN_UNITS})`);
+check(
+  /href="\/curriculum\/units\/"/.test(html),
+  "the hub no longer links to the units browser at /curriculum/units/",
+);
 check(
   lessonLinks >= MIN_LESSON_LINKS,
   `only ${lessonLinks} /lessons/ links (expected >= ${MIN_LESSON_LINKS})`,
