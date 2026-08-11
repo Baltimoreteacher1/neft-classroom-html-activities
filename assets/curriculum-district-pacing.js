@@ -23,6 +23,7 @@
       <option value="playlist">🎵 Tiered Student Playlist (Seq ${item.sequence})</option>
       <option value="unit_map">🗺️ Unit Scope & Prerequisites Map</option>
       <option value="groups">👥 Studio Small-Group Rotation Console</option>
+      <option value="scorm">🎓 Download Canvas SCORM Package for Sequence ${item.sequence}</option>
     `;
     lessonSelect.appendChild(groupActions);
 
@@ -67,6 +68,8 @@
       window.open('/curriculum/map/?seq=' + seq + '&unit=' + unitTitle, '_blank');
     } else if (actionType === 'groups') {
       window.open('/neft-math-lab-studio/?seq=' + seq + '&unit=' + unitTitle, '_blank');
+    } else if (actionType === 'scorm') {
+      window.open('/teacher-tools/canvas-scorm/?seq=' + seq + '&unit=' + unitTitle, '_blank');
     }
   };
 
