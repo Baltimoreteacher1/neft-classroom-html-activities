@@ -1132,18 +1132,23 @@ const LEGACY_TOPIC = {
   "5-7": [10, 4],
   "5-8": [10, 5],
   // ── authored for the book ──
-  "1-1": [1, 1],
-  "1-2": [1, 2],
-  "1-3": [1, 3],
-  "1-4": [1, 4],
-  "1-5": [1, 5],
-  "1-6": [1, 6],
-  "10-1": [10, 1],
-  "10-2": [10, 3],
-  "10-3": [10, 2],
-  "10-4": [10, 4],
-  "10-5": [10, 5],
-  "10-6": [10, 1],
+  // The "Math Is..." lessons teach disposition, but each carries REAL arithmetic
+  // from its deck, and THAT is what its small groups must practise. Mapping them
+  // by unit number served 10-2 ("Math is Beauty" — bilateral symmetry) twelve
+  // surface-area-of-a-net problems. Each entry is the strand of the lesson's own
+  // maths, named so the next person can check it against the deck.
+  "1-1": [1, 4], // estimating the Ferris wheel, 20 x 4 -> whole-number computation
+  "1-2": [1, 5], // decomposing 105.76 -> add and subtract decimals
+  "1-3": [1, 4], // the tram: 4,000 passengers in rides of 80 -> division
+  "1-4": [10, 1], // garden beds holding 48 cubic feet -> volume
+  "1-5": [3, 2], // scores growing by a fixed rule -> ratio tables
+  "1-6": [3, 1], // "6 times as many wheels" -> multiplicative comparison
+  "10-1": [10, 1], // the 4 x 2 x 1 planter -> volume
+  "10-2": [9, 7], // bilateral symmetry -> reflection across a line
+  "10-3": [6, 1], // Tower of Hanoi doubling -> powers and exponents
+  "10-4": [3, 1], // gear ratio, 40 teeth to 10 -> ratios
+  "10-5": [1, 4], // position divided by pattern-unit length -> division with remainder
+  "10-6": [4, 4], // 78.5 as 50% of 157 -> percent of a number
   "2-8": [8, 2],
   "4-3": [4, 3],
   "7-1": [9, 2],
