@@ -108,6 +108,70 @@
     }
   }
 
+  /** Sentinel for the "every lesson, site order" scope option. */
+  var ALL_LESSONS = "all";
+
+  /** The district crosswalk, or [] when the pacing module is absent. */
+  function pacingSequences() {
+    var pacing = window.NTDistrictPacing;
+    if (!pacing || !Array.isArray(pacing.crosswalk)) return [];
+    return pacing.crosswalk;
+  }
+
+  function sequenceByValue(value) {
+    var number = Number(String(value || "").replace("seq:", ""));
+    if (!number) return null;
+    return (
+      pacingSequences().find(function (item) {
+        return item.sequence === number;
+      }) || null
+    );
+  }
+
+  /**
+   * Which sequence option should be showing for a given lesson. Small-group,
+   * catch-up and project ids ("1-1-group1") are matched by their parent, since
+   * the crosswalk only lists core lessons.
+   */
+  function sequenceValueForLesson(id) {
+    var sequences = pacingSequences();
+    if (!sequences.length) return ALL_LESSONS;
+    var base = String(id || "").replace(/-(group\d+|catchup|project)$/, "");
+    var owner = sequences.find(function (item) {
+      return (item.lessons || []).some(function (entry) {
+        return entry.id === base;
+      });
+    });
+    if (owner) return `seq:${owner.sequence}`;
+    // Not in the crosswalk — fall back to today's sequence, then to everything.
+    var today = pacingSeqNumber();
+    return today ? `seq:${today}` : ALL_LESSONS;
+  }
+
+  /**
+   * A link from the district pacing console down to the cockpit it continues.
+   * Both panels answer "what am I teaching"; only one of them is visible from
+   * the top of the page.
+   */
+  function addCockpitJumpLink() {
+    var host = document.getElementById("district-pacing-console");
+    if (!host || document.getElementById("ctw-jump-link")) return;
+    var jump = document.createElement("button");
+    jump.type = "button";
+    jump.id = "ctw-jump-link";
+    jump.className = "ctw-jump-link";
+    jump.textContent = "⬇ Open the Teacher Command Center for this sequence";
+    jump.addEventListener("click", function () {
+      var target = document.getElementById("curriculum-teacher-workflow");
+      if (!target) return;
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Focus lands on the panel so keyboard users travel with the scroll.
+      target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
+    });
+    host.appendChild(jump);
+  }
+
   function defaultState() {
     return {
       selected: pacingDefaultLesson(),
@@ -368,19 +432,23 @@
       onChange();
     });
 
+    // District sequence, NOT site unit number. The district teaches units out of
+    // numeric order (Unit 5 lands at Seq 8, Unit 2 at Seq 9), so a "Unit 1..10"
+    // dropdown here implied an order the district does not follow and silently
+    // disagreed with the pacing console at the top of this page.
     var unit = el("select", "ctw-select");
-    Array.from(
-      new Set(
-        lessons.map(function (lesson) {
-          return lesson.unit;
-        }),
-      ),
-    ).forEach(function (number) {
-      var option = el("option", null, `Unit ${number}`);
-      option.value = String(number);
+    var sequences = pacingSequences();
+    sequences.forEach(function (item) {
+      var option = el("option", null, `Seq ${item.sequence} · ${item.district_title}`);
+      option.value = `seq:${item.sequence}`;
       unit.appendChild(option);
     });
-    unit.value = String(selectedLesson().unit);
+    // Escape hatch: lessons the district crosswalk does not list (extensions,
+    // bridges authored after the crosswalk) must stay reachable.
+    var allOption = el("option", null, "All lessons · site order");
+    allOption.value = ALL_LESSONS;
+    unit.appendChild(allOption);
+    unit.value = sequenceValueForLesson(state.selected);
 
     var lessonSelect = el("select", "ctw-select");
     function addOption(id, label) {
@@ -388,28 +456,56 @@
       option.value = id;
       lessonSelect.appendChild(option);
     }
-    function fillLessons(unitNumber) {
+    /** One lesson plus its small-group and catch-up children. */
+    function addLessonWithChildren(lesson) {
+      addOption(lesson.id, `${lesson.id} · ${lesson.title}`);
+      // Group 1 / Group 2 small-group lessons, indented under their base.
+      (smallGroupsByParent[lesson.id] || []).forEach(function (group) {
+        addOption(group.id, `   ↳ ${group.title}`);
+      });
+      // Band-review catch-up lesson, after that band's last lesson.
+      (catchUpsByParent[lesson.id] || []).forEach(function (catchUp) {
+        addOption(catchUp.id, `   ↺ ${catchUp.title}`);
+      });
+    }
+
+    function fillLessons(scope) {
       lessonSelect.replaceChildren();
-      var number = Number(unitNumber);
-      lessons
-        .filter(function (lesson) {
-          return lesson.unit === number;
-        })
-        .forEach(function (lesson) {
-          addOption(lesson.id, `${lesson.id} · ${lesson.title}`);
-          // Group 1 / Group 2 small-group lessons, indented under their base.
-          (smallGroupsByParent[lesson.id] || []).forEach(function (group) {
-            addOption(group.id, `   ↳ ${group.title}`);
-          });
-          // Band-review catch-up lesson, after that band's last lesson.
-          (catchUpsByParent[lesson.id] || []).forEach(function (catchUp) {
-            addOption(catchUp.id, `   ↺ ${catchUp.title}`);
-          });
+      var units = [];
+      if (scope === ALL_LESSONS) {
+        // Site order, grouped by unit - the previous behaviour, kept as the
+        // escape hatch for anything the district crosswalk does not list.
+        lessons.forEach(function (lesson) {
+          if (units.indexOf(lesson.unit) === -1) units.push(lesson.unit);
+          addLessonWithChildren(lesson);
         });
-      // End-of-unit culminating project at the bottom of the unit.
-      var eou = endOfUnitByUnit[number];
-      if (eou) addOption(eou.id, `   ★ ${eou.title}`);
-      if (lessonsById[state.selected]?.unit === number) lessonSelect.value = state.selected;
+      } else {
+        var item = sequenceByValue(scope);
+        var ids = item
+          ? item.lessons.map(function (entry) {
+              return entry.id;
+            })
+          : [];
+        ids.forEach(function (id) {
+          var lesson = lessonsById[id];
+          // A crosswalk id with no lesson on disk is skipped rather than
+          // rendered dead - the district list and the site library drift.
+          if (!lesson) return;
+          if (units.indexOf(lesson.unit) === -1) units.push(lesson.unit);
+          addLessonWithChildren(lesson);
+        });
+      }
+      // End-of-unit culminating project, after that unit's lessons.
+      units.forEach(function (number) {
+        var eou = endOfUnitByUnit[number];
+        if (eou) addOption(eou.id, `   ★ ${eou.title}`);
+      });
+      // Never hand the teacher an empty control.
+      if (!lessonSelect.options.length) lessons.forEach(addLessonWithChildren);
+      var listed = Array.prototype.some.call(lessonSelect.options, function (option) {
+        return option.value === state.selected;
+      });
+      if (listed) lessonSelect.value = state.selected;
       else state.selected = lessonSelect.value;
     }
     fillLessons(unit.value);
@@ -428,7 +524,7 @@
     });
 
     container.appendChild(field("Class", section));
-    container.appendChild(field("Unit", unit));
+    container.appendChild(field("District Sequence", unit));
     container.appendChild(field("Lesson", lessonSelect));
   }
 
@@ -933,6 +1029,13 @@
         var anchor = document.querySelector(".wrap");
         if (!anchor?.parentNode) return;
         anchor.parentNode.insertBefore(buildPanel(), anchor);
+        // The cockpit lands ~2300px down, and curriculum-lesson-merge.js then
+        // docks it directly above the Units & Lessons library on purpose (they
+        // share one selection). So it cannot simply be moved to the top — but
+        // a teacher reading the pacing console has no idea it exists that far
+        // down, and reported the whole panel as missing. Give the console a
+        // link to it.
+        addCockpitJumpLink();
         // Public selection bridge so the Units & Lessons library can drive the
         // cockpit (Option 1 merge): the library's "Teach / Launch" control calls
         // select(id) to load a lesson here and scroll up; the bridge reads
