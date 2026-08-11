@@ -412,6 +412,152 @@ export function detectVisualMismatch(config, html) {
   return { topic, introOk, wrongTopic };
 }
 
+/* Words a lesson is actually NAMED for — the ones that tell it apart from its
+   neighbours, not the vocabulary the whole unit shares. Built from the title and
+   the vocabulary terms with the generic mathematical scaffolding removed. */
+const GENERIC_SIGNATURE = new Set([
+  "determine",
+  "describe",
+  "understand",
+  "represent",
+  "explore",
+  "apply",
+  "identify",
+  "relate",
+  "compare",
+  "analyze",
+  "generate",
+  "solve",
+  "problem",
+  "problems",
+  "solving",
+  "using",
+  "with",
+  "their",
+  "from",
+  "into",
+  "within",
+  "between",
+  "them",
+  "then",
+  "area",
+  "data",
+  "number",
+  "numbers",
+  "value",
+  "values",
+  "expression",
+  "expressions",
+  "equation",
+  "equations",
+  "measure",
+  "measures",
+  "measurement",
+  "measurements",
+  "unit",
+  "units",
+  "system",
+  "systems",
+  "point",
+  "points",
+  "line",
+  "lines",
+  "find",
+  "write",
+  "evaluate",
+  "graph",
+  "model",
+  "models",
+  "same",
+  "given",
+  "part",
+  "whole",
+  "percent",
+  "percents",
+  "percentage",
+  "percentages",
+  "ratio",
+  "ratios",
+  "fraction",
+  "fractions",
+  "digit",
+  "algorithm",
+  "concepts",
+  "relationships",
+  "variables",
+]);
+
+export function lessonSignatureTerms(config) {
+  /* TITLE ONLY, deliberately. Vocabulary is shared across a unit — the trapezoid
+     note and the triangle lesson both say "height" and "base" — so including
+     vocabulary terms let the shipped defect pass. The title is what distinguishes
+     one lesson from its neighbours. Compared with a trailing "s" trimmed so
+     "Triangles" matches a note that says "triangle". */
+  return [...new Set(tokenize(config.title).map(stemWord))].filter(
+    (w) => w.length > 4 && !GENERIC_SIGNATURE.has(w),
+  );
+}
+
+function stemWord(word) {
+  return String(word || "")
+    .replace(/(ies)$/, "y")
+    .replace(/s$/, "");
+}
+
+/* A note is "misfiled" when it names another lesson's distinctive topic and never
+   names its own. That relative test is what catches the defect that shipped —
+   5-2's note (Area of Triangles) opened with "the area of a trapezoid" — while
+   staying quiet about thematic titles like "Math is Beauty", where an absolute
+   "must name its own title" rule produced 19 false alarms.
+
+   `lessons` is [{ id, config }] with config.familyNotes already merged. */
+export function findNoteOwnershipConflicts(lessons) {
+  const metas = lessons.map(({ id, config }) => ({
+    id,
+    config,
+    meta: extractLessonKeywords(config),
+    signature: lessonSignatureTerms(config),
+  }));
+
+  const conflicts = [];
+  for (const { id, config, signature } of metas) {
+    const note = config.familyNotes;
+    if (!note) continue;
+    const text = [note.learningTonight?.en, note.bigIdea?.en].filter(Boolean).join(" ").trim();
+    if (!text) continue;
+
+    /* Condition 1: the note never names the topic its own title is built on.
+       Thematic titles ("Math is Beauty") yield no signature, so they opt out. */
+    if (!signature.length) continue;
+    if (signature.some((t) => text.toLowerCase().includes(t))) continue;
+
+    /* Condition 2: some OTHER lesson matches the note materially better. Both
+       conditions are required because either alone is noisy — sibling lessons
+       legitimately share vocabulary (3-6 and 3-10 are both unit conversion),
+       and plenty of good notes phrase a title's topic in student words. */
+    const scored = metas
+      .map((l) => ({ id: l.id, score: scoreTextAlignment(text, l.meta) }))
+      .sort((a, b) => b.score - a.score);
+    const own = scored.find((s) => s.id === id).score;
+    const best = scored[0];
+    if (best.id === id || best.score - own < NOTE_OWNERSHIP_GAP) continue;
+
+    conflicts.push({
+      id,
+      suspectedOwner: best.id,
+      ownScore: own,
+      bestScore: best.score,
+      text: text.slice(0, 90),
+    });
+  }
+  return conflicts;
+}
+
+/* Separation measured on the real curriculum: with every note on its correct
+   lesson the largest honest gap is 6, while 5-3's trapezoid note pasted onto 5-2
+   (the defect that shipped) scores 14 ahead. 10 sits between them. */
+export const NOTE_OWNERSHIP_GAP = 10;
+
 export function scoreHomeworkAlignment(config, html) {
   const lessonMeta = extractLessonKeywords(config);
   const { topic, wrongTopic } = detectVisualMismatch(config, html);
@@ -461,6 +607,27 @@ export function scoreHomeworkAlignment(config, html) {
 
   if (!keyEn || !headerSlice.includes(keyEn.slice(0, 20))) {
     score -= 10;
+  }
+
+  /* The curated family note is the FIRST thing a parent reads, and until
+     2026-08-11 nothing scored it. Every note in data/family-homework-notes/ was
+     still keyed to the pre-renumber lesson ids, so lesson 5-2 ("Determine the
+     Area of Triangles") shipped a note teaching trapezoids — and this audit
+     reported 84/84 aligned the whole time, because it only ever read the
+     generated problems and visuals. Scoring the note against the lesson's own
+     keywords is what makes that class of drift fail loudly. */
+  const note = config.familyNotes;
+  if (note) {
+    const noteText = [note.learningTonight?.en, note.bigIdea?.en].filter(Boolean).join(" ").trim();
+    if (!noteText) {
+      score -= 20;
+      issues.push("Family note has no English learning summary");
+    } else {
+      if (scoreTextAlignment(noteText, lessonMeta) < 0) {
+        score -= 50;
+        issues.push(`Family note teaches a different topic: ${noteText.slice(0, 70)}…`);
+      }
+    }
   }
 
   return { score, issues, topic, critical: wrongTopic || score < 50 };
