@@ -65,9 +65,10 @@ const resolve = (href) => {
   return candidates.find((c) => existsSync(fileURLToPath(new URL(c, root))));
 };
 
-// Units with no unit game, by decision or because it is not built yet.
-// 1 & 10: the book's "Math Is..." units. 9: Two-Variable Relationships, pending.
-const UNITS_WITHOUT_A_GAME = new Set([1, 9, 10]);
+// Units with no unit game. Only the book's two "Math Is..." units, by Joel's
+// call — they teach disposition, not a content strand a game can drill.
+// Unit 9 came off this list once its Variable Velocity game was wired up.
+const UNITS_WITHOUT_A_GAME = new Set([1, 10]);
 
 for (const unit of units) {
   const where = `Unit ${unit.num}`;
