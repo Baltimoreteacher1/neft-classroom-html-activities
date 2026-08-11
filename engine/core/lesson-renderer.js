@@ -1363,44 +1363,26 @@ function renderNoticeAndWonder(host, config, state) {
   layout.className = "nw-layout";
 
   const objVisuals = resolveObjectiveVisuals(config);
-<<<<<<< HEAD
-  const imgSrc = nw.image || (objVisuals && objVisuals.content && objVisuals.content.src ? objVisuals.content.src : null);
-||||||| 540ecb4e3
-  if (nw.image) {
-=======
   // Only ever show the lesson's OWN data-context image. This used to fall back to
   // the generic objective illustration, which put a stock classroom scene next to
   // starters like "I notice the two totals differ by ___" — 29 lessons author no
   // nw.image, so every one of them asked students to describe a picture that was
   // not about their problem. `.nw-layout-noimg` already handles the no-image case.
   const imgSrc = nw.image || null;
->>>>>>> origin/main
 
   if (imgSrc) {
     const fig = document.createElement("figure");
     fig.className = "nw-figure";
-<<<<<<< HEAD
-    fig.style.cssText = "background:#ffffff; padding:10px; border-radius:12px; border:1px solid #cbd5e1;";
-||||||| 540ecb4e3
-=======
     fig.style.cssText =
       "background:#ffffff; padding:10px; border-radius:12px; border:1px solid #cbd5e1;";
->>>>>>> origin/main
     const img = document.createElement("img");
     img.className = "nw-img";
     img.setAttribute("loading", "lazy");
     img.setAttribute("decoding", "async");
     img.src = String(imgSrc);
-<<<<<<< HEAD
-    img.alt = nw.context ? String(nw.context) : (objVisuals?.content?.caption || config.title || "Notice and Wonder data display");
-||||||| 540ecb4e3
-    img.src = String(nw.image);
-    img.alt = nw.context ? String(nw.context) : "Notice and Wonder data display";
-=======
     img.alt = nw.context
       ? String(nw.context)
       : objVisuals?.content?.caption || config.title || "Notice and Wonder data display";
->>>>>>> origin/main
     fig.append(img);
     attachImageZoom(img);
     // "Annotate the scene": a draw overlay so students can circle/underline what

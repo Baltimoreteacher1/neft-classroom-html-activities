@@ -70,126 +70,6 @@ export function resolveInteractiveToolForLesson(config) {
   // Helper: word-boundary test (prevents "means" matching "mean", etc.)
   const wb = (pattern) => new RegExp(`\\b(?:${pattern})\\b`, "i").test(text);
 
-<<<<<<< HEAD
-  // ── 1. Standard-based classification (most reliable) ──────────────────────
-  const std = String(cfg.standard || "").trim().toUpperCase();
-
-  // 6.NOS.1 — Fraction Division
-  if (std === "6.NOS.1") {
-    return { kind: "fraction-divide", num1: "3/4", num2: "1/2", label: "Interactive Fraction Division: Keep, Change, Flip!" };
-  }
-  // 6.NOS.2 — Long Division
-  if (std === "6.NOS.2") {
-    return { kind: "long-division-builder", label: "Interactive Long Division & Partial Quotients Lab" };
-  }
-  // 6.NOS.3 — Decimal Operations (refine by wording)
-  if (std === "6.NOS.3") {
-    if (wb("multiply|multiplication|product")) return { kind: "decimal-product", label: "Interactive Decimal Multiplication Tool" };
-    if (wb("divide|division|quotient")) return { kind: "decimal-quotient", label: "Interactive Decimal Division Tool" };
-    return { kind: "decimal-columns", label: "Interactive Decimal Columns & Regrouping Tool" };
-  }
-  // 6.NOS.4 — Factors, GCF, LCM
-  if (std === "6.NOS.4") {
-    if (wb("least common multiple|LCM")) return { kind: "lcm-lab", num1: 6, num2: 8, label: "Interactive LCM Explorer: Tap shared multiples to find the LCM!" };
-    if (wb("greatest common factor|GCF")) return { kind: "factor-tree-lab", number: 48, label: "Interactive GCF & Factor Tree Explorer" };
-    return { kind: "factor-tree-lab", number: 36, label: "Interactive Factor Tree Explorer: Build prime factorizations step-by-step!" };
-  }
-  // 6.NOS.6 — Coordinate Plane / Number Line
-  if (std === "6.NOS.6") {
-    if (wb("number line")) return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
-    return { kind: "coordinate-plane", points: [{ x: 3, y: 4, label: "A" }, { x: -2, y: 5, label: "B" }], label: "Interactive Coordinate Plane Explorer" };
-  }
-  // 6.NOS.7 — Quadrants / Coordinate Plane
-  if (std === "6.NOS.7") {
-    return { kind: "coordinate-plane", points: [{ x: 3, y: 4, label: "A" }, { x: -2, y: -3, label: "B" }], label: "Interactive Four-Quadrant Coordinate Plane Explorer" };
-  }
-  // 6.NOS.8 — Integers / Absolute Value
-  if (std === "6.NOS.8") {
-    return { kind: "number-line-explorer", label: "Interactive Absolute Value & Integer Explorer" };
-  }
-  // 6.NOS.9 — Distance
-  if (std === "6.NOS.9") {
-    return { kind: "number-line-explorer", label: "Interactive Distance on a Number Line Explorer" };
-  }
-  // 6.AT.1 — Ratios
-  if (std === "6.AT.1") {
-    return { kind: "tape-diagram", parts: [3, 5], labels: ["Quantity A", "Quantity B"], label: "Interactive Tape Diagram Explorer: Count and compare equal parts!" };
-  }
-  // 6.AT.2 — Rates
-  if (std === "6.AT.2") {
-    return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder: Calculate 'per 1' unit rates live on double number lines!" };
-  }
-  // 6.AT.3, 6.AT.3a — Ratio Tables / Rates
-  if (std === "6.AT.3" || std === "6.AT.3A") {
-    if (wb("unit rate")) return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder" };
-    return { kind: "ratio-table-builder", label: "Interactive Ratio Table Explorer: Scale quantities up and down to find equivalent ratios!" };
-  }
-  // 6.AT.3c — Measurement Conversions
-  if (std === "6.AT.3C") {
-    return { kind: "ratio-table-builder", label: "Interactive Measurement Conversion Ratio Table" };
-  }
-  // 6.AT.4 — Percents
-  if (std === "6.AT.4") {
-    if (wb("percent of|percentage of")) return { kind: "percent-builder", label: "Interactive Percent of a Quantity Builder" };
-    return { kind: "percent-grid", percent: 45, label: "Interactive Percent Grid Tool" };
-  }
-  // 6.AT.5 — Exponents
-  if (std === "6.AT.5") {
-    return { kind: "power-builder", base: 2, exponent: 4, label: "Interactive Powers & Exponents Builder" };
-  }
-  // 6.AT.6a, 6.AT.6c, 6.AT.7 — Expressions
-  if (std === "6.AT.6A" || std === "6.AT.6C" || std === "6.AT.7") {
-    if (wb("distributive")) return { kind: "distributive-builder", a: 3, b: "x", c: 4, label: "Interactive Distributive Property Area Model" };
-    if (wb("like terms|combine")) return { kind: "combine-like-terms", label: "Interactive Combine Like Terms Lab" };
-    return { kind: "step-solver", label: "Interactive Expression Evaluator & Step Solver" };
-  }
-  // 6.AT.8 — Equations / Inequalities
-  if (std === "6.AT.8") {
-    if (wb("inequalit")) return { kind: "number-line", min: -5, max: 5, step: 1, problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }], label: "Interactive Inequality Number Line" };
-    return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance: Keep both sides equal!" };
-  }
-  // 6.AT.9 — Inequalities
-  if (std === "6.AT.9") {
-    return { kind: "number-line", min: -5, max: 5, step: 1, problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }], label: "Interactive Inequality Number Line" };
-  }
-  // 6.DS.1 — Statistical Questions
-  if (std === "6.DS.1") {
-    return { kind: "stats-data-lab", label: "Interactive Statistics & Data Set Explorer" };
-  }
-  // 6.DS.3 — Distributions
-  if (std === "6.DS.3") {
-    return { kind: "stats-data-lab", label: "Interactive Distribution Shape Explorer" };
-  }
-  // 6.DS.4 — Mean, Median, Mode
-  if (std === "6.DS.4") {
-    return { kind: "stats-data-lab", label: "Interactive Mean, Median & Mode Explorer" };
-  }
-  // 6.DS.5 — Box Plots / Histograms
-  if (std === "6.DS.5") {
-    if (wb("histogram")) return { kind: "histogram-builder", label: "Interactive Histogram Bar Builder" };
-    return { kind: "box-plot-builder", label: "Interactive Box Plot & Five-Number Summary Builder" };
-  }
-  // 6.DS.6c, 6.DS.6d — MAD / Center
-  if (std === "6.DS.6C" || std === "6.DS.6D") {
-    return { kind: "stats-data-lab", label: "Interactive Mean Absolute Deviation Explorer" };
-  }
-  // 6.GR.1 — Area
-  if (std === "6.GR.1") {
-    const shape = wb("triangle") ? "triangle" : wb("trapezoid") ? "trapezoid" : "parallelogram";
-    return { kind: "area-morph", shape, label: "Interactive Area Morph & Transformation Explorer" };
-  }
-  // 6.GR.2, 6.GR.4 — Solids / Nets
-  if (std === "6.GR.2" || std === "6.GR.4") {
-    if (wb("net|fold|surface area")) return { kind: "net-folder", solid: "cube", label: "Interactive 3D Net Folder: Fold 2D nets into 3D solids!" };
-    return { kind: "solid-3d", shape: wb("pyramid") ? "triangular-pyramid" : "cube", label: "Interactive 3D Solid & Net Explorer" };
-||||||| 540ecb4e3
-  // Lesson 2-1 & Ratio Tables / Equivalent Ratios
-  if (text.includes("ratio table") || text.includes("equivalent ratio") || text.includes("table of ratios") || (text.includes("ratio") && text.includes("table")) || text.includes("2-1")) {
-    return {
-      kind: "ratio-table-builder",
-      label: "Interactive Ratio Table Explorer: Scale quantities up and down to find equivalent ratios!",
-    };
-=======
   // Which figure an area-morph should demonstrate for this term. area-morph
   // reads `figure` and defaults to a parallelogram, so a term this misses gets
   // the wrong shape's formula rather than an obvious failure — hence polygon
@@ -217,81 +97,14 @@ export function resolveInteractiveToolForLesson(config) {
       divisor: "1/2",
       label: "Interactive Fraction Division: Keep, Change, Flip!",
     };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-
-  // Also handle RP standard codes (alternate standard labels)
-  if (/^6\.RP/i.test(std)) {
-    if (wb("ratio table|equivalent ratio")) return { kind: "ratio-table-builder", label: "Interactive Ratio Table Explorer" };
-    if (wb("unit rate")) return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder" };
-    if (wb("percent")) return { kind: "percent-grid", percent: 45, label: "Interactive Percent Grid Tool" };
-    return { kind: "tape-diagram", parts: [3, 5], labels: ["Quantity A", "Quantity B"], label: "Interactive Tape Diagram Explorer" };
-  }
-  if (/^6\.EE/i.test(std)) {
-    if (wb("inequalit")) return { kind: "number-line", min: -5, max: 5, step: 1, problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }], label: "Interactive Inequality Number Line" };
-    if (wb("equation")) return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
-    return { kind: "step-solver", label: "Interactive Expression Evaluator & Step Solver" };
-  }
-  if (/^6\.NS/i.test(std)) {
-    if (wb("fraction|divid")) return { kind: "fraction-divide", num1: "3/4", num2: "1/2", label: "Interactive Fraction Division" };
-    if (wb("decimal")) return { kind: "decimal-columns", label: "Interactive Decimal Columns Tool" };
-    if (wb("factor|GCF|LCM")) return { kind: "factor-tree-lab", number: 36, label: "Interactive Factor Tree Explorer" };
-    if (wb("coordinate")) return { kind: "coordinate-plane", points: [{ x: 3, y: 4, label: "A" }], label: "Interactive Coordinate Plane Explorer" };
-    return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
-  }
-  if (/^6\.SP/i.test(std)) {
-    if (wb("box plot")) return { kind: "box-plot-builder", label: "Interactive Box Plot Builder" };
-    if (wb("histogram")) return { kind: "histogram-builder", label: "Interactive Histogram Builder" };
-    return { kind: "stats-data-lab", label: "Interactive Statistics Explorer" };
-  }
-  if (/^6\.G/i.test(std)) {
-    if (wb("area")) return { kind: "area-morph", shape: "parallelogram", label: "Interactive Area Explorer" };
-    return { kind: "solid-3d", shape: "cube", label: "Interactive 3D Solid Explorer" };
-||||||| 540ecb4e3
-
-  // Unit Rates & Constant of Proportionality
-  if (text.includes("unit rate") || text.includes("constant of proportionality") || text.includes("per 1") || text.includes("rate")) {
-    return {
-      kind: "unit-rate-builder",
-      label: "Interactive Unit Rate Builder: Calculate 'per 1' unit rates live on double number lines!",
-    };
-=======
   // 6.NOS.2 — Long Division
   if (std === "6.NOS.2") {
     return {
       kind: "long-division-builder",
       label: "Interactive Long Division & Partial Quotients Lab",
     };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-
-  // ── 2. Wording-based fallback (regex word boundaries) ─────────────────────
-  // Most specific phrases first, most general last.
-
-  if (wb("ratio table|equivalent ratio|table of ratios")) {
-    return { kind: "ratio-table-builder", label: "Interactive Ratio Table Explorer" };
-||||||| 540ecb4e3
-
-  // Tape Diagrams
-  if (text.includes("tape diagram") || text.includes("ratio")) {
-    return {
-      kind: "tape-diagram",
-      parts: [3, 5],
-      labels: ["Quantity A", "Quantity B"],
-      label: "Interactive Tape Diagram Explorer: Count and compare equal parts!",
-    };
-  }
-
-  // Factor Trees & Prime Factorization
-  if (text.includes("factor tree") || text.includes("prime factor") || text.includes("prime factorization") || text.includes("factorization")) {
-    return {
-      kind: "factor-tree-lab",
-      number: 36,
-      label: "Interactive Factor Tree Explorer: Build prime factorizations step-by-step!",
-    };
-=======
   // 6.NOS.3 — Decimal Operations (refine by wording)
   if (std === "6.NOS.3") {
     if (wb("multiply|multiplication|product"))
@@ -336,22 +149,7 @@ export function resolveInteractiveToolForLesson(config) {
       number: 36,
       label: "Interactive Factor Tree Explorer: Build prime factorizations step-by-step!",
     };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-  if (wb("unit rate|constant of proportionality")) {
-    return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder" };
-||||||| 540ecb4e3
-
-  // Least Common Multiple (LCM) & GCF
-  if (text.includes("least common multiple") || text.includes("lcm")) {
-    return {
-      kind: "lcm-lab",
-      num1: 6,
-      num2: 8,
-      label: "Interactive LCM Explorer: Tap shared multiples to find the LCM!",
-    };
-=======
   // 6.NOS.6 — Coordinate Plane / Number Line
   if (std === "6.NOS.6") {
     if (wb("number line"))
@@ -364,20 +162,7 @@ export function resolveInteractiveToolForLesson(config) {
       ],
       label: "Interactive Coordinate Plane Explorer",
     };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-  if (wb("tape diagram")) {
-    return { kind: "tape-diagram", parts: [3, 5], labels: ["Quantity A", "Quantity B"], label: "Interactive Tape Diagram Explorer" };
-||||||| 540ecb4e3
-
-  if (text.includes("greatest common factor") || text.includes("gcf")) {
-    return {
-      kind: "factor-tree-lab",
-      number: 48,
-      label: "Interactive GCF & Factor Tree Explorer",
-    };
-=======
   // 6.NOS.7 — Quadrants / Coordinate Plane
   if (std === "6.NOS.7") {
     return {
@@ -388,22 +173,7 @@ export function resolveInteractiveToolForLesson(config) {
       ],
       label: "Interactive Four-Quadrant Coordinate Plane Explorer",
     };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-  if (wb("factor tree|prime factorization")) {
-    return { kind: "factor-tree-lab", number: 36, label: "Interactive Factor Tree Explorer" };
-||||||| 540ecb4e3
-
-  // Exponents & Powers
-  if (text.includes("exponent") || text.includes("power") || text.includes("base") || text.includes("squared") || text.includes("cubed")) {
-    return {
-      kind: "power-builder",
-      base: 2,
-      exponent: 4,
-      label: "Interactive Powers & Exponents Builder",
-    };
-=======
   // 6.NOS.8 — Integers / Absolute Value
   if (std === "6.NOS.8") {
     return { kind: "number-line-explorer", label: "Interactive Absolute Value & Integer Explorer" };
@@ -468,22 +238,7 @@ export function resolveInteractiveToolForLesson(config) {
       exponent: 4,
       label: "Interactive Powers & Exponents Builder",
     };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-  if (wb("least common multiple") || /\bLCM\b/.test(text)) {
-    return { kind: "lcm-lab", num1: 6, num2: 8, label: "Interactive LCM Explorer" };
-||||||| 540ecb4e3
-
-  // Fraction Division
-  if (text.includes("divide fraction") || text.includes("fraction division") || text.includes("dividing fraction")) {
-    return {
-      kind: "fraction-divide",
-      num1: "3/4",
-      num2: "1/2",
-      label: "Interactive Fraction Division: Keep, Change, Flip!",
-    };
-=======
   // 6.AT.6a, 6.AT.6c, 6.AT.7 — Expressions
   if (std === "6.AT.6A" || std === "6.AT.6C" || std === "6.AT.7") {
     if (wb("distributive"))
@@ -501,84 +256,7 @@ export function resolveInteractiveToolForLesson(config) {
         label: "Interactive Combine Like Terms Lab",
       };
     return { kind: "step-solver", label: "Interactive Expression Evaluator & Step Solver" };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-  if (wb("greatest common factor") || /\bGCF\b/.test(text)) {
-    return { kind: "factor-tree-lab", number: 48, label: "Interactive GCF & Factor Tree Explorer" };
-  }
-  if (wb("exponents?|powers of")) {
-    return { kind: "power-builder", base: 2, exponent: 4, label: "Interactive Powers & Exponents Builder" };
-  }
-  if (wb("divid\\w* fractions?|fraction division|divid\\w* by a fraction")) {
-    return { kind: "fraction-divide", num1: "3/4", num2: "1/2", label: "Interactive Fraction Division: Keep, Change, Flip!" };
-  }
-  if (wb("long division|partial quotients?")) {
-    return { kind: "long-division-builder", label: "Interactive Long Division Lab" };
-  }
-  if (wb("divid\\w* decimals?|decimal division")) {
-    return { kind: "decimal-quotient", label: "Interactive Decimal Division Tool" };
-  }
-  if (wb("multiply\\w* decimals?|decimal multiplication")) {
-    return { kind: "decimal-product", label: "Interactive Decimal Multiplication Tool" };
-  }
-  if (wb("add\\w* decimals?|subtract\\w* decimals?|decimal")) {
-    return { kind: "decimal-columns", label: "Interactive Decimal Columns & Regrouping Tool" };
-||||||| 540ecb4e3
-
-  // Long Division
-  if (text.includes("long division") || text.includes("partial quotient")) {
-    return {
-      kind: "long-division-builder",
-      label: "Interactive Long Division & Partial Quotients Lab",
-    };
-  }
-
-  // Decimal Operations
-  if (text.includes("divide decimal") || text.includes("decimal division")) {
-    return {
-      kind: "decimal-quotient",
-      label: "Interactive Decimal Division Tool",
-    };
-  }
-
-  if (text.includes("multiply decimal") || text.includes("decimal multiplication")) {
-    return {
-      kind: "decimal-product",
-      label: "Interactive Decimal Multiplication Tool",
-    };
-  }
-
-  if (text.includes("add decimal") || text.includes("subtract decimal") || text.includes("decimal")) {
-    return {
-      kind: "decimal-columns",
-      label: "Interactive Decimal Columns & Regrouping Tool",
-    };
-  }
-
-  // Percents
-  if (text.includes("percent of") || text.includes("percentage of")) {
-    return {
-      kind: "percent-builder",
-      label: "Interactive Percent of a Quantity Builder",
-    };
-  }
-
-  if (text.includes("percent") || text.includes("percentage")) {
-    return {
-      kind: "percent-grid",
-      percent: 45,
-      label: "Interactive Percent Grid Tool",
-    };
-  }
-
-  // Equations & Balance Scale
-  if (text.includes("balance") || text.includes("solve equation") || text.includes("one-step equation") || text.includes("equation")) {
-    return {
-      kind: "equation-balance-lab",
-      label: "Interactive Equation Pan Balance: Keep both sides equal!",
-    };
-=======
   // 6.AT.8 — Equations / Inequalities
   if (std === "6.AT.8") {
     if (wb("inequalit"))
@@ -594,23 +272,7 @@ export function resolveInteractiveToolForLesson(config) {
       kind: "equation-balance-lab",
       label: "Interactive Equation Pan Balance: Keep both sides equal!",
     };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-  if (wb("percent of|percentage of")) {
-    return { kind: "percent-builder", label: "Interactive Percent of a Quantity Builder" };
-||||||| 540ecb4e3
-
-  // Expressions & Distributive Property
-  if (text.includes("distribut") || text.includes("expand")) {
-    return {
-      kind: "distributive-builder",
-      a: 3,
-      b: "x",
-      c: 4,
-      label: "Interactive Distributive Property Area Model",
-    };
-=======
   // 6.AT.9 — Inequalities
   if (std === "6.AT.9") {
     return {
@@ -857,69 +519,17 @@ export function resolveInteractiveToolForLesson(config) {
       c: 4,
       label: "Interactive Distributive Property Area Model",
     };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-  if (wb("percents?|percentage")) {
-    return { kind: "percent-grid", percent: 45, label: "Interactive Percent Grid Tool" };
-||||||| 540ecb4e3
-
-  if (text.includes("combine like terms") || text.includes("like terms")) {
-    return {
-      kind: "combine-like-terms",
-      label: "Interactive Combine Like Terms Lab",
-    };
-=======
   if (wb("combine like terms|like terms")) {
     return {
       kind: "combine-like-terms",
       expr: "5x + 3 + 2x - 1",
       label: "Interactive Combine Like Terms Lab",
     };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-  if (wb("ratios?")) {
-    return { kind: "tape-diagram", parts: [3, 5], labels: ["Quantity A", "Quantity B"], label: "Interactive Tape Diagram Explorer" };
-||||||| 540ecb4e3
-
-  // Absolute Value & Rational Numbers
-  if (text.includes("absolute value") || text.includes("distance from zero") || text.includes("opposite")) {
-    return {
-      kind: "number-line-explorer",
-      label: "Interactive Absolute Value & Number Line Explorer",
-    };
-=======
   if (wb("equations?") && wb("solve|one-step|two-step|balance")) {
     return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-  if (wb("distributive property")) {
-    return { kind: "distributive-builder", a: 3, b: "x", c: 4, label: "Interactive Distributive Property Area Model" };
-  }
-  if (wb("combine like terms|like terms")) {
-    return { kind: "combine-like-terms", label: "Interactive Combine Like Terms Lab" };
-||||||| 540ecb4e3
-
-  if (text.includes("coordinate") || text.includes("ordered pair") || text.includes("quadrant")) {
-    return {
-      kind: "coordinate-plane",
-      points: [{ x: 3, y: 4, label: "A" }, { x: -2, y: 5, label: "B" }],
-      label: "Interactive Coordinate Plane Explorer",
-    };
-  }
-
-  if (text.includes("number line") || text.includes("inequality") || text.includes("inequalities")) {
-    return {
-      kind: "number-line",
-      min: -5,
-      max: 5,
-      step: 1,
-      points: [{ value: 3, label: "x = 3" }],
-      label: "Interactive Number Line Explorer",
-    };
-=======
   if (wb("inequalit\\w*")) {
     return {
       kind: "number-line",
@@ -929,21 +539,7 @@ export function resolveInteractiveToolForLesson(config) {
       problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }],
       label: "Interactive Inequality Number Line",
     };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-  if (wb("equations?") && wb("solve|one-step|two-step|balance")) {
-    return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
-||||||| 540ecb4e3
-
-  // Geometry, Area, Surface Area & Volume
-  if (text.includes("area of") || text.includes("parallelogram") || text.includes("triangle area") || text.includes("trapezoid")) {
-    return {
-      kind: "area-morph",
-      shape: text.includes("triangle") ? "triangle" : text.includes("trapezoid") ? "trapezoid" : "parallelogram",
-      label: "Interactive Area Morph & Transformation Explorer",
-    };
-=======
   if (wb("absolute value")) {
     return { kind: "number-line-explorer", label: "Interactive Absolute Value Explorer" };
   }
@@ -956,36 +552,10 @@ export function resolveInteractiveToolForLesson(config) {
       ],
       label: "Interactive Coordinate Plane Explorer",
     };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-  if (wb("inequalit\\w*")) {
-    return { kind: "number-line", min: -5, max: 5, step: 1, problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }], label: "Interactive Inequality Number Line" };
-||||||| 540ecb4e3
-
-  if (text.includes("net") || text.includes("surface area") || text.includes("fold")) {
-    return {
-      kind: "net-folder",
-      solid: "cube",
-      label: "Interactive 3D Net Folder: Fold 2D nets into 3D solids!",
-    };
-=======
   if (wb("number line")) {
     return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-  if (wb("absolute value")) {
-    return { kind: "number-line-explorer", label: "Interactive Absolute Value Explorer" };
-||||||| 540ecb4e3
-
-  if (text.includes("3d") || text.includes("prism") || text.includes("pyramid") || text.includes("volume")) {
-    return {
-      kind: "solid-3d",
-      shape: text.includes("pyramid") ? "triangular-pyramid" : text.includes("triangular") ? "triangular-prism" : "cube",
-      label: "Interactive 3D Solid & Net Explorer",
-    };
-=======
   if (wb("area of|parallelogram|trapezoid")) {
     const figure = areaFigure();
     return { kind: "area-morph", figure, label: "Interactive Area Explorer" };
@@ -999,19 +569,7 @@ export function resolveInteractiveToolForLesson(config) {
       shape: wb("pyramid") ? "triangular-pyramid" : "cube",
       label: "Interactive 3D Solid Explorer",
     };
->>>>>>> origin/main
   }
-<<<<<<< HEAD
-  if (wb("coordinate plane|ordered pairs?")) {
-    return { kind: "coordinate-plane", points: [{ x: 3, y: 4, label: "A" }, { x: -2, y: 5, label: "B" }], label: "Interactive Coordinate Plane Explorer" };
-||||||| 540ecb4e3
-
-  if (text.includes("cross section") || text.includes("slice")) {
-    return {
-      kind: "cross-section",
-      label: "Interactive 3D Cross-Section Slicing Tool",
-    };
-=======
   if (wb("cross sections?")) {
     return { kind: "cross-section", label: "Interactive 3D Cross-Section Slicing Tool" };
   }
@@ -1035,80 +593,10 @@ export function resolveInteractiveToolForLesson(config) {
       divisor: "1/2",
       label: "Interactive Fraction Division Tool",
     };
->>>>>>> origin/main
-  }
-<<<<<<< HEAD
-  if (wb("number line")) {
-    return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
-||||||| 540ecb4e3
-
-  // Statistics & Data Analysis
-  if (text.includes("mean") || text.includes("median") || text.includes("mad") || text.includes("data set") || text.includes("variability")) {
-    return {
-      kind: "stats-data-lab",
-      label: "Interactive Statistics & Live Data Explorer",
-    };
-=======
-  if (wb("equations?")) {
-    return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
->>>>>>> origin/main
-  }
-<<<<<<< HEAD
-  if (wb("area of|parallelogram|trapezoid")) {
-    const shape = wb("triangle") ? "triangle" : wb("trapezoid") ? "trapezoid" : "parallelogram";
-    return { kind: "area-morph", shape, label: "Interactive Area Explorer" };
-  }
-  if (wb("nets?|surface area") && !wb("internet|planet")) {
-    return { kind: "net-folder", solid: "cube", label: "Interactive 3D Net Folder" };
-  }
-  if (wb("prisms?|pyramids?|volume")) {
-    return { kind: "solid-3d", shape: wb("pyramid") ? "triangular-pyramid" : "cube", label: "Interactive 3D Solid Explorer" };
-  }
-  if (wb("cross sections?")) {
-    return { kind: "cross-section", label: "Interactive 3D Cross-Section Slicing Tool" };
-  }
-  // Statistics: use \bmean\b (whole word only — never matches "means")
-  if (/\bmean\b/.test(text) || wb("median|data sets?|variability") || /\bMAD\b/.test(text)) {
-    return { kind: "stats-data-lab", label: "Interactive Statistics & Live Data Explorer" };
-  }
-  if (wb("box plots?|quartiles?")) {
-    return { kind: "box-plot-builder", label: "Interactive Box Plot Builder" };
-  }
-  if (wb("histograms?")) {
-    return { kind: "histogram-builder", label: "Interactive Histogram Builder" };
-  }
-  if (wb("dot plots?")) {
-    return { kind: "dot-plot", label: "Interactive Dot Plot Explorer" };
-  }
-  if (wb("fractions?")) {
-    return { kind: "fraction-divide", num1: "3/4", num2: "1/2", label: "Interactive Fraction Division Tool" };
   }
   if (wb("equations?")) {
     return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
   }
-||||||| 540ecb4e3
-
-  if (text.includes("box plot") || text.includes("quartile")) {
-    return {
-      kind: "box-plot-builder",
-      label: "Interactive Box Plot & Five-Number Summary Builder",
-    };
-  }
-
-  if (text.includes("histogram")) {
-    return {
-      kind: "histogram-builder",
-      label: "Interactive Histogram Bar Builder",
-    };
-  }
-
-  if (text.includes("dot plot")) {
-    return {
-      kind: "dot-plot",
-      label: "Interactive Dot Plot Explorer",
-    };
-=======
->>>>>>> origin/main
   if (wb("expressions?|variables?")) {
     return { kind: "step-solver", label: "Interactive Expression Step Solver" };
   }

@@ -83,7 +83,8 @@ function questionCard(index, stem, stemEs, item = {}) {
   const stratBar = el("div", "sg-strategy-bar");
   stratBar.setAttribute("role", "group");
   stratBar.setAttribute("aria-label", "Choose your strategy");
-  stratBar.innerHTML = `<span class="sg-strat-label">Strategy:</span>` +
+  stratBar.innerHTML =
+    `<span class="sg-strat-label">Strategy:</span>` +
     `<button type="button" class="sg-strat-btn active" data-strat="calc">✍️ Write &amp; Calculate</button>` +
     `<button type="button" class="sg-strat-btn" data-strat="model">🎨 Draw Visual Model</button>` +
     `<button type="button" class="sg-strat-btn" data-strat="manip">🧱 Manipulatives</button>` +
