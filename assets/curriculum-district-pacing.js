@@ -10,40 +10,60 @@
     lessonSelect.innerHTML = '';
     
     const groupActions = document.createElement('optgroup');
-    groupActions.label = '⚡ Quick Planning Actions';
+    groupActions.label = '⚡ Quick Unit Planning Actions';
     groupActions.innerHTML = `
       <option value="launch_first">🚀 Launch First Lesson of Unit</option>
       <option value="build_week">🗓️ Plan the Week on Class Board</option>
       <option value="playlist">🎵 Tiered Student Playlist</option>
       <option value="unit_map">🗺️ Unit Scope & Prerequisites Map</option>
-      <option value="groups">👥 Studio Small Groups</option>
+      <option value="groups">👥 Studio Small-Group Rotation Console</option>
     `;
     lessonSelect.appendChild(groupActions);
 
     const groupLessons = document.createElement('optgroup');
-    groupLessons.label = '📖 Target Lessons in District Sequence';
+    groupLessons.label = '📖 Lessons & Synced Small-Group Pathways (District Sequence)';
+    
     item.lessons.forEach(l => {
-      const opt = document.createElement('option');
-      opt.value = `lesson_${l.id}`;
-      opt.textContent = `Lesson ${l.id}: ${l.title} [${l.standards.join(', ')}]`;
-      groupLessons.appendChild(opt);
+      // Parent Interactive Lesson
+      const optMain = document.createElement('option');
+      optMain.value = `lesson_${l.id}`;
+      optMain.textContent = `Lesson ${l.id}: ${l.title} [${l.standards.join(', ')}]`;
+      groupLessons.appendChild(optMain);
+
+      // Synced Group 1 (Support / Level 1)
+      const optG1 = document.createElement('option');
+      optG1.value = `sg1_${l.id}`;
+      optG1.textContent = `    ↳ 💡 Lesson ${l.id} Group 1 (Level 1 Support Pathway)`;
+      groupLessons.appendChild(optG1);
+
+      // Synced Group 2 (Enrichment / Level 2)
+      const optG2 = document.createElement('option');
+      optG2.value = `sg2_${l.id}`;
+      optG2.textContent = `    ↳ 🚀 Lesson ${l.id} Group 2 (Level 2 Enrichment Pathway)`;
+      groupLessons.appendChild(optG2);
     });
     lessonSelect.appendChild(groupLessons);
   };
 
   window.onDistrictLessonChange = function(val) {
+    if (!val) return;
     if (val.startsWith('lesson_')) {
       const lid = val.replace('lesson_', '');
       window.open('/lessons/' + lid + '/', '_blank');
+    } else if (val.startsWith('sg1_')) {
+      const lid = val.replace('sg1_', '');
+      window.open('/lessons/' + lid + '-group1/', '_blank');
+    } else if (val.startsWith('sg2_')) {
+      const lid = val.replace('sg2_', '');
+      window.open('/lessons/' + lid + '-group2/', '_blank');
     }
   };
 
   window.launchTargetLesson = function() {
     const select = document.getElementById('district-lesson-select');
-    const val = select.value;
-    if (val && val.startsWith('lesson_')) {
-      const lid = val.replace('lesson_', '');
-      window.open('/lessons/' + lid + '/', '_blank');
+    const val = select ? select.value : '';
+    if (val) {
+      window.onDistrictLessonChange(val);
     } else {
       const seqVal = document.getElementById('district-seq-select').value;
       const item = crosswalk.find(x => x.sequence == seqVal);
