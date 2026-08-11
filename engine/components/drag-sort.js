@@ -450,6 +450,29 @@ function createDragItem(item) {
     }
   }
 
+  // Visual pop-up preview button if item text or visual property has an illustration preview
+  const visualInfo = item.visual || getVisualForText(item.text);
+  if (visualInfo) {
+    const previewBtn = document.createElement("button");
+    previewBtn.type = "button";
+    previewBtn.className = "ds-preview-btn";
+    previewBtn.style.cssText =
+      "margin-top:4px; padding:3px 8px; font-size:11.5px; font-weight:700; border:1px solid var(--teal, #1fa6a2); border-radius:999px; background:var(--teal-light, #eaf0f7); color:var(--teal-dark, #0d7a76); cursor:pointer; display:inline-flex; align-items:center; gap:3px; transition:transform 0.1s ease;";
+    previewBtn.innerHTML = "🔍 View Model";
+    previewBtn.addEventListener("click", (e) => {
+      e.stopPropagation(); // don't trigger drag selection
+      openDragItemModal(
+        visualInfo.title || item.text,
+        visualInfo.svg || "",
+        visualInfo.explanation || "",
+      );
+    });
+    previewBtn.addEventListener("touchend", (e) => {
+      e.stopPropagation();
+    });
+    el.append(previewBtn);
+  }
+
   // Keyboard/tap selection (paired with wireZoneKeyboard on the drop zones).
   el.tabIndex = 0;
   el.setAttribute("role", "button");
@@ -649,4 +672,92 @@ function createNumberArraySVG(num) {
   }
 
   return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="display:block; margin:4px auto 0; overflow:visible;">${dotsSvg}</svg>`;
+}
+
+function openDragItemModal(title, svgContent, text) {
+  let dialog = document.getElementById("ds-preview-dialog");
+  if (!dialog) {
+    dialog = document.createElement("dialog");
+    dialog.id = "ds-preview-dialog";
+    dialog.className = "sg-info-dialog";
+    dialog.style.cssText =
+      "padding:0; border:1px solid var(--sg-line, #d8dfe6); border-radius:18px; max-width:540px; width:90%; background:#fff; box-shadow:0 20px 45px rgba(0,0,0,0.25);";
+    document.body.appendChild(dialog);
+  }
+  dialog.innerHTML = `
+    <div style="position:relative; padding:24px; text-align:center;">
+      <button type="button" class="sg-info-close" style="position:absolute; top:14px; right:16px; border:none; background:none; font-size:24px; cursor:pointer; color:#64748b;" onclick="this.closest('dialog').close()">&times;</button>
+      <h3 style="margin:0 0 10px; font-family:var(--sg-display, sans-serif); font-size:1.35rem; color:#0f172a;">${title}</h3>
+      <div style="margin:14px 0; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; display:flex; justify-content:center; align-items:center;">${svgContent}</div>
+      <p style="margin:12px 0 0; font-size:0.95rem; color:#475569; line-height:1.5;">${text || ""}</p>
+      <button type="button" class="btn btn-primary" style="margin-top:16px; padding:8px 20px; font-weight:700;" onclick="this.closest('dialog').close()">Close Preview</button>
+    </div>
+  `;
+  dialog.showModal();
+}
+
+function getVisualForText(text) {
+  const t = String(text || "").toLowerCase();
+  if (t.includes("butterfly")) {
+    return {
+      title: "Butterfly (Bilateral Symmetry)",
+      explanation:
+        "A line down the body divides the butterfly into two identical mirror-image wings.",
+      svg: `<svg viewBox="0 0 200 160" width="180" height="144" style="background:white; border-radius:8px;"><g stroke="#0f172a" stroke-width="2" fill="none"><path d="M 100,20 C 60,10 20,40 30,80 C 40,110 90,120 100,140 C 110,120 160,110 170,80 C 180,40 140,10 100,20 Z" fill="#e0f2fe"/><path d="M 100,40 C 70,30 40,60 50,90 C 60,110 90,110 100,125 C 110,110 140,110 150,90 C 160,60 130,30 100,40 Z" fill="#38bdf8" opacity="0.6"/><circle cx="70" cy="65" r="8" fill="#0284c7"/><circle cx="130" cy="65" r="8" fill="#0284c7"/><line x1="100" y1="10" x2="100" y2="150" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="5,4"/><circle cx="100" cy="25" r="4" fill="#0f172a"/></g><text x="100" y="156" text-anchor="middle" font-size="11" fill="#ef4444" font-weight="bold">Line of Symmetry</text></svg>`,
+    };
+  }
+  if (t.includes("ladybug")) {
+    return {
+      title: "Ladybug (Bilateral Symmetry)",
+      explanation: "The left shell and right shell mirror each other across the central line.",
+      svg: `<svg viewBox="0 0 180 160" width="162" height="144" style="background:white; border-radius:8px;"><circle cx="90" cy="90" r="55" fill="#ef4444" stroke="#0f172a" stroke-width="3"/><circle cx="90" cy="40" r="22" fill="#0f172a"/><line x1="90" y1="35" x2="90" y2="145" stroke="#0f172a" stroke-width="3"/><circle cx="65" cy="75" r="7" fill="#0f172a"/><circle cx="115" cy="75" r="7" fill="#0f172a"/><circle cx="65" cy="110" r="7" fill="#0f172a"/><circle cx="115" cy="110" r="7" fill="#0f172a"/><line x1="90" y1="15" x2="90" y2="145" stroke="#2563eb" stroke-width="2" stroke-dasharray="4,3"/><text x="90" y="155" text-anchor="middle" font-size="11" fill="#2563eb" font-weight="bold">Line of Symmetry</text></svg>`,
+    };
+  }
+  if (t.includes("dragonfly")) {
+    return {
+      title: "Dragonfly (Bilateral Symmetry)",
+      explanation:
+        "Long slender body with matched pairs of wings extending symmetrically on both sides.",
+      svg: `<svg viewBox="0 0 200 160" width="180" height="144" style="background:white; border-radius:8px;"><ellipse cx="100" cy="80" rx="6" ry="60" fill="#0f172a"/><ellipse cx="55" cy="60" rx="40" ry="10" fill="#2dd4bf" stroke="#0f172a" stroke-width="1.5" transform="rotate(-10 55 60)"/><ellipse cx="145" cy="60" rx="40" ry="10" fill="#2dd4bf" stroke="#0f172a" stroke-width="1.5" transform="rotate(10 145 60)"/><ellipse cx="60" cy="85" rx="35" ry="8" fill="#2dd4bf" stroke="#0f172a" stroke-width="1.5" transform="rotate(5 60 85)"/><ellipse cx="140" cy="85" rx="35" ry="8" fill="#2dd4bf" stroke="#0f172a" stroke-width="1.5" transform="rotate(-5 140 85)"/><line x1="100" y1="10" x2="100" y2="150" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,3"/><text x="100" y="156" text-anchor="middle" font-size="11" fill="#ef4444" font-weight="bold">Line of Symmetry</text></svg>`,
+    };
+  }
+  if (t.includes("leaf") || t.includes("leaves")) {
+    return {
+      title: "Layer of Leaves (Bilateral Symmetry)",
+      explanation: "Two leaves growing opposite each other form a mirror pair across the stem.",
+      svg: `<svg viewBox="0 0 200 160" width="180" height="144" style="background:white; border-radius:8px;"><path d="M 100,140 Q 50,110 40,70 Q 70,50 100,80 Z" fill="#4ade80" stroke="#15803d" stroke-width="2"/><path d="M 100,140 Q 150,110 160,70 Q 130,50 100,80 Z" fill="#4ade80" stroke="#15803d" stroke-width="2"/><line x1="100" y1="20" x2="100" y2="150" stroke="#166534" stroke-width="3"/><line x1="100" y1="20" x2="100" y2="150" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,3"/><text x="100" y="156" text-anchor="middle" font-size="11" fill="#ef4444" font-weight="bold">Center Stem / Symmetry</text></svg>`,
+    };
+  }
+  if (t.includes("face")) {
+    return {
+      title: "Human Face (Bilateral Symmetry)",
+      explanation: "Eyes, ears, and features mirror across the center line of the face.",
+      svg: `<svg viewBox="0 0 160 160" width="144" height="144" style="background:white; border-radius:8px;"><ellipse cx="80" cy="80" rx="50" ry="60" fill="#fde047" stroke="#0f172a" stroke-width="2"/><circle cx="60" cy="70" r="7" fill="#0f172a"/><circle cx="100" cy="70" r="7" fill="#0f172a"/><path d="M 60 110 Q 80 130 100 110" stroke="#0f172a" stroke-width="3" fill="none"/><line x1="80" y1="10" x2="80" y2="150" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,3"/><text x="80" y="156" text-anchor="middle" font-size="11" fill="#ef4444" font-weight="bold">Line of Symmetry</text></svg>`,
+    };
+  }
+  if (t.includes("letter f") || t.includes("the letter f")) {
+    return {
+      title: "Letter F (No Bilateral Symmetry)",
+      explanation:
+        "There is no line you can draw where the left/right or top/bottom halves mirror each other.",
+      svg: `<svg viewBox="0 0 160 160" width="144" height="144" style="background:white; border-radius:8px;"><text x="80" y="120" text-anchor="middle" font-size="110" font-family="Outfit, sans-serif" font-weight="900" fill="#64748b">F</text><line x1="80" y1="20" x2="80" y2="140" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,3"/><path d="M 40 40 L 120 120 M 120 40 L 40 120" stroke="#ef4444" stroke-width="4" opacity="0.6"/><text x="80" y="155" text-anchor="middle" font-size="11" fill="#ef4444" font-weight="bold">No Mirror Line (Asymmetric)</text></svg>`,
+    };
+  }
+  if (t.includes("letter r") || t.includes("the letter r")) {
+    return {
+      title: "Letter R (No Bilateral Symmetry)",
+      explanation:
+        "The curved top loop and diagonal leg on the right side do not match the straight left bar.",
+      svg: `<svg viewBox="0 0 160 160" width="144" height="144" style="background:white; border-radius:8px;"><text x="80" y="120" text-anchor="middle" font-size="110" font-family="Outfit, sans-serif" font-weight="900" fill="#64748b">R</text><line x1="80" y1="20" x2="80" y2="140" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,3"/><path d="M 40 40 L 120 120 M 120 40 L 40 120" stroke="#ef4444" stroke-width="4" opacity="0.6"/><text x="80" y="155" text-anchor="middle" font-size="11" fill="#ef4444" font-weight="bold">No Mirror Line (Asymmetric)</text></svg>`,
+    };
+  }
+  if (t.includes("snail") || t.includes("shell")) {
+    return {
+      title: "Spiral Snail Shell (No Bilateral Symmetry)",
+      explanation:
+        "A spiral curves outward in one direction continuously, so it cannot be folded into two matching halves.",
+      svg: `<svg viewBox="0 0 160 160" width="144" height="144" style="background:white; border-radius:8px;"><path d="M 80 80 A 10 10 0 0 1 90 80 A 20 20 0 0 1 70 80 A 35 35 0 0 1 105 80 A 50 50 0 0 1 55 80" fill="none" stroke="#64748b" stroke-width="6" stroke-linecap="round"/><path d="M 40 40 L 120 120 M 120 40 L 40 120" stroke="#ef4444" stroke-width="4" opacity="0.6"/><text x="80" y="155" text-anchor="middle" font-size="11" fill="#ef4444" font-weight="bold">Spiral (No Bilateral Mirror)</text></svg>`,
+    };
+  }
+  return null;
 }
