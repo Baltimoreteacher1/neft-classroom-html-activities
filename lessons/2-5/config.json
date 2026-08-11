@@ -1,1259 +1,1334 @@
 {
   "lessonId": "2-5",
+  "standard": "6.DS.3",
+  "unit": 2,
   "projects": [
     {
       "emoji": "🏆",
-      "title": "Unit 2 Project — Fraction Division in Action",
-      "desc": "Apply dividing fractions to a real-world capstone challenge for Unit 2.",
-      "href": "/math/unit-2/projects/"
+      "title": "Unit 8 Project — Statistics in Action",
+      "desc": "Capstone: describe the center, spread, and overall shape of your data distribution.",
+      "href": "/math/statistics/projects/"
     },
     {
-      "emoji": "⚽",
-      "title": "Fractions Soccer",
-      "desc": "Score goals by modeling and interpreting fraction division (6.NOS.1).",
-      "href": "/fractions-soccer/"
+      "emoji": "🕵️",
+      "title": "Distribution Detective",
+      "desc": "Identify symmetric, skewed, and clustered shapes in data distributions (6.DS.3).",
+      "href": "/math/statistics/distribution-detective/"
     },
     {
-      "emoji": "🍳",
-      "title": "Fraction Kitchen",
-      "desc": "Use fraction division to scale recipes and solve kitchen problems (6.NOS.1).",
-      "href": "/math/unit-2/games/unit2-fraction-kitchen.html"
+      "emoji": "📊",
+      "title": "Histogram Master Lab",
+      "desc": "Read histograms to see the shape and spread of a distribution.",
+      "href": "/math/statistics/histogram-master-lab/"
+    },
+    {
+      "emoji": "📖",
+      "title": "Unit 8 Graphic Novel",
+      "desc": "Story-driven comic exploring statistics and data distributions.",
+      "href": "/graphic-novels/unit8/graphic-novel-1.html"
     }
   ],
-  "standard": "6.NOS.1",
-  "unit": 2,
   "lesson": 5,
-  "title": "Fraction Division Problem Solving",
-  "theme": "detective-agency",
-  "themeEmoji": "🔍",
-  "contentObjective": "I can solve real-world problems by writing and solving fraction division equations.",
-  "languageObjective": "I can explain my reasoning using the words model, equation, solution, and reasonableness.",
+  "title": "Describe Data by Range and Interquartile Range",
+  "theme": "sports-analytics",
+  "themeEmoji": "🏀",
+  "contentObjective": "I can find the range and the interquartile range of a data set and use them to describe how spread out the data is.",
+  "languageObjective": "I can explain what the spread of a data set is using the words range, quartile, interquartile range, and vary.",
   "noticeAndWonder": {
-    "image": "/lessons/2-5/reveal-assets/notice-wonder.png",
-    "context": "Agent Diaz is reviewing 5/8 of an hour of security footage. She wants to place a time-stamp marker every 1/16 of an hour along the footage.",
+    "context": "The team's data analyst pulls up two dot plots. Fan ages at last night's game: 18, 19, 20, 20, 21, 21, 22, 68 (one grandparent came too). Roster shoe sizes: 9, 10, 10, 10.5, 11, 11, 11.5.",
     "noticeStarters": [
-      "I notice the security footage lasts ___.",
-      "I notice the markers are spaced every ___.",
-      "I notice both amounts are fractions of ___."
+      "I notice the fan ages stretch from ___.",
+      "I notice the shoe sizes are packed ___.",
+      "I notice the middle ages sit between ___."
     ],
     "wonderStarters": [
-      "I wonder how many markers Agent Diaz places ___.",
-      "I wonder whether my answer is reasonable because ___.",
-      "I wonder how to write this situation as ___."
-    ]
+      "I wonder how to measure that ___.",
+      "I wonder if one faraway value ___.",
+      "I wonder how spread the middle half ___."
+    ],
+    "image": "/lessons/2-5/reveal-assets/notice-wonder.svg"
   },
   "revealWordProblem": {
-    "title": "Apply: The Getaway Timeline",
-    "text": "Detective Nakamura has 5/6 of an hour of security footage to review. She wants to write a report every 1/12 of an hour. Write a division equation for how many reports she will write, solve it, and explain how you know your answer is reasonable.",
-    "sampleAnswer": "The total footage (5/6 hour) is the dividend and the length of each report segment (1/12 hour) is the divisor, so the equation is 5/6 ÷ 1/12. Multiply by the reciprocal: 5/6 × 12/1 = 60/6 = 10. Nakamura's solution is 10 reports. This is reasonable because 10 segments of 1/12 hour equal 10/12 = 5/6 hour, which matches the total footage."
+    "title": "Apply: Professional Basketball Salaries",
+    "text": "Two box plots show the salaries of 15 players on two professional teams. Team A: least $1M, Q1 $2M, median $4M, Q3 $9M, greatest $15M. Team B: least $2M, Q1 $3.5M, median $4M, Q3 $6M, greatest $9M. A player hopes to be drafted. Find the range and the IQR for each team, then decide which team he should hope for and explain your reasoning.",
+    "sampleAnswer": "Team A: range = 15 − 1 = $14M, IQR = 9 − 2 = $7M. Team B: range = 9 − 2 = $7M, IQR = 6 − 3.5 = $2.5M. Both teams have the same median salary, $4M, so the median cannot separate them. Team A has far more variability: a few players earn very large salaries while the bottom quarter earns under $2M. Team B's salaries are much less spread out, so a typical player is more likely to earn close to $4M. If the player wants the best chance at a salary near the middle, he should hope for Team B; if he is betting on becoming a star and is willing to risk the low end, Team A pays the highest salaries."
   },
   "turnAndTalk": [
     {
       "phase": "launch",
-      "question": "Agent Torres has 2/3 gallon of fingerprint dust and each test uses 1/6 gallon. How do you decide which number is the dividend and which is the divisor?",
-      "kernel": "The total amount is the dividend; the size of each test is the divisor.",
+      "question": "Two classes have the same median score, 81. Can you tell which class did better? What else would you need to know?",
+      "kernel": "Equal medians do not make two data sets the same — you still need to know how spread out the scores are.",
       "stems": [
         {
-          "en": "The total, ___, is the dividend because ___.",
-          "es": "El total, ___, es el dividendo porque ___."
+          "en": "The medians are the same, so I still need to know how ___ the scores are.",
+          "es": "Las medianas son iguales, así que todavía necesito saber qué tan ___ están los puntajes."
         },
         {
-          "en": "The size of each test, ___, is the divisor because ___.",
-          "es": "El tamaño de cada prueba, ___, es el divisor porque ___."
+          "en": "I would want to compare the ___ and the ___ of each class.",
+          "es": "Querría comparar el ___ y el ___ de cada clase."
         }
       ],
       "wordBank": [
-        "equation",
-        "model",
-        "solution"
+        "median",
+        "spread out",
+        "range",
+        "interquartile range",
+        "vary"
       ],
-      "listenFor": "Students identify 2/3 as the total being split (dividend) and 1/6 as the group size (divisor), writing 2/3 ÷ 1/6.",
-      "extend": "Why would writing 1/6 ÷ 2/3 instead give an unreasonable answer for this problem? Justify.",
+      "listenFor": "Students name a measure of spread rather than another measure of center.",
+      "extend": "Could two classes have the same median AND the same range and still look different?",
       "extendStems": [
-        "Reversing the order is wrong because ___.",
-        "The answer 1/6 ÷ 2/3 would mean ___, which does not match the question."
+        "They could still differ because the ___ describes the middle half."
       ]
     },
     {
       "phase": "explore",
-      "question": "What clue in a word problem tells you to divide fractions instead of multiply?",
-      "kernel": "Asking 'how many groups fit' signals division.",
+      "question": "Why does the range change a lot when one unusual value is added, but the IQR barely moves?",
+      "kernel": "The range is built from the two extreme values; the IQR is built from the quartiles, which sit inside the data.",
       "stems": [
         {
-          "en": "The problem asked me to find ___, so I divided.",
-          "es": "El problema me pidió encontrar ___, así que dividí."
+          "en": "The range uses the ___ and ___ values, so one unusual value ___ it.",
+          "es": "El rango usa los valores ___ y ___, así que un valor inusual lo ___."
         },
         {
-          "en": "I divided rather than multiplied because ___.",
-          "es": "Dividí en lugar de multiplicar porque ___."
+          "en": "The IQR only uses ___ and ___, which are inside the data.",
+          "es": "El RIC solo usa ___ y ___, que están dentro de los datos."
         }
       ],
       "wordBank": [
-        "equation",
-        "solution",
-        "reasonableness"
+        "least",
+        "greatest",
+        "Q1",
+        "Q3",
+        "stretches",
+        "middle half"
       ],
-      "listenFor": "Students point to 'how many fit / how many groups' language and contrast it with 'a fraction of' which signals multiplication.",
-      "extend": "Write a multiplication word problem and a division word problem that both use 3/4 and 1/8, and explain the difference.",
+      "listenFor": "Students point at WHICH values each measure subtracts, not just at the results.",
+      "extend": "Which measure would you report to a coach after a record-breaking game, and why?",
       "extendStems": [
-        "My multiplication problem is ___.",
-        "My division problem is ___, and the difference is ___."
+        "I would report the ___ because one game cannot ___ it."
       ]
     },
     {
-      "phase": "reflect",
-      "question": "How can you check that a fraction-division answer is reasonable?",
-      "kernel": "I can use inverse operations: the quotient times the divisor should equal the dividend.",
+      "phase": "connect",
+      "question": "Class A's IQR is 13 and Class B's is 8. Say what that means in the context of the test, not just in numbers.",
+      "kernel": "A smaller IQR means the middle half of that class scored within a narrower band of points.",
       "stems": [
         {
-          "en": "I can check my answer by ___.",
-          "es": "Puedo verificar mi respuesta al ___."
+          "en": "An IQR of ___ means the middle half of that class differed by only ___ points.",
+          "es": "Un RIC de ___ significa que la mitad central de esa clase se diferenció por solo ___ puntos."
         },
         {
-          "en": "My answer is reasonable because ___.",
-          "es": "Mi respuesta es razonable porque ___."
+          "en": "Class ___ is more consistent because its box is ___.",
+          "es": "La clase ___ es más consistente porque su caja es más ___."
         }
       ],
       "wordBank": [
-        "reasonableness",
-        "inverse operations",
-        "solution"
+        "interquartile range",
+        "middle half",
+        "points",
+        "consistent",
+        "narrower"
       ],
-      "listenFor": "Students propose multiplying quotient by divisor to recover the dividend, or estimating to confirm the result makes sense.",
-      "extend": "A classmate got an answer smaller than the dividend when dividing by a fraction less than 1. Critique whether that can be correct.",
+      "listenFor": "Students translate the number into students and points, not just 'smaller'.",
+      "extend": "Does a smaller IQR always mean a class did better?",
       "extendStems": [
-        "This answer cannot be right because ___.",
-        "Dividing by a fraction less than one should give ___."
+        "Not always, because a class could be consistently ___."
       ]
     },
     {
       "phase": "practice",
-      "question": "During practice on Fraction Division Problem Solving, what strategy did you use when a problem felt tricky?",
-      "kernel": "Total goes first (dividend), group size goes second (divisor): total ÷ group size. Then check your answer by multiplying it back.",
+      "question": "How would you explain the difference between range and IQR to someone who missed today?",
+      "kernel": "Both measure spread; the range measures the whole span, the IQR measures only the middle half.",
       "stems": [
         {
-          "en": "The problem asked me to find ___, so I divided.",
-          "es": "El problema me pidió encontrar ___, así que dividí."
+          "en": "The range is ___ minus ___, and it covers ___ the data.",
+          "es": "El rango es ___ menos ___, y cubre ___ los datos."
         },
         {
-          "en": "I knew my answer was reasonable because ___.",
-          "es": "Supe que mi respuesta era razonable porque ___."
+          "en": "The IQR is ___ minus ___, and it covers only the ___.",
+          "es": "El RIC es ___ menos ___, y cubre solo la ___."
         }
       ],
       "wordBank": [
-        "Model",
-        "Equation",
-        "Solution",
-        "Reasonableness"
+        "greatest",
+        "least",
+        "all of",
+        "Q3",
+        "Q1",
+        "middle half"
       ],
-      "listenFor": "Listen for students naming a specific strategy tied to 6.NOS.1 — not just \"I multiplied.\" They should connect steps to the key idea.",
-      "extend": "How would you help a classmate who made the common mistake from today's lesson? Use one vocabulary word.",
+      "listenFor": "Both definitions are stated as subtractions, with the correct values named.",
+      "extend": "Draw one box plot with a large range and a small IQR. What does it look like?",
       "extendStems": [
-        "I would tell them to ___ first because ___.",
-        "The mistake happens when you ___ instead of ___."
+        "It would have long ___ and a narrow ___."
       ]
     }
   ],
+  "vocabMode": "matching",
   "vocabulary": [
     {
-      "term": "Fraction Division Problem Solving",
-      "termEs": "Resolución de problemas de división de fracciones",
-      "definition": "Use fraction division to find an unknown number of groups or the size of each group.",
-      "definitionEs": "Usar la división de fracciones para hallar una cantidad desconocida de grupos o el tamaño de cada grupo.",
-      "visual": "Number of groups = total amount ÷ amount in each group.",
-      "image": "/assets/vocab-images/concept-fraction-division-problem-solving.svg"
+      "term": "Range and Interquartile Range",
+      "termEs": "Rango y rango intercuartílico",
+      "definition": "Two numbers that describe spread: the range covers all the data, and the interquartile range covers only the middle half.",
+      "definitionEs": "Dos números que describen la dispersión: el rango cubre todos los datos y el rango intercuartílico solo la mitad central.",
+      "visual": "Range 26 covers 68 to 94; IQR 12.5 covers only 75.5 to 88",
+      "image": "/assets/vocab-images/interquartile-range.svg"
     },
     {
-      "term": "Model",
-      "termEs": "Modelo",
-      "definition": "A picture or math way to show a problem so you can solve it.",
-      "definitionEs": "Un dibujo o forma matemática de mostrar un problema para resolverlo.",
-      "visual": "A bar model showing 3/4 split into 1/8-size pieces, or the equation 3/4 ÷ 1/8 = 6",
-      "cloze": "A drawing or diagram that shows a math situation is a ___."
+      "term": "Range",
+      "termEs": "Rango",
+      "definition": "The distance from the least value to the greatest value, found by subtracting: greatest − least.",
+      "definitionEs": "La distancia del valor menor al mayor, que se halla restando: mayor − menor.",
+      "visual": "94 − 68 = 26",
+      "image": "/assets/vocab-images/range.svg"
     },
     {
-      "term": "Equation",
-      "termEs": "Ecuación",
-      "definition": "A math sentence with an equal sign showing both sides are the same.",
-      "definitionEs": "Una oración matemática con un signo igual que muestra que ambos lados son iguales.",
-      "visual": "3/4 ÷ 1/8 = 6 — the left side (division) equals the right side (answer)",
-      "cloze": "A math sentence that says two amounts are equal, with an = sign, is an ___.",
-      "image": "/assets/vocab-images/equation-fraction-division.svg"
+      "term": "Quartile",
+      "termEs": "Cuartil",
+      "definition": "One of the three values that cut an ordered data set into four equal-sized groups.",
+      "definitionEs": "Uno de los tres valores que dividen un conjunto ordenado de datos en cuatro grupos del mismo tamaño.",
+      "visual": "Q1 = 75.5, median = 83.5, Q3 = 88",
+      "image": "/assets/vocab-images/quartile.svg"
     },
     {
-      "term": "Solution",
-      "termEs": "Solución",
-      "definition": "A number that makes the equation or inequality true.",
-      "definitionEs": "Un número que hace verdadera la ecuación o desigualdad.",
-      "visual": "In 3/4 ÷ 1/8 = 6, the solution is 6 portions",
-      "cloze": "The value that makes an equation true is the ___."
+      "term": "Interquartile range",
+      "termEs": "Rango intercuartílico",
+      "definition": "The distance across the middle half of the data, found by subtracting the first quartile from the third: Q3 − Q1.",
+      "definitionEs": "La distancia a lo largo de la mitad central de los datos: se resta el primer cuartil del tercero: Q3 − Q1.",
+      "visual": "88 − 75.5 = 12.5 — the width of the box on a box plot",
+      "image": "/assets/vocab-images/interquartile-range.svg"
     },
     {
-      "term": "Reasonableness",
-      "termEs": "Razonabilidad",
-      "definition": "Checking if your answer makes sense.",
-      "definitionEs": "Revisar si tu respuesta tiene sentido.",
-      "visual": "3 ÷ 1/4 = 12. Is 12 reasonable? Yes, because 1/4 is small so many pieces fit into 3.",
-      "cloze": "Checking whether an answer makes sense for the problem is checking its ___."
+      "term": "Variability",
+      "termEs": "Variabilidad",
+      "definition": "How much the values in a data set differ from one another — whether they sit close together or far apart.",
+      "definitionEs": "Cuánto se diferencian entre sí los valores de un conjunto de datos: si están juntos o muy separados.",
+      "visual": "Close together = low variability; spread apart = high variability",
+      "image": "/assets/vocab-images/spread.svg"
     },
     {
-      "term": "Inverse operations",
-      "termEs": "Operaciones inversas",
-      "definition": "Two math actions that undo each other, like × and ÷.",
-      "definitionEs": "Dos operaciones que se deshacen entre sí, como × y ÷.",
-      "visual": "If 3/4 ÷ 1/8 = 6, then 6 × 1/8 = 6/8 = 3/4. Multiplication checks division.",
-      "cloze": "Operations that undo each other, like multiplication and division, are ___."
+      "term": "Measure of variation",
+      "termEs": "Medida de variación",
+      "definition": "A single number that describes the spread of a whole data set. The range and the IQR are both measures of variation.",
+      "definitionEs": "Un solo número que describe la dispersión de todo un conjunto de datos. El rango y el RIC son medidas de variación.",
+      "visual": "One number stands in for the spread of all 20 scores",
+      "image": "/assets/vocab-images/spread.svg"
     }
   ],
   "launch": {
     "beCurious": {
       "vocab": [
-        "total",
-        "part",
-        "longer",
-        "shorter",
-        "fit",
-        "each",
-        "divide"
+        "least",
+        "greatest",
+        "range",
+        "quartile",
+        "middle half",
+        "interquartile range",
+        "spread out"
       ],
       "phrases": [
-        "I notice the long top bar shows the total, ___ gallon.",
-        "I notice the bottom bar is shorter than the top bar.",
-        "I notice each small part is ___ gallon.",
-        "I wonder how many small bars fit inside the big bar.",
-        "I wonder why one test uses only ___ gallon."
+        "I notice the lowest value is ___ and the highest is ___.",
+        "I notice the values in the middle are packed between ___ and ___.",
+        "I notice one value sits far from ___.",
+        "I wonder how far apart the ___ and ___ values are.",
+        "I wonder how spread out the middle half of the data ___."
       ]
     },
-    "visual": {
-      "kind": "tape-diagram",
-      "title": "Agent Torres's Fingerprint Dust",
-      "caption": "The top bar is ALL of Agent Torres's dust; the bottom bar is what one test uses. About how many of the small bars do you think fit inside the big one?",
-      "rows": [
-        {
-          "label": "Total dust: 2/3 gallon",
-          "parts": [
-            {
-              "value": 4,
-              "label": "2/3 gallon"
-            }
-          ]
-        },
-        {
-          "label": "One test uses: 1/6 gallon",
-          "parts": [
-            {
-              "value": 1,
-              "label": "1/6 gallon"
-            }
-          ]
-        }
-      ]
-    },
-    "badge": "Detective Agency Case File",
-    "narrative": "Agent Torres is closing the biggest case of the year. She has 2/3 of a gallon of fingerprint dust left and each test uses 1/6 of a gallon. Before the evidence expires, she needs to figure out exactly how many tests she can run. Can you write the equation and solve it?",
-    "contextImage": "Detective at a forensics station with vials of fingerprint dust and case files spread across the desk",
+    "badge": "Spread Detective",
+    "narrative": "The league analyst is comparing two sixth-grade classes that took the same math test. Both classes have the SAME median score, 81 — so the medians alone cannot tell them apart. Your job is to measure how spread out each class's scores are, using the range and the interquartile range, and decide which class did better overall.",
+    "contextImage": "Three different histogram shapes displayed on a sports analytics dashboard",
     "noticePrompts": [
-      "What is the total amount of fingerprint dust?",
-      "How much does each test use?",
-      "What operation will help solve this problem?"
+      "I notice the lowest score in the data set is ___.",
+      "I notice the highest score in the data set is ___.",
+      "I notice the middle half of the scores runs from ___ to ___."
     ],
     "wonderPrompts": [
-      "How do you decide which number is the dividend and which is the divisor?",
-      "How can you check if your answer is reasonable?"
+      "I wonder what one number could describe how spread out all the scores are ___.",
+      "I wonder why the middle half might describe the class better than ___."
     ],
+    "visual": {
+      "kind": "box-plot",
+      "title": "History test scores — box plot",
+      "min": 68,
+      "q1": 75.5,
+      "median": 83.5,
+      "q3": 88,
+      "max": 94,
+      "axisMin": 65,
+      "axisMax": 96,
+      "caption": "Range = 94 − 68 = 26 (the whole span, whisker tip to whisker tip). IQR = 88 − 75.5 = 12.5 (just the width of the box — the middle half)."
+    },
     "conceptIntro": {
-      "heading": "How do I solve a fraction division word problem?",
-      "intro": "In a word problem, the total amount is the dividend (the number being split) and the size of each group is the divisor (what you divide by). Write the equation, solve with Keep, Change, Flip, then check that the answer makes sense.",
-      "keyIdea": "Total goes first (dividend), group size goes second (divisor): total ÷ group size. Then check your answer by multiplying it back.",
+      "heading": "How spread out is the data?",
+      "intro": "A measure of center like the median tells you where the data sits. It does not tell you how far apart the values are. Two classes can share the same median and still look nothing alike. Range and interquartile range are the two numbers that describe that spread.",
+      "keyIdea": "Range = greatest − least, and it covers every value. Interquartile range = Q3 − Q1, and it covers only the middle half, so one faraway value cannot stretch it.",
       "iDo": {
-        "title": "Watch me",
+        "title": "Watch me measure the spread of the test scores",
         "lines": [
-          "Agent Torres has 2/3 gallon of dust and each test uses 1/6 gallon. I ask: how many tests fit?",
-          "The total 2/3 is the dividend. The size of each test 1/6 is the divisor. My equation is 2/3 ÷ 1/6.",
-          "Keep 2/3, change to ×, flip 1/6 to 6/1: 2/3 × 6/1 = 12/3 = 4.",
-          "So she can run 4 tests. I check by multiplying back: 4 × 1/6 = 4/6 = 2/3. It matches the total, so the answer is reasonable."
+          "Here are 20 history test scores in order: 68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94. Ordering them first is what makes every step after this possible.",
+          "Range: I subtract the least value from the greatest. 94 − 68 = 26. The scores span 26 points from end to end.",
+          "Now the quartiles. The median splits the 20 scores into two halves of 10. The median is halfway between the 10th and 11th values: (83 + 84) ÷ 2 = 83.5.",
+          "Q1 is the median of the lower 10 values: halfway between 75 and 76, so Q1 = 75.5. Q3 is the median of the upper 10: halfway between 88 and 88, so Q3 = 88.",
+          "Interquartile range: IQR = Q3 − Q1 = 88 − 75.5 = 12.5. The middle half of the students' scores differed by only 12.5 points, even though the full range was 26."
         ]
       },
       "weDo": {
-        "title": "Let's try together",
+        "title": "Let's do one together",
         "lines": [
-          "A ribbon is 3/4 yard and each bow uses 1/4 yard. The total 3/4 is the dividend; 1/4 is the divisor.",
-          "Equation: 3/4 ÷ 1/4. Keep, change, flip: 3/4 × 4/1 = 12/4 = 3.",
-          "So we can make 3 bows. Check: 3 × 1/4 = 3/4. It matches, so it is reasonable."
+          "Class A's box plot reads: least 62, Q1 74, median 81, Q3 87, greatest 90. Find the range first.",
+          "Range = 90 − 62 = 28 points from the lowest score to the highest.",
+          "Now the IQR: subtract Q1 from Q3. IQR = 87 − 74 = 13 points across the middle half.",
+          "Say what each one means: the whole class's scores span 28 points, but the middle half of the class is packed into 13 points."
         ]
       },
       "youDo": {
-        "title": "Now it's your turn",
+        "title": "Your turn",
         "lines": [
-          "Now read each word problem, write the equation as total ÷ group size, solve it, and decide if your answer is reasonable."
+          "Class B's box plot reads: least 70, Q1 76, median 81, Q3 84, greatest 90.",
+          "Find the range: greatest − least.",
+          "Find the IQR: Q3 − Q1.",
+          "Class A and Class B have the SAME median, 81. Which class's scores are less spread out — and how do your two numbers show it?"
         ]
       }
     }
   },
   "explore": {
     "diagram": {
-      "kind": "manip",
-      "manip": "frac-divide",
-      "attrs": {}
+      "kind": "box-plot-builder",
+      "unit": "points",
+      "data": [
+        68,
+        70,
+        73,
+        74,
+        75,
+        76,
+        77,
+        80,
+        82,
+        83,
+        84,
+        85,
+        86,
+        86,
+        88,
+        88,
+        90,
+        90,
+        93,
+        94
+      ],
+      "presets": [
+        {
+          "label": "History test scores",
+          "data": [
+            68,
+            70,
+            73,
+            74,
+            75,
+            76,
+            77,
+            80,
+            82,
+            83,
+            84,
+            85,
+            86,
+            86,
+            88,
+            88,
+            90,
+            90,
+            93,
+            94
+          ],
+          "unit": "points"
+        },
+        {
+          "label": "Class A math test",
+          "data": [
+            62,
+            68,
+            72,
+            74,
+            76,
+            79,
+            81,
+            83,
+            85,
+            87,
+            88,
+            90
+          ],
+          "unit": "points"
+        },
+        {
+          "label": "Class B math test",
+          "data": [
+            70,
+            74,
+            76,
+            77,
+            79,
+            81,
+            82,
+            83,
+            84,
+            86,
+            88,
+            90
+          ],
+          "unit": "points"
+        }
+      ],
+      "intro": "Build the box plot, then read the two spreads off it: the range is whisker tip to whisker tip, and the IQR is the width of the box."
     },
-    "type": "fill-table",
-    "instructions": "Read each word problem. Set up the fraction division equation, solve it, and check for reasonableness.",
-    "label": "Set Up and Solve Fraction Division Equations",
-    "columns": [
-      "Word Problem",
-      "Equation",
-      "Solution",
-      "Reasonable?"
+    "type": "drag-sort",
+    "label": "Each statement describes a spread. Sort it under the measure that produced it.",
+    "categories": [
+      "Range",
+      "Interquartile range"
     ],
-    "rows": [
+    "cards": [
       {
-        "problem": "A detective has 3/4 pound of plaster. Each mold uses 1/8 pound. How many molds can she make?",
-        "equation": "3/4 ÷ 1/8",
-        "solution": "6",
-        "check": "Yes — 6 > 3/4 because each piece is very small"
+        "text": "94 − 68 = 26",
+        "correct": 0
       },
       {
-        "problem": "A suspect traveled 5/6 of a mile. Each city block is 1/12 of a mile. How many blocks did the suspect travel?",
-        "equation": "5/6 ÷ 1/12",
-        "solution": "10",
-        "check": "Yes — 10 > 5/6 because twelfths are smaller than sixths"
+        "text": "88 − 75.5 = 12.5",
+        "correct": 1
       },
       {
-        "problem": "An evidence bag holds 2/3 of a kilogram. Each sample weighs 1/9 of a kilogram. How many samples fit?",
-        "equation": "2/3 ÷ 1/9",
-        "solution": "6",
-        "check": "Yes — 6 > 2/3 because ninths are much smaller than thirds"
+        "text": "Uses the greatest and least values",
+        "correct": 0
+      },
+      {
+        "text": "Uses the third quartile and the first quartile",
+        "correct": 1
+      },
+      {
+        "text": "Describes the middle half of the data",
+        "correct": 1
+      },
+      {
+        "text": "Describes every value in the data set",
+        "correct": 0
+      },
+      {
+        "text": "The width of the box on a box plot",
+        "correct": 1
+      },
+      {
+        "text": "One unusually high value stretches it a lot",
+        "correct": 0
       }
     ],
     "discourse": {
-      "prompt": "How do you decide which value is the dividend and which is the divisor in a word problem?",
-      "sentenceFrame": "The total amount is the ___ because it is being split into groups. The size of each group is the ___ because we are dividing by that amount.",
+      "prompt": "Both numbers describe spread. Why might a coach trust the IQR more than the range when one player had a record-breaking night?",
+      "sentenceFrame": "I would use the ___ because it only uses the ___, so one unusual value cannot ___.",
       "keywords": [
-        "dividend",
-        "divisor",
-        "total",
-        "group",
-        "split",
-        "equation"
+        "range",
+        "interquartile range",
+        "middle half",
+        "quartile",
+        "spread out",
+        "vary"
       ]
     }
   },
   "practice": {
     "diagram": {
-      "kind": "fraction-divide",
-      "dividend": "5",
-      "divisor": "5/8",
+      "kind": "box-plot-builder",
+      "unit": "points",
+      "data": [
+        62,
+        68,
+        72,
+        74,
+        76,
+        79,
+        81,
+        83,
+        85,
+        87,
+        88,
+        90
+      ],
       "presets": [
         {
-          "dividend": "5",
-          "divisor": "5/8",
-          "label": "5 ÷ 5/8"
+          "label": "Class A math test",
+          "data": [
+            62,
+            68,
+            72,
+            74,
+            76,
+            79,
+            81,
+            83,
+            85,
+            87,
+            88,
+            90
+          ],
+          "unit": "points"
         },
         {
-          "dividend": "7/8",
-          "divisor": "1/4",
-          "label": "7/8 ÷ 1/4"
+          "label": "Class B math test",
+          "data": [
+            70,
+            74,
+            76,
+            77,
+            79,
+            81,
+            82,
+            83,
+            84,
+            86,
+            88,
+            90
+          ],
+          "unit": "points"
         },
         {
-          "dividend": "4 1/2",
-          "divisor": "3/4",
-          "label": "4 1/2 ÷ 3/4"
+          "label": "History test scores",
+          "data": [
+            68,
+            70,
+            73,
+            74,
+            75,
+            76,
+            77,
+            80,
+            82,
+            83,
+            84,
+            85,
+            86,
+            86,
+            88,
+            88,
+            90,
+            90,
+            93,
+            94
+          ],
+          "unit": "points"
         }
-      ]
+      ],
+      "intro": "Build each box plot, then measure both spreads: range from whisker to whisker, IQR across the box."
     },
     "optional": [
       {
         "type": "multiple-choice",
-        "stem": "Room 1 — Evidence Locker: Agent Torres has 7/8 pound of casting clay to lift footprints. Each cast uses 1/8 pound. How many casts can she make to unlock the door?",
+        "stem": "What is the range of 7, 9, 12, 15, 20?",
         "choices": [
+          "13",
+          "20",
           "7",
-          "6",
-          "8",
-          "1/7"
+          "9"
         ],
         "correctIndex": 0,
-        "explanation": "The total (7/8 lb) is the dividend and each cast (1/8 lb) is the divisor: 7/8 ÷ 1/8 = 7/8 × 8/1 = 56/8 = 7 casts.",
+        "explanation": "Range = 20 − 7 = 13.",
         "choiceFeedback": [
           "",
-          "That's not the right operation. Division by a fraction asks 'how many pieces fit in the whole.'",
-          "Check your dividend and divisor order. The whole should come first.",
-          "Does dividing by a fraction smaller than 1 give a larger or smaller quotient?"
+          "20 is the greatest value alone.",
+          "7 is the least value alone.",
+          "9 is a value in the data, not a difference."
         ],
-        "stemEs": "Sala 1 — Depósito de evidencia: la agente Torres tiene 7/8 de libra de arcilla para moldear huellas. Cada molde usa 1/8 de libra. ¿Cuántos moldes puede hacer para abrir la puerta?",
-        "explanationEs": "El total (7/8 lb) es el dividendo y cada molde (1/8 lb) es el divisor: 7/8 ÷ 1/8 = 7/8 × 8/1 = 56/8 = 7 moldes.",
         "hints": [
-          "\"How many groups of this size fit inside that total?\" is a division question.",
-          "Write total ÷ size of one group, then keep the first fraction, change ÷ to ×, and flip the second.",
-          "Set up 7/8 ÷ 1/8, rewrite it as 7/8 × 8/1, and multiply the numerators and the denominators."
-        ],
-        "hintsEs": [
-          "\"¿Cuántos grupos de este tamaño caben en ese total?\" es una pregunta de división.",
-          "Escribe total ÷ tamaño de un grupo; luego deja igual la primera fracción, cambia ÷ por × e invierte la segunda.",
-          "Plantea 7/8 ÷ 1/8, reescríbelo como 7/8 × 8/1 y multiplica los numeradores y los denominadores."
+          "Find the greatest and the least.",
+          "Subtract the least from the greatest.",
+          "20 − 7 = ?"
         ]
       },
       {
         "type": "multiple-choice",
-        "stem": "Room 2 — Surveillance Map: A suspect's trail is 5/6 of a mile. Hidden checkpoints are spaced every 1/6 of a mile. How many checkpoints are on the trail?",
+        "stem": "A box plot has Q1 = 30 and Q3 = 45. What is the IQR?",
         "choices": [
-          "5",
-          "6",
-          "1/5",
-          "4"
+          "15",
+          "75",
+          "37.5",
+          "45"
         ],
         "correctIndex": 0,
-        "explanation": "The total distance (5/6 mile) is the dividend and the checkpoint spacing (1/6 mile) is the divisor: 5/6 ÷ 1/6 = 5/6 × 6/1 = 30/6 = 5 checkpoints.",
+        "explanation": "IQR = 45 − 30 = 15.",
         "choiceFeedback": [
           "",
-          "That's not the right operation. Division by a fraction asks 'how many pieces fit in the whole.'",
-          "Check your dividend and divisor order. The whole should come first.",
-          "Does dividing by a fraction smaller than 1 give a larger or smaller quotient?"
+          "That is the sum, not the difference.",
+          "37.5 is halfway between them — the middle, not the width.",
+          "45 is Q3 alone."
         ],
-        "stemEs": "Sala 2 — Mapa de vigilancia: el rastro de un sospechoso mide 5/6 de milla. Hay puntos de control ocultos cada 1/6 de milla. ¿Cuántos puntos de control hay en el rastro?",
-        "explanationEs": "La distancia total (5/6 de milla) es el dividendo y la separación entre puntos de control (1/6 de milla) es el divisor: 5/6 ÷ 1/6 = 5/6 × 6/1 = 30/6 = 5 puntos de control.",
         "hints": [
-          "Counting how many equal spaces fit into a total distance is a division situation.",
-          "The total distance goes first; the spacing between checkpoints is what you divide by.",
-          "Write 5/6 ÷ 1/6, change it to 5/6 × 6/1, then multiply straight across and simplify."
-        ],
-        "hintsEs": [
-          "Contar cuántos espacios iguales caben en una distancia total es una situación de división.",
-          "La distancia total va primero; la separación entre puntos de control es lo que va como divisor.",
-          "Escribe 5/6 ÷ 1/6, cámbialo a 5/6 × 6/1, luego multiplica en línea recta y simplifica."
+          "The IQR is the width of the box.",
+          "Subtract Q1 from Q3.",
+          "45 − 30 = ?"
         ]
       },
       {
         "type": "drag-sort",
-        "instructions": "Room 3 — Sort the Clues: Each safe opens only if you pick the clues that need fraction DIVISION. Sort each clue into the correct lock.",
-        "items": [
-          {
-            "text": "A roll of crime-scene tape is 3/5 mile long, cut into 1/10-mile strips. How many strips? (3/5 ÷ 1/10)",
-            "category": "divide"
-          },
-          {
-            "text": "A footprint trail is 2/3 mile long with markers every 1/12 mile. How many markers? (2/3 ÷ 1/12)",
-            "category": "divide"
-          },
-          {
-            "text": "Each evidence bag weighs 1/4 pound. The detective grabs 4 bags. What is the total weight? (1/4 × 4)",
-            "category": "multiply"
-          },
-          {
-            "text": "A report is 3/8 page long. Torres reads half of it. How much did she read? (3/8 × 1/2)",
-            "category": "multiply"
-          }
-        ],
+        "stem": "Sort each phrase under the correct measure.",
         "categories": [
+          "Range",
+          "Interquartile range"
+        ],
+        "cards": [
           {
-            "id": "divide",
-            "label": "Needs Division (how many groups fit?)"
+            "text": "Uses all the data",
+            "correct": 0
           },
           {
-            "id": "multiply",
-            "label": "Needs Multiplication (a part of an amount)"
+            "text": "Uses the middle half",
+            "correct": 1
+          },
+          {
+            "text": "Greatest − least",
+            "correct": 0
+          },
+          {
+            "text": "Q3 − Q1",
+            "correct": 1
           }
         ],
-        "hint": "Decide: does each expression match the story? Check the operation and the numbers.",
-        "explanation": "Division answers \"how many equal pieces fit,\" so cutting a 3/5-mile roll into 1/10-mile strips (3/5 ÷ 1/10) and marking a 2/3-mile trail every 1/12 mile (2/3 ÷ 1/12) belong in the division lock. Multiplication finds a repeat or a part of an amount, so 4 bags at 1/4 pound each (1/4 × 4) and half of a 3/8-page report (3/8 × 1/2) belong in the multiplication lock.",
-        "explanationEs": "La división responde \"cuántas piezas iguales caben\", así que cortar un rollo de 3/5 de milla en tiras de 1/10 de milla (3/5 ÷ 1/10) y marcar un sendero de 2/3 de milla cada 1/12 de milla (2/3 ÷ 1/12) van en el candado de división. La multiplicación halla una repetición o una parte de una cantidad, así que 4 bolsas de 1/4 de libra cada una (1/4 × 4) y la mitad de un informe de 3/8 de página (3/8 × 1/2) van en el candado de multiplicación.",
-        "instructionsEs": "Sala 3 — Clasifica las pistas: Cada caja fuerte se abre solo si eliges las pistas que necesitan DIVISIÓN de fracciones. Clasifica cada pista en la cerradura correcta."
+        "explanation": "The range spans everything; the IQR spans the box.",
+        "hints": [
+          "Which one includes the extremes?",
+          "Which one is the width of the box?",
+          "Whiskers = range, box = IQR."
+        ]
       },
       {
         "type": "matching-game",
-        "label": "Room 4 — Match the Lock: Drag each word problem to the division equation that unlocks it.",
-        "columns": 2,
+        "stem": "Match each term to its meaning.",
         "pairs": [
           {
-            "term": "A 4/5-yard cord is cut into 1/10-yard fuses for the alarm.",
-            "match": "4/5 ÷ 1/10 = 8"
+            "left": "Range",
+            "right": "Greatest value − least value"
           },
           {
-            "term": "A 1/2-gallon jug of luminol is poured into 1/8-gallon sprayers.",
-            "match": "1/2 ÷ 1/8 = 4"
+            "left": "Interquartile range",
+            "right": "Q3 − Q1"
           },
           {
-            "term": "A 3/4-mile escape route is split into 3/8-mile sprints.",
-            "match": "3/4 ÷ 3/8 = 2"
+            "left": "Quartile",
+            "right": "A value that cuts the ordered data into four equal groups"
           },
           {
-            "term": "A 5/6-liter sample is divided into 1/12-liter test tubes.",
-            "match": "5/6 ÷ 1/12 = 10"
+            "left": "Variability",
+            "right": "How much the values differ from one another"
           }
         ],
-        "hint": "Match each story to the correct division expression by identifying the whole and piece size.",
-        "explanation": "Each story names a total and one piece size, and the matching equation always puts the total first: 4/5 ÷ 1/10 = 8 fuses, 1/2 ÷ 1/8 = 4 sprayers, 3/4 ÷ 3/8 = 2 sprints, and 5/6 ÷ 1/12 = 10 test tubes. Smaller pieces produce more of them, which is why the 1/12-liter tubes give the largest count.",
-        "explanationEs": "Cada historia menciona un total y el tamaño de una pieza, y la ecuación que le corresponde siempre pone el total primero: 4/5 ÷ 1/10 = 8 mechas, 1/2 ÷ 1/8 = 4 rociadores, 3/4 ÷ 3/8 = 2 tramos y 5/6 ÷ 1/12 = 10 tubos de ensayo. Las piezas más pequeñas producen más cantidad, por eso los tubos de 1/12 de litro dan el número más alto.",
-        "labelEs": "Sala 4 — Une la cerradura: Arrastra cada problema hasta la ecuación de división que lo abre."
+        "explanation": "Range and IQR are both measures of variation; a quartile is a marker, and variability is the idea both measures describe.",
+        "hints": [
+          "Two of these are differences.",
+          "One is a marker in the ordered data.",
+          "One is the idea, not a calculation."
+        ]
       },
       {
         "type": "multiple-choice",
-        "stem": "Room 5 — Final Keypad: The vault key code equals the number of 3/10-liter vials Torres can fill from a 9/10-liter bottle of fingerprint solution. What is the code?",
+        "stem": "Which data set has the greater range: A (12, 14, 15, 18) or B (5, 9, 14, 25)?",
         "choices": [
-          "3",
-          "9",
-          "1/3",
-          "6"
+          "B, because 25 − 5 = 20",
+          "A, because it has larger values",
+          "They are equal",
+          "You cannot tell without the median"
         ],
         "correctIndex": 0,
-        "explanation": "The total (9/10 liter) is the dividend and each vial (3/10 liter) is the divisor: 9/10 ÷ 3/10 = 9/10 × 10/3 = 90/30 = 3 vials, so the code is 3.",
+        "explanation": "A's range is 18 − 12 = 6. B's range is 25 − 5 = 20, so B is more spread out.",
         "choiceFeedback": [
           "",
-          "That's not the right operation. Division by a fraction asks 'how many pieces fit in the whole.'",
-          "Check your dividend and divisor order. The whole should come first.",
-          "Does dividing by a fraction smaller than 1 give a larger or smaller quotient?"
+          "A's values are closer together, which makes its range smaller, not larger.",
+          "6 and 20 are not equal.",
+          "The range needs only the least and greatest values — the median is not required."
         ],
-        "stemEs": "Sala 5 — Teclado final: el código de la bóveda es igual al número de frascos de 3/10 de litro que Torres puede llenar con una botella de 9/10 de litro de solución para huellas. ¿Cuál es el código?",
-        "explanationEs": "El total (9/10 de litro) es el dividendo y cada frasco (3/10 de litro) es el divisor: 9/10 ÷ 3/10 = 9/10 × 10/3 = 90/30 = 3 frascos, así que el código es 3.",
         "hints": [
-          "Filling containers from one supply asks how many equal parts fit inside the total — that is division.",
-          "The bottle's amount is the dividend and one vial's amount is the divisor; then multiply by the reciprocal.",
-          "Write 9/10 ÷ 3/10 and rewrite it as 9/10 × 10/3. Multiply the numerators, multiply the denominators, then simplify."
-        ],
-        "hintsEs": [
-          "Llenar recipientes desde una sola provisión pregunta cuántas partes iguales caben en el total: eso es división.",
-          "La cantidad de la botella es el dividendo y la de un frasco es el divisor; luego multiplica por el recíproco.",
-          "Escribe 9/10 ÷ 3/10 y reescríbelo como 9/10 × 10/3. Multiplica los numeradores, multiplica los denominadores y simplifica."
+          "Compute each range separately.",
+          "A: 18 − 12. B: 25 − 5.",
+          "Compare 6 and 20."
         ]
       },
       {
         "type": "error-analysis",
-        "title": "Level 2 Extension — Escape the Wrong Operation",
+        "title": "Find the error",
         "workedExample": [
           {
-            "label": "Problem",
-            "work": "A tank holds 4/5 gallon of testing fluid. Each test uses 1/10 gallon. How many tests can be run to escape the lab?"
+            "label": "Setup",
+            "work": "Data in order: 4, 6, 9, 11, 14.",
+            "labelEs": "Planteamiento",
+            "workEs": "Datos en orden: 4, 6, 9, 11, 14."
           },
           {
-            "label": "Student's equation",
-            "work": "4/5 × 1/10"
+            "label": "Step 1",
+            "work": "The least value is 4 and the greatest is 14.",
+            "labelEs": "Paso 1",
+            "workEs": "El valor menor es 4 y el mayor es 14."
           },
           {
-            "label": "Solve",
-            "work": "4/5 × 1/10 = 4/50 = 2/25"
-          },
-          {
-            "label": "Answer",
-            "work": "2/25 of a test"
+            "label": "Step 2",
+            "work": "Range = 4 − 14 = −10.",
+            "labelEs": "Paso 2",
+            "workEs": "Rango = 4 − 14 = −10."
           }
         ],
-        "errorStep": 1,
-        "correctWork": "The question asks how many 1/10-gallon groups fit into 4/5 gallon, so this is division, not multiplication. The equation should be 4/5 ÷ 1/10 = 4/5 × 10/1 = 40/5 = 8 tests.",
+        "errorStep": 2,
+        "correctWork": "Step 2 subtracts in the wrong order. Range = greatest − least = 14 − 4 = 10. A distance is never negative.",
+        "explanation": "The range measures a distance, so the smaller value is always subtracted from the larger one.",
         "hints": [
-          "Does the question ask for a part of the fluid, or how many equal groups fit inside it?",
-          "Multiplying makes the answer smaller, but more than one test should fit — choose division and set it up as total ÷ group size: 4/5 ÷ 1/10."
-        ],
-        "titleEs": "Extensión de Nivel 2: Escapa de la operación equivocada",
-        "explanation": "The question asks how many 1/10-gallon groups fit inside 4/5 gallon, which calls for division, not multiplication. Multiplying produced 2/25, less than a single test, which cannot be right. The correct equation is 4/5 ÷ 1/10 = 4/5 × 10/1 = 40/5 = 8 tests.",
-        "explanationEs": "La pregunta es cuántos grupos de 1/10 de galón caben dentro de 4/5 de galón, lo cual pide división, no multiplicación. Al multiplicar se obtuvo 2/25, menos de una sola prueba, y eso no puede ser correcto. La ecuación correcta es 4/5 ÷ 1/10 = 4/5 × 10/1 = 40/5 = 8 pruebas."
+          "Can a spread be negative?",
+          "Which number should come first in the subtraction?",
+          "14 − 4 = ?"
+        ]
       }
     ],
     "approaching": [
       {
         "type": "multiple-choice",
-        "stem": "A ribbon is 4/5 of a yard long. Each bow uses 1/10 of a yard. Which equation finds how many bows can be made?",
+        "stem": "A data set runs from a least value of 12 to a greatest value of 30. What is the range?",
         "choices": [
-          "4/5 ÷ 1/10",
-          "1/10 ÷ 4/5",
-          "4/5 × 1/10",
-          "4/5 + 1/10"
+          "18",
+          "30",
+          "12",
+          "21"
         ],
         "correctIndex": 0,
-        "explanation": "The total (4/5 yard) is divided into groups of 1/10 yard each. The equation is 4/5 ÷ 1/10 = 4/5 × 10/1 = 40/5 = 8 bows.",
+        "explanation": "Range = greatest − least = 30 − 12 = 18.",
         "choiceFeedback": [
           "",
-          "That uses the wrong operation. Division finds how many of a given size fit in the whole.",
-          "You have the dividend and divisor reversed. Put the whole first and the piece size second.",
-          "Dividing by a small fraction gives a quotient bigger than the original number."
+          "30 is the greatest value, not the distance between the two ends.",
+          "12 is the least value, not the distance between the two ends.",
+          "21 is halfway between 12 and 30 — that is a center, not a spread."
         ],
         "hints": [
-          "Name the roles: 4/5 yard is ALL the ribbon; 1/10 yard is what one bow uses.",
-          "'How many bows' means total ÷ group size — and the total always comes before the ÷ sign.",
-          "Decide which number is being cut up. Put that one first, then check each choice's order and operation."
-        ],
-        "stemEs": "Una cinta mide 4/5 de yarda de largo. Cada moño usa 1/10 de yarda. ¿Cuál ecuación halla cuántos moños se pueden hacer?",
-        "explanationEs": "El total (4/5 de yarda) se reparte en grupos de 1/10 de yarda cada uno. La ecuación es 4/5 ÷ 1/10 = 4/5 × 10/1 = 40/5 = 8 moños."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "A detective has 1/2 gallon of solution. Each test uses 1/8 gallon. How many tests can be run?",
-        "choices": [
-          "4",
-          "1/16",
-          "16",
-          "1/4"
-        ],
-        "correctIndex": 0,
-        "explanation": "1/2 ÷ 1/8 = 1/2 × 8/1 = 8/2 = 4 tests.",
-        "choiceFeedback": [
-          "",
-          "That uses the wrong operation. Division finds how many of a given size fit in the whole.",
-          "You have the dividend and divisor reversed. Put the whole first and the piece size second.",
-          "Dividing by a small fraction gives a quotient bigger than the original number."
-        ],
-        "hints": [
-          "The total is 1/2 gallon; each test drains 1/8 gallon — you're counting tests.",
-          "Rewrite 1/2 as eighths so both amounts match, or Keep-Change-Flip with 8/1.",
-          "Multiply top and bottom of 1/2 by 4 to get eighths, then count how many 1/8-tests that covers."
-        ],
-        "stemEs": "Un detective tiene 1/2 galón de solución. Cada prueba usa 1/8 de galón. ¿Cuántas pruebas se pueden hacer?",
-        "explanationEs": "1/2 ÷ 1/8 = 1/2 × 8/1 = 8/2 = 4 pruebas.",
-        "hintsEs": [
-          "El total es 1/2 galón y cada prueba usa 1/8 de galón: estás contando pruebas.",
-          "Reescribe 1/2 en octavos para que ambas cantidades coincidan, o usa Conserva-Cambia-Invierte con 8/1.",
-          "Multiplica arriba y abajo de 1/2 por 4 para obtener octavos y luego cuenta cuántas pruebas de 1/8 cubre."
+          "Range asks how far it is from one end of the data to the other.",
+          "Find the greatest value and the least value, then subtract.",
+          "30 − 12 = ?"
         ]
       },
       {
         "type": "multiple-choice",
-        "stem": "A trail is 3/4 mile long. A jogger runs laps of 1/4 mile each. How many laps does the jogger complete?",
+        "stem": "On a box plot, Q1 = 20 and Q3 = 36. What is the interquartile range?",
         "choices": [
-          "3 laps",
-          "1/3 lap",
-          "4 laps",
-          "3/16 lap"
+          "16",
+          "56",
+          "28",
+          "36"
         ],
         "correctIndex": 0,
-        "explanation": "3/4 ÷ 1/4 = 3/4 × 4/1 = 12/4 = 3 laps. This is reasonable: three 1/4-mile pieces fit into 3/4 mile.",
+        "explanation": "IQR = Q3 − Q1 = 36 − 20 = 16.",
         "choiceFeedback": [
           "",
-          "That uses the wrong operation. Division finds how many of a given size fit in the whole.",
-          "You have the dividend and divisor reversed. Put the whole first and the piece size second.",
-          "Dividing by a small fraction gives a quotient bigger than the original number."
+          "That is 36 + 20. The IQR is a difference, so subtract.",
+          "28 is halfway between 20 and 36 — that is a middle, not a width.",
+          "36 is Q3 by itself, not the distance from Q1 to Q3."
         ],
         "hints": [
-          "The trail is 3/4 mile total, and every lap covers exactly 1/4 mile.",
-          "Both numbers are fourths — count how many 1/4s stack up to reach 3/4.",
-          "Stack laps one at a time: 1/4, then 2/4, then… stop when you reach 3/4 and count your laps."
+          "The IQR is the width of the box on a box plot.",
+          "The box runs from Q1 to Q3, so subtract Q1 from Q3.",
+          "36 − 20 = ?"
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Which measure of spread uses ONLY the middle half of the data?",
+        "choices": [
+          "The interquartile range",
+          "The range",
+          "The median",
+          "The mode"
         ],
-        "stemEs": "Un sendero mide 3/4 de milla de largo. Un corredor da vueltas de 1/4 de milla cada una. ¿Cuántas vueltas completa el corredor?",
-        "explanationEs": "3/4 ÷ 1/4 = 3/4 × 4/1 = 12/4 = 3 vueltas. Tiene sentido: tres pedazos de 1/4 de milla caben en 3/4 de milla.",
-        "choicesEs": [
-          "3 vueltas",
-          "1/3 de vuelta",
-          "4 vueltas",
-          "3/16 de vuelta"
+        "correctIndex": 0,
+        "explanation": "The IQR runs from Q1 to Q3, which is exactly the middle half of the values. The range uses every value, including the extremes.",
+        "choiceFeedback": [
+          "",
+          "The range stretches from the least value to the greatest, so it uses all of the data.",
+          "The median is a measure of center, not of spread.",
+          "The mode is the most common value — also not a measure of spread."
         ],
-        "hintsEs": [
-          "El sendero mide 3/4 de milla en total y cada vuelta cubre exactamente 1/4 de milla.",
-          "Ambos números están en cuartos: cuenta cuántos 1/4 se acumulan para llegar a 3/4.",
-          "Suma vueltas de una en una: 1/4, luego 2/4, luego… detente al llegar a 3/4 y cuenta tus vueltas."
+        "hints": [
+          "One is measured across the box on a box plot; the other whisker to whisker.",
+          "The box holds the middle 50% of the data.",
+          "Q1 to Q3 is the middle half."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Two classes both have a median score of 81. Class A's IQR is 13 and Class B's IQR is 8. Which statement is true?",
+        "choices": [
+          "The middle half of Class B's scores is less spread out",
+          "Class B has a higher median",
+          "Class A has more students",
+          "Class B's highest score is greater"
+        ],
+        "correctIndex": 0,
+        "explanation": "A smaller IQR means the middle half of the data is packed into a shorter stretch, so Class B's middle half varies less. The medians are equal, so nothing there separates them.",
+        "choiceFeedback": [
+          "",
+          "Both medians are 81 — they are the same.",
+          "The IQR says nothing about how many students are in a class.",
+          "The IQR describes only the middle half; it says nothing about the highest score."
+        ],
+        "hints": [
+          "A smaller IQR means a narrower box.",
+          "A narrower box means the middle half of the values sit closer together.",
+          "Which class has the smaller IQR?"
         ]
       },
       {
         "type": "drag-sort",
-        "instructions": "Sort each word problem: should you DIVIDE or MULTIPLY to solve it?",
-        "items": [
-          {
-            "text": "How many 1/3-cup scoops fit into 2 cups? (2 ÷ 1/3)",
-            "category": "divide"
-          },
-          {
-            "text": "A ribbon is 3/4 yard. Each piece is 1/8 yard. How many pieces? (3/4 ÷ 1/8)",
-            "category": "divide"
-          },
-          {
-            "text": "You run 1/2 mile, 3 times. How far total? (1/2 × 3)",
-            "category": "multiply"
-          },
-          {
-            "text": "A recipe uses 2/3 cup. You make half a recipe. How much? (2/3 × 1/2)",
-            "category": "multiply"
-          }
-        ],
+        "stem": "Sort each fact under the measure of variation it describes.",
         "categories": [
+          "Range",
+          "Interquartile range"
+        ],
+        "cards": [
           {
-            "id": "divide",
-            "label": "Division Problem"
+            "text": "Greatest value − least value",
+            "correct": 0
           },
           {
-            "id": "multiply",
-            "label": "Multiplication Problem"
+            "text": "Q3 − Q1",
+            "correct": 1
+          },
+          {
+            "text": "The width of the box on a box plot",
+            "correct": 1
+          },
+          {
+            "text": "The distance from whisker tip to whisker tip",
+            "correct": 0
+          },
+          {
+            "text": "Changes a lot when one value is unusually high",
+            "correct": 0
+          },
+          {
+            "text": "Describes the middle 50% of the data",
+            "correct": 1
           }
         ],
-        "hint": "For each statement, check: is the operation correct? Are the numbers in the right order?",
+        "explanation": "The range uses the two extreme values, so an unusual value moves it. The IQR uses only the quartiles, so it describes the middle half no matter what happens at the ends.",
         "hints": [
-          "Re-read each story: does it ask 'how many fit?' or 'how much is a part of the amount?'",
-          "'How many groups or pieces fit' → division. 'A fraction OF an amount' → multiplication.",
-          "First card: 1/3-cup scoops filling 2 cups asks how many scoops FIT — decide which lock that clue belongs in."
-        ],
-        "explanation": "Division answers \"how many equal groups fit inside a total,\" so filling 2 cups with 1/3-cup scoops (2 ÷ 1/3) and cutting 3/4 yard into 1/8-yard pieces (3/4 ÷ 1/8) are division stories. Multiplication finds a repeat or a part of an amount, so running 1/2 mile three times (1/2 × 3) and making half of a 2/3-cup recipe (2/3 × 1/2) are multiplication stories.",
-        "explanationEs": "La división responde \"cuántos grupos iguales caben dentro de un total\", así que llenar 2 tazas con cucharadas de 1/3 de taza (2 ÷ 1/3) y cortar 3/4 de yarda en piezas de 1/8 de yarda (3/4 ÷ 1/8) son problemas de división. La multiplicación halla una repetición o una parte de una cantidad, así que correr 1/2 milla tres veces (1/2 × 3) y hacer la mitad de una receta de 2/3 de taza (2/3 × 1/2) son problemas de multiplicación.",
-        "instructionsEs": "Clasifica cada problema: ¿debes DIVIDIR o MULTIPLICAR para resolverlo?",
-        "hintsEs": [
-          "Vuelve a leer cada historia: ¿pregunta 'cuántas caben' o 'cuánto es una parte de la cantidad'?",
-          "'Cuántos grupos o piezas caben' → división. 'Una fracción DE una cantidad' → multiplicación.",
-          "Primera tarjeta: cucharas de 1/3 de taza llenando 2 tazas pregunta cuántas cucharadas CABEN; decide a qué candado va esa pista."
-        ]
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "A board is 5/6 foot long. Each shelf bracket needs 1/6 foot. How many brackets fit?",
-        "choices": [
-          "5",
-          "1/36",
-          "6",
-          "5/36"
-        ],
-        "correctIndex": 0,
-        "explanation": "5/6 ÷ 1/6 = 5/6 × 6/1 = 30/6 = 5 brackets.",
-        "choiceFeedback": [
-          "",
-          "That uses the wrong operation. Division finds how many of a given size fit in the whole.",
-          "You have the dividend and divisor reversed. Put the whole first and the piece size second.",
-          "Dividing by a small fraction gives a quotient bigger than the original number."
-        ],
-        "hints": [
-          "Board = 5/6 foot, each bracket = 1/6 foot — both are already in sixths.",
-          "With matching denominators, count the sixths in 5/6 using the numerators.",
-          "Count the 1/6 steps one at a time — 1/6, 2/6, 3/6… — and stop when you reach 5/6."
-        ],
-        "stemEs": "Una tabla mide 5/6 de pie de largo. Cada soporte de repisa necesita 1/6 de pie. ¿Cuántos soportes caben?",
-        "explanationEs": "5/6 ÷ 1/6 = 5/6 × 6/1 = 30/6 = 5 soportes.",
-        "hintsEs": [
-          "La tabla mide 5/6 de pie y cada soporte mide 1/6 de pie: ambos ya están en sextos.",
-          "Con denominadores iguales, cuenta los sextos de 5/6 usando los numeradores.",
-          "Cuenta los pasos de 1/6 uno por uno —1/6, 2/6, 3/6…— y detente al llegar a 5/6."
+          "Ask which values each measure subtracts.",
+          "The range uses the ends; the IQR uses the quartiles.",
+          "On a box plot: whiskers = range, box = IQR."
         ]
       },
       {
         "type": "error-analysis",
-        "title": "Spot the Common Mistake",
+        "title": "Find the error",
         "workedExample": [
           {
-            "label": "Problem",
-            "work": "A detective has 4/5 gallon of cleaning fluid. Each spray bottle holds 1/5 gallon. How many bottles can she fill?"
+            "label": "Setup",
+            "work": "Data: 40, 42, 45, 50, 55, 58, 60. Q1 = 42, median = 50, Q3 = 58.",
+            "labelEs": "Planteamiento",
+            "workEs": "Datos: 40, 42, 45, 50, 55, 58, 60. Q1 = 42, mediana = 50, Q3 = 58."
           },
           {
-            "label": "Student's equation",
-            "work": "1/5 ÷ 4/5"
+            "label": "Step 1",
+            "work": "Range = 60 − 40 = 20",
+            "labelEs": "Paso 1",
+            "workEs": "Rango = 60 − 40 = 20"
           },
           {
-            "label": "Solve",
-            "work": "1/5 × 5/4 = 5/20 = 1/4"
+            "label": "Step 2",
+            "work": "IQR = 58 + 42 = 100",
+            "labelEs": "Paso 2",
+            "workEs": "RIC = 58 + 42 = 100"
           },
           {
-            "label": "Answer",
-            "work": "1/4 of a bottle"
+            "label": "Step 3",
+            "work": "The middle half of the data spans 100 units.",
+            "labelEs": "Paso 3",
+            "workEs": "La mitad central de los datos abarca 100 unidades."
           }
         ],
-        "errorStep": 1,
-        "correctWork": "The total amount (4/5 gallon) must be the dividend and each bottle (1/5 gallon) the divisor, so the equation is 4/5 ÷ 1/5, not 1/5 ÷ 4/5. Solve: 4/5 × 5/1 = 20/5 = 4 bottles.",
+        "errorStep": 2,
+        "correctWork": "Step 2 should subtract, not add: IQR = Q3 − Q1 = 58 − 42 = 16. Step 3 then reads: the middle half of the data spans 16 units — which must be smaller than the range of 20, because the middle half is part of the whole span.",
+        "explanation": "Every measure of variation is a difference. An IQR larger than the range is impossible, and that impossibility is the fastest way to catch this mistake.",
         "hints": [
-          "Which value is the total being split up — 4/5 or 1/5?",
-          "Write it as total ÷ group size: 4/5 ÷ 1/5. The student reversed the dividend and divisor."
-        ],
-        "titleEs": "Detecta el error común",
-        "explanation": "In a division story the total comes first and the size of one group comes second. The 4/5 gallon is the total and 1/5 gallon is one bottle, so the equation is 4/5 ÷ 1/5, not 1/5 ÷ 4/5. Solving gives 4/5 × 5/1 = 20/5 = 4 bottles, which fits, because 4/5 is exactly four times 1/5.",
-        "explanationEs": "En un problema de división, el total va primero y el tamaño de un grupo va después. Los 4/5 de galón son el total y 1/5 de galón es una botella, así que la ecuación es 4/5 ÷ 1/5, no 1/5 ÷ 4/5. Al resolver: 4/5 × 5/1 = 20/5 = 4 botellas, lo cual tiene sentido porque 4/5 es exactamente cuatro veces 1/5."
+          "Compare the IQR in Step 2 to the range in Step 1.",
+          "Can the middle half of the data be wider than all of the data?",
+          "IQR = Q3 − Q1, a subtraction."
+        ]
       }
     ],
     "onLevel": [
       {
-        "type": "fill-table",
-        "label": "Solve each word problem by writing and solving an equation.",
-        "columns": [
-          "Problem",
-          "Equation",
-          "Solution"
+        "type": "multiple-choice",
+        "stem": "A box plot shows: least 68, Q1 75.5, median 83.5, Q3 88, greatest 94. What are the range and the IQR?",
+        "choices": [
+          "Range 26, IQR 12.5",
+          "Range 12.5, IQR 26",
+          "Range 26, IQR 83.5",
+          "Range 20, IQR 12.5"
         ],
-        "rows": [
+        "correctIndex": 0,
+        "explanation": "Range = 94 − 68 = 26. IQR = 88 − 75.5 = 12.5. The range covers the whole span; the IQR covers only the box.",
+        "choiceFeedback": [
+          "",
+          "These are swapped: the range must be at least as large as the IQR.",
+          "83.5 is the median, a measure of center, not the width of the box.",
+          "94 − 68 = 26, not 20."
+        ],
+        "hints": [
+          "Do the whiskers first: greatest − least.",
+          "Then the box: Q3 − Q1.",
+          "94 − 68 and 88 − 75.5."
+        ]
+      },
+      {
+        "type": "matching",
+        "stem": "Match each value from the history test data (68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94) with what it is.",
+        "pairs": [
           {
-            "problem": "A board is 7/8 foot long. Each shelf bracket needs 1/4 foot. How many brackets fit?",
-            "equation": "7/8 ÷ 1/4",
-            "solution": "3 1/2"
+            "left": "26",
+            "right": "Range"
           },
           {
-            "problem": "A jug holds 5/6 liter. Each cup holds 1/3 liter. How many cups can be filled?",
-            "equation": "5/6 ÷ 1/3",
-            "solution": "2 1/2"
+            "left": "12.5",
+            "right": "Interquartile range"
           },
           {
-            "problem": "A path is 3/4 mile long. A runner does laps of 3/8 mile. How many laps fit?",
-            "equation": "3/4 ÷ 3/8",
-            "solution": "2"
+            "left": "83.5",
+            "right": "Median"
+          },
+          {
+            "left": "75.5",
+            "right": "First quartile"
+          },
+          {
+            "left": "88",
+            "right": "Third quartile"
           }
         ],
-        "hint": "For each row, compute the quotient using division. Notice the pattern of the answers.",
+        "explanation": "The median splits the 20 ordered values; Q1 is the median of the lower 10 and Q3 the median of the upper 10. Range and IQR are then both subtractions.",
         "hints": [
-          "Every equation is total ÷ group size — the Equation column shows each setup.",
-          "Keep-Change-Flip each one and simplify. Some answers come out as mixed numbers.",
-          "Row one: 7/8 ÷ 1/4 → 7/8 × 4/1 = 28/8. Reduce that fraction and write it as a mixed number."
+          "Two of these five are differences; three are positions in the data.",
+          "The two differences are the range and the IQR.",
+          "Q1 = 75.5 and Q3 = 88, so their difference is 12.5."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Team A's salaries have a range of $14M and an IQR of $7M. Team B's have a range of $7M and an IQR of $2.5M. Both teams have the same median salary. What does this tell a player?",
+        "choices": [
+          "Team B's salaries cluster much more tightly around the median",
+          "Team B pays more overall",
+          "Team A has more players",
+          "Team B's highest salary is greater"
         ],
-        "explanation": "Every row is total ÷ group size, and Keep-Change-Flip turns each into a multiplication: 7/8 × 4/1 = 28/8 = 3 1/2 brackets, 5/6 × 3/1 = 15/6 = 2 1/2 cups, and 3/4 × 8/3 = 24/12 = 2 laps. A fractional answer like 3 1/2 just means the last piece is only part of a full bracket.",
-        "explanationEs": "Cada fila es total ÷ tamaño del grupo, y Mantener-Cambiar-Invertir convierte cada una en una multiplicación: 7/8 × 4/1 = 28/8 = 3 1/2 soportes, 5/6 × 3/1 = 15/6 = 2 1/2 tazas y 3/4 × 8/3 = 24/12 = 2 vueltas. Una respuesta fraccionaria como 3 1/2 solo significa que la última pieza es una parte de un soporte completo.",
-        "labelEs": "Resuelve cada problema escribiendo y resolviendo una ecuación.",
-        "hintsEs": [
-          "Cada ecuación es total ÷ tamaño del grupo; la columna Ecuación muestra cada planteamiento.",
-          "Aplica Conserva-Cambia-Invierte a cada una y simplifica. Algunas respuestas salen como números mixtos.",
-          "Fila uno: 7/8 ÷ 1/4 → 7/8 × 4/1 = 28/8. Reduce esa fracción y escríbela como número mixto."
+        "correctIndex": 0,
+        "explanation": "Both measures of variation are smaller for Team B, so its salaries vary less: a typical player is more likely to earn close to the median. Team A spreads much wider in both directions.",
+        "choiceFeedback": [
+          "",
+          "The medians are equal, so neither team pays more at the middle.",
+          "Neither measure of variation says anything about how many players there are.",
+          "Team A's greatest salary is $15M, which is larger than Team B's $9M."
+        ],
+        "hints": [
+          "Compare the two ranges, then compare the two IQRs.",
+          "Smaller numbers mean the values sit closer together.",
+          "Both of Team B's numbers are smaller."
         ]
       },
       {
         "type": "drag-sort",
-        "instructions": "Sort: is the equation and solution CORRECT, or is there an error?",
-        "items": [
-          {
-            "text": "A tank has 5/6 gallon. Each bucket holds 1/3 gallon. → 5/6 ÷ 1/3 = 2 1/2 buckets",
-            "category": "correct"
-          },
-          {
-            "text": "A pipe is 2/3 foot long. Each piece is 1/6 foot. → 2/3 ÷ 1/6 = 4 pieces",
-            "category": "correct"
-          },
-          {
-            "text": "A bag has 3/4 lb. Each scoop is 1/8 lb. → 3/4 ÷ 1/8 = 6 scoops",
-            "category": "correct"
-          },
-          {
-            "text": "A rope is 1/2 yard. Each section is 1/4 yard. → 1/4 ÷ 1/2 = 1/2 section",
-            "category": "incorrect"
-          },
-          {
-            "text": "A jug has 4/5 liter. Each cup is 2/5 liter. → 4/5 × 2/5 = 8/25 cups",
-            "category": "incorrect"
-          },
-          {
-            "text": "A shelf is 7/8 foot. Each book is 1/4 foot. → 7/8 ÷ 1/4 = 7/32 books",
-            "category": "incorrect"
-          }
-        ],
+        "stem": "A value far above the rest is added to a data set. Sort what happens.",
         "categories": [
+          "The range grows a lot",
+          "The IQR barely changes"
+        ],
+        "cards": [
           {
-            "id": "correct",
-            "label": "Correct Equation and Solution"
+            "text": "Because it uses the greatest value",
+            "correct": 0
           },
           {
-            "id": "incorrect",
-            "label": "Incorrect Equation or Solution"
+            "text": "Because it uses only Q1 and Q3",
+            "correct": 1
+          },
+          {
+            "text": "It measures the whole span of the data",
+            "correct": 0
+          },
+          {
+            "text": "It measures only the middle half",
+            "correct": 1
           }
         ],
-        "hint": "Look at each expression. Does it correctly represent the story? Check operation and numbers.",
+        "explanation": "This is the reason both measures exist. The range reacts to the extremes; the IQR ignores them and reports the middle half.",
         "hints": [
-          "Check two things on every card: is the operation right, AND is the total first in the equation?",
-          "Red flags: a 'how many' answer smaller than 1, or multiplication where the story asks how many fit.",
-          "Test the first card yourself: solve 5/6 ÷ 1/3 with Keep-Change-Flip and see whether 2 1/2 really checks out."
-        ],
-        "explanation": "Three cards are set up as total ÷ group size and solved correctly: 5/6 ÷ 1/3 = 2 1/2, 2/3 ÷ 1/6 = 4, and 3/4 ÷ 1/8 = 6. The other three break down: 1/4 ÷ 1/2 reverses the total and the piece size, 4/5 × 2/5 multiplies where the story asks how many cups fit, and 7/8 ÷ 1/4 = 7/32 comes from multiplying by 1/4 instead of flipping it to 4/1.",
-        "explanationEs": "Tres tarjetas están planteadas como total ÷ tamaño del grupo y resueltas correctamente: 5/6 ÷ 1/3 = 2 1/2, 2/3 ÷ 1/6 = 4 y 3/4 ÷ 1/8 = 6. Las otras tres fallan: 1/4 ÷ 1/2 invierte el total y el tamaño de la pieza, 4/5 × 2/5 multiplica cuando la historia pregunta cuántas tazas caben, y 7/8 ÷ 1/4 = 7/32 sale de multiplicar por 1/4 en vez de invertirlo a 4/1.",
-        "instructionsEs": "Clasifica: ¿la ecuación y la solución son CORRECTAS o hay un error?",
-        "hintsEs": [
-          "Revisa dos cosas en cada tarjeta: ¿es correcta la operación Y está el total primero en la ecuación?",
-          "Señales de alerta: una respuesta de 'cuántas' menor que 1, o multiplicación cuando la historia pregunta cuántas caben.",
-          "Prueba tú mismo la primera tarjeta: resuelve 5/6 ÷ 1/3 con Conserva-Cambia-Invierte y ve si 2 1/2 de verdad cuadra."
-        ]
-      },
-      {
-        "type": "bar-model",
-        "instructions": "Use the bar model to solve: A detective has 3/4 pound of clay. Each mold needs 1/8 pound. How many molds?",
-        "label": "Model 3/4 ÷ 1/8",
-        "bars": [
-          {
-            "value": 1,
-            "label": "1/8",
-            "annotation": "mold 1"
-          },
-          {
-            "value": 1,
-            "label": "1/8",
-            "annotation": "mold 2"
-          },
-          {
-            "value": 1,
-            "label": "1/8",
-            "annotation": "mold 3"
-          },
-          {
-            "value": 1,
-            "label": "1/8",
-            "annotation": "mold 4"
-          },
-          {
-            "value": 1,
-            "label": "1/8",
-            "annotation": "mold 5"
-          },
-          {
-            "value": 1,
-            "label": "1/8",
-            "annotation": "mold 6"
-          }
-        ],
-        "totalLabel": "3/4 = 6/8 → six 1/8-size pieces fit",
-        "questionText": "How many 1/8-pound molds can be made from 3/4 pound?",
-        "answer": "6",
-        "hint": "Count all the small pieces shown on the bar model. That count is your quotient.",
-        "hints": [
-          "The bar shows the 3/4 pound of clay already split into 1/8-pound molds.",
-          "Rewrite 3/4 as eighths so you know how many pieces to expect before counting.",
-          "Multiply top and bottom of 3/4 by 2 to get eighths, then count the 1/8 pieces along the bar."
-        ],
-        "explanation": "Rewriting 3/4 as 6/8 shows the clay measured in eighth-pound pieces, which is exactly what the bar model lays out. Each mold takes 1/8 pound, so six molds can be made: 3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6.",
-        "explanationEs": "Reescribir 3/4 como 6/8 muestra la arcilla medida en piezas de un octavo de libra, que es justo lo que presenta el modelo de barras. Cada molde usa 1/8 de libra, así que se pueden hacer seis moldes: 3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6."
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "Marcus solved 2/3 ÷ 1/4 and got 8/3 = 2 2/3. He says 'That can't be right because I started with less than 1.' Is Marcus's math correct? Is his reasoning correct?",
-        "choices": [
-          "His math is correct (2 2/3), but his reasoning is wrong — dividing by a small fraction gives a larger result",
-          "His math and reasoning are both correct — the answer should be less than 1",
-          "His math is wrong — the answer should be 1/6",
-          "His math is wrong — the answer should be 8/12"
-        ],
-        "correctIndex": 0,
-        "explanation": "2/3 ÷ 1/4 = 2/3 × 4/1 = 8/3 = 2 2/3. This IS correct. When you divide by a number less than 1, the quotient is greater than the dividend.",
-        "choiceFeedback": [
-          "",
-          "That's multiplication or another operation. Division finds how many pieces fit.",
-          "The dividend (the whole being divided) goes first.",
-          "Re-solve using the correct division and the correct order of numbers."
-        ],
-        "hints": [
-          "Two separate questions: is Marcus's MATH right, and is his REASONING right? Check each on its own.",
-          "Redo 2/3 ÷ 1/4 with Keep-Change-Flip, then recall what dividing by a number less than 1 does to a quotient.",
-          "Compute 2/3 × 4/1 and compare with Marcus's 8/3. Then ask: is an answer bigger than the start actually a mistake here?"
-        ],
-        "stemEs": "Marcus resolvió 2/3 ÷ 1/4 y obtuvo 8/3 = 2 2/3. Él dice: 'Eso no puede estar bien porque empecé con menos de 1'. ¿Es correcta la operación de Marcus? ¿Es correcto su razonamiento?",
-        "explanationEs": "2/3 ÷ 1/4 = 2/3 × 4/1 = 8/3 = 2 2/3. Eso SÍ es correcto. Cuando divides entre un número menor que 1, el cociente es mayor que el dividendo.",
-        "choicesEs": [
-          "Sus cuentas están bien (2 2/3), pero su razonamiento está mal — dividir entre una fracción pequeña da un resultado más grande",
-          "Sus cuentas y su razonamiento están bien — la respuesta debería ser menor que 1",
-          "Sus cuentas están mal — la respuesta debería ser 1/6",
-          "Sus cuentas están mal — la respuesta debería ser 8/12"
-        ],
-        "hintsEs": [
-          "Dos preguntas distintas: ¿son correctas las CUENTAS de Marcus y es correcto su RAZONAMIENTO? Revisa cada una por separado.",
-          "Rehaz 2/3 ÷ 1/4 con Conserva-Cambia-Invierte y luego recuerda qué le hace al cociente dividir entre un número menor que 1.",
-          "Calcula 2/3 × 4/1 y compáralo con el 8/3 de Marcus. Luego pregunta: ¿una respuesta mayor que el inicio es realmente un error aquí?"
+          "Which measure touches the greatest value?",
+          "Which measure only touches the quartiles?",
+          "An unusual value sits out at an end, not in the middle."
         ]
       },
       {
         "type": "error-analysis",
-        "title": "Spot the Common Mistake",
+        "title": "Find the error",
         "workedExample": [
           {
-            "label": "Problem",
-            "work": "A chemist has 3/4 liter of solution. Each test tube holds 1/8 liter. How many test tubes can be filled?"
+            "label": "Setup",
+            "work": "Data: 15, 18, 20, 22, 25, 60.",
+            "labelEs": "Planteamiento",
+            "workEs": "Datos: 15, 18, 20, 22, 25, 60."
           },
           {
-            "label": "Student's equation",
-            "work": "3/4 ÷ 1/8 = 3/4 × 1/8"
+            "label": "Step 1",
+            "work": "The range is 60 − 15 = 45.",
+            "labelEs": "Paso 1",
+            "workEs": "El rango es 60 − 15 = 45."
           },
           {
-            "label": "Solve",
-            "work": "3/4 × 1/8 = 3/32"
+            "label": "Step 2",
+            "work": "The range of 45 shows that a typical value differs from the others by about 45.",
+            "labelEs": "Paso 2",
+            "workEs": "El rango de 45 muestra que un valor típico se diferencia de los demás por unos 45."
           },
           {
-            "label": "Answer",
-            "work": "3/32 of a test tube"
+            "label": "Step 3",
+            "work": "So this data set has high variability everywhere.",
+            "labelEs": "Paso 3",
+            "workEs": "Entonces este conjunto de datos tiene alta variabilidad en todas partes."
           }
         ],
-        "errorStep": 1,
-        "correctWork": "The student set up the division correctly but forgot to flip the divisor. Keep, Change, Flip means multiply by the reciprocal of 1/8, which is 8/1: 3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6 test tubes. Check: 6 × 1/8 = 6/8 = 3/4.",
+        "errorStep": 2,
+        "correctWork": "Step 2 overreads the range. The range only reports the distance between the two extremes — here it is large because of the single value 60. Five of the six values sit between 15 and 25, a span of just 10. The IQR (about 7) shows that the middle of the data barely varies at all.",
+        "explanation": "A big range does not mean every value is spread out. When one value sits far from the rest, the IQR is the measure that describes what is typical.",
         "hints": [
-          "Did the student flip the second fraction (the divisor) before multiplying?",
-          "Keep 3/4, change ÷ to ×, flip 1/8 to 8/1: 3/4 × 8/1 = 6 — not 3/4 × 1/8."
-        ],
-        "titleEs": "Detecta el error común",
-        "explanation": "The setup 3/4 ÷ 1/8 was right, but the divisor was never flipped. Keep-Change-Flip means multiplying by the reciprocal of 1/8, which is 8/1: 3/4 × 8/1 = 24/4 = 6 test tubes. Checking confirms it, since 6 × 1/8 = 6/8 = 3/4.",
-        "explanationEs": "El planteamiento 3/4 ÷ 1/8 estaba bien, pero nunca se invirtió el divisor. Mantener-Cambiar-Invertir significa multiplicar por el recíproco de 1/8, que es 8/1: 3/4 × 8/1 = 24/4 = 6 tubos de ensayo. La comprobación lo confirma, porque 6 × 1/8 = 6/8 = 3/4."
+          "Look at where the six values actually sit.",
+          "How far apart are the five values other than 60?",
+          "Which measure of variation ignores the extremes?"
+        ]
       }
     ],
     "extending": [
       {
         "type": "error-analysis",
-        "title": "Find the Problem-Solving Error",
+        "title": "Find the error",
         "workedExample": [
           {
-            "label": "Problem",
-            "work": "A tank has 3/4 gallon of water. Each bucket holds 1/6 gallon. How many buckets can be filled?"
+            "label": "Setup",
+            "work": "Class A: least 62, Q1 74, median 81, Q3 87, greatest 90.",
+            "labelEs": "Planteamiento",
+            "workEs": "Clase A: menor 62, Q1 74, mediana 81, Q3 87, mayor 90."
           },
           {
-            "label": "Student's equation",
-            "work": "1/6 ÷ 3/4"
+            "label": "Setup",
+            "work": "Class B: least 70, Q1 76, median 81, Q3 84, greatest 90.",
+            "labelEs": "Planteamiento",
+            "workEs": "Clase B: menor 70, Q1 76, mediana 81, Q3 84, mayor 90."
           },
           {
-            "label": "Solve",
-            "work": "1/6 × 4/3 = 4/18 = 2/9"
+            "label": "Step 1",
+            "work": "Both classes have a median of 81.",
+            "labelEs": "Paso 1",
+            "workEs": "Las dos clases tienen una mediana de 81."
           },
           {
-            "label": "Answer",
-            "work": "2/9 buckets"
+            "label": "Step 2",
+            "work": "Both classes reached the same greatest score, 90.",
+            "labelEs": "Paso 2",
+            "workEs": "Las dos clases alcanzaron el mismo puntaje mayor, 90."
+          },
+          {
+            "label": "Step 3",
+            "work": "So the two classes performed the same overall.",
+            "labelEs": "Paso 3",
+            "workEs": "Entonces las dos clases tuvieron el mismo desempeño en general."
           }
         ],
-        "errorStep": 1,
-        "correctWork": "The equation should be 3/4 ÷ 1/6 (total ÷ group size). Then 3/4 × 6/1 = 18/4 = 4 1/2 buckets.",
+        "errorStep": 4,
+        "correctWork": "Step 3 ignores variability. Class A's range is 28 and its IQR is 13; Class B's range is 20 and its IQR is 8. Class B's scores are far less spread out, so 75% of Class B scored 76 or more, while a quarter of Class A scored below 74. Equal medians and equal maximums do not make two distributions the same.",
+        "explanation": "Two data sets can match on every measure of center and still differ sharply. Measures of variation are what tell them apart.",
         "hints": [
-          "Which value is the total being divided — 3/4 or 1/6?",
-          "The student wrote the dividend and divisor in the wrong order. The total (3/4) should come first."
-        ],
-        "titleEs": "Encuentra el error al resolver el problema",
-        "explanation": "The dividend and divisor are swapped. The 3/4 gallon is the total being split up and 1/6 gallon is one bucket, so the equation must be 3/4 ÷ 1/6 = 3/4 × 6/1 = 18/4 = 4 1/2 buckets. An answer of 2/9 of a bucket is a warning sign, since a 1/6-gallon bucket clearly fits inside 3/4 gallon more than once.",
-        "explanationEs": "El dividendo y el divisor están invertidos. Los 3/4 de galón son el total que se reparte y 1/6 de galón es una cubeta, así que la ecuación debe ser 3/4 ÷ 1/6 = 3/4 × 6/1 = 18/4 = 4 1/2 cubetas. Una respuesta de 2/9 de cubeta es una señal de alerta, porque una cubeta de 1/6 de galón claramente cabe más de una vez dentro de 3/4 de galón."
-      },
-      {
-        "type": "open-response",
-        "prompt": "Write your own fraction division word problem where the answer is 8. Then show the equation, solve it step by step, and explain how you know your answer is reasonable.",
-        "sentenceFrame": "My word problem: ___. The equation is ___ ÷ ___ = ___. I solved it using KCF: ___ × ___ = ___. The answer 8 is reasonable because ___.",
-        "keywords": [
-          "divide",
-          "= 8",
-          "reasonable",
-          "word problem",
-          "equation",
-          "reciprocal"
-        ],
-        "minLength": 40,
-        "hint": "Explain your reasoning with a concrete example. Use division and a model if helpful.",
-        "hints": [
-          "Work backwards: pick a group size first, then build a total that divides by it exactly 8 times.",
-          "Multiply your chosen divisor by 8 — that product becomes your total (the dividend) in the story.",
-          "Example start: pick 1/2 as the group size. 8 groups of 1/2 make 4, so a story about 4 wholes works. Now pick your own numbers."
-        ],
-        "explanation": "The safest way to build this problem is backwards: choose a group size, multiply it by 8, and let that product be the total in your story. For example, 8 groups of 1/2 make 4, so \"4 cups of trail mix packed into 1/2-cup bags\" gives 4 ÷ 1/2 = 4 × 2/1 = 8. The answer is reasonable because 8 groups of the size you chose rebuild the original total exactly.",
-        "explanationEs": "La forma más segura de construir este problema es al revés: elige un tamaño de grupo, multiplícalo por 8 y deja que ese producto sea el total de tu historia. Por ejemplo, 8 grupos de 1/2 forman 4, así que \"4 tazas de mezcla de nueces empacadas en bolsas de 1/2 taza\" da 4 ÷ 1/2 = 4 × 2/1 = 8. La respuesta es razonable porque 8 grupos del tamaño que elegiste vuelven a formar exactamente el total original.",
-        "promptEs": "Escribe tu propio problema de división de fracciones cuya respuesta sea 8. Después muestra la ecuación, resuélvela paso a paso y explica cómo sabes que tu respuesta es razonable.",
-        "hintsEs": [
-          "Trabaja al revés: escoge primero un tamaño de grupo y luego arma un total que se divida entre él exactamente 8 veces.",
-          "Multiplica el divisor que escogiste por 8: ese producto será tu total (el dividendo) en la historia.",
-          "Ejemplo de inicio: escoge 1/2 como tamaño del grupo. 8 grupos de 1/2 forman 4, así que una historia sobre 4 enteros funciona. Ahora escoge tus propios números."
+          "What have you NOT compared yet?",
+          "Compute both ranges and both IQRs.",
+          "Which class has the narrower box?"
         ]
       },
       {
-        "type": "fill-table",
-        "label": "Solve each multi-step problem. Show the equation and verify with multiplication.",
-        "columns": [
-          "Problem",
-          "Equation",
-          "Solution",
-          "Check (quotient × divisor = dividend)"
+        "type": "open-response",
+        "stem": "Two students both scored 80 on a make-up test — one joins Class A (range 28, IQR 13) and one joins Class B (range 20, IQR 8). Both classes have a median of 81. Predict how each class's IQR changes, and explain your reasoning.",
+        "sampleAnswer": "Each new score of 80 lands just below the median of 81, which is inside the box for both classes. Adding a value inside the middle of the data pulls the quartiles slightly toward the center, so each IQR either stays the same or shrinks a little; neither can grow much, because nothing was added out at the extremes. The ranges do not change at all, since 80 is neither a new least nor a new greatest value for either class. The comparison holds: Class B's scores stay the more tightly clustered of the two.",
+        "hints": [
+          "Where does 80 fall relative to each class's box?",
+          "A value added inside the box cannot stretch the box outward.",
+          "Does 80 change either class's least or greatest value?"
+        ]
+      },
+      {
+        "type": "drag-sort",
+        "stem": "A coach wants ONE number for each question. Sort each question under the measure that answers it.",
+        "categories": [
+          "Range",
+          "Interquartile range"
         ],
-        "rows": [
+        "cards": [
           {
-            "problem": "A chef has 2 1/2 cups of flour. Each batch of cookies needs 1/4 cup. How many batches?",
-            "equation": "2 1/2 ÷ 1/4 = 5/2 × 4/1",
-            "solution": "10",
-            "check": "10 × 1/4 = 10/4 = 2 1/2"
+            "text": "How far apart are our best and worst games?",
+            "correct": 0
           },
           {
-            "problem": "A detective has 1 1/3 gallons of solution. Each test uses 2/3 gallon. How many tests?",
-            "equation": "1 1/3 ÷ 2/3 = 4/3 × 3/2",
-            "solution": "2",
-            "check": "2 × 2/3 = 4/3 = 1 1/3"
+            "text": "How consistent is a typical night for this team?",
+            "correct": 1
           },
           {
-            "problem": "A board is 3 3/4 feet long. Each piece must be 5/8 foot. How many pieces?",
-            "equation": "3 3/4 ÷ 5/8 = 15/4 × 8/5",
-            "solution": "6",
-            "check": "6 × 5/8 = 30/8 = 3 3/4"
+            "text": "How much did the middle half of our scores vary?",
+            "correct": 1
+          },
+          {
+            "text": "What is the full span from lowest to highest?",
+            "correct": 0
+          },
+          {
+            "text": "Which measure survives one record-breaking game?",
+            "correct": 1
           }
         ],
-        "hint": "Look at each row. As the divisor changes, what pattern do you see in the quotients?",
+        "explanation": "Questions about extremes are range questions. Questions about what is typical or consistent are IQR questions, because the IQR ignores the extremes.",
         "hints": [
-          "Each row is total ÷ group size — and the mixed-number totals must be converted first.",
-          "Keep-Change-Flip, simplify, then use the Check column: quotient × divisor must rebuild the dividend.",
-          "Row one: 2 1/2 = 5/2, so compute 5/2 × 4/1. Then multiply your quotient by 1/4 to confirm it returns 2 1/2."
-        ],
-        "explanation": "Each mixed number becomes an improper fraction before Keep-Change-Flip: 2 1/2 ÷ 1/4 = 5/2 × 4/1 = 10 batches, 1 1/3 ÷ 2/3 = 4/3 × 3/2 = 2 tests, and 3 3/4 ÷ 5/8 = 15/4 × 8/5 = 6 pieces. The Check column proves each one, because multiplying the quotient back by the divisor returns the original total.",
-        "explanationEs": "Cada número mixto se convierte en fracción impropia antes de Mantener-Cambiar-Invertir: 2 1/2 ÷ 1/4 = 5/2 × 4/1 = 10 tandas, 1 1/3 ÷ 2/3 = 4/3 × 3/2 = 2 pruebas y 3 3/4 ÷ 5/8 = 15/4 × 8/5 = 6 piezas. La columna de comprobación demuestra cada una, porque multiplicar el cociente por el divisor devuelve el total original.",
-        "labelEs": "Resuelve cada problema de varios pasos. Muestra la ecuación y comprueba con una multiplicación.",
-        "hintsEs": [
-          "Cada fila es total ÷ tamaño del grupo, y los totales con números mixtos hay que convertirlos primero.",
-          "Conserva-Cambia-Invierte, simplifica y luego usa la columna Comprobación: cociente × divisor debe reconstruir el dividendo.",
-          "Fila uno: 2 1/2 = 5/2, así que calcula 5/2 × 4/1. Luego multiplica tu cociente por 1/4 para confirmar que regresa a 2 1/2."
+          "Does the question ask about the ends or about the middle?",
+          "'Typical' and 'consistent' point at the middle half.",
+          "'Best and worst' points at the two extremes."
         ]
       }
     ],
     "optionalActivity": {
-      "name": "Fraction Word Problem Escape Room",
-      "emoji": "🔍",
-      "intro": "Agent Torres is locked inside the evidence vault — crack each fraction-division clue to unlock the next room and escape with the case file.",
-      "stepLabel": "Room"
+      "name": "Spread Detective Gallery Walk",
+      "emoji": "🏀",
+      "intro": "Walk the league's analytics gallery. For each box plot on the wall, report the range, the IQR, and which team is more consistent.",
+      "stepLabel": "Box plot"
     },
-    "commonMistake": "A common mistake in Fraction Division Problem Solving is reversing which fraction is the dividend and which is the divisor when setting up the equation from a word problem. For example: a pitcher holds 3/4 cup of punch, and each serving is 1/8 cup — how many servings? The correct setup is total ÷ group size = 3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6 servings. A student who reverses the setup calculates 1/8 ÷ 3/4 = 1/8 × 4/3 = 4/24 = 1/6, an answer smaller than 1 that can't possibly be a serving count. Before you submit, check: does my answer make sense as a NUMBER OF GROUPS? If the setup gives a fraction less than 1 for a 'how many' question, you likely swapped the dividend and divisor."
+    "commonMistake": "A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted."
   },
   "connect": {
     "diagram": {
-      "kind": "tape-diagram",
-      "title": "How Many DNA Tests Fit",
-      "caption": "The top bar is the 5/6 L of solution (10 twelfths); the bottom bar is one 1/12 L test, so count how many bottom bars fit in the top: 5/6 ÷ 1/12 = 10 tests.",
-      "rows": [
-        {
-          "label": "Total solution: 5/6 L",
-          "parts": [
-            {
-              "value": 10,
-              "label": "5/6 L = 10 twelfths"
-            }
-          ]
-        },
-        {
-          "label": "One DNA test: 1/12 L",
-          "parts": [
-            {
-              "value": 1,
-              "label": "1/12 L"
-            }
-          ]
-        }
-      ]
+      "kind": "box-plot",
+      "title": "Class A — math test scores",
+      "min": 62,
+      "q1": 74,
+      "median": 81,
+      "q3": 87,
+      "max": 90,
+      "axisMin": 60,
+      "axisMax": 95,
+      "caption": "Class A: range 90 − 62 = 28, IQR 87 − 74 = 13. Same median as Class B (81), but a much wider box."
     },
-    "scenario": "A forensic chemist has 5/6 of a liter of testing solution. Each DNA test requires 1/12 of a liter. She needs to figure out how many tests she can run before the solution runs out.",
-    "promptQuestion": "How does setting up a fraction division equation help solve this real-world problem?",
-    "prompt": "The chemist can run ___ tests because 5/6 ÷ 1/12 = ___.",
+    "scenario": "Two sixth-grade classes took the same math test. Class A's box plot reads least 62, Q1 74, median 81, Q3 87, greatest 90. Class B's reads least 70, Q1 76, median 81, Q3 84, greatest 90. Both classes have a median of 81, so the median alone cannot tell you which class did better overall.",
+    "visual": {
+      "kind": "box-plot",
+      "title": "Class B — math test scores",
+      "min": 70,
+      "q1": 76,
+      "median": 81,
+      "q3": 84,
+      "max": 90,
+      "axisMin": 60,
+      "axisMax": 95,
+      "caption": "Class B: range 90 − 70 = 20, IQR 84 − 76 = 8. The same median, but the scores are packed much tighter."
+    },
+    "promptQuestion": "Which class scored better overall, and how do the range and the IQR show it?",
+    "prompt": "Class A's range is ___ and Class B's range is ___, so Class A's scores are more ___. Class A's IQR is ___ and Class B's IQR is ___, so the middle half of Class B is packed into a ___ stretch of points. Because 75% of Class B scored ___ or more, Class B did better ___.",
     "keywords": [
-      "equation",
-      "divide",
-      "model",
-      "10",
-      "tests",
-      "reasonable"
+      "28",
+      "20",
+      "spread out",
+      "13",
+      "8",
+      "smaller",
+      "76",
+      "overall"
     ],
     "check": [
       {
-        "stem": "Which equation matches the problem?",
+        "stem": "What is the range of Class A's scores?",
         "choices": [
-          "5/6 ÷ 1/12 = t",
-          "5/6 × 1/12 = t",
-          "1/12 ÷ 5/6 = t",
-          "5/6 + 1/12 = t"
+          "28 points",
+          "13 points",
+          "81 points",
+          "90 points"
         ],
         "answer": 0,
-        "explanation": "You start with 5/6 L and ask how many 1/12-L tests fit inside it — that is 5/6 divided by 1/12."
+        "explanation": "Range = greatest − least = 90 − 62 = 28 points."
       },
       {
-        "stem": "5/6 ÷ 1/12 = ?",
+        "stem": "What is the interquartile range of Class B's scores?",
         "choices": [
-          "10",
-          "2",
-          "12",
-          "5/72"
+          "8 points",
+          "20 points",
+          "14 points",
+          "81 points"
         ],
         "answer": 0,
-        "explanation": "5/6 = 10/12, so ten 1/12-L tests fit. Or multiply by the reciprocal: 5/6 × 12 = 10."
+        "explanation": "IQR = Q3 − Q1 = 84 − 76 = 8 points — the width of Class B's box."
       },
       {
-        "stem": "Is 10 tests a reasonable answer?",
+        "stem": "Both classes have a median of 81. What do the smaller range and smaller IQR tell you about Class B?",
         "choices": [
-          "Yes — each test uses far less than the total, so the answer should be well above 1",
-          "No — the answer should be less than 1",
-          "No — you cannot divide fractions",
-          "Yes — because 10 is a round number"
+          "Class B's scores are less spread out, so more students scored near the median",
+          "Class B's best score was higher",
+          "Class B had fewer students",
+          "Class B's median is actually larger"
         ],
         "answer": 0,
-        "explanation": "Each test uses only 1/12 L, much less than the 5/6 L on hand, so many tests should fit. An answer of 10 makes sense; an answer below 1 would not."
+        "explanation": "A smaller range and a smaller IQR both mean less variability: Class B's scores cluster more tightly around the same median of 81."
       }
     ],
     "answers": [
-      "10",
-      "10"
+      [
+        "28"
+      ],
+      [
+        "20"
+      ],
+      [
+        "spread out",
+        "variable",
+        "spread"
+      ],
+      [
+        "13"
+      ],
+      [
+        "8"
+      ],
+      [
+        "smaller",
+        "tighter",
+        "narrower"
+      ],
+      [
+        "76"
+      ],
+      [
+        "overall"
+      ]
     ],
-    "modelAnswer": "5/6 ÷ 1/12 = 10 tests. Writing the equation first makes the operation clear: you are asking how many 1/12-L doses fit in 5/6 L. Since 5/6 = 10/12, the answer is 10."
+    "modelAnswer": "Class A's range is 28 and Class B's range is 20, so Class A's scores are more spread out. Class A's IQR is 13 and Class B's IQR is 8, so the middle half of Class B is packed into a smaller stretch of points. Because 75% of Class B scored 76 or more, Class B did better overall."
   },
   "reflect": {
     "exitTicket": {
-      "stem": "A pipe is 3/4 meter long. Each connector piece is 3/8 meter. How many connectors fit on the pipe?",
+      "stem": "A box plot has Q1 = 20 and Q3 = 36, with a least value of 10 and a greatest value of 50. What is the IQR, and what does it tell you?",
       "choices": [
-        "2",
-        "9/32",
-        "3/2",
-        "6"
+        "IQR = 16; the middle half of the data spans 16 units",
+        "IQR = 40; the data spans 40 units from end to end",
+        "IQR = 56; the quartiles add to 56",
+        "IQR = 28; 28 is halfway between the quartiles"
       ],
       "correctIndex": 0,
-      "explanation": "3/4 ÷ 3/8 = 3/4 × 8/3 = 24/12 = 2. Two connector pieces fit on the pipe.",
+      "explanation": "IQR = Q3 − Q1 = 36 − 20 = 16. Because it runs from Q1 to Q3, it describes only the middle half of the values — the width of the box.",
       "choiceFeedback": [
         "",
-        "That's multiplication or another operation. Dividing by 1/4 asks 'how many fit in the whole.'",
-        "The dividend (whole) comes first; the divisor (piece size) comes second.",
-        "Dividing by a fraction makes the quotient larger, not smaller."
+        "50 − 10 = 40 is the RANGE, which uses the extremes. The IQR uses only the quartiles.",
+        "The IQR is a difference, not a sum. Subtract Q1 from Q3.",
+        "28 is the midpoint between 20 and 36 — that is a center, not a width."
       ],
       "hints": [
-        "The pipe is 3/4 meter total and each connector takes 3/8 meter — estimate how many fit before solving.",
-        "Rewrite 3/4 in eighths so both measurements match, or multiply by the reciprocal 8/3.",
-        "Multiply top and bottom of 3/4 by 2 to get eighths, then bundle those eighths into groups of three."
+        "The IQR is the width of the box on a box plot.",
+        "The box runs from Q1 to Q3, so subtract: 36 − 20.",
+        "Then say what that number covers: all of the data, or just the middle half?"
       ]
     }
   },
   "readiness": true,
   "googleForms": {
     "student": {
-      "notes": "https://docs.google.com/forms/d/e/1FAIpQLSeUn8eJuaM9Z9TCVNGI0gDfX28sCtoM3x3hLfA-zXvJ0dVWgg/viewform",
-      "practice": "https://docs.google.com/forms/d/e/1FAIpQLSc1BwMtwaHFhXuM7tG5WTTBusp-lSoavy8KRZUtVEKEmosDyg/viewform",
-      "quiz": "https://docs.google.com/forms/d/e/1FAIpQLSfxk28MQP5C7VR-anCCnq0DGofdKk_PZ4wDt_XmD9e6OjsYBA/viewform"
+      "notes": "https://docs.google.com/forms/d/e/1FAIpQLSdHQskP2JmmRx-PDUD_2wXo2XQtwCPQKBtAUfTrbcYWbptXqg/viewform",
+      "practice": "https://docs.google.com/forms/d/e/1FAIpQLSeidPxCLKWlD-EZE3tXkxv4Ugcfz3hrLAE5aEWzqSD-5-fcJw/viewform",
+      "quiz": "https://docs.google.com/forms/d/e/1FAIpQLScgMG8g-8WCZxxC2nU0ewrIiluUcLWfHCFmGrXxI_l9pVIFYQ/viewform"
     }
   },
   "timeEstimate": "~45 min",
   "printables": [
     {
       "kind": "activity",
-      "name": "Fraction Division Story Court",
+      "name": "Distribution Shape Gallery",
       "emoji": "🎲",
-      "type": "Debate / justify task cards",
-      "desc": "Teams decide when a story needs fraction division, write the equation, solve, and defend the result.",
-      "standard": "6.NOS.1",
-      "pdf": "/lessons/2-5/downloads/printables/2-5-activity.pdf",
-      "docx": "/lessons/2-5/downloads/printables/2-5-activity.docx"
+      "type": "Gallery walk + label",
+      "desc": "Students rotate a gallery of displays and label each shape with supporting evidence.",
+      "standard": "6.DS.3",
+      "pdf": "/lessons/2-5/downloads/printables/8-7-activity.pdf",
+      "docx": "/lessons/2-5/downloads/printables/8-7-activity.docx"
     },
     {
       "kind": "color-by-number",
-      "name": "Fraction Division Problem Solving — Color by Number",
+      "name": "Shape of Data Distributions — Color by Number",
       "emoji": "🎨",
       "desc": "Solve each problem, then color by the answer to reveal a picture.",
-      "pdf": "/lessons/2-5/downloads/printables/2-5-color-by-number.pdf",
-      "docx": "/lessons/2-5/downloads/printables/2-5-color-by-number.docx"
+      "pdf": "/lessons/2-5/downloads/printables/8-7-color-by-number.pdf",
+      "docx": "/lessons/2-5/downloads/printables/8-7-color-by-number.docx"
+    },
+    {
+      "kind": "word-search",
+      "name": "Shape of Data Distributions — Vocabulary Word Search",
+      "emoji": "🔎",
+      "desc": "Find this lesson's key vocabulary terms in the puzzle.",
+      "pdf": "/lessons/2-5/downloads/printables/8-7-word-search.pdf",
+      "docx": "/lessons/2-5/downloads/printables/8-7-word-search.docx"
+    },
+    {
+      "kind": "mcap",
+      "name": "Shape of Data Distributions — MCAP-Style Practice",
+      "emoji": "📝",
+      "desc": "MCAP-style selected- and constructed-response practice items.",
+      "standard": "6.DS.3",
+      "docx": "/lessons/2-5/downloads/printables/8-7-mcap-practice.docx"
     }
   ],
   "graphicNovel": {
-    "href": "/graphic-novels/axiom-city/episodes/axiom-city-u6-e1-split-the-glitch.html",
-    "title": "Axiom City: Split the Glitch",
-    "menuTitle": "Split the Glitch",
-    "standard": "6.NOS.1",
-    "desc": "Interactive Axiom City episode — read straight through; gates coach but never block. Not graded."
+    "href": "/graphic-novels/unit8/graphic-novel-1.html",
+    "title": "Unit 8 Graphic Novel: Statistics & Data Distributions",
+    "menuTitle": "Data Distributions",
+    "standard": "6.DS.3",
+    "desc": "Story-driven comic exploring the shape of data distributions — read straight through; gates coach but never block. Not graded."
   },
   "warmup": {
     "title": "Warmup: Previous Lesson Check",
-    "prevLessonId": "2-4",
-    "prevLessonTitle": "Divide Mixed Numbers",
+    "prevLessonId": "8-6",
+    "prevLessonTitle": "Display Data: Histograms",
     "questions": [
       {
-        "id": "warmup-2-5-1",
-        "stem": "What is 1 1/2 ÷ 3/4?",
+        "id": "warmup-8-7-1",
+        "stem": "In a histogram, what does the height of each bar represent?",
         "choices": [
-          "1 1/8",
-          "3/4",
-          "9/8",
-          "2"
+          "The average of the data in that interval",
+          "The range of the interval",
+          "The median of the data",
+          "The frequency (count) of data in that interval"
         ],
         "correctIndex": 3,
-        "explanation": "1 1/2 = 3/2. Then 3/2 ÷ 3/4 = 3/2 × 4/3 = 12/6 = 2."
+        "explanation": "Each bar's height shows the frequency — how many data values fall within that interval."
       },
       {
-        "id": "warmup-2-5-2",
-        "stem": "What is 3 1/2 ÷ 1/4?",
+        "id": "warmup-8-7-2",
+        "stem": "A histogram bar for the interval 20–29 reaches a height of 7. What does the 7 tell you?",
         "choices": [
-          "3 1/8",
-          "7/8",
-          "14",
-          "13/4"
+          "The largest value is 7",
+          "There are 7 intervals",
+          "The interval is 7 wide",
+          "7 data values fall between 20 and 29"
         ],
-        "correctIndex": 2,
-        "explanation": "3 1/2 = 7/2. Then 7/2 ÷ 1/4 = 7/2 × 4/1 = 28/2 = 14."
+        "correctIndex": 3,
+        "explanation": "A bar's height is the frequency — here, 7 values land in the 20–29 interval."
       },
       {
-        "id": "warmup-2-5-3",
-        "stem": "Convert 3 2/5 to an improper fraction.",
+        "id": "warmup-8-7-3",
+        "stem": "A histogram has intervals: 0–4, 5–9, 10–14, 15–19. What is the width of each interval?",
         "choices": [
-          "15/5",
-          "17/5",
-          "6/5",
-          "32/5"
+          "4",
+          "10",
+          "19",
+          "5"
         ],
-        "correctIndex": 1,
-        "explanation": "3 × 5 = 15, then 15 + 2 = 17. So 3 2/5 = 17/5."
+        "correctIndex": 3,
+        "explanation": "Each interval covers 5 values (0,1,2,3,4 then 5,6,7,8,9 etc.), so the width is 5."
       }
     ]
-  },
-  "hasConversionChart": true,
-  "tools": [
-    "conversion-chart"
-  ]
+  }
 }

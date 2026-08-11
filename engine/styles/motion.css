@@ -26,7 +26,7 @@
     animation-delay: 0.09s;
   }
   .app .phase.active > *:nth-child(3) {
-    animation-delay: 0.15s;
+    animation-delay: var(--duration-fast);
   }
   .app .phase.active > *:nth-child(4) {
     animation-delay: 0.21s;
@@ -47,6 +47,17 @@
     animation: none;
   }
 
+  /* The work pair holds the sticky tool column. `animation: … both` leaves the
+     final keyframe applied forever, and ANY transform on an ancestor — even the
+     identity `transform: none` this animation ends on, which still computes to a
+     matrix while the fill is held — makes that ancestor the containing block for
+     `position: sticky` inside it. The manipulative then scrolled away from the
+     problem it belongs to. Fade the pair in instead: same entrance, no transform,
+     sticky intact. */
+  .app .phase.active > .nt-work-pair {
+    animation-name: motionFadeIn;
+  }
+
   /* ── Section header ambience ── */
   .app .section-header {
     position: relative;
@@ -64,10 +75,10 @@
     bottom: -10px;
     height: 3px;
     border-radius: 2px;
-    background: linear-gradient(90deg, var(--teal, #1fa6a2), transparent 70%);
+    background: linear-gradient(90deg, var(--teal, var(--teal)), transparent 70%);
     transform: scaleX(0);
     transform-origin: left;
-    animation: motionUnderline 0.7s var(--ease-out) 0.25s both;
+    animation: motionUnderline 0.7s var(--ease-out) var(--duration-normal) both;
     opacity: 0.55;
     pointer-events: none;
   }
@@ -123,7 +134,7 @@
     animation: motionStampIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   }
   .app .badge-unlock:nth-child(2) {
-    animation-delay: 0.15s;
+    animation-delay: var(--duration-fast);
   }
   .app .badge-unlock:nth-child(3) {
     animation-delay: 0.3s;
@@ -138,7 +149,7 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: radial-gradient(circle at 32% 30%, #ffe9a8, #f2c15b 55%, #c98f2a);
+  background: radial-gradient(circle at 32% 30%, #ffe9a8, var(--amber) 55%, #c98f2a);
   box-shadow: 0 0 8px rgba(242, 193, 91, 0.8);
   pointer-events: none;
   z-index: 9999;
@@ -153,6 +164,15 @@
   pointer-events: none;
   z-index: 9999;
   animation: motionSparkFly 0.55s ease-out both;
+}
+
+@keyframes motionFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes motionRise {

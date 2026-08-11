@@ -209,6 +209,38 @@ function discourseCard(discourse) {
 }
 
 // ── 1 · Explore Lab — the real manipulative for this lesson's explore phase ──
+// Cover the Step 2 manipulative until the Step 1 tool announces a solved
+// problem (`nt:decimal-columns-solved`, dispatched by the columns lab and
+// bubbling up to `scope`). The gated node is built and mounted underneath, so
+// unlocking costs nothing and no state is rebuilt. The cover carries its own
+// skip control — a student who solved on paper, or whose tool failed to load,
+// is never stranded. The point is the order of the work, not a checkpoint.
+function gateUntilSolved(scope, gated) {
+  const cover = el("div", "sg-solve-gate");
+  cover.setAttribute("role", "status");
+  cover.appendChild(el("p", "sg-solve-gate-line", "🔒 Solve the problem above first."));
+  const skip = el("button", "sg-solve-gate-skip");
+  skip.type = "button";
+  skip.textContent = "I already solved it — open this";
+  cover.appendChild(skip);
+
+  gated.classList.add("sg-solve-gated");
+  gated.setAttribute("aria-hidden", "true");
+  gated.before(cover);
+
+  let open = false;
+  const unlock = () => {
+    if (open) return;
+    open = true;
+    cover.remove();
+    gated.classList.remove("sg-solve-gated");
+    gated.removeAttribute("aria-hidden");
+    scope.removeEventListener("nt:decimal-columns-solved", unlock);
+  };
+  skip.addEventListener("click", unlock);
+  scope.addEventListener("nt:decimal-columns-solved", unlock);
+}
+
 export function createExploreLab(config, variant, { number, store, events, onDone }) {
   const explore = config.explore;
   const loader = explore && EXPLORE_LOADERS[explore.type];
@@ -232,11 +264,39 @@ export function createExploreLab(config, variant, { number, store, events, onDon
     );
   if (explore.instructions) section.appendChild(el("p", "sg-lab-note", esc(explore.instructions)));
 
+  // `solveFirst` is the one authored exception to the 5.1 directive below: the
+  // diagram is not a competing reference, it is Step 1 of the SAME task. On the
+  // decimal lessons the lab is a number line whose jumps a student cannot know
+  // without first computing the sum — so the columns lab mounts LIVE, above the
+  // number line, and the number line stays covered until it reports a solve.
+  const solveFirst = explore.solveFirst === true && Boolean(explore.diagram);
+  if (solveFirst) {
+    const step1 = figureBlock(explore.diagram, { staticOnly: false, store, slot: "explore-solve" });
+    if (step1) {
+      section.appendChild(
+        el(
+          "p",
+          "sg-lab-step",
+          esc(explore.solveFirstToolCaption || "Step 1 — solve the problem here first."),
+        ),
+      );
+      section.appendChild(step1);
+      section.appendChild(
+        el(
+          "p",
+          "sg-lab-step",
+          esc(explore.solveFirstTaskCaption || "Step 2 — then show that same jump below."),
+        ),
+      );
+    }
+  }
+
   // The lab itself is the manipulative; the parent lesson's explore.diagram
   // (e.g. an unrelated line grapher) is never MOUNTED here (5.1 directive).
   const mount = el("div", "sg-lab-mount");
   mount.appendChild(el("p", "sg-lab-loading", "Loading the interactive lab…"));
   section.appendChild(mount);
+  if (solveFirst) gateUntilSolved(section, mount);
 
   // The authored diagram still has value as a quiet, collapsed reference.
   // 3D kinds (solid-3d / cross-section / net-folder — the AR/3D model lane)
@@ -244,7 +304,9 @@ export function createExploreLab(config, variant, { number, store, events, onDon
   // competing visual. Every other kind renders static-only so it never fights
   // the manipulative.
   const is3d = ["solid-3d", "cross-section", "net-folder"].includes(explore.diagram?.kind);
-  const reference = figureBlock(explore.diagram, { staticOnly: !is3d });
+  // Already mounted live as Step 1 — a collapsed copy of the same tool below it
+  // reads as a second, different model.
+  const reference = solveFirst ? null : figureBlock(explore.diagram, { staticOnly: !is3d });
   if (reference) {
     const shelf = el("details", "sg-sample");
     shelf.appendChild(

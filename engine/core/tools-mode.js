@@ -37,17 +37,17 @@ function titleCase(slug) {
 }
 
 /**
- * True when the student has the Spanish lane on. Two keys because the two
- * renderers own different language controls: the full lesson engine writes
- * `nt-lang` (i18n.js) and the small-group studio writes `nt-sg-lang` from its
- * vocabulary language bar. A tools page reached from either must honour it.
+ * True when the student has the Spanish lane on.
+ *
+ * This used to check two keys, because the lesson engine wrote `nt-lang` while
+ * the small-group studio wrote its own `nt-sg-lang`, and a tools page reached
+ * from either had to honour both. That fallback was a symptom: the two
+ * surfaces disagreed about the student's own language. The studio now writes
+ * the shared preference, so there is one key and one answer. (i18n.js adopts
+ * any lingering legacy value on load, so devices set in the old studio keep
+ * their Spanish.)
  */
 function esOn() {
-  try {
-    if (window.localStorage.getItem("nt-sg-lang") === "es") return true;
-  } catch {
-    /* storage blocked — fall through to the engine preference */
-  }
   try {
     return getPreferredLang() === "es";
   } catch {
@@ -880,6 +880,19 @@ function setupThemeToggle() {
   });
 }
 
+// Teacher-mode read, done locally: importing teacher-mode.js here would pull
+// lesson-renderer.js (and with it the engine's CSS imports) into every module
+// that touches the tools page, including the node test harness.
+function teacherModeOn() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("teacher") === "0" || params.get("student") === "1") return false;
+    return localStorage.getItem("nt-teacher-mode") === "1";
+  } catch (_e) {
+    return false;
+  }
+}
+
 /**
  * Add an "Interactive Tools" item to the lesson's Tools/utility menu that links
  * to `?mode=tools`. No-op when the lesson has no registered tools. Mirrors the
@@ -898,7 +911,26 @@ export function mountToolsMenuItem(config) {
     const u = new URL(window.location.href);
     u.searchParams.set("mode", "tools");
     item.href = u.pathname + u.search;
-    item.innerHTML = '<span aria-hidden="true">🧰</span><span>Interactive Tools</span>';
+    // Open in its own window: the tools page is a full takeover, and losing the
+    // lesson screen mid-class (scroll position, current phase, unsaved work on
+    // screen) is exactly what teachers do not want it to do.
+    item.target = "_blank";
+    item.rel = "noopener";
+    item.innerHTML =
+      '<span aria-hidden="true">🧰</span><span>Interactive Tools</span><span aria-hidden="true">↗</span>';
+    // Teacher-only. Checked at PAINT time, not mount time: the menu mounts
+    // before the identity gate is passed and teacher mode can be unlocked at any
+    // point after, so a one-shot check at boot would hide it from a teacher who
+    // signed in a second later (and is how "Clear all answers" is gated too).
+    const paint = () => {
+      item.style.display = teacherModeOn() ? "" : "none";
+    };
+    paint();
+    window.addEventListener("storage", (e) => {
+      if (!e.key || e.key === "nt-teacher-mode") paint();
+    });
+    setTimeout(paint, 1500);
+    setTimeout(paint, 4000);
     slot.appendChild(item);
     return true;
   };

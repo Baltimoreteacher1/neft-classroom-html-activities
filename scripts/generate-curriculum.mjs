@@ -29,17 +29,24 @@ const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
 // Friendly unit themes / titles. Pulled from each unit's lesson config "theme"
 // plus the standard cluster the lessons share.
+// Unit numbering follows the publisher's Reveal Math table of contents
+// (data/reveal-toc-2025.json) — see data/toc-migration.json for the crosswalk.
+// These themes must track that TOC: before the renumbering, unit 1 here read
+// "The Number System", which is now unit 6's material.
 const UNIT_THEMES = {
-  1: { name: "The Number System", blurb: "Factors, multiples & decimal operations" },
-  2: { name: "Fractions", blurb: "Dividing fractions & mixed numbers" },
-  3: { name: "Ratios", blurb: "Ratios & ratio reasoning" },
-  4: { name: "Rates & Percents", blurb: "Rates, unit rates & percents" },
-  5: { name: "Area", blurb: "Area of polygons & composite figures" },
-  6: { name: "Expressions & Exponents", blurb: "Expressions, exponents & properties" },
-  7: { name: "Equations & Inequalities", blurb: "Equations & inequalities" },
-  8: { name: "Statistics", blurb: "Statistics & data displays" },
-  9: { name: "Integers & the Coordinate Plane", blurb: "Integers & the coordinate plane" },
-  10: { name: "Volume & Surface Area", blurb: "Volume & surface area" },
+  1: { name: "Math Is...", blurb: "Who we are as mathematicians" },
+  2: { name: "Statistics", blurb: "Statistical questions, data displays & measures" },
+  3: { name: "Ratios & Rates", blurb: "Ratios, rates & ratio reasoning" },
+  4: { name: "Percents", blurb: "Understand & use percentages" },
+  5: { name: "Area, Surface Area & Volume", blurb: "Area, surface area & volume problems" },
+  6: { name: "Expressions", blurb: "Numerical & algebraic expressions, fraction division" },
+  7: {
+    name: "Integers & the Coordinate Plane",
+    blurb: "Integers, rational numbers & the coordinate plane",
+  },
+  8: { name: "Equations & Inequalities", blurb: "Equations & inequalities" },
+  9: { name: "Two-Variable Relationships", blurb: "Relationships between two variables" },
+  10: { name: "Math Is...", blurb: "Where math takes us next" },
 };
 
 function lessonConfigs() {

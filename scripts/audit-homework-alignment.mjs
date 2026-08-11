@@ -4,7 +4,11 @@
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { detectVisualMismatch, scoreHomeworkAlignment } from "./homework-alignment.mjs";
+import {
+  detectVisualMismatch,
+  findNoteOwnershipConflicts,
+  scoreHomeworkAlignment,
+} from "./homework-alignment.mjs";
 
 const root = join(import.meta.dirname, "..");
 const lessonsDir = join(root, "lessons");
@@ -59,22 +63,38 @@ function loadLessons() {
       const [, u2, l2] = b.match(LESSON_DIR_RE);
       return Number(u1) - Number(u2) || Number(l1) - Number(l2);
     })
-    .map((id) => ({
-      id,
-      config: JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8")),
-      html: readFileSync(join(lessonsDir, id, "homework.html"), "utf8"),
-    }));
+    .map((id) => {
+      const config = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
+      /* Merge the curated family-note sidecar exactly the way
+         scripts/generate-homework-html.mjs does, so this audit scores the text a
+         parent actually reads. Reading only config.json is what let a whole
+         directory of notes drift onto the wrong lessons unnoticed. */
+      const notesPath = join(root, "data", "family-homework-notes", `${id}.json`);
+      if (existsSync(notesPath)) {
+        config.familyNotes = {
+          ...JSON.parse(readFileSync(notesPath, "utf8")),
+          ...(config.familyNotes || {}),
+        };
+      }
+      return { id, config, html: readFileSync(join(lessonsDir, id, "homework.html"), "utf8") };
+    });
 }
 
 const lessons = loadLessons();
-const expectedCount = 74;
+/* One entry per lesson directory that ships family homework. Pinned so a lesson
+   that silently stops generating homework fails here instead of shrinking the
+   denominator and still reporting "all compliant". Was 74 until the book-TOC
+   renumber brought the curriculum to 84. */
+const expectedCount = 84;
 const failures = [];
 const alignmentRows = [];
 
 console.log(`\nHomework alignment audit — ${lessons.length} lessons\n`);
 
 if (lessons.length !== expectedCount) {
-  console.warn(`⚠ Expected ${expectedCount} lessons, found ${lessons.length}`);
+  failures.push(
+    `lesson count: expected ${expectedCount}, found ${lessons.length} — update expectedCount if this is intentional`,
+  );
 }
 
 // The optional "More practice" accordion intentionally pulls a broader pool that
@@ -134,6 +154,19 @@ for (const marker of REQUIRED_MARKERS) {
   const ok = lessons.filter((l) => marker.test(l.html)).length;
   console.log(`  ${ok === lessons.length ? "✓" : "✗"} ${marker.id}: ${ok}/${lessons.length}`);
 }
+
+/* Is each curated family note on the lesson it belongs to? Nothing checked this
+   until 2026-08-11, which is how an entire directory of notes kept the
+   pre-renumber lesson ids while this audit reported "84/84 fully compliant". */
+const ownership = findNoteOwnershipConflicts(lessons);
+for (const c of ownership) {
+  failures.push(
+    `${c.id}: family note looks like ${c.suspectedOwner}'s lesson (score ${c.bestScore} vs ${c.ownScore}) — "${c.text}…"`,
+  );
+}
+console.log(
+  `Family notes: ${lessons.length - ownership.length}/${lessons.length} on the right lesson`,
+);
 
 console.log(
   `\nTopic alignment: ${alignedCount}/${lessons.length} aligned (score ≥70, no wrong-topic visual)`,

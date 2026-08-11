@@ -6,6 +6,7 @@ import { renderDataLive } from "../components/data-live.js";
 import { renderEquationBalanceLab } from "../components/equation-balance-lab.js";
 import { renderPercentGridLab } from "../components/percent-grid-lab.js";
 import { isRight } from "./answer-match.js";
+import { mountSymbolPad, needsSymbolPad } from "./symbol-pad.js";
 
 // Exact data-figure kinds routed to the interactive "Data Live" widget. Exact
 // match (not substring) so bar-MODEL, scale-bars, double-rate-bars, etc. keep
@@ -527,6 +528,7 @@ function guidedSteps(item, mode, events = {}) {
       spanish.lang = "es";
       prompt.appendChild(spanish);
     }
+    if (needsSymbolPad(step.answer)) mountSymbolPad(input, { force: true });
     const check = el("button", "btn sg-step-check", "Check step");
     check.type = "button";
     const status = el("span", "sg-step-status");

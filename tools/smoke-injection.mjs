@@ -54,7 +54,7 @@ const pages = [
   "/math/reading/area-enrichment/",
   "/wida-access/writing/", // repaired report/print generator
   "/reveal-evidence-studio/", // repaired report/print generator
-  "/lessons/1-1/", // normal lesson page
+  "/lessons/6-13/", // normal lesson page
   "/games/3d/unit-2/", // game page
 ];
 

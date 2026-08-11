@@ -4,6 +4,7 @@
 
 import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { createGoDeeper } from "./go-deeper.js";
+import { enableKeyboardScrolling } from "./keyboard-scroll.js";
 import {
   detectMisconception,
   MISCONCEPTIONS,
@@ -15,6 +16,7 @@ import {
 // all — the stylesheet reaches the page through Vite's shared CSS chunk, which
 // every lesson entry links.
 import { mountPresentWidget } from "./present-mode.js";
+import { createAutoPilot } from "./small-group-adaptive.js";
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
 import { createBuildVisualizer } from "./small-group-build-visuals.js";
 import {
@@ -41,6 +43,7 @@ import {
   createModelLab,
   figureBlock,
 } from "./small-group-labs.js";
+import { createMasteryLadder } from "./small-group-mastery.js";
 import { createMathCheckLab } from "./small-group-math-check.js";
 import { installSmallGroupPassport } from "./small-group-passport.js";
 import {
@@ -317,15 +320,42 @@ function teacherPanel(config, accent, talk) {
   return wrapper;
 }
 
+/**
+ * The headline a STUDENT sees, which is not the same string as the lesson's
+ * catalog identity.
+ *
+ * `config.title` is "5.3 Small Group · Group 1". That string is load-bearing
+ * elsewhere — the playlist builder, the Canvas library, the registry, the launch
+ * manifests and the search index all carry it — so it is not the thing to
+ * rewrite. But on the page itself it sat directly under a badge reading
+ * "SMALL GROUP · FOUNDATIONS", so the same lesson announced itself two
+ * different ways in adjacent lines, and the louder one was an ability label.
+ *
+ * Students do not need to know they are in "Group 1". The badge already names
+ * the work; this makes the headline agree with it and drops the group number.
+ * Only the rendered text changes — no id, url, config field or manifest moves.
+ */
+function studentTitle(config, badge) {
+  const raw = String(config.title || "").trim();
+  if (!raw) return "Small-Group Math Studio";
+  // Take the purpose word straight from the badge so the two can never drift.
+  const purpose = String(badge || "")
+    .split("·")
+    .pop()
+    .trim();
+  const renamed = raw.replace(/\s*·\s*Group\s*[12]\s*$/i, "");
+  return purpose && renamed !== raw ? `${renamed} · ${purpose}` : raw;
+}
+
 function hero(config, accent, voice) {
   const container = el("div", "sg-hero");
   markScene(container, "hero");
   const grid = el("div", "sg-hero-grid");
-  const copy = el("div");
+  const copy = el("div", "sg-hero-copy");
   copy.classList.add("sg-scene-enter");
   const badge = config.launch?.badge || `Small Group · ${accent.name}`;
   copy.appendChild(el("div", null, `<span class="sg-kicker">${accent.emoji} ${esc(badge)}</span>`));
-  copy.appendChild(el("h1", null, esc(config.title || "Small-Group Math Studio")));
+  copy.appendChild(el("h1", null, esc(studentTitle(config, badge))));
   if (config.contentObjective) {
     // One crisp kid-facing line up top; full content + language objectives fold
     // into a collapsible detail so the hero stays readable for Level 1 students.
@@ -350,7 +380,6 @@ function hero(config, accent, voice) {
     copy.appendChild(el("div", "sg-hero-scene-chip", `Scene · ${esc(sceneName)}`));
   }
   const mathMove = mathMoveOfTheDay(config);
-  if (mathMove) copy.appendChild(mathMove);
   const mark = el("div", "sg-hero-mark sg-scene-enter");
   // Code-drawn theme SVG / emoji is the fallback; if the lesson carries authored
   // hero art, that wins and this runs only if the asset fails to load.
@@ -367,7 +396,16 @@ function hero(config, accent, voice) {
   } else {
     heroFallback();
   }
+  // The math move is a GRID ITEM, not an absolutely-positioned overlay.
+  // It used to be `position:absolute` inside `copy` with a hand-tuned
+  // `top:154px`, which worked until the storyboard wave gave `.sg-scene-enter`
+  // an entrance animation: a transformed ancestor becomes the containing block
+  // for absolute descendants, so `right:0` started resolving against the 648px
+  // text column instead of the 974px hero — and the card landed on top of the
+  // objective, covering the one line every student is supposed to read. Placed
+  // in the reserved second column it cannot overlap anything at any width.
   grid.append(copy, mark);
+  if (mathMove) grid.appendChild(mathMove);
   container.appendChild(grid);
   return container;
 }
@@ -519,6 +557,12 @@ function renderStudio(config) {
     // consensus/coach labs survive a reload instead of resetting to "—".
     mathCheckDone: Boolean(store.get("mathCheckDone")),
     consensusVotes: store.get("consensusVotes") || [],
+    masteryLevel: store.get("masteryLevel") || null,
+    selfCheck: store.get("selfCheck") || {},
+    selfCheckEvidence: store.get("selfCheckEvidence") || "",
+    m4Justify: store.get("m4Justify") || "",
+    m4Generalize: store.get("m4Generalize") || "",
+    m4Create: store.get("m4Create") || "",
     revision: store.get("revision") || null,
     revisionReason: store.get("revisionReason") || "",
     adaptivePath: store.get("adaptivePath") || null,
@@ -546,6 +590,12 @@ function renderStudio(config) {
   // tapping "Find our next move" in the adaptive coach, so students who never
   // opened the coach worked the whole set unscaffolded no matter how it went.
   const autoSupport = createAutoSupportTracker();
+
+  // Automatic difficulty pilot — the rule the coach never applied on its own:
+  // two consecutive misses step the set down (supports + a worked model from
+  // the student's own solved work); three hint-free solves step it up. The
+  // pilot resumes from the stored path so a reload doesn't reset difficulty.
+  const autoPilot = createAutoPilot(state.adaptivePath);
 
   const events = {
     onAttempt({ correct, item, response, choiceIndex = null }) {
@@ -588,9 +638,16 @@ function renderStudio(config) {
       // Live momentum chip in the sticky rail (tabs mount after restore, so
       // the optional chain keeps restored solves from crashing the studio).
       tabs?.setStreak?.(state.streak || 0);
+      const autoMove = autoPilot.recordAttempt(Boolean(correct));
+      if (autoMove) {
+        state.adaptivePath = autoMove.path;
+        store.set("adaptivePath", autoMove.path);
+        document.dispatchEvent(new CustomEvent("sg:auto-move", { detail: autoMove }));
+      }
     },
     onHint() {
       state.hints++;
+      autoPilot.noteHint();
     },
     onSolved() {
       state.solved++;
@@ -744,7 +801,12 @@ function renderStudio(config) {
     events,
     onDone: phaseDone("sg-tab-learn", "modelDone"),
   });
-  const vocab = createVocabularySection(config, phaseDone("sg-tab-vocab", "vocabDone"), store);
+  const vocab = createVocabularySection(
+    config,
+    variant,
+    phaseDone("sg-tab-vocab", "vocabDone"),
+    store,
+  );
   // Partner talk lives inside the Practice tab so discussion is part of
   // practicing, not a detour.
   const talk =
@@ -830,6 +892,16 @@ function renderStudio(config) {
       adaptivePath: state.adaptivePath || store.get("adaptivePath") || "connect",
     },
   );
+  // More Practice used to be "the same set again". The mastery ladder in front
+  // of it makes the section a rubric a student can act on: criteria, a level
+  // they choose, level-4 tasks anyone can attempt, and a self-check.
+  const masteryLadder = createMasteryLadder({
+    config,
+    state,
+    store,
+    practiceSection: morePractice,
+  });
+
   const apply = createApplyLab(config, variant, {
     store,
     events,
@@ -871,15 +943,22 @@ function renderStudio(config) {
     return panel;
   };
   const tabSteps = [
-    { id: "sg-tab-vocab", label: "Vocabulary", panel: makePanel("sg-tab-vocab", [vocab]) },
+    {
+      id: "sg-tab-vocab",
+      label: "Vocabulary",
+      sub: "The words",
+      panel: makePanel("sg-tab-vocab", [vocab]),
+    },
     {
       id: "sg-tab-learn",
       label: "Learn It",
+      sub: "Worked example",
       panel: makePanel("sg-tab-learn", [pulseCard, build, explore, model]),
     },
     {
       id: "sg-tab-guided",
       label: "Guided",
+      sub: "Together",
       panel: makePanel("sg-tab-guided", [guided, createAdaptiveCoach(variant, state, store)]),
     },
     {
@@ -890,6 +969,7 @@ function renderStudio(config) {
       // finish the reflection.
       id: "sg-tab-practice",
       label: "Practice & Check",
+      sub: "On your own",
       // practiceLab: the same optional practice.diagram slot the full lesson
       // honors (step-solver, box-plot-builder, equation-balance-lab, …),
       // mounted first so students can rehearse the skill with the tool before
@@ -913,12 +993,14 @@ function renderStudio(config) {
     {
       id: "sg-tab-more",
       label: "More Practice",
-      panel: makePanel("sg-tab-more", [morePractice, mission, apply, goDeeper]),
+      sub: "Stretch",
+      panel: makePanel("sg-tab-more", [masteryLadder, morePractice, mission, apply, goDeeper]),
     },
     // Group 2 only — keep the stable id for saved-tab compatibility.
     {
       id: "sg-tab-prove",
       label: "Math Check",
+      sub: "Show it",
       panel: makePanel("sg-tab-prove", [mathCheck]),
     },
   ];
@@ -1094,7 +1176,7 @@ function baseLessonId(id) {
 
 // Rewrite a variant URL path to a sibling variant's path, preserving the
 // trailing slash. Exported so the redirect can be unit-tested without a
-// navigable window. "/lessons/1-1-group1/" + "1-1-group2" → "/lessons/1-1-group2/".
+// navigable window. "/lessons/6-13-group1/" + "1-1-group2" → "/lessons/6-13-group2/".
 export function variantPath(pathname, currentId, targetId) {
   const suffix = targetId.slice(baseLessonId(currentId).length + 1); // "group2" | "catchup"
   return String(pathname).replace(/-(?:group[12]|catchup)(\/|$)/, `-${suffix}$1`);
@@ -1152,6 +1234,8 @@ export async function resolveAssignedVariant(config) {
 }
 
 export function bootSmallGroup(config) {
+  // Arrow / Page keys scroll the studio panels, not just the mouse wheel.
+  enableKeyboardScrolling();
   const params = new URLSearchParams(window.location.search);
 
   // ?mode=tools deep-link: render the standalone Interactive Tools page instead

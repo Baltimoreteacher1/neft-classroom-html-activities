@@ -176,9 +176,9 @@ ok(
   "planner deep link present",
 );
 ok(links.includes("autogen=1"), "planner link autogenerates");
-ok(links.includes("/lessons/3-3-catchup/"), "lesson 3.2 maps to 3-3 catch-up band");
+ok(links.includes("/lessons/3-4-catchup/"), "lesson 3.2 maps to 3-3 catch-up band");
 ok(links.includes("/math/games/practice-arcade/?lesson=3-2"), "arcade link uses dashed id");
-ok(links.includes("/lessons/3-2/"), "lesson link present");
+ok(links.includes("/lessons/3-3/"), "lesson link present");
 
 // Idea cites the misconception
 ok(brief.standards[0].idea.includes("unit-rate-flip"), "reteach idea names the misconception tag");
@@ -225,10 +225,10 @@ ok(
 );
 
 // Catch-up band edges
-ok(engine.catchupPath("1.1") === "/lessons/1-3-catchup/", "1.1 -> 1-3 band");
-ok(engine.catchupPath("1.5") === "/lessons/1-7-catchup/", "1.5 -> 1-7 band");
+ok(engine.catchupPath("1.1") === "/lessons/6-12-catchup/", "1.1 -> 1-3 band");
+ok(engine.catchupPath("1.5") === "/lessons/2-7-catchup/", "1.5 -> 1-7 band");
 ok(
-  engine.catchupPath("2.9") === "/lessons/2-5-catchup/",
+  engine.catchupPath("2.9") === "/lessons/6-11-catchup/",
   "beyond last boundary falls back to last band",
 );
 

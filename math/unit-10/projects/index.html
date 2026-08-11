@@ -22,6 +22,9 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+    <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
+    <!-- projects-mode-pill-head:end -->
 </head>
   <body class="pk-hub">
     <main class="page-shell">
@@ -42,7 +45,7 @@
             <rect x="60" y="40" width="120" height="60" fill="#e8f5e9" stroke="#0e9a8c" stroke-width="2"/>
             <polygon points="180,40 200,28 200,88 180,100" fill="#c8e6c9" stroke="#0e9a8c" stroke-width="2"/>
             <text x="120" y="76" text-anchor="middle" fill="#2e7d32" font-size="12" font-weight="800" font-family="system-ui">L x W x H</text>
-            <text x="140" y="115" text-anchor="middle" fill="#1763c7" font-size="12" font-weight="800" font-family="system-ui">V = 5 x 3 x 4 = 60 units cubed</text>
+            <text x="140" y="115" text-anchor="middle" fill="#12539f" font-size="12" font-weight="800" font-family="system-ui">V = 5 x 3 x 4 = 60 units cubed</text>
           </svg>
         </div>
       </section>
@@ -82,15 +85,13 @@
             <span class="button-link">Launch Version B</span>
           </a>
 
-          <a class="activity-card is-stretch" href="/math/unit-10/projects/world-architect/">
-            <span class="card-kicker">Extension Expedition · Broader Geometry</span>
-            <h3>🏛️ World Architect Expedition</h3>
+          <a class="activity-card is-stretch" href="/math/unit-10/projects/version-c/">
+            <span class="card-kicker">Version C · Extension Expedition</span>
+            <h3>🏛️ 3D Geo-Architect Expedition</h3>
             <p>
-              Travel the globe virtually with live Google Maps links to explore 
-              world landmarks like the Taj Mahal, Great Pyramid, Louvre, and CN Tower. 
-              Determine the correct solid model (rectangular prism, square pyramid, or 
-              parallelogram) and apply surface area, lateral area, or volume formulas 
-              to estimate construction and restoration costs.
+              Design 3D architectural structures: calculate fractional edge volume
+              ($V = l \cdot w \cdot h$), 2D net unfolding for 5-face and 6-face surface area,
+              and material cost efficiency. Self → Peer → World with Levels 1, 2, and 3.
             </p>
             <span class="button-link">Launch Version C</span>
           </a>
@@ -181,12 +182,15 @@
   <script src="/assets/canvas-bridge.js" defer></script>
   <!-- canvas-bridge-injected:end -->
   <!-- projects-scorm-propagate:begin (keep SCORM launch params on version links — added with canvas version packages) -->
-  <script>(function(){try{if(!/(?:^|[?&])lms=scorm(?:&|$)/.test(location.search))return;var qs="lms=scorm&embed=1";document.addEventListener("click",function(e){var a=e.target&&e.target.closest?e.target.closest("a[href]"):null;if(!a)return;var href=a.getAttribute("href")||"";if(!/\/version-[ab]\/?(?:[?#]|$)/.test(href))return;if(href.indexOf("lms=scorm")!==-1)return;a.setAttribute("href",href+(href.indexOf("?")===-1?"?":"&")+qs);},true);}catch(err){}})();</script>
+  <script>(function(){try{if(!/(?:^|[?&])lms=scorm(?:&|$)/.test(location.search))return;var qs="lms=scorm&embed=1";document.addEventListener("click",function(e){var a=e.target&&e.target.closest?e.target.closest("a[href]"):null;if(!a)return;var href=a.getAttribute("href")||"";if(!/\/(?:version-[ab]|world-architect)\/?(?:[?#]|$)/.test(href))return;if(href.indexOf("lms=scorm")!==-1)return;a.setAttribute("href",href+(href.indexOf("?")===-1?"?":"&")+qs);},true);}catch(err){}})();</script>
   <!-- projects-scorm-propagate:end -->
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->
     <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+  <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+  <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
+  <!-- projects-mode-pill-body:end -->
 </body>
 </html>

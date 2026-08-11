@@ -73,3 +73,45 @@ curl "https://eduwonderlab.com/access-practice-lab/config.json?cb=$(date +%s)"
 `npm run ship:verify` polls this until it matches `origin/main` (or a SHA you
 pass). The nightly route monitor (`night-shift/modules/05-route-monitor.mjs`)
 also checks deploy freshness and live routes.
+
+`workers/deploy-watch/` asks the same question every 5 minutes from a
+Cloudflare Cron Trigger, and answers it at the Worker's own URL as JSON
+(`{status: "ok" | "settling" | "drift" | "unknown", detail}`; HTTP 503 for the
+last two, so a shell script can act on the status code alone). It exists
+because it does **not** need a GitHub runner — see the next section. Deploy it
+with `cd workers/deploy-watch && npx wrangler deploy`; it is read-only and
+holds no state, so there is nothing to provision first.
+
+---
+
+## Runnerless cancels — a red X that means nothing failed
+
+GitHub intermittently cannot hand this repo a runner. When that happens the run
+is **created, queued, and cancelled at almost exactly 15:00 having executed
+zero steps**. In the checks UI it is a plain red X, identical to a genuine
+failure, and it will absolutely fool you. On 2026-08-06 it hit eight runs
+across two workflows in one afternoon and produced two confident wrong
+diagnoses — first "a GitHub incident", then "something specific to that
+workflow file". It was neither: the same workflow succeeded, unchanged, on a
+later dispatch.
+
+**The tell** (check before debugging anything):
+
+```bash
+gh api repos/<owner>/<repo>/actions/runs/<run_id>/jobs \
+  --jq '.jobs[] | {name, conclusion, runner_id, steps: (.steps|length)}'
+```
+
+`runner_id: 0` **and** `steps: 0` **and** ~15 minutes elapsed = the job never
+started. Nothing in your code or your workflow is wrong. Re-dispatch it; do not
+change the workflow. Capacity has come back within an hour every time.
+
+`.github/workflows/retry-runnerless.yml` now does that re-dispatch
+automatically for Verify Deploy and Refresh Visual Baseline. It fires only on
+that exact signature — a cancelled run that *did* get a runner is a real cancel
+and is deliberately left alone, because retrying it would hide the cause.
+
+**What cannot move off Actions:** anything needing a real browser at the pinned
+Chromium build (`nightly-browser-qa`, `refresh-visual-baseline`). Those must
+wait for a runner. Everything that is only an HTTP request — verifying the
+deploy stamp, route liveness — does not, which is what `deploy-watch` is for.

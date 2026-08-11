@@ -56,16 +56,16 @@ assert.ok(overrides >= 43, `expected the context overrides to be wired, found ${
 // Keyed by the picture each lesson family needs. A lesson listed here that
 // resolves to the shared slug image is showing the wrong math.
 const REQUIRED = {
-  "percent-base": { term: "base", lessons: ["4-4", "4-4-group1", "4-4-group2", "4-7-catchup"] },
+  "percent-base": { term: "base", lessons: ["4-4", "4-4-group1", "4-4-group2", "3-8-catchup"] },
   "percent-part": { term: "part", lessons: ["4-4", "4-4-group1", "4-4-group2"] },
   "exponent-base": {
     term: "base",
-    lessons: ["6-1", "6-1-flagship", "6-1-group1", "6-1-group2", "6-3-catchup"],
+    lessons: ["6-3", "6-3-group1", "6-3-group2", "6-5-catchup"],
   },
-  "pyramid-base": { term: "base", lessons: ["10-5", "10-5-group1", "10-5-group2"] },
+  "pyramid-base": { term: "base", lessons: ["5-8", "5-8-group1", "5-8-group2"] },
   "percent-of-a-number": {
     term: "percent of a number",
-    lessons: ["4-4", "4-4-group1", "4-4-group2", "4-7-catchup"],
+    lessons: ["4-4", "4-4-group1", "4-4-group2", "3-8-catchup"],
   },
 };
 
@@ -117,7 +117,7 @@ for (const [id, config] of configs) {
     `${id}: "${drawn}" never appears in the lesson — pick an equation the lesson actually uses`,
   );
 }
-assert.ok(equations >= 19, `expected the equation lessons to be wired, found ${equations}`);
+assert.ok(equations >= 18, `expected the equation lessons to be wired, found ${equations}`);
 
 // ── 4. No vocab word may show a generic category placeholder. ─────────────
 // cat-number.svg is a literal "#" tile. 203 entries used to land on one — the

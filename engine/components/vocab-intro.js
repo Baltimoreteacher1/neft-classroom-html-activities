@@ -1,19 +1,6 @@
-import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
-import { exploreLabel, openExplorer } from "./vocab-explore.js";
-import { buildSayItRow, speechSupported } from "./vocab-explore-tasks.js";
 import { speakText } from "../core/speech-voice.js";
-
-// Compact tap-to-hear row for a flip-card face. Reuses the shared bilingual
-// "Say it" control (en-US + es-US voices via pickVoice) and swallows the click
-// so pressing 🔊 never flips the card underneath it.
-function sayItFor(en, es, face) {
-  if (!speechSupported()) return;
-  const row = buildSayItRow({ en, es });
-  row.classList.add("vocab-say-row");
-  row.addEventListener("click", (e) => e.stopPropagation());
-  row.addEventListener("keydown", (e) => e.stopPropagation());
-  face.append(row);
-}
+import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
+import { openExplorer } from "./vocab-explore.js";
 
 function _esc(s) {
   const d = document.createElement("div");
@@ -37,15 +24,21 @@ export function openVocabPopOut(t) {
 
   const modal = document.createElement("div");
   modal.className = "vocab-popout-modal";
+  // `justify-content: center` on a SCROLLING flex container clips the overflow
+  // at BOTH ends: a card taller than the viewport (long definition, Spanish
+  // definition and an example all at once) had its header pushed above the
+  // scroll origin, so the term itself was unreachable — you could never scroll
+  // back up to it. `flex-start` + `margin: auto` on the card centres it while
+  // it fits and lets it scroll normally, whole, once it does not.
   modal.style.cssText = `
     position: fixed; inset: 0; z-index: 99999;
     background: rgba(11, 15, 25, 0.94); backdrop-filter: blur(12px);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 20px; cursor: zoom-out; overflow-y: auto;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    padding: 20px; cursor: zoom-out; overflow-y: auto; overscroll-behavior: contain;
   `;
 
   modal.innerHTML = `
-    <div class="vocab-popout-content" style="max-width: 680px; width: 100%; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.6); cursor: default; border: 2.5px solid #cbd5e1;" onclick="event.stopPropagation()">
+    <div class="vocab-popout-content" style="max-width: 680px; width: 100%; margin: auto; flex: 0 0 auto; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.6); cursor: default; border: 2.5px solid #cbd5e1;" onclick="event.stopPropagation()">
       <div style="background: linear-gradient(135deg, #0f2b48 0%, #134074 100%); padding: 22px 26px; color: #ffffff; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
         <div>
           <div style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; color: #38bdf8; margin-bottom: 4px;">📖 Math Vocabulary Pop-Out</div>
@@ -67,7 +60,7 @@ export function openVocabPopOut(t) {
 
         <!-- ENGLISH DEFINITION -->
         <div style="background: #f8fbff; border: 1.5px solid #cbd5e1; border-left: 5px solid #0369a1; border-radius: 14px; padding: 16px 18px; margin-bottom: 14px;">
-          <div style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #0369a1; margin-bottom: 4px;">🇺🇸 English Definition</div>
+          <div style="font-size: 0.95rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: #0369a1; margin-bottom: 4px;">🇺🇸 English Definition</div>
           <div style="font-size: 1.1rem; font-weight: 700; color: #0f172a; line-height: 1.55;">${_esc(defEn)}</div>
         </div>
 
@@ -76,7 +69,7 @@ export function openVocabPopOut(t) {
           defEs
             ? `
         <div style="background: #fffdf5; border: 1.5px solid #fed7aa; border-left: 5px solid #ea580c; border-radius: 14px; padding: 16px 18px; margin-bottom: 14px;">
-          <div style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #c2410c; margin-bottom: 4px;">🇲🇽 Definición en Español</div>
+          <div style="font-size: 0.95rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: #c2410c; margin-bottom: 4px;">🇲🇽 Definición en Español</div>
           <div style="font-size: 1.1rem; font-weight: 700; color: #431407; line-height: 1.55;">${_esc(defEs)}</div>
         </div>`
             : ""
@@ -87,7 +80,7 @@ export function openVocabPopOut(t) {
           example
             ? `
         <div style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-left: 5px solid #16a34a; border-radius: 14px; padding: 14px 18px; margin-bottom: 18px;">
-          <div style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #15803d; margin-bottom: 4px;">💡 Example & Visual Note</div>
+          <div style="font-size: 0.95rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: #15803d; margin-bottom: 4px;">💡 Example & Visual Note</div>
           <div style="font-size: 1.02rem; font-weight: 600; color: #14532d; line-height: 1.5;">${_esc(example)}</div>
         </div>`
             : ""
@@ -129,15 +122,18 @@ function injectVocabIntroStyles() {
       border-radius: var(--radius-md, 12px);
     }
 
+    /* The deck is a wrapping grid, not a horizontal scroller (see
+       .vocab-container in design-system.css), so the phone rules are about
+       fitting ONE card per row rather than about snapping a swipe. The old
+       scroll-snap + flex-basis pair is gone with the scroller it served. */
     @media (max-width: 540px) {
       .vocab-container {
-        scroll-snap-type: x mandatory;
-        scroll-padding-inline: var(--sp-3, 12px);
+        grid-template-columns: 1fr;
       }
       .vocab-card {
-        flex: 0 0 min(82vw, 300px);
-        scroll-snap-align: center;
-        scroll-snap-stop: always;
+        width: 100%;
+        max-width: 340px;
+        margin-inline: auto;
       }
     }
 
@@ -225,13 +221,11 @@ export function renderVocabIntro(container, { terms, onComplete }) {
     thumb.loading = "lazy";
     thumbWrap.append(thumb);
 
-    const popBadge = document.createElement("span");
-    popBadge.className = "vocab-pop-badge";
-    popBadge.innerHTML = "🔍 Pop Out";
-    popBadge.style.cssText =
-      "position:absolute; bottom:6px; right:6px; background:rgba(15,23,42,0.88); color:#ffffff; font-size:0.72rem; font-weight:900; padding:3px 9px; border-radius:6px; backdrop-filter:blur(4px); pointer-events:none; border:1px solid rgba(255,255,255,0.2);";
-    thumbWrap.append(popBadge);
-
+    // No "Pop Out" chip over the picture. The badge sat on the bottom-right
+    // corner of a 72px thumbnail and covered the part of the diagram it was
+    // advertising. The image itself is the affordance (cursor:zoom-in, a title
+    // tooltip, and the hint line above the deck), so the pop-out still works —
+    // there is just no chrome on top of the visual any more.
     thumbWrap.addEventListener("click", (e) => {
       e.stopPropagation();
       openVocabPopOut(t);
@@ -249,8 +243,6 @@ export function renderVocabIntro(container, { terms, onComplete }) {
       es.textContent = termEs;
       front.append(es);
     }
-
-    sayItFor(t.term, termEs, front);
 
     const flipPrompt = document.createElement("span");
     flipPrompt.className = "flip-prompt";
@@ -274,8 +266,6 @@ export function renderVocabIntro(container, { terms, onComplete }) {
       back.append(defEsEl);
     }
 
-    sayItFor(t.definition, defEs, back);
-
     const exampleText = t.visual || t.example;
     if (exampleText) {
       const ex = document.createElement("p");
@@ -284,22 +274,15 @@ export function renderVocabIntro(container, { terms, onComplete }) {
       back.append(ex);
     }
 
-    const backPopBtn = document.createElement("button");
-    backPopBtn.type = "button";
-    backPopBtn.className = "btn sm";
-    backPopBtn.style.cssText = "margin-top: auto; padding: 4px 12px; font-size: 0.78rem; font-weight: 800; background: #0f172a; color: #fff; border-radius: 6px; border: none; cursor: pointer;";
-    backPopBtn.textContent = "🔍 Pop Out Image & Defs";
-    backPopBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      openVocabPopOut(t);
-    });
-    back.append(backPopBtn);
-
+    // The back of the card used to end in a "🔍 Pop Out Image & Defs" button.
+    // It is gone for the same reason as the front badge: the pop-out is reached
+    // by tapping the picture, and a button that duplicates that only competes
+    // with the definition for the small amount of room on the back face.
     inner.append(front, back);
     card.append(inner);
 
     const flipCard = (evt) => {
-      if (evt && (evt.target.closest(".vocab-say-row") || evt.target.closest(".vocab-thumb-wrap") || evt.target.closest(".btn"))) {
+      if (evt && (evt.target.closest(".vocab-thumb-wrap") || evt.target.closest(".btn"))) {
         return;
       }
       card.classList.add("vi-flipping");
@@ -326,7 +309,7 @@ export function renderVocabIntro(container, { terms, onComplete }) {
     const expBtn = document.createElement("button");
     expBtn.className = "btn primary lg vocab-explore-btn";
     expBtn.type = "button";
-    expBtn.innerHTML = `<span>${exploreLabel(terms.length)}</span>`;
+    expBtn.textContent = `🧠 Explore all ${terms.length} words`;
     expBtn.addEventListener("click", () => {
       openExplorer({ terms, onComplete });
     });

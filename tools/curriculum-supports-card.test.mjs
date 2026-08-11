@@ -39,8 +39,8 @@ const HUB = `<!doctype html><html><body>
     <nav class="curriculum-guide__actions"><a href="#interactive-hub">Explore by unit</a></nav>
   </header>
   <main>
-    <a href="/lessons/1-1/">Ratios and Rates</a>
-    <a href="/lessons/3-2/">Dividing Fractions</a>
+    <a href="/lessons/6-13/">Ratios and Rates</a>
+    <a href="/lessons/3-3/">Dividing Fractions</a>
   </main>
 </body></html>`;
 
@@ -185,7 +185,7 @@ test("an assigned lesson the hub data does not know still gets a usable name", a
   const w = await boot({
     sections: { 601: ["JN"] },
     identity: { section: "601", initials: "JN" },
-    forLessons: ["3-2"],
+    forLessons: ["3-3"],
   });
   const link = card(w).querySelector(".nt-sup-picked__link");
   assert.equal(link.textContent, "Dividing Fractions", "falls back to the anchor label");

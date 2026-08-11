@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — Lesson 4-4: Find the Percent of a Number</title>
+<title>Help Your Student — Lesson 4-4: Find and Compare with Percentages</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -14,6 +14,8 @@
   --navy-light: #18466f;
   --teal: #1fa6a2;
 --teal-ink: #0c6f6b;
+  /* Text-safe partner for --coral, which is a fill colour only (3.0:1 on white). */
+  --coral-ink: #9c4326;
   --teal-light: #dff2ee;
   --amber: #f2c15b;
   --amber-light: #fef7e0;
@@ -277,12 +279,16 @@ header.homework-header h1 {
   font-size: 13px;
 }
 
+/* A left rule rather than a third teal slab: the problem card already carries a
+   teal hint button and a teal step guide, and three identical fills flattened
+   the hierarchy into noise. */
 .family-hint-box {
   margin-bottom: 14px;
-  padding: 10px 12px;
-  background: var(--teal-light);
-  border-radius: var(--radius-sm);
-  font-size: 13.5px;
+  padding: 2px 0 2px 14px;
+  background: none;
+  border-left: 3px solid var(--teal);
+  border-radius: 0;
+  font-size: 14px;
   color: var(--navy);
 }
 
@@ -400,9 +406,9 @@ header.homework-header h1 {
 }
 
 .flip-prompt {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  color: var(--teal);
+  color: var(--teal-ink);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-top: auto;
@@ -509,10 +515,10 @@ header.homework-header h1 {
 
 .problem-type-badge {
   font-family: var(--font-display);
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.05em;
-  color: var(--teal);
+  letter-spacing: 0.02em;
+  color: var(--teal-ink);
   background: var(--teal-light);
   padding: 4px 10px;
   border-radius: 99px;
@@ -616,7 +622,7 @@ header.homework-header h1 {
 .hw-graph-controls button {
   font-family: var(--font-display); font-size: 12.5px; font-weight: 700;
   background: #ffffff; color: var(--navy);
-  border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 11px; min-height: 36px; cursor: pointer;
+  border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 11px; min-height: 44px; cursor: pointer;
 }
 .hw-graph-controls button:hover { border-color: var(--teal); }
 .hw-graph-controls button[aria-pressed="true"] { background: var(--teal-ink); color: #ffffff; border-color: var(--teal-ink); }
@@ -647,6 +653,18 @@ header.homework-header h1 {
   .hw-step-guide { break-inside: avoid; border-color: #888; background: #fff; }
   .hw-step-guide > summary { background: #f0f0f0; }
   .hw-step-guide[open] > summary::after, .hw-step-guide > summary::after { content: ""; }
+  /* The routine is collapsed on screen (it repeats on every problem). On paper
+     there is nothing to click, so force the contents visible. */
+  .hw-step-guide > * { display: block !important; }
+  /* Flip cards print flat — otherwise only the English word reaches the paper
+     and every definition prints as a blank box. */
+  .vocab-card-inner { transform: none !important; }
+  .vocab-card-front, .vocab-card-back {
+    position: static !important;
+    transform: none !important;
+    -webkit-backface-visibility: visible !important;
+    backface-visibility: visible !important;
+  }
   .hw-workspace { break-inside: avoid; }
   .hw-work-input { min-height: 130px; border: 1px solid #888; }
   .hw-visual-frame { border-color: #888; }
@@ -1205,11 +1223,11 @@ header.homework-header h1 {
 
 .word-chip {
   background: var(--teal-light);
-  color: var(--teal);
+  color: var(--teal-ink);
   border: 1.5px solid var(--teal);
   border-radius: var(--radius-sm);
-  padding: 6px 12px;
-  font-size: 13px;
+  padding: 11px 12px;
+  font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
@@ -1318,7 +1336,10 @@ header.homework-header h1 {
 }
 
 .status-bar-wrapper {
-  max-width: 800px;
+  /* Must track .container's max-width (set in the polish layer) or the sticky
+     bar's controls sit inset from every card above it. */
+  max-width: 840px;
+  padding: 0 18px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -1454,7 +1475,8 @@ header.homework-header h1 {
    Math words in the notes/practice prose become dotted-underline buttons that open
    a simple EN/ES definition + illustration, exactly like the lessons. */
 .obj-term {
-  display: inline; margin: 0; padding: 0; border: 0; background: none;
+  display: inline; margin: -6px 0; padding: 6px 2px; border: 0; background: none;
+  touch-action: manipulation;
   font: inherit; color: inherit; cursor: pointer;
   text-decoration: underline; text-decoration-style: dotted;
   text-decoration-thickness: 2px; text-underline-offset: 2px;
@@ -1479,7 +1501,7 @@ header.homework-header h1 {
   padding: 26px 20px 20px; text-align: center; animation: objFadeIn 0.2s ease;
 }
 .obj-popup-close {
-  position: absolute; top: 8px; right: 10px; width: 36px; height: 36px;
+  position: absolute; top: 8px; right: 10px; width: 44px; height: 44px;
   border: 0; border-radius: 50%; background: var(--cream, #f7f4ec);
   color: var(--navy, #12355b); font-size: 1.5rem; line-height: 1; cursor: pointer;
 }
@@ -1861,15 +1883,10 @@ body.obj-popup-open { overflow: hidden; }
   scroll-snap-type: x proximity;
 }
 /* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
-   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
-   trailing edge so the strip reads as scrollable. Only below 700px, where the
-   overflow is guaranteed — a permanent fade on desktop would just look broken. */
-@media (max-width: 700px) {
-  .homework-tab-bar {
-    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
-    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
-  }
-}
+   (Help, More, Done) sat off-screen. A trailing fade was the first attempt, but a
+   28px fade is a weak hint for 2x overflow and five tabs stayed undiscoverable.
+   Wrap into two rows of five instead: every tab is visible, and the compact row
+   height keeps the whole strip under ~104px of a phone viewport. */
 .homework-tab-btn {
   flex: 0 0 auto;
   scroll-snap-align: start;
@@ -1886,7 +1903,7 @@ body.obj-popup-open { overflow: hidden; }
   justify-content: center;
   gap: 3px;
   font-family: var(--font-display);
-  font-size: 11px;
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--muted);
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
@@ -1901,8 +1918,29 @@ body.obj-popup-open { overflow: hidden; }
 }
 .tab-icon { font-size: 20px; line-height: 1; }
 .tab-label { display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
-.tab-es { font-size: 10px; color: var(--muted); font-weight: 600; }
+.tab-es { font-size: 11.5px; color: var(--muted); font-weight: 600; }
 .homework-tab-btn.is-active .tab-es { color: var(--white); }
+
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .homework-tab-btn {
+    flex: 0 0 calc(20% - 5px);
+    min-width: 0;
+    min-height: 48px;
+    padding: 5px 2px;
+    font-size: 11.5px;
+  }
+  .tab-icon { font-size: 17px; }
+  /* The stacked EN + ES gloss is what makes each button two lines tall — three
+     rows of tabs would eat 28% of a phone screen. In bilingual/English mode the
+     English label carries it; ES-only mode already hides .tab-en and shows this. */
+  body:not(.lang-mode-es) .tab-es { display: none; }
+}
 
 .help-pop-btn {
   margin: 8px 0;
@@ -1964,7 +2002,7 @@ body.help-modal-open { overflow: hidden; }
   border-radius: var(--radius-sm); font-size: 14px; line-height: 1.5;
 }
 .help-modal-frame[hidden] { display: none !important; }
-.help-frame-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.help-frame-tag { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; color: var(--teal-ink); }
 .help-frame-es { color: var(--muted); }
 
 /* Guided "Try together" fill-in spaces + step actions */
@@ -1996,7 +2034,7 @@ body.help-modal-open { overflow: hidden; }
 .ladder-item { border: 1px solid var(--line); border-left: 4px solid #5b8def; border-radius: var(--radius-sm); padding: 9px 11px; background: var(--white); }
 .ladder-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
 .ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
-.ladder-tier { font-family: var(--font-display); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--navy); }
+.ladder-tier { font-family: var(--font-display); font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; color: var(--navy); }
 .ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
 .ladder-choices { list-style: upper-alpha; margin: 0 0 8px; padding: 0 0 0 22px; display: flex; flex-direction: column; gap: 3px; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
@@ -2013,8 +2051,8 @@ body.teacher-mode .ladder-answer { display: block; }
 
 /* "More practice" accordion in the Check tab */
 /* Tiered practice sections (warm-up first, then a harder challenge set) */
-.practice-tier { margin: 0 0 22px; }
-.practice-tier + .practice-tier { margin-top: 4px; }
+.practice-tier { margin: 0 0 40px; }
+.practice-tier + .practice-tier { margin-top: 0; padding-top: 32px; border-top: 2px solid var(--line); }
 .practice-tier-head {
   display: flex; align-items: center; gap: 12px; margin: 0 0 10px;
   padding: 12px 16px; border-radius: var(--radius-md);
@@ -2077,7 +2115,7 @@ body.teacher-mode .ladder-answer { display: block; }
   background: var(--cream); text-decoration: none; color: inherit;
 }
 .external-resource-link:hover { border-color: var(--teal); background: var(--teal-light); text-decoration: none; }
-.ext-source { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.ext-source { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; color: var(--teal-ink); }
 .ext-title-en { font-weight: 700; color: var(--navy); }
 .ext-title-es { font-size: 13px; color: var(--muted); }
 .section-more { border-left: 4px solid #5b8def; }
@@ -2318,7 +2356,7 @@ body.lang-mode-es .bilingual-grid {
   margin: 0 0 4px;
   font-family: var(--font-display);
   font-size: 16px;
-  color: var(--teal);
+  color: var(--teal-ink);
   font-weight: 800;
 }
 .cert-detail {
@@ -2385,7 +2423,11 @@ body.lang-mode-es .bilingual-grid {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .homework-tab-btn, .hw-game-choice-btn, .help-pop-btn { transition: none; }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
@@ -2397,6 +2439,16 @@ body.lang-mode-es .bilingual-grid {
   [data-tab-panel="play"],
   [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
+  /* Browsers drop background colours when printing. Several distinctions on this
+     sheet are carried by fill alone — the EN/ES columns, the highlighted worked
+     step, and above all the green "say this" vs red "don't say this" coaching
+     panels, which print as two identical white boxes without this. */
+  .bilingual-col, .worked-step, .worked-step.highlighted,
+  .stuck-say, .stuck-dont, .watch-for-list, .watch-for,
+  .practice-tier-head, .key-idea-banner {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
   
   .print-only-certificate.is-signed {
     display: block !important;
@@ -2490,6 +2542,13 @@ body.lang-mode-es .bilingual-grid {
 body { font-size: 15px; line-height: 1.58; }
 .container { max-width: 840px; padding: 28px 18px 40px; }
 
+/* On a laptop the 840px column left half the viewport empty while single
+   problem cards ran thousands of pixels tall. Give the reading column more
+   room — and keep the sticky bar's inner column locked to it. */
+@media (min-width: 1180px) {
+  .container, .status-bar-wrapper { max-width: 1000px; }
+}
+
 /* Section headings get a clear accent + stronger hierarchy */
 .section-title {
   font-size: 22px;
@@ -2534,17 +2593,24 @@ body { font-size: 15px; line-height: 1.58; }
   box-shadow: 0 8px 22px -14px rgba(242,193,91,.9);
 }
 .step-badge {
-  font-size: 10px;
-  letter-spacing: .04em;
+  font-size: 11.5px;
+  letter-spacing: .02em;
   padding: 4px 9px;
   border-radius: 999px;
   align-self: center;
 }
 .step-label { font-size: 15px; }
 
-/* Bilingual text: clearer separation, muted secondary language */
-.lang-es { color: var(--muted); }
-.worked-step .lang-es, .lang-en + .lang-es { display: block; margin-top: 3px; }
+/* Bilingual text: Spanish is a primary language here, so it keeps full ink
+   contrast. The separation is carried structurally by a teal rule, never by
+   fading the text (that read as "English written twice, Spanish as a footnote"). */
+.lang-es { color: var(--ink); }
+.worked-step .lang-es, .lang-en + .lang-es {
+  display: block;
+  margin-top: 4px;
+  padding-left: 10px;
+  border-left: 2px solid var(--teal-light);
+}
 
 /* "Watch for this" / tip callouts: crisp, friendly */
 .watch-for-list, .watch-for {
@@ -2608,11 +2674,11 @@ header.packet h1::after{
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/4-4/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 4-4: Find the Percent of a Number.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 4-4: Find and Compare with Percentages.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson 4-4: Find the Percent of a Number">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 4-4: Find the Percent of a Number.">
+  <meta property="og:title" content="Help Your Student — Lesson 4-4: Find and Compare with Percentages">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 4-4: Find and Compare with Percentages.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/4-4/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
@@ -2649,7 +2715,7 @@ header.packet h1::after{
           <p class="welcome-tag">Unit 4 · 6.AT.4</p>
           <h1 class="welcome-title-en">Family Math Night</h1>
           <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
-          <p class="welcome-lesson">Find the Percent of a Number · Lesson 4-4</p>
+          <p class="welcome-lesson">Find and Compare with Percentages · Lesson 4-4</p>
         </div>
       </div>
       <p class="welcome-lead bilingual-block">
@@ -2849,14 +2915,14 @@ header.packet h1::after{
       <section class="family-visual-lab" data-visual-lab="ratios" data-lesson-model="percent-builder" aria-labelledby="visual_lab_title">
     <div class="visual-lab-heading">
       <div><span class="visual-lab-kicker"><span class="lang-en">TOUCH &amp; TRY</span><span class="lang-es" lang="es">TOCA Y PRUEBA</span></span>
-      <h2 id="visual_lab_title"><span aria-hidden="true">🖐️</span> <span class="lang-en">Find the Percent of a Number</span><span class="lang-es" lang="es">Modelo interactivo de la lección</span></h2></div>
+      <h2 id="visual_lab_title"><span aria-hidden="true">🖐️</span> <span class="lang-en">Find and Compare with Percentages</span><span class="lang-es" lang="es">Modelo interactivo de la lección</span></h2></div>
       <p><span class="lang-en">Use the same interactive model from the lesson. Change it, notice the pattern, and explain what the model shows.</span><span class="lang-es" lang="es">Usa el mismo modelo interactivo de la lección. Cámbialo, observa el patrón y explica lo que muestra.</span></p>
     </div>
-    <div class="visual-lab-stage" data-lesson-model-host><div class="interactive-visual" data-visual="percent-builder" data-config="{&quot;kind&quot;:&quot;percent-builder&quot;,&quot;percent&quot;:25,&quot;whole&quot;:80}" role="group" aria-label="Interactive Find the Percent of a Number" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use the interactive lesson model.</div></noscript></div></div>
+    <div class="visual-lab-stage" data-lesson-model-host><div class="interactive-visual" data-visual="percent-builder" data-config="{&quot;kind&quot;:&quot;percent-builder&quot;,&quot;percent&quot;:25,&quot;whole&quot;:80}" role="group" aria-label="Interactive Find and Compare with Percentages" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use the interactive lesson model.</div></noscript></div></div>
     <div class="visual-representation-grid" aria-label="Three ways to understand the lesson model">
       <article class="visual-representation-card visual-representation-model"><span class="representation-number">1</span><h3><span class="lang-en">Touch and change</span><span class="lang-es" lang="es">Toca y cambia</span></h3><p><span class="lang-en">Move, type, tap, or drag in the model. Watch what changes.</span><span class="lang-es" lang="es">Mueve, escribe, toca o arrastra en el modelo. Observa qué cambia.</span></p></article>
       <article class="visual-representation-card visual-representation-math"><span class="representation-number">2</span><h3><span class="lang-en">Write the math</span><span class="lang-es" lang="es">Escribe las matemáticas</span></h3><p><span class="lang-en">Record one equation, value, or relationship you can see.</span><span class="lang-es" lang="es">Escribe una ecuación, un valor o una relación que puedas ver.</span></p></article>
-      <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3><p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p><details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">To find the part, change the percent to a decimal, then multiply: part = percent × base.</p></details></article>
+      <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3><p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p><details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">Write the percent as a decimal (move the point 2 places left), then multiply it by the base: part = percent × base.</p></details></article>
     </div>
   </section>
       <p class="tab-help-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"The whole amount is the base. The piece you take is the part. The word \"of\" means multiply. So: change the percent to a decimal, then multiply by the base.","es":"La cantidad total es la base. La parte que tomas es la parte. La palabra \"de\" significa multiplicar. Así que: cambia el porcentaje a decimal y luego multiplica por la base."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
@@ -2929,17 +2995,17 @@ header.packet h1::after{
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent-base.svg" alt="Illustration of Base: The number you take the percent OF — it is the number right after the word &#039;of&#039;." loading="lazy" width="72" height="72" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent-base.svg" alt="Illustration of Base: The whole amount you start with — the number right after the word “of.”" loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Base</h3>
                   <p class="vocab-es" lang="es">Base</p>
-                  <div class="vocab-visual-hint">💡 In &#039;25% of 80,&#039; the base is 80. In &#039;140% of 145,&#039; the base is still 145.</div>
+                  <div class="vocab-visual-hint">💡 25% of 80 → the whole is 80.</div>
                   <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
                 </div>
                 <div class="vocab-card-back">
-                  <p class="vocab-def">The number you take the percent OF — it is the number right after the word &#039;of&#039;.</p>
-                  <p class="vocab-def-es" lang="es">El número del que sacas el porcentaje — es el número que va después de la palabra &#039;de&#039;.</p>
-                  <p class="vocab-back-visual">📌 In &#039;25% of 80,&#039; the base is 80. In &#039;140% of 145,&#039; the base is still 145.</p>
+                  <p class="vocab-def">The whole amount you start with — the number right after the word “of.”</p>
+                  <p class="vocab-def-es" lang="es">La cantidad total con la que empiezas: el número que va después de la palabra “de”.</p>
+                  <p class="vocab-back-visual">📌 25% of 80 → the whole is 80.</p>
                 </div>
               </div>
             </div>
@@ -2947,17 +3013,17 @@ header.packet h1::after{
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent-part.svg" alt="Illustration of Part: The amount the percent gives you — the answer to percent × base." loading="lazy" width="72" height="72" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent-part.svg" alt="Illustration of Part: How much of the base (the whole) you get. It is your answer." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Part</h3>
                   <p class="vocab-es" lang="es">Parte</p>
-                  <div class="vocab-visual-hint">💡 25% of 80 = 20, so the part is 20. 140% of 145 = 203, so the part is 203.</div>
+                  <div class="vocab-visual-hint">💡 25% of 80 = 20 → the part is 20 (20 out of the 80).</div>
                   <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
                 </div>
                 <div class="vocab-card-back">
-                  <p class="vocab-def">The amount the percent gives you — the answer to percent × base.</p>
-                  <p class="vocab-def-es" lang="es">La cantidad que te da el porcentaje — el resultado de porcentaje × base.</p>
-                  <p class="vocab-back-visual">📌 25% of 80 = 20, so the part is 20. 140% of 145 = 203, so the part is 203.</p>
+                  <p class="vocab-def">How much of the base (the whole) you get. It is your answer.</p>
+                  <p class="vocab-def-es" lang="es">Cuánto obtienes de la base (el total). Es tu respuesta.</p>
+                  <p class="vocab-back-visual">📌 25% of 80 = 20 → the part is 20 (20 out of the 80).</p>
                 </div>
               </div>
             </div>
@@ -2965,17 +3031,17 @@ header.packet h1::after{
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/equation-percent-formula.svg" alt="Illustration of Equation: A math sentence with an equal sign showing both sides are the same." loading="lazy" width="72" height="72" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/equation-percent-formula.svg" alt="Illustration of Equation: A number sentence with an equal sign. The percent one is: part = percent × base." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Equation</h3>
                   <p class="vocab-es" lang="es">Ecuación</p>
-                  <div class="vocab-visual-hint">💡 part = percent × base</div>
+                  <div class="vocab-visual-hint">💡 part = percent × base — like 20 = 0.25 × 80.</div>
                   <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
                 </div>
                 <div class="vocab-card-back">
-                  <p class="vocab-def">A math sentence with an equal sign showing both sides are the same.</p>
-                  <p class="vocab-def-es" lang="es">Una oración matemática con un signo igual que muestra que ambos lados son iguales.</p>
-                  <p class="vocab-back-visual">📌 part = percent × base</p>
+                  <p class="vocab-def">A number sentence with an equal sign. The percent one is: part = percent × base.</p>
+                  <p class="vocab-def-es" lang="es">Una oración numérica con signo de igual. La de porcentaje es: parte = porcentaje × base.</p>
+                  <p class="vocab-back-visual">📌 part = percent × base — like 20 = 0.25 × 80.</p>
                 </div>
               </div>
             </div>
@@ -3158,9 +3224,121 @@ header.packet h1::after{
           </div>
         </div>
         <section class="problems-container" aria-label="Practice problems">
-    <section class="problem-section card" id="problem_0" data-problem-type="fill-table">
+    <section class="problem-section card" id="problem_0" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"There are only two possible results here, 12 and 30, so each card just needs to be worked out and compared.","es":"Aquí solo hay dos resultados posibles, 12 y 30, así que cada tarjeta solo hay que resolverla y compararla.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem"><span class="lang-en">Each arcade game shows a percent of a number. Sort each one into the correct result bin.</span><span class="lang-es" lang="es">Cada juego del arcade muestra un porcentaje de un número. Clasifica cada uno en el grupo de resultados correcto.</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        <div class="family-hint-box"><p>💡 <span class="lang-en">There are only two possible results here, 12 and 30, so each card just needs to be worked out and compared.</span><span class="lang-es" lang="es">Aquí solo hay dos resultados posibles, 12 y 30, así que cada tarjeta solo hay que resolverla y compararla.</span></p><p>💡 <span class="lang-en">Turn the percent into a decimal and multiply by the number after &#039;of&#039;, or use fraction shortcuts like 25% = 1/4 and 75% = 3/4.</span><span class="lang-es" lang="es">Convierte el porcentaje en decimal y multiplica por el número que sigue a &#039;de&#039;, o usa atajos con fracciones como 25% = 1/4 y 75% = 3/4.</span></p><p>💡 <span class="lang-en">Start with &#039;25% of 48&#039;: that is 48 ÷ 4. Compute it and see which bin the card belongs in, then do the same for the rest.</span><span class="lang-es" lang="es">Empieza con &#039;25% de 48&#039;: eso es 48 ÷ 4. Calcúlalo y mira a qué casilla va la tarjeta, y luego haz lo mismo con las demás.</span></p></div>
+        <div class="drag-sort-workspace" id="dragsort_0">
+          <div class="drag-columns">
+
+              <div class="drag-column" data-category-id="equals12" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'equals12')">
+                <div class="drag-column-header">Equals 12</div>
+                <div class="drag-column-slots" id="slots_0_equals12" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'equals12')"></div>
+              </div>
+              <div class="drag-column" data-category-id="equals30" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'equals30')">
+                <div class="drag-column-header">Equals 30</div>
+                <div class="drag-column-slots" id="slots_0_equals30" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'equals30')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_0" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_0_0"
+                     data-item-index="0"
+                     data-correct-category="equals12"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">25% of 48</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_0_0', 0); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="equals12">Equals 12</option><option value="equals30">Equals 30</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_0_1"
+                     data-item-index="1"
+                     data-correct-category="equals12"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">40% of 30</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_0_1', 0); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="equals12">Equals 12</option><option value="equals30">Equals 30</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_0_2"
+                     data-item-index="2"
+                     data-correct-category="equals30"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">75% of 40</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_0_2', 0); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="equals12">Equals 12</option><option value="equals30">Equals 30</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_0_3"
+                     data-item-index="3"
+                     data-correct-category="equals30"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">10% of 300</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_0_3', 0); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="equals12">Equals 12</option><option value="equals30">Equals 30</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(0); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide">
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the unit rate or use a ratio table to scale up or down.</span><span class="lang-es" lang="es">Halla la tasa unitaria o usa una tabla de razones para escalar.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
+        <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_1" data-problem-type="fill-table">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
         <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The finished row shows the recipe: 25% of 60 became 0.25 × 60 = 15. Your rows use the same formula.","es":"La fila terminada muestra la receta: 25% de 60 se volvió 0.25 × 60 = 15. Tus filas usan la misma fórmula.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
@@ -3187,7 +3365,7 @@ header.packet h1::after{
                           <div class="table-input-wrapper">
                             <input type="text" 
                                    class="custom-input table-input" 
-                                   name="q_0_table_1_2"
+                                   name="q_1_table_1_2"
                                    data-correct="32" 
                                    placeholder="Type answer..." 
                                    oninput="saveState(); updateProgress();">
@@ -3203,7 +3381,7 @@ header.packet h1::after{
                           <div class="table-input-wrapper">
                             <input type="text" 
                                    class="custom-input table-input" 
-                                   name="q_0_table_2_2"
+                                   name="q_1_table_2_2"
                                    data-correct="30" 
                                    placeholder="Type answer..." 
                                    oninput="saveState(); updateProgress();">
@@ -3219,7 +3397,7 @@ header.packet h1::after{
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3238,122 +3416,10 @@ header.packet h1::after{
           </div>
         </div>
         <div class="hw-work">
-          <label class="hw-work-label" for="work_0"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_0" name="work_0" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+          <label class="hw-work-label" for="work_1"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_1" name="work_1" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
         </div>
       </div>
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
-        <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_1" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
-      </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"There are only two possible results here, 12 and 30, so each card just needs to be worked out and compared.","es":"Aquí solo hay dos resultados posibles, 12 y 30, así que cada tarjeta solo hay que resolverla y compararla.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
-      
-      <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">Each arcade game shows a percent of a number. Sort each one into the correct result bin.</span><span class="lang-es" lang="es">Cada juego del arcade muestra un porcentaje de un número. Clasifica cada uno en el grupo de resultados correcto.</span></p>
-        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
-        <div class="family-hint-box"><p>💡 <span class="lang-en">There are only two possible results here, 12 and 30, so each card just needs to be worked out and compared.</span><span class="lang-es" lang="es">Aquí solo hay dos resultados posibles, 12 y 30, así que cada tarjeta solo hay que resolverla y compararla.</span></p><p>💡 <span class="lang-en">Turn the percent into a decimal and multiply by the number after &#039;of&#039;, or use fraction shortcuts like 25% = 1/4 and 75% = 3/4.</span><span class="lang-es" lang="es">Convierte el porcentaje en decimal y multiplica por el número que sigue a &#039;de&#039;, o usa atajos con fracciones como 25% = 1/4 y 75% = 3/4.</span></p><p>💡 <span class="lang-en">Start with &#039;25% of 48&#039;: that is 48 ÷ 4. Compute it and see which bin the card belongs in, then do the same for the rest.</span><span class="lang-es" lang="es">Empieza con &#039;25% de 48&#039;: eso es 48 ÷ 4. Calcúlalo y mira a qué casilla va la tarjeta, y luego haz lo mismo con las demás.</span></p></div>
-        <div class="drag-sort-workspace" id="dragsort_1">
-          <div class="drag-columns">
-
-              <div class="drag-column" data-category-id="equals12" ondragover="allowDrop(event)" ondrop="handleDrop(event, 1, 'equals12')">
-                <div class="drag-column-header">Equals 12</div>
-                <div class="drag-column-slots" id="slots_1_equals12" ondragover="allowDrop(event)" ondrop="handleDrop(event, 1, 'equals12')"></div>
-              </div>
-              <div class="drag-column" data-category-id="equals30" ondragover="allowDrop(event)" ondrop="handleDrop(event, 1, 'equals30')">
-                <div class="drag-column-header">Equals 30</div>
-                <div class="drag-column-slots" id="slots_1_equals30" ondragover="allowDrop(event)" ondrop="handleDrop(event, 1, 'equals30')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_1" ondragover="allowDrop(event)" ondrop="handleDrop(event, 1, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_1_0"
-                     data-item-index="0"
-                     data-correct-category="equals12"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">25% of 48</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_1_0', 1); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="equals12">Equals 12</option><option value="equals30">Equals 30</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_1_1"
-                     data-item-index="1"
-                     data-correct-category="equals12"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">40% of 30</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_1_1', 1); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="equals12">Equals 12</option><option value="equals30">Equals 30</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_1_2"
-                     data-item-index="2"
-                     data-correct-category="equals30"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">75% of 40</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_1_2', 1); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="equals12">Equals 12</option><option value="equals30">Equals 30</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_1_3"
-                     data-item-index="3"
-                     data-correct-category="equals30"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">10% of 300</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_1_3', 1); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="equals12">Equals 12</option><option value="equals30">Equals 30</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(1); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      
-      <details class="hw-step-guide" open>
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the unit rate or use a ratio table to scale up or down.</span><span class="lang-es" lang="es">Halla la tasa unitaria o usa una tabla de razones para escalar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
-      </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -3366,42 +3432,42 @@ header.packet h1::after{
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"This question is backwards from the others: you have the part (15) and the whole (50), and you need the PERCENT.","es":"Esta pregunta va al revés de las otras: tienes la parte (15) y el todo (50), y necesitas el PORCENTAJE.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The bonus is a percent of the score you already earned, so 60 is the whole.","es":"La bonificación es un porcentaje del puntaje que ya ganaste, así que 60 es el entero.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">What percent of 50 is 15?</span><span class="lang-es" lang="es">¿Qué porcentaje de 50 es 15?</span></p>
+        <p class="problem-stem"><span class="lang-en">Your bowling score was 60 points. The bonus round adds 15% more points. How many bonus points is that?</span><span class="lang-es" lang="es">Tu puntaje de boliche fue de 60 puntos. La ronda de bonificación agrega 15% más de puntos. ¿Cuántos puntos de bonificación son?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="15/50 → 50 × 2 = 100, so 15 × 2 = 30. That makes 15/50 = 30/100 = 30%." data-explanation-es="15/50 → 50 × 2 = 100, así que 15 × 2 = 30. Entonces 15/50 = 30/100 = 30%.">
+        <div class="mc-options" data-correct="0" data-explanation="15% = 0.15. Multiply: 0.15 × 60 = 9 bonus points." data-explanation-es="15% = 0.15. Multiplica: 0.15 × 60 = 9 puntos de bonificación.">
           
             <label class="mc-option-label" id="label_q_2_0">
               <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">30%</span>
+              <span class="choice-text">9</span>
             </label>
           
             <label class="mc-option-label" id="label_q_2_1">
               <input type="radio" name="q_2" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">15%</span>
+              <span class="choice-text">15</span>
             </label>
           
             <label class="mc-option-label" id="label_q_2_2">
               <input type="radio" name="q_2" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">35%</span>
+              <span class="choice-text">45</span>
             </label>
           
             <label class="mc-option-label" id="label_q_2_3">
               <input type="radio" name="q_2" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">50%</span>
+              <span class="choice-text">75</span>
             </label>
           
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3532,7 +3598,7 @@ header.packet h1::after{
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3562,47 +3628,47 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_4" data-problem-type="open-response">
+    <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"There are three separate percents of the SAME 32 students: 25%, 50%, and 12.5%. Find each group first.","es":"Hay tres porcentajes distintos de los MISMOS 32 estudiantes: 25%, 50% y 12.5%. Halla primero cada grupo.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read carefully: the question asks how many tickets you SAVE — that&#39;s just the discount amount, not the new price.","es":"Lee con cuidado: la pregunta es cuántos boletos AHORRAS, o sea solo el descuento, no el precio nuevo.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">A class has 32 students. 25% are in the math club, 50% are in the reading club, and 12.5% are in both. How many students are in each group? Can the total of all three groups be more than 32? Explain why or why not.</span><span class="lang-es" lang="es">Un salón tiene 32 estudiantes. El 25% está en el club de matemáticas, el 50% está en el club de lectura y el 12.5% está en los dos. ¿Cuántos estudiantes hay en cada grupo? ¿Puede el total de los tres grupos ser más de 32? Explica por qué sí o por qué no.</span></p>
-        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
-        
-        
-          <div class="sentence-frame-card">
-            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
-            <span class="sentence-frame-text" onclick="insertSentenceStarter(4, 'There are ___ in math club, ___ in reading club, and ___ in both. The total ___ be more than 32 because ___.')">"There are ___ in math club, ___ in reading club, and ___ in both. The total ___ be more than 32 because ___."</span>
-            <span class="click-to-insert-hint">(Click to insert starter)</span>
-          </div>
-        
-        
-        <div class="open-response-wrapper">
-          <textarea id="open_response_4" 
-                    class="custom-textarea open-response-textarea" 
-                    data-min-length="30" 
-                    data-keywords="[&quot;8&quot;,&quot;16&quot;,&quot;4&quot;,&quot;overlap&quot;,&quot;can&quot;,&quot;counted twice&quot;,&quot;both&quot;]"
-                    placeholder="Write your mathematical explanation here..." 
-                    oninput="saveState(); updateProgress();"></textarea>
-          <span class="feedback-badge"></span>
+        <p class="problem-stem"><span class="lang-en">An arcade prize costs 240 tickets. If you have a coupon for 15% off, how many tickets do you save?</span><span class="lang-es" lang="es">Un premio del arcade cuesta 240 boletos. Si tienes un cupón de 15% de descuento, ¿cuántos boletos ahorras?</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="15% of 240 = 0.15 × 240 = 36 tickets saved." data-explanation-es="15% de 240 = 0.15 × 240 = 36 boletos ahorrados.">
+          
+            <label class="mc-option-label" id="label_q_4_0">
+              <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text"><span class="lang-en">36 tickets</span><span class="lang-es" lang="es">36 boletos</span></span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_1">
+              <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text"><span class="lang-en">24 tickets</span><span class="lang-es" lang="es">24 boletos</span></span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_2">
+              <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text"><span class="lang-en">15 tickets</span><span class="lang-es" lang="es">15 boletos</span></span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_3">
+              <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text"><span class="lang-en">204 tickets</span><span class="lang-es" lang="es">204 boletos</span></span>
+            </label>
+          
         </div>
-        
-        
-          <div class="word-bank-container">
-            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
-            <div class="word-bank-chips">
-              <span class="word-chip" onclick="insertWord(4, '8')">8</span><span class="word-chip" onclick="insertWord(4, '16')">16</span><span class="word-chip" onclick="insertWord(4, '4')">4</span><span class="word-chip" onclick="insertWord(4, 'overlap')">overlap</span><span class="word-chip" onclick="insertWord(4, 'can')">can</span><span class="word-chip" onclick="insertWord(4, 'counted twice')">counted twice</span><span class="word-chip" onclick="insertWord(4, 'both')">both</span>
-            </div>
-          </div>
-        
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3632,96 +3698,47 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_5" data-problem-type="fill-table">
+    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every row is the same job: find the percent OF the base. The Part should be smaller than the Base when the percent is under 100%.","es":"Cada fila es el mismo trabajo: hallar el porcentaje DE la base. La Parte debe ser menor que la Base cuando el porcentaje es menor de 100%.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A percent is a part out of 100, and 25% means one quarter of the whole.","es":"Un porcentaje es una parte de 100, y 25% significa una cuarta parte del entero.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">Complete each row to find the percent of a number.</span><span class="lang-es" lang="es">Completa cada fila para encontrar el porcentaje de un número.</span></p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Percent</th><th>Base</th><th>Part</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>10%</td><td>250</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_0_2"
-                                   data-correct="25" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>75%</td><td>120</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_1_2"
-                                   data-correct="90" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>35%</td><td>200</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_2_2"
-                                   data-correct="70" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>8%</td><td>50</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_3_2"
-                                   data-correct="4" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
+        <p class="problem-stem"><span class="lang-en">The claw machine prize is 80 tickets and today it is 25% off. How many tickets do you save?</span><span class="lang-es" lang="es">El premio de la máquina de garra cuesta 80 boletos y hoy tiene 25% de descuento. ¿Cuántos boletos ahorras?</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="25% = 0.25. Multiply: 0.25 × 80 = 20 tickets saved." data-explanation-es="25% = 0.25. Multiplica: 0.25 × 80 = 20 boletos ahorrados.">
+          
+            <label class="mc-option-label" id="label_q_5_0">
+              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">20</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_1">
+              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">25</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_2">
+              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">55</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_3">
+              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">16</span>
+            </label>
+          
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3767,42 +3784,42 @@ header.packet h1::after{
         <div class="problem-number-badge">Bonus / Más 1</div>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read carefully: the question asks how many tickets you SAVE — that&#39;s just the discount amount, not the new price.","es":"Lee con cuidado: la pregunta es cuántos boletos AHORRAS, o sea solo el descuento, no el precio nuevo.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"This question is backwards from the others: you have the part (15) and the whole (50), and you need the PERCENT.","es":"Esta pregunta va al revés de las otras: tienes la parte (15) y el todo (50), y necesitas el PORCENTAJE.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">An arcade prize costs 240 tickets. If you have a coupon for 15% off, how many tickets do you save?</span><span class="lang-es" lang="es">Un premio del arcade cuesta 240 boletos. Si tienes un cupón de 15% de descuento, ¿cuántos boletos ahorras?</span></p>
+        <p class="problem-stem"><span class="lang-en">What percent of 50 is 15?</span><span class="lang-es" lang="es">¿Qué porcentaje de 50 es 15?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="15% of 240 = 0.15 × 240 = 36 tickets saved." data-explanation-es="15% de 240 = 0.15 × 240 = 36 boletos ahorrados.">
+        <div class="mc-options" data-correct="0" data-explanation="15/50 → 50 × 2 = 100, so 15 × 2 = 30. That makes 15/50 = 30/100 = 30%." data-explanation-es="15/50 → 50 × 2 = 100, así que 15 × 2 = 30. Entonces 15/50 = 30/100 = 30%.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text"><span class="lang-en">36 tickets</span><span class="lang-es" lang="es">36 boletos</span></span>
+              <span class="choice-text">30%</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text"><span class="lang-en">24 tickets</span><span class="lang-es" lang="es">24 boletos</span></span>
+              <span class="choice-text">15%</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text"><span class="lang-en">15 tickets</span><span class="lang-es" lang="es">15 boletos</span></span>
+              <span class="choice-text">35%</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text"><span class="lang-en">204 tickets</span><span class="lang-es" lang="es">204 boletos</span></span>
+              <span class="choice-text">50%</span>
             </label>
           
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3832,47 +3849,96 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_7" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The score 72 is the part and 90 is the whole — you need what percent 72 is OF 90.","es":"La calificación 72 es la parte y 90 es el todo: necesitas qué porcentaje es 72 DE 90.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every row is the same job: find the percent OF the base. The Part should be smaller than the Base when the percent is under 100%.","es":"Cada fila es el mismo trabajo: hallar el porcentaje DE la base. La Parte debe ser menor que la Base cuando el porcentaje es menor de 100%.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">A student scored 72 out of 90 on a test. What percent did they score?</span><span class="lang-es" lang="es">Un estudiante obtuvo 72 de 90 en un examen. ¿Qué porcentaje obtuvo?</span></p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="72/90 simplifies to 8/10, and 10 × 10 = 100, so 8 × 10 = 80. That makes 72/90 = 80/100 = 80%." data-explanation-es="72/90 se simplifica a 8/10, y 10 × 10 = 100, así que 8 × 10 = 80. Entonces 72/90 = 80/100 = 80%.">
-          
-            <label class="mc-option-label" id="label_q_7_0">
-              <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">80%</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_1">
-              <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">72%</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_2">
-              <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">75%</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_7_3">
-              <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">90%</span>
-            </label>
-          
+        <p class="problem-stem"><span class="lang-en">Complete each row to find the percent of a number.</span><span class="lang-es" lang="es">Completa cada fila para encontrar el porcentaje de un número.</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Percent</th><th>Base</th><th>Part</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>10%</td><td>250</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_7_table_0_2"
+                                   data-correct="25" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>75%</td><td>120</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_7_table_1_2"
+                                   data-correct="90" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>35%</td><td>200</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_7_table_2_2"
+                                   data-correct="70" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>8%</td><td>50</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_7_table_3_2"
+                                   data-correct="4" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+            </tbody>
+          </table>
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3907,42 +3973,42 @@ header.packet h1::after{
         <div class="problem-number-badge">Bonus / Más 3</div>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A percent is a part out of 100, and 25% means one quarter of the whole.","es":"Un porcentaje es una parte de 100, y 25% significa una cuarta parte del entero.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The score 72 is the part and 90 is the whole — you need what percent 72 is OF 90.","es":"La calificación 72 es la parte y 90 es el todo: necesitas qué porcentaje es 72 DE 90.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">The claw machine prize is 80 tickets and today it is 25% off. How many tickets do you save?</span><span class="lang-es" lang="es">El premio de la máquina de garra cuesta 80 boletos y hoy tiene 25% de descuento. ¿Cuántos boletos ahorras?</span></p>
+        <p class="problem-stem"><span class="lang-en">A student scored 72 out of 90 on a test. What percent did they score?</span><span class="lang-es" lang="es">Un estudiante obtuvo 72 de 90 en un examen. ¿Qué porcentaje obtuvo?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="25% = 0.25. Multiply: 0.25 × 80 = 20 tickets saved." data-explanation-es="25% = 0.25. Multiplica: 0.25 × 80 = 20 boletos ahorrados.">
+        <div class="mc-options" data-correct="0" data-explanation="72/90 simplifies to 8/10, and 10 × 10 = 100, so 8 × 10 = 80. That makes 72/90 = 80/100 = 80%." data-explanation-es="72/90 se simplifica a 8/10, y 10 × 10 = 100, así que 8 × 10 = 80. Entonces 72/90 = 80/100 = 80%.">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">20</span>
+              <span class="choice-text">80%</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_1">
               <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">25</span>
+              <span class="choice-text">72%</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_2">
               <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">55</span>
+              <span class="choice-text">75%</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_3">
               <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">16</span>
+              <span class="choice-text">90%</span>
             </label>
           
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3972,123 +4038,47 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_9" data-problem-type="matching-game">
+    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
-      </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every card asks for a part of a base, so each answer must be smaller than the number after the word &#39;of&#39;.","es":"Cada tarjeta pide una parte de una base, así que cada respuesta debe ser menor que el número que sigue a la palabra &#39;de&#39;.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
-      
-      <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">Match each percent-of-a-number tip to its result.</span><span class="lang-es" lang="es">Une cada consejo de porcentaje de un número con su resultado.</span></p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="20% of 70" data-correct="14">
-              <div class="matching-term">20% of 70</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="14">14</option><option value="23">23</option><option value="60">60</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="50% of 46" data-correct="23">
-              <div class="matching-term">50% of 46</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="14">14</option><option value="23">23</option><option value="60">60</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="10% of 90" data-correct="9">
-              <div class="matching-term">10% of 90</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="14">14</option><option value="23">23</option><option value="60">60</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="30% of 200" data-correct="60">
-              <div class="matching-term">30% of 200</div>
-              <div class="matching-select-container">
-                <select name="q_9_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="14">14</option><option value="23">23</option><option value="60">60</option><option value="9">9</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      
-      <details class="hw-step-guide" open>
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the unit rate or use a ratio table to scale up or down.</span><span class="lang-es" lang="es">Halla la tasa unitaria o usa una tabla de razones para escalar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
-      </details>
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Bonus / Más 5</div>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;20% of 150&#39; means you want a PART of 150 — the answer should be smaller than 150.","es":"&#39;20% de 150&#39; significa que quieres una PARTE de 150: la respuesta debe ser menor que 150.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Sales tax is a percent of the price, so the $40 is the whole.","es":"El impuesto sobre la venta es un porcentaje del precio, así que los $40 son el entero.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">What is 20% of 150?</span><span class="lang-es" lang="es">¿Cuánto es el 20% de 150?</span></p>
+        <p class="problem-stem"><span class="lang-en">A snack at the arcade costs $40. The sales tax is 5%. How many dollars is the tax?</span><span class="lang-es" lang="es">Un refrigerio en el arcade cuesta $40. El impuesto sobre la venta es del 5%. ¿Cuántos dólares es el impuesto?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="20% = 0.20. Multiply: 0.20 × 150 = 30." data-explanation-es="20% = 0.20. Multiplica: 0.20 × 150 = 30.">
+        <div class="mc-options" data-correct="0" data-explanation="5% = 0.05. Multiply: 0.05 × 40 = $2 in tax." data-explanation-es="5% = 0.05. Multiplica: 0.05 × 40 = $2 de impuesto.">
           
-            <label class="mc-option-label" id="label_q_10_0">
-              <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_9_0">
+              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">30</span>
+              <span class="choice-text">$2</span>
             </label>
           
-            <label class="mc-option-label" id="label_q_10_1">
-              <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_9_1">
+              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">20</span>
+              <span class="choice-text">$5</span>
             </label>
           
-            <label class="mc-option-label" id="label_q_10_2">
-              <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_9_2">
+              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">35</span>
+              <span class="choice-text">$8</span>
             </label>
           
-            <label class="mc-option-label" id="label_q_10_3">
-              <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_9_3">
+              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">75</span>
+              <span class="choice-text">$20</span>
             </label>
           
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -4107,10 +4097,86 @@ header.packet h1::after{
           </div>
         </div>
         <div class="hw-work">
-          <label class="hw-work-label" for="work_10"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_10" name="work_10" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+          <label class="hw-work-label" for="work_9"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_9" name="work_9" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
         </div>
       </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
+        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_10" data-problem-type="matching-game">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 5</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every card asks for a part of a base, so each answer must be smaller than the number after the word &#39;of&#39;.","es":"Cada tarjeta pide una parte de una base, así que cada respuesta debe ser menor que el número que sigue a la palabra &#39;de&#39;.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem"><span class="lang-en">Match each percent-of-a-number tip to its result.</span><span class="lang-es" lang="es">Une cada consejo de porcentaje de un número con su resultado.</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="20% of 70" data-correct="14">
+              <div class="matching-term">20% of 70</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="14">14</option><option value="23">23</option><option value="60">60</option><option value="9">9</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="50% of 46" data-correct="23">
+              <div class="matching-term">50% of 46</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="14">14</option><option value="23">23</option><option value="60">60</option><option value="9">9</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="10% of 90" data-correct="9">
+              <div class="matching-term">10% of 90</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="14">14</option><option value="23">23</option><option value="60">60</option><option value="9">9</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="30% of 200" data-correct="60">
+              <div class="matching-term">30% of 200</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="14">14</option><option value="23">23</option><option value="60">60</option><option value="9">9</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide">
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the unit rate or use a ratio table to scale up or down.</span><span class="lang-es" lang="es">Halla la tasa unitaria o usa una tabla de razones para escalar.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -4118,47 +4184,47 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_11" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"50% is a friendly percent — it means exactly one-half of the number.","es":"50% es un porcentaje amigable: significa exactamente la mitad del número.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"There are three separate percents of the SAME 32 students: 25%, 50%, and 12.5%. Find each group first.","es":"Hay tres porcentajes distintos de los MISMOS 32 estudiantes: 25%, 50% y 12.5%. Halla primero cada grupo.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">What is 50% of 84?</span><span class="lang-es" lang="es">¿Cuánto es el 50% de 84?</span></p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="50% = 0.50. Multiply: 0.50 × 84 = 42. (Or simply divide by 2: 84 ÷ 2 = 42.)" data-explanation-es="50% = 0.50. Multiplica: 0.50 × 84 = 42. (O simplemente divide entre 2: 84 ÷ 2 = 42.)">
-          
-            <label class="mc-option-label" id="label_q_11_0">
-              <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">42</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_11_1">
-              <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">50</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_11_2">
-              <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">34</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_11_3">
-              <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">168</span>
-            </label>
-          
+        <p class="problem-stem"><span class="lang-en">A class has 32 students. 25% are in the math club, 50% are in the reading club, and 12.5% are in both. How many students are in each group? Can the total of all three groups be more than 32? Explain why or why not.</span><span class="lang-es" lang="es">Un salón tiene 32 estudiantes. El 25% está en el club de matemáticas, el 50% está en el club de lectura y el 12.5% está en los dos. ¿Cuántos estudiantes hay en cada grupo? ¿Puede el total de los tres grupos ser más de 32? Explica por qué sí o por qué no.</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
+        
+        
+          <div class="sentence-frame-card">
+            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
+            <span class="sentence-frame-text" onclick="insertSentenceStarter(11, 'There are ___ in math club, ___ in reading club, and ___ in both. The total ___ be more than 32 because ___.')">"There are ___ in math club, ___ in reading club, and ___ in both. The total ___ be more than 32 because ___."</span>
+            <span class="click-to-insert-hint">(Click to insert starter)</span>
+          </div>
+        
+        
+        <div class="open-response-wrapper">
+          <textarea id="open_response_11" 
+                    class="custom-textarea open-response-textarea" 
+                    data-min-length="30" 
+                    data-keywords="[&quot;8&quot;,&quot;16&quot;,&quot;4&quot;,&quot;overlap&quot;,&quot;can&quot;,&quot;counted twice&quot;,&quot;both&quot;]"
+                    placeholder="Write your mathematical explanation here..." 
+                    oninput="saveState(); updateProgress();"></textarea>
+          <span class="feedback-badge"></span>
         </div>
+        
+        
+          <div class="word-bank-container">
+            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
+            <div class="word-bank-chips">
+              <span class="word-chip" onclick="insertWord(11, '8')">8</span><span class="word-chip" onclick="insertWord(11, '16')">16</span><span class="word-chip" onclick="insertWord(11, '4')">4</span><span class="word-chip" onclick="insertWord(11, 'overlap')">overlap</span><span class="word-chip" onclick="insertWord(11, 'can')">can</span><span class="word-chip" onclick="insertWord(11, 'counted twice')">counted twice</span><span class="word-chip" onclick="insertWord(11, 'both')">both</span>
+            </div>
+          </div>
+        
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -4193,42 +4259,42 @@ header.packet h1::after{
         <div class="problem-number-badge">Bonus / Más 7</div>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"10% means one-tenth — there&#39;s a shortcut that needs no multiplication at all.","es":"10% significa un décimo: hay un atajo que no necesita ninguna multiplicación.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;20% of 150&#39; means you want a PART of 150 — the answer should be smaller than 150.","es":"&#39;20% de 150&#39; significa que quieres una PARTE de 150: la respuesta debe ser menor que 150.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">What is 10% of 320?</span><span class="lang-es" lang="es">¿Cuánto es el 10% de 320?</span></p>
+        <p class="problem-stem"><span class="lang-en">What is 20% of 150?</span><span class="lang-es" lang="es">¿Cuánto es el 20% de 150?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="10% = 0.10. Multiply: 0.10 × 320 = 32. (Or move the decimal one place left.)" data-explanation-es="10% = 0.10. Multiplica: 0.10 × 320 = 32. (O mueve el punto decimal un lugar a la izquierda.)">
+        <div class="mc-options" data-correct="0" data-explanation="20% = 0.20. Multiply: 0.20 × 150 = 30." data-explanation-es="20% = 0.20. Multiplica: 0.20 × 150 = 30.">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">32</span>
+              <span class="choice-text">30</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_1">
               <input type="radio" name="q_12" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">3.2</span>
+              <span class="choice-text">20</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_2">
               <input type="radio" name="q_12" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">320</span>
+              <span class="choice-text">35</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_3">
               <input type="radio" name="q_12" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">64</span>
+              <span class="choice-text">75</span>
             </label>
           
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -4263,42 +4329,42 @@ header.packet h1::after{
         <div class="problem-number-badge">Bonus / Más 8</div>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The bonus is a percent of the score you already earned, so 60 is the whole.","es":"La bonificación es un porcentaje del puntaje que ya ganaste, así que 60 es el entero.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"50% is a friendly percent — it means exactly one-half of the number.","es":"50% es un porcentaje amigable: significa exactamente la mitad del número.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">Your bowling score was 60 points. The bonus round adds 15% more points. How many bonus points is that?</span><span class="lang-es" lang="es">Tu puntaje de boliche fue de 60 puntos. La ronda de bonificación agrega 15% más de puntos. ¿Cuántos puntos de bonificación son?</span></p>
+        <p class="problem-stem"><span class="lang-en">What is 50% of 84?</span><span class="lang-es" lang="es">¿Cuánto es el 50% de 84?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="15% = 0.15. Multiply: 0.15 × 60 = 9 bonus points." data-explanation-es="15% = 0.15. Multiplica: 0.15 × 60 = 9 puntos de bonificación.">
+        <div class="mc-options" data-correct="0" data-explanation="50% = 0.50. Multiply: 0.50 × 84 = 42. (Or simply divide by 2: 84 ÷ 2 = 42.)" data-explanation-es="50% = 0.50. Multiplica: 0.50 × 84 = 42. (O simplemente divide entre 2: 84 ÷ 2 = 42.)">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">9</span>
+              <span class="choice-text">42</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_1">
               <input type="radio" name="q_13" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">15</span>
+              <span class="choice-text">50</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_2">
               <input type="radio" name="q_13" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">45</span>
+              <span class="choice-text">34</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_3">
               <input type="radio" name="q_13" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">75</span>
+              <span class="choice-text">168</span>
             </label>
           
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -4598,8 +4664,8 @@ header.packet h1::after{
 
 <script>
 window.LESSON_ID = "4-4";
-window.LESSON_TITLE = "Find the Percent of a Number";
-window.__HW_VOCAB__ = [{"term":"Percent of a Number","termEs":"Porcentaje de un número","def":"A part of a number found by multiplying the number by the percent written as a decimal.","defEs":"Una parte de un número que se halla multiplicando el número por el porcentaje escrito como decimal.","example":"25% of 80 = 0.25 × 80 = 20","img":"/assets/vocab-images/percent-of-a-number.svg","imgAlt":"Illustration of Percent of a Number: A part of a number found by multiplying the number by the percent written as a decimal."},{"term":"Percent","termEs":"Porcentaje","def":"A way to compare a number to 100, shown with the % sign.","defEs":"Una manera de comparar un número con 100, con el signo %.","example":"30% means 30 out of 100","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Percent: A way to compare a number to 100, shown with the % sign."},{"term":"Base","termEs":"Base","def":"The number you take the percent OF — it is the number right after the word 'of'.","defEs":"El número del que sacas el porcentaje — es el número que va después de la palabra 'de'.","example":"In '25% of 80,' the base is 80. In '140% of 145,' the base is still 145.","img":"/assets/vocab-images/percent-base.svg","imgAlt":"Illustration of Base: The number you take the percent OF — it is the number right after the word 'of'."},{"term":"Part","termEs":"Parte","def":"The amount the percent gives you — the answer to percent × base.","defEs":"La cantidad que te da el porcentaje — el resultado de porcentaje × base.","example":"25% of 80 = 20, so the part is 20. 140% of 145 = 203, so the part is 203.","img":"/assets/vocab-images/percent-part.svg","imgAlt":"Illustration of Part: The amount the percent gives you — the answer to percent × base."},{"term":"Equation","termEs":"Ecuación","def":"A math sentence with an equal sign showing both sides are the same.","defEs":"Una oración matemática con un signo igual que muestra que ambos lados son iguales.","example":"part = percent × base","img":"/assets/vocab-images/equation-percent-formula.svg","imgAlt":"Illustration of Equation: A math sentence with an equal sign showing both sides are the same."},{"term":"Discount","termEs":"Descuento","def":"Money taken off the first price to make it cheaper.","defEs":"Dinero que se quita del precio original para que sea más barato.","example":"$40 shirt at 25% off: discount = $10","img":"/assets/vocab-images/discount.svg","imgAlt":"Illustration of Discount: Money taken off the first price to make it cheaper."}];
+window.LESSON_TITLE = "Find and Compare with Percentages";
+window.__HW_VOCAB__ = [{"term":"Percent of a Number","termEs":"Porcentaje de un número","def":"A part of a number found by multiplying the number by the percent written as a decimal.","defEs":"Una parte de un número que se halla multiplicando el número por el porcentaje escrito como decimal.","example":"25% of 80 = 0.25 × 80 = 20","img":"/assets/vocab-images/percent-of-a-number.svg","imgAlt":"Illustration of Percent of a Number: A part of a number found by multiplying the number by the percent written as a decimal."},{"term":"Percent","termEs":"Porcentaje","def":"A way to compare a number to 100, shown with the % sign.","defEs":"Una manera de comparar un número con 100, con el signo %.","example":"30% means 30 out of 100","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Percent: A way to compare a number to 100, shown with the % sign."},{"term":"Base","termEs":"Base","def":"The whole amount you start with — the number right after the word “of.”","defEs":"La cantidad total con la que empiezas: el número que va después de la palabra “de”.","example":"25% of 80 → the whole is 80.","img":"/assets/vocab-images/percent-base.svg","imgAlt":"Illustration of Base: The whole amount you start with — the number right after the word “of.”"},{"term":"Part","termEs":"Parte","def":"How much of the base (the whole) you get. It is your answer.","defEs":"Cuánto obtienes de la base (el total). Es tu respuesta.","example":"25% of 80 = 20 → the part is 20 (20 out of the 80).","img":"/assets/vocab-images/percent-part.svg","imgAlt":"Illustration of Part: How much of the base (the whole) you get. It is your answer."},{"term":"Equation","termEs":"Ecuación","def":"A number sentence with an equal sign. The percent one is: part = percent × base.","defEs":"Una oración numérica con signo de igual. La de porcentaje es: parte = porcentaje × base.","example":"part = percent × base — like 20 = 0.25 × 80.","img":"/assets/vocab-images/equation-percent-formula.svg","imgAlt":"Illustration of Equation: A number sentence with an equal sign. The percent one is: part = percent × base."},{"term":"Discount","termEs":"Descuento","def":"Money taken off the first price to make it cheaper.","defEs":"Dinero que se quita del precio original para que sea más barato.","example":"$40 shirt at 25% off: discount = $10","img":"/assets/vocab-images/discount.svg","imgAlt":"Illustration of Discount: Money taken off the first price to make it cheaper."}];
 window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Percent of a Number|Equation|Discount|Percent|Base|Part)(?:es|s)?\\b","lookup":{"percent of a number":0,"percent":1,"base":2,"part":3,"equation":4,"discount":5}};
 
 function syncHomeworkChromeHeights() {

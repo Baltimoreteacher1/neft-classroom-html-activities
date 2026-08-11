@@ -59,7 +59,7 @@ say ""
 # are intentionally NOT in this list. Names that don't exist are skipped cleanly.
 CANDIDATES=(
 	build
-	lint
+	check
 	test
 	validate
 	validate:static
@@ -79,8 +79,14 @@ CANDIDATES=(
 )
 # NOTE: `format` (= `biome format --write`) and `prettier` are intentionally
 # NOT run here — this loop must be READ-ONLY. `biome format --write` mutates
-# the working tree, which left dirty files after every run. `lint` (biome lint,
-# read-only) is already in the list above for a style signal; run
+# the working tree, which left dirty files after every run.
+#
+# The read-only style signal is `check` (= `biome check`), NOT `lint`. That was
+# the gap: `lint` reports nothing about formatting, so the only thing in this
+# repo that checked it was the Pre-Deploy Gate, which runs on PRs only — and
+# deploys here go straight to `main` via `npm run ship`, which opens no PR. So
+# format drift accumulated to 32 errors on `main` with every local gate green.
+# `check` is a strict superset of `lint` and writes nothing; run
 # `npm run format` by hand to rewrite files. See .prettierignore (Biome is the
 # repo formatter, not Prettier).
 

@@ -2,8 +2,10 @@
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 
+import { detectConceptTool } from "./concept-tool.js";
+import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
+import { stackContentHtml } from "./i18n.js";
 import { renderMathText } from "./math-typography.js";
-import { renderConversionChip, hasConversionFacts } from "./conversion-chart.js";
 import { renderToolChip } from "./tool-drawer.js";
 
 const TYPE_LABELS = {
@@ -28,65 +30,18 @@ export function problemTypeLabel(def = {}) {
   return TYPE_LABELS[def.type] || "Practice";
 }
 
-function detectConceptTool(stemText) {
-  if (!stemText || typeof stemText !== "string") return null;
-  const str = stemText.toLowerCase();
-
-  if (str.includes("exponent") || str.includes("power") || str.includes("base") || str.includes("squared") || str.includes("cubed")) {
-    return { kind: "power-builder", icon: "⚡", label: "Powers & Exponents" };
-  }
-  if (str.includes("factor tree") || str.includes("prime factor")) {
-    return { kind: "factor-tree-lab", icon: "🌳", label: "Factor Tree Lab" };
-  }
-  if (str.includes("lcm") || str.includes("least common multiple")) {
-    return { kind: "lcm-lab", icon: "🔢", label: "LCM Lab" };
-  }
-  if (str.includes("fraction") && (str.includes("divide") || str.includes("÷") || str.includes("kcf") || str.includes("reciprocal"))) {
-    return { kind: "fraction-divide", icon: "🥞", label: "Divide Fractions Lab" };
-  }
-  if (str.includes("decimal") && (str.includes("multiply") || str.includes("product"))) {
-    return { kind: "decimal-product", icon: "🔢", label: "Multiply Decimals Lab" };
-  }
-  if (str.includes("decimal") && (str.includes("divide") || str.includes("quotient"))) {
-    return { kind: "decimal-quotient", icon: "🔢", label: "Divide Decimals Lab" };
-  }
-  if (str.includes("decimal") && (str.includes("add") || str.includes("subtract") || str.includes("column"))) {
-    return { kind: "decimal-columns", icon: "🔢", label: "Decimal Column Lab" };
-  }
-  if ((str.includes("divide") || str.includes("quotient") || str.includes("long division")) && str.includes("remainder")) {
-    return { kind: "long-division-builder", icon: "🧮", label: "Long Division Lab" };
-  }
-  if (str.includes("equation") || str.includes("balance scale")) {
-    return { kind: "algebra-balance-scale", icon: "⚖️", label: "Balance Scale" };
-  }
-  if (str.includes("inequality") || str.includes("greater than") || str.includes("less than") || str.includes("≤") || str.includes("≥")) {
-    return { kind: "neon-inequality", icon: "📈", label: "Inequality Lab" };
-  }
-  if (str.includes("surface area") || str.includes("net") || str.includes("prism")) {
-    return { kind: "surface-area-packer", icon: "📦", label: "Surface Area Packer" };
-  }
-  if (str.includes("area of") || str.includes("parallelogram") || str.includes("trapezoid")) {
-    return { kind: "area-morph", icon: "📐", label: "Area Lab" };
-  }
-  if (str.includes("coordinate") || str.includes("quadrant") || str.includes("ordered pair") || str.includes("x-axis")) {
-    return { kind: "coordinate-navigator", icon: "📍", label: "Coordinate Navigator" };
-  }
-  if (str.includes("box plot") || str.includes("quartile") || str.includes("interquartile")) {
-    return { kind: "box-plot-detective", icon: "📊", label: "Box Plot Detective" };
-  }
-  if (str.includes("histogram") || str.includes("frequency table")) {
-    return { kind: "histogram-master-lab", icon: "📊", label: "Histogram Lab" };
-  }
-  if (str.includes("mean absolute deviation") || str.includes("mad")) {
-    return { kind: "mad-balance-sandbox", icon: "⚖️", label: "MAD Balance Lab" };
-  }
-  return null;
-}
-
 /**
  * Create a premium problem card. Returns { card, body, coinSlot, setResult }.
  */
-export function createProblemCard({ number, total, tier, typeLabel, stem, hasConversionChart } = {}) {
+export function createProblemCard({
+  number,
+  total,
+  tier,
+  typeLabel,
+  stem,
+  stemEs,
+  hasConversionChart,
+} = {}) {
   const card = document.createElement("article");
   card.className = "problem-card";
   card.setAttribute("aria-label", `Problem ${number} of ${total}`);
@@ -145,7 +100,10 @@ export function createProblemCard({ number, total, tier, typeLabel, stem, hasCon
     stemEl.className = "problem-stem";
     // Let students mark up the problem text (highlight / underline / bold).
     stemEl.setAttribute("data-annotate", "word-problem");
-    stemEl.innerHTML = renderMathText(stem);
+    // Both lanes go through renderMathText — the Spanish stem carries the same
+    // numbers and math markup as the English one, so escaping it instead would
+    // print the markup literally on exactly the students who need it readable.
+    stemEl.innerHTML = stackContentHtml(renderMathText(stem), stemEs ? renderMathText(stemEs) : "");
     card.append(stemEl);
   }
 

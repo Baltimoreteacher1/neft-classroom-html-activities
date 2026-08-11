@@ -426,13 +426,15 @@ export const TOOL_CATALOG = {
     purposeEs:
       "Mueve un control y observa cómo una figura se reorganiza en una forma cuya área ya conoces: de ahí sale cada fórmula de área.",
     howTo: [
-      "Drag the slider slowly and watch the figure move.",
-      "Stop when it becomes a rectangle you can measure.",
-      "Compare the rectangle's area with the original figure's formula.",
+      "Drag the big slider slowly and watch the figure rearrange itself.",
+      "Read the b and h labels on the drawing — they never leave their edges.",
+      "Watch the blanks in the formula fill in as the new shape appears.",
+      "Use the three step buttons to jump back and forth between stages.",
     ],
     tryThis: [
+      "Stop halfway. Which piece moved, and did any area get lost?",
       "Where does the ÷ 2 in the triangle formula come from?",
-      "Change the height. Does the rearranged area still match?",
+      "Cover the formula, predict the last blank, then slide to the end.",
     ],
   },
   "solid-3d": {

@@ -52,6 +52,30 @@ const PORT = Number(process.env.SMOKE_PORT || 0) || 0;
 const LESSON_MIN = 800; // a rendered lesson is ~10k chars; a blank shell is 0
 const NAV_TIMEOUT = 25000;
 const RENDER_TIMEOUT = 12000; // how long to wait for the mount to fill
+
+/**
+ * Exit code for "there is no browser, so nothing was probed" — a SKIP.
+ *
+ * This probe is the only member of `npm run validate` that opens a real browser,
+ * so without one it checks nothing at all. It used to exit 0 in that case, which
+ * renders in the qa:loop table as `PASS validate:lesson-boot`, indistinguishable
+ * from 16 pages genuinely rendering. That is precisely the failure this repo
+ * keeps writing gates against — a check that stopped firing reporting a clean
+ * site — and it was observed live: every qa:loop run in a sandbox lacking the
+ * pinned Chromium build reported PASS in ~1s having probed zero pages.
+ *
+ * Locally a skip stays exit 0. Not every machine has browsers, and blocking
+ * every push over that just gets the gate deleted. In CI there is no such
+ * excuse: a missing browser is an infrastructure failure and must be loud.
+ * PW_CHROMIUM_PATH points at a system Chromium when the Playwright-managed
+ * download is missing or version-mismatched.
+ */
+const skipExit = (why) => {
+  if (!process.env.CI) return 0;
+  console.error(`✗ ${why} — CI must not report a skipped render smoke as a pass.`);
+  console.error("   Install a browser (npx playwright install chromium) or set PW_CHROMIUM_PATH.");
+  return 1;
+};
 // Shared runtime scripts every hub (curriculum, monster-math, …) loads and needs
 // to render. They are committed static files copied into dist/ by vite.config's
 // copy-standalone-html plugin. If a concurrent build sharing node_modules disrupts
@@ -247,12 +271,25 @@ async function probeRoute(page, base, route) {
       { selector: route.measure === "html" ? route.selector : null, measure: route.measure },
     )
     .catch(() => -1);
+  // assets/lesson-shell-guard.js paints #nt-shell-fallback ("This lesson is
+  // having trouble loading") when a lesson fails to boot. That card is ~1072
+  // characters — comfortably OVER this probe's 800-char floor — so a page
+  // showing students a failure notice scored as a PASS on content length alone.
+  // It is not hypothetical: all 10 flagship lessons rendered nothing but that
+  // card and this probe reported "16/16 pages rendered" for weeks. The card is
+  // the single most explicit statement a page can make that it did not render,
+  // so look for it directly rather than trusting a byte count to imply it.
+  const fallback = await page
+    .evaluate(() => Boolean(document.getElementById("nt-shell-fallback")))
+    .catch(() => false);
+
   page.off("pageerror", onPageError);
   page.off("console", onConsole);
 
   const reasons = [];
   if (navError) reasons.push(`navigation failed: ${navError}`);
   if (pageErrors.length) reasons.push(`uncaught: ${pageErrors[0]}`);
+  if (fallback) reasons.push("shell guard fallback shown (lesson did not boot)");
   if (len < route.min) reasons.push(`content below min (${len} < ${route.min})`);
   return { ...route, len, pageErrors, consoleErrors, ok: reasons.length === 0, reasons };
 }
@@ -322,7 +359,7 @@ async function main() {
   } catch {
     console.error("⚠️  playwright not installed — render smoke SKIPPED.");
     console.error("   Install with: npm i -D playwright && npx playwright install chromium");
-    process.exit(0);
+    process.exit(skipExit("playwright is not installed"));
   }
 
   let server = null;
@@ -368,7 +405,7 @@ async function main() {
     console.error(`⚠️  Could not launch Chromium — render smoke SKIPPED (${e.message}).`);
     console.error("   Install with: npx playwright install chromium");
     if (server) server.child.kill("SIGKILL");
-    process.exit(0);
+    process.exit(skipExit("Chromium could not be launched"));
   }
 
   console.log(`Render smoke — ${live ? "LIVE" : "local dist"} @ ${base}`);

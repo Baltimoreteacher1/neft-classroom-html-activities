@@ -15,11 +15,11 @@
         --blue-lt: #f3e8ff; /* light purple */
         --teal: #2563eb; /* gaming blue */
         --teal-lt: #dbeafe; /* light gaming blue */
-        --gold: #a5670a;
+        --gold: #8a5f0a;
         --gold-lt: #fdf3e0;
         --green: #1e7d40;
         --green-lt: #e6f4eb;
-        --coral: #c45a3c;
+        --coral: #a8442a;
         --ink: #0f172a;
         --muted: #64748b;
         --line: #cbd5e1;
@@ -139,7 +139,8 @@
         border-radius: 10px; font-size: 15px; font-family: inherit;
         background: var(--bg); color: var(--ink); transition: border-color .2s;
       }
-      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      input:focus, textarea:focus, select:focus { outline: 3px solid rgba(2, 132, 199, .45); outline-offset: 2px; border-color: var(--blue); }
+      button:focus-visible, a:focus-visible, [role="button"]:focus-visible { outline: 3px solid rgba(2, 132, 199, .55); outline-offset: 2px; }
       textarea { min-height: 90px; resize: vertical; }
       .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
       @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
@@ -260,6 +261,8 @@
       .lvl1-only { display: none; }
       .lvl2-only { display: none; }
       body.level-1 .lvl1-only { display: block; }
+      /* Level 0 = extra support, so it also shows every Level 1 support. */
+      body.level-0 .lvl1-only { display: block; }
       body.level-2 .lvl2-only { display: block; }
       body.level-2 .lvl2-block { border-color: var(--blue); }
 
@@ -384,6 +387,9 @@
     <!-- projects-twist-head:begin (Design Twist — tools/inject-projects-twist.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-twist.css?v=20260722" />
     <!-- projects-twist-head:end -->
+    <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
+    <!-- projects-mode-pill-head:end -->
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
 
@@ -516,7 +522,7 @@
             <div class="card-icon">🎮</div>
             <div>
               <h2 class="card-title"><span class="en-text">Step 1 — Base Score Formula</span><span class="es-text">Paso 1 — Fórmula de puntuación base</span></h2>
-              <div class="card-sub"><span class="en-text">Design your <span class="vocab-word" data-vocab="base" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('base')">base</span> scoring system using coefficients and variables</span><span class="es-text">Diseña tu sistema de puntuación <span class="vocab-word" data-vocab="base" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('base')">base</span> usando coeficientes y variables</span></div>
+              <div class="card-sub"><span class="en-text">Design your <span class="vocab-word" data-vocab="base" style="border-bottom:2px dotted #0369a1; color:#0369a1; font-weight:800; cursor:pointer;" onclick="openVocabModal('base')">base</span> scoring system using coefficients and variables</span><span class="es-text">Diseña tu sistema de puntuación <span class="vocab-word" data-vocab="base" style="border-bottom:2px dotted #0369a1; color:#0369a1; font-weight:800; cursor:pointer;" onclick="openVocabModal('base')">base</span> usando coeficientes y variables</span></div>
             </div>
           </div>
 
@@ -610,7 +616,7 @@
 
           <details class="hint">
             <summary><span class="en-text">Need a hint for evaluating expressions?</span><span class="es-text">¿Necesitas una pista para evaluar expresiones?</span></summary>
-            <p><span class="en-text">Substitute the variables with numbers and follow the Order of Operations (PEMDAS).<br><strong>Example:</strong> For formula 10p + 5b when p = 50 and b = 10:<br>10 × 50 + 5 × 10 = 500 + 50 = <strong>550</strong>.</span><span class="es-text">Sustituye las variables por números y sigue el Orden de las operaciones (PEMDAS).<br><strong>Ejemplo:</strong> Para la fórmula 10p + 5b cuando p = 50 y b = 10:<br>10 × 50 + 5 × 10 = 500 + 50 = <strong>550</strong>.</span></p>
+            <p><span class="en-text">Substitute the variables with numbers, then follow the Order of Operations (PEMDAS): multiply before you add.<br><strong>Different example:</strong> For the formula 7p + 4b when p = 6 and b = 3:<br>7 × 6 + 4 × 3 = 42 + 12 = <strong>54</strong>.<br>Now do the same steps with <em>your</em> coefficients and the values in the task.</span><span class="es-text">Sustituye las variables por números y sigue el Orden de las operaciones (PEMDAS): multiplica antes de sumar.<br><strong>Ejemplo distinto:</strong> Para la fórmula 7p + 4b cuando p = 6 y b = 3:<br>7 × 6 + 4 × 3 = 42 + 12 = <strong>54</strong>.<br>Ahora haz los mismos pasos con <em>tus</em> coeficientes y los valores de la tarea.</span></p>
           </details>
         </div>
 
@@ -749,7 +755,7 @@
           <details class="hint">
             <summary><span class="en-text">Need a hint on exponents?</span><span class="es-text">¿Necesitas una pista sobre los exponentes?</span></summary>
             <p>
-              <span class="en-text">An exponent tells you how many times to multiply the base by itself.<br><strong>Example (base 2):</strong> 2<sup>3</sup> = 2 × 2 × 2 = 8 (NOT 2 × 3 = 6).<br><strong>Example (base 3):</strong> 3<sup>3</sup> = 3 × 3 × 3 = 27.</span><span class="es-text">Un exponente te indica cuántas veces debes multiplicar la base por sí misma.<br><strong>Ejemplo (base 2):</strong> 2<sup>3</sup> = 2 × 2 × 2 = 8 (NO 2 × 3 = 6).<br><strong>Ejemplo (base 3):</strong> 3<sup>3</sup> = 3 × 3 × 3 = 27.</span>
+              <span class="en-text">An exponent tells you how many times to multiply the base by itself — it is NOT “base × exponent”.<br><strong>Different example:</strong> 10<sup>3</sup> = 10 × 10 × 10 = 1,000 (NOT 10 × 3 = 30).<br><strong>Watch the trap:</strong> 5<sup>2</sup> means 5 × 5, not 5 × 2.<br>Use the Expanded Form column to count the factors, then multiply.</span><span class="es-text">Un exponente te indica cuántas veces multiplicar la base por sí misma; NO es “base × exponente”.<br><strong>Ejemplo distinto:</strong> 10<sup>3</sup> = 10 × 10 × 10 = 1,000 (NO 10 × 3 = 30).<br><strong>Cuidado:</strong> 5<sup>2</sup> significa 5 × 5, no 5 × 2.<br>Usa la columna de Forma expandida para contar los factores y luego multiplica.</span>
             </p>
           </details>
         </div>
@@ -788,10 +794,10 @@
           <!-- Challenge 1 -->
           <div class="equiv-card">
             <div style="font-weight:700; font-size:14px; color:var(--navy);">
-              <span class="en-text">Challenge 1: <span class="vocab-word" data-vocab="factor" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('factor')">Factor</span> out a constant</span><span class="es-text">Desafío 1: Factorizar una constante</span>
+              <span class="en-text">Challenge 1: <span class="vocab-word" data-vocab="factor" style="border-bottom:2px dotted #0369a1; color:#0369a1; font-weight:800; cursor:pointer;" onclick="openVocabModal('factor')">Factor</span> out a constant</span><span class="es-text">Desafío 1: Factorizar una constante</span>
             </div>
             <div class="equiv-expr">3(2p + 4b) &nbsp; vs &nbsp; 6p + 12b</div>
-            <p style="font-size:13px;color:var(--muted);margin:4px 0 8px"><span class="en-text"><strong>Algebraic proof:</strong> 3(2p + 4b) = 3·2p + 3·4b = 6p + 12b.</span><span class="es-text"><strong>Demostración algebraica:</strong> 3(2p + 4b) = 3·2p + 3·4b = 6p + 12b.</span></p>
+            <details class="hint no-print"><summary><span class="en-text">Check your algebra (open after you decide)</span><span class="es-text">Revisa tu álgebra (ábrelo después de decidir)</span></summary><p style="font-size:13px;color:var(--muted);margin:4px 0 8px"><span class="en-text"><strong>Algebraic proof:</strong> 3(2p + 4b) = 3·2p + 3·4b = 6p + 12b.</span><span class="es-text"><strong>Demostración algebraica:</strong> 3(2p + 4b) = 3·2p + 3·4b = 6p + 12b.</span></p></details>
             <div class="grid2">
               <div>
                 <label class="lbl" for="eq1-left"><span class="en-text">Evaluate Left: 3(2(3) + 4(2))</span><span class="es-text">Evaluar izquierda: 3(2(3) + 4(2))</span></label>
@@ -819,7 +825,7 @@
               <span class="en-text">Challenge 2: Forgetting to distribute</span><span class="es-text">Desafío 2: Olvidar distribuir</span>
             </div>
             <div class="equiv-expr">4(p + 3b) &nbsp; vs &nbsp; 4p + 3b</div>
-            <p style="font-size:13px;color:var(--muted);margin:4px 0 8px"><span class="en-text"><strong>Algebraic comparison:</strong> 4(p + 3b) = 4p + 12b, which is not 4p + 3b.</span><span class="es-text"><strong>Comparación algebraica:</strong> 4(p + 3b) = 4p + 12b, que no es 4p + 3b.</span></p>
+            <details class="hint no-print"><summary><span class="en-text">Check your algebra (open after you decide)</span><span class="es-text">Revisa tu álgebra (ábrelo después de decidir)</span></summary><p style="font-size:13px;color:var(--muted);margin:4px 0 8px"><span class="en-text"><strong>Algebraic comparison:</strong> 4(p + 3b) = 4p + 12b, which is not 4p + 3b.</span><span class="es-text"><strong>Comparación algebraica:</strong> 4(p + 3b) = 4p + 12b, que no es 4p + 3b.</span></p></details>
             <div class="grid2">
               <div>
                 <label class="lbl" for="eq2-left"><span class="en-text">Evaluate Left: 4(3 + 3(2))</span><span class="es-text">Evaluar izquierda: 4(3 + 3(2))</span></label>
@@ -847,7 +853,7 @@
               <span class="en-text">Challenge 3: Distributing with constants</span><span class="es-text">Desafío 3: Distribuir con constantes</span>
             </div>
             <div class="equiv-expr">5(2p + b + 8) &nbsp; vs &nbsp; 10p + 5b + 40</div>
-            <p style="font-size:13px;color:var(--muted);margin:4px 0 8px"><span class="en-text"><strong>Algebraic proof:</strong> 5(2p + b + 8) = 10p + 5b + 40.</span><span class="es-text"><strong>Demostración algebraica:</strong> 5(2p + b + 8) = 10p + 5b + 40.</span></p>
+            <details class="hint no-print"><summary><span class="en-text">Check your algebra (open after you decide)</span><span class="es-text">Revisa tu álgebra (ábrelo después de decidir)</span></summary><p style="font-size:13px;color:var(--muted);margin:4px 0 8px"><span class="en-text"><strong>Algebraic proof:</strong> 5(2p + b + 8) = 10p + 5b + 40.</span><span class="es-text"><strong>Demostración algebraica:</strong> 5(2p + b + 8) = 10p + 5b + 40.</span></p></details>
             <div class="grid2">
               <div>
                 <label class="lbl" for="eq3-left"><span class="en-text">Evaluate Left: 5(2(3) + 2 + 8)</span><span class="es-text">Evaluar izquierda: 5(2(3) + 2 + 8)</span></label>
@@ -906,7 +912,7 @@
           <details class="hint">
             <summary><span class="en-text">Need a hint on equivalent expressions?</span><span class="es-text">¿Necesitas una pista sobre expresiones equivalentes?</span></summary>
             <p>
-              <span class="en-text">To check if expressions are equivalent, expand or simplify them using properties:<br><strong>3(2p + 4b)</strong> = 3 × 2p + 3 × 4b = <strong>6p + 12b</strong>. Since they simplify to the same form, they are equivalent.<br>To evaluate for p=3 and b=2: 6(3) + 12(2) = 18 + 24 = 42.</span><span class="es-text">Para verificar si las expresiones son equivalentes, expándelas o simplifícalas usando propiedades:<br><strong>3(2p + 4b)</strong> = 3 × 2p + 3 × 4b = <strong>6p + 12b</strong>. Dado que se simplifican a la misma forma, son equivalentes.<br>Para evaluar para p=3 y b=2: 6(3) + 12(2) = 18 + 24 = 42.</span>
+              <span class="en-text">Expand the side with parentheses first, then compare the two algebraic forms — matching forms is what proves equivalence for every value.<br><strong>Different example:</strong> <strong>4(3p + 2b)</strong> = 4 × 3p + 4 × 2b = <strong>12p + 8b</strong>, so those two forms are equivalent.<br>Substituting numbers is only a check: if one substitution disagrees, the expressions are NOT equivalent.</span><span class="es-text">Primero desarrolla el lado con paréntesis y compara las dos formas algebraicas: que coincidan es lo que demuestra la equivalencia para todo valor.<br><strong>Ejemplo distinto:</strong> <strong>4(3p + 2b)</strong> = 4 × 3p + 4 × 2b = <strong>12p + 8b</strong>, así que esas formas son equivalentes.<br>Sustituir números es solo una comprobación: si una sustitución no coincide, NO son equivalentes.</span>
             </p>
           </details>
         </div>
@@ -1069,7 +1075,27 @@
             </button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
+
+          <!-- Finish & Turn In -->
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:22px; margin-bottom:6px;">
+            <span class="en-text">🎉 Finish &amp; Turn In</span><span class="es-text">🎉 Terminar y entregar</span>
+          </h3>
+          <div class="instruct green">
+            <span class="en-text"><strong>Three things left:</strong> 1) Write your design pitch above. 2) Check every box on the Scoring Engine Checklist. 3) Click <strong>Generate Summary</strong>, then press <strong>Finish &amp; Turn In</strong> and show your report to your teacher (or download the .txt and submit it).</span><span class="es-text"><strong>Faltan tres cosas:</strong> 1) Escribe tu presentación arriba. 2) Marca todas las casillas de la lista de verificación. 3) Haz clic en <strong>Generar resumen</strong>, luego presiona <strong>Terminar y entregar</strong> y muestra tu informe a tu maestro (o descarga el .txt y entrégalo).</span>
+          </div>
+          <div id="finish-status" class="feedback" role="status" aria-live="polite"></div>
         </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(5)"><span class="en-text">← Back</span><span class="es-text">← Atrás</span></button>
+          <button class="nav-btn green" onclick="finishProject()"><span class="en-text">🎉 Finish &amp; Turn In</span><span class="es-text">🎉 Terminar y entregar</span></button>
+        </div>
+      </div>
+
+    </div><!-- end wizard -->
+
+    <!-- ====== SCRIPTS ====== -->
+    <script src="/assets/app.js" defer></script>
     <script>
       const PRESETS = {"g-pt-rate": 10, "g-bn-rate": 5};
       function handleLevelPreset(n) {
@@ -1161,6 +1187,7 @@
         bodyEl.classList.remove('level-0', 'level-1', 'level-2');
         bodyEl.classList.add('level-' + n);
         handleLevelPreset(n);
+        ntSaveProgress();
         document.getElementById('btn-lv0').classList.toggle('active', n === 0);
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
@@ -1202,6 +1229,7 @@
         updateProgress();
         window.scrollTo({ top: 0, behavior: 'smooth' });
         recalcAll();
+        ntSaveProgress();
       }
 
       function updateProgress() {
@@ -1331,10 +1359,36 @@
       function finishProject() {
         const body = document.getElementById('body') || document.body;
         const isEs = body.classList.contains('es');
-        const msg = isEs 
-          ? '¡Felicitaciones! 🎉 Muestra esta página y tu informe generado a tu profesor.' 
-          : 'Congratulations! 🎉 Show this page and your generated report to your teacher.';
-        alert(msg);
+        const boxes = Array.from(document.querySelectorAll('#checklist input[type="checkbox"]'));
+        const unchecked = boxes.filter(b => !b.checked).length;
+        const pitchEl = document.getElementById('pitch');
+        const pitchDone = !!(pitchEl && pitchEl.value.trim().length >= 40);
+        const reportEl = document.getElementById('reportBox');
+        const reportDone = !!(reportEl && reportEl.textContent.trim());
+        const todo = [];
+        if (!pitchDone) todo.push(isEs ? 'Escribe tu presentación del diseño (3-5 oraciones).' : 'Write your design pitch (3-5 sentences).');
+        if (unchecked > 0) todo.push(isEs ? ('Marca ' + unchecked + ' casilla(s) más de la lista.') : ('Check off ' + unchecked + ' more checklist item(s).'));
+        if (!reportDone) todo.push(isEs ? 'Haz clic en "Generar resumen".' : 'Click "Generate Summary".');
+        const status = document.getElementById('finish-status');
+        if (todo.length) {
+          const head = isEs ? 'Casi listo. Todavía falta:' : 'Almost there. Still to do:';
+          if (status) {
+            status.style.color = 'var(--coral)';
+            status.innerHTML = '\u26A0\uFE0F <strong>' + head + '</strong><br>\u2022 ' + todo.join('<br>\u2022 ');
+          }
+          alert(head + '\n\n\u2022 ' + todo.join('\n\u2022 '));
+          return;
+        }
+        if (status) {
+          status.style.color = 'var(--green)';
+          status.textContent = isEs
+            ? '\u2705 Listo para entregar. Muestra tu informe a tu maestro o descarga el .txt.'
+            : '\u2705 Ready to turn in! Show your report to your teacher, or download the .txt and submit it.';
+        }
+        playConfetti();
+        alert(isEs
+          ? '\u00A1Felicitaciones! \uD83C\uDF89 Muestra esta página y tu informe generado a tu profesor.'
+          : 'Congratulations! \uD83C\uDF89 Show this page and your generated report to your teacher.');
       }
 
       // ---- No-giveaway hint ladder (per-input attempt tracking) ----
@@ -1835,9 +1889,10 @@
           const userIn1 = document.getElementById('dist-in1').value || '—';
           const userIn2 = document.getElementById('dist-in2').value || '—';
           const correctG = gcd(myPtRate, myBnRate);
+          const showFactorTarget = ![userG, userIn1, userIn2].some(v => String(v) === '\u2014');
           propertySection = isEs
-            ? `   Expresión factorizada: ${userG}(${userIn1}p + ${userIn2}b) [Objetivo: ${correctG}(${myPtRate/correctG}p + ${myBnRate/correctG}b)]`
-            : `   Factored Expression: ${userG}(${userIn1}p + ${userIn2}b) [Target: ${correctG}(${myPtRate/correctG}p + ${myBnRate/correctG}b)]`;
+            ? `   Expresión factorizada: ${userG}(${userIn1}p + ${userIn2}b)${showFactorTarget ? ` [Objetivo: ${correctG}(${myPtRate/correctG}p + ${myBnRate/correctG}b)]` : ' (objetivo oculto hasta que respondas)'}`
+            : `   Factored Expression: ${userG}(${userIn1}p + ${userIn2}b)${showFactorTarget ? ` [Target: ${correctG}(${myPtRate/correctG}p + ${myBnRate/correctG}b)]` : ' (target hidden until you answer)'}`;
         }
 
         // Duel
@@ -1863,6 +1918,11 @@
         const pReflect = document.getElementById('peer-reflect').value || '—';
         const pitch = document.getElementById('pitch').value || '—';
 
+        const notAns = isEs ? '(sin responder todavia)' : '(not answered yet)';
+        const chk = (u, c) => (String(u) === '\u2014' ? notAns : (u + ' | ' + (isEs ? 'Correcto' : 'Correct') + ': ' + c));
+        const tgt = (a, b, c, t) => ([a, b, c].some(v => String(v) === '\u2014')
+          ? (isEs ? '(objetivo oculto hasta que respondas)' : '(target hidden until you answer)')
+          : '(' + (isEs ? 'Objetivo' : 'Target') + ': ' + t + ')');
         const lines = isEs ? [
           '═══ MOTOR DE PUNTUACIÓN DE ESTUDIO DE JUEGOS — PROYECTO UNIDAD 6 (Versión A) ═══',
           '',
@@ -1872,19 +1932,19 @@
           `Fórmula de puntuación base: ${baseFormula}`,
           '',
           '📊 PASO 1 — PRUEBAS DE EVALUACIÓN',
-          `   Configuración A (p=50, b=10)   -> Ingresado: ${userEvalA} | Correcto: ${correctEvalA}`,
-          `   Configuración B (p=100, b=20)  -> Ingresado: ${userEvalB} | Correcto: ${correctEvalB}`,
+          `   Configuración A (p=50, b=10)   -> Ingresado: ${chk(userEvalA, correctEvalA)}`,
+          `   Configuración B (p=100, b=20)  -> Ingresado: ${chk(userEvalB, correctEvalB)}`,
           '',
           '⚡ PASO 2 — MULTIPLICADOR DE NIVEL (Base ' + myExpBase + '^n)',
-          `   Multiplicador Nivel 2 -> Ingresado: ${userM2} | Correcto: ${correctM2}`,
-          `   Multiplicador Nivel 3 -> Ingresado: ${userM3} | Correcto: ${correctM3}`,
-          `   Multiplicador Nivel 4 -> Ingresado: ${userM4} | Correcto: ${correctM4}`,
-          `   Multiplicador Nivel 5 -> Ingresado: ${userM5} | Correcto: ${correctM5}`,
+          `   Multiplicador Nivel 2 -> Ingresado: ${chk(userM2, correctM2)}`,
+          `   Multiplicador Nivel 3 -> Ingresado: ${chk(userM3, correctM3)}`,
+          `   Multiplicador Nivel 4 -> Ingresado: ${chk(userM4, correctM4)}`,
+          `   Multiplicador Nivel 5 -> Ingresado: ${chk(userM5, correctM5)}`,
           '',
           '🟰 PASO 3 — EXPRESIONES EQUIVALENTES',
-          `   Desafío 1 [3(2p+4b) vs 6p+12b] -> Izq: ${userEq1Left} | Der: ${userEq1Right} | Equiv: ${userEq1Ans} (Objetivo: 42/42/Yes)`,
-          `   Desafío 2 [4(p+3b) vs 4p+3b]   -> Izq: ${userEq2Left} | Der: ${userEq2Right} | Equiv: ${userEq2Ans} (Objetivo: 36/18/No)`,
-          `   Desafío 3 [5(2p+b+8) vs 10p+5b+40] -> Izq: ${userEq3Left} | Der: ${userEq3Right} | Equiv: ${userEq3Ans} (Objetivo: 80/80/Yes)`,
+          `   Desafío 1 [3(2p+4b) vs 6p+12b] -> Izq: ${userEq1Left} | Der: ${userEq1Right} | Equiv: ${userEq1Ans} ${tgt(userEq1Left, userEq1Right, userEq1Ans, '42/42/Yes')}`,
+          `   Desafío 2 [4(p+3b) vs 4p+3b]   -> Izq: ${userEq2Left} | Der: ${userEq2Right} | Equiv: ${userEq2Ans} ${tgt(userEq2Left, userEq2Right, userEq2Ans, '36/18/No')}`,
+          `   Desafío 3 [5(2p+b+8) vs 10p+5b+40] -> Izq: ${userEq3Left} | Der: ${userEq3Right} | Equiv: ${userEq3Ans} ${tgt(userEq3Left, userEq3Right, userEq3Ans, '80/80/Yes')}`,
           propertySection,
           '',
           '👥 PASO 4 — DUELO DE PUNTUACIÓN CON COMPAÑERO (en p=80, b=15, Nivel 3)',
@@ -1907,19 +1967,19 @@
           `Base Score Formula: ${baseFormula}`,
           '',
           '📊 STEP 1 — EVALUATION TESTS',
-          `   Setup A (p=50, b=10)   -> Entered: ${userEvalA} | Correct: ${correctEvalA}`,
-          `   Setup B (p=100, b=20)  -> Entered: ${userEvalB} | Correct: ${correctEvalB}`,
+          `   Setup A (p=50, b=10)   -> Entered: ${chk(userEvalA, correctEvalA)}`,
+          `   Setup B (p=100, b=20)  -> Entered: ${chk(userEvalB, correctEvalB)}`,
           '',
           '⚡ STEP 2 — LEVEL MULTIPLIER (Base ' + myExpBase + '^n)',
-          `   Level 2 Multiplier -> Entered: ${userM2} | Correct: ${correctM2}`,
-          `   Level 3 Multiplier -> Entered: ${userM3} | Correct: ${correctM3}`,
-          `   Level 4 Multiplier -> Entered: ${userM4} | Correct: ${correctM4}`,
-          `   Level 5 Multiplier -> Entered: ${userM5} | Correct: ${correctM5}`,
+          `   Level 2 Multiplier -> Entered: ${chk(userM2, correctM2)}`,
+          `   Level 3 Multiplier -> Entered: ${chk(userM3, correctM3)}`,
+          `   Level 4 Multiplier -> Entered: ${chk(userM4, correctM4)}`,
+          `   Level 5 Multiplier -> Entered: ${chk(userM5, correctM5)}`,
           '',
           '🟰 STEP 3 — EQUIVALENT EXPRESSIONS',
-          `   Challenge 1 [3(2p+4b) vs 6p+12b] -> Left: ${userEq1Left} | Right: ${userEq1Right} | Equiv: ${userEq1Ans} (Target: 42/42/Yes)`,
-          `   Challenge 2 [4(p+3b) vs 4p+3b]   -> Left: ${userEq2Left} | Right: ${userEq2Right} | Equiv: ${userEq2Ans} (Target: 36/18/No)`,
-          `   Challenge 3 [5(2p+b+8) vs 10p+5b+40] -> Left: ${userEq3Left} | Right: ${userEq3Right} | Equiv: ${userEq3Ans} (Target: 80/80/Yes)`,
+          `   Challenge 1 [3(2p+4b) vs 6p+12b] -> Left: ${userEq1Left} | Right: ${userEq1Right} | Equiv: ${userEq1Ans} ${tgt(userEq1Left, userEq1Right, userEq1Ans, '42/42/Yes')}`,
+          `   Challenge 2 [4(p+3b) vs 4p+3b]   -> Left: ${userEq2Left} | Right: ${userEq2Right} | Equiv: ${userEq2Ans} ${tgt(userEq2Left, userEq2Right, userEq2Ans, '36/18/No')}`,
+          `   Challenge 3 [5(2p+b+8) vs 10p+5b+40] -> Left: ${userEq3Left} | Right: ${userEq3Right} | Equiv: ${userEq3Ans} ${tgt(userEq3Left, userEq3Right, userEq3Ans, '80/80/Yes')}`,
           propertySection,
           '',
           '👥 STEP 4 — PARTNER SCORING DUEL (at p=80, b=15, Level 3)',
@@ -1968,9 +2028,30 @@
         a.click();
       }
 
+      // ---- Save / restore level + step (inputs are handled by the save-resume engine) ----
+      const NT_PROGRESS_KEY = 'nt-u6-project-a-progress';
+      function ntSaveProgress() {
+        try {
+          localStorage.setItem(NT_PROGRESS_KEY, JSON.stringify({ level: level, step: currentStep, visited: Array.from(visited) }));
+        } catch (e) {}
+      }
+      function ntRestoreProgress() {
+        try {
+          const raw = localStorage.getItem(NT_PROGRESS_KEY);
+          if (!raw) return;
+          const saved = JSON.parse(raw) || {};
+          if (Array.isArray(saved.visited)) saved.visited.forEach(v => visited.add(v));
+          if (typeof saved.level === 'number' && saved.level !== level) setLevel(saved.level);
+          if (typeof saved.step === 'number' && saved.step >= 1 && saved.step <= STEPS.length) goStep(saved.step);
+          buildTrail();
+          updateProgress();
+        } catch (e) {}
+      }
+
       // ---- Init ----
       buildTrail();
       updateProgress();
+      ntRestoreProgress();
       
       // Hook page calculations to run shortly after load (once save-resume has populated values)
       window.addEventListener('load', () => {
@@ -2114,5 +2195,8 @@
   <!-- projects-twist-body:end -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+  <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+  <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
+  <!-- projects-mode-pill-body:end -->
 </body>
 </html>

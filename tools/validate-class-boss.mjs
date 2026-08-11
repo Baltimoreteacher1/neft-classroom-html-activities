@@ -122,6 +122,27 @@ const EXPECT = {
   "fsa-trail": (v) => [F(v.a * v.d, v.b * v.c), F(v.c / v.a, v.d / v.b)],
 
   // measure-area-perimeter-swap — distractor is the other measure entirely.
+  "tri-sail": (v) => [(v.b * v.h) / 2, v.b * v.h],
+  "tri-garden": (v) => [(v.b * v.h) / 2, v.b * v.h],
+  "tri-ramp": (v) => [(v.b * v.h) / 2, v.b * v.h],
+  "tri-flag": (v) => [(v.b * v.h) / 2, v.b * v.h],
+  // geom-surface-area-as-volume — the wrong answer is the VOLUME, which is a
+  // correct computation of the wrong quantity. Written out independently here
+  // (2(lw + lh + wh)) rather than copied from the bank, which is the point of
+  // the double entry: a typo in the bank's formula has to survive being
+  // re-derived from the geometry to pass.
+  "sa-gift": (v) => [2 * (v.l * v.w + v.l * v.h + v.w * v.h), v.l * v.w * v.h],
+  "sa-crate": (v) => [2 * (v.l * v.w + v.l * v.h + v.w * v.h), v.l * v.w * v.h],
+  "sa-cube": (v) => [6 * v.s * v.s, v.s * v.s * v.s],
+  "sa-net": (v) => [2 * (v.l * v.w + v.l * v.h + v.w * v.h), v.l * v.w * v.h],
+  "vol-box": (v) => [v.l * v.w * v.h, v.l + v.w + v.h],
+  "vol-tank": (v) => [v.l * v.w * v.h, v.l + v.w + v.h],
+  "vol-locker": (v) => [v.l * v.w * v.h, v.l + v.w + v.h],
+  "vol-cube": (v) => [v.s * v.s * v.s, 3 * v.s],
+  "dist-sum": (v) => [v.a * (v.b + v.c), v.a * v.b + v.c],
+  "dist-tickets": (v) => [v.a * (v.b + v.c), v.a * v.b + v.c],
+  "dist-garden": (v) => [v.a * (v.b + v.c), v.a * v.b + v.c],
+  "dist-diff": (v) => [v.a * (v.b - v.c), v.a * v.b - v.c],
   "ap-area": (v) => [v.l * v.w, 2 * v.l + 2 * v.w],
   "ap-perimeter": (v) => [2 * v.l + 2 * v.w, v.l * v.w],
   "ap-square": (v) => [v.s * v.s, 4 * v.s],

@@ -2,15 +2,15 @@
    EDUWONDERLAB FORMULA & VOCABULARY POPUP + SCROLL RESET SYSTEM
    ========================================================================== */
 
-(function() {
+(function () {
   // 1. Force Page Scroll to Top on Lesson Boot
-  if ('scrollRestoration' in history) {
-    history.scrollRestoration = 'manual';
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
   }
   window.scrollTo(0, 0);
   document.documentElement.scrollTop = 0;
   document.body.scrollTop = 0;
-  window.addEventListener('load', function() {
+  window.addEventListener("load", function () {
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
@@ -18,7 +18,7 @@
 
   // 2. Comprehensive Vocabulary & Formula Database with SVG Diagrams
   const VOCAB_DB = {
-    "add": {
+    add: {
       title: "Add",
       def: "To combine two or more numbers or quantities to find a total sum.",
       example: "If you have 6 blocks and add 4 more, 6 + 4 = 10.",
@@ -32,9 +32,9 @@
         <rect x="210" y="30" width="55" height="55" fill="#047857" rx="10"/>
         <text x="237" y="65" text-anchor="middle" fill="#FFF" font-weight="900" font-size="22">10</text>
         <text x="140" y="105" text-anchor="middle" fill="#166534" font-weight="800" font-size="12">Combine parts ➜ Total Sum</text>
-      </svg>`
+      </svg>`,
     },
-    "subtract": {
+    subtract: {
       title: "Subtract",
       def: "To take one number away from another to find the difference.",
       example: "If you have 10 counters and take away 4, 10 - 4 = 6.",
@@ -48,9 +48,9 @@
         <rect x="220" y="35" width="45" height="45" fill="#B91C1C" rx="8"/>
         <text x="242" y="62" text-anchor="middle" fill="#FFF" font-weight="900" font-size="18">6</text>
         <text x="140" y="105" text-anchor="middle" fill="#991B1B" font-weight="800" font-size="12">Take away ➜ Difference</text>
-      </svg>`
+      </svg>`,
     },
-    "multiply": {
+    multiply: {
       title: "Multiply",
       def: "To add a number to itself a specific number of times (repeated addition).",
       example: "6 × 8 means 6 groups of 8, which equals 48.",
@@ -63,9 +63,9 @@
         <rect x="180" y="25" width="70" height="50" fill="none" stroke="#0284C7" stroke-width="2" stroke-dasharray="4" rx="6"/>
         <text x="215" y="55" text-anchor="middle" fill="#0284C7" font-weight="800" font-size="12">Array Grid</text>
         <text x="140" y="105" text-anchor="middle" fill="#0369A1" font-weight="800" font-size="12">Equal groups ➜ Product</text>
-      </svg>`
+      </svg>`,
     },
-    "divide": {
+    divide: {
       title: "Divide",
       def: "To split a number into equal parts or groups.",
       example: "12 ÷ 3 means sharing 12 items into 3 equal groups of 4.",
@@ -78,9 +78,9 @@
         <text x="150" y="50" text-anchor="middle" fill="#FFF" font-weight="900" font-size="14">4</text>
         <text x="220" y="50" text-anchor="middle" fill="#7E22CE" font-weight="900" font-size="18">12 ÷ 3 = 4</text>
         <text x="140" y="105" text-anchor="middle" fill="#6B21A8" font-weight="800" font-size="12">Split equally ➜ Quotient</text>
-      </svg>`
+      </svg>`,
     },
-    "half": {
+    half: {
       title: "Half",
       def: "One of two equal parts of a whole; the same as dividing by 2 (or multiplying by ½).",
       example: "Half of 12 is 6, because 12 ÷ 2 = 6.",
@@ -90,9 +90,9 @@
         <line x1="80" y1="18" x2="80" y2="82" stroke="#FFF" stroke-width="3"/>
         <text x="185" y="55" text-anchor="middle" fill="#B45309" font-weight="900" font-size="18">½ of Total</text>
         <text x="140" y="105" text-anchor="middle" fill="#92400E" font-weight="800" font-size="12">Split in 2 equal pieces</text>
-      </svg>`
+      </svg>`,
     },
-    "rectangle": {
+    rectangle: {
       title: "Rectangle",
       def: "A 4-sided flat shape with 4 right angles (90°) and opposite sides equal.",
       example: "A door, smartphone screen, or book cover is shaped like a rectangle.",
@@ -104,9 +104,9 @@
         <rect x="220" y="75" width="10" height="10" fill="none" stroke="#0284C7" stroke-width="1.5"/>
         <text x="140" y="60" text-anchor="middle" fill="#0F172A" font-weight="900" font-size="14">4 Right Angles (90°)</text>
         <text x="140" y="105" text-anchor="middle" fill="#475569" font-weight="800" font-size="12">Opposite sides are parallel & equal</text>
-      </svg>`
+      </svg>`,
     },
-    "trapezoid": {
+    trapezoid: {
       title: "Trapezoid",
       def: "A 4-sided flat shape with exactly one pair of parallel sides (called bases).",
       example: "A trapezoid has a top base b₁ and a bottom base b₂ with height h.",
@@ -116,9 +116,9 @@
         <text x="140" y="100" text-anchor="middle" fill="#C2410C" font-weight="900" font-size="12">Base 2 (b₂)</text>
         <line x1="140" y1="25" x2="140" y2="85" stroke="#0D9488" stroke-width="2" stroke-dasharray="4"/>
         <text x="152" y="60" fill="#0D9488" font-weight="900" font-size="12">h</text>
-      </svg>`
+      </svg>`,
     },
-    "parallelogram": {
+    parallelogram: {
       title: "Parallelogram",
       def: "A 4-sided flat shape with both pairs of opposite sides parallel and equal in length.",
       example: "Area of a parallelogram = base × height (A = b × h).",
@@ -127,9 +127,9 @@
         <line x1="70" y1="25" x2="70" y2="85" stroke="#EA580C" stroke-width="2" stroke-dasharray="4"/>
         <text x="82" y="60" fill="#EA580C" font-weight="900" font-size="12">Height (h)</text>
         <text x="110" y="102" fill="#0D9488" font-weight="900" font-size="12">Base (b)</text>
-      </svg>`
+      </svg>`,
     },
-    "triangle": {
+    triangle: {
       title: "Triangle",
       def: "A 3-sided flat polygon with three interior angles adding up to 180°.",
       example: "Area = ½ × base × height.",
@@ -138,12 +138,13 @@
         <line x1="160" y1="20" x2="160" y2="85" stroke="#EA580C" stroke-width="2" stroke-dasharray="4"/>
         <text x="172" y="55" fill="#EA580C" font-weight="900" font-size="12">Height (h)</text>
         <text x="140" y="102" fill="#0284C7" font-weight="900" font-size="12">Base (b)</text>
-      </svg>`
+      </svg>`,
     },
-    "parallel": {
+    parallel: {
       title: "Parallel",
       def: "Lines or sides in the same plane that stay the exact same distance apart and never cross or intersect.",
-      example: "The top and bottom bases of a trapezoid (or opposite sides of a rectangle) are parallel lines.",
+      example:
+        "The top and bottom bases of a trapezoid (or opposite sides of a rectangle) are parallel lines.",
       svg: `<svg viewBox="0 0 280 120" style="background:#F0F9FF; border-radius:12px; border:1px solid #BAE6FD; width:100%;">
         <line x1="40" y1="35" x2="240" y2="35" stroke="#0284C7" stroke-width="4"/>
         <line x1="40" y1="85" x2="240" y2="85" stroke="#0284C7" stroke-width="4"/>
@@ -154,7 +155,7 @@
         <line x1="70" y1="35" x2="70" y2="85" stroke="#EA580C" stroke-width="2" stroke-dasharray="4"/>
         <text x="82" y="64" fill="#EA580C" font-weight="900" font-size="12">Equal distance</text>
         <text x="180" y="64" fill="#0369A1" font-weight="900" font-size="14">Never intersect (∥)</text>
-      </svg>`
+      </svg>`,
     },
     "parallel lines": {
       title: "Parallel Lines",
@@ -166,9 +167,9 @@
         <polygon points="135,30 145,35 135,40" fill="#0284C7"/>
         <polygon points="135,80 145,85 135,90" fill="#0284C7"/>
         <text x="140" y="64" text-anchor="middle" fill="#0369A1" font-weight="900" font-size="14">Always Same Distance Apart</text>
-      </svg>`
+      </svg>`,
     },
-    "base": {
+    base: {
       title: "Base",
       def: "A side of a flat shape (or one of the parallel top/bottom sides in a trapezoid) used as a foundation to measure length and height.",
       example: "In a trapezoid, there are two parallel bases: Base 1 (b₁) and Base 2 (b₂).",
@@ -178,9 +179,9 @@
         <text x="140" y="102" text-anchor="middle" fill="#C2410C" font-weight="900" font-size="12">Bottom Base (b₂)</text>
         <line x1="80" y1="25" x2="200" y2="25" stroke="#0284C7" stroke-width="4"/>
         <line x1="40" y1="85" x2="240" y2="85" stroke="#0284C7" stroke-width="4"/>
-      </svg>`
+      </svg>`,
     },
-    "bases": {
+    bases: {
       title: "Bases",
       def: "Plural of base. The parallel sides of a polygon (such as a trapezoid) used to compute area.",
       example: "A trapezoid's bases are added together: (b₁ + b₂).",
@@ -188,9 +189,9 @@
         <polygon points="80,25 200,25 240,85 40,85" fill="rgba(234,88,12,0.18)" stroke="#EA580C" stroke-width="3"/>
         <text x="140" y="20" text-anchor="middle" fill="#C2410C" font-weight="900" font-size="12">Base 1 (b₁)</text>
         <text x="140" y="102" text-anchor="middle" fill="#C2410C" font-weight="900" font-size="12">Base 2 (b₂)</text>
-      </svg>`
+      </svg>`,
     },
-    "area": {
+    area: {
       title: "Area",
       def: "The total amount of 2D surface space enclosed inside a shape (measured in square units).",
       example: "A 4cm × 5cm rectangle has an area of 20 square centimeters (cm²).",
@@ -202,9 +203,9 @@
         </g>
         <text x="140" y="60" text-anchor="middle" fill="#15803D" font-weight="900" font-size="14">Covered Grid Squares</text>
         <text x="140" y="108" text-anchor="middle" fill="#166534" font-weight="800" font-size="12">Inside space (square units)</text>
-      </svg>`
+      </svg>`,
     },
-    "perimeter": {
+    perimeter: {
       title: "Perimeter",
       def: "The total length of the outer boundary edge around a 2D shape.",
       example: "Adding all side lengths around a garden fence gives its perimeter.",
@@ -212,9 +213,9 @@
         <rect x="60" y="25" width="160" height="60" fill="none" stroke="#2563EB" stroke-width="4" stroke-dasharray="6" rx="4"/>
         <text x="140" y="60" text-anchor="middle" fill="#1D4ED8" font-weight="900" font-size="14">Distance Around Outside</text>
         <text x="140" y="105" text-anchor="middle" fill="#1E40AF" font-weight="800" font-size="12">P = Side₁ + Side₂ + Side₃ + Side₄</text>
-      </svg>`
+      </svg>`,
     },
-    "volume": {
+    volume: {
       title: "Volume",
       def: "The total 3D space occupied inside a 3D solid object (measured in cubic units).",
       example: "Volume of a prism = length × width × height (V = l × w × h).",
@@ -223,9 +224,9 @@
         <polygon points="100,40 220,40 220,15 100,15" fill="rgba(147,51,234,0.3)" stroke="#9333EA" stroke-width="2"/>
         <polygon points="60,80 100,40 100,15 60,55" fill="rgba(147,51,234,0.4)" stroke="#9333EA" stroke-width="2"/>
         <text x="140" y="60" text-anchor="middle" fill="#6B21A8" font-weight="900" font-size="14">3D Cube Space (V = l · w · h)</text>
-      </svg>`
+      </svg>`,
     },
-    "fraction": {
+    fraction: {
       title: "Fraction",
       def: "A number representing part of a whole, written as numerator over denominator.",
       example: "¾ means 3 equal parts out of 4 total parts.",
@@ -239,12 +240,13 @@
         <line x1="190" y1="54" x2="230" y2="54" stroke="#0369A1" stroke-width="3"/>
         <text x="210" y="76" text-anchor="middle" fill="#0369A1" font-weight="900" font-size="20">4</text>
         <text x="140" y="105" text-anchor="middle" fill="#0284C7" font-weight="800" font-size="12">Shaded Parts / Total Parts</text>
-      </svg>`
+      </svg>`,
     },
-    "ratio": {
+    ratio: {
       title: "Ratio",
       def: "A relationship comparing two quantities by division (written as a:b, a to b, or a/b).",
-      example: "If there are 2 blue stars and 3 orange circles, the ratio of stars to circles is 2:3.",
+      example:
+        "If there are 2 blue stars and 3 orange circles, the ratio of stars to circles is 2:3.",
       svg: `<svg viewBox="0 0 280 120" style="background:#FEF3C7; border-radius:12px; border:1px solid #FDE68A; width:100%;">
         <circle cx="50" cy="45" r="16" fill="#0284C7"/>
         <circle cx="90" cy="45" r="16" fill="#0284C7"/>
@@ -252,7 +254,7 @@
         <circle cx="190" cy="45" r="16" fill="#EA580C"/>
         <circle cx="230" cy="45" r="16" fill="#EA580C"/>
         <text x="140" y="92" text-anchor="middle" fill="#92400E" font-weight="900" font-size="16">Ratio = 2 : 3</text>
-      </svg>`
+      </svg>`,
     },
     "unit rate": {
       title: "Unit Rate",
@@ -262,9 +264,9 @@
         <rect x="40" y="30" width="200" height="40" fill="#16A34A" rx="8"/>
         <text x="140" y="56" text-anchor="middle" fill="#FFF" font-weight="900" font-size="18">$4.00 for 1 Item</text>
         <text x="140" y="100" text-anchor="middle" fill="#15803D" font-weight="800" font-size="12">Denominator is always 1</text>
-      </svg>`
+      </svg>`,
     },
-    "equation": {
+    equation: {
       title: "Equation",
       def: "A mathematical statement showing that two expressions are equal with an equals sign (=).",
       example: "x + 5 = 12 (Solve for x: x = 7).",
@@ -275,9 +277,9 @@
         <rect x="170" y="35" width="80" height="45" fill="#0284C7" rx="8"/>
         <text x="210" y="63" text-anchor="middle" fill="#FFF" font-weight="900" font-size="16">12</text>
         <text x="140" y="105" text-anchor="middle" fill="#334155" font-weight="800" font-size="12">Balanced on both sides</text>
-      </svg>`
+      </svg>`,
     },
-    "expression": {
+    expression: {
       title: "Expression",
       def: "A mathematical phrase with numbers, variables, and operation symbols (no equals sign).",
       example: "3x + 7 is an algebraic expression.",
@@ -285,9 +287,9 @@
         <rect x="40" y="30" width="200" height="45" fill="#C026D3" rx="8"/>
         <text x="140" y="58" text-anchor="middle" fill="#FFF" font-weight="900" font-size="20">3x + 7</text>
         <text x="140" y="102" text-anchor="middle" fill="#86198F" font-weight="800" font-size="12">No equals sign (=)</text>
-      </svg>`
+      </svg>`,
     },
-    "variable": {
+    variable: {
       title: "Variable",
       def: "A symbol or letter (like x or n) representing an unknown number or value.",
       example: "In x + 3 = 8, x is the variable representing 5.",
@@ -295,27 +297,27 @@
         <rect x="100" y="25" width="80" height="55" fill="#2563EB" rx="12"/>
         <text x="140" y="62" text-anchor="middle" fill="#FFF" font-weight="900" font-size="32">x</text>
         <text x="140" y="105" text-anchor="middle" fill="#1E40AF" font-weight="800" font-size="12">Unknown letter value</text>
-      </svg>`
+      </svg>`,
     },
-    "factor": {
+    factor: {
       title: "Factor",
       def: "A whole number that divides another number evenly with zero remainder.",
       example: "The factors of 12 are 1, 2, 3, 4, 6, and 12.",
       svg: `<svg viewBox="0 0 280 120" style="background:#F0FDF4; border-radius:12px; border:1px solid #BBF7D0; width:100%;">
         <text x="140" y="45" text-anchor="middle" fill="#166534" font-weight="900" font-size="20">3 × 4 = 12</text>
         <text x="140" y="85" text-anchor="middle" fill="#15803D" font-weight="800" font-size="14">3 and 4 are factors of 12</text>
-      </svg>`
+      </svg>`,
     },
-    "multiple": {
+    multiple: {
       title: "Multiple",
       def: "The product of multiplying a number by any whole number (1, 2, 3...).",
       example: "Multiples of 5 are 5, 10, 15, 20, 25, 30...",
       svg: `<svg viewBox="0 0 280 120" style="background:#FFFBEB; border-radius:12px; border:1px solid #FDE68A; width:100%;">
         <text x="140" y="45" text-anchor="middle" fill="#92400E" font-weight="900" font-size="18">5, 10, 15, 20, 25...</text>
         <text x="140" y="85" text-anchor="middle" fill="#B45309" font-weight="800" font-size="13">Skip counting by 5s</text>
-      </svg>`
+      </svg>`,
     },
-    "height": {
+    height: {
       title: "Height",
       def: "The perpendicular (straight 90°) distance from the base to the top vertex or side of a shape.",
       example: "Height must always meet the base at a right angle (90°).",
@@ -324,9 +326,34 @@
         <line x1="150" y1="25" x2="150" y2="85" stroke="#EA580C" stroke-width="3" stroke-dasharray="4"/>
         <rect x="150" y="75" width="10" height="10" fill="none" stroke="#EA580C" stroke-width="1.5"/>
         <text x="165" y="60" fill="#EA580C" font-weight="900" font-size="14">h (90°)</text>
-      </svg>`
+      </svg>`,
     },
-    "exponent": {
+    width: {
+      title: "Width",
+      def: "How wide a shape or object is — the distance across it from one side to the other.",
+      example: "A rectangle that measures 8 cm across has a width of 8 cm.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0F9FF; border-radius:12px; border:1px solid #BAE6FD; width:100%;">
+        <rect x="55" y="30" width="170" height="50" fill="rgba(2,132,199,0.15)" stroke="#0284C7" stroke-width="3"/>
+        <line x1="55" y1="98" x2="225" y2="98" stroke="#EA580C" stroke-width="3"/>
+        <line x1="55" y1="92" x2="55" y2="104" stroke="#EA580C" stroke-width="3"/>
+        <line x1="225" y1="92" x2="225" y2="104" stroke="#EA580C" stroke-width="3"/>
+        <text x="140" y="115" text-anchor="middle" fill="#EA580C" font-weight="900" font-size="13">width = 8 cm</text>
+      </svg>`,
+    },
+    length: {
+      title: "Length",
+      def: "How long a shape or object is — the distance from one end to the other.",
+      example: "A rectangle 8 cm long and 3 cm wide has a length of 8 cm.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0F9FF; border-radius:12px; border:1px solid #BAE6FD; width:100%;">
+        <rect x="55" y="25" width="160" height="55" fill="rgba(2,132,199,0.15)" stroke="#0284C7" stroke-width="3"/>
+        <line x1="55" y1="98" x2="215" y2="98" stroke="#0284C7" stroke-width="3"/>
+        <line x1="55" y1="92" x2="55" y2="104" stroke="#0284C7" stroke-width="3"/>
+        <line x1="215" y1="92" x2="215" y2="104" stroke="#0284C7" stroke-width="3"/>
+        <text x="135" y="115" text-anchor="middle" fill="#0284C7" font-weight="900" font-size="13">length = 8 cm</text>
+        <text x="232" y="58" fill="#EA580C" font-weight="900" font-size="12">3 cm</text>
+      </svg>`,
+    },
+    exponent: {
       title: "Exponent",
       def: "A small number placed above and to the right of a base showing how many times to multiply the base by itself.",
       example: "In 2³, 3 is the exponent (2 × 2 × 2 = 8).",
@@ -334,9 +361,9 @@
         <text x="120" y="75" fill="#1D4ED8" font-weight="900" font-size="44">2</text>
         <text x="150" y="45" fill="#DC2626" font-weight="900" font-size="28">3</text>
         <text x="140" y="105" text-anchor="middle" fill="#1E40AF" font-weight="800" font-size="12">Multiply 2 three times: 2 · 2 · 2 = 8</text>
-      </svg>`
+      </svg>`,
     },
-    "percent": {
+    percent: {
       title: "Percent",
       def: "A ratio or fraction comparing a quantity out of 100, written with the % symbol.",
       example: "25% means 25 out of 100, or ¼.",
@@ -344,22 +371,22 @@
         <rect x="80" y="25" width="120" height="50" fill="#DC2626" rx="8"/>
         <text x="140" y="58" text-anchor="middle" fill="#FFF" font-weight="900" font-size="24">75%</text>
         <text x="140" y="105" text-anchor="middle" fill="#991B1B" font-weight="800" font-size="12">75 per 100 (75/100)</text>
-      </svg>`
+      </svg>`,
     },
-    "polygon": {
+    polygon: {
       title: "Polygon",
       def: "A closed 2D shape made up of 3 or more straight line segments that meet at corners.",
       example: "Triangles, rectangles, pentagons, and hexagons are all polygons.",
       svg: `<svg viewBox="0 0 280 120" style="background:#F0FDF4; border-radius:12px; border:1px solid #BBF7D0; width:100%;">
         <polygon points="60,80 100,25 180,25 220,80 140,105" fill="rgba(22,163,74,0.2)" stroke="#16A34A" stroke-width="3"/>
         <text x="140" y="65" text-anchor="middle" fill="#15803D" font-weight="900" font-size="14">Straight Sides & Closed</text>
-      </svg>`
-    }
+      </svg>`,
+    },
   };
 
   // 3. Inject Universal Modal Card
   function initVocabModal() {
-    if (document.getElementById('formula-popup-modal')) return;
+    if (document.getElementById("formula-popup-modal")) return;
     const modalHtml = `
       <div id="formula-popup-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.65); backdrop-filter:blur(4px); z-index:99999; display:none; align-items:center; justify-content:center;">
         <div style="background:#FFF; width:480px; max-width:92vw; border-radius:20px; padding:24px; box-shadow:0 20px 50px rgba(0,0,0,0.25); border:1px solid #E2E8F0; font-family:'Nunito', 'Outfit', sans-serif;">
@@ -390,15 +417,15 @@
         </div>
       </div>
     `;
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     div.innerHTML = modalHtml;
     document.body.appendChild(div);
   }
 
   // 4. Global Handler Functions
-  window['openVocabModal'] = function(termOrKey) {
+  window["openVocabModal"] = function (termOrKey) {
     initVocabModal();
-    const key = (termOrKey || '').toLowerCase().trim();
+    const key = (termOrKey || "").toLowerCase().trim();
     const data = VOCAB_DB[key] || {
       title: termOrKey.charAt(0).toUpperCase() + termOrKey.slice(1),
       def: "A mathematical term used to represent quantitative relationships, measurements, or operations.",
@@ -406,19 +433,19 @@
       svg: `<svg viewBox="0 0 280 120" style="background:#F0F9FF; border-radius:12px; border:1px solid #BAE6FD; width:100%;">
         <rect x="40" y="30" width="200" height="50" fill="#0284C7" rx="10"/>
         <text x="140" y="62" text-anchor="middle" fill="#FFF" font-weight="900" font-size="18">${termOrKey.toUpperCase()}</text>
-      </svg>`
+      </svg>`,
     };
 
-    document.getElementById('formula-modal-title').innerText = data.title;
-    document.getElementById('formula-modal-def').innerText = data.def;
-    document.getElementById('formula-modal-example').innerText = data.example;
-    document.getElementById('formula-modal-svg').innerHTML = data.svg;
+    document.getElementById("formula-modal-title").innerText = data.title;
+    document.getElementById("formula-modal-def").innerText = data.def;
+    document.getElementById("formula-modal-example").innerText = data.example;
+    document.getElementById("formula-modal-svg").innerHTML = data.svg;
 
     // Attach Speech Synthesis to Listen button
-    const ttsBtn = document.getElementById('vocab-tts-btn');
+    const ttsBtn = document.getElementById("vocab-tts-btn");
     if (ttsBtn) {
-      ttsBtn.onclick = function() {
-        if ('speechSynthesis' in window) {
+      ttsBtn.onclick = function () {
+        if ("speechSynthesis" in window) {
           window.speechSynthesis.cancel();
           const text = `${data.title}. ${data.def} Example: ${data.example}`;
           const u = new SpeechSynthesisUtterance(text);
@@ -428,56 +455,69 @@
       };
     }
 
-    const modal = document.getElementById('formula-popup-modal');
-    if (modal) modal.style.display = 'flex';
+    const modal = document.getElementById("formula-popup-modal");
+    if (modal) modal.style.display = "flex";
   };
 
-  window['openFormulaModal'] = function(key) {
-    window['openVocabModal'](key);
+  window["openFormulaModal"] = function (key) {
+    window["openVocabModal"](key);
   };
 
-  window['closeFormulaModal'] = function() {
-    const modal = document.getElementById('formula-popup-modal');
+  window["closeFormulaModal"] = function () {
+    const modal = document.getElementById("formula-popup-modal");
     if (modal) {
-      modal.style.display = 'none';
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      modal.style.display = "none";
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
     }
   };
 
   // 5. Docked Notice/Wonder Scaffold & Word Bank Toolbar Auto-Injector
   function initNoticeWonderScaffolds() {
     const textareas = /** @type {NodeListOf<HTMLTextAreaElement>} */ (
-      document.querySelectorAll('textarea.ref-lined-input, .ref-nw-panel textarea, .notice-wonder textarea, .talk-about-it textarea, .discourse textarea, textarea[placeholder*="notice"], textarea[placeholder*="wonder"], textarea[placeholder*="Notice"], textarea[placeholder*="Wonder"]')
+      document.querySelectorAll(
+        'textarea.ref-lined-input, .ref-nw-panel textarea, .notice-wonder textarea, .talk-about-it textarea, .discourse textarea, textarea[placeholder*="notice"], textarea[placeholder*="wonder"], textarea[placeholder*="Notice"], textarea[placeholder*="Wonder"]',
+      )
     );
-    
+
     textareas.forEach((ta) => {
       if (ta.dataset.nwScaffoldInjected) return;
       ta.dataset.nwScaffoldInjected = "true";
 
-      const placeholder = (ta.placeholder || '').toLowerCase();
-      const parentText = (ta.parentElement ? ta.parentElement.innerText : '').toLowerCase();
-      const isWonder = placeholder.includes('wonder') || parentText.includes('wonder');
+      const placeholder = (ta.placeholder || "").toLowerCase();
+      const parentText = (ta.parentElement ? ta.parentElement.innerText : "").toLowerCase();
+      const isWonder = placeholder.includes("wonder") || parentText.includes("wonder");
 
-      const starters = isWonder ? [
-        'I wonder why...',
-        'What would happen if...',
-        'How does...',
-        'Why are...'
-      ] : [
-        'I notice that...',
-        'I observe...',
-        'The shape has...',
-        'The dimensions show...'
+      const starters = isWonder
+        ? ["I wonder why...", "What would happen if...", "How does...", "Why are..."]
+        : ["I notice that...", "I observe...", "The shape has...", "The dimensions show..."];
+
+      const vocabWords = [
+        "base",
+        "trapezoid",
+        "height",
+        "area",
+        "parallel",
+        "formula",
+        "dimension",
       ];
 
-      const vocabWords = ['base', 'trapezoid', 'height', 'area', 'parallel', 'formula', 'dimension'];
+      const bar = document.createElement("div");
+      bar.className = "nw-scaffold-toolbar";
+      bar.style.cssText =
+        'background:#F8FAFC; border:1px solid #CBD5E1; border-bottom:none; border-radius:12px 12px 0 0; padding:8px 12px; margin-top:10px; display:flex; flex-direction:column; gap:6px; font-family:"Nunito", sans-serif; box-shadow:0 -2px 10px rgba(0,0,0,0.03);';
 
-      const bar = document.createElement('div');
-      bar.className = 'nw-scaffold-toolbar';
-      bar.style.cssText = 'background:#F8FAFC; border:1px solid #CBD5E1; border-bottom:none; border-radius:12px 12px 0 0; padding:8px 12px; margin-top:10px; display:flex; flex-direction:column; gap:6px; font-family:"Nunito", sans-serif; box-shadow:0 -2px 10px rgba(0,0,0,0.03);';
-      
-      let startersHtml = starters.map(s => `<button type="button" class="nw-starter-btn" style="background:#FFF; border:1px solid #BAE6FD; color:#0369A1; font-weight:800; font-size:0.75rem; padding:3px 9px; border-radius:16px; cursor:pointer;" data-insert="${s}">${s}</button>`).join('');
-      let vocabHtml = vocabWords.map(w => `<button type="button" class="nw-vocab-btn" style="background:#F0FDFA; border:1px solid #99F6E4; color:#0D9488; font-weight:900; font-size:0.75rem; padding:2px 8px; border-radius:8px; cursor:pointer;" data-word="${w}">${w} 🔍</button>`).join('');
+      let startersHtml = starters
+        .map(
+          (s) =>
+            `<button type="button" class="nw-starter-btn" style="background:#FFF; border:1px solid #BAE6FD; color:#0369A1; font-weight:800; font-size:0.75rem; padding:3px 9px; border-radius:16px; cursor:pointer;" data-insert="${s}">${s}</button>`,
+        )
+        .join("");
+      let vocabHtml = vocabWords
+        .map(
+          (w) =>
+            `<button type="button" class="nw-vocab-btn" style="background:#F0FDFA; border:1px solid #99F6E4; color:#0D9488; font-weight:900; font-size:0.75rem; padding:2px 8px; border-radius:8px; cursor:pointer;" data-word="${w}">${w} 🔍</button>`,
+        )
+        .join("");
 
       bar.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
@@ -493,17 +533,17 @@
         </div>
       `;
 
-      ta.style.borderTopLeftRadius = '0px';
-      ta.style.borderTopRightRadius = '0px';
+      ta.style.borderTopLeftRadius = "0px";
+      ta.style.borderTopRightRadius = "0px";
       ta.parentNode.insertBefore(bar, ta);
 
       const starterButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (
-        bar.querySelectorAll('.nw-starter-btn')
+        bar.querySelectorAll(".nw-starter-btn")
       );
-      starterButtons.forEach(btn => {
-        btn.onclick = function(e) {
+      starterButtons.forEach((btn) => {
+        btn.onclick = function (e) {
           e.preventDefault();
-          const txt = btn.getAttribute('data-insert');
+          const txt = btn.getAttribute("data-insert");
           if (!ta.value.trim()) {
             ta.value = txt + " ";
           } else {
@@ -514,25 +554,30 @@
       });
 
       const vocabButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (
-        bar.querySelectorAll('.nw-vocab-btn')
+        bar.querySelectorAll(".nw-vocab-btn")
       );
-      vocabButtons.forEach(btn => {
-        btn.onclick = function(e) {
+      vocabButtons.forEach((btn) => {
+        btn.onclick = function (e) {
           e.preventDefault();
-          const word = btn.getAttribute('data-word');
+          const word = btn.getAttribute("data-word");
           const start = ta.selectionStart || ta.value.length;
           const end = ta.selectionEnd || ta.value.length;
           const val = ta.value;
-          ta.value = val.substring(0, start) + (start > 0 && val[start-1] !== ' ' ? ' ' : '') + word + ' ' + val.substring(end);
+          ta.value =
+            val.substring(0, start) +
+            (start > 0 && val[start - 1] !== " " ? " " : "") +
+            word +
+            " " +
+            val.substring(end);
           ta.focus();
-          if (window['openVocabModal']) window['openVocabModal'](word);
+          if (window["openVocabModal"]) window["openVocabModal"](word);
         };
       });
     });
   }
 
   // 6. Auto-bind events on DOM Content Loaded
-  window.addEventListener('DOMContentLoaded', function() {
+  window.addEventListener("DOMContentLoaded", function () {
     initVocabModal();
     initNoticeWonderScaffolds();
     setTimeout(initNoticeWonderScaffolds, 1000);

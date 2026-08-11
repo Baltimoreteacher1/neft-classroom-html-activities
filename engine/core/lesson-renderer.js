@@ -1,12 +1,11 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-import { extractDivisionDiagram } from "./division-helper.js";
+
 import {
   renderActivityChooser,
   renderOptionalPracticeOptIn,
 } from "../components/activity-chooser.js";
-import { renderCelebrationPicker, fireCelebrationFX } from "./celebration-picker.js";
 import {
   renderAlgebraTiles,
   renderBalanceScale,
@@ -33,10 +32,12 @@ import { createAdaptiveSequence } from "./adaptive.js";
 import { enableWordProblemAnnotation, observeWordProblemAnnotation } from "./annotate.js";
 import { fullerFormHint, isRight } from "./answer-match.js";
 import { createApp } from "./app.js";
+import { fireCelebrationFX, renderCelebrationPicker } from "./celebration-picker.js";
 import { mountCertificateDownload } from "./certificate-export.js";
 import { mountChalkAnnotations } from "./chalk-annotate.js";
 import { deriveCommonMistake, deriveErrorExample } from "./content-enrichment.js";
 import { mountDiscussionMoment } from "./discourse.js";
+import { extractDivisionDiagram } from "./division-helper.js";
 import { getFeedbackMode, MODES, mountFeedbackModeToggle } from "./feedback-mode.js";
 import {
   fadeNoteFor,
@@ -48,7 +49,7 @@ import { createGoDeeper } from "./go-deeper.js";
 import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
 import { mountHintLadder } from "./hint-ladder.js";
-import { badgeName, getPreferredLang, phaseName, stackHtml, t } from "./i18n.js";
+import { badgeName, getPreferredLang, phaseName, stackContent, stackHtml, t } from "./i18n.js";
 import { attachImageZoom, isLightboxOpen } from "./image-zoom.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { mountLevel3Launch } from "./level3-launch.js";
@@ -61,7 +62,6 @@ import {
   resolveNoticeWonderAcademicWord,
 } from "./notice-wonder-glossary.js";
 import { resolveObjectiveVisuals } from "./objective-visuals.js";
-import { speakText } from "./speech-voice.js";
 import { studentFirstName, toThirdPersonObjective } from "./objective-voice.js";
 import { mountPeerExchange } from "./peer-exchange.js";
 import {
@@ -76,6 +76,7 @@ import { mountReadingProgress } from "./reading-progress.js";
 import { mountRetrievalOpener } from "./retrieval.js";
 import { mountQuestionLadderReader } from "./socratic.js";
 import { mountStuckSupport } from "./stuck-support.js";
+import { mountSymbolPad, needsSymbolPad } from "./symbol-pad.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
 import { toolMeta } from "./tool-catalog.js";
@@ -253,10 +254,10 @@ function buildVisual(v) {
       });
     }
     case "tape-diagram":
-      // Interactive "count the equal parts" tape (interactive-visual bridge).
-      // The static SVG stays as the JS-off / print fallback.
+      // Interactive "solve for the missing quantity" tape (interactive-visual
+      // bridge). The static SVG stays as the JS-off / print fallback.
       return interactiveVisualHost(v, {
-        ariaLabel: `Interactive tape diagram: ${v.title || "count the equal parts"}. Tap each part to count how many equal parts there are in all.`,
+        ariaLabel: `Interactive tape diagram: ${v.title || "find the missing amount"}. Read the whole bar and the equal parts, then type the amount the model leaves out and check it.`,
         fallback: tapeDiagramSVG(v),
       });
     case "coordinate-plane":
@@ -518,10 +519,12 @@ function buildVisual(v) {
     }
     case "percent-builder": {
       return interactiveVisualHost(v, {
-        ariaLabel:
-          "Interactive percent-of-a-number lab. Type a percent and a whole to find that part on a double number line.",
-        fallback:
-          "Interactive percent-of-a-number builder. Turn on JavaScript to find a percent of a number.",
+        ariaLabel: v.apply
+          ? "Interactive percent problem lab. Type a percent and a price, then choose whether the amount is taken off (discount) or added on (tax, tip, markup) to see the finished total."
+          : "Interactive percent-of-a-number lab. Type a percent and a whole to find that part on a double number line.",
+        fallback: v.apply
+          ? "Interactive percent problem lab. Turn on JavaScript to find a percent of a price and then take it off or add it on."
+          : "Interactive percent-of-a-number builder. Turn on JavaScript to find a percent of a number.",
       });
     }
     case "unit-rate-builder": {
@@ -547,6 +550,16 @@ function buildVisual(v) {
           "Interactive ratio-table builder. Turn on JavaScript to build a table of equivalent ratios.",
       });
     }
+    case "long-division-builder":
+      // In the REGISTRY since the Lab shipped, but absent from this bridge —
+      // so every main-path practice item with a division diagram rendered
+      // nothing (the exact "registered but unrenderable" gap the static
+      // lesson-visuals probe exists to catch; it only sweeps authored kinds).
+      return interactiveVisualHost(v, {
+        ariaLabel: figureAria(v, "Long Division Lab — type each digit of the algorithm"),
+        fallback:
+          "Interactive long-division workspace. Turn on JavaScript to work the algorithm step by step.",
+      });
     default:
       return "";
   }
@@ -984,6 +997,14 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
       tier: shellOpts.tier,
       typeLabel: problemTypeLabel(problemDef),
       stem: problemDef.stem || problemDef.prompt || problemDef.label,
+      // Mirror the English fallback chain exactly — a lesson that authored
+      // `prompt`/`promptEs` rather than `stem`/`stemEs` must not end up showing
+      // the English prompt above the Spanish translation of a different field.
+      stemEs: problemDef.stem
+        ? problemDef.stemEs
+        : problemDef.prompt
+          ? problemDef.promptEs
+          : problemDef.labelEs,
     });
     container.append(shell.card);
     body = shell.body;
@@ -1029,7 +1050,10 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
       if (problemDef.instructions) {
         const p = document.createElement("p");
         p.style.cssText = "font-weight:600; margin-bottom:var(--sp-3);";
-        p.textContent = problemDef.instructions;
+        // `instructionsEs` is authored on 170 items and had no renderer at all
+        // until now — the sort task told a Spanish-speaking student what to do
+        // only in English, directly above a set of cards they then had to sort.
+        p.innerHTML = stackContent(problemDef.instructions, problemDef.instructionsEs);
         body.append(p);
       }
       renderDragSort(body, {
@@ -1077,14 +1101,24 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
       });
       break;
     case "matching": {
+      // The Es lanes mirror the English fallback chains field-for-field, so a
+      // pair authored as {left,leftEs} cannot end up pairing English `left`
+      // with the Spanish of a different field.
       const pairs = (problemDef.pairs || []).map((p) => ({
         term: p.left || p.term || p.prompt || "",
+        termEs: p.left ? p.leftEs : p.term ? p.termEs : p.promptEs,
         match: p.right || p.match || p.answer || "",
+        matchEs: p.right ? p.rightEs : p.match ? p.matchEs : p.answerEs,
       }));
       renderMatchingGame(body, {
         pairs,
         columns: problemDef.columns || 2,
         label: problemDef.hideStem ? problemDef.label : problemDef.stem || problemDef.label,
+        labelEs: problemDef.hideStem
+          ? problemDef.labelEs
+          : problemDef.stem
+            ? problemDef.stemEs
+            : problemDef.labelEs,
         onComplete: (c, t) => wrappedOnAnswer(c === t),
       });
       break;
@@ -1329,18 +1363,44 @@ function renderNoticeAndWonder(host, config, state) {
   layout.className = "nw-layout";
 
   const objVisuals = resolveObjectiveVisuals(config);
+<<<<<<< HEAD
   const imgSrc = nw.image || (objVisuals && objVisuals.content && objVisuals.content.src ? objVisuals.content.src : null);
+||||||| 540ecb4e3
+  if (nw.image) {
+=======
+  // Only ever show the lesson's OWN data-context image. This used to fall back to
+  // the generic objective illustration, which put a stock classroom scene next to
+  // starters like "I notice the two totals differ by ___" — 29 lessons author no
+  // nw.image, so every one of them asked students to describe a picture that was
+  // not about their problem. `.nw-layout-noimg` already handles the no-image case.
+  const imgSrc = nw.image || null;
+>>>>>>> origin/main
 
   if (imgSrc) {
     const fig = document.createElement("figure");
     fig.className = "nw-figure";
+<<<<<<< HEAD
     fig.style.cssText = "background:#ffffff; padding:10px; border-radius:12px; border:1px solid #cbd5e1;";
+||||||| 540ecb4e3
+=======
+    fig.style.cssText =
+      "background:#ffffff; padding:10px; border-radius:12px; border:1px solid #cbd5e1;";
+>>>>>>> origin/main
     const img = document.createElement("img");
     img.className = "nw-img";
     img.setAttribute("loading", "lazy");
     img.setAttribute("decoding", "async");
     img.src = String(imgSrc);
+<<<<<<< HEAD
     img.alt = nw.context ? String(nw.context) : (objVisuals?.content?.caption || config.title || "Notice and Wonder data display");
+||||||| 540ecb4e3
+    img.src = String(nw.image);
+    img.alt = nw.context ? String(nw.context) : "Notice and Wonder data display";
+=======
+    img.alt = nw.context
+      ? String(nw.context)
+      : objVisuals?.content?.caption || config.title || "Notice and Wonder data display";
+>>>>>>> origin/main
     fig.append(img);
     attachImageZoom(img);
     // "Annotate the scene": a draw overlay so students can circle/underline what
@@ -1996,6 +2056,43 @@ export function observeVocabTerms(container, vocab) {
 // keys so ticking "Did it" at the end does not rewrite the "Got it" the student
 // ticked at the start. With no name entered it degrades to the ordinary
 // first-person wording, so nothing depends on the Name field being filled in.
+// Talk targets are short bullets now, not one long sentence. Older callers (and
+// any lesson that pins its own prompt text) may still hand over a single string,
+// so normalise both shapes to a list before rendering.
+function talkList(value) {
+  if (Array.isArray(value)) return value.map((v) => String(v)).filter(Boolean);
+  const s = String(value || "").trim();
+  return s ? [s] : [];
+}
+
+// esc() escapes < > &, but NOT the double quotes a JSON list is full of, so the
+// list is percent-encoded before it goes into an attribute. Encoding rather than
+// re-escaping keeps the round trip lossless no matter what a prompt contains.
+function talkAttr(value) {
+  return encodeURIComponent(JSON.stringify(talkList(value)));
+}
+
+function talkBulletsHtml(value) {
+  return talkList(value)
+    .map((line) => `<li style="margin:2px 0;">${esc(line)}</li>`)
+    .join("");
+}
+
+// The caption under the visual model, as short labelled bullets rather than one
+// long sentence. Newcomers read the label ("You see", "Your goal") and one
+// clause, instead of a 45-word paragraph of subordinate clauses.
+// Falls back to the single-sentence caption if a config resolves no bullets.
+function visualCaptionHtml(bullets, caption) {
+  const list = Array.isArray(bullets) ? bullets.filter((b) => b && b.text) : [];
+  if (!list.length) return esc(caption || "");
+  return `<ul style="margin:0; padding-left:0; list-style:none; display:flex; flex-direction:column; gap:5px;">${list
+    .map(
+      (b) =>
+        `<li style="display:flex; gap:8px; align-items:flex-start; line-height:1.45;"><span aria-hidden="true">${esc(b.icon)}</span><span><strong>${esc(b.label)}:</strong> ${esc(b.text)}</span></li>`,
+    )
+    .join("")}</ul>`;
+}
+
 function renderObjectives(el, config, state, opts = {}) {
   const review = !!opts.review;
   const name = review ? studentFirstName(state) : "";
@@ -2013,47 +2110,54 @@ function renderObjectives(el, config, state, opts = {}) {
   const card = (o) => `
     <div class="card ${o.cardClass} launch-objective">
       <div class="launch-objective-head" style="display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2); margin-bottom:var(--sp-2);">
-        <h4 style="color:${o.ink}; margin:0; font-size:1.15rem; font-weight:800; letter-spacing:-0.01em;">${o.label}</h4>
+        <h4 style="color:${o.ink}; margin:0; font-size:1.28rem; font-weight:800; letter-spacing:-0.01em;">${o.label}</h4>
         <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.85rem; font-weight:800; color:${o.ink}; cursor:pointer; white-space:nowrap;">
           <input type="checkbox" class="objective-check-box" data-obj-key="${o.key}" aria-label="${o.checkAria}"
                  style="width:18px; height:18px; accent-color:${o.ink}; cursor:pointer;" />
           ${o.checkLabel}
         </label>
       </div>
-      <p style="margin:0; font-size:1.08rem; font-weight:800; color:#0f172a; line-height:1.65; -webkit-font-smoothing:antialiased;">${o.text}</p>
+      <p style="margin:0; font-size:1.32rem; font-weight:800; color:#0f172a; line-height:1.55; letter-spacing:-0.005em; -webkit-font-smoothing:antialiased;">${o.text}</p>
       
       <!-- PUBLISHER-GRADE VISUAL MODEL CARD DIRECTLY BELOW OBJECTIVE TEXT -->
       <div class="visual-model-wrapper" style="margin-top:16px; margin-bottom:16px; border-radius:14px; overflow:hidden; border:1.5px solid rgba(15,23,42,0.18); box-shadow:0 6px 20px rgba(0,0,0,0.08); background:#0b0f19; cursor:zoom-in;">
         <img src="${o.img}" alt="${esc(o.alt)}" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
         <div style="padding:12px 16px; background:#ffffff; border-top:1.5px solid #e2e8f0; font-size:0.96rem; color:#0f172a; font-weight:800; line-height:1.5; -webkit-font-smoothing:antialiased;">
-          ${o.icon} <strong>Visual Representation:</strong> ${esc(o.caption)} <span style="display:inline-block; font-size:0.78rem; font-weight:800; color:#0284c7; background:rgba(2,132,199,0.08); padding:3px 8px; border-radius:6px; margin-left:6px; border:1px solid rgba(2,132,199,0.2);">🔍 Click to enlarge</span>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:7px;">
+            <span>${o.icon} <strong>Visual Representation</strong></span>
+            <span style="display:inline-block; font-size:0.78rem; font-weight:800; color:#0284c7; background:rgba(2,132,199,0.08); padding:3px 8px; border-radius:6px; border:1px solid rgba(2,132,199,0.2);">🔍 Click to enlarge</span>
+          </div>
+          ${visualCaptionHtml(o.captionBullets, o.caption)}
         </div>
-        ${o.talkPrompts ? `
-        <div class="language-talk-card" data-lang="en" data-say-en="${esc(o.talkPrompts.say)}" data-say-es="${esc(o.talkPrompts.sayEs || o.talkPrompts.say)}" data-listen-en="${esc(o.talkPrompts.listen)}" data-listen-es="${esc(o.talkPrompts.listenEs || o.talkPrompts.listen)}" style="padding:14px 16px; background:#fff7ed; border-top:2px solid #fdba74; font-size:0.95rem; color:#0f172a; line-height:1.55; -webkit-font-smoothing:antialiased;">
+        ${
+          o.talkPrompts
+            ? `
+        <div class="language-talk-card" data-lang="en" data-say-en="${talkAttr(o.talkPrompts.say)}" data-say-es="${talkAttr(o.talkPrompts.sayEs || o.talkPrompts.say)}" data-listen-en="${talkAttr(o.talkPrompts.listen)}" data-listen-es="${talkAttr(o.talkPrompts.listenEs || o.talkPrompts.listen)}" style="padding:14px 16px; background:#fff7ed; border-top:2px solid #fdba74; font-size:0.95rem; color:#0f172a; line-height:1.55; -webkit-font-smoothing:antialiased;">
           <div style="font-weight:900; font-size:0.82rem; color:#c2410c; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
             <span>🗣️ Student Talk Targets (What to Say & Listen For):</span>
             <div style="display:inline-flex; align-items:center; gap:6px;">
-              <button type="button" class="talk-audio-btn btn btn-xs btn-outline" data-talk-text="${esc(o.talkPrompts.say)}" title="Listen to pronunciation" style="padding:2px 8px; font-size:0.75rem; font-weight:800; border-radius:6px; background:white; color:#c2410c; border:1px solid #fdba74; cursor:pointer;">🔊 Listen</button>
               <button type="button" class="talk-lang-toggle btn btn-xs btn-outline" title="Switch English / Spanish" style="padding:2px 8px; font-size:0.75rem; font-weight:800; border-radius:6px; background:white; color:#0369a1; border:1px solid #7dd3fc; cursor:pointer;">🇲🇽 ES</button>
             </div>
           </div>
           <div style="display:flex; flex-direction:column; gap:8px;">
             <div style="background:rgba(234,88,12,0.06); padding:9px 12px; border-radius:8px; border-left:4px solid #ea580c;">
-              <strong style="color:#c2410c; font-weight:900; font-size:0.95rem;">What to Say:</strong> 
-              <span class="talk-say-text" style="font-weight:750; font-size:0.98rem; color:#0f172a; font-style:italic;">"${esc(o.talkPrompts.say)}"</span>
+              <strong style="color:#c2410c; font-weight:900; font-size:0.95rem;">What to Say:</strong>
+              <ul class="talk-say-text talk-bullets" style="margin:6px 0 0; padding-left:20px; font-weight:750; font-size:1rem; color:#0f172a; font-style:italic; line-height:1.6;">${talkBulletsHtml(o.talkPrompts.say)}</ul>
             </div>
             <div style="background:rgba(2,132,199,0.06); padding:9px 12px; border-radius:8px; border-left:4px solid #0284c7;">
-              <strong style="color:#0369a1; font-weight:900; font-size:0.95rem;">What to Listen For:</strong> 
-              <span class="talk-listen-text" style="font-weight:750; font-size:0.98rem; color:#0f172a;">"${esc(o.talkPrompts.listen)}"</span>
+              <strong style="color:#0369a1; font-weight:900; font-size:0.95rem;">What to Listen For:</strong>
+              <ul class="talk-listen-text talk-bullets" style="margin:6px 0 0; padding-left:20px; font-weight:750; font-size:1rem; color:#0f172a; line-height:1.6;">${talkBulletsHtml(o.talkPrompts.listen)}</ul>
             </div>
           </div>
         </div>
-        ` : ""}
+        `
+            : ""
+        }
       </div>
 
       <div class="objective-discuss" style="margin-top:var(--sp-3); padding-top:var(--sp-2); border-top:1px dashed rgba(0,0,0,0.12);">
-        <span style="display:block; font-size:.85rem; font-weight:800; letter-spacing:.02em; color:${o.ink}; margin-bottom:3px;">💬 Talk about it</span>
-        <span style="font-size:.98rem; font-weight:700; color:#1e293b; line-height:1.5;">${o.discuss}</span>
+        <span style="display:block; font-size:1.1rem; font-weight:800; letter-spacing:.02em; color:${o.ink}; margin-bottom:6px;">💬 Talk about it</span>
+        <span style="display:block; font-size:1.25rem; font-weight:700; color:#1e293b; line-height:1.6;">${o.discuss}</span>
       </div>
     </div>`;
 
@@ -2075,6 +2179,7 @@ function renderObjectives(el, config, state, opts = {}) {
       alt: visuals.content.alt,
       icon: "🎯",
       caption: visuals.content.caption,
+      captionBullets: visuals.content.captionBullets,
       talkPrompts: visuals.content.talkPrompts,
       checkLabel: review ? "Did it" : "Got it",
       checkAria: review
@@ -2094,6 +2199,7 @@ function renderObjectives(el, config, state, opts = {}) {
       alt: visuals.language.alt,
       icon: "🗣️",
       caption: visuals.language.caption,
+      captionBullets: visuals.language.captionBullets,
       talkPrompts: visuals.language.talkPrompts,
       checkLabel: review ? "Did it" : "Got it",
       checkAria: review
@@ -2119,16 +2225,6 @@ function renderObjectives(el, config, state, opts = {}) {
     attachImageZoom(img);
   });
 
-  block.querySelectorAll(".talk-audio-btn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const text = btn.getAttribute("data-talk-text");
-      const cardEl = btn.closest(".language-talk-card");
-      const isEs = cardEl?.getAttribute("data-lang") === "es";
-      if (text) speakText(text, isEs ? "es-US" : "en-US");
-    });
-  });
-
   block.querySelectorAll(".talk-lang-toggle").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -2138,12 +2234,19 @@ function renderObjectives(el, config, state, opts = {}) {
       cardEl.setAttribute("data-lang", isEs ? "en" : "es");
       const sayEl = cardEl.querySelector(".talk-say-text");
       const listenEl = cardEl.querySelector(".talk-listen-text");
-      const audioBtn = cardEl.querySelector(".talk-audio-btn");
-      const sayText = isEs ? cardEl.getAttribute("data-say-en") : cardEl.getAttribute("data-say-es");
-      const listenText = isEs ? cardEl.getAttribute("data-listen-en") : cardEl.getAttribute("data-listen-es");
-      if (sayEl) sayEl.textContent = `"${sayText}"`;
-      if (listenEl) listenEl.textContent = `"${listenText}"`;
-      if (audioBtn && sayText) audioBtn.setAttribute("data-talk-text", sayText);
+      // Both language variants ride along as JSON lists, so switching language
+      // rebuilds the bullets instead of swapping one sentence.
+      const readList = (attr) => {
+        try {
+          return talkList(JSON.parse(decodeURIComponent(cardEl.getAttribute(attr) || "%5B%5D")));
+        } catch (_e) {
+          return [];
+        }
+      };
+      const sayText = readList(isEs ? "data-say-en" : "data-say-es");
+      const listenText = readList(isEs ? "data-listen-en" : "data-listen-es");
+      if (sayEl) sayEl.innerHTML = talkBulletsHtml(sayText);
+      if (listenEl) listenEl.innerHTML = talkBulletsHtml(listenText);
       btn.textContent = isEs ? "🇲🇽 ES" : "🇺🇸 EN";
     });
   });
@@ -2279,7 +2382,7 @@ function renderNoticeWonderSupport(host, support, config, fieldRoot = host) {
 // the last-known value so the timer renders instantly and still works offline
 // or when the shared backend is unavailable. Editing is Teacher-Mode only.
 const WARMUP_TIME_KEY = "nt-warmup-seconds";
-const WARMUP_TIME_DEFAULT = 180;
+const WARMUP_TIME_DEFAULT = 300;
 const WARMUP_TIME_MIN = 15;
 const WARMUP_TIME_MAX = 3600;
 const WARMUP_SETTINGS_URL = "/api/settings/warmup";
@@ -3162,10 +3265,29 @@ function renderLaunchPhase(el, state, ctx, config) {
   const isEs = getPreferredLang() === "es";
   const btn = document.createElement("button");
   btn.className = "btn btn-primary btn-lg mt-6";
-  const isStudied = (state.get() || {}).vocabVisited || (state.get() || {}).notesVisited;
-  btn.textContent = isStudied
-    ? (isEs ? "Continuar a la Fase 4: Explorar 🔍 →" : "Continue to Phase 4: Explore 🔍 →")
-    : (isEs ? "🔑 Vocabulario 🚀 →" : "🔑 Vocabulary 🚀 →");
+  // Launch always continues to Vocab, which continues to Learn It. That is the
+  // taught order, so it is the order the button offers — every time, not only
+  // on a student's first visit.
+  //
+  // This used to branch on `vocabVisited || notesVisited`: a student who had
+  // opened either one ONCE got "Continue to Phase 4: Explore" instead and was
+  // sent straight past both pre-lesson steps. Opening a tab is not the same as
+  // having studied it, and it silently produced two different lesson orders for
+  // two students sitting next to each other.
+  //
+  // The label is "Continue to Vocab →" for the same reason the rest of the
+  // chain reads that way ("Continue to Learn It", "Continue to Explore",
+  // "Continue to Practice"): the old "🔑 Vocabulary 🚀 →" named a destination
+  // without saying it was the next step, so it read as a side trip rather than
+  // the way forward.
+  //
+  // Explore is named here because this list used to skip it, which is not
+  // harmless in a comment that documents the chain — tests/lesson-reflow.spec.ts
+  // asserted Learn It → Practice on the strength of exactly that reading and
+  // failed against a shell that was behaving correctly. The order is Launch →
+  // Vocab → Learn It → Explore → Practice; openExtra("learn") in
+  // engine/core/app.js is where the Learn It → Explore hand-off is defined.
+  btn.textContent = isEs ? "Continuar a Vocabulario →" : "Continue to Vocab →";
 
   btn.addEventListener("click", async () => {
     if (
@@ -3186,15 +3308,7 @@ function renderLaunchPhase(el, state, ctx, config) {
     }
     el.querySelector(".launch-fb")?.remove();
     await completePhase(el, ctx, state, 2, "Launch", 1, 1, { quiet: true });
-    if (isStudied) {
-      if (typeof ctx.navigateTo === "function") {
-        ctx.navigateTo(3);
-      } else if (typeof ctx.nextPhase === "function") {
-        ctx.nextPhase();
-      }
-    } else {
-      ctx.openExtra("vocab");
-    }
+    ctx.openExtra("vocab");
   });
   el.append(btn);
 }
@@ -3202,12 +3316,17 @@ function renderLaunchPhase(el, state, ctx, config) {
 // ── Phase 3: Explore ──
 function renderExplorePhase(el, state, ctx, config) {
   const cfg = config.explore;
+  // The header states the POINT of the phase; the task itself is printed once,
+  // on the activity card below. Printing `instructions` here as well meant a
+  // student read the same sentence three times (header, stem, tool label)
+  // before reaching anything they could touch.
   phaseHeader(
     el,
     "🔍",
     "section-icon-teal",
     "Explore",
-    cfg.instructions || "Investigate the concept with an interactive tool.",
+    cfg.goal ||
+      "Build it yourself first. You do not need the formula yet — you are looking for it.",
   );
 
   // Opt-in data diagram shown up front so students can SEE and read the visual
@@ -3215,14 +3334,14 @@ function renderExplorePhase(el, state, ctx, config) {
   // (histogram, dot-plot, box-plot, bar-chart, number-line); `histogram` kept
   // for back-compat.
   const exploreDiagram = cfg.diagram || cfg.histogram;
+  let exploreFig = null;
   if (exploreDiagram) {
-    const figCard = document.createElement("div");
-    figCard.className = "card";
-    figCard.innerHTML = cfg.diagram ? buildVisual(cfg.diagram) : histogramSVG(cfg.histogram);
-    el.append(figCard);
-    // Explore is where the building happens, so this is the mount that most
-    // needs to remember. phaseId 1 = Explore.
-    mountInteractiveVisuals(figCard, { state, phaseId: 1 });
+    exploreFig = document.createElement("div");
+    exploreFig.className = "card";
+    exploreFig.innerHTML = cfg.diagram ? buildVisual(cfg.diagram) : histogramSVG(cfg.histogram);
+    // Held, not appended: it is placed beside the activity below rather than
+    // stacked above it. Mounted after placement so the component measures a
+    // node that is already in its final column.
   }
 
   // Surface a Turn & Talk discussion moment after the Explore interaction.
@@ -3230,7 +3349,15 @@ function renderExplorePhase(el, state, ctx, config) {
   // affordance is built into the button flow so it never blocks progress.
   // An optional `ttPrompt` overrides the generic explore prompt — used to run
   // the authored post-activity discussion as a SPOKEN follow-up (see below).
+  // Interactive components report completion more than once (a re-check, a
+  // reset-and-retry, a per-problem callback that fires again on the last item),
+  // and every call appended ANOTHER Turn & Talk card plus another Continue
+  // button — lesson 1-5 showed the same discussion three times in a row. This
+  // hand-off happens once per phase render.
+  let turnTalkShown = false;
   const showTurnTalkThenComplete = (ttPrompt) => {
+    if (turnTalkShown) return;
+    turnTalkShown = true;
     renderTurnAndTalk(
       el,
       ttPrompt || resolveTurnTalk("explore", config),
@@ -3251,7 +3378,47 @@ function renderExplorePhase(el, state, ctx, config) {
 
   const exploreShell = document.createElement("div");
   exploreShell.className = "explore-problem-wrap";
-  el.append(exploreShell);
+  if (exploreFig) {
+    // Figure on the right, the activity it describes on the left, so a student
+    // reading the data can work the interaction without scrolling away from it.
+    // Two live widgets side by side with no captions read as two unrelated
+    // assignments, so each column says plainly what it is and what order to
+    // work in.
+    const pair = openWorkPair(el);
+    // `solveFirst` inverts the pair: the TOOL is the assignment and the activity
+    // is what you do with the result. Authored for the decimal labs, where the
+    // number line was being worked as a standalone "drag to the number we told
+    // you" task — the arithmetic the lesson is actually about happened in an
+    // optional widget beside it, or not at all. Now the student computes the sum
+    // in columns first, and the number line stays locked until they have one.
+    const solveFirst = cfg.solveFirst === true;
+    if (solveFirst) {
+      pair.main.parentElement?.classList.add("nt-work-pair--tool-first");
+      pair.tool.prepend(
+        workPairCaption("Step 1", cfg.solveFirstToolCaption || "Solve the problem here first."),
+      );
+      pair.main.prepend(
+        workPairCaption(
+          "Step 2",
+          cfg.solveFirstTaskCaption || "Then show that move on the number line.",
+        ),
+      );
+    } else {
+      // "Do this" / "Use this to see why" read as one instruction split across two
+      // columns, so students tried to follow Step 1's caption while looking at
+      // Step 2's widget. Each caption now names what its OWN column is for.
+      pair.main.prepend(workPairCaption("Step 1", "Work the task below."));
+      pair.tool.prepend(workPairCaption("Step 2", "Then use this model to check your thinking."));
+    }
+    pair.main.append(exploreShell);
+    pair.tool.append(exploreFig);
+    if (solveFirst) lockUntilSolved(pair.main, exploreShell);
+    // Explore is where the building happens, so this is the mount that most
+    // needs to remember. phaseId 1 = Explore.
+    mountInteractiveVisuals(exploreFig, { state, phaseId: 1 });
+  } else {
+    el.append(exploreShell);
+  }
 
   // Inline Reveal Math slides for the Explore section.
   renderRevealSlides(el, config, "explore");
@@ -3262,7 +3429,10 @@ function renderExplorePhase(el, state, ctx, config) {
     // (exploreDiagram). Drop it here so renderComponent's per-item diagram
     // slot doesn't render the SAME figure a second time (was producing two
     // identical balance widgets in Explore).
-    { ...cfg, diagram: undefined, stem: cfg.instructions || cfg.stem },
+    // `label` is dropped for the same reason as `diagram`: the component prints
+    // it directly above its own widget, one line under the stem that already
+    // said it. One instruction, one place.
+    { ...cfg, diagram: undefined, label: undefined, stem: cfg.instructions || cfg.stem },
     () => {
       if (cfg.discourse) {
         // Post-activity discussion is now a SPOKEN Turn & Talk (not a writing
@@ -3405,6 +3575,93 @@ function stripLabelForGrading(correct) {
 // are auto-graded (✅/❌); complex expressions fall back to a self-check reveal.
 // Genuinely practices the skill (not only matching/sorting games), and saves
 // work to the Practice phase responses. No-op when there are no solvable items.
+// Put an interactive tool beside the work it supports instead of above it.
+// Returns the two columns: `main` for the problems, `tool` for the manipulative.
+// Callers append the tool once and then keep appending problem content to
+// `main`; anything appended to the original host afterwards still lands full
+// width below the pair, which is what wide content wants.
+function openWorkPair(host) {
+  const pair = document.createElement("div");
+  pair.className = "nt-work-pair";
+  const main = document.createElement("div");
+  main.className = "nt-work-main";
+  const tool = document.createElement("div");
+  tool.className = "nt-work-tool";
+  pair.append(main, tool);
+  host.append(pair);
+  return { main, tool };
+}
+
+// Hold the Step 2 activity closed until the Step 1 tool reports a solved
+// problem (`nt:decimal-columns-solved`, dispatched by the columns lab and
+// bubbling up through the pair). The lock is a cover over the activity, not a
+// removal: the widget below it is fully built and mounted, so unlocking is
+// instant and nothing has to re-render.
+//
+// It is never a dead end. The cover carries its own "Skip ahead" control, so a
+// student who worked the problem on paper — or who hits a tool that will not
+// load — is one click from the number line. The point is the ORDER (compute,
+// then model), not a checkpoint to enforce.
+function lockUntilSolved(scope, gated) {
+  const cover = document.createElement("div");
+  cover.className = "nt-solve-gate";
+  cover.setAttribute("role", "status");
+
+  const line = document.createElement("p");
+  line.className = "nt-solve-gate-line";
+  line.textContent = "🔒 Finish Step 1 first — solve the problem in columns.";
+
+  const skip = document.createElement("button");
+  skip.type = "button";
+  skip.className = "btn btn-secondary nt-solve-gate-skip";
+  skip.textContent = "I already solved it — open the number line";
+
+  cover.append(line, skip);
+  gated.setAttribute("aria-hidden", "true");
+  gated.classList.add("nt-solve-gated");
+  gated.before(cover);
+
+  // The tool lives in the SIBLING column, so the solved event is only visible
+  // on the shared ancestor — listening on `scope` itself would never fire.
+  const listenOn = scope.parentElement || scope;
+  let open = false;
+  const unlock = () => {
+    if (open) return;
+    open = true;
+    cover.remove();
+    gated.classList.remove("nt-solve-gated");
+    gated.removeAttribute("aria-hidden");
+    listenOn.removeEventListener("nt:decimal-columns-solved", unlock);
+  };
+  skip.addEventListener("click", unlock);
+  listenOn.addEventListener("nt:decimal-columns-solved", unlock);
+}
+
+// Small "Step 1 · Do this" caption that sits above one column of a work pair,
+// so a two-widget layout reads as one ordered activity instead of two.
+function workPairCaption(step, text) {
+  const p = document.createElement("p");
+  p.className = "nt-work-caption";
+  // One horizontal line across the full width of its column: the badge and the
+  // sentence used to wrap onto separate lines in the narrower column, which read
+  // as two headings instead of one instruction.
+  p.style.cssText =
+    "display:flex; align-items:center; flex-wrap:nowrap; width:100%; gap:10px; " +
+    "margin:0 0 var(--sp-3,12px); font-size:var(--fs-lg,1.15rem); font-weight:800; color:var(--navy,#12355b);";
+  const badge = document.createElement("span");
+  // Darker green and no uppercase/letter-spacing: the old pill printed small
+  // wide-tracked caps in white on a light teal, which is the hardest thing on
+  // the page to read.
+  badge.style.cssText =
+    "flex:0 0 auto; padding:6px 16px; border-radius:999px; background:#0f766e; color:#fff; " +
+    "font-size:var(--fs-lg,1.15rem); font-weight:900;";
+  badge.textContent = step;
+  const txt = document.createElement("span");
+  txt.textContent = text;
+  p.append(badge, txt);
+  return p;
+}
+
 function renderSkillPractice(host, config, state) {
   const p = config.practice || {};
   // The Worked Example panel above (renderWorkedExamplePanel) reveals the I-Do
@@ -3479,6 +3736,9 @@ function renderSkillPractice(host, config, state) {
 
     const workEl = wrap.querySelector(".sp-work");
     const ansEl = wrap.querySelector(".sp-answer");
+    // Inequality answers get one-tap ≤ / ≥ buttons — those symbols are not on a
+    // Chromebook keyboard, so typing them is the barrier, not the maths.
+    if (needsSymbolPad(it.answer)) mountSymbolPad(ansEl, { force: true });
     const reveal = wrap.querySelector(".sp-reveal");
     workEl.value = state.getResponse(2, `sp-work-${i}`) || "";
     ansEl.value = state.getResponse(2, `sp-ans-${i}`) || "";
@@ -3621,6 +3881,7 @@ function renderPracticePhase(el, state, ctx, config) {
   // mounted at the top of Practice so students can rehearse the skill before the
   // adaptive items. `practice.diagram` accepts any interactive/static visual
   // kind, or an ARRAY of them to stack several complementary labs.
+  const labCards = [];
   if (config.practice?.diagram) {
     const labs = Array.isArray(config.practice.diagram)
       ? config.practice.diagram
@@ -3635,17 +3896,26 @@ function renderPracticePhase(el, state, ctx, config) {
       // and what it is for. Falls back to the bare tool when a kind somehow has
       // no catalog entry (tools/interactive-tools.test.mjs gates against that).
       labCard.innerHTML = practiceLabHeaderHtml(lab) + buildVisual(lab);
-      el.append(labCard);
+      labCards.push(labCard);
       mountInteractiveVisuals(labCard, { state, phaseId: 2 });
     }
   }
 
-  renderWorkedExamplePanel(el, config);
-  renderCommonMistakeCallout(el, config);
+  // The lab sits BESIDE the work it is for. Stacked above it, a student on
+  // problem 3 had already scrolled the tool off screen.
+  let workHost = el;
+  if (labCards.length) {
+    const pair = openWorkPair(el);
+    labCards.forEach((c) => pair.tool.append(c));
+    workHost = pair.main;
+  }
+
+  renderWorkedExamplePanel(workHost, config);
+  renderCommonMistakeCallout(workHost, config);
 
   // Lead with real skill practice — solve problems, show steps — before the
   // interactive games/sorts below.
-  renderSkillPractice(el, config, state);
+  renderSkillPractice(workHost, config, state);
 
   // Opt-in discussion moment: after doing the skill, students compare and
   // question each other's strategies. Non-graded, dismissible, never blocks.
@@ -3969,6 +4239,7 @@ function renderConnectFrame(cfg, state) {
   frame.className = "sentence-frame sentence-frame-live";
 
   const inputs = [];
+  const padTargets = [];
   segments.forEach((text, i) => {
     if (text) frame.append(document.createTextNode(text.replace(/\s+/g, " ")));
     if (i >= blankCount) return;
@@ -3983,8 +4254,12 @@ function renderConnectFrame(cfg, state) {
       input.classList.remove("is-correct", "is-wrong");
     });
     frame.append(input);
+    if (needsSymbolPad(answers[i])) padTargets.push(input);
     inputs.push(input);
   });
+
+  // Inequality blanks get their ≤ / ≥ keys BELOW the sentence, not inline.
+  for (const target of padTargets) mountSymbolPad(target, { force: true, host: frame });
 
   // Fill the frame in with what the student typed, so the saved response reads
   // as a complete sentence rather than a bag of fragments.
@@ -4069,7 +4344,9 @@ function renderConnectPhase(el, state, ctx, config) {
 
   // Editable response box (core-owned), mirroring Launch/Reflect persistence.
   const minLength = 25;
-  const promptText = cfg.promptQuestion || `Explain your mathematical solution for ${config.title || "this scenario"}:`;
+  const promptText =
+    cfg.promptQuestion ||
+    `Explain your mathematical solution for ${config.title || "this scenario"}:`;
 
   const respCard = document.createElement("div");
   respCard.className = "card card-teal";
@@ -4079,7 +4356,8 @@ function renderConnectPhase(el, state, ctx, config) {
   const label = document.createElement("label");
   label.setAttribute("for", fieldId);
   label.className = "connect-prompt-label";
-  label.style.cssText = "font-weight:800; font-size:1.1rem; color:var(--teal-ink); margin-bottom:10px; display:block;";
+  label.style.cssText =
+    "font-weight:800; font-size:1.1rem; color:var(--teal-ink); margin-bottom:10px; display:block;";
   label.textContent = promptText;
   respCard.append(label);
 
@@ -4235,11 +4513,23 @@ function renderConnectPhase(el, state, ctx, config) {
       return;
     }
 
+    // The Spanish resolution rides directly under the English rather than behind
+    // a toggle: this card appears once, at the moment the answer is revealed, so
+    // a newcomer who has to find and press a control has already lost the beat.
+    // Only shown when it is actually authored AND differs from the English.
+    const modelTextEs =
+      cfg.modelAnswerEs && String(cfg.modelAnswerEs).trim() !== String(modelText).trim()
+        ? String(cfg.modelAnswerEs)
+        : "";
     const reveal = document.createElement("div");
     reveal.className = "connect-reveal";
     reveal.innerHTML = `
       <div class="connect-reveal-title">✅ The answer</div>
-      <p class="connect-reveal-body">${renderMathText(String(modelText))}</p>`;
+      <p class="connect-reveal-body">${renderMathText(String(modelText))}</p>${
+        modelTextEs
+          ? `\n      <p class="connect-reveal-body connect-reveal-es" lang="es">${renderMathText(modelTextEs)}</p>`
+          : ""
+      }`;
     const continueBtn = document.createElement("button");
     continueBtn.type = "button";
     continueBtn.className = "btn btn-primary mt-4";
@@ -4277,30 +4567,10 @@ function renderReflectPhase(el, state, ctx, config) {
   // of which question stopped them belongs here rather than behind another tab.
   if (isTeacherMode()) mountQuestionLadderReader(el, state);
 
-  // 3-2-1
-  const rCard = document.createElement("div");
-  rCard.className = "card";
-  rCard.innerHTML = `<div class="badge badge-teal mb-4">${stackHtml(t("reflection321", "en"), t("reflection321", "es"))}</div>`;
-  [
-    { n: 3, color: "teal", label: t("thingsLearned"), icon: "📝" },
-    { n: 2, color: "amber", label: t("connectionsMade"), icon: "🔗" },
-    { n: 1, color: "coral", label: t("questionStillHave"), icon: "❓" },
-  ].forEach((r) => {
-    const row = document.createElement("div");
-    row.style.cssText =
-      "display:grid; grid-template-columns:auto 1fr; gap:var(--sp-3); align-items:start; margin-bottom:var(--sp-3);";
-    row.innerHTML = `<span class="badge badge-${r.color}">${r.icon} ${r.n}</span>`;
-    const ta = document.createElement("textarea");
-    ta.className = "text-input";
-    ta.rows = r.n > 1 ? 2 : 1;
-    ta.placeholder = `${r.n} ${r.label}...`;
-    ta.value = state.getResponse(4, `reflect_${r.n}`) || "";
-    ta.addEventListener("input", () => state.saveResponse(4, `reflect_${r.n}`, ta.value));
-    row.append(ta);
-    rCard.append(row);
-  });
-  el.append(rCard);
-
+  // The 3-2-1 reflection grid was removed (2026-08-07): three open textareas
+  // asking for three things, two connections and one question sat directly
+  // above "One thing I learned" and the confidence check, which ask the same
+  // thing more simply. Reflect now opens on the single prompt students answer.
   // One thing I learned (exit ticket prep)
   const learnedCard = document.createElement("div");
   learnedCard.className = "card card-amber";

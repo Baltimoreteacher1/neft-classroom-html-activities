@@ -208,6 +208,47 @@ export const MISCONCEPTIONS = {
     studentEs:
       "Eso es el total de los datos, no su promedio. ¿Tu respuesta podría ser un valor real de esa lista? Un promedio tiene que caer dentro de los datos.",
   },
+  "geom-triangle-area-no-half": {
+    label: "Found base × height but forgot the half",
+    labelEs: "Calculó base × altura pero olvidó la mitad",
+    watchFor: "Draw the rectangle around the triangle — the triangle is half of it.",
+    student:
+      "You multiplied base × height, but that gives the whole rectangle. A triangle is half of that rectangle — take half of your answer.",
+    studentEs:
+      "Multiplicaste base × altura, pero eso da el rectángulo completo. Un triángulo es la mitad de ese rectángulo: toma la mitad de tu respuesta.",
+  },
+  // Authored-only, deliberately: there is no honest numeric predictor here.
+  // The error is answering the WRONG QUESTION (volume when surface area was
+  // asked), and l·w·h is a perfectly correct computation — nothing about the
+  // value alone reveals the mistake. Only the item's own distractor knows.
+  "geom-surface-area-as-volume": {
+    label: "Found the volume instead of the surface area",
+    labelEs: "Halló el volumen en vez del área total",
+    watchFor:
+      "Ask what the unit has to be — square units cover a surface, cubic units fill a space.",
+    student:
+      "That is the volume — the space inside. Surface area is the wrapping: find the area of all six faces and add them. Check your unit, too — a surface is measured in square units, not cubic.",
+    studentEs:
+      "Eso es el volumen: el espacio de adentro. El área total es la envoltura: halla el área de las seis caras y súmalas. Revisa también la unidad: una superficie se mide en unidades cuadradas, no cúbicas.",
+  },
+  "geom-volume-added-dimensions": {
+    label: "Added the dimensions instead of multiplying",
+    labelEs: "Sumó las dimensiones en vez de multiplicarlas",
+    watchFor: "Build one layer of unit cubes first, then count the layers.",
+    student:
+      "You added length + width + height. Volume fills the box with cubes — build one layer, then multiply by how many layers stack up.",
+    studentEs:
+      "Sumaste largo + ancho + alto. El volumen llena la caja con cubos: arma una capa y multiplica por cuántas capas se apilan.",
+  },
+  "algebra-distributive-partial": {
+    label: "Distributed to the first term only",
+    labelEs: "Distribuyó solo al primer término",
+    watchFor: "Draw the area model — the outside factor touches BOTH terms.",
+    student:
+      "The number outside the parentheses has to multiply BOTH terms inside, not just the first one. Draw the area model and check both pieces.",
+    studentEs:
+      "El número fuera del paréntesis debe multiplicar AMBOS términos de adentro, no solo el primero. Dibuja el modelo de área y revisa las dos partes.",
+  },
   "measure-area-perimeter-swap": {
     label: "Swapped area and perimeter",
     labelEs: "Confundió área y perímetro",
@@ -227,7 +268,42 @@ export const MISCONCEPTIONS = {
 const AUTHORED_TAGS = {
   "place-value": "decimal-place-value",
   "sign-error": "sign-dropped",
+  // Straight-across fraction division is ALGEBRAICALLY VALID, so it has no
+  // numeric predictor (see the long note in predictions()) — an authored
+  // distractor is the only honest way to name it, and until this mapping
+  // existed an authored "straight-across" tag resolved to nothing at all.
+  "straight-across": "fraction-straight-across-division",
+  "triangle-half": "geom-triangle-area-no-half",
+  "volume-added": "geom-volume-added-dimensions",
+  "distributive-partial": "algebra-distributive-partial",
 };
+
+/**
+ * Resolve an authored distractor tag to a MISCONCEPTIONS key.
+ *
+ * Two accepted forms, in priority order:
+ *   1. a short alias from AUTHORED_TAGS above (kept for the 111 items already
+ *      authored against them, and for genuinely nicer shorthand)
+ *   2. a taxonomy id verbatim ("ratio-inverted")
+ *
+ * Form 2 exists because the alias map covered only 6 of the 22 taxonomy
+ * entries, which quietly made the other 16 UNAUTHORABLE. That matters more
+ * than it sounds: the numeric predictor can only infer an error from a stem it
+ * can parse as arithmetic, and 82% of this curriculum's multiple-choice items
+ * are prose word problems (see reports/misconception-coverage.md). For those,
+ * an authored tag is the ONLY detection path — so an author who wanted to name
+ * "flipped the ratio" on a distractor had no way to say it, and the tag they
+ * wrote resolved to nothing at all with no warning.
+ *
+ * Unknown strings still resolve to null and fall through to the predictor,
+ * so a typo degrades to today's behaviour rather than inventing a diagnosis.
+ */
+export function resolveAuthoredTag(tag) {
+  const key = typeof tag === "string" ? tag.trim() : "";
+  if (!key) return null;
+  if (AUTHORED_TAGS[key]) return AUTHORED_TAGS[key];
+  return MISCONCEPTIONS[key] ? key : null;
+}
 
 /** Split "3/4" into parts. Returns null unless the whole string is a fraction. */
 function fractionParts(text) {
@@ -506,6 +582,45 @@ export function predictions(item, correct) {
     push("ratio-inverted", apply(expression.b, expression.a, "/"));
   }
 
+  // Triangle area: base × height offered without the half. Gated on the words
+  // "triangle" AND "area" AND explicitly labelled base/height quantities, so a
+  // rectangle problem or a bare "6 by 4" stem never earns a triangle label.
+  if (/\btriangle\b/i.test(stem) && /\barea\b/i.test(stem)) {
+    const base = stem.match(/base\s*(?:of|is|=|:)?\s*(\d+(?:\.\d+)?)/i);
+    const height = stem.match(/height\s*(?:of|is|=|:)?\s*(\d+(?:\.\d+)?)/i);
+    if (base && height) {
+      push("geom-triangle-area-no-half", Number(base[1]) * Number(height[1]));
+    }
+  }
+
+  // Volume of a rectangular prism: the three dimensions added instead of
+  // multiplied. Needs the word "volume" and a full "L by W by H" chain.
+  if (/\bvolume\b/i.test(stem)) {
+    const triple = stem.match(
+      /(\d+(?:\.\d+)?)\s*(?:units?|cm|m|in|ft|mm)?\s*(?:by|×|x)\s*(\d+(?:\.\d+)?)\s*(?:units?|cm|m|in|ft|mm)?\s*(?:by|×|x)\s*(\d+(?:\.\d+)?)/i,
+    );
+    if (triple) {
+      push(
+        "geom-volume-added-dimensions",
+        Number(triple[1]) + Number(triple[2]) + Number(triple[3]),
+      );
+    }
+  }
+
+  // Distributive property: a(b + c) with the outside factor applied to the
+  // first term only — a·b + c. Only for a literal numeric "N(N ± N)" in the
+  // stem, so prose never triggers it.
+  const distributive = stem.match(
+    /(\d+(?:\.\d+)?)\s*\(\s*(\d+(?:\.\d+)?)\s*([+−–-])\s*(\d+(?:\.\d+)?)\s*\)/,
+  );
+  if (distributive) {
+    const factor = Number(distributive[1]);
+    const first = Number(distributive[2]);
+    const second = Number(distributive[4]);
+    const sign = distributive[3] === "+" ? 1 : -1;
+    push("algebra-distributive-partial", factor * first + sign * second);
+  }
+
   // Sign loss is the explanation of LAST RESORT, and only for negative answers.
   // On "12 − 30" the reversal (30 − 12) and the dropped sign (|−18|) are the same
   // number 18, so offering both would make every negative subtraction ambiguous
@@ -547,7 +662,7 @@ export function detectMisconception(item, typed, choiceIndex = null) {
   // more than any predictor can.
   const it = /** @type {any} */ (item);
   if (Number.isInteger(choiceIndex) && Array.isArray(it?.misconceptionTags)) {
-    const authored = AUTHORED_TAGS[it.misconceptionTags[choiceIndex]];
+    const authored = resolveAuthoredTag(it.misconceptionTags[choiceIndex]);
     if (authored) return authored;
   }
   const answer = numberOf(correctAnswerText(item));
@@ -598,6 +713,22 @@ export function studentExplanation(id, lang = "en") {
   if (!entry) return "";
   if (lang === "es") return entry.studentEs || entry.student || "";
   return entry.student || "";
+}
+
+/**
+ * The short diagnosis chip ("Added the denominators") in the requested
+ * language. Mirrors `studentExplanation` — same fallback rule, so a partially
+ * translated taxonomy degrades to readable English, never to blank.
+ *
+ * Callers want this rather than `diagnoseChoice(...).labelEs`: that spread is
+ * typed from the entries that carry no Spanish, so reaching into it is both a
+ * type error and a silent `undefined` on any entry that was never translated.
+ */
+export function misconceptionLabel(id, lang = "en") {
+  const entry = MISCONCEPTIONS[id];
+  if (!entry) return "";
+  if (lang === "es") return entry.labelEs || entry.label || "";
+  return entry.label || "";
 }
 
 /**

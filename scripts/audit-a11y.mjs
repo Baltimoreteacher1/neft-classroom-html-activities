@@ -48,7 +48,7 @@ const ANCHORS = [
   { path: "/", name: "Home portal" },
   { path: "/curriculum/", name: "Curriculum hub" },
   { path: "/directory/", name: "Activity directory" },
-  { path: "/lessons/1-1/", name: "Lesson 1-1 launcher" },
+  { path: "/lessons/6-13/", name: "Lesson 1-1 launcher" },
   { path: "/math/student-board/", name: "Class board" },
   { path: "/access-practice-lab/", name: "ACCESS practice lab" },
   { path: "/practice-engine/", name: "Practice engine" },
@@ -99,7 +99,15 @@ async function filterGradientBacked(tab, nodes) {
   return out;
 }
 
-const browser = await chromium.launch();
+// PW_CHROMIUM_PATH: point at a system Chromium when the Playwright-managed
+// download is missing or version-mismatched (sandboxed containers, locked-down
+// runners). Same override tools/smoke-lesson-boot.mjs and
+// scripts/validate-lesson-visuals.mjs already take — this was the third script
+// in the repo to need it and the only one still without it, so an a11y sweep
+// could not be run anywhere those two could.
+const browser = await chromium.launch(
+  process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
+);
 const findings = [];
 const manualReview = [];
 const keyboard = [];

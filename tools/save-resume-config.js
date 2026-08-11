@@ -74,6 +74,11 @@ export const SKIP_TOPLEVEL = new Set([
   "ar-measure", // stateless WebXR AR measuring tool — nothing to save
   "class-manip", // shared class dot plot — state lives in the room, not save/resume
   "mentor-lab", // Unit 0 mentor choice — durable in `nt_mentor`, nothing partial to resume
+  "fix-it-design-challenge", // teacher PD worksheet — self-persists to its own
+  // localStorage key and hands off via a copied Padlet post; the generic
+  // "save your work" bar sat on top of the wizard and meant nothing here
+  "osamr-case-clinic", // same teacher PD model: local state plus a shared board
+  // via /api/osamr-board, so there is no student work for the widget to hold
 ]);
 
 // Filename patterns that are not student-facing activities.
@@ -99,7 +104,12 @@ export const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b|(^|[/\\])printable\
 //   - math/student-board/index.html → the live Class Board (teacher-authored,
 //     student-visible display; its own state lives in D1 via /api/board, not in
 //     the generic student save/resume widget)
+//   - today/index.html           → the daily front door: a nav screen that READS
+//     save/resume state (via /api/progress/mine) to decide what to link to. It
+//     holds no student work of its own, so a Save widget on it would offer to
+//     save an empty page — and would sit directly under the "Continue" button,
+//     which is exactly the confusion this screen exists to remove.
 // (The math/intervention/<topic>/ pages DO carry student self-assessment +
 // quiz state and are intentionally NOT excluded.)
 export const SKIP_PATH_RE =
-  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/(?:intervention|student-board)\/index\.html$)/i;
+  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/(?:intervention|student-board)\/index\.html$|today\/index\.html$)/i;

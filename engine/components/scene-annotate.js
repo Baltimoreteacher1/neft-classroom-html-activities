@@ -111,7 +111,11 @@ export function attachAnnotator(figureEl, opts = {}) {
     // Resize the backing store to the current box, then repaint. Points are in
     // CSS pixels relative to the figure's content box, so they survive resize.
     function resize() {
-      const r = figureEl.getBoundingClientRect();
+      // Measure the CANVAS. It is `inset:0` inside the figure, so once the
+      // figure has a border or its own padding its border-box rect is a
+      // different rectangle than the box the ink actually lands in — and the
+      // strokes land offset from the pen by exactly that difference.
+      const r = canvas.getBoundingClientRect();
       if (r.width < 1 || r.height < 1) return;
       const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
       canvas.width = Math.round(r.width * dpr);
@@ -134,13 +138,22 @@ export function attachAnnotator(figureEl, opts = {}) {
         // a single tap = a dot (mark a point)
         ctx.lineTo(s.pts[0].x + 0.01, s.pts[0].y);
       } else {
-        for (let i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i].x, s.pts[i].y);
+        // Smooth through the midpoints of consecutive samples: a straight
+        // lineTo between raw pointer samples renders every sample as a visible
+        // corner, which reads as ragged, shaky ink.
+        for (let i = 1; i < s.pts.length - 1; i++) {
+          const mx = (s.pts[i].x + s.pts[i + 1].x) / 2;
+          const my = (s.pts[i].y + s.pts[i + 1].y) / 2;
+          ctx.quadraticCurveTo(s.pts[i].x, s.pts[i].y, mx, my);
+        }
+        const last = s.pts[s.pts.length - 1];
+        ctx.lineTo(last.x, last.y);
       }
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
     function redraw() {
-      const r = figureEl.getBoundingClientRect();
+      const r = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, r.width, r.height);
       strokes.forEach(drawStroke);
       if (current) drawStroke(current);
@@ -167,7 +180,10 @@ export function attachAnnotator(figureEl, opts = {}) {
     }
     function onMove(e) {
       if (!drawing || !current) return;
-      current.pts.push(ptFrom(e));
+      // Keep the positions the browser coalesced into this event; dropping them
+      // is what turns a fast arc into a chain of straight chords.
+      const evs = typeof e.getCoalescedEvents === "function" ? e.getCoalescedEvents() : [];
+      for (const ev of evs.length ? evs : [e]) current.pts.push(ptFrom(ev));
       e.preventDefault();
       redraw();
     }
@@ -188,7 +204,9 @@ export function attachAnnotator(figureEl, opts = {}) {
     canvas.addEventListener("pointermove", onMove);
     canvas.addEventListener("pointerup", onUp);
     canvas.addEventListener("pointercancel", onUp);
-    canvas.addEventListener("pointerleave", onUp);
+    // No pointerleave handler: the pointer is captured for the whole stroke, so
+    // leaving the box is normal mid-mark. Ending the stroke there chopped a
+    // circle into pieces whenever the student drew near the figure's edge.
 
     // ── toolbar ──
     const tools = document.createElement("div");

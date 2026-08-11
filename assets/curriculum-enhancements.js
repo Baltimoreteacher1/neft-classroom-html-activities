@@ -82,14 +82,19 @@
     }
   }
 
+  // Routed through /assets/curriculum-json-cache.js so the hub fetches each
+  // data file once instead of once per feature script. This file also loads on
+  // 64 homework pages, which do not carry the cache — hence the plain fallback.
   function loadJson(url) {
-    return fetch(url)
-      .then(function (r) {
-        return r.ok ? r.json() : {};
-      })
-      .catch(function () {
-        return {};
-      });
+    var cache = window.NTJsonCache;
+    var request = cache
+      ? cache.json(url)
+      : fetch(url).then(function (r) {
+          return r.ok ? r.json() : {};
+        });
+    return request.catch(function () {
+      return {};
+    });
   }
 
   function loadProgress() {
@@ -186,13 +191,46 @@
   // Password gate for switching INTO Teacher Mode. Returns role string on
   // success, or false. Accepts master or co-teacher PIN (same Teacher Mode;
   // no Basic Auth / SITE_PASSWORD grant).
-  function requestTeacher() {
-    var entered = window.prompt("Enter teacher password:");
-    if (entered === null) return false; // cancelled
-    var role = matchTeacherPin(entered.trim());
-    if (role) return role;
-    window.alert("That password did not work. Try again.");
-    return false;
+  // Inline PIN form, opened next to the mode button. This used to be a
+  // window.prompt(), which no password manager can ever fill — so the teacher
+  // retyped the PIN on every classroom device, every day. A real credential
+  // form (stable username + current-password field) can be saved once and
+  // autofilled after that, and it matches the lesson-engine control exactly.
+  // `onRole` is called with the role string once the PIN checks out.
+  function requestTeacher(anchor, onRole) {
+    var existing = document.getElementById("hub-teacher-unlock");
+    if (existing) {
+      existing.remove();
+      return;
+    }
+    var form = document.createElement("form");
+    form.id = "hub-teacher-unlock";
+    form.className = "hub-teacher-unlock";
+    form.innerHTML =
+      '<input type="text" name="username" value="teacher" autocomplete="username" readonly tabindex="-1" aria-hidden="true" class="nt-credential-user" />' +
+      '<input type="password" name="password" class="hub-teacher-pin" autocomplete="current-password" placeholder="Enter teacher password" aria-label="Enter teacher password" />' +
+      '<button type="submit" class="hub-teacher-go">Enter</button>' +
+      '<p class="hub-teacher-err" role="alert" hidden>That password did not work. Try again.</p>';
+
+    var pin = form.querySelector(".hub-teacher-pin");
+    var err = form.querySelector(".hub-teacher-err");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var role = matchTeacherPin(String(pin.value || "").trim());
+      if (!role) {
+        err.hidden = false;
+        pin.value = "";
+        pin.focus();
+        return;
+      }
+      form.remove();
+      onRole(role);
+    });
+    form.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") form.remove();
+    });
+    anchor.insertAdjacentElement("afterend", form);
+    pin.focus();
   }
 
   function isTeacherResource(act) {
@@ -278,6 +316,7 @@
     }
     updateStudentHint();
     refreshHub();
+    document.dispatchEvent(new CustomEvent("nt:mode-change"));
   }
 
   function escapeHtml(s) {
@@ -445,15 +484,13 @@
     }
     if (existing) {
       existing.textContent = code;
-      existing.href = "http://corestandards.org/Math/Content/" + code.replace(".", "/");
       return;
     }
-    var badge = document.createElement("a");
+    // Non-navigating on purpose: these are Maryland 2025 MCCRS codes with no
+    // stable public URL (the old corestandards.org path 404s for every code).
+    var badge = document.createElement("span");
     badge.className = "lesson-standard-badge badge badge-cluster";
-    badge.href = "http://corestandards.org/Math/Content/" + code.replace(".", "/");
-    badge.target = "_blank";
-    badge.rel = "noopener noreferrer";
-    badge.title = "Common Core State Standard";
+    badge.title = "Maryland College and Career Ready Standard";
     badge.textContent = code;
     var obj = infoBlock.querySelector(".lesson-info-obj");
     if (obj) infoBlock.insertBefore(badge, obj);
@@ -477,14 +514,16 @@
     modeBtn.addEventListener("click", function () {
       // Switching INTO teacher requires the password; back to student is free.
       if (!teacherMode) {
-        var role = requestTeacher();
-        if (!role) return;
-        teacherMode = true;
-        saveTeacherMode(true, role);
-      } else {
-        teacherMode = false;
-        saveTeacherMode(false);
+        requestTeacher(modeBtn, function (role) {
+          teacherMode = true;
+          saveTeacherMode(true, role);
+          applyTeacherMode();
+          updateProgressSummary();
+        });
+        return;
       }
+      teacherMode = false;
+      saveTeacherMode(false);
       applyTeacherMode();
       updateProgressSummary();
     });
@@ -1733,6 +1772,16 @@
     box.addEventListener("input", function () {
       clearBtn.hidden = !box.value;
     });
+
+    // Deep-link search: /curriculum/?q=<term> pre-fills and runs the search.
+    // My Progress "Practise this" links rely on this to land students on the
+    // matching lessons instead of the unfiltered hub.
+    var qParam = new URLSearchParams(location.search).get("q");
+    if (qParam && !box.value) {
+      box.value = qParam;
+      box.dispatchEvent(new Event("input", { bubbles: true }));
+      clearBtn.hidden = false;
+    }
 
     // Press "/" anywhere to jump to search; Esc clears it.
     document.addEventListener("keydown", function (e) {

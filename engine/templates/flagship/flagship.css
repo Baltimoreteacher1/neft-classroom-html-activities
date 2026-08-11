@@ -7,7 +7,21 @@
   inset: 0;
   z-index: 9000;
   display: grid;
-  place-items: center;
+  /*
+   * `place-items: center` alone made the briefing unusable on a phone. The card
+   * is ~1044px tall at 320px wide; in a 900px-tall viewport that put the Start
+   * button at y≈958 — below the fold on a POSITION:FIXED layer, which does not
+   * scroll with the page. A student on a phone could see the mission and had no
+   * way to begin the lesson. All 10 unit-entry lessons open on this screen.
+   *
+   * `overflow-y: auto` alone does not fix it: a centered grid item taller than
+   * its container overflows equally in both directions and the top becomes
+   * unreachable. `margin: auto` on the card is the fix that behaves both ways —
+   * it centers while the card fits, and collapses to normal flow (scrollable
+   * from the top) once it does not.
+   */
+  overflow-y: auto;
+  justify-items: center;
   padding: var(--sp-5);
   background:
     radial-gradient(
@@ -29,6 +43,9 @@
 .flagship-mission-card {
   max-width: 600px;
   width: 100%;
+  /* Centers the card while it fits, and lets it scroll from the top when it
+     does not. See the note on .flagship-mission above. */
+  margin: auto;
   background: var(--card);
   border-radius: var(--radius-lg);
   padding: var(--sp-8) var(--sp-7);

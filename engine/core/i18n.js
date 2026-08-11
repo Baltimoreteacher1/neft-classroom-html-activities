@@ -199,6 +199,49 @@ const STRINGS = {
   mathematician: { en: "Mathematician", es: "Matemático" },
   ofComplete: { en: "of", es: "de" },
   complete: { en: "complete", es: "completadas" },
+  // Lesson entrance badge (engine/core/app.js playLessonEntrance).
+  entranceWelcome: { en: "Welcome,", es: "Te damos la bienvenida," },
+  entranceGo: { en: "Your lesson is ready — let's go!", es: "Tu lección está lista — ¡vamos!" },
+  // Matching-game chrome (engine/components/matching-game.js).
+  mgTap: {
+    en: "Tap an item on the left, then its match on the right.",
+    es: "Toca un elemento a la izquierda y luego su pareja a la derecha.",
+  },
+  mgMatched: { en: "matched", es: "emparejados" },
+  mgAttempts: { en: "Attempts", es: "Intentos" },
+  mgMatchThese: { en: "Match these…", es: "Empareja estos…" },
+  mgWithThese: { en: "…with these", es: "…con estos" },
+  mgDoneOne: { en: "All matched in 1 attempt!", es: "¡Todo emparejado en 1 intento!" },
+  mgDoneMany: {
+    en: "All matched in {n} attempts!",
+    es: "¡Todo emparejado en {n} intentos!",
+  },
+  mgFlawless: { en: "Flawless!", es: "¡Impecable!" },
+  mgNice: { en: "Nice work!", es: "¡Buen trabajo!" },
+  mgKeep: { en: "Keep practicing!", es: "¡Sigue practicando!" },
+  // Drag-sort chrome (engine/components/drag-sort.js).
+  dsBank: {
+    en: "Drag items into the correct category",
+    es: "Arrastra cada tarjeta a su categoría",
+  },
+  dsCheckSorting: { en: "Check Sorting", es: "Revisar clasificación" },
+  dsCheckOrder: { en: "Check Order", es: "Revisar orden" },
+  dsOrderRight: {
+    en: "Correct order! Nicely sequenced.",
+    es: "¡Orden correcto! Bien secuenciado.",
+  },
+  dsOrderPartial: {
+    en: "{n} of {t} in the right spot. Use ▲ ▼ to rearrange, then check again.",
+    es: "{n} de {t} en el lugar correcto. Usa ▲ ▼ para reordenar y revisa otra vez.",
+  },
+  dsAllSorted: {
+    en: "All {t} items sorted correctly!",
+    es: "¡Las {t} tarjetas están clasificadas correctamente!",
+  },
+  dsPartialSorted: {
+    en: "{n} of {t} correct. Drag the highlighted items to the right category.",
+    es: "{n} de {t} correctas. Arrastra las tarjetas marcadas a la categoría correcta.",
+  },
 };
 
 const PHASE_NAMES = {
@@ -230,22 +273,73 @@ const HINT_LABELS = [
 /** Persisted student language choice (English and Spanish only). */
 const LANG_LS = "nt-lang";
 
-/** Detect preferred language: saved choice first, then html[lang]/browser. */
+/**
+ * Legacy key: the small-group studio used to persist its own Spanish lane
+ * separately from the lesson engine's. Two keys meant two switches — a student
+ * who chose Español in a lesson walked into the studio and got English back,
+ * and had to find a second control they had no reason to know existed. The
+ * studio now reads and writes `nt-lang` like everything else.
+ *
+ * This adopts the old value ONCE, and only when the student has never made a
+ * choice under the new key, so a device already set to Spanish in the studio
+ * stays in Spanish instead of silently reverting on the day this shipped. A
+ * later explicit "English" writes `nt-lang` and wins permanently — the legacy
+ * key is removed here rather than left to out-vote it on the next load.
+ */
+const LEGACY_STUDIO_LANG_LS = "nt-sg-lang";
+
+function adoptLegacyStudioLang() {
+  try {
+    const legacy = localStorage.getItem(LEGACY_STUDIO_LANG_LS);
+    if (legacy === null) return;
+    const saved = localStorage.getItem(LANG_LS);
+    if (saved !== "es" && saved !== "en" && (legacy === "es" || legacy === "en")) {
+      localStorage.setItem(LANG_LS, legacy);
+    }
+    localStorage.removeItem(LEGACY_STUDIO_LANG_LS);
+  } catch {
+    /* storage blocked — nothing to migrate, and nothing breaks without it */
+  }
+}
+
+if (typeof localStorage !== "undefined") adoptLegacyStudioLang();
+
+/**
+ * The student's language, which is ENGLISH until they say otherwise.
+ *
+ * This used to auto-detect: no saved choice meant falling through to
+ * `document.documentElement.lang`, and then to `navigator.language`. On any
+ * device whose browser is set to Spanish — a shared Chromebook, a phone, a
+ * teacher's laptop — the lesson opened in Spanish with nobody having asked for
+ * it, and the only way back was to find the ES/EN toggle. The Spanish is a
+ * support students opt into, not a default the operating system picks for them.
+ *
+ * `setPreferredLang` still stamps `document.documentElement.lang`, so the html
+ * attribute is a mirror of the saved choice rather than a second source of
+ * truth; reading it back here would just reintroduce the same guess.
+ */
 export function getPreferredLang() {
   try {
     const saved = localStorage.getItem(LANG_LS);
     if (saved === "es" || saved === "en") return saved;
   } catch {
-    /* storage blocked — fall through to auto-detect */
-  }
-  if (typeof document !== "undefined") {
-    const htmlLang = document.documentElement.lang || "";
-    if (htmlLang.startsWith("es")) return "es";
-  }
-  if (typeof navigator !== "undefined" && navigator.language?.startsWith("es")) {
-    return "es";
+    /* storage blocked — the choice simply does not persist; English stands */
   }
   return "en";
+}
+
+// Mirror the saved choice onto <html lang> as soon as this module loads.
+// setPreferredLang() stamps it when the student TOGGLES, but on a later page
+// load nothing did — so a student who had chosen Spanish got Spanish phase
+// names (phaseName reads the preference directly) while every stacked bilingual
+// label stayed hidden, because those are switched by the lang attribute. The
+// attribute is now set from the same source of truth on every load.
+if (typeof document !== "undefined") {
+  try {
+    document.documentElement.lang = getPreferredLang();
+  } catch {
+    /* nothing to do — the attribute is a hint, not a requirement */
+  }
 }
 
 /** Persist the student's language choice ("en" | "es"); "" clears it. */
@@ -323,6 +417,52 @@ export function hintLabel(index) {
 
 export function stackHtml(en, es) {
   return `<span class="i18n-stack"><span class="i18n-en" lang="en">${esc(en)}</span><span class="i18n-es" lang="es">${esc(es)}</span></span>`;
+}
+
+/**
+ * Stacked chrome string with `{placeholder}` interpolation — for the fixed UI
+ * strings that need a live number in them ("3 of 8 correct"). Same escaping
+ * and CSS-switch contract as `stackHtml`; values are interpolated into BOTH
+ * lanes before escaping.
+ */
+export function stackT(key, vars = {}) {
+  const entry = STRINGS[key];
+  if (!entry) return esc(key);
+  const fill = (s) => String(s).replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ""));
+  return stackHtml(fill(entry.en), fill(entry.es));
+}
+
+/**
+ * Bilingual stack for AUTHORED CONTENT (stems, hints, explanations, choices) —
+ * as opposed to `stackHtml`, which is for fixed UI chrome.
+ *
+ * The difference is what happens when there is no Spanish. Chrome always has
+ * both lanes, so `stackHtml` can emit the `.i18n-es` span unconditionally.
+ * Content does not: hint ladders fall back to generic English strings, and not
+ * every practice item was translated. Emitting an empty `.i18n-es` for those
+ * puts a blank italic line under the English whenever a student is in Spanish
+ * mode, which reads as "the translation is missing" on items that never had
+ * one. So a blank/whitespace `es` returns the English alone, unstacked.
+ *
+ * Spanish stays opt-in: `.i18n-es` is `display:none` until `setPreferredLang`
+ * stamps `<html lang="es">` (see design-system.css). A student who never
+ * touches the toggle sees exactly what they saw before.
+ */
+export function stackContent(en, es) {
+  return stackContentHtml(esc(en), esc(es));
+}
+
+/**
+ * Pre-rendered variant of `stackContent`. Both lanes must ALREADY be escaped or
+ * intentionally-trusted markup — problem stems run through `renderMathText`,
+ * which emits real tags, so escaping here would print them as literal text.
+ * Callers passing raw config text want `stackContent` instead.
+ */
+export function stackContentHtml(enHtml, esHtml) {
+  const en = String(enHtml ?? "");
+  const es = String(esHtml ?? "");
+  if (!es.trim() || es === en) return en;
+  return `<span class="i18n-stack"><span class="i18n-en" lang="en">${en}</span><span class="i18n-es" lang="es">${es}</span></span>`;
 }
 
 function esc(s) {

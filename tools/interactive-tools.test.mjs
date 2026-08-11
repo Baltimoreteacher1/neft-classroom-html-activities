@@ -147,7 +147,7 @@ assert.ok(
 
 // ── 3. Rendered behaviour ──────────────────────────────────────────────────
 const dom = new JSDOM('<!doctype html><html lang="en"><body><div id="app"></div></body></html>', {
-  url: "https://eduwonderlab.com/lessons/1-1/?mode=tools",
+  url: "https://eduwonderlab.com/lessons/6-13/?mode=tools",
 });
 globalThis.window = dom.window;
 globalThis.document = dom.window.document;

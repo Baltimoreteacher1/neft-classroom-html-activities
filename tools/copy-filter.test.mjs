@@ -20,7 +20,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { SKIP_COPY_RE, makeCopyFilter } from "../scripts/lib/copy-filter.mjs";
+import { makeCopyFilter, SKIP_COPY_RE } from "../scripts/lib/copy-filter.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -54,18 +54,30 @@ for (const rel of [
   "docs/README.md",
   "activities/demo/NOTES.md",
 ]) {
-  assert.equal(plain(`/Users/x/repo/${rel}`), false, `"${rel}" must NOT be copied into the published site`);
+  assert.equal(
+    plain(`/Users/x/repo/${rel}`),
+    false,
+    `"${rel}" must NOT be copied into the published site`,
+  );
 }
 
 /* --- 3. Paths outside the copy root are refused, not silently relativised --- */
-assert.equal(plain("/Users/x/other/assets/app.js"), false, "a path outside the copy root must be refused");
+assert.equal(
+  plain("/Users/x/other/assets/app.js"),
+  false,
+  "a path outside the copy root must be refused",
+);
 
 /* --- 4. The root itself copies (cpSync tests it first) --------------------- */
 assert.equal(plain("/Users/x/repo"), true, "the copy root itself must not be filtered out");
 
 /* --- 5. vite.config.js must use the rooted factory, not a bare regex -------- */
 const vite = readFileSync(join(ROOT, "vite.config.js"), "utf8");
-assert.match(vite, /makeCopyFilter\(__dirname\)/, "vite.config.js must build its copy filter with makeCopyFilter(__dirname)");
+assert.match(
+  vite,
+  /makeCopyFilter\(__dirname\)/,
+  "vite.config.js must build its copy filter with makeCopyFilter(__dirname)",
+);
 assert.doesNotMatch(
   vite,
   /copyFilter\s*=\s*\(src\)\s*=>\s*!SKIP_COPY_RE\.test\(src\)/,
@@ -77,4 +89,6 @@ for (const frag of ["claude", "node_modules", "_engine"]) {
   assert.ok(SKIP_COPY_RE.source.includes(frag), `SKIP_COPY_RE lost its "${frag}" branch`);
 }
 
-console.log("Static-copy filter: rooted at the copy root, 6 cases + the .claude-worktree regression covered.");
+console.log(
+  "Static-copy filter: rooted at the copy root, 6 cases + the .claude-worktree regression covered.",
+);

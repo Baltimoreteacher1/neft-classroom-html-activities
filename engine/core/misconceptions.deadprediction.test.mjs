@@ -64,6 +64,16 @@ function buildItems() {
   add("What is 15% of 60?", 9);
   add("What is 25% of 80?", 20);
 
+  // Geometry stems — the triangle-half and volume branches.
+  add("A triangle has a base of 6 cm and a height of 4 cm. What is its area?", 12);
+  add("Find the area of a triangle with base 10 and height 7.", 35);
+  add("What is the volume of a box that is 3 by 4 by 5 units?", 60);
+  add("A prism measures 2.5 by 4 by 2 cm. What is its volume?", 20);
+
+  // Distributive property stems.
+  add("Simplify: 3(4 + 5)", 27);
+  add("What is 6(10 − 2)?", 48);
+
   return items;
 }
 

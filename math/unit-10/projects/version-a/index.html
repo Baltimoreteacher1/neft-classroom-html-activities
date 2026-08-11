@@ -25,7 +25,7 @@
         --gold-lt: #ffedd5;
         --green: #1e7d40;
         --green-lt: #e6f4eb;
-        --coral: #c45a3c;
+        --coral: #a8442a;
         --ink: #1a2633;
         --muted: #525f6e;
         --line: #e2e7ec;
@@ -783,6 +783,9 @@
     <!-- projects-twist-head:begin (Design Twist — tools/inject-projects-twist.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-twist.css?v=20260722" />
     <!-- projects-twist-head:end -->
+    <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
+    <!-- projects-mode-pill-head:end -->
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -1229,7 +1232,7 @@
                 <span class="es-text">Paso 2 — Área de Superficie a partir de la Plantilla</span>
               </h2>
               <div class="card-sub">
-                <span class="en-text">Calculate the <span class="vocab-word" data-vocab="area" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('area')">area</span> of all faces to find cardboard usage</span>
+                <span class="en-text">Calculate the <span class="vocab-word" data-vocab="area" style="border-bottom:2px dotted #0369a1; color:#0369a1; font-weight:800; cursor:pointer;" onclick="openVocabModal('area')">area</span> of all faces to find cardboard usage</span>
                 <span class="es-text"
                   >Calcula el área de todas las caras para encontrar el uso de cartón</span
                 >
@@ -1986,6 +1989,16 @@
                 >Escribí una propuesta de presentación y revisé la rúbrica de calificación.</span
               >
             </li>
+            <li>
+              <input type="checkbox" id="ck7" />
+              <span class="en-text"
+                >I generated my spec sheet and turned it in the way my teacher asked
+                (print, download, or show the screen).</span
+              ><span class="es-text"
+                >Generé mi hoja de especificaciones y la entregué como pidió mi maestro
+                (imprimir, descargar o mostrar la pantalla).</span
+              >
+            </li>
           </ul>
 
           <!-- Rubric -->
@@ -2246,7 +2259,7 @@
         } catch (e) {}
       }
 
-      // Low-floor ESOL scaffold: fill the real inputs with a worked example
+      // Low-floor support scaffold: fill the real inputs with a worked example
       // box (8" × 5" × 4") and its six face areas, then recompute.
       function loadExampleNumbers() {
         const vals = {
@@ -2386,11 +2399,16 @@
       }
 
       // ---- Navigation ----
+      const STEP_KEY = "u10ProjectA_step";
+
       function goStep(n) {
         if (n < 1 || n > STEPS.length) return;
         document.getElementById("step-" + currentStep).classList.remove("active");
         currentStep = n;
         visited.add(n);
+        try {
+          localStorage.setItem(STEP_KEY, String(n));
+        } catch (e) {}
         document.getElementById("step-" + n).classList.add("active");
         buildTrail();
         updateProgress();
@@ -2594,11 +2612,48 @@
       }
 
       function finishProject() {
-        if (isSpanish) {
-          alert("¡Felicitaciones! 🎉 Muestra esta hoja de especificaciones completa a tu maestro.");
-        } else {
-          alert("Congratulations! 🎉 Show this completed spec sheet to your teacher.");
+        // Name what is still missing instead of celebrating an empty project.
+        const ids = ["ck1", "ck2", "ck3", "ck4", "ck5", "ck6", "ck7"];
+        const missing = ids.filter((id) => {
+          const el = document.getElementById(id);
+          return el && !el.checked;
+        }).length;
+        const reportReady = !!document
+          .getElementById("reportBox")
+          .textContent.trim();
+
+        if (missing > 0 || !reportReady) {
+          const parts = [];
+          if (missing > 0) {
+            parts.push(
+              isSpanish
+                ? `Todavía hay ${missing} casilla(s) sin marcar en la Lista de Verificación.`
+                : `You still have ${missing} unchecked box(es) on the Project Checklist.`,
+            );
+          }
+          if (!reportReady) {
+            parts.push(
+              isSpanish
+                ? 'Aún no has presionado "📝 Generar Resumen" para crear tu hoja de especificaciones.'
+                : 'You have not pressed "📝 Generate Summary" yet to create your spec sheet.',
+            );
+          }
+          alert(
+            (isSpanish ? "Casi listo. " : "Almost there. ") +
+              parts.join(" ") +
+              (isSpanish
+                ? " Termina eso y vuelve a presionar este botón."
+                : " Finish that, then press this button again."),
+          );
+          return;
         }
+
+        playConfetti();
+        alert(
+          isSpanish
+            ? "¡Felicitaciones! 🎉 Entrega tu hoja de especificaciones: imprímela, descárgala o muéstrala a tu maestro."
+            : "Congratulations! 🎉 Turn in your spec sheet: print it, download it, or show it to your teacher.",
+        );
       }
 
       // ---- Math helpers ----
@@ -3034,12 +3089,12 @@
           if (isSpanish) {
             showReadout(
               "cost-out",
-              '<span style="color:#c45a3c;font-weight:bold;">⚠️ ¡Completa y verifica tus cálculos de las caras del Área de Superficie en el Paso 2 primero!</span>',
+              '<span style="color:#a8442a;font-weight:bold;">⚠️ ¡Completa y verifica tus cálculos de las caras del Área de Superficie en el Paso 2 primero!</span>',
             );
           } else {
             showReadout(
               "cost-out",
-              '<span style="color:#c45a3c;font-weight:bold;">⚠️ Complete and verify your Surface Area face calculations in Step 2 first!</span>',
+              '<span style="color:#a8442a;font-weight:bold;">⚠️ Complete and verify your Surface Area face calculations in Step 2 first!</span>',
             );
           }
           return;
@@ -3100,12 +3155,12 @@
           if (isSpanish) {
             showReadout(
               "peer-out",
-              '<span style="color:#c45a3c;font-weight:bold;">⚠️ ¡Completa primero las especificaciones de tu propia caja (Pasos 1 y 2)!</span>',
+              '<span style="color:#a8442a;font-weight:bold;">⚠️ ¡Completa primero las especificaciones de tu propia caja (Pasos 1 y 2)!</span>',
             );
           } else {
             showReadout(
               "peer-out",
-              '<span style="color:#c45a3c;font-weight:bold;">⚠️ Complete your own box specs (Steps 1 & 2) first!</span>',
+              '<span style="color:#a8442a;font-weight:bold;">⚠️ Complete your own box specs (Steps 1 & 2) first!</span>',
             );
           }
           return;
@@ -3322,7 +3377,7 @@
               </linearGradient>
               <linearGradient id="boxTopGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#e0f2fe"/>
-                <stop offset="100%" stop-color="#0284c7"/>
+                <stop offset="100%" stop-color="#0369a1"/>
               </linearGradient>
               <linearGradient id="boxSideGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#dcfce7"/>
@@ -3350,7 +3405,7 @@
             <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw + dx},${originY + dy} ${originX + dx},${originY + dy}" fill="rgba(245, 158, 11, 0.08)" stroke="none" />
 
             <!-- Top Face -->
-            <polygon points="${originX},${originY - sh} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY + dy - sh} ${originX + dx},${originY + dy - sh}" fill="url(#boxTopGrad)" stroke="#0284c7" stroke-width="2" />
+            <polygon points="${originX},${originY - sh} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY + dy - sh} ${originX + dx},${originY + dy - sh}" fill="url(#boxTopGrad)" stroke="#0369a1" stroke-width="2" />
 
             <!-- Right Face -->
             <polygon points="${originX + sw},${originY} ${originX + sw + dx},${originY + dy} ${originX + sw + dx},${originY + dy - sh} ${originX + sw},${originY - sh}" fill="url(#boxSideGrad)" stroke="#16a34a" stroke-width="2" />
@@ -3379,8 +3434,8 @@
             <text x="${originX + sw + dx/2 + 6}" y="${originY + dy/2 + 9}" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">w = ${w}"</text>
 
             <!-- Height (h) arrow -->
-            <line x1="${originX - 16}" y1="${originY}" x2="${originX - 16}" y2="${originY - sh}" stroke="#0284c7" stroke-width="1.5" marker-start="url(#box-arrow-start)" marker-end="url(#box-arrow-end)" />
-            <rect x="${originX - 56}" y="${originY - sh/2 - 10}" width="60" height="20" rx="10" fill="#0284c7" />
+            <line x1="${originX - 16}" y1="${originY}" x2="${originX - 16}" y2="${originY - sh}" stroke="#0369a1" stroke-width="1.5" marker-start="url(#box-arrow-start)" marker-end="url(#box-arrow-end)" />
+            <rect x="${originX - 56}" y="${originY - sh/2 - 10}" width="60" height="20" rx="10" fill="#0369a1" />
             <text x="${originX - 26}" y="${originY - sh/2 + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">h = ${h}"</text>
 
             <!-- Volume Summary Box (Right Card) -->
@@ -3444,7 +3499,7 @@
           <defs>
             <linearGradient id="netBottomGradA" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
-              <stop offset="100%" stop-color="#0284c7" stop-opacity="0.45"/>
+              <stop offset="100%" stop-color="#0369a1" stop-opacity="0.45"/>
             </linearGradient>
             <linearGradient id="netSideGradA" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#dcfce7" stop-opacity="0.7"/>
@@ -3464,7 +3519,7 @@
           <line x1="0" y1="32" x2="520" y2="32" stroke="#e2e8f0" stroke-width="1" />
           <text x="16" y="21" font-size="12" font-weight="800" fill="#0f172a">${titleText}</text>
           
-          <rect x="360" y="6" width="144" height="20" rx="10" fill="${isOpenTop ? "#ef4444" : "#0284c7"}" />
+          <rect x="360" y="6" width="144" height="20" rx="10" fill="${isOpenTop ? "#ef4444" : "#0369a1"}" />
           <text x="432" y="19" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">${isOpenTop ? (isSpanish ? "5 Caras (Abierta)" : "5 Faces (Open Top)") : (isSpanish ? "6 Caras (Cerrada)" : "6 Faces (Closed Box)")}</text>
 
           <g stroke-linejoin="round" stroke-linecap="round">
@@ -3477,7 +3532,7 @@
               <rect x="${x1}" y="${y1}" width="${sl}" height="${sw}" fill="#f8fafc" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,4" rx="2"/>
               <text x="${cx}" y="${y1 + sw / 2 + 4}" text-anchor="middle" font-size="9" font-weight="700" fill="#ef4444">${isSpanish ? "SIN TAPA (Abierta)" : "NO LID (Open)"}</text>
             ` : `
-              <rect x="${x1}" y="${y1}" width="${sl}" height="${sw}" fill="url(#netBottomGradA)" stroke="#0284c7" stroke-width="2" rx="2"/>
+              <rect x="${x1}" y="${y1}" width="${sl}" height="${sw}" fill="url(#netBottomGradA)" stroke="#0369a1" stroke-width="2" rx="2"/>
               <text x="${cx}" y="${y1 + sw / 2 + 4}" text-anchor="middle" font-size="9" font-weight="800" fill="#0369a1">${isSpanish ? "SUPERIOR" : "TOP"} (${l}"×${w}")</text>
             `}
 
@@ -3486,7 +3541,7 @@
             <text x="${cx}" y="${y2 + sh / 2 + 4}" text-anchor="middle" font-size="9" font-weight="800" fill="#78350f">${isSpanish ? "FRENTE" : "FRONT"} (${l}"×${h}")</text>
 
             <!-- Bottom face -->
-            <rect x="${x1}" y="${y3}" width="${sl}" height="${sw}" fill="url(#netBottomGradA)" stroke="#0284c7" stroke-width="2" rx="2"/>
+            <rect x="${x1}" y="${y3}" width="${sl}" height="${sw}" fill="url(#netBottomGradA)" stroke="#0369a1" stroke-width="2" rx="2"/>
             <text x="${cx}" y="${y3 + sw / 2 + 4}" text-anchor="middle" font-size="9" font-weight="800" fill="#0369a1">${isSpanish ? "FONDO" : "BOTTOM"} (${l}"×${w}")</text>
 
             <!-- Left face -->
@@ -3556,7 +3611,7 @@
         const worldNote = document.getElementById("world-compare").value || "";
         const peerReflect = document.getElementById("peer-reflect").value || "";
 
-        const cks = ["ck1", "ck2", "ck3", "ck4", "ck5", "ck6"].map((id) => {
+        const cks = ["ck1", "ck2", "ck3", "ck4", "ck5", "ck6", "ck7"].map((id) => {
           const el = document.getElementById(id);
           return el ? (el.checked ? "✅" : "❌") : "❌";
         });
@@ -3614,6 +3669,7 @@
             `   [${cks[3]}] Costo del material de cartón calculado`,
             `   [${cks[4]}] Comparado lado a lado con un compañero`,
             `   [${cks[5]}] Propuesta escrita y revisada contra la rúbrica`,
+            `   [${cks[6]}] Hoja de especificaciones generada y entregada`,
             "",
             "═══════════════════════════════",
             `Generado: ${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}`,
@@ -3666,6 +3722,7 @@
             `   [${cks[3]}] Cardboard material cost calculated`,
             `   [${cks[4]}] Compared side-by-side with classmate`,
             `   [${cks[5]}] Pitch written & checked against rubric`,
+            `   [${cks[6]}] Spec sheet generated & turned in`,
             "",
             "═══════════════════════════════",
             `Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`,
@@ -3713,6 +3770,18 @@
       buildTrail();
       updateProgress();
       updateVolumeCalc();
+
+      // Resume the student at the step they left off on (their answers are
+      // restored separately by the shared save/resume engine).
+      (function restoreStep() {
+        try {
+          const saved = parseInt(localStorage.getItem(STEP_KEY), 10);
+          if (saved >= 1 && saved <= STEPS.length && saved !== currentStep) {
+            for (let i = 1; i <= saved; i++) visited.add(i);
+            goStep(saved);
+          }
+        } catch (e) {}
+      })();
 
     </script>
 
@@ -3785,5 +3854,8 @@
   <!-- projects-twist-body:end -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+  <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+  <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
+  <!-- projects-mode-pill-body:end -->
 </body>
 </html>

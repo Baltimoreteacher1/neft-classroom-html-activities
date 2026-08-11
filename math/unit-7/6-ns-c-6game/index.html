@@ -29,7 +29,8 @@
         padding: 0;
         box-sizing: border-box;
       }
-      html, body {
+      html,
+      body {
         width: 100%;
         height: 100%;
         margin: 0;
@@ -53,32 +54,56 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
 
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/unit-7/6-ns-c-6game): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-  <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+  </head>
   <body>
-
-      <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100;">
-        <div class="ewl-arcade-title-group">
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
+    <!-- EWL Universal Arcade Enhancements Header -->
+    <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100">
+      <div class="ewl-arcade-title-group">
+        <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge"
+          >⭐ Level 1: Guided Support</span
+        >
+        <span style="font-size: 13px; font-weight: 600; opacity: 0.85"
+          >| EduWonderLab Interactive Arcade</span
+        >
       </div>
-  
+      <div class="ewl-arcade-controls">
+        <button
+          type="button"
+          class="ewl-btn-toggle active"
+          id="ewl-btn-l1"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(1);"
+        >
+          L1 Support
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-l2"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(2);"
+        >
+          L2 Challenge
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-lang"
+          onclick="if (window.ewlToggleLang) window.ewlToggleLang();"
+        >
+          🌐 EN / ES
+        </button>
+      </div>
+    </div>
+
     <div id="game-container"></div>
     <!-- games-2d metadata source of truth (window.Games2DData) -->
     <script src="/assets/games2d-data.js"></script>
@@ -97,8 +122,7 @@
       // inline; the term + definition TEXT is pulled from the SoT when present so
       // teachers edit copy in one place. Inline values below act as a fallback.
       const GAME_ID = "6-ns-c-6game";
-      const GAME_DATA =
-        (window.Games2DData && window.Games2DData[GAME_ID]) || {};
+      const GAME_DATA = (window.Games2DData && window.Games2DData[GAME_ID]) || {};
 
       function synth(f, d, t = "square", v = 0.1) {
         try {
@@ -118,9 +142,7 @@
         synth(220, 0.04);
       }
       function sndTreasure() {
-        [523, 659, 784, 1047].forEach((f, i) =>
-          setTimeout(() => synth(f, 0.12), i * 80),
-        );
+        [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => synth(f, 0.12), i * 80));
       }
       function sndCorrect() {
         synth(523, 0.1);
@@ -134,9 +156,7 @@
         setTimeout(() => synth(220, 0.15, "sine", 0.06), 100);
       }
       function sndLevelUp() {
-        [440, 554, 659, 880].forEach((f, i) =>
-          setTimeout(() => synth(f, 0.1), i * 90),
-        );
+        [440, 554, 659, 880].forEach((f, i) => setTimeout(() => synth(f, 0.1), i * 90));
       }
 
       function shuffle(a) {
@@ -248,16 +268,11 @@
 
           push(
             this.add
-              .text(
-                W / 2,
-                70,
-                `KEY WORD ${this.idx + 1} OF ${this.terms.length}`,
-                {
-                  fontSize: "15px",
-                  color: "#38bdf8",
-                  fontStyle: "bold",
-                },
-              )
+              .text(W / 2, 70, `KEY WORD ${this.idx + 1} OF ${this.terms.length}`, {
+                fontSize: "15px",
+                color: "#38bdf8",
+                fontStyle: "bold",
+              })
               .setOrigin(0.5),
           );
 
@@ -555,9 +570,7 @@
 
           // Floating treasures
           for (let i = 0; i < 4; i++) {
-            const t = this.add
-              .image(180 + i * 160, 340, "treasure")
-              .setScale(2.5);
+            const t = this.add.image(180 + i * 160, 340, "treasure").setScale(2.5);
             this.tweens.add({
               targets: t,
               y: 330,
@@ -597,9 +610,7 @@
               .setOrigin(0.5);
             bg.on("pointerdown", () => {
               this.selectedShip = i;
-              this.shipBtns.forEach((b, j) =>
-                b.setTint(j === i ? 0x4ade80 : 0xffffff),
-              );
+              this.shipBtns.forEach((b, j) => b.setTint(j === i ? 0x4ade80 : 0xffffff));
               synth(400 + i * 120, 0.08);
             });
             bg.on("pointerover", () => bg.setScale(0.8));
@@ -640,15 +651,10 @@
           });
 
           this.add
-            .text(
-              W / 2,
-              585,
-              "Arrow keys / WASD / Touch to navigate the coordinate grid",
-              {
-                fontSize: "12px",
-                color: "#64748b",
-              },
-            )
+            .text(W / 2, 585, "Arrow keys / WASD / Touch to navigate the coordinate grid", {
+              fontSize: "12px",
+              color: "#64748b",
+            })
             .setOrigin(0.5);
 
           this.cameras.main.fadeIn(500);
@@ -747,11 +753,7 @@
             .setAlpha(qlAlpha);
 
           // Marker (used by reflection missions — the point to transform)
-          this.marker = this.add
-            .image(ox, oy, "map_pin")
-            .setScale(2)
-            .setDepth(6)
-            .setVisible(false);
+          this.marker = this.add.image(ox, oy, "map_pin").setScale(2).setDepth(6).setVisible(false);
           this.markerLabel = this.add
             .text(ox, oy - 18, "", {
               fontSize: "12px",
@@ -792,9 +794,7 @@
 
           this.cursors = this.input.keyboard.createCursorKeys();
           this.wasd = this.input.keyboard.addKeys("W,A,S,D");
-          this.spaceKey = this.input.keyboard.addKey(
-            Phaser.Input.Keyboard.KeyCodes.SPACE,
-          );
+          this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
           this.spaceKey.on("down", () => this.dropAnchor());
 
           this.createTouchControls();
@@ -877,11 +877,7 @@
             used.add(`${gx},${gy}`);
             const sx = this.ox + gx * this.cs;
             const sy = this.oy - gy * this.cs;
-            const c = this.add
-              .image(sx, sy, "coin")
-              .setScale(1.4)
-              .setDepth(4)
-              .setAlpha(0.85);
+            const c = this.add.image(sx, sy, "coin").setScale(1.4).setDepth(4).setAlpha(0.85);
             this.tweens.add({
               targets: c,
               y: sy - 4,
@@ -930,12 +926,8 @@
             () => {
               const x = nz(-R, R);
               const y = nz(-R, R);
-              const xPhrase =
-                x < 0
-                  ? `${Math.abs(x)} to the LEFT of 0`
-                  : `${x} to the RIGHT of 0`;
-              const yPhrase =
-                y < 0 ? `${Math.abs(y)} DOWN from 0` : `${y} UP from 0`;
+              const xPhrase = x < 0 ? `${Math.abs(x)} to the LEFT of 0` : `${x} to the RIGHT of 0`;
+              const yPhrase = y < 0 ? `${Math.abs(y)} DOWN from 0` : `${y} UP from 0`;
               return {
                 prompt: `Sail to the point that is ${xPhrase} and ${yPhrase}.`,
                 hint: "Left = negative x, right = positive x. Up = positive y, down = negative y.",
@@ -981,19 +973,14 @@
               return {
                 prompt: `Sail to ANY point that is exactly ${d} steps from the center (count |x| + |y|), then drop anchor.`,
                 hint: "Steps = the distance along x plus the distance along y, ignoring signs.",
-                test: (gx, gy) =>
-                  Math.abs(gx) + Math.abs(gy) === d && (gx !== 0 || gy !== 0),
+                test: (gx, gy) => Math.abs(gx) + Math.abs(gy) === d && (gx !== 0 || gy !== 0),
               };
             },
           ];
 
           // Early levels favor the simpler mission types.
           const pool =
-            this.level === 1
-              ? [0, 1, 5]
-              : this.level === 2
-                ? [0, 1, 2, 3, 5]
-                : [0, 1, 2, 3, 4, 5];
+            this.level === 1 ? [0, 1, 5] : this.level === 2 ? [0, 1, 2, 3, 5] : [0, 1, 2, 3, 4, 5];
 
           for (let i = 0; i < this.totalMissions; i++) {
             const type = Phaser.Utils.Array.GetRandom(pool);
@@ -1025,9 +1012,7 @@
 
           this.promptText.setText(m.prompt);
           this.hintText.setText("");
-          this.missionLabel.setText(
-            `Mission ${this.missionsDone + 1} of ${this.missions.length}`,
-          );
+          this.missionLabel.setText(`Mission ${this.missionsDone + 1} of ${this.missions.length}`);
           this.missionLocked = false;
           this.canMove = true;
         }
@@ -1037,8 +1022,7 @@
         // says to go, then commits. No options, no announced coordinates.
         // ----------------------------------------------------------------
         dropAnchor() {
-          if (!this.canMove || this.missionLocked || !this.activeMission)
-            return;
+          if (!this.canMove || this.missionLocked || !this.activeMission) return;
           this.missionLocked = true;
           this.canMove = false;
           this.qTotal++;
@@ -1046,6 +1030,7 @@
           const x = this.shipGridX;
           const y = this.shipGridY;
           const ok = this.activeMission.test(x, y);
+          if (window.NeftScore) NeftScore.attempt(ok);
 
           if (ok) {
             this.qCorrect++;
@@ -1069,10 +1054,7 @@
           const sx = this.ox + x * this.cs;
           const sy = this.oy - y * this.cs;
 
-          const chest = this.add
-            .image(sx, sy, "treasure")
-            .setScale(0.5)
-            .setDepth(20);
+          const chest = this.add.image(sx, sy, "treasure").setScale(0.5).setDepth(20);
           this.tweens.add({
             targets: chest,
             scale: 3,
@@ -1206,9 +1188,7 @@
           }
 
           // Mission prompt (the math instruction) — top banner.
-          this.add
-            .rectangle(W / 2, 56, W - 24, 40, 0x102a4c, 0.85)
-            .setDepth(100);
+          this.add.rectangle(W / 2, 56, W - 24, 40, 0x102a4c, 0.85).setDepth(100);
           this.promptText = this.add
             .text(W / 2, 56, "", {
               fontSize: "16px",
@@ -1301,9 +1281,7 @@
         }
 
         showLevelIntro() {
-          const ov = this.add
-            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.78)
-            .setDepth(500);
+          const ov = this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.78).setDepth(500);
           const t1 = this.add
             .text(W / 2, H / 2 - 50, `Level ${this.level}`, {
               fontSize: "44px",
@@ -1360,13 +1338,7 @@
 
           const nx = this.shipGridX + dx;
           const ny = this.shipGridY + dy;
-          if (
-            nx < -this.range ||
-            nx > this.range ||
-            ny < -this.range ||
-            ny > this.range
-          )
-            return;
+          if (nx < -this.range || nx > this.range || ny < -this.range || ny > this.range) return;
 
           sndMove();
           this.shipGridX = nx;
@@ -1396,9 +1368,7 @@
           else if (dy < 0) this.ship.setAngle(180);
 
           // Bonus coin pickup (navigation reward, not the win condition).
-          const coin = this.coins.find(
-            (c) => !c.collected && c.gx === nx && c.gy === ny,
-          );
+          const coin = this.coins.find((c) => !c.collected && c.gx === nx && c.gy === ny);
           if (coin) {
             coin.collected = true;
             this.score += 25;
@@ -1547,8 +1517,7 @@
           this.scoreText.setText(`Score: ${this.score}`);
           if (this.combo > 1) this.comboText.setText(`${this.combo}x Combo!`);
           else this.comboText.setText("");
-          for (let i = 0; i < 3; i++)
-            this.hearts[i].setAlpha(i < this.lives ? 1 : 0.2);
+          for (let i = 0; i < 3; i++) this.hearts[i].setAlpha(i < this.lives ? 1 : 0.2);
         }
 
         update() {
@@ -1600,16 +1569,11 @@
         create() {
           this.cameras.main.setBackgroundColor("#051225");
 
+          // NeftScore counted every mission judge as it happened and beacons
+          // on pagehide; the old direct EduPulse.record here required both
+          // reaching Results AND a loaded bridge, and never produced a row.
           try {
-            window.EduPulse &&
-              EduPulse.record({
-                activityTitle: document.title,
-                score: this.d.qCorrect,
-                maxScore: this.d.qTotal,
-                problemsCorrect: this.d.qCorrect,
-                problemsAttempted: this.d.qTotal,
-                standard: "6.NOS.C.6",
-              });
+            window.NeftScore && NeftScore.finish();
           } catch (e) {}
 
           for (let i = 0; i < 60; i++) {
@@ -1642,9 +1606,7 @@
             ["Best Combo", `${this.d.maxCombo}x`],
             [
               "Accuracy",
-              this.d.qTotal > 0
-                ? Math.round((this.d.qCorrect / this.d.qTotal) * 100) + "%"
-                : "N/A",
+              this.d.qTotal > 0 ? Math.round((this.d.qCorrect / this.d.qTotal) * 100) + "%" : "N/A",
             ],
           ];
 
@@ -1661,8 +1623,7 @@
                 fontStyle: "bold",
               })
               .setOrigin(1, 0);
-            if (i < stats.length - 1)
-              this.add.rectangle(W / 2, y + 36, 320, 1, 0x1e293b);
+            if (i < stats.length - 1) this.add.rectangle(W / 2, y + 36, 320, 1, 0x1e293b);
           });
 
           const pct = this.d.qTotal > 0 ? this.d.qCorrect / this.d.qTotal : 0;
@@ -1699,9 +1660,7 @@
               fontStyle: "bold",
             })
             .setOrigin(0.5);
-          playBtn.on("pointerdown", () =>
-            this.scene.start("Game", { shipTint: this.d.shipTint }),
-          );
+          playBtn.on("pointerdown", () => this.scene.start("Game", { shipTint: this.d.shipTint }));
 
           const menuBtn = this.add
             .image(W / 2 + 120, 545, "btn")
@@ -1736,31 +1695,45 @@
       new Phaser.Game(config);
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/game-score.js"></script>
+    <script>
+      window.NeftScore && NeftScore.init({ gameId: "6-ns-c-6game", standard: "6.NOS.C.6" });
+    </script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  
-  <!-- mwb-injected:end -->
-  <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
-  <script src="/assets/canvas-bridge.js" defer></script>
-  <!-- canvas-bridge-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Keep equations balanced by applying inverse operations to both sides!" data-es="¡Mantén las ecuaciones equilibradas con operaciones inversas!">Keep equations balanced by applying inverse operations to both sides!</p>
-        </div>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+
+    <!-- mwb-injected:end -->
+    <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
+
+    <!-- EWL Diagnostic Misconception Coach -->
+    <div
+      class="ewl-coach-card"
+      id="ewl-coach-card"
+      style="display: flex; position: relative; z-index: 100"
+    >
+      <div class="ewl-coach-icon">💡</div>
+      <div class="ewl-coach-content">
+        <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
+        <p
+          id="ewl-coach-text"
+          data-en="Keep equations balanced by applying inverse operations to both sides!"
+          data-es="¡Mantén las ecuaciones equilibradas con operaciones inversas!"
+        >
+          Keep equations balanced by applying inverse operations to both sides!
+        </p>
       </div>
-  
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-</body>
+    </div>
+
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <script src="/assets/formula-popup.js" defer></script>
+  </body>
 </html>

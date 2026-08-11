@@ -388,9 +388,7 @@ export const CONVERSION_DATA = [
     type: "capacity",
     typeLabel: "Capacity",
     typeLabelEs: "Capacidad",
-    items: [
-      { label: "1 Liter", eq: "1 L = 1,000 mL", detail: "1 liter equals 1,000 milliliters" },
-    ],
+    items: [{ label: "1 Liter", eq: "1 L = 1,000 mL", detail: "1 liter equals 1,000 milliliters" }],
   },
   {
     category: "time",
@@ -450,7 +448,8 @@ export function hasConversionFacts(text, config = null) {
   if (config && (config.hasConversionChart || config.tools?.includes("conversion-chart"))) {
     return true;
   }
-  const str = typeof text === "string" ? text.toLowerCase() : JSON.stringify(text || "").toLowerCase();
+  const str =
+    typeof text === "string" ? text.toLowerCase() : JSON.stringify(text || "").toLowerCase();
   const keywords = [
     "convert",
     "conversion",
@@ -564,7 +563,8 @@ export function openConversionChartModal({ category = "all", triggerEl = null } 
     // Search input
     const searchInput = activeDialog.querySelector(".nt-conversion-search");
     searchInput.addEventListener("input", () => {
-      const activeTab = activeDialog.querySelector(".nt-conversion-tab.active")?.dataset?.cat || "all";
+      const activeTab =
+        activeDialog.querySelector(".nt-conversion-tab.active")?.dataset?.cat || "all";
       renderContent(activeTab, searchInput.value);
     });
 
@@ -625,7 +625,7 @@ function renderContent(category = "all", searchQuery = "") {
         (it) =>
           it.label.toLowerCase().includes(query) ||
           it.eq.toLowerCase().includes(query) ||
-          it.detail.toLowerCase().includes(query)
+          it.detail.toLowerCase().includes(query),
       )
     );
   });
@@ -687,7 +687,10 @@ export function closeConversionChartModal() {
 /**
  * Render a Conversion Reference Chip Button into a container element
  */
-export function renderConversionChip(container, { category = "all", label = "Conversion Chart", icon = "📋" } = {}) {
+export function renderConversionChip(
+  container,
+  { category = "all", label = "Conversion Chart", icon = "📋" } = {},
+) {
   if (!container || typeof document === "undefined") return null;
   ensureStyles();
 

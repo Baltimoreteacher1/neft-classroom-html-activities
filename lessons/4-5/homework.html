@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — Lesson 4-5: Use Percent to Solve Problems</title>
+<title>Help Your Student — Lesson 4-5: Determine the Whole Given the Part and Percent</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -14,6 +14,8 @@
   --navy-light: #18466f;
   --teal: #1fa6a2;
 --teal-ink: #0c6f6b;
+  /* Text-safe partner for --coral, which is a fill colour only (3.0:1 on white). */
+  --coral-ink: #9c4326;
   --teal-light: #dff2ee;
   --amber: #f2c15b;
   --amber-light: #fef7e0;
@@ -277,12 +279,16 @@ header.homework-header h1 {
   font-size: 13px;
 }
 
+/* A left rule rather than a third teal slab: the problem card already carries a
+   teal hint button and a teal step guide, and three identical fills flattened
+   the hierarchy into noise. */
 .family-hint-box {
   margin-bottom: 14px;
-  padding: 10px 12px;
-  background: var(--teal-light);
-  border-radius: var(--radius-sm);
-  font-size: 13.5px;
+  padding: 2px 0 2px 14px;
+  background: none;
+  border-left: 3px solid var(--teal);
+  border-radius: 0;
+  font-size: 14px;
   color: var(--navy);
 }
 
@@ -400,9 +406,9 @@ header.homework-header h1 {
 }
 
 .flip-prompt {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  color: var(--teal);
+  color: var(--teal-ink);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-top: auto;
@@ -509,10 +515,10 @@ header.homework-header h1 {
 
 .problem-type-badge {
   font-family: var(--font-display);
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.05em;
-  color: var(--teal);
+  letter-spacing: 0.02em;
+  color: var(--teal-ink);
   background: var(--teal-light);
   padding: 4px 10px;
   border-radius: 99px;
@@ -616,7 +622,7 @@ header.homework-header h1 {
 .hw-graph-controls button {
   font-family: var(--font-display); font-size: 12.5px; font-weight: 700;
   background: #ffffff; color: var(--navy);
-  border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 11px; min-height: 36px; cursor: pointer;
+  border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 11px; min-height: 44px; cursor: pointer;
 }
 .hw-graph-controls button:hover { border-color: var(--teal); }
 .hw-graph-controls button[aria-pressed="true"] { background: var(--teal-ink); color: #ffffff; border-color: var(--teal-ink); }
@@ -647,6 +653,18 @@ header.homework-header h1 {
   .hw-step-guide { break-inside: avoid; border-color: #888; background: #fff; }
   .hw-step-guide > summary { background: #f0f0f0; }
   .hw-step-guide[open] > summary::after, .hw-step-guide > summary::after { content: ""; }
+  /* The routine is collapsed on screen (it repeats on every problem). On paper
+     there is nothing to click, so force the contents visible. */
+  .hw-step-guide > * { display: block !important; }
+  /* Flip cards print flat — otherwise only the English word reaches the paper
+     and every definition prints as a blank box. */
+  .vocab-card-inner { transform: none !important; }
+  .vocab-card-front, .vocab-card-back {
+    position: static !important;
+    transform: none !important;
+    -webkit-backface-visibility: visible !important;
+    backface-visibility: visible !important;
+  }
   .hw-workspace { break-inside: avoid; }
   .hw-work-input { min-height: 130px; border: 1px solid #888; }
   .hw-visual-frame { border-color: #888; }
@@ -1205,11 +1223,11 @@ header.homework-header h1 {
 
 .word-chip {
   background: var(--teal-light);
-  color: var(--teal);
+  color: var(--teal-ink);
   border: 1.5px solid var(--teal);
   border-radius: var(--radius-sm);
-  padding: 6px 12px;
-  font-size: 13px;
+  padding: 11px 12px;
+  font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
@@ -1318,7 +1336,10 @@ header.homework-header h1 {
 }
 
 .status-bar-wrapper {
-  max-width: 800px;
+  /* Must track .container's max-width (set in the polish layer) or the sticky
+     bar's controls sit inset from every card above it. */
+  max-width: 840px;
+  padding: 0 18px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -1454,7 +1475,8 @@ header.homework-header h1 {
    Math words in the notes/practice prose become dotted-underline buttons that open
    a simple EN/ES definition + illustration, exactly like the lessons. */
 .obj-term {
-  display: inline; margin: 0; padding: 0; border: 0; background: none;
+  display: inline; margin: -6px 0; padding: 6px 2px; border: 0; background: none;
+  touch-action: manipulation;
   font: inherit; color: inherit; cursor: pointer;
   text-decoration: underline; text-decoration-style: dotted;
   text-decoration-thickness: 2px; text-underline-offset: 2px;
@@ -1479,7 +1501,7 @@ header.homework-header h1 {
   padding: 26px 20px 20px; text-align: center; animation: objFadeIn 0.2s ease;
 }
 .obj-popup-close {
-  position: absolute; top: 8px; right: 10px; width: 36px; height: 36px;
+  position: absolute; top: 8px; right: 10px; width: 44px; height: 44px;
   border: 0; border-radius: 50%; background: var(--cream, #f7f4ec);
   color: var(--navy, #12355b); font-size: 1.5rem; line-height: 1; cursor: pointer;
 }
@@ -1861,15 +1883,10 @@ body.obj-popup-open { overflow: hidden; }
   scroll-snap-type: x proximity;
 }
 /* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
-   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
-   trailing edge so the strip reads as scrollable. Only below 700px, where the
-   overflow is guaranteed — a permanent fade on desktop would just look broken. */
-@media (max-width: 700px) {
-  .homework-tab-bar {
-    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
-    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
-  }
-}
+   (Help, More, Done) sat off-screen. A trailing fade was the first attempt, but a
+   28px fade is a weak hint for 2x overflow and five tabs stayed undiscoverable.
+   Wrap into two rows of five instead: every tab is visible, and the compact row
+   height keeps the whole strip under ~104px of a phone viewport. */
 .homework-tab-btn {
   flex: 0 0 auto;
   scroll-snap-align: start;
@@ -1886,7 +1903,7 @@ body.obj-popup-open { overflow: hidden; }
   justify-content: center;
   gap: 3px;
   font-family: var(--font-display);
-  font-size: 11px;
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--muted);
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
@@ -1901,8 +1918,29 @@ body.obj-popup-open { overflow: hidden; }
 }
 .tab-icon { font-size: 20px; line-height: 1; }
 .tab-label { display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
-.tab-es { font-size: 10px; color: var(--muted); font-weight: 600; }
+.tab-es { font-size: 11.5px; color: var(--muted); font-weight: 600; }
 .homework-tab-btn.is-active .tab-es { color: var(--white); }
+
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .homework-tab-btn {
+    flex: 0 0 calc(20% - 5px);
+    min-width: 0;
+    min-height: 48px;
+    padding: 5px 2px;
+    font-size: 11.5px;
+  }
+  .tab-icon { font-size: 17px; }
+  /* The stacked EN + ES gloss is what makes each button two lines tall — three
+     rows of tabs would eat 28% of a phone screen. In bilingual/English mode the
+     English label carries it; ES-only mode already hides .tab-en and shows this. */
+  body:not(.lang-mode-es) .tab-es { display: none; }
+}
 
 .help-pop-btn {
   margin: 8px 0;
@@ -1964,7 +2002,7 @@ body.help-modal-open { overflow: hidden; }
   border-radius: var(--radius-sm); font-size: 14px; line-height: 1.5;
 }
 .help-modal-frame[hidden] { display: none !important; }
-.help-frame-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.help-frame-tag { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; color: var(--teal-ink); }
 .help-frame-es { color: var(--muted); }
 
 /* Guided "Try together" fill-in spaces + step actions */
@@ -1996,7 +2034,7 @@ body.help-modal-open { overflow: hidden; }
 .ladder-item { border: 1px solid var(--line); border-left: 4px solid #5b8def; border-radius: var(--radius-sm); padding: 9px 11px; background: var(--white); }
 .ladder-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
 .ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
-.ladder-tier { font-family: var(--font-display); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--navy); }
+.ladder-tier { font-family: var(--font-display); font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; color: var(--navy); }
 .ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
 .ladder-choices { list-style: upper-alpha; margin: 0 0 8px; padding: 0 0 0 22px; display: flex; flex-direction: column; gap: 3px; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
@@ -2013,8 +2051,8 @@ body.teacher-mode .ladder-answer { display: block; }
 
 /* "More practice" accordion in the Check tab */
 /* Tiered practice sections (warm-up first, then a harder challenge set) */
-.practice-tier { margin: 0 0 22px; }
-.practice-tier + .practice-tier { margin-top: 4px; }
+.practice-tier { margin: 0 0 40px; }
+.practice-tier + .practice-tier { margin-top: 0; padding-top: 32px; border-top: 2px solid var(--line); }
 .practice-tier-head {
   display: flex; align-items: center; gap: 12px; margin: 0 0 10px;
   padding: 12px 16px; border-radius: var(--radius-md);
@@ -2077,7 +2115,7 @@ body.teacher-mode .ladder-answer { display: block; }
   background: var(--cream); text-decoration: none; color: inherit;
 }
 .external-resource-link:hover { border-color: var(--teal); background: var(--teal-light); text-decoration: none; }
-.ext-source { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.ext-source { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; color: var(--teal-ink); }
 .ext-title-en { font-weight: 700; color: var(--navy); }
 .ext-title-es { font-size: 13px; color: var(--muted); }
 .section-more { border-left: 4px solid #5b8def; }
@@ -2318,7 +2356,7 @@ body.lang-mode-es .bilingual-grid {
   margin: 0 0 4px;
   font-family: var(--font-display);
   font-size: 16px;
-  color: var(--teal);
+  color: var(--teal-ink);
   font-weight: 800;
 }
 .cert-detail {
@@ -2385,7 +2423,11 @@ body.lang-mode-es .bilingual-grid {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .homework-tab-btn, .hw-game-choice-btn, .help-pop-btn { transition: none; }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
@@ -2397,6 +2439,16 @@ body.lang-mode-es .bilingual-grid {
   [data-tab-panel="play"],
   [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
+  /* Browsers drop background colours when printing. Several distinctions on this
+     sheet are carried by fill alone — the EN/ES columns, the highlighted worked
+     step, and above all the green "say this" vs red "don't say this" coaching
+     panels, which print as two identical white boxes without this. */
+  .bilingual-col, .worked-step, .worked-step.highlighted,
+  .stuck-say, .stuck-dont, .watch-for-list, .watch-for,
+  .practice-tier-head, .key-idea-banner {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
   
   .print-only-certificate.is-signed {
     display: block !important;
@@ -2490,6 +2542,13 @@ body.lang-mode-es .bilingual-grid {
 body { font-size: 15px; line-height: 1.58; }
 .container { max-width: 840px; padding: 28px 18px 40px; }
 
+/* On a laptop the 840px column left half the viewport empty while single
+   problem cards ran thousands of pixels tall. Give the reading column more
+   room — and keep the sticky bar's inner column locked to it. */
+@media (min-width: 1180px) {
+  .container, .status-bar-wrapper { max-width: 1000px; }
+}
+
 /* Section headings get a clear accent + stronger hierarchy */
 .section-title {
   font-size: 22px;
@@ -2534,17 +2593,24 @@ body { font-size: 15px; line-height: 1.58; }
   box-shadow: 0 8px 22px -14px rgba(242,193,91,.9);
 }
 .step-badge {
-  font-size: 10px;
-  letter-spacing: .04em;
+  font-size: 11.5px;
+  letter-spacing: .02em;
   padding: 4px 9px;
   border-radius: 999px;
   align-self: center;
 }
 .step-label { font-size: 15px; }
 
-/* Bilingual text: clearer separation, muted secondary language */
-.lang-es { color: var(--muted); }
-.worked-step .lang-es, .lang-en + .lang-es { display: block; margin-top: 3px; }
+/* Bilingual text: Spanish is a primary language here, so it keeps full ink
+   contrast. The separation is carried structurally by a teal rule, never by
+   fading the text (that read as "English written twice, Spanish as a footnote"). */
+.lang-es { color: var(--ink); }
+.worked-step .lang-es, .lang-en + .lang-es {
+  display: block;
+  margin-top: 4px;
+  padding-left: 10px;
+  border-left: 2px solid var(--teal-light);
+}
 
 /* "Watch for this" / tip callouts: crisp, friendly */
 .watch-for-list, .watch-for {
@@ -2608,11 +2674,11 @@ header.packet h1::after{
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/4-5/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 4-5: Use Percent to Solve Problems.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 4-5: Determine the Whole Given the Part and Percent.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson 4-5: Use Percent to Solve Problems">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 4-5: Use Percent to Solve Problems.">
+  <meta property="og:title" content="Help Your Student — Lesson 4-5: Determine the Whole Given the Part and Percent">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 4-5: Determine the Whole Given the Part and Percent.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/4-5/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
@@ -2649,7 +2715,7 @@ header.packet h1::after{
           <p class="welcome-tag">Unit 4 · 6.AT.4</p>
           <h1 class="welcome-title-en">Family Math Night</h1>
           <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
-          <p class="welcome-lesson">Use Percent to Solve Problems · Lesson 4-5</p>
+          <p class="welcome-lesson">Determine the Whole Given the Part and Percent · Lesson 4-5</p>
         </div>
       </div>
       <p class="welcome-lead bilingual-block">
@@ -2754,13 +2820,13 @@ header.packet h1::after{
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
-          <p class="learning-big">Tonight we solve real shopping problems with percents: discounts that lower a price, and tax or tips that raise it.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Percent Problem Solving</li><li>Discount</li><li>Markup</li><li>Tax</li><li>Tip</li></ul></div>
+          <p class="learning-big">Tonight we work backwards: when we know a part and the percent that part represents, we find the whole amount it came from.</p>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Determine the Whole Given the Part and Percent</li><li>Part</li><li>Whole</li><li>Double number line</li><li>Equation</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
-          <p class="learning-big">Esta noche resolvemos problemas reales de compras con porcentajes: descuentos que bajan un precio, e impuestos o propinas que lo suben.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Resolución de problemas con porcentajes</li><li>Descuento</li><li>Recargo (margen)</li><li>Impuesto</li><li>Propina</li></ul></div>
+          <p class="learning-big">Esta noche trabajamos al revés: cuando conocemos una parte y el porcentaje que representa, hallamos el total del que proviene.</p>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Hallar el total dados la parte y el porcentaje</li><li>Parte</li><li>Total</li><li>Recta numérica doble</li><li>Ecuación</li></ul></div>
         </div>
       </div>
     
@@ -2779,8 +2845,8 @@ header.packet h1::after{
         <ol class="concept-quick-path" aria-label="Four-step visual math path"><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">👀</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">🧩</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✏️</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✅</span><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></li></ol>
       </div>
       <div class="key-idea-banner">
-        <p class="lang-en"><strong>In one sentence:</strong> A discount makes the price go down. Tax, tip, and markup make it go up. When there is a discount and a tax, take the discount off first, then add the tax on the new lower price.</p>
-        <p class="lang-es" lang="es"><strong>En una frase:</strong> Un descuento hace que el precio baje. El impuesto, la propina y el recargo lo suben. Cuando hay descuento e impuesto, quita el descuento primero y luego suma el impuesto sobre el nuevo precio más bajo.</p>
+        <p class="lang-en"><strong>In one sentence:</strong> Percent × whole = part. When the whole is missing, divide the part by the percent written as a decimal.</p>
+        <p class="lang-es" lang="es"><strong>En una frase:</strong> Porcentaje × total = parte. Cuando falta el total, divide la parte entre el porcentaje escrito como decimal.</p>
       </div>
       <ol class="guided-steps">
         
@@ -2789,26 +2855,26 @@ header.packet h1::after{
               <span class="guided-step-icon" aria-hidden="true">👀</span>
               <div><span class="step-cue-label"><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
             </div>
-            <p class="step-lead lang-en">Real example: a bear costs 200 tickets, with 25% off, then a 5% tax.</p>
-            <p class="step-lead lang-es" lang="es">Ejemplo real: un oso cuesta 200 boletos, con 25% de descuento, y luego un 5% de impuesto.</p>
-            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">We want the final price.</p><p class="lang-es" lang="es">Queremos el precio final.</p></details>
+            <p class="step-lead lang-en">Real example: a sweater&#039;s sale price is $42, which is 60% of the original price.</p>
+            <p class="step-lead lang-es" lang="es">Ejemplo real: el precio de oferta de un suéter es $42, que es el 60 % del precio original.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">What was the original price?</p><p class="lang-es" lang="es">¿Cuál era el precio original?</p></details>
           </li>
           <li class="guided-step step-color-2">
             <div class="guided-step-head">
               <span class="guided-step-icon" aria-hidden="true">🧩</span>
               <div><span class="step-cue-label"><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
             </div>
-            <p class="step-lead lang-en">First the discount: 0.25 × 200 = 50 off.</p>
-            <p class="step-lead lang-es" lang="es">Primero el descuento: 0.25 × 200 = 50 de rebaja.</p>
-            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">New price: 200 − 50 = 150 tickets.</p><p class="lang-es" lang="es">Nuevo precio: 200 − 50 = 150 boletos.</p></details>
+            <p class="step-lead lang-en">Name the pieces: $42 is the part, 60% is the percent, and the original price is the missing whole (100%).</p>
+            <p class="step-lead lang-es" lang="es">Nombra las partes: $42 es la parte, 60 % es el porcentaje, y el precio original es el total que falta (100 %).</p>
+
           </li>
           <li class="guided-step step-color-3">
             <div class="guided-step-head">
               <span class="guided-step-icon" aria-hidden="true">✏️</span>
               <div><span class="step-cue-label"><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
             </div>
-            <p class="step-lead lang-en">Now the tax goes on the NEW price, not the old one: 0.05 × 150 = 7.5.</p>
-            <p class="step-lead lang-es" lang="es">Ahora el impuesto va sobre el NUEVO precio, no el viejo: 0.05 × 150 = 7.5.</p>
+            <p class="step-lead lang-en">Write 60% as a decimal, 0.6, and set up the equation: 0.6 × v = 42.</p>
+            <p class="step-lead lang-es" lang="es">Escribe 60 % como decimal, 0.6, y plantea la ecuación: 0.6 × v = 42.</p>
 
           </li>
           <li class="guided-step step-color-4">
@@ -2816,9 +2882,9 @@ header.packet h1::after{
               <span class="guided-step-icon" aria-hidden="true">✅</span>
               <div><span class="step-cue-label"><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
             </div>
-            <p class="step-lead lang-en">Add the tax on: 150 + 7.5 = 157.5.</p>
-            <p class="step-lead lang-es" lang="es">Suma el impuesto: 150 + 7.5 = 157.5.</p>
-            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">The final price is 157.5 tickets.</p><p class="lang-es" lang="es">El precio final es 157.5 boletos.</p></details>
+            <p class="step-lead lang-en">Divide to undo the multiplication: 42 ÷ 0.6 = 70.</p>
+            <p class="step-lead lang-es" lang="es">Divide para deshacer la multiplicación: 42 ÷ 0.6 = 70.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">The original price was $70 — larger than the sale price, as a discount requires.</p><p class="lang-es" lang="es">El precio original era $70, mayor que el de oferta, como debe ser con un descuento.</p></details>
           </li>
       </ol>
       <ul class="watch-for-list">
@@ -2826,22 +2892,22 @@ header.packet h1::after{
           <li>
             <span class="watch-icon">👀</span>
             <div>
-              <p class="lang-en">Listen for &quot;descuento&quot; (discount) — it lowers the price. Listen for &quot;impuesto&quot; (tax) and &quot;propina&quot; (tip) — they raise it.</p>
-              <p class="lang-es" lang="es">Escucha &quot;descuento&quot; — baja el precio. Escucha &quot;impuesto&quot; y &quot;propina&quot; — lo suben.</p>
+              <p class="lang-en">Listen for &quot;the whole&quot; (el total) — it is always the 100% amount, and it is what is missing tonight.</p>
+              <p class="lang-es" lang="es">Escucha &quot;el total&quot;: siempre es la cantidad del 100 %, y es lo que falta esta noche.</p>
             </div>
           </li>
           <li>
             <span class="watch-icon">🔢</span>
             <div>
-              <p class="lang-en">The tax goes on the price AFTER the discount, because that is what you really pay.</p>
-              <p class="lang-es" lang="es">El impuesto va sobre el precio DESPUÉS del descuento, porque eso es lo que realmente pagas.</p>
+              <p class="lang-en">Divide, do not multiply. Multiplying by 0.6 makes the answer smaller than the part, which is impossible.</p>
+              <p class="lang-es" lang="es">Divide, no multipliques. Multiplicar por 0.6 hace la respuesta menor que la parte, lo cual es imposible.</p>
             </div>
           </li>
           <li>
             <span class="watch-icon">✋</span>
             <div>
-              <p class="lang-en">Let your student go step by step. Ask &quot;Did we take the discount off first?&quot; before adding tax.</p>
-              <p class="lang-es" lang="es">Deja que tu estudiante vaya paso a paso. Pregunta &quot;¿Ya quitamos el descuento primero?&quot; antes de sumar el impuesto.</p>
+              <p class="lang-en">Check the size: if the percent is under 100%, the whole must be bigger than the part.</p>
+              <p class="lang-es" lang="es">Comprueben el tamaño: si el porcentaje es menor que 100 %, el total debe ser mayor que la parte.</p>
             </div>
           </li>
       </ul>
@@ -2849,17 +2915,17 @@ header.packet h1::after{
       <section class="family-visual-lab" data-visual-lab="ratios" data-lesson-model="percent-builder" aria-labelledby="visual_lab_title">
     <div class="visual-lab-heading">
       <div><span class="visual-lab-kicker"><span class="lang-en">TOUCH &amp; TRY</span><span class="lang-es" lang="es">TOCA Y PRUEBA</span></span>
-      <h2 id="visual_lab_title"><span aria-hidden="true">🖐️</span> <span class="lang-en">Use Percent to Solve Problems</span><span class="lang-es" lang="es">Modelo interactivo de la lección</span></h2></div>
+      <h2 id="visual_lab_title"><span aria-hidden="true">🖐️</span> <span class="lang-en">Determine the Whole Given the Part and Percent</span><span class="lang-es" lang="es">Modelo interactivo de la lección</span></h2></div>
       <p><span class="lang-en">Use the same interactive model from the lesson. Change it, notice the pattern, and explain what the model shows.</span><span class="lang-es" lang="es">Usa el mismo modelo interactivo de la lección. Cámbialo, observa el patrón y explica lo que muestra.</span></p>
     </div>
-    <div class="visual-lab-stage" data-lesson-model-host><div class="interactive-visual" data-visual="percent-builder" data-config="{&quot;kind&quot;:&quot;percent-builder&quot;,&quot;percent&quot;:25,&quot;whole&quot;:120,&quot;presets&quot;:[&quot;25%of120&quot;,&quot;15%of20&quot;,&quot;40%of30&quot;,&quot;10%of30&quot;]}" role="group" aria-label="Interactive Use Percent to Solve Problems" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use the interactive lesson model.</div></noscript></div></div>
+    <div class="visual-lab-stage" data-lesson-model-host><div class="interactive-visual" data-visual="percent-builder" data-config="{&quot;kind&quot;:&quot;percent-builder&quot;,&quot;percent&quot;:60,&quot;whole&quot;:70,&quot;presets&quot;:[&quot;60%of70:part&quot;,&quot;15%of500:part&quot;,&quot;70%of38000:part&quot;,&quot;25%of120:part&quot;]}" role="group" aria-label="Interactive Determine the Whole Given the Part and Percent" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use the interactive lesson model.</div></noscript></div></div>
     <div class="visual-representation-grid" aria-label="Three ways to understand the lesson model">
       <article class="visual-representation-card visual-representation-model"><span class="representation-number">1</span><h3><span class="lang-en">Touch and change</span><span class="lang-es" lang="es">Toca y cambia</span></h3><p><span class="lang-en">Move, type, tap, or drag in the model. Watch what changes.</span><span class="lang-es" lang="es">Mueve, escribe, toca o arrastra en el modelo. Observa qué cambia.</span></p></article>
       <article class="visual-representation-card visual-representation-math"><span class="representation-number">2</span><h3><span class="lang-en">Write the math</span><span class="lang-es" lang="es">Escribe las matemáticas</span></h3><p><span class="lang-en">Record one equation, value, or relationship you can see.</span><span class="lang-es" lang="es">Escribe una ecuación, un valor o una relación que puedas ver.</span></p></article>
-      <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3><p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p><details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">Take the discount off first to get the new lower price, then add the tax on that new price.</p></details></article>
+      <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3><p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p><details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">Percent × whole = part. When the whole is unknown, divide the part by the percent in decimal form: whole = part ÷ decimal.</p></details></article>
     </div>
   </section>
-      <p class="tab-help-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"A discount makes the price go down. Tax, tip, and markup make it go up. When there is a discount and a tax, take the discount off first, then add the tax on the new lower price.","es":"Un descuento hace que el precio baje. El impuesto, la propina y el recargo lo suben. Cuando hay descuento e impuesto, quita el descuento primero y luego suma el impuesto sobre el nuevo precio más bajo."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
+      <p class="tab-help-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"Percent × whole = part. When the whole is missing, divide the part by the percent written as a decimal.","es":"Porcentaje × total = parte. Cuando falta el total, divide la parte entre el porcentaje escrito como decimal."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="arcade" id="hw_panel_arcade" role="tabpanel" hidden>
@@ -2893,17 +2959,17 @@ header.packet h1::after{
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/concept-percent-problem-solving.svg" alt="Illustration of Percent Problem Solving: Use a percent to find a part, a whole, or a percent change in a real situation." loading="lazy" width="72" height="72" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent-base.svg" alt="Illustration of Determine the Whole Given the Part and Percent: Working backwards from a part and its percent to find the whole amount it came from." loading="lazy" width="72" height="72" />
                   </div>
-                  <h3>Percent Problem Solving</h3>
-                  <p class="vocab-es" lang="es">Resolución de problemas con porcentajes</p>
-                  <div class="vocab-visual-hint">💡 Sale price = original price − discount.</div>
+                  <h3>Determine the Whole Given the Part and Percent</h3>
+                  <p class="vocab-es" lang="es">Hallar el total dados la parte y el porcentaje</p>
+                  <div class="vocab-visual-hint">💡 $42 is 60% of what? → $70</div>
                   <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
                 </div>
                 <div class="vocab-card-back">
-                  <p class="vocab-def">Use a percent to find a part, a whole, or a percent change in a real situation.</p>
-                  <p class="vocab-def-es" lang="es">Usar un porcentaje para hallar una parte, un total o un cambio porcentual en una situación real.</p>
-                  <p class="vocab-back-visual">📌 Sale price = original price − discount.</p>
+                  <p class="vocab-def">Working backwards from a part and its percent to find the whole amount it came from.</p>
+                  <p class="vocab-def-es" lang="es">Trabajar al revés a partir de una parte y su porcentaje para hallar el total del que proviene.</p>
+                  <p class="vocab-back-visual">📌 $42 is 60% of what? → $70</p>
                 </div>
               </div>
             </div>
@@ -2911,17 +2977,17 @@ header.packet h1::after{
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/discount.svg" alt="Illustration of Discount: Money taken off the first price to make it cheaper." loading="lazy" width="72" height="72" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent-part.svg" alt="Illustration of Part: The amount you already know — the piece of the whole that the percent describes." loading="lazy" width="72" height="72" />
                   </div>
-                  <h3>Discount</h3>
-                  <p class="vocab-es" lang="es">Descuento</p>
-                  <div class="vocab-visual-hint">💡 20% off $50 → discount is $10</div>
+                  <h3>Part</h3>
+                  <p class="vocab-es" lang="es">Parte</p>
+                  <div class="vocab-visual-hint">💡 The $42 sale price is the part</div>
                   <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
                 </div>
                 <div class="vocab-card-back">
-                  <p class="vocab-def">Money taken off the first price to make it cheaper.</p>
-                  <p class="vocab-def-es" lang="es">Dinero que se quita del precio original para que sea más barato.</p>
-                  <p class="vocab-back-visual">📌 20% off $50 → discount is $10</p>
+                  <p class="vocab-def">The amount you already know — the piece of the whole that the percent describes.</p>
+                  <p class="vocab-def-es" lang="es">La cantidad que ya conoces: el pedazo del total que describe el porcentaje.</p>
+                  <p class="vocab-back-visual">📌 The $42 sale price is the part</p>
                 </div>
               </div>
             </div>
@@ -2929,17 +2995,17 @@ header.packet h1::after{
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Markup: Money added to the cost to set the selling price." loading="lazy" width="72" height="72" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/part-to-whole.svg" alt="Illustration of Whole: The full amount the percent is measured against. The whole is always 100%." loading="lazy" width="72" height="72" />
                   </div>
-                  <h3>Markup</h3>
-                  <p class="vocab-es" lang="es">Recargo (margen)</p>
-                  <div class="vocab-visual-hint">💡 A $30 item with 10% markup sells for $33</div>
+                  <h3>Whole</h3>
+                  <p class="vocab-es" lang="es">Total</p>
+                  <div class="vocab-visual-hint">💡 The original price is the whole = 100%</div>
                   <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
                 </div>
                 <div class="vocab-card-back">
-                  <p class="vocab-def">Money added to the cost to set the selling price.</p>
-                  <p class="vocab-def-es" lang="es">Dinero que se suma al costo para fijar el precio de venta.</p>
-                  <p class="vocab-back-visual">📌 A $30 item with 10% markup sells for $33</p>
+                  <p class="vocab-def">The full amount the percent is measured against. The whole is always 100%.</p>
+                  <p class="vocab-def-es" lang="es">La cantidad completa contra la que se mide el porcentaje. El total siempre es 100 %.</p>
+                  <p class="vocab-back-visual">📌 The original price is the whole = 100%</p>
                 </div>
               </div>
             </div>
@@ -2947,17 +3013,17 @@ header.packet h1::after{
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Tax: Extra money added to a price for the government." loading="lazy" width="72" height="72" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/number-line.svg" alt="Illustration of Double number line: Two lines lined up — dollars on one, percents on the other — so matching marks show the same amount two ways." loading="lazy" width="72" height="72" />
                   </div>
-                  <h3>Tax</h3>
-                  <p class="vocab-es" lang="es">Impuesto</p>
-                  <div class="vocab-visual-hint">💡 6% tax on $20 adds $1.20</div>
+                  <h3>Double number line</h3>
+                  <p class="vocab-es" lang="es">Recta numérica doble</p>
+                  <div class="vocab-visual-hint">💡 $0, $7, $42, $70 above 0%, 10%, 60%, 100%</div>
                   <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
                 </div>
                 <div class="vocab-card-back">
-                  <p class="vocab-def">Extra money added to a price for the government.</p>
-                  <p class="vocab-def-es" lang="es">Dinero extra que se suma a un precio para el gobierno.</p>
-                  <p class="vocab-back-visual">📌 6% tax on $20 adds $1.20</p>
+                  <p class="vocab-def">Two lines lined up — dollars on one, percents on the other — so matching marks show the same amount two ways.</p>
+                  <p class="vocab-def-es" lang="es">Dos rectas alineadas —dólares en una y porcentajes en la otra— para que las marcas correspondientes muestren la misma cantidad de dos formas.</p>
+                  <p class="vocab-back-visual">📌 $0, $7, $42, $70 above 0%, 10%, 60%, 100%</p>
                 </div>
               </div>
             </div>
@@ -2965,17 +3031,17 @@ header.packet h1::after{
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Tip: Extra money you give for good service." loading="lazy" width="72" height="72" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/equation-0-7v.svg" alt="Illustration of Equation: A math sentence with an equal sign. Here it says percent × whole = part, with the whole unknown." loading="lazy" width="72" height="72" />
                   </div>
-                  <h3>Tip</h3>
-                  <p class="vocab-es" lang="es">Propina</p>
-                  <div class="vocab-visual-hint">💡 15% tip on $40 = $6</div>
+                  <h3>Equation</h3>
+                  <p class="vocab-es" lang="es">Ecuación</p>
+                  <div class="vocab-visual-hint">💡 0.7v = 26,600 — the percent times the unknown whole equals the part</div>
                   <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
                 </div>
                 <div class="vocab-card-back">
-                  <p class="vocab-def">Extra money you give for good service.</p>
-                  <p class="vocab-def-es" lang="es">Dinero extra que das por un buen servicio.</p>
-                  <p class="vocab-back-visual">📌 15% tip on $40 = $6</p>
+                  <p class="vocab-def">A math sentence with an equal sign. Here it says percent × whole = part, with the whole unknown.</p>
+                  <p class="vocab-def-es" lang="es">Una oración matemática con signo de igual. Aquí dice porcentaje × total = parte, con el total desconocido.</p>
+                  <p class="vocab-back-visual">📌 0.7v = 26,600 — the percent times the unknown whole equals the part</p>
                 </div>
               </div>
             </div>
@@ -2983,17 +3049,17 @@ header.packet h1::after{
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Percent: A way to compare a number to 100, shown with the % sign." loading="lazy" width="72" height="72" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Percent: A ratio comparing a number to 100. To compute with it, write it in decimal form: 60% = 0.6." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Percent</h3>
                   <p class="vocab-es" lang="es">Porcentaje</p>
-                  <div class="vocab-visual-hint">💡 50% means 50 out of 100</div>
+                  <div class="vocab-visual-hint">💡 60% = 0.6 · 70% = 0.7</div>
                   <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
                 </div>
                 <div class="vocab-card-back">
-                  <p class="vocab-def">A way to compare a number to 100, shown with the % sign.</p>
-                  <p class="vocab-def-es" lang="es">Una manera de comparar un número con 100, con el signo %.</p>
-                  <p class="vocab-back-visual">📌 50% means 50 out of 100</p>
+                  <p class="vocab-def">A ratio comparing a number to 100. To compute with it, write it in decimal form: 60% = 0.6.</p>
+                  <p class="vocab-def-es" lang="es">Una razón que compara un número con 100. Para calcular con él, escríbelo en forma decimal: 60 % = 0.6.</p>
+                  <p class="vocab-back-visual">📌 60% = 0.6 · 70% = 0.7</p>
                 </div>
               </div>
             </div>
@@ -3002,8 +3068,8 @@ header.packet h1::after{
 <div class="tab-panel-inner" data-tab-panel="together" id="hw_panel_together" role="tabpanel" hidden>
     
       <h2 class="section-title">🤝 <span class="lang-en">Try this together</span><span class="lang-es" lang="es">Inténtenlo juntos</span></h2>
-      <p class="try-scenario lang-en">A keychain costs 80 tickets with 10% off, then a 5% tax. Find the final price.</p>
-             <p class="try-scenario lang-es" lang="es">Un llavero cuesta 80 boletos con 10% de descuento, y luego un 5% de impuesto. Hallen el precio final.</p>
+      <p class="try-scenario lang-en">A student spends 75 minutes in science class, which is 15% of the school day.</p>
+             <p class="try-scenario lang-es" lang="es">Un estudiante pasa 75 minutos en la clase de ciencias, que es el 15 % del día escolar.</p>
       <p class="try-together-note bilingual-block">
         <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
         <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
@@ -3014,12 +3080,12 @@ header.packet h1::after{
             <div class="together-step-head">
               <span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span>
               <div class="together-step-actions">
-                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"10% of 80 is 0.10 × 80 = 8 off, so the price is 80 − 8.","es":"10% de 80 es 0.10 × 80 = 8 de rebaja, así que el precio es 80 − 8."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
-                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 — more help","titleEs":"Paso 1 — más ayuda","en":"The new price after the discount is 72 tickets.","es":"El nuevo precio después del descuento es 72 boletos."}' onclick="openHelpModalFromBtn(this)">🤝 <span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"75 minutes is the part; the length of the whole day is missing.","es":"75 minutos es la parte; falta la duración de todo el día."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 — more help","titleEs":"Paso 1 — más ayuda","en":"The whole is always the 100% amount.","es":"El total siempre es la cantidad del 100 %."}' onclick="openHelpModalFromBtn(this)">🤝 <span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></button>
               </div>
             </div>
-            <p class="lang-en">First find the discount and the new price.</p>
-            <p class="lang-es" lang="es">Primero hallen el descuento y el nuevo precio.</p>
+            <p class="lang-en">Which number is the part, and what is missing?</p>
+            <p class="lang-es" lang="es">¿Cuál número es la parte y qué falta?</p>
             <div class="together-fill">
               <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 1"></textarea>
             </div>
@@ -3028,12 +3094,12 @@ header.packet h1::after{
             <div class="together-step-head">
               <span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span>
               <div class="together-step-actions">
-                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"0.05 × 72 = the tax.","es":"0.05 × 72 = el impuesto."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
-                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 — more help","titleEs":"Paso 2 — más ayuda","en":"0.05 × 72 = 3.6 in tax.","es":"0.05 × 72 = 3.6 de impuesto."}' onclick="openHelpModalFromBtn(this)">🤝 <span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"0.15 × d = 75","es":"0.15 × d = 75"}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 — more help","titleEs":"Paso 2 — más ayuda","en":"Percent × whole = part.","es":"Porcentaje × total = parte."}' onclick="openHelpModalFromBtn(this)">🤝 <span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></button>
               </div>
             </div>
-            <p class="lang-en">Now find the 5% tax on the new price of 72.</p>
-            <p class="lang-es" lang="es">Ahora hallen el 5% de impuesto sobre el nuevo precio de 72.</p>
+            <p class="lang-en">Write the equation with 15% as a decimal.</p>
+            <p class="lang-es" lang="es">Escriban la ecuación con 15 % como decimal.</p>
             <div class="together-fill">
               <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 2"></textarea>
             </div>
@@ -3042,12 +3108,12 @@ header.packet h1::after{
             <div class="together-step-head">
               <span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span>
               <div class="together-step-actions">
-                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"72 + 3.6 = the final price.","es":"72 + 3.6 = el precio final."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
-                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 — more help","titleEs":"Paso 3 — más ayuda","en":"72 + 3.6 = 75.6 tickets is the final price.","es":"72 + 3.6 = 75.6 boletos es el precio final."}' onclick="openHelpModalFromBtn(this)">🤝 <span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"75 ÷ 0.15 = 500 minutes.","es":"75 ÷ 0.15 = 500 minutos."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 — more help","titleEs":"Paso 3 — más ayuda","en":"Check: 500 minutes is much longer than 75 — correct direction.","es":"Comprueben: 500 minutos es mucho más que 75; la dirección es correcta."}' onclick="openHelpModalFromBtn(this)">🤝 <span class="lang-en">More help</span><span class="lang-es" lang="es">Más ayuda</span></button>
               </div>
             </div>
-            <p class="lang-en">Add the tax to get the final price.</p>
-            <p class="lang-es" lang="es">Sumen el impuesto para obtener el precio final.</p>
+            <p class="lang-en">Divide to find the whole day.</p>
+            <p class="lang-es" lang="es">Dividan para hallar el día completo.</p>
             <div class="together-fill">
               <textarea id="together_2" name="together_2" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 3"></textarea>
             </div>
@@ -3069,12 +3135,12 @@ header.packet h1::after{
             <span class="ladder-stars" aria-hidden="true">★</span>
             <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
           </div>
-          <p class="ladder-q">A prize costs 120 tickets and is 25% off. What is the sale price?</p>
-          <ol class="ladder-choices"><li class="ladder-choice">90 tickets</li><li class="ladder-choice">95 tickets</li><li class="ladder-choice">100 tickets</li><li class="ladder-choice">30 tickets</li></ol>
+          <p class="ladder-q">$20 is 50% of what number?</p>
+          <ol class="ladder-choices"><li class="ladder-choice">$40</li><li class="ladder-choice">$10</li><li class="ladder-choice">$25</li><li class="ladder-choice">$70</li></ol>
           <input type="text" id="ladder_0" name="ladder_0" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 1" />
           <details class="ladder-answer">
              <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
-             <p class="ladder-answer-text">A. 90 tickets</p>
+             <p class="ladder-answer-text">A. $40</p>
            </details>
         </li>
         <li class="ladder-item">
@@ -3082,12 +3148,12 @@ header.packet h1::after{
             <span class="ladder-stars" aria-hidden="true">★</span>
             <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
           </div>
-          <p class="ladder-q">A meal costs $20. You leave a 15% tip. How much is the tip?</p>
-          <ol class="ladder-choices"><li class="ladder-choice">$3.00</li><li class="ladder-choice">$1.50</li><li class="ladder-choice">$5.00</li><li class="ladder-choice">$0.15</li></ol>
+          <p class="ladder-q">Which equation says &quot;30 is 25% of some number n&quot;?</p>
+          <ol class="ladder-choices"><li class="ladder-choice">0.25n = 30</li><li class="ladder-choice">25n = 30</li><li class="ladder-choice">n = 0.25 × 30</li><li class="ladder-choice">n = 30 + 25</li></ol>
           <input type="text" id="ladder_1" name="ladder_1" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 2" />
           <details class="ladder-answer">
              <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
-             <p class="ladder-answer-text">A. $3.00</p>
+             <p class="ladder-answer-text">A. 0.25n = 30</p>
            </details>
         </li>
         <li class="ladder-item">
@@ -3095,12 +3161,12 @@ header.packet h1::after{
             <span class="ladder-stars" aria-hidden="true">★★</span>
             <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
           </div>
-          <p class="ladder-q">A store marks up a $30 item by 40%, then a customer gets 10% off. What is the final price?</p>
-          <ol class="ladder-choices"><li class="ladder-choice">$37.80</li><li class="ladder-choice">$39.00</li><li class="ladder-choice">$42.00</li><li class="ladder-choice">$36.00</li></ol>
+          <p class="ladder-q">A car is now worth $26,600, which is 70% of its purchase price. What was the purchase price?</p>
+          <ol class="ladder-choices"><li class="ladder-choice">$38,000</li><li class="ladder-choice">$18,620</li><li class="ladder-choice">$26,670</li><li class="ladder-choice">$45,200</li></ol>
           <input type="text" id="ladder_2" name="ladder_2" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 3" />
           <details class="ladder-answer">
              <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
-             <p class="ladder-answer-text">A. $37.80</p>
+             <p class="ladder-answer-text">A. $38,000</p>
            </details>
         </li>
         <li class="ladder-item">
@@ -3108,12 +3174,12 @@ header.packet h1::after{
             <span class="ladder-stars" aria-hidden="true">★★</span>
             <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
           </div>
-          <p class="ladder-q">A restaurant bill is $35. You want to leave a 20% tip. What is the total amount you pay?</p>
-          <ol class="ladder-choices"><li class="ladder-choice">$42.00</li><li class="ladder-choice">$40.00</li><li class="ladder-choice">$38.50</li><li class="ladder-choice">$55.00</li></ol>
+          <p class="ladder-q">Which statement correctly names the pieces of &quot;18 students is 30% of the class&quot;?</p>
+          <ol class="ladder-choices"><li class="ladder-choice">18 is the part, 30% is the percent, the class size is the whole</li><li class="ladder-choice">18 is the whole, 30% is the part</li><li class="ladder-choice">30 is the part, 18 is the percent</li><li class="ladder-choice">The class size is the part</li></ol>
           <input type="text" id="ladder_3" name="ladder_3" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 4" />
           <details class="ladder-answer">
              <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
-             <p class="ladder-answer-text">A. $42.00</p>
+             <p class="ladder-answer-text">A. 18 is the part, 30% is the percent, the class size is the whole</p>
            </details>
         </li>
         <li class="ladder-item">
@@ -3121,10 +3187,13 @@ header.packet h1::after{
             <span class="ladder-stars" aria-hidden="true">★★★</span>
             <span class="ladder-tier"><span class="lang-en">Challenge</span><span class="lang-es" lang="es">Reto</span></span>
           </div>
-          <p class="ladder-q">A store has a 20% off sale, then takes an additional 10% off the sale price. Is this the same as 30% off the original? Use $100 as the original price. Show your work for both scenarios and explain the difference.</p>
+          <p class="ladder-q">A toy store&#039;s puzzle stock was 25% 300-piece, 15% 500-piece, and the rest 1,000-piece. During a sale the store sold ALL of its 300-piece and 500-piece puzzles — 120 puzzles in total. How many of each type did the store have before the sale? Explain your reasoning.</p>
           
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-          
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">The 120 puzzles sold were the 300-piece and 500-piece stock together, so they represent 25% + 15% = 40% of the whole stock. That makes 120 the part and 40% the percent, with the total stock unknown: 0.4t = 120, so t = 120 ÷ 0.4 = 300 puzzles in all. Now find each type as a part of that whole: 300-piece = 0.25 × 300 = 75 puzzles, 500-piece = 0.15 × 300 = 45 puzzles, and 1,000-piece = the remaining 60% = 0.6 × 300 = 180 puzzles. Check: 75 + 45 = 120 sold ✓, and 75 + 45 + 180 = 300 ✓.</p>
+           </details>
         </li></ol>
     </div>
     </div>
@@ -3158,133 +3227,47 @@ header.packet h1::after{
           </div>
         </div>
         <section class="problems-container" aria-label="Practice problems">
-    <section class="problem-section card" id="problem_0" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+    <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Focus on what each word DOES to the price: some words take money off, others add money on.","es":"Concéntrate en lo que cada palabra LE HACE al precio: algunas quitan dinero y otras lo agregan.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Start from percent × whole = part.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">Sort each situation: does the final price go UP or DOWN?</span><span class="lang-es" lang="es">Clasifica cada situación: ¿el precio final SUBE o BAJA?</span></p>
-        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
-        <div class="family-hint-box"><p>💡 <span class="lang-en">Focus on what each word DOES to the price: some words take money off, others add money on.</span><span class="lang-es" lang="es">Concéntrate en lo que cada palabra LE HACE al precio: algunas quitan dinero y otras lo agregan.</span></p><p>💡 <span class="lang-en">Discounts and &#039;% off&#039; sales lower the price. Tax, tips, and markups add to it.</span><span class="lang-es" lang="es">Los descuentos y las rebajas &#039;% de descuento&#039; bajan el precio. El impuesto, las propinas y los recargos lo suben.</span></p><p>💡 <span class="lang-en">Try &#039;20% discount on a jacket&#039; first: a discount takes money off, so the price goes DOWN. Test each card&#039;s key word the same way.</span><span class="lang-es" lang="es">Prueba primero &#039;20% de descuento en una chaqueta&#039;: un descuento quita dinero, así que el precio BAJA. Revisa la palabra clave de cada tarjeta igual.</span></p></div>
-        <div class="drag-sort-workspace" id="dragsort_0">
-          <div class="drag-columns">
-
-              <div class="drag-column" data-category-id="up" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'up')">
-                <div class="drag-column-header">Price Goes UP</div>
-                <div class="drag-column-slots" id="slots_0_up" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'up')"></div>
-              </div>
-              <div class="drag-column" data-category-id="down" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'down')">
-                <div class="drag-column-header">Price Goes DOWN</div>
-                <div class="drag-column-slots" id="slots_0_down" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'down')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_0" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_0_0"
-                     data-item-index="0"
-                     data-correct-category="down"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">20% discount on a jacket</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_0_0', 0); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="up">Price Goes UP</option><option value="down">Price Goes DOWN</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_0_1"
-                     data-item-index="1"
-                     data-correct-category="up"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">6% sales tax on electronics</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_0_1', 0); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="up">Price Goes UP</option><option value="down">Price Goes DOWN</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_0_2"
-                     data-item-index="2"
-                     data-correct-category="up"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">15% tip on a meal</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_0_2', 0); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="up">Price Goes UP</option><option value="down">Price Goes DOWN</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_0_3"
-                     data-item-index="3"
-                     data-correct-category="down"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">30% off clearance sale</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_0_3', 0); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="up">Price Goes UP</option><option value="down">Price Goes DOWN</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_0_4"
-                     data-item-index="4"
-                     data-correct-category="up"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">10% markup by the store</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_0_4', 0); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="up">Price Goes UP</option><option value="down">Price Goes DOWN</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_0_5"
-                     data-item-index="5"
-                     data-correct-category="down"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Buy-one-get-one 50% off</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_0_5', 0); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="up">Price Goes UP</option><option value="down">Price Goes DOWN</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(0); saveState(); updateProgress();">Reset Sorting</button>
+        <p class="problem-stem" data-es-missing="stem">To find the whole from a part and a percent, you…</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="Percent × whole = part, so dividing the part by the decimal undoes the multiplication and leaves the whole.">
+          
+            <label class="mc-option-label" id="label_q_0_0">
+              <input type="radio" name="q_0" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Divide the part by the percent in decimal form</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_0_1">
+              <input type="radio" name="q_0" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Multiply the part by the percent</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_0_2">
+              <input type="radio" name="q_0" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Add the part and the percent</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_0_3">
+              <input type="radio" name="q_0" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Subtract the percent from 100</span>
+            </label>
+          
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3293,6 +3276,20 @@ header.packet h1::after{
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 110" class="hw-visual-svg" role="img" aria-label="Blank ratio table"><rect x="10" y="15" width="300" height="80" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="10" y1="55" x2="310" y2="55" stroke="#12355b" stroke-width="1.5"/><line x1="85" y1="15" x2="85" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="160" y1="15" x2="160" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="235" y1="15" x2="235" y2="95" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_0"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_0" name="work_0" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -3300,80 +3297,47 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_1" data-problem-type="fill-table">
+    <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The Calculation column already sets up each problem — the parentheses part is the discount, tax, or tip amount.","es":"La columna de Cálculo ya plantea cada problema: la parte entre paréntesis es el descuento, el impuesto o la propina.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Which number counts actual students?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">Solve each percent word problem.</span><span class="lang-es" lang="es">Resuelve cada problema de porcentajes.</span></p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Situation</th><th>Calculation</th><th>Answer</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>A $45 game has a 20% discount. What is the sale price?</td><td>45 − (0.20 × 45)</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_1_table_0_2"
-                                   data-correct="$36" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>A $60 controller has 8% tax. What is the total?</td><td>60 + (0.08 × 60)</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_1_table_1_2"
-                                   data-correct="$64.80" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>A $25 meal with 15% tip. What is the total?</td><td>25 + (0.15 × 25)</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_1_table_2_2"
-                                   data-correct="$28.75" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
+        <p class="problem-stem" data-es-missing="stem">Which statement correctly names the pieces of &quot;18 students is 30% of the class&quot;?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="The known count is the part, the percent describes it, and the missing class size is the whole (100%).">
+          
+            <label class="mc-option-label" id="label_q_1_0">
+              <input type="radio" name="q_1" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">18 is the part, 30% is the percent, the class size is the whole</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_1_1">
+              <input type="radio" name="q_1" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">18 is the whole, 30% is the part</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_1_2">
+              <input type="radio" name="q_1" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">30 is the part, 18 is the percent</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_1_3">
+              <input type="radio" name="q_1" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">The class size is the part</span>
+            </label>
+          
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3403,133 +3367,67 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_2" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+    <section class="problem-section card" id="problem_2" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every sign is either taking part of the price away or piling something extra on top — decide which one before you look at the number.","es":"Cada letrero quita parte del precio o le agrega algo extra: decide cuál de las dos antes de mirar el número.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Divide each part by its decimal percent.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">Store 4 — Deal Sorter: Sort each mall sign by what it does to the final price.</span><span class="lang-es" lang="es">Tienda 4 — Clasificador de ofertas: Clasifica cada letrero del centro comercial según lo que le hace al precio final.</span></p>
-        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
-        <div class="family-hint-box"><p>💡 <span class="lang-en">Every sign is either taking part of the price away or piling something extra on top — decide which one before you look at the number.</span><span class="lang-es" lang="es">Cada letrero quita parte del precio o le agrega algo extra: decide cuál de las dos antes de mirar el número.</span></p><p>💡 <span class="lang-en">Sort by the key word: &quot;off,&quot; &quot;clearance,&quot; and &quot;coupon&quot; lower the price, while &quot;tax,&quot; &quot;tip,&quot; and &quot;markup&quot; raise it.</span><span class="lang-es" lang="es">Clasifica por la palabra clave: &quot;off&quot;, &quot;liquidación&quot; y &quot;cupón&quot; bajan el precio, mientras que &quot;impuesto&quot;, &quot;propina&quot; y &quot;aumento&quot; lo suben.</span></p><p>💡 <span class="lang-en">Start with &quot;7% sales tax at checkout&quot;: tax is charged in addition to what the item costs, so ask whether that makes you hand over more money or less.</span><span class="lang-es" lang="es">Empieza con &quot;7% sales tax at checkout&quot;: el impuesto se cobra además de lo que cuesta el artículo, así que pregúntate si eso hace que pagues más o menos.</span></p></div>
-        <div class="drag-sort-workspace" id="dragsort_2">
-          <div class="drag-columns">
-
-              <div class="drag-column" data-category-id="up" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'up')">
-                <div class="drag-column-header">Final Price Goes UP</div>
-                <div class="drag-column-slots" id="slots_2_up" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'up')"></div>
+        <p class="problem-stem"><span class="lang-en">Match each item to its correct partner.</span><span class="lang-es" lang="es">Une cada elemento con su pareja correcta.</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="" data-correct="">
+              <div class="matching-term"></div>
+              <div class="matching-select-container">
+                <select name="q_2_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value=""></option>
+                </select>
+                <span class="feedback-badge"></span>
               </div>
-              <div class="drag-column" data-category-id="down" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'down')">
-                <div class="drag-column-header">Final Price Goes DOWN</div>
-                <div class="drag-column-slots" id="slots_2_down" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'down')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_2" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_2_0"
-                     data-item-index="0"
-                     data-correct-category="down"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">35% off backpacks</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_0', 2); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="up">Final Price Goes UP</option><option value="down">Final Price Goes DOWN</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_2_1"
-                     data-item-index="1"
-                     data-correct-category="up"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">7% sales tax at checkout</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_1', 2); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="up">Final Price Goes UP</option><option value="down">Final Price Goes DOWN</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_2_2"
-                     data-item-index="2"
-                     data-correct-category="up"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">18% tip at the smoothie bar</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_2', 2); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="up">Final Price Goes UP</option><option value="down">Final Price Goes DOWN</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_2_3"
-                     data-item-index="3"
-                     data-correct-category="down"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Clearance: 50% off shoes</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_3', 2); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="up">Final Price Goes UP</option><option value="down">Final Price Goes DOWN</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_2_4"
-                     data-item-index="4"
-                     data-correct-category="up"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Store adds a 12% markup on collectibles</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_4', 2); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="up">Final Price Goes UP</option><option value="down">Final Price Goes DOWN</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_2_5"
-                     data-item-index="5"
-                     data-correct-category="down"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Coupon: 15% off your total</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_5', 2); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="up">Final Price Goes UP</option><option value="down">Final Price Goes DOWN</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
             </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(2); saveState(); updateProgress();">Reset Sorting</button>
+          
+            <div class="matching-row" data-term="" data-correct="">
+              <div class="matching-term"></div>
+              <div class="matching-select-container">
+                <select name="q_2_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value=""></option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="" data-correct="">
+              <div class="matching-term"></div>
+              <div class="matching-select-container">
+                <select name="q_2_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value=""></option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="" data-correct="">
+              <div class="matching-term"></div>
+              <div class="matching-select-container">
+                <select name="q_2_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value=""></option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3561,67 +3459,34 @@ header.packet h1::after{
           </div>
         </div>
         <section class="problems-container" aria-label="Practice problems">
-    <section class="problem-section card" id="problem_3" data-problem-type="matching-game">
+    <section class="problem-section card" id="problem_3" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read each purchase for the word \"off\" versus \"added\" — a discount card can never match a price larger than the one it started with.","es":"Lee cada compra buscando la palabra \"off\" o \"added\": una tarjeta con descuento nunca puede corresponder a un precio mayor que el de partida.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"What percent of the stock did the 120 sold puzzles make up?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">Store 5 — Price Match: Match each mall purchase to its correct final price.</span><span class="lang-es" lang="es">Tienda 5 — Precio correcto: Une cada compra del centro comercial con su precio final correcto.</span></p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="$100 jacket, 30% off" data-correct="$70">
-              <div class="matching-term">$100 jacket, 30% off</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="$25">$25</option><option value="$55">$55</option><option value="$60">$60</option><option value="$70">$70</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="$50 game, 10% tax added" data-correct="$55">
-              <div class="matching-term">$50 game, 10% tax added</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="$25">$25</option><option value="$55">$55</option><option value="$60">$60</option><option value="$70">$70</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="$20 meal, 25% tip added" data-correct="$25">
-              <div class="matching-term">$20 meal, 25% tip added</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="$25">$25</option><option value="$55">$55</option><option value="$60">$60</option><option value="$70">$70</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="$80 boots, 25% off" data-correct="$60">
-              <div class="matching-term">$80 boots, 25% off</div>
-              <div class="matching-select-container">
-                <select name="q_3_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="$25">$25</option><option value="$55">$55</option><option value="$60">$60</option><option value="$70">$70</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
+        <p class="problem-stem"></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
+        
+        
+        
+        <div class="open-response-wrapper">
+          <textarea id="open_response_3" 
+                    class="custom-textarea open-response-textarea" 
+                    data-min-length="15" 
+                    data-keywords="[]"
+                    placeholder="Write your mathematical explanation here..." 
+                    oninput="saveState(); updateProgress();"></textarea>
+          <span class="feedback-badge"></span>
         </div>
+        
+        
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3630,6 +3495,20 @@ header.packet h1::after{
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 110" class="hw-visual-svg" role="img" aria-label="Blank ratio table"><rect x="10" y="15" width="300" height="80" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="10" y1="55" x2="310" y2="55" stroke="#12355b" stroke-width="1.5"/><line x1="85" y1="15" x2="85" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="160" y1="15" x2="160" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="235" y1="15" x2="235" y2="95" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_3"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_3" name="work_3" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -3637,47 +3516,84 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_4" data-problem-type="open-response">
+    <section class="problem-section card" id="problem_4" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The trap: the second discount (10%) is taken from the SALE price, which is smaller than $100 — so it saves less than $10.","es":"La trampa: el segundo descuento (10%) se toma del precio de OFERTA, que es menor que $100, así que ahorra menos de $10.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Write each percent as a decimal first.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">A store has a 20% off sale, then takes an additional 10% off the sale price. Is this the same as 30% off the original? Use $100 as the original price. Show your work for both scenarios and explain the difference.</span><span class="lang-es" lang="es">Una tienda tiene una rebaja del 20%, y después descuenta un 10% adicional sobre el precio rebajado. ¿Es lo mismo que un 30% de descuento sobre el precio original? Usa $100 como precio original. Muestra tu trabajo en los dos casos y explica la diferencia.</span></p>
-        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
-        
-        
-          <div class="sentence-frame-card">
-            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
-            <span class="sentence-frame-text" onclick="insertSentenceStarter(4, 'Taking 20% off then 10% off gives a final price of $___, but 30% off the original gives $___. The difference is $___ because ___.')">"Taking 20% off then 10% off gives a final price of $___, but 30% off the original gives $___. The difference is $___ because ___."</span>
-            <span class="click-to-insert-hint">(Click to insert starter)</span>
-          </div>
-        
-        
-        <div class="open-response-wrapper">
-          <textarea id="open_response_4" 
-                    class="custom-textarea open-response-textarea" 
-                    data-min-length="40" 
-                    data-keywords="[&quot;72&quot;,&quot;70&quot;,&quot;not the same&quot;,&quot;second discount&quot;,&quot;smaller base&quot;,&quot;80&quot;]"
-                    placeholder="Write your mathematical explanation here..." 
-                    oninput="saveState(); updateProgress();"></textarea>
-          <span class="feedback-badge"></span>
+        <p class="problem-stem" data-es-missing="stem">Each row gives a part and a percent. Find the whole.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Part</th><th>Percent</th><th>Whole</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>$42</td><td>60%</td><td>70</td>
+                </tr>
+              
+                <tr>
+                  <td>$26,600</td><td>70%</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_4_table_1_2"
+                                   data-correct="38000" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>75 min</td><td>15%</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_4_table_2_2"
+                                   data-correct="500" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>18 students</td><td>30%</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_4_table_3_2"
+                                   data-correct="60" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+            </tbody>
+          </table>
         </div>
-        
-        
-          <div class="word-bank-container">
-            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
-            <div class="word-bank-chips">
-              <span class="word-chip" onclick="insertWord(4, '72')">72</span><span class="word-chip" onclick="insertWord(4, '70')">70</span><span class="word-chip" onclick="insertWord(4, 'not the same')">not the same</span><span class="word-chip" onclick="insertWord(4, 'second discount')">second discount</span><span class="word-chip" onclick="insertWord(4, 'smaller base')">smaller base</span><span class="word-chip" onclick="insertWord(4, '80')">80</span>
-            </div>
-          </div>
-        
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3712,56 +3628,32 @@ header.packet h1::after{
         <div class="problem-number-badge">Level up / Reto 3</div>
         <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Follow the finished Headphones row: discount first, THEN the 6% tax is charged on the discounted price.","es":"Sigue la fila terminada de los Audífonos: primero el descuento y DESPUÉS el 6% de impuesto se cobra sobre el precio con descuento.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"60% ÷ 6 = 10%, so divide the dollars by 6 as well.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">You are shopping at the arcade prize store. Calculate the final price for each item after discount AND 6% tax.</span><span class="lang-es" lang="es">Estás comprando en la tienda de premios del arcade. Calcula el precio final de cada artículo después del descuento Y del 6% de impuesto.</span></p>
+        <p class="problem-stem" data-es-missing="stem">$42 is 60% of the original price. Complete the ratio table to reach 100%.</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
             <thead>
               <tr>
-                <th>Item</th><th>Original Price</th><th>Discount</th><th>After Discount</th><th>6% Tax</th><th>Final Price</th>
+                <th>Percent</th><th>Dollars</th>
               </tr>
             </thead>
             <tbody>
               
                 <tr>
-                  <td>Headphones</td><td>$50</td><td>20% off</td><td>$40</td><td>$2.40</td><td>$42.40</td>
+                  <td>60%</td><td>42</td>
                 </tr>
               
                 <tr>
-                  <td>Speaker</td><td>$80</td><td>15% off</td>
+                  <td>10%</td>
                         <td>
                           <div class="table-input-wrapper">
                             <input type="text" 
                                    class="custom-input table-input" 
-                                   name="q_5_table_1_3"
-                                   data-correct="$68" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_1_4"
-                                   data-correct="$4.08" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_1_5"
-                                   data-correct="$72.08" 
+                                   name="q_5_table_1_1"
+                                   data-correct="7" 
                                    placeholder="Type answer..." 
                                    oninput="saveState(); updateProgress();">
                             <span class="feedback-badge"></span>
@@ -3771,37 +3663,13 @@ header.packet h1::after{
                 </tr>
               
                 <tr>
-                  <td>Game</td><td>$25</td><td>40% off</td>
+                  <td>100%</td>
                         <td>
                           <div class="table-input-wrapper">
                             <input type="text" 
                                    class="custom-input table-input" 
-                                   name="q_5_table_2_3"
-                                   data-correct="$15" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_2_4"
-                                   data-correct="$0.90" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_2_5"
-                                   data-correct="$15.90" 
+                                   name="q_5_table_2_1"
+                                   data-correct="70" 
                                    placeholder="Type answer..." 
                                    oninput="saveState(); updateProgress();">
                             <span class="feedback-badge"></span>
@@ -3816,7 +3684,7 @@ header.packet h1::after{
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3862,42 +3730,42 @@ header.packet h1::after{
         <div class="problem-number-badge">Bonus / Más 1</div>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;25% off&#39; means the discount gets SUBTRACTED — the sale price must be less than 120 tickets.","es":"&#39;25% de descuento&#39; significa que el descuento se RESTA: el precio de oferta debe ser menor que 120 boletos.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"What percent stands for the whole?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">A prize costs 120 tickets and is 25% off. What is the sale price?</span><span class="lang-es" lang="es">Un premio cuesta 120 boletos y tiene 25% de descuento. ¿Cuál es el precio de oferta?</span></p>
+        <p class="problem-stem" data-es-missing="stem">$42 is 60% of the original price. Should the original price be more or less than $42?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="25% of 120 = 0.25 × 120 = 30. Sale price: 120 − 30 = 90 tickets." data-explanation-es="25% de 120 = 0.25 × 120 = 30. Precio de oferta: 120 − 30 = 90 boletos.">
+        <div class="mc-options" data-correct="0" data-explanation="60% describes only part of the original price, so the whole original price must be larger than that part.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text"><span class="lang-en">90 tickets</span><span class="lang-es" lang="es">90 boletos</span></span>
+              <span class="choice-text">More, because 60% is less than the whole</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text"><span class="lang-en">95 tickets</span><span class="lang-es" lang="es">95 boletos</span></span>
+              <span class="choice-text">Less, because 60 is a big number</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text"><span class="lang-en">100 tickets</span><span class="lang-es" lang="es">100 boletos</span></span>
+              <span class="choice-text">Exactly $42</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text"><span class="lang-en">30 tickets</span><span class="lang-es" lang="es">30 boletos</span></span>
+              <span class="choice-text">You cannot tell</span>
             </label>
           
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -3932,42 +3800,42 @@ header.packet h1::after{
         <div class="problem-number-badge">Bonus / Más 2</div>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"This is a TWO-step problem: the markup happens first, and the 10% discount applies to the marked-up price — not the original $30.","es":"Este es un problema de DOS pasos: primero ocurre el recargo, y el 10% de descuento se aplica al precio ya recargado, no a los $30 originales.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"50% means half.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">A store marks up a $30 item by 40%, then a customer gets 10% off. What is the final price?</span><span class="lang-es" lang="es">Una tienda aumenta el precio de un artículo de $30 en un 40% y luego un cliente recibe un 10% de descuento. ¿Cuál es el precio final?</span></p>
+        <p class="problem-stem" data-es-missing="stem">$10 is 50% of what number?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Markup: $30 × 1.40 = $42. Discount: $42 × 0.10 = $4.20. Final: $42 − $4.20 = $37.80." data-explanation-es="Aumento: $30 × 1.40 = $42. Descuento: $42 × 0.10 = $4.20. Precio final: $42 − $4.20 = $37.80.">
+        <div class="mc-options" data-correct="0" data-explanation="Half of the whole is $10, so the whole is $20.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$37.80</span>
+              <span class="choice-text">$20</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_1">
               <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$39.00</span>
+              <span class="choice-text">$5</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_2">
               <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$42.00</span>
+              <span class="choice-text">$60</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$36.00</span>
+              <span class="choice-text">$100</span>
             </label>
           
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -4002,42 +3870,42 @@ header.packet h1::after{
         <div class="problem-number-badge">Bonus / Más 3</div>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Sales tax is an extra amount added on top of the price, so the total has to be more than $25.","es":"El impuesto sobre la venta es una cantidad adicional que se agrega al precio, así que el total tiene que ser mayor que $25.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"50% means half of the whole.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">Store 2 — Tech Stop: A $25 phone case has 8% sales tax added. What is the total cost?</span><span class="lang-es" lang="es">Tienda 2 — Tech Stop: Una funda para teléfono de $25 tiene un impuesto sobre la venta del 8%. ¿Cuál es el costo total?</span></p>
+        <p class="problem-stem" data-es-missing="stem">$20 is 50% of what number?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Tax: 0.08 x 25 = 2. Total: 25 + 2 = $27." data-explanation-es="Impuesto: 0.08 × 25 = 2. Total: 25 + 2 = $27.">
+        <div class="mc-options" data-correct="0" data-explanation="50% is half, so the part is half the whole. Doubling gives the whole: 20 ÷ 0.5 = 40.">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$27</span>
+              <span class="choice-text">$40</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_1">
               <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$33</span>
+              <span class="choice-text">$10</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_2">
               <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$25.08</span>
+              <span class="choice-text">$25</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_3">
               <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$23</span>
+              <span class="choice-text">$70</span>
             </label>
           
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -4067,47 +3935,137 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_9" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Marked up&#39; means the price goes UP — the new price must be more than 200 tickets.","es":"&#39;Con recargo&#39; significa que el precio SUBE: el precio nuevo debe ser más de 200 boletos.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Which number was actually paid?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">A game originally costs 200 tickets. It is marked up 10%. What is the new price?</span><span class="lang-es" lang="es">Un juego cuesta originalmente 200 boletos. Se le aplica un aumento del 10%. ¿Cuál es el precio nuevo?</span></p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Markup: 0.10 × 200 = 20. New price: 200 + 20 = 220 tickets." data-explanation-es="Aumento: 0.10 × 200 = 20. Precio nuevo: 200 + 20 = 220 boletos.">
-          
-            <label class="mc-option-label" id="label_q_9_0">
-              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text"><span class="lang-en">220 tickets</span><span class="lang-es" lang="es">220 boletos</span></span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_1">
-              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text"><span class="lang-en">210 tickets</span><span class="lang-es" lang="es">210 boletos</span></span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_2">
-              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text"><span class="lang-en">180 tickets</span><span class="lang-es" lang="es">180 boletos</span></span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_3">
-              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text"><span class="lang-en">200 tickets</span><span class="lang-es" lang="es">200 boletos</span></span>
-            </label>
-          
+        <p class="problem-stem"><span class="lang-en">Sort the items into the correct groups.</span><span class="lang-es" lang="es">Clasifica los elementos en los grupos correctos.</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        <div class="family-hint-box"><p>💡 Which number was actually paid?</p><p>💡 Which number has a % sign or is its decimal form?</p><p>💡 Which amount is missing?</p></div>
+        <div class="drag-sort-workspace" id="dragsort_9">
+          <div class="drag-columns">
+
+              <div class="drag-column" data-category-id="the-part" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'the-part')">
+                <div class="drag-column-header">The part</div>
+                <div class="drag-column-slots" id="slots_9_the-part" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'the-part')"></div>
+              </div>
+              <div class="drag-column" data-category-id="the-percent" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'the-percent')">
+                <div class="drag-column-header">The percent</div>
+                <div class="drag-column-slots" id="slots_9_the-percent" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'the-percent')"></div>
+              </div>
+              <div class="drag-column" data-category-id="the-unknown-whole" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'the-unknown-whole')">
+                <div class="drag-column-header">The unknown whole</div>
+                <div class="drag-column-slots" id="slots_9_the-unknown-whole" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'the-unknown-whole')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_9" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_0"
+                     data-item-index="0"
+                     data-correct-category="the-part"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">$42</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_0', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="the-part">The part</option><option value="the-percent">The percent</option><option value="the-unknown-whole">The unknown whole</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_1"
+                     data-item-index="1"
+                     data-correct-category="the-percent"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">60%</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_1', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="the-part">The part</option><option value="the-percent">The percent</option><option value="the-unknown-whole">The unknown whole</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_2"
+                     data-item-index="2"
+                     data-correct-category="the-unknown-whole"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">the original price</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_2', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="the-part">The part</option><option value="the-percent">The percent</option><option value="the-unknown-whole">The unknown whole</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_3"
+                     data-item-index="3"
+                     data-correct-category="the-part"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">the amount Akela paid</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_3', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="the-part">The part</option><option value="the-percent">The percent</option><option value="the-unknown-whole">The unknown whole</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_4"
+                     data-item-index="4"
+                     data-correct-category="the-percent"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">0.6</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_4', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="the-part">The part</option><option value="the-percent">The percent</option><option value="the-unknown-whole">The unknown whole</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_5"
+                     data-item-index="5"
+                     data-correct-category="the-unknown-whole"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">100%</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_5', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="the-part">The part</option><option value="the-percent">The percent</option><option value="the-unknown-whole">The unknown whole</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(9); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -4116,20 +4074,6 @@ header.packet h1::after{
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></div>
-          <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 320 110" class="hw-visual-svg" role="img" aria-label="Blank ratio table"><rect x="10" y="15" width="300" height="80" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="10" y1="55" x2="310" y2="55" stroke="#12355b" stroke-width="1.5"/><line x1="85" y1="15" x2="85" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="160" y1="15" x2="160" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="235" y1="15" x2="235" y2="95" stroke="#12355b" stroke-width="1.5"/></svg>
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>
-        </div>
-        <div class="hw-work">
-          <label class="hw-work-label" for="work_9"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_9" name="work_9" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -4142,42 +4086,42 @@ header.packet h1::after{
         <div class="problem-number-badge">Bonus / Más 5</div>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The question only asks for the TIP amount — not the meal plus the tip.","es":"La pregunta pide solo la cantidad de la PROPINA, no la comida más la propina.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Which amount is the part, and which is the unknown whole?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">A meal costs $20. You leave a 15% tip. How much is the tip?</span><span class="lang-es" lang="es">Una comida cuesta $20. Dejas una propina del 15%. ¿De cuánto es la propina?</span></p>
+        <p class="problem-stem" data-es-missing="stem">A car is now worth $26,600, which is 70% of its purchase price. What was the purchase price?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="15% of $20 = 0.15 × 20 = $3.00." data-explanation-es="15% de $20 = 0.15 × 20 = $3.00.">
+        <div class="mc-options" data-correct="0" data-explanation="Write 0.7v = 26,600 and divide: v = 26,600 ÷ 0.7 = $38,000.">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$3.00</span>
+              <span class="choice-text">$38,000</span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_1">
               <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$1.50</span>
+              <span class="choice-text">$18,620</span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_2">
               <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$5.00</span>
+              <span class="choice-text">$26,670</span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_3">
               <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$0.15</span>
+              <span class="choice-text">$45,200</span>
             </label>
           
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -4212,42 +4156,42 @@ header.packet h1::after{
         <div class="problem-number-badge">Bonus / Más 6</div>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Tax gets ADDED on, so the total must be a little more than $40.","es":"El impuesto se SUMA, así que el total debe ser un poco más de $40.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"25% means one quarter.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">A shirt costs $40 and the sales tax is 5%. What is the total cost including tax?</span><span class="lang-es" lang="es">Una camisa cuesta $40 y el impuesto sobre la venta es del 5%. ¿Cuál es el costo total con impuesto?</span></p>
+        <p class="problem-stem" data-es-missing="stem">$9 is 25% of what number?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Tax: 0.05 × $40 = $2.00. Total: $40 + $2 = $42.00." data-explanation-es="Impuesto: 0.05 × $40 = $2.00. Total: $40 + $2 = $42.00.">
+        <div class="mc-options" data-correct="0" data-explanation="25% is a quarter, so the whole is 4 times the part: 9 ÷ 0.25 = 36.">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$42.00</span>
+              <span class="choice-text">$36</span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_1">
               <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$45.00</span>
+              <span class="choice-text">$2.25</span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_2">
               <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$40.05</span>
+              <span class="choice-text">$34</span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_3">
               <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$38.00</span>
+              <span class="choice-text">$225</span>
             </label>
           
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -4282,42 +4226,42 @@ header.packet h1::after{
         <div class="problem-number-badge">Bonus / Más 7</div>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A discount comes off the original price, so the sale price has to be less than $60.","es":"Un descuento se quita del precio original, así que el precio de oferta tiene que ser menor que $60.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Which number is the part, and which is the percent?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">Store 1 — Sneaker Spot: A pair of sneakers is $60 with 20% off. What is the sale price?</span><span class="lang-es" lang="es">Tienda 1 — Sneaker Spot: Un par de tenis cuesta $60 con 20% de descuento. ¿Cuál es el precio de oferta?</span></p>
+        <p class="problem-stem" data-es-missing="stem">Which equation says &quot;30 is 25% of some number n&quot;?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Discount: 0.20 x 60 = 12. Sale price: 60 - 12 = $48." data-explanation-es="Descuento: 0.20 × 60 = 12. Precio de oferta: 60 − 12 = $48.">
+        <div class="mc-options" data-correct="0" data-explanation="Percent × whole = part, so 0.25 × n = 30.">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$48</span>
+              <span class="choice-text">0.25n = 30</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_1">
               <input type="radio" name="q_12" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$40</span>
+              <span class="choice-text">25n = 30</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_2">
               <input type="radio" name="q_12" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$52</span>
+              <span class="choice-text">n = 0.25 × 30</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_3">
               <input type="radio" name="q_12" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$12</span>
+              <span class="choice-text">n = 30 + 25</span>
             </label>
           
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -4352,42 +4296,42 @@ header.packet h1::after{
         <div class="problem-number-badge">Bonus / Más 8</div>
         <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The question asks the TOTAL you pay — the bill AND the tip together, not just the tip.","es":"La pregunta pide el TOTAL que pagas: la cuenta Y la propina juntas, no solo la propina.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Write the equation: 0.15d = 75.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"><span class="lang-en">A restaurant bill is $35. You want to leave a 20% tip. What is the total amount you pay?</span><span class="lang-es" lang="es">La cuenta de un restaurante es de $35. Quieres dejar una propina del 20%. ¿Cuál es la cantidad total que pagas?</span></p>
+        <p class="problem-stem" data-es-missing="stem">75 minutes is 15% of the school day. How long is the school day?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Tip: 0.20 × $35 = $7.00. Total: $35 + $7 = $42.00." data-explanation-es="Propina: 0.20 × $35 = $7.00. Total: $35 + $7 = $42.00.">
+        <div class="mc-options" data-correct="0" data-explanation="Divide the part by the decimal: 75 ÷ 0.15 = 500 minutes.">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$42.00</span>
+              <span class="choice-text">500 minutes</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_1">
               <input type="radio" name="q_13" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$40.00</span>
+              <span class="choice-text">11.25 minutes</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_2">
               <input type="radio" name="q_13" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$38.50</span>
+              <span class="choice-text">90 minutes</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_3">
               <input type="radio" name="q_13" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">$55.00</span>
+              <span class="choice-text">1,125 minutes</span>
             </label>
           
         </div>
       </div>
     
       
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -4443,13 +4387,13 @@ header.packet h1::after{
         <div class="stuck-panel stuck-say">
           <h3 class="stuck-heading">✅ What to say / Qué decir</h3>
           <ul>
-            <li><p class="lang-en">Does this word make the price go up or down?</p><p class="lang-es" lang="es">¿Esta palabra hace que el precio suba o baje?</p></li><li><p class="lang-en">Did we take the discount off before adding the tax?</p><p class="lang-es" lang="es">¿Quitamos el descuento antes de sumar el impuesto?</p></li><li><p class="lang-en">What is the new price now? The tax goes on that number.</p><p class="lang-es" lang="es">¿Cuál es el nuevo precio ahora? El impuesto va sobre ese número.</p></li>
+            <li><p class="lang-en">Which amount is the part, and which is missing?</p><p class="lang-es" lang="es">¿Cuál cantidad es la parte y cuál falta?</p></li><li><p class="lang-en">What is that percent as a decimal?</p><p class="lang-es" lang="es">¿Cuánto es ese porcentaje como decimal?</p></li><li><p class="lang-en">Should the whole be bigger or smaller than the part?</p><p class="lang-es" lang="es">¿El total debe ser mayor o menor que la parte?</p></li>
           </ul>
         </div>
         <div class="stuck-panel stuck-dont">
           <h3 class="stuck-heading">🚫 What NOT to say / Qué evitar</h3>
           <ul>
-            <li><p class="lang-en">Add the tax on the original price before the discount.</p><p class="lang-es" lang="es">Suma el impuesto sobre el precio original antes del descuento.</p></li><li><p class="lang-en">Just add the discount percent and the tax percent together into one step.</p><p class="lang-es" lang="es">Solo suma el porcentaje de descuento y el de impuesto en un solo paso.</p></li><li><p class="lang-en">The tip or tax IS the total, so you are done after finding it.</p><p class="lang-es" lang="es">La propina o el impuesto ES el total, así que terminas después de hallarlo.</p></li>
+            <li><p class="lang-en">Multiply the part by the percent.</p><p class="lang-es" lang="es">Multiplica la parte por el porcentaje.</p></li><li><p class="lang-en">Add the part and the percent.</p><p class="lang-es" lang="es">Suma la parte y el porcentaje.</p></li><li><p class="lang-en">The whole is always 100 of something.</p><p class="lang-es" lang="es">El total siempre es 100 de algo.</p></li>
           </ul>
         </div>
       </div>
@@ -4461,7 +4405,7 @@ header.packet h1::after{
       <div class="help-hub card-ish">
         <h3 class="section-title">💡 <span class="lang-en">Quick help topics</span><span class="lang-es" lang="es">Temas de ayuda</span></h3>
         <ul class="help-topic-list">
-          <li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Does this word make the price go up or down?","es":"¿Esta palabra hace que el precio suba o baje?"}' onclick="openHelpModalFromBtn(this)"><span class="lang-en">Tip 1</span><span class="lang-es" lang="es">Pista 1</span></button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Did we take the discount off before adding the tax?","es":"¿Quitamos el descuento antes de sumar el impuesto?"}' onclick="openHelpModalFromBtn(this)"><span class="lang-en">Tip 2</span><span class="lang-es" lang="es">Pista 2</span></button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"What is the new price now? The tax goes on that number.","es":"¿Cuál es el nuevo precio ahora? El impuesto va sobre ese número."}' onclick="openHelpModalFromBtn(this)"><span class="lang-en">Tip 3</span><span class="lang-es" lang="es">Pista 3</span></button></li>
+          <li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Which amount is the part, and which is missing?","es":"¿Cuál cantidad es la parte y cuál falta?"}' onclick="openHelpModalFromBtn(this)"><span class="lang-en">Tip 1</span><span class="lang-es" lang="es">Pista 1</span></button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"What is that percent as a decimal?","es":"¿Cuánto es ese porcentaje como decimal?"}' onclick="openHelpModalFromBtn(this)"><span class="lang-en">Tip 2</span><span class="lang-es" lang="es">Pista 2</span></button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Should the whole be bigger or smaller than the part?","es":"¿El total debe ser mayor o menor que la parte?"}' onclick="openHelpModalFromBtn(this)"><span class="lang-en">Tip 3</span><span class="lang-es" lang="es">Pista 3</span></button></li>
         </ul>
       </div>
     </div>
@@ -4687,9 +4631,9 @@ header.packet h1::after{
 
 <script>
 window.LESSON_ID = "4-5";
-window.LESSON_TITLE = "Use Percent to Solve Problems";
-window.__HW_VOCAB__ = [{"term":"Percent Problem Solving","termEs":"Resolución de problemas con porcentajes","def":"Use a percent to find a part, a whole, or a percent change in a real situation.","defEs":"Usar un porcentaje para hallar una parte, un total o un cambio porcentual en una situación real.","example":"Sale price = original price − discount.","img":"/assets/vocab-images/concept-percent-problem-solving.svg","imgAlt":"Illustration of Percent Problem Solving: Use a percent to find a part, a whole, or a percent change in a real situation."},{"term":"Discount","termEs":"Descuento","def":"Money taken off the first price to make it cheaper.","defEs":"Dinero que se quita del precio original para que sea más barato.","example":"20% off $50 → discount is $10","img":"/assets/vocab-images/discount.svg","imgAlt":"Illustration of Discount: Money taken off the first price to make it cheaper."},{"term":"Markup","termEs":"Recargo (margen)","def":"Money added to the cost to set the selling price.","defEs":"Dinero que se suma al costo para fijar el precio de venta.","example":"A $30 item with 10% markup sells for $33","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Markup: Money added to the cost to set the selling price."},{"term":"Tax","termEs":"Impuesto","def":"Extra money added to a price for the government.","defEs":"Dinero extra que se suma a un precio para el gobierno.","example":"6% tax on $20 adds $1.20","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Tax: Extra money added to a price for the government."},{"term":"Tip","termEs":"Propina","def":"Extra money you give for good service.","defEs":"Dinero extra que das por un buen servicio.","example":"15% tip on $40 = $6","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Tip: Extra money you give for good service."},{"term":"Percent","termEs":"Porcentaje","def":"A way to compare a number to 100, shown with the % sign.","defEs":"Una manera de comparar un número con 100, con el signo %.","example":"50% means 50 out of 100","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Percent: A way to compare a number to 100, shown with the % sign."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Percent Problem Solving|Discount|Percent|Markup|Tax|Tip)(?:es|s)?\\b","lookup":{"percent problem solving":0,"discount":1,"markup":2,"tax":3,"tip":4,"percent":5}};
+window.LESSON_TITLE = "Determine the Whole Given the Part and Percent";
+window.__HW_VOCAB__ = [{"term":"Determine the Whole Given the Part and Percent","termEs":"Hallar el total dados la parte y el porcentaje","def":"Working backwards from a part and its percent to find the whole amount it came from.","defEs":"Trabajar al revés a partir de una parte y su porcentaje para hallar el total del que proviene.","example":"$42 is 60% of what? → $70","img":"/assets/vocab-images/percent-base.svg","imgAlt":"Illustration of Determine the Whole Given the Part and Percent: Working backwards from a part and its percent to find the whole amount it came from."},{"term":"Part","termEs":"Parte","def":"The amount you already know — the piece of the whole that the percent describes.","defEs":"La cantidad que ya conoces: el pedazo del total que describe el porcentaje.","example":"The $42 sale price is the part","img":"/assets/vocab-images/percent-part.svg","imgAlt":"Illustration of Part: The amount you already know — the piece of the whole that the percent describes."},{"term":"Whole","termEs":"Total","def":"The full amount the percent is measured against. The whole is always 100%.","defEs":"La cantidad completa contra la que se mide el porcentaje. El total siempre es 100 %.","example":"The original price is the whole = 100%","img":"/assets/vocab-images/part-to-whole.svg","imgAlt":"Illustration of Whole: The full amount the percent is measured against. The whole is always 100%."},{"term":"Double number line","termEs":"Recta numérica doble","def":"Two lines lined up — dollars on one, percents on the other — so matching marks show the same amount two ways.","defEs":"Dos rectas alineadas —dólares en una y porcentajes en la otra— para que las marcas correspondientes muestren la misma cantidad de dos formas.","example":"$0, $7, $42, $70 above 0%, 10%, 60%, 100%","img":"/assets/vocab-images/number-line.svg","imgAlt":"Illustration of Double number line: Two lines lined up — dollars on one, percents on the other — so matching marks show the same amount two ways."},{"term":"Equation","termEs":"Ecuación","def":"A math sentence with an equal sign. Here it says percent × whole = part, with the whole unknown.","defEs":"Una oración matemática con signo de igual. Aquí dice porcentaje × total = parte, con el total desconocido.","example":"0.7v = 26,600 — the percent times the unknown whole equals the part","img":"/assets/vocab-images/equation-0-7v.svg","imgAlt":"Illustration of Equation: A math sentence with an equal sign. Here it says percent × whole = part, with the whole unknown."},{"term":"Percent","termEs":"Porcentaje","def":"A ratio comparing a number to 100. To compute with it, write it in decimal form: 60% = 0.6.","defEs":"Una razón que compara un número con 100. Para calcular con él, escríbelo en forma decimal: 60 % = 0.6.","example":"60% = 0.6 · 70% = 0.7","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Percent: A ratio comparing a number to 100. To compute with it, write it in decimal form: 60% = 0.6."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Determine the Whole Given the Part and Percent|Double number line|Equation|Percent|Whole|Part)(?:es|s)?\\b","lookup":{"determine the whole given the part and percent":0,"part":1,"whole":2,"double number line":3,"equation":4,"percent":5}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');

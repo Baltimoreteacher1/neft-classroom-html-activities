@@ -12,7 +12,7 @@
         --navy2: #27435f;
         --teal: #387f84;
         --teal2: #2b696e;
-        --amber: #f2a93b;
+        --amber: #9a6100;
         --cream: #faf6ee;
         --cream2: #f4ebdd;
         --rust: #c85a3a;
@@ -20,7 +20,7 @@
         --mint: #eaf5ee;
         --sky: #eef6f6;
         --ink: #2a3240;
-        --muted: #758394;
+        --muted: #5a6672;
         --card: #ffffff;
         --line: #e2ddd4;
         --line2: #d1c8b8;
@@ -1489,6 +1489,37 @@
             <tbody id="review-body"></tbody>
           </table>
 
+          <div class="submit-card" style="margin-bottom: 14px">
+            <h3>Finish &amp; Turn In</h3>
+            <p>
+              Check each line before you submit. If something is missing, go back
+              to that stop and fix it &mdash; your work is saved.
+            </p>
+            <div class="check-grid">
+              <label class="check-row"
+                ><input type="checkbox" /> My name, period, and date are filled
+                in.</label
+              >
+              <label class="check-row"
+                ><input type="checkbox" /> Every stop has a formula, a
+                substitution, and an answer with its unit.</label
+              >
+              <label class="check-row"
+                ><input type="checkbox" /> I pressed Check Calculation on every
+                stop and fixed the ones marked &ldquo;Not yet.&rdquo;</label
+              >
+              <label class="check-row"
+                ><input type="checkbox" /> I downloaded or copied my report and
+                submitted it.</label
+              >
+            </div>
+            <div class="submit-actions">
+              <button class="ghost-btn" onclick="returnToMissions()">
+                &larr; Back to My Missions
+              </button>
+            </div>
+          </div>
+
           <div class="submission-grid">
             <div class="submit-card">
               <h3>Google Classroom Submission</h3>
@@ -1602,7 +1633,7 @@
           y: Math.random() * canvas.height - canvas.height,
           vx: (Math.random() - 0.5) * 10,
           vy: Math.random() * 5 + 5,
-          color: ['#F2A93B','#387F84','#C85A3A','#4A7C6F'][Math.floor(Math.random()*4)],
+          color: ['#9a6100','#387F84','#C85A3A','#4A7C6F'][Math.floor(Math.random()*4)],
           size: Math.random() * 8 + 4,
           rot: Math.random() * Math.PI * 2,
           rotSpeed: (Math.random() - 0.5) * 0.2
@@ -1719,7 +1750,7 @@
           ],
           substitution: "A = 18 × 11",
           hint1: "Use the parallelogram area formula: base × height.",
-          hint2: "Multiply 18 × 11. Keep the unit squared because it is area.",
+          hint2: "Multiply the base by the height that is perpendicular to it — not the slanted side. Area units are squared.",
           visual: "parallelogram",
           rates: [
             ["fabric shade material", 7.5],
@@ -1755,7 +1786,7 @@
           ],
           substitution: "SA = 2(12×8 + 12×6 + 8×6)",
           hint1: "Find lw, lh, and wh first. Then add them and multiply by 2.",
-          hint2: "12×8=96, 12×6=72, 8×6=48. 2(96+72+48)=432.",
+          hint2: "Work out the three face areas (lw, lh, wh) one at a time, add those three, then double the total because faces come in pairs.",
           visual: "rect_prism",
           rates: [
             ["protective wrap", 3.5],
@@ -1791,7 +1822,7 @@
           ],
           substitution: "LA = 4(½ × 14 × 12)",
           hint1: "Find the area of one triangular face, then multiply by 4.",
-          hint2: "½ × 14 × 12 = 84. Four faces: 4 × 84 = 336.",
+          hint2: "Area of one triangular face is ½ × base × slant height. A square pyramid has four identical faces, so multiply that one area by 4.",
           visual: "pyramid",
           rates: [
             ["sand-colored paneling", 5.0],
@@ -1826,7 +1857,7 @@
           ],
           substitution: "LA = 4(½ × 35 × 28)",
           hint1: "Each face is a triangle. Find one triangle’s area first.",
-          hint2: "½ × 35 × 28 = 490. Four faces: 4 × 490 = 1,960.",
+          hint2: "Do one triangle first (½ × base × slant height), then multiply by 4 for the four matching faces. Lateral area leaves out the base.",
           visual: "pyramid_glass",
           rates: [
             ["standard glass", 14.5],
@@ -1862,7 +1893,7 @@
           ],
           substitution: "SA = 2(10×6 + 10×4 + 6×4)",
           hint1: "Surface area means all outside faces.",
-          hint2: "2(60+40+24)=2(124)=248.",
+          hint2: "Find lw, lh, and wh, add the three, then multiply the sum by 2. Every face has a matching partner on the opposite side.",
           visual: "rect_prism_box",
           rates: [
             ["cardboard", 0.08],
@@ -1897,7 +1928,7 @@
           ],
           substitution: "A = ½ × 24 × 18",
           hint1: "Use half of base times height.",
-          hint2: "24 × 18 = 432, and half of 432 is 216.",
+          hint2: "Multiply base × height first, then take half — a triangle is half of the rectangle around it.",
           visual: "triangle_sail",
           rates: [
             ["ceramic tile finish", 11.0],
@@ -1933,7 +1964,7 @@
           ],
           substitution: "A = ½(28 + 16) × 11",
           hint1: "Add the two bases first, then multiply by height and by ½.",
-          hint2: "28 + 16 = 44. ½ × 44 × 11 = 242.",
+          hint2: "Add the two parallel bases first, then multiply by the height, then take half. Do those three moves in that order.",
           visual: "trapezoid",
           rates: [
             ["stone cleaning", 6.5],
@@ -1969,7 +2000,7 @@
           ],
           substitution: "A = 4 × 3 × 28",
           hint1: "Find the area of one rectangular panel first.",
-          hint2: "One panel: 4×3=12. For 28 panels: 12×28=336.",
+          hint2: "Find the area of ONE panel (length × width), then multiply that single area by how many panels there are.",
           visual: "window_grid",
           rates: [
             ["window cleaning", 2.4],
@@ -2004,7 +2035,7 @@
           ],
           substitution: "A = 18 × 7",
           hint1: "Use base times height. Do not use the slanted side.",
-          hint2: "18 × 7 = 126.",
+          hint2: "Multiply base × perpendicular height. The slanted side is longer, so using it would make your answer too big.",
           visual: "parallelogram_terrace",
           rates: [
             ["soil care", 4.0],
@@ -2040,7 +2071,7 @@
           ],
           substitution: "V = 9 × 4 × 3",
           hint1: "Volume measures the space inside a 3D object.",
-          hint2: "9 × 4 × 3 = 108.",
+          hint2: "Multiply all three dimensions: length × width × height. Volume units are cubed.",
           visual: "crate",
           rates: [
             ["storage volume fee", 1.25],
@@ -2076,7 +2107,7 @@
           ],
           substitution: "V = 5 × 4 × 12",
           hint1: "For a rectangular prism, multiply length, width, and height.",
-          hint2: "5 × 4 = 20, and 20 × 12 = 240.",
+          hint2: "Multiply two dimensions to get the base area, then multiply by the third dimension. Order does not matter.",
           visual: "tower_case",
           rates: [
             ["basic display space", 0.05],
@@ -2111,7 +2142,7 @@
           ],
           substitution: "A = ½(5.2 + 3.8) × 2",
           hint1: "Add the two bases first.",
-          hint2: "5.2 + 3.8 = 9. ½ × 9 × 2 = 9.",
+          hint2: "Add the two bases first, then multiply by the height, then halve it. Keep one decimal place while you work.",
           visual: "trapezoid_cable",
           rates: [
             ["rubber mat", 16.0],
@@ -2226,6 +2257,7 @@
             budgetEstimate: "",
             budgetComputed: "",
             hintsShown: 0,
+            attempts: 0,
           };
         }
         return state.responses[id];
@@ -2538,7 +2570,7 @@
           india_taj_kite: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Taj Mahal inspired garden with marked parallelogram">
       <rect x="10" y="64" width="130" height="34" rx="9" fill="#EAF5EE"/>
       <rect x="63" y="30" width="24" height="26" fill="#fff" stroke="#BFD8D8" stroke-width="2"/><circle cx="75" cy="28" r="15" fill="#fff" stroke="#BFD8D8" stroke-width="2"/>
-      <path d="M33 85 L99 85 L87 67 L21 67 Z" fill="rgba(242,169,59,.22)" stroke="#F2A93B" stroke-width="2"/>
+      <path d="M33 85 L99 85 L87 67 L21 67 Z" fill="rgba(242,169,59,.22)" stroke="#9a6100" stroke-width="2"/>
       <path d="M33 85 L99 85 L87 67 L21 67 Z" ${mark}/><text x="45" y="104" ${label}>marked shade sail</text>
     </svg>`,
           brazil_redeemer: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Christ the Redeemer inspired pedestal with marked prism">
@@ -2594,7 +2626,7 @@
     </svg>`,
           southafrica_table: `<svg width="150" height="110" viewBox="0 0 150 110" role="img" aria-label="Table Mountain cable car inspired mat with marked trapezoid">
       <path d="M18 49 H132 L116 72 H34 Z" fill="#4A7C6F" opacity=".35"/><rect x="38" y="31" width="74" height="45" rx="9" fill="#EEF6F6" stroke="#387F84" stroke-width="2"/>
-      <polygon points="56,50 94,50 103,69 47,69" fill="#FFF7E7" stroke="#F2A93B" stroke-width="2"/>
+      <polygon points="56,50 94,50 103,69 47,69" fill="#FFF7E7" stroke="#9a6100" stroke-width="2"/>
       <polygon points="56,50 94,50 103,69 47,69" ${mark}/><text x="44" y="104" ${label}>marked floor mat</text>
     </svg>`,
         };
@@ -2789,7 +2821,7 @@
         if (ok) {
           return `<strong>✅ Correct calculation.</strong> ${escapeHtml(d.substitution)} = <strong>${escapeHtml(d.answer)} ${escapeHtml(d.unit)}</strong>.`;
         }
-        return `<strong>Not quite yet.</strong> Check the formula and the arithmetic. Expected setup: <em>${escapeHtml(d.substitution)}</em>.`;
+        return `<strong>Not quite yet.</strong> Re-check the formula you chose and the arithmetic, then press Check Calculation again.`;
       }
       function explorationComplete(r) {
         return !!(
@@ -2939,16 +2971,29 @@
         const fb = $("feedback-box");
         fb.className = "feedback show " + (r.correct ? "ok" : "no");
         if (r.correct) {
-          fb.innerHTML = `<strong>✅ Correct calculation.</strong> ${expectedSetup} = <strong>${value} ${escapeHtml(d.unit)}</strong>.`;
+          r.attempts = 0;
+          fb.innerHTML = `✅ <strong>Correct calculation.</strong> ${expectedSetup} = <strong>${value} ${escapeHtml(d.unit)}</strong>.`;
           AudioSynth.success();
         } else {
+          r.attempts = (r.attempts || 0) + 1;
           const formulaMsg = formulaOK
-            ? "Your formula choice is correct."
-            : `Formula check: choose <strong>${escapeHtml(FORMULAS[d.formulaType])}</strong>.`;
-          const answerMsg = numericOK
-            ? "Your number is correct."
-            : `Calculation check: using your dimensions, the expected answer is <strong>${expectedAnswer} ${escapeHtml(d.unit)}</strong>.`;
-          fb.innerHTML = `<strong>Revise and try again.</strong> ${formulaMsg} ${answerMsg}<br><em>Expected setup: ${expectedSetup}</em>`;
+            ? "Your formula choice matches the solid. ✅"
+            : `Start with the formula: this model is <strong>${escapeHtml(FORMULAS[d.formulaType])}</strong>. Pick that first, then recalculate.`;
+          let answerMsg = "";
+          if (numericOK) {
+            answerMsg = "Your number checks out.";
+          } else if (!isFinite(value)) {
+            answerMsg = "Type a number only in the answer box — no units or symbols. The unit is already shown beside it.";
+          } else if (value > expectedAnswer) {
+            answerMsg = "Your number is <strong>too large</strong>. Re-read which dimensions belong in the formula — a common slip is using a dimension twice or skipping the ½.";
+          } else {
+            answerMsg = "Your number is <strong>too small</strong>. Check that you used every dimension the formula asks for, and that you multiplied rather than added.";
+          }
+          const ladder =
+            r.attempts >= 2 && !numericOK
+              ? `<br><em>Set it up like this, then do the arithmetic yourself: ${expectedSetup}</em>`
+              : "<br><em>Try Hint 1, then Hint 2 if you are still stuck.</em>";
+          fb.innerHTML = `<strong>Not yet — revise and try again.</strong> ${formulaMsg} ${answerMsg}${ladder}`;
           AudioSynth.error();
         }
         saveState(true);
@@ -3011,6 +3056,19 @@
           saveState(false);
           AudioSynth.click();
         }
+      }
+
+      function returnToMissions() {
+        if (!state.selectedIds.length) return;
+        $("intro-screen").style.display = "none";
+        $("results-screen").style.display = "none";
+        $("app-screen").style.display = "block";
+        $("header-progress").style.display = "block";
+        renderSidebar();
+        renderMission();
+        saveState(false);
+        window.scrollTo(0, 0);
+        AudioSynth.click();
       }
 
       function showResults() {
@@ -3251,20 +3309,20 @@
         const map = {
           parallelogram: `<svg width="300" height="190" viewBox="0 0 300 190" role="img" aria-label="Parallelogram diagram">
       <polygon points="65,145 235,145 195,45 25,45" fill="#EEF6F6" stroke="#387F84" stroke-width="3"/>
-      <line x1="65" y1="145" x2="65" y2="45" stroke="#F2A93B" stroke-width="2" stroke-dasharray="6,5"/>
+      <line x1="65" y1="145" x2="65" y2="45" stroke="#9a6100" stroke-width="2" stroke-dasharray="6,5"/>
       <text x="122" y="164" ${commonText}>base</text><text x="72" y="98" ${commonText}>height</text>
     </svg>`,
           parallelogram_terrace: `<svg width="300" height="190" viewBox="0 0 300 190" role="img" aria-label="Terrace parallelogram">
       <rect x="20" y="25" width="260" height="140" rx="12" fill="#F4EBDD"/>
       <path d="M55 145 L235 145 L205 55 L25 55 Z" fill="#EAF5EE" stroke="#4A7C6F" stroke-width="3"/>
       <path d="M25 78 L215 78 M40 102 L225 102 M52 126 L232 126" stroke="#A8B9A5" stroke-width="2"/>
-      <line x1="55" y1="145" x2="55" y2="55" stroke="#F2A93B" stroke-width="2" stroke-dasharray="6,5"/>
+      <line x1="55" y1="145" x2="55" y2="55" stroke="#9a6100" stroke-width="2" stroke-dasharray="6,5"/>
       <text x="119" y="164" ${commonText}>base</text><text x="62" y="102" ${commonText}>height</text>
     </svg>`,
           rect_prism: `<svg width="300" height="210" viewBox="0 0 300 210" role="img" aria-label="Rectangular prism" style="background:white; border-radius:8px;">
       <defs>
         <linearGradient id="rpFront" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fef3c7"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient>
-        <linearGradient id="rpTop" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f2fe"/><stop offset="100%" stop-color="#0284c7"/></linearGradient>
+        <linearGradient id="rpTop" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f2fe"/><stop offset="100%" stop-color="#0369a1"/></linearGradient>
         <linearGradient id="rpSide" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#dcfce7"/><stop offset="100%" stop-color="#16a34a"/></linearGradient>
         <filter id="rpShadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter>
       </defs>
@@ -3275,7 +3333,7 @@
       <line x1="165" y1="35" x2="245" y2="70" stroke="#94a3b8" stroke-dasharray="3,3" stroke-width="1.5"/>
       <line x1="165" y1="35" x2="165" y2="135" stroke="#94a3b8" stroke-dasharray="3,3" stroke-width="1.5"/>
       <!-- Top Face -->
-      <polygon points="75,70 165,35 245,70 155,105" fill="url(#rpTop)" stroke="#0284c7" stroke-width="2"/>
+      <polygon points="75,70 165,35 245,70 155,105" fill="url(#rpTop)" stroke="#0369a1" stroke-width="2"/>
       <!-- Right Face -->
       <polygon points="155,105 245,70 245,170 155,170" fill="url(#rpSide)" stroke="#16a34a" stroke-width="2"/>
       <!-- Front Face -->
@@ -3325,17 +3383,17 @@
       <!-- Right Triangular Face -->
       <polygon points="150,30 170,185 250,170" fill="url(#pyrSide)" stroke="#b45309" stroke-width="2.5"/>
       <!-- Slant Height Dashed Line -->
-      <line x1="150" y1="30" x2="110" y2="177.5" stroke="#0284c7" stroke-width="2" stroke-dasharray="5,4"/>
+      <line x1="150" y1="30" x2="110" y2="177.5" stroke="#0369a1" stroke-width="2" stroke-dasharray="5,4"/>
       <!-- Apex Point -->
       <circle cx="150" cy="30" r="3.5" fill="#d97706"/>
       <!-- Labels -->
-      <text x="105" y="105" text-anchor="end" font-size="11" font-weight="700" fill="#0284c7">slant height</text>
+      <text x="105" y="105" text-anchor="end" font-size="11" font-weight="700" fill="#0369a1">slant height</text>
       <text x="110" y="198" font-size="11" font-weight="700" fill="#b45309">base</text>
     </svg>`,
           pyramid_glass: `<svg width="300" height="220" viewBox="0 0 300 220" role="img" aria-label="Glass pyramid" style="background:white; border-radius:8px;">
       <defs>
-        <linearGradient id="pyrGlassFront" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#38bdf8" stop-opacity="0.2"/><stop offset="100%" stop-color="#0284c7" stop-opacity="0.45"/></linearGradient>
-        <linearGradient id="pyrGlassSide" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0284c7" stop-opacity="0.3"/><stop offset="100%" stop-color="#0369a1" stop-opacity="0.6"/></linearGradient>
+        <linearGradient id="pyrGlassFront" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#38bdf8" stop-opacity="0.2"/><stop offset="100%" stop-color="#0369a1" stop-opacity="0.45"/></linearGradient>
+        <linearGradient id="pyrGlassSide" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0369a1" stop-opacity="0.3"/><stop offset="100%" stop-color="#0369a1" stop-opacity="0.6"/></linearGradient>
         <filter id="pyrGShadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter>
       </defs>
       <!-- Shadow -->
@@ -3343,30 +3401,30 @@
       <!-- Back Framework -->
       <line x1="150" y1="30" x2="190" y2="155" stroke="#94a3b8" stroke-dasharray="3,3" stroke-width="1.5"/>
       <!-- Translucent Glass Faces -->
-      <polygon points="150,30 50,170 170,185" fill="url(#pyrGlassFront)" stroke="#0284c7" stroke-width="2.5"/>
-      <polygon points="150,30 170,185 250,170" fill="url(#pyrGlassSide)" stroke="#0284c7" stroke-width="2.5"/>
+      <polygon points="150,30 50,170 170,185" fill="url(#pyrGlassFront)" stroke="#0369a1" stroke-width="2.5"/>
+      <polygon points="150,30 170,185 250,170" fill="url(#pyrGlassSide)" stroke="#0369a1" stroke-width="2.5"/>
       <!-- Glass Lattice Grid Lines -->
       <path d="M90 123 L180 133 M115 88 L163 94 M132 60 L156 64" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
       <!-- Specular Highlight -->
       <line x1="140" y1="45" x2="80" y2="130" stroke="rgba(255,255,255,0.75)" stroke-width="2" stroke-linecap="round"/>
       <!-- Badge -->
-      <rect x="75" y="185" width="150" height="22" rx="6" fill="#0284c7"/>
+      <rect x="75" y="185" width="150" height="22" rx="6" fill="#0369a1"/>
       <text x="150" y="200" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">4 triangular faces total</text>
     </svg>`,
           triangle_sail: `<svg width="300" height="210" viewBox="0 0 300 210" role="img" aria-label="Triangle sail">
       <path d="M70 175 C120 110 150 55 220 28 L220 175 Z" fill="#EEF6F6" stroke="#387F84" stroke-width="3"/>
-      <polygon points="70,175 220,28 220,175" fill="rgba(242,169,59,.20)" stroke="#F2A93B" stroke-width="2"/>
+      <polygon points="70,175 220,28 220,175" fill="rgba(242,169,59,.20)" stroke="#9a6100" stroke-width="2"/>
       <line x1="220" y1="28" x2="220" y2="175" stroke="#1C2E42" stroke-width="2" stroke-dasharray="6,5"/>
       <text x="130" y="194" ${commonText}>base</text><text x="228" y="108" ${commonText}>height</text>
     </svg>`,
           trapezoid: `<svg width="300" height="190" viewBox="0 0 300 190" role="img" aria-label="Trapezoid">
-      <polygon points="85,45 215,45 255,145 45,145" fill="#FFF7E7" stroke="#F2A93B" stroke-width="3"/>
+      <polygon points="85,45 215,45 255,145 45,145" fill="#FFF7E7" stroke="#9a6100" stroke-width="3"/>
       <line x1="150" y1="45" x2="150" y2="145" stroke="#387F84" stroke-width="2" stroke-dasharray="6,5"/>
       <text x="128" y="35" ${commonText}>base 2</text><text x="126" y="166" ${commonText}>base 1</text><text x="158" y="102" ${commonText}>height</text>
     </svg>`,
           trapezoid_cable: `<svg width="300" height="190" viewBox="0 0 300 190" role="img" aria-label="Cable car trapezoid mat">
       <rect x="50" y="25" width="200" height="130" rx="22" fill="#EEF6F6" stroke="#387F84" stroke-width="3"/>
-      <polygon points="90,60 210,60 235,130 65,130" fill="#FAF6EE" stroke="#F2A93B" stroke-width="3"/>
+      <polygon points="90,60 210,60 235,130 65,130" fill="#FAF6EE" stroke="#9a6100" stroke-width="3"/>
       <line x1="150" y1="60" x2="150" y2="130" stroke="#387F84" stroke-width="2" stroke-dasharray="6,5"/>
       <circle cx="80" cy="45" r="5" fill="#1C2E42"/><circle cx="220" cy="45" r="5" fill="#1C2E42"/>
       <text x="116" y="151" ${commonText}>floor mat area</text>

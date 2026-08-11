@@ -587,7 +587,7 @@ function topicGuide(topic) {
 function renderStepGuide(topic) {
   const g = topicGuide(topic);
   return `
-      <details class="hw-step-guide" open>
+      <details class="hw-step-guide">
         <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
         <ol class="hw-steps">
           <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
@@ -1125,6 +1125,8 @@ ${EDITORIAL_FONT_IMPORT}
   --navy-light: #18466f;
   --teal: #1fa6a2;
 --teal-ink: #0c6f6b;
+  /* Text-safe partner for --coral, which is a fill colour only (3.0:1 on white). */
+  --coral-ink: #9c4326;
   --teal-light: #dff2ee;
   --amber: #f2c15b;
   --amber-light: #fef7e0;
@@ -1388,12 +1390,16 @@ header.homework-header h1 {
   font-size: 13px;
 }
 
+/* A left rule rather than a third teal slab: the problem card already carries a
+   teal hint button and a teal step guide, and three identical fills flattened
+   the hierarchy into noise. */
 .family-hint-box {
   margin-bottom: 14px;
-  padding: 10px 12px;
-  background: var(--teal-light);
-  border-radius: var(--radius-sm);
-  font-size: 13.5px;
+  padding: 2px 0 2px 14px;
+  background: none;
+  border-left: 3px solid var(--teal);
+  border-radius: 0;
+  font-size: 14px;
   color: var(--navy);
 }
 
@@ -1511,9 +1517,9 @@ header.homework-header h1 {
 }
 
 .flip-prompt {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  color: var(--teal);
+  color: var(--teal-ink);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-top: auto;
@@ -1620,10 +1626,10 @@ header.homework-header h1 {
 
 .problem-type-badge {
   font-family: var(--font-display);
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.05em;
-  color: var(--teal);
+  letter-spacing: 0.02em;
+  color: var(--teal-ink);
   background: var(--teal-light);
   padding: 4px 10px;
   border-radius: 99px;
@@ -1727,7 +1733,7 @@ header.homework-header h1 {
 .hw-graph-controls button {
   font-family: var(--font-display); font-size: 12.5px; font-weight: 700;
   background: #ffffff; color: var(--navy);
-  border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 11px; min-height: 36px; cursor: pointer;
+  border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 11px; min-height: 44px; cursor: pointer;
 }
 .hw-graph-controls button:hover { border-color: var(--teal); }
 .hw-graph-controls button[aria-pressed="true"] { background: var(--teal-ink); color: #ffffff; border-color: var(--teal-ink); }
@@ -1758,6 +1764,18 @@ header.homework-header h1 {
   .hw-step-guide { break-inside: avoid; border-color: #888; background: #fff; }
   .hw-step-guide > summary { background: #f0f0f0; }
   .hw-step-guide[open] > summary::after, .hw-step-guide > summary::after { content: ""; }
+  /* The routine is collapsed on screen (it repeats on every problem). On paper
+     there is nothing to click, so force the contents visible. */
+  .hw-step-guide > * { display: block !important; }
+  /* Flip cards print flat — otherwise only the English word reaches the paper
+     and every definition prints as a blank box. */
+  .vocab-card-inner { transform: none !important; }
+  .vocab-card-front, .vocab-card-back {
+    position: static !important;
+    transform: none !important;
+    -webkit-backface-visibility: visible !important;
+    backface-visibility: visible !important;
+  }
   .hw-workspace { break-inside: avoid; }
   .hw-work-input { min-height: 130px; border: 1px solid #888; }
   .hw-visual-frame { border-color: #888; }
@@ -2316,11 +2334,11 @@ header.homework-header h1 {
 
 .word-chip {
   background: var(--teal-light);
-  color: var(--teal);
+  color: var(--teal-ink);
   border: 1.5px solid var(--teal);
   border-radius: var(--radius-sm);
-  padding: 6px 12px;
-  font-size: 13px;
+  padding: 11px 12px;
+  font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
@@ -2429,7 +2447,10 @@ header.homework-header h1 {
 }
 
 .status-bar-wrapper {
-  max-width: 800px;
+  /* Must track .container's max-width (set in the polish layer) or the sticky
+     bar's controls sit inset from every card above it. */
+  max-width: 840px;
+  padding: 0 18px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -2570,6 +2591,13 @@ ${VISUAL_LABS_CSS}
 body { font-size: 15px; line-height: 1.58; }
 .container { max-width: 840px; padding: 28px 18px 40px; }
 
+/* On a laptop the 840px column left half the viewport empty while single
+   problem cards ran thousands of pixels tall. Give the reading column more
+   room — and keep the sticky bar's inner column locked to it. */
+@media (min-width: 1180px) {
+  .container, .status-bar-wrapper { max-width: 1000px; }
+}
+
 /* Section headings get a clear accent + stronger hierarchy */
 .section-title {
   font-size: 22px;
@@ -2614,17 +2642,24 @@ body { font-size: 15px; line-height: 1.58; }
   box-shadow: 0 8px 22px -14px rgba(242,193,91,.9);
 }
 .step-badge {
-  font-size: 10px;
-  letter-spacing: .04em;
+  font-size: 11.5px;
+  letter-spacing: .02em;
   padding: 4px 9px;
   border-radius: 999px;
   align-self: center;
 }
 .step-label { font-size: 15px; }
 
-/* Bilingual text: clearer separation, muted secondary language */
-.lang-es { color: var(--muted); }
-.worked-step .lang-es, .lang-en + .lang-es { display: block; margin-top: 3px; }
+/* Bilingual text: Spanish is a primary language here, so it keeps full ink
+   contrast. The separation is carried structurally by a teal rule, never by
+   fading the text (that read as "English written twice, Spanish as a footnote"). */
+.lang-es { color: var(--ink); }
+.worked-step .lang-es, .lang-en + .lang-es {
+  display: block;
+  margin-top: 4px;
+  padding-left: 10px;
+  border-left: 2px solid var(--teal-light);
+}
 
 /* "Watch for this" / tip callouts: crisp, friendly */
 .watch-for-list, .watch-for {

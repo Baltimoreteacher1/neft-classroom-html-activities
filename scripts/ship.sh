@@ -84,10 +84,21 @@ MAIN_SHA="$(git rev-parse origin/main)"
 # poll_stamp <expected-sha> — succeeds once the public build stamp reports the
 # expected commit. Cache-busted per request; CF asset TTL does not apply to it.
 poll_stamp() {
-  local expect="$1" waited=0 body live
+  local expect="$1" waited=0 body live reached=0 err_file
+  err_file="$(mktemp)"
   say "Verifying live deploy — polling build stamp for ${expect:0:9} (up to $((VERIFY_TIMEOUT_SECS / 60)) min)..."
   while [ "$waited" -le "$VERIFY_TIMEOUT_SECS" ]; do
-    body="$(curl -fsS --max-time 15 "${STAMP_URL}?cb=$(date +%s)$$" 2>/dev/null || true)"
+    # `reached` records whether the stamp URL EVER answered. Without it, a host
+    # this machine cannot route to looks exactly like a Cloudflare build that
+    # never promoted: both leave $body empty, and the old `|| true` threw the
+    # curl exit code away. That is not hypothetical — shipping b8c3086 from a
+    # sandboxed agent burned 12 minutes on a proxy answering 403 to CONNECT and
+    # then reported a healthy deploy as a stuck build.
+    if body="$(curl -fsS --max-time 15 "${STAMP_URL}?cb=$(date +%s)$$" 2>"$err_file")"; then
+      reached=1
+    else
+      body=""
+    fi
     live="$(printf '%s' "$body" | node -e '
 let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{
   try{process.stdout.write(JSON.parse(d).commit||"")}catch(e){}
@@ -95,6 +106,7 @@ let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{
     # Match when either value is a prefix of the other (stamp may hold a short SHA).
     if [ -n "$live" ] && { [ "${expect#"$live"}" != "$expect" ] || [ "${live#"$expect"}" != "$live" ]; }; then
       say "✓ LIVE — production is serving ${live:0:9} (waited ${waited}s)"
+      rm -f "$err_file"
       return 0
     fi
     [ -n "$live" ] && say "  ...live=${live:0:9} expected=${expect:0:9} (${waited}s)"
@@ -102,8 +114,25 @@ let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{
     waited=$((waited + VERIFY_INTERVAL_SECS))
   done
   say "" >&2
+  if [ "$reached" -eq 0 ]; then
+    # Never got a single answer — say so, instead of blaming the build.
+    say "✗ Deploy NOT VERIFIED — the build stamp was unreachable from this machine" >&2
+    say "  for the whole $((VERIFY_TIMEOUT_SECS / 60)) min. Every request to ${STAMP_URL}" >&2
+    say "  failed, so this is a NETWORK result, not a build result." >&2
+    say "  Last curl error: $(tr -d '\r' <"$err_file" | tail -n 1)" >&2
+    rm -f "$err_file"
+    say "" >&2
+    say "  The push itself SUCCEEDED. Cloudflare may have promoted normally —" >&2
+    say "  nothing here can tell. Verify from somewhere with public egress:" >&2
+    say "    1. GitHub → Actions → 'Verify Deploy' → Run workflow (asserts the" >&2
+    say "       commit and FAILS on a stale stamp), or" >&2
+    say "    2. npm run ship:verify   from an unrestricted machine." >&2
+    return 1
+  fi
+  rm -f "$err_file"
   say "✗ Deploy NOT confirmed live after $((VERIFY_TIMEOUT_SECS / 60)) min." >&2
-  say "  Likely a stuck/failed Cloudflare Pages build. Remediation:" >&2
+  say "  The stamp is reachable but still reports the wrong commit — a stuck or" >&2
+  say "  failed Cloudflare Pages build. Remediation:" >&2
   say "    1. Check the Pages build log in the Cloudflare dashboard." >&2
   say "    2. If the build succeeded but production is frozen, push an empty" >&2
   say "       rebuild commit:   ALLOW_DEPLOY=1 npm run ship -- --rebuild" >&2
@@ -198,6 +227,11 @@ trap cleanup EXIT
 
 # The pre-push QA loop builds from the worktree root; share node_modules.
 [ -d "$ROOT/node_modules" ] && ln -s "$ROOT/node_modules" "$WT/node_modules"
+# …and reports/, for the same reason. It is gitignored generated output, so a
+# fresh worktree never has it, and tools/a11y-ratchet.test.mjs asserts on
+# reports/a11y-audit.md — which failed the QA gate on every ship regardless of
+# what was being deployed.
+[ -d "$ROOT/reports" ] && ln -s "$ROOT/reports" "$WT/reports"
 
 # --- Assemble the deploy commit(s) ----------------------------------------------------
 if [ "$MODE" = "rebuild" ]; then

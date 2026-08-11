@@ -103,12 +103,14 @@ the strongest one(s) relevant to what you changed:
 | `npm run validate`                            | Runs `validate:static` + `validate:reveal-math` + `validate:hub` + `validate:curriculum-top1` + `validate:save-resume`.                                                                                              | Any HTML, link, or structure change. **Primary check.**                                         |
 | `npm run validate:static`                     | Validates the static site structure/links only.                                                                                                                                                                      | Static HTML/link-only edits.                                                                    |
 | `npm run validate:js-syntax`                  | Parses every shipped `.js`/`.mjs` and every inline `<script>` block (~1,000 files + ~3,100 blocks) and fails on any SyntaxError. Part of `validate`. Added after `assets/game-fx.js` shipped to production truncated mid-function: the file is one IIFE, so nothing in it ran and the FX kit was dead across ~114 games, yet only `validate:lesson-boot`'s 16-page probe happened to notice. Syntax-only by design — Biome covers style. | Any JS edit, and any bulk/injector change that rewrites script files.                            |
+| `npm run validate:lesson-boot`                | Boots 16 representative pages in a real browser and asserts each one actually RENDERED. **The only member of the gate that opens a browser — so if it cannot get one, it checks nothing.** Without the pinned Chromium it now SKIPS locally (exit 0, warns) and FAILS in CI (`CI` set), because it used to exit 0 either way and print `PASS validate:lesson-boot 1.0s`, indistinguishable from 16 pages rendering. Set **`PW_CHROMIUM_PATH`** to a system Chromium when Playwright's own download is missing or version-mismatched — a real run takes ~200s, not 1s, and that time difference is the tell. It also asserts `#nt-shell-fallback` is absent: the shell guard's "This lesson is having trouble loading" card is ~1072 chars, which sailed over the old 800-char content floor, so 10 lessons showed students an error card while this probe reported 16/16. | Any engine, renderer or lesson-shell change; always with a browser available. |
 | `npm run validate:workflow-yaml`              | Rejects duplicate keys in `.github/workflows/*.yml`, then self-tests the scanner (10 cases) so a gate that stops firing fails loudly. GitHub REFUSES to run a workflow with a duplicate key — the run is created, dies instantly, and is labelled by file path instead of workflow name, which reads like an ordinary red check. `codex-verify.yml` sat dead for 16 days that way after a second `concurrency:` block landed in aa0a0aad0. Ordinary YAML parsers cannot catch it: PyYAML and js-yaml both accept duplicates and keep the last one. Part of `validate`, and runs first (it is instant). | Any `.github/workflows/*.yml` edit.                                                              |
 | `npm run validate:reveal-math`                | Validates the Reveal Math tool launchers.                                                                                                                                                                            | Reveal Math / lesson launcher edits.                                                            |
 | `npm run validate:save-resume`                | Audits Save/Resume wiring across every active activity (0 missing/duplicate/broken/unsentineled required). Part of `validate`.                                                                                       | Any change near activity state, Save, or Resume — enforced on every `validate` run.             |
 | `npm run validate:ai-hub`                     | Regression guard for `curriculum/ai-hub/index.html`: inline script parses, every inline `on*` handler resolves to a defined function, the critical tutor-chat functions (`showTypingIndicator`, `startTutorChat`, `sendChatAnswer`, …) exist and are called, and no duplicate static ids. Part of `validate`. Added because concurrent rewrites twice shipped a dead tutor chat that the presence-only Playwright suite missed. | Any change to `curriculum/ai-hub/index.html`.                                                   |
 | `npm run validate:injection`                  | Structural integrity for ALL sentinel injection layers (nsr/mobile-access/mwb/gfx/ghl/support-enhance/etc.): every `<family>-injected:begin/end` must balance per file. Auto-discovers families. Part of `validate`. | Any change to a `tools/inject-*` layer or bulk edit of injected pages.                          |
 | `npm run validate:ccss`                       | Asserts every `standard` used by `lessons/*/config.json` exists in `data/ccss-standards.json` (the standards SoT, keyed by the 2025 MCCRS codes). Part of `validate`.                                                | Any change to lesson `standard` fields, `data/ccss-standards.json`, or a standards re-code.     |
+| `npm run validate:reveal-assets`              | Asserts every file in `lessons/*/reveal-assets/` is referenced by tracked source, and every reference resolves on disk. These images have no generator owning their lifecycle, so both directions of the desync have shipped: replacing the Notice-and-Wonder stock photos with per-lesson SVGs re-pointed the configs and left 41 superseded rasters (6.58 MB) being copied into `dist/` and served to students for nothing. It builds the reference set from **all** tracked text files, never from the owning lesson's config — the 148 generated group/catch-up lessons cite the CORE lesson's assets (`2-7-group2` → `/lessons/2-7/reveal-assets/notice-wonder.png`), so a per-lesson check reports live classroom images as garbage, and its self-test pins exactly that case. Part of `validate`. | Any change to a lesson's reveal images or to a `config.json` image reference. |
 | `npm run eval:small-groups`                   | **Fleet evaluation of the 148 generated small-group/catch-up lessons.** Treats the GENERATOR as the artifact under test: sweeps every config, reports per-stratum coverage to `reports/small-group-fleet-eval.md`, and fails on the defect classes no per-file gate can see — scaffolding that coaches the wrong operation (a `×` stem told to "line up the decimal points"), hints that state the answer outright, `errorStep` out of range, and choice feedback misaligned with choices. Self-tests all six detectors before sweeping, since a gate that stops firing reports a clean fleet. Found 89 real defects on first run. Part of `validate`. | Any change to a small-group generator, `tools/lib/small-group-*`, or bulk lesson-content edits. |
 | `npm run validate:math`                       | **Checks that curriculum answers are arithmetically correct**, not merely present — exact rational arithmetic over every lesson `config.json` (1,819 decidable checks). Runs its own 51-case self-test first, so a gate that stops firing fails loudly instead of reporting a clean curriculum. Undecidable shapes are skipped, never failed. Part of `validate`. | Any edit to lesson answers, generators that emit answers, or `scripts/lib/rational.mjs`. |
 | `npm run validate:learn-figures`             | **Proves every Learn It worked-example diagram is read from its own lesson.** `scripts/lib/learn-figures.mjs` draws the parallelogram, box, number line, grid or bar model for the problem the worked example actually solves, by strict pattern-matching over `launch.conceptIntro.iDo` (25 of 74 lessons; it draws nothing when unsure). A picture that disagrees with the paragraph is worse than no picture — a student trusts the picture — so this gate asserts every measurement the figure claims appears in the lesson text, that no measurement label prints a number the reader never saw (axis ticks are exempt: they are scale, not claims about the problem), that the SVG is balanced and carries an aria-label, and that the figure reached `learn.html`. Self-tests 11 positive and 3 negative fixtures BEFORE sweeping, and fails if the sweep finds ZERO figures, so a reader that quietly stops matching cannot report a clean curriculum. Part of `validate`. | Any change to `scripts/lib/learn-figures.mjs`, or to a lesson's `conceptIntro.iDo` wording. |
@@ -124,8 +126,8 @@ the strongest one(s) relevant to what you changed:
 | `npm run validate:scorm`                      | Builds the SCORM SCO in-memory and asserts its hardening invariants are intact (cross-origin-safe API discovery, `report()` finished/started guards, `session_time`, Canvas identity, `<noscript>`), that the live `functions/_lib/scorm.js` `sco()` and CLI `tools/scorm/template/index.html.tpl` stay in lockstep, and that `functions/api/scorm.js` validates the target exists (fail-open, 404-only). Part of `validate`.                | Any change to the SCORM SCO wrapper, `/api/scorm`, or the CLI template.                          |
 | `npm run typecheck`                           | `tsc --noEmit` with `checkJs` over `assets/`, `engine/` and `shared/`. `npm run typecheck` prints the current coverage; the ratchet test below prints the split. Files not yet clean carry a `// @ts-nocheck` marker at the top — that marker IS the debt register, and removing one is the unit of work. The marker lives in the file rather than in a tsconfig list for a reason `exclude` cannot solve: tsc follows imports regardless of `exclude`, so one un-typed file re-contaminates every clean importer, and `engine/` is an entangled import graph. `types/globals.d.ts` declares the site's `window.*` handles, without which every window property is equally unknown and nothing about them is checkable. Part of `validate`. | Any change under `assets/`, `engine/` or `shared/`; before removing a `@ts-nocheck` marker. |
 | `npm run audit:duplicates`                    | Groups tracked assets by content hash and annotates each copy with how many source files reference it. Duplication alone is not the signal — a vendored library loaded from two paths is fine — so it reports the bytes held by copies **nothing** points at. On first run it found 25.4 MB held in redundant copies, 12.6 MB of which nothing referenced at all (those were removed 2026-08-01; the rest all have live references and need a routing decision, not a delete). **Reports only — never deletes.** → `reports/duplicate-assets.md`. | Debt burn-down; before adding another copy of an asset that may already exist. |
-| `npm run qa:fast`                             | **The inner-loop gate.** Runs only the checks that cover what you actually changed, in parallel — a lesson `config.json` edit costs ~1s instead of the full 36s. It is DEFAULT-DENY: a changed path matching no rule in `scripts/qa-run.mjs`'s `COVERAGE` table escalates to the full gate, so it can never be *less* safe than running everything, only faster when coverage is provable. Not a substitute for the push gate — `qa:loop` still runs everything. | Constantly, while building. Cheap enough that there is no reason to skip it. |
-| `npm run qa:loop`                             | **The full pre-push gate** (what the `pre-push` hook runs). Same 47 checks as before, now scheduled by `scripts/qa-run.mjs`: `validate` is expanded into its members so they run concurrently, `build` is a barrier ahead of them because it rewrites the tree they read, and nothing runs twice. 90s → **36s**. The old serial loop is still on disk as `npm run qa:loop:serial`. `tools/qa-run.test.mjs` (in `npm test`) reads the serial script's candidate list and fails if the parallel set ever stops covering it — a scheduler that gets fast by dropping a gate is worse than a slow one. | Before every push; automatically by the pre-push hook. |
+| `npm run qa:fast`                             | **The inner-loop gate.** Runs only the checks that cover what you actually changed, in parallel — a lesson `config.json` edit costs ~1s instead of the full gate. It is DEFAULT-DENY: a changed path matching no rule in `scripts/qa-run.mjs`'s `COVERAGE` table escalates to the full gate, so it can never be *less* safe than running everything, only faster when coverage is provable. Not a substitute for the push gate — `qa:loop` still runs everything. | Constantly, while building. Cheap enough that there is no reason to skip it. |
+| `npm run qa:loop`                             | **The full pre-push gate** (what the `pre-push` hook runs). **48 checks**, scheduled by `scripts/qa-run.mjs`: `validate` is expanded into its members so they run concurrently, `build` is a barrier ahead of them because it rewrites the tree they read, and nothing runs twice. The old serial loop is still on disk as `npm run qa:loop:serial`. `tools/qa-run.test.mjs` (in `npm test`) reads the serial script's candidate list and fails if the parallel set ever stops covering it — a scheduler that gets fast by dropping a gate is worse than a slow one. **Wall time depends entirely on whether a browser is available: ~60s without one, ~240s with**, because `validate:lesson-boot` is the only member that opens one and it costs ~200s. That is not overhead to avoid — without a browser that check probes nothing (see its row below). | Before every push; automatically by the pre-push hook. |
 | `npm run new:surface -- <slug> --title "…"`   | Scaffolds a new `/curriculum` surface **already wired**: page + scoped stylesheet + module, a real `tools/validate-<slug>.mjs` gate linked into `npm run validate`, the `data/routes.json` redirect, the hub card, and a `qa:fast` coverage rule. Every edit is anchored and additive — no file is re-serialised (`data/routes.json` is not Biome-formatted, so a `JSON.stringify` round-trip buries a 5-line change in a 97-line diff). `--dry-run` prints the plan. | Adding any new surface under `/curriculum/`. |
 | `npm run build`                               | Vite production build to `dist/`.                                                                                                                                                                                    | Anything touching Vite-built lesson launchers, config, or before a deploy-affecting change.     |
 | `npm run preview`                             | Serves the built `dist/` for smoke testing.                                                                                                                                                                          | Manual browser/smoke verification after a build.                                                |
@@ -141,9 +143,10 @@ the strongest one(s) relevant to what you changed:
 
 > **Note:** `npm test` **does exist** — `node tools/run-tests.mjs`, which walks
 > the repo for `*.test.{mjs,cjs,js}` (ignoring `node_modules`, `dist`, `.git`,
-> `.qa-logs`, `coverage`) and runs 108 test scripts green in a few
-> seconds (count as of 2026-08-01 — check `npm test` rather than trusting this
-> number, which is the mistake this note exists to warn about). Several of those are RATCHETS rather than ordinary tests — they pin a
+> `.qa-logs`, `coverage`) and runs 127 test scripts green in a few
+> seconds (count as of 2026-08-05 — check `npm test` rather than trusting this
+> number, which is the mistake this note exists to warn about; it had drifted
+> from 108 to 127 before anyone re-read it). Several of those are RATCHETS rather than ordinary tests — they pin a
 > number so a regression cannot be absorbed silently, and each one's failure
 > message tells you exactly what to do:
 > `tools/lint-coverage.test.mjs` (every shipped script must be visible to Biome),
@@ -155,10 +158,21 @@ the strongest one(s) relevant to what you changed:
 > `tools/redirects-shadowing.test.mjs` (no `_redirects` rule may be unreachable),
 > `tools/build-injectors-idempotent.test.mjs` (`npm run build` must not modify
 > committed source), `tools/a11y-coverage.test.mjs` (the a11y sample must cover
-> every page template), and `functions/api-contract.test.mjs` (a new `/api`
-> endpoint must use the shared handler in `functions/_lib/http.js`). It is wired into `npm run validate`, so every `ship` gates on it.
-> There is also `npm run check` (Biome), `npm run e2e` (Playwright), and
-> `npm run qa` (check + test + e2e).
+> every page template), `functions/api-contract.test.mjs` (a new `/api`
+> endpoint must use the shared handler in `functions/_lib/http.js`), and
+> `tools/curriculum-json-cache.test.mjs` (every hub feature script that reads a
+> shared `/data` manifest must go through `window.NTJsonCache`, and the hub must
+> load it first — seven scripts each fetching the same two manifests is what put
+> `/curriculum/` over its 60-request perf budget, and no per-file check can see
+> it because each of those files is individually correct). It is wired into `npm run validate`, so every `ship` gates on it.
+> `npm run check` (Biome: lint **+ formatting**) is a member of the `qa:loop`
+> gate — it replaced `npm run lint` there on 2026-08-05, because `lint` alone
+> says nothing about formatting, so the only thing checking it was the PR-only
+> Pre-Deploy Gate. Deploys here go straight to `main` via `npm run ship`, which
+> opens no PR, so 32 format errors banked up on `main` with every local gate
+> green. `check` is a strict superset of `lint` and writes nothing, so the loop
+> stays read-only. There is also `npm run e2e` (Playwright) and `npm run qa`
+> (check + test + e2e).
 >
 > This note previously claimed the repo had no `npm test` and told agents not to
 > invent one. That was wrong, and the cost was concrete: `assets/game-score.test.mjs`
@@ -218,21 +232,30 @@ fill-in checklist to run before every handoff.
 
 ## Automated QA Loop
 
-A repeatable, conservative build → audit → fix → retest loop, defined in
-[`.claude/loop.md`](.claude/loop.md) and runnable as a slash command (`/qa-loop`).
+A repeatable, conservative build → audit → fix → retest loop, defined by
+[`scripts/qa-run.mjs`](scripts/qa-run.mjs) (parallel scheduler, the default) and
+[`scripts/qa-loop.sh`](scripts/qa-loop.sh) (the serial original, kept as
+`npm run qa:loop:serial` and read by `tools/qa-run.test.mjs` as the coverage
+ratchet).
 
-- **How to run:** `npm run qa:loop` (or the `/qa-loop` command). It detects which
-  check scripts actually exist, runs the safe ones (`build`, `validate*`,
-  `audit*`, plus `lint`/`test`/`format` _if_ they ever exist), prints PASS / SKIP
-  / FAIL per check, and writes a timestamped log to `.qa-logs/`. It exits non-zero
-  if any available check fails. `npm run qa:danger -- "<cmd>"` checks whether a
-  command is one of the blocked dangerous ones.
+- **How to run:** `npm run qa:loop`. The serial script detects which check
+  scripts actually exist, runs the safe ones (`build`, `check`, `test`,
+  `validate*`, `audit*`), prints PASS / SKIP / FAIL per check, and writes a
+  timestamped log to `.qa-logs/`. It exits non-zero if any available check
+  fails. `npm run qa:danger -- "<cmd>"` checks whether a command is one of the
+  blocked dangerous ones (`scripts/check-dangerous-commands.sh`; exit 2 =
+  blocked). The slash commands that exist are `/qa-check`, `/new-activity` and
+  `/ship` — see `.claude/commands/`.
 - **What it checks:** Vite build + the repo's `validate`/`audit` suites. It never
   runs generators or `deploy`.
 - **What it refuses to do:** deploy, commit, push, force-push, delete/move lesson
   folders or routes, restructure curriculum/pages, or replace working content
-  with placeholders. These are enforced by `permissions.deny` and the
-  `pre-bash-guard.sh` PreToolUse hook in `.claude/settings.json`.
+  with placeholders. These are enforced by `permissions.deny` in
+  `.claude/settings.json` — 11 rules covering `wrangler deploy`, `npm run
+  deploy`, force-push, `git reset --hard`, `git clean -fd` and `rm -rf` — and,
+  since 2026-08-06, by the `pre-bash-guard.sh` PreToolUse/Bash hook, which is
+  now written, wired and verified running (see the note under **Stop rule**).
+  `npm run qa:danger` runs the same checks on a command by hand.
 - **Deploy rule:** push to `main` is the only deploy path (Cloudflare Git
   integration), and `ALLOW_DEPLOY=1 npm run ship -- <sha>` is the only supported
   way to push it. **Never** run `wrangler` / `npm run deploy` manually — it is
@@ -241,5 +264,44 @@ A repeatable, conservative build → audit → fix → retest loop, defined in
   structure unless Joel explicitly asks.
 - **Stop rule:** stop after available checks pass (twice in a row), or when the
   same failure repeats and needs human judgment, or when the only fix left would
-  be a risky structural change — then produce the final report from
-  `.claude/loop.md`.
+  be a risky structural change — then produce the final report described in
+  [`docs/closed-loop-qa-checklist.md`](docs/closed-loop-qa-checklist.md).
+
+> **Hooks — what is actually wired.** `.claude/settings.json` declares two:
+> `SessionStart → .claude/hooks/session-start.sh` and `PreToolUse(Bash) →
+> .claude/hooks/pre-bash-guard.sh`. Both scripts exist and both were verified by
+> execution, not by reading the config.
+>
+> History worth keeping: the config once declared three hooks whose scripts did
+> not exist. A hook pointing at a missing script does not announce itself — it
+> simply never runs — so the repo documented three safety behaviours that were
+> not happening, and the dead declarations were removed on 2026-08-05. The Bash
+> guard was then written for real and wired on 2026-08-06, after
+> `git update-ref -d refs/heads/<x>` was found to delete a branch straight past
+> the `git branch -D` entry in `permissions.deny`. **Verify a hook by running
+> it** (`echo '{"tool_input":{"command":"…"}}' | bash .claude/hooks/pre-bash-guard.sh`;
+> exit 2 means blocked), never by trusting this file.
+>
+> The guard delegates to `scripts/check-dangerous-commands.sh`, which is tracked
+> and covered by `scripts/check-dangerous-commands.test.mjs` — that test pins
+> both halves, what must block AND what must stay allowed, because the first
+> attempt at the ref-deletion rules also blocked the safe `git branch -d`.
+>
+> **Resolved 2026-08-09.** This used to read: "`.claude/` is excluded via
+> `.git/info/exclude`, so the hook scripts and `settings.json` hook block are
+> machine-local — a fresh clone gets the blocklist script and its test but not
+> the wiring. Re-add the `PreToolUse` block after cloning."
+>
+> Half of that had stopped being true, in the worse direction. `.gitignore`
+> un-ignores `.claude/settings.json` and `.claude/hooks/`, so the **wiring** was
+> tracked while `pre-bash-guard.sh` was **not** — a fresh clone got a
+> `PreToolUse` hook pointing at a missing script. That is exactly the failure
+> described two paragraphs up, and this file asserted "both scripts exist" while
+> it was happening. Reading could never have caught it: a hook that never runs
+> looks identical to a hook that allows everything.
+>
+> `pre-bash-guard.sh` is now committed, so the wiring resolves on a fresh clone.
+> `npm run validate:graph` checks every hook command in `settings.json` against
+> the filesystem, so the next time config and repo disagree it fails a build
+> instead of silently disarming the guard. Still verify by running it, never by
+> trusting this file.

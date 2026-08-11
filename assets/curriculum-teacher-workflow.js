@@ -73,7 +73,15 @@
     });
   }
 
+  // Routed through /assets/curriculum-json-cache.js so the hub fetches each
+  // data file once instead of once per feature script.
   function getJson(url) {
+    var cache = window.NTJsonCache;
+    if (cache) {
+      return cache.json(url).catch(function () {
+        throw new Error("Missing curriculum workflow data");
+      });
+    }
     return fetch(url, { credentials: "same-origin" }).then(function (response) {
       if (!response.ok) throw new Error("Missing curriculum workflow data");
       return response.json();

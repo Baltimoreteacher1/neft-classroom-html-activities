@@ -67,9 +67,8 @@ for (const unit of UNITS) {
   }
 }
 
-// 23 shipped pages: version-a + version-b for 11 unit folders, plus
-// unit-8/version-c (Escape Room Master Codebreaker).
-if (pages.length !== 23) failures.push(`expected 23 project pages, enumerated ${pages.length}`);
+// 25 shipped pages: version-a + version-b + version-c for units with 3 options
+if (pages.length !== 25) failures.push(`expected 25 project pages, enumerated ${pages.length}`);
 
 if (failures.length) {
   console.error(

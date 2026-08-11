@@ -19,6 +19,7 @@ import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
 import { writeGenerated } from "./lib/preserve-injected.mjs";
 import { REFERENCE_CSS, tokensToCssVars } from "./lib/slide-reference-theme.mjs";
 import { getUnitPalette, paletteToCssVars } from "./lib/slide-theme-palettes.mjs";
+import { linkifyDeck } from "./lib/vocab-linkify.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -582,7 +583,17 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
   let normalizedItems = [];
   const rawItems = explore.items || explore.cards || [];
   rawItems.forEach((item, idx) => {
-    let text = item.text || String(item);
+    // Sort cards author `text`; fill-table rows are plain objects of column
+    // values (plus a `figure` that is metadata, not content). Without this the
+    // slide printed "[object Object]" for every fill-table row.
+    let text = item.text;
+    if (!text && item && typeof item === "object") {
+      text = Object.entries(item)
+        .filter(([k, v]) => k !== "figure" && v != null && typeof v !== "object")
+        .map(([, v]) => String(v))
+        .join(" · ");
+    }
+    if (!text) text = String(item);
     let catId = "";
 
     if (item.category !== undefined) {
@@ -2038,6 +2049,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
     .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
     .workspace-table th { background:var(--teal-light); font-weight:800; }
     .workspace-cell { width:60px; text-align:center; border:1px solid var(--teal); border-radius:4px; padding:4px; font-weight:700; }
+    .workspace-select { width:auto; max-width:190px; font-size:10px; }
     .workspace-cell.correct { background:var(--teal-light); border-color:var(--teal); }
     .workspace-cell.incorrect { background:var(--coral); border-color:#D9795D; }
     .sketch-canvas { width:100%; border:1.5px solid var(--gray); border-radius:8px; background:white; cursor:crosshair; }
@@ -2928,7 +2940,7 @@ ${deck.thumbnailsHtml}
     
     function saveWork() {
       const data = {};
-      document.querySelectorAll('textarea, input[type="text"]').forEach((input) => {
+      document.querySelectorAll('textarea, input[type="text"], select.workspace-cell').forEach((input) => {
         data[input.id || input.placeholder] = input.value;
       });
       
@@ -3082,7 +3094,7 @@ ${deck.thumbnailsHtml}
         const saved = localStorage.getItem(storageKey);
         if (saved) {
           const data = JSON.parse(saved);
-          document.querySelectorAll('textarea, input[type="text"]').forEach((input) => {
+          document.querySelectorAll('textarea, input[type="text"], select.workspace-cell').forEach((input) => {
             const val = data[input.id || input.placeholder];
             if (val !== undefined) input.value = val;
           });
@@ -3829,6 +3841,11 @@ ${deck.thumbnailsHtml}
     
   </script>
 
+  <!-- Glossary modal for the .vocab-word links emitted by scripts/lib/vocab-linkify.mjs.
+       Both the links AND this tag must come from the generator: when the tag was
+       only ever added by a one-shot decorate pass, regenerating a deck silently
+       removed openVocabModal and every vocab link on the page became dead. -->
+  <script src="/assets/formula-popup.js" defer></script>
 </body>
 </html>
 `;
@@ -3862,7 +3879,11 @@ function main() {
       const configPath = path.join(lessonsDir, id, "config.json");
       const data = JSON.parse(fs.readFileSync(configPath, "utf8"));
       const googleSlidesUrl = urlMap[id] || null;
-      const html = generateSlidesHtml(id, data, googleSlidesUrl);
+      // linkifyDeck, not the raw generator output: the `.vocab-word` glossary
+      // links used to be added by a separate one-shot pass, so regenerating a
+      // deck silently STRIPPED them. Emitting them here is what makes these
+      // decks regenerable at all.
+      const html = linkifyDeck(generateSlidesHtml(id, data, googleSlidesUrl));
 
       const outputPath = path.join(lessonsDir, id, "slides.html");
       // writeGenerated, not fs.writeFileSync: the injectors (Save/Resume,

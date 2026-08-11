@@ -270,15 +270,30 @@ export function solids() {
   s += T(580, 410, 24, C.navy, "Unfolded 2D Net (6 Faces)", { weight: 800 });
 
   // 4. Mathematical Readouts & Formulas (Right side, cx=940)
-  s += chip(930, 120, "Volume (Space Inside)", { fill: C.tealLight, stroke: C.teal, textFill: C.tealInk, size: 26 });
+  s += chip(930, 120, "Volume (Space Inside)", {
+    fill: C.tealLight,
+    stroke: C.teal,
+    textFill: C.tealInk,
+    size: 26,
+  });
   s += T(930, 175, 26, C.navy, "V = length × width × height", { weight: 800 });
   s += T(930, 215, 26, C.tealInk, "V = 8 × 4 × 5 = 160 cu in", { weight: 800 });
 
-  s += chip(930, 275, "Surface Area (All 6 Faces)", { fill: C.coralLight, stroke: C.coral, textFill: C.coralInk, size: 26 });
+  s += chip(930, 275, "Surface Area (All 6 Faces)", {
+    fill: C.coralLight,
+    stroke: C.coral,
+    textFill: C.coralInk,
+    size: 26,
+  });
   s += T(930, 330, 26, C.navy, "SA = 2(lw + lh + wh)", { weight: 800 });
   s += T(930, 370, 26, C.coralInk, "SA = 2(32 + 40 + 20) = 184 sq in", { weight: 800 });
 
-  s += chip(930, 420, "2D net area = 3D surface area", { fill: C.amberLight, stroke: C.amber, textFill: C.amberInk, size: 24 });
+  s += chip(930, 420, "2D net area = 3D surface area", {
+    fill: C.amberLight,
+    stroke: C.amber,
+    textFill: C.amberInk,
+    size: 24,
+  });
 
   return s;
 }
@@ -291,4 +306,3 @@ export const GEOMETRY_MODELS = {
   distance,
   solids,
 };
-

@@ -74,4 +74,4 @@
 - [ ] Review `git diff --check`, changed paths, placeholders, and the final branch diff.
 - [ ] Commit only the reviewed paths with a Conventional Commit message.
 - [ ] Run the guarded ship dry run, then `ALLOW_DEPLOY=1 npm run ship -- <sha>`.
-- [ ] Verify the live build stamp and smoke-test `/curriculum/`, `/lessons/1-1-group1/`, and `/lessons/7-2-group2/` on production.
+- [ ] Verify the live build stamp and smoke-test `/curriculum/`, `/lessons/6-13-group1/`, and `/lessons/8-2-group2/` on production.

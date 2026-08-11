@@ -30,6 +30,61 @@ import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
 import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
 
 const ROOT = process.env.REPO || resolve(dirname(fileURLToPath(import.meta.url)), "..");
+
+/* Human-readable names for the misconceptions a lesson's own distractors can
+   diagnose (data/misconception-labels.json, generated from the engine
+   taxonomy). Used to tell a teacher WHO to pull by the error they made rather
+   than by "students who struggled" — the difference between a level group and
+   a diagnostic one. Absent file degrades to the old generic line. */
+let MISCONCEPTION_LABELS = {};
+try {
+  MISCONCEPTION_LABELS =
+    JSON.parse(readFileSync(join(ROOT, "data/misconception-labels.json"), "utf8")).tags || {};
+} catch (_error) {
+  MISCONCEPTION_LABELS = {};
+}
+
+/**
+ * The justification half of a challenge objective, matched to the KIND of
+ * mathematics the lesson does.
+ *
+ * One clause does not fit every lesson. "Explain why the method works" is right
+ * for "divide by multiplying by the reciprocal" and nonsense for "tell the
+ * difference between a statistical and a non-statistical question" — there is
+ * no method there to justify, there is a criterion to apply. Writing a single
+ * sentence for all 64 lessons is exactly the templating this rewrite exists to
+ * remove, so the clause follows the verb.
+ */
+function proveClause(skill) {
+  const s = String(skill || "").toLowerCase();
+  // Build verbs are tested FIRST. Objectives routinely pair them with a
+  // describing verb ("write and DESCRIBE a ratio", "plot and IDENTIFY points"),
+  // and testing classification first handed those lessons "explain how I can
+  // tell" when the student is actually constructing something.
+  if (/\b(write|writing|represent|model|graph|plot|draw|construct|build)\b/.test(s))
+    return "explain what each part stands for, and build one for a situation I have not seen before.";
+  if (
+    /\b(tell the difference|identify|classify|decide|recognize|compare|describe|interpret)\b/.test(
+      s,
+    )
+  )
+    return "explain how I can tell, and judge a case I have not seen before.";
+  return "explain why the method works, and use it on a problem I have not seen before.";
+}
+
+/** The misconception labels this lesson's practice items can actually detect. */
+function diagnosedErrors(base) {
+  const found = new Set();
+  for (const tier of ["approaching", "onLevel", "extending", "optional"]) {
+    for (const item of base?.practice?.[tier] || []) {
+      for (const tag of item?.misconceptionTags || []) {
+        const label = tag && MISCONCEPTION_LABELS[tag]?.label;
+        if (label) found.add(label);
+      }
+    }
+  }
+  return [...found];
+}
 const LESSONS = join(ROOT, "lessons");
 const FACILITATION_MODULE = join(ROOT, "functions", "teacher-small-group", "_facilitation-data.js");
 const DRY = process.argv.includes("--dry");
@@ -120,6 +175,28 @@ function toStudentConfig(value) {
 
 // ---------------------------------------------------------------- Group 1
 // Extra Support — teacher-led re-teach + heavily scaffolded practice.
+/**
+ * The base lesson's interactive tool, wherever it was authored. Mirrors the
+ * precedence in scripts/generate-homework-html.mjs `lessonModelCandidates`:
+ * practice first, then explore, connect and the launch visual. Reading only
+ * `practice.diagram` left every small group of a lesson whose tool sits in
+ * connect/explore with no put-your-own-numbers-in tool at all — which is
+ * exactly what lesson-tool-coverage checks for.
+ */
+function baseDiagram(base) {
+  const first = (value) => {
+    const arr = Array.isArray(value) ? value : [value];
+    return arr.find((x) => x && typeof x === "object" && typeof x.kind === "string") || null;
+  };
+  return (
+    first(base?.practice?.diagram) ||
+    first(base?.explore?.diagram) ||
+    first(base?.connect?.diagram) ||
+    first(base?.launch?.visual) ||
+    undefined
+  );
+}
+
 function buildGroup1(base, u, m) {
   const out = clone(base);
   const id = `${u}-${m}-group1`;
@@ -178,7 +255,7 @@ function buildGroup1(base, u, m) {
     // `practice.diagram` at the top of the Practice & Check tab; rebuilding
     // `out.practice` from scratch used to drop it, so every small group lost
     // the one put-your-own-numbers-in tool the full lesson gives students.
-    diagram: p.diagram,
+    diagram: baseDiagram(base),
     approaching: practice.slice(0, 6),
     onLevel: practice.slice(6),
     extending: [],
@@ -205,13 +282,23 @@ function buildGroup1(base, u, m) {
     // keep .hints so support is available on the check
   }
 
-  out.vocabulary = (base.vocabulary || []).slice(0, 8);
+  out.vocabulary = withPriorVocabulary((base.vocabulary || []).slice(0, 8), id);
 
   out.smallGroup = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    // Diagnostic, not "students who struggled" — this lesson's own distractors
+    // can now name the error, so say which error to pull FOR. Falls back to the
+    // generic line on lessons whose items diagnose nothing yet.
+    who: (() => {
+      const errors = diagnosedErrors(base);
+      if (!errors.length)
+        return "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.";
+      return `Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: ${errors
+        .slice(0, 3)
+        .join("; ")}. Group students who made the SAME error; they need different repairs.`;
+    })(),
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -240,7 +327,13 @@ function buildGroup2(base, u, m) {
   out.title = `${dm} Small Group · Group 2`;
   out.themeEmoji = "\u{1F680}"; // 🚀
   out.timeEstimate = "~15–20 min";
-  out.contentObjective = `I can go beyond today's lesson: ${lc1(skill)} in trickier cases, and explain WHY it works.`;
+  // NOT "in trickier cases". Harder numbers are more tedious, not more
+  // demanding, and this wording is load-bearing: successCriteria() in
+  // engine/core/small-group-mastery.js strips "I can" off this string and shows
+  // it to students as the "Do it" criterion, so "trickier cases" told every
+  // challenge group that the work ahead was bigger arithmetic. The real work
+  // this group does is the L4 "Prove it" band, and this now says so.
+  out.contentObjective = `I can ${lc1(skill)}, ${proveClause(skill)}`;
   out.languageObjective = `I can justify my answer to a skeptic and connect it to a second strategy or representation.`;
 
   const ci = clone(base.launch?.conceptIntro || {});
@@ -248,18 +341,22 @@ function buildGroup2(base, u, m) {
 
   out.launch = out.launch || {};
   out.launch.badge = "Small Group · Challenge";
-  out.launch.narrative = `This is your challenge small group for Lesson ${dm}. You've got the basics — now let's push on it: harder cases, a second strategy, and always the question "how do you KNOW?"`;
+  out.launch.narrative = `This is your challenge small group for Lesson ${dm}. You can already get the answer — so in here the answer is the starting point. We ask when the method holds, when it breaks, and how you would convince someone who disagrees.`;
   out.launch.conceptIntro = {
     heading: `Push further — ${ci.heading || base.title}`,
+    // Extension here is abstraction, justification and transfer — not bigger
+    // numbers. A student who is already fluent gains nothing from arithmetic
+    // that is merely longer, and promising them "trickier numbers" set exactly
+    // the wrong expectation for the Prove-It work this group actually does.
     intro:
-      "You already can do this. In this group we go deeper: trickier numbers, a second way to see it, and explaining why it works — not just getting the answer.",
+      "You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.",
     keyIdea: ci.keyIdea
-      ? `${String(ci.keyIdea).replace(/[.\s]+$/, "")} — and you can explain why it works, even when it gets tricky.`
-      : "You can explain why today's idea works, even when it gets tricky.",
-    // Build stays a quick "trickier case" warm-up. The real challenge —
-    // generalizing, justifying, and defending — lives in the guided
-    // "Prove It" tab (see engine/core/small-group-innovation.js).
-    iDo: ci.iDo || { title: "A trickier case", lines: [] },
+      ? `${String(ci.keyIdea).replace(/[.\s]+$/, "")} — and you can say why it is true, and where it would stop being true.`
+      : "You can say why today's idea is true, and where it would stop being true.",
+    // The Build step is a quick warm-up; the real challenge — generalizing,
+    // justifying, and defending — lives in the guided "Prove It" tab (see
+    // engine/core/small-group-innovation.js).
+    iDo: ci.iDo || { title: "Start from the answer", lines: [] },
   };
 
   const practice = uniquePractice(
@@ -270,7 +367,7 @@ function buildGroup2(base, u, m) {
   ).slice(0, 12);
   out.practice = {
     // Same rehearsal tool the full lesson mounts — see buildGroup1.
-    diagram: p.diagram,
+    diagram: baseDiagram(base),
     approaching: [],
     onLevel: practice.slice(0, 4),
     extending: practice.slice(4),
@@ -297,7 +394,7 @@ function buildGroup2(base, u, m) {
     out.reflect.exitTicket.stem = `Explain your thinking — ${out.reflect.exitTicket.stem}`;
   }
 
-  out.vocabulary = (base.vocabulary || []).slice(0, 8);
+  out.vocabulary = withPriorVocabulary((base.vocabulary || []).slice(0, 8), id);
 
   out.smallGroup = {
     group: 2,
@@ -358,6 +455,37 @@ const bases = readdirSync(LESSONS)
     const [bu, bm] = b.split("-").map(Number);
     return au - bu || am - bm;
   });
+
+/* Regeneration must never DELETE vocabulary that is already published.
+ *
+ * These groups take the base lesson's first 8 terms. Committed groups can hold
+ * more — 5-1-group1/group2 carry all 10 of lesson 5-1's terms, so a plain
+ * re-run stripped "Composite figure" and "Formula" from both. Same class of
+ * silent loss the catch-up generator had (56 terms there); see
+ * tools/generators-preserve-vocabulary.test.mjs.
+ *
+ * The cap stays — a small-group pull-out is meant to be compact — but nothing
+ * already on disk is removed. A term goes away only by editing the config.
+ */
+function withPriorVocabulary(vocabulary, id) {
+  const priorPath = join(LESSONS, id, "config.json");
+  if (!existsSync(priorPath)) return vocabulary;
+  const out = [...vocabulary];
+  const seen = new Set(out.map((v) => String(v.term || "").toLowerCase()));
+  let prior;
+  try {
+    prior = JSON.parse(readFileSync(priorPath, "utf8")).vocabulary || [];
+  } catch {
+    return out; // unreadable prior config is not a reason to fail the run
+  }
+  for (const v of prior) {
+    const k = String(v.term || "").toLowerCase();
+    if (!k || seen.has(k)) continue;
+    seen.add(k);
+    out.push(v);
+  }
+  return out;
+}
 
 const rows = [];
 const facilitationByLesson = {};

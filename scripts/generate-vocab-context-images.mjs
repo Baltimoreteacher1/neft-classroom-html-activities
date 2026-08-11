@@ -166,6 +166,16 @@ function tintEquals(line) {
 }
 
 function renderCard(card) {
+  if (card.numberLine) {
+    const { size, lines } = fitParagraph(card.paragraph, 2);
+    const lineHeight = size * 1.4;
+    const top = VIEW_H - 22 - (lines.length - 1) * lineHeight;
+    const body = [
+      ...numberLineFigure(card.numberLine),
+      ...lines.flatMap((line, i) => renderRow(tintEquals(line), top + i * lineHeight, size)),
+    ];
+    return wrapSvg(card, body);
+  }
   if (card.paragraph) {
     const { size, lines } = fitParagraph(card.paragraph);
     const lineHeight = size * 1.45;
@@ -199,6 +209,44 @@ function renderCard(card) {
   return wrapSvg(card, body, caption);
 }
 
+// A drawn number line for terms that are ABOUT the number line. Those cards used
+// to be their sentence typeset on a beige rectangle — technically accurate and
+// visually useless, since the whole idea is WHERE a number sits. Ticks are drawn
+// at `step`, labels only at whole numbers, and each mark is a coral dot with its
+// two names above it.
+function numberLineFigure({ min, max, step = 0.25, marks = [], y = 46 }) {
+  const left = 16;
+  const right = VIEW_W - 16;
+  const span = max - min;
+  const xOf = (v) => left + ((v - min) / span) * (right - left);
+  const out = [
+    `<line x1="${left}" y1="${y}" x2="${right}" y2="${y}" stroke="${INK}" stroke-width="2.5"/>`,
+    `<polygon points="${right},${y} ${right - 8},${y - 5} ${right - 8},${y + 5}" fill="${INK}"/>`,
+    `<polygon points="${left},${y} ${left + 8},${y - 5} ${left + 8},${y + 5}" fill="${INK}"/>`,
+  ];
+  for (let v = min; v <= max + 1e-9; v = Math.round((v + step) * 1e6) / 1e6) {
+    const major = Math.abs(v - Math.round(v)) < 1e-9;
+    const h = major ? 6 : 3.5;
+    out.push(
+      `<line x1="${round(xOf(v))}" y1="${y - h}" x2="${round(xOf(v))}" y2="${y + h}" stroke="${INK}" stroke-width="${major ? 1.6 : 1}"/>`,
+    );
+    if (major) {
+      out.push(
+        `<text x="${round(xOf(v))}" y="${y + 18}" font-family="${FONT}" font-size="8.5" font-weight="800" fill="${INK}" text-anchor="middle">${esc(String(v))}</text>`,
+      );
+    }
+  }
+  for (const m of marks) {
+    out.push(`<circle cx="${round(xOf(m.value))}" cy="${y}" r="5" fill="${CORAL}"/>`);
+    if (m.label) {
+      out.push(
+        `<text x="${round(xOf(m.value))}" y="${y - 12}" font-family="${FONT}" font-size="9" font-weight="800" fill="${CORAL}" text-anchor="middle">${esc(m.label)}</text>`,
+      );
+    }
+  }
+  return out;
+}
+
 function wrapSvg(card, body, caption = "") {
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_W} ${VIEW_H}" role="img" aria-labelledby="t">`,
@@ -219,6 +267,36 @@ function wrapSvg(card, body, caption = "") {
 // at it, so the picture, the definition, and the problems agree.
 // ─────────────────────────────────────────────────────────────────────────
 export const CARDS = [
+  // ── The two Unit 9 terms that are ABOUT position on the number line. Their
+  // auto-generated cards typeset the sentence and drew nothing, so the picture
+  // said less than the definition it sat beside. The paragraph under each figure
+  // is still the lesson's own `visual`, verbatim — that is what keeps the card
+  // and the word wall in step (tools/vocab-context-images.test.mjs).
+  {
+    slug: "concept-rational-numbers-on-the-number-line",
+    title: "Rational Numbers on the Number Line: −1/2 and −0.5 name the same point.",
+    paragraph: "−1/2 and −0.5 name the same point.",
+    numberLine: {
+      min: -1,
+      max: 1,
+      step: 0.25,
+      marks: [{ value: -0.5, label: "−1/2 = −0.5" }],
+    },
+  },
+  {
+    slug: "concept-rational-number",
+    title: "Rational number: 1/2 = 0.5, -3/4 = -0.75, 6 = 6/1 — all rational numbers",
+    paragraph: "1/2 = 0.5, -3/4 = -0.75, 6 = 6/1 — all rational numbers",
+    numberLine: {
+      min: -1,
+      max: 1,
+      step: 0.25,
+      marks: [
+        { value: -0.75, label: "−3/4" },
+        { value: 0.5, label: "1/2" },
+      ],
+    },
+  },
   // ── "Base" and "Part" in the percent lessons (4.4, 4.7 catch-up). Defined
   // positionally so they survive percents over 100%, where the part is BIGGER
   // than the base — which is exactly what the second row shows.
@@ -247,6 +325,18 @@ export const CARDS = [
     title: "Percent of a number: multiply by the percent as a decimal",
     rows: [[{ t: "25% of 80" }], [{ t: "= 0.25 × 80 =  " }, { t: "20", hi: true }]],
     caption: "multiply by the percent as a decimal",
+  },
+  // ── "Ratio table" across the ratio lessons (3.2–3.7, 4.6). Without a card
+  // the term fell through to the generic ratio.svg pie — a ratio, not a table.
+  // This card IS a two-row table, the same juice/water one its `visual` names.
+  {
+    slug: "ratio-table",
+    title: "Ratio table: rows of equivalent ratios",
+    rows: [
+      [{ t: "juice  " }, { t: "2", hi: true }, { t: " | 4 | 6" }],
+      [{ t: "water  " }, { t: "3", hi: true }, { t: " | 6 | 9" }],
+    ],
+    caption: "every column shows the same ratio",
   },
   // ── "Base" in 6.1 Powers and Exponents: the number being multiplied.
   {
@@ -287,6 +377,14 @@ export const CARDS = [
     caption: "both sides equal 6 when x = 3",
   },
   {
+    // Lesson 9-3 writes equations for two-variable relationships: the gym's
+    // c = 24.95m is the one its `example` states, so that is what the card draws.
+    slug: "equation-c-equals-24-95m",
+    title: "Equation: c equals 24.95 times m",
+    rows: [[{ t: "c " }, { t: "=", accent: true }, { t: " 24.95m" }]],
+    caption: "total cost = monthly rate × months",
+  },
+  {
     slug: "equation-x-plus-8",
     title: "Equation: x plus 8 equals 15",
     rows: [[{ t: "x + 8 " }, { t: "=", accent: true }, { t: " 15" }]],
@@ -318,7 +416,12 @@ const LESSONS_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "lessons
 
 // Terms deliberately handled by a hand-authored card above, which can highlight
 // the specific number the definition is about.
-const BESPOKE_TERMS = new Set(["percent of a number"]);
+const BESPOKE_TERMS = new Set([
+  "percent of a number",
+  // Drawn as real number lines above, not typeset sentences.
+  "rational numbers on the number line",
+  "rational number",
+]);
 
 export function conceptCards() {
   const byTerm = new Map();

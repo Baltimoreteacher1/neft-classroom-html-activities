@@ -128,13 +128,13 @@ export function renderVocabSort(container, { terms, onComplete }) {
 
   const progress = document.createElement("div");
   progress.style.cssText =
-    "font-size:0.85rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-4);";
+    "font-size:1.05rem; font-weight:700; color:var(--navy, #1f2a44); margin-bottom:var(--sp-4);";
   progress.textContent = `0 / ${total} sorted`;
   wrapper.append(progress);
 
   const bankLabel = document.createElement("div");
   bankLabel.style.cssText =
-    "font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin-bottom:var(--sp-2);";
+    "font-size:0.95rem; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; color:var(--navy, #1f2a44); margin-bottom:var(--sp-2);";
   bankLabel.textContent = "Examples to Sort";
   wrapper.append(bankLabel);
 
@@ -197,13 +197,13 @@ export function renderVocabSort(container, { terms, onComplete }) {
     labelRow.append(vocabImageEl(t));
 
     const bucketLabel = document.createElement("div");
-    bucketLabel.style.cssText = "font-weight:800; font-size:0.95rem; color:var(--navy);";
+    bucketLabel.style.cssText = "font-weight:800; font-size:1.1rem; color:var(--navy);";
     bucketLabel.textContent = t.term;
     if (t.termEs) {
       const es = document.createElement("span");
       es.lang = "es";
       es.style.cssText =
-        "display:block; font-size:0.78rem; font-weight:600; font-style:italic; color:var(--muted);";
+        "display:block; font-size:1rem; font-weight:600; font-style:italic; color:var(--gray-700, #45566b);";
       es.textContent = t.termEs;
       bucketLabel.append(es);
     }
@@ -212,7 +212,7 @@ export function renderVocabSort(container, { terms, onComplete }) {
 
     const bucketHint = document.createElement("div");
     bucketHint.style.cssText =
-      "font-size:0.8rem; color:var(--muted); font-style:italic; margin-bottom:var(--sp-2);";
+      "font-size:1rem; color:var(--gray-700, #45566b); font-style:italic; margin-bottom:var(--sp-2);";
     bucketHint.textContent = t.definition;
     if (t.definitionEs) {
       const es = document.createElement("span");
@@ -314,7 +314,26 @@ export function renderVocabSort(container, { terms, onComplete }) {
 }
 
 function buildExamples(term) {
-  if (term.examples && term.examples.length) return term.examples;
+  // `examples` is authored two ways across the corpus: as plain strings, and as
+  // { text, isExample, why } objects (238 terms in 164 lessons use the object
+  // form). This returned the array untouched, so every object chip rendered as
+  // String(object) — Example Sort on 1-1 was a bank of chips all reading
+  // "[object Object]". vocab-explore-tasks and the small-group renderer both
+  // already normalise this shape; only this component did not.
+  //
+  // Non-examples are dropped rather than shown: the task is "sort each example
+  // under the correct term", so a chip that belongs under NEITHER term has no
+  // right answer and cannot be sorted correctly.
+  if (Array.isArray(term.examples) && term.examples.length) {
+    const usable = term.examples
+      .map((ex) => {
+        if (typeof ex === "string") return ex;
+        if (ex && typeof ex === "object" && ex.isExample !== false) return ex.text;
+        return null;
+      })
+      .filter((t) => typeof t === "string" && t.trim());
+    if (usable.length) return usable;
+  }
   const pieces = [];
   if (term.visual) pieces.push(term.visual);
   pieces.push(`"${term.term}" — ${term.definition}`);

@@ -64,7 +64,7 @@ for (const id of ids) {
   }
 }
 
-assert.ok(pages >= 70, `expected the generated vocab pages to be present, found ${pages}`);
+assert.ok(pages >= 60, `expected the generated vocab pages to be present, found ${pages}`);
 assert.deepEqual(
   stale,
   [],

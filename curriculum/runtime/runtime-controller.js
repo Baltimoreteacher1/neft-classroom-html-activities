@@ -33,7 +33,9 @@ const byId = (id) => document.getElementById(id);
 const value = (id) => byId(id).value;
 
 function counts() {
-  return Object.fromEntries(["secure", "developing", "stuck"].map((name) => [name, Number(value(`${name}-count`)) || 0]));
+  return Object.fromEntries(
+    ["secure", "developing", "stuck"].map((name) => [name, Number(value(`${name}-count`)) || 0]),
+  );
 }
 
 function compose(event) {
@@ -62,7 +64,12 @@ function updateEvidence() {
   renderAdaptation(adaptation);
   renderReasoning(reasoning);
   renderRevision(latestRevision);
-  appendLocal("evidence", { lessonId: currentRuntime.lesson.id, adaptation, reasoning, at: new Date().toISOString() });
+  appendLocal("evidence", {
+    lessonId: currentRuntime.lesson.id,
+    adaptation,
+    reasoning,
+    at: new Date().toISOString(),
+  });
   setStatus("Anonymous classroom evidence updated.", "success");
 }
 
@@ -95,13 +102,13 @@ async function askCopilot() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         mode: "teach",
-        problem: `${currentRuntime.lesson.title}: ${prompt}`.slice(0, 900),
+        itemText: `${currentRuntime.lesson.title}: ${prompt}`.slice(0, 900),
         replyLang: tutorLanguage(currentRuntime.language),
       }),
     });
     if (!response.ok) throw new Error("Tutor unavailable");
     const data = await response.json();
-    output.textContent = data.response || data.message || currentRuntime.guidance.responseMove;
+    output.textContent = data.reply || currentRuntime.guidance.responseMove;
   } catch {
     output.textContent = `${currentRuntime.guidance.responseMove} Ask: ${currentRuntime.copy.notice}`;
   }
@@ -110,8 +117,15 @@ async function askCopilot() {
 async function inspectPhoto() {
   if (!currentRuntime) return setStatus("Compose a runtime first.", "warning");
   const file = byId("work-photo").files[0];
-  if (!file || !["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 2_500_000) {
-    return setStatus("Choose a JPG, PNG, or WebP under 2.5 MB. Remove names before uploading.", "warning");
+  if (
+    !file ||
+    !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
+    file.size > 2_500_000
+  ) {
+    return setStatus(
+      "Choose a JPG, PNG, or WebP under 2.5 MB. Remove names before uploading.",
+      "warning",
+    );
   }
   const image = await new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -125,11 +139,16 @@ async function inspectPhoto() {
     const response = await fetch(RUNTIME_CONFIG.tutorEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mode: "photo", image, studentWork: "Give one coaching move. Do not reveal the answer.", replyLang: tutorLanguage(currentRuntime.language) }),
+      body: JSON.stringify({
+        mode: "photo",
+        image,
+        studentWork: "Give one coaching move. Do not reveal the answer.",
+        replyLang: tutorLanguage(currentRuntime.language),
+      }),
     });
     if (!response.ok) throw new Error("Vision unavailable");
     const data = await response.json();
-    output.textContent = data.response || data.message || currentRuntime.guidance.responseMove;
+    output.textContent = data.reply || currentRuntime.guidance.responseMove;
   } catch {
     output.textContent = `Photo coaching is temporarily unavailable. Try this move: ${currentRuntime.guidance.responseMove}`;
   } finally {
@@ -139,10 +158,16 @@ async function inspectPhoto() {
 
 function startVoice() {
   const Recognition = globalThis.SpeechRecognition || globalThis.webkitSpeechRecognition;
-  if (!Recognition) return setStatus("Voice input is not available in this browser. Type the observation instead.", "warning");
+  if (!Recognition)
+    return setStatus(
+      "Voice input is not available in this browser. Type the observation instead.",
+      "warning",
+    );
   const recognition = new Recognition();
   recognition.lang = currentRuntime?.language === "es" ? "es-US" : "en-US";
-  recognition.onresult = (event) => { byId("reasoning-evidence").value = event.results[0][0].transcript; };
+  recognition.onresult = (event) => {
+    byId("reasoning-evidence").value = event.results[0][0].transcript;
+  };
   recognition.onerror = () => setStatus("Voice input stopped. No recording was saved.", "warning");
   recognition.start();
   setStatus("Listening once. Speech stays in the browser unless you submit evidence.", "neutral");
@@ -162,20 +187,35 @@ function bindEvents() {
     appendLocal("approved-revisions", latestRevision);
     renderRevision(latestRevision);
   });
-  byId("export-fork").addEventListener("click", () => currentFork && downloadJson(`${currentFork.lesson.id}-fork.json`, currentFork));
-  document.querySelectorAll("[data-stage-button]").forEach((button) => button.addEventListener("click", () => activateStage(button.dataset.stageButton)));
+  byId("export-fork").addEventListener(
+    "click",
+    () => currentFork && downloadJson(`${currentFork.lesson.id}-fork.json`, currentFork),
+  );
+  document
+    .querySelectorAll("[data-stage-button]")
+    .forEach((button) =>
+      button.addEventListener("click", () => activateStage(button.dataset.stageButton)),
+    );
 }
 
 async function init() {
   if (!selfTest()) throw new Error("Runtime configuration self-test failed.");
   bindEvents();
+  byId("compose-submit").disabled = true;
   try {
     curriculum = await loadCurriculum();
     populateLessons(curriculum.launchData.lessons);
-    setStatus(`${curriculum.launchData.lessons.length} canonical lessons ready. English / Español only.`, "success");
+    byId("compose-submit").disabled = false;
+    setStatus(
+      `${curriculum.launchData.lessons.length} canonical lessons ready. English / Español only.`,
+      "success",
+    );
   } catch (error) {
     byId("compose-submit").disabled = true;
-    setStatus(`${error.message} Refresh to try again; existing curriculum links still work.`, "danger");
+    setStatus(
+      `${error.message} Refresh to try again; existing curriculum links still work.`,
+      "danger",
+    );
   }
 }
 

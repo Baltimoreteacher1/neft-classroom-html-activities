@@ -26,12 +26,28 @@
   --fs-base: 1.15rem; /* 18.4px — clear, bold, student-friendly reading size */
   --lh-base: 1.65; /* generous line-height for EL readers */
 
+  /* Type scale — every engine font-size snaps to one of these steps.
+     Do not introduce new hardcoded font-size values in engine styles. */
+  /* Deliberately wider contrast than the sizes it replaced: utility text
+     steps down slightly, headings step up, so the reading hierarchy is
+     visible at a glance. Retune here, never per-component. */
+  --fs-2xs: 0.7rem;
+  --fs-xs: 0.78rem;
+  --fs-sm: 0.85rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.15rem;
+  --fs-xl: 1.4rem;
+  --fs-2xl: 1.6rem;
+  --fs-3xl: 1.9rem;
+  --fs-4xl: 2.2rem;
+  --fs-5xl: 2.6rem;
+
   /* Transitions */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --duration-slow: 400ms;
+  --duration-fast: var(--duration-fast);
+  --duration-normal: var(--duration-normal);
+  --duration-slow: var(--duration-slow);
 
   /* Theme override slot (set per-unit) */
   --theme-accent: var(--teal);
@@ -134,6 +150,10 @@ h4 {
   display: flex;
   flex-direction: column;
   gap: var(--sp-4);
+  /* Clearance for the teacher-only "Clear answers" FAB parked in the bottom-left
+     corner (`.nt-teacher-clear`, 40px + 16px inset): the rail scrolls, so
+     without this a phase button can come to rest underneath it. */
+  padding-bottom: 72px;
 }
 
 .sidebar-header {
@@ -149,7 +169,7 @@ h4 {
   background: linear-gradient(135deg, var(--amber), var(--teal));
   display: grid;
   place-items: center;
-  font-size: 1.4rem;
+  font-size: var(--fs-xl);
   font-weight: 900;
   color: var(--navy);
   flex-shrink: 0;
@@ -158,13 +178,13 @@ h4 {
 
 .sidebar-title {
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   font-weight: 800;
   line-height: 1.15;
 }
 
 .sidebar-subtitle {
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   color: rgba(255, 255, 255, 0.7);
   margin-top: 2px;
 }
@@ -179,7 +199,7 @@ h4 {
 
 .student-info label {
   display: block;
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: rgba(255, 255, 255, 0.6);
@@ -196,7 +216,7 @@ h4 {
   border: none;
   border-radius: var(--radius-sm);
   padding: 8px 10px;
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
   color: var(--ink);
   background: white;
   transition: box-shadow var(--duration-fast) ease;
@@ -222,7 +242,7 @@ h4 {
 }
 
 .xp-label {
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -231,7 +251,7 @@ h4 {
 
 .xp-value {
   font-family: var(--font-display);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   font-weight: 800;
   color: white;
 }
@@ -272,7 +292,7 @@ h4 {
   border-radius: var(--radius-md);
   padding: 12px 12px;
   font-weight: 700;
-  font-size: 0.98rem;
+  font-size: var(--fs-md);
   transition: all var(--duration-fast) ease;
 }
 
@@ -312,7 +332,7 @@ h4 {
   display: grid;
   place-items: center;
   font-weight: 900;
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   color: #ffffff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   transition: all var(--duration-fast) ease;
@@ -332,7 +352,7 @@ h4 {
 .phase-stars {
   display: flex;
   gap: 2px;
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
 }
 
 .phase-stars .star {
@@ -419,7 +439,7 @@ h4 {
   border-radius: var(--radius-md);
   display: grid;
   place-items: center;
-  font-size: 1.5rem;
+  font-size: var(--fs-2xl);
   flex-shrink: 0;
 }
 
@@ -441,14 +461,14 @@ h4 {
 }
 
 .section-title {
-  font-size: 1.7rem;
+  font-size: var(--fs-3xl);
   font-weight: 800;
   color: var(--navy);
   letter-spacing: -0.02em;
 }
 
 .section-desc {
-  font-size: 1rem;
+  font-size: var(--fs-md);
   color: var(--muted);
   margin-top: 3px;
   line-height: 1.5;
@@ -461,7 +481,7 @@ h4 {
   gap: var(--sp-1);
   padding: 5px 12px;
   border-radius: var(--radius-full);
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -493,7 +513,7 @@ h4 {
   padding: 12px 24px;
   border-radius: var(--radius-md);
   font-weight: 800;
-  font-size: 1.02rem;
+  font-size: var(--fs-md);
   letter-spacing: 0.01em;
   transition: all var(--duration-fast) ease;
   min-height: 46px;
@@ -539,7 +559,7 @@ h4 {
 
 .btn-lg {
   padding: 14px 32px;
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   border-radius: var(--radius-lg);
 }
 
@@ -549,7 +569,7 @@ h4 {
   padding: 12px 14px;
   border: 2px solid var(--line);
   border-radius: var(--radius-md);
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
   color: var(--ink);
   background: white;
   transition:
@@ -576,7 +596,7 @@ h4 {
   border-radius: var(--radius-md);
   padding: var(--sp-4);
   margin: var(--sp-3) 0;
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   line-height: 1.7;
 }
 
@@ -609,7 +629,7 @@ h4 {
   margin: 0 4px;
   color: var(--teal-ink);
   font-family: inherit;
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   text-align: center;
 }
@@ -634,7 +654,7 @@ h4 {
 .connect-check-intro {
   margin: var(--sp-2) 0 0;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
 }
 
 .connect-check-item {
@@ -711,7 +731,7 @@ h4 {
   margin-top: var(--sp-3);
   padding: 10px 14px;
   border-radius: var(--radius-md);
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
   line-height: 1.55;
 }
 
@@ -754,13 +774,22 @@ h4 {
   line-height: 1.6;
 }
 
+/* Spanish resolution shown under the English in the Connect reveal. Muted and
+   italic so it reads as the same sentence in another language, not a second
+   claim. See lesson-renderer.js — it renders only when authored and different. */
+.connect-reveal-es {
+  margin-top: 6px;
+  font-style: italic;
+  opacity: 0.85;
+}
+
 /* ── Feedback Messages ── */
 .feedback {
   display: none;
   padding: var(--sp-4);
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--fs-md);
   line-height: 1.5;
   animation: feedbackIn 0.3s var(--ease-spring);
 }
@@ -778,7 +807,7 @@ h4 {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   font-weight: 900;
 }
 
@@ -859,7 +888,7 @@ h4 {
   color: white;
   text-align: left;
   padding: 12px 16px;
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -867,7 +896,7 @@ h4 {
 
 .vocab-table td {
   padding: 14px 16px;
-  font-size: 1.02rem;
+  font-size: var(--fs-md);
   line-height: 1.55;
   border-bottom: 1px solid var(--line);
   vertical-align: top;
@@ -905,7 +934,7 @@ h4 {
   border: 2px solid var(--line);
   border-radius: var(--radius-md);
   font-weight: 700;
-  font-size: 1rem;
+  font-size: var(--fs-md);
   cursor: grab;
   user-select: none;
   transition: all var(--duration-fast) var(--ease-spring);
@@ -924,7 +953,7 @@ h4 {
 .drag-item.incorrect {
   border-color: var(--error);
   background: var(--error-bg);
-  animation: shake 0.4s ease;
+  animation: shake var(--duration-slow) ease;
 }
 
 @keyframes shake {
@@ -1011,13 +1040,27 @@ h4 {
 .obj-popup-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1100;
+  /* Sits above every other layer on a lesson page. At z-index 1100 this modal
+     was BELOW 25 live elements — the sidebar and draw HUD (9999), the supports
+     dock and content panel (10000/10001), the formula modal (99999), and the
+     save/resume + workbench launchers (2147483000) — so tapping an underlined
+     objective term opened a definition hidden behind whichever dock overlapped
+     it. A dismissible aria-modal dialog belongs on top while it is open, and
+     [hidden] below sets display:none, so it captures nothing once closed. */
+  z-index: 2147483001;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  /* The card centres via `margin: auto` on .obj-popup, NOT via align/justify
+     center. Centring a flex item inside a scrolling container clips it at both
+     ends once it is taller than the viewport, so on a short window (or a
+     projector at 125%) the term heading and close button were pushed off the
+     top with no way to scroll back to them. */
+  align-items: flex-start;
+  justify-content: flex-start;
   padding: var(--sp-4, 18px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: rgba(15, 23, 42, 0.55);
-  animation: objFadeIn 0.15s ease;
+  animation: objFadeIn var(--duration-fast) ease;
 }
 .obj-popup-backdrop[hidden] {
   display: none;
@@ -1026,8 +1069,9 @@ h4 {
 .obj-popup {
   position: relative;
   width: min(420px, 100%);
-  max-height: 90vh;
-  overflow-y: auto;
+  margin: auto;
+  flex: 0 0 auto;
+  overflow-y: visible;
   background: var(--white, #fff);
   border-radius: var(--radius-lg, 16px);
   box-shadow: 0 18px 50px rgba(15, 23, 42, 0.3);
@@ -1046,7 +1090,7 @@ h4 {
   border-radius: 50%;
   background: var(--cream, #f4f1ea);
   color: var(--navy, #1f2a44);
-  font-size: 1.5rem;
+  font-size: var(--fs-2xl);
   line-height: 1;
   cursor: pointer;
 }
@@ -1077,7 +1121,7 @@ h4 {
   color: var(--teal, #1c8c8c);
 }
 .obj-popup-tr-es {
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
   font-weight: 600;
   color: var(--navy, #1f2a44);
 }
@@ -1092,10 +1136,23 @@ h4 {
   height: auto;
   margin: 0 auto var(--sp-2, 10px);
 }
+/* The wording under the vocabulary picture — the worked example that explains
+   what the picture shows. One step up the type scale so it reads for a
+   newcomer. */
 .obj-popup-example {
+  /* No inner scroller. The whole card scrolls now (see .obj-popup-backdrop), so
+     a second nested scroll box just hid the tail of the worked example behind a
+     scrollbar students did not notice. */
   margin: 0;
-  font-weight: 600;
+  padding: var(--sp-2, 10px) var(--sp-3, 14px);
+  border: 1px solid var(--gray-200, #e2e8f0);
+  border-radius: var(--radius-md, 12px);
+  background: var(--cream, #f4f1ea);
   color: var(--navy, #1f2a44);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  line-height: 1.6;
+  text-align: left;
 }
 .obj-popup-example[hidden] {
   display: none;
@@ -1103,7 +1160,7 @@ h4 {
 
 .obj-popup-def {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   line-height: 1.5;
   color: var(--navy, #1f2a44);
 }
@@ -1133,14 +1190,14 @@ body.obj-popup-open {
 }
 
 .phase-complete-banner h3 {
-  font-size: 1.8rem;
+  font-size: var(--fs-3xl);
   color: var(--navy);
   margin-bottom: var(--sp-2);
 }
 
 .phase-complete-xp {
   font-family: var(--font-display);
-  font-size: 2.4rem;
+  font-size: var(--fs-5xl);
   font-weight: 900;
   color: var(--amber);
 }
@@ -1165,7 +1222,7 @@ body.obj-popup-open {
 }
 
 .star-display .star-icon {
-  font-size: 2rem;
+  font-size: var(--fs-4xl);
   opacity: 0.2;
   transition: all 0.3s var(--ease-spring);
 }
@@ -1173,7 +1230,7 @@ body.obj-popup-open {
 .star-display .star-icon.earned {
   opacity: 1;
   color: var(--amber);
-  animation: starPop 0.4s var(--ease-spring);
+  animation: starPop var(--duration-slow) var(--ease-spring);
 }
 
 @keyframes starPop {
@@ -1215,12 +1272,12 @@ body.obj-popup-open {
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  background: linear-gradient(135deg, #ff6b35, #f2c15b);
+  background: linear-gradient(135deg, #ff6b35, var(--amber));
   color: white;
   border-radius: var(--radius-full);
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: 1rem;
+  font-size: var(--fs-md);
   box-shadow: 0 4px 16px rgba(255, 107, 53, 0.4);
   opacity: 0;
   transform: scale(0.8) translateY(-10px);
@@ -1232,7 +1289,7 @@ body.obj-popup-open {
   transform: scale(1) translateY(0);
 }
 .streak-fire {
-  font-size: 1.2rem;
+  font-size: var(--fs-lg);
 }
 .streak-count {
   min-width: 1ch;
@@ -1253,7 +1310,7 @@ body.obj-popup-open {
 }
 .streak-badge {
   margin-top: var(--sp-3);
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   font-weight: 700;
   color: var(--coral);
 }
@@ -1261,8 +1318,8 @@ body.obj-popup-open {
 /* ── Card Hover Polish ── */
 .card {
   transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+    transform var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
 }
 
 /* ── Matching Game Flip ── */
@@ -1274,14 +1331,14 @@ body.obj-popup-open {
   transform: translateY(-3px);
 }
 .match-card-inner {
-  transition: transform 0.4s var(--ease-out);
+  transition: transform var(--duration-slow) var(--ease-out);
   transform-style: preserve-3d;
 }
 .match-card.flipped .match-card-inner {
   transform: rotateY(180deg);
 }
 .match-card.matched {
-  animation: matchPop 0.4s var(--ease-spring);
+  animation: matchPop var(--duration-slow) var(--ease-spring);
 }
 @keyframes matchPop {
   0% {
@@ -1358,7 +1415,7 @@ body.obj-popup-open {
 
 /* ── Multiple Choice Selection ── */
 .mc-option {
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) ease;
 }
 .mc-option:hover:not(.selected):not(.correct):not(.wrong) {
   border-color: var(--teal);
@@ -1373,7 +1430,7 @@ body.obj-popup-open {
 .mc-option.wrong {
   border-color: var(--error);
   background: var(--error-bg);
-  animation: shake 0.4s ease;
+  animation: shake var(--duration-slow) ease;
 }
 
 /* ── Balance Scale Tilt ── */
@@ -1431,7 +1488,7 @@ body.obj-popup-open {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   font-weight: 800;
   cursor: pointer;
   z-index: 2;
@@ -1518,7 +1575,7 @@ body.obj-popup-open {
   .phase-btn {
     grid-template-columns: 28px minmax(0, 1fr);
     padding: 8px 10px;
-    font-size: 0.78rem;
+    font-size: var(--fs-xs);
     white-space: normal;
     min-width: 0;
     width: 100%;
@@ -1544,7 +1601,7 @@ body.obj-popup-open {
   }
   .drag-item {
     padding: 10px 18px;
-    font-size: 1rem;
+    font-size: var(--fs-md);
   }
   .streak-display {
     top: auto;
@@ -1670,7 +1727,7 @@ body.obj-popup-open {
 }
 .identity-meta {
   font-family: var(--font-display);
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -1684,7 +1741,7 @@ body.obj-popup-open {
 }
 .identity-title {
   font-family: var(--font-display);
-  font-size: 1.75rem;
+  font-size: var(--fs-3xl);
   font-weight: 800;
   color: white;
   margin: 0 0 var(--sp-2);
@@ -1692,7 +1749,7 @@ body.obj-popup-open {
   letter-spacing: -0.02em;
 }
 .identity-sub {
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   color: rgba(255, 255, 255, 0.95);
   margin: 0 0 var(--sp-4);
 }
@@ -1704,7 +1761,7 @@ body.obj-popup-open {
   border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   margin-bottom: var(--sp-4);
 }
@@ -1716,7 +1773,7 @@ body.obj-popup-open {
   padding: var(--sp-3) var(--sp-4);
 }
 .identity-objective-row {
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   line-height: 1.45;
   margin-bottom: var(--sp-2);
 }
@@ -1728,7 +1785,7 @@ body.obj-popup-open {
   background: var(--amber);
   color: var(--navy);
   font-weight: 800;
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   padding: 2px 8px;
   border-radius: var(--radius-full);
   text-transform: uppercase;
@@ -1746,7 +1803,7 @@ body.obj-popup-open {
   text-align: left;
 }
 .identity-form label {
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
@@ -1756,7 +1813,7 @@ body.obj-popup-open {
   padding: 10px 14px;
   border: 2px solid var(--line);
   border-radius: var(--radius-md);
-  font-size: 1rem;
+  font-size: var(--fs-md);
   transition: border-color var(--duration-fast) ease;
 }
 .identity-form input:focus {
@@ -1770,7 +1827,7 @@ body.obj-popup-open {
   color: white;
   border: none;
   border-radius: var(--radius-md);
-  font-size: 1rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   cursor: pointer;
   transition: opacity var(--duration-fast) ease;
@@ -1789,7 +1846,7 @@ body.obj-popup-open {
   text-align: left;
 }
 .identity-saved-label {
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
@@ -1804,7 +1861,7 @@ body.obj-popup-open {
   border: 2px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--cream);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   cursor: pointer;
   margin-bottom: var(--sp-2);
   transition: all var(--duration-fast) ease;
@@ -1817,10 +1874,10 @@ body.obj-popup-open {
 .student-name-display {
   font-weight: 700;
   color: var(--navy);
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
 }
 .student-period-display {
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--muted);
 }
 
@@ -1846,7 +1903,7 @@ body.obj-popup-open {
 /* Ready-to-export / required-section readiness chip (sits before the buttons) */
 .export-readiness {
   margin-right: auto;
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 999px;
@@ -1856,12 +1913,12 @@ body.obj-popup-open {
   display: none;
 }
 .export-readiness.is-ready {
-  color: var(--success, #0f7c4a);
-  background: var(--success-bg, #e6f7ef);
+  color: var(--success, var(--success));
+  background: var(--success-bg, var(--success-bg));
 }
 .export-readiness.is-incomplete {
-  color: var(--hint, #875f00);
-  background: var(--hint-bg, #fef7e0);
+  color: var(--hint, var(--hint));
+  background: var(--hint-bg, var(--amber-light));
 }
 @media (max-width: 768px) {
   .export-readiness {
@@ -1878,7 +1935,7 @@ body.obj-popup-open {
   padding: 7px 16px;
   border-radius: var(--radius-full);
   font-family: var(--font-body);
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   cursor: pointer;
   border: none;
@@ -1938,7 +1995,7 @@ body:has(.identity-screen) .export-toolbar {
   }
   .export-btn {
     padding: 6px 10px;
-    font-size: 0.75rem;
+    font-size: var(--fs-2xs);
   }
   .export-btn-primary span {
     display: none;
@@ -1956,7 +2013,7 @@ body:has(.identity-screen) .export-toolbar {
   margin-bottom: var(--sp-5);
 }
 .level-selector-intro {
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   font-weight: 700;
   color: var(--muted);
   margin-bottom: var(--sp-3);
@@ -1976,7 +2033,7 @@ body:has(.identity-screen) .export-toolbar {
   border-radius: var(--radius-md);
   background: var(--card);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) ease;
   min-height: 64px;
 }
 .level-option:hover {
@@ -1992,11 +2049,11 @@ body:has(.identity-screen) .export-toolbar {
 }
 .level-option-title {
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
   color: var(--navy);
 }
 .level-option-blurb {
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   color: var(--muted);
   line-height: 1.35;
 }
@@ -2038,13 +2095,13 @@ body:has(.identity-screen) .export-toolbar {
 }
 .lesson-hero-title {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: var(--fs-xl);
   font-weight: 800;
   margin: 0;
   line-height: 1.2;
 }
 .lesson-hero-meta {
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   opacity: 0.85;
   margin-top: 4px;
@@ -2062,7 +2119,7 @@ body:has(.identity-screen) .export-toolbar {
   border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2082,7 +2139,7 @@ body:has(.identity-screen) .export-toolbar {
 .phase-progress-label {
   display: flex;
   justify-content: space-between;
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   margin-top: 6px;
   opacity: 0.9;
@@ -2097,7 +2154,7 @@ body:has(.identity-screen) .export-toolbar {
 .sidebar-progress-label {
   display: flex;
   justify-content: space-between;
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -2116,11 +2173,11 @@ body:has(.identity-screen) .export-toolbar {
   border-left: 4px solid var(--amber);
   border-radius: var(--radius-md);
   margin-bottom: var(--sp-5);
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
   line-height: 1.55;
 }
 .instruction-callout-icon {
-  font-size: 1.4rem;
+  font-size: var(--fs-xl);
   flex-shrink: 0;
   line-height: 1;
 }
@@ -2138,7 +2195,7 @@ body:has(.identity-screen) .export-toolbar {
   background: var(--hint-bg);
   border: 1px solid rgba(135, 95, 0, 0.2);
   border-radius: var(--radius-md);
-  font-size: 0.92rem;
+  font-size: var(--fs-sm);
   line-height: 1.5;
 }
 .scaffold-panel summary {
@@ -2161,7 +2218,7 @@ body:has(.identity-screen) .export-toolbar {
 
 @media (max-width: 640px) {
   .identity-title {
-    font-size: 1.45rem;
+    font-size: var(--fs-2xl);
   }
   .identity-hero {
     padding: var(--sp-6) var(--sp-4) var(--sp-5);
@@ -2171,16 +2228,16 @@ body:has(.identity-screen) .export-toolbar {
   }
   .identity-btn {
     min-height: 48px;
-    font-size: 1.05rem;
+    font-size: var(--fs-md);
   }
   .lesson-hero {
     padding: var(--sp-3) var(--sp-4);
   }
   .lesson-hero-title {
-    font-size: 1.15rem;
+    font-size: var(--fs-lg);
   }
   .instruction-callout {
-    font-size: 0.9rem;
+    font-size: var(--fs-sm);
     padding: var(--sp-3);
   }
 }
@@ -2213,7 +2270,7 @@ body:has(.identity-screen) .export-toolbar {
   transition:
     border-color 0.3s ease,
     box-shadow 0.3s ease;
-  animation: problemSlideIn 0.4s var(--ease-out);
+  animation: problemSlideIn var(--duration-slow) var(--ease-out);
 }
 
 @keyframes problemSlideIn {
@@ -2258,7 +2315,7 @@ body:has(.identity-screen) .export-toolbar {
 .problem-number-badge {
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: 1.35rem;
+  font-size: var(--fs-xl);
   color: var(--navy);
   background: var(--cream);
   padding: 4px 12px;
@@ -2267,7 +2324,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .problem-of-total {
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   color: var(--muted);
 }
@@ -2281,7 +2338,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .problem-type-badge {
   font-family: var(--font-display);
-  font-size: 0.68rem;
+  font-size: var(--fs-2xs);
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -2292,7 +2349,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .problem-tier-badge {
-  font-size: 0.68rem;
+  font-size: var(--fs-2xs);
   font-weight: 800;
   padding: 4px 10px;
   border-radius: var(--radius-full);
@@ -2314,7 +2371,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .coin-earned {
   display: inline-flex;
-  font-size: 1.4rem;
+  font-size: var(--fs-xl);
   animation: coinPop 0.5s var(--ease-spring);
 }
 
@@ -2333,7 +2390,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .problem-stem {
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   color: var(--navy);
   margin: 0 0 var(--sp-4);
@@ -2355,7 +2412,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .problem-check-result {
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   line-height: 1.45;
   padding: var(--sp-3);
@@ -2420,7 +2477,7 @@ body:has(.identity-screen) .export-toolbar {
   padding: 14px 18px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--fs-md);
   transition: all var(--duration-fast) ease;
   min-height: 52px;
 }
@@ -2480,7 +2537,7 @@ body:has(.identity-screen) .export-toolbar {
   border-radius: 10px;
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--navy);
   flex-shrink: 0;
   transition: all var(--duration-fast) ease;
@@ -2505,7 +2562,7 @@ body:has(.identity-screen) .export-toolbar {
 .mc-option-label.is-incorrect {
   border-color: var(--error) !important;
   background: var(--error-bg) !important;
-  animation: shake 0.4s ease;
+  animation: shake var(--duration-slow) ease;
 }
 
 .mc-option-label.is-incorrect .mc-letter-badge {
@@ -2521,38 +2578,36 @@ body:has(.identity-screen) .export-toolbar {
 /* ── Vocab flip cards (homework parity) ── */
 .vocab-flip-hint {
   text-align: center;
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   color: var(--muted);
   margin-bottom: var(--sp-4);
 }
 
+/* The word wall WRAPS. It used to be a single `nowrap` flex row with
+   `overflow-x: auto`, so a seven-word lesson laid 2,072px of cards into an
+   808px column — 1,264px of vocabulary lived off the right edge, reachable only
+   by a horizontal scroll most students never tried. Auto-fit columns stack the
+   cards down the page instead: several per row when there is room, one per row
+   on a phone, and nothing off-screen at any width. */
 .vocab-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, max-content));
   justify-content: center;
-  justify-content: safe center;
   gap: var(--sp-4);
-  overflow-x: auto;
   padding: var(--sp-3) var(--sp-2) var(--sp-5);
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-color: var(--teal) transparent;
-}
-
-.vocab-container::-webkit-scrollbar {
-  height: 6px;
-}
-.vocab-container::-webkit-scrollbar-thumb {
-  background: var(--teal);
-  border-radius: 3px;
 }
 
 .vocab-card {
-  flex: 0 0 260px;
-  height: 220px;
+  /* Grid item now, not a flex child — the width comes from the column. */
+  width: 280px;
+  /* Taller than it used to be (220px) to hold the enlarged word-wall picture.
+     The card is a fixed-height flip container, so the thumbnail can only grow
+     if this grows with it. */
+  height: 310px;
   perspective: 1000px;
   cursor: pointer;
   scroll-snap-align: start;
-  animation: phaseIn 0.4s var(--ease-out) both;
+  animation: phaseIn var(--duration-slow) var(--ease-out) both;
 }
 
 .vocab-card-inner {
@@ -2591,7 +2646,7 @@ body:has(.identity-screen) .export-toolbar {
 .vocab-card-front h3 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: var(--fs-lg);
   font-weight: 800;
 }
 
@@ -2602,8 +2657,13 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .vocab-thumb {
-  width: 72px;
-  height: 72px;
+  /* Was 72px — a math diagram at that size is a smudge, and the "Pop Out" chip
+     that used to sit on it covered a corner of the smudge. Now the picture is
+     the biggest thing on the card and readable without opening the pop-out;
+     tapping it still opens the full-size view. */
+  width: 100%;
+  max-width: 190px;
+  height: 150px;
   object-fit: contain;
   border-radius: 10px;
   background: var(--cream);
@@ -2614,12 +2674,12 @@ body:has(.identity-screen) .export-toolbar {
 .vocab-es {
   color: var(--muted);
   font-style: italic;
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   margin: 2px 0 0;
 }
 
 .vocab-visual-hint {
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   background: var(--teal-light);
   padding: 6px 8px;
   border-radius: var(--radius-sm);
@@ -2628,7 +2688,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .flip-prompt {
-  font-size: 0.68rem;
+  font-size: var(--fs-2xs);
   font-weight: 800;
   color: var(--teal-ink);
   text-transform: uppercase;
@@ -2650,14 +2710,14 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .vocab-def {
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   line-height: 1.45;
   margin: 0;
 }
 
 .vocab-def-es {
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   color: var(--amber-ink);
   margin: var(--sp-2) 0 0;
   font-style: italic;
@@ -2665,7 +2725,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .vocab-back-visual {
   margin: var(--sp-2) 0 0;
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   color: var(--teal-light);
 }
 
@@ -2696,7 +2756,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .theme-illustration-caption {
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   color: var(--muted);
   font-style: italic;
   margin-top: var(--sp-2);
@@ -2710,7 +2770,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .launch-narrative {
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
   line-height: 1.65;
   margin: 0;
 }
@@ -2730,7 +2790,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .worked-example-summary {
   cursor: pointer;
-  font-size: 1rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   color: var(--navy);
   display: flex;
@@ -2749,7 +2809,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .worked-example-problem {
   font-weight: 600;
-  font-size: 1.02rem;
+  font-size: var(--fs-md);
   margin: 0 0 var(--sp-3);
   padding: var(--sp-3);
   background: white;
@@ -2781,7 +2841,7 @@ body:has(.identity-screen) .export-toolbar {
   color: white;
   border-radius: 50%;
   font-weight: 800;
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
 }
 
 .worked-example-answer {
@@ -2807,7 +2867,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .common-mistake-icon {
-  font-size: 1.5rem;
+  font-size: var(--fs-2xl);
   flex-shrink: 0;
 }
 
@@ -2828,7 +2888,7 @@ body:has(.identity-screen) .export-toolbar {
   border-radius: var(--radius-md);
   margin-bottom: var(--sp-4);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -2839,7 +2899,7 @@ body:has(.identity-screen) .export-toolbar {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
 }
 
 .practice-score-streak {
@@ -2864,7 +2924,7 @@ body:has(.identity-screen) .export-toolbar {
   position: absolute;
   top: -18px;
   left: var(--sp-4);
-  font-size: 1.8rem;
+  font-size: var(--fs-3xl);
   background: white;
   padding: 0 6px;
   border-radius: var(--radius-full);
@@ -2905,7 +2965,7 @@ body:has(.identity-screen) .export-toolbar {
   color: var(--navy);
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   padding: 6px 18px;
@@ -2914,13 +2974,13 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .certificate-title {
-  font-size: 1.75rem;
+  font-size: var(--fs-3xl);
   color: var(--navy);
   margin-bottom: var(--sp-2);
 }
 
 .certificate-subtitle {
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
   color: var(--muted);
   margin-bottom: var(--sp-5);
 }
@@ -2934,7 +2994,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .certificate-label {
   display: block;
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--muted);
@@ -2945,7 +3005,7 @@ body:has(.identity-screen) .export-toolbar {
 .certificate-name {
   display: block;
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: var(--fs-2xl);
   font-weight: 800;
   color: var(--navy);
   border-bottom: 2px solid var(--teal);
@@ -2954,7 +3014,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .certificate-period {
   display: block;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--muted);
   margin-top: var(--sp-1);
 }
@@ -2968,7 +3028,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .cert-stat-value {
   font-family: var(--font-display);
-  font-size: 1.75rem;
+  font-size: var(--fs-3xl);
   font-weight: 900;
   color: var(--amber);
 }
@@ -2978,12 +3038,12 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .cert-stat-denom {
-  font-size: 1rem;
+  font-size: var(--fs-md);
   color: var(--muted);
 }
 
 .cert-stat-label {
-  font-size: 0.68rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -3016,7 +3076,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .cert-phase-name {
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
 }
 
 .cert-phase-stars {
@@ -3030,7 +3090,7 @@ body:has(.identity-screen) .export-toolbar {
   justify-content: center;
   gap: var(--sp-3);
   align-items: center;
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   color: var(--muted);
   margin-bottom: var(--sp-4);
 }
@@ -3113,8 +3173,12 @@ body:has(.identity-screen) .export-toolbar {
     padding: var(--sp-4);
   }
   .vocab-card {
-    flex: 0 0 220px;
-    height: 200px;
+    width: 240px;
+    height: 280px;
+  }
+  .vocab-thumb {
+    max-width: 160px;
+    height: 128px;
   }
 }
 
@@ -3181,7 +3245,7 @@ body:has(.identity-screen) .export-toolbar {
   color: var(--navy);
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   border-radius: var(--radius-full);
@@ -3236,7 +3300,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .cover-goal-label {
   display: block;
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -3257,7 +3321,7 @@ body:has(.identity-screen) .export-toolbar {
   gap: var(--sp-3);
   justify-content: center;
   margin: var(--sp-3) 0;
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
 }
 
 .cover-stat strong {
@@ -3299,7 +3363,7 @@ body:has(.identity-screen) .export-toolbar {
   align-items: center;
   justify-content: center;
   font-weight: 900;
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   color: var(--navy);
 }
 
@@ -3316,7 +3380,7 @@ body:has(.identity-screen) .export-toolbar {
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--line);
   border-radius: var(--radius-full);
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   color: var(--navy);
 }
@@ -3330,7 +3394,7 @@ body:has(.identity-screen) .export-toolbar {
   border: 1px solid var(--teal);
   border-radius: var(--radius-md);
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   color: var(--navy);
   cursor: pointer;
   text-align: left;
@@ -3347,7 +3411,7 @@ body:has(.identity-screen) .export-toolbar {
   color: var(--ink);
   border: 1px solid rgba(56, 127, 132, 0.25);
   border-radius: var(--radius-sm);
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   line-height: 1.5;
   text-align: left;
   box-shadow: var(--shadow-sm);
@@ -3358,7 +3422,7 @@ body:has(.identity-screen) .export-toolbar {
 
 /* ── Phase accent moods ── */
 .main.phase-accent-launch .lesson-hero {
-  background: linear-gradient(135deg, #d9795d 0%, #f2a93b 50%, #387f84 100%);
+  background: linear-gradient(135deg, var(--coral) 0%, #f2a93b 50%, #387f84 100%);
 }
 
 .main.phase-accent-vocab .lesson-hero {
@@ -3370,7 +3434,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .main.phase-accent-practice .lesson-hero {
-  background: linear-gradient(135deg, #264653, #12355b);
+  background: linear-gradient(135deg, #264653, var(--navy));
 }
 
 .main.phase-accent-connect .lesson-hero {
@@ -3378,11 +3442,17 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .main.phase-accent-reflect .lesson-hero {
-  background: linear-gradient(135deg, #f2a93b, #d9795d, #387f84);
+  background: linear-gradient(135deg, #f2a93b, var(--coral), #387f84);
 }
 
 .phase-enter {
   animation: phaseSlideIn 0.45s var(--ease-out);
+}
+
+/* Jumping BACK along the phase strip enters from the left — the content moves
+   the way the student moved, so the slide reads as travel, not decoration. */
+.phase-enter.phase-enter-back {
+  animation: phaseSlideInBack 0.45s var(--ease-out);
 }
 
 @keyframes phaseSlideIn {
@@ -3393,6 +3463,90 @@ body:has(.identity-screen) .export-toolbar {
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@keyframes phaseSlideInBack {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Lesson entrance badge ──────────────────────────────────────────────────
+   The "ID badge" beat between the name gate and the lesson (app.js
+   playLessonEntrance). The overlay covers first-render jank while the lesson
+   boots underneath; the badge stamps in like a card hitting a desk. JS skips
+   the whole thing under prefers-reduced-motion, and the animation-none rules
+   below are the belt to that suspenders. */
+.nt-entrance-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-5);
+  background: linear-gradient(135deg, var(--navy, #12355b), #1c4d7a);
+  cursor: pointer;
+}
+.nt-entrance-overlay.leaving {
+  animation: ntEntranceOut 0.4s ease-in forwards;
+}
+.nt-entrance-badge {
+  max-width: 420px;
+  width: 100%;
+  padding: var(--sp-6) var(--sp-5);
+  background: var(--surface, #fff);
+  border-radius: var(--radius-lg, 18px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  text-align: center;
+  animation: ntBadgeStamp 0.5s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) both;
+}
+.nt-entrance-emoji {
+  font-size: 2.6rem;
+  margin-bottom: var(--sp-2);
+}
+.nt-entrance-welcome {
+  margin: 0 0 var(--sp-1);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--navy, #12355b);
+}
+.nt-entrance-title {
+  margin: 0 0 var(--sp-3);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--muted, #5b6773);
+}
+.nt-entrance-go {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--teal-ink, #0f766e);
+}
+@keyframes ntBadgeStamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.5) rotate(-3deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.97) rotate(0.5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+@keyframes ntEntranceOut {
+  to {
+    opacity: 0;
+    transform: translateY(-16px);
   }
 }
 
@@ -3417,7 +3571,7 @@ body:has(.identity-screen) .export-toolbar {
   border-radius: var(--radius-md);
   cursor: pointer;
   text-align: left;
-  transition: all 0.25s var(--ease-out);
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .story-beat-card:hover,
@@ -3445,14 +3599,14 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .story-beat-teaser {
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   color: var(--muted);
   font-weight: 600;
 }
 
 .story-beat-reveal {
   padding: var(--sp-3) var(--sp-4) var(--sp-3) 52px;
-  font-size: 1.02rem;
+  font-size: var(--fs-md);
   line-height: 1.6;
   color: var(--navy);
   animation: stepReveal 0.35s var(--ease-out);
@@ -3476,12 +3630,12 @@ body:has(.identity-screen) .export-toolbar {
 
 .hint-ladder-title {
   font-weight: 800;
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   color: var(--navy);
 }
 
 .hint-ladder-count {
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   color: var(--muted);
   font-weight: 700;
 }
@@ -3524,7 +3678,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .hint-ladder-body {
   padding: var(--sp-2) var(--sp-3);
-  font-size: 0.92rem;
+  font-size: var(--fs-sm);
   line-height: 1.5;
   color: var(--navy);
 }
@@ -3546,7 +3700,7 @@ body:has(.identity-screen) .export-toolbar {
   padding: 4px 12px;
   background: var(--cream);
   border-radius: var(--radius-full);
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   color: var(--navy);
 }
@@ -3558,12 +3712,12 @@ body:has(.identity-screen) .export-toolbar {
   background: linear-gradient(135deg, var(--teal-light), white);
   border: 2px solid var(--teal);
   border-radius: var(--radius-md);
-  animation: bannerIn 0.4s var(--ease-spring);
+  animation: bannerIn var(--duration-slow) var(--ease-spring);
 }
 
 .phase-next-label {
   display: block;
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -3572,7 +3726,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .phase-next-icon {
-  font-size: 2rem;
+  font-size: var(--fs-4xl);
   display: block;
   margin-bottom: var(--sp-1);
 }
@@ -3596,7 +3750,7 @@ body:has(.identity-screen) .export-toolbar {
   background: linear-gradient(135deg, var(--amber), var(--gold));
   color: var(--navy);
   font-weight: 800;
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   border-radius: var(--radius-full);
   animation: starPop 0.5s var(--ease-spring);
 }
@@ -3610,13 +3764,13 @@ body:has(.identity-screen) .export-toolbar {
 /* Connect written-response block. */
 .connect-prompt-label {
   display: block;
-  font-size: 1rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   margin: 0 0 var(--sp-3);
   line-height: 1.5;
 }
 .connect-charcount {
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   color: var(--muted);
   margin-top: var(--sp-1);
   text-align: right;
@@ -3633,19 +3787,19 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .connect-scenario-icon {
-  font-size: 2.4rem;
+  font-size: var(--fs-5xl);
   line-height: 1;
 }
 
 .connect-scenario-theme {
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   text-transform: capitalize;
   color: var(--muted);
 }
 
 .connect-scenario-text {
-  font-size: 1.08rem;
+  font-size: var(--fs-lg);
   line-height: 1.65;
   margin: 0;
 }
@@ -3660,7 +3814,7 @@ body:has(.identity-screen) .export-toolbar {
 .confidence-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   color: var(--muted);
   font-weight: 600;
 }
@@ -3670,7 +3824,7 @@ body:has(.identity-screen) .export-toolbar {
   text-align: center;
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: 1.4rem;
+  font-size: var(--fs-xl);
   color: var(--teal-ink);
   margin-top: var(--sp-2);
 }
@@ -3699,7 +3853,7 @@ body:has(.identity-screen) .export-toolbar {
   background: var(--navy);
   color: white;
   font-weight: 700;
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   border-radius: var(--radius-full);
 }
 
@@ -3710,13 +3864,13 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .coins-label {
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   font-weight: 800;
   color: var(--amber);
 }
 
 .lesson-hero-standard {
-  font-size: 0.72rem !important;
+  font-size: var(--fs-2xs) !important;
   max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3769,7 +3923,7 @@ body:has(.identity-screen) .export-toolbar {
   padding: var(--sp-3);
   max-height: 70vh;
   overflow-y: auto;
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
 }
 
 .teacher-panel-section {
@@ -3780,7 +3934,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .teacher-panel-section h4 {
   margin: 0 0 var(--sp-2);
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--teal-ink);
@@ -3790,6 +3944,22 @@ body:has(.identity-screen) .export-toolbar {
    Shows the current mode at a glance and switches in one tap. Teacher Mode is a
    solid teal pill; Student Mode is a subtle outline control that reveals a PIN
    field to enter Teacher Mode (same password gate as the login screen). */
+/* The teacher PIN forms carry a username field so the browser's password
+   manager treats them as a real login and can save/autofill the PIN. It is for
+   the manager, not the teacher — hidden visually, but never display:none,
+   which managers skip. */
+.nt-credential-user {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .mode-toggle-pill {
   position: fixed;
   top: 12px;
@@ -3798,7 +3968,7 @@ body:has(.identity-screen) .export-toolbar {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   border-radius: 999px;
   cursor: pointer;
 }
@@ -3827,7 +3997,7 @@ body:has(.identity-screen) .export-toolbar {
   border: 1px solid var(--gray-300, #cbd5e1);
   box-shadow: 0 2px 8px rgba(18, 53, 91, 0.12);
   padding: 4px 6px 4px 12px;
-  color: var(--navy, #12355b);
+  color: var(--navy, var(--navy));
 }
 .mode-toggle-pill.is-student .mode-toggle-enter {
   display: inline-flex;
@@ -3861,13 +4031,13 @@ body:has(.identity-screen) .export-toolbar {
   padding: 6px 10px;
   border: 1px solid var(--gray-300, #cbd5e1);
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 .mode-toggle-pin.is-error {
   border-color: #dc2626;
 }
 .mode-toggle-go {
-  background: var(--navy, #12355b);
+  background: var(--navy, var(--navy));
   color: #fff;
   border: 0;
   border-radius: 8px;
@@ -3900,10 +4070,10 @@ body:has(.identity-screen) .export-toolbar {
 }
 .identity-teacher-btn {
   background: none;
-  border: 1px solid var(--navy, #12355b);
-  color: var(--navy, #12355b);
+  border: 1px solid var(--navy, var(--navy));
+  color: var(--navy, var(--navy));
   font-weight: 700;
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   padding: 7px 16px;
   border-radius: 999px;
   cursor: pointer;
@@ -3924,10 +4094,10 @@ body:has(.identity-screen) .export-toolbar {
   padding: 8px 12px;
   border: 1px solid var(--gray-300, #cbd5e1);
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
 }
 .identity-teacher-go {
-  background: var(--navy, #12355b);
+  background: var(--navy, var(--navy));
   color: #fff;
   border: 0;
   font-weight: 700;
@@ -3942,7 +4112,7 @@ body:has(.identity-screen) .export-toolbar {
   flex-basis: 100%;
   margin: 2px 0 0;
   color: var(--amber, #c85a3a);
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
 }
 .identity-teacher.is-on {
@@ -3954,15 +4124,15 @@ body:has(.identity-screen) .export-toolbar {
 }
 .identity-teacher-label {
   font-weight: 800;
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
   color: var(--teal, #128a87);
 }
 .identity-teacher-exit {
   background: none;
   border: 1px solid var(--gray-300, #cbd5e1);
-  color: var(--navy, #12355b);
+  color: var(--navy, var(--navy));
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   padding: 6px 14px;
   border-radius: 999px;
   cursor: pointer;
@@ -3987,7 +4157,7 @@ body:has(.identity-screen) .export-toolbar {
   font-family: var(--font-display, system-ui);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
   color: var(--navy);
   min-width: 3.6em;
 }
@@ -4037,13 +4207,13 @@ html.projector .main {
 }
 
 .teacher-answer-key {
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
 }
 
 /* ── Teacher Mode: BCPS UIFR (TEACH · Level 4) evidence ── */
 .teacher-uifr .uifr-summary {
   margin: 0 0 var(--sp-2);
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
 }
 .uifr-indicators {
   margin: 0;
@@ -4057,23 +4227,23 @@ html.projector .main {
   padding-left: var(--sp-2);
 }
 .uifr-ind-head {
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   line-height: 1.35;
 }
 .uifr-ind-l4 {
   margin: 2px 0 4px;
-  font-size: 0.75rem;
+  font-size: var(--fs-2xs);
   opacity: 0.85;
 }
 .uifr-surfaces {
   margin: 0;
   padding-left: 1.1rem;
-  font-size: 0.74rem;
+  font-size: var(--fs-2xs);
   line-height: 1.45;
 }
 .uifr-tag {
   display: inline-block;
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   padding: 1px 6px;
   border-radius: 6px;
@@ -4090,14 +4260,14 @@ html.projector .main {
 }
 .uifr-note {
   margin: var(--sp-2) 0 0;
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   font-style: italic;
   opacity: 0.8;
 }
 
 .btn-sm {
   padding: 6px 12px;
-  font-size: 0.82rem;
+  font-size: var(--fs-xs);
 }
 
 /* ── Math subscript ── */
@@ -4123,16 +4293,28 @@ html.projector .main {
 .i18n-en {
   font-weight: inherit;
 }
+/* The Spanish line is OPT-IN, not a default.
+   .i18n-stack renders both languages into the DOM, and the Spanish half used to
+   be visible unconditionally — so every phase button, tab and nav control read
+   as two languages stacked whether or not anyone had asked for Spanish. That is
+   the same complaint as the vocabulary cards: support a student chooses, not a
+   second language printed on top of everything.
+   setPreferredLang() stamps <html lang>, so it is the switch. */
 .i18n-es {
+  display: none;
   font-size: 0.82em;
   opacity: 0.92;
   font-style: italic;
+}
+:root[lang="es"] .i18n-es,
+html[lang^="es"] .i18n-es {
+  display: revert;
 }
 .i18n-btn .i18n-es {
   font-size: 0.78em;
 }
 .cover-phase-chip .i18n-stack {
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
 }
 .welcome-teacher-notes {
   margin: 0 0 var(--sp-4);
@@ -4150,7 +4332,7 @@ html.projector .main {
 }
 .welcome-teacher-panel h5 {
   margin: 0 0 var(--sp-2);
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   color: var(--teal-ink);
 }
 .certificate-download-btn {
@@ -4160,6 +4342,10 @@ html.projector .main {
 @media (prefers-reduced-motion: reduce) {
   .lesson-cover-art .theme-hero-svg.cover-svg-animate,
   .phase-enter,
+  .phase-enter.phase-enter-back,
+  .nt-entrance-overlay,
+  .nt-entrance-overlay.leaving,
+  .nt-entrance-badge,
   .story-beat-reveal {
     animation: none !important;
   }
@@ -4185,11 +4371,11 @@ html.projector .main {
   align-items: center;
   gap: var(--sp-1);
   font-family: var(--font-display);
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: #0f766e;
+  color: var(--teal-ink);
 }
 .reveal-slides-figure {
   margin: 0 0 var(--sp-3);
@@ -4209,7 +4395,7 @@ html.projector .main {
 }
 .reveal-slides-caption {
   margin-top: var(--sp-2);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   line-height: 1.5;
   color: var(--muted);
   text-align: center;
@@ -4219,29 +4405,29 @@ html.projector .main {
    Opt-in card. The renderer only emits `.nw-card` when config.noticeAndWonder
    exists, so this block has no effect on lessons without the field. */
 .nw-card {
-  border-top: 4px solid #0f766e;
+  border-top: 4px solid var(--teal-ink);
 }
 .nw-head {
   margin-bottom: var(--sp-4);
 }
 .nw-eyebrow {
   font-family: var(--font-display);
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #0f766e;
+  color: var(--teal-ink);
 }
 .nw-title {
   margin: var(--sp-1) 0 0;
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: var(--fs-2xl);
   font-weight: 800;
   color: var(--navy);
 }
 .nw-context {
   margin: 0 0 var(--sp-4);
-  font-size: 1.0625rem;
+  font-size: var(--fs-md);
   line-height: 1.6;
   color: var(--ink);
 }
@@ -4300,7 +4486,7 @@ html.projector .main {
 .nw-col-title {
   margin: 0 0 var(--sp-3);
   font-family: var(--font-display);
-  font-size: 1.3rem;
+  font-size: var(--fs-xl);
   font-weight: 800;
   color: var(--navy);
 }
@@ -4313,7 +4499,7 @@ html.projector .main {
 .nw-chip {
   padding: 8px 15px;
   font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
   font-weight: 600;
   color: var(--navy);
   background: var(--card);
@@ -4325,15 +4511,15 @@ html.projector .main {
 }
 .nw-chip:hover,
 .nw-chip:focus-visible {
-  background: #0f766e;
-  border-color: #0f766e;
+  background: var(--teal-ink);
+  border-color: var(--teal-ink);
   color: #fff;
 }
 .nw-textarea {
   width: 100%;
   min-height: 132px;
   padding: var(--sp-3);
-  font-size: 1.15rem;
+  font-size: var(--fs-lg);
   line-height: 1.6;
 }
 /* Below ~980px three columns get cramped: drop the image to its own full row
@@ -4422,7 +4608,7 @@ html.projector .main {
    Opt-in display card. The renderer only emits `.wp-card` when
    config.revealWordProblem exists. */
 .wp-card {
-  border-top: 4px solid #0f766e;
+  border-top: 4px solid var(--teal-ink);
 }
 .wp-head {
   display: flex;
@@ -4437,24 +4623,24 @@ html.projector .main {
   gap: var(--sp-1);
   padding: 4px 12px;
   font-family: var(--font-display);
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #0f766e;
+  color: var(--teal-ink);
   background: var(--teal-light);
   border-radius: var(--radius-full);
 }
 .wp-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: var(--fs-2xl);
   font-weight: 800;
   color: var(--navy);
 }
 .wp-text {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: var(--fs-lg);
   line-height: 1.7;
   color: var(--ink);
 }
@@ -4493,12 +4679,12 @@ html.projector .main {
 /* Minimum-word goal counter (writing scaffold) */
 .syw-wordcount {
   align-self: flex-end;
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   font-weight: 700;
   color: var(--muted);
 }
 .syw-wordcount.is-ready {
-  color: var(--success, #0f7c4a);
+  color: var(--success, var(--success));
 }
 .syw-wordcount.is-ready::before {
   content: "✓ ";
@@ -4509,7 +4695,7 @@ html.projector .main {
   margin: var(--sp-4) 0;
   border: 1px dashed var(--teal);
   border-radius: var(--radius-md, 12px);
-  background: var(--teal-light, #dff2ee);
+  background: var(--teal-light, var(--teal-light));
   overflow: hidden;
 }
 .stuck-toggle {
@@ -4520,7 +4706,7 @@ html.projector .main {
   padding: var(--sp-3) var(--sp-4);
   font-family: var(--font-display, system-ui);
   font-weight: 800;
-  font-size: 0.98rem;
+  font-size: var(--fs-md);
   color: var(--navy);
   cursor: pointer;
 }
@@ -4540,7 +4726,7 @@ html.projector .main {
   border-radius: 999px;
   padding: 6px 14px;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
   cursor: pointer;
   min-height: 40px;
 }
@@ -4590,13 +4776,13 @@ html.projector .main {
   font-family: var(--font-display);
   font-weight: 800;
   color: var(--navy);
-  font-size: 1rem;
+  font-size: var(--fs-md);
 }
 .syw-hint {
   font-family: var(--font-body);
   font-weight: 500;
   color: var(--muted, #5e6e7e);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 .syw-input {
   width: 100%;
@@ -4614,7 +4800,7 @@ textarea.syw-input {
   padding: var(--sp-4);
   border-radius: var(--radius-md);
   background: var(--teal-light);
-  border-left: 4px solid #0f766e;
+  border-left: 4px solid var(--teal-ink);
 }
 .syw-checklist[hidden] {
   display: none;
@@ -4632,7 +4818,7 @@ textarea.syw-input {
 }
 .syw-check-note {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
   color: var(--ink);
 }
 @media print {
@@ -4652,13 +4838,13 @@ textarea.syw-input {
   margin: 0 0 var(--sp-2);
 }
 .annot-tip {
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--muted, #5e6e7e);
 }
 .annot-btn {
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   font-weight: 700;
   line-height: 1;
   color: var(--navy);
@@ -4680,7 +4866,7 @@ textarea.syw-input {
   transform: translateY(1px);
 }
 .annot-erase {
-  color: var(--coral, #d9795d);
+  color: var(--coral, var(--coral));
 }
 .annotatable {
   cursor: text;
@@ -4731,7 +4917,7 @@ textarea.syw-input {
   flex-wrap: wrap;
   gap: var(--sp-2);
   align-items: baseline;
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
   line-height: 1.6;
   font-weight: 600;
   color: var(--navy, #264653);
@@ -4756,7 +4942,7 @@ textarea.syw-input {
   background: var(--navy, #264653);
   color: #fff;
   font-family: var(--font-display);
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
   font-weight: 800;
 }
 .sp-row {
@@ -4774,7 +4960,7 @@ textarea.syw-input {
   border: 0;
   border-bottom: 2px solid var(--teal, #2a9d8f);
   font: inherit;
-  font-size: 1rem;
+  font-size: var(--fs-md);
   padding: 4px 6px;
 }
 .sp-reveal[hidden] {
@@ -4926,11 +5112,11 @@ html.nt-extra-fullpage-open body {
   padding: 8px 14px;
   border: 0;
   border-radius: 999px;
-  background: var(--navy, #12355b);
+  background: var(--navy, var(--navy));
   color: #fff;
   font: inherit;
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(18, 53, 91, 0.3);
 }
@@ -4978,7 +5164,7 @@ html.nt-extra-fullpage-open body {
   border: 0;
   border-radius: 10px;
   background: none;
-  color: var(--navy, #12355b);
+  color: var(--navy, var(--navy));
   font: inherit;
   font-weight: 700;
   text-align: left;
@@ -5013,10 +5199,17 @@ html.nt-extra-fullpage-open body {
    module never mounts it for students. See engine/core/teacher-clear.js. */
 .nt-teacher-clear {
   position: fixed;
-  left: calc(var(--nt-rail-w, 0px) + 16px);
-  bottom: 72px;
+  left: 16px;
+  bottom: 16px;
   z-index: 9998;
 }
+/* Per Joel 2026-08-10: park it in the TRUE bottom-left corner, out of the way —
+   it previously docked beside the rail (left: rail + 16, bottom: 72), which put
+   it over the lesson text. It now sits at 16/16 on every surface, including
+   Reveal lessons, so the only rule needed is the base one above.
+   The 2026-08-01 complaint that a corner FAB hid a phase button is handled by
+   reserving space at the bottom of the scrolling rail (see `.app .sidebar`
+   padding-bottom) rather than by pushing the button back over the content. */
 .nt-teacher-clear-fab {
   width: 40px;
   height: 40px;
@@ -5028,13 +5221,13 @@ html.nt-extra-fullpage-open body {
   border-radius: 999px;
   background: #b91c1c;
   color: #fff;
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   line-height: 1;
   cursor: pointer;
   box-shadow: 0 6px 18px rgba(185, 28, 28, 0.3);
   transition:
-    transform 0.15s ease,
-    background 0.15s ease;
+    transform var(--duration-fast) ease,
+    background var(--duration-fast) ease;
 }
 .nt-teacher-clear-fab:hover {
   background: #991b1b;
@@ -5062,11 +5255,11 @@ html.nt-extra-fullpage-open body {
 .nt-teacher-clear-title {
   margin: 0 0 2px;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
 }
 .nt-teacher-clear-sub {
   margin: 0 0 8px;
-  font-size: 0.76rem;
+  font-size: var(--fs-2xs);
   color: #64748b;
 }
 .nt-teacher-clear-list {
@@ -5083,7 +5276,7 @@ html.nt-extra-fullpage-open body {
   gap: 8px;
   padding: 6px 6px;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   cursor: pointer;
 }
 .nt-teacher-clear-row:hover {
@@ -5108,7 +5301,7 @@ html.nt-extra-fullpage-open body {
   color: #fff;
   font: inherit;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   cursor: pointer;
 }
 .nt-teacher-clear-do:hover {
@@ -5205,4 +5398,140 @@ body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-doc
    split across lines — seen in the 2026-07-14 visual audit). */
 .obj-nowrap {
   white-space: nowrap;
+}
+
+/* ── Tool beside the work it supports ─────────────────────────────────────
+   Explore and Practice used to stack: the manipulative as a full-width card,
+   the problems underneath it. A student working problem 3 had scrolled the tool
+   off the screen, so the tool stopped being something they used and became
+   something they passed. Paired, and with the tool sticky, it stays beside the
+   problem it is for. Stacks to one column below 1024px, work first, exactly as
+   it behaved before. */
+.nt-work-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--sp-4, 16px);
+  align-items: start;
+  margin-bottom: var(--sp-4, 16px);
+}
+.nt-work-pair .nt-work-tool {
+  position: sticky;
+  top: var(--sp-3, 12px);
+  /* Sticky alone is not enough: a manipulative taller than the viewport scrolls
+     its own bottom off-screen and never comes back. Cap it to the viewport and
+     let the tool scroll inside its column, so the whole tool stays reachable
+     beside whichever problem the student is on. */
+  max-height: calc(100vh - var(--sp-5, 24px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.nt-work-pair .nt-work-tool > .card,
+.nt-work-pair .nt-work-main > .card:first-child {
+  margin-top: 0;
+}
+@media (max-width: 1023px) {
+  .nt-work-pair {
+    grid-template-columns: 1fr;
+  }
+  .nt-work-pair .nt-work-tool {
+    position: static;
+    order: -1;
+  }
+}
+
+/* `solveFirst` Explore: the TOOL is Step 1, so it leads on wide screens too.
+   (Narrow screens already stack it first.) The task column stays the wider of
+   the two — a number line needs the room — so only the ORDER flips. */
+.nt-work-pair--tool-first .nt-work-tool {
+  order: -1;
+}
+
+/* Step 2 held closed until Step 1 reports a solved problem. The activity is
+   built and mounted underneath; this only covers it. See lockUntilSolved(). */
+.nt-solve-gated {
+  pointer-events: none;
+  opacity: 0.35;
+  filter: grayscale(0.6);
+}
+.nt-solve-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3, 12px);
+  margin-bottom: var(--sp-3, 12px);
+  padding: var(--sp-4, 16px);
+  border: 2px dashed #94a3b8;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+.nt-solve-gate-line {
+  margin: 0;
+  font-size: var(--fs-md, 1rem);
+  font-weight: 800;
+  color: var(--navy, #12355b);
+}
+
+/* ── Vocabulary activities — legibility & completion layer (2026-08-07) ──────
+   The word games (Fill the Blanks, Term Match, Example Sort, Word Builder) had
+   drifted to small type, tight lines and thin drop targets: readable to an
+   adult reading a screenshot, hard to actually DO on a Chromebook. This is one
+   layer over all four so they read and behave as one publisher-grade set —
+   bigger words, one comfortable column, and targets you can hit.
+   Scoped to the activity roots so no other surface inherits it. */
+.vocab-cloze-root,
+.vdm-board,
+.vs-bank,
+.vs-buckets,
+.vocab-explore-panel {
+  font-size: 1.12rem;
+  line-height: 1.65;
+}
+.vocab-cloze-root p,
+.vocab-cloze-root li,
+.vdm-board p,
+.vs-buckets p {
+  line-height: 1.7;
+}
+/* Word chips and definition cards: the words ARE the content, so they get the
+   largest comfortable size and never truncate. */
+.vocab-sort-item,
+.vocab-dm-term,
+.vocab-dm-def,
+.drag-item.vocab-sort-item {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.45;
+  min-height: 48px;
+  padding: 12px 16px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+/* Drop zones sized to be aimed at, with a visible "put it here" edge. */
+.vocab-sort-zone,
+.vs-bank {
+  min-height: 92px;
+  padding: 14px;
+  border-radius: 14px;
+}
+.vocab-cloze-blank {
+  min-width: 168px;
+  min-height: 52px;
+  font-size: 1.12rem;
+}
+/* One readable column on every screen; the sort buckets stack rather than
+   squeezing three columns of clipped words onto a laptop. */
+.vocab-cloze-root,
+.vdm-board,
+.vs-buckets {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 860px) {
+  .vs-buckets,
+  .vdm-board {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-3, 12px);
+  }
 }

@@ -50,7 +50,7 @@ const read = (p) => readFileSync(url(p), "utf8");
 // would keep passing if the collector were narrowed, which is exactly the
 // regression that would silently hide tools from students.
 const dom = new JSDOM('<!doctype html><html lang="en"><body></body></html>', {
-  url: "https://eduwonderlab.com/lessons/1-1/",
+  url: "https://eduwonderlab.com/lessons/6-13/",
 });
 globalThis.window = dom.window;
 globalThis.document = dom.window.document;

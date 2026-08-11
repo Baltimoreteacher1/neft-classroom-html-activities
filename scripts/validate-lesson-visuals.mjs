@@ -251,6 +251,19 @@ const collectHosts = (page) =>
       mountedFlag: el.dataset.ivMounted === "1",
       // Real, student-facing output — not just any child node.
       hasContent: !!el.querySelector("svg, canvas, input, button, select, model-viewer"),
+      // A tool can render perfectly and still be broken. /lessons/2-11/ mounted
+      // the Decimal Columns lab with no operands, so Number(undefined) became
+      // NaN and the digit cells spelled "N a N" down the column — a host that
+      // rendered, was interactive, and passed every check we had. Anything that
+      // printed NaN, undefined or null where a number belongs is a dead tool.
+      junk: (() => {
+        const txt = (el.innerText || "").replace(/\s+/g, " ");
+        const hit = txt.match(/\b(NaN|undefined|null|Infinity)\b/);
+        // Digit-cell layouts split the string one character per box, so the
+        // word arrives spaced out ("N a N"); catch that spelling too.
+        const spaced = txt.match(/\bN a N\b|\bu n d e f i n e d\b/i);
+        return hit ? hit[1] : spaced ? spaced[0] : null;
+      })(),
     })),
   );
 
@@ -331,6 +344,20 @@ async function probeLesson(browser, id) {
         );
         await page.waitForTimeout(1100);
         push(await collectHosts(page), phase);
+      }
+      // The eight graded phases are not the whole lesson. The Learn It tab mounts
+      // its OWN interactive visual, chosen by resolveInteractiveVisual() rather
+      // than authored in the config — and because this walk stopped at the phases,
+      // that tool went unchecked. It is where /lessons/2-11/ was serving a Decimal
+      // Columns lab with no operands, printing "N a N" down the column while this
+      // gate reported the whole site clean.
+      for (const kind of ["vocab", "learn"]) {
+        await page.evaluate(
+          (k) => document.dispatchEvent(new CustomEvent("rma:openextra", { detail: { kind: k } })),
+          kind,
+        );
+        await page.waitForTimeout(1400);
+        push(await collectHosts(page), `tab:${kind}`);
       }
     } else {
       await page.close();
@@ -433,7 +460,14 @@ if (process.argv.includes("--static-only")) process.exit(0);
 
 console.log(`Probing ${ids.length} lesson(s) at ${BASE} (concurrency ${CONCURRENCY})`);
 
-const browser = await chromium.launch();
+// PW_CHROMIUM_PATH: point at a system Chromium when the Playwright-managed
+// download is missing/version-mismatched (e.g. sandboxed CI containers). Same
+// override tools/smoke-lesson-boot.mjs takes — without it this gate cannot run
+// wherever Playwright's own build number does not match what is on disk, and a
+// gate that cannot open a browser probes nothing.
+const browser = await chromium.launch(
+  process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
+);
 const results = await runPool(ids, browser);
 await browser.close();
 console.log("");
@@ -468,6 +502,15 @@ for (const r of results.sort((a, b) => a.id.localeCompare(b.id))) {
       verdict === "unknown-kind"
         ? `${r.id}: "${h.kind}" is not in the interactive-visual REGISTRY — renders nothing (phase ${h.phase})`
         : `${r.id}: "${h.kind}" mounted but rendered no content (phase ${h.phase})`,
+    );
+  }
+  for (const h of r.hosts) {
+    if (!h.junk) continue;
+    const key = `junk:${h.kind}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    failures.push(
+      `${r.id}: "${h.kind}" printed ${h.junk} to the student (phase ${h.phase}) — the tool rendered but its numbers are missing`,
     );
   }
   for (const w of [...new Set(r.mountWarnings)]) failures.push(`${r.id}: ${w}`);

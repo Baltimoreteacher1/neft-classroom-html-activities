@@ -91,7 +91,12 @@ export function template(uid, decimal, presets, mode) {
     `<button type="button" class="ldl-fact-toggle" title="Show multiplication facts helper" style="margin-left:auto; padding:6px 12px; font-size:0.82rem; font-weight:800; color:#0d7a76; border:1.5px solid #0d7a76; border-radius:8px; background:#f0fdf4; cursor:pointer;">💡 Fact Helper</button></div>` +
     `<div class="ldl-fact-helper" style="margin-top:8px; padding:10px 12px; background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:12px; font-size:0.88rem; color:#166534;" hidden></div>` +
     `<div class="ldl-keypad" role="group" aria-label="Interactive Number Keypad" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; padding:10px; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:14px; justify-content:center;">` +
-    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "⌫", "Clear"].map((k) => `<button type="button" class="ldl-key" data-key="${k}" style="min-width:38px; height:38px; padding:0 8px; font-family:'Outfit',sans-serif; font-size:1.05rem; font-weight:800; color:#1e293b; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.04); cursor:pointer; touch-action:manipulation;">${k}</button>`).join("") +
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "⌫", "Clear"]
+      .map(
+        (k) =>
+          `<button type="button" class="ldl-key" data-key="${k}" style="min-width:38px; height:38px; padding:0 8px; font-family:'Outfit',sans-serif; font-size:1.05rem; font-weight:800; color:#1e293b; background:#ffffff; border:1.5px solid #cbd5e1; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.04); cursor:pointer; touch-action:manipulation;">${k}</button>`,
+      )
+      .join("") +
     `</div>` +
     `<p class="ldl-feedback" aria-live="polite"></p>` +
     `<div class="ldl-result" aria-live="polite" hidden></div>`

@@ -361,6 +361,9 @@
     <!-- projects-twist-head:begin (Design Twist — tools/inject-projects-twist.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-twist.css?v=20260722" />
     <!-- projects-twist-head:end -->
+    <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
+    <!-- projects-mode-pill-head:end -->
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
 
@@ -444,8 +447,8 @@
             <div class="card-icon gold">📖</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Key Words</span>
-                <span class="es-text">Palabras clave</span>
+                <span class="en-text">Step 1 — Key Words</span>
+                <span class="es-text">Paso 1 — Palabras clave</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Learn these 4 math words before you begin</span>
@@ -547,11 +550,11 @@
             <div class="card-icon">📐</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 1 — Room Floor Area</span>
-                <span class="es-text">Paso 1 — Área del piso del cuarto</span>
+                <span class="en-text">Step 2 — Room Floor Area</span>
+                <span class="es-text">Paso 2 — Área del piso del cuarto</span>
               </h2>
               <div class="card-sub">
-                <span class="en-text">Calculate the total <span class="vocab-word" data-vocab="area" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('area')">area</span> of your rectangular floor plan</span>
+                <span class="en-text">Calculate the total <span class="vocab-word" data-vocab="area" style="border-bottom:2px dotted #0369a1; color:#0369a1; font-weight:800; cursor:pointer;" onclick="openVocabModal('area')">area</span> of your rectangular floor plan</span>
                 <span class="es-text">Calcula el área total del plano rectangular de tu piso</span>
               </div>
             </div>
@@ -660,11 +663,11 @@
             <div class="card-icon teal">🎨</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 2 — Wall Paint Coverage</span>
-                <span class="es-text">Paso 2 — Cobertura de pintura de paredes</span>
+                <span class="en-text">Step 3 — Wall Paint Coverage</span>
+                <span class="es-text">Paso 3 — Cobertura de pintura de paredes</span>
               </h2>
               <div class="card-sub">
-                <span class="en-text">Find wall <span class="vocab-word" data-vocab="area" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('area')">area</span>, subtract window/door areas, and compute gallons of paint</span>
+                <span class="en-text">Find wall <span class="vocab-word" data-vocab="area" style="border-bottom:2px dotted #0369a1; color:#0369a1; font-weight:800; cursor:pointer;" onclick="openVocabModal('area')">area</span>, subtract window/door areas, and compute gallons of paint</span>
                 <span class="es-text">Calcula el área de la pared, resta ventanas/puertas y calcula los galones de pintura</span>
               </div>
             </div>
@@ -804,8 +807,8 @@
             <div class="card-icon gold">💵</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 3 — Paint &amp; Flooring Cost</span>
-                <span class="es-text">Paso 3 — Costo de piso y pintura</span>
+                <span class="en-text">Step 4 — Paint &amp; Flooring Cost</span>
+                <span class="es-text">Paso 4 — Costo de piso y pintura</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Choose materials, calculate total cost, and compare with average budgets</span>
@@ -1006,8 +1009,8 @@
             <div class="card-icon teal">👥</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 4 — Partner Comparison</span>
-                <span class="es-text">Paso 4 — Comparación con compañero</span>
+                <span class="en-text">Step 5 — Partner Comparison</span>
+                <span class="es-text">Paso 5 — Comparación con compañero</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Compare your room makeover plan with a classmate</span>
@@ -1115,8 +1118,8 @@
             <div class="card-icon green">🏆</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 5 — Finish &amp; Submit</span>
-                <span class="es-text">Paso 5 — Terminar y entregar</span>
+                <span class="en-text">Step 6 — Finish &amp; Turn In</span>
+                <span class="es-text">Paso 6 — Terminar y entregar</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Write your pitch, check the list, and review the rubric</span>
@@ -1327,7 +1330,7 @@
             <span class="en-text">← Back</span>
             <span class="es-text">← Atrás</span>
           </button>
-          <button class="nav-btn green" onclick="const isEs = document.body.classList.contains('es'); alert(isEs ? '¡Excelente trabajo! 🎉 Muestra esta página a tu profesor.' : 'Great work! 🎉 Show this page to your teacher.')">
+          <button class="nav-btn green" onclick="finishProject()">
             <span class="en-text">🎉 I'm Done!</span>
             <span class="es-text">🎉 ¡Terminé!</span>
           </button>
@@ -1342,7 +1345,9 @@
       const PRESETS = {"floor-length": 15, "floor-width": 12, "wall-height": 8, "window-area": 30, "door-area": 20};
       function handleLevelPreset(n) {
         try {
-          if (n === 1) {
+          if (n === 0 || n === 1) {
+            // Level 0 needs at least as much scaffolding as Level 1, so it gets
+            // the same worked example values instead of a page of empty boxes.
             for (const [id, val] of Object.entries(PRESETS)) {
               const el = document.getElementById(id);
               if (el && !el.value) {
@@ -1432,6 +1437,7 @@
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
         recalcAll();
+        saveProgress();
       }
 
       // ---- Build step trail ----
@@ -1462,6 +1468,7 @@
         buildTrail();
         updateProgress();
         recalcAll();
+        saveProgress();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
@@ -1954,14 +1961,14 @@
           '═══ PRESUPUESTO DE REMODELACIÓN — PROYECTO UNIDAD 5 (Versión B) ═══',
           '',
           '📐 ESTÁNDARES UTILIZADOS: 6.GR.1 (área de polígonos) y 6.GR.4 (red parcial de cuatro caras laterales)',
-          `   Nivel: ${isLevel2 ? 'Nivel 2 — Desafío' : 'Nivel 1 — Con apoyo'}`,
+          `   Nivel: ${isLevel2 ? 'Nivel 2 — Desafío' : document.body.classList.contains('level-0') ? 'Nivel 0 — Apoyo extra' : 'Nivel 1 — Con apoyo'}`,
           '',
-          '📐 PASO 1 — ÁREA DEL PISO',
+          '📐 PASO 2 — ÁREA DEL PISO',
           `   Dimensiones del piso: ${l ? l + ' pies' : '—'} × ${w ? w + ' pies' : '—'}`,
           `   Área del piso = ${floorArea ? fmt(floorArea) + ' pies²' : '—'}`,
           isLevel2 && compFloorAns ? `   Desafío de piso compuesto en forma de L: ${compFloorAns}` : '',
           '',
-          '🎨 PASO 2 — COBERTURA DE PINTURA DE PAREDES',
+          '🎨 PASO 3 — COBERTURA DE PINTURA DE PAREDES',
           `   Altura de la pared: ${h ? h + ' pies' : '—'}`,
           `   Restando: Ventanas = ${win} pies² | Puertas = ${door} pies²`,
           `   Área bruta de la pared = ${grossWallArea ? fmt(grossWallArea) + ' pies²' : '—'}`,
@@ -1969,14 +1976,14 @@
           `   Galones necesarios = ${gallonsToBuy} galones`,
           isLevel2 && twoCoatsAns ? `   Desafío de dos capas de pintura: ${twoCoatsAns}` : '',
           '',
-          '💵 PASO 3 — COSTOS DE REMODELACIÓN',
+          '💵 PASO 4 — COSTOS DE REMODELACIÓN',
           `   Piso: ${flooringName} = $${flooringCost ? fmt(flooringCost) : '—'}`,
           `   Pintura: ${paintName} = $${paintCost ? fmt(paintCost) : '—'}`,
           `   Costo total de remodelación = $${totalCost ? fmt(totalCost) : '—'}`,
           worldNote ? `   Comparación en el mundo real: ${worldNote}` : '',
           isLevel2 && budgetStrategy ? `   Estrategia de presupuesto (límite de $1,500): ${budgetStrategy}` : '',
           '',
-          '👥 PASO 4 — COMPARACIÓN CON COMPAÑERO',
+          '👥 PASO 5 — COMPARACIÓN CON COMPAÑERO',
           `   Compañero: ${partner || '—'}`,
           `   Área del piso del compañero: ${pArea || '—'} pies² | Galones: ${pGallons || '—'} | Costo: $${pCost || '—'}`,
           pReflect ? `   Reflexión: ${pReflect}` : '',
@@ -1991,14 +1998,14 @@
           '═══ ROOM MAKEOVER BUDGET — UNIT 5 PROJECT (Version B) ═══',
           '',
           '📐 STANDARDS USED: 6.GR.1 (polygon area) and 6.GR.4 (partial net of four lateral wall faces)',
-          `   Level: ${isLevel2 ? 'Level 2 — Challenge' : 'Level 1 — With Support'}`,
+          `   Level: ${isLevel2 ? 'Level 2 — Challenge' : document.body.classList.contains('level-0') ? 'Level 0 — Extra Support' : 'Level 1 — With Support'}`,
           '',
-          '📐 STEP 1 — FLOOR AREA',
+          '📐 STEP 2 — FLOOR AREA',
           `   Floor Dimensions: ${l ? l + ' ft' : '—'} × ${w ? w + ' ft' : '—'}`,
           `   Floor Area = ${floorArea ? fmt(floorArea) + ' sq ft' : '—'}`,
           isLevel2 && compFloorAns ? `   L-Shape Composite Floor Challenge: ${compFloorAns}` : '',
           '',
-          '🎨 STEP 2 — WALL PAINT COVERAGE',
+          '🎨 STEP 3 — WALL PAINT COVERAGE',
           `   Wall Height: ${h ? h + ' ft' : '—'}`,
           `   Subtracting: Windows = ${win} sq ft | Doors = ${door} sq ft`,
           `   Gross Wall Area = ${grossWallArea ? fmt(grossWallArea) + ' sq ft' : '—'}`,
@@ -2006,14 +2013,14 @@
           `   Gallons Needed = ${gallonsToBuy} gallons`,
           isLevel2 && twoCoatsAns ? `   Two Coats Challenge: ${twoCoatsAns}` : '',
           '',
-          '💵 STEP 3 — MAKEOVER COSTS',
+          '💵 STEP 4 — MAKEOVER COSTS',
           `   Flooring: ${flooringName} = $${flooringCost ? fmt(flooringCost) : '—'}`,
           `   Paint: ${paintName} = $${paintCost ? fmt(paintCost) : '—'}`,
           `   Total Makeover Cost = $${totalCost ? fmt(totalCost) : '—'}`,
           worldNote ? `   Real-World Comparison: ${worldNote}` : '',
           isLevel2 && budgetStrategy ? `   Budget Strategy ($1,500 limit): ${budgetStrategy}` : '',
           '',
-          '👥 STEP 4 — PARTNER COMPARISON',
+          '👥 STEP 5 — PARTNER COMPARISON',
           `   Partner: ${partner || '—'}`,
           `   Partner Floor Area: ${pArea || '—'} sq ft | Gallons: ${pGallons || '—'} | Cost: $${pCost || '—'}`,
           pReflect ? `   Reflection: ${pReflect}` : '',
@@ -2054,10 +2061,93 @@
         comparePeer();
       }
 
+      // ---- Save & restore level + step ----
+      // Your level choice and where you stopped come back after a reload.
+      const NT_PROGRESS_KEY = 'nt-u5-projectB-progress';
+      function saveProgress() {
+        try {
+          const lvl = document.body.classList.contains('level-0') ? 0
+            : document.body.classList.contains('level-2') ? 2 : 1;
+          localStorage.setItem(NT_PROGRESS_KEY, JSON.stringify({
+            level: lvl, step: currentStep, visited: Array.from(visited)
+          }));
+        } catch (e) {}
+      }
+      function restoreProgress() {
+        try {
+          const raw = localStorage.getItem(NT_PROGRESS_KEY);
+          if (!raw) return;
+          const saved = JSON.parse(raw);
+          if (!saved) return;
+          if (Array.isArray(saved.visited)) {
+            saved.visited.forEach(n => {
+              if (Number(n) >= 1 && Number(n) <= STEPS.length) visited.add(Number(n));
+            });
+          }
+          const lvl = Number(saved.level);
+          if (lvl === 0 || lvl === 1 || lvl === 2) {
+            // Restore the level WITHOUT re-running presets, so a student's own
+            // typed measurements are never overwritten or cleared on reload.
+            document.body.classList.remove('level-0', 'level-1', 'level-2');
+            document.body.classList.add('level-' + lvl);
+            ['btn-lv0', 'btn-lv1', 'btn-lv2'].forEach((id, i) => {
+              const b = document.getElementById(id);
+              if (b) b.classList.toggle('active', i === lvl);
+            });
+          }
+          const step = Number(saved.step);
+          if (step >= 1 && step <= STEPS.length && step !== currentStep) {
+            const cur = document.getElementById('step-' + currentStep);
+            const next = document.getElementById('step-' + step);
+            if (cur && next) {
+              cur.classList.remove('active');
+              currentStep = step;
+              visited.add(step);
+              next.classList.add('active');
+            }
+          }
+        } catch (e) {}
+      }
+
+      // ---- Finish & turn in ----
+      // Names exactly what is still missing instead of congratulating an empty page.
+      function finishProject() {
+        const isEs = document.body.classList.contains('es');
+        const boxes = Array.from(document.querySelectorAll('#checklist input[type="checkbox"]'));
+        const remaining = boxes.filter(b => !b.checked).length;
+        const pitchEl = document.getElementById('pitch');
+        const pitchDone = !!(pitchEl && pitchEl.value.trim().length > 20);
+        const reportEl = document.getElementById('reportBox');
+        const reportDone = !!(reportEl && reportEl.classList.contains('show'));
+
+        const todo = [];
+        if (!pitchDone) todo.push(isEs
+          ? 'Escribe tu propuesta escrita usando tus n\u00fameros reales.'
+          : 'Write your written pitch using your real numbers.');
+        if (remaining > 0) todo.push(isEs
+          ? 'Marca las ' + remaining + ' casilla(s) que faltan en la lista de verificaci\u00f3n.'
+          : 'Check off the ' + remaining + ' remaining box(es) on the project checklist.');
+        if (!reportDone) todo.push(isEs
+          ? 'Presiona "Generar resumen" para crear tu informe final.'
+          : 'Press "Generate Summary" to create your final report.');
+
+        if (todo.length) {
+          alert((isEs ? 'Casi listo. Antes de entregar:\n\n' : 'Almost there. Before you turn it in:\n\n')
+            + todo.map((t, i) => (i + 1) + '. ' + t).join('\n'));
+          return;
+        }
+        playConfetti();
+        alert(isEs
+          ? '\u00a1Felicitaciones! \ud83c\udf89 Tu proyecto est\u00e1 completo. Imprime o descarga tu informe y entr\u00e9galo a tu profesor/a.'
+          : 'Congratulations! \ud83c\udf89 Your project is complete. Print or download your report and turn it in to your teacher.');
+      }
+
       // ---- Init ----
+      restoreProgress();
       buildTrail();
       updateProgress();
       recalcAll();
+      saveProgress();
 
       
       
@@ -2066,7 +2156,12 @@
           const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
           const inputs = {};
           document.querySelectorAll('input, textarea, select').forEach(el => {
-            if (el.id) inputs[el.id] = el.value;
+            if (!el.id) return;
+            // Checkboxes/radios carry their state in .checked, not .value —
+            // reading .value here silently dropped every checklist tick.
+            inputs[el.id] = (el.type === 'checkbox' || el.type === 'radio')
+              ? el.checked
+              : el.value;
           });
           const metadata = {
             schemaVersion: 1,
@@ -2106,7 +2201,8 @@
               for (const [id, val] of Object.entries(data.inputs)) {
                 const el = document.getElementById(id);
                 if (el) {
-                  el.value = val;
+                  if (el.type === 'checkbox' || el.type === 'radio') el.checked = !!val;
+                  else el.value = val;
                   el.dispatchEvent(new Event('input', { bubbles: true }));
                   el.dispatchEvent(new Event('change', { bubbles: true }));
                 }
@@ -2194,5 +2290,8 @@
   <!-- projects-twist-body:end -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+  <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+  <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
+  <!-- projects-mode-pill-body:end -->
 </body>
 </html>

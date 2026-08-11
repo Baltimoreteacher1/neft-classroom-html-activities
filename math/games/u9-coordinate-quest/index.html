@@ -127,28 +127,67 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
     <!-- nsr-injected:end -->
-    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-</head>
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
   <body>
-
-            <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar">
-        <div class="ewl-arcade-title-group">
-          <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-sound-toggle-btn" id="ewl-btn-sound" onclick="if(window.GameFX && window.GameFX.AudioSynth){ window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted; this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On'; }">🔊 Sound On</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
+    <!-- EWL Universal Arcade Enhancements Header -->
+    <div class="ewl-arcade-header-bar">
+      <div class="ewl-arcade-title-group">
+        <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
+        <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge"
+          >⭐ Level 1: Guided Support</span
+        >
+        <span style="font-size: 13px; font-weight: 600; opacity: 0.85"
+          >| EduWonderLab Interactive Arcade</span
+        >
       </div>
-  
+      <div class="ewl-arcade-controls">
+        <button
+          type="button"
+          class="ewl-btn-toggle active"
+          id="ewl-btn-l1"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(1);"
+        >
+          L1 Support
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-l2"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(2);"
+        >
+          L2 Challenge
+        </button>
+        <button
+          type="button"
+          class="ewl-sound-toggle-btn"
+          id="ewl-btn-sound"
+          onclick="
+            if (window.GameFX && window.GameFX.AudioSynth) {
+              window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted;
+              this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On';
+            }
+          "
+        >
+          🔊 Sound On
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-lang"
+          onclick="if (window.ewlToggleLang) window.ewlToggleLang();"
+        >
+          🌐 EN / ES
+        </button>
+      </div>
+    </div>
+
     <!-- Decorative animated star-field (behind the Phaser canvas). -->
     <div id="cq-bg" data-parallax aria-hidden="true">
       <div id="cq-bg-layer" data-parallax-layer></div>
@@ -1440,6 +1479,7 @@
         this.locked = true;
         const p = this.problem;
         const correct = this.mx === p.tx && this.my === p.ty;
+        if (window.NeftScore) NeftScore.attempt(correct);
         if (correct) {
           SFX.good();
           JUICE.audio.correct(this.streak);
@@ -1644,6 +1684,7 @@
         if (this.phase !== "answer" || !this.choiceVals || this.answerDone) return;
         if (i < 0 || i >= this.choiceVals.length) return;
         const ans = this.problem.answer;
+        if (window.NeftScore) NeftScore.attempt(this.choiceVals[i] === ans.correct);
         if (this.choiceVals[i] === ans.correct) {
           this.answerDone = true;
           SFX.good();
@@ -1799,16 +1840,13 @@
         SFX.win();
         JUICE.audio.fanfare();
 
-        // EduPulse reporting (guarded; safe no-op without bridge).
+        // Score reporting goes through NeftScore (attempt() at each judge
+        // above), which loads the bridge itself and beacons on pagehide —
+        // the old direct EduPulse.record here only fired if a student
+        // reached this screen with the bridge already loaded, which is why
+        // this game never produced a game_scores row.
         try {
-          window.EduPulse &&
-            EduPulse.record({
-              activityTitle: document.title,
-              score: d.score,
-              stars: stars,
-              standard: "6.NOS.6 / 6.NOS.9 / 6.GR.3",
-              problemsAttempted: d.solved,
-            });
+          window.NeftScore && NeftScore.finish();
         } catch (e) {}
         srSay("Quest complete! Final score " + d.score + ", " + stars + " stars.");
 
@@ -1891,13 +1929,17 @@
       });
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/game-score.js"></script>
+    <script>
+      window.NeftScore && NeftScore.init({ gameId: "u9-coordinate-quest", standard: "6.NOS.6" });
+    </script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    
+
     <!-- mwb-injected:end -->
     <!-- Student Passport (meta-progression pill; boots itself, award() guarded) -->
     <script src="/assets/lesson-passport.js" defer></script>
@@ -1928,30 +1970,40 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
     <!-- nsr-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Plot (x, y) by moving horizontally along x first, then vertically along y!" data-es="¡Grafica (x, y) moviéndote horizontalmente en x primero, y luego verticalmente en y!">Plot (x, y) by moving horizontally along x first, then vertically along y!</p>
-        </div>
-      </div>
-  
-  <script>
-    (function() {
-      window.ewlShowMasteryModal = function(opts) {
-        opts = opts || {};
-        const score = opts.score || 0;
-        const maxScore = opts.maxScore || 1000;
-        const stars = opts.stars || (score >= maxScore * 0.8 ? 3 : score >= maxScore * 0.5 ? 2 : 1);
-        const accuracy = opts.accuracy != null ? opts.accuracy : Math.min(100, Math.round((score / Math.max(1, maxScore)) * 100));
-        const gameTitle = opts.title || "Unit Game Complete!";
-        const nextUrl = opts.nextUrl || "/math/games/";
 
-        const starStr = "⭐".repeat(stars) + "☆".repeat(3 - stars);
-        
-        const modalHtml = `
+    <!-- EWL Diagnostic Misconception Coach -->
+    <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex">
+      <div class="ewl-coach-icon">💡</div>
+      <div class="ewl-coach-content">
+        <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
+        <p
+          id="ewl-coach-text"
+          data-en="Plot (x, y) by moving horizontally along x first, then vertically along y!"
+          data-es="¡Grafica (x, y) moviéndote horizontalmente en x primero, y luego verticalmente en y!"
+        >
+          Plot (x, y) by moving horizontally along x first, then vertically along y!
+        </p>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        window.ewlShowMasteryModal = function (opts) {
+          opts = opts || {};
+          const score = opts.score || 0;
+          const maxScore = opts.maxScore || 1000;
+          const stars =
+            opts.stars || (score >= maxScore * 0.8 ? 3 : score >= maxScore * 0.5 ? 2 : 1);
+          const accuracy =
+            opts.accuracy != null
+              ? opts.accuracy
+              : Math.min(100, Math.round((score / Math.max(1, maxScore)) * 100));
+          const gameTitle = opts.title || "Unit Game Complete!";
+          const nextUrl = opts.nextUrl || "/math/games/";
+
+          const starStr = "⭐".repeat(stars) + "☆".repeat(3 - stars);
+
+          const modalHtml = `
           <div class="ewl-mastery-overlay" id="ewl-mastery-modal">
             <div class="ewl-mastery-card">
               <div class="ewl-mastery-stars">${starStr}</div>
@@ -1974,73 +2026,88 @@
             </div>
           </div>
         `;
-        const existing = document.getElementById("ewl-mastery-modal");
-        if (existing) existing.remove();
-        document.body.insertAdjacentHTML("beforeend", modalHtml);
-        
-        if (window.GameFX && window.GameFX.AudioSynth) {
-          try { window.GameFX.AudioSynth.playSuccess(); } catch(e){}
-        }
-        if (window.GameFX && window.GameFX.burst) {
-          try { window.GameFX.burst(window.innerWidth / 2, window.innerHeight / 3); } catch(e){}
-        }
-      };
-    })();
-  </script>
-  <!-- Shared Arcade FX Engine & Particles -->
-  <canvas id="fx-canvas" style="position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:9999;"></canvas>
-  <script src="/math/games/shared/arcade-fx-engine.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const canvas = document.getElementById("fx-canvas");
-      if (canvas) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        window.addEventListener("resize", () => {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-        });
-      }
+          const existing = document.getElementById("ewl-mastery-modal");
+          if (existing) existing.remove();
+          document.body.insertAdjacentHTML("beforeend", modalHtml);
 
-      document.body.addEventListener("pointerdown", function(e) {
-        if (window.ArcadeFX) {
-          if (canvas) {
-            window.ArcadeFX.spawnParticles(canvas, e.clientX, e.clientY, "#f59e0b", 16);
+          if (window.GameFX && window.GameFX.AudioSynth) {
+            try {
+              window.GameFX.AudioSynth.playSuccess();
+            } catch (e) {}
           }
-        }
-      });
-    });
-  </script>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      if (window.ArcadeFX) {
-        window.ArcadeFX.renderControlBar("arcade-controls-host");
-      }
-      const canvas = document.getElementById("fx-canvas");
-      if (canvas) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        window.addEventListener("resize", () => {
+          if (window.GameFX && window.GameFX.burst) {
+            try {
+              window.GameFX.burst(window.innerWidth / 2, window.innerHeight / 3);
+            } catch (e) {}
+          }
+        };
+      })();
+    </script>
+    <!-- Shared Arcade FX Engine & Particles -->
+    <canvas
+      id="fx-canvas"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 9999;
+      "
+    ></canvas>
+    <script src="/math/games/shared/arcade-fx-engine.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const canvas = document.getElementById("fx-canvas");
+        if (canvas) {
           canvas.width = window.innerWidth;
           canvas.height = window.innerHeight;
-        });
-      }
+          window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+          });
+        }
 
-      document.body.addEventListener("click", function(e) {
-        if (window.ArcadeFX) {
-          if (e.target.closest(".btn, button, .bubble, .card, canvas")) {
-            window.ArcadeFX.playSFX("click");
-            if (canvas && (e.target.closest(".btn, button") || e.target.tagName === "BUTTON")) {
-              window.ArcadeFX.spawnParticles(canvas, e.clientX, e.clientY, "#06b6d4", 22);
+        document.body.addEventListener("pointerdown", function (e) {
+          if (window.ArcadeFX) {
+            if (canvas) {
+              window.ArcadeFX.spawnParticles(canvas, e.clientX, e.clientY, "#f59e0b", 16);
             }
           }
-        }
+        });
       });
-    });
-  </script>
-  
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-</body>
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.ArcadeFX) {
+          window.ArcadeFX.renderControlBar("arcade-controls-host");
+        }
+        const canvas = document.getElementById("fx-canvas");
+        if (canvas) {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+          });
+        }
+
+        document.body.addEventListener("click", function (e) {
+          if (window.ArcadeFX) {
+            if (e.target.closest(".btn, button, .bubble, .card, canvas")) {
+              window.ArcadeFX.playSFX("click");
+              if (canvas && (e.target.closest(".btn, button") || e.target.tagName === "BUTTON")) {
+                window.ArcadeFX.spawnParticles(canvas, e.clientX, e.clientY, "#06b6d4", 22);
+              }
+            }
+          }
+        });
+      });
+    </script>
+
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <script src="/assets/formula-popup.js" defer></script>
+  </body>
 </html>

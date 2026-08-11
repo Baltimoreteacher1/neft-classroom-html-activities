@@ -253,7 +253,13 @@ export function themeIllustration(theme, figure, config) {
       const visuals = resolveObjectiveVisuals(config);
       if (visuals && visuals.content && visuals.content.src) {
         return `<div class="theme-hero-artwork" style="background:#ffffff; padding:12px; border-radius:14px; border:1.5px solid #cbd5e1; box-shadow:0 4px 14px rgba(0,0,0,0.06); text-align:center;">
+<<<<<<< HEAD
           <img src="${visuals.content.src}" alt="${esc(visuals.content.alt || config.title || '')}" class="theme-hero-img cover-svg-animate" style="max-width:100%; max-height:210px; height:auto; object-fit:contain; display:block; margin:0 auto;" />
+||||||| 540ecb4e3
+export function themeIllustration(theme, figure) {
+=======
+          <img src="${visuals.content.src}" alt="${esc(visuals.content.alt || config.title || "")}" class="theme-hero-img cover-svg-animate" style="max-width:100%; max-height:210px; height:auto; object-fit:contain; display:block; margin:0 auto;" />
+>>>>>>> origin/main
         </div>`;
       }
     } catch (e) {
@@ -275,7 +281,14 @@ export function renderThemeIllustration(host, theme, caption, figure, config) {
       const visuals = resolveObjectiveVisuals(config);
       if (visuals && visuals.content && visuals.content.src) {
         svgHtml = `<div class="theme-hero-artwork" style="background:#ffffff; padding:12px; border-radius:14px; border:1.5px solid #cbd5e1; box-shadow:0 4px 14px rgba(0,0,0,0.06); text-align:center;">
+<<<<<<< HEAD
           <img src="${visuals.content.src}" alt="${esc(visuals.content.alt || config.title || '')}" class="theme-hero-img cover-svg-animate" style="max-width:100%; max-height:210px; height:auto; object-fit:contain; display:block; margin:0 auto;" />
+||||||| 540ecb4e3
+  wrap.innerHTML = themeIllustration(theme, figure);
+  if (caption) {
+=======
+          <img src="${visuals.content.src}" alt="${esc(visuals.content.alt || config.title || "")}" class="theme-hero-img cover-svg-animate" style="max-width:100%; max-height:210px; height:auto; object-fit:contain; display:block; margin:0 auto;" />
+>>>>>>> origin/main
         </div>`;
         if (visuals.content.caption) {
           cleanCaption = visuals.content.caption;
@@ -295,7 +308,14 @@ export function renderThemeIllustration(host, theme, caption, figure, config) {
   if (cleanCaption && typeof cleanCaption === "string" && cleanCaption.trim()) {
     const figcap = document.createElement("figcaption");
     figcap.className = "theme-illustration-caption";
+<<<<<<< HEAD
     figcap.style.cssText = "margin-top:10px; font-size:0.92rem; font-weight:700; color:#334155; text-align:center; line-height:1.45;";
+||||||| 540ecb4e3
+    figcap.textContent = caption;
+=======
+    figcap.style.cssText =
+      "margin-top:10px; font-size:0.92rem; font-weight:700; color:#334155; text-align:center; line-height:1.45;";
+>>>>>>> origin/main
     figcap.textContent = cleanCaption;
     wrap.append(figcap);
   }

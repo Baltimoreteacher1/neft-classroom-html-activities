@@ -1,0 +1,630 @@
+/* plan-notes.css — styles for /curriculum/plan-notes/.
+ * Every selector is scoped under .plan-notes-wrap on purpose: shared stylesheets on
+ * this site have leaked onto lesson pages before, and the generated validator
+ * fails if a bare element selector appears here. */
+
+.plan-notes-wrap {
+  --ink: #15233b;
+  --muted: #55617a;
+  --accent: #15487f;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 4rem;
+  font-family: "Hanken Grotesk", system-ui, sans-serif;
+  color: var(--ink);
+}
+
+.plan-notes-wrap .backlink {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.plan-notes-wrap .backlink:hover,
+.plan-notes-wrap .backlink:focus-visible {
+  text-decoration: underline;
+}
+
+.plan-notes-wrap header {
+  margin-bottom: 2rem;
+}
+
+.plan-notes-wrap .page-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.plan-notes-wrap h1 {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  margin: 0.5rem 0 0.25rem;
+}
+
+.plan-notes-wrap .lede {
+  font-size: 1.125rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.plan-notes-wrap .empty-state {
+  padding: 2rem;
+  border: 2px dashed #c9d3e4;
+  border-radius: 0.75rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.plan-notes-wrap .skip-link:focus-visible,
+.plan-notes-wrap :focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Wider than the scaffold default: this is a two-pane reading surface, and a
+   60rem cap would put the plan and the rail in a column each too narrow to read. */
+.plan-notes-wrap {
+  max-width: 88rem;
+}
+
+.plan-notes-wrap .pn-muted {
+  color: var(--muted);
+}
+
+.plan-notes-wrap .pn-btn {
+  font: inherit;
+  font-weight: 600;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #c9d3e4;
+  border-radius: 0.6rem;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.plan-notes-wrap .pn-btn:hover {
+  border-color: var(--accent);
+}
+
+.plan-notes-wrap .pn-btn.solid {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.plan-notes-wrap .pn-btn.danger {
+  color: #a3271f;
+  border-color: #e5c2be;
+}
+
+.plan-notes-wrap .pn-btn.small {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+.plan-notes-wrap .pn-btn[disabled] {
+  opacity: 0.55;
+  cursor: progress;
+}
+
+.plan-notes-wrap .pn-field {
+  display: block;
+  margin: 0 0 0.9rem;
+}
+
+.plan-notes-wrap .pn-field > span {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.plan-notes-wrap .pn-field input,
+.plan-notes-wrap .pn-field select,
+.plan-notes-wrap .pn-field textarea {
+  font: inherit;
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #c9d3e4;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: var(--ink);
+}
+
+.plan-notes-wrap .pn-gate-form {
+  max-width: 26rem;
+}
+
+.plan-notes-wrap .pn-error {
+  color: #a3271f;
+  font-weight: 600;
+}
+
+.plan-notes-wrap .pn-status {
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.5rem;
+  background: #eef3fa;
+  font-weight: 600;
+}
+
+.plan-notes-wrap .pn-status[data-tone="error"] {
+  background: #fdeceb;
+  color: #a3271f;
+}
+
+.plan-notes-wrap .pn-status[data-tone="warn"] {
+  background: #fdf4e3;
+  color: #7a5310;
+}
+
+.plan-notes-wrap .pn-status[data-tone="ok"] {
+  background: #e9f5ec;
+  color: #1d6b38;
+}
+
+/* ── Library ──────────────────────────────────────────────────────────────── */
+
+.plan-notes-wrap .pn-drop {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 2.5rem 1.5rem;
+  border: 2px dashed #c9d3e4;
+  border-radius: 0.9rem;
+  background: #f8fafd;
+  cursor: pointer;
+  text-align: center;
+}
+
+.plan-notes-wrap .pn-drop.is-over {
+  border-color: var(--accent);
+  background: #eef3fa;
+}
+
+.plan-notes-wrap .pn-paste {
+  margin: 1.25rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f2;
+  border-radius: 0.75rem;
+}
+
+.plan-notes-wrap .pn-paste summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.plan-notes-wrap .pn-doclist {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.plan-notes-wrap .pn-doc {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #e2e8f2;
+  border-radius: 0.7rem;
+  background: #fff;
+}
+
+.plan-notes-wrap .pn-doc-open {
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  background: none;
+  border: 0;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 0;
+}
+
+.plan-notes-wrap .pn-doc-meta {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.plan-notes-wrap .pn-warn {
+  color: #7a5310;
+  font-weight: 600;
+}
+
+/* ── Annotator ────────────────────────────────────────────────────────────── */
+
+.plan-notes-wrap .pn-toolbar {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.9rem;
+}
+
+.plan-notes-wrap .pn-toolbar-title {
+  flex: 1 1 12rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-notes-wrap .pn-sync {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.plan-notes-wrap .pn-sync[data-tone="warn"] {
+  color: #7a5310;
+}
+
+.plan-notes-wrap .pn-sync[data-tone="ok"] {
+  color: #1d6b38;
+}
+
+.plan-notes-wrap .pn-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 0.9rem;
+  border: 1px solid #e2e8f2;
+  border-radius: 0.7rem;
+  background: #f8fafd;
+}
+
+.plan-notes-wrap .pn-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(18rem, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 60rem) {
+  .plan-notes-wrap .pn-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.plan-notes-wrap .pn-plan {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #e2e8f2;
+  border-radius: 0.9rem;
+  background: #fff;
+  max-height: 78vh;
+  overflow-y: auto;
+}
+
+.plan-notes-wrap .pn-page + .pn-page {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed #dbe3ef;
+}
+
+.plan-notes-wrap .pn-page-num {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 0.5rem;
+}
+
+/* pre-wrap keeps the line structure the extractor worked to rebuild — "Warm-Up:
+   5 min" stays its own line, which is what makes a quote anchor readable. */
+.plan-notes-wrap .pn-page-body {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.plan-notes-wrap .pn-mark {
+  border-radius: 0.25rem;
+  padding: 0.05em 0.15em;
+  cursor: pointer;
+  background: #fff3bf;
+  color: inherit;
+}
+
+.plan-notes-wrap .pn-mark.k-watch {
+  background: #ffe0dc;
+}
+
+.plan-notes-wrap .pn-mark.k-swap {
+  background: #e3e0ff;
+}
+
+.plan-notes-wrap .pn-mark.k-timing {
+  background: #d9f0ff;
+}
+
+.plan-notes-wrap .pn-mark.k-resource {
+  background: #d9f5e3;
+}
+
+/* ── Rail ─────────────────────────────────────────────────────────────────── */
+
+.plan-notes-wrap .pn-rail {
+  position: sticky;
+  top: 1rem;
+  max-height: 78vh;
+  overflow-y: auto;
+  padding: 1rem;
+  border: 1px solid #e2e8f2;
+  border-radius: 0.9rem;
+  background: #f8fafd;
+}
+
+.plan-notes-wrap .pn-rail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.plan-notes-wrap .pn-rail-head h2 {
+  font-family: "Outfit", system-ui, sans-serif;
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.plan-notes-wrap .pn-unpinned {
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.75rem;
+  border-radius: 0.5rem;
+  background: #fdf4e3;
+  color: #7a5310;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.plan-notes-wrap .pn-notes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.plan-notes-wrap .pn-note {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #e2e8f2;
+  border-left: 4px solid #c9d3e4;
+  border-radius: 0.6rem;
+  background: #fff;
+}
+
+.plan-notes-wrap .pn-note.k-watch {
+  border-left-color: #d9534f;
+}
+
+.plan-notes-wrap .pn-note.k-swap {
+  border-left-color: #6c5ce7;
+}
+
+.plan-notes-wrap .pn-note.k-timing {
+  border-left-color: #1c7ed6;
+}
+
+.plan-notes-wrap .pn-note.k-resource {
+  border-left-color: #2f9e44;
+}
+
+.plan-notes-wrap .pn-note.is-unpinned {
+  background: #fffaf0;
+}
+
+.plan-notes-wrap .pn-note-head {
+  font: inherit;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.plan-notes-wrap .pn-note-kind {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.plan-notes-wrap .pn-note-body,
+.plan-notes-wrap .pn-note-alt {
+  margin: 0.4rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.plan-notes-wrap .pn-note-alt {
+  font-weight: 600;
+  color: #4a3fbe;
+}
+
+.plan-notes-wrap .pn-note-strong {
+  margin: 0.3rem 0 0;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.plan-notes-wrap .pn-note-quote {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.plan-notes-wrap .pn-note-link {
+  display: inline-block;
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.plan-notes-wrap .pn-chip {
+  display: inline-block;
+  margin: 0.3rem 0.3rem 0 0;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #eef3fa;
+  color: var(--accent);
+}
+
+.plan-notes-wrap .pn-chip-tag {
+  background: #ffe9e6;
+  color: #a3271f;
+}
+
+.plan-notes-wrap .pn-chip-level {
+  background: #ece9ff;
+  color: #4a3fbe;
+}
+
+.plan-notes-wrap .pn-chip-time {
+  background: #ddeeff;
+  color: #14539a;
+}
+
+.plan-notes-wrap .pn-chip-res {
+  background: #e2f6e9;
+  color: #1d6b38;
+}
+
+.plan-notes-wrap .pn-chip-ai {
+  background: #f0e7ff;
+  color: #5a3fb0;
+}
+
+.plan-notes-wrap .pn-chip-pending,
+.plan-notes-wrap .pn-chip-warn {
+  background: #fdf4e3;
+  color: #7a5310;
+}
+
+/* ── Note editor dialog ───────────────────────────────────────────────────────
+   The <dialog> is a body-level sibling (top-layer elements cannot be nested
+   inside a transformed ancestor without losing their positioning), so it cannot
+   sit under .plan-notes-wrap. Every selector below carries a .pn- namespace of
+   its own — just as scoped, without relying on the wrapper. */
+
+.pn-dialog {
+  border: 0;
+  border-radius: 0.9rem;
+  padding: 1.5rem;
+  max-width: 34rem;
+  width: calc(100vw - 2rem);
+  font-family: "Hanken Grotesk", system-ui, sans-serif;
+  color: #15233b;
+  box-shadow: 0 1.5rem 3rem rgb(21 35 59 / 25%);
+}
+
+.pn-dialog::backdrop {
+  background: rgb(21 35 59 / 45%);
+}
+
+.pn-dialog h2 {
+  font-family: "Outfit", system-ui, sans-serif;
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+}
+
+.pn-dialog .pn-field {
+  display: block;
+  margin: 0 0 0.9rem;
+}
+
+.pn-dialog .pn-field > span {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.pn-dialog .pn-field input,
+.pn-dialog .pn-field select,
+.pn-dialog .pn-field textarea {
+  font: inherit;
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #c9d3e4;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: inherit;
+}
+
+.pn-dialog .pn-quote {
+  padding: 0.6rem 0.75rem;
+  margin: 0 0 0.9rem;
+  border-left: 3px solid #15487f;
+  background: #f8fafd;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.pn-dialog .pn-tagpick {
+  display: grid;
+  gap: 0.25rem;
+  max-height: 13rem;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border: 1px solid #c9d3e4;
+  border-radius: 0.5rem;
+}
+
+.pn-dialog .pn-tagopt {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.pn-dialog .pn-error {
+  color: #a3271f;
+  font-weight: 600;
+}
+
+.pn-dialog .pn-dialog-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+.pn-dialog .pn-btn {
+  font: inherit;
+  font-weight: 600;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #c9d3e4;
+  border-radius: 0.6rem;
+  background: #fff;
+  color: inherit;
+  cursor: pointer;
+}
+
+.pn-dialog .pn-btn.solid {
+  background: #15487f;
+  border-color: #15487f;
+  color: #fff;
+}
+
+.pn-dialog .pn-btn.danger {
+  color: #a3271f;
+  border-color: #e5c2be;
+}
+
+.pn-dialog :focus-visible {
+  outline: 3px solid #15487f;
+  outline-offset: 2px;
+}

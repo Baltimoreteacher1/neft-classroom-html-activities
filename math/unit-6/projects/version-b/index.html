@@ -11,15 +11,15 @@
     <style>
       :root {
         --navy: #0f2b3c;
-        --blue: #0e8a7d; /* Teal is primary! */
+        --blue: #0c6f6b; /* Teal is primary! */
         --blue-lt: #e4f5f3;
         --teal: #1a6fb5; /* Blue is secondary */
         --teal-lt: #e8f2fc;
-        --gold: #a5670a;
+        --gold: #8a5f0a;
         --gold-lt: #fdf3e0;
         --green: #1e7d40;
         --green-lt: #e6f4eb;
-        --coral: #c45a3c;
+        --coral: #a8442a;
         --ink: #1a2633;
         --muted: #525f6e;
         --line: #e2e7ec;
@@ -33,7 +33,7 @@
 
       /* ---- Hero ---- */
       .hero {
-        background: linear-gradient(135deg, #0f2b3c 0%, #0e8a7d 60%, #1a6fb5 100%);
+        background: linear-gradient(135deg, #0f2b3c 0%, #0c6f6b 60%, #1a6fb5 100%);
         color: #fff;
         padding: 36px 24px 28px;
         text-align: center;
@@ -139,7 +139,8 @@
         border-radius: 10px; font-size: 15px; font-family: inherit;
         background: var(--bg); color: var(--ink); transition: border-color .2s;
       }
-      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      input:focus, textarea:focus, select:focus { outline: 3px solid rgba(2, 132, 199, .45); outline-offset: 2px; border-color: var(--blue); }
+      button:focus-visible, a:focus-visible, [role="button"]:focus-visible { outline: 3px solid rgba(2, 132, 199, .55); outline-offset: 2px; }
       textarea { min-height: 90px; resize: vertical; }
       .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
       @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
@@ -253,6 +254,8 @@
       .lvl1-only { display: none; }
       .lvl2-only { display: none; }
       body.level-1 .lvl1-only { display: block; }
+      /* Level 0 = extra support, so it also shows every Level 1 support. */
+      body.level-0 .lvl1-only { display: block; }
       body.level-2 .lvl2-only { display: block; }
       body.level-2 .lvl2-block { border-color: var(--blue); }
 
@@ -359,6 +362,9 @@
     <!-- projects-twist-head:begin (Design Twist — tools/inject-projects-twist.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-twist.css?v=20260722" />
     <!-- projects-twist-head:end -->
+    <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
+    <!-- projects-mode-pill-head:end -->
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
 
@@ -596,14 +602,14 @@
             </text>
             
             <!-- Standard box -->
-            <rect x="25" y="45" width="200" height="70" rx="8" fill="#e8f2fc" stroke="#0e8a7d" stroke-width="2"/>
+            <rect x="25" y="45" width="200" height="70" rx="8" fill="#e8f2fc" stroke="#0c6f6b" stroke-width="2"/>
             <text x="125" y="68" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">
               <tspan class="en-text">Standard Plan 📱</tspan>
               <tspan class="es-text">Plan estándar 📱</tspan>
             </text>
-            <text id="svg-std-expr" x="125" y="95" text-anchor="middle" font-size="12" fill="#0e8a7d" font-weight="bold">3.99 &times; s</text>
+            <text id="svg-std-expr" x="125" y="95" text-anchor="middle" font-size="12" fill="#0c6f6b" font-weight="bold">3.99 &times; s</text>
             
-            <text x="260" y="85" text-anchor="middle" font-size="24" font-weight="bold" fill="#0e8a7d">+</text>
+            <text x="260" y="85" text-anchor="middle" font-size="24" font-weight="bold" fill="#0c6f6b">+</text>
             
             <!-- Premium box -->
             <rect x="295" y="45" width="200" height="70" rx="8" fill="#e4f5f3" stroke="#1a6fb5" stroke-width="2"/>
@@ -676,8 +682,8 @@
               <span class="es-text">¿Necesitas una pista?</span>
             </summary>
             <p>
-              <span class="en-text">Multiply standard price by standard subscribers (as), then multiply premium price by premium subscribers (bp), and add the two amounts together.<br><strong>Example:</strong> ($3.00 × 100) + ($8.00 × 50) = $300.00 + $400.00 = <strong>$700.00</strong>.</span>
-              <span class="es-text">Multiplica el precio estándar por los suscriptores estándar (as), luego multiplica el precio premium por los suscriptores premium (bp) y suma ambas cantidades.<br><strong>Ejemplo:</strong> ($3.00 × 100) + ($8.00 × 50) = $300.00 + $400.00 = <strong>$700.00</strong>.</span>
+              <span class="en-text">Multiply standard price by standard subscribers (as), then multiply premium price by premium subscribers (bp), and add the two amounts.<br><strong>Different example:</strong> ($2.00 × 40) + ($5.00 × 20) = $80.00 + $100.00 = <strong>$180.00</strong>.<br>Now run the same two steps with <em>your</em> prices and subscriber counts.</span>
+              <span class="es-text">Multiplica el precio estándar por los suscriptores estándar (as), luego el precio premium por los suscriptores premium (bp) y suma ambas cantidades.<br><strong>Ejemplo distinto:</strong> ($2.00 × 40) + ($5.00 × 20) = $80.00 + $100.00 = <strong>$180.00</strong>.<br>Ahora haz los mismos dos pasos con <em>tus</em> precios y suscriptores.</span>
             </p>
           </details>
 
@@ -1314,6 +1320,17 @@
             </button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
+
+          <!-- Finish & Turn In -->
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">
+            <span class="en-text">🎉 Finish &amp; Turn In</span>
+            <span class="es-text">🎉 Terminar y entregar</span>
+          </h3>
+          <div class="instruct green">
+            <span class="en-text"><strong>Three things left:</strong> 1) Write your pricing memo above. 2) Check every box on the Analyst Checklist. 3) Click <strong>Generate Summary</strong>, then press <strong>I’m Done</strong> and show your report to your teacher (or download the .txt and submit it).</span>
+            <span class="es-text"><strong>Faltan tres cosas:</strong> 1) Escribe tu informe de precios arriba. 2) Marca todas las casillas de la lista del analista. 3) Haz clic en <strong>Generar resumen</strong>, luego presiona <strong>¡He terminado!</strong> y muestra tu informe a tu maestro (o descarga el .txt y entrégalo).</span>
+          </div>
+          <div id="finish-status" style="font-size:15px;font-weight:700;display:block;margin-top:8px;min-height:18px;" role="status" aria-live="polite"></div>
         </div>
 
         <div class="nav-row">
@@ -1412,6 +1429,7 @@
         { id: 5, labelEn: 'Finish', labelEs: 'Finalizar', icon: '🏆' },
       ];
       let currentStep = 0;
+      let currentLevel = 1;
       const visited = new Set([0]);
 
       // ---- Level toggle ----
@@ -1423,6 +1441,8 @@
         document.getElementById('btn-lv1').classList.toggle('active', n === 1);
         document.getElementById('btn-lv2').classList.toggle('active', n === 2);
         handleLevelPreset(n);
+        currentLevel = n;
+        ntSaveProgress();
       }
 
       // ---- Build step trail ----
@@ -1458,6 +1478,7 @@
         buildTrail();
         updateProgress();
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        ntSaveProgress();
       }
 
       function updateProgress() {
@@ -1603,11 +1624,36 @@
 
       function onDoneClicked() {
         const isEs = document.body.classList.contains('es');
-        if (isEs) {
-          alert('¡Buen trabajo! 🎉 Muestra esta página a tu profesor.');
-        } else {
-          alert('Great work! 🎉 Show this page to your teacher.');
+        const boxes = Array.from(document.querySelectorAll('#checklist input[type="checkbox"]'));
+        const unchecked = boxes.filter(b => !b.checked).length;
+        const pitchEl = document.getElementById('pitch');
+        const pitchDone = !!(pitchEl && pitchEl.value.trim().length >= 40);
+        const reportEl = document.getElementById('reportBox');
+        const reportDone = !!(reportEl && reportEl.textContent.trim());
+        const todo = [];
+        if (!pitchDone) todo.push(isEs ? 'Escribe tu informe de precios (3-5 oraciones).' : 'Write your pricing memo (3-5 sentences).');
+        if (unchecked > 0) todo.push(isEs ? ('Marca ' + unchecked + ' casilla(s) más de la lista.') : ('Check off ' + unchecked + ' more checklist item(s).'));
+        if (!reportDone) todo.push(isEs ? 'Haz clic en "Generar resumen".' : 'Click "Generate Summary".');
+        const status = document.getElementById('finish-status');
+        if (todo.length) {
+          const head = isEs ? 'Casi listo. Todavía falta:' : 'Almost there. Still to do:';
+          if (status) {
+            status.style.color = 'var(--coral)';
+            status.innerHTML = '\u26A0\uFE0F <strong>' + head + '</strong><br>\u2022 ' + todo.join('<br>\u2022 ');
+          }
+          alert(head + '\n\n\u2022 ' + todo.join('\n\u2022 '));
+          return;
         }
+        if (status) {
+          status.style.color = 'var(--green)';
+          status.textContent = isEs
+            ? '\u2705 Listo para entregar. Muestra tu informe a tu maestro o descarga el .txt.'
+            : '\u2705 Ready to turn in! Show your report to your teacher, or download the .txt and submit it.';
+        }
+        playConfetti();
+        alert(isEs
+          ? '\u00A1Buen trabajo! \uD83C\uDF89 Muestra esta p\u00e1gina y tu informe a tu profesor.'
+          : 'Great work! \uD83C\uDF89 Show this page and your report to your teacher.');
       }
 
       // ---- Math Calculations & SVG Rendering ----
@@ -1725,9 +1771,9 @@
           <text x="340" y="135" text-anchor="middle" font-size="10" fill="#5e6e7e">${isEs ? 'Mes 4' : 'M4'}</text>
           <text x="340" y="${115 - heights[3]}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">$${vals[3].toFixed(2)}</text>
           
-          <rect x="400" y="${120 - heights[4]}" width="40" height="${heights[4]}" rx="3" fill="#0e8a7d" stroke="#0e8a7d" stroke-width="1.5"/>
+          <rect x="400" y="${120 - heights[4]}" width="40" height="${heights[4]}" rx="3" fill="#0c6f6b" stroke="#0c6f6b" stroke-width="1.5"/>
           <text x="420" y="135" text-anchor="middle" font-size="10" fill="#5e6e7e">${isEs ? 'Mes 5' : 'M5'}</text>
-          <text x="420" y="${115 - heights[4]}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">$${vals[4].toFixed(2)}</text>
+          <text x="420" y="${115 - heights[4]}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0c6f6b">$${vals[4].toFixed(2)}</text>
         `;
       }
 
@@ -1786,11 +1832,11 @@
         if (profit >= 0) {
           profitY = yBase - profitH;
           profitFill = '#e4f5f3';
-          profitStroke = '#0e8a7d';
+          profitStroke = '#0c6f6b';
         } else {
           profitY = yBase;
           profitFill = '#fdeee9';
-          profitStroke = '#c45a3c';
+          profitStroke = '#a8442a';
         }
         
         const isEs = document.body.classList.contains('es');
@@ -1924,7 +1970,7 @@
             
             <g transform="rotate(${angle})">
               <line x1="-120" y1="0" x2="120" y2="0" stroke="#0f2b3c" stroke-width="3"/>
-              <circle cx="0" cy="0" r="4" fill="#0e8a7d"/>
+              <circle cx="0" cy="0" r="4" fill="#0c6f6b"/>
               
               <!-- Left pan (Mine) -->
               <line x1="-100" y1="0" x2="-100" y2="25" stroke="#5e6e7e" stroke-width="1.5" />
@@ -1933,8 +1979,8 @@
               
               <!-- Right pan (Partner) -->
               <line x1="100" y1="0" x2="100" y2="25" stroke="#5e6e7e" stroke-width="1.5" />
-              <path d="M 75 25 L 125 25 L 115 32 L 85 32 Z" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="1.5" />
-              <text x="100" y="45" text-anchor="middle" font-size="10" font-weight="bold" fill="#0e8a7d">${pName}: $${partnerProfit.toFixed(2)}</text>
+              <path d="M 75 25 L 125 25 L 115 32 L 85 32 Z" fill="#e4f5f3" stroke="#0c6f6b" stroke-width="1.5" />
+              <text x="100" y="45" text-anchor="middle" font-size="10" font-weight="bold" fill="#0c6f6b">${pName}: $${partnerProfit.toFixed(2)}</text>
             </g>
           </g>
           
@@ -2082,9 +2128,30 @@
         a.click();
       }
 
+      // ---- Save / restore level + step (inputs are handled by the save-resume engine) ----
+      const NT_PROGRESS_KEY = 'nt-u6-project-b-progress';
+      function ntSaveProgress() {
+        try {
+          localStorage.setItem(NT_PROGRESS_KEY, JSON.stringify({ level: currentLevel, step: currentStep, visited: Array.from(visited) }));
+        } catch (e) {}
+      }
+      function ntRestoreProgress() {
+        try {
+          const raw = localStorage.getItem(NT_PROGRESS_KEY);
+          if (!raw) return;
+          const saved = JSON.parse(raw) || {};
+          if (Array.isArray(saved.visited)) saved.visited.forEach(v => visited.add(v));
+          if (typeof saved.level === 'number' && saved.level !== currentLevel) setLevel(saved.level);
+          if (typeof saved.step === 'number' && saved.step >= 0 && saved.step < STEPS.length) goStep(saved.step);
+          buildTrail();
+          updateProgress();
+        } catch (e) {}
+      }
+
       // ---- Init ----
       buildTrail();
       updateProgress();
+      ntRestoreProgress();
       
       // Delay slightly for save-resume module to populate inputs
       setTimeout(recalcAll, 100);
@@ -2224,5 +2291,8 @@
   <!-- projects-twist-body:end -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+  <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+  <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
+  <!-- projects-mode-pill-body:end -->
 </body>
 </html>

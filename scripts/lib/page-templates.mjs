@@ -129,6 +129,39 @@ export const TEMPLATES = [
       return p && `/math/projects/${p}/`;
     },
   },
+  // The three CULMINATING-project layouts. The template above resolves to the
+  // portfolio dashboard, which is a different page entirely — so the 44 pages
+  // under /math/unit-N/projects/ were invisible to every audit that samples by
+  // template. That blind spot cost real coverage: a 48-page axe sweep found
+  // 220 serious contrast violations on these layouts on the same day the
+  // sampled audit reported zero. One representative each; the layouts are
+  // generated siblings, so unit-1 stands for all units.
+  {
+    id: "unit-project-hub",
+    name: "Unit project hub",
+    resolve: () => (first("math/unit-1/projects") ? "/math/unit-1/projects/" : null),
+  },
+  {
+    id: "unit-project-version",
+    name: "Unit project worksheet",
+    resolve: () => {
+      const v = first("math/unit-1/projects", (n) => n.startsWith("version-"));
+      return v && `/math/unit-1/projects/${v}/`;
+    },
+  },
+  {
+    id: "unit-project-answer-key",
+    name: "Unit project answer key",
+    // Teacher surface: functions/_middleware.js Basic-Auths every answer-key
+    // path, so 401 is the HEALTHY production answer — this flag was missing
+    // when the template landed, and Verify Deploy went red on a correct
+    // deployment because the smoke expected 200 from a gate doing its job.
+    authGated: true,
+    resolve: () => {
+      const k = first("math/unit-1/projects", (n) => n === "answer-key");
+      return k && `/math/unit-1/projects/${k}/`;
+    },
+  },
   {
     id: "graphic-novel",
     name: "Graphic novel",

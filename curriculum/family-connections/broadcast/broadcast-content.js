@@ -90,6 +90,24 @@ export const STANDARDS = Object.freeze({
     family: "describing a whole set of numbers with one fair number",
     familyEs: "describir todo un conjunto de números con un solo número justo",
   },
+  "6.GR.4": {
+    label: "Surface area & nets",
+    labelEs: "Área total y plantillas",
+    family: "measuring the paper it would take to wrap the outside of a box",
+    familyEs: "medir el papel que haría falta para envolver el exterior de una caja",
+  },
+  "6.GR.2": {
+    label: "Volume",
+    labelEs: "Volumen",
+    family: "measuring how much space fills the inside of a box",
+    familyEs: "medir cuánto espacio llena el interior de una caja",
+  },
+  "6.AT.7": {
+    label: "Equivalent expressions",
+    labelEs: "Expresiones equivalentes",
+    family: "rewriting an expression so it says the same thing a different way",
+    familyEs: "reescribir una expresión para decir lo mismo de otra manera",
+  },
   "6.GR.1": {
     label: "Area",
     labelEs: "Área",
@@ -156,16 +174,16 @@ export const ASSETS = Object.freeze({
     {
       title: "4-1 Rates and Unit Rates",
       titleEs: "4-1 Tasas y tasas unitarias",
-      path: "/lessons/4-1/",
+      path: "/lessons/3-2/",
     },
     {
       title: "4-7 Solve Problems with Unit Rates",
       titleEs: "4-7 Resolver problemas con tasas unitarias",
-      path: "/lessons/4-7/",
+      path: "/lessons/3-8/",
     },
   ],
   "6.AT.3": [
-    { title: "3-4 Equivalent Ratios", titleEs: "3-4 Razones equivalentes", path: "/lessons/3-4/" },
+    { title: "3-4 Equivalent Ratios", titleEs: "3-4 Razones equivalentes", path: "/lessons/3-9/" },
     {
       title: "3-7 Ratio and Rate Problem Solving",
       titleEs: "3-7 Resolver problemas de razones y tasas",
@@ -188,7 +206,7 @@ export const ASSETS = Object.freeze({
     {
       title: "6-1 Powers and Exponents",
       titleEs: "6-1 Potencias y exponentes",
-      path: "/lessons/6-1/",
+      path: "/lessons/6-3/",
     },
     {
       title: "Unit 6 Culminating Projects",
@@ -200,31 +218,31 @@ export const ASSETS = Object.freeze({
     {
       title: "6-3 Write Algebraic Expressions",
       titleEs: "6-3 Escribir expresiones algebraicas",
-      path: "/lessons/6-3/",
+      path: "/lessons/6-5/",
     },
     {
       title: "6-3 Get Ready: Write Algebraic Expressions",
       titleEs: "6-3 Prepárese: Escribir expresiones algebraicas",
-      path: "/lessons/6-3/readiness/",
+      path: "/lessons/6-5/readiness/",
     },
   ],
   "6.AT.6c": [
     {
       title: "6-2 Evaluate Expressions",
       titleEs: "6-2 Evaluar expresiones",
-      path: "/lessons/6-2/",
+      path: "/lessons/6-4/",
     },
     {
       title: "6-2 Get Ready: Evaluate Expressions",
       titleEs: "6-2 Prepárese: Evaluar expresiones",
-      path: "/lessons/6-2/readiness/",
+      path: "/lessons/6-4/readiness/",
     },
   ],
   "6.DS.4": [
     {
       title: "8-2 Mean, Median, and Mode",
       titleEs: "8-2 Media, mediana y moda",
-      path: "/lessons/8-2/",
+      path: "/lessons/2-3/",
     },
     {
       title: "Unit 8 Culminating Projects",
@@ -232,52 +250,78 @@ export const ASSETS = Object.freeze({
       path: "/math/unit-8/projects/",
     },
   ],
+  "6.GR.4": [
+    {
+      title: "10-3 Surface Area Using Nets",
+      titleEs: "10-3 Área total con plantillas",
+      path: "/lessons/5-6/",
+    },
+    {
+      title: "10-4 Surface Area of Prisms",
+      titleEs: "10-4 Área total de prismas",
+      path: "/lessons/5-7/",
+    },
+  ],
+  "6.GR.2": [
+    {
+      title: "10-1 Volume with Whole Number Edges",
+      titleEs: "10-1 Volumen con aristas de números enteros",
+      path: "/lessons/5-5/",
+    },
+  ],
+  "6.AT.7": [
+    {
+      title: "6-6 Equivalent Expressions",
+      titleEs: "6-6 Expresiones equivalentes",
+      path: "/lessons/6-6/",
+    },
+  ],
   "6.GR.1": [
     {
       title: "5-3 Area of Triangles",
       titleEs: "5-3 Área de los triángulos",
-      path: "/lessons/5-3/",
+      path: "/lessons/5-2/",
     },
     {
       title: "5-5 Area of Composite Figures",
       titleEs: "5-5 Área de figuras compuestas",
-      path: "/lessons/5-5/",
+      path: "/lessons/5-4/",
     },
   ],
   "6.NOS.1": [
-    { title: "2-3 Divide Fractions", titleEs: "2-3 Dividir fracciones", path: "/lessons/2-3/" },
+    { title: "2-3 Divide Fractions", titleEs: "2-3 Dividir fracciones", path: "/lessons/6-2/" },
     {
       title: "2-5 Fraction Division Problem Solving",
       titleEs: "2-5 Resolver problemas de división de fracciones",
-      path: "/lessons/2-5/",
+      path: "/lessons/6-11/",
     },
   ],
   "6.NOS.2": [
     {
       title: "1-4 Divide Multi-Digit Numbers",
       titleEs: "1-4 Dividir números de varios dígitos",
-      path: "/lessons/1-4/",
+      path: "/lessons/2-6/",
     },
     {
       title: "1-4 Get Ready: Divide Multi-Digit Numbers",
       titleEs: "1-4 Prepárese: Dividir números de varios dígitos",
-      path: "/lessons/1-4/readiness/",
+      path: "/lessons/2-6/readiness/",
     },
   ],
   "6.NOS.3": [
-    { title: "1-6 Multiply Decimals", titleEs: "1-6 Multiplicar decimales", path: "/lessons/1-6/" },
-    { title: "1-7 Divide Decimals", titleEs: "1-7 Dividir decimales", path: "/lessons/1-7/" },
+    { title: "1-6 Multiply Decimals", titleEs: "1-6 Multiplicar decimales", path: "/lessons/2-12/" },
+    { title: "1-7 Divide Decimals", titleEs: "1-7 Dividir decimales", path: "/lessons/2-7/" },
   ],
   "6.NOS.4": [
     {
       title: "1-2 Greatest Common Factor",
       titleEs: "1-2 Máximo común divisor",
-      path: "/lessons/1-2/",
+      path: "/lessons/6-7/",
     },
     {
       title: "1-3 Least Common Multiple",
       titleEs: "1-3 Mínimo común múltiplo",
-      path: "/lessons/1-3/",
+      path: "/lessons/6-12/",
     },
   ],
   // 6.NOS.5 / 6.NOS.6c carry no assets of their own in the concept map, so the
@@ -286,19 +330,19 @@ export const ASSETS = Object.freeze({
     {
       title: "9-4 Rational Numbers on the Number Line",
       titleEs: "9-4 Números racionales en la recta numérica",
-      path: "/lessons/9-4/",
+      path: "/lessons/7-2/",
     },
   ],
   "6.NOS.6c": [
     {
       title: "9-4 Rational Numbers on the Number Line",
       titleEs: "9-4 Números racionales en la recta numérica",
-      path: "/lessons/9-4/",
+      path: "/lessons/7-2/",
     },
     {
       title: "9-5 Ordered Pairs in All Four Quadrants",
       titleEs: "9-5 Pares ordenados en los cuatro cuadrantes",
-      path: "/lessons/9-5/",
+      path: "/lessons/7-8/",
     },
   ],
 });
@@ -340,6 +384,21 @@ export const BRIDGES = Object.freeze({
     from: "6.NOS.3",
     en: "An average is a division. A slip in the arithmetic looks like a mix-up about averages.",
     es: "Un promedio es una división. Un desliz en la aritmética parece una confusión sobre promedios.",
+  },
+  "6.GR.4": {
+    from: "6.GR.1",
+    en: "Surface area is the area of flat shapes, added up — the net turns a solid back into rectangles and triangles.",
+    es: "El área total es la suma de áreas de figuras planas: la plantilla convierte un sólido otra vez en rectángulos y triángulos.",
+  },
+  "6.GR.2": {
+    from: "6.NOS.1",
+    en: "Volume with fractional edges is fraction multiplication stacked in three directions.",
+    es: "El volumen con aristas fraccionarias es multiplicación de fracciones en tres direcciones.",
+  },
+  "6.AT.7": {
+    from: "6.AT.6b",
+    en: "Rewriting an expression means naming its terms and factors first.",
+    es: "Reescribir una expresión requiere primero nombrar sus términos y factores.",
   },
   "6.GR.1": {
     from: "6.NOS.3",
@@ -403,6 +462,36 @@ export const TAGS = Object.freeze({
     watchFor: "Reground division as “how many of these fit into that?”",
     watchForEs: "Replantee la división como “¿cuántos de estos caben en aquello?”",
     standards: ["6.NOS.1"],
+  },
+  "geom-triangle-area-no-half": {
+    label: "Found base × height but forgot the half",
+    labelEs: "Calculó base × altura pero olvidó la mitad",
+    watchFor: "Draw the rectangle around the triangle — the triangle is half of it.",
+    watchForEs: "Dibuje el rectángulo alrededor del triángulo: el triángulo es la mitad.",
+    standards: ["6.GR.1"],
+  },
+  "geom-surface-area-as-volume": {
+    label: "Found the volume instead of the surface area",
+    labelEs: "Halló el volumen en vez del área total",
+    watchFor:
+      "Ask what the unit has to be — square units cover a surface, cubic units fill a space.",
+    watchForEs:
+      "Pregunte cuál debe ser la unidad: las unidades cuadradas cubren una superficie, las cúbicas llenan un espacio.",
+    standards: ["6.GR.4"],
+  },
+  "geom-volume-added-dimensions": {
+    label: "Added the dimensions instead of multiplying",
+    labelEs: "Sumó las dimensiones en vez de multiplicarlas",
+    watchFor: "Build one layer of unit cubes first, then count the layers.",
+    watchForEs: "Arme primero una capa de cubos unitarios y luego cuente las capas.",
+    standards: ["6.GR.2"],
+  },
+  "algebra-distributive-partial": {
+    label: "Distributed to the first term only",
+    labelEs: "Distribuyó solo al primer término",
+    watchFor: "Draw the area model — the outside factor touches BOTH terms.",
+    watchForEs: "Dibuje el modelo de área: el factor de afuera toca AMBOS términos.",
+    standards: ["6.AT.7"],
   },
   "measure-area-perimeter-swap": {
     label: "Swapped area and perimeter",
@@ -625,6 +714,93 @@ export const KITCHEN_TABLE = Object.freeze({
     why: "Division asks how many of these fit into that. The pieces on the table settle the argument in seconds.",
     whyEs:
       "La división pregunta cuántos de estos caben en aquello. Las piezas sobre la mesa resuelven la discusión en segundos.",
+  },
+  "geom-triangle-area-no-half": {
+    minutes: 5,
+    title: "Cut the rectangle in half",
+    titleEs: "Corta el rectángulo por la mitad",
+    materials: "A piece of paper, scissors, and a pencil.",
+    materialsEs: "Una hoja de papel, tijeras y un lápiz.",
+    steps: [
+      "Cut a rectangle out of paper and find its area together: length times width.",
+      "Draw one diagonal and cut along it to make two triangles.",
+      "Stack the two triangles to show they match exactly.",
+      "Ask: if the rectangle was 24 squares, how big is each triangle? Say why out loud.",
+    ],
+    stepsEs: [
+      "Recorten un rectángulo de papel y hallen juntos su área: largo por ancho.",
+      "Dibujen una diagonal y córtenla para formar dos triángulos.",
+      "Apilen los dos triángulos para mostrar que son idénticos.",
+      "Pregunte: si el rectángulo era de 24 cuadrados, ¿cuánto mide cada triángulo? Digan por qué en voz alta.",
+    ],
+    why: "Seeing the two matching halves is the whole formula — the ½ stops being a rule to memorize.",
+    whyEs:
+      "Ver las dos mitades idénticas es toda la fórmula: el ½ deja de ser una regla de memoria.",
+  },
+  "geom-surface-area-as-volume": {
+    minutes: 5,
+    title: "Unfold the cereal box",
+    titleEs: "Desdoblen la caja de cereal",
+    materials: "An empty cereal or cracker box, and scissors.",
+    materialsEs: "Una caja vacía de cereal o galletas, y tijeras.",
+    steps: [
+      "Cut along the edges and flatten the box out until it lies completely flat.",
+      "Count the rectangles. Ask which ones are the same size as each other, and why.",
+      "Point at the flat shape and ask: is this the paper AROUND the box, or the cereal INSIDE it?",
+      "Ask: if we wanted to know how much cereal fits, would we measure this flat paper — or something else?",
+    ],
+    stepsEs: [
+      "Corten por los bordes y aplanen la caja hasta que quede completamente plana.",
+      "Cuenten los rectángulos. Pregunte cuáles son del mismo tamaño y por qué.",
+      "Señale la figura plana y pregunte: ¿esto es el papel de AFUERA o el cereal de ADENTRO?",
+      "Pregunte: si quisiéramos saber cuánto cereal cabe, ¿mediríamos este papel plano u otra cosa?",
+    ],
+    why: "Surface area is the flattened box; volume is what fills it. Cutting one open makes them two different things instead of two formulas to mix up.",
+    whyEs:
+      "El área total es la caja desdoblada; el volumen es lo que la llena. Abrir una las convierte en dos cosas distintas y no en dos fórmulas que se confunden.",
+  },
+  "geom-volume-added-dimensions": {
+    minutes: 5,
+    title: "Fill the box in layers",
+    titleEs: "Llena la caja por capas",
+    materials: "A small box and anything cube-ish: dice, sugar cubes, or blocks.",
+    materialsEs: "Una caja pequeña y algo con forma de cubo: dados, cubos de azúcar o bloques.",
+    steps: [
+      "Cover just the bottom of the box with cubes and count that one layer.",
+      "Ask how many layers like that would stack to the top.",
+      "Multiply layer × layers, then check by filling the box if you have enough cubes.",
+      "Ask: why does adding the three side lengths NOT tell us how much fits inside?",
+    ],
+    stepsEs: [
+      "Cubran solo el fondo de la caja con cubos y cuenten esa primera capa.",
+      "Pregunte cuántas capas como esa se apilarían hasta arriba.",
+      "Multipliquen capa × capas y comprueben llenando la caja si tienen cubos suficientes.",
+      "Pregunte: ¿por qué sumar los tres lados NO nos dice cuánto cabe adentro?",
+    ],
+    why: "Volume is filling, not measuring edges. One layer, times the number of layers, is the formula.",
+    whyEs:
+      "El volumen es llenar, no medir bordes. Una capa, por el número de capas, es la fórmula.",
+  },
+  "algebra-distributive-partial": {
+    minutes: 5,
+    title: "Three of everything",
+    titleEs: "Tres de todo",
+    materials: "Any small snack items: crackers and grapes work well.",
+    materialsEs: "Cualquier merienda pequeña: galletas y uvas funcionan bien.",
+    steps: [
+      "Make one plate with 4 crackers and 2 grapes.",
+      "Ask your student to build THREE plates exactly like it.",
+      "Count everything: 3 × 4 crackers and 3 × 2 grapes. Write 3(4 + 2) = 12 + 6.",
+      "Ask: what goes wrong if only the crackers get tripled?",
+    ],
+    stepsEs: [
+      "Armen un plato con 4 galletas y 2 uvas.",
+      "Pida a su estudiante que arme TRES platos exactamente iguales.",
+      "Cuenten todo: 3 × 4 galletas y 3 × 2 uvas. Escriban 3(4 + 2) = 12 + 6.",
+      "Pregunte: ¿qué sale mal si solo se triplican las galletas?",
+    ],
+    why: "Three groups means three of EVERYTHING in the group — the parentheses travel together.",
+    whyEs: "Tres grupos significa tres de TODO lo que hay en el grupo: el paréntesis viaja junto.",
   },
   "measure-area-perimeter-swap": {
     minutes: 5,

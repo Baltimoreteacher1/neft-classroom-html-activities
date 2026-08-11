@@ -66,18 +66,54 @@ function renderChoices(choices) {
     .join("")}</ol>`;
 }
 
+// Print twin of the engine's buildRowFigure: the row's regular polygon fanned
+// into its congruent triangles, so the paper copy shows the same picture the
+// screen does. Returns "" for anything it does not draw.
+function polygonFigureSvg(spec) {
+  if (!spec || typeof spec !== "object" || spec.shape !== "regular-polygon") return "";
+  const sides = Number(spec.sides);
+  if (!Number.isInteger(sides) || sides < 3 || sides > 12) return "";
+  const size = 44;
+  const c = size / 2;
+  const r = c - 3;
+  const pt = (i) => {
+    const a = (2 * Math.PI * i) / sides - Math.PI / 2;
+    return [
+      Math.round((c + Math.cos(a) * r) * 100) / 100,
+      Math.round((c + Math.sin(a) * r) * 100) / 100,
+    ];
+  };
+  let wedges = "";
+  for (let i = 0; i < sides; i++) {
+    const [x1, y1] = pt(i);
+    const [x2, y2] = pt(i + 1);
+    wedges += `<polygon points="${c},${c} ${x1},${y1} ${x2},${y2}" fill="none" stroke="#333" stroke-width="1"/>`;
+  }
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="Regular polygon with ${sides} sides split into ${sides} triangles" style="display:block; margin-bottom:3px;">${wedges}</svg>`;
+}
+
 // A blank grid table: header row + one row per data row, final column blanked
 // for the student to fill. Earlier (scaffold) columns are shown as given.
 function renderFillTable(item) {
   const cols = item.columns || [];
-  const rows = item.rows || [];
-  const keys = rows.length ? Object.keys(rows[0]) : [];
+  // Configs author the row data as either `rows` or `items` (the engine's
+  // normalizeFillTable accepts both); without the fallback the printable
+  // renders a headers-only table with no rows at all.
+  const rows = Array.isArray(item.rows) && item.rows.length ? item.rows : item.items || [];
+  // `figure` is row metadata (a drawn shape), not a column — same contract the
+  // engine's normalizeFillTable uses. Keeping it would shift every column.
+  const keys = rows.length ? Object.keys(rows[0]).filter((k) => k !== "figure") : [];
   const head = `<tr>${cols.map((c) => `<th>${esc(c)}</th>`).join("")}</tr>`;
   const body = rows
     .map((r) => {
       const vals = keys.map((k) => r[k]);
+      const fig = polygonFigureSvg(r.figure);
       return `<tr>${vals
-        .map((v, i) => (i === vals.length - 1 ? `<td class="fill"></td>` : `<td>${esc(v)}</td>`))
+        .map((v, i) =>
+          i === vals.length - 1
+            ? `<td class="fill"></td>`
+            : `<td>${i === 0 ? fig : ""}${esc(v)}</td>`,
+        )
         .join("")}</tr>`;
     })
     .join("");

@@ -6,6 +6,15 @@
 //   renderPercentBuilder(container, cfg) -> { destroy }
 //     cfg.percent, cfg.whole : starting values (default 25, 80)
 //     cfg.presets            : quick-pick "p%ofw" strings, e.g. "25%of80"
+//     cfg.apply              : opt-in second step. Percent-of-a-number is only
+//                              HALF of a discount/tax/tip/markup problem — the
+//                              student still has to subtract or add the part to
+//                              the original price, which is exactly the step
+//                              they lose. With apply:true the lab adds a "then
+//                              what?" dropdown (part only / take it off / add it
+//                              on) and shows the finishing line. Off by default
+//                              so the plain percent-of-a-number lessons (4-4)
+//                              are untouched.
 
 const C = {
   navy: "#12355b",
@@ -28,6 +37,14 @@ function round2(n) {
   return Math.round(n * 100) / 100;
 }
 
+const CHIP_OP = { part: "", off: " off", on: " added" };
+
+function chipLabel(p) {
+  const m = String(p).match(/(\d+)%?of(\d+)(?::(part|off|on))?/);
+  if (!m) return String(p).replace("of", "% of ").replace("%%", "%");
+  return `${m[1]}% of ${m[2]}${CHIP_OP[m[3]] || ""}`;
+}
+
 export function renderPercentBuilder(container, cfg = {}) {
   let pct = clamp(cfg.percent ?? 25, 0, 100);
   let whole = clampWhole(cfg.whole ?? 80);
@@ -46,23 +63,51 @@ export function renderPercentBuilder(container, cfg = {}) {
       ? cfg.presets
       : ["25%of80", "10%of50", "50%of36", "75%of120", "20%of45"];
 
+  const apply = cfg.apply === true;
+  // label: what the dropdown calls the starting number and the finished answer,
+  // so the tool reads like the word problems instead of like a naked equation.
+  const OPS = {
+    part: { label: "just the part", verb: null },
+    off: { label: "take it OFF (discount, sale)", verb: "−", word: "you pay" },
+    on: {
+      label: "add it ON (tax, tip, markup)",
+      verb: "+",
+      word: "you pay",
+    },
+  };
+  let op = OPS[cfg.op] ? cfg.op : apply ? "off" : "part";
+
   injectStyles();
 
   const root = document.createElement("div");
   root.className = "pctlab";
   root.innerHTML =
-    `<div class="pctlab-title">Percent of a Number Lab</div>` +
-    `<p class="pctlab-hint">"Percent" means "out of 100." Type a percent and a whole to find that part of the number.</p>` +
+    `<div class="pctlab-title">${apply ? "Percent Problem Lab" : "Percent of a Number Lab"}</div>` +
+    `<p class="pctlab-hint">${
+      apply
+        ? `Finding the percent is only step 1. Pick what the problem does with that amount — a discount comes <strong>off</strong> the price, while tax, a tip, and markup go <strong>on</strong> top.`
+        : `"Percent" means "out of 100." Type a percent and a whole to find that part of the number.`
+    }</p>` +
     `<div class="pctlab-controls">` +
     `<label class="pctlab-field"><span>Percent</span><input type="number" min="0" max="100" value="${pct}" data-inp="pct" aria-label="Percent (0 to 100)"/></label>` +
     `<span class="pctlab-of">% of</span>` +
     `<label class="pctlab-field"><span>Whole</span><input type="number" min="1" max="10000" value="${whole}" data-inp="whole" aria-label="The whole number"/></label>` +
+    (apply
+      ? `<label class="pctlab-field pctlab-field-op"><span>Then</span><select data-inp="op" aria-label="What the problem does with that amount">` +
+        Object.entries(OPS)
+          .map(
+            ([k, v]) =>
+              `<option value="${k}"${k === op ? " selected" : ""}>${esc(v.label)}</option>`,
+          )
+          .join("") +
+        `</select></label>`
+      : "") +
     `<button type="button" class="pctlab-go">Find it →</button></div>` +
     `<div class="pctlab-presets" role="group" aria-label="Quick-pick problems">` +
     presets
       .map(
         (p) =>
-          `<button type="button" class="pctlab-chip" data-p="${esc(p)}">${esc(p.replace("of", "% of ").replace("%%", "%"))}</button>`,
+          `<button type="button" class="pctlab-chip" data-p="${esc(p)}">${esc(chipLabel(p))}</button>`,
       )
       .join("") +
     `</div>` +
@@ -73,10 +118,12 @@ export function renderPercentBuilder(container, cfg = {}) {
 
   const inP = root.querySelector('[data-inp="pct"]');
   const inW = root.querySelector('[data-inp="whole"]');
+  const inOp = root.querySelector('[data-inp="op"]');
   const stage = root.querySelector(".pctlab-stage");
   const result = root.querySelector(".pctlab-result");
 
   function draw() {
+    if (inOp) op = OPS[inOp.value] ? inOp.value : "part";
     pct = clamp(inP.value, 0, 100);
     whole = clampWhole(inW.value);
     inP.value = pct;
@@ -113,18 +160,41 @@ export function renderPercentBuilder(container, cfg = {}) {
       `</svg>`;
 
     stage.innerHTML = svg;
+    const money = (n) => `$${round2(n).toFixed(2)}`;
+    const step2 =
+      op === "part" || !OPS[op].verb
+        ? ""
+        : (() => {
+            const total = round2(op === "off" ? whole - part : whole + part);
+            return (
+              `<div class="pctlab-step2">` +
+              `<div class="pctlab-eqn">Step 2 — ${money(whole)} ${OPS[op].verb} ${money(part)} = <strong>${money(total)}</strong></div>` +
+              `<p class="pctlab-explain">${
+                op === "off"
+                  ? `A discount comes off the original price, so the answer must be <strong>less</strong> than ${money(whole)}.`
+                  : `Tax, a tip, and markup go on top of the original price, so the answer must be <strong>more</strong> than ${money(whole)}.`
+              } The finished answer is ${money(total)} — not ${money(part)}, which is only the amount you found in step 1.</p>` +
+              `</div>`
+            );
+          })();
     result.innerHTML =
-      `<div class="pctlab-eqn">${pct}% of ${whole} = ${pct}/100 × ${whole} = <strong>${part}</strong></div>` +
-      `<p class="pctlab-explain">Move ${pct}% of the way along the line: ${pct}% is the same fraction as ${pct}/100, so you take ${pct}/100 of ${whole}.</p>`;
+      `<div class="pctlab-eqn">${op === "part" ? "" : "Step 1 — "}${pct}% of ${whole} = ${pct}/100 × ${whole} = <strong>${part}</strong></div>` +
+      `<p class="pctlab-explain">Move ${pct}% of the way along the line: ${pct}% is the same fraction as ${pct}/100, so you take ${pct}/100 of ${whole}.</p>` +
+      step2;
   }
 
   root.querySelector(".pctlab-go").addEventListener("click", draw);
+  if (inOp) inOp.addEventListener("change", draw);
   root.querySelectorAll(".pctlab-chip").forEach((chip) =>
     chip.addEventListener("click", () => {
-      const m = chip.dataset.p.match(/(\d+)%?of(\d+)/);
+      // "20%of60" or, when apply is on, "20%of60:off" — the trailing op lets a
+      // preset stand for a whole word problem (sale price, total with tax)
+      // rather than only its first step.
+      const m = chip.dataset.p.match(/(\d+)%?of(\d+)(?::(part|off|on))?/);
       if (m) {
         inP.value = m[1];
         inW.value = m[2];
+        if (inOp && m[3]) inOp.value = m[3];
         draw();
       }
     }),
@@ -170,6 +240,9 @@ function injectStyles() {
   .pctlab-result{text-align:center;}
   .pctlab-eqn{font-family:"Outfit",system-ui,sans-serif;font-weight:800;font-size:1.1rem;color:${C.navy};line-height:1.5;}
   .pctlab-explain{margin:6px auto 0;max-width:500px;color:${C.ink};font-size:.9rem;line-height:1.5;}
+  .pctlab-field-op select{padding:8px 10px;font-size:.95rem;font-weight:700;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;text-transform:none;max-width:100%;}
+  .pctlab-field-op select:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
+  .pctlab-step2{margin-top:12px;padding-top:10px;border-top:2px dashed ${C.line};}
   `;
   document.head.appendChild(s);
 }

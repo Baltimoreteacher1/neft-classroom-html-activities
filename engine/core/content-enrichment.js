@@ -107,11 +107,22 @@ export function countPracticeProblems(config) {
 export function deriveHintLadder(prob) {
   if (!prob) return [];
   const authored = Array.isArray(prob.hints) ? prob.hints.filter(Boolean) : [];
+  // `hintsEs` is indexed against the RAW `hints` array, so it must be read
+  // before `filter(Boolean)` shifts the positions — a blank hint in the middle
+  // would otherwise pair every later hint with the wrong translation.
+  const authoredEs = Array.isArray(prob.hintsEs) ? prob.hintsEs : [];
+  const esFor = (h) => {
+    const at = Array.isArray(prob.hints) ? prob.hints.indexOf(h) : -1;
+    return at >= 0 ? authoredEs[at] : undefined;
+  };
   if (authored.length >= 3) {
     return authored.slice(0, 3).map((h, i) => ({
       level: i + 1,
       label: ["💡 Tip", "🧭 Strategy", "👀 Show me how"][i],
       text: String(h),
+      // Undefined when this item has no Spanish; the ladder renders English
+      // alone in that case rather than an empty second line.
+      textEs: esFor(h) ? String(esFor(h)) : undefined,
     }));
   }
 
@@ -132,45 +143,127 @@ export function deriveHintLadder(prob) {
     ? headerSource.filter((h) => typeof h === "string").slice(0, 4)
     : [];
 
+  // Every generic rung carries both lanes: the ladder was English-only for any
+  // item without authored hints, which in practice meant EVERY game item
+  // (drag-sort, matching-game) — the exact place a student who reads Spanish
+  // gets stuck with no authored support. Interpolated category/header names
+  // are authored lesson text and appear verbatim in both lanes. An authored
+  // `scaffold` replaces the third rung; its Spanish comes from `scaffoldEs`
+  // when authored, else the rung falls back to English alone (the stack
+  // renderer's contract for missing translations).
+  const scaffoldRung = (fallbackEn, fallbackEs) =>
+    scaffold
+      ? { en: scaffold, es: prob.scaffoldEs || prob.hintEs || undefined }
+      : { en: fallbackEn, es: fallbackEs };
+  const matchingHints = [
+    {
+      en: "Read every item in BOTH columns before you tap anything.",
+      es: "Lee todos los elementos de AMBAS columnas antes de tocar nada.",
+    },
+    {
+      en: "Match the pairs you are sure about first — fewer choices are left for the hard ones.",
+      es: "Empareja primero los que estés seguro — quedarán menos opciones para los difíciles.",
+    },
+    scaffoldRung(
+      "Stuck on one? Rule out the matches already taken, then compare what's left.",
+      "¿Atascado en uno? Descarta las parejas ya usadas y compara lo que queda.",
+    ),
+  ];
   const typeHints = {
     "multiple-choice": [
-      "Read the question twice. What is it really asking?",
-      "Cross out choices that clearly don't fit. Compare what's left.",
-      scaffold || "Pick the choice that matches the math rule you learned today.",
+      {
+        en: "Read the question twice. What is it really asking?",
+        es: "Lee la pregunta dos veces. ¿Qué te pide realmente?",
+      },
+      {
+        en: "Cross out choices that clearly don't fit. Compare what's left.",
+        es: "Tacha las opciones que claramente no encajan. Compara las que quedan.",
+      },
+      scaffoldRung(
+        "Pick the choice that matches the math rule you learned today.",
+        "Elige la opción que sigue la regla matemática que aprendiste hoy.",
+      ),
     ],
     "drag-sort": [
       catNames.length
-        ? `Read each category out loud first: ${catNames.join(" · ")}. Ask: what makes them different?`
-        : "Read every category label before you drag.",
-      "Sort the easiest cards first — use them as clues for the rest.",
-      scaffold ||
-        (catNames.length
+        ? {
+            en: `Read each category out loud first: ${catNames.join(" · ")}. Ask: what makes them different?`,
+            es: `Primero lee cada categoría en voz alta: ${catNames.join(" · ")}. Pregúntate: ¿en qué se diferencian?`,
+          }
+        : {
+            en: "Read every category label before you drag.",
+            es: "Lee la etiqueta de cada categoría antes de arrastrar.",
+          },
+      {
+        en: "Sort the easiest cards first — use them as clues for the rest.",
+        es: "Clasifica primero las tarjetas más fáciles — úsalas como pistas para las demás.",
+      },
+      scaffoldRung(
+        catNames.length
           ? `For each card, test it against every category (${catNames.join(", ")}) before you drop it.`
-          : "One card belongs in each category. Match the math vocabulary."),
+          : "One card belongs in each category. Match the math vocabulary.",
+        catNames.length
+          ? `Antes de soltar cada tarjeta, pruébala contra cada categoría (${catNames.join(", ")}).`
+          : "Cada tarjeta pertenece a una categoría. Fíjate en el vocabulario matemático.",
+      ),
     ],
+    "matching-game": matchingHints,
+    // Legacy alias for "matching-game" (same renderer).
+    matching: matchingHints,
     "fill-table": [
       headerNames.length
-        ? `Look at the column headings — ${headerNames.join(" · ")}. How does each row connect them?`
-        : "Fill cells you already know. Look for a pattern between rows.",
-      "Check if each row grows by the same amount or follows a ratio.",
-      scaffold || "Use the pattern to find missing values one cell at a time.",
+        ? {
+            en: `Look at the column headings — ${headerNames.join(" · ")}. How does each row connect them?`,
+            es: `Mira los títulos de las columnas — ${headerNames.join(" · ")}. ¿Cómo los conecta cada fila?`,
+          }
+        : {
+            en: "Fill cells you already know. Look for a pattern between rows.",
+            es: "Llena las celdas que ya sabes. Busca un patrón entre las filas.",
+          },
+      {
+        en: "Check if each row grows by the same amount or follows a ratio.",
+        es: "Revisa si cada fila crece por la misma cantidad o sigue una razón.",
+      },
+      scaffoldRung(
+        "Use the pattern to find missing values one cell at a time.",
+        "Usa el patrón para encontrar los valores que faltan, celda por celda.",
+      ),
     ],
     "error-analysis": [
-      "Read each step in order. Which step breaks the rule?",
-      "Check the operation in each step — add, subtract, multiply, or divide?",
-      scaffold || "Find the first step where the math stops being true.",
+      {
+        en: "Read each step in order. Which step breaks the rule?",
+        es: "Lee cada paso en orden. ¿Qué paso rompe la regla?",
+      },
+      {
+        en: "Check the operation in each step — add, subtract, multiply, or divide?",
+        es: "Revisa la operación de cada paso — ¿suma, resta, multiplicación o división?",
+      },
+      scaffoldRung(
+        "Find the first step where the math stops being true.",
+        "Encuentra el primer paso donde la matemática deja de ser verdadera.",
+      ),
     ],
     default: [
-      "Re-read the question. Underline what it's asking.",
-      "What math tool or vocabulary word fits this problem?",
-      scaffold || "Plan your first step before you answer.",
+      {
+        en: "Re-read the question. Underline what it's asking.",
+        es: "Vuelve a leer la pregunta. Subraya lo que te pide.",
+      },
+      {
+        en: "What math tool or vocabulary word fits this problem?",
+        es: "¿Qué herramienta matemática o palabra de vocabulario encaja con este problema?",
+      },
+      scaffoldRung(
+        "Plan your first step before you answer.",
+        "Planea tu primer paso antes de responder.",
+      ),
     ],
   };
 
   const hints = typeHints[prob.type] || typeHints.default;
-  return hints.map((text, i) => ({
+  return hints.map((h, i) => ({
     level: i + 1,
     label: ["💡 Tip", "🧭 Strategy", "👀 Show me how"][i],
-    text: String(text),
+    text: String(h.en),
+    textEs: h.es ? String(h.es) : undefined,
   }));
 }

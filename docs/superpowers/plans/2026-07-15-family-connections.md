@@ -43,7 +43,7 @@ const message = composeMessage({
   language: "plain",
   student: "Jordan",
   lessonLabel: "Lesson 3-2 · Unit Rates",
-  resource: { label: "Family Homework", url: "/lessons/3-2/homework.html" },
+  resource: { label: "Family Homework", url: "/lessons/3-3/homework.html" },
   context: "The first two questions are complete.",
 });
 assert.match(message.body, /Jordan/);
@@ -55,7 +55,7 @@ assert.match(buildOutlookUrl(message), /^https:\/\/outlook\.office\.com\/mail\/d
 assert.deepEqual(getLessonResources({ id: "3-2", resources: {} })[0], {
   kind: "family-homework",
   label: "Family Homework",
-  url: "/lessons/3-2/homework.html",
+  url: "/lessons/3-3/homework.html",
 });
 ```
 

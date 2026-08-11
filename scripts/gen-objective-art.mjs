@@ -47,6 +47,17 @@ const M = {
  */
 const TOPICS = [
   {
+    key: "mathPractice",
+    model: M.mathPractice,
+    heading: "Notice a rule, test it, explain why",
+    note: "1  ·  3  ·  7  →  double it, then add 1",
+    talkHeading: "Saying the rule out loud",
+    lines: [
+      ["Each box doubles the dots in the box before it", "and then adds one more."],
+      ["So the next box would hold 7 x 2 + 1 = 15 dots.", "That is why the rule works."],
+    ],
+  },
+  {
     key: "factors",
     model: M.factors,
     heading: "Factor trees, GCF and LCM",

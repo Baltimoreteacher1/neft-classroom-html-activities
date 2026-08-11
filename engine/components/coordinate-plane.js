@@ -38,9 +38,9 @@ export function renderCoordinatePlane(
     "position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);";
   wrapper.append(live);
 
-  const W = 520,
-    H = 520,
-    PAD = 30;
+  const W = 640,
+    H = 640,
+    PAD = 34;
   const plot = W - PAD * 2;
   const toX = (v) => PAD + ((v - min) / (max - min)) * plot;
   const toY = (v) => PAD + ((max - v) / (max - min)) * plot;
@@ -57,7 +57,7 @@ export function renderCoordinatePlane(
   );
   svg.setAttribute("tabindex", "0");
   svg.style.cssText =
-    "width:100%; max-width:520px; height:auto; display:block; margin:0 auto; background:white; border:1px solid var(--line); border-radius:var(--radius-md); user-select:none; touch-action:none;";
+    "width:100%; max-width:640px; height:auto; display:block; margin:0 auto; background:white; border:1px solid var(--line); border-radius:var(--radius-md); user-select:none; touch-action:none;";
 
   function svgEl(tag, attrs) {
     const e = document.createElementNS(NS, tag);
@@ -163,10 +163,10 @@ export function renderCoordinatePlane(
     const r = svgEl("circle", {
       cx: toX(t.x),
       cy: toY(t.y),
-      r: 11,
+      r: 13,
       fill: "none",
-      stroke: "rgba(15,124,74,0.45)",
-      "stroke-width": 2,
+      stroke: "rgba(15,124,74,0.55)",
+      "stroke-width": 2.5,
       "stroke-dasharray": "4,3",
     });
     r.style.display = "none";
@@ -185,38 +185,67 @@ export function renderCoordinatePlane(
   function drawCross() {
     const cx = toX(cur.x),
       cy = toY(cur.y);
-    ch1.setAttribute("x1", cx - 8);
+    ch1.setAttribute("x1", cx - 10);
     ch1.setAttribute("y1", cy);
-    ch1.setAttribute("x2", cx + 8);
+    ch1.setAttribute("x2", cx + 10);
     ch1.setAttribute("y2", cy);
     ch2.setAttribute("x1", cx);
-    ch2.setAttribute("y1", cy - 8);
+    ch2.setAttribute("y1", cy - 10);
     ch2.setAttribute("x2", cx);
-    ch2.setAttribute("y2", cy + 8);
+    ch2.setAttribute("y2", cy + 10);
   }
 
   const placed = [];
   function placePoint(x, y) {
-    if (placed.length >= targets.length) return;
+    if (placed.length >= targets.length) {
+      live.textContent = `All ${targets.length} points are placed. Click a point to remove it first.`;
+      instr.textContent = `All ${targets.length} points placed — click a point to remove it, or press Check Points.`;
+      return;
+    }
+    // Refuse a duplicate: two dots on one lattice point look like one dot and
+    // silently waste a placement.
+    if (placed.some((p) => p.x === x && p.y === y)) {
+      live.textContent = `There is already a point at ${x}, ${y}.`;
+      instr.textContent = `Already a point at (${x}, ${y}) — pick a different spot.`;
+      return;
+    }
     const g = svgEl("g", {});
+    // Invisible halo first: a generous tap target for removing the point.
+    const halo = svgEl("circle", {
+      cx: toX(x),
+      cy: toY(y),
+      r: 16,
+      fill: "transparent",
+    });
+    // White under-ring keeps the dot readable even on a gridline crossing.
+    const ring = svgEl("circle", {
+      cx: toX(x),
+      cy: toY(y),
+      r: 11,
+      fill: "white",
+      "fill-opacity": "0.85",
+    });
     const dot = svgEl("circle", {
       cx: toX(x),
       cy: toY(y),
-      r: 7,
+      r: 8.5,
       fill: "var(--amber)",
       stroke: "var(--navy)",
-      "stroke-width": 2,
+      "stroke-width": 2.5,
     });
+    // Flip the label to the left near the right edge so it never runs off.
+    const flip = toX(x) > W - PAD - 70;
     const lbl = svgEl("text", {
-      x: toX(x) + 11,
-      y: toY(y) - 9,
-      "font-size": "11px",
+      x: flip ? toX(x) - 13 : toX(x) + 13,
+      y: toY(y) - 11,
+      "font-size": "14px",
       fill: "var(--navy)",
       "font-weight": "700",
+      "text-anchor": flip ? "end" : "start",
       "font-family": "Calibri, sans-serif",
     });
     lbl.textContent = `(${x}, ${y})`;
-    g.append(dot, lbl);
+    g.append(halo, ring, dot, lbl);
     g.style.cursor = "pointer";
     svg.append(g);
     const rec = { x, y, g, dot };

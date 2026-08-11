@@ -1,5 +1,16 @@
 import { el } from "./small-group-ui.js";
 
+/**
+ * The mode bar is mounted as a SIBLING of #app, immediately before it, not as
+ * its first child. #app is a centred 1160px column, so a bar inside it stops at
+ * the column edge and reads as a floating dark slab on any wide screen; a plain
+ * block in the body spans the viewport exactly, with no 100vw scrollbar
+ * overshoot. Everything else stays inside #app.
+ */
+function mountBar(app, bar) {
+  app.parentNode?.insertBefore(bar, app);
+}
+
 function modeBar(mode, lessonId) {
   const bar = el("div", `sg-mode sg-mode--${mode}`);
   bar.setAttribute("aria-label", `${mode === "teacher" ? "Teacher" : "Student"} mode controls`);
@@ -19,7 +30,7 @@ function modeBar(mode, lessonId) {
 export async function mountSmallGroupTeacherAccess({ app, lessonId, renderTeacher }) {
   const requested = new URLSearchParams(window.location.search).get("teacher") === "1";
   if (!requested) {
-    app.prepend(modeBar("student", lessonId));
+    mountBar(app, modeBar("student", lessonId));
     return false;
   }
 
@@ -41,18 +52,18 @@ export async function mountSmallGroupTeacherAccess({ app, lessonId, renderTeache
     }
   }
   if (!response?.ok || !payload?.facilitation) {
-    app.prepend(modeBar("student", lessonId));
+    mountBar(app, modeBar("student", lessonId));
     const notice = el(
       "p",
       "sg-mode-notice",
       "Teacher access was not confirmed. This lesson is staying in Student Mode.",
     );
     notice.setAttribute("role", "status");
-    app.querySelector(".sg-mode")?.after(notice);
+    app.prepend(notice);
     return false;
   }
 
-  app.prepend(modeBar("teacher", lessonId));
+  mountBar(app, modeBar("teacher", lessonId));
   document.body.classList.add("sg-is-teacher");
   renderTeacher(payload.facilitation);
   return true;

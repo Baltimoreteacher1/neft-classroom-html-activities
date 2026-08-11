@@ -4,6 +4,197 @@ Findings log for `docs/lesson-quality-rubric.md` audit passes. Each wave is a da
 Per the rubric's "Engine-Level vs Per-Unit Fix" guidance, findings that recur 3+ times across
 lessons in the same way are logged once as a schema/engine gap, not repeated per lesson.
 
+> **Read Wave 2 before acting on Wave 1.** Wave 1 audited a 74-lesson corpus that no longer
+> exists — the curriculum is now 64 core lessons plus 148 generated group/catch-up variants,
+> and several lessons Wave 1 names (`3-1-flagship`, every other `*-flagship`) are gone. Its
+> two largest schema gaps are closed. Wave 2 re-verifies each Wave 1 gap against the current
+> corpus and says which still stand.
+
+## Wave 3 — 2026-08-06 — Wave 2's Finding 1 was wrong; the whole practice lane was dead
+
+**Read this before Wave 2's Finding 1.** That finding said a Spanish-speaking student
+"reads the question, the hints and the explanation in Spanish, then analyzes math work that
+is only in English," and concluded the fix was a 257-item job to author `workedExampleEs`.
+The premise is false for core lessons, and acting on it would have paid for translations of
+257 worked examples while **2,900+ already-authored Spanish strings sat undisplayed**.
+
+### What is actually true
+
+A module-graph walk from `engine/core/lesson-renderer.js` (99 modules) finds a consumer for
+the *vocabulary* Spanish only. The practice lane had none:
+
+| `*Es` key | occurrences in the 64 core configs | reachable consumer before this wave |
+| --- | --- | --- |
+| `explanationEs` | 1,308 | **none** |
+| `hintsEs` | 860 | **none** |
+| `stemEs` | 538 | none on the practice path (only `vocab-learn-panel.js`, a different surface) |
+| `instructionsEs` | 170 | **none** |
+| `choicesEs` | 162 | **none — consumed nowhere in the repo at all** |
+| `promptEs` | 54 | **none** |
+| `termEs` / `definitionEs` | 417 each | 11–13 modules — vocabulary was always bilingual |
+
+4,355 `*Es` occurrences in total; 1,308 of 1,965 practice items carry at least one. The
+reason this looked like "prose translated, steps not" is that vocabulary *is* fully
+bilingual, so the Spanish a reviewer happens to click on usually renders. Practice items
+never did. `engine/components/multiple-choice.js` contained the string `Es` zero times.
+
+The small-group renderer had a complete bilingual lane the entire time — `bi()` in
+`small-group-ui.js`, used by the 148 generated variants. Only the core renderer lacked one.
+Two separate paths, one of which nobody had wired.
+
+### Fixed this wave (engine)
+
+The core practice lane now renders the Spanish that was already authored. English is always
+drawn; Spanish stacks beneath it inside `.i18n-es`, which `design-system.css` keeps at
+`display:none` until `<html lang="es">` — so this is **opt-in behind the existing ES/EN
+toggle and changes nothing for a student who never touches it**.
+
+- `engine/core/i18n.js` — new `stackContent` / `stackContentHtml`. Unlike `stackHtml` (built
+  for fixed chrome, which always has both lanes), these return English *alone* when the
+  Spanish is blank or identical. Emitting an empty `.i18n-es` would print a blank italic
+  line under every untranslated item, which reads as a missing translation.
+- `problem-shell.js` + `lesson-renderer.js` — problem stems (`stemEs`, falling back through
+  the same `prompt`/`label` chain the English side uses, so the two lanes cannot desync).
+- `content-enrichment.js` + `hint-ladder.js` — hint rungs. The ladder's *header* has been
+  bilingual since it shipped, so a student in Spanish mode opened a Spanish-labelled hint
+  and read English. Pairing is by raw index: `hints` is filtered for blanks before mapping
+  and `hintsEs` is not, so pairing after the filter hands a rung the wrong translation.
+- `multiple-choice.js` — choices, explanation, the retry coach, and the misconception chip.
+- `misconceptions.js` — new `misconceptionLabel(id, lang)`, mirroring the existing
+  `studentExplanation`. Callers must not reach into `diagnoseChoice(...).labelEs`: that
+  spread is typed from the entries carrying no Spanish, so it is both a type error and a
+  silent `undefined` on any untranslated entry.
+- `error-analysis.js` — title, per-step `labelEs`/`workEs`, `correctWorkEs`, and its two
+  hardcoded English UI lines.
+
+### What is still a content job
+
+Wave 2 was right that the worked steps themselves have no Spanish — `workedExampleEs` /
+`correctWorkEs` do not exist in any config. That part stands, and it is still ~257 items.
+The difference is that the renderer now supports it, so authoring produces visible student
+support rather than dead data. Author per-step `labelEs` / `workEs` and `correctWorkEs`.
+
+Sequencing note for the next pass: `instructionsEs` (170) and `promptEs` (54) are still
+unrendered — they belong to `drag-sort` / `fill-table` / open-response components that this
+wave did not touch. Same fix shape, same helper.
+
+### Gates run
+
+`npm run validate` (exit 0), `npm test` (127/127, plus the new
+`engine/core/bilingual-practice.test.mjs`, 8/8), `npm run typecheck` (clean — it caught the
+`diagnoseChoice(...).labelEs` mistake above), `npx biome check` (clean), `npm run build`, and
+a real-Chromium probe over `1-2`, `1-3`, `1-4`, `2-2`: in `es` mode 21 Spanish spans visible
+per lesson across stems and hint rungs with **0 blank** ES spans; in `en` mode the same 21
+spans present and **0 visible**. English text identical in both modes.
+
+## Wave 2 — 2026-08-06 — Re-verification + detector sweep (64 core lessons)
+
+Scope: the 64 core lessons (`lessons/*/config.json`, excluding the 148 `-group*`/`-catchup`
+variants, which `npm run eval:small-groups` owns). Method: self-tested scripted detectors for
+the classes no existing gate covers, targeted manual reads to confirm or kill each hit, and
+both browser-backed gates run against a real Chromium.
+
+### Wave 1 gaps re-verified against the current corpus
+
+| Wave 1 gap | Status now |
+| --- | --- |
+| #1 `noticeAndWonder` + `revealWordProblem` missing (17 of 74) | **Closed.** 0 of 64 missing either key. |
+| #2 fields present but no `image` | **Closed.** 0 of 64 lack `noticeAndWonder.image`; 0 config image refs point at a file that is not on disk. |
+| #3 `noticeAndWonder.image` unrelated to its context (Unit 8) | **Superseded.** The stock photos were replaced by per-lesson SVG diagrams drawn from each lesson's own numbers (e.g. `2-1` now renders a 3-foot tape cut into twelve 1/4-foot sections). See finding 2 below for the debris that replacement left. |
+| 7-6 / 9-7 "Unit N" copy-paste in project titles | **Closed.** 0 lessons state a unit number other than their own in any `title`/`desc`/`name`/`label`. |
+| 3-1-flagship Spanish boilerplate | **Moot** — the lesson no longer exists. |
+| 2-1 graphic-novel `desc` mismatch | **Fixed this wave** (finding 3). |
+
+### Finding 1 — ESOL: worked-example steps are English-only, corpus-wide (schema gap)
+
+> **Superseded by Wave 3 — its premise is wrong.** This finding assumes the surrounding
+> prose (`stemEs`, `explanationEs`, `hintsEs`, `choicesEs`) was being *displayed* to
+> students. It was not: the core lesson renderer had no consumer for any of those keys, so
+> the practice lane was English-only end to end, not just its worked steps. The conclusion
+> below — "author `workedExampleEs` on 257 items" — would have added translations to a
+> renderer that could not show them while 2,900+ existing Spanish strings stayed dark. Wave 3
+> wired the renderer. Keep reading only for the worked-step gap itself, which is real.
+
+**All 257 error-analysis / worked-example items across all 64 lessons** carry translated prose
+— `stemEs`, `explanationEs`, `hintsEs`, `choicesEs` — while the worked steps the student is
+asked to analyze (`workedExample`, `correctWork`) have no `…Es` variant at all. A Spanish-
+speaking student reads the question, the hints and the explanation in Spanish, then analyzes
+math work that is only in English.
+
+This also explains a pattern that looks like a translation defect but is not: Spanish
+explanations quote English step labels verbatim (`3-4`: `El paso "Apply to the flour" suma 3
+en lugar de multiplicar por 3`). That quoting is *correct* — it names what is actually on
+screen. Translating those quotes without translating the steps would break the reference.
+The steps are the thing to fix, not the quotes.
+
+**This is engine work before it is content work.** `engine/components/error-analysis.js`
+destructures `{ title, workedExample, errorStep, correctWork, hints, onAnswer }` and renders
+`step.label` and `step.work` raw; the call site in `engine/core/lesson-renderer.js` (~line
+1062) spreads `...problemDef` straight through. There is no `…Es` lookup and no
+`getPreferredLang()` call anywhere in that path. Authoring `workedExampleEs` on 257 items
+today would produce **dead data the engine cannot display** — a large content effort for zero
+student benefit.
+
+Sequence it the other way round: teach the component the Spanish lane first, following the
+pattern the other bilingual components already use (`twr-writing.js`, `discourse.js`,
+`misconceptions.js` — English always rendered, Spanish added beneath it, gated on
+`getPreferredLang()`), then author the content against a renderer that can show it. The
+engine change is small and additive; the content job after it is the large one, and both
+need Joel's review.
+
+Largest single ESOL gap in the curriculum.
+
+### Finding 2 — 41 unreferenced `reveal-assets/` files, 6.58 MB, all shipped to production
+
+The Wave 1 gap-#3 fix (stock photo → lesson-specific SVG) re-pointed the configs but left the
+superseded rasters on disk. 41 files across 33 lessons are referenced by **nothing** in
+tracked source, and all 41 are copied into `dist/` and served. Largest: `2-3` 1.2 MB, `2-1`
+964 KB, `1-3` 928 KB.
+
+Verify with the whole-repo reference set, not the owning lesson's config — the generated
+group/catch-up lessons reference the *core* lesson's assets (`1-7-group2` →
+`/lessons/2-7/reveal-assets/notice-wonder.png`), so a per-lesson check reports live files as
+orphans. Four lessons (`8-2`, `8-4`, `9-1`, `9-5`) still legitimately use a raster.
+
+Reported, not deleted — same posture as `audit:dead-code` and `audit:duplicates`.
+
+### Finding 3 — fixed this wave
+
+- **`2-1`, `4-1`** — `graphicNovel.desc` read "Interactive Axiom City episode" while the linked
+  episodes are *Master Chef Kitchen — Recipe Rescue* and *Shopping Mall Mogul*. Both now
+  describe their actual episode, in the wording their sibling lessons already use.
+- **`5-5`** — `practice.approaching[2].explanationEs` ended "= 23 sq units"; now "= 23 unidades
+  cuadradas". The only Spanish slot in the corpus that was byte-identical to its English pair
+  while carrying real prose.
+- **`scripts/validate-lesson-visuals.mjs`** — now honors `PW_CHROMIUM_PATH`, the override
+  `tools/smoke-lesson-boot.mjs` already had. Without it the gate cannot open a browser wherever
+  Playwright's expected build number does not match what is on disk (here: it wanted
+  headless-shell 1234, the box has 1194), and a visual gate that cannot open a browser probes
+  nothing.
+
+### Checked and cleared — do not re-chase these
+
+Each looked like a defect class and is not. Logged so a later pass does not spend the time again.
+
+- **Vocabulary entries "missing" `cloze`** (8 lessons). There are two complete card shapes:
+  `cloze` cards and `sentences` cards. Every entry lacking `cloze` carries `sentences`.
+  `examples` and `image` are optional enrichments. Zero real gaps.
+- **145 project `href`s whose `/math/unit-N/` number differs from the lesson's unit.** The
+  `/math/` folder numbering is a separate legacy scheme. All 145 resolve on disk; `audit:links`
+  confirms all 25,100 internal links resolve.
+- **1–2 `console.error` on every page** in the boot smoke. Google Fonts blocked by the sandbox
+  proxy, plus `/api/supports/sections` 404 because Pages Functions do not run under
+  `vite preview`. Environment artifacts, not site defects.
+- **Image-filename-vs-context keyword heuristics.** Useless here — every reveal image is named
+  `notice-wonder.<ext>`, so the filename carries no signal. Any future detector must read the
+  image, not its name.
+
+### Gates run for this wave
+
+`npm run validate` (exit 0), `npm run validate:lesson-boot` with a real Chromium
+(**16/16 pages rendered**, ~200s — not the 1s no-op), and `validate:lesson-visuals` full
+browser probe over all 212 lessons.
+
 ## Wave 1 — 2026-07-02 — Full-corpus human-judgment pass (74 lessons)
 
 Read-only audit, 7 parallel passes covering all lessons in `lessons/`, scored against all 9

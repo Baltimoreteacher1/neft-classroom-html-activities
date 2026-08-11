@@ -3,7 +3,6 @@
  * Batch-enrich lesson config.json files with:
  * - practice.commonMistake (lesson-specific from keyIdea)
  * - turnAndTalk practice-phase entry where missing
- * - familyNotes overrides for flagship lessons
  * - stretch error-analysis in approaching tier where a tier lacks depth
  *
  * Run: node scripts/enrich-lesson-configs.mjs
@@ -15,7 +14,7 @@ import { join } from "node:path";
 
 const root = join(import.meta.dirname, "..");
 const lessonsDir = join(root, "lessons");
-const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
+const LESSON_DIR_RE = /^(\d+)-(\d+)$/;
 
 function keyIdea(config) {
   return (
@@ -75,80 +74,6 @@ function derivePracticeTurnAndTalk(config) {
   };
 }
 
-function flagshipFamilyNotes(config) {
-  const idea = keyIdea(config);
-  const vocab = config.vocabulary || [];
-  const mission = config.flagship?.mission;
-
-  return {
-    learningTonight: {
-      en: mission?.objective || plainObjective(config.contentObjective) || config.title,
-      es: config.contentObjectiveEs || `Practicar: ${config.title || "la lección de hoy"}`,
-    },
-    conceptSteps: [
-      {
-        en: mission?.story?.split(".")[0] + "." || idea,
-        es: "Lean la historia de la misión juntos antes de empezar los ejercicios.",
-      },
-      {
-        en: idea || config.contentObjective || "",
-        es: "Verifiquen cada paso con la idea clave de la lección.",
-      },
-    ].filter((s) => s.en),
-    watchFor: vocab.slice(0, 3).map((v) => ({
-      icon: "👀",
-      en: `Listen for "${v.term}" — ${v.definition}`,
-      es: `Escucha "${v.termEs || v.term}" — ${v.definitionEs || v.definition}`,
-    })),
-    tryTogether: {
-      titleEn: "Mission practice together",
-      titleEs: "Practiquen la misión juntos",
-      scenarioEn: mission?.story || config.launch?.narrative?.split(".")[0] + "." || "",
-      scenarioEs: "Usen la historia de la misión para conectar la matemática con un problema real.",
-      steps: [
-        {
-          en: "Pick one practice problem and solve it on paper together.",
-          es: "Elijan un problema de práctica y resuélvanlo en papel juntos.",
-          hint: "Talk through each step aloud.",
-          hintEs: "Hablen de cada paso en voz alta.",
-        },
-        {
-          en: idea
-            ? `Check: does your answer follow — ${idea}?`
-            : "Check: does your answer match today's objective?",
-          es: idea
-            ? `Verifiquen: ¿su respuesta sigue — ${idea}?`
-            : "Verifiquen: ¿su respuesta coincide con el objetivo de hoy?",
-          hint: "This is the flagship lesson's deepest idea.",
-          hintEs: "Esta es la idea más profunda de la lección estrella.",
-        },
-      ],
-    },
-    stuckTips: {
-      say: [
-        {
-          en: "What part of the mission story helps here?",
-          es: "¿Qué parte de la historia de la misión ayuda aquí?",
-        },
-        { en: "Let's re-read the key idea together.", es: "Releamos juntos la idea clave." },
-      ],
-      dontSay: [
-        {
-          en: "This flagship lesson is too hard — skip it.",
-          es: "Esta lección estrella es muy difícil — sáltenla.",
-        },
-      ],
-    },
-  };
-}
-
-function plainObjective(obj) {
-  if (!obj) return "";
-  return String(obj)
-    .replace(/^I can\s+/i, "")
-    .replace(/\.$/, "");
-}
-
 function needsStretchProblem(tier) {
   if (!Array.isArray(tier) || tier.length === 0) return true;
   return !tier.some(
@@ -188,7 +113,7 @@ const lessonIds = readdirSync(lessonsDir)
   .filter((d) => LESSON_DIR_RE.test(d) && existsSync(join(lessonsDir, d, "config.json")))
   .sort();
 
-let stats = { commonMistake: 0, practiceTT: 0, familyNotes: 0, stretch: 0 };
+let stats = { commonMistake: 0, practiceTT: 0, stretch: 0 };
 
 for (const id of lessonIds) {
   const path = join(lessonsDir, id, "config.json");
@@ -207,12 +132,6 @@ for (const id of lessonIds) {
   if (practiceTT) {
     config.turnAndTalk = [...(config.turnAndTalk || []), practiceTT];
     stats.practiceTT++;
-    changed = true;
-  }
-
-  if (id.includes("flagship") && !config.familyNotes) {
-    config.familyNotes = flagshipFamilyNotes(config);
-    stats.familyNotes++;
     changed = true;
   }
 

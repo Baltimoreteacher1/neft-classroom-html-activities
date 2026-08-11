@@ -3,6 +3,7 @@
 //   item: { stem, answer, choices?, correctIndex?, visual?, difficulty? }
 //   returns null (attaches nothing) when the item can't be safely regenerated.
 
+import { mountSymbolPad, needsSymbolPad } from "../core/symbol-pad.js";
 import { canRegenerate, regenerate } from "./problem-generator.js";
 
 const STYLE_ID = "regen-practice-styles";
@@ -115,6 +116,10 @@ export function attachRegenPractice(container, item, opts = {}) {
             `<button type="button" class="regen-btn" data-el="check">Check</button></div>`) +
         `<div class="regen-fb" data-el="fb" role="status" aria-live="polite"></div>`;
       const fb = q('[data-el="fb"]');
+
+      // Inequality answers need symbols no Chromebook keyboard has.
+      const regenInput = q(".regen-input");
+      if (regenInput && needsSymbolPad(gen.answer)) mountSymbolPad(regenInput, { force: true });
 
       const win = () => {
         done = true;

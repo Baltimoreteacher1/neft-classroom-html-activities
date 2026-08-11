@@ -103,16 +103,17 @@ counts.
 | Momentum meter            | Called phase completions "checks"                     | Fixed — "steps done"                           |
 | Reasoning reader          | n/a (new)                                             | 502 over a guessed reply; answer-leak guard    |
 | Streak chip               | Reports consecutive correct answers, labelled as such | Compliant — verified, not changed              |
-| Mastery dashboard rollups | Consumes `reported`; display not yet updated          | **Open** — see below                           |
+| Mastery dashboard rollups | Consumes `reported`; display not yet updated          | Fixed 2026-08-04 — coverage shown, see below   |
 
-## Known open item
+## Known open item — closed 2026-08-04
 
-`/api/progress/small-group-summary` and the `/teacher-tools/mastery/` display
-predate this policy. The producer now emits `reported: 1`, so the coverage data
-exists, but those two surfaces do not yet show it. Until they do, a `0` on the
-mastery dashboard still carries the old ambiguity. This is recorded rather than
-quietly fixed because changing that display is a separate, teacher-facing change
-with its own validation surface.
+`/api/progress/small-group-summary` now aggregates `reported` into
+`devicesReporting` (per group and total, including the empty and error paths, so
+a bare `0` is itself a claim about coverage). The rotation console's evidence
+table shows a Devices column plus a caption stating the denominator, and
+`/teacher-tools/mastery/` shows a "Devices reporting" summary card and, when
+events exist but none carry the marker, states explicitly that zeros mean no
+evidence rather than zero learning.
 
 ## For new work
 

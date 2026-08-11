@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Today — Neft Teacher</title>
+    <meta
+      name="description"
+      content="One place to pick up where you left off and start today's lesson."
+    />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <style>
+      /* ---------------------------------------------------------------------
+         Today — the daily front door.
+
+         Design rule: the screen has the SAME shape every day. Only its contents
+         change. A student who has been out for three days opens this and sees a
+         familiar layout with different words in it, which is the whole point —
+         they stop re-learning the tool and start doing math.
+
+         Everything is sized for a Chromebook at arm's length: large type, large
+         tap targets, no hover-only affordances, and never more than one obvious
+         next action.
+      --------------------------------------------------------------------- */
+      :root {
+        --ink: #0f172a;
+        --muted: #475569;
+        --line: #cbd5e1;
+        --teal: #0f766e;
+        --teal-dark: #115e59;
+        --amber: #b45309;
+        --paper: #f8fafc;
+        --card: #ffffff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font:
+          17px/1.55 system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+      .wrap {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 28px 18px 64px;
+      }
+      h1 {
+        font-size: 2rem;
+        margin: 0 0 4px;
+        letter-spacing: -0.02em;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 24px;
+        font-size: 1rem;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card h2 {
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin: 0 0 10px;
+      }
+      .card .title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        margin: 0 0 4px;
+      }
+      .card .meta {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin: 0 0 16px;
+      }
+      /* The primary card is visually louder than everything else, because on a
+         normal day tapping it is the entire interaction. */
+      .card.primary {
+        border: 2px solid var(--teal);
+        background: #f0fdfa;
+      }
+      .btn {
+        display: block;
+        width: 100%;
+        padding: 16px 20px;
+        border: 0;
+        border-radius: 12px;
+        background: var(--teal);
+        color: #fff;
+        font: inherit;
+        font-size: 1.15rem;
+        font-weight: 800;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .btn:hover,
+      .btn:focus-visible {
+        background: var(--teal-dark);
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--teal);
+        border: 2px solid var(--teal);
+      }
+      .btn.ghost:hover,
+      .btn.ghost:focus-visible {
+        background: #f0fdfa;
+      }
+      .bar {
+        height: 10px;
+        background: #e2e8f0;
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 16px;
+      }
+      .bar > i {
+        display: block;
+        height: 100%;
+        background: var(--teal);
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 16px;
+        font: inherit;
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-align: center;
+        text-transform: uppercase;
+        border: 2px solid var(--line);
+        border-radius: 12px;
+      }
+      input[type="text"]:focus {
+        outline: 3px solid var(--teal);
+        outline-offset: 2px;
+      }
+      .names {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        margin-top: 6px;
+      }
+      .names button {
+        padding: 16px 10px;
+        font: inherit;
+        font-size: 1.05rem;
+        font-weight: 700;
+        background: #fff;
+        border: 2px solid var(--line);
+        border-radius: 12px;
+        cursor: pointer;
+      }
+      .names button:hover,
+      .names button:focus-visible {
+        border-color: var(--teal);
+        background: #f0fdfa;
+      }
+      .list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .list li {
+        border-top: 1px solid var(--line);
+      }
+      .list a {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        padding: 14px 4px;
+        color: var(--ink);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .list a:hover,
+      .list a:focus-visible {
+        color: var(--teal);
+      }
+      .tag {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .tag.done {
+        color: var(--teal);
+      }
+      .tag.open {
+        color: var(--amber);
+      }
+      details > summary {
+        cursor: pointer;
+        font-weight: 700;
+        padding: 6px 0;
+      }
+      .who {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-bottom: 18px;
+      }
+      .who button {
+        background: none;
+        border: 0;
+        font: inherit;
+        color: var(--teal);
+        font-weight: 700;
+        text-decoration: underline;
+        cursor: pointer;
+        padding: 4px;
+      }
+      .msg {
+        color: #b91c1c;
+        font-weight: 600;
+        min-height: 1.4em;
+        margin: 10px 0 0;
+      }
+      .note {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      #teacher {
+        margin-top: 34px;
+        border: 2px dashed var(--line);
+        background: #fffbeb;
+      }
+      #teacher select,
+      #teacher input {
+        width: 100%;
+        padding: 11px;
+        font: inherit;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        margin-bottom: 10px;
+        text-align: left;
+        letter-spacing: normal;
+        text-transform: none;
+        font-size: 1rem;
+        font-weight: 500;
+      }
+      @media (max-width: 480px) {
+        h1 {
+          font-size: 1.6rem;
+        }
+        .wrap {
+          padding: 20px 14px 48px;
+        }
+      }
+    </style>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+</head>
+  <body>
+    <div class="wrap">
+      <!-- STEP 1 — class code. Shown once per device, then never again. -->
+      <section id="join" hidden>
+        <h1>Welcome</h1>
+        <p class="sub">Type the class code your teacher put on the board.</p>
+        <div class="card">
+          <label for="code" style="font-weight: 700; display: block; margin-bottom: 8px"
+            >Class code</label
+          >
+          <input id="code" type="text" maxlength="12" autocomplete="off" placeholder="MK7Q9C" />
+          <p class="msg" id="join-msg"></p>
+          <button class="btn" id="join-go" style="margin-top: 10px">Go</button>
+        </div>
+      </section>
+
+      <!-- STEP 2 — tap your name. Big targets, no typing, no spelling. -->
+      <section id="pick" hidden>
+        <h1>Tap your name</h1>
+        <p class="sub" id="pick-sub"></p>
+        <div class="card"><div class="names" id="names"></div></div>
+        <p class="note">
+          Wrong class? <button class="btn ghost" id="pick-back">Use a different code</button>
+        </p>
+      </section>
+
+      <!-- STEP 3 — the daily screen. Same shape every single day. -->
+      <section id="today" hidden>
+        <div class="who">
+          <span id="who-label"></span>
+          <button id="who-switch">Not you?</button>
+        </div>
+        <h1>Today</h1>
+        <p class="sub" id="today-sub">Here's where you are.</p>
+
+        <!-- Unfinished work. The one-tap path back in. -->
+        <div class="card primary" id="resume-card" hidden>
+          <h2>Pick up where you left off</h2>
+          <p class="title" id="resume-title"></p>
+          <p class="meta" id="resume-meta"></p>
+          <div class="bar"><i id="resume-bar"></i></div>
+          <a class="btn" id="resume-go" href="#">Continue</a>
+        </div>
+
+        <!-- Today's assigned lesson. Collapses into the card above when they
+             are the same lesson, so a student never sees two buttons for one
+             thing. -->
+        <div class="card" id="assigned-card" hidden>
+          <h2>Today's lesson</h2>
+          <p class="title" id="assigned-title"></p>
+          <p class="meta" id="assigned-meta"></p>
+          <a class="btn ghost" id="assigned-go" href="#">Start</a>
+        </div>
+
+        <div class="card" id="empty-card" hidden>
+          <h2>Ready when you are</h2>
+          <p class="meta">Nothing is waiting for you. Pick a lesson below to get going.</p>
+        </div>
+
+        <!-- Everything else, tucked away but always reachable. -->
+        <div class="card">
+          <details id="all-lessons">
+            <summary>Choose a different lesson</summary>
+            <ul class="list" id="lesson-list"></ul>
+          </details>
+        </div>
+
+        <!-- Teacher-only: set what "Today's lesson" points at. -->
+        <div class="card" id="teacher" hidden>
+          <h2>Teacher — set today's lesson</h2>
+          <select id="t-section"></select>
+          <select id="t-lesson"></select>
+          <button class="btn" id="t-save">Save for the class</button>
+          <p class="msg" id="t-msg"></p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Loaded BEFORE the page script: claim() calls NTIdentity synchronously. -->
+    <script src="/assets/shared-identity.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        /* ------------------------------------------------------------------
+           Storage keys are DELIBERATELY the ones the rest of the site already
+           uses. "nt-class-code" is read by the lesson engine's roster picker,
+           and shared-identity.js owns the student record — so joining here
+           means a student is already identified inside every lesson they open
+           afterwards. This page adds a front door, not a second identity.
+        ------------------------------------------------------------------ */
+        var CLASS_CODE_LS = "nt-class-code";
+        var PICK_LS = "nt-today-student"; // { id, name, section }
+        var TEACHER_MODE_LS = "nt-teacher-mode";
+        var TEACHER_KEY_LS = "neft.teacher.key"; // shared with Insight Brief
+
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+        var show = function (id) {
+          ["join", "pick", "today"].forEach(function (s) {
+            $(s).hidden = s !== id;
+          });
+        };
+        function read(key, fallback) {
+          try {
+            var raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+          } catch (_e) {
+            return fallback;
+          }
+        }
+        function write(key, val) {
+          try {
+            localStorage.setItem(key, JSON.stringify(val));
+          } catch (_e) {
+            /* private mode — the page still works, it just re-asks */
+          }
+        }
+        function esc(s) {
+          return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+          });
+        }
+        /* Same derivation as engine/core/state.js normalizeStudentId and the
+           save-resume engine, so all three agree on who a student is. */
+        function studentIdFor(name) {
+          return String(name || "")
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "_")
+            .replace(/[^a-z0-9_]/g, "");
+        }
+        function friendlyWhen(iso) {
+          var then = Date.parse(iso || "");
+          if (!then) return "";
+          var mins = Math.round((Date.now() - then) / 60000);
+          if (mins < 2) return "just now";
+          if (mins < 60) return mins + " minutes ago";
+          var hrs = Math.round(mins / 60);
+          if (hrs < 24) return hrs === 1 ? "an hour ago" : hrs + " hours ago";
+          var days = Math.round(hrs / 24);
+          return days === 1 ? "yesterday" : days + " days ago";
+        }
+
+        var state = { code: "", me: null, manifest: null, plan: {} };
+
+        /* ---------------- Step 1: class code ---------------- */
+        function askForCode(msg) {
+          $("join-msg").textContent = msg || "";
+          show("join");
+          $("code").focus();
+        }
+
+        function loadRoster(code) {
+          return fetch("/api/roster/get?code=" + encodeURIComponent(code), { credentials: "omit" })
+            .then(function (r) {
+              return r.ok ? r.json() : null;
+            })
+            .then(function (d) {
+              return d && d.ok && Array.isArray(d.students) && d.students.length ? d : null;
+            })
+            .catch(function () {
+              return null;
+            });
+        }
+
+        $("join-go").addEventListener("click", function () {
+          var code = ($("code").value || "").toUpperCase().trim();
+          if (!/^[A-Z0-9]{4,12}$/.test(code)) {
+            $("join-msg").textContent = "That code doesn't look right. Check the board.";
+            return;
+          }
+          $("join-msg").textContent = "Checking…";
+          loadRoster(code).then(function (data) {
+            if (!data) {
+              $("join-msg").textContent = "No class found with that code. Check the board.";
+              return;
+            }
+            state.code = code;
+            try {
+              localStorage.setItem(CLASS_CODE_LS, code);
+            } catch (_e) {}
+            renderNames(data);
+          });
+        });
+        $("code").addEventListener("keydown", function (e) {
+          if (e.key === "Enter") $("join-go").click();
+        });
+
+        /* ---------------- Step 2: tap your name ---------------- */
+        function renderNames(data) {
+          $("pick-sub").textContent = data.section ? "Class " + data.section : "";
+          var box = $("names");
+          box.textContent = "";
+          data.students.forEach(function (s) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.textContent = s.name;
+            b.addEventListener("click", function () {
+              claim(s.name, data.section);
+            });
+            box.appendChild(b);
+          });
+          show("pick");
+        }
+
+        function claim(name, section) {
+          state.me = { id: studentIdFor(name), name: name, section: section || "" };
+          write(PICK_LS, state.me);
+          // Keep the platform-wide identity in step, so lessons opened from
+          // here already know who this is (supports, telemetry, passport).
+          try {
+            if (window.NTIdentity) {
+              window.NTIdentity.set({ alias: name, section: section || "" });
+            }
+          } catch (_e) {}
+          renderToday();
+        }
+
+        $("pick-back").addEventListener("click", function () {
+          askForCode("");
+        });
+        $("who-switch").addEventListener("click", function () {
+          try {
+            localStorage.removeItem(PICK_LS);
+          } catch (_e) {}
+          state.me = null;
+          loadRoster(state.code).then(function (d) {
+            if (d) renderNames(d);
+            else askForCode("");
+          });
+        });
+
+        /* ---------------- Step 3: the daily screen ---------------- */
+        function lessonUrl(id) {
+          return "/lessons/" + id + "/";
+        }
+
+        function fetchManifest() {
+          if (state.manifest) return Promise.resolve(state.manifest);
+          return fetch("/data/curriculum-manifest.json")
+            .then(function (r) {
+              return r.ok ? r.json() : null;
+            })
+            .then(function (d) {
+              state.manifest = (d && d.lessons) || [];
+              return state.manifest;
+            })
+            .catch(function () {
+              state.manifest = [];
+              return state.manifest;
+            });
+        }
+
+        function fetchPlan() {
+          return fetch("/api/settings/today")
+            .then(function (r) {
+              return r.ok ? r.json() : null;
+            })
+            .then(function (d) {
+              state.plan = (d && d.plan) || {};
+            })
+            .catch(function () {
+              state.plan = {};
+            });
+        }
+
+        function fetchMine() {
+          var q =
+            "?code=" +
+            encodeURIComponent(state.code) +
+            "&student=" +
+            encodeURIComponent(state.me.id);
+          return fetch("/api/progress/mine" + q, { credentials: "omit" })
+            .then(function (r) {
+              return r.ok ? r.json() : null;
+            })
+            .then(function (d) {
+              return d && d.ok ? d : { resume: null, recent: [], done: [] };
+            })
+            .catch(function () {
+              // Offline or backend down: the Today screen still renders with
+              // the assigned lesson and the full lesson list. Losing resume is
+              // a degraded day, not a broken one.
+              return { resume: null, recent: [], done: [] };
+            });
+        }
+
+        function renderToday() {
+          show("today");
+          $("who-label").textContent =
+            state.me.name + (state.me.section ? " · " + state.me.section : "");
+          // Reset every card first. renderToday runs again whenever a student
+          // switches, and without this the previous student's cards stay on
+          // screen — including an assigned card that should have collapsed
+          // into the resume card.
+          $("resume-card").hidden = true;
+          $("assigned-card").hidden = true;
+          $("empty-card").hidden = true;
+          $("assigned-go").className = "btn ghost";
+          Promise.all([fetchManifest(), fetchPlan(), fetchMine()]).then(function (out) {
+            var lessons = out[0];
+            var mine = out[2];
+            var assigned = state.plan[state.me.section] || state.plan["*"] || null;
+            var resume = mine.resume;
+
+            // Collapse: if the unfinished work IS today's lesson, one card.
+            // Exact match on the derived slug — a substring test would make
+            // lesson "4-4" swallow "4-40".
+            var sameLesson =
+              !!resume && !!assigned && resume.activityId === "lessons-" + assigned.lessonId;
+
+            if (resume) {
+              $("resume-title").textContent = resume.activityTitle;
+              $("resume-meta").textContent =
+                resume.percent +
+                "% done" +
+                (friendlyWhen(resume.updatedAt) ? " · " + friendlyWhen(resume.updatedAt) : "") +
+                (sameLesson ? " · this is today's lesson" : "");
+              $("resume-bar").style.width = Math.max(3, Math.min(100, resume.percent)) + "%";
+              $("resume-go").href = resume.url || lessonUrl(resume.activityId);
+              $("resume-card").hidden = false;
+            }
+
+            if (assigned && !sameLesson) {
+              $("assigned-title").textContent = assigned.title || "Lesson " + assigned.lessonId;
+              $("assigned-meta").textContent = resume
+                ? "New today — start this when you're caught up."
+                : "";
+              $("assigned-go").href = lessonUrl(assigned.lessonId);
+              // With nothing to resume, today's lesson IS the main action.
+              if (!resume) $("assigned-go").className = "btn";
+              $("assigned-card").hidden = false;
+            }
+
+            if (!resume && !assigned) $("empty-card").hidden = false;
+            $("today-sub").textContent = resume ? "Here's where you are." : "Ready to start.";
+
+            renderLessonList(lessons, mine);
+            maybeShowTeacher(lessons);
+          });
+        }
+
+        function renderLessonList(lessons, mine) {
+          var doneSet = {};
+          (mine.done || []).forEach(function (a) {
+            doneSet[a] = true;
+          });
+          var openMap = {};
+          (mine.recent || []).concat(mine.resume ? [mine.resume] : []).forEach(function (r) {
+            openMap[r.activityId] = r;
+          });
+          var ul = $("lesson-list");
+          ul.textContent = "";
+          lessons.forEach(function (l) {
+            var slug = "lessons-" + l.id; // save-resume derives ids from the path
+            var li = document.createElement("li");
+            var tag = doneSet[slug]
+              ? '<span class="tag done">✓ done</span>'
+              : openMap[slug]
+                ? '<span class="tag open">' + openMap[slug].percent + "% started</span>"
+                : '<span class="tag"></span>';
+            li.innerHTML =
+              '<a href="' +
+              esc(lessonUrl(l.id)) +
+              '"><span>' +
+              esc(l.id + " · " + l.title) +
+              "</span>" +
+              tag +
+              "</a>";
+            ul.appendChild(li);
+          });
+        }
+
+        /* ---------------- Teacher strip ---------------- */
+        function maybeShowTeacher(lessons) {
+          var on = false;
+          try {
+            on = localStorage.getItem(TEACHER_MODE_LS) === "1";
+          } catch (_e) {}
+          if (!on) return;
+          var sections = Object.keys(state.plan);
+          if (state.me.section && sections.indexOf(state.me.section) === -1) {
+            sections.push(state.me.section);
+          }
+          if (sections.indexOf("*") === -1) sections.push("*");
+          $("t-section").innerHTML = sections
+            .map(function (s) {
+              return (
+                '<option value="' +
+                esc(s) +
+                '"' +
+                (s === state.me.section ? " selected" : "") +
+                ">" +
+                esc(s === "*" ? "Every class" : "Class " + s) +
+                "</option>"
+              );
+            })
+            .join("");
+          $("t-lesson").innerHTML = lessons
+            .map(function (l) {
+              return (
+                '<option value="' + esc(l.id) + '">' + esc(l.id + " · " + l.title) + "</option>"
+              );
+            })
+            .join("");
+          $("teacher").hidden = false;
+        }
+
+        $("t-save").addEventListener("click", function () {
+          var key = "";
+          try {
+            key = localStorage.getItem(TEACHER_KEY_LS) || "";
+          } catch (_e) {}
+          if (!key) key = window.prompt("Teacher key") || "";
+          if (!key) return;
+          var section = $("t-section").value;
+          var lessonId = $("t-lesson").value;
+          var lesson = (state.manifest || []).filter(function (l) {
+            return l.id === lessonId;
+          })[0];
+          var plan = Object.assign({}, state.plan);
+          plan[section] = { lessonId: lessonId, title: lesson ? lesson.title : "" };
+          $("t-msg").textContent = "Saving…";
+          fetch("/api/settings/today", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", "x-teacher-key": key },
+            body: JSON.stringify({ plan: plan }),
+          })
+            .then(function (r) {
+              if (r.status === 401) throw new Error("That teacher key was rejected.");
+              if (!r.ok) throw new Error("Save failed.");
+              return r.json();
+            })
+            .then(function (d) {
+              state.plan = d.plan || plan;
+              try {
+                localStorage.setItem(TEACHER_KEY_LS, key);
+              } catch (_e) {}
+              $("t-msg").style.color = "#0f766e";
+              $("t-msg").textContent = "Saved. Students see it on their next load.";
+            })
+            .catch(function (e) {
+              $("t-msg").style.color = "#b91c1c";
+              $("t-msg").textContent = e.message;
+            });
+        });
+
+        /* ---------------- Boot ----------------
+           A returning student on a known device lands straight on Today with
+           zero taps. That is the single most important property of this page:
+           the common case has no ceremony at all.
+        -------------------------------------- */
+        (function boot() {
+          var code = "";
+          try {
+            code = (localStorage.getItem(CLASS_CODE_LS) || "").toUpperCase();
+          } catch (_e) {}
+          // ?join=CODE lets a teacher hand out one link that skips step 1.
+          var fromUrl = (new URLSearchParams(location.search).get("join") || "")
+            .toUpperCase()
+            .trim();
+          if (/^[A-Z0-9]{4,12}$/.test(fromUrl)) code = fromUrl;
+
+          if (!/^[A-Z0-9]{4,12}$/.test(code)) return askForCode("");
+          state.code = code;
+          try {
+            localStorage.setItem(CLASS_CODE_LS, code);
+          } catch (_e) {}
+
+          var me = read(PICK_LS, null);
+          if (me && me.id && me.name) {
+            state.me = me;
+            return renderToday();
+          }
+          loadRoster(code).then(function (d) {
+            if (d) renderNames(d);
+            else askForCode("We couldn't reach the class list. Check the code.");
+          });
+        })();
+      })();
+    </script>
+    <script>
+      // Usage signal for /today: does anyone actually use the front door?
+      // One event per outbound click, riding the standard telemetry producer
+      // (lessonSlug pinned so deriveSlug never invents one from the path).
+      (function () {
+        window.NT_TELEMETRY_CONFIG = { lessonSlug: "today" };
+        var s = document.createElement("script");
+        s.src = "/assets/lesson-telemetry.js";
+        s.defer = true;
+        document.head.appendChild(s);
+        document.addEventListener(
+          "click",
+          function (e) {
+            var a = e.target && e.target.closest && e.target.closest("a[href]");
+            if (!a || !window.NTtelemetry) return;
+            var kind = null;
+            if (a.id === "resume-go") kind = "resume";
+            else if (a.id === "assigned-go") kind = "assigned";
+            else if (a.closest("#lesson-list")) kind = "list";
+            if (!kind) return;
+            window.NTtelemetry.track("today_open", {
+              kind: kind,
+              target: (a.getAttribute("href") || "").slice(0, 80),
+            });
+            window.NTtelemetry.flush();
+          },
+          true,
+        );
+      })();
+    </script>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  </body>
+</html>

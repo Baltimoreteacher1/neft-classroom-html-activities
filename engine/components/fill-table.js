@@ -1,4 +1,5 @@
 import { isRight } from "../core/answer-match.js";
+import { stackContent } from "../core/i18n.js";
 
 const FT_STYLE_ID = "ft-engine-styles";
 
@@ -39,6 +40,10 @@ function injectFillTableStyles() {
       box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 22%, transparent);
       background-size: 100% 2px;
     }
+
+    /* Dropdown cells (authored via editableCells[].options) */
+    .ft-root .ft-select { cursor: pointer; background-color: var(--surface, #fff); }
+    .ft-root .ft-select:disabled { cursor: default; opacity: 1; }
 
     /* Parallax row lift on hover: row shifts up, shadow grows */
     .ft-root .ft-table tbody tr {
@@ -106,7 +111,7 @@ export function renderFillTable(container, config) {
   // { columns:[...], items|rows:[{key:value,...}] } where each row is an
   // object whose values map positionally to `columns`. Without this adapter
   // those tables render blank (missing headers/rows/editableCells).
-  const { headers, rows, editableCells, onComplete } = normalizeFillTable(config);
+  const { headers, rows, editableCells, rowFigures, onComplete } = normalizeFillTable(config);
 
   const wrapper = document.createElement("div");
   wrapper.className = "card ft-root";
@@ -149,18 +154,50 @@ export function renderFillTable(container, config) {
       const editable = editableCells.find((e) => e.row === ri && e.col === ci);
 
       if (editable) {
-        const input = document.createElement("input");
-        input.type = "text";
-        input.className = "text-input ft-input";
-        input.style.cssText = "padding:6px 8px; font-size:0.9rem; width:100%; min-width:60px;";
-        input.placeholder = "?";
+        // A cell that authors a fixed `options` list becomes a dropdown, not a
+        // free-text box. Some columns ("Better Buy?") are a CHOICE, and a blank
+        // text box there tells a student nothing about what to type.
+        const choices = Array.isArray(editable.options)
+          ? editable.options.filter((o) => o != null).map(String)
+          : null;
+        let input;
+        if (choices && choices.length) {
+          input = document.createElement("select");
+          input.className = "text-input ft-input ft-select";
+          input.style.cssText = "padding:6px 8px; font-size:0.9rem; width:100%; min-width:60px;";
+          const placeholder = document.createElement("option");
+          placeholder.value = "";
+          placeholder.textContent = editable.placeholder || "Choose…";
+          input.append(placeholder);
+          choices.forEach((choice) => {
+            const opt = document.createElement("option");
+            opt.value = choice;
+            opt.textContent = choice;
+            input.append(opt);
+          });
+        } else {
+          input = document.createElement("input");
+          input.type = "text";
+          input.className = "text-input ft-input";
+          input.style.cssText = "padding:6px 8px; font-size:0.9rem; width:100%; min-width:60px;";
+          input.placeholder = "?";
+        }
         input.setAttribute("aria-label", `${headers[ci]} for row ${ri + 1}`);
         input.dataset.key = cellKey;
         answerByKey.set(cellKey, String(editable.answer));
         td.append(input);
         inputs.push(input);
       } else {
-        td.textContent = cell;
+        // An authored per-row figure rides in the FIRST cell, above its label,
+        // so a student can see the shape the row is describing instead of
+        // holding "octagon = 8 triangles" in their head.
+        if (ci === 0 && rowFigures[ri]) {
+          const fig = buildRowFigure(rowFigures[ri]);
+          if (fig) td.append(fig);
+        }
+        const text = document.createElement("span");
+        text.textContent = cell;
+        td.append(text);
         td.style.fontWeight = "600";
       }
 
@@ -197,7 +234,10 @@ export function renderFillTable(container, config) {
 
       if (isMatch) {
         correct++;
-        input.readOnly = true;
+        // `readOnly` is a no-op on <select>; lock those with `disabled` so a
+        // confirmed-correct dropdown cannot be changed back to a wrong choice.
+        if (input.tagName === "SELECT") input.disabled = true;
+        else input.readOnly = true;
         // Confirmation pop (1 -> 1.05 -> 1); CSS gates it under reduced motion.
         // Retrigger reliably by clearing then re-adding the animation class.
         input.classList.remove("ft-cell-correct");
@@ -231,7 +271,12 @@ function renderFillTableFallback(wrapper, config = {}) {
   if (config.instructions || config.label) {
     const p = document.createElement("p");
     p.style.cssText = "font-weight:600; margin-bottom:var(--sp-3);";
-    p.textContent = config.instructions || config.label;
+    // Mirror the English fallback chain exactly, so a config that authored
+    // `label`/`labelEs` cannot end up showing the English label above the
+    // Spanish translation of a different field.
+    p.innerHTML = config.instructions
+      ? stackContent(config.instructions, config.instructionsEs)
+      : stackContent(config.label, config.labelEs);
     wrapper.append(p);
   }
 
@@ -285,6 +330,7 @@ export function normalizeFillTable(config = {}) {
       headers: config.headers,
       rows: config.rows,
       editableCells: Array.isArray(config.editableCells) ? config.editableCells : [],
+      rowFigures: Array.isArray(config.rowFigures) ? config.rowFigures : [],
       onComplete,
     };
   }
@@ -306,7 +352,7 @@ export function normalizeFillTable(config = {}) {
 
   if (!headers.length || !objectRows.length) {
     // Could not interpret — return what we have so the caller can fall back.
-    return { headers, rows: [], editableCells: [], onComplete };
+    return { headers, rows: [], editableCells: [], rowFigures: [], onComplete };
   }
 
   // Determine which column index holds the answer to make editable. Prefer a
@@ -314,9 +360,14 @@ export function normalizeFillTable(config = {}) {
   const colCount = headers.length;
   const rows = [];
   const editableCells = [];
+  const rowFigures = [];
 
   objectRows.forEach((obj, ri) => {
-    const keys = Object.keys(obj);
+    // `figure` is metadata, not a column: it draws a small shape in the first
+    // cell. Strip it before the positional value mapping below, or every
+    // column after it would shift by one.
+    rowFigures.push(obj.figure || null);
+    const keys = Object.keys(obj).filter((k) => k !== "figure");
     // Map object values to columns by position, padding/truncating to headers.
     const values = keys.map((k) => obj[k]);
     const cells = [];
@@ -346,7 +397,60 @@ export function normalizeFillTable(config = {}) {
     rows.push(cells);
   });
 
-  return { headers, rows, editableCells, onComplete };
+  return { headers, rows, editableCells, rowFigures, onComplete };
+}
+
+// Draws the small per-row shape authored as `figure` on a row object.
+// Only one shape so far: { shape:"regular-polygon", sides:6 } — the polygon fanned
+// into its congruent triangles, which is exactly the "one triangle per side"
+// idea students are being asked to use. Returns null for anything unknown, so
+// an unrecognised figure degrades to no picture rather than a broken cell.
+// DOM-light by design: pure SVG, no listeners, no layout measurement.
+export function buildRowFigure(spec) {
+  if (!spec || typeof spec !== "object") return null;
+  if (spec.shape !== "regular-polygon") return null;
+  const sides = Number(spec.sides);
+  if (!Number.isInteger(sides) || sides < 3 || sides > 12) return null;
+
+  const size = 56;
+  const cx = size / 2;
+  const cy = size / 2;
+  const r = size / 2 - 4;
+  const vertex = (i) => {
+    const angle = (2 * Math.PI * i) / sides - Math.PI / 2;
+    return [cx + Math.cos(angle) * r, cy + Math.sin(angle) * r];
+  };
+  const fmt = (n) => Math.round(n * 100) / 100;
+
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
+  svg.setAttribute("width", String(size));
+  svg.setAttribute("height", String(size));
+  svg.setAttribute("role", "img");
+  svg.setAttribute(
+    "aria-label",
+    `A regular polygon with ${sides} sides, split into ${sides} congruent triangles that meet at the center.`,
+  );
+  svg.style.cssText = "display:block; margin-bottom:6px;";
+
+  for (let i = 0; i < sides; i++) {
+    const [x1, y1] = vertex(i);
+    const [x2, y2] = vertex(i + 1);
+    const wedge = document.createElementNS(ns, "polygon");
+    wedge.setAttribute(
+      "points",
+      `${fmt(cx)},${fmt(cy)} ${fmt(x1)},${fmt(y1)} ${fmt(x2)},${fmt(y2)}`,
+    );
+    // Alternating fills so the triangle count is countable at a glance.
+    wedge.setAttribute("fill", i % 2 ? "var(--teal-soft, #d7f0ee)" : "var(--coral-soft, #fde3dd)");
+    wedge.setAttribute("stroke", "var(--teal-ink, #0f6f6a)");
+    wedge.setAttribute("stroke-width", "1");
+    wedge.setAttribute("stroke-linejoin", "round");
+    svg.append(wedge);
+  }
+
+  return svg;
 }
 
 function showFb(slot, type, msg) {

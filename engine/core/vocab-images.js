@@ -12,7 +12,35 @@ export function slugify(term) {
 }
 
 const DEDICATED = new Set([
+  // Math Is... process vocabulary — tiles drawn by
+  // scripts/gen-mindset-vocab-art.mjs.
+  "argument",
+  "justify",
+  "critique",
+  "counterexample",
+  "reasonable",
+  "conjecture",
+  "persevere",
+  "strategy",
+  "make-sense-of-a-problem",
+  "organize",
+  "tool",
+  "puzzle",
+  "inventory",
+  "doer-of-math",
+  "strength",
+  "confidence",
+  "community",
+  "community-agreement",
+  "profession",
+  "math-biography",
+  "math-story",
+  "ingenuity",
   "ratio",
+  // Both have art on disk but were never listed, so anything aliased to them
+  // silently fell through to a category tile.
+  "ratio-table",
+  "percent-part",
   "unit-rate",
   "rate",
   "proportion",
@@ -22,6 +50,17 @@ const DEDICATED = new Set([
   "decimal",
   "integer",
   "absolute-value",
+  "place-value",
+  "tenths",
+  "hundredths",
+  "thousandths",
+  "decimal-point",
+  "greater-than",
+  "less-than",
+  "symmetric",
+  "skewed",
+  "part-to-part",
+  "part-to-whole",
   "opposite",
   "number-line",
   "negative",
@@ -35,6 +74,28 @@ const DEDICATED = new Set([
   "triangle",
   "parallelogram",
   "trapezoid",
+  "rectangle",
+  "rhombus",
+  "square",
+  // "parallel" and "perpendicular" are taught words in their own right, not
+  // decoration on another term's picture. "perpendicular" used to resolve to
+  // triangle.svg and "parallel" fell all the way through to cat-shape.svg, so
+  // the two ideas a student must tell apart were illustrated by a triangle and
+  // a placeholder. Each now has its own diagram.
+  "parallel",
+  "perpendicular",
+  // "slanted side" used to resolve to parallelogram.svg, which highlights the
+  // HEIGHT — the exact thing the term exists to contrast against.
+  "slanted-side",
+  // Compound terms ("area of a ___") carry the formula in their own picture;
+  // they used to borrow the plain shape image, which shows no formula at all.
+  "area-of-parallelograms",
+  "area-of-trapezoids",
+  "area-of-triangles",
+  "area-of-composite-figures",
+  "volume-of-rectangular-prisms",
+  "surface-area-of-prisms",
+  "surface-area-of-pyramids",
   "rectangular-prism",
   "net",
   "edge",
@@ -71,6 +132,9 @@ const DEDICATED = new Set([
   "reciprocal",
   "scale-factor",
   "discount",
+  "markup",
+  "tax",
+  "tip",
   "add",
   "subtract",
   "dividend",
@@ -104,9 +168,57 @@ const DEDICATED = new Set([
   "height",
   "substitute",
   "like-terms",
+  "rotation",
+  "gear",
 ]);
 
 const SYNONYMS = {
+  // ── Book-TOC lessons (Math Is..., Unit 9, 2-8, 7-1, 7-7, 4-3) ──────────────
+  // Terms whose picture already exists under another name. Mapped rather than
+  // redrawn so the tile always MEANS the word — a wrong picture is worse than
+  // none, which is why the placeholder tiles fail vocab-bank-fresh at all.
+  average: "mean",
+  "balance-point": "mean",
+  "measure-of-center": "mean",
+  "data-set": "data",
+  "benchmark-percent": "percent",
+  "the-whole": "part-to-whole",
+  portion: "percent-part",
+  "compatible-numbers": "estimate",
+  "bilateral-symmetry": "symmetric",
+  "line-of-symmetry": "symmetric",
+  "mirror-image": "reflection",
+  coordinates: "ordered-pair",
+  "distance-between-vertices": "distance",
+  "round-trip": "distance",
+  "double-number-line": "number-line",
+  "table-of-values": "ratio-table",
+  "tape-diagram": "bar-model",
+  represent: "bar-model",
+  representation: "bar-model",
+  "negative-number": "negative",
+  "positive-number": "positive",
+  polygon: "regular-polygon",
+  "independent-variable": "variable",
+  "dependent-variable": "variable",
+  "depends-on": "variable",
+  "define-the-variables": "variable",
+  quantity: "variable",
+  relationship: "ratio-table",
+  "pattern-rule": "pattern",
+  "pattern-unit": "pattern",
+  repetition: "pattern",
+  rhythm: "pattern",
+  predictability: "pattern",
+  predict: "pattern",
+  generalization: "pattern",
+  // "rotation" and "gear" used to borrow reflection.svg and ratio.svg — a turn
+  // drawn as a mirror image, and a toothed wheel drawn as a colon ratio. Each
+  // now has its own diagram (Unit 10 bicycle-gear lesson depends on both).
+  rotations: "rotation",
+  gears: "gear",
+  growth: "rate",
+  vertex: "ordered-pair",
   "unit-rate": "unit-rate",
   "per-unit": "unit-rate",
   per: "unit-rate",
@@ -114,8 +226,6 @@ const SYNONYMS = {
   "equivalent-ratios": "equivalent-ratio",
   "ratio-table": "ratio",
   "colon-notation": "ratio",
-  "part-to-part": "ratio",
-  "part-to-whole": "ratio",
   comparison: "ratio",
   compare: "inequality",
   part: "fraction",
@@ -123,9 +233,16 @@ const SYNONYMS = {
   "cross-multiply": "proportion",
   scale: "scale-factor",
   "better-buy": "unit-rate",
-  markup: "percent",
-  tax: "percent",
-  tip: "percent",
+  // markup / tax / tip used to resolve to percent.svg — a plain "50 out of 100"
+  // grid. That picture says what a percent IS, not what these three words DO
+  // (each adds an amount on top of a starting price), so the word wall showed
+  // the same generic grid for three distinct terms. Each now has its own
+  // before → added amount → total diagram that matches its `visual` example.
+  markup: "markup",
+  "sales-tax": "tax",
+  tax: "tax",
+  tip: "tip",
+  gratuity: "tip",
   "greater-than-100": "percent",
   "less-than-1": "percent",
 
@@ -140,32 +257,35 @@ const SYNONYMS = {
   "decimal-division": "decimal",
   tenths: "decimal",
   hundredths: "decimal",
-  "place-value": "decimal",
+  // "place value" used to resolve to decimal.svg — a shaded hundredths grid for
+  // 0.37. That picture is about what a decimal *is*, not about a digit's value
+  // depending on its column, so the word wall illustrated the term with a
+  // diagram that never shows a place. It now has its own chart (place-value.svg);
+  // the plural is mapped because lessons author both spellings.
+  "place-values": "place-value",
   "rational-number": "number-line",
 
   "negative-integer": "negative",
   "negative-coordinate": "negative",
   "whole-number": "integer",
 
-  "base-area": "area",
+  "base-area": "base-area-prism",
   "square-units": "square-unit",
   "cubic-unit": "cubic-units",
+  // `base` and `height` are PARTS of a shape, so the generic picture is only
+  // ever right by accident. Each lesson that teaches them pins a shape-matched
+  // image (`base-parallelogram`, `height-triangle`, …) on the vocabulary entry
+  // itself; these slugs stay as the safe default for anywhere that does not.
   base: "base",
   height: "height",
-  "slant-height": "height",
-  slant: "parallelogram",
-  slanted: "parallelogram",
-  "slanted-side": "parallelogram",
-  "area-of-parallelograms": "parallelogram",
-  "area-of-trapezoids": "trapezoid",
-  "area-of-triangles": "triangle",
+  "slant-height": "slant-height-pyramid",
+  slant: "slanted-side",
+  slanted: "slanted-side",
   "area-of-regular-polygons": "area-of-regular-polygons",
-  "area-of-composite-figures": "composite-figure",
-  "volume-with-whole-number-edges": "volume",
-  "volume-of-rectangular-prisms": "volume",
-  "surface-area-using-nets": "net",
-  "surface-area-of-prisms": "surface-area",
-  "surface-area-of-pyramids": "surface-area",
+  // These two compounds state a formula, so they get the formula picture
+  // rather than the plain shape/net image, which shows no formula at all.
+  "volume-with-whole-number-edges": "volume-of-rectangular-prisms",
+  "surface-area-using-nets": "surface-area-of-prisms",
   dimensions: "dimensions",
   "length-width-height": "dimensions",
   "lateral-area": "surface-area",
@@ -178,9 +298,20 @@ const SYNONYMS = {
   "regular-polygon": "regular-polygon",
   "two-dimensional": "square-unit",
   composite: "composite-figure",
-  perpendicular: "triangle",
-  "base-1-b1": "trapezoid",
-  "base-2-b2": "trapezoid",
+  parallel: "parallel",
+  "parallel-side": "parallel",
+  "parallel-sides": "parallel",
+  "parallel-lines": "parallel",
+  perpendicular: "perpendicular",
+  "perpendicular-lines": "perpendicular",
+  "perpendicular-height": "perpendicular",
+  "right-angle": "perpendicular",
+  "base-1-b1": "base-1-trapezoid",
+  "base-2-b2": "base-2-trapezoid",
+  rectangle: "rectangle",
+  rhombus: "rhombus",
+  square: "square",
+  quadrilateral: "parallelogram",
 
   "mean-absolute-deviation": "mean-absolute-deviation",
   mad: "mean-absolute-deviation",
@@ -197,9 +328,7 @@ const SYNONYMS = {
   outlier: "outlier",
   cluster: "cluster",
   gap: "histogram",
-  skewed: "histogram",
-  symmetric: "histogram",
-  symmetry: "histogram",
+  symmetry: "symmetric",
   "statistical-question": "data",
   survey: "data",
   graph: "histogram",
@@ -212,8 +341,6 @@ const SYNONYMS = {
   "horizontal-distance": "distance",
   "vertical-distance": "distance",
   distance: "distance",
-  "greater-than": "inequality",
-  "less-than": "inequality",
   "at-least-at-most": "inequality",
   "no-more-than": "inequality",
   "at-most": "inequality",
@@ -350,6 +477,18 @@ const EXTRA_DEDICATED = new Set([
   "measurement",
   "number",
   "bar-model",
+  // Shape-qualified part terms. A lesson pins one of these on the vocabulary
+  // entry's `image` field so "base"/"height" show the shape THAT lesson is
+  // about; they are also listed here so a slug or synonym can reach them.
+  "base-parallelogram",
+  "base-triangle",
+  "base-1-trapezoid",
+  "base-2-trapezoid",
+  "base-area-prism",
+  "height-parallelogram",
+  "height-triangle",
+  "height-trapezoid",
+  "slant-height-pyramid",
 ]);
 
 export function resolveVocabImage(term, override) {

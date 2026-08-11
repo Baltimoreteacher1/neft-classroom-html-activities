@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="AI for Accessible Instruction — the OSAMR scale, and where each part of today's session happens."
+    />
+    <title>OSAMR Reference | AI for Accessible Instruction</title>
+    <style>
+      :root {
+        --navy: #10283f;
+        --teal: #247c7f;
+        --gold: #e0a93c;
+        --terracotta: #c9684a;
+        --sage: #dce8df;
+        --ink: #17212b;
+        --muted: #5b6b7a;
+        --line: rgba(16, 40, 63, 0.16);
+        --soft: 0 8px 20px rgba(16, 40, 63, 0.08);
+        --radius: 20px;
+        --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(79, 182, 179, 0.16), transparent 28rem),
+          linear-gradient(135deg, #f6fbfb 0%, #fff8ed 72%, #f8efe7 100%);
+        min-height: 100vh;
+        padding-bottom: 56px;
+      }
+      a {
+        color: inherit;
+      }
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        z-index: 60;
+        background: var(--navy);
+        color: #fff;
+        padding: 10px 16px;
+        font-weight: 900;
+      }
+      .skip-link:focus {
+        left: 0;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      header.top {
+        background: rgba(255, 253, 248, 0.95);
+        border-bottom: 1px solid var(--line);
+        padding: 14px 0;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .brand .mark {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: var(--navy);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+      }
+      .brand h1 {
+        margin: 0;
+        font-size: 21px;
+        color: var(--navy);
+      }
+      .brand p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .hero {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+        color: #fff;
+        border-radius: var(--radius);
+        padding: 26px 28px;
+        margin: 22px 0 20px;
+      }
+      .hero .kicker {
+        margin: 0 0 6px;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        opacity: 0.85;
+      }
+      .hero h2 {
+        margin: 0 0 12px;
+        font-size: clamp(25px, 3.6vw, 34px);
+        line-height: 1.14;
+      }
+      .hero p {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.5;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--soft);
+        padding: 22px 24px;
+        margin-bottom: 18px;
+      }
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 21px;
+        color: var(--navy);
+      }
+      .card p {
+        margin: 0 0 10px;
+        line-height: 1.55;
+      }
+      .card p:last-child {
+        margin-bottom: 0;
+      }
+
+      .levels {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .lvl {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 13px 15px;
+        background: #fff;
+      }
+      .lvl b {
+        flex: none;
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--sage);
+        color: var(--navy);
+        font-size: 15px;
+      }
+      .lvl.warn {
+        background: #fffaf1;
+        border-color: rgba(201, 104, 74, 0.35);
+      }
+      .lvl.warn b {
+        background: rgba(201, 104, 74, 0.18);
+        color: #8a3d2a;
+      }
+      .lvl h4 {
+        margin: 0 0 3px;
+        font-size: 16px;
+        color: var(--navy);
+      }
+      .lvl p {
+        margin: 0;
+        font-size: 14.5px;
+        line-height: 1.45;
+        color: #33424f;
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+        margin-top: 6px;
+      }
+      .step {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px 18px;
+        background: #fff;
+      }
+      .step .num {
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--navy);
+        color: #fff;
+        font-weight: 900;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+      .step h4 {
+        margin: 0 0 6px;
+        font-size: 17px;
+        color: var(--navy);
+      }
+      .step p {
+        margin: 0 0 12px;
+        font-size: 14.5px;
+        line-height: 1.5;
+        color: #33424f;
+      }
+
+      .btn {
+        display: inline-block;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--navy);
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-size: 15px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .btn.primary {
+        background: var(--gold);
+        border-color: var(--gold);
+      }
+
+      .rule {
+        background: #fffdf6;
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--gold);
+        border-radius: 14px;
+        padding: 14px 18px;
+        margin-top: 6px;
+        line-height: 1.55;
+      }
+      .rule strong {
+        color: var(--navy);
+      }
+    </style>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+</head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="top">
+      <div class="wrap brand">
+        <div class="mark">AI</div>
+        <div>
+          <h1>AI for Accessible Instruction</h1>
+          <p>OSAMR reference · where each part happens</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap" id="main">
+      <div class="hero">
+        <p class="kicker">Keep this open</p>
+        <h2>Did AI clear the way — or did AI do the work?</h2>
+        <p>
+          That is the only question behind both halves of today. This page holds the scale and says
+          where each part happens.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Today, in two parts</h3>
+        <div class="steps">
+          <article class="step">
+            <div class="num">1</div>
+            <h4>Sort — on the slides</h4>
+            <p>
+              I show one real classroom AI move at a time. Your table decides which letter it lands
+              on and drops just that letter in the chat. Nothing to open — watch the screen.
+            </p>
+          </article>
+          <article class="step">
+            <div class="num">2</div>
+            <h4>Build — on your device</h4>
+            <p>
+              A teacher tells you what they need. Your group writes the AI prompt that gets it, at
+              one level of the scale, then posts it to Padlet.
+            </p>
+            <a class="btn primary" href="/fix-it-design-challenge/">Open the build activity →</a>
+          </article>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>The OSAMR scale</h3>
+        <p>Not a ranking. The goal is the honest letter, not the highest one.</p>
+        <div class="levels">
+          <div class="lvl warn">
+            <b>O</b>
+            <div>
+              <h4>Overreliance</h4>
+              <p>
+                AI did the thinking students were supposed to do. Nothing is left to figure out.
+              </p>
+            </div>
+          </div>
+          <div class="lvl">
+            <b>S</b>
+            <div>
+              <h4>Substitution</h4>
+              <p>AI swaps in one support. The task itself is unchanged.</p>
+            </div>
+          </div>
+          <div class="lvl">
+            <b>A</b>
+            <div>
+              <h4>Augmentation</h4>
+              <p>AI adds help. The task gets clearer — it does not get solved.</p>
+            </div>
+          </div>
+          <div class="lvl">
+            <b>M</b>
+            <div>
+              <h4>Modification</h4>
+              <p>The task works differently now. Students still learn the same thing.</p>
+            </div>
+          </div>
+          <div class="lvl">
+            <b>R</b>
+            <div>
+              <h4>Redefinition</h4>
+              <p>Students can do work that was not possible before.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>The test that settles most arguments</h3>
+        <p class="rule">
+          <strong>Does the support do the part you are actually grading?</strong> If yes, it is
+          Overreliance — however good the materials look. If no, the only question left is how far
+          the task itself moved.
+        </p>
+        <p style="margin-top: 14px">
+          <strong>Barrier removed. Thinking preserved. Target unchanged.</strong>
+        </p>
+      </div>
+    </main>
+  </body>
+</html>

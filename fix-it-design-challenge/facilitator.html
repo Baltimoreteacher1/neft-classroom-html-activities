@@ -16,7 +16,9 @@
         --muted: #607080;
         --line: rgba(16, 40, 63, 0.16);
         --soft: 0 8px 20px rgba(16, 40, 63, 0.08);
-        --font: Calibri, Arial, Helvetica, sans-serif;
+        --font: system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        --gfx-bar-clear: 0px;
       }
       * {
         box-sizing: border-box;
@@ -150,6 +152,50 @@
           display: none;
         }
       }
+
+      /* ---- Page-local GameFX opt-out (mirrors the participant page) --------
+         The site-wide kit opens an "Arcade" mission-brief dialog over this page
+         on load - it was covering the <h1> and swallowing clicks - plus an
+         Esc-to-pause card, an on-screen d-pad and a combo meter, none of which
+         mean anything on a page of facilitator notes. The shared kit is not
+         modified; this only hides them here. The toolbar is kept (it carries
+         read-aloud, language and contrast) and its height is reserved so it
+         stops overlapping the heading. -------------------------------------- */
+      /* ---- No Math Workbench on this page ---------------------------------
+         The mwb-injected sentinel block below is intentionally EMPTY - the
+         injector decided this page gets no Math Workbench - but a stray
+         script tag for /assets/math-workbench-launcher.js, sitting outside
+         that block, was loading it anyway and floating a "Math Workbench"
+         link over a teacher PD worksheet. That tag is now removed.
+         Removing it alone is not enough: save-resume-engine.js only skips its
+         own Math Workbench chip when it finds #mwb-launcher, so with the
+         launcher gone it renders #nsr-workbench instead. Hide both, which also
+         covers the case where either script returns later. ------------------ */
+      #mwb-launcher,
+      .mwb-launcher-nav,
+      #nsr-workbench {
+        display: none !important;
+      }
+
+      #gfx-mission-brief,
+      #gfx-pause-overlay,
+      #game-combo-hud,
+      #gfx-combo-meter,
+      #gfx-arcade-controls,
+      #game-passport-dialog,
+      #btn-game-passport,
+      #btn-game-pause,
+      #btn-game-controls {
+        display: none !important;
+      }
+      body {
+        padding-top: calc(32px + var(--gfx-bar-clear));
+      }
+      @media print {
+        body {
+          padding-top: 0 !important;
+        }
+      }
     </style>
   <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
   <link rel="stylesheet" href="/assets/game-fx.css">
@@ -160,6 +206,46 @@
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<script>
+  /* Opt out of the shared GameFX mission brief via the kit's own once-per-session
+     key, and reserve the fixed toolbar's measured height so it cannot sit on top
+     of the heading. */
+  (function () {
+    try {
+      var path = location.pathname || "/";
+      [path, path.replace(/facilitator\.html$/, "")].forEach(function (key) {
+        sessionStorage.setItem("gfx-brief:" + (key || "/"), "1");
+      });
+    } catch (error) {
+      /* private window - the CSS rule above covers it */
+    }
+    function find(tries) {
+      var bar = document.getElementById("game-pub-toolbar");
+      if (bar) {
+        var update = function () {
+          var rect = bar.getBoundingClientRect();
+          document.documentElement.style.setProperty(
+            "--gfx-bar-clear",
+            (rect.height ? Math.ceil(rect.height + rect.top + 8) : 0) + "px",
+          );
+        };
+        update();
+        if (window.ResizeObserver) new ResizeObserver(update).observe(bar);
+        window.addEventListener("resize", update);
+        return;
+      }
+      if (tries > 0)
+        window.setTimeout(function () {
+          find(tries - 1);
+        }, 120);
+    }
+    if (document.readyState === "loading")
+      document.addEventListener("DOMContentLoaded", function () {
+        find(30);
+      });
+    else find(30);
+  })();
+</script>
 </head>
   <body>
     <div class="sheet">
@@ -245,7 +331,6 @@
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->
-    <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
 </body>
 </html>

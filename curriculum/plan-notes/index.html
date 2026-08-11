@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Upload a lesson plan and get it annotated — timing, watch-fors, Level 1/2 swaps, and your own activities pinned in place."
+    />
+    <title>Plan Notes — Neft Teacher</title>
+    <link rel="canonical" href="https://eduwonderlab.com/curriculum/plan-notes/" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#15487f" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="./plan-notes.css" />
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+</head>
+  <body>
+    <a class="skip-link" href="#main">Skip to the main content</a>
+
+    <div class="plan-notes-wrap">
+      <a class="backlink" href="/curriculum/">&#8592; Back to curriculum</a>
+
+      <header>
+        <span class="page-icon" aria-hidden="true">🖍️</span>
+        <h1>Plan Notes</h1>
+        <p class="lede">
+          Drop in a lesson plan and mark it up — timing, watch-fors, Level 1 and 2 swaps, and your
+          own activities pinned where they belong.
+        </p>
+      </header>
+
+      <main id="main">
+        <!-- Teacher gate. Everything here is teacher-only, so nothing renders until
+             the key is present and the API has confirmed it. -->
+        <section class="pn-view" data-view="gate" hidden>
+          <h2>Teacher key</h2>
+          <p class="pn-muted">
+            Plan Notes holds your own plan documents and your notes on them. It stays behind the
+            teacher key.
+          </p>
+          <form data-role="gate-form" class="pn-gate-form">
+            <label class="pn-field">
+              <span>Teacher key</span>
+              <input type="password" data-role="key-input" autocomplete="current-password" />
+            </label>
+            <button type="submit" class="pn-btn solid">Unlock</button>
+          </form>
+          <p class="pn-error" data-role="gate-error" hidden></p>
+        </section>
+
+        <!-- Library: every plan, linked or not, annotated or not. -->
+        <section class="pn-view" data-view="library" hidden>
+          <div class="pn-drop" data-role="drop" tabindex="0" role="button">
+            <strong>Drop lesson plans here</strong>
+            <span class="pn-muted">PDF, DOCX, TXT or MD — several at once is fine</span>
+            <input
+              type="file"
+              data-role="file-input"
+              multiple
+              accept=".pdf,.docx,.txt,.md,application/pdf,text/plain"
+              hidden
+            />
+          </div>
+
+          <details class="pn-paste">
+            <summary>…or paste a plan as text</summary>
+            <label class="pn-field">
+              <span>Name this plan</span>
+              <input type="text" data-role="paste-label" placeholder="Unit 4 Lesson 4 — BCPS" />
+            </label>
+            <label class="pn-field">
+              <span>Plan text</span>
+              <textarea data-role="paste-text" rows="8"></textarea>
+            </label>
+            <button type="button" class="pn-btn solid" data-role="paste-go">Add this plan</button>
+          </details>
+
+          <p class="pn-status" data-role="library-status" hidden></p>
+
+          <h2>Your plans</h2>
+          <ul class="pn-doclist" data-role="doclist"></ul>
+          <p class="pn-muted" data-role="doclist-empty">
+            No plans yet. Drop one above and it will appear here.
+          </p>
+        </section>
+
+        <!-- Annotator: plan on the left, note rail on the right. -->
+        <section class="pn-view pn-annotate" data-view="annotate" hidden>
+          <div class="pn-toolbar">
+            <button type="button" class="pn-btn" data-role="back-to-library">
+              &#8592; All plans
+            </button>
+            <div class="pn-toolbar-title">
+              <strong data-role="plan-title"></strong>
+              <span class="pn-muted" data-role="plan-sub"></span>
+            </div>
+            <button type="button" class="pn-btn solid" data-role="auto-annotate">
+              Annotate this plan
+            </button>
+            <span class="pn-sync" data-role="sync"></span>
+          </div>
+
+          <div class="pn-summary" data-role="summary" hidden></div>
+          <p class="pn-status" data-role="annotate-status" hidden></p>
+
+          <div class="pn-split">
+            <article class="pn-plan" data-role="plan"></article>
+            <aside class="pn-rail" aria-label="Notes on this plan">
+              <div class="pn-rail-head">
+                <h2>Notes</h2>
+                <button type="button" class="pn-btn" data-role="add-note">+ Add</button>
+              </div>
+              <div class="pn-unpinned" data-role="unpinned" hidden></div>
+              <ul class="pn-notes" data-role="notes"></ul>
+              <p class="pn-muted" data-role="notes-empty">
+                No notes yet. Select text in the plan to pin one, or let the annotator draft a first
+                pass.
+              </p>
+            </aside>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- The note editor. A dialog rather than an inline form: a note is written
+         about a specific quote, and losing that selection mid-edit is the fastest
+         way to end up with notes pinned to the wrong paragraph. -->
+    <dialog class="pn-dialog" data-role="editor">
+      <form method="dialog" data-role="editor-form">
+        <h2 data-role="editor-title">New note</h2>
+        <p class="pn-quote" data-role="editor-quote" hidden></p>
+
+        <label class="pn-field">
+          <span>Kind</span>
+          <select data-role="f-kind">
+            <option value="watch-for">⚠ Watch-for — where they trip</option>
+            <option value="swap">⇄ Swap — what a level does instead</option>
+            <option value="timing">⏱ Timing — how long it really takes</option>
+            <option value="resource">🔗 Resource — pin one of your activities</option>
+            <option value="note">✎ Note — anything else</option>
+          </select>
+        </label>
+
+        <label class="pn-field" data-field="body">
+          <span data-role="body-label">What happens here</span>
+          <textarea data-role="f-body" rows="3"></textarea>
+        </label>
+
+        <label class="pn-field" data-field="bodyAlt" hidden>
+          <span>What you do instead</span>
+          <textarea data-role="f-body-alt" rows="3"></textarea>
+        </label>
+
+        <label class="pn-field" data-field="level" hidden>
+          <span>Who for</span>
+          <select data-role="f-level">
+            <option value="0">Level 0 — most support</option>
+            <option value="1">Level 1 — support</option>
+            <option value="2">Level 2 — enrichment</option>
+          </select>
+        </label>
+
+        <label class="pn-field" data-field="timingMin" hidden>
+          <span>Minutes it actually takes</span>
+          <input type="number" data-role="f-timing" min="0" max="240" step="1" />
+        </label>
+
+        <div class="pn-field" data-field="misconceptionTags" hidden>
+          <span>Which mistake</span>
+          <div class="pn-tagpick" data-role="f-tags"></div>
+        </div>
+
+        <label class="pn-field" data-field="activityRefs" hidden>
+          <span>Which activity</span>
+          <select data-role="f-activity"></select>
+        </label>
+
+        <p class="pn-error" data-role="editor-error" hidden></p>
+
+        <div class="pn-dialog-actions">
+          <button type="button" class="pn-btn" data-role="editor-cancel">Cancel</button>
+          <button type="button" class="pn-btn danger" data-role="editor-delete" hidden>
+            Delete
+          </button>
+          <button type="button" class="pn-btn solid" data-role="editor-save">Save note</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./plan-notes.js" type="module"></script>
+  </body>
+</html>

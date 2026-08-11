@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Groups from Evidence · Neft Teacher</title>
+    <meta
+      name="description"
+      content="Composes today's small groups from the errors students actually made — grouped by misconception, routed to the matching small-group lesson, and measured for whether the error cleared."
+    />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <link rel="stylesheet" href="evidence-groups.css" />
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+</head>
+  <body>
+    <a class="skip-link" href="#plan">Skip to the plan</a>
+
+    <header class="eg-header">
+      <nav aria-label="Breadcrumb">
+        <ol class="crumbs">
+          <li><a href="/teacher-tools/">Teacher Tools</a></li>
+          <li aria-current="page">Groups from Evidence</li>
+        </ol>
+      </nav>
+      <h1>Groups from Evidence</h1>
+      <p class="lede">
+        Small groups composed from the errors students actually made — not from a score band.
+        Each group is one specific misconception, routed to the small-group lesson where that
+        error keeps happening, and measured against last week to show whether it is clearing.
+      </p>
+    </header>
+
+    <main>
+      <!-- Key gate ------------------------------------------------------- -->
+      <section class="eg-gate" id="gate" hidden>
+        <h2>Teacher key</h2>
+        <p>
+          Student names come from the teacher-gated progress API. Enter your teacher key once —
+          it stays on this device.
+        </p>
+        <form id="gate-form">
+          <label for="gate-key">Teacher key</label>
+          <input id="gate-key" type="password" autocomplete="off" required />
+          <button class="btn btn-primary" type="submit">Save key</button>
+        </form>
+      </section>
+
+      <!-- Controls ------------------------------------------------------- -->
+      <section class="eg-controls" aria-labelledby="controls-h">
+        <h2 id="controls-h" class="sr-only">Build the plan</h2>
+        <div class="ctl-row">
+          <div class="ctl">
+            <label for="ctl-section">Class period</label>
+            <input id="ctl-section" type="text" placeholder="all periods" inputmode="numeric" />
+          </div>
+          <div class="ctl">
+            <label for="ctl-days">Look back</label>
+            <select id="ctl-days">
+              <option value="3">3 days</option>
+              <option value="7" selected>7 days</option>
+              <option value="14">14 days</option>
+            </select>
+          </div>
+          <div class="ctl">
+            <label for="ctl-max">Max group size</label>
+            <select id="ctl-max">
+              <option value="4">4 students</option>
+              <option value="6" selected>6 students</option>
+              <option value="8">8 students</option>
+            </select>
+          </div>
+          <div class="ctl ctl-actions">
+            <button class="btn btn-primary" id="btn-build" type="button">Build groups</button>
+            <button class="btn" id="btn-demo" type="button">Show me an example</button>
+            <button class="btn" id="btn-print" type="button">Print</button>
+          </div>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- Plan ----------------------------------------------------------- -->
+      <section id="plan" class="eg-plan" aria-labelledby="plan-h" tabindex="-1">
+        <h2 id="plan-h" class="sr-only">Today's groups</h2>
+        <div id="plan-body">
+          <p class="empty">
+            Press <strong>Build groups</strong> to compose today's small groups from the last
+            week of lesson evidence — or <strong>Show me an example</strong> to see the shape of
+            the plan using sample data.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="eg-footer">
+      <p>
+        Grouping runs entirely in this browser. Nothing is written back, and no student data
+        leaves this page.
+      </p>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

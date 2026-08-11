@@ -15,8 +15,20 @@
 //     a:      second base (trapezoid only)
 //     unit:   display unit, e.g. "cm" (optional)
 //
+// Layout contract (2026-08 redesign — the old build read as four competing
+// controls with no hierarchy, an uncaptioned slider, a figure that was already
+// cut apart on frame one, no dimension labels, and a formula bar that sat on
+// "A = ?" for two thirds of the timeline):
+//   figure (with b / h / a measured ON the drawing)
+//   → fill-in-the-blank formula that assembles as the figure resolves
+//   → caption
+//   → PRIMARY control: one labelled slider, directly under the sentence that
+//     points at it, with its endpoints named
+//   → SECONDARY: three named step chips + Watch. No emoji, no Prev/Next — the
+//     chips ARE the discrete positions of the same axis.
+//
 // Honors prefers-reduced-motion: the slider still works (it IS the animation
-// timeline, user-driven), but the idle "watch it" auto-demo never plays.
+// timeline, user-driven), but the "Watch it" auto-demo never plays.
 
 const C = {
   navy: "#12355b",
@@ -41,23 +53,41 @@ function esc(s) {
 // Smooth the raw slider value so motion feels physical, not linear.
 const ease = (t) => t * t * (3 - 2 * t);
 
+// A measurement drawn ON the figure, so "b" and "h" are never abstract names.
+//   p1/p2  — the segment being measured, in figure coordinates
+//   off    — label offset from the segment midpoint, in figure units
+//   tickDir— when set, draws a right-angle square at p1 between the segment and
+//            this direction (that is what makes a height read as PERPENDICULAR)
+const dim = (p1, p2, text, off, opts = {}) => ({ p1, p2, text, off, ...opts });
+
 // Each figure def returns, for progress t ∈ [0,1]:
-//   pieces: [{ points | rect, fill, stroke, dash }]
+//   whole:   the single uncut outline shown at t≈0 (step 1 must look like ONE
+//            plain figure — the cut line is the story, so it cannot pre-exist)
+//   pieces(t): [{ points, fill, stroke, dash, label }]
+//   dims(t): measurements attached to the edges they measure
 //   caption(t): one plain-language sentence describing what the student sees
-//   formula: { start, end } — the equivalence being built
+//   tokens: fill-in-the-blank formula parts, each with the t it is earned at
+//   steps: the three step names (no emoji, named for what they ARE)
 // Coordinates are in an abstract unit box; we scale into the viewBox.
-function figureDef(figure, { b, h, a }) {
+function figureDef(figure, { b, h, a }, unit) {
+  const u = unit ? ` ${unit}` : "";
+  const sq = unit ? ` ${unit}²` : " square units";
+
   switch (figure) {
     case "triangle": {
       const B = b || 8;
       const H = h || 5;
+      const apex = B * 0.4;
       return {
         area: (B * H) / 2,
-        formulaStart: "A = ?",
-        formulaEnd: `A = ½ · b · h = ½ · ${B} · ${H}`,
         grid: true,
+        steps: ["1 · Triangle", "2 · Rotate a copy", "3 · Parallelogram"],
+        whole: [
+          [0, H],
+          [B, H],
+          [apex, 0],
+        ],
         pieces(t) {
-          const apex = B * 0.4;
           const tri = [
             [0, H],
             [B, H],
@@ -81,10 +111,29 @@ function figureDef(figure, { b, h, a }) {
             { points: rot, fill: C.coralSoft, stroke: C.coral, dash: t < 1 ? "6 4" : "" },
           ];
         },
+        // The original triangle never moves, so its base and height stay put.
+        dims() {
+          return [
+            dim([0, H], [B, H], `b = ${B}${u}`, [0, 0.62]),
+            dim([-0.95, H], [-0.95, 0], `h = ${H}${u}`, [-0.75, 0], {
+              dashed: true,
+              tickDir: [1, 0],
+            }),
+          ];
+        },
+        tokens: [
+          { txt: "A =", at: 0 },
+          { txt: "½", at: 0.55 },
+          { txt: "·", at: 0.55 },
+          { txt: "b · h", at: 0.35 },
+          { txt: `= ½ · ${B} · ${H}`, at: 0.8 },
+          { txt: `= ${(B * H) / 2}${sq}`, at: 0.97 },
+        ],
         caption(t) {
-          if (t < 0.05) return "One triangle. Its area formula is the mystery.";
+          if (t < 0.05)
+            return `One triangle, base ${B}${u} and height ${H}${u}. Its area formula is the mystery — drag the slider below.`;
           if (t < 0.95) return "A copy of the SAME triangle is rotating 180°…";
-          return `Two identical triangles tile a parallelogram (area b · h) — so ONE triangle is HALF: ½ · ${B} · ${H} = ${(B * H) / 2}.`;
+          return `Two identical triangles tile a parallelogram of area b · h. So ONE triangle is HALF of it: ½ · ${B} · ${H} = ${(B * H) / 2}.`;
         },
       };
     }
@@ -92,13 +141,18 @@ function figureDef(figure, { b, h, a }) {
       const A = a || 4;
       const B = b || 8;
       const H = h || 4;
+      const off = (B - A) / 2;
       return {
         area: ((A + B) / 2) * H,
-        formulaStart: "A = ?",
-        formulaEnd: `A = ½ (a + b) h = ½ (${A} + ${B}) · ${H}`,
         grid: true,
+        steps: ["1 · Trapezoid", "2 · Rotate a copy", "3 · Parallelogram"],
+        whole: [
+          [0, H],
+          [B, H],
+          [B - off, 0],
+          [off, 0],
+        ],
         pieces(t) {
-          const off = (B - A) / 2;
           const trap = [
             [0, H],
             [B, H],
@@ -123,8 +177,28 @@ function figureDef(figure, { b, h, a }) {
             { points: rot, fill: C.coralSoft, stroke: C.coral, dash: t < 1 ? "6 4" : "" },
           ];
         },
+        // Both parallel bases are named, because the formula uses both.
+        dims() {
+          return [
+            dim([0, H], [B, H], `b = ${B}${u}`, [0, 0.62]),
+            dim([off, 0], [B - off, 0], `a = ${A}${u}`, [0, -0.55]),
+            dim([-0.95, H], [-0.95, 0], `h = ${H}${u}`, [-0.8, 0], {
+              dashed: true,
+              tickDir: [1, 0],
+            }),
+          ];
+        },
+        tokens: [
+          { txt: "A =", at: 0 },
+          { txt: "½", at: 0.55 },
+          { txt: "(a + b)", at: 0.35 },
+          { txt: "h", at: 0.35 },
+          { txt: `= ½ (${A} + ${B}) · ${H}`, at: 0.8 },
+          { txt: `= ${((A + B) / 2) * H}${sq}`, at: 0.97 },
+        ],
         caption(t) {
-          if (t < 0.05) return "One trapezoid — two different parallel bases, a and b.";
+          if (t < 0.05)
+            return `One trapezoid: two different parallel bases, a = ${A}${u} and b = ${B}${u}. Drag the slider below.`;
           if (t < 0.95) return "An identical copy is rotating 180° to dock against it…";
           return `Together they make a parallelogram with base (a + b) = ${A + B}. One trapezoid is HALF of it: ½ (${A} + ${B}) · ${H} = ${((A + B) / 2) * H}.`;
         },
@@ -134,30 +208,37 @@ function figureDef(figure, { b, h, a }) {
       // Regular hexagon → 6 congruent triangles fanning out from the center.
       const S = b || 4; // side length
       const R = S; // circumradius of a regular hexagon = side
-      const ap = (S * Math.sqrt(3)) / 2;
+      const ap = (S * Math.sqrt(3)) / 2; // apothem = the triangles' height
+      const cx = R * 1.5;
+      const cy = R * 1.3;
+      const vert = (i) => [
+        cx + Math.cos((Math.PI / 3) * i - Math.PI / 2) * R,
+        cy + Math.sin((Math.PI / 3) * i - Math.PI / 2) * R,
+      ];
+      // How far wedge i has slid outward at time t, so labels ride along.
+      const push = (i, t) => {
+        const mid = (Math.PI / 3) * (i + 0.5) - Math.PI / 2;
+        const d = t * R * 0.42;
+        return [Math.cos(mid) * d, Math.sin(mid) * d];
+      };
       return {
         area: 6 * ((S * ap) / 2),
-        formulaStart: "A = ?",
-        formulaEnd: `A = 6 triangles = 6 · (½ · ${S} · h)`,
         grid: false,
+        steps: ["1 · Hexagon", "2 · Break apart", "3 · Six triangles"],
+        whole: [0, 1, 2, 3, 4, 5].map(vert),
         pieces(t) {
-          const cx = R * 1.5;
-          const cy = R * 1.3;
           const out = [];
           for (let i = 0; i < 6; i++) {
-            const a1 = (Math.PI / 3) * i - Math.PI / 2;
-            const a2 = (Math.PI / 3) * (i + 1) - Math.PI / 2;
             // Each triangle slides radially outward as t grows — an exploded view
             // that shows the hexagon is literally built from 6 equal triangles.
-            const mid = (a1 + a2) / 2;
-            const push = t * R * 0.42;
-            const ox = Math.cos(mid) * push;
-            const oy = Math.sin(mid) * push;
+            const [ox, oy] = push(i, t);
+            const [x1, y1] = vert(i);
+            const [x2, y2] = vert(i + 1);
             out.push({
               points: [
                 [cx + ox, cy + oy],
-                [cx + Math.cos(a1) * R + ox, cy + Math.sin(a1) * R + oy],
-                [cx + Math.cos(a2) * R + ox, cy + Math.sin(a2) * R + oy],
+                [x1 + ox, y1 + oy],
+                [x2 + ox, y2 + oy],
               ],
               fill: i % 2 ? C.coralSoft : C.tealSoft,
               stroke: i % 2 ? C.coral : C.teal,
@@ -165,10 +246,35 @@ function figureDef(figure, { b, h, a }) {
           }
           return out;
         },
+        // Measure ONE wedge — side s along its outer edge, height h (the
+        // apothem) from the center point out to that edge's midpoint.
+        dims(t) {
+          const [ox, oy] = push(0, t);
+          const [x1, y1] = vert(0);
+          const [x2, y2] = vert(1);
+          const mx = (x1 + x2) / 2 + ox;
+          const my = (y1 + y2) / 2 + oy;
+          return [
+            dim([x1 + ox, y1 + oy], [x2 + ox, y2 + oy], `s = ${S}${u}`, [0.85, -0.15]),
+            dim([mx, my], [cx + ox, cy + oy], `h = ${ap.toFixed(1)}${u}`, [0.35, -0.5], {
+              dashed: true,
+              tickDir: [x2 - x1, y2 - y1],
+            }),
+          ];
+        },
+        tokens: [
+          { txt: "A =", at: 0 },
+          { txt: "6", at: 0.35 },
+          { txt: "·", at: 0.35 },
+          { txt: "(½ · s · h)", at: 0.55 },
+          { txt: `= 6 · (½ · ${S} · ${ap.toFixed(1)})`, at: 0.8 },
+          { txt: `≈ ${Math.round(6 * ((S * ap) / 2) * 10) / 10}${sq}`, at: 0.97 },
+        ],
         caption(t) {
-          if (t < 0.05) return "A regular hexagon looks hard to measure…";
-          if (t < 0.95) return "…until it explodes into congruent triangles.";
-          return `6 identical triangles — find ONE triangle's area, multiply by 6. Decomposition beats memorization.`;
+          if (t < 0.05)
+            return "A regular hexagon looks hard to measure. Drag the slider below and watch what it is made of.";
+          if (t < 0.95) return "…it breaks into congruent triangles, all the same size.";
+          return `Six identical triangles. Find ONE triangle's area (½ · s · h), then multiply by 6. Decomposition beats memorization.`;
         },
       };
     }
@@ -179,15 +285,23 @@ function figureDef(figure, { b, h, a }) {
       const cutY = Math.round(H * 0.45);
       const a1 = B * cutY;
       const a2 = cutX * (H - cutY);
+      const gapAt = (t) => t * 1.6;
       return {
         area: a1 + a2,
-        formulaStart: "A = ?",
-        formulaEnd: `A = ${B}·${cutY} + ${cutX}·${H - cutY} = ${a1} + ${a2}`,
         grid: true,
+        steps: ["1 · L-shape", "2 · Split it", "3 · Two rectangles"],
+        whole: [
+          [0, H],
+          [B, H],
+          [B, H - cutY],
+          [cutX, H - cutY],
+          [cutX, 0],
+          [0, 0],
+        ],
         pieces(t) {
-          // L-shape splits: the top rectangle slides up-right away from the
-          // bottom one, revealing the two simple rectangles it was made of.
-          const gap = t * 1.6;
+          // L-shape splits: the top rectangle slides right away from the bottom
+          // one, revealing the two simple rectangles it was made of.
+          const gap = gapAt(t);
           return [
             {
               points: [
@@ -201,7 +315,6 @@ function figureDef(figure, { b, h, a }) {
               label: t > 0.6 ? `${B} × ${cutY} = ${a1}` : "",
             },
             {
-              // Top rectangle slides right, cleanly separating the two parts.
               points: [
                 [gap, H - cutY],
                 [cutX + gap, H - cutY],
@@ -214,9 +327,34 @@ function figureDef(figure, { b, h, a }) {
             },
           ];
         },
+        // Each rectangle carries its own base and height — that IS the formula.
+        dims(t) {
+          const gap = gapAt(t);
+          return [
+            dim([0, H], [B, H], `${B}${u}`, [0, 0.62]),
+            dim([-0.85, H], [-0.85, H - cutY], `${cutY}${u}`, [-0.7, 0], {
+              dashed: true,
+              tickDir: [1, 0],
+            }),
+            dim([gap, 0], [cutX + gap, 0], `${cutX}${u}`, [0, -0.5]),
+            dim([cutX + gap + 0.5, 0], [cutX + gap + 0.5, H - cutY], `${H - cutY}${u}`, [0.6, 0], {
+              dashed: true,
+              tickDir: [-1, 0],
+            }),
+          ];
+        },
+        tokens: [
+          { txt: "A =", at: 0 },
+          { txt: "(rectangle 1)", at: 0.35 },
+          { txt: "+", at: 0.35 },
+          { txt: "(rectangle 2)", at: 0.35 },
+          { txt: `= ${B}·${cutY} + ${cutX}·${H - cutY}`, at: 0.8 },
+          { txt: `= ${a1 + a2}${sq}`, at: 0.97 },
+        ],
         caption(t) {
-          if (t < 0.05) return "A composite (L-shaped) figure — no single formula fits it.";
-          if (t < 0.95) return "Pull it apart…";
+          if (t < 0.05)
+            return "A composite (L-shaped) figure — no single formula fits it. Drag the slider below.";
+          if (t < 0.95) return "Pull it apart into shapes you already know…";
           return `Two plain rectangles: ${a1} + ${a2} = ${a1 + a2} square units. Split, solve, add.`;
         },
       };
@@ -228,9 +366,14 @@ function figureDef(figure, { b, h, a }) {
       const sk = H * 0.75; // horizontal skew of the slanted sides
       return {
         area: B * H,
-        formulaStart: "A = ?",
-        formulaEnd: `A = b · h = ${B} · ${H}`,
         grid: true,
+        steps: ["1 · Parallelogram", "2 · Cut & slide", "3 · Rectangle"],
+        whole: [
+          [0, H],
+          [B, H],
+          [B + sk, 0],
+          [sk, 0],
+        ],
         pieces(t) {
           // The slanted triangle on the left is sliced off and slides base-width
           // to the right, filling the gap → a b×h rectangle. Classic shear proof.
@@ -260,8 +403,31 @@ function figureDef(figure, { b, h, a }) {
             },
           ];
         },
+        // The base travels with the figure (0→sk) so the "b" bar always sits
+        // under the base it names, at the start AND on the finished rectangle.
+        dims(t) {
+          const q = t * sk;
+          return [
+            dim([q, H], [B + q, H], `b = ${B}${u}`, [0, 0.62]),
+            // The height gutter travels with the figure's left edge, so it is
+            // never left stranded beside empty grid once the shape moves.
+            dim([q - 0.95, H], [q - 0.95, 0], `h = ${H}${u}`, [-0.8, 0], {
+              dashed: true,
+              tickDir: [1, 0],
+            }),
+          ];
+        },
+        tokens: [
+          { txt: "A =", at: 0 },
+          { txt: "b", at: 0.35 },
+          { txt: "·", at: 0.35 },
+          { txt: "h", at: 0.35 },
+          { txt: `= ${B} · ${H}`, at: 0.8 },
+          { txt: `= ${B * H}${sq}`, at: 0.97 },
+        ],
         caption(t) {
-          if (t < 0.05) return "A slanted parallelogram. Slide the slider →";
+          if (t < 0.05)
+            return `A slanted parallelogram, base ${B}${u} and height ${H}${u}. Drag the slider below to cut and slide it.`;
           if (t < 0.95) return "Slicing the triangle off one end and carrying it to the other…";
           return `Same pieces, zero area lost — it IS a ${B} × ${H} rectangle. That is why A = b · h.`;
         },
@@ -271,9 +437,13 @@ function figureDef(figure, { b, h, a }) {
 }
 
 export function renderAreaMorph(container, cfg = {}) {
-  const figure = cfg.figure || "parallelogram";
-  const def = figureDef(figure, cfg);
+  // `figure` is the documented key. `shape` is accepted because three call
+  // sites in vocab-learn-panel.js used it for months and silently got a
+  // parallelogram for every triangle and trapezoid term; the call sites are
+  // fixed, and this keeps any future stray `shape` from failing silently.
+  const figure = cfg.figure || cfg.shape || "parallelogram";
   const unit = cfg.unit ? String(cfg.unit) : "";
+  const def = figureDef(figure, cfg, unit);
 
   const reduceMotion =
     typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -285,25 +455,34 @@ export function renderAreaMorph(container, cfg = {}) {
     C.line +
     "; border-radius:16px; padding:16px; box-shadow:0 2px 10px rgba(12,27,42,.08);";
 
-  // Size the viewBox from the ACTUAL sweep of every piece across the whole
-  // animation (rotating copies swing outside the resting figure), so nothing
-  // ever clips mid-motion.
+  // Size the viewBox from the ACTUAL sweep of every piece AND every dimension
+  // label across the whole animation (rotating copies swing outside the resting
+  // figure; gutter measurements sit outside it too), so nothing ever clips.
   let minX = Infinity;
   let minY = Infinity;
   let maxX = -Infinity;
   let maxY = -Infinity;
+  const seen = (x, y) => {
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+  };
   for (let i = 0; i <= 24; i++) {
-    for (const p of def.pieces(ease(i / 24))) {
-      for (const [x, y] of p.points) {
-        if (x < minX) minX = x;
-        if (y < minY) minY = y;
-        if (x > maxX) maxX = x;
-        if (y > maxY) maxY = y;
-      }
+    const t = ease(i / 24);
+    for (const p of def.pieces(t)) for (const [x, y] of p.points) seen(x, y);
+    for (const d of def.dims(t)) {
+      seen(d.p1[0], d.p1[1]);
+      seen(d.p2[0], d.p2[1]);
+      const mx = (d.p1[0] + d.p2[0]) / 2 + (d.off ? d.off[0] : 0);
+      const my = (d.p1[1] + d.p2[1]) / 2 + (d.off ? d.off[1] : 0);
+      seen(mx, my);
     }
   }
+  for (const [x, y] of def.whole) seen(x, y);
+
   const W = 560;
-  const PAD = 30;
+  const PAD = 34;
   const scale = (W - PAD * 2) / (maxX - minX);
   const H = Math.round((maxY - minY) * scale) + PAD * 2;
 
@@ -313,63 +492,80 @@ export function renderAreaMorph(container, cfg = {}) {
   svg.style.cssText = "display:block; width:100%; height:auto;";
   root.appendChild(svg);
 
-  // Caption — narrates the transformation as it happens.
+  // Formula strip — a fill-in-the-blank that ASSEMBLES as the figure resolves.
+  // Blanks show the shape of the answer without handing it over.
+  const formula = document.createElement("div");
+  formula.setAttribute("aria-live", "polite");
+  formula.style.cssText =
+    "text-align:center; font-size:1.15rem; font-weight:800; color:" +
+    C.navy +
+    "; background:" +
+    C.tealSoft +
+    "; border-radius:12px; padding:10px 12px; margin:12px 0 10px; letter-spacing:.02em; font-family:ui-monospace,Menlo,monospace;";
+  root.appendChild(formula);
+
+  // Caption — narrates the transformation, and points at the slider directly
+  // beneath it.
   const caption = document.createElement("div");
   caption.setAttribute("aria-live", "polite");
   caption.style.cssText =
     "text-align:center; color:" +
     C.ink +
-    "; font-size:1rem; margin:10px 4px 12px; min-height:2.6em; font-weight:600;";
+    "; font-size:1rem; margin:0 4px 12px; min-height:3.1em; font-weight:600; line-height:1.35;";
   root.appendChild(caption);
 
-  // Formula chip — flips from mystery to derived formula at the end.
-  const formula = document.createElement("div");
-  formula.style.cssText =
-    "text-align:center; font-size:1.05rem; font-weight:800; color:" +
+  // PRIMARY control: one labelled slider, with its two endpoints named so a
+  // student can see what the axis MEANS before touching it.
+  const sliderWrap = document.createElement("div");
+  sliderWrap.style.cssText =
+    "border:2px solid " +
+    C.teal +
+    "; border-radius:14px; padding:10px 12px 6px; background:#f7fdfd;";
+  sliderWrap.innerHTML =
+    '<label for="am-slider-ID" style="display:block; text-align:center; font-weight:800; color:' +
     C.navy +
-    "; background:" +
-    C.tealSoft +
-    "; border-radius:12px; padding:8px 12px; margin-bottom:12px; font-family:ui-monospace,Menlo,monospace;";
-  root.appendChild(formula);
-
-  // Step Navigation Controls: Watch all vs Step 1 / Step 2 / Step 3
-  const stepBar = document.createElement("div");
-  stepBar.style.cssText = "display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:14px;";
-  stepBar.innerHTML = `
-    <button type="button" class="morph-step-btn" data-step="0" style="padding:7px 14px; border:2px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:0.88rem; font-weight:800; cursor:pointer;">Step 1: Start 📐</button>
-    <button type="button" class="morph-step-btn" data-step="1" style="padding:7px 14px; border:2px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:0.88rem; font-weight:800; cursor:pointer;">Step 2: Transform ✂️</button>
-    <button type="button" class="morph-step-btn" data-step="2" style="padding:7px 14px; border:2px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:0.88rem; font-weight:800; cursor:pointer;">Step 3: Formula 🏁</button>
-  `;
-  root.appendChild(stepBar);
-
-  // The main control row: Slider + Prev/Next + Watch
-  const controls = document.createElement("div");
-  controls.style.cssText = "display:flex; flex-wrap:wrap; align-items:center; gap:10px;";
-  controls.innerHTML =
-    '<button type="button" data-act="prev" aria-label="Previous step" style="min-height:42px; padding:0 12px; border:2px solid ' +
-    C.line +
-    '; border-radius:10px; background:#fff; color:' +
-    C.navy +
-    '; font-weight:800; cursor:pointer;">⏮ Prev</button>' +
-    '<input type="range" min="0" max="1000" value="0" step="1" aria-label="Transform the figure" style="flex:1; min-width:140px; min-height:44px; accent-color:' +
+    '; font-size:.95rem; margin-bottom:2px;">Drag to transform the figure</label>' +
+    '<input id="am-slider-ID" type="range" min="0" max="1000" value="0" step="25" style="display:block; width:100%; min-height:44px; accent-color:' +
     C.teal +
     ';" />' +
-    '<button type="button" data-act="next" aria-label="Next step" style="min-height:42px; padding:0 12px; border:2px solid ' +
-    C.line +
-    '; border-radius:10px; background:#fff; color:' +
-    C.navy +
-    '; font-weight:800; cursor:pointer;">Next ⏭</button>' +
-    '<button type="button" data-act="play" aria-label="Play full transformation animation" style="min-height:42px; padding:0 16px; border:2px solid ' +
-    C.teal +
-    '; border-radius:10px; background:' +
-    C.teal +
-    '; color:#fff; font-weight:800; cursor:pointer;">▶ Watch All</button>';
-  root.appendChild(controls);
+    '<div style="display:flex; justify-content:space-between; color:' +
+    C.muted +
+    '; font-size:.8rem; font-weight:700; margin-top:-2px;"><span>' +
+    esc(def.steps[0].replace(/^\d+\s·\s/, "")) +
+    "</span><span>" +
+    esc(def.steps[2].replace(/^\d+\s·\s/, "")) +
+    "</span></div>";
+  // Unique id so several explorers can share one page without stealing labels.
+  const uid = `am-${Math.random().toString(36).slice(2, 8)}`;
+  sliderWrap.innerHTML = sliderWrap.innerHTML.replace(/am-slider-ID/g, uid);
+  root.appendChild(sliderWrap);
 
-  const slider = controls.querySelector("input");
-  const playBtn = controls.querySelector('[data-act="play"]');
-  const prevBtn = controls.querySelector('[data-act="prev"]');
-  const nextBtn = controls.querySelector('[data-act="next"]');
+  // SECONDARY: the same axis as three named stops, plus Watch. Small, quiet,
+  // clearly subordinate to the slider above.
+  const stepBar = document.createElement("div");
+  stepBar.setAttribute("role", "group");
+  stepBar.setAttribute("aria-label", "Jump to a step");
+  stepBar.style.cssText =
+    "display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-top:12px;";
+  stepBar.innerHTML =
+    def.steps
+      .map(
+        (name, i) =>
+          `<button type="button" class="morph-step-btn" data-step="${i}" aria-pressed="false" style="min-height:44px; padding:6px 12px; border:1.5px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:.82rem; font-weight:700; cursor:pointer;">${esc(name)}</button>`,
+      )
+      .join("") +
+    `<button type="button" data-act="play" aria-label="Watch the whole transformation" style="min-height:44px; padding:6px 14px; border:1.5px solid ${C.navy}; border-radius:10px; background:#fff; color:${C.navy}; font-size:.82rem; font-weight:700; cursor:pointer;">Watch it</button>`;
+  // The step chips sit ABOVE the caption, not at the very bottom. In a lesson
+  // this component mounts inside `.nt-work-tool`, a STICKY column, while the
+  // lesson floats a fixed "Next: …" button over the viewport's bottom-right.
+  // A sticky column never scrolls out from under it, so whatever occupies that
+  // corner is unreachable for good — the last two chips were. Keeping the
+  // bottom band for the full-width slider (whose centre clears the button)
+  // leaves every control tappable, and preserves caption → slider adjacency.
+  root.insertBefore(stepBar, caption);
+
+  const slider = sliderWrap.querySelector("input");
+  const playBtn = stepBar.querySelector('[data-act="play"]');
   const stepBtns = stepBar.querySelectorAll(".morph-step-btn");
 
   const stepValues = [0, 0.5, 1];
@@ -381,21 +577,65 @@ export function renderAreaMorph(container, cfg = {}) {
     else currentStepIdx = 2;
 
     stepBtns.forEach((btn, idx) => {
-      if (idx === currentStepIdx) {
-        btn.style.background = C.navy;
-        btn.style.color = "#ffffff";
-        btn.style.borderColor = C.navy;
-      } else {
-        btn.style.background = "#ffffff";
-        btn.style.color = C.navy;
-        btn.style.borderColor = C.line;
-      }
+      const on = idx === currentStepIdx;
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.style.background = on ? C.navy : "#ffffff";
+      btn.style.color = on ? "#ffffff" : C.navy;
+      btn.style.borderColor = on ? C.navy : C.line;
     });
+    slider.setAttribute("aria-valuetext", def.steps[currentStepIdx]);
   }
 
   const ux = (x) => PAD + (x - minX) * scale;
   const uy = (y) => PAD + (y - minY) * scale;
   const px = ([x, y]) => `${ux(x).toFixed(1)},${uy(y).toFixed(1)}`;
+
+  // A measurement: a thin line with end caps, an optional right-angle square,
+  // and a haloed label so it stays readable over the unit grid.
+  function drawDim(d) {
+    const x1 = ux(d.p1[0]);
+    const y1 = uy(d.p1[1]);
+    const x2 = ux(d.p2[0]);
+    const y2 = uy(d.p2[1]);
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const L = Math.hypot(dx, dy) || 1;
+    const nx = (-dy / L) * 5;
+    const ny = (dx / L) * 5;
+    let s =
+      `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" ` +
+      `stroke="${C.navy}" stroke-width="1.6" ${d.dashed ? 'stroke-dasharray="5 4"' : ""}/>`;
+    for (const [ex, ey] of [
+      [x1, y1],
+      [x2, y2],
+    ]) {
+      s += `<line x1="${(ex - nx).toFixed(1)}" y1="${(ey - ny).toFixed(1)}" x2="${(ex + nx).toFixed(1)}" y2="${(ey + ny).toFixed(1)}" stroke="${C.navy}" stroke-width="1.6"/>`;
+    }
+    if (d.tickDir) {
+      // Right-angle square at p1, between the measured segment and tickDir.
+      const tx = d.tickDir[0] * scale;
+      const ty = d.tickDir[1] * scale;
+      const tl = Math.hypot(tx, ty) || 1;
+      const k = 9;
+      const ax = (dx / L) * k;
+      const ay = (dy / L) * k;
+      const bx = (tx / tl) * k;
+      const by = (ty / tl) * k;
+      s += `<path d="M${(x1 + ax).toFixed(1)},${(y1 + ay).toFixed(1)} L${(x1 + ax + bx).toFixed(1)},${(y1 + ay + by).toFixed(1)} L${(x1 + bx).toFixed(1)},${(y1 + by).toFixed(1)}" fill="none" stroke="${C.navy}" stroke-width="1.4"/>`;
+    }
+    // Keep the whole label inside the viewBox, not just its anchor point — at
+    // 18px a centred "h = 3.5 cm" is ~55px of ink on each side of its anchor.
+    const halfW = d.text.length * 5.2 + 4;
+    const lx = Math.min(
+      Math.max((x1 + x2) / 2 + (d.off ? d.off[0] * scale : 0), halfW + 2),
+      W - halfW - 2,
+    );
+    const ly = (y1 + y2) / 2 + (d.off ? d.off[1] * scale : 0) + 4;
+    s +=
+      `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="18" font-weight="800" ` +
+      `font-family="system-ui" fill="${C.navy}" stroke="#fff" stroke-width="4.5" paint-order="stroke">${esc(d.text)}</text>`;
+    return s;
+  }
 
   function draw(tRaw) {
     const t = ease(Math.max(0, Math.min(1, tRaw)));
@@ -409,25 +649,48 @@ export function renderAreaMorph(container, cfg = {}) {
         body += `<line x1="${ux(minX)}" y1="${uy(gy)}" x2="${ux(maxX)}" y2="${uy(gy)}" stroke="${C.grid}" stroke-width="1"/>`;
       }
     }
-    for (const p of def.pieces(t)) {
-      const pts = p.points.map(px).join(" ");
-      body += `<polygon points="${pts}" fill="${p.fill}" stroke="${p.stroke}" stroke-width="2.5" ${
-        p.dash ? `stroke-dasharray="${p.dash}"` : ""
-      } stroke-linejoin="round"/>`;
-      if (p.label) {
-        const cx = p.points.reduce((s, q) => s + q[0], 0) / p.points.length;
-        const cy = p.points.reduce((s, q) => s + q[1], 0) / p.points.length;
-        body += `<text x="${ux(cx)}" y="${uy(cy)}" text-anchor="middle" font-size="14" font-weight="800" font-family="system-ui" fill="${C.navy}">${esc(
-          p.label,
-        )}</text>`;
+    if (t < 0.02) {
+      // Step 1 is ONE whole figure. No seam, no cut line, no stacked copy —
+      // the cut is the thing being explained, so it may not pre-exist.
+      body += `<polygon points="${def.whole.map(px).join(" ")}" fill="${C.tealSoft}" stroke="${C.teal}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    } else {
+      for (const p of def.pieces(t)) {
+        const pts = p.points.map(px).join(" ");
+        body += `<polygon points="${pts}" fill="${p.fill}" stroke="${p.stroke}" stroke-width="2.5" ${
+          p.dash ? `stroke-dasharray="${p.dash}"` : ""
+        } stroke-linejoin="round"/>`;
+        if (p.label) {
+          const cx = p.points.reduce((s, q) => s + q[0], 0) / p.points.length;
+          const cy = p.points.reduce((s, q) => s + q[1], 0) / p.points.length;
+          body += `<text x="${ux(cx)}" y="${uy(cy)}" text-anchor="middle" font-size="17" font-weight="800" font-family="system-ui" fill="${C.navy}" stroke="#fff" stroke-width="3.5" paint-order="stroke">${esc(
+            p.label,
+          )}</text>`;
+        }
       }
     }
+    for (const d of def.dims(t)) body += drawDim(d);
+
     svg.innerHTML = body;
     caption.textContent = def.caption(t);
-    formula.textContent =
-      t >= 0.95
-        ? `${def.formulaEnd} = ${def.area}${unit ? ` ${unit}²` : " square units"}`
-        : def.formulaStart;
+    // Blanks fill in one part at a time, so the formula is visibly derived from
+    // the picture rather than announced at the end.
+    // An unearned part is ONE uniform slot, not a run of underscores sized to
+    // the answer. Ragged underscores of five different lengths read as noise
+    // ("A = __ __ b · h ______ ______") and hint at the answer's length; a row
+    // of identical slots reads as an equation waiting to be filled in.
+    formula.innerHTML = def.tokens
+      .map((tok) => {
+        if (t >= tok.at) return `<span>${esc(tok.txt)}</span>`;
+        // A continuation ("= ½ · 8 · 5", "= 20 square units") is the arithmetic
+        // that follows once the formula exists. Blanking those adds two wide
+        // empty slots that wrap onto their own lines in a narrow lesson column
+        // and swamp the formula being built, so they are simply absent until
+        // earned. Only the formula's own parts hold a place.
+        if (/^=/.test(tok.txt.trim())) return "";
+        return `<span role="img" aria-label="blank" style="display:inline-block; width:1.9em; border-bottom:2px solid ${C.navy}; opacity:.28; vertical-align:baseline;">&nbsp;</span>`;
+      })
+      .filter(Boolean)
+      .join(" ");
     svg.setAttribute(
       "aria-label",
       `${figure} area transformation, ${Math.round(t * 100)}% complete. ${def.caption(t)}`,
@@ -458,20 +721,7 @@ export function renderAreaMorph(container, cfg = {}) {
   }
 
   stepBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const idx = parseInt(btn.dataset.step, 10);
-      goToStep(idx);
-    });
-  });
-
-  prevBtn.addEventListener("click", () => {
-    const nextIdx = Math.max(0, currentStepIdx - 1);
-    goToStep(nextIdx);
-  });
-
-  nextBtn.addEventListener("click", () => {
-    const nextIdx = Math.min(stepValues.length - 1, currentStepIdx + 1);
-    goToStep(nextIdx);
+    btn.addEventListener("click", () => goToStep(parseInt(btn.dataset.step, 10)));
   });
 
   slider.addEventListener("input", () => {

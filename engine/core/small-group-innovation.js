@@ -149,107 +149,324 @@ function printOnly(target, node) {
   window.print();
 }
 
-// Short, ESOL-friendly "how to do it" guidance for each proof method, surfaced
-// as tap-to-open popovers in the consensus lab so a student who is unsure what
-// "Model it / Explain it / Test it / Teach it" means can see concrete steps and
-// sentence frames — anchored to one of the lesson's own problems.
+// Which family of problem the team is settling. Guidance that says "draw it"
+// for every stem is guidance a student cannot act on, so the panel below picks
+// steps that name the actual moves for THIS problem type. Order matters: the
+// first pattern that matches wins, so the narrow shapes are listed first and a
+// stem that matches nothing falls back to the generic steps rather than being
+// forced into a wrong one.
+const PROBLEM_KINDS = [
+  {
+    id: "geometry",
+    test: /\b(area|perimeter|volume|surface area|triangle|rectangle|parallelogram|trapezoid|prism|polygon|base|height)\b/i,
+  },
+  { id: "ratio", test: /\b(ratio|rate|unit rate|proportion|percent|per\s|tax|tip|discount)\b|%/i },
+  {
+    id: "fraction",
+    test: /\b(fraction|numerator|denominator|mixed number|reciprocal)\b|\d\s*\/\s*\d/i,
+  },
+  { id: "decimal", test: /\b(decimal|tenths?|hundredths?|thousandths?)\b|\d+\.\d/i },
+  {
+    id: "integer",
+    test: /\b(integer|negative|opposite|absolute value|number line|below zero)\b|−|-\d/i,
+  },
+  { id: "equation", test: /\b(solve|equation|expression|variable|evaluate|substitute)\b/i },
+];
+
+function classifyProblem(stem) {
+  const text = String(stem || "");
+  return PROBLEM_KINDS.find((kind) => kind.test.test(text))?.id || "generic";
+}
+
+// Short, ESOL-friendly "how to do it" guidance for each proof method. `steps`
+// is the fallback; `byKind` sharpens it for the problem the team is actually
+// settling. Every step is one action in plain language — enough to start, not
+// enough to hand over the answer, which is the whole point: a step that reads
+// "the answer is 24 because…" would end the discussion this protocol exists to
+// start.
 const PROOF_GUIDANCE = {
   model: {
     steps: [
-      "Draw it — a diagram, table, number line, or quick picture.",
-      "Label each part, then point to where the answer shows up.",
+      "Draw the problem — a picture, table, number line, or diagram.",
+      "Label each part with what it stands for.",
+      "Point to the spot in your drawing where the answer appears.",
     ],
-    frames: ["This part shows ___.", "The answer is here because ___."],
+    byKind: {
+      fraction: [
+        "Draw one bar (or circle) for each fraction, split into equal parts.",
+        "Shade the parts the problem names. Write the fraction under each bar.",
+        "Line the bars up and point to what the drawing shows.",
+      ],
+      decimal: [
+        "Draw a place-value chart: ones, tenths, hundredths.",
+        "Write each number in the chart so the decimal points line up.",
+        "Point to the column that decides your answer.",
+      ],
+      ratio: [
+        "Draw a two-row tape diagram or a ratio table with both labels.",
+        "Fill in the pair the problem gives you, then scale up or down step by step.",
+        "Circle the column that answers the question.",
+      ],
+      geometry: [
+        "Sketch the shape and label every measurement the problem gives.",
+        "Mark the base and the height (or each face) so nothing is mixed up.",
+        "Write the formula next to the sketch and show where each number goes.",
+      ],
+      integer: [
+        "Draw a number line with 0 in the middle.",
+        "Mark each number, then draw the arrow for the move.",
+        "Point to where the arrow lands — that is your answer.",
+      ],
+      equation: [
+        "Draw a balance (or bar model) with both sides of the equation.",
+        "Show what you take away or add to BOTH sides.",
+        "Point to the step where the variable is alone.",
+      ],
+    },
+    frames: ["This part of my drawing shows ___.", "The answer is here because ___."],
   },
   explain: {
-    steps: ["Say your steps out loud, in order.", "Name the rule or math idea you used."],
+    steps: [
+      "Say your steps out loud, in order: first, next, last.",
+      "Name the rule or math idea you used.",
+      "Say why that rule fits THIS problem.",
+    ],
+    byKind: {
+      fraction: [
+        "Say what the numerator and the denominator each mean here.",
+        "Explain the step where the denominators become the same — and why.",
+        "Say what your answer means back in the story.",
+      ],
+      decimal: [
+        "Say which place value each digit is in.",
+        "Explain how you knew where the decimal point goes in the answer.",
+        "Estimate out loud to show your answer is reasonable.",
+      ],
+      ratio: [
+        "Say the ratio in words: “___ for every ___.”",
+        "Explain the number you multiplied or divided by, and why.",
+        "Say what one unit is worth.",
+      ],
+      geometry: [
+        "Name the shape and the formula you chose.",
+        "Explain which measurement is the base and which is the height.",
+        "Say the units of your answer and why (units, square units, cubic units).",
+      ],
+      integer: [
+        "Say which direction each number moves you on the number line.",
+        "Explain the sign of your answer.",
+        "Say what the negative number means in the situation.",
+      ],
+      equation: [
+        "Say what the variable stands for.",
+        "Explain the inverse operation you used to undo each step.",
+        "Say why doing it to both sides keeps the equation true.",
+      ],
+    },
     frames: ["I know ___ because ___, so ___.", "First ___, then ___, which means ___."],
   },
   test: {
     steps: [
-      "Put your answer back into the problem and check every step.",
-      "Try one more example to be sure it holds.",
+      "Put your answer back into the problem and re-check every step.",
+      "Estimate: is your answer about the size you expected?",
+      "Try one more example to be sure the method holds.",
     ],
     group2Steps: [
-      "Try a boundary case or a number that could break your answer.",
-      "Show it still works — or find exactly where it would not.",
+      "Pick a boundary case — a 0, a 1, a negative, or a very large number.",
+      "Run your method on it and watch what happens.",
+      "Show it still works, or find exactly where it breaks.",
     ],
+    byKind: {
+      fraction: [
+        "Check that every fraction is in its simplest form.",
+        "Estimate with benchmarks (0, 1/2, 1): is your answer near where it should be?",
+        "Redo one step a different way and see if you land in the same place.",
+      ],
+      decimal: [
+        "Round both numbers and estimate — compare that to your answer.",
+        "Count the decimal places and check where the point landed.",
+        "Work the problem backward to see if you get the starting number.",
+      ],
+      ratio: [
+        "Cross-check the two ratios: do they simplify to the same thing?",
+        "Test your unit rate on a second row of the table.",
+        "Ask: should the answer be bigger or smaller than the start? Does it match?",
+      ],
+      geometry: [
+        "Recount every measurement against the picture.",
+        "Check the units — did area come out in square units?",
+        "Try the formula on a simple shape you already know, to be sure you used it right.",
+      ],
+      integer: [
+        "Check your answer on the number line — is it on the correct side of 0?",
+        "Try the opposite move and see if you return to the start.",
+        "Ask: should this answer be positive or negative? Does it match?",
+      ],
+      equation: [
+        "Substitute your answer back into the original equation.",
+        "Work out both sides separately — do they match?",
+        "Try one nearby number and show it does NOT work.",
+      ],
+    },
     frames: ["When I check it, I get ___.", "This proves ___ because ___."],
   },
   teach: {
     steps: [
       "Plan a 30-second explanation for a partner.",
-      "End with one question that checks they understood.",
+      "Decide the ONE step people get wrong, and slow that step down.",
+      "End with a question that checks they understood.",
     ],
+    byKind: {
+      fraction: [
+        "Plan how you will show what the denominator means.",
+        "Warn your partner about the step people rush — and show it slowly.",
+        "Ask: “Why did the denominators have to match?”",
+      ],
+      decimal: [
+        "Plan how you will show lining up the place values.",
+        "Point out where the decimal point goes, and why.",
+        "Ask: “Where does the decimal point go, and how do you know?”",
+      ],
+      ratio: [
+        "Plan how you will say the ratio in words first.",
+        "Show the scaling step slowly, with the number you multiplied by.",
+        "Ask: “What is the value of one ___?”",
+      ],
+      geometry: [
+        "Plan how you will point to the base and the height on the picture.",
+        "Show why the formula fits this shape.",
+        "Ask: “Why is the answer in square units?”",
+      ],
+      integer: [
+        "Plan how you will use the number line to show the move.",
+        "Slow down on how you decided the sign.",
+        "Ask: “Which way do we move, and why?”",
+      ],
+      equation: [
+        "Plan how you will show what stays balanced.",
+        "Slow down on the inverse operation.",
+        "Ask: “Why do we do it to both sides?”",
+      ],
+    },
     frames: ["The key step is ___.", "Check — can you tell me why ___?"],
   },
 };
 
-// Two-column "Do this / Sentence frames" scaffold for one proof method, shared
-// by the consensus popovers and the group2 Prove-It flow so both give students
-// the same concrete how-to. Group 2 gets the boundary-case steps for "Test it".
-function guidanceCols(id, variant) {
+// Simple, high-contrast line art per method. Decorative and aria-hidden — the
+// steps carry the meaning — but for an ESOL reader the picture is what makes
+// "Model it" vs "Teach it" readable before the words are.
+const PROOF_ART = {
+  model:
+    '<rect x="6" y="10" width="30" height="34" rx="4"/><path d="M12 38v-9M20 38V22M28 38v-14"/><path d="M44 14h26M44 24h26M44 34h18"/>',
+  explain:
+    '<path d="M6 12h40a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H22l-10 9V38H6a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z" transform="translate(6 2)"/><path d="M18 22h22M18 30h14"/>',
+  test: '<path d="M22 6h12M26 6v14L14 42a4 4 0 0 0 3 6h22a4 4 0 0 0 3-6L30 20V6"/><path d="M18 34h20"/><circle cx="24" cy="40" r="2"/><circle cx="33" cy="39" r="3"/>',
+  teach:
+    '<path d="M28 8 6 18l22 10 22-10z"/><path d="M14 23v11c0 4 6 7 14 7s14-3 14-7V23"/><path d="M50 18v14"/>',
+};
+
+function proofArt(id) {
+  const art = PROOF_ART[id];
+  if (!art) return "";
+  return (
+    `<svg class="sg-guide-art" viewBox="0 0 76 52" role="presentation" aria-hidden="true" ` +
+    `fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${art}</svg>`
+  );
+}
+
+/** Steps for one method, sharpened to the problem type when we recognise it. */
+function stepsFor(id, variant, kind) {
   const guide = PROOF_GUIDANCE[id] || {};
-  const steps = (variant === "group2" && guide.group2Steps) || guide.steps || [];
-  const frames = guide.frames || [];
+  if (variant === "group2" && guide.group2Steps) return guide.group2Steps;
+  return guide.byKind?.[kind] || guide.steps || [];
+}
+
+// Two-column "Do this / Sentence frames" scaffold for one proof method, shared
+// by the consensus panel and the group2 Prove-It flow so both give students the
+// same concrete how-to. Group 2 gets the boundary-case steps for "Test it".
+function guidanceCols(id, variant, kind = "generic") {
+  const steps = stepsFor(id, variant, kind);
+  const frames = PROOF_GUIDANCE[id]?.frames || [];
   if (!steps.length && !frames.length) return "";
-  const list = (items) => items.map((item) => `<li>${esc(item)}</li>`).join("");
   return (
     `<div class="sg-guide-cols">` +
-    `<div><b>Do this</b><ul>${list(steps)}</ul></div>` +
-    `<div><b>Sentence frames</b><ul>${list(frames)}</ul></div>` +
+    `<div><b>Do this</b><ol>${steps.map((item) => `<li>${esc(item)}</li>`).join("")}</ol></div>` +
+    `<div><b>Sentence frames</b><ul>${frames.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></div>` +
     `</div>`
   );
 }
 
-// Tap-to-open method guide: a row of chips (one per proof method) that reveal a
-// shared panel with "Do this" steps + sentence frames for the tapped method.
-// One panel open at a time; tapping the open chip again closes it.
-function createConsensusGuide(variant, sample) {
-  const wrap = el("div", "sg-guide");
-  wrap.appendChild(
-    el(
-      "div",
-      "sg-guide-lede",
-      "Not sure what a choice means? Tap it for how-to steps and sentence frames.",
-    ),
-  );
-  const chipRow = el("div", "sg-guide-chips");
+/**
+ * The guidance panel that opens under the choice row. It is deliberately NOT a
+ * worked solution: it names the moves for this method on this kind of problem
+ * and hands over sentence frames, then stops. The student still has to do the
+ * mathematics — which is what they will have to defend to the table.
+ */
+function createGuidancePanel(variant, problem) {
   const panel = el("div", "sg-guide-panel");
   panel.hidden = true;
   panel.setAttribute("aria-live", "polite");
-  const chips = [];
-  let openId = null;
-  const renderPanel = (path) => {
-    panel.innerHTML =
-      `<div class="sg-guide-title"><span aria-hidden="true">${path.icon || ""}</span> ${esc(path.label)}</div>` +
-      (sample
-        ? `<p class="sg-guide-anchor">For the problem above: <i>${esc(sample)}</i></p>`
-        : "") +
-      guidanceCols(path.id, variant);
+  const kind = classifyProblem(problem);
+  return {
+    node: panel,
+    show(path) {
+      panel.innerHTML =
+        `<div class="sg-guide-head">${proofArt(path.id)}` +
+        `<div><div class="sg-guide-title">${esc(path.label)} — how to do it</div>` +
+        (problem ? `<p class="sg-guide-anchor">For this problem: <i>${esc(problem)}</i></p>` : "") +
+        `</div></div>` +
+        guidanceCols(path.id, variant, kind) +
+        `<p class="sg-guide-foot">These are starting moves, not the answer. Do the math yourself, then be ready to defend it.</p>`;
+      panel.hidden = false;
+    },
+    hide() {
+      panel.hidden = true;
+    },
+  };
+}
+
+/**
+ * ONE row with every proof method on it. Tapping a method both records the
+ * choice and opens its how-to panel — the previous design split those apart
+ * (a chip row that only explained, and a separate three-voice board that only
+ * voted), which meant the student who most needed the steps had already voted
+ * blind by the time they found them.
+ */
+function createProofChoiceRow({ variant, problem, initial, onPick, lockOnPick = false }) {
+  const wrap = el("div", "sg-proof-choice");
+  const row = el("div", "sg-proof-row");
+  const guide = createGuidancePanel(variant, problem);
+  const buttons = new Map();
+  const select = (path, persist) => {
+    buttons.forEach((button, id) => {
+      button.setAttribute("aria-pressed", String(id === path.id));
+      // A live table commits once, so the row freezes — but the steps stay open,
+      // because the student needs them AFTER committing, not before.
+      if (lockOnPick) button.disabled = true;
+    });
+    guide.show(path);
+    onPick?.(path, persist);
   };
   proofEntries(variant).forEach((path) => {
-    const chip = el(
+    const button = el(
       "button",
-      "sg-guide-chip",
-      `<span aria-hidden="true">${path.icon || ""}</span> ${esc(path.label)} <span aria-hidden="true">?</span>`,
+      "sg-proof-button sg-vote-button",
+      `<span class="sg-proof-icon" aria-hidden="true">${path.icon || ""}</span>` +
+        `<span class="sg-proof-label">${esc(path.label)}</span>` +
+        `<span class="sg-proof-hint">Tap for steps</span>`,
     );
-    chip.type = "button";
-    chip.setAttribute("aria-expanded", "false");
-    chip.onclick = () => {
-      const closing = openId === path.id;
-      openId = closing ? null : path.id;
-      if (!closing) renderPanel(path);
-      panel.hidden = closing;
-      chips.forEach((item) =>
-        item.setAttribute("aria-expanded", String(!closing && item === chip)),
-      );
-    };
-    chips.push(chip);
-    chipRow.appendChild(chip);
+    button.type = "button";
+    button.setAttribute("aria-pressed", "false");
+    button.onclick = () => select(path, true);
+    buttons.set(path.id, button);
+    row.appendChild(button);
   });
-  wrap.append(chipRow, panel);
-  return wrap;
+  wrap.append(row, guide.node);
+  // Restore a choice made last session — including its guidance panel, so a
+  // returning student picks up mid-thought instead of at a blank board.
+  const saved = proofEntries(variant).find((path) => path.id === initial);
+  if (saved) select(saved, false);
+  return { node: wrap };
 }
 
 /**
@@ -258,13 +475,12 @@ function createConsensusGuide(variant, sample) {
  * whole pedagogical point is that you commit before you know what anyone else
  * said, so the disagreement that follows is real.
  */
-function liveConsensusBoard(config, variant, state, store, room) {
+function liveConsensusBoard(config, variant, state, store, room, problem) {
   const wrap = el("div", "sg-vote-board sg-vote-live");
   const status = el("div", "sg-consensus-reveal", `🔒 Waiting for your table…`);
   status.setAttribute("aria-live", "polite");
   const itemKey = `consensus:${config.lessonId || "lesson"}`;
-  const row = el("div", "sg-vote-row");
-  row.appendChild(el("b", null, `Your seat (${room.seat()})`));
+  wrap.appendChild(el("div", "sg-seat-label", `Your seat (${room.seat()})`));
 
   let stop = null;
   const paint = (data) => {
@@ -295,19 +511,12 @@ function liveConsensusBoard(config, variant, state, store, room) {
         .join("");
   };
 
-  proofEntries(variant).forEach((path) => {
-    const button = el(
-      "button",
-      "sg-vote-button",
-      `<span aria-hidden="true">${path.icon || ""}</span> ${esc(path.label)}`,
-    );
-    button.type = "button";
-    button.setAttribute("aria-label", `Your choice · ${path.label}`);
-    const cast = async (persist) => {
-      [...row.querySelectorAll("button")].forEach((item) => {
-        item.disabled = true;
-        item.setAttribute("aria-pressed", String(item === button));
-      });
+  const choice = createProofChoiceRow({
+    variant,
+    problem,
+    initial: state.consensusVotes?.[0] || null,
+    lockOnPick: true,
+    onPick: async (path, persist) => {
       state.consensusVotes = [path.id];
       if (persist) {
         store?.set("consensusVotes", [path.id]);
@@ -316,12 +525,9 @@ function liveConsensusBoard(config, variant, state, store, room) {
       status.textContent = "🔒 Locked in. Waiting for the rest of your table…";
       stop?.();
       stop = room.watch(itemKey, paint);
-    };
-    button.onclick = () => cast(true);
-    if (state.consensusVotes?.[0] === path.id) cast(false);
-    row.appendChild(button);
+    },
   });
-  wrap.append(row, status);
+  wrap.append(choice.node, status);
   // A returning student who already committed should see the live state at once.
   if (state.consensusVotes?.[0]) {
     stop?.();
@@ -353,76 +559,44 @@ export function createConsensusLab(config, variant, state, store = null, room = 
     problemCard.appendChild(el("p", "sg-consensus-problem-stem", esc(problem)));
     fieldset.appendChild(problemCard);
   }
-  // A real table gets a real board. One seat, one vote, revealed only when
-  // everyone has committed. The simulated three-voice board below is the SOLO
-  // fallback, and it now says so — a device counting "0 of 3 voices ready" while
-  // one student taps all three is a ritual of collaboration, not collaboration,
-  // and labelling it honestly is the difference between a scaffold and a fiction.
-  const live = room?.active?.() ? liveConsensusBoard(config, variant, state, store, room) : null;
+  // A real table gets a real board: one seat, one vote, revealed only when every
+  // seat has committed. Solo gets the same single row — the old simulated
+  // "Voice 1 / Voice 2 / Voice 3" board asked one student to cast three votes
+  // against themselves, which is a ritual of collaboration rather than
+  // collaboration, and it buried the how-to steps behind a separate chip row.
+  const live = room?.active?.()
+    ? liveConsensusBoard(config, variant, state, store, room, problem)
+    : null;
   fieldset.appendChild(
     el(
       "p",
       "sg-innovation-lede",
       live
         ? `Everyone at table ${esc(room.code())} picks the single best way to prove the answer${problem ? " to the problem above" : ""}. Your choice stays private until every seat has committed — then all of them appear at once.`
-        : problem
-          ? "Pick the single best way to prove the answer to the problem above. Working alone, you are casting all three positions yourself — try to argue each one honestly. With a group at one table, start a table code above so each seat votes for real."
-          : "Working alone, you are casting all three positions yourself — try to argue each one honestly. With a group at one table, start a table code above so each seat votes for real.",
+        : `Pick the single best way to prove the answer${problem ? " to the problem above" : ""}. Tap a choice to see how to do it, step by step. You still do the math — then be ready to defend your choice to the group.`,
     ),
   );
   if (live) {
     fieldset.appendChild(live);
   }
-  const voteBoard = el("div", "sg-vote-board");
-  const reveal = el("div", "sg-consensus-reveal", "🔒 0 of 3 positions argued");
+  const soloBoard = el("div", "sg-vote-board");
+  const reveal = el("div", "sg-consensus-reveal", "Choose a method above to get your steps.");
   reveal.setAttribute("aria-live", "polite");
-  const votes = Array.isArray(state.consensusVotes) ? [...state.consensusVotes] : [];
-  const updateReveal = () => {
-    const ready = votes.filter(Boolean).length;
-    if (ready < 3)
-      reveal.textContent = `🔒 ${ready} of 3 positions argued — you are arguing all three`;
-    else {
-      const counts = votes.reduce((all, id) => ({ ...all, [id]: (all[id] || 0) + 1 }), {});
-      reveal.classList.add("is-revealed");
-      reveal.innerHTML = `<b>Your three positions, side by side</b>${Object.entries(counts)
-        .map(
-          ([id, count]) =>
-            `<span>${esc(labelFor(id))} · ${count} ${count === 1 ? "position" : "positions"}</span>`,
-        )
-        .join("")}`;
-    }
-  };
-  [1, 2, 3].forEach((voice) => {
-    const row = el("div", "sg-vote-row");
-    row.appendChild(el("b", null, `Voice ${voice}`));
-    const casters = new Map();
-    proofEntries(variant).forEach((path) => {
-      const button = el(
-        "button",
-        "sg-vote-button",
-        `<span aria-hidden="true">${path.icon || ""}</span> ${esc(path.label)}`,
-      );
-      button.type = "button";
-      button.setAttribute("aria-label", `Voice ${voice} · ${path.label}`);
-      const cast = (persist) => {
-        votes[voice - 1] = path.id;
-        [...row.querySelectorAll("button")].forEach((item) => {
-          item.disabled = true;
-          item.setAttribute("aria-pressed", String(item === button));
-        });
-        state.consensusVotes = [...votes];
-        if (persist) store?.set("consensusVotes", [...votes]);
-        updateReveal();
-      };
-      button.onclick = () => cast(true);
-      casters.set(path.id, cast);
-      row.appendChild(button);
-    });
-    // Restore a voice cast last session — the board stays as they left it.
-    const saved = votes[voice - 1];
-    if (saved && casters.has(saved)) casters.get(saved)(false);
-    voteBoard.appendChild(row);
-  });
+  if (!live) {
+    soloBoard.appendChild(
+      createProofChoiceRow({
+        variant,
+        problem,
+        initial: state.consensusVotes?.[0] || null,
+        onPick: (path, persist) => {
+          state.consensusVotes = [path.id];
+          if (persist) store?.set("consensusVotes", [path.id]);
+          reveal.classList.add("is-revealed");
+          reveal.innerHTML = `<b>Your method: ${esc(path.label)}</b><span>Work the steps, then say why this method proves it best.</span>`;
+        },
+      }).node,
+    );
+  }
   const revision = el("fieldset", "sg-revision");
   revision.appendChild(el("legend", "block-lab", "After discussion, what happened?"));
   [
@@ -451,11 +625,9 @@ export function createConsensusLab(config, variant, state, store = null, room = 
     store?.set("revisionReason", state.revisionReason);
   };
   revision.appendChild(reasonLabel);
-  // With a real table the live board above IS the vote; the simulated
-  // three-position board would only invite students to argue with themselves
-  // while their group waits.
-  if (live) fieldset.append(createConsensusGuide(variant, problem), revision);
-  else fieldset.append(createConsensusGuide(variant, problem), voteBoard, reveal, revision);
+  // With a real table the live board above IS the choice row, steps included.
+  if (live) fieldset.appendChild(revision);
+  else fieldset.append(soloBoard, reveal, revision);
   return fieldset;
 }
 

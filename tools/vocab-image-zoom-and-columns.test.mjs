@@ -36,7 +36,7 @@ const read = (rel) => readFileSync(new URL(`../${rel}`, import.meta.url), "utf8"
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", {
   pretendToBeVisual: true,
-  url: "https://example.test/lessons/1-1/",
+  url: "https://example.test/lessons/6-13/",
 });
 globalThis.window = dom.window;
 globalThis.document = dom.window.document;
@@ -52,7 +52,11 @@ document.body.append(img);
 attachImageZoom(img);
 
 assert.equal(img.dataset.zoomable, "1", "a zoomable vocabulary image must carry data-zoomable=1");
-assert.equal(img.getAttribute("role"), "button", "it must announce itself as a button");
+// The image must STAY an image to assistive tech — overriding its role with
+// "button" hid every vocabulary illustration from the accessibility tree and
+// read its alt text out as a button label (fixed 2026-08-04; the studio
+// Playwright suite asserts the same contract via getByRole("img")).
+assert.equal(img.getAttribute("role"), null, "it must keep its implicit img role");
 assert.equal(img.getAttribute("tabindex"), "0", "it must be reachable by keyboard");
 assert.equal(img.getAttribute("title"), "Click to enlarge", "it must say what tapping does");
 assert.ok(img.classList.contains("is-zoomable"), "it must carry the zoom-in cursor class");
@@ -105,7 +109,7 @@ const wallImg = configureVocabImage(document.createElement("img"), {
   definition: "a rate for one unit",
 });
 assert.equal(wallImg.dataset.zoomable, "1", "small-group vocabulary cards must enlarge on tap");
-assert.equal(wallImg.getAttribute("role"), "button");
+assert.equal(wallImg.getAttribute("role"), null, "word-wall image keeps its img role");
 assert.equal(wallImg.getAttribute("tabindex"), "0");
 
 // ───────────────────────────────────────────────────────────────────────────

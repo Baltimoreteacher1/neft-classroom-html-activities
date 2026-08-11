@@ -113,19 +113,20 @@ test.describe("small-group guided math studio", () => {
     // Team consensus protocol lives with partner talk in the Practice tab.
     await page.locator("#sg-tab-sg-tab-practice").click();
     const consensus = page.getByRole("group", { name: "Team consensus protocol" });
-    // Without a table code this is the SOLO board, and the innovation wave made it
-    // say so: one student tapping all three seats is a ritual of collaboration, not
-    // collaboration. The honest labelling is the assertion — and the old
+    // Without a table code this is the SOLO board: ONE row with every method on
+    // it, and tapping a method both records the choice and opens its how-to
+    // steps. The old three-voice board is gone — one student casting three votes
+    // against themselves was a ritual of collaboration, not collaboration. The
     // "your choice stays private" promise must NOT appear here, because with one
-    // device there is nobody to keep it private from. That promise is now scoped to
+    // device there is nobody to keep it private from; that promise is scoped to
     // the live table branch (createConsensusLab in small-group-innovation.js).
-    await expect(consensus.getByText(/casting all three positions yourself/i)).toBeVisible();
     await expect(consensus.getByText(/stays private|stays hidden/i)).toHaveCount(0);
-    for (const voice of ["Voice 1", "Voice 2", "Voice 3"]) {
-      await consensus.getByRole("button", { name: new RegExp(`${voice}.*Model it`, "i") }).click();
-    }
-    await expect(consensus.getByText(/Your three positions, side by side/i)).toBeVisible();
-    await expect(consensus.getByText(/Model it · 3 positions/)).toBeVisible();
+    await expect(consensus.getByRole("button", { name: /Voice \d/i })).toHaveCount(0);
+    await consensus.getByRole("button", { name: /Model it/i }).click();
+    await expect(consensus.getByText(/Your method: Model it/i)).toBeVisible();
+    // Tapping the method must hand over actionable steps — not the answer.
+    await expect(consensus.getByText("Do this")).toBeVisible();
+    await expect(consensus.getByText(/These are starting moves, not the answer/i)).toBeVisible();
     await consensus.getByRole("radio", { name: "Revised the position" }).check();
     await consensus
       .getByLabel("Why did your thinking change?")

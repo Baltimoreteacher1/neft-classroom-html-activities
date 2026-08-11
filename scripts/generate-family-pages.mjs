@@ -484,7 +484,7 @@ function buildLessonRecords() {
         blurb: "Grade 6 math practice and support.",
       };
       const topic = topicFor(lessonSource);
-      const isFlagship = lessonId.endsWith("-flagship") || Boolean(lessonSource.flagship);
+      const isFlagship = lessonId.endsWith("-flagship");
       return {
         lessonId,
         unit,
@@ -547,7 +547,7 @@ function renderIndex(lessons) {
     .topbar a { color: #fff; text-decoration: none; font-weight: 700; }
     main { max-width: 1180px; margin: 0 auto; padding: 34px 20px 56px; }
     .hero { display: grid; gap: 14px; margin-bottom: 24px; }
-    .eyebrow { color: var(--teal); font-weight: 800; text-transform: uppercase; font-size: 0.78rem; }
+    .eyebrow { color: var(--teal-ink); font-weight: 800; text-transform: uppercase; font-size: 0.78rem; }
     h1 { margin: 0; font-size: clamp(2rem, 5vw, 4rem); line-height: 1.02; }
     .subtitle { margin: 0; max-width: 760px; font-size: 1.2rem; color: #334e68; }
     .intro { max-width: 860px; color: var(--muted); margin: 0; }

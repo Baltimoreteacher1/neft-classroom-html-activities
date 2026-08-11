@@ -16,7 +16,7 @@ import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
 
 const dom = new JSDOM("<!doctype html><html><body><div id='h'></div></body></html>", {
-  url: "https://eduwonderlab.com/lessons/1-1/",
+  url: "https://eduwonderlab.com/lessons/6-13/",
 });
 globalThis.window = dom.window;
 globalThis.document = dom.window.document;

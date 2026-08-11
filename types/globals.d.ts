@@ -60,6 +60,19 @@ interface Window {
   NTEdgeTwins: any;
   NTFocus: any;
   NTFuture: any;
+  /**
+   * `assets/curriculum-json-cache.js` publishes this so the hub's feature
+   * scripts fetch each shared `/data` manifest once instead of once apiece.
+   * Optional and looked up defensively (`var cache = window.NTJsonCache`)
+   * because the same scripts also load on pages that do not carry the cache.
+   */
+  NTJsonCache?: {
+    json: (url: string, init?: RequestInit) => Promise<any>;
+    text: (
+      url: string,
+      init?: RequestInit,
+    ) => Promise<{ ok: boolean; status: number; text: string }>;
+  };
   NTHubUnits: any;
   NTIdentity: any;
   NTInkMath: any;
@@ -347,6 +360,13 @@ interface Window {
   SpeechRecognition: any;
   webkitSpeechRecognition: any;
   webkitAudioContext: any;
+  /**
+   * `assets/formula-popup.js` publishes this so any page that loads the popup
+   * can open the vocab card for a term. It is looked up defensively
+   * (`if (window.openVocabModal)`) because pages that do not load the script
+   * simply will not have it.
+   */
+  openVocabModal?: (termOrKey: string) => void;
 }
 
 /**

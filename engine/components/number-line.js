@@ -1,4 +1,13 @@
+import { mountSymbolPad } from "../core/symbol-pad.js";
 export function renderNumberLine(container, config) {
+  // Shape adapter, applied BEFORE anything reads the config: several lessons
+  // author the plot-these-values task as `items:[{label,value}]` + `range:
+  // {min,max,step}` (see lessons/1-5) rather than `targets` + flat min/max/step.
+  // Nothing consumed that shape, so those Explore phases fell through to the
+  // "unavailable" stub — which printed the directions a SECOND time under the
+  // problem card and then reported a completion the student never earned.
+  // Normalising here fixes every lesson written that way, not just one.
+  config = adaptNumberLineShape(config);
   const { min, max, step, targets, snapToTick, label, onComplete } = config;
   injectNumberLineStyles();
 
@@ -23,12 +32,17 @@ export function renderNumberLine(container, config) {
       return renderJumpNumberLine(container, config);
     }
     // Guard malformed config: with no targets, the original "correct === targets.length"
-    // check is 0 === 0 on the first click and fires a false success.
+    // check is 0 === 0 on the first click and fires a false success. The stub no
+    // longer echoes the directions (the problem card above already printed them
+    // — `hideStem`) and no longer calls onComplete, which used to hand the
+    // surrounding phase a completion, a green "correct" card and a Turn & Talk
+    // for a task the student was never actually shown.
     const warn = document.createElement("p");
     warn.className = "problem-stem";
-    warn.textContent = label || config.instructions || "This number-line task is unavailable.";
+    warn.textContent = config.hideStem
+      ? "This number-line task is unavailable."
+      : label || config.instructions || "This number-line task is unavailable.";
     container.append(warn);
-    if (onComplete) onComplete(0, 0);
     return;
   }
 
@@ -80,14 +94,35 @@ export function renderNumberLine(container, config) {
   fadeInOnMount(arrowL, 380);
   fadeInOnMount(arrowR, 380);
 
-  // Ticks and labels (labels fade in with a slight left-to-right stagger)
+  // Ticks and labels (labels fade in with a slight left-to-right stagger).
+  //
+  // Every tick used to carry a label. That capped how fine a line could be: a
+  // lesson whose points sit on halves or quarters needs quarter ticks, and 25
+  // labels across 600px collide into an unreadable smear — so lessons authored
+  // a coarse step instead and their own points ended up BETWEEN ticks, where a
+  // snapping dot can never land. Minor ticks are drawn shorter and unlabelled,
+  // so a fine step stays readable and the points stay reachable.
+  const tickCount = Math.max(1, Math.round((max - min) / step));
+  const labelEvery = Math.max(1, Math.ceil(tickCount / 12));
   let tickIdx = 0;
   for (let v = min; v <= max; v = round(v + step)) {
     const x = toX(v);
-    line(svg, x, TICK_Y - 8, x, TICK_Y + 8, "#12355b", 1.5);
-    const txt = text(svg, x, TICK_Y + 24, formatNum(v), "11px", "#21313f");
-    txt.setAttribute("text-anchor", "middle");
-    fadeInOnMount(txt, 140 + tickIdx * 35);
+    const isMajor = tickIdx % labelEvery === 0;
+    line(
+      svg,
+      x,
+      TICK_Y - (isMajor ? 10 : 6),
+      x,
+      TICK_Y + (isMajor ? 10 : 6),
+      "#12355b",
+      isMajor ? 2.5 : 1.5,
+    );
+    if (isMajor) {
+      const txt = text(svg, x, TICK_Y + 26, formatNum(v), "17px", "#12355b");
+      txt.setAttribute("text-anchor", "middle");
+      txt.setAttribute("font-weight", "700");
+      fadeInOnMount(txt, 140 + tickIdx * 35);
+    }
     tickIdx += 1;
   }
 
@@ -117,7 +152,7 @@ export function renderNumberLine(container, config) {
     const dot = circle(g, 0, 0, DOT_R, "#f2c15b", "#12355b", 2.5);
     // Class enables the smooth fill/stroke color transition (check feedback).
     dot.setAttribute("class", "nl-dot");
-    const dotLabel = text(g, 0, -18, t.label || "?", "11px", "#12355b");
+    const dotLabel = text(g, 0, -20, t.label || "?", "16px", "#12355b");
     dotLabel.setAttribute("text-anchor", "middle");
     dotLabel.setAttribute("font-weight", "700");
 
@@ -321,6 +356,36 @@ export function renderNumberLine(container, config) {
   container.append(wrapper);
 }
 
+// `items` + `range` → `targets` + flat min/max/step, the shape every renderer in
+// this file reads. Returns the config untouched when it is already canonical, so
+// this is a no-op for the lessons that author `targets`.
+//
+// A plot-these-values list is worked ONE dot at a time (`sequential`): the
+// authored items are an ordered walk ("Start: 3.4" → "Add 1.25 → land at 4.65"),
+// which reads as nonsense when four dots start bunched together on the line.
+function adaptNumberLineShape(config) {
+  if (!config || (Array.isArray(config.targets) && config.targets.length)) return config;
+  const items = Array.isArray(config.items) ? config.items : null;
+  if (!items || !items.length) return config;
+  const targets = items
+    .filter((it) => it && Number.isFinite(Number(it.value)))
+    .map((it) => ({ value: Number(it.value), label: it.label }));
+  if (!targets.length) return config;
+  const range = config.range || {};
+  const values = targets.map((t) => t.value);
+  return {
+    ...config,
+    targets,
+    sequential: config.sequential !== false,
+    min:
+      config.min ??
+      (Number.isFinite(Number(range.min)) ? Number(range.min) : Math.min(...values, 0)),
+    max:
+      config.max ?? (Number.isFinite(Number(range.max)) ? Number(range.max) : Math.max(...values)),
+    step: config.step ?? (Number.isFinite(Number(range.step)) ? Number(range.step) : 1),
+  };
+}
+
 // One dot, moved to each value in turn. Snaps to tenths when the values are
 // decimals (so 3.4 is actually reachable — integer snapping was the "weird" part),
 // shows the current target and progress, and advances on a correct placement.
@@ -347,7 +412,11 @@ function renderSequentialNumberLine(container, config) {
 
   const wrapper = document.createElement("div");
   wrapper.className = "card";
-  const lead = label || instructions;
+  // `hideStem` means the surrounding problem shell already printed the task
+  // sentence. Without honouring it the student read the SAME directions twice —
+  // once in the card header, once again immediately below it (see
+  // coordinate-grid.js, which already did this).
+  const lead = config.hideStem ? label : label || instructions;
   if (lead) {
     const p = document.createElement("p");
     p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
@@ -404,11 +473,12 @@ function renderSequentialNumberLine(container, config) {
       x,
       TICK_Y + (isMajor ? 8 : 5),
       "#12355b",
-      isMajor ? 1.5 : 1,
+      isMajor ? 2.5 : 1.5,
     );
     if (isMajor) {
-      const t = text(svg, x, TICK_Y + 24, formatNum(v), "11px", "#21313f");
+      const t = text(svg, x, TICK_Y + 26, formatNum(v), "17px", "#12355b");
       t.setAttribute("text-anchor", "middle");
+      t.setAttribute("font-weight", "700");
       fadeInOnMount(t, 140 + seqTickIdx * 35);
       seqTickIdx += 1;
     }
@@ -422,7 +492,7 @@ function renderSequentialNumberLine(container, config) {
   const shadow = circle(g, 0, 0, DOT_R + 2, "rgba(18,53,91,0.12)", "none", 0);
   const dot = circle(g, 0, 0, DOT_R, "#f2c15b", "#12355b", 2.5);
   dot.setAttribute("class", "nl-dot");
-  const valLabel = text(g, 0, -18, "", "12px", "#12355b");
+  const valLabel = text(g, 0, -20, "", "16px", "#12355b");
   valLabel.setAttribute("text-anchor", "middle");
   valLabel.setAttribute("font-weight", "800");
   g.append(shadow, dot, valLabel);
@@ -558,7 +628,7 @@ function normalizeIneq(s) {
 // a fresh number line centered on the boundary. Used by renderInequalityGraphs.
 function drawInequalityLine(boundary, circleType, direction) {
   const PAD = 40;
-  const TICK_Y = 55;
+  const TICK_Y = 58;
   const W = 600;
   const usable = W - PAD * 2;
   const bmin = boundary - 5;
@@ -574,31 +644,41 @@ function drawInequalityLine(boundary, circleType, direction) {
     `Number line: ${circleType} circle at ${boundary}, shaded ${direction}`,
   );
 
-  line(svg, PAD, TICK_Y, W - PAD, TICK_Y, "#1fa6a2", 3);
-  poly(svg, `${PAD - 6},${TICK_Y} ${PAD + 4},${TICK_Y - 5} ${PAD + 4},${TICK_Y + 5}`, "#1fa6a2");
+  // Legibility on a projector and on a Chromebook at arm's length: the axis was
+  // a 3px mid-teal line with 1.5px ticks and 11px labels, which is the faintest
+  // thing on the page and the part students actually have to read. Dark ink,
+  // thicker rules, larger labels.
+  line(svg, PAD, TICK_Y, W - PAD, TICK_Y, "#12355b", 4);
+  poly(svg, `${PAD - 8},${TICK_Y} ${PAD + 5},${TICK_Y - 7} ${PAD + 5},${TICK_Y + 7}`, "#12355b");
   poly(
     svg,
-    `${W - PAD + 6},${TICK_Y} ${W - PAD - 4},${TICK_Y - 5} ${W - PAD - 4},${TICK_Y + 5}`,
-    "#1fa6a2",
+    `${W - PAD + 8},${TICK_Y} ${W - PAD - 5},${TICK_Y - 7} ${W - PAD - 5},${TICK_Y + 7}`,
+    "#12355b",
   );
 
   for (let v = bmin; v <= bmax; v += 1) {
     const x = toX(v);
-    line(svg, x, TICK_Y - 7, x, TICK_Y + 7, "#12355b", 1.5);
-    const t = text(svg, x, TICK_Y + 22, formatNum(v), "11px", "#21313f");
+    line(svg, x, TICK_Y - 10, x, TICK_Y + 10, "#12355b", 2.5);
+    const t = text(svg, x, TICK_Y + 30, formatNum(v), "18px", "#12355b");
     t.setAttribute("text-anchor", "middle");
+    t.setAttribute("font-weight", "800");
   }
 
   // Shaded ray from the boundary toward `direction`.
   const bx = toX(boundary);
   const endX = direction === "left" ? PAD + 6 : W - PAD - 6;
-  const ray = line(svg, bx, TICK_Y, endX, TICK_Y, "#d9795d", 6);
+  const ray = line(svg, bx, TICK_Y, endX, TICK_Y, "#d9542f", 9);
   ray.setAttribute("stroke-linecap", "round");
-  ray.setAttribute("opacity", "0.85");
 
   // Boundary circle: closed = filled, open = hollow.
-  const filled = circleType === "closed";
-  circle(svg, bx, TICK_Y, 9, filled ? "#12355b" : "#ffffff", "#12355b", 3);
+  // Case-insensitive: configs have authored "Closed" as well as "closed", and a
+  // strict compare silently drew an OPEN circle for an inclusive inequality —
+  // the one detail the whole graph turns on.
+  const filled =
+    String(circleType ?? "")
+      .trim()
+      .toLowerCase() === "closed";
+  circle(svg, bx, TICK_Y, 12, filled ? "#12355b" : "#ffffff", "#12355b", 4);
   return svg;
 }
 
@@ -610,10 +690,13 @@ function renderInequalityGraphs(container, config) {
   const wrapper = document.createElement("div");
   wrapper.className = "card";
 
-  if (instructions || label) {
+  // `hideStem`: the problem shell already printed this sentence — see the
+  // sequential renderer above.
+  const lead = config.hideStem ? label : instructions || label;
+  if (lead) {
     const p = document.createElement("p");
     p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
-    p.textContent = instructions || label;
+    p.textContent = lead;
     wrapper.append(p);
   }
 
@@ -648,6 +731,8 @@ function renderInequalityGraphs(container, config) {
     checkBtn.className = "btn btn-primary";
     checkBtn.textContent = "Check";
     controls.append(input, checkBtn);
+    // ≤ and ≥ are not on the keyboard — offer them as buttons.
+    mountSymbolPad(input, { force: true });
 
     const fb = document.createElement("div");
     fb.className = "mt-3";
@@ -719,10 +804,13 @@ function renderJumpNumberLine(container, config) {
   const wrapper = document.createElement("div");
   wrapper.className = "card";
 
-  if (instructions || label) {
+  // `hideStem`: the problem shell already printed this sentence — see the
+  // sequential renderer above.
+  const lead = config.hideStem ? label : instructions || label;
+  if (lead) {
     const p = document.createElement("p");
     p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
-    p.textContent = instructions || label;
+    p.textContent = lead;
     wrapper.append(p);
   }
 
@@ -741,13 +829,14 @@ function renderJumpNumberLine(container, config) {
   svg.setAttribute("role", "img");
   svg.setAttribute("aria-label", `Number line from ${lo} to ${hi} with ${jumps} equal jumps`);
 
-  line(svg, PAD, TICK_Y, W - PAD, TICK_Y, "#1fa6a2", 3);
+  line(svg, PAD, TICK_Y, W - PAD, TICK_Y, "#12355b", 4);
   const st = Number(step) || (hi - lo) / jumps;
   for (let v = lo; v <= hi + 1e-9; v = round(v + st)) {
     const x = toX(v);
-    line(svg, x, TICK_Y - 7, x, TICK_Y + 7, "#12355b", 1.5);
-    const t = text(svg, x, TICK_Y + 22, formatNum(v), "11px", "#21313f");
+    line(svg, x, TICK_Y - 10, x, TICK_Y + 10, "#12355b", 2.5);
+    const t = text(svg, x, TICK_Y + 26, formatNum(v), "17px", "#12355b");
     t.setAttribute("text-anchor", "middle");
+    t.setAttribute("font-weight", "700");
   }
 
   // Jump arcs above the line.

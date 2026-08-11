@@ -64,6 +64,7 @@ export { MANIPULATIVES, OBJECTIVE_IMAGES } from "./objective-art-catalog.js";
  * problem.
  */
 export const TOPICS = {
+  mathPractice: { content: "mathPracticeContent", language: "mathPracticeTalk" },
   factors: { content: "factorsContent", language: "factorsTalk" },
   division: { content: "divisionContent", language: "divisionTalk" },
   decimalSum: { content: "decimalSumContent", language: "decimalSumTalk" },
@@ -102,6 +103,14 @@ export const TOPICS = {
  * @type {Record<string, { topic: string, rules?: [RegExp, string][] }>}
  */
 const BY_STANDARD = {
+  // The book's "Math Is..." units (1 and 10) are placed by their practice
+  // standard, and its Grade 5 review lessons by the Grade 5 code they revisit.
+  // Without these they fell through to the hard default, which this module
+  // treats as a failure: a lesson would inherit a stranger's picture.
+  "MPP.3": { topic: "mathPractice" },
+  "MPP.4": { topic: "mathPractice" },
+  "MPP.7": { topic: "mathPractice" },
+  "5.OA.B.3": { topic: "mathPractice" },
   "6.NOS.1": { topic: "fractionDivision" },
   "6.NOS.2": { topic: "division" },
   "6.NOS.3": {
@@ -171,15 +180,33 @@ const BY_WORDING = [
 ];
 
 // Last resort before the hard default: keep a lesson inside its own strand.
-const BY_FAMILY = { NOS: "rationalNumberLine", AT: "expressions", DS: "centre", GR: "planeArea" };
+const BY_FAMILY = {
+  NOS: "rationalNumberLine",
+  AT: "expressions",
+  DS: "centre",
+  GR: "planeArea",
+  // The book's "Math Is..." units carry practice standards, and its Grade 5
+  // review lessons carry Grade 5 codes. Both are placed on the practice picture.
+  MPP: "mathPractice",
+  G5: "mathPractice",
+};
 
 function normaliseStandard(standard) {
-  const m = String(standard || "")
-    .trim()
-    .match(/^6\.(NOS|AT|DS|GR)\.(\d+)\s*([a-z]?)/i);
-  if (!m) return null;
-  const family = m[1].toUpperCase();
-  return { family, key: `6.${family}.${m[2]}${m[3].toLowerCase()}`, base: `6.${family}.${m[2]}` };
+  const raw = String(standard || "").trim();
+  const m = raw.match(/^6\.(NOS|AT|DS|GR)\.(\d+)\s*([a-z]?)/i);
+  if (m) {
+    const family = m[1].toUpperCase();
+    return { family, key: `6.${family}.${m[2]}${m[3].toLowerCase()}`, base: `6.${family}.${m[2]}` };
+  }
+  // MPP.3 / MPP.4 / MPP.7 — the mathematical-practice standards the book's
+  // "Math Is..." units are built on. Returning null here sent all twelve of
+  // them to the hard default.
+  const mpp = raw.match(/^MPP\.(\d+)/i);
+  if (mpp) return { family: "MPP", key: `MPP.${mpp[1]}`, base: `MPP.${mpp[1]}` };
+  // Grade 5 review codes (5.NF.B.4, 5.OA.B.3, …) carried by unit 1's lessons.
+  const g5 = raw.match(/^5\.[A-Z]+(?:\.[A-Z0-9.]+)?/i);
+  if (g5) return { family: "G5", key: g5[0].toUpperCase(), base: g5[0].toUpperCase() };
+  return null;
 }
 
 function lessonText(config) {
@@ -340,113 +367,219 @@ function joinCaption(scene, lead, goalPhrase) {
   return `${scene} ${lead} ${goalPhrase}.`;
 }
 
+// ── ESOL caption bullets ────────────────────────────────────────────────────
+// The card used to print `caption` as one run-on line: a full scene sentence
+// ("A student moves unit cubes on a pan balance labelled x + 3 = 7, keeping the
+// two pans level so the equation stays true while she works out what x is
+// worth.") followed by the whole objective. That is ~45 words of subordinate
+// clauses under a picture, and a newcomer reading at an entering/emerging level
+// gets nothing from it — the sentence is longer than the objective it explains.
+//
+// So the SAME two facts are now printed as two short bullets: what is on the
+// screen, then what you are aiming at. Nothing new is invented and no scene text
+// was rewritten — each bullet is the first clause of a sentence the module
+// already had, cut at the first real clause boundary.
+
+// Clause boundaries that reliably start a subordinate clause in the authored
+// scenes. Cutting here keeps a complete, true main clause every time.
+const SCENE_CLAUSE =
+  /\s*(?:,\s*(?:so|and|with|while|instead|then|which|because|but|each|its|one|the other)\b|,\s*\w+ing\b|\s—\s|[;:]\s).*$/i;
+
+const SCENE_MAX = 110;
+
+// Last ", " at paren depth 0 before `limit`. Coordinate pairs are written
+// "(3, 2)", so a depth-blind search cuts scenes mid-ordered-pair — "reflects
+// across the y-axis to B (−3" is worse than the long sentence it shortened.
+function lastTopLevelComma(text, limit) {
+  let depth = 0;
+  let found = -1;
+  for (let i = 0; i < text.length && i < limit; i += 1) {
+    const ch = text[i];
+    if (ch === "(") depth += 1;
+    else if (ch === ")") depth = Math.max(0, depth - 1);
+    else if (ch === "," && depth === 0 && text[i + 1] === " ") found = i;
+  }
+  return found;
+}
+
 /**
- * Generate 1-2 concrete, student-facing "What to Say" and "What to Listen For"
- * prompts derived directly from the lesson's language objective, sentence stems,
- * or key academic vocabulary.
+ * The one-clause version of a scene sentence: what a student can see, with the
+ * explanatory tail removed.
+ *
+ * @param {string} scene authored scene sentence
+ * @returns {string} plain text, no trailing punctuation
+ */
+export function shortScene(scene) {
+  let s = String(scene || "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!s) return "";
+  s = s.replace(SCENE_CLAUSE, "");
+  if (s.length > SCENE_MAX) {
+    const cut = lastTopLevelComma(s, SCENE_MAX);
+    if (cut > 40) s = s.slice(0, cut);
+  }
+  return s.replace(/[.,;:]+$/, "").trim();
+}
+
+/**
+ * The one-clause version of an objective phrase, for the goal bullet. The full
+ * phrase stays available on `goalPhrase` and in `caption`.
+ *
+ * @param {string} phrase output of {@link objectivePhrase}
+ * @returns {string}
+ */
+export function shortGoal(phrase) {
+  let s = String(phrase || "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!s) return "";
+  // Level-2 objectives open with a lead-in label ("go beyond today's lesson:
+  // solve one-step equations…"). The label is framing for the teacher; the
+  // substance is after the colon, and printing the label alone says nothing.
+  const lead = s.match(/^([^:]{1,40}):\s+(.+)$/);
+  if (lead) s = lead[2];
+  // Split only on markers that genuinely END the main idea. A bare comma does
+  // not: objectives list their tools ("use the commutative, associative and
+  // distributive properties"), and cutting there prints the fragment "use the
+  // commutative". Over-long goals are handled by the honest word cap below.
+  const clause = s.split(/\s+—\s+|\s+(?:so that|in order to|and then|while)\s+/i)[0].trim();
+  if (clause.length >= 12) s = clause;
+  const words = s.split(/\s+/);
+  if (words.length > 12) s = `${words.slice(0, 12).join(" ")}…`;
+  return s.replace(/[.,;:]+$/, "").trim();
+}
+
+/**
+ * The two short lines printed under the picture, in place of the old paragraph.
+ * An authored `contentVisualCaption` / `languageVisualCaption` wins outright —
+ * a teacher who wrote their own caption gets it printed as a single bullet.
+ *
+ * @param {object} o
+ * @param {string} o.scene authored scene sentence
+ * @param {string} o.goalPhrase full objective phrase
+ * @param {string} o.goalLabel "Your goal" / "Your talking goal"
+ * @param {string} [o.authored] author-supplied caption override
+ * @returns {{ icon: string, label: string, text: string }[]}
+ */
+function captionBullets({ scene, goalPhrase, goalLabel, authored }) {
+  if (authored) return [{ icon: "🖼️", label: "About this picture", text: String(authored) }];
+  const bullets = [];
+  const look = shortScene(scene);
+  if (look) bullets.push({ icon: "👀", label: "You see", text: look });
+  const goal = shortGoal(goalPhrase);
+  if (goal) bullets.push({ icon: "🎯", label: goalLabel, text: goal });
+  return bullets;
+}
+
+// ── Student talk targets ────────────────────────────────────────────────────
+// These print on the objective cards under "What to Say / What to Listen For".
+// They used to be one long sentence each, built by pasting the whole content or
+// language objective into a frame — e.g. "To solve this, I can multiply
+// multi-digit decimals fluently using the standard algorithm and estimate to
+// check reasonableness." That is the objective, not something a multilingual
+// sixth grader can say out loud, and it is the one line on the card a newcomer
+// most needs to be able to read.
+//
+// Both resolvers now return SHORT BULLETS instead: three frames of a handful of
+// words each, ending in a blank the student fills. The lesson still shows up —
+// one bullet names the skill or the key word — but the grammar is handed over
+// rather than modelled at full length.
+
+// Cut a long objective down to a sayable skill phrase. Objectives are written as
+// "I can <skill>, <qualifier> using <tool> to <purpose>"; everything after the
+// first clause boundary is detail a speaker does not need.
+function shortSkillPhrase(objective, fallback) {
+  const cleaned = String(objective || "")
+    .replace(/^\s*(students?\s+will\s+be\s+able\s+to|swbat|I\s+can)\s+/i, "")
+    .replace(/\.\s*$/, "")
+    .trim();
+  if (!cleaned) return fallback;
+  const clause = cleaned.split(
+    /\s*,\s*|\s+(?:using|by|to|so that|in order to|and then|while)\s+/i,
+  )[0];
+  const words = clause.trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return fallback;
+  return words
+    .slice(0, 6)
+    .join(" ")
+    .replace(/[.,;:]$/, "");
+}
+
+const firstTerm = (list) => (list && list.length ? String(list[0]) : "");
+
+function vocabTerms(cfg) {
+  return Array.isArray(cfg.vocabulary)
+    ? cfg.vocabulary
+        .map((v) => (typeof v === "object" && v ? v.term || v.word || "" : String(v || "")))
+        .filter(Boolean)
+    : [];
+}
+
+/**
+ * Short, student-facing "What to Say" / "What to Listen For" bullets for the
+ * CONTENT objective card.
  *
  * @param {LessonConfig} config
- * @returns {{ say: string, sayEs?: string, listen: string, listenEs?: string, keyWords?: string[] }}
+ * @returns {{ say: string[], sayEs: string[], listen: string[], listenEs: string[] }}
  */
 export function resolveContentTalkPrompts(config) {
   const cfg = config || {};
   const contentObj = String(cfg.contentObjective || cfg.objective || cfg.launch?.objective || "");
-  const title = String(cfg.title || "this math topic");
-  const vocabList = Array.isArray(cfg.vocabulary)
-    ? cfg.vocabulary
-        .map((v) => (typeof v === "object" && v ? v.term || v.word || "" : String(v || "")))
-        .filter(Boolean)
-    : [];
+  const skill = shortSkillPhrase(contentObj, "solve this problem");
 
-  let say = "";
-  if (contentObj) {
-    const cleaned = contentObj.replace(/^\s*I\s+can\s+/i, "").replace(/\.\s*$/, "");
-    say = `To solve this, I can ${cleaned}.`;
-  } else {
-    say = `I solved this problem by explaining my math steps clearly.`;
-  }
-
-  let sayEs = contentObj
-    ? `Para resolver esto, puedo explicar los pasos de la lección sobre ${title}.`
-    : `Resolví este problema explicando mis pasos matemáticos claramente.`;
-
-  let listen = "";
-  if (contentObj.toLowerCase().includes("step") || contentObj.toLowerCase().includes("find") || contentObj.toLowerCase().includes("solve")) {
-    listen = `My partner explaining each mathematical step in order and showing why their final answer is correct.`;
-  } else if (vocabList.length >= 1) {
-    listen = `My partner explaining how their visual model proves their solution using ${vocabList[0]}.`;
-  } else {
-    listen = `My partner describing their problem-solving strategy and checking that their work makes sense.`;
-  }
-
-  let listenEs = `Mi compañero explicando cada paso matemático en orden y demostrando por qué su respuesta final es correcta.`;
-
-  return { say, sayEs, listen, listenEs };
+  return {
+    say: [`I can ${skill}.`, "First I ___. Then I ___.", "My answer is ___ because ___."],
+    // No lesson in the corpus authors a Spanish content objective, so the
+    // Spanish first bullet stays generic rather than pasting the English skill
+    // phrase into a Spanish sentence ("Puedo multiply decimals…").
+    sayEs: [
+      "Puedo explicar mi trabajo paso a paso.",
+      "Primero yo ___. Luego yo ___.",
+      "Mi respuesta es ___ porque ___.",
+    ],
+    listen: [
+      "Did they say every step?",
+      "Did they say WHY it works?",
+      "Did they check the answer?",
+    ],
+    listenEs: ["¿Dijeron cada paso?", "¿Dijeron POR QUÉ funciona?", "¿Revisaron la respuesta?"],
+  };
 }
 
+/**
+ * Short, student-facing "What to Say" / "What to Listen For" bullets for the
+ * LANGUAGE objective card. One bullet always names a real lesson word so the
+ * target is a word the student will actually hear today.
+ *
+ * @param {LessonConfig} config
+ * @returns {{ say: string[], sayEs: string[], listen: string[], listenEs: string[], keyWords: string[] }}
+ */
 export function resolveLanguageTalkPrompts(config) {
   const cfg = config || {};
-  const langObj = String(cfg.languageObjective || "");
-  const vocabList = Array.isArray(cfg.vocabulary)
-    ? cfg.vocabulary
-        .map((v) => (typeof v === "object" && v ? v.term || v.word || "" : String(v || "")))
-        .filter(Boolean)
-    : [];
+  const vocabList = vocabTerms(cfg);
+  const word = firstTerm(vocabList);
 
-  let stemSay = "";
-  let stemSayEs = "";
-  if (Array.isArray(cfg.turnAndTalk)) {
-    for (const item of cfg.turnAndTalk) {
-      if (Array.isArray(item.stems) && item.stems.length > 0) {
-        const firstStem = item.stems[0];
-        const rawStem = typeof firstStem === "object" && firstStem ? firstStem.en : firstStem;
-        if (rawStem && typeof rawStem === "string") {
-          stemSay = rawStem.replace(/^I\s+/i, "I ").trim();
-        }
-        if (typeof firstStem === "object" && firstStem && firstStem.es) {
-          stemSayEs = firstStem.es;
-        }
-        if (stemSay) break;
-      }
-    }
-  }
+  const wordSay = word ? `I used the word "${word}".` : "I used today's math words.";
+  const wordSayEs = word ? `Usé la palabra "${word}".` : "Usé las palabras de hoy.";
+  const wordListen = word ? `Did they say "${word}"?` : "Did they use today's math words?";
+  const wordListenEs = word ? `¿Dijeron "${word}"?` : "¿Usaron las palabras de hoy?";
 
-  let say = "";
-  if (stemSay) {
-    say = stemSay;
-  } else if (langObj) {
-    const cleaned = langObj.replace(/^\s*I\s+can\s+/i, "").replace(/\.\s*$/, "");
-    say = `I can ${cleaned}.`;
-  } else if (vocabList.length >= 2) {
-    say = `I used the academic terms "${vocabList[0]}" and "${vocabList[1]}" to explain my strategy.`;
-  } else if (vocabList.length === 1) {
-    say = `I used the math term "${vocabList[0]}" to describe my work to my partner.`;
-  } else {
-    say = "I know my solution is correct because I can explain each step clearly to my partner.";
-  }
-
-  let sayEs = stemSayEs || (langObj ? `Puedo explicar mi razonamiento usando el vocabulario matemático de hoy.` : "Sé que mi solución es correcta porque puedo explicar cada paso claramente.");
-
-  let listen = "";
-  if (vocabList.length >= 2) {
-    listen = `My partner using academic terms like "${vocabList[0]}" and "${vocabList[1]}" to justify their reasoning.`;
-  } else if (vocabList.length === 1) {
-    listen = `My partner using the word "${vocabList[0]}" while describing how they solved the problem.`;
-  } else if (langObj.toLowerCase().includes("words") || langObj.toLowerCase().includes("using")) {
-    const match = langObj.match(/words?\s+([^\.]+)/i);
-    const wordClause = match ? match[1].trim() : "academic vocabulary";
-    listen = `My partner explaining their strategy using ${wordClause}.`;
-  } else if (langObj.toLowerCase().includes("explain") || langObj.toLowerCase().includes("justify")) {
-    listen = "My partner explaining WHY their strategy works, not just sharing the final answer.";
-  } else {
-    listen = "My partner naming the mathematical model and describing how their steps connect to it.";
-  }
-
-  let listenEs = vocabList.length >= 1
-    ? `Mi compañero usando términos del vocabulario como "${vocabList[0]}" para justificar su razonamiento.`
-    : "Mi compañero explicando POR QUÉ funciona su estrategia y usando el vocabulario matemático.";
-
-  return { say, sayEs, listen, listenEs, keyWords: vocabList };
+  return {
+    say: ["I think ___ because ___.", wordSay, "I agree with ___ because ___."],
+    sayEs: ["Creo que ___ porque ___.", wordSayEs, "Estoy de acuerdo con ___ porque ___."],
+    listen: [
+      wordListen,
+      "Did they say why, not just the answer?",
+      "Did they talk in a full sentence?",
+    ],
+    listenEs: [
+      wordListenEs,
+      "¿Dijeron por qué, no solo la respuesta?",
+      "¿Hablaron con una oración completa?",
+    ],
+    keyWords: vocabList,
+  };
 }
 
 export function resolveObjectiveVisuals(config) {
@@ -470,6 +603,12 @@ export function resolveObjectiveVisuals(config) {
       goalPhrase: contentPhrase,
       caption:
         cfg.contentVisualCaption || joinCaption(contentScene, "Today's goal:", contentPhrase),
+      captionBullets: captionBullets({
+        scene: contentScene,
+        goalPhrase: contentPhrase,
+        goalLabel: "Your goal",
+        authored: cfg.contentVisualCaption,
+      }),
       talkPrompts: resolveContentTalkPrompts(cfg),
     },
     language: {
@@ -480,6 +619,12 @@ export function resolveObjectiveVisuals(config) {
       caption:
         cfg.languageVisualCaption ||
         joinCaption(languageScene, "Today's talking goal:", languagePhrase),
+      captionBullets: captionBullets({
+        scene: languageScene,
+        goalPhrase: languagePhrase,
+        goalLabel: "Your talking goal",
+        authored: cfg.languageVisualCaption,
+      }),
       talkPrompts: resolveLanguageTalkPrompts(cfg),
     },
   };

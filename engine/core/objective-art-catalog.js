@@ -118,6 +118,32 @@ const RAW = {
       "vertex, rectangular face — instead of saying “this part here”.",
   },
 
+  // ── Mathematical practice ────────────────────────────────────────────────
+  // The book's "Math Is..." units carry MPP standards rather than a Grade 6
+  // content cluster, so they have no content diagram to inherit. This pair
+  // pictures the practice itself.
+  mathPracticeContent: {
+    shows: ["pattern"],
+    alt:
+      "Three boxes in a row hold a growing dot pattern — one dot, then three, then seven — with " +
+      "arrows between them. A heading reads Step 1, notice how the pattern grows. Two labels " +
+      "underneath read Step 2, test the rule: double it, then add 1, and Step 3, explain why: " +
+      "7 x 2 + 1 = 15 comes next.",
+    scene:
+      "A dot pattern grows 1, 3, 7 across three boxes, and the labels underneath name the rule " +
+      "and check it: double the dots and add 1, so 15 comes next.",
+  },
+  mathPracticeTalk: {
+    shows: ["pattern"],
+    alt:
+      "The same growing dot pattern of 1, 3 and 7 dots, with two partners drawn beneath it. " +
+      "Their speech bubbles read that each box doubles the dots before and adds one more, and " +
+      "that this is why the next box would hold 15 dots.",
+    scene:
+      "Two partners read the same growing pattern out loud and say the rule to each other — " +
+      "double the dots, add one — then agree that 15 comes next.",
+  },
+
   // ── Number system ─────────────────────────────────────────────────────────
   factorsContent: {
     shows: ["factor tree"],
@@ -459,7 +485,6 @@ const RAW = {
     scene:
       "Two partners discuss the 3D rectangular prism and unfolded 2D net out loud — length, width, height, surface area, volume, and how net faces fold into solid faces.",
   },
-
 
   // ── Statistics ────────────────────────────────────────────────────────────
   statQuestionsContent: {

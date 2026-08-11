@@ -153,7 +153,7 @@ export function exploreLabel(term) {
     padding:10px 14px; min-height:44px; cursor:pointer;
     border:2px dashed var(--teal); border-radius:var(--radius-md);
     background:var(--teal-light); color:var(--navy);
-    font-family:var(--font-display); font-weight:800; font-size:0.95rem;
+    font-family:var(--font-display); font-weight:800; font-size:1.1rem;
     transition:transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), background var(--duration-fast);`;
   // Hover/focus depth is handled by the inject-once .vocab-explore-trigger
   // rules so it can be gated under prefers-reduced-motion (see ensureExploreStyles).
@@ -275,11 +275,11 @@ function makeRevealCard(term) {
     padding:var(--sp-3); background:var(--teal-light); border-radius:var(--radius-md);`;
   const h = document.createElement("div");
   h.style.cssText =
-    "font-family:var(--font-display); font-weight:800; font-size:0.95rem; color:var(--navy); margin-bottom:4px;";
+    "font-family:var(--font-display); font-weight:800; font-size:1.1rem; color:var(--navy); margin-bottom:4px;";
   h.textContent = "What it means";
   card.append(h);
   const en = document.createElement("p");
-  en.style.cssText = "margin:0; font-size:0.95rem; line-height:1.6; color:var(--ink);";
+  en.style.cssText = "margin:0; font-size:1.05rem; line-height:1.65; color:var(--ink);";
   en.textContent = term.definition || "";
   card.append(en);
   if (term.definitionEs) {

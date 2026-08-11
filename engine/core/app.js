@@ -1,17 +1,19 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-import { runComponentList } from "../components/activity-chooser.js";
+import { renderActivityChooser, runComponentList } from "../components/activity-chooser.js";
 import {
+  renderLearnItPanel,
   renderVocabAndLearnIt,
   renderVocabPanel,
-  renderLearnItPanel,
 } from "../components/vocab-learn-panel.js";
 import { createEngagement } from "../engagement/engagement.js";
+import { fireCelebrationFX } from "./celebration-picker.js";
 import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import { mountExportToolbar } from "./export.js";
 import { completeLesson, reportExitTicketScore } from "./grade-emit.js";
 import { getPreferredLang, phaseName, setPreferredLang, stackHtml, t } from "./i18n.js";
+import { enableKeyboardScrolling } from "./keyboard-scroll.js";
 import {
   linkifyObjectiveTerms,
   observeVocabTerms,
@@ -28,7 +30,6 @@ import { initPresentMode } from "./present-mode.js";
 import { reportScore } from "./score-reporter.js";
 import { clearLessonStorage, createState, findSavedStudents, normalizeStudentId } from "./state.js";
 import { mountTeacherClearButton } from "./teacher-clear.js";
-import { fireCelebrationFX } from "./celebration-picker.js";
 import {
   buildWelcomeTeacherNotes,
   initTeacherAccess,
@@ -49,6 +50,11 @@ export function createApp(config) {
   const root = document.getElementById("app");
   root.innerHTML = "";
   root.className = "app";
+
+  // Arrow / Page / Home / End keys scroll the lesson — including the Vocab,
+  // Learn It and Guided Notes takeovers, which lock the document scroller and
+  // scroll inside their own panel.
+  enableKeyboardScrolling();
 
   // Device-local learning signals (assets/nt-signal.js → window.NTSignal).
   // Lazy-loaded so lesson launchers need no HTML change; every consumer
@@ -689,11 +695,74 @@ function showIdentityScreen(root, config) {
     } catch {
       /* identity is an enhancement — never block launching the lesson */
     }
-    screen.remove();
-    initMainApp(root, config, studentId, name, period);
+    playLessonEntrance(config, name, () => {
+      screen.remove();
+      initMainApp(root, config, studentId, name, period);
+    });
   }
 
   setTimeout(() => nameInput.focus(), 100);
+}
+
+// ── Lesson entrance: the "ID badge" beat between the name gate and the lesson.
+//
+// After the student starts, a badge card stamps in over the cover — their name,
+// the lesson title, and a bilingual "let's go" — while the real lesson boots
+// UNDERNEATH it, so the entrance also hides first-render jank. Three hard
+// rules keep it classroom-safe: reduced-motion students skip it entirely (no
+// delay, not a still frame); it plays at most once per lesson per day per
+// device (30 students log in daily — anything that replays every time gets
+// old by Tuesday); and a tap anywhere lifts it early. The lesson must launch
+// even if every line of this fails, so the boot callback runs first-class and
+// the overlay is pure chrome on top.
+function playLessonEntrance(config, name, boot) {
+  let overlay = null;
+  const lift = () => {
+    if (!overlay) return;
+    const o = overlay;
+    overlay = null;
+    o.classList.add("leaving");
+    setTimeout(() => o.remove(), 420);
+  };
+  try {
+    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    const key = `nt-entrance:${config.lessonId}`;
+    const today = new Date().toISOString().slice(0, 10);
+    let seen = null;
+    try {
+      seen = localStorage.getItem(key);
+    } catch {
+      /* storage blocked — treat as unseen, it just won't persist */
+    }
+    if (reduced || seen === today) return boot();
+    try {
+      localStorage.setItem(key, today);
+    } catch {
+      /* storage blocked — the entrance simply replays next time */
+    }
+    overlay = document.createElement("div");
+    overlay.className = "nt-entrance-overlay";
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.innerHTML = `
+      <div class="nt-entrance-badge">
+        <div class="nt-entrance-emoji">${config.themeEmoji || "📐"}</div>
+        <p class="nt-entrance-welcome">${stackHtml(`${t("entranceWelcome", "en")} ${name}!`, `${t("entranceWelcome", "es")} ${name}!`)}</p>
+        <p class="nt-entrance-title">${escHtml(config.title)}</p>
+        <p class="nt-entrance-go">${stackHtml(t("entranceGo", "en"), t("entranceGo", "es"))}</p>
+      </div>`;
+    overlay.addEventListener("click", lift);
+    document.body.append(overlay);
+    setTimeout(lift, 1600);
+  } catch {
+    lift();
+  }
+  try {
+    boot();
+  } catch (e) {
+    // Never leave a broken lesson hidden behind the entrance card.
+    lift();
+    throw e;
+  }
 }
 
 function initMainApp(root, config, studentId, studentName, studentPeriod) {
@@ -755,6 +824,12 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   if (!state.get().studentName) {
     state.set({ studentName, studentPeriod });
   }
+
+  // Named indices for the phases the pre-lesson tabs hand off to. The tabs
+  // used to hardcode raw numbers (3, 2) that no longer matched this list.
+  const PHASE_WARMUP = 0;
+  const PHASE_LAUNCH = 2;
+  const PHASE_EXPLORE = 3;
 
   const phaseConfigs = [
     { name: phaseName(0), icon: "⚡" }, // Warmup (Phase 1)
@@ -841,6 +916,12 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     canvas.id = "lesson-drawing-canvas";
     canvas.style.cssText =
       "position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:9998; display:none;";
+    // `.main` is `position:static` in the design system, so an absolutely
+    // positioned child anchors to the nearest POSITIONED ancestor instead —
+    // the canvas was laid out over a different box than the one it measured,
+    // which is why ink landed away from the pen. Promote main to a containing
+    // block (nothing else about its layout changes).
+    if (getComputedStyle(main).position === "static") main.style.position = "relative";
     main.append(canvas);
 
     // The drawing canvas (z-index 9998) spans the viewport when active and would
@@ -855,11 +936,82 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     let color = "#ef4444";
     let width = 3;
 
+    // Strokes are kept as point arrays in CSS pixels relative to the canvas
+    // box, NOT just painted and forgotten. Assigning canvas.width/height wipes
+    // the bitmap, so a resize (or the lesson growing as a phase opens) used to
+    // erase everything a student had drawn; with a model we simply repaint.
+    /** @type {{color:string,width:number,pts:{x:number,y:number}[]}[]} */
+    const strokes = [];
+    /** @type {{color:string,width:number,pts:{x:number,y:number}[]}|null} */
+    let current = null;
+
+    function paintStroke(s) {
+      if (!s.pts.length) return;
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = s.width;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      if (s.pts.length === 1) {
+        // A single tap is a dot, not nothing.
+        ctx.moveTo(s.pts[0].x, s.pts[0].y);
+        ctx.lineTo(s.pts[0].x + 0.01, s.pts[0].y);
+      } else {
+        // Quadratic curves through the midpoints of consecutive samples. A raw
+        // lineTo polyline shows every pointer sample as a visible corner, which
+        // is what made the ink look ragged; midpoint smoothing costs nothing
+        // and renders a continuous line.
+        ctx.moveTo(s.pts[0].x, s.pts[0].y);
+        for (let i = 1; i < s.pts.length - 1; i++) {
+          const mx = (s.pts[i].x + s.pts[i + 1].x) / 2;
+          const my = (s.pts[i].y + s.pts[i + 1].y) / 2;
+          ctx.quadraticCurveTo(s.pts[i].x, s.pts[i].y, mx, my);
+        }
+        const last = s.pts[s.pts.length - 1];
+        ctx.lineTo(last.x, last.y);
+      }
+      ctx.stroke();
+    }
+
+    function repaint() {
+      const r = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, r.width, r.height);
+      strokes.forEach(paintStroke);
+      if (current) paintStroke(current);
+    }
+
     function resizeCanvas() {
-      canvas.width = main.clientWidth;
-      canvas.height = main.clientHeight;
+      // Measure the CANVAS, not `main`: the canvas is the box the ink lands in,
+      // and `main`'s clientWidth/Height is a different rectangle once padding
+      // and the containing block are taken into account.
+      const r = canvas.getBoundingClientRect();
+      if (r.width < 1 || r.height < 1) return;
+      // Back the canvas with real device pixels so lines are crisp instead of
+      // upscaled and fuzzy on a retina screen or a projector.
+      const dpr = Math.min(window.devicePixelRatio || 1, 3);
+      const w = Math.round(r.width * dpr);
+      const h = Math.round(r.height * dpr);
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
+      // One transform, so every coordinate below stays in plain CSS pixels.
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      repaint();
     }
     window.addEventListener("resize", resizeCanvas);
+    // A lesson grows as phases open; without this the backing store keeps the
+    // size it had when Draw was switched on and the ink drifts from the pen.
+    if (typeof ResizeObserver !== "undefined") {
+      new ResizeObserver(() => {
+        if (canvas.style.display !== "none") resizeCanvas();
+      }).observe(main);
+    }
+
+    function pointFrom(e) {
+      const r = canvas.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
 
     // Drawing event listeners
     canvas.addEventListener("pointerdown", (e) => {
@@ -885,27 +1037,45 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         return;
       }
       drawing = true;
-      ctx.beginPath();
-      const rect = canvas.getBoundingClientRect();
-      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+      current = { color, width, pts: [pointFrom(e)] };
+      // Capture keeps the stroke alive when the pointer crosses a child element
+      // or briefly leaves the canvas — previously the line just stopped dead.
+      try {
+        canvas.setPointerCapture(e.pointerId);
+      } catch {
+        /* capture unsupported — events still fire */
+      }
+      e.preventDefault();
+      repaint();
     });
 
     canvas.addEventListener("pointermove", (e) => {
-      if (!drawing) return;
-      ctx.lineWidth = width;
-      ctx.lineCap = "round";
-      ctx.strokeStyle = color;
-      const rect = canvas.getBoundingClientRect();
-      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-      ctx.stroke();
+      if (!drawing || !current) return;
+      // A fast drag delivers several positions per frame. Reading the coalesced
+      // events keeps the corners the browser would otherwise throw away, which
+      // is the difference between a smooth arc and a chain of straight chords.
+      const events = typeof e.getCoalescedEvents === "function" ? e.getCoalescedEvents() : [e];
+      for (const ev of events.length ? events : [e]) current.pts.push(pointFrom(ev));
+      e.preventDefault();
+      repaint();
     });
 
-    canvas.addEventListener("pointerup", () => {
+    function endStroke(e) {
+      if (!drawing) return;
       drawing = false;
-    });
-    canvas.addEventListener("pointerleave", () => {
-      drawing = false;
-    });
+      if (current && current.pts.length) strokes.push(current);
+      current = null;
+      if (e && e.pointerId != null) {
+        try {
+          canvas.releasePointerCapture(e.pointerId);
+        } catch {
+          /* nothing captured */
+        }
+      }
+      repaint();
+    }
+    canvas.addEventListener("pointerup", endStroke);
+    canvas.addEventListener("pointercancel", endStroke);
 
     // Drawing Tool controls HUD
     const drawHud = document.createElement("div");
@@ -917,7 +1087,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       <button class="color-btn" data-color="#3b82f6" style="width:20px; height:20px; border-radius:50%; border:none; background:#3b82f6; cursor:pointer; padding:0;"></button>
       <button class="color-btn" data-color="#10b981" style="width:20px; height:20px; border-radius:50%; border:none; background:#10b981; cursor:pointer; padding:0;"></button>
       <button class="color-btn" data-color="rgba(253,224,71,0.5)" style="width:20px; height:20px; border-radius:50%; border:none; background:#fde047; cursor:pointer; padding:0;"></button>
-      <button id="draw-clear-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer; margin-left:8px;">Clear</button>
+      <button id="draw-undo-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer; margin-left:8px;">Undo</button>
+      <button id="draw-clear-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer;">Clear</button>
     `;
     document.body.append(drawHud);
 
@@ -931,8 +1102,17 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       });
     });
 
+    // Undo is only possible now that strokes exist as data. One click removes
+    // one whole mark, which is what a student means by "undo".
+    drawHud.querySelector("#draw-undo-btn").addEventListener("click", () => {
+      strokes.pop();
+      repaint();
+    });
+
     drawHud.querySelector("#draw-clear-btn").addEventListener("click", () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      strokes.length = 0;
+      current = null;
+      repaint();
     });
 
     // Toggle draw mode
@@ -977,17 +1157,51 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     "position:fixed; bottom:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; display:flex; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:0.3s;";
   document.body.append(minimapHUD);
 
+  // The phase dots PERSIST across renders, and that is the whole point.
+  //
+  // This used to re-write minimapHUD.innerHTML on every state change, which
+  // replaced each dot with a brand-new element. A CSS transition can only
+  // animate from a previous value on the SAME node, so the `transition: 0.3s`
+  // these dots declared never ran once — the map snapped between phases while
+  // appearing, in source, to glide. Keeping the nodes and mutating only their
+  // colour and scale lets that transition finally play, so the map travels
+  // alongside the phase slide instead of teleporting after it.
+  //
+  // They are also <button>s now rather than divs carrying an inline onclick:
+  // the dots are real navigation, and a div is not reachable by keyboard.
+  let minimapDots = [];
   function updateMinimap() {
     const s = state.get();
-    minimapHUD.innerHTML = s.phases
-      .map((p, i) => {
-        const isCurrent = i === s.currentPhase;
-        const done = p.status === "completed";
-        const bg = isCurrent ? "#387F84" : done ? "#F2A93B" : "rgba(0,0,0,0.1)";
-        const scale = isCurrent ? "scale(1.2)" : "scale(1)";
-        return `<div style="width:12px;height:12px;border-radius:50%;background:${bg}; transform:${scale}; transition:0.3s; cursor:pointer;" title="Phase ${i + 1}" onclick="document.dispatchEvent(new CustomEvent('rma:navigate', {detail:{phase:${i}}}))"></div>`;
-      })
-      .join("");
+    if (minimapDots.length !== s.phases.length) {
+      minimapHUD.innerHTML = "";
+      minimapDots = s.phases.map((_, i) => {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "minimap-dot";
+        dot.title = `Phase ${i + 1}`;
+        dot.setAttribute("aria-label", `Go to phase ${i + 1}`);
+        dot.style.cssText =
+          "width:12px; height:12px; padding:0; border:0; border-radius:50%; cursor:pointer;" +
+          "transition:background-color 0.3s ease, transform 0.3s ease;";
+        dot.addEventListener("click", () =>
+          document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: i } })),
+        );
+        minimapHUD.append(dot);
+        return dot;
+      });
+    }
+    s.phases.forEach((p, i) => {
+      const dot = minimapDots[i];
+      if (!dot) return;
+      const isCurrent = i === s.currentPhase;
+      dot.style.backgroundColor = isCurrent
+        ? "#387F84"
+        : p.status === "completed"
+          ? "#F2A93B"
+          : "rgba(0,0,0,0.1)";
+      dot.style.transform = isCurrent ? "scale(1.2)" : "scale(1)";
+      dot.setAttribute("aria-current", isCurrent ? "step" : "false");
+    });
   }
 
   state.subscribe(() => {
@@ -1041,7 +1255,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       }
       phaseContainer.innerHTML = "";
       const el = document.createElement("div");
-      el.className = "phase active phase-enter";
+      // Direction-aware slide: moving forward enters from the right, jumping
+      // back (sidebar, minimap) enters from the left — the content moves the
+      // way the student moved along the phase strip, so the transition reads
+      // as travel instead of decoration. Same 0.45s, same reduced-motion off
+      // switch as the original single-direction phase-enter.
+      const backward = this._lastRenderedPhase != null && index < this._lastRenderedPhase;
+      this._lastRenderedPhase = index;
+      el.className = `phase active phase-enter${backward ? " phase-enter-back" : ""}`;
       el.setAttribute("role", "region");
       el.setAttribute("aria-label", phaseConfigs[index]?.name || `Phase ${index + 1}`);
       phaseContainer.append(el);
@@ -1067,7 +1288,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // and matching/optional activities mount their own markup after this
       // point — keep underlining that dynamically-added content too.
       this._vocabObserver = observeVocabTerms(el, glossaryVocab);
-      el.addEventListener("animationend", () => el.classList.remove("phase-enter"), { once: true });
+      el.addEventListener(
+        "animationend",
+        () => el.classList.remove("phase-enter", "phase-enter-back"),
+        { once: true },
+      );
     },
 
     navigateTo(index) {
@@ -1125,6 +1350,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         phaseContainer.innerHTML = "";
         const el = document.createElement("div");
         el.className = "phase active extra-panel extra-panel--fullpage";
+        // Focusable (never in the tab order) so the takeover — which scrolls
+        // inside itself while the document scroller is locked — responds to the
+        // keyboard as soon as it opens.
+        el.tabIndex = -1;
         el.setAttribute("role", "region");
         el.setAttribute("aria-label", "Vocabulary");
         phaseContainer.append(el);
@@ -1132,7 +1361,20 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           state,
           onComplete: () => this.openExtra("learn"),
         });
+        // Term Match, Fill-the-Blanks, Example Sort and Memory Match all exist,
+        // but the only place they were rendered was the end-of-lesson completion
+        // screen — a student had to finish all eight phases before the word games
+        // for this lesson's vocabulary appeared. They belong next to the words
+        // they practise, so the same chooser is offered here too, in vocab-only
+        // mode (the word wall is already above it, and Extra Practice is not a
+        // vocabulary activity). Ungraded, exactly as on the completion screen.
+        const vocabGames = document.createElement("div");
+        vocabGames.style.cssText = "margin-top:var(--sp-6, 24px);";
+        renderActivityChooser(vocabGames, { config, only: "vocab" });
+        if (vocabGames.childNodes.length) el.append(vocabGames);
+        el.append(chainContinueButton("Continue to Learn It 📖 →", () => this.openExtra("learn")));
         el.scrollIntoView({ block: "start" });
+        el.focus?.({ preventScroll: true });
         return;
       }
 
@@ -1141,14 +1383,26 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         phaseContainer.innerHTML = "";
         const el = document.createElement("div");
         el.className = "phase active extra-panel extra-panel--fullpage";
+        // Focusable (never in the tab order) so the takeover — which scrolls
+        // inside itself while the document scroller is locked — responds to the
+        // keyboard as soon as it opens.
+        el.tabIndex = -1;
         el.setAttribute("role", "region");
         el.setAttribute("aria-label", "Learn It");
         phaseContainer.append(el);
         renderLearnItPanel(el, config, {
+          // Canonical lesson order: Launch → Vocab → Learn It → Explore.
+          // Learn It is pre-work for Explore, so it hands off to EXPLORE
+          // (phase index 3), not Practice — sending a student straight to
+          // Practice skipped the Explore phase entirely.
           state,
-          onComplete: () => this.navigateTo(3),
+          onComplete: () => this.navigateTo(PHASE_EXPLORE),
         });
+        el.append(
+          chainContinueButton("Continue to Explore 🔍 →", () => this.navigateTo(PHASE_EXPLORE)),
+        );
         el.scrollIntoView({ block: "start" });
+        el.focus?.({ preventScroll: true });
         return;
       }
       const id = encodeURIComponent(config.lessonId);
@@ -1206,6 +1460,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       phaseContainer.innerHTML = "";
       const el = document.createElement("div");
       el.className = "phase active extra-panel" + (fullPage ? " extra-panel--fullpage" : "");
+      el.tabIndex = -1;
       el.setAttribute("role", "region");
       el.setAttribute("aria-label", meta.title);
       const frameStyle = fullPage
@@ -1265,30 +1520,68 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // ── Curated forward flow: Launch → Vocab → Notes → Launch → Explore ──────
       const addContinue = (label, onClick) => {
         const wrap = document.createElement("div");
-        wrap.style.cssText = "margin-top:var(--sp-4, 16px); text-align:center; padding-bottom:24px;";
+        wrap.style.cssText =
+          "margin-top:var(--sp-4, 16px); text-align:center; padding-bottom:24px;";
         const b = document.createElement("button");
         b.type = "button";
         b.className = "btn btn-primary btn-lg";
-        b.style.cssText = "padding:14px 28px; font-weight:800; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
+        b.style.cssText =
+          "padding:14px 28px; font-weight:800; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
         b.textContent = label;
         b.addEventListener("click", onClick);
         wrap.append(b);
         el.append(wrap);
       };
 
-      if (kind === "vocab") {
-        addContinue("Continue to Guided Notes 📝 →", () => this.openExtra("notes"));
-      } else if (kind === "notes" || kind === "learn") {
-        if (kind === "learn") this.renderLearnItExtras?.(el);
+      // Each tab's bottom button moves to the NEXT thing in the lesson chain:
+      // Launch → Vocab → Learn It → Explore. Vocab used to jump to Guided Notes
+      // (skipping Learn It entirely) and Learn It used to go back to Launch, so
+      // neither button did what its position implied. Guided Notes is a side
+      // tab, not a link in the chain, so it still returns to Launch.
+      if (kind === "readiness") {
+        // Get Ready is the on-ramp to the Warm-Up, so finishing it moves the
+        // student on WITHOUT leaving the page: the embedded readiness page
+        // posts `nt-readiness-complete` when its exit ticket is done (or when
+        // the student presses "Continue to Warm-Up"), and we swap the panel
+        // for the Warm-Up phase in place. The button below is the same door
+        // for anyone who wants to move on early.
+        const toWarmup = () => {
+          window.removeEventListener("message", onReadinessMessage);
+          this.navigateTo(PHASE_WARMUP);
+        };
+        const onReadinessMessage = (e) => {
+          if (!document.body.contains(el)) {
+            window.removeEventListener("message", onReadinessMessage);
+            return;
+          }
+          if (e.origin !== window.location.origin) return;
+          if (e.source !== frame.contentWindow) return;
+          if (e.data?.type !== "nt-readiness-complete") return;
+          toWarmup();
+        };
+        window.addEventListener("message", onReadinessMessage);
+        addContinue("Continue to Warm-Up ⚡ →", toWarmup);
+      } else if (kind === "vocab") {
+        addContinue("Continue to Learn It 📖 →", () => this.openExtra("learn"));
+      } else if (kind === "learn") {
+        this.renderLearnItExtras?.(el);
+        addContinue("Continue to Explore 🔍 →", () => {
+          try {
+            state.set({ notesVisited: true });
+          } catch (_) {}
+          this.navigateTo(PHASE_EXPLORE);
+        });
+      } else if (kind === "notes") {
         addContinue("Continue to Launch 🚀 →", () => {
           try {
             state.set({ notesVisited: true });
           } catch (_) {}
-          this.navigateTo(2);
+          this.navigateTo(PHASE_LAUNCH);
         });
       }
 
       el.scrollIntoView({ block: "start" });
+      el.focus?.({ preventScroll: true });
     },
 
     // Objectives: a non-graded pre-lesson page (between Get Ready and Notes)
@@ -1399,6 +1692,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       });
 
       el.scrollIntoView({ block: "start" });
+      el.focus?.({ preventScroll: true });
     },
 
     // Bonus Activity: the lesson's named TPT-style activity
@@ -1438,6 +1732,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         host.append(done);
       });
       el.scrollIntoView({ block: "start" });
+      el.focus?.({ preventScroll: true });
     },
 
     // Projects: a non-graded "extend" tab present on every lesson. Filled in
@@ -1512,6 +1807,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       `;
       phaseContainer.append(el);
       el.scrollIntoView({ block: "start" });
+      el.focus?.({ preventScroll: true });
     },
 
     // Printables: a non-graded "extra" tab listing this lesson's print-ready
@@ -1581,6 +1877,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         });
       });
       el.scrollIntoView({ block: "start" });
+      el.focus?.({ preventScroll: true });
     },
 
     start() {
@@ -1625,6 +1922,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   // the Save/Resume launcher; hidden on the final phase and while a full-page
   // pre-lesson tab (Vocab / Learn It / Notes) is open.
   (function mountNextButton() {
+    const hasVocab = Array.isArray(config.vocabulary) && config.vocabulary.length > 0;
     const nextBtn = document.createElement("button");
     nextBtn.type = "button";
     nextBtn.className = "nt-next-phase-btn";
@@ -1646,12 +1944,31 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const cur = st.currentPhase ?? 0;
       const total = config.phases.length;
       const onExtra = document.documentElement.classList.contains("nt-extra-fullpage-open");
-      const nextName = phaseConfigs[cur + 1]?.name || "Next";
+      // Canonical order is Launch → Vocab → Learn It → Explore. Vocab and
+      // Learn It are full-page extras, not entries in `phases`, so stepping
+      // cur+1 from Launch skipped straight past both of them and landed on
+      // Explore — the opposite of what the lesson chain says. From Launch the
+      // control therefore points at Vocab (when the lesson has vocabulary);
+      // everywhere else it is still the next phase.
+      const toVocab = cur === PHASE_LAUNCH && hasVocab;
+      const nextName = toVocab ? "Vocabulary" : phaseConfigs[cur + 1]?.name || "Next";
+      const hide = cur >= total - 1 || onExtra;
       nextBtn.innerHTML = `Next: ${nextName} <span aria-hidden="true">→</span>`;
-      nextBtn.hidden = cur >= total - 1 || onExtra;
+      nextBtn.hidden = hide;
+      // `hidden` alone was not enough. The UA rule is [hidden] { display: none },
+      // and this button carries an INLINE display:inline-flex, which wins on
+      // specificity — so on the last phase (Objectives Review) the control stayed
+      // on screen reading "Next: Next →" with nowhere to go. Drive display
+      // directly, from the same condition, so the two can never disagree.
+      nextBtn.style.display = hide ? "none" : "inline-flex";
     }
     nextBtn.addEventListener("click", () => {
       const cur = state.get().currentPhase ?? 0;
+      if (cur === PHASE_LAUNCH && hasVocab) {
+        app.openExtra("vocab");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
       if (cur < config.phases.length - 1) {
         app.navigateTo(cur + 1);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1689,6 +2006,32 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   initPresentMode({ app, config, phaseConfigs, phaseContainer, state });
 
   return app;
+}
+
+/**
+ * The forward button for a pre-lesson step: Launch → Vocab → Learn It → Practice.
+ *
+ * The native Vocab and Learn It panels advanced ONLY through their `onComplete`
+ * hook — finish the vocabulary activity and you were moved on. A student who
+ * read the words without completing the activity had no way forward at all: the
+ * panel replaces the phase container, so there was no Continue button and no
+ * visible next step. The iframe-backed panels further down openExtra() have had
+ * their own addContinue() for exactly this reason; the native ones never got it.
+ *
+ * Styling matches that addContinue() so the chain looks like one flow.
+ */
+function chainContinueButton(label, onClick) {
+  const wrap = document.createElement("div");
+  wrap.style.cssText = "margin-top:var(--sp-4, 16px); text-align:center; padding-bottom:24px;";
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "btn btn-primary btn-lg";
+  b.style.cssText =
+    "padding:14px 28px; font-weight:800; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
+  b.textContent = label;
+  b.addEventListener("click", onClick);
+  wrap.append(b);
+  return wrap;
 }
 
 function buildSidebar(config, state, _phaseConfigs) {

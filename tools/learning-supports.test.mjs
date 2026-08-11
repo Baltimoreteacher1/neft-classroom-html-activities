@@ -30,7 +30,7 @@ const mockManifest = {
     workedExample: "Split 60: 60 = 6 x 10 -> (2 x 3) x (2 x 5) -> 2^2 x 3 x 5.",
     sentenceFrames: ["I know ___ is prime because ___."],
     wordBank: ["prime", "composite"],
-    readinessHref: "/lessons/1-1/readiness/",
+    readinessHref: "/lessons/6-13/readiness/",
     profiles: {
       "read-understand": true,
       "focus-organize": true,
@@ -64,7 +64,7 @@ async function runTests() {
       </body>
     </html>`,
     {
-      url: "https://eduwonderlab.com/lessons/1-1/",
+      url: "https://eduwonderlab.com/lessons/6-13/",
       runScripts: "outside-only",
     },
   );

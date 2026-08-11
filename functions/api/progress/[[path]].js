@@ -124,6 +124,48 @@ async function ensureSchema(db) {
     .run();
 }
 
+/* Columns added by migrations/0007 that link a progress row back to the student
+   who owns it. They are added lazily so a database that has not had the
+   migration applied still works — but ALTER TABLE on every request would be
+   wasteful, so the result is cached per isolate. A cold isolate pays one
+   PRAGMA; everything after is free.
+
+   Deliberately additive: older clients that never send these fields keep
+   saving exactly as before, they just don't appear on the /today screen until
+   the student next opens the activity. Nothing breaks, nothing is lost. */
+const STUDENT_LINK_COLUMNS = ["student_id", "class_code", "activity_url"];
+// progressPercent is the engine's own heuristic (filled fields / total), so it
+// rarely lands exactly on 100 even when a student is finished. Treat "almost
+// entirely filled in" as done rather than nagging them back into a lesson they
+// have effectively completed.
+const DONE_PERCENT = 95;
+let studentLinkReady = false;
+
+async function ensureStudentLinkColumns(db) {
+  if (studentLinkReady) return;
+  const info = await db.prepare("PRAGMA table_info(student_progress)").all();
+  const have = new Set((info.results || []).map((r) => r.name));
+  for (const col of STUDENT_LINK_COLUMNS) {
+    if (have.has(col)) continue;
+    try {
+      await db.prepare(`ALTER TABLE student_progress ADD COLUMN ${col} TEXT`).run();
+    } catch (_e) {
+      // Raced with another request that added it — harmless either way.
+    }
+  }
+  try {
+    await db
+      .prepare(
+        `CREATE INDEX IF NOT EXISTS idx_student_progress_student
+           ON student_progress (class_code, student_id, updated_at DESC)`,
+      )
+      .run();
+  } catch (_e) {
+    /* index is an optimisation, not a correctness requirement */
+  }
+  studentLinkReady = true;
+}
+
 async function ensureTelemetrySchema(db) {
   // Idempotent: created on first telemetry write — no separate migration needed.
   await db
@@ -432,17 +474,25 @@ async function upsert(db, body, isCreate) {
   const stateJson = JSON.stringify(body.state || {});
   const nowIso = new Date().toISOString();
   const progress = Number(body.progressPercent) || 0;
+  await ensureStudentLinkColumns(db);
+  const studentId = clamp(body.studentId, 64);
+  const classCode = clamp(body.classCode, 12).toUpperCase();
+  const activityUrl = clamp(body.url, 300);
   if (isCreate) {
     await db
       .prepare(
         `INSERT INTO student_progress
            (save_code, activity_id, activity_title, student_name, section,
-            state_json, progress_percent, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            state_json, progress_percent, created_at, updated_at,
+            student_id, class_code, activity_url)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(save_code) DO UPDATE SET
             state_json = excluded.state_json,
             progress_percent = excluded.progress_percent,
-            updated_at = excluded.updated_at`,
+            updated_at = excluded.updated_at,
+            student_id = COALESCE(NULLIF(excluded.student_id, ''), student_progress.student_id),
+            class_code = COALESCE(NULLIF(excluded.class_code, ''), student_progress.class_code),
+            activity_url = COALESCE(NULLIF(excluded.activity_url, ''), student_progress.activity_url)`,
       )
       .bind(
         code,
@@ -454,19 +504,37 @@ async function upsert(db, body, isCreate) {
         progress,
         body.createdAt || nowIso,
         nowIso,
+        studentId,
+        classCode,
+        activityUrl,
       )
       .run();
   } else {
     // Save: update if present, else insert (covers cross-device first save).
+    // Identity fields only ever fill in — a client that doesn't know the
+    // student's roster id must never blank one that an earlier save recorded.
     const res = await db
       .prepare(
         `UPDATE student_progress
             SET state_json = ?, progress_percent = ?, updated_at = ?,
                 student_name = COALESCE(NULLIF(?, ''), student_name),
-                section = COALESCE(NULLIF(?, ''), section)
+                section = COALESCE(NULLIF(?, ''), section),
+                student_id = COALESCE(NULLIF(?, ''), student_id),
+                class_code = COALESCE(NULLIF(?, ''), class_code),
+                activity_url = COALESCE(NULLIF(?, ''), activity_url)
           WHERE save_code = ?`,
       )
-      .bind(stateJson, progress, nowIso, clamp(body.studentName, 60), clamp(body.section, 40), code)
+      .bind(
+        stateJson,
+        progress,
+        nowIso,
+        clamp(body.studentName, 60),
+        clamp(body.section, 40),
+        studentId,
+        classCode,
+        activityUrl,
+        code,
+      )
       .run();
     if (!res.meta || res.meta.changes === 0) {
       await upsert(db, body, true);
@@ -659,7 +727,7 @@ export async function onRequest(context) {
   if (seg === "small-group-summary" && method === "GET") {
     const base = clamp(url.searchParams.get("lesson"), 10);
     if (!/^\d{1,2}-\d{1,2}$/.test(base)) return json({ ok: false, error: "invalid-lesson" }, 400);
-    if (!env.DB) return json({ ok: true, groups: [] });
+    if (!env.DB) return json({ ok: true, devicesReporting: 0, groups: [] });
     try {
       await ensureTelemetrySchema(env.DB);
       const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
@@ -687,7 +755,12 @@ export async function onRequest(context) {
           solvedSum: 0,
           totalSum: 0,
           hintHeavy: 0,
+          devicesReporting: 0,
         };
+        // Coverage denominator (epistemic policy): each event declares
+        // reported:1, so a group whose counts are 0 can be told apart from a
+        // group nobody's device ever reported from.
+        group.devicesReporting += Number(payload.reported) || 0;
         if (payload.kind === "checkpoint") {
           group.inProgress++;
         } else {
@@ -698,10 +771,12 @@ export async function onRequest(context) {
         }
         groups.set(key, group);
       }
+      const groupList = [...groups.values()];
       return json({
         ok: true,
         lesson: base,
-        groups: [...groups.values()].map((group) => ({
+        devicesReporting: groupList.reduce((sum, g) => sum + g.devicesReporting, 0),
+        groups: groupList.map((group) => ({
           section: group.section,
           variant: group.variant,
           completions: group.completions,
@@ -709,10 +784,11 @@ export async function onRequest(context) {
           avgSolved: group.completions ? Math.round(group.solvedSum / group.completions) : 0,
           avgTotal: group.completions ? Math.round(group.totalSum / group.completions) : 0,
           hintHeavy: group.hintHeavy,
+          devicesReporting: group.devicesReporting,
         })),
       });
     } catch (_err) {
-      return json({ ok: true, groups: [] });
+      return json({ ok: true, devicesReporting: 0, groups: [] });
     }
   }
 
@@ -1721,6 +1797,77 @@ export async function onRequest(context) {
         return json({ ok: false, error: "not-found" }, 404);
       }
       return json({ ok: true, record: recordFromRow(row) });
+    }
+
+    /* GET /api/progress/mine?code=CLASSCODE&student=ID
+       -> { ok, resume, recent:[...], done:[activityId] }
+
+       Everything this student has going, newest first. This is the query that
+       makes the /today screen possible: `resume` is the single most recently
+       touched unfinished piece of work (the big "Continue" button), `recent`
+       is the rest of the unfinished work, and `done` is a bare list of
+       activity ids so the lesson picker can show checkmarks without shipping
+       the state blobs for finished work.
+
+       Auth posture matches /load: a class code plus a roster student id is a
+       bearer credential, so it gets the SAME per-IP miss throttle. It is a
+       weaker secret than a random save code (a classmate knows both), so the
+       response deliberately carries no state_json — only titles, percentages
+       and the save codes needed to resume. Reading a classmate's row tells you
+       what lesson they're on, which is what the classroom wall already shows.
+    */
+    if (seg === "mine" && method === "GET") {
+      const params2 = new URL(request.url).searchParams;
+      const classCode = (params2.get("code") || "").toUpperCase().trim();
+      const studentId = (params2.get("student") || "").trim();
+      if (!/^[A-Z0-9]{4,12}$/.test(classCode) || !studentId || studentId.length > 64) {
+        return json({ ok: false, error: "bad-request" }, 400);
+      }
+
+      const ip = clientIp(request);
+      const bucket = loadBucket();
+      await ensureLoadGuardSchema(env.DB);
+      if ((await loadMissCount(env.DB, ip, bucket)) > LOAD_MAX_MISSES) {
+        return json({ ok: false, error: "rate-limited" }, 429, {
+          "Retry-After": String(LOAD_WINDOW_SEC),
+        });
+      }
+
+      await ensureStudentLinkColumns(env.DB);
+      const res = await env.DB.prepare(
+        `SELECT save_code, activity_id, activity_title, activity_url,
+                progress_percent, updated_at
+           FROM student_progress
+          WHERE class_code = ? AND student_id = ?
+          ORDER BY updated_at DESC
+          LIMIT 60`,
+      )
+        .bind(classCode, studentId)
+        .all();
+      const rows = res.results || [];
+      // An unknown pair is indistinguishable from a student who has simply not
+      // started anything, so it counts as a miss for throttling purposes but
+      // still returns 200 — a brand-new student must not see an error screen.
+      if (!rows.length) await noteLoadMiss(env.DB, ip, bucket);
+
+      const open = [];
+      const done = [];
+      for (const r of rows) {
+        const percent = Number(r.progress_percent) || 0;
+        if (percent >= DONE_PERCENT) {
+          done.push(r.activity_id);
+          continue;
+        }
+        open.push({
+          saveCode: r.save_code,
+          activityId: r.activity_id,
+          activityTitle: r.activity_title || r.activity_id,
+          url: r.activity_url || "",
+          percent,
+          updatedAt: r.updated_at,
+        });
+      }
+      return json({ ok: true, resume: open[0] || null, recent: open.slice(1), done });
     }
 
     if ((seg === "create" || seg === "save") && method === "POST") {

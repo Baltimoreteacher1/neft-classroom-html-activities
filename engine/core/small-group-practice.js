@@ -1,13 +1,16 @@
 import { attachRegenPractice } from "../components/regen-practice.js";
 import { isRight, numberOf } from "./answer-match.js";
+import { detectConceptTool } from "./concept-tool.js";
+import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
+import { extractDivisionDiagram } from "./division-helper.js";
+import { pickWorkedModel } from "./small-group-adaptive.js";
+import { figureBlock } from "./small-group-labs.js";
 import { mountReasoningReader } from "./small-group-reasoning.js";
 import { createRubricDetails } from "./small-group-rubric.js";
 import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
-import { renderConversionChip, hasConversionFacts } from "./conversion-chart.js";
+import { mountSymbolPad, needsSymbolPad } from "./symbol-pad.js";
 import { renderToolChip } from "./tool-drawer.js";
-import { extractDivisionDiagram } from "./division-helper.js";
-import { figureBlock } from "./small-group-labs.js";
 
 const firstHint = (item) => item.hints?.[0] || item.hint || null;
 
@@ -34,58 +37,34 @@ function streakNote(events) {
   )}</b> `;
 }
 
-// Bilingual correct-answer lead shared by every checkable card.
-const correctLead = () =>
-  `✅ <b>${biHtml("Your reasoning landed.", "¡Tu razonamiento dio en el blanco!")}</b>`;
+// Bilingual correct-answer leads shared by every checkable card.
+//
+// This was a single constant — "✅ Your reasoning landed." — which meant a
+// student working an 18-item set read the identical sentence up to 18 times in
+// one rotation. Praise that never varies stops reading as a response to what
+// the student did and starts reading as machinery. The voice rule stays the
+// same across all of these: name the METHOD working, never rate the child.
+//
+// Rotation is a plain counter, not Math.random: successive corrects walk the
+// list in order, so no two consecutive answers repeat and the sequence is
+// deterministic for tests and replays.
+export const CORRECT_LEADS = [
+  ["Your reasoning landed.", "¡Tu razonamiento dio en el blanco!"],
+  ["That's your method working.", "Así funciona tu método."],
+  ["Clean thinking — it held up.", "Pensamiento claro: se sostuvo."],
+  ["You checked it, and it checks out.", "Lo comprobaste, y cuadra."],
+  ["Right — and you could explain why.", "Correcto, y podrías explicar por qué."],
+  ["Solid step. Keep that strategy.", "Paso sólido. Conserva esa estrategia."],
+];
+let correctLeadCursor = 0;
+const correctLead = () => {
+  const [en, es] = CORRECT_LEADS[correctLeadCursor % CORRECT_LEADS.length];
+  correctLeadCursor += 1;
+  return `✅ <b>${biHtml(en, es)}</b>`;
+};
 
 function itemStem(item) {
   return item.stem || item.title || item.instructions || item.prompt || "Try this problem.";
-}
-
-function detectConceptTool(stemText) {
-  if (!stemText || typeof stemText !== "string") return null;
-  const str = stemText.toLowerCase();
-
-  if (str.includes("exponent") || str.includes("power") || str.includes("base")) {
-    return { kind: "power-builder", icon: "⚡", label: "Powers & Exponents" };
-  }
-  if (str.includes("factor tree") || str.includes("prime factor")) {
-    return { kind: "factor-tree-lab", icon: "🌳", label: "Factor Tree Lab" };
-  }
-  if (str.includes("lcm") || str.includes("least common multiple")) {
-    return { kind: "lcm-lab", icon: "🔢", label: "LCM Lab" };
-  }
-  if (str.includes("fraction") && (str.includes("divide") || str.includes("÷") || str.includes("kcf"))) {
-    return { kind: "fraction-divide", icon: "🥞", label: "Divide Fractions Lab" };
-  }
-  if (str.includes("decimal") && (str.includes("multiply") || str.includes("product"))) {
-    return { kind: "decimal-product", icon: "🔢", label: "Multiply Decimals Lab" };
-  }
-  if (str.includes("decimal") && (str.includes("divide") || str.includes("quotient"))) {
-    return { kind: "decimal-quotient", icon: "🔢", label: "Divide Decimals Lab" };
-  }
-  if (str.includes("equation") || str.includes("balance scale")) {
-    return { kind: "algebra-balance-scale", icon: "⚖️", label: "Balance Scale" };
-  }
-  if (str.includes("inequality") || str.includes("greater than") || str.includes("less than")) {
-    return { kind: "neon-inequality", icon: "📈", label: "Inequality Lab" };
-  }
-  if (str.includes("surface area") || str.includes("net") || str.includes("prism")) {
-    return { kind: "surface-area-packer", icon: "📦", label: "Surface Area Packer" };
-  }
-  if (str.includes("area of") || str.includes("parallelogram") || str.includes("trapezoid")) {
-    return { kind: "area-morph", icon: "📐", label: "Area Lab" };
-  }
-  if (str.includes("coordinate") || str.includes("quadrant") || str.includes("ordered pair")) {
-    return { kind: "coordinate-navigator", icon: "📍", label: "Coordinate Navigator" };
-  }
-  if (str.includes("box plot") || str.includes("quartile")) {
-    return { kind: "box-plot-detective", icon: "📊", label: "Box Plot Detective" };
-  }
-  if (str.includes("histogram") || str.includes("frequency table")) {
-    return { kind: "histogram-master-lab", icon: "📊", label: "Histogram Lab" };
-  }
-  return null;
 }
 
 function questionCard(index, stem, stemEs, item = {}) {
@@ -192,7 +171,7 @@ function seededOrder(length, seed) {
 }
 
 function multipleChoiceCard(item, index, onSolved, events = {}) {
-  const card = questionCard(index, itemStem(item), item.stemEs);
+  const card = questionCard(index, itemStem(item), item.stemEs, item);
   const status = feedback();
   const choices = el("div", "choices");
   let complete = false;
@@ -260,6 +239,7 @@ function errorAnalysisCard(item, index, onSolved, events = {}) {
     index,
     item.title || item.stem || "Find the reasoning break.",
     item.stemEs || item.titleEs,
+    item,
   );
   const work = el("div", "we-steps");
   const list = el("ol", "steps");
@@ -429,6 +409,9 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
     if (item.unit) line.appendChild(el("span", "fillunit", esc(item.unit)));
     box.appendChild(line);
   }
+  // Inequality answers: ≤ and ≥ are not on the keyboard, so offer them as
+  // buttons that type themselves into the box.
+  if (needsSymbolPad(answer)) mountSymbolPad(input, { force: true });
   // The bank always exists (hidden when unscaffolded) so the adaptive coach's
   // "stabilize" move can open it later without rebuilding the card.
   let bank = null;
@@ -563,7 +546,7 @@ function appendStepGuide(card, item, scaffold) {
 }
 
 function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
-  const card = questionCard(index, itemStem(item), item.stemEs);
+  const card = questionCard(index, itemStem(item), item.stemEs, item);
   const status = feedback();
   const answer = answerOf(item);
   // Wired after the guide/hints exist (they render below the control); after
@@ -777,6 +760,117 @@ export function orderItemsForAdaptivePath(items = [], pathId = "connect") {
 }
 
 /**
+ * Spread the FORMATS through the set instead of serving them in blocks.
+ *
+ * Every one of the 148 generated small-group lessons opened with twelve
+ * consecutive `guided-fill` items — the whole `parallelPractice` bank — and
+ * only reached its multiple-choice / error-analysis variety at item 13. In a
+ * 15-minute station rotation a lot of students never got there, so the variety
+ * that was authored for them was, in practice, for nobody. Measured across the
+ * fleet: longest single-format run 12.1 items on average, and the guided-fill
+ * block was contiguous in 148 of 148 lessons.
+ *
+ * The dominant format is dealt into evenly sized gaps around the others, so 12
+ * fills and 5 others render as `GF GF · GF GF · GF GF …` — runs of 2, the
+ * arithmetic best for those counts.
+ *
+ * Two tempting versions are both wrong, and were both measured on this fleet
+ * before this one:
+ *   - Strict alternation ("most remaining format that is not the last one")
+ *     pairs 1-to-1, exhausts the minority at the halfway point, and leaves the
+ *     whole remainder of the majority in a tail block. Still left runs of 9.
+ *   - Spreading every format independently across [0,1] by its own (k+0.5)/c
+ *     fraction looks right and is close, but the separators land on their own
+ *     fractions rather than on the block's, so the gaps come out uneven. Left
+ *     runs of 3 where 2 was achievable, on 84 of 148 lessons.
+ *
+ * Ties break on the item's incoming position, so the output is deterministic:
+ * the same config always renders the same order, which matters because these
+ * lessons are generated and diffed.
+ *
+ * DISPLAY ONLY. `_practiceIndex` rides along on each item untouched, because
+ * that — not display position — is the Save/Resume key (see
+ * `orderItemsForAdaptivePath`, which established the same contract). A student
+ * mid-lesson keeps every saved answer attached to the problem they answered.
+ */
+export function interleaveByFormat(items = []) {
+  if (!Array.isArray(items) || items.length < 3) return (items || []).slice();
+  const buckets = new Map();
+  items.forEach((item, index) => {
+    const key = item?.type || "?";
+    if (!buckets.has(key)) buckets.set(key, []);
+    buckets.get(key).push({ item, index });
+  });
+  // One format present means there is nothing to interleave, and returning the
+  // input untouched keeps single-format sets in their authored order.
+  if (buckets.size < 2) return items.slice();
+
+  // The dominant format is the one that forms the block; everything else is a
+  // separator. Ties resolve to whichever appeared first, so this is stable.
+  let dominantType = null;
+  for (const [type, list] of buckets) {
+    if (!dominantType || list.length > buckets.get(dominantType).length) dominantType = type;
+  }
+  const dominant = buckets.get(dominantType).slice();
+
+  // Separators are themselves spread across their own formats, so a lesson with
+  // three multiple-choice and two error-analysis alternates them instead of
+  // emitting MC MC MC EA EA between the fills.
+  const separators = [];
+  for (const [type, list] of buckets) {
+    if (type === dominantType) continue;
+    list.forEach((entry, k) => separators.push({ ...entry, at: (k + 0.5) / list.length }));
+  }
+  separators.sort((a, b) => a.at - b.at || a.index - b.index);
+  if (!separators.length) return items.slice();
+
+  // Deal the dominant items into the gaps AROUND the separators, as evenly as
+  // the counts allow. Spreading each format independently is not enough: the
+  // separators land on their own fractions rather than on the block's, so the
+  // gaps come out uneven and a run of 3 survives where 2 was achievable.
+  const gaps = separators.length + 1;
+  const base = Math.floor(dominant.length / gaps);
+  const extra = dominant.length % gaps;
+  const out = [];
+  let cursor = 0;
+  for (let gap = 0; gap < gaps; gap += 1) {
+    const take = base + (gap < extra ? 1 : 0);
+    for (let n = 0; n < take; n += 1) out.push(dominant[cursor++].item);
+    if (gap < separators.length) out.push(separators[gap].item);
+  }
+  return out;
+}
+
+/**
+ * The order a practice set is actually drawn in: adaptive priority first, then
+ * written responses pushed to the close, then formats interleaved within the
+ * checkable group.
+ *
+ * Extracted so the variety gate can exercise the REAL ordering instead of a
+ * copy of it — a re-implementation in the test would keep passing after this
+ * pipeline changed underneath it.
+ *
+ * Interleaving runs after the adaptive sort rather than before it, because the
+ * adaptive score groups by tier and type and would otherwise re-cluster what
+ * this just spread. Priority is not lost: each format bucket keeps its incoming
+ * order, so the highest-scored item of a format is still the first of that
+ * format to appear.
+ */
+export function practiceDisplayOrder(collected = [], pathId = "connect") {
+  const ordered = orderItemsForAdaptivePath(collected, pathId);
+  // Only a genuine WRITTEN response closes the set. This used to be "anything
+  // `answerOf` cannot score", which swept the manipulatives out with the
+  // essays: across the fleet that stranded 19 fill-table, 13 drag-sort, 5
+  // matching-game, 3 number-line and 3 coordinate-grid items behind the whole
+  // practice bank, where the students who ran out of time never reached them.
+  // Position never affected whether those widgets RENDER — only whether anyone
+  // got to them — so they belong in the flow with everything else.
+  const written = ordered.filter((item) => item.type === "open-response");
+  const interactive = ordered.filter((item) => item.type !== "open-response");
+  return [...interleaveByFormat(interactive), ...written];
+}
+
+/**
  * Additive stretch: ensure authored extending items appear in the More Practice
  * set when the stretch path is chosen. Never removes existing items; tags new
  * arrivals with fresh `_practiceIndex` values past the current max so prior
@@ -848,13 +942,7 @@ export function createPracticeSection(
     collected = bringInExtendingItems(collected, config);
   }
   const pathId = options.adaptivePath || "connect";
-  const ordered = orderItemsForAdaptivePath(collected, pathId);
-  // Interactive, checkable problems first; written responses close the set
-  // (stable partition — relative order inside each group is preserved).
-  const items = [
-    ...ordered.filter((item) => answerOf(item) != null || item.type === "error-analysis"),
-    ...ordered.filter((item) => answerOf(item) == null && item.type !== "error-analysis"),
-  ];
+  const items = practiceDisplayOrder(collected, pathId);
   if (!items.length) return null;
   const section = el("section", "sg-sec");
   section.id = options.id || "sg-practice";
@@ -1038,7 +1126,9 @@ export function createPracticeSection(
       }
       displayItems = enriched;
     }
-    const reordered = orderItemsForAdaptivePath(displayItems, nextPath || "connect");
+    // Same ordering as the first render, so switching adaptive path does not
+    // hand the student back the twelve-in-a-row block this exists to break up.
+    const reordered = practiceDisplayOrder(displayItems, nextPath || "connect");
     const nav = section.querySelector(":scope > .sg-problem-nav");
     const anchor = nav || null;
     reordered.forEach((item) => {
@@ -1111,6 +1201,68 @@ export function createPracticeSection(
     if (header) header.after(note);
     else section.prepend(note);
   });
+  // Automatic difficulty moves — dispatched by the renderer's auto-pilot
+  // (small-group-adaptive.js) on two consecutive misses or three clean solves.
+  //
+  // DOWN respects the same furniture rule as sg:auto-support: it opens
+  // supports and adds a worked model drawn from the student's OWN solved work,
+  // but never reorders — it fires mid-problem, not in answer to a button.
+  // UP fires right after a third clean solve — a reward moment — so in More
+  // Practice it also promotes the harder items the way the coach's path
+  // buttons do.
+  document.addEventListener("sg:auto-move", (event) => {
+    const detail = /** @type {CustomEvent} */ (event).detail || {};
+    if (detail.move === "up") {
+      if (options.mode === "more") applyPathOrder(detail.path);
+      if (section.dataset.autoMoveUp === "on") return;
+      section.dataset.autoMoveUp = "on";
+      const note = el(
+        "div",
+        "sg-adaptive-banner",
+        biHtml(
+          "Three clean solves in a row — the set just stepped up. You earned the harder problems.",
+          "Tres aciertos seguidos sin pistas — el conjunto acaba de subir de nivel. Te ganaste los problemas más difíciles.",
+        ),
+      );
+      note.setAttribute("aria-live", "polite");
+      const header = section.querySelector(":scope > .sg-h");
+      if (header) header.after(note);
+      else section.prepend(note);
+      return;
+    }
+    if (detail.move !== "down") return;
+    for (const card of section.querySelectorAll(":scope > .prob:not(.sg-done-all)"))
+      card.sgApplySupport?.();
+    if (section.dataset.autoMoveDown === "on") return;
+    section.dataset.autoMoveDown = "on";
+    const note = el(
+      "div",
+      "sg-adaptive-banner",
+      biHtml(
+        "Let's steady this: supports are open on every problem.",
+        "Vamos a afianzar esto: los apoyos están abiertos en cada problema.",
+      ),
+    );
+    note.setAttribute("aria-live", "polite");
+    const header = section.querySelector(":scope > .sg-h");
+    if (header) header.after(note);
+    else section.prepend(note);
+    // Worked model from the student's own solved work — never from an
+    // unsolved problem, which would print an answer they haven't earned.
+    const model = pickWorkedModel(items, (storeIndex) =>
+      Boolean(store?.has("solvedPractice", storeIndex) || counted.has(storeIndex)),
+    );
+    if (model) {
+      const panel = el("details", "card sg-worked-model");
+      panel.open = true;
+      const answer = answerOf(model);
+      panel.innerHTML = `<summary>📌 ${bi("Look how you solved this one", "Mira cómo resolviste este")}</summary><p class="sg-worked-model-stem">${esc(model.stem || "")}</p>${
+        answer == null ? "" : `<p><b>${bi("Your answer", "Tu respuesta")}:</b> ${esc(answer)}</p>`
+      }<p>${esc(model.explanation || model.sampleAnswer || "")}</p>`;
+      note.after(panel);
+    }
+  });
+
   const optional = config.practice?.optionalActivity;
   if (optional && options.includeOptional)
     section.appendChild(

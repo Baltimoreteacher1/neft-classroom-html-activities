@@ -33,8 +33,8 @@
  * ========================================================================== */
 
 import { execFile, execFileSync } from "node:child_process";
-import { cpus } from "node:os";
 import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
+import { cpus } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -50,7 +50,13 @@ const SCRIPTS = pkg.scripts || {};
  * ------------------------------------------------------------------------ */
 const GATE = [
   "build",
-  "lint",
+  // `check` (biome check), NOT `lint` (biome lint). Both are read-only, but
+  // `lint` ignores formatting, and `biome check` -- the thing the PR-only
+  // Pre-Deploy Gate actually runs -- does not. Because every deploy here goes
+  // straight to `main` via `npm run ship`, which opens no PR, nothing ran
+  // `biome check` for weeks and 32 format errors banked up unseen on `main`.
+  // `check` is a strict superset of `lint`, so this only ever catches more.
+  "check",
   "validate",
   "validate:homework",
   "validate:practice",
@@ -86,20 +92,77 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
  * ~1,000 files plus ~3,100 inline blocks and costs 23s, which would be the
  * whole budget of a "fast" lane. It is added below only when a changed path can
  * actually carry a script, and the full gate at push time runs it regardless. */
-const UNIVERSAL = ["lint"];
+const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
-  [/^lessons\/[^/]+\/config\.json$/, ["validate:math", "validate:ccss", "validate:connect", "validate:homework", "validate:practice", "validate:scope", "audit:homework"]],
-  [/^lessons\//, ["validate:static", "validate:save-resume", "validate:lesson-boot", "audit:links"]],
+  // Routing: data/routes.json is the source of truth for BOTH _redirects and
+  // functions/_lib/redirect-map.js, and the middleware replays the map on a 404.
+  // validate:routes catches a half-applied edit (the map generated but the
+  // static file not, or vice versa); the test run pins the fallback behaviour.
+  [
+    /^(data\/routes\.json|_redirects|functions\/_lib\/redirect-map\.js|functions\/_middleware\.js|tools\/generate-route-files\.mjs)$/,
+    ["validate:routes", "test", "validate:static", "validate:js-syntax", "audit:links"],
+  ],
+  // Plan Notes owns a page, an API route, a generated vocabulary and a write
+  // gate. All four are covered by the one surface validator plus the test run,
+  // which is what makes an edit here cheap instead of a full-gate escalation.
+  [
+    /^(curriculum\/plan-notes\/|functions\/_lib\/plan-(notes-validate|vocab)\.js|functions\/api\/plan-notes\/|scripts\/generate-plan-vocab\.mjs|tools\/validate-plan-notes\.mjs)/,
+    ["validate:plan-notes", "test", "validate:static", "validate:js-syntax"],
+  ],
+  [
+    /^lessons\/[^/]+\/config\.json$/,
+    [
+      "validate:math",
+      "validate:ccss",
+      "validate:connect",
+      "validate:homework",
+      "validate:practice",
+      "validate:scope",
+      "audit:homework",
+      // a config edit is how an image stops being referenced
+      "validate:reveal-assets",
+      // …and how coaching drifts away from the problem it belongs to
+      "eval:core-lessons",
+    ],
+  ],
+  // must precede the generic /^lessons\// rule below — first match wins
+  [/^lessons\/[^/]+\/reveal-assets\//, ["validate:reveal-assets"]],
+  [
+    /^lessons\//,
+    ["validate:static", "validate:save-resume", "validate:lesson-boot", "audit:links"],
+  ],
   [/^curriculum\/ai-hub\//, ["validate:ai-hub", "validate:hub", "audit:links"]],
   [/^curriculum\/forge\//, ["validate:forge"]],
   [/^curriculum\/showcase\//, ["validate:showcase"]],
   [/^curriculum\/class-boss\//, ["validate:class-boss"]],
   [/^curriculum\/teach-the-machine\//, ["validate:teach-machine"]],
   [/^curriculum\/family-connections\//, ["validate:family-broadcast"]],
-  [/^curriculum\/projects\//, ["validate:projects-publication", "validate:projects-award", "validate:solve-along", "validate:injection"]],
-  [/^curriculum\/index\.html$/, ["validate:hub", "validate:curriculum-top1", "validate:teacher-workflow", "validate:guided-path", "validate:curriculum-product", "audit:links"]],
-  [/^curriculum\//, ["validate:hub", "validate:runtime", "validate:static", "audit:links", "audit:curriculum"]],
+  [
+    /^curriculum\/projects\//,
+    [
+      "validate:projects-publication",
+      "validate:projects-award",
+      "validate:solve-along",
+      "validate:injection",
+    ],
+  ],
+  [
+    /^curriculum\/index\.html$/,
+    [
+      "validate:hub",
+      "validate:curriculum-top1",
+      "validate:teacher-workflow",
+      "validate:guided-path",
+      "validate:curriculum-product",
+      "validate:curriculum-links",
+      "audit:links",
+    ],
+  ],
+  [
+    /^curriculum\//,
+    ["validate:hub", "validate:runtime", "validate:static", "audit:links", "audit:curriculum"],
+  ],
   [/^\.github\/workflows\//, ["validate:workflow-yaml"]],
   [/^data\/ccss-standards\.json$/, ["validate:ccss", "validate:scope"]],
   [/^data\/routes\.json$/, ["validate:static", "audit:links"]],
@@ -158,10 +221,21 @@ function changedPaths() {
       return "";
     }
   };
-    const override = optVal("--paths");
-  if (override) return override.split(",").map((s) => s.trim()).filter(Boolean);
+  const override = optVal("--paths");
+  if (override)
+    return override
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
   const merged = `${run(["diff", "--name-only", "HEAD"])}\n${run(["ls-files", "--others", "--exclude-standard"])}`;
-  return [...new Set(merged.split("\n").map((s) => s.trim()).filter(Boolean))];
+  return [
+    ...new Set(
+      merged
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    ),
+  ];
 }
 
 function scopeFor(paths) {
@@ -182,7 +256,7 @@ function scopeFor(paths) {
  * checks the old serial loop ran. A scheduler that quietly stops running a
  * gate is worse than a slow one.
  * ------------------------------------------------------------------------ */
-export { GATE, COVERAGE, UNIVERSAL, CARRIES_SCRIPT, expand, resolveSet, scopeFor, needsOf };
+export { CARRIES_SCRIPT, COVERAGE, expand, GATE, needsOf, resolveSet, scopeFor, UNIVERSAL };
 
 async function main() {
   /* --- Decide the check set ------------------------------------------------- */
@@ -199,7 +273,10 @@ async function main() {
       label = `change-scoped (${paths.length} changed file(s))`;
     } else {
       checks = resolveSet(GATE);
-      label = paths.length === 0 ? "FULL (no changes detected)" : "FULL (a changed path has no coverage rule)";
+      label =
+        paths.length === 0
+          ? "FULL (no changes detected)"
+          : "FULL (a changed path has no coverage rule)";
     }
   } else {
     checks = resolveSet(GATE);
@@ -239,23 +316,31 @@ async function main() {
   const started = Date.now();
 
   const ready = (c) => needsOf(c).every((d) => !checks.includes(d) || results.get(d)?.ok);
-  const blocked = (c) => needsOf(c).some((d) => checks.includes(d) && results.get(d) && !results.get(d).ok);
+  const blocked = (c) =>
+    needsOf(c).some((d) => checks.includes(d) && results.get(d) && !results.get(d).ok);
 
   function runOne(name) {
     return new Promise((resolve) => {
       const t0 = Date.now();
-      execFile("npm", ["run", name], { cwd: ROOT, maxBuffer: 64 * 1024 * 1024 }, (err, stdout, stderr) => {
-        const secs = ((Date.now() - t0) / 1000).toFixed(1);
-        const ok = !err;
-        results.set(name, { ok, secs });
-        logTo(`\n===== ${ok ? "PASS" : "FAIL"} npm run ${name} (${secs}s) =====\n${stdout}\n${stderr}\n`);
-        console.log(`${ok ? "PASS" : "FAIL"}  ${name.padEnd(32)} ${secs}s`);
-        if (!ok) {
-          const tail = `${stdout}\n${stderr}`.trim().split("\n").slice(-12);
-          for (const l of tail) console.log(`      | ${l}`);
-        }
-        resolve();
-      });
+      execFile(
+        "npm",
+        ["run", name],
+        { cwd: ROOT, maxBuffer: 64 * 1024 * 1024 },
+        (err, stdout, stderr) => {
+          const secs = ((Date.now() - t0) / 1000).toFixed(1);
+          const ok = !err;
+          results.set(name, { ok, secs });
+          logTo(
+            `\n===== ${ok ? "PASS" : "FAIL"} npm run ${name} (${secs}s) =====\n${stdout}\n${stderr}\n`,
+          );
+          console.log(`${ok ? "PASS" : "FAIL"}  ${name.padEnd(32)} ${secs}s`);
+          if (!ok) {
+            const tail = `${stdout}\n${stderr}`.trim().split("\n").slice(-12);
+            for (const l of tail) console.log(`      | ${l}`);
+          }
+          resolve();
+        },
+      );
     });
   }
 
@@ -300,14 +385,15 @@ async function main() {
   const failed = checks.filter((c) => !results.get(c)?.ok);
   const wall = ((Date.now() - started) / 1000).toFixed(1);
   console.log("---------------------------------------------------------------");
-  console.log(`PASS ${checks.length - failed.length}/${checks.length}   wall ${wall}s   log ${LOG}`);
+  console.log(
+    `PASS ${checks.length - failed.length}/${checks.length}   wall ${wall}s   log ${LOG}`,
+  );
   if (failed.length) {
     console.log(`FAILED: ${failed.join(", ")}`);
     console.log("Re-run one check with:  npm run qa:fast -- --only <name>");
     process.exit(1);
   }
   console.log("STATUS: PASS — no deploy, commit, or push performed.");
-
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) await main();

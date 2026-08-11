@@ -44,6 +44,11 @@ for (const a of registry.activities) {
     type: a.activityType,
     standard,
     level: typeof t.level === "number" ? t.level : 1,
+    // Whether `level` above was asserted by a tag or is just the fallback.
+    // Without this, an untagged activity is indistinguishable from one
+    // deliberately tagged level 1, so every consumer reads "this has level-1
+    // support" where the truth is "nobody has levelled this yet".
+    levelTagged: typeof t.level === "number",
     misconceptions: t.misconceptions || [],
     confidence: typeof t.confidence === "number" ? t.confidence : null,
   };

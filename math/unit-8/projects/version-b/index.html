@@ -25,7 +25,7 @@
         --gold-lt: #fdf3e0;
         --green: #1e7d40;
         --green-lt: #e6f4eb;
-        --coral: #c45a3c;
+        --coral: #a8442a;
         --ink: #1a2633;
         --muted: #525f6e;
         --line: #e2e7ec;
@@ -48,7 +48,7 @@
 
       /* ---- Hero ---- */
       .hero {
-        background: linear-gradient(135deg, #0f2b3c 0%, #1e7d40 60%, #0e8a7d 100%);
+        background: linear-gradient(135deg, #0f2b3c 0%, #1e7d40 60%, #0c6f6b 100%);
         color: #fff;
         padding: 36px 24px 28px;
         text-align: center;
@@ -148,6 +148,15 @@
         padding: 8px 12px;
         border-radius: 10px;
         transition: background 0.15s;
+        background: none;
+        border: 0;
+        font: inherit;
+        color: inherit;
+        text-align: left;
+      }
+      .step-trail-item:focus-visible {
+        outline: 3px solid var(--blue);
+        outline-offset: 2px;
       }
       .step-trail-item:hover {
         background: var(--blue-lt);
@@ -559,7 +568,7 @@
         font-weight: 700;
       }
       .score-2 {
-        color: #a5670a;
+        color: #8a5f0a;
         font-weight: 700;
       }
 
@@ -812,6 +821,9 @@
     <!-- projects-twist-head:begin (Design Twist — tools/inject-projects-twist.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-twist.css?v=20260722" />
     <!-- projects-twist-head:end -->
+    <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
+    <!-- projects-mode-pill-head:end -->
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -844,16 +856,16 @@
           <span class="es-text">Versión B</span>
         </span>
       </div>
-      <div class="level-bar">
-        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+      <div class="level-bar" role="group" aria-label="Choose your level">
+        <button type="button" class="level-btn" id="btn-lv0" aria-pressed="false" onclick="setLevel(0)">
           <span class="en-text">🟠 Level 0 — Extra Support</span>
           <span class="es-text">🟠 Nivel 0 — Apoyo Extra</span>
         </button>
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+        <button type="button" class="level-btn active" id="btn-lv1" aria-pressed="true" onclick="setLevel(1)">
           <span class="en-text">🟢 Level 1 — With Support</span>
           <span class="es-text">🟢 Nivel 1 — Con apoyo</span>
         </button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+        <button type="button" class="level-btn" id="btn-lv2" aria-pressed="false" onclick="setLevel(2)">
           <span class="en-text">🔵 Level 2 — Challenge</span>
           <span class="es-text">🔵 Nivel 2 — Desafío</span>
         </button>
@@ -904,8 +916,8 @@
             <div class="card-icon gold">📖</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Key Words</span>
-                <span class="es-text">Palabras clave</span>
+                <span class="en-text">Step 1 — Key Words</span>
+                <span class="es-text">Paso 1 — Palabras clave</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Learn these 5 math words before you begin</span>
@@ -1095,12 +1107,12 @@
             <div class="card-icon">🎒</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 1 — Fundraiser Goal &amp; Progress</span>
-                <span class="es-text">Paso 1 — Meta y progreso de la recaudación</span>
+                <span class="en-text">Step 2 — Fundraiser Goal &amp; Progress</span>
+                <span class="es-text">Paso 2 — Meta y progreso de la recaudación</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
-                  >Write an addition <span class="vocab-word" data-vocab="equation" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('equation')">equation</span> to find the needed remaining funds</span
+                  >Write an addition <span class="vocab-word" data-vocab="equation" style="border-bottom:2px dotted #0369a1; color:#0369a1; font-weight:800; cursor:pointer;" onclick="openVocabModal('equation')">equation</span> to find the needed remaining funds</span
                 >
                 <span class="es-text"
                   >Escribe una ecuación de suma para encontrar los fondos restantes necesarios</span
@@ -1323,8 +1335,8 @@
             <div class="card-icon teal">↔️</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 2 — Progress Milestones</span>
-                <span class="es-text">Paso 2 — Hitos de progreso</span>
+                <span class="en-text">Step 3 — Progress Milestones</span>
+                <span class="es-text">Paso 3 — Hitos de progreso</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Write and evaluate inequalities to represent milestones</span>
@@ -1531,11 +1543,11 @@
             <div class="card-icon gold">🧮</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 3 — Plan Product Sales</span>
-                <span class="es-text">Paso 3 — Planificar ventas de productos</span>
+                <span class="en-text">Step 4 — Plan Product Sales</span>
+                <span class="es-text">Paso 4 — Planificar ventas de productos</span>
               </h2>
               <div class="card-sub">
-                <span class="en-text">Write a multiplication <span class="vocab-word" data-vocab="equation" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('equation')">equation</span> to calculate item sales</span>
+                <span class="en-text">Write a multiplication <span class="vocab-word" data-vocab="equation" style="border-bottom:2px dotted #0369a1; color:#0369a1; font-weight:800; cursor:pointer;" onclick="openVocabModal('equation')">equation</span> to calculate item sales</span>
                 <span class="es-text"
                   >Escribe una ecuación de multiplicación para calcular las ventas de
                   artículos</span
@@ -1824,8 +1836,8 @@
             <div class="card-icon">👥</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 4 — Compare With a Classmate</span>
-                <span class="es-text">Paso 4 — Comparar con un/a compañero/a</span>
+                <span class="en-text">Step 5 — Compare With a Classmate</span>
+                <span class="es-text">Paso 5 — Comparar con un/a compañero/a</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text">Compare goals and fundraiser progress side-by-side</span>
@@ -1846,6 +1858,23 @@
               ><strong>Tu trabajo:</strong> Entrevista a un/a compañero/a. Ingresa su nombre, meta y
               cuánto ha recaudado. Calcularemos su porcentaje de progreso y mostraremos cómo se
               comparan.</span
+            >
+          </div>
+
+          <div class="instruct">
+            <strong>
+              <span class="en-text">No partner today?</span>
+              <span class="es-text">¿No tienes compañero/a hoy?</span>
+            </strong>
+            <span class="en-text"
+              >You can still finish this step. Write "Solo" for the name and compare against the
+              benchmark fundraiser from Step 2 instead — use its goal and amount raised as the
+              second plan, then explain which plan is closer to its goal and how you know.</span
+            >
+            <span class="es-text"
+              >Igual puedes terminar este paso. Escribe "Solo" en el nombre y compárate con la
+              recaudación de referencia del Paso 2: usa su meta y lo recaudado como el segundo
+              plan, y explica cuál plan está más cerca de su meta y cómo lo sabes.</span
             >
           </div>
 
@@ -1942,8 +1971,8 @@
             <div class="card-icon green">🏆</div>
             <div>
               <h2 class="card-title">
-                <span class="en-text">Step 5 — Finish &amp; Submit</span>
-                <span class="es-text">Paso 5 — Finalizar y enviar</span>
+                <span class="en-text">Step 6 — Finish &amp; Submit</span>
+                <span class="es-text">Paso 6 — Finalizar y enviar</span>
               </h2>
               <div class="card-sub">
                 <span class="en-text"
@@ -2227,6 +2256,8 @@
           <pre class="report-box" id="reportBox"></pre>
         </div>
 
+        <div class="instruct" id="finishStatus" role="status" tabindex="-1" hidden></div>
+
         <div class="nav-row">
           <button class="nav-btn ghost" onclick="goStep(5)">
             <span class="en-text">← Back</span>
@@ -2359,9 +2390,12 @@
         const body = document.getElementById("body");
         body.classList.remove("level-0", "level-1", "level-2");
         body.classList.add("level-" + n);
-        document.getElementById("btn-lv0").classList.toggle("active", n === 0);
-        document.getElementById("btn-lv1").classList.toggle("active", n === 1);
-        document.getElementById("btn-lv2").classList.toggle("active", n === 2);
+        [0, 1, 2].forEach(function (i) {
+          const b = document.getElementById("btn-lv" + i);
+          if (!b) return;
+          b.classList.toggle("active", n === i);
+          b.setAttribute("aria-pressed", n === i ? "true" : "false");
+        });
 
         // Reset or redraw components
         drawTapeDiagram();
@@ -2373,12 +2407,20 @@
       // ---- Build Step Trail ----
       function buildTrail() {
         const trail = document.getElementById("stepTrail");
+        if (!trail) return;
+        const isEs = document.body.classList.contains("es");
         trail.innerHTML = STEPS.map((s, i) => {
           const isLast = i === STEPS.length - 1;
-          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" role="button" tabindex="0" onclick="goStep(${s.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(${s.id});}">
-            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id}</span>
+          const isNow = s.id === currentStep;
+          const isDone = visited.has(s.id) && !isNow;
+          const label = isEs ? s.labelEs : s.labelEn;
+          const go = isEs
+            ? `Ir al paso ${s.id} de ${STEPS.length}: ${label}`
+            : `Go to step ${s.id} of ${STEPS.length}: ${label}`;
+          return `<button type="button" class="step-trail-item${isNow ? " active" : ""}${isDone ? " done" : ""}"${isNow ? ' aria-current="step"' : ""} aria-label="${go}" onclick="goStep(${s.id})">
+            <span class="s-num" aria-hidden="true">${isDone ? "\u2713" : s.id}</span>
             <span class="s-label"><span class="en-text">${s.labelEn}</span><span class="es-text">${s.labelEs}</span></span>
-          </span>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
+          </button>${!isLast ? '<span class="step-arrow" aria-hidden="true">\u203a</span>' : ""}`;
         }).join("");
       }
 
@@ -2538,8 +2580,8 @@
             showReadout(
               "fg-eq-out",
               `
-            <span class="en-text">Here's the worked path: relate the raised amount (<strong>$${raised}</strong>), the variable (<strong>${varName}</strong>), and the total goal (<strong>$${goal}</strong>). <br>Example: <code>${raised} + ${varName} = ${goal}</code></span>
-            <span class="es-text">Aquí está el camino resuelto: relaciona la cantidad recaudada (<strong>$${raised}</strong>), la variable (<strong>${varName}</strong>) y la meta total (<strong>$${goal}</strong>). <br>Ejemplo: <code>${raised} + ${varName} = ${goal}</code></span>
+            <span class="en-text">Here's the setup: your equation has three slots — <code>___ + ${varName} = ___</code>. The first blank is the amount you have already raised; the last blank is your total goal. Read those two numbers off your Step 1 fields, type each into its slot, and leave <strong>${varName}</strong> in the middle standing for the amount still needed.</span>
+            <span class="es-text">Así se arma: tu ecuación tiene tres espacios — <code>___ + ${varName} = ___</code>. El primer espacio es la cantidad que ya recaudaste; el último es tu meta total. Lee esos dos números en los campos del Paso 1, escribe cada uno en su espacio y deja <strong>${varName}</strong> en el medio representando la cantidad que aún falta.</span>
           `,
             );
           }
@@ -2594,8 +2636,8 @@
             showReadout(
               "fg-sol-out",
               `
-            <span class="en-text">❌ <strong>Not quite.</strong> Look at the equation from Step 1 — what operation is being done to the variable? Think about the inverse (opposite) operation you'd apply to both sides to get it alone.</span>
-            <span class="es-text">❌ <strong>Todavía no.</strong> Mira la ecuación del Paso 1 — ¿qué operación se le hace a la variable? Piensa en la operación inversa (opuesta) que aplicarías a ambos lados para dejarla sola.</span>
+            <span class="en-text">❌ <strong>Not quite.</strong> Look at the equation from Step 2 — what operation is being done to the variable? Think about the inverse (opposite) operation you'd apply to both sides to get it alone.</span>
+            <span class="es-text">❌ <strong>Todavía no.</strong> Mira la ecuación del Paso 2 — ¿qué operación se le hace a la variable? Piensa en la operación inversa (opuesta) que aplicarías a ambos lados para dejarla sola.</span>
           `,
             );
           } else if (triesFgSol === 2) {
@@ -2611,18 +2653,18 @@
               "fg-sol-out",
               `
             <span class="en-text">
-              Here's the worked path: <strong>${varName} = $${correctSol}</strong><br>
+              Here's the setup — you finish the arithmetic:<br>
               1. Write equation: <code>${raised} + ${varName} = ${goal}</code><br>
               2. Subtract ${raised} from both sides:<br>
                  <code>${varName} = ${goal} - ${raised}</code><br>
-              3. Simplify: <code>${varName} = ${correctSol}</code>
+              3. Work out <code>${goal} - ${raised}</code> on paper and enter that number as your solution.
             </span>
             <span class="es-text">
-              Aquí está el camino resuelto: <strong>${varName} = $${correctSol}</strong><br>
+              Así se arma — tú terminas la aritmética:<br>
               1. Escribe la ecuación: <code>${raised} + ${varName} = ${goal}</code><br>
               2. Resta ${raised} de ambos lados:<br>
                  <code>${varName} = ${goal} - ${raised}</code><br>
-              3. Simplifica: <code>${varName} = ${correctSol}</code>
+              3. Calcula <code>${goal} - ${raised}</code> en papel y escribe ese número como tu solución.
             </span>
           `,
             );
@@ -2768,8 +2810,8 @@
             showReadout(
               "ineq-out",
               `
-            <span class="en-text">Here's the worked path: write an inequality using <strong>y</strong>, your comparison symbol, and the milestone target <strong>$${target}</strong>. <br>Example: <code>y ${symbol} ${target}</code> (you can type <code>y ${typeSym} ${target}</code>)</span>
-            <span class="es-text">Aquí está el camino resuelto: escribe una desigualdad usando <strong>y</strong>, tu símbolo de comparación y la meta del hito <strong>$${target}</strong>. <br>Ejemplo: <code>y ${symbol} ${target}</code> (puedes escribir <code>y ${typeSym} ${target}</code>)</span>
+            <span class="en-text">Here's the setup: an inequality is three parts in this order — variable, symbol, number: <code>y ${typeSym} ___</code>. Type <strong>y</strong>, then <code>${typeSym}</code>, then read the milestone target off the milestone target field above and type that number into the blank.</span>
+            <span class="es-text">Así se arma: una desigualdad son tres partes en este orden — variable, símbolo, número: <code>y ${typeSym} ___</code>. Escribe <strong>y</strong>, luego <code>${typeSym}</code>, y luego lee la meta del hito en el campo de meta de arriba y escribe ese número en el espacio.</span>
           `,
             );
           }
@@ -2927,8 +2969,8 @@
             showReadout(
               "sales-eq-out",
               `
-            <span class="en-text">Here's the worked path: $${price} selling price − $${cost} cost = <strong>$${net} net per item</strong>.<br>Example: <code>${net}${varName} = ${remaining}</code></span>
-            <span class="es-text">Camino resuelto: $${price} de venta − $${cost} de costo = <strong>$${net} netos por artículo</strong>.<br>Ejemplo: <code>${net}${varName} = ${remaining}</code></span>
+            <span class="en-text">Here's the setup: first find your net per item by computing $${price} selling price − $${cost} cost. Then write the equation in this shape — <code>(net)${varName} = (amount still needed)</code> — putting the net number you just computed directly in front of <strong>${varName}</strong>, and the amount you still need after the equals sign.</span>
+            <span class="es-text">Así se arma: primero halla tu ganancia neta por artículo calculando $${price} de venta − $${cost} de costo. Luego escribe la ecuación con esta forma — <code>(neto)${varName} = (cantidad que aún falta)</code> — poniendo el número neto que acabas de calcular justo delante de <strong>${varName}</strong>, y la cantidad que aún necesitas después del signo igual.</span>
           `,
             );
           }
@@ -3015,8 +3057,8 @@
             showReadout(
               "sales-sol-out",
               `
-            <span class="en-text">Here's the worked path: <code>${varName} = ${remaining} / ${net} = ${exact.toFixed(2)}</code>${neededItems !== exact ? ` — round up to <strong>${neededItems}</strong> items so <code>${net}${varName} ≥ ${remaining}</code>.` : ""}</span>
-            <span class="es-text">Camino resuelto: <code>${varName} = ${remaining} / ${net} = ${exact.toFixed(2)}</code>${neededItems !== exact ? ` — redondea a <strong>${neededItems}</strong> para que <code>${net}${varName} ≥ ${remaining}</code>.` : ""}</span>
+            <span class="en-text">Here's the setup: <strong>${varName}</strong> is multiplied by your net per item, so undo that by dividing BOTH sides by the net — that is, compute <code>${varName} = (amount still needed) ÷ (net per item)</code>. Work out that quotient yourself, and since you can't sell part of an item, round it UP to the next whole number before entering it.</span>
+            <span class="es-text">Así se arma: <strong>${varName}</strong> está multiplicada por tu neto por artículo, así que deshazlo dividiendo AMBOS lados entre el neto — es decir, calcula <code>${varName} = (cantidad que aún falta) ÷ (neto por artículo)</code>. Halla tú ese cociente y, como no puedes vender parte de un artículo, redondéalo HACIA ARRIBA al siguiente número entero antes de escribirlo.</span>
           `,
             );
           }
@@ -3384,15 +3426,73 @@
         window.speechSynthesis.speak(utterance);
       }
 
+      // ---- Finish & Turn In ----
+      function finishStatusRead() {
+        const boxes = Array.prototype.slice.call(
+          document.querySelectorAll(".checklist input[type='checkbox']"),
+        );
+        const missing = boxes.filter((b) => !b.checked).length;
+        const pitchEl = document.getElementById("pitch");
+        const words = pitchEl ? pitchEl.value.trim().split(/\s+/).filter(Boolean).length : 0;
+        return { total: boxes.length, missing: missing, words: words };
+      }
+
       function finishProject() {
         const isEs = document.body.classList.contains("es");
-        if (isEs) {
-          alert(
-            "¡Felicitaciones! 🎉 Muestra tu localizador de metas completado y tu presentación a tu profesor/a.",
+        const st = finishStatusRead();
+        const todo = [];
+        if (st.total && st.missing > 0) {
+          todo.push(
+            isEs
+              ? `Faltan ${st.missing} de ${st.total} casillas de la lista de verificacion.`
+              : `${st.missing} of ${st.total} checklist boxes are still unchecked.`,
           );
-        } else {
-          alert("Congratulations! 🎉 Show your completed tracker and pitch to your teacher.");
         }
+        if (st.words < 25) {
+          todo.push(
+            isEs
+              ? "Tu presentacion todavia necesita de 3 a 5 oraciones completas."
+              : "Your written pitch still needs 3-5 full sentences.",
+          );
+        }
+        // Generating the summary is what records this project as complete.
+        try {
+          if (typeof buildReport === "function") buildReport();
+        } catch (_e) {}
+
+        const box = document.getElementById("finishStatus");
+        if (!box) {
+          alert(
+            todo.length
+              ? (isEs ? "Casi listo: " : "Almost there: ") + todo.join(" ")
+              : isEs
+                ? "Felicitaciones! Muestra esta pagina a tu profesor."
+                : "Congratulations! Show this page to your teacher.",
+          );
+          return;
+        }
+        if (todo.length) {
+          box.className = "instruct";
+          box.innerHTML =
+            "<strong>" +
+            (isEs ? "Casi listo — falta esto:" : "Almost there — finish these first:") +
+            "</strong><ul style=\"margin:8px 0 0 20px\">" +
+            todo.map((t) => "<li>" + t + "</li>").join("") +
+            "</ul>";
+        } else {
+          box.className = "instruct green";
+          box.innerHTML =
+            "<strong>" +
+            (isEs ? "Listo para entregar!" : "Ready to turn in!") +
+            "</strong> " +
+            (isEs
+              ? "Tu resumen esta generado abajo. Descargalo o imprimelo y entregaselo a tu profesor."
+              : "Your summary is generated below. Download or print it, then hand it in to your teacher.");
+        }
+        box.hidden = false;
+        try {
+          box.focus();
+        } catch (_e) {}
       }
 
       // ---- Init ----
@@ -3473,5 +3573,8 @@
   <!-- projects-twist-body:end -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+  <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+  <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
+  <!-- projects-mode-pill-body:end -->
 </body>
 </html>

@@ -180,6 +180,37 @@
     }
     return local;
   }
+  /* Link a saved record back to the student who owns it, so /api/progress/mine
+     can answer "what does this student have going?" — the query behind the
+     /today screen. Without this, every save code is an island.
+
+     studentId uses the SAME derivation as the lesson engine
+     (engine/core/state.js normalizeStudentId), so one student has one id
+     across the whole platform rather than a second parallel notion of
+     identity. It is derived from the roster-picked name, which is
+     byte-identical on every device — that is what makes it stable.
+
+     Both fields are best-effort: when a student typed their own name instead
+     of picking from a roster, or no class code is on the device, they stay
+     empty and the save behaves exactly as it always has. */
+  var CLASS_CODE_LS = "nt-class-code";
+
+  function normalizeStudentId(name) {
+    return String(name || "")
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "_")
+      .replace(/[^a-z0-9_]/g, "");
+  }
+
+  function classCode() {
+    var code = "";
+    safe(function () {
+      code = (localStorage.getItem(CLASS_CODE_LS) || "").toUpperCase().trim();
+    }, "class-code");
+    return /^[A-Z0-9]{4,12}$/.test(code) ? code : "";
+  }
+
   function setIdentity(name, section) {
     var id = {
       name: String(name || "")
@@ -1205,6 +1236,11 @@
     _persist: function (reason) {
       var self = this;
       var rec = this.record;
+      // Refresh the student link on every save rather than only at create, so
+      // work started before the student joined a class code (or before this
+      // code shipped) is backfilled the next time they touch it.
+      rec.studentId = normalizeStudentId(rec.studentName);
+      rec.classCode = classCode();
       setStatus(self, "saving");
       var local = new LocalStorageAdapter();
       return local

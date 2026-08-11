@@ -23,9 +23,9 @@ assert.equal(COPY_KEYS.includes("findHomework"), false);
 assert.match(translationsEs.homeworkTitle, /Práctica familiar opcional/i);
 assert.match(translationsEs.homeworkIntro, /aparte de la tarea regular/i);
 
-assert.equal(lessons.length, 74, "every curriculum lesson should be available");
+assert.equal(lessons.length, 84, "every curriculum lesson should be available");
 assert.equal(lessons[0].id, "1-1");
-assert.equal(lessons.at(-1).id, "10-5");
+assert.equal(lessons.at(-1).id, "10-6");
 
 const snapshot = createDefaultSnapshot();
 assert.equal(snapshot.sections.length, 1);
@@ -46,10 +46,10 @@ meaningfulWeek.week.days[0] = {
 };
 assert.equal(familyModel.weekHasMeaningfulContent(meaningfulWeek), true);
 
-const lessonWithArcade = lessons.find((item) => item.id === "1-1");
+const lessonWithArcade = lessons.find((item) => item.id === "6-13");
 assert.equal(lessonWithArcade.arcadePath, "/math/unit-1/games/unit1-factor-frenzy.html");
 assert.match(lessonWithArcade.arcadeTitle, /Factor Frenzy/i);
-assert.equal(lessons.find((item) => item.id === "2-1").arcadePath, "");
+assert.equal(lessons.find((item) => item.id === "1-1").arcadePath, "");
 
 const future = {
   id: "12-9",
@@ -60,10 +60,10 @@ const future = {
   resources: { homework: { exists: true, path: "/lessons/12-9/homework.html" } },
 };
 const merged = mergeHomework([...manifest.lessons, future], {
-  "1-1": { title: "Factor Trees at Home", directions: "Explain one branch at a time." },
+  "6-13": { title: "Factor Trees at Home", directions: "Explain one branch at a time." },
 });
-assert.equal(merged.length, 75, "future manifest lessons should appear without migration");
-assert.equal(merged.find((item) => item.id === "1-1").title, "Factor Trees at Home");
+assert.equal(merged.length, 85, "future manifest lessons should appear without migration");
+assert.equal(merged.find((item) => item.id === "6-13").title, "Factor Trees at Home");
 assert.equal(merged.at(-1).id, "12-9");
 assert.equal(mergeHomework([future], { "12-9": { visible: false } }).length, 0);
 
@@ -82,10 +82,10 @@ assert.equal(familyModel.parseCanvasCourseUrl("https://school.instructure.com/da
 assert.equal(familyModel.parseCanvasCourseUrl("javascript:alert(1)"), null);
 
 snapshot.sections[0].week.label = "September 8-12";
-snapshot.sections[0].week.days[0] = { day: "Monday", status: "lesson", lessonId: "1-1", note: "Bring notes." };
+snapshot.sections[0].week.days[0] = { day: "Monday", status: "lesson", lessonId: "6-13", note: "Bring notes." };
 const announcement = buildCanvasAnnouncement(snapshot, lessons, snapshot.sections[0].id);
 assert.match(announcement.text, /September 8-12/);
-assert.match(announcement.text, /Lesson 1-1/);
+assert.match(announcement.text, /Lesson 6-13/);
 assert.match(announcement.text, /Optional family practice:/);
 assert.match(announcement.text, /separate from regular homework/i);
 assert.match(announcement.html, /<h2>/);
@@ -95,10 +95,10 @@ assert.doesNotMatch(announcement.html, /<script/i);
 const moduleLinks = buildCanvasModuleLinks(snapshot, lessons, snapshot.sections[0].id);
 assert.deepEqual(moduleLinks[0], {
   day: "Monday",
-  lessonId: "1-1",
-  title: "Lesson 1-1 · Prime Factorization",
-  lessonUrl: "https://eduwonderlab.com/lessons/1-1/",
-  homeworkUrl: "https://eduwonderlab.com/lessons/1-1/homework.html",
+  lessonId: "6-13",
+  title: "Lesson 6-13 · Prime Factorization",
+  lessonUrl: "https://eduwonderlab.com/lessons/6-13/",
+  homeworkUrl: "https://eduwonderlab.com/lessons/6-13/homework.html",
 });
 
 const canvasExport = buildCanvasExport(snapshot, lessons, snapshot.sections[0].id);

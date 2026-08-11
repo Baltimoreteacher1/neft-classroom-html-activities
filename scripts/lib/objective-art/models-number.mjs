@@ -278,9 +278,54 @@ export function fractionDivision() {
 
 export const NUMBER_MODELS = {
   factors,
+  mathPractice,
   longDivision,
   decimalSum,
   decimalProduct,
   decimalQuotient,
   fractionDivision,
 };
+
+// ── Mathematical practice: notice a rule, test it, explain why ──────────────
+// The book's "Math Is..." units (1 and 10) teach DISPOSITION, so their standards
+// are MPP.3/4/7 and the Grade-5 review codes rather than a Grade-6 content
+// cluster. Without a picture of their own they fell through to a hard default,
+// which objective-visuals treats as a failure: a lesson would inherit a
+// stranger's diagram. This draws the practice itself — a growing pattern, the
+// rule read off it, and the reasoning steps underneath.
+export function mathPractice() {
+  const dots = (cx, cy, n) => {
+    let s = "";
+    for (let i = 0; i < n; i++) {
+      const col = i % 4;
+      const row = Math.floor(i / 4);
+      s += circle(cx - 36 + col * 26, cy + 30 - row * 26, 10, { fill: C.teal });
+    }
+    return s;
+  };
+  const stage = (cx, label, n) =>
+    rect(cx - 90, 96, 180, 132, { fill: C.white, stroke: C.navy, sw: 2.5, rx: 16 }) +
+    dots(cx, 138, n) +
+    T(cx, 216, 26, C.navy, label, { weight: 800 });
+
+  return (
+    T(600, 60, 34, C.navy, "Step 1 · Notice how the pattern grows", { weight: 800 }) +
+    stage(300, "1 dot", 1) +
+    stage(600, "3 dots", 3) +
+    stage(900, "7 dots", 7) +
+    arrow(400, 162, 500, 162, { stroke: C.coral }) +
+    arrow(700, 162, 800, 162, { stroke: C.coral }) +
+    chip(600, 286, "Step 2 · Test the rule: double it, then add 1", {
+      fill: C.amberLight,
+      stroke: C.amberInk,
+      textFill: C.amberInk,
+      size: 28,
+    }) +
+    chip(600, 356, "Step 3 · Explain why: 7 × 2 + 1 = 15 comes next", {
+      fill: C.coralLight,
+      stroke: C.coral,
+      textFill: C.coralInk,
+      size: 28,
+    })
+  );
+}

@@ -1,4 +1,5 @@
-import { diagnoseChoice } from "../core/misconceptions.js";
+import { stackContent } from "../core/i18n.js";
+import { diagnoseChoice, misconceptionLabel, studentExplanation } from "../core/misconceptions.js";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
@@ -13,12 +14,6 @@ const BOILERPLATE_FEEDBACK = new Set([
   "Take another look and try again.",
   "Not quite — try again.",
 ]);
-
-function esc(s) {
-  const d = document.createElement("div");
-  d.textContent = s ?? "";
-  return d.innerHTML;
-}
 
 const MC_STYLE_ID = "mc-enhancements-styles";
 
@@ -209,9 +204,12 @@ function fireChoiceConfetti(wrapper) {
 export function renderMultipleChoice(container, opts) {
   let {
     stem,
+    stemEs,
     choices,
+    choicesEs,
     correctIndex,
     explanation,
+    explanationEs,
     onAnswer,
     hideStem,
     choiceFeedback,
@@ -242,7 +240,7 @@ export function renderMultipleChoice(container, opts) {
     stemEl.className = "problem-stem";
     // Let students mark up the problem text (highlight / underline / bold).
     stemEl.setAttribute("data-annotate", "word-problem");
-    stemEl.textContent = stem;
+    stemEl.innerHTML = stackContent(stem, stemEs);
     wrapper.append(stemEl);
   }
 
@@ -278,7 +276,11 @@ export function renderMultipleChoice(container, opts) {
 
     const text = document.createElement("span");
     text.className = "choice-text";
-    text.textContent = choice;
+    // The radio's aria-label above deliberately stays English-only: it already
+    // reads "Option A: <choice>", and stacking a second language into an
+    // accessible name makes screen-reader output worse, not more inclusive.
+    // The VISIBLE lane is what gains Spanish.
+    text.innerHTML = stackContent(choice, Array.isArray(choicesEs) ? choicesEs[i] : undefined);
 
     label.append(input, radio, letter, text);
 
@@ -335,6 +337,10 @@ export function renderMultipleChoice(container, opts) {
     labels.forEach((l) => l.classList.remove("is-correct", "is-incorrect", "is-selected"));
 
     let fbMsg;
+    // Spanish lane for the same message. Left undefined wherever the item has
+    // no translated source, so `stackContent` falls back to English alone
+    // rather than printing a blank second line.
+    let fbMsgEs;
     // Only reveal the correct choice once the student has had a retry — naming
     // the answer on the first miss makes "Try Again" pointless.
     let revealAnswer = isCorrect;
@@ -345,6 +351,7 @@ export function renderMultipleChoice(container, opts) {
       if (window.fireConfetti) window.fireConfetti();
       fireChoiceConfetti(wrapper);
       fbMsg = explanation || "Correct! Great work.";
+      fbMsgEs = explanationEs || (explanation ? undefined : "¡Correcto! Buen trabajo.");
       checkBtn.style.display = "none";
     } else {
       wrongAttempts += 1;
@@ -359,6 +366,7 @@ export function renderMultipleChoice(container, opts) {
         // Out of retries — show the answer so the student isn't stuck.
         labels[correctIndex].classList.add("is-correct");
         fbMsg = `The answer is ${LETTERS[correctIndex]}. ${explanation || ""}`.trim();
+        fbMsgEs = `La respuesta es ${LETTERS[correctIndex]}. ${explanationEs || ""}`.trim();
       } else {
         // Coach the retry instead of a bare "wrong": prefer authored
         // per-choice feedback (why THIS distractor tempts), then the problem's
@@ -374,6 +382,21 @@ export function renderMultipleChoice(container, opts) {
         const useful = authored && !BOILERPLATE_FEEDBACK.has(authored.trim());
         const coach = useful ? authored : diagnosis?.student || authored || hint || scaffold || "";
         fbMsg = coach ? `Not quite. ${coach}` : "Not quite — take another look and try again.";
+        // The misconception table is the one coaching source that ships with a
+        // Spanish lane (`studentEs`), and only when the diagnosis is what we
+        // actually showed — authored per-choice feedback outranks it above, and
+        // pairing English feedback with an unrelated Spanish diagnosis would
+        // tell the student two different things about their own mistake.
+        // `studentExplanation` falls back to English when a misconception was
+        // never translated, so compare before wrapping — otherwise the Spanish
+        // lane reads "No exactamente." followed by the English sentence, which
+        // is worse than showing no Spanish at all.
+        const coachEs = !useful && diagnosis?.student ? studentExplanation(diagnosis.id, "es") : "";
+        fbMsgEs = coach
+          ? coachEs && coachEs !== coach
+            ? `No exactamente. ${coachEs}`
+            : undefined
+          : "No exactamente — míralo otra vez e inténtalo de nuevo.";
         tryAgainBtn.style.display = "inline-flex";
       }
     }
@@ -385,9 +408,14 @@ export function renderMultipleChoice(container, opts) {
     // step, so the two do not repeat each other, and a student who reads only
     // the chip still learns what their thinking was.
     const chip = diagnosis
-      ? `<span class="mc-diagnosis"><span aria-hidden="true">💭</span> Looks like: ${esc(diagnosis.label)}</span>`
+      ? `<span class="mc-diagnosis"><span aria-hidden="true">💭</span> ${stackContent(
+          `Looks like: ${diagnosis.label}`,
+          misconceptionLabel(diagnosis.id, "es") === diagnosis.label
+            ? undefined
+            : `Parece que: ${misconceptionLabel(diagnosis.id, "es")}`,
+        )}</span>`
       : "";
-    feedbackSlot.innerHTML = `${chip}<span class="mc-feedback-line"><span class="feedback-icon">${isCorrect ? "✓" : "💡"}</span><span>${esc(fbMsg)}</span></span>`;
+    feedbackSlot.innerHTML = `${chip}<span class="mc-feedback-line"><span class="feedback-icon">${isCorrect ? "✓" : "💡"}</span><span>${stackContent(fbMsg, fbMsgEs)}</span></span>`;
 
     // Second arg is additive: existing single-arg callers are unaffected, and
     // misconception-aware callers can see WHICH distractor was chosen.

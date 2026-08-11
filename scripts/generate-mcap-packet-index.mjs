@@ -12,9 +12,10 @@
  * Source of truth: the skill .html files already in each folder (their <title>
  * gives the skill name + standard). Idempotent — safe to re-run.
  */
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { domainName } from "./lib/ccss.mjs";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const root = process.cwd();
 const packetsDir = join(root, "mcap-review", "packets");
@@ -146,7 +147,7 @@ for (const slug of Object.keys(DOMAINS)) {
     .map((file) => ({ file, ...readSkill(join(dir, `${file}.html`)) }));
   const packetFile = `${slug}-review-packet.docx`;
   const packetHref = existsSync(join(dir, packetFile)) ? `./${packetFile}` : "";
-  writeFileSync(join(dir, "index.html"), buildPage(slug, DOMAINS[slug], skills, packetHref));
+  writeGenerated(join(dir, "index.html"), buildPage(slug, DOMAINS[slug], skills, packetHref));
   console.log(`✓ ${slug}/index.html (${skills.length} skills)`);
   built++;
 }

@@ -2,12 +2,36 @@ import { expect, test } from "@playwright/test";
 
 const LESSON_PATH = "/lessons/1-1/?sn=Layout%20Tester";
 
+/**
+ * Dismiss the flagship Mission Briefing if this lesson has one.
+ *
+ * The 10 unit-entry lessons (1-1, 2-1, 3-1, 4-1, 5-3, 6-1 … 10-1) were moved
+ * onto the flagship narrative shell in dfb9d20, which opens on a full-screen
+ * story screen and does not call bootLesson() — so no `.sidebar`, no phases,
+ * no Continue buttons — until the student presses Start. These specs predate
+ * that and drove straight into the phase assertions, so every one of them that
+ * targets /lessons/1-1/ has been failing on a lesson that works.
+ *
+ * Deliberately conditional, not an unconditional click: it keeps the same spec
+ * honest for the ~200 non-flagship lessons, which have no briefing at all.
+ */
+async function enterLesson(page: import("@playwright/test").Page) {
+  const start = page.locator(".flagship-mission-start");
+  if (await start.count()) {
+    await start.click();
+    // The overlay leaves on a 350ms transition before bootLesson() runs.
+    await page.locator(".flagship-mission").waitFor({ state: "detached" });
+  }
+  await page.locator(".sidebar").waitFor();
+}
+
 test.describe("shared lesson shell reflow", () => {
   for (const lessonPath of ["/lessons/1-1/", "/lessons/10-3/"]) {
     test(`bottom Continue buttons advance each shared lesson phase: ${lessonPath}`, async ({
       page,
     }) => {
       await page.goto(`${lessonPath}?sn=Navigation%20Tester`, { waitUntil: "networkidle" });
+      await enterLesson(page);
 
       await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Warmup");
       await page.getByRole("button", { name: "Continue to Phase 2: Objectives 🎯" }).click();
@@ -24,18 +48,42 @@ test.describe("shared lesson shell reflow", () => {
       // element and the fill retried until the test timed out.
       await page.locator("#nw-notice").fill("I notice a math pattern in the example.");
       await page.locator("#nw-wonder").fill("I wonder how the pattern will help me solve it.");
+
+      // The taught order: Launch → Vocab → Learn It → Explore → Practice. Every
+      // hop is a real button a student can press, which is the point — Vocab and
+      // Learn It used to advance ONLY by completing their activity, so a student
+      // who read the page without finishing it had no way forward.
+      //
+      // Explore belongs in that chain, and this spec used to leave it out: it
+      // went Learn It → Practice and then failed waiting for a "Continue to
+      // Practice" button that is not on the Learn It panel and should not be.
+      // Learn It is pre-work FOR Explore, so it hands off to Explore — see the
+      // canonical-order comment in openExtra("learn") in engine/core/app.js —
+      // and jumping straight to Practice is the skipped-phase bug that hand-off
+      // exists to prevent. The spec was pinning the old behaviour, so the shell
+      // was reported broken for doing the right thing.
       await page.getByRole("button", { name: "Continue to Vocab →" }).click();
-      await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Vocab");
-      await page.getByRole("button", { name: "Continue to Learn It →" }).click();
+      await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Vocabulary");
+      await page.getByRole("button", { name: "Continue to Learn It" }).click();
       await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Learn It");
-      await page.getByRole("button", { name: "Continue to the Lesson →" }).click();
+      await page.getByRole("button", { name: "Continue to Explore" }).click();
       await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Explore");
+
+      // Explore is the first GRADED phase in the chain, so it is the first hop
+      // with no labelled "Continue to …" of its own on these lessons: that
+      // button is rendered on the Turn & Talk path, and 1-1 and 10-3 open on an
+      // interactive activity instead. The shell's own next control is what a
+      // student who has read the phase without finishing the activity uses, and
+      // the no-dead-ends property this spec is really about is that it works.
+      await page.getByRole("button", { name: "Go to the next part of the lesson" }).click();
+      await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Practice");
     });
   }
 
   test("keeps every lesson navigation item visible at 320 CSS pixels", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 900 });
     await page.goto(LESSON_PATH, { waitUntil: "networkidle" });
+    await enterLesson(page);
     await page.evaluate(() => window.scrollTo(0, 48));
 
     const layout = await page.locator(".sidebar").evaluate((sidebar) => {
@@ -99,6 +147,7 @@ test.describe("shared lesson shell reflow", () => {
     test(`keeps floating chrome off the phase rail at ${label} size`, async ({ page }) => {
       await page.setViewportSize({ width, height });
       await page.goto(LESSON_PATH, { waitUntil: "networkidle" });
+      await enterLesson(page);
 
       const clashes = await page.evaluate(() => {
         const buttons = Array.from(document.querySelectorAll<HTMLElement>(".phase-btn"));
@@ -130,6 +179,7 @@ test.describe("shared lesson shell reflow", () => {
   }) => {
     await page.setViewportSize({ width: 2560, height: 900 });
     await page.goto(LESSON_PATH, { waitUntil: "networkidle" });
+    await enterLesson(page);
 
     const gaps = await page.locator(".app").evaluate((app) => {
       const sidebar = app.querySelector<HTMLElement>(".sidebar");

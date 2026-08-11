@@ -311,9 +311,9 @@
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <main class="cb-wrap">
       <header class="cb-hero">
@@ -321,19 +321,15 @@
         <span class="tag">Teacher Tool</span>
         <h1>Living Class Brain</h1>
         <p>
-          Drop in one exit ticket's results and get a ready-to-use "Tomorrow's
-          Adjustments" card — what to re-teach, which misconception to target,
-          where to slow down. Saved in this browser, builds a running picture of
-          the class over time.
+          Drop in one exit ticket's results and get a ready-to-use "Tomorrow's Adjustments" card —
+          what to re-teach, which misconception to target, where to slow down. Saved in this
+          browser, builds a running picture of the class over time.
         </p>
       </header>
 
       <div class="cb-grid">
         <!-- INPUT -->
-        <section
-          class="cb-card cb-input"
-          aria-label="Enter exit ticket results"
-        >
+        <section class="cb-card cb-input" aria-label="Enter exit ticket results">
           <h2>1 · Enter the evidence</h2>
           <div class="cb-row">
             <div class="cb-field">
@@ -350,49 +346,27 @@
             </div>
           </div>
           <div class="cb-field">
-            <label for="f-standard"
-              >Standard <span class="hint">(e.g. 6.AT.A.3)</span></label
-            >
+            <label for="f-standard">Standard <span class="hint">(e.g. 6.AT.A.3)</span></label>
             <input type="text" id="f-standard" placeholder="6.AT.A.3" />
           </div>
           <div class="cb-field">
-            <label for="f-desc"
-              >Standard description <span class="hint">(optional)</span></label
-            >
-            <input
-              type="text"
-              id="f-desc"
-              placeholder="Use ratio and rate reasoning…"
-            />
+            <label for="f-desc">Standard description <span class="hint">(optional)</span></label>
+            <input type="text" id="f-desc" placeholder="Use ratio and rate reasoning…" />
           </div>
           <div class="cb-row">
             <div class="cb-field">
               <label for="f-correct"># Correct</label>
-              <input
-                type="number"
-                id="f-correct"
-                min="0"
-                step="1"
-                placeholder="15"
-              />
+              <input type="number" id="f-correct" min="0" step="1" placeholder="15" />
             </div>
             <div class="cb-field">
               <label for="f-total"># Total responses</label>
-              <input
-                type="number"
-                id="f-total"
-                min="0"
-                step="1"
-                placeholder="24"
-              />
+              <input type="number" id="f-total" min="0" step="1" placeholder="24" />
             </div>
           </div>
           <div class="cb-field">
             <label for="f-misc"
               >Misconceptions seen
-              <span class="hint"
-                >— one per line. Add a count like "reversed-iv-dv x4"</span
-              >
+              <span class="hint">— one per line. Add a count like "reversed-iv-dv x4"</span>
             </label>
             <textarea
               id="f-misc"
@@ -400,9 +374,7 @@
             ></textarea>
           </div>
           <div class="cb-actions">
-            <button class="cb-btn" id="btn-generate">
-              Generate adjustments
-            </button>
+            <button class="cb-btn" id="btn-generate">Generate adjustments</button>
             <button class="cb-btn ghost" id="btn-clear-form">Clear form</button>
           </div>
         </section>
@@ -411,8 +383,8 @@
         <section class="cb-card card-out" id="out" aria-live="polite">
           <h2>2 · Tomorrow's Adjustments</h2>
           <p class="empty" id="out-empty">
-            Enter an exit ticket on the left and press <b>Generate</b>. Your
-            card appears here and is saved to this device.
+            Enter an exit ticket on the left and press <b>Generate</b>. Your card appears here and
+            is saved to this device.
           </p>
           <div id="out-body" hidden></div>
         </section>
@@ -449,9 +421,7 @@
       function mergeMisconceptions(prior, newCounts) {
         const counts = {};
         prior.forEach((m) => (counts[m.name] = m.count));
-        Object.keys(newCounts).forEach(
-          (n) => (counts[n] = (counts[n] || 0) + newCounts[n]),
-        );
+        Object.keys(newCounts).forEach((n) => (counts[n] = (counts[n] || 0) + newCounts[n]));
         return Object.keys(counts)
           .map((k) => ({ name: k, count: counts[k] }))
           .sort((a, b) => b.count - a.count)
@@ -503,10 +473,7 @@
         return isNaN(d) ? null : Math.round(d);
       }
       function esc(s) {
-        return String(s).replace(
-          /[&<>]/g,
-          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c],
-        );
+        return String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
       }
 
       // ---- capture run ----
@@ -515,14 +482,15 @@
         const std = cap.standard;
         const totalItems = cap.total || 0;
         const totalCorrect = Math.min(cap.correct || 0, totalItems);
-        const pct = totalItems
-          ? Math.round((1000 * totalCorrect) / totalItems) / 10
-          : null;
+        const pct = totalItems ? Math.round((1000 * totalCorrect) / totalItems) / 10 : null;
         const band = bandFromPct(pct);
         const flagged = totalItems === 0;
 
         const cm = brain.class.standardsMastery;
-        cm[std] = blend(cm[std], band);
+        // A misconception-only capture (no totals) carries no mastery signal —
+        // blending its null-pct band of 0 would halve the standard's mastery
+        // every time a teacher logs qualitative evidence. Skip the blend.
+        if (!flagged) cm[std] = blend(cm[std], band);
         brain.class.liveMisconceptions = mergeMisconceptions(
           brain.class.liveMisconceptions || [],
           cap.miscCounts,
@@ -530,9 +498,7 @@
         brain.class.lastClassAveragePct = pct;
 
         const prior = brain.lastUpdated;
-        const daysSince = prior
-          ? daysBetween(prior.slice(0, 10), cap.date)
-          : null;
+        const daysSince = prior ? daysBetween(prior.slice(0, 10), cap.date) : null;
         brain.lastUpdated = cap.date;
 
         const top = brain.class.liveMisconceptions.length
@@ -581,14 +547,10 @@
       function renderCard(r) {
         const c = r.cap;
         const stale =
-          r.daysSince === null
-            ? "first capture"
-            : r.daysSince + " day(s) since last capture";
+          r.daysSince === null ? "first capture" : r.daysSince + " day(s) since last capture";
         const mode = "class-level (roster blank)";
         const miscItems = r.stack.length
-          ? r.stack
-              .map((m) => "<li>" + esc(m.name) + " (" + m.count + ")</li>")
-              .join("")
+          ? r.stack.map((m) => "<li>" + esc(m.name) + " (" + m.count + ")</li>").join("")
           : "<li>(none captured)</li>";
         const verify = r.flagged
           ? '<div class="verify">[VERIFY] No total entered — mastery band recorded as no-evidence (0). Add # total for a scored band.</div>'
@@ -668,28 +630,22 @@
       // ---- wiring ----
       function todayISO() {
         const d = new Date();
-        return new Date(d.getTime() - d.getTimezoneOffset() * 60000)
-          .toISOString()
-          .slice(0, 10);
+        return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
       }
       document.getElementById("f-date").value = todayISO();
       renderHistory();
 
       document.getElementById("btn-generate").addEventListener("click", () => {
         const standard = document.getElementById("f-standard").value.trim();
-        const total =
-          parseInt(document.getElementById("f-total").value, 10) || 0;
-        const correct =
-          parseInt(document.getElementById("f-correct").value, 10) || 0;
+        const total = parseInt(document.getElementById("f-total").value, 10) || 0;
+        const correct = parseInt(document.getElementById("f-correct").value, 10) || 0;
         const miscText = document.getElementById("f-misc").value;
         if (!standard) {
           alert("Enter a standard (e.g. 6.AT.A.3) first.");
           return;
         }
         if (total === 0 && !miscText.trim()) {
-          alert(
-            "Add # total responses (and # correct), or at least the misconceptions you saw.",
-          );
+          alert("Add # total responses (and # correct), or at least the misconceptions you saw.");
           return;
         }
         const cap = {
@@ -702,20 +658,16 @@
           miscCounts: parseMisc(miscText),
         };
         renderCard(runCapture(cap));
-        document
-          .getElementById("out")
-          .scrollIntoView({ behavior: "smooth", block: "nearest" });
+        document.getElementById("out").scrollIntoView({ behavior: "smooth", block: "nearest" });
       });
 
-      document
-        .getElementById("btn-clear-form")
-        .addEventListener("click", () => {
-          ["f-standard", "f-desc", "f-correct", "f-total", "f-misc"].forEach(
-            (id) => (document.getElementById(id).value = ""),
-          );
-          document.getElementById("f-session").value = "";
-          document.getElementById("f-date").value = todayISO();
-        });
+      document.getElementById("btn-clear-form").addEventListener("click", () => {
+        ["f-standard", "f-desc", "f-correct", "f-total", "f-misc"].forEach(
+          (id) => (document.getElementById(id).value = ""),
+        );
+        document.getElementById("f-session").value = "";
+        document.getElementById("f-date").value = todayISO();
+      });
 
       document.getElementById("btn-reset").addEventListener("click", () => {
         if (
@@ -730,8 +682,8 @@
         }
       });
     </script>
-  <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
+    <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
     <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-</body>
+    <script src="/assets/formula-popup.js" defer></script>
+  </body>
 </html>

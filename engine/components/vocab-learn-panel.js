@@ -1,9 +1,9 @@
 import { getPreferredLang } from "../core/i18n.js";
-import { renderMathText } from "../core/math-typography.js";
-import { renderVocabIntro } from "./vocab-intro.js";
-import { resolveObjectiveVisuals } from "../core/objective-visuals.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "../core/interactive-visual.js";
 import { underlineVocabTerms } from "../core/lesson-renderer.js";
+import { renderMathText } from "../core/math-typography.js";
+import { resolveObjectiveVisuals } from "../core/objective-visuals.js";
+import { renderVocabIntro } from "./vocab-intro.js";
 
 function escHtml(s) {
   return String(s || "")
@@ -21,11 +21,11 @@ function openVisualLightbox(imgSrc, captionText) {
   modal.style.cssText = `
     position: fixed; inset: 0; z-index: 99999;
     background: rgba(11, 15, 25, 0.95); backdrop-filter: blur(12px);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 24px; cursor: zoom-out;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    padding: 24px; cursor: zoom-out; overflow-y: auto; overscroll-behavior: contain;
   `;
   modal.innerHTML = `
-    <div style="max-width: 92vw; max-height: 90vh; text-align: center; color: white;" onclick="event.stopPropagation()">
+    <div style="max-width: 92vw; margin: auto; flex: 0 0 auto; text-align: center; color: white;" onclick="event.stopPropagation()">
       <div style="background: #0f172a; padding: 20px; border-radius: 24px; border: 2.5px solid #38bdf8; box-shadow: 0 25px 60px rgba(0,0,0,0.75);">
         <img src="${imgSrc}" style="max-width: 100%; max-height: 68vh; border-radius: 14px; background: white; padding: 14px; display: inline-block;" />
         <div style="margin-top: 18px; font-size: 1.15rem; font-weight: 800; line-height: 1.5; color: #f8fafc; max-width: 680px; margin-left: auto; margin-right: auto;">
@@ -64,11 +64,13 @@ export function resolveInteractiveToolForLesson(config) {
     return authored;
   }
 
-  const text = `${cfg.title || ""} ${cfg.standard || ""} ${cfg.contentObjective || ""} ${cfg.objective || ""}`.toLowerCase();
+  const text =
+    `${cfg.title || ""} ${cfg.standard || ""} ${cfg.contentObjective || ""} ${cfg.objective || ""}`.toLowerCase();
 
   // Helper: word-boundary test (prevents "means" matching "mean", etc.)
   const wb = (pattern) => new RegExp(`\\b(?:${pattern})\\b`, "i").test(text);
 
+<<<<<<< HEAD
   // ── 1. Standard-based classification (most reliable) ──────────────────────
   const std = String(cfg.standard || "").trim().toUpperCase();
 
@@ -180,7 +182,44 @@ export function resolveInteractiveToolForLesson(config) {
   if (std === "6.GR.2" || std === "6.GR.4") {
     if (wb("net|fold|surface area")) return { kind: "net-folder", solid: "cube", label: "Interactive 3D Net Folder: Fold 2D nets into 3D solids!" };
     return { kind: "solid-3d", shape: wb("pyramid") ? "triangular-pyramid" : "cube", label: "Interactive 3D Solid & Net Explorer" };
+||||||| 540ecb4e3
+  // Lesson 2-1 & Ratio Tables / Equivalent Ratios
+  if (text.includes("ratio table") || text.includes("equivalent ratio") || text.includes("table of ratios") || (text.includes("ratio") && text.includes("table")) || text.includes("2-1")) {
+    return {
+      kind: "ratio-table-builder",
+      label: "Interactive Ratio Table Explorer: Scale quantities up and down to find equivalent ratios!",
+    };
+=======
+  // Which figure an area-morph should demonstrate for this term. area-morph
+  // reads `figure` and defaults to a parallelogram, so a term this misses gets
+  // the wrong shape's formula rather than an obvious failure — hence polygon
+  // and composite are matched here too, not just triangle and trapezoid.
+  // Whole-figure kinds are tested FIRST: "Area of Regular Polygons — decompose
+  // into triangles" names both, and the lesson is about the polygon.
+  const areaFigure = () => {
+    if (wb("hexagons?|pentagons?|octagons?|regular polygons?|apothem")) return "polygon";
+    if (wb("composite|l-shaped?|irregular figures?")) return "composite";
+    if (wb("trapezoids?|trapezoidal")) return "trapezoid";
+    if (wb("triangles?|triangular")) return "triangle";
+    return "parallelogram";
+  };
+
+  // ── 1. Standard-based classification (most reliable) ──────────────────────
+  const std = String(cfg.standard || "")
+    .trim()
+    .toUpperCase();
+
+  // 6.NOS.1 — Fraction Division
+  if (std === "6.NOS.1") {
+    return {
+      kind: "fraction-divide",
+      dividend: "3/4",
+      divisor: "1/2",
+      label: "Interactive Fraction Division: Keep, Change, Flip!",
+    };
+>>>>>>> origin/main
   }
+<<<<<<< HEAD
 
   // Also handle RP standard codes (alternate standard labels)
   if (/^6\.RP/i.test(std)) {
@@ -209,26 +248,262 @@ export function resolveInteractiveToolForLesson(config) {
   if (/^6\.G/i.test(std)) {
     if (wb("area")) return { kind: "area-morph", shape: "parallelogram", label: "Interactive Area Explorer" };
     return { kind: "solid-3d", shape: "cube", label: "Interactive 3D Solid Explorer" };
+||||||| 540ecb4e3
+
+  // Unit Rates & Constant of Proportionality
+  if (text.includes("unit rate") || text.includes("constant of proportionality") || text.includes("per 1") || text.includes("rate")) {
+    return {
+      kind: "unit-rate-builder",
+      label: "Interactive Unit Rate Builder: Calculate 'per 1' unit rates live on double number lines!",
+    };
+=======
+  // 6.NOS.2 — Long Division
+  if (std === "6.NOS.2") {
+    return {
+      kind: "long-division-builder",
+      label: "Interactive Long Division & Partial Quotients Lab",
+    };
+>>>>>>> origin/main
   }
+<<<<<<< HEAD
 
   // ── 2. Wording-based fallback (regex word boundaries) ─────────────────────
   // Most specific phrases first, most general last.
 
   if (wb("ratio table|equivalent ratio|table of ratios")) {
     return { kind: "ratio-table-builder", label: "Interactive Ratio Table Explorer" };
+||||||| 540ecb4e3
+
+  // Tape Diagrams
+  if (text.includes("tape diagram") || text.includes("ratio")) {
+    return {
+      kind: "tape-diagram",
+      parts: [3, 5],
+      labels: ["Quantity A", "Quantity B"],
+      label: "Interactive Tape Diagram Explorer: Count and compare equal parts!",
+    };
   }
+
+  // Factor Trees & Prime Factorization
+  if (text.includes("factor tree") || text.includes("prime factor") || text.includes("prime factorization") || text.includes("factorization")) {
+    return {
+      kind: "factor-tree-lab",
+      number: 36,
+      label: "Interactive Factor Tree Explorer: Build prime factorizations step-by-step!",
+    };
+=======
+  // 6.NOS.3 — Decimal Operations (refine by wording)
+  if (std === "6.NOS.3") {
+    if (wb("multiply|multiplication|product"))
+      return {
+        kind: "decimal-product",
+        a: 4.5,
+        b: 1.2,
+        label: "Interactive Decimal Multiplication Tool",
+      };
+    if (wb("divide|division|quotient"))
+      return {
+        kind: "decimal-quotient",
+        dividend: 18.9,
+        divisor: 6.3,
+        label: "Interactive Decimal Division Tool",
+      };
+    return {
+      kind: "decimal-columns",
+      op: "+",
+      a: 3.4,
+      b: 1.25,
+      label: "Interactive Decimal Columns & Regrouping Tool",
+    };
+  }
+  // 6.NOS.4 — Factors, GCF, LCM
+  if (std === "6.NOS.4") {
+    if (wb("least common multiple|LCM"))
+      return {
+        kind: "lcm-lab",
+        num1: 6,
+        num2: 8,
+        label: "Interactive LCM Explorer: Tap shared multiples to find the LCM!",
+      };
+    if (wb("greatest common factor|GCF"))
+      return {
+        kind: "factor-tree-lab",
+        number: 48,
+        label: "Interactive GCF & Factor Tree Explorer",
+      };
+    return {
+      kind: "factor-tree-lab",
+      number: 36,
+      label: "Interactive Factor Tree Explorer: Build prime factorizations step-by-step!",
+    };
+>>>>>>> origin/main
+  }
+<<<<<<< HEAD
   if (wb("unit rate|constant of proportionality")) {
     return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder" };
+||||||| 540ecb4e3
+
+  // Least Common Multiple (LCM) & GCF
+  if (text.includes("least common multiple") || text.includes("lcm")) {
+    return {
+      kind: "lcm-lab",
+      num1: 6,
+      num2: 8,
+      label: "Interactive LCM Explorer: Tap shared multiples to find the LCM!",
+    };
+=======
+  // 6.NOS.6 — Coordinate Plane / Number Line
+  if (std === "6.NOS.6") {
+    if (wb("number line"))
+      return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
+    return {
+      kind: "coordinate-plane",
+      points: [
+        { x: 3, y: 4, label: "A" },
+        { x: -2, y: 5, label: "B" },
+      ],
+      label: "Interactive Coordinate Plane Explorer",
+    };
+>>>>>>> origin/main
   }
+<<<<<<< HEAD
   if (wb("tape diagram")) {
     return { kind: "tape-diagram", parts: [3, 5], labels: ["Quantity A", "Quantity B"], label: "Interactive Tape Diagram Explorer" };
+||||||| 540ecb4e3
+
+  if (text.includes("greatest common factor") || text.includes("gcf")) {
+    return {
+      kind: "factor-tree-lab",
+      number: 48,
+      label: "Interactive GCF & Factor Tree Explorer",
+    };
+=======
+  // 6.NOS.7 — Quadrants / Coordinate Plane
+  if (std === "6.NOS.7") {
+    return {
+      kind: "coordinate-plane",
+      points: [
+        { x: 3, y: 4, label: "A" },
+        { x: -2, y: -3, label: "B" },
+      ],
+      label: "Interactive Four-Quadrant Coordinate Plane Explorer",
+    };
+>>>>>>> origin/main
   }
+<<<<<<< HEAD
   if (wb("factor tree|prime factorization")) {
     return { kind: "factor-tree-lab", number: 36, label: "Interactive Factor Tree Explorer" };
+||||||| 540ecb4e3
+
+  // Exponents & Powers
+  if (text.includes("exponent") || text.includes("power") || text.includes("base") || text.includes("squared") || text.includes("cubed")) {
+    return {
+      kind: "power-builder",
+      base: 2,
+      exponent: 4,
+      label: "Interactive Powers & Exponents Builder",
+    };
+=======
+  // 6.NOS.8 — Integers / Absolute Value
+  if (std === "6.NOS.8") {
+    return { kind: "number-line-explorer", label: "Interactive Absolute Value & Integer Explorer" };
   }
+  // 6.NOS.9 — Distance
+  if (std === "6.NOS.9") {
+    return {
+      kind: "number-line-explorer",
+      label: "Interactive Distance on a Number Line Explorer",
+    };
+  }
+  // 6.AT.1 — Ratios
+  if (std === "6.AT.1") {
+    return {
+      kind: "tape-diagram",
+      // tape-diagram-lab reads `rows: [{ label, parts: [{value}] }]`. The
+      // parts/labels pair below was a shape no component ever consumed, so the
+      // lab counted zero parts and drew nothing.
+      rows: [
+        { label: "Quantity A", parts: [{ value: 1 }, { value: 1 }, { value: 1 }] },
+        {
+          label: "Quantity B",
+          parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }],
+        },
+      ],
+      label: "Interactive Tape Diagram Explorer: Count and compare equal parts!",
+    };
+  }
+  // 6.AT.2 — Rates
+  if (std === "6.AT.2") {
+    return {
+      kind: "unit-rate-builder",
+      label:
+        "Interactive Unit Rate Builder: Calculate 'per 1' unit rates live on double number lines!",
+    };
+  }
+  // 6.AT.3, 6.AT.3a — Ratio Tables / Rates
+  if (std === "6.AT.3" || std === "6.AT.3A") {
+    if (wb("unit rate"))
+      return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder" };
+    return {
+      kind: "ratio-table-builder",
+      label:
+        "Interactive Ratio Table Explorer: Scale quantities up and down to find equivalent ratios!",
+    };
+  }
+  // 6.AT.3c — Measurement Conversions
+  if (std === "6.AT.3C") {
+    return { kind: "ratio-table-builder", label: "Interactive Measurement Conversion Ratio Table" };
+  }
+  // 6.AT.4 — Percents
+  if (std === "6.AT.4") {
+    if (wb("percent of|percentage of"))
+      return { kind: "percent-builder", label: "Interactive Percent of a Quantity Builder" };
+    return { kind: "percent-grid", percent: 45, label: "Interactive Percent Grid Tool" };
+  }
+  // 6.AT.5 — Exponents
+  if (std === "6.AT.5") {
+    return {
+      kind: "power-builder",
+      base: 2,
+      exponent: 4,
+      label: "Interactive Powers & Exponents Builder",
+    };
+>>>>>>> origin/main
+  }
+<<<<<<< HEAD
   if (wb("least common multiple") || /\bLCM\b/.test(text)) {
     return { kind: "lcm-lab", num1: 6, num2: 8, label: "Interactive LCM Explorer" };
+||||||| 540ecb4e3
+
+  // Fraction Division
+  if (text.includes("divide fraction") || text.includes("fraction division") || text.includes("dividing fraction")) {
+    return {
+      kind: "fraction-divide",
+      num1: "3/4",
+      num2: "1/2",
+      label: "Interactive Fraction Division: Keep, Change, Flip!",
+    };
+=======
+  // 6.AT.6a, 6.AT.6c, 6.AT.7 — Expressions
+  if (std === "6.AT.6A" || std === "6.AT.6C" || std === "6.AT.7") {
+    if (wb("distributive"))
+      return {
+        kind: "distributive-builder",
+        a: 3,
+        b: "x",
+        c: 4,
+        label: "Interactive Distributive Property Area Model",
+      };
+    if (wb("like terms|combine"))
+      return {
+        kind: "combine-like-terms",
+        expr: "5x + 3 + 2x - 1",
+        label: "Interactive Combine Like Terms Lab",
+      };
+    return { kind: "step-solver", label: "Interactive Expression Evaluator & Step Solver" };
+>>>>>>> origin/main
   }
+<<<<<<< HEAD
   if (wb("greatest common factor") || /\bGCF\b/.test(text)) {
     return { kind: "factor-tree-lab", number: 48, label: "Interactive GCF & Factor Tree Explorer" };
   }
@@ -249,6 +524,308 @@ export function resolveInteractiveToolForLesson(config) {
   }
   if (wb("add\\w* decimals?|subtract\\w* decimals?|decimal")) {
     return { kind: "decimal-columns", label: "Interactive Decimal Columns & Regrouping Tool" };
+||||||| 540ecb4e3
+
+  // Long Division
+  if (text.includes("long division") || text.includes("partial quotient")) {
+    return {
+      kind: "long-division-builder",
+      label: "Interactive Long Division & Partial Quotients Lab",
+    };
+  }
+
+  // Decimal Operations
+  if (text.includes("divide decimal") || text.includes("decimal division")) {
+    return {
+      kind: "decimal-quotient",
+      label: "Interactive Decimal Division Tool",
+    };
+  }
+
+  if (text.includes("multiply decimal") || text.includes("decimal multiplication")) {
+    return {
+      kind: "decimal-product",
+      label: "Interactive Decimal Multiplication Tool",
+    };
+  }
+
+  if (text.includes("add decimal") || text.includes("subtract decimal") || text.includes("decimal")) {
+    return {
+      kind: "decimal-columns",
+      label: "Interactive Decimal Columns & Regrouping Tool",
+    };
+  }
+
+  // Percents
+  if (text.includes("percent of") || text.includes("percentage of")) {
+    return {
+      kind: "percent-builder",
+      label: "Interactive Percent of a Quantity Builder",
+    };
+  }
+
+  if (text.includes("percent") || text.includes("percentage")) {
+    return {
+      kind: "percent-grid",
+      percent: 45,
+      label: "Interactive Percent Grid Tool",
+    };
+  }
+
+  // Equations & Balance Scale
+  if (text.includes("balance") || text.includes("solve equation") || text.includes("one-step equation") || text.includes("equation")) {
+    return {
+      kind: "equation-balance-lab",
+      label: "Interactive Equation Pan Balance: Keep both sides equal!",
+    };
+=======
+  // 6.AT.8 — Equations / Inequalities
+  if (std === "6.AT.8") {
+    if (wb("inequalit"))
+      return {
+        kind: "number-line",
+        min: -5,
+        max: 5,
+        step: 1,
+        problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }],
+        label: "Interactive Inequality Number Line",
+      };
+    return {
+      kind: "equation-balance-lab",
+      label: "Interactive Equation Pan Balance: Keep both sides equal!",
+    };
+>>>>>>> origin/main
+  }
+<<<<<<< HEAD
+  if (wb("percent of|percentage of")) {
+    return { kind: "percent-builder", label: "Interactive Percent of a Quantity Builder" };
+||||||| 540ecb4e3
+
+  // Expressions & Distributive Property
+  if (text.includes("distribut") || text.includes("expand")) {
+    return {
+      kind: "distributive-builder",
+      a: 3,
+      b: "x",
+      c: 4,
+      label: "Interactive Distributive Property Area Model",
+    };
+=======
+  // 6.AT.9 — Inequalities
+  if (std === "6.AT.9") {
+    return {
+      kind: "number-line",
+      min: -5,
+      max: 5,
+      step: 1,
+      problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }],
+      label: "Interactive Inequality Number Line",
+    };
+  }
+  // 6.DS.1 — Statistical Questions
+  if (std === "6.DS.1") {
+    return { kind: "stats-data-lab", label: "Interactive Statistics & Data Set Explorer" };
+  }
+  // 6.DS.3 — Distributions
+  if (std === "6.DS.3") {
+    return { kind: "stats-data-lab", label: "Interactive Distribution Shape Explorer" };
+  }
+  // 6.DS.4 — Mean, Median, Mode
+  if (std === "6.DS.4") {
+    return { kind: "stats-data-lab", label: "Interactive Mean, Median & Mode Explorer" };
+  }
+  // 6.DS.5 — Box Plots / Histograms
+  if (std === "6.DS.5") {
+    if (wb("histogram"))
+      return { kind: "histogram-builder", label: "Interactive Histogram Bar Builder" };
+    return {
+      kind: "box-plot-builder",
+      label: "Interactive Box Plot & Five-Number Summary Builder",
+    };
+  }
+  // 6.DS.6c, 6.DS.6d — MAD / Center
+  if (std === "6.DS.6C" || std === "6.DS.6D") {
+    return { kind: "stats-data-lab", label: "Interactive Mean Absolute Deviation Explorer" };
+  }
+  // 6.GR.1 — Area
+  if (std === "6.GR.1") {
+    // `figure` is the key area-morph reads. It was `shape` here, which the
+    // component never looks at, so every triangle/trapezoid term silently
+    // demonstrated a PARALLELOGRAM — the wrong shape's formula.
+    const figure = areaFigure();
+    return {
+      kind: "area-morph",
+      figure,
+      label: "Interactive Area Morph & Transformation Explorer",
+    };
+  }
+  // 6.GR.2, 6.GR.4 — Solids / Nets
+  if (std === "6.GR.2" || std === "6.GR.4") {
+    if (wb("net|fold|surface area"))
+      return {
+        kind: "net-folder",
+        solid: "cube",
+        label: "Interactive 3D Net Folder: Fold 2D nets into 3D solids!",
+      };
+    return {
+      kind: "solid-3d",
+      shape: wb("pyramid") ? "triangular-pyramid" : "cube",
+      label: "Interactive 3D Solid & Net Explorer",
+    };
+  }
+
+  // Also handle RP standard codes (alternate standard labels)
+  if (/^6\.RP/i.test(std)) {
+    if (wb("ratio table|equivalent ratio"))
+      return { kind: "ratio-table-builder", label: "Interactive Ratio Table Explorer" };
+    if (wb("unit rate"))
+      return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder" };
+    if (wb("percent"))
+      return { kind: "percent-grid", percent: 45, label: "Interactive Percent Grid Tool" };
+    return {
+      kind: "tape-diagram",
+      // tape-diagram-lab reads `rows: [{ label, parts: [{value}] }]`. The
+      // parts/labels pair below was a shape no component ever consumed, so the
+      // lab counted zero parts and drew nothing.
+      rows: [
+        { label: "Quantity A", parts: [{ value: 1 }, { value: 1 }, { value: 1 }] },
+        {
+          label: "Quantity B",
+          parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }],
+        },
+      ],
+      label: "Interactive Tape Diagram Explorer",
+    };
+  }
+  if (/^6\.EE/i.test(std)) {
+    if (wb("inequalit"))
+      return {
+        kind: "number-line",
+        min: -5,
+        max: 5,
+        step: 1,
+        problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }],
+        label: "Interactive Inequality Number Line",
+      };
+    if (wb("equation"))
+      return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
+    return { kind: "step-solver", label: "Interactive Expression Evaluator & Step Solver" };
+  }
+  if (/^6\.NS/i.test(std)) {
+    if (wb("fraction|divid"))
+      return {
+        kind: "fraction-divide",
+        dividend: "3/4",
+        divisor: "1/2",
+        label: "Interactive Fraction Division",
+      };
+    if (wb("decimal"))
+      return {
+        kind: "decimal-columns",
+        op: "+",
+        a: 3.4,
+        b: 1.25,
+        label: "Interactive Decimal Columns Tool",
+      };
+    if (wb("factor|GCF|LCM"))
+      return { kind: "factor-tree-lab", number: 36, label: "Interactive Factor Tree Explorer" };
+    if (wb("coordinate"))
+      return {
+        kind: "coordinate-plane",
+        points: [{ x: 3, y: 4, label: "A" }],
+        label: "Interactive Coordinate Plane Explorer",
+      };
+    return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
+  }
+  if (/^6\.SP/i.test(std)) {
+    if (wb("box plot")) return { kind: "box-plot-builder", label: "Interactive Box Plot Builder" };
+    if (wb("histogram"))
+      return { kind: "histogram-builder", label: "Interactive Histogram Builder" };
+    return { kind: "stats-data-lab", label: "Interactive Statistics Explorer" };
+  }
+  if (/^6\.G/i.test(std)) {
+    if (wb("area"))
+      return { kind: "area-morph", figure: areaFigure(), label: "Interactive Area Explorer" };
+    return { kind: "solid-3d", shape: "cube", label: "Interactive 3D Solid Explorer" };
+  }
+
+  // ── 2. Wording-based fallback (regex word boundaries) ─────────────────────
+  // Most specific phrases first, most general last.
+
+  if (wb("ratio table|equivalent ratio|table of ratios")) {
+    return { kind: "ratio-table-builder", label: "Interactive Ratio Table Explorer" };
+  }
+  if (wb("unit rate|constant of proportionality")) {
+    return { kind: "unit-rate-builder", label: "Interactive Unit Rate Builder" };
+  }
+  if (wb("tape diagram")) {
+    return {
+      kind: "tape-diagram",
+      // tape-diagram-lab reads `rows: [{ label, parts: [{value}] }]`. The
+      // parts/labels pair below was a shape no component ever consumed, so the
+      // lab counted zero parts and drew nothing.
+      rows: [
+        { label: "Quantity A", parts: [{ value: 1 }, { value: 1 }, { value: 1 }] },
+        {
+          label: "Quantity B",
+          parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }],
+        },
+      ],
+      label: "Interactive Tape Diagram Explorer",
+    };
+  }
+  if (wb("factor tree|prime factorization")) {
+    return { kind: "factor-tree-lab", number: 36, label: "Interactive Factor Tree Explorer" };
+  }
+  if (wb("least common multiple") || /\bLCM\b/.test(text)) {
+    return { kind: "lcm-lab", num1: 6, num2: 8, label: "Interactive LCM Explorer" };
+  }
+  if (wb("greatest common factor") || /\bGCF\b/.test(text)) {
+    return { kind: "factor-tree-lab", number: 48, label: "Interactive GCF & Factor Tree Explorer" };
+  }
+  if (wb("exponents?|powers of")) {
+    return {
+      kind: "power-builder",
+      base: 2,
+      exponent: 4,
+      label: "Interactive Powers & Exponents Builder",
+    };
+  }
+  if (wb("divid\\w* fractions?|fraction division|divid\\w* by a fraction")) {
+    return {
+      kind: "fraction-divide",
+      dividend: "3/4",
+      divisor: "1/2",
+      label: "Interactive Fraction Division: Keep, Change, Flip!",
+    };
+  }
+  if (wb("long division|partial quotients?")) {
+    return { kind: "long-division-builder", label: "Interactive Long Division Lab" };
+  }
+  if (wb("divid\\w* decimals?|decimal division")) {
+    return {
+      kind: "decimal-quotient",
+      dividend: 18.9,
+      divisor: 6.3,
+      label: "Interactive Decimal Division Tool",
+    };
+  }
+  if (wb("multiply\\w* decimals?|decimal multiplication")) {
+    return {
+      kind: "decimal-product",
+      a: 4.5,
+      b: 1.2,
+      label: "Interactive Decimal Multiplication Tool",
+    };
+  }
+  if (wb("add\\w* decimals?|subtract\\w* decimals?|decimal")) {
+    return {
+      kind: "decimal-columns",
+      op: "+",
+      a: 3.4,
+      b: 1.25,
+      label: "Interactive Decimal Columns & Regrouping Tool",
+    };
   }
   if (wb("percent of|percentage of")) {
     return { kind: "percent-builder", label: "Interactive Percent of a Quantity Builder" };
@@ -257,29 +834,226 @@ export function resolveInteractiveToolForLesson(config) {
     return { kind: "percent-grid", percent: 45, label: "Interactive Percent Grid Tool" };
   }
   if (wb("ratios?")) {
-    return { kind: "tape-diagram", parts: [3, 5], labels: ["Quantity A", "Quantity B"], label: "Interactive Tape Diagram Explorer" };
+    return {
+      kind: "tape-diagram",
+      // tape-diagram-lab reads `rows: [{ label, parts: [{value}] }]`. The
+      // parts/labels pair below was a shape no component ever consumed, so the
+      // lab counted zero parts and drew nothing.
+      rows: [
+        { label: "Quantity A", parts: [{ value: 1 }, { value: 1 }, { value: 1 }] },
+        {
+          label: "Quantity B",
+          parts: [{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }],
+        },
+      ],
+      label: "Interactive Tape Diagram Explorer",
+    };
   }
+  if (wb("distributive property")) {
+    return {
+      kind: "distributive-builder",
+      a: 3,
+      b: "x",
+      c: 4,
+      label: "Interactive Distributive Property Area Model",
+    };
+>>>>>>> origin/main
+  }
+<<<<<<< HEAD
+  if (wb("percents?|percentage")) {
+    return { kind: "percent-grid", percent: 45, label: "Interactive Percent Grid Tool" };
+||||||| 540ecb4e3
+
+  if (text.includes("combine like terms") || text.includes("like terms")) {
+    return {
+      kind: "combine-like-terms",
+      label: "Interactive Combine Like Terms Lab",
+    };
+=======
+  if (wb("combine like terms|like terms")) {
+    return {
+      kind: "combine-like-terms",
+      expr: "5x + 3 + 2x - 1",
+      label: "Interactive Combine Like Terms Lab",
+    };
+>>>>>>> origin/main
+  }
+<<<<<<< HEAD
+  if (wb("ratios?")) {
+    return { kind: "tape-diagram", parts: [3, 5], labels: ["Quantity A", "Quantity B"], label: "Interactive Tape Diagram Explorer" };
+||||||| 540ecb4e3
+
+  // Absolute Value & Rational Numbers
+  if (text.includes("absolute value") || text.includes("distance from zero") || text.includes("opposite")) {
+    return {
+      kind: "number-line-explorer",
+      label: "Interactive Absolute Value & Number Line Explorer",
+    };
+=======
+  if (wb("equations?") && wb("solve|one-step|two-step|balance")) {
+    return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
+>>>>>>> origin/main
+  }
+<<<<<<< HEAD
   if (wb("distributive property")) {
     return { kind: "distributive-builder", a: 3, b: "x", c: 4, label: "Interactive Distributive Property Area Model" };
   }
   if (wb("combine like terms|like terms")) {
     return { kind: "combine-like-terms", label: "Interactive Combine Like Terms Lab" };
+||||||| 540ecb4e3
+
+  if (text.includes("coordinate") || text.includes("ordered pair") || text.includes("quadrant")) {
+    return {
+      kind: "coordinate-plane",
+      points: [{ x: 3, y: 4, label: "A" }, { x: -2, y: 5, label: "B" }],
+      label: "Interactive Coordinate Plane Explorer",
+    };
   }
+
+  if (text.includes("number line") || text.includes("inequality") || text.includes("inequalities")) {
+    return {
+      kind: "number-line",
+      min: -5,
+      max: 5,
+      step: 1,
+      points: [{ value: 3, label: "x = 3" }],
+      label: "Interactive Number Line Explorer",
+    };
+=======
+  if (wb("inequalit\\w*")) {
+    return {
+      kind: "number-line",
+      min: -5,
+      max: 5,
+      step: 1,
+      problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }],
+      label: "Interactive Inequality Number Line",
+    };
+>>>>>>> origin/main
+  }
+<<<<<<< HEAD
   if (wb("equations?") && wb("solve|one-step|two-step|balance")) {
     return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
-  }
-  if (wb("inequalit\\w*")) {
-    return { kind: "number-line", min: -5, max: 5, step: 1, problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }], label: "Interactive Inequality Number Line" };
-  }
+||||||| 540ecb4e3
+
+  // Geometry, Area, Surface Area & Volume
+  if (text.includes("area of") || text.includes("parallelogram") || text.includes("triangle area") || text.includes("trapezoid")) {
+    return {
+      kind: "area-morph",
+      shape: text.includes("triangle") ? "triangle" : text.includes("trapezoid") ? "trapezoid" : "parallelogram",
+      label: "Interactive Area Morph & Transformation Explorer",
+    };
+=======
   if (wb("absolute value")) {
     return { kind: "number-line-explorer", label: "Interactive Absolute Value Explorer" };
   }
   if (wb("coordinate plane|ordered pairs?")) {
-    return { kind: "coordinate-plane", points: [{ x: 3, y: 4, label: "A" }, { x: -2, y: 5, label: "B" }], label: "Interactive Coordinate Plane Explorer" };
+    return {
+      kind: "coordinate-plane",
+      points: [
+        { x: 3, y: 4, label: "A" },
+        { x: -2, y: 5, label: "B" },
+      ],
+      label: "Interactive Coordinate Plane Explorer",
+    };
+>>>>>>> origin/main
   }
+<<<<<<< HEAD
+  if (wb("inequalit\\w*")) {
+    return { kind: "number-line", min: -5, max: 5, step: 1, problems: [{ inequality: "x > 2", boundary: 2, circleType: "open", direction: "right" }], label: "Interactive Inequality Number Line" };
+||||||| 540ecb4e3
+
+  if (text.includes("net") || text.includes("surface area") || text.includes("fold")) {
+    return {
+      kind: "net-folder",
+      solid: "cube",
+      label: "Interactive 3D Net Folder: Fold 2D nets into 3D solids!",
+    };
+=======
   if (wb("number line")) {
     return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
+>>>>>>> origin/main
   }
+<<<<<<< HEAD
+  if (wb("absolute value")) {
+    return { kind: "number-line-explorer", label: "Interactive Absolute Value Explorer" };
+||||||| 540ecb4e3
+
+  if (text.includes("3d") || text.includes("prism") || text.includes("pyramid") || text.includes("volume")) {
+    return {
+      kind: "solid-3d",
+      shape: text.includes("pyramid") ? "triangular-pyramid" : text.includes("triangular") ? "triangular-prism" : "cube",
+      label: "Interactive 3D Solid & Net Explorer",
+    };
+=======
+  if (wb("area of|parallelogram|trapezoid")) {
+    const figure = areaFigure();
+    return { kind: "area-morph", figure, label: "Interactive Area Explorer" };
+  }
+  if (wb("nets?|surface area") && !wb("internet|planet")) {
+    return { kind: "net-folder", solid: "cube", label: "Interactive 3D Net Folder" };
+  }
+  if (wb("prisms?|pyramids?|volume")) {
+    return {
+      kind: "solid-3d",
+      shape: wb("pyramid") ? "triangular-pyramid" : "cube",
+      label: "Interactive 3D Solid Explorer",
+    };
+>>>>>>> origin/main
+  }
+<<<<<<< HEAD
+  if (wb("coordinate plane|ordered pairs?")) {
+    return { kind: "coordinate-plane", points: [{ x: 3, y: 4, label: "A" }, { x: -2, y: 5, label: "B" }], label: "Interactive Coordinate Plane Explorer" };
+||||||| 540ecb4e3
+
+  if (text.includes("cross section") || text.includes("slice")) {
+    return {
+      kind: "cross-section",
+      label: "Interactive 3D Cross-Section Slicing Tool",
+    };
+=======
+  if (wb("cross sections?")) {
+    return { kind: "cross-section", label: "Interactive 3D Cross-Section Slicing Tool" };
+  }
+  // Statistics: use \bmean\b (whole word only — never matches "means")
+  if (/\bmean\b/.test(text) || wb("median|data sets?|variability") || /\bMAD\b/.test(text)) {
+    return { kind: "stats-data-lab", label: "Interactive Statistics & Live Data Explorer" };
+  }
+  if (wb("box plots?|quartiles?")) {
+    return { kind: "box-plot-builder", label: "Interactive Box Plot Builder" };
+  }
+  if (wb("histograms?")) {
+    return { kind: "histogram-builder", label: "Interactive Histogram Builder" };
+  }
+  if (wb("dot plots?")) {
+    return { kind: "dot-plot", label: "Interactive Dot Plot Explorer" };
+  }
+  if (wb("fractions?")) {
+    return {
+      kind: "fraction-divide",
+      dividend: "3/4",
+      divisor: "1/2",
+      label: "Interactive Fraction Division Tool",
+    };
+>>>>>>> origin/main
+  }
+<<<<<<< HEAD
+  if (wb("number line")) {
+    return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
+||||||| 540ecb4e3
+
+  // Statistics & Data Analysis
+  if (text.includes("mean") || text.includes("median") || text.includes("mad") || text.includes("data set") || text.includes("variability")) {
+    return {
+      kind: "stats-data-lab",
+      label: "Interactive Statistics & Live Data Explorer",
+    };
+=======
+  if (wb("equations?")) {
+    return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
+>>>>>>> origin/main
+  }
+<<<<<<< HEAD
   if (wb("area of|parallelogram|trapezoid")) {
     const shape = wb("triangle") ? "triangle" : wb("trapezoid") ? "trapezoid" : "parallelogram";
     return { kind: "area-morph", shape, label: "Interactive Area Explorer" };
@@ -312,6 +1086,29 @@ export function resolveInteractiveToolForLesson(config) {
   if (wb("equations?")) {
     return { kind: "equation-balance-lab", label: "Interactive Equation Pan Balance" };
   }
+||||||| 540ecb4e3
+
+  if (text.includes("box plot") || text.includes("quartile")) {
+    return {
+      kind: "box-plot-builder",
+      label: "Interactive Box Plot & Five-Number Summary Builder",
+    };
+  }
+
+  if (text.includes("histogram")) {
+    return {
+      kind: "histogram-builder",
+      label: "Interactive Histogram Bar Builder",
+    };
+  }
+
+  if (text.includes("dot plot")) {
+    return {
+      kind: "dot-plot",
+      label: "Interactive Dot Plot Explorer",
+    };
+=======
+>>>>>>> origin/main
   if (wb("expressions?|variables?")) {
     return { kind: "step-solver", label: "Interactive Expression Step Solver" };
   }
@@ -326,7 +1123,8 @@ export function resolveInteractiveToolForLesson(config) {
 function resolveLessonMisconception(config) {
   const cfg = config || {};
   if (cfg.misconception) return cfg.misconception;
-  const text = `${cfg.title || ""} ${cfg.standard || ""} ${cfg.contentObjective || ""}`.toLowerCase();
+  const text =
+    `${cfg.title || ""} ${cfg.standard || ""} ${cfg.contentObjective || ""}`.toLowerCase();
 
   if (text.includes("factor tree") || text.includes("prime factor")) {
     return {
@@ -364,18 +1162,101 @@ function resolveLessonMisconception(config) {
   };
 }
 
+/**
+ * Build a Try It challenge from the lesson's OWN practice items — the only way
+ * the checkpoint is guaranteed to be about THIS lesson's concept. Picks the
+ * first multiple-choice item with a stem and a valid answer, keeps the correct
+ * choice plus the first two distractors (preferring authored choiceFeedback so
+ * the wrong-answer coaching names the actual error), and preserves the
+ * original choice order. Returns null when the lesson has no usable item.
+ */
+function tryItFromPractice(cfg) {
+  const seen = new Set();
+  const findItem = (node, depth) => {
+    if (!node || typeof node !== "object" || depth > 4 || seen.has(node)) return null;
+    seen.add(node);
+    if (
+      typeof node.stem === "string" &&
+      node.stem.trim() &&
+      Array.isArray(node.choices) &&
+      node.choices.length >= 3 &&
+      Number.isInteger(node.correctIndex) &&
+      node.choices[node.correctIndex] != null
+    ) {
+      return node;
+    }
+    for (const value of Object.values(node)) {
+      const hit = findItem(value, depth + 1);
+      if (hit) return hit;
+    }
+    return null;
+  };
+  const item = findItem(cfg.practice, 0) || findItem(cfg.explore, 0);
+  if (!item) return null;
+
+  const feedback = Array.isArray(item.choiceFeedback) ? item.choiceFeedback : [];
+  const correctExplain =
+    (typeof item.explanation === "string" && item.explanation.trim()) ||
+    "Correct! That matches the worked example above.";
+  const options = [];
+  item.choices.forEach((choice, idx) => {
+    if (choice == null || String(choice).trim() === "") return;
+    if (idx === item.correctIndex) {
+      options.push({ text: String(choice), correct: true, explain: correctExplain, idx });
+    } else {
+      options.push({
+        text: String(choice),
+        correct: false,
+        explain:
+          (typeof feedback[idx] === "string" && feedback[idx].trim()) ||
+          "Not quite — walk back through the worked example above and try again.",
+        idx,
+      });
+    }
+  });
+  const correct = options.find((o) => o.correct);
+  if (!correct) return null;
+  // Cap at 3 (A/B/C), always including the correct choice, original order.
+  const wrong = options.filter((o) => !o.correct).slice(0, 2);
+  const capped = [correct, ...wrong].sort((a, b) => a.idx - b.idx);
+  return {
+    question: item.stem,
+    questionEs: typeof item.stemEs === "string" && item.stemEs.trim() ? item.stemEs : item.stem,
+    options: capped.map(({ text, correct: ok, explain }) => ({ text, correct: ok, explain })),
+  };
+}
+
 function resolveTryItChallenge(config) {
   const cfg = config || {};
+  // Lesson-specific first: a question from this lesson's own practice set
+  // beats any keyword-matched bank.
+  const fromPractice = tryItFromPractice(cfg);
+  if (fromPractice) return fromPractice;
   const text = `${cfg.title || ""} ${cfg.standard || ""}`.toLowerCase();
 
   if (text.includes("ratio") || text.includes("2-1")) {
     return {
-      question: "In a ratio table comparing flour to sugar as 3 : 2, if you use 9 cups of flour, how much sugar do you need?",
-      questionEs: "En una tabla de razones que compara harina y azúcar como 3 : 2, si usas 9 tazas de harina, ¿cuánta azúcar necesitas?",
+      question:
+        "In a ratio table comparing flour to sugar as 3 : 2, if you use 9 cups of flour, how much sugar do you need?",
+      questionEs:
+        "En una tabla de razones que compara harina y azúcar como 3 : 2, si usas 9 tazas de harina, ¿cuánta azúcar necesitas?",
       options: [
-        { text: "6 cups of sugar (scaled up by ×3)", correct: true, explain: "Correct! Both quantities scaled up by ×3 (3×3=9 and 2×3=6)!" },
-        { text: "5 cups of sugar", correct: false, explain: "Not quite: Remember to multiply both terms of the ratio by the SAME factor (3×3=9, so 2×3=6)." },
-        { text: "12 cups of sugar", correct: false, explain: "Not quite: Scale 2 by ×3 to get 6 cups." },
+        {
+          text: "6 cups of sugar (scaled up by ×3)",
+          correct: true,
+          explain: "Correct! Both quantities scaled up by ×3 (3×3=9 and 2×3=6)!",
+        },
+        {
+          text: "5 cups of sugar",
+          correct: false,
+          explain:
+            "Not quite: Remember to multiply both terms of the ratio by the SAME factor (3×3=9, so 2×3=6).",
+        },
+        {
+          text: "12 cups of sugar",
+          correct: false,
+          explain: "Not quite: Scale 2 by ×3 to get 6 cups.",
+        },
       ],
     };
   }
@@ -384,9 +1265,21 @@ function resolveTryItChallenge(config) {
       question: "Which of the following is the correct prime factorization of 12?",
       questionEs: "¿Cuál de las siguientes es la factorización prima correcta de 12?",
       options: [
-        { text: "2 × 2 × 3", correct: true, explain: "Correct! 2 × 2 × 3 = 12, and 2 and 3 are both prime numbers!" },
-        { text: "2 × 6", correct: false, explain: "Not quite: 6 is not a prime number (6 = 2 × 3)." },
-        { text: "3 × 4", correct: false, explain: "Not quite: 4 is not a prime number (4 = 2 × 2)." },
+        {
+          text: "2 × 2 × 3",
+          correct: true,
+          explain: "Correct! 2 × 2 × 3 = 12, and 2 and 3 are both prime numbers!",
+        },
+        {
+          text: "2 × 6",
+          correct: false,
+          explain: "Not quite: 6 is not a prime number (6 = 2 × 3).",
+        },
+        {
+          text: "3 × 4",
+          correct: false,
+          explain: "Not quite: 4 is not a prime number (4 = 2 × 2).",
+        },
       ],
     };
   }
@@ -395,27 +1288,37 @@ function resolveTryItChallenge(config) {
       question: "When computing 3/4 ÷ 1/2, what is the first step?",
       questionEs: "Al calcular 3/4 ÷ 1/2, ¿cuál es el primer paso?",
       options: [
-        { text: "Multiply 3/4 by 2/1 (Keep, Change, Flip)", correct: true, explain: "Correct! Flip 1/2 into 2/1 and multiply: 3/4 × 2/1 = 6/4 = 1 1/2!" },
-        { text: "Divide 3 by 1 and 4 by 2 directly", correct: false, explain: "Incorrect: Remember the rule: Keep, Change, Flip!" },
-        { text: "Flip 3/4 into 4/3", correct: false, explain: "Incorrect: Always keep the first fraction unchanged!" },
+        {
+          text: "Multiply 3/4 by 2/1 (Keep, Change, Flip)",
+          correct: true,
+          explain: "Correct! Flip 1/2 into 2/1 and multiply: 3/4 × 2/1 = 6/4 = 1 1/2!",
+        },
+        {
+          text: "Divide 3 by 1 and 4 by 2 directly",
+          correct: false,
+          explain: "Incorrect: Remember the rule: Keep, Change, Flip!",
+        },
+        {
+          text: "Flip 3/4 into 4/3",
+          correct: false,
+          explain: "Incorrect: Always keep the first fraction unchanged!",
+        },
       ],
     };
   }
-  return {
-    question: "Which statement best describes how to check if your math reasoning is correct?",
-    questionEs: "¿Qué afirmación describe mejor cómo comprobar si tu razonamiento matemático es correcto?",
-    options: [
-      { text: "Explain each step and prove why the visual model matches your math", correct: true, explain: "Exactly! Explaining each step and connecting to a visual model proves accuracy!" },
-      { text: "Only write down the final number without showing steps", correct: false, explain: "Showing steps and explaining reasoning is essential for deep math learning." },
-      { text: "Guess the answer without checking the math model", correct: false, explain: "Always verify your answer using the visual representation." },
-    ],
-  };
+  // No lesson-specific item and no matching bank: render NO checkpoint. A
+  // generic "how do you check your reasoning?" question taught nothing about
+  // the lesson at hand and read as filler.
+  return null;
 }
 
 let injectedStyles = false;
 
 function injectVocabLearnStyles() {
-  if (injectedStyles || (typeof document !== "undefined" && document.getElementById("vl-panel-styles"))) {
+  if (
+    injectedStyles ||
+    (typeof document !== "undefined" && document.getElementById("vl-panel-styles"))
+  ) {
     injectedStyles = true;
     return;
   }
@@ -611,6 +1514,46 @@ function injectVocabLearnStyles() {
       border-radius: 8px;
       border: 1.5px solid rgba(2, 132, 199, 0.25);
     }
+    /* Watch Me and the tool that practises it, side by side. The tool sticks so
+       it stays beside whichever step the student is reading, instead of
+       scrolling away from the step it is meant to be used on. Stacks to one
+       column on anything narrower than a laptop, worked example first. */
+    .vl-learn-pair {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: var(--sp-4, 16px);
+      align-items: start;
+      margin: 26px 0;
+    }
+    .vl-learn-pair > :last-child {
+      position: sticky;
+      top: var(--sp-3, 12px);
+      margin: 0 !important;
+    }
+    .vl-learn-pair .vl-demo-box { margin: 0; }
+    /* Each step is a [badge][text][Hear Step] row, which needs the full panel
+       width. In half a panel the sentence wrapped every three words, so inside
+       the pair the row becomes a small grid: badge and button on one line, the
+       sentence across the full column underneath. */
+    .vl-learn-pair .vl-demo-step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-template-areas: "num btn" "text text";
+      align-items: center;
+      gap: 8px 10px;
+    }
+    .vl-learn-pair .vl-demo-step .vl-step-num { grid-area: num; }
+    .vl-learn-pair .vl-demo-step .vl-step-text { grid-area: text; }
+    .vl-learn-pair .vl-demo-step .vl-step-speak-btn { grid-area: btn; justify-self: end; }
+    @media (max-width: 1023px) {
+      .vl-learn-pair {
+        grid-template-columns: 1fr;
+      }
+      .vl-learn-pair > :last-child {
+        position: static;
+      }
+    }
+
     .vl-demo-box {
       background: #f8fbff;
       border: 2.5px solid #cbd5e1;
@@ -879,14 +1822,18 @@ export function renderVocabPanel(container, config, options = {}) {
   renderVocabIntro(vocabTarget, {
     terms: vocabList,
     onComplete: () => {
-      try { if (state) state.set({ vocabVisited: true }); } catch (_) {}
+      try {
+        if (state) state.set({ vocabVisited: true });
+      } catch (_) {}
       onComplete?.();
     },
   });
 
   // Highlight vocabulary terms throughout
   if (vocabList.length > 0) {
-    try { underlineVocabTerms(cardSection, vocabList); } catch (_) {}
+    try {
+      underlineVocabTerms(cardSection, vocabList);
+    } catch (_) {}
   }
 
   const actions = document.createElement("div");
@@ -899,7 +1846,9 @@ export function renderVocabPanel(container, config, options = {}) {
     isEs ? "Siguiente: Aprender el Concepto 💡 →" : "Next: Learn It (How the Math Works) 💡 →"
   }</span>`;
   btn.addEventListener("click", () => {
-    try { if (state) state.set({ vocabVisited: true }); } catch (_) {}
+    try {
+      if (state) state.set({ vocabVisited: true });
+    } catch (_) {}
     onComplete?.();
   });
   actions.append(btn);
@@ -909,6 +1858,165 @@ export function renderVocabPanel(container, config, options = {}) {
 }
 
 // ─── 2. SEPARATE LEARN IT PANEL (EXPLANATION + INTERACTIVE VISUAL + TURN AND TALK + CONFIDENCE CHECK) ──
+// Open the Learn It tool on the problem the worked example is actually working.
+//
+// The tool used to be chosen by resolveInteractiveVisual() from the standard and
+// the title, with hard-coded operands — so a student read "I add: 128.75 + 46.80"
+// and then met a tool set to 3.4 + 1.25. Nothing connected the two. Reading the
+// operands out of the iDo lines makes the tool the place you TRY the step you
+// just watched.
+//
+// Conservative by design: it overrides only on a clean match for the operation
+// the tool already performs, and otherwise leaves the authored defaults alone.
+function decimalsIn(n) {
+  const s = String(n);
+  const dot = s.indexOf(".");
+  return dot === -1 ? 0 : s.length - dot - 1;
+}
+
+// A PARALLEL problem — same shape, different numbers.
+//
+// Seeding the tool with the exact problem the worked example solves let a
+// student read the answer straight off the step beside it. This keeps every
+// feature the lesson is teaching — the number of decimal places in each operand
+// (so "annex a zero" still applies), the operation, and which operand is larger
+// — and changes only the digits, so the student has to actually do it.
+//
+// Deterministic: the same lesson always produces the same practice problem, so
+// it matches the printout and does not reshuffle on every reload.
+function parallelPair(a, b, op) {
+  const keep = (v, places) => Number(v.toFixed(places));
+  const pa = decimalsIn(a);
+  const pb = decimalsIn(b);
+  let na = keep(a * 1.17, pa);
+  let nb = keep(b * 1.17, pb);
+  // Subtraction must not go negative, and neither operand should collapse to 0.
+  if (op === "-" && nb >= na) [na, nb] = [nb + keep(na, pa), na];
+  if (!(na > 0) || !(nb > 0)) return [a, b];
+  return [na, nb];
+}
+
+// Display unit for the tool, read from the words the lesson actually uses.
+// area-morph prints the unit on every measurement ("b = 12 ft"), so an unset
+// unit makes the figure read as abstract next to a lesson about a garden.
+function unitFromText(text) {
+  const m = text.match(
+    /\b(feet|foot|ft|inches|inch|in\.|centimeters|cm|meters|metres|m|yards|yd)\b/i,
+  );
+  if (!m) return "";
+  const w = m[1].toLowerCase();
+  if (/^(feet|foot|ft)$/.test(w)) return "ft";
+  if (/^(inches|inch|in\.)$/.test(w)) return "in";
+  if (/^(centimeters|cm)$/.test(w)) return "cm";
+  if (/^(meters|metres|m)$/.test(w)) return "m";
+  return "yd";
+}
+
+/* Give the area explorer the LESSON'S OWN measurements.
+ *
+ * Unlike the arithmetic tools above, this one is deliberately NOT a parallel
+ * problem. area-morph does not pose a question to answer — it demonstrates WHY
+ * a formula works, by rotating a copy of the triangle to build a parallelogram.
+ * There is no answer for a student to read off the worked example, so changing
+ * the digits buys nothing and costs the thing that matters: seeing the very
+ * garden they just read about get cut apart. Left unseeded it drew the
+ * component's built-in 8 × 5 default beside a lesson about 12 × 8.
+ *
+ * Dimensions are clamped to what the drawing can actually hold — a stray
+ * "126 square feet" total from the same paragraph must not become a base.
+ */
+function seedAreaMorph(iv, text) {
+  const n = "(\\d+(?:\\.\\d+)?)";
+  const grab = (re) => {
+    const m = text.match(re);
+    const v = m ? Number(m[1]) : NaN;
+    return Number.isFinite(v) && v > 0 && v <= 40 ? v : null;
+  };
+
+  const unit = unitFromText(text);
+  const out = { ...iv };
+  if (unit) out.unit = unit;
+
+  const height = grab(new RegExp(`heights?\\s+of\\s+${n}`, "i"));
+
+  if (iv.figure === "trapezoid") {
+    // "a top base of 4 feet, a bottom base of 8 feet" → a = top, b = bottom.
+    const top = grab(new RegExp(`top\\s+base\\s+of\\s+${n}`, "i"));
+    const bottom = grab(new RegExp(`bottom\\s+base\\s+of\\s+${n}`, "i"));
+    if (top) out.a = top;
+    if (bottom) out.b = bottom;
+    if (height) out.h = height;
+    return out;
+  }
+
+  if (iv.figure === "polygon") {
+    // "Each side is 6 feet, and each center triangle has a height of 5.2 feet"
+    const side = grab(new RegExp(`each\\s+side\\s+is\\s+${n}`, "i"));
+    if (side) out.b = side;
+    if (height) out.h = height;
+    return out;
+  }
+
+  if (iv.figure === "composite") {
+    // "one is 12 ft by 8 ft" — the first rectangle sets the overall scale.
+    const by = text.match(new RegExp(`${n}\\s*(?:ft|feet|in|cm|m)?\\s+by\\s+${n}`, "i"));
+    const w = by ? Number(by[1]) : null;
+    const t = by ? Number(by[2]) : null;
+    if (w > 0 && w <= 40) out.b = w;
+    if (t > 0 && t <= 40) out.h = t;
+    return out;
+  }
+
+  // parallelogram + triangle: "a base of 12 feet and a height of 8 feet"
+  const base = grab(new RegExp(`bases?\\s+of\\s+${n}`, "i"));
+  if (base) out.b = base;
+  if (height) out.h = height;
+  return out;
+}
+
+function seedVisualFromWorkedExample(iv, lines) {
+  if (!iv || !iv.kind || !Array.isArray(lines) || !lines.length) return iv;
+  const text = lines.join(" ");
+  const num = "(\\d+(?:\\.\\d+)?)";
+  const find = (opChars) => {
+    const m = text.match(new RegExp(`${num}\\s*([${opChars}])\\s*${num}`));
+    return m ? { a: Number(m[1]), op: m[2], b: Number(m[3]) } : null;
+  };
+
+  if (iv.kind === "area-morph") return seedAreaMorph(iv, text);
+
+  if (iv.kind === "decimal-columns") {
+    const hit = find("+\\-\u2212");
+    if (hit) {
+      const [a, b] = parallelPair(hit.a, hit.b, hit.op === "+" ? "+" : "-");
+      return { ...iv, op: hit.op === "+" ? "+" : "-", a, b };
+    }
+  }
+  if (iv.kind === "decimal-product") {
+    const hit = find("\u00d7x*");
+    if (hit) {
+      const [a, b] = parallelPair(hit.a, hit.b, "*");
+      return { ...iv, a, b };
+    }
+  }
+  if (iv.kind === "decimal-quotient") {
+    const hit = find("\u00f7/");
+    if (hit && hit.b) {
+      // Keep the quotient exact: scale the dividend so it still divides evenly.
+      const divisor = hit.b;
+      const q = Math.round(hit.a / hit.b);
+      const dividend = Number((divisor * (q + 1)).toFixed(decimalsIn(hit.a)));
+      return { ...iv, dividend, divisor };
+    }
+  }
+  if (iv.kind === "fraction-divide") {
+    const f = "(\\d+\\s+\\d+/\\d+|\\d+/\\d+|\\d+)";
+    const m = text.match(new RegExp(`${f}\\s*\u00f7\\s*${f}`));
+    if (m) return { ...iv, dividend: m[1].trim(), divisor: m[2].trim() };
+  }
+  return iv;
+}
+
 export function renderLearnItPanel(container, config, options = {}) {
   const { onComplete = () => {}, state = null } = options;
   injectVocabLearnStyles();
@@ -954,7 +2062,7 @@ export function renderLearnItPanel(container, config, options = {}) {
   wrap.append(hero);
 
   const visuals = resolveObjectiveVisuals(config);
-  const ivConfig = resolveInteractiveToolForLesson(config);
+  const ivConfig = seedVisualFromWorkedExample(resolveInteractiveToolForLesson(config), iDo.lines);
 
   const mainCard = document.createElement("div");
   mainCard.className = "vl-section-card";
@@ -997,21 +2105,9 @@ export function renderLearnItPanel(container, config, options = {}) {
       </div>
     </div>
 
-    <!-- MOUNT HOST FOR LIVE INTERACTIVE MATH TOOL -->
-    ${
-      ivConfig && ivConfig.kind
-        ? `
-      <div style="margin:26px 0; padding:20px; background:#f8fbff; border:2.5px solid #38bdf8; border-radius:20px; box-shadow:0 8px 24px rgba(56,189,248,0.14);">
-        <div style="font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:900; color:#0369a1; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
-          <span>🛠️ ${isEs ? "Herramienta Matemática Interactiva (¡Toca para explorar!):" : "Interactive Math Tool (Tap & Explore Live!):"}</span>
-          <span style="font-size:0.82rem; font-weight:800; color:#0284c7; background:#e0f2fe; padding:4px 10px; border-radius:999px;">Live Tool</span>
-        </div>
-        ${interactiveVisualHost(ivConfig, ivConfig.label || visuals.content.caption)}
-      </div>`
-        : ""
-    }
-
-    <!-- STEP-BY-STEP WORKED EXAMPLE -->
+    <!-- WORKED EXAMPLE + THE TOOL THAT PRACTISES IT, SIDE BY SIDE -->
+    <div class="vl-learn-pair">
+      <!-- Watch me -->
     ${
       Array.isArray(iDo.lines) && iDo.lines.length > 0
         ? `
@@ -1036,6 +2132,21 @@ export function renderLearnItPanel(container, config, options = {}) {
       </div>`
         : ""
     }
+      <!-- Now try that step here -->
+    ${
+      ivConfig && ivConfig.kind
+        ? `
+      <div style="margin:26px 0; padding:20px; background:#f8fbff; border:2.5px solid #38bdf8; border-radius:20px; box-shadow:0 8px 24px rgba(56,189,248,0.14);">
+        <div style="font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:900; color:#0369a1; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+          <span>🛠️ ${isEs ? "Herramienta Matemática Interactiva (¡Toca para explorar!):" : "Interactive Math Tool (Tap & Explore Live!):"}</span>
+          <span style="font-size:0.82rem; font-weight:800; color:#0284c7; background:#e0f2fe; padding:4px 10px; border-radius:999px;">Live Tool</span>
+        </div>
+        ${interactiveVisualHost(ivConfig, ivConfig.label || visuals.content.caption)}
+      </div>`
+        : ""
+    }
+
+    </div>
   `;
 
   // Attach Step Audio Listeners
@@ -1055,9 +2166,12 @@ export function renderLearnItPanel(container, config, options = {}) {
   }
 
   // ─── MINI PRACTICE CHECKPOINT (TRY IT!) ─────────────────────────────────────
-  const tryItCard = document.createElement("div");
-  tryItCard.className = "vl-tryit-card";
-  tryItCard.innerHTML = `
+  // Only rendered when a lesson-specific (or concept-matched) question exists;
+  // resolveTryItChallenge returns null rather than serving generic filler.
+  if (tryIt) {
+    const tryItCard = document.createElement("div");
+    tryItCard.className = "vl-tryit-card";
+    tryItCard.innerHTML = `
     <div class="vl-tryit-head">
       <div class="vl-tryit-title">
         <span>✏️ ${isEs ? "¡Pruébalo! Verificación Rápida de Práctica" : "Try It! Quick Concept Practice"}</span>
@@ -1080,67 +2194,85 @@ export function renderLearnItPanel(container, config, options = {}) {
     <div class="vl-tryit-feedback" style="margin-top:16px; padding:14px; border-radius:14px; font-weight:800; font-size:1rem; display:none;"></div>
   `;
 
-  const tryOpts = tryItCard.querySelectorAll(".vl-tryit-opt");
-  const tryFb = tryItCard.querySelector(".vl-tryit-feedback");
+    const tryOpts = /** @type {NodeListOf<HTMLButtonElement>} */ (
+      tryItCard.querySelectorAll(".vl-tryit-opt")
+    );
+    const tryFb = /** @type {HTMLElement} */ (tryItCard.querySelector(".vl-tryit-feedback"));
 
-  tryOpts.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const isCorrect = btn.dataset.correct === "true";
-      const explain = btn.dataset.explain;
+    tryOpts.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const isCorrect = btn.dataset.correct === "true";
+        const explain = btn.dataset.explain;
 
-      tryOpts.forEach((b) => {
-        b.style.background = "#ffffff";
-        b.style.borderColor = "#bae6fd";
+        tryOpts.forEach((b) => {
+          b.style.background = "#ffffff";
+          b.style.borderColor = "#bae6fd";
+        });
+
+        if (isCorrect) {
+          btn.style.background = "#dcfce7";
+          btn.style.borderColor = "#16a34a";
+          tryFb.style.background = "#f0fdf4";
+          tryFb.style.color = "#14532d";
+          tryFb.style.border = "2px solid #22c55e";
+          tryFb.textContent = `🎉 ${explain}`;
+        } else {
+          btn.style.background = "#fef2f2";
+          btn.style.borderColor = "#ef4444";
+          tryFb.style.background = "#fff1f2";
+          tryFb.style.color = "#9f1239";
+          tryFb.style.border = "2px solid #f43f5e";
+          tryFb.textContent = `💡 ${explain}`;
+        }
+        tryFb.style.display = "block";
+        speakText(explain, isEs ? "es-US" : "en-US");
       });
-
-      if (isCorrect) {
-        btn.style.background = "#dcfce7";
-        btn.style.borderColor = "#16a34a";
-        tryFb.style.background = "#f0fdf4";
-        tryFb.style.color = "#14532d";
-        tryFb.style.border = "2px solid #22c55e";
-        tryFb.textContent = `🎉 ${explain}`;
-      } else {
-        btn.style.background = "#fef2f2";
-        btn.style.borderColor = "#ef4444";
-        tryFb.style.background = "#fff1f2";
-        tryFb.style.color = "#9f1239";
-        tryFb.style.border = "2px solid #f43f5e";
-        tryFb.textContent = `💡 ${explain}`;
-      }
-      tryFb.style.display = "block";
-      speakText(explain, isEs ? "es-US" : "en-US");
     });
-  });
 
-  mainCard.append(tryItCard);
+    mainCard.append(tryItCard);
+  }
 
   // ─── BUILT-IN TURN AND TALK SECTION ─────────────────────────────────────────
   const turnAndTalkData = (Array.isArray(config.turnAndTalk) && config.turnAndTalk[0]) || {};
   let currentLangEs = isEs;
 
-  const defaultQuestionEn = turnAndTalkData.question ||
+  const defaultQuestionEn =
+    turnAndTalkData.question ||
     `Turn and talk with your partner: How does this math visual and example work? What step did you notice first?`;
-  const defaultQuestionEs = turnAndTalkData.questionEs ||
+  const defaultQuestionEs =
+    turnAndTalkData.questionEs ||
     `Habla con tu compañero: ¿Cómo funciona este modelo visual y ejemplo? ¿Qué paso notaste primero?`;
 
-  const defaultStartersEn = [
-    `Looking at the visual, I notice that ______ in Step 1.`,
-    `This math model shows ______ because ______.`,
-    `My partner and I agree that the key step is ______.`,
-  ];
-  const defaultStartersEs = [
-    `Mirando el modelo visual, noté que ______ en el Paso 1.`,
-    `Este modelo matemático muestra ______ porque ______.`,
-    `Mi compañero y yo estamos de acuerdo en que el paso clave es ______.`,
-  ];
+  // 202 of 222 lesson configs author `turnAndTalk[].stems` — bilingual starters
+  // written against THAT lesson's problem and visual. Reading them is the point:
+  // the generic trio below talks about "the visual" and "Step 1" in the abstract,
+  // so when it renders next to a specific figure the two disagree.
+  const authoredStems = Array.isArray(turnAndTalkData.stems) ? turnAndTalkData.stems : [];
+  const stemText = (stem, lang) => (typeof stem === "string" ? stem : stem?.[lang]);
+  const authoredEn = authoredStems.map((st) => stemText(st, "en")).filter(Boolean);
+  const authoredEs = authoredStems.map((st) => stemText(st, "es")).filter(Boolean);
+
+  const startersEn = authoredEn.length
+    ? authoredEn
+    : [
+        `Looking at the visual, I notice that ______ in Step 1.`,
+        `This math model shows ______ because ______.`,
+        `My partner and I agree that the key step is ______.`,
+      ];
+  const startersEs = authoredEs.length
+    ? authoredEs
+    : [
+        `Mirando el modelo visual, noté que ______ en el Paso 1.`,
+        `Este modelo matemático muestra ______ porque ______.`,
+        `Mi compañero y yo estamos de acuerdo en que el paso clave es ______.`,
+      ];
 
   const ttContainer = document.createElement("div");
   ttContainer.className = "vl-turntalk-card";
 
   function renderTurnAndTalk() {
     const qText = currentLangEs ? defaultQuestionEs : defaultQuestionEn;
-    const starters = currentLangEs ? defaultStartersEs : defaultStartersEn;
+    const starters = currentLangEs ? startersEs : startersEn;
 
     ttContainer.innerHTML = `
       <div class="vl-turntalk-head">
@@ -1177,9 +2309,14 @@ export function renderLearnItPanel(container, config, options = {}) {
       speakText(qText, currentLangEs ? "es-US" : "en-US");
     });
 
-    ttContainer.querySelectorAll(".vl-starter-chip").forEach((chip) => {
+    const starterChips = /** @type {NodeListOf<HTMLElement>} */ (
+      ttContainer.querySelectorAll(".vl-starter-chip")
+    );
+    starterChips.forEach((chip) => {
       chip.addEventListener("click", () => {
-        ttContainer.querySelectorAll(".vl-starter-chip").forEach((c) => c.classList.remove("active"));
+        ttContainer
+          .querySelectorAll(".vl-starter-chip")
+          .forEach((c) => c.classList.remove("active"));
         chip.classList.add("active");
         const idx = Number(chip.dataset.idx);
         const text = starters[idx];
@@ -1222,8 +2359,10 @@ export function renderLearnItPanel(container, config, options = {}) {
     <div class="vl-conf-feedback" style="margin-top:16px; font-weight:800; font-size:1.02rem; padding:12px 16px; border-radius:12px; display:none;"></div>
   `;
 
-  const confButtons = confWidget.querySelectorAll(".vl-conf-btn");
-  const confFb = confWidget.querySelector(".vl-conf-feedback");
+  const confButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (
+    confWidget.querySelectorAll(".vl-conf-btn")
+  );
+  const confFb = /** @type {HTMLElement} */ (confWidget.querySelector(".vl-conf-feedback"));
 
   confButtons.forEach((b) => {
     b.addEventListener("click", () => {
@@ -1268,7 +2407,9 @@ export function renderLearnItPanel(container, config, options = {}) {
   // Underline vocabulary terms throughout Learn It for definition & image popups
   const vocabList = Array.isArray(config.vocabulary) ? config.vocabulary : [];
   if (vocabList.length > 0) {
-    try { underlineVocabTerms(mainCard, vocabList); } catch (_) {}
+    try {
+      underlineVocabTerms(mainCard, vocabList);
+    } catch (_) {}
   }
 
   // Bottom Continue Action Button
@@ -1278,12 +2419,16 @@ export function renderLearnItPanel(container, config, options = {}) {
   btn.type = "button";
   btn.className = "btn btn-primary btn-lg vl-continue-btn";
   btn.innerHTML = `<span>${
+    // Learn It hands off to Practice. The label used to say "let's explore",
+    // which named a phase this button has never opened.
     isEs
-      ? "¡He aprendido el concepto — a explorar! 🚀 →"
-      : "I've learned the concept — let's explore! 🚀 →"
+      ? "¡He aprendido el concepto — a practicar! ✏️ →"
+      : "I've learned the concept — let's practice! ✏️ →"
   }</span>`;
   btn.addEventListener("click", () => {
-    try { if (state) state.set({ notesVisited: true }); } catch (_) {}
+    try {
+      if (state) state.set({ notesVisited: true });
+    } catch (_) {}
     onComplete?.();
   });
   actions.append(btn);

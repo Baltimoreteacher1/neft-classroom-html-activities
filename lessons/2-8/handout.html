@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Describe Data Using the Mean — Student Handout</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Hanken+Grotesk:wght@400;600&display=swap');
+    * { box-sizing: border-box; }
+    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; }
+    h1, h2 { font-family: Outfit, system-ui, sans-serif; margin: 0 0 8px; }
+    .header { border-bottom: 3px solid #387F84; padding-bottom: 12px; margin-bottom: 16px; }
+    .meta { color: #5a6b75; font-size: 0.9rem; }
+    .bilingual { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .box { border: 1px solid #e4ddc9; border-radius: 8px; padding: 12px; margin-bottom: 12px; background: #fdf6ec; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { border: 1px solid #e4ddc9; padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #dff2ee; }
+    .work-space { border-bottom: 1px dashed #c5bdb0; min-height: 48px; margin-top: 8px; }
+    .notice-wonder { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .footer { margin-top: 16px; font-size: 0.78rem; color: #5a6b75; text-align: center; }
+    .name-line { border-bottom: 1px solid #264653; display: inline-block; min-width: 200px; margin-left: 8px; }
+    @media print {
+      body { padding: 12px; }
+      .no-print { display: none; }
+      .box { break-inside: avoid; }
+    }
+    
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+<main>
+  <div class="no-print" style="text-align:right; margin-bottom:12px;">
+    <button onclick="window.print()" style="padding:8px 16px; font-weight:700; cursor:pointer;">🖨️ Print / Imprimir</button>
+  </div>
+  <header class="header">
+    <h1>Describe Data Using the Mean</h1>
+    <div class="meta">6.DS.4 · Unit 2 · Lesson 8</div>
+    <p style="margin-top:12px;">Name <span class="name-line"></span> &nbsp; Period <span class="name-line" style="min-width:60px"></span></p>
+  </header>
+
+  <div class="bilingual">
+    <div class="box">
+      <h2>Objectives / Objetivos</h2>
+      <p lang="en"><strong>Content Objective:</strong> I can determine the mean of a data set, use a target mean to find a missing value, and explain the mean as the fair share and the balance point of the data.</p>
+      
+      <p lang="en"><strong>Language Objective:</strong> I can explain my reasoning using the words mean, average, measure of center, balance point, and data set.</p>
+    </div>
+    <div class="box">
+      <h2>Key Idea / Idea clave</h2>
+      <p>Mean = total of all the values ÷ how many values there are.</p>
+    </div>
+  </div>
+
+  <div class="notice-wonder">
+    <div class="box"><h2>I Notice / Observo</h2><ul><li>How many days of earnings did Miguel record?</li><li>What is the total amount Miguel earned?</li></ul></div>
+    <div class="box"><h2>I Wonder / Me pregunto</h2><ul><li>If Miguel shared the $60 equally across the 4 days, how much would each day be?</li></ul></div>
+  </div>
+
+  <div class="box">
+    <h2>Vocabulary / Vocabulario</h2>
+    <table>
+      <thead><tr><th>Term / Término</th><th>Definition / Definición</th></tr></thead>
+      <tbody><tr><td><strong>Mean</strong><br><span lang="es">Media</span></td><td>The average of a data set. Add all the values, then divide by how many values there are.<br><span lang="es">El promedio de un conjunto de datos. Suma todos los valores y divide entre cuántos valores hay.</span></td></tr><tr><td><strong>Average</strong><br><span lang="es">Promedio</span></td><td>Another word for the mean — the amount each value would be if the total were shared equally.<br><span lang="es">Otra palabra para la media: la cantidad que tendría cada valor si el total se repartiera en partes iguales.</span></td></tr><tr><td><strong>Measure of center</strong><br><span lang="es">Medida de centro</span></td><td>A single number used to describe the middle, or typical value, of a whole data set.<br><span lang="es">Un solo número que se usa para describir el centro, o valor típico, de todo un conjunto de datos.</span></td></tr><tr><td><strong>Balance point</strong><br><span lang="es">Punto de equilibrio</span></td><td>The value where the total distance of the data above it equals the total distance below it. The mean is the balance point.<br><span lang="es">El valor donde la distancia total de los datos por encima es igual a la distancia total por debajo. La media es el punto de equilibrio.</span></td></tr><tr><td><strong>Data set</strong><br><span lang="es">Conjunto de datos</span></td><td>The whole collection of values that were gathered or measured.<br><span lang="es">Toda la colección de valores que se recopilaron o midieron.</span></td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="box">
+    <h2>Practice Preview / Vista previa de práctica</h2>
+    <ol><li>Find the mean of: 4, 6, 8, 10<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>7</li><li>28</li><li>8</li><li>6</li></ol><div class="work-space"></div></li><li>Problem 2<div class="work-space"></div></li><li>Sofia wants to average 15 points per game over 10 games. How many points does she need in all 10 games combined?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>150 points</li><li>15 points</li><li>25 points</li><li>1.5 points</li></ol><div class="work-space"></div></li><li>Problem 4<div class="work-space"></div></li></ol>
+  </div>
+
+  <div class="box">
+    <h2>Reflection / Reflexión</h2>
+    <p>One thing I learned today / Una cosa que aprendí hoy:</p>
+    <div class="work-space" style="min-height:64px"></div>
+  </div>
+
+  <footer class="footer">Neft Teacher · 2-8 · Printable student handout</footer>
+</main>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

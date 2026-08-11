@@ -1,3 +1,5 @@
+import { getPreferredLang } from "./i18n.js";
+
 //
 // These are the SITE brand values, not a private small-group palette. Until
 // 2026-07-31 the studio shipped its own cold slate (#33568f) and a separate
@@ -125,11 +127,13 @@ export const LEVEL_VOICE = {
 };
 export const voiceFor = (variant) => LEVEL_VOICE[variant] || LEVEL_VOICE.catchup;
 
-// Device-wide Spanish lane: chosen from the vocabulary language bar, read at
-// render time anywhere student text is drawn.
+// Device-wide Spanish lane: chosen from the vocabulary language bar OR from the
+// lesson engine's ES/EN toggle — they are the same preference now. The studio
+// used to keep its own key, so the two surfaces disagreed and a student had to
+// set Spanish twice. Read at render time anywhere student text is drawn.
 export const esLane = () => {
   try {
-    return window.localStorage.getItem("nt-sg-lang") === "es";
+    return getPreferredLang() === "es";
   } catch {
     return false;
   }
@@ -356,7 +360,7 @@ export function injectSmallGroupStyles(accent) {
     const storyboard = document.createElement("link");
     storyboard.id = "sg-storyboard-styles";
     storyboard.rel = "stylesheet";
-    storyboard.href = "/assets/small-group-storyboard.css?v=20260731-pub1";
+    storyboard.href = "/assets/small-group-storyboard.css?v=20260804-adapt1";
     document.head.appendChild(storyboard);
   }
   // assets/small-group-designsystem.css is the studio's art direction: the base
@@ -429,7 +433,7 @@ export function injectSmallGroupStyles(accent) {
        — so a callout inside a card inside the page read as one flat surface and
        the studio looked unfinished no matter how good the type was. Keep the
        steps visible. */
-    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#c8d4e0;--sg-paper:#f6f2e9;--sg-card:#fff;--sg-text:#1d2a36;--sg-muted:#4c5f72;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e0f3ef;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fcede7;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fffdf8;--sg-fill:#e8eff6;
+    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#d8dfe6;--sg-paper:#fdfaf3;--sg-card:#fff;--sg-text:#1d2a36;--sg-muted:#5a6b7c;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e0f3ef;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fcede7;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fffdf8;--sg-fill:#e8eff6;
       /* Type pairing. Outfit (the site display face, already loaded by the
          lesson shell) for anything that acts as a heading or a label; Atkinson
          Hyperlegible — chosen for these pathways because it is the most legible
@@ -455,14 +459,21 @@ export function injectSmallGroupStyles(accent) {
        frame — measurable jank on a classroom Chromebook — and at these
        document lengths it also left whole screens unpainted mid-scroll.
        Anchoring to the document costs nothing and paints reliably. */
+    /* Warm paper, and nothing tiled behind the words.
+       This used to lay a 40px graph-paper grid across the entire document —
+       two repeating 1px gradients — under every paragraph, worked example and
+       vocabulary card. A ruled texture reads as "math notebook" in a mockup and
+       as visual noise on a Chromebook an hour into a rotation, because the
+       lines never stop and they sit directly beneath the text the student is
+       trying to track. The two soft washes stay: they are large, static, and
+       nowhere near reading size. */
     body{margin:0;color:var(--sg-text);font-family:var(--sg-body);font-size:17px;line-height:1.62;background-color:var(--sg-paper);background-image:
-      radial-gradient(110% 86% at 88% 0%,color-mix(in srgb,var(--sg-pop) 12%,transparent),transparent 70%),
-      radial-gradient(90% 74% at 4% 100%,rgba(18,53,91,.06),transparent 72%),
-      linear-gradient(rgba(18,53,91,.026) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(18,53,91,.026) 1px,transparent 1px);
-      background-position:top right,bottom left,0 0,0 0;
-      background-repeat:no-repeat,no-repeat,repeat,repeat;
-      background-size:100% 780px,100% 620px,40px 40px,40px 40px;
+      radial-gradient(120% 90% at 88% 0%,color-mix(in srgb,var(--sg-pop) 9%,transparent),transparent 72%),
+      radial-gradient(95% 78% at 4% 100%,rgba(18,53,91,.045),transparent 74%);
+      background-position:top right,bottom left;
+      background-repeat:no-repeat,no-repeat;
+      background-size:100% 780px,100% 620px;
+      background-attachment:scroll;
       -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-optical-sizing:auto}
     button,input,textarea{font:inherit}
     button,a,input,textarea,summary{outline-offset:4px}
@@ -511,7 +522,18 @@ export function injectSmallGroupStyles(accent) {
     .sg-teacher summary{cursor:pointer;padding:14px 17px;font-family:var(--sg-display);font-weight:700;color:var(--sg-ink)}
     .sg-tbody{padding:0 18px 18px}.sg-tbody li{margin:5px 0}.sg-frames,.sg-wordbank{display:flex;flex-wrap:wrap;gap:8px}
     .sg-frame,.sg-word{padding:7px 12px;border:1px dashed color-mix(in srgb,var(--sg) 28%,transparent);border-radius:10px;background:var(--sg-soft);color:var(--sg-ink);font-weight:700}
-    .sg-mode{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 -24px;padding:10px 24px;color:#fff;background:var(--sg-deep);font-family:var(--sg-display);font-size:14px;font-weight:700;letter-spacing:.01em}
+    /* Full-bleed, not a slab. The old "margin:0 -24px" only cancelled #app's
+       28px padding, so on any viewport wider than the 1160px content column the
+       bar rendered as a dark rectangle floating in the middle of the paper with
+       page showing on both sides — the loudest "unfinished" tell on the page.
+       It is chrome; chrome runs edge to edge. It gets there by being a sibling
+       of #app rather than a child (see small-group-teacher-access.js): a plain
+       block in the body is exactly the viewport's content width. The obvious
+       alternative, width:100vw with negative margins, overshoots by the
+       scrollbar width and opens a horizontal scrollbar the studio spec forbids.
+       The left padding clears the fixed passport pill (12px + 82px + gap),
+       which used to sit on top of the bar's own label. */
+    .sg-mode{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0;padding:10px 28px 10px 110px;color:#fff;background:var(--sg-deep);font-family:var(--sg-display);font-size:14px;font-weight:700;letter-spacing:.01em}
     .sg-mode-action{display:inline-flex;align-items:center;min-height:44px;padding:9px 14px;border:1px solid rgba(255,255,255,.34);border-radius:10px;background:rgba(255,255,255,.1);color:#fff;text-decoration:none}
     .sg-mode-action:hover{background:rgba(255,255,255,.2)}
     .sg-mode--teacher{background:#5c3c05}.sg-mode-notice{margin:12px 0;padding:11px 14px;border:1px solid var(--sg-warn-line);border-radius:11px;color:var(--sg-warn-ink);background:var(--sg-warn-bg)}
@@ -522,12 +544,25 @@ export function injectSmallGroupStyles(accent) {
        active step), which is what makes "where am I" answerable at a glance. */
     .sg-rail,.sg-tabs{position:sticky;top:0;z-index:30;display:grid;gap:6px;margin:0 -6px 30px;padding:9px;border:1px solid var(--sg-line);border-top:0;border-radius:0 0 var(--sg-radius) var(--sg-radius);background:color-mix(in srgb,var(--sg-card) 88%,var(--sg-paper));backdrop-filter:blur(14px) saturate(1.4);box-shadow:0 6px 20px -8px rgba(17,34,56,.22)}
     .sg-rail{grid-template-columns:repeat(auto-fit,minmax(0,1fr))}
-    .sg-tabs{grid-template-columns:repeat(6,minmax(0,1fr))}
-    .sg-step{position:relative;display:flex;min-height:48px;align-items:center;justify-content:center;gap:8px;padding:6px 8px;border:0;border-radius:var(--sg-radius-sm);background:transparent;color:var(--sg-muted);font-family:var(--sg-display);font-size:13.5px;font-weight:700;cursor:pointer}
+    /* One track per part, set from the real count by mountSmallGroupTabs.
+       A hard repeat(6,...) left an empty column whenever a lesson shipped five
+       parts, and squeezed "Practice & Check" into a wrap to pay for it.
+       auto-fit is the reflex fix and is wrong here: it sizes tracks to the
+       minimum and leaves the row short, which truncated "Worked example" to
+       "Worked exa...". The count is known when the strip is built, so it is
+       passed in rather than guessed. */
+    .sg-tabs{grid-template-columns:repeat(var(--sg-tab-count,5),minmax(0,1fr))}
+    /* The parts of the lesson, as real cards rather than a row of words. Each
+       is a titled destination — name on top, what-you-do underneath — so the
+       strip reads as the lesson's table of contents instead of decoration. */
+    .sg-step{position:relative;display:flex;min-height:52px;align-items:center;justify-content:flex-start;gap:9px;padding:8px 10px;border:1px solid var(--sg-line);border-radius:var(--sg-radius-sm);background:var(--sg-card);color:var(--sg-ink);font-family:var(--sg-display);font-size:13.5px;font-weight:700;text-align:left;cursor:pointer;box-shadow:0 3px 8px rgba(16,40,63,.05);transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
+    .sg-step .lbl{display:block;min-width:0;line-height:1.2}
+    .sg-step .lbl small{display:block;margin-top:2px;color:var(--sg-muted);font-size:11.5px;font-weight:600;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .sg-step .dot{display:grid;width:26px;height:26px;flex:none;place-items:center;border-radius:8px;background:var(--sg-fill);color:var(--sg-ink);font-size:13px;font-weight:800}
-    .sg-step:hover:not([aria-selected="true"]){color:var(--sg-ink);background:var(--sg-soft)}
+    .sg-step:hover:not([aria-selected="true"]){color:var(--sg-ink);background:var(--sg-card);transform:translateY(-1px);box-shadow:0 6px 15px rgba(16,40,63,.09)}
     .sg-step.done{color:var(--sg-ink)}.sg-step.done .dot{color:#fff;background:var(--sg-good)}
-    .sg-step[aria-selected="true"]{color:#fff;background:var(--sg);box-shadow:0 5px 14px -6px color-mix(in srgb,var(--sg) 70%,transparent)}
+    .sg-step[aria-selected="true"]{color:#fff;background:var(--sg);border-color:var(--sg);box-shadow:0 6px 16px -6px color-mix(in srgb,var(--sg) 70%,transparent)}
+    .sg-step[aria-selected="true"] .lbl small{color:rgba(255,255,255,.78)}
     .sg-step[aria-selected="true"] .dot{color:var(--sg-deep);background:var(--sg-pop)}
     /* Accent tick under the active step — the pathway signature, repeated. */
     .sg-step[aria-selected="true"]::after{content:"";position:absolute;left:50%;bottom:-9px;width:22px;height:3px;border-radius:3px;background:var(--sg-pop);transform:translateX(-50%)}
@@ -645,9 +680,8 @@ export function injectSmallGroupStyles(accent) {
     .sg-plot-grid{cursor:crosshair;touch-action:manipulation}
     .sg-tile-tray{min-height:56px;padding:9px;border:2px dashed var(--sg-line);border-radius:12px}
     .sg-tile{min-width:44px;min-height:52px;border-radius:10px;font-family:var(--sg-display);font-size:20px;font-weight:900;cursor:pointer;border:2px solid var(--sg-rule)}
-    .sg-tile.is-x{background:var(--sg);color:#fff;min-width:64px}
-    .sg-tile.is-one{background:var(--sg-pop);color:#332000}
-    .sg-es{display:block;margin-top:3px;color:var(--sg-muted);font-weight:600;font-size:.93em}
+    .sg-es{display:none;margin-top:3px;color:var(--sg-muted);font-weight:600;font-size:.93em}
+    html[data-lang="es"] .sg-es, body.es .sg-es, body.lang-es .sg-es, [data-es="true"] .sg-es {display:block;}
     /* Place-value giant workspace: the stacked column math IS the visual */
     .sg-big-work .colmath{min-width:320px;padding:24px 38px;border:3px solid var(--sg);border-radius:20px;background:var(--sg-figure);box-shadow:0 10px 25px rgba(23,32,51,.09);font-size:44px}
     .sg-big-work .colmath .fillin{width:220px;font-size:40px}
@@ -667,6 +701,12 @@ export function injectSmallGroupStyles(accent) {
     .sg-lab{--sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:20px;--sp-6:24px;--radius-sm:8px;--radius:12px;--teal:var(--sg);--teal-light:var(--sg-soft);--teal-dark:var(--sg-deep);--navy:var(--sg-deep);--coral:#d9795d;--cream:#fdf9f0;--muted:var(--sg-muted);--ink:var(--sg-text)}
     .sg-lab-note{padding:11px 14px;border-radius:12px;background:var(--sg-soft);color:var(--sg-ink);font-weight:700}
     .sg-lab-loading{padding:14px;color:var(--sg-muted);font-weight:700}
+    .sg-lab-step{margin:16px 0 6px;color:var(--sg-deep);font-family:var(--sg-display);font-size:18px;font-weight:900}
+    .sg-solve-gated{opacity:.35;filter:grayscale(.6);pointer-events:none}
+    .sg-solve-gate{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:12px 0;padding:14px 16px;border:2px dashed var(--sg-line);border-radius:16px;background:var(--sg-soft)}
+    .sg-solve-gate-line{margin:0;color:var(--sg-ink);font-weight:800}
+    .sg-solve-gate-skip{min-height:44px;padding:8px 16px;border:2px solid var(--sg-line);border-radius:999px;color:var(--sg-ink);background:var(--sg-card);font:inherit;font-weight:800;font-size:14px;cursor:pointer}
+    .sg-solve-gate-skip:hover{border-color:var(--sg);background:var(--sg-soft)}
     .sg-lab-mount{margin:12px 0}
     .sg-lab-mount .card{border:1px solid var(--sg-line);border-radius:16px;background:var(--sg-card);padding:16px;box-shadow:0 8px 24px rgba(23,32,51,.07)}
     .sg-figure{margin:12px 0;padding:14px;border:1px solid var(--sg-line);border-radius:16px;background:var(--sg-card);box-shadow:0 8px 24px rgba(23,32,51,.07)}
@@ -724,6 +764,23 @@ export function injectSmallGroupStyles(accent) {
     .sg-cloze-sentence{font-size:18px;font-weight:400;line-height:1.75}
     .sg-cloze-blank{display:inline-grid;min-width:120px;min-height:30px;place-items:center;padding:2px 10px;border-bottom:3px solid var(--sg);color:var(--sg-ink);font-weight:900}
     .sg-cloze-blank.ok{color:var(--sg-good);border-color:var(--sg-good)}
+    /* Group 2 bonus: "use it in writing". One card per word — prompt, a real
+       place to write, a check that names what to fix, and a model to compare
+       against. No timer, no lock-out: a finished card is marked, never scored. */
+    .sg-write-intro{margin:10px 0 4px;color:var(--sg-muted);font-weight:700}
+    .sg-write-item{margin-top:14px;padding:15px;border:1px solid var(--sg-line);border-radius:14px;background:var(--sg-card)}
+    .sg-write-item.done{border-color:var(--sg-good);box-shadow:inset 4px 0 0 var(--sg-good)}
+    .sg-write-prompt{display:block;margin-bottom:9px;color:var(--sg-ink);font-size:17px;font-weight:800;line-height:1.5}
+    .sg-write-es{margin:0 0 9px;color:var(--sg-muted);font-size:15px;font-weight:700}
+    .sg-write-es[hidden]{display:none}
+    .sg-write-input{display:block;width:100%;min-height:88px;padding:11px 13px;border:2px solid var(--sg-line);border-radius:12px;background:var(--sg-card);color:var(--sg-ink);font:inherit;font-size:17px;line-height:1.6;resize:vertical}
+    .sg-write-input:focus-visible{border-color:var(--sg);outline:3px solid color-mix(in srgb,var(--sg) 45%,transparent);outline-offset:2px}
+    .sg-write-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:11px}
+    .sg-write-actions .btn{min-height:44px}
+    .sg-write-status{min-height:0;color:var(--sg-ink)}
+    .sg-write-model{margin-top:11px;padding:12px 14px;border-left:5px solid var(--sg-good);border-radius:10px;background:var(--sg-soft);font-size:16px;line-height:1.6}
+    .sg-write-model[hidden]{display:none}
+    .sg-write-modellab{display:block;color:var(--sg-good);font-family:var(--sg-display);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
     /* ── Learning map + progress meter ── */
     .sg-map{margin:0 0 24px;padding:20px 22px;border:1px solid var(--sg-line);border-left:6px solid var(--sg);border-radius:18px;background:var(--sg-card);box-shadow:0 8px 24px rgba(23,32,51,.07)}
     .sg-map-goal{margin:0 0 6px;font-size:18px;font-weight:800;color:var(--sg-ink)}
@@ -786,7 +843,7 @@ export function injectSmallGroupStyles(accent) {
     @keyframes sg-pop{0%{opacity:0;transform:scale(.25) rotate(-8deg)}35%{opacity:1;transform:scale(1.12) rotate(4deg)}100%{opacity:0;transform:scale(1.35)}}
     .sg-confetti{position:absolute;left:50%;top:50%;width:10px;height:14px;border-radius:3px;opacity:0;animation:sg-confetti .9s cubic-bezier(.16,1,.3,1) forwards}
     @keyframes sg-confetti{0%{opacity:1;transform:translate(-50%,-50%) rotate(0)}100%{opacity:0;transform:translate(calc(-50% + var(--cx)),calc(-50% + var(--cy))) rotate(var(--cr))}}
-    @media(max-width:760px){#app{padding-inline:14px}.sg-mode{margin-inline:-14px;padding-inline:14px}
+    @media(max-width:760px){#app{padding-inline:14px}.sg-mode{padding-inline:14px}
     .sg-hero{margin-inline:0;padding:22px 18px 20px;border-radius:var(--sg-radius)}
     .sg-hero-grid{grid-template-columns:1fr}
     /* The mark is decoration, and on a phone it costs a third of the first

@@ -37,6 +37,32 @@ function injectVocabDragMatchStyles() {
       hyphens: auto;
     }
 
+    /* Legibility (not motion): the base sizes below are set inline on each card
+       so they travel with the element; these rules only carry the line-height
+       and vertical rhythm that the bigger 6th-grade type needs. Cards are sized
+       by their content — no fixed heights — so a two-line term and a four-line
+       definition both grow instead of clipping. */
+    .vocab-dm-term {
+      line-height: 1.3;
+    }
+    .vocab-dm-def {
+      line-height: 1.45;
+    }
+
+    /* Tablet / narrow-laptop band: one step down from the desktop size so two
+       columns still fit side by side without the cards becoming a wall of
+       wrapped words. Still well above the old 0.88rem. */
+    @media (max-width: 900px) {
+      .vocab-dm-term {
+        font-size: 1.2rem !important;
+        padding: 14px 16px !important;
+      }
+      .vocab-dm-def {
+        font-size: 1.05rem !important;
+        padding: 14px 16px !important;
+      }
+    }
+
     /* Layout aid (not motion): TWO COLUMNS ALWAYS — terms on one side,
        definitions on the other, at every viewport width and every zoom level.
        This used to collapse to a single full-width stack below 560px, which put
@@ -52,10 +78,13 @@ function injectVocabDragMatchStyles() {
       .vdm-arrow-col {
         display: none !important;
       }
-      .vocab-dm-term,
+      .vocab-dm-term {
+        font-size: 1.05rem !important;
+        padding: 12px 12px !important;
+      }
       .vocab-dm-def {
-        font-size: 0.95rem;
-        padding: 10px 12px !important;
+        font-size: 1rem !important;
+        padding: 12px 12px !important;
       }
     }
 
@@ -109,7 +138,7 @@ function vocabImageEl(entry) {
   img.loading = "lazy";
   img.draggable = false;
   img.style.cssText = `
-    width:40px; aspect-ratio:4 / 3; flex:0 0 auto; vertical-align:middle;
+    width:52px; aspect-ratio:4 / 3; flex:0 0 auto; vertical-align:middle;
     border-radius:var(--radius-sm); background:var(--card);
     border:1px solid var(--line); object-fit:contain;
   `;
@@ -140,14 +169,17 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
 
   const progress = document.createElement("div");
   progress.style.cssText =
-    "font-size:0.85rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-4);";
+    "font-size:1rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-4);";
   progress.textContent = `0 / ${terms.length} matched`;
   wrapper.append(progress);
 
   const board = document.createElement("div");
   board.className = "vdm-board";
   board.style.cssText =
-    "display:grid; grid-template-columns:minmax(0, 1fr) 40px minmax(0, 1fr); gap:var(--sp-3); align-items:start;";
+    // The arrow column is a fixed 44px gutter; the two card columns are
+    // minmax(0, 1fr) so the larger type wraps inside them instead of widening
+    // the grid and pushing the board off the page.
+    "display:grid; grid-template-columns:minmax(0, 1fr) 44px minmax(0, 1fr); gap:var(--sp-3); align-items:start;";
 
   const termsCol = document.createElement("div");
   termsCol.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2); min-width:0;";
@@ -170,8 +202,8 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
     el.dataset.termName = term.term;
     el.style.cssText = `
       display:flex; align-items:center; gap:var(--sp-2);
-      padding:12px 16px; border:2px solid var(--teal); border-radius:var(--radius-md);
-      background:white; font-weight:700; font-size:0.92rem; text-align:left;
+      padding:16px 18px; border:2px solid var(--teal); border-radius:var(--radius-md);
+      background:white; font-weight:700; font-size:1.35rem; text-align:left;
       cursor:pointer; transition:all var(--duration-fast) ease; width:100%;
       color:var(--ink);
     `;
@@ -184,7 +216,9 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
       const es = document.createElement("span");
       es.lang = "es";
       es.style.cssText =
-        "display:block; font-size:0.78rem; font-weight:600; font-style:italic; color:var(--muted);";
+        // Kept proportional to the English term (~0.8×) so the Spanish support
+        // label stays comfortably readable rather than shrinking to a footnote.
+        "display:block; margin-top:2px; font-size:1.05rem; font-weight:600; font-style:italic; color:var(--muted);";
       es.textContent = term.termEs;
       termLabel.append(en, es);
     } else {
@@ -221,7 +255,9 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
     const arrow = document.createElement("span");
     arrow.className = "vdm-arrow";
     arrow.style.cssText =
-      "color:var(--muted); font-size:1.2rem; height:48px; display:grid; place-items:center;";
+      // Height tracks the definition card's min-height (64px) so the decorative
+      // arrows keep roughly lining up with the rows now that the type is larger.
+      "color:var(--muted); font-size:1.4rem; height:64px; display:grid; place-items:center;";
     arrow.textContent = "→";
     arrowCol.append(arrow);
   });
@@ -233,9 +269,9 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
     // (`term`) and used by checkMatch — it is deliberately NOT written to a
     // data-* attribute, which would expose the answer pairing in the DOM.
     el.style.cssText = `
-      padding:12px 16px; border:2px dashed var(--line); border-radius:var(--radius-md);
-      background:white; font-size:0.88rem; text-align:left; cursor:pointer;
-      transition:all var(--duration-fast) ease; width:100%; min-height:48px;
+      padding:16px 18px; border:2px dashed var(--line); border-radius:var(--radius-md);
+      background:white; font-size:1.15rem; text-align:left; cursor:pointer;
+      transition:all var(--duration-fast) ease; width:100%; min-height:64px;
       color:var(--ink);
     `;
     el.textContent = term.definition;
@@ -243,7 +279,9 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
       const es = document.createElement("span");
       es.lang = "es";
       es.style.cssText =
-        "display:block; margin-top:4px; font-size:0.8rem; font-style:italic; color:var(--muted);";
+        // Same proportional rule as the term sub-label: readable support text,
+        // clearly secondary to the English definition above it.
+        "display:block; margin-top:6px; font-size:1rem; font-style:italic; color:var(--muted);";
       es.textContent = term.definitionEs;
       el.append(es);
     }

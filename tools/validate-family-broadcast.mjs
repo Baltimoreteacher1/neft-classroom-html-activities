@@ -59,9 +59,9 @@ const {
 
 /* ---------------------------------------- 1. bank covers all 19 tags ------ */
 
-if (canonicalTags.length !== 19) {
+if (canonicalTags.length !== 23) {
   fail(
-    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 19 — update this validator deliberately, not by accident`,
+    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 23 — update this validator deliberately, not by accident`,
   );
 }
 

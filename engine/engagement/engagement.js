@@ -112,6 +112,35 @@ function flyXPOrbs(fromEl, count = 6) {
   }
 }
 
+// Count the phase's XP up from zero, easing into the real number.
+//
+// The final value is written FIRST and the animation only then rewinds to 0,
+// so every path that never animates — reduced motion, a throttled background
+// tab, a browser without requestAnimationFrame — still shows the true number
+// rather than a zero frozen mid-count. Both writes happen in the same task,
+// so nothing renders in between and there is no flash.
+export function tickXP(el, total) {
+  if (!el) return;
+  const write = (n) => {
+    el.textContent = `+${n} XP`;
+  };
+  write(total);
+  if (!total || !motionOK() || typeof requestAnimationFrame !== "function") return;
+
+  const DURATION_MS = 700;
+  let startedAt = null;
+  write(0);
+  const step = (now) => {
+    if (startedAt === null) startedAt = now;
+    const progress = Math.min(1, (now - startedAt) / DURATION_MS);
+    // Cubic ease-out: fast at first, decelerating onto the final value.
+    write(Math.round(total * (1 - (1 - progress) ** 3)));
+    if (progress < 1) requestAnimationFrame(step);
+    else write(total);
+  };
+  requestAnimationFrame(step);
+}
+
 export function createEngagement(state) {
   let streakEl = null;
 
@@ -326,6 +355,11 @@ export function createEngagement(state) {
 
       container.innerHTML = "";
       container.append(banner);
+
+      // XP counts UP as part of the transition instead of arriving already
+      // finished, so the reward reads as one moment with the movement rather
+      // than a number that was simply there when the card appeared.
+      tickXP(banner.querySelector(".phase-complete-xp"), xpEarned);
 
       if (window.AudioSynth && next) {
         setTimeout(() => window.AudioSynth.success(), 200);

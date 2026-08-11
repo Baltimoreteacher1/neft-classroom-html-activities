@@ -199,11 +199,23 @@
     hub.insertAdjacentElement("beforebegin", chip);
   }
 
+  // Routed through /assets/curriculum-json-cache.js so the hub fetches each
+  // data file once instead of once per feature script. A missing manifest still
+  // resolves to null, which the next step treats as "nothing to render".
+  function loadManifest() {
+    var cache = window.NTJsonCache;
+    if (cache) {
+      return cache.json(MANIFEST_URL).catch(function () {
+        return null;
+      });
+    }
+    return fetch(MANIFEST_URL).then(function (response) {
+      return response.ok ? response.json() : null;
+    });
+  }
+
   function boot() {
-    fetch(MANIFEST_URL)
-      .then(function (response) {
-        return response.ok ? response.json() : null;
-      })
+    loadManifest()
       .then(function (manifest) {
         if (!manifest || !manifest.lessons) return;
         var unitStats = collectSignals(manifest);

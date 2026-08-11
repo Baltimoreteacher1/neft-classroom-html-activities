@@ -48,7 +48,7 @@ function injectVocabExploreTaskStyles() {
       gap: 6px;
       margin: 0;
       font-family: var(--font-display);
-      font-size: 0.78rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: var(--muted, #6b7280);
       list-style: none;
@@ -116,7 +116,7 @@ function injectVocabExploreTaskStyles() {
        nudges the student to make a real guess. Guarded for reduced motion. */
     .vet-parallax-hint {
       margin: 0;
-      font-size: 0.85rem;
+      font-size: 1rem;
       color: var(--muted, #6b7280);
       will-change: transform;
       transition: transform 0.25s var(--ease-out, ease);
@@ -289,7 +289,7 @@ export function bilingualTermEl(term) {
 
 export function bilingualDefinitionEl(term) {
   const wrap = document.createElement("div");
-  wrap.style.cssText = "font-size:0.95rem; line-height:1.6; color:var(--ink); text-align:left;";
+  wrap.style.cssText = "font-size:1.05rem; line-height:1.65; color:var(--ink); text-align:left;";
   const en = document.createElement("p");
   en.style.cssText = "margin:0;";
   en.textContent = term.definition;
@@ -365,7 +365,7 @@ function feedbackLine() {
   p.setAttribute("role", "status");
   p.setAttribute("aria-live", "polite");
   p.style.cssText =
-    "margin:0; min-height:1.4em; font-size:0.92rem; font-weight:600; line-height:1.45;";
+    "margin:0; min-height:1.4em; font-size:1.02rem; font-weight:600; line-height:1.5;";
   return p;
 }
 
@@ -510,7 +510,7 @@ export function buildExampleSort(term, { onAdvance }) {
 
   const card = stepCard(`Is this a "${term.term}"?`, "2");
   const intro = document.createElement("p");
-  intro.style.cssText = "margin:0; font-size:0.9rem; color:var(--muted);";
+  intro.style.cssText = "margin:0; font-size:1rem; color:var(--gray-700, #45566b);";
   intro.textContent = "Tap Yes or No. We'll tell you why.";
   card.append(intro);
 
@@ -525,12 +525,12 @@ export function buildExampleSort(term, { onAdvance }) {
       padding:var(--sp-2) var(--sp-3); border:1px solid var(--line);
       border-radius:var(--radius-md); background:var(--cream);`;
     const text = document.createElement("span");
-    text.style.cssText = "flex:1 1 160px; font-size:0.92rem; color:var(--ink);";
+    text.style.cssText = "flex:1 1 160px; font-size:1.02rem; color:var(--ink);";
     text.textContent = it.text;
 
     const why = document.createElement("span");
     why.className = "vet-yesno-why";
-    why.style.cssText = "flex-basis:100%; font-size:0.85rem; line-height:1.4;";
+    why.style.cssText = "flex-basis:100%; font-size:0.98rem; line-height:1.5;";
     why.hidden = true;
 
     let answered = false;
@@ -725,7 +725,7 @@ export function buildConfirmation(term) {
     box.append(es);
   }
   const sub = document.createElement("div");
-  sub.style.cssText = "font-size:0.85rem; color:var(--muted); margin-top:6px;";
+  sub.style.cssText = "font-size:1rem; color:var(--gray-700, #45566b); margin-top:6px;";
   sub.textContent = "Great thinking. You're ready to practice this word.";
   box.append(sub);
   return box;

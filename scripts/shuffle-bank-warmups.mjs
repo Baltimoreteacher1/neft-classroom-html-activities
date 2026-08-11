@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync, readdirSync, statSync } from "fs";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "fs";
 import { join, resolve } from "path";
 
 const ROOT = resolve(process.cwd());
@@ -21,8 +21,8 @@ function shuffleChoices(choices, correctIndex) {
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
 
-  const newChoices = shuffled.map(s => s.text);
-  const newCorrectIndex = shuffled.findIndex(s => s.isCorrect);
+  const newChoices = shuffled.map((s) => s.text);
+  const newCorrectIndex = shuffled.findIndex((s) => s.isCorrect);
 
   return { choices: newChoices, correctIndex: newCorrectIndex };
 }
@@ -32,9 +32,12 @@ let bankUpdatedCount = 0;
 if (readFileSync(BANK_PATH, "utf8")) {
   const bank = JSON.parse(readFileSync(BANK_PATH, "utf8"));
   if (Array.isArray(bank.questions)) {
-    bank.questions.forEach(q => {
+    bank.questions.forEach((q) => {
       if (Array.isArray(q.choices) && q.correctIndex !== undefined) {
-        const { choices: newChoices, correctIndex: newIdx } = shuffleChoices(q.choices, q.correctIndex);
+        const { choices: newChoices, correctIndex: newIdx } = shuffleChoices(
+          q.choices,
+          q.correctIndex,
+        );
         q.choices = newChoices;
         q.correctIndex = newIdx;
         bankUpdatedCount++;
@@ -67,18 +70,21 @@ function processHtmlFile(filePath) {
   let modified = false;
 
   // Pattern: warmup question blocks with options: [...] and correct: X
-  content = content.replace(/options:\s*(\[[^\]]+\]),\s*correct:\s*(\d+)/g, (match, optsStr, correctStr) => {
-    try {
-      const opts = JSON.parse(optsStr);
-      const correctIdx = parseInt(correctStr, 10);
-      const { choices: newOpts, correctIndex: newIdx } = shuffleChoices(opts, correctIdx);
-      modified = true;
-      htmlUpdatedCount++;
-      return `options: ${JSON.stringify(newOpts)}, correct: ${newIdx}`;
-    } catch (e) {
-      return match;
-    }
-  });
+  content = content.replace(
+    /options:\s*(\[[^\]]+\]),\s*correct:\s*(\d+)/g,
+    (match, optsStr, correctStr) => {
+      try {
+        const opts = JSON.parse(optsStr);
+        const correctIdx = parseInt(correctStr, 10);
+        const { choices: newOpts, correctIndex: newIdx } = shuffleChoices(opts, correctIdx);
+        modified = true;
+        htmlUpdatedCount++;
+        return `options: ${JSON.stringify(newOpts)}, correct: ${newIdx}`;
+      } catch (e) {
+        return match;
+      }
+    },
+  );
 
   if (modified) {
     writeFileSync(filePath, content, "utf8");

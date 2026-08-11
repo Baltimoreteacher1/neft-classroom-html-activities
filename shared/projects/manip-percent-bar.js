@@ -89,6 +89,21 @@
     if (isNaN(base)) base = 40;
     var pct = parseFloat(el.dataset.percent);
     if (isNaN(pct)) pct = 10;
+    // The slider used to be hard-wired to 0-50% in 1% steps, so a lesson about
+    // percents GREATER than 100% (or less than 1%) was handed a tool that could
+    // not show one: an authored data-percent of 150 was silently clamped to 50.
+    // The ceiling and the step are now data-driven, and an authored percent
+    // above the ceiling raises it rather than being thrown away.
+    var pctMax = parseFloat(el.dataset.percentMax);
+    if (isNaN(pctMax) || pctMax <= 0) pctMax = 50;
+    if (pct > pctMax) pctMax = pct;
+    var pctStep = parseFloat(el.dataset.percentStep);
+    if (isNaN(pctStep) || pctStep <= 0) pctStep = 1;
+    // Taking more than 100% off would price the item below zero, so Discount
+    // keeps the old ceiling no matter how high the others go.
+    function maxFor(m) {
+      return m === "discount" ? Math.min(pctMax, 100) : pctMax;
+    }
     var mode = PMODES[startMode] ? startMode : "tax";
 
     el.innerHTML =
@@ -109,7 +124,11 @@
       '<button type="button" class="pki-pb-btn" data-inc aria-label="increase price">+</button>' +
       "</div></div></div>" +
       '<div class="pki-pb-slider"><label>Percent <b data-pctlabel></b></label>' +
-      '<input type="range" min="0" max="50" step="1" value="' +
+      '<input type="range" min="0" max="' +
+      maxFor(mode) +
+      '" step="' +
+      pctStep +
+      '" value="' +
       pct +
       '" data-pct aria-label="percent"></div>' +
       '<div class="pki-pb-bars"><div class="pki-pb-bar"><div class="pki-pb-cap">' +
@@ -139,7 +158,9 @@
 
     function render() {
       base = clamp(isNaN(base) ? 0 : base, 0, 100000);
-      pct = clamp(isNaN(pct) ? 0 : pct, 0, 50);
+      pct = clamp(isNaN(pct) ? 0 : pct, 0, maxFor(mode));
+      pctInput.max = maxFor(mode);
+      pctInput.step = pctStep;
       pctInput.value = pct;
       pctLabel.textContent = pct + "%";
 

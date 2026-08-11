@@ -4485,145 +4485,13 @@
     { base: "Home Base 🏆", title: "Safe at Home! Mind Centered", prompt: "Safe at home plate! Take one final slow breath. Your mind is calm, clear, and ready!" },
   ];
 
-  // Next-Level NeeDoh Studio State & Data
-  let neeDohSqueezes = 0;
-  let neeDohShapeIdx = 0;
-  let neeDohMaterialIdx = 0;
-
-  const NEEDOH_SHAPES = [
-    { id: "ball", name: "Groovy Ball", emoji: "🟡", borderRadius: "50%", clipPath: "none" },
-    { id: "cube", name: "Nice Cube", emoji: "🧊", borderRadius: "24px", clipPath: "none" },
-    { id: "star", name: "Super Star", emoji: "🌟", borderRadius: "0", clipPath: "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)" },
-    { id: "cat", name: "Squish Cat", emoji: "🐱", borderRadius: "38% 38% 48% 48%", clipPath: "none" },
-    { id: "donut", name: "Gummy Donut", emoji: "🍩", borderRadius: "50%", clipPath: "none" },
-    { id: "gem", name: "Crystal Gem", emoji: "💎", borderRadius: "0", clipPath: "polygon(50% 0%, 90% 25%, 90% 75%, 50% 100%, 10% 75%, 10% 25%)" },
-  ];
-
-  const NEEDOH_MATERIALS = [
-    { id: "jelly", name: "Gummy Jelly", bg: "radial-gradient(circle at 35% 35%, #ff77bc, #ec4899 60%, #be185d)", shadow: "0 12px 28px rgba(236,72,153,0.35)", sound: "jelly" },
-    { id: "ice", name: "Nice Cube Ice", bg: "linear-gradient(135deg, #a5f3fc 0%, #38bdf8 50%, #0284c7 100%)", shadow: "0 12px 28px rgba(56,189,248,0.4)", sound: "ice" },
-    { id: "glitter", name: "Glitter Magic", bg: "radial-gradient(circle at 35% 35%, #f5d0fe, #c084fc 50%, #7e22ce 100%)", shadow: "0 12px 28px rgba(168,85,247,0.4)", sound: "glitter" },
-    { id: "bead", name: "Micro-Bead Crunch", bg: "radial-gradient(circle at 35% 35%, #fef08a, #eab308 60%, #ca8a04 100%)", shadow: "0 12px 28px rgba(234,179,8,0.35)", sound: "bead" },
-    { id: "rainbow", name: "Rainbow Swirl", bg: "linear-gradient(135deg, #f43f5e, #fb923c, #facc15, #4ade80, #38bdf8, #c084fc)", shadow: "0 12px 28px rgba(244,63,94,0.35)", sound: "rainbow" },
-    { id: "neon", name: "Neon Glow", bg: "radial-gradient(circle at 35% 35%, #86efac, #22c55e 60%, #15803d 100%)", shadow: "0 0 35px #4ade80, 0 10px 25px rgba(34,197,94,0.4)", sound: "neon" },
-  ];
-
-  function getNeeDohRank(squeezes) {
-    if (squeezes >= 100) return "👑 NeeDoh Grand Master";
-    if (squeezes >= 50) return "⚡ Master Squisher";
-    if (squeezes >= 25) return "🔥 Pro Squisher";
-    if (squeezes >= 10) return "🌟 Groovy Squisher";
-    return "🐣 Beginner Squisher";
-  }
-
-  function playNeeDohMaterialSound(matId = "jelly") {
-    try {
-      initAudio();
-      if (!audioCtx) return;
-      const now = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      if (matId === "ice") {
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(110, now);
-        osc.frequency.exponentialRampToValueAtTime(35, now + 0.18);
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-      } else if (matId === "glitter") {
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(660, now);
-        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.14);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-      } else if (matId === "bead") {
-        osc.type = "square";
-        osc.frequency.setValueAtTime(340, now);
-        osc.frequency.setValueAtTime(180, now + 0.04);
-        osc.frequency.setValueAtTime(420, now + 0.09);
-        gain.gain.setValueAtTime(0.25, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-      } else if (matId === "rainbow") {
-        osc.type = "sawtooth";
-        osc.frequency.setValueAtTime(260, now);
-        osc.frequency.exponentialRampToValueAtTime(520, now + 0.16);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-      } else if (matId === "neon") {
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(180, now);
-        osc.frequency.exponentialRampToValueAtTime(540, now + 0.18);
-        gain.gain.setValueAtTime(0.35, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-      } else {
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(220, now);
-        osc.frequency.exponentialRampToValueAtTime(480, now + 0.12);
-        gain.gain.setValueAtTime(0.35, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
-      }
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(now + 0.22);
-    } catch {}
-  }
-
+  // The NeeDoh Studio is a real soft-body simulation living in
+  // needoh-studio.js (physics, audio, FX, progression). This just emits its
+  // root markup — the engine self-hydrates any root that lands in the DOM,
+  // so it works in a re-rendered card and in a modal alike.
   function renderNeeDohStudioHtml() {
-    const sh = NEEDOH_SHAPES[neeDohShapeIdx % NEEDOH_SHAPES.length];
-    const mat = NEEDOH_MATERIALS[neeDohMaterialIdx % NEEDOH_MATERIALS.length];
-    const rank = getNeeDohRank(neeDohSqueezes);
-
-    const shapeBtns = NEEDOH_SHAPES.map(
-      (s, idx) =>
-        '<button type="button" class="btn sm' + (idx === (neeDohShapeIdx % NEEDOH_SHAPES.length) ? " primary" : "") + '" data-act="needoh-select-shape" data-arg="' + idx + '">' + s.emoji + ' ' + s.name + '</button>'
-    ).join(" ");
-
-    const matBtns = NEEDOH_MATERIALS.map(
-      (m, idx) =>
-        '<button type="button" class="btn sm' + (idx === (neeDohMaterialIdx % NEEDOH_MATERIALS.length) ? " primary" : "") + '" data-act="needoh-select-mat" data-arg="' + idx + '">' + m.name + '</button>'
-    ).join(" ");
-
-    return (
-      '<div class="needoh-studio-wrap" style="text-align:center; padding:6px;">' +
-        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">' +
-          '<div style="font-weight:800; font-size:0.85rem; color:var(--muted);">' +
-            'Rank: <span id="needohRank" style="color:var(--accent,#38bdf8); font-weight:900;">' + rank + '</span>' +
-          '</div>' +
-          '<div style="font-weight:800; font-size:0.85rem;">' +
-            'Squeezes: <span id="needohCount" style="color:var(--accent,#38bdf8); font-size:1.05rem;">' + neeDohSqueezes + '</span>' +
-          '</div>' +
-        '</div>' +
-
-        '<div style="margin-bottom:10px;">' +
-          '<div style="font-size:0.75rem; font-weight:900; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom:4px;">1. Choose Shape</div>' +
-          '<div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; justify-content:center; flex-wrap:wrap;">' +
-            shapeBtns +
-          '</div>' +
-        '</div>' +
-
-        '<div style="margin-bottom:12px;">' +
-          '<div style="font-size:0.75rem; font-weight:900; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom:4px;">2. Choose Material / Filling</div>' +
-          '<div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; justify-content:center; flex-wrap:wrap;">' +
-            matBtns +
-          '</div>' +
-        '</div>' +
-
-        '<div style="height:180px; display:flex; align-items:center; justify-content:center; position:relative; margin:10px 0; background:rgba(0,0,0,0.04); border-radius:16px;">' +
-          '<div id="needohBall" class="needoh-ball" data-act="needoh-squish" role="button" tabindex="0" aria-label="Squish NeeDoh Fidget"' +
-               ' style="width:120px; height:120px; border-radius:' + sh.borderRadius + '; clip-path:' + sh.clipPath + '; background:' + mat.bg + '; box-shadow:' + mat.shadow + '; cursor:pointer; transition:transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); user-select:none; touch-action:manipulation; display:flex; align-items:center; justify-content:center; font-size:2.6rem; position:relative;">' +
-            sh.emoji +
-          '</div>' +
-        '</div>' +
-
-        '<div style="display:flex; justify-content:center; gap:8px; margin-top:10px; flex-wrap:wrap;">' +
-          '<button type="button" class="btn primary sm" data-act="needoh-squish">💥 Squish!</button>' +
-          '<button type="button" class="btn sm" data-act="needoh-stretch">↔️ Stretch!</button>' +
-          '<button type="button" class="btn sm" data-act="needoh-twist">🔄 Twist!</button>' +
-        '</div>' +
-      '</div>'
-    );
+    if (window.NeeDohStudio) return window.NeeDohStudio.html();
+    return '<p class="muted">The NeeDoh Studio is still loading — reopen this in a moment.</p>';
   }
 
   // Sensory Bubble Wrap State
@@ -6095,7 +5963,7 @@
       const needohHtml = card(
         "calm-needoh",
         "🟡 Next-Level NeeDoh Studio",
-        "Choose custom shapes & materials! Squish, stretch, and twist your NeeDoh fidget.",
+        "A real squishy toy: grab it to stretch, press to squish. Six shapes, six materials, ranks and combos.",
         renderNeeDohStudioHtml(),
       );
 
@@ -11568,64 +11436,6 @@ Due May 31"></textarea>
       ];
       const msgEl = document.getElementById("gloveMessage");
       if (msgEl) msgEl.textContent = msgs[window._gloveCatches % msgs.length];
-    },
-    "needoh-select-shape": (id, arg) => {
-      const idx = Number(arg);
-      if (!isNaN(idx)) neeDohShapeIdx = idx;
-      playCalmPopSound();
-      render();
-    },
-    "needoh-select-mat": (id, arg) => {
-      const idx = Number(arg);
-      if (!isNaN(idx)) neeDohMaterialIdx = idx;
-      const mat = NEEDOH_MATERIALS[neeDohMaterialIdx % NEEDOH_MATERIALS.length];
-      playNeeDohMaterialSound(mat.sound);
-      render();
-    },
-    "needoh-squish": () => {
-      neeDohSqueezes++;
-      const mat = NEEDOH_MATERIALS[neeDohMaterialIdx % NEEDOH_MATERIALS.length];
-      playNeeDohMaterialSound(mat.sound);
-      try { navigator.vibrate?.(35); } catch {}
-      const ball = document.getElementById("needohBall");
-      if (ball) {
-        ball.style.transform = `scale(${1.32 + Math.random() * 0.1}, ${0.62 + Math.random() * 0.1}) translateY(12px) rotate(${(Math.random() - 0.5) * 18}deg)`;
-        setTimeout(() => { if (ball) ball.style.transform = "scale(1, 1) translateY(0) rotate(0deg)"; }, 180);
-      }
-      const countEl = document.getElementById("needohCount");
-      if (countEl) countEl.textContent = String(neeDohSqueezes);
-      const rankEl = document.getElementById("needohRank");
-      if (rankEl) rankEl.textContent = getNeeDohRank(neeDohSqueezes);
-    },
-    "needoh-stretch": () => {
-      neeDohSqueezes++;
-      const mat = NEEDOH_MATERIALS[neeDohMaterialIdx % NEEDOH_MATERIALS.length];
-      playNeeDohMaterialSound(mat.sound);
-      try { navigator.vibrate?.(45); } catch {}
-      const ball = document.getElementById("needohBall");
-      if (ball) {
-        ball.style.transform = `scale(${1.6 + Math.random() * 0.1}, ${0.5 + Math.random() * 0.1}) rotate(0deg)`;
-        setTimeout(() => { if (ball) ball.style.transform = "scale(1, 1) translateY(0) rotate(0deg)"; }, 220);
-      }
-      const countEl = document.getElementById("needohCount");
-      if (countEl) countEl.textContent = String(neeDohSqueezes);
-      const rankEl = document.getElementById("needohRank");
-      if (rankEl) rankEl.textContent = getNeeDohRank(neeDohSqueezes);
-    },
-    "needoh-twist": () => {
-      neeDohSqueezes++;
-      const mat = NEEDOH_MATERIALS[neeDohMaterialIdx % NEEDOH_MATERIALS.length];
-      playNeeDohMaterialSound(mat.sound);
-      try { navigator.vibrate?.(40); } catch {}
-      const ball = document.getElementById("needohBall");
-      if (ball) {
-        ball.style.transform = `scale(0.85, 1.25) rotate(45deg)`;
-        setTimeout(() => { if (ball) ball.style.transform = "scale(1, 1) translateY(0) rotate(0deg)"; }, 220);
-      }
-      const countEl = document.getElementById("needohCount");
-      if (countEl) countEl.textContent = String(neeDohSqueezes);
-      const rankEl = document.getElementById("needohRank");
-      if (rankEl) rankEl.textContent = getNeeDohRank(neeDohSqueezes);
     },
     // ---- Routine day-of-week toggles (in the routine editor) ----
     "toggle-routine-day": (id, arg, ev) => {

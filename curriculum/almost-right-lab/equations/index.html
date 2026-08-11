@@ -458,7 +458,9 @@
             el.setAttribute("aria-label", `Mission ${i+1}: ${m.title} — Locked`);
           }
           el.className = `mission-item ${done ? "completed" : unlocked ? "unlocked" : "locked"}`;
-          el.setAttribute("role", "listitem");
+          // Only non-link (locked) items get listitem; on an <a> the role
+          // override hides the link from screen-reader link navigation.
+          if (!unlocked) el.setAttribute("role", "listitem");
 
           el.innerHTML = `
             <div class="mission-num" aria-hidden="true">${done ? "✓" : i+1}</div>

@@ -65,13 +65,20 @@ const resolve = (href) => {
   return candidates.find((c) => existsSync(fileURLToPath(new URL(c, root))));
 };
 
+// Units with no unit game. Only the book's two "Math Is..." units, by Joel's
+// call — they teach disposition, not a content strand a game can drill.
+// Unit 9 came off this list once its Variable Velocity game was wired up.
+const UNITS_WITHOUT_A_GAME = new Set([1, 10]);
+
 for (const unit of units) {
   const where = `Unit ${unit.num}`;
 
   // Shape parity: 78063af11 replaced the blurb + cluster badge with links on
   // Units 7-9. All ten summaries carry the same three pieces.
   assert.ok(unit.blurb, `${where}: missing unit blurb`);
-  assert.match(unit.badge, /^6\.[A-Z]+$/, `${where}: missing cluster badge`);
+  // MPP is a real domain here: the book's Unit 1 and Unit 10 are the "Math Is..."
+  // practice-standard units, so a badge of MPP is correct, not a missing cluster.
+  assert.match(unit.badge, /^(6\.[A-Z]+|MPP)$/, `${where}: missing cluster badge`);
   assert.match(unit.count, /^\d+ lessons$/, `${where}: missing lesson count`);
   assert.ok(
     !unit.studioInSummary,
@@ -79,7 +86,16 @@ for (const unit of units) {
   );
   assert.ok(unit.studioInBody, `${where}: missing the Small-Group Studio link in its resource row`);
 
-  // The Unit Game must exist…
+  // The Unit Game must exist… except where the curriculum legitimately has none.
+  // Units 1 and 10 are the book's "Math Is..." mindset units — Joel's call is
+  // that they do not get a unit game. Unit 9 (Two-Variable Relationships) is new
+  // content whose game is not built yet. The exempt set is asserted below rather
+  // than merely skipped, so it cannot quietly grow to cover a unit that lost its
+  // game by accident.
+  if (UNITS_WITHOUT_A_GAME.has(unit.num)) {
+    assert.ok(!unit.href, `${where}: has a Unit Game now — remove it from UNITS_WITHOUT_A_GAME`);
+    continue;
+  }
   assert.ok(unit.href, `${where}: no "🎮 Unit Game" link`);
   const file = resolve(unit.href);
   assert.ok(file, `${where}: Unit Game link ${unit.href} does not resolve to a file`);
@@ -99,7 +115,11 @@ for (const unit of units) {
 // ── Self-test: prove the standard check actually fires ───────────────────────
 // A gate that stops firing reports a perfectly mapped curriculum.
 {
-  const statistics = unitStandards.get(8);
+  // Statistics is unit 2 under the book numbering (it was unit 8 before the
+  // renumbering). Reading unit 8 here now returns Equations & Inequalities, so
+  // the equations game was being checked against its OWN standards and the
+  // self-test could never pass.
+  const statistics = unitStandards.get(2);
   const equationsGame = new Set(
     [...read("math/unit-8/games/unit7-equation-escape.html").match(STANDARD_RE)].map(norm),
   );

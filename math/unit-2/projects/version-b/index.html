@@ -19,7 +19,7 @@
         --gold-lt: #fdf3e0;
         --green: #1e7d40;
         --green-lt: #e6f4eb;
-        --coral: #c45a3c;
+        --coral: #a8442a;
         --ink: #2b251e;
         --muted: #6e6255;
         --line: #ebdcc8;
@@ -352,6 +352,9 @@
     <!-- projects-twist-head:begin (Design Twist — tools/inject-projects-twist.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-twist.css?v=20260722" />
     <!-- projects-twist-head:end -->
+    <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
+    <!-- projects-mode-pill-head:end -->
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
 
@@ -366,9 +369,9 @@
         <span class="tag gold-lt" style="color:var(--gold); border-color:var(--gold);"><span class="en-text">Version B</span><span class="es-text">Versión B</span></span>
       </div>
       <div class="level-bar">
-        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)"><span class="en-text">🟠 Level 0 · Extra Support</span><span class="es-text">🟠 Nivel 0 · Apoyo Extra</span></button>
-        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)"><span class="en-text">🟢 Level 1 — With Support</span><span class="es-text">🟢 Nivel 1 — Con Apoyo</span></button>
-        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)"><span class="en-text">🔵 Level 2 — Challenge</span><span class="es-text">🔵 Nivel 2 — Desafío</span></button>
+        <button class="level-btn" id="btn-lv0" aria-pressed="false" onclick="setLevel(0)"><span class="en-text">🟠 Level 0 · Extra Support</span><span class="es-text">🟠 Nivel 0 · Apoyo Extra</span></button>
+        <button class="level-btn active" id="btn-lv1" aria-pressed="true" onclick="setLevel(1)"><span class="en-text">🟢 Level 1 — With Support</span><span class="es-text">🟢 Nivel 1 — Con Apoyo</span></button>
+        <button class="level-btn" id="btn-lv2" aria-pressed="false" onclick="setLevel(2)"><span class="en-text">🔵 Level 2 — Challenge</span><span class="es-text">🔵 Nivel 2 — Desafío</span></button>
         <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
         <button class="level-btn" id="btn-read" onclick="readAloud()">🔊 Read Aloud</button>
       </div>
@@ -411,7 +414,7 @@
           <div class="card-header">
             <div class="card-icon gold">📖</div>
             <div>
-              <h2 class="card-title"><span class="en-text">Step 0 — Key Words</span><span class="es-text">Paso 0 — Palabras clave</span></h2>
+              <h2 class="card-title"><span class="en-text">Step 1 — Key Words</span><span class="es-text">Paso 1 — Palabras clave</span></h2>
               <div class="card-sub"><span class="en-text">Learn these 4 math words before you begin</span><span class="es-text">Aprende estas 4 palabras matemáticas antes de comenzar</span></div>
             </div>
           </div>
@@ -465,8 +468,8 @@
           <div class="card-header">
             <div class="card-icon gold">🪢</div>
             <div>
-              <h2 class="card-title"><span class="en-text">Step 1 — Rope Cuts</span><span class="es-text">Paso 1 — Cortes de cuerda</span></h2>
-              <div class="card-sub"><span class="en-text">Total rope (fraction or whole) ÷ piece <span class="vocab-word" data-vocab="length" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('length')">length</span> (unit fraction) = number of pieces</span><span class="es-text">Cuerda total (fracción o entero) ÷ longitud de pieza (fracción unitaria) = número de piezas</span></div>
+              <h2 class="card-title"><span class="en-text">Step 2 — Rope Cuts</span><span class="es-text">Paso 2 — Cortes de cuerda</span></h2>
+              <div class="card-sub"><span class="en-text">Total rope (fraction or whole) ÷ piece <span class="vocab-word" data-vocab="length" style="border-bottom:2px dotted #0369a1; color:#0369a1; font-weight:800; cursor:pointer;" onclick="openVocabModal('length')">length</span> (unit fraction) = number of pieces</span><span class="es-text">Cuerda total (fracción o entero) ÷ longitud de pieza (fracción unitaria) = número de piezas</span></div>
             </div>
           </div>
 
@@ -491,15 +494,15 @@
           <div class="instruct lvl0-only">
             <span class="en-text"
               >🟠 <strong>Level 0 — one step at a time:</strong><br />
-              Step 1: Choose the whole-number input and type <strong>2</strong> feet of rope.<br />
-              Step 2: Type a piece length of <strong>1/2</strong> foot.<br />
+              First: Choose the whole-number input and type <strong>2</strong> feet of rope.<br />
+              Then: Type a piece length of <strong>1/2</strong> foot.<br />
               Tiny example with other numbers: 1 foot of rope cut into 1/2-foot pieces makes 2 pieces.<br />
               Say it: “I chose ___ because ___.”</span
             >
             <span class="es-text"
               >🟠 <strong>Nivel 0 — un paso a la vez:</strong><br />
-              Paso 1: Elige la entrada de número entero y escribe <strong>2</strong> pies de cuerda.<br />
-              Paso 2: Escribe una longitud de pieza de <strong>1/2</strong> pie.<br />
+              Primero: Elige la entrada de número entero y escribe <strong>2</strong> pies de cuerda.<br />
+              Luego: Escribe una longitud de pieza de <strong>1/2</strong> pie.<br />
               Ejemplo pequeño con otros números: 1 pie de cuerda cortado en piezas de 1/2 pie da 2 piezas.<br />
               Dilo: “Elegí ___ porque ___.”</span
             >
@@ -580,8 +583,8 @@
           <div class="card-header">
             <div class="card-icon gold">🪵</div>
             <div>
-              <h2 class="card-title"><span class="en-text">Step 2 — Wood Strips</span><span class="es-text">Paso 2 — Tiras de madera</span></h2>
-              <div class="card-sub"><span class="en-text">Total board (mixed number) ÷ strip <span class="vocab-word" data-vocab="length" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('length')">length</span> (fraction) = number of strips</span><span class="es-text">Tabla total (número mixto) ÷ longitud de tira (fracción) = número de tiras</span></div>
+              <h2 class="card-title"><span class="en-text">Step 3 — Wood Strips</span><span class="es-text">Paso 3 — Tiras de madera</span></h2>
+              <div class="card-sub"><span class="en-text">Total board (mixed number) ÷ strip <span class="vocab-word" data-vocab="length" style="border-bottom:2px dotted #0369a1; color:#0369a1; font-weight:800; cursor:pointer;" onclick="openVocabModal('length')">length</span> (fraction) = number of strips</span><span class="es-text">Tabla total (número mixto) ÷ longitud de tira (fracción) = número de tiras</span></div>
             </div>
           </div>
 
@@ -606,15 +609,15 @@
           <div class="instruct lvl0-only">
             <span class="en-text"
               >🟠 <strong>Level 0 — one step at a time:</strong><br />
-              Step 1: Type <strong>2</strong> whole, <strong>1</strong> numerator, <strong>2</strong> denominator — that is 2 1/2 feet.<br />
-              Step 2: Cut strips of <strong>1/2</strong> foot.<br />
+              First: Type <strong>2</strong> whole, <strong>1</strong> numerator, <strong>2</strong> denominator — that is 2 1/2 feet.<br />
+              Then: Cut strips of <strong>1/2</strong> foot.<br />
               Tiny example with other numbers: 1 1/2 feet cut into 1/2-foot strips makes 3 strips.<br />
               Say it: “I chose ___ because ___.”</span
             >
             <span class="es-text"
               >🟠 <strong>Nivel 0 — un paso a la vez:</strong><br />
-              Paso 1: Escribe <strong>2</strong> enteros, <strong>1</strong> numerador, <strong>2</strong> denominador — eso es 2 1/2 pies.<br />
-              Paso 2: Corta tiras de <strong>1/2</strong> pie.<br />
+              Primero: Escribe <strong>2</strong> enteros, <strong>1</strong> numerador, <strong>2</strong> denominador — eso es 2 1/2 pies.<br />
+              Luego: Corta tiras de <strong>1/2</strong> pie.<br />
               Ejemplo pequeño con otros números: 1 1/2 pies cortados en tiras de 1/2 pie dan 3 tiras.<br />
               Dilo: “Elegí ___ porque ___.”</span
             >
@@ -685,7 +688,7 @@
           <div class="card-header">
             <div class="card-icon gold">🧵</div>
             <div>
-              <h2 class="card-title">Step 3 — Fabric Cuts &amp; Supplies</h2>
+              <h2 class="card-title">Step 4 — Fabric Cuts &amp; Supplies</h2>
               <div class="card-sub"><span class="en-text">Total fabric ÷ swatch size = number of swatches; scale to supplier rolls</span><span class="es-text">Tela total ÷ tamaño de muestra = número de muestras; escalar a rollos de proveedor</span></div>
             </div>
           </div>
@@ -706,15 +709,15 @@
           <div class="instruct lvl0-only">
             <span class="en-text"
               >🟠 <strong>Level 0 — one step at a time:</strong><br />
-              Step 1: Type <strong>1</strong> on top and <strong>2</strong> on the bottom — a 1/2-yard swatch.<br />
-              Step 2: Look at how many swatches fit on the bolt.<br />
+              First: Type <strong>1</strong> on top and <strong>2</strong> on the bottom — a 1/2-yard swatch.<br />
+              Then: Look at how many swatches fit on the bolt.<br />
               Tiny example with other numbers: a 2-yard bolt with 1/4-yard swatches gives 2 × 4 = 8 swatches.<br />
               Say it: “I chose ___ because ___.”</span
             >
             <span class="es-text"
               >🟠 <strong>Nivel 0 — un paso a la vez:</strong><br />
-              Paso 1: Escribe <strong>1</strong> arriba y <strong>2</strong> abajo — una muestra de 1/2 yarda.<br />
-              Paso 2: Mira cuántas muestras caben en el rollo.<br />
+              Primero: Escribe <strong>1</strong> arriba y <strong>2</strong> abajo — una muestra de 1/2 yarda.<br />
+              Luego: Mira cuántas muestras caben en el rollo.<br />
               Ejemplo pequeño con otros números: un rollo de 2 yardas con muestras de 1/4 de yarda da 2 × 4 = 8 muestras.<br />
               Dilo: “Elegí ___ porque ___.”</span
             >
@@ -807,7 +810,7 @@
           <div class="card-header">
             <div class="card-icon gold">👥</div>
             <div>
-              <h2 class="card-title"><span class="en-text">Step 4 — Partner Compare</span><span class="es-text">Paso 4 — Comparar con compañero</span></h2>
+              <h2 class="card-title"><span class="en-text">Step 5 — Partner Compare</span><span class="es-text">Paso 5 — Comparar con compañero</span></h2>
               <div class="card-sub"><span class="en-text">Compare cut lists and yields with a partner</span><span class="es-text">Compara listas de corte y rendimientos con un compañero</span></div>
             </div>
           </div>
@@ -865,7 +868,7 @@
           <div class="card-header">
             <div class="card-icon green">🏆</div>
             <div>
-              <h2 class="card-title">Step 5 — Finish &amp; Submit</h2>
+              <h2 class="card-title">Step 6 — Finish &amp; Submit</h2>
               <div class="card-sub"><span class="en-text">Generate your final cut list summary and review your scoring rubric</span><span class="es-text">Genera tu resumen final de la lista de cortes y revisa tu rúbrica de calificación</span></div>
             </div>
           </div>
@@ -935,11 +938,25 @@
             <button class="export-btn" onclick="window.print()">🖨️ <span class="en-text">Print</span><span class="es-text">Imprimir</span></button>
           </div>
           <pre class="report-box" id="reportBox"></pre>
+
+          <div class="instruct green" id="turnInBox">
+            <span class="en-text"><strong>📬 Finish &amp; Turn In — do these four things:</strong><br />
+              1. Check every box in the checklist above.<br />
+              2. Write 3–5 sentences in your Workshop Cut List Memo.<br />
+              3. Press <strong>📝 Generate Summary</strong> to build your report.<br />
+              4. Press <strong>🎉 I'm Done!</strong> — it will tell you if anything is still missing.</span>
+            <span class="es-text"><strong>📬 Termina y entrega — haz estas cuatro cosas:</strong><br />
+              1. Marca todas las casillas de la lista de verificación.<br />
+              2. Escribe de 3 a 5 oraciones en tu memo del taller.<br />
+              3. Presiona <strong>📝 Generar resumen</strong> para crear tu reporte.<br />
+              4. Presiona <strong>🎉 ¡Terminé!</strong> — te dirá si falta algo.</span>
+          </div>
+          <div class="instruct" id="finishStatus" style="display:none"></div>
         </div>
 
         <div class="nav-row">
           <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
-          <button class="nav-btn green" onclick="alert('Congratulations! 🎉 Show your cut list report to your teacher.')"><span class="en-text">🎉 I'm Done!</span><span class="es-text">🎉 ¡Terminé!</span></button>
+          <button class="nav-btn green" onclick="finishProject()"><span class="en-text">🎉 I'm Done!</span><span class="es-text">🎉 ¡Terminé!</span></button>
         </div>
       </div>
 
@@ -1008,9 +1025,11 @@
       function setLevel(n) {
         document.body.classList.remove('level-0', 'level-1', 'level-2');
         document.body.classList.add('level-' + n);
-        document.getElementById('btn-lv0').classList.toggle('active', n === 0);
-        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
-        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
+        [0, 1, 2].forEach(i => {
+          const b = document.getElementById('btn-lv' + i);
+          b.classList.toggle('active', n === i);
+          b.setAttribute('aria-pressed', String(n === i));
+        });
 
         calcRope();
         calcWood();
@@ -1048,14 +1067,51 @@
         document.getElementById('step-' + n).classList.add('active');
         buildTrail();
         updateProgress();
+        saveWizardState();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
       function updateProgress() {
-        const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
+        // Progress reflects how many steps have actually been opened, not just
+        // where the student happens to be standing right now.
+        const done = Math.max(0, visited.size - 1);
+        const pct = Math.round((done / (STEPS.length - 1)) * 100);
         document.getElementById('progFill').style.width = pct + '%';
         const isEs = document.body.classList.contains('es');
-        document.getElementById('progLabel').textContent = isEs ? `Paso ${currentStep} de ${STEPS.length}` : `Step ${currentStep} of ${STEPS.length}`;
+        document.getElementById('progLabel').textContent = isEs
+          ? `Paso ${currentStep} de ${STEPS.length} · ${pct}% completado`
+          : `Step ${currentStep} of ${STEPS.length} · ${pct}% complete`;
+      }
+
+      /* ---- Wizard state: remember level + step across reloads ----
+         Student work (inputs/checkboxes) is handled by the shared Save/Resume
+         engine; this only keeps the WIZARD position so a reload never drops a
+         student back on Step 1 at the wrong level. */
+      const WIZ_KEY = 'nt:u2-projects:version-b:wizard';
+      function saveWizardState() {
+        try {
+          localStorage.setItem(WIZ_KEY, JSON.stringify({
+            step: currentStep,
+            visited: Array.from(visited),
+            level: document.body.classList.contains('level-0') ? 0
+              : document.body.classList.contains('level-2') ? 2 : 1
+          }));
+        } catch (e) { /* storage unavailable — page still works, just no resume */ }
+      }
+      function restoreWizardState() {
+        let saved = null;
+        try { saved = JSON.parse(localStorage.getItem(WIZ_KEY) || 'null'); } catch (e) { saved = null; }
+        if (!saved) return;
+        if (Array.isArray(saved.visited)) {
+          saved.visited.forEach(n => { if (n >= 1 && n <= STEPS.length) visited.add(n); });
+        }
+        if (saved.level === 0 || saved.level === 2) setLevel(saved.level);
+        if (saved.step >= 1 && saved.step <= STEPS.length && saved.step !== currentStep) {
+          goStep(saved.step);
+        } else {
+          buildTrail();
+          updateProgress();
+        }
       }
 
       // ---- Math helpers ----
@@ -1156,8 +1212,8 @@
           const x = 40 + i * stepSize;
           if (x <= 40 + ropeLength) {
             html += `
-              <line x1="${x}" y1="50" x2="${x}" y2="70" stroke="#c45a3c" stroke-width="2"/>
-              <circle cx="${x}" cy="60" r="3" fill="#c45a3c"/>
+              <line x1="${x}" y1="50" x2="${x}" y2="70" stroke="#a8442a" stroke-width="2"/>
+              <circle cx="${x}" cy="60" r="3" fill="#a8442a"/>
             `;
           }
         }
@@ -1165,7 +1221,7 @@
         if (qVal > totalCuts) {
           const xEnd = 40 + ropeLength;
           html += `
-            <path d="M ${xEnd - 5},52 L ${xEnd + 2},60 L ${xEnd - 5},68" fill="none" stroke="#c45a3c" stroke-width="2"/>
+            <path d="M ${xEnd - 5},52 L ${xEnd + 2},60 L ${xEnd - 5},68" fill="none" stroke="#a8442a" stroke-width="2"/>
           `;
         }
         
@@ -1263,7 +1319,7 @@
         
         const boardLength = totalVal * scale;
         html += `
-          <rect x="40" y="50" width="${boardLength}" height="36" rx="4" fill="#fdf3e0" stroke="#d4952a" stroke-width="2"/>
+          <rect x="40" y="50" width="${boardLength}" height="36" rx="4" fill="#fdf3e0" stroke="#8a5f0a" stroke-width="2"/>
         `;
         
         const stepSize = stripVal * scale;
@@ -1280,8 +1336,8 @@
           const xScrap = 40 + usedLength;
           const wScrap = boardLength - usedLength;
           html += `
-            <rect x="${xScrap}" y="51" width="${wScrap}" height="34" fill="#fdeee9" stroke="#c45a3c" stroke-width="1"/>
-            <text x="${xScrap + wScrap/2}" y="72" text-anchor="middle" font-size="9" fill="#c45a3c" font-weight="bold">Scrap</text>
+            <rect x="${xScrap}" y="51" width="${wScrap}" height="34" fill="#fdeee9" stroke="#a8442a" stroke-width="1"/>
+            <text x="${xScrap + wScrap/2}" y="72" text-anchor="middle" font-size="9" fill="#a8442a" font-weight="bold">Scrap</text>
           `;
         }
         
@@ -1552,12 +1608,54 @@
         a.click();
       }
 
+      // ---- Step 6: Finish check ----
+      function finishProject() {
+        const isEs = document.body.classList.contains('es');
+        const missing = [];
+        const boxes = Array.from(document.querySelectorAll('#checklist input[type=checkbox]'));
+        const unchecked = boxes.filter(b => !b.checked).length;
+        if (unchecked > 0) {
+          missing.push(isEs
+            ? `Marca las ${unchecked} casillas que faltan en la lista de verificación.`
+            : `Check the ${unchecked} box${unchecked === 1 ? '' : 'es'} still empty in the checklist.`);
+        }
+        const pitch = (document.getElementById('pitch').value || '').trim();
+        if (pitch.split(/\s+/).filter(Boolean).length < 20) {
+          missing.push(isEs
+            ? 'Escribe de 3 a 5 oraciones en tu memo del taller (usa tus números reales).'
+            : 'Write 3–5 sentences in your Workshop Cut List Memo (use your real numbers).');
+        }
+        if (!(document.getElementById('reportBox').textContent || '').trim()) {
+          missing.push(isEs
+            ? 'Presiona 📝 Generar resumen para crear tu reporte.'
+            : 'Press 📝 Generate Summary to build your report.');
+        }
+        const box = document.getElementById('finishStatus');
+        box.style.display = 'block';
+        if (missing.length) {
+          box.classList.remove('green');
+          box.innerHTML = `<strong>${isEs ? 'Casi listo — falta esto:' : 'Almost there — still missing:'}</strong><ul style="margin:8px 0 0 18px">`
+            + missing.map(m => `<li>${m}</li>`).join('') + '</ul>';
+        } else {
+          box.classList.add('green');
+          box.innerHTML = isEs
+            ? '<strong>🎉 ¡Listo para entregar!</strong> Tu lista de cortes está completa. Muestra o imprime tu reporte para tu maestro.'
+            : '<strong>🎉 Ready to turn in!</strong> Your cut list is complete. Show or print your report for your teacher.';
+          playConfetti();
+        }
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
       // ---- Init ----
       buildTrail();
       updateProgress();
       calcRope();
       calcWood();
       calcFabric();
+      restoreWizardState();
+      document.querySelectorAll('.level-btn[id^=btn-lv]').forEach(b => {
+        b.addEventListener('click', saveWizardState);
+      });
 
       function toggleLanguage() {
         const isEs = document.body.classList.toggle('es');
@@ -1792,5 +1890,8 @@
   <!-- projects-twist-body:end -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+  <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+  <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
+  <!-- projects-mode-pill-body:end -->
 </body>
 </html>
