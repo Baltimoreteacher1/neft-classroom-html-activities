@@ -44,15 +44,87 @@
     return node;
   }
 
-  function loadState() {
+  /**
+   * The lesson the district pacing calendar puts us on today. Falls back to
+   * "1-1" only when the pacing module is absent — never as a silent default,
+   * which is what used to strand the cockpit on lesson 1-1 for the whole year.
+   */
+  function pacingDefaultLesson() {
+    var pacing = window.NTDistrictPacing;
+    if (!pacing) return "1-1";
     try {
-      return Object.assign(
-        { selected: "1-1", section: "601", favorites: [], recent: [], view: "today" },
-        JSON.parse(localStorage.getItem(STORAGE)) || {},
-      );
+      var ids = pacing.lessonIds(pacing.today());
+      return ids[0] || "1-1";
     } catch (_error) {
-      return { selected: "1-1", section: "601", favorites: [], recent: [], view: "today" };
+      return "1-1";
     }
+  }
+
+  /** The district sequence number for today, or 0 when pacing is unavailable. */
+  function pacingSeqNumber() {
+    var pacing = window.NTDistrictPacing;
+    if (!pacing) return 0;
+    try {
+      var item = pacing.today();
+      return (item && item.sequence) || 0;
+    } catch (_error) {
+      return 0;
+    }
+  }
+
+  /**
+   * The pacing line in the hero. Mirrors the top console's
+   * "Grade 6 Math · Course 1 District Pacing" and adds WHICH sequence is live,
+   * so the cockpit states its own alignment instead of implying it.
+   */
+  function pacingStampText() {
+    var base = "Grade 6 Math · Course 1 District Pacing";
+    var pacing = window.NTDistrictPacing;
+    if (!pacing) return base;
+    try {
+      var label = pacing.label(pacing.today());
+      return label ? `${base} · ${label}` : base;
+    } catch (_error) {
+      return base;
+    }
+  }
+
+  function defaultState() {
+    return {
+      selected: pacingDefaultLesson(),
+      section: "601",
+      favorites: [],
+      recent: [],
+      view: "today",
+      seqStamp: pacingSeqNumber(),
+    };
+  }
+
+  /**
+   * Saved state wins WITHIN a district sequence — a teacher's chosen lesson,
+   * section and view must survive a reload. But when the calendar rolls into a
+   * new sequence, the stored `selected` is a stale answer to "what are we
+   * teaching", so the lesson (and only the lesson) re-defaults to the new
+   * sequence's opener. Favourites, section and recents are never touched.
+   */
+  function loadState() {
+    var base = defaultState();
+    // Captured BEFORE the merge: Object.assign mutates `base`, so reading
+    // base.selected afterwards would hand back the stale saved lesson.
+    var pacingLesson = base.selected;
+    var saved;
+    try {
+      saved = JSON.parse(localStorage.getItem(STORAGE)) || {};
+    } catch (_error) {
+      return base;
+    }
+    var merged = Object.assign(base, saved);
+    var seq = pacingSeqNumber();
+    if (seq && merged.seqStamp !== seq) {
+      merged.selected = pacingLesson;
+      merged.seqStamp = seq;
+    }
+    return merged;
   }
 
   function saveState() {
@@ -753,7 +825,10 @@
     panel.appendChild(quick);
 
     var hero = el("header", "ctw-header");
-    hero.appendChild(el("p", "ctw-kicker", "Teacher Command Center · Local & private"));
+    var headrow = el("div", "ctw-headrow");
+    headrow.appendChild(el("p", "ctw-kicker", "🔒 Teacher Command Center · Local & private"));
+    headrow.appendChild(el("p", "ctw-pacing-stamp", pacingStampText()));
+    hero.appendChild(headrow);
     hero.appendChild(el("h2", null, "Plan it. Teach it. Launch it."));
     hero.appendChild(
       el(

@@ -311,6 +311,75 @@
     return crosswalk.find((x) => x.sequence == seqVal) || crosswalk[0];
   };
 
+  /* ---------------------------------------------------------- pacing clock */
+
+  /**
+   * Parse the crosswalk's `M/D/YY` dates as LOCAL midnight. `new Date("8/24/26")`
+   * is engine-dependent and `new Date("2026-08-24")` parses as UTC — either one
+   * lands a teacher on the wrong sequence for a day at each boundary.
+   */
+  function parseSeqDate(text) {
+    const bits = String(text || "").split("/");
+    if (bits.length !== 3) return null;
+    const month = Number(bits[0]);
+    const day = Number(bits[1]);
+    let year = Number(bits[2]);
+    if (!month || !day || Number.isNaN(year)) return null;
+    if (year < 100) year += 2000;
+    return new Date(year, month - 1, day);
+  }
+
+  function atMidnight(date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
+
+  /**
+   * The district sequence a given date falls in. Dates inside a window return
+   * that window. Dates in a GAP between windows (breaks, testing weeks) return
+   * the sequence that starts next, because that is what a teacher is planning
+   * toward. Before the year starts → sequence 1; after it ends → the last one.
+   */
+  function seqForDate(when) {
+    const day = atMidnight(when instanceof Date ? when : new Date());
+    let upcoming = null;
+    for (const item of crosswalk) {
+      const start = parseSeqDate(item.start_date);
+      const end = parseSeqDate(item.end_date);
+      if (!start || !end) continue;
+      if (day >= start && day <= end) return item;
+      if (day < start && (!upcoming || start < parseSeqDate(upcoming.start_date))) upcoming = item;
+    }
+    return upcoming || crosswalk[crosswalk.length - 1];
+  }
+
+  /**
+   * The shared pacing API. The Teacher Command Center reads this so the hub has
+   * ONE answer to "where is the district right now" instead of two surfaces
+   * disagreeing — the cockpit used to open on lesson 1-1 all year.
+   */
+  window.NTDistrictPacing = {
+    crosswalk: crosswalk,
+    seqForDate: seqForDate,
+    /** The sequence covering today. */
+    today: function () {
+      return seqForDate(new Date());
+    },
+    /** The sequence the teacher currently has selected in the pacing console. */
+    active: function () {
+      return window.getActiveDistrictSeq();
+    },
+    /** Lesson ids for a sequence, in district order. */
+    lessonIds: function (item) {
+      return ((item && item.lessons) || []).map(function (lesson) {
+        return lesson.id;
+      });
+    },
+    label: function (item) {
+      if (!item) return "";
+      return `${item.quarter} · Seq ${item.sequence} · ${item.district_title}`;
+    },
+  };
+
   window.onDistrictSeqChange = function (seqVal) {
     const item = crosswalk.find((x) => x.sequence == seqVal);
     const lessonSelect = document.getElementById("district-lesson-select");
@@ -408,6 +477,12 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     const select = document.getElementById("district-seq-select");
-    if (select && select.value) window.onDistrictSeqChange(select.value);
+    if (!select) return;
+    // Open on where the district actually is today, not on Seq 1 in June.
+    const today = seqForDate(new Date());
+    if (today && select.querySelector(`option[value="${today.sequence}"]`)) {
+      select.value = String(today.sequence);
+    }
+    if (select.value) window.onDistrictSeqChange(select.value);
   });
 })();
