@@ -662,10 +662,13 @@ export function createVocabularySection(config, variant, onDone, store = null) {
 
   const renderRound = () => {
     const word = words[index];
-    prompt.textContent = word.definition || word.visual || `Choose the term for word ${index + 1}.`;
+    const rawDef = word.definition || word.visual || `Word ${index + 1}`;
+    prompt.innerHTML = `Which term means: <strong>"${esc(rawDef)}"</strong>?`;
     options.innerHTML = "";
-    // Shuffled every round so the answer position never becomes a pattern.
-    shuffle([...words]).forEach((candidate) => {
+    // Filter out target word to select max 3 distractors for clear, focused choices (max 4 total options)
+    const distractors = shuffle(words.filter((w) => w.term !== word.term)).slice(0, 3);
+    const roundChoices = shuffle([word, ...distractors]);
+    roundChoices.forEach((candidate) => {
       const button = el("button", "sg-match-btn", esc(candidate.term));
       button.type = "button";
       button.onclick = () => {
@@ -722,7 +725,9 @@ export function createVocabularySection(config, variant, onDone, store = null) {
       sentence.appendChild(blank);
       sentence.appendChild(document.createTextNode(rest.join("___")));
       chipRow.innerHTML = "";
-      shuffle([...words]).forEach((candidate) => {
+      const clozeDistractors = shuffle(words.filter((w) => w.term !== word.term)).slice(0, 3);
+      const clozeChoices = shuffle([word, ...clozeDistractors]);
+      clozeChoices.forEach((candidate) => {
         const chip = el("button", "sg-match-btn", esc(candidate.term));
         chip.type = "button";
         chip.onclick = () => {
