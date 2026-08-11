@@ -1031,7 +1031,7 @@
             }
           }
         </style>
-        <header class="hub">
+        <header class="hub" id="top">
           <p class="lede">
             <strong>Browse the library</strong> — expand a unit for its lessons, activities, notes,
             downloads, and homework.
@@ -1082,6 +1082,59 @@
               background: var(--teal);
               color: #ffffff;
               border-color: var(--teal);
+            }
+            .unit-jump-pill.is-active,
+            .unit-jump-pill[aria-current="true"] {
+              background: var(--navy, #12355b);
+              color: #ffffff !important;
+              border-color: var(--navy, #12355b);
+              box-shadow: 0 2px 6px rgba(18, 53, 91, 0.25);
+            }
+            .unit-jump-bar--bottom {
+              margin: 24px 0 12px;
+              background: rgba(255, 255, 255, 0.95);
+              box-shadow: 0 4px 16px rgba(18, 53, 91, 0.08);
+            }
+            .unit-jump-top-btn {
+              background: var(--teal-light, #dff2ee);
+              color: var(--teal, #1fa6a2);
+              border-color: var(--teal, #1fa6a2);
+            }
+            .unit-jump-top-btn:hover,
+            .unit-jump-top-btn:focus-visible {
+              background: var(--teal, #1fa6a2);
+              color: #ffffff !important;
+            }
+            .bottom-lesson-jump {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              margin: 12px 0 24px;
+              padding: 10px 14px;
+              background: #ffffff;
+              border: 1px solid var(--line);
+              border-radius: 12px;
+              box-shadow: 0 2px 8px rgba(18, 53, 91, 0.04);
+            }
+            .bottom-lesson-label {
+              font-weight: 800;
+              font-size: 12px;
+              text-transform: uppercase;
+              letter-spacing: 0.04em;
+              color: var(--navy);
+              white-space: nowrap;
+            }
+            .bottom-lesson-select {
+              flex: 1;
+              min-height: 38px;
+              padding: 0 12px;
+              border: 1px solid var(--line);
+              border-radius: 8px;
+              font-size: 14px;
+              font-weight: 600;
+              color: var(--ink);
+              background: var(--cream, #f7f4ec);
+              cursor: pointer;
             }
             .card-collapse-toggle {
               position: absolute;
@@ -9660,6 +9713,116 @@
           </details>
         </div>
       </details>
+      <nav class="unit-jump-bar unit-jump-bar--bottom" aria-label="Quick jump to unit (bottom navigation)">
+        <span class="unit-jump-label">Quick Jump:</span>
+        <div class="unit-jump-pills">
+          <a href="#unit-1" class="unit-jump-pill">Unit 1 Math Is...</a>
+          <a href="#unit-2" class="unit-jump-pill">Unit 2 Statistics</a>
+          <a href="#unit-3" class="unit-jump-pill">Unit 3 Ratios &amp; Rates</a>
+          <a href="#unit-4" class="unit-jump-pill">Unit 4 Percents</a>
+          <a href="#unit-5" class="unit-jump-pill">Unit 5 Area, Surface Area &amp; Volume</a>
+          <a href="#unit-6" class="unit-jump-pill">Unit 6 Expressions</a>
+          <a href="#unit-7" class="unit-jump-pill"
+            >Unit 7 Integers &amp; the Coordinate Plane</a
+          >
+          <a href="#unit-8" class="unit-jump-pill">Unit 8 Equations &amp; Inequalities</a>
+          <a href="#unit-9" class="unit-jump-pill">Unit 9 Two-Variable Relationships</a>
+          <a href="#unit-10" class="unit-jump-pill">Unit 10 Math Is...</a>
+          <a href="#top" class="unit-jump-pill unit-jump-top-btn" title="Return to top of curriculum page">▲ Back to Top</a>
+        </div>
+      </nav>
+
+      <div class="bottom-lesson-jump" aria-label="Quick lesson jump dropdown">
+        <label for="bottom-lesson-select" class="bottom-lesson-label">Jump to Lesson:</label>
+        <select id="bottom-lesson-select" class="bottom-lesson-select">
+          <option value="">Select a lesson (1-1 through 10-6)…</option>
+        </select>
+      </div>
+
+      <script>
+        (function setupCurriculumNavSync() {
+          function initNavSync() {
+            var bottomSelect = document.getElementById("bottom-lesson-select");
+            if (bottomSelect && bottomSelect.options.length <= 1) {
+              var lessons = document.querySelectorAll("details.lesson");
+              lessons.forEach(function (l) {
+                var head = l.querySelector(".lesson-head");
+                if (!head) return;
+                var text = head.textContent.trim().replace(/\s+/g, " ");
+                var match = text.match(/Lesson\s+(\d+-\d+)/i) || text.match(/(\d+\.\d+)/);
+                var val = match ? match[1].replace(".", "-") : text.slice(0, 15);
+                var opt = document.createElement("option");
+                opt.value = val;
+                opt.textContent = text;
+                bottomSelect.appendChild(opt);
+              });
+              bottomSelect.addEventListener("change", function () {
+                var val = this.value;
+                if (!val) return;
+                var targetLesson = null;
+                var allLessons = document.querySelectorAll("details.lesson");
+                allLessons.forEach(function (l) {
+                  var dataSearch = l.getAttribute("data-search") || "";
+                  var headText = l.querySelector(".lesson-head")?.textContent || "";
+                  if (dataSearch.indexOf(val.toLowerCase()) > -1 || headText.indexOf(val) > -1) {
+                    if (!targetLesson) targetLesson = l;
+                  }
+                });
+                if (targetLesson) {
+                  var parentUnit = targetLesson.closest("details.unit");
+                  if (parentUnit) parentUnit.open = true;
+                  targetLesson.open = true;
+                  targetLesson.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+              });
+            }
+
+            var units = document.querySelectorAll("details.unit[id], section.unit[id]");
+            if (!units.length) return;
+
+            var topPills = document.querySelectorAll(".unit-jump-bar:not(.unit-jump-bar--bottom) .unit-jump-pill");
+            var bottomPills = document.querySelectorAll(".unit-jump-bar--bottom .unit-jump-pill");
+
+            function setActivePill(unitId) {
+              [topPills, bottomPills].forEach(function (pills) {
+                pills.forEach(function (pill) {
+                  var href = pill.getAttribute("href");
+                  if (href === "#" + unitId) {
+                    pill.classList.add("is-active");
+                    pill.setAttribute("aria-current", "true");
+                  } else if (href !== "#top") {
+                    pill.classList.remove("is-active");
+                    pill.removeAttribute("aria-current");
+                  }
+                });
+              });
+            }
+
+            if ("IntersectionObserver" in window) {
+              var observer = new IntersectionObserver(
+                function (entries) {
+                  entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                      setActivePill(entry.target.id);
+                    }
+                  });
+                },
+                { rootMargin: "-15% 0px -65% 0px" }
+              );
+              units.forEach(function (u) {
+                observer.observe(u);
+              });
+            }
+          }
+
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initNavSync);
+          } else {
+            setTimeout(initNavSync, 100);
+          }
+        })();
+      </script>
+
       <footer class="hub">
         Neft Teacher · Grade 6 Math · 10 units · 64 lessons · 158 pathways (128 small-group / 20
         catch-up / 10 unit projects) ·
