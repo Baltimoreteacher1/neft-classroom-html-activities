@@ -220,7 +220,7 @@
       '<div style="display:flex; gap:10px;">' +
       '<button type="button" class="hub-teacher-cancel" style="flex:1; min-height:44px; border:1px solid #cbd5e1; background:#f8fafc; color:#475569; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer;">Cancel</button>' +
       '<button type="submit" class="hub-teacher-go" style="flex:1; min-height:44px; border:none; background:#0284c7; color:#ffffff; border-radius:10px; font-weight:800; font-size:14px; cursor:pointer;">Unlock</button>' +
-      '</div>' +
+      "</div>" +
       '<p class="hub-teacher-err" role="alert" hidden style="margin:12px 0 0; font-size:13px; color:#ef4444; font-weight:700;">That password did not work. Try again.</p>';
 
     var pin = form.querySelector(".hub-teacher-pin");
