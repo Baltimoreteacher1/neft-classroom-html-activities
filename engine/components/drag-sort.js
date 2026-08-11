@@ -675,7 +675,7 @@ function createNumberArraySVG(num) {
 }
 
 function openDragItemModal(title, svgContent, text) {
-  let dialog = document.getElementById("ds-preview-dialog");
+  let dialog = /** @type {HTMLDialogElement|null} */ (document.getElementById("ds-preview-dialog"));
   if (!dialog) {
     dialog = document.createElement("dialog");
     dialog.id = "ds-preview-dialog";
@@ -693,7 +693,9 @@ function openDragItemModal(title, svgContent, text) {
       <button type="button" class="btn btn-primary" style="margin-top:16px; padding:8px 20px; font-weight:700;" onclick="this.closest('dialog').close()">Close Preview</button>
     </div>
   `;
-  dialog.showModal();
+  if (typeof dialog.showModal === "function") {
+    dialog.showModal();
+  }
 }
 
 function getVisualForText(text) {
