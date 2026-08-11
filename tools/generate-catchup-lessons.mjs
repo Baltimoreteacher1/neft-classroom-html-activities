@@ -100,15 +100,16 @@ for (const band of bands) {
   out.contentObjective = `I can show I am caught up on Lessons ${range} by using each lesson's big idea in mixed practice.`;
   out.languageObjective = `I can explain which lesson's big idea I used and how, using key vocabulary from Lessons ${range}.`;
 
-  // Merged vocab: top 2 terms per lesson, deduped.
+  // Merged vocab: top terms per lesson, deduped.
   const seen = new Set();
   out.vocabulary = [];
   for (const s of srcs) {
-    for (const v of (s.c.vocabulary || []).slice(0, 2)) {
-      const k = v.term.toLowerCase();
-      if (seen.has(k)) continue;
+    for (const v of s.c.vocabulary || []) {
+      const k = v.term ? v.term.toLowerCase() : "";
+      if (!k || seen.has(k)) continue;
       seen.add(k);
       out.vocabulary.push(v);
+      if (out.vocabulary.length >= 8) break;
     }
   }
 
