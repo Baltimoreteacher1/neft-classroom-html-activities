@@ -23,6 +23,7 @@
 // and a generator re-run converges on the identical result.
 
 import { globSync, readFileSync, writeFileSync } from "node:fs";
+import { deriveOperandTags } from "./lib/operand-misconception-tagger.mjs";
 
 const DRY = process.argv.includes("--dry-run");
 
@@ -119,6 +120,16 @@ function walk(node, visit) {
   }
 }
 
+/* The exact ×10^k / negation rules above only reach items whose distractors are
+   magnitude or sign twins. Most of this curriculum is prose word problems, and
+   for those the operand reconstruction in tools/lib/operand-misconception-tagger.mjs
+   is the honest path — it recovers the problem's arithmetic model from the
+   stem's own numbers and refuses every ambiguous reading. Exact rules win where
+   both apply; the operand family fills what they leave untagged. */
+function tagsFor(node) {
+  return deriveTags(node) || deriveOperandTags(node);
+}
+
 function main() {
   selfTest();
   const files = globSync("lessons/*/config.json").sort();
@@ -129,7 +140,7 @@ function main() {
     const config = JSON.parse(source);
     let changed = 0;
     walk(config, (node) => {
-      const tags = deriveTags(node);
+      const tags = tagsFor(node);
       if (tags) {
         node.misconceptionTags = tags;
         changed++;
