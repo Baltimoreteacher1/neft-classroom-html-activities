@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Geo-Architect Expedition — Unit 10 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 10 Volume &amp; Surface Area culminating project: 3D Geo-Architect Expedition. Design 3D structures, fold 2D nets, calculate surface area and fractional edge volume."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
+    <style>
+      :root {
+        --navy: #1c2e42;
+        --teal: #0b6f65;
+        --teal-lt: #e4f5f3;
+        --amber: #d97706;
+        --amber-lt: #fef3c7;
+        --ink: #0f172a;
+        --muted: #475569;
+        --line: #cbd5e1;
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 20px rgba(28, 46, 66, 0.08);
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: "Inter", system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
+      .hero { background: linear-gradient(135deg, #1c2e42 0%, #2b696e 60%, #9a6100 100%); color: #fff; padding: 36px 24px 28px; text-align: center; }
+      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
+      .hero h1 { font-size: clamp(24px, 5vw, 38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+      .hero-sub { color: rgba(255, 255, 255, 0.9); font-size: 16px; max-width: 620px; margin: 0 auto 16px; }
+      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+      .tag { background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; }
+      .tag.gold { background: var(--amber); border-color: var(--amber); color: #fff; }
+      .level-bar { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
+      .level-btn { background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.35); color: #fff; border-radius: 10px; padding: 8px 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+      .container { max-width: 960px; margin: 28px auto; padding: 0 20px; }
+      .project-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; margin-bottom: 24px; box-shadow: var(--shadow); }
+      .step-num { display: inline-block; background: var(--teal); color: #fff; font-weight: 800; padding: 2px 10px; border-radius: 6px; font-size: 13px; margin-bottom: 8px; }
+      .card-title { font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 12px; }
+      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+      @media(max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+      .input-group { margin-bottom: 14px; }
+      .input-group label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 4px; color: var(--muted); }
+      .input-group input, .input-group select { width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; font-size: 15px; font-weight: 600; }
+      .calc-box { background: var(--teal-lt); border: 1px solid var(--teal); border-radius: 12px; padding: 18px; margin-top: 14px; }
+      .calc-title { font-weight: 800; color: var(--teal); margin-bottom: 6px; font-size: 15px; }
+      .btn-primary { background: var(--teal); color: #fff; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s; }
+      .btn-primary:hover { background: #08514a; }
+      .hint-box { background: var(--amber-lt); border: 1px solid var(--amber); border-radius: 10px; padding: 14px; margin-top: 12px; font-size: 14px; color: #78350f; display: none; }
+    </style>
+      <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
+    <!-- projects-mode-pill-head:end -->
+    <!-- projects-publication-head:begin (Publication Studio — tools/inject-projects-publication.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-publication.css?v=20260714" />
+    <!-- projects-publication-head:end -->
+    <!-- projects-award-head:begin (Community Math Studio — tools/inject-projects-award.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-award.css?v=20260714" />
+    <!-- projects-award-head:end -->
+    <!-- projects-solve-injected:begin (guided worked examples — tools/inject-projects-solve.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-solve.css" />
+    <!-- projects-solve-injected:end -->
+    <!-- projects-twist-head:begin (Design Twist — tools/inject-projects-twist.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-twist.css?v=20260722" />
+    <!-- projects-twist-head:end -->
+    <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-complete.css" />
+    <!-- projects-complete-injected:end -->
+    <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-check.css" />
+    <!-- projects-check-injected:end -->
+    <!-- projects-discourse-injected:begin (Turn & Talk + structured peer compare — tools/inject-projects-discourse.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-discourse.css" />
+    <!-- projects-discourse-injected:end -->
+    <!-- projects-answerkey-link-injected:begin (teacher-only answer-key link — tools/inject-projects-answerkey-link.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-answerkey-link.css" />
+    <!-- projects-answerkey-link-injected:end -->
+    <!-- projects-partner-injected:begin (Level 0/1 partner guide — tools/inject-projects-partner.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-partner.css" />
+    <!-- projects-partner-injected:end -->
+</head>
+  <body class="pro-projects">
+    <main class="page-shell">
+      <header class="hero">
+        <div class="hero-emoji">🏛️</div>
+        <p class="eyebrow">Unit 10 · Culminating Project · Version C</p>
+        <h1>3D Geo-Architect Expedition</h1>
+        <p class="hero-copy">
+          Design 3D architectural structures! Unfold 2D nets, calculate surface area and fractional edge volume, and optimize glass/cardboard material costs.
+        </p>
+        <div class="hero-tags">
+          <span class="tag gold">VERSION C · EXTENSION EXPEDITION</span>
+          <span class="tag">6.GR.2 (Volume Fractional Edges)</span>
+          <span class="tag">6.GR.4 (Surface Area Nets)</span>
+        </div>
+        <div class="level-bar">
+          <button class="level-btn active" onclick="setLevel(1)">Level 1 · Foundation Architect</button>
+          <button class="level-btn" onclick="setLevel(2)">Level 2 · Project Manager</button>
+          <button class="level-btn" onclick="setLevel(3)">Level 3 · Master Engineer</button>
+        </div>
+      </header>
+
+      <div class="container">
+        <!-- STEP 1: Fractional Edge Volume -->
+        <div class="step-panel active" id="step-1">
+          <span class="step-num">STEP 1</span>
+          <h2 class="card-title">📦 Fractional Edge Volume ($V = l \cdot w \cdot h$)</h2>
+          <p style="margin-bottom:16px; color:var(--muted);" data-research-find="volume-architect">
+            Calculate total internal volume for custom architectural modules with fractional dimensions.
+          </p>
+          <div class="grid-2">
+            <div>
+              <div class="input-group">
+                <label>Length (m):</label>
+                <input type="number" id="vol-l" value="4.5" step="0.5" min="1" max="20" oninput="calcVol()" />
+              </div>
+              <div class="input-group">
+                <label>Width (m):</label>
+                <input type="number" id="vol-w" value="3.2" step="0.1" min="1" max="20" oninput="calcVol()" />
+              </div>
+              <div class="input-group">
+                <label>Height (m):</label>
+                <input type="number" id="vol-h" value="2.5" step="0.5" min="1" max="20" oninput="calcVol()" />
+              </div>
+              <button class="btn-primary" onclick="toggleHint('hint-1')">💡 Need a Hint?</button>
+              <div id="hint-1" class="hint-box">
+                Volume of a rectangular prism is V = l × w × h. Convert decimals to fractions or multiply directly!
+              </div>
+            </div>
+            <div>
+              <div class="calc-box">
+                <div class="calc-title">Architectural Volume Telemetry:</div>
+                <p id="vol-result" style="font-size:16px; font-weight:700; color:var(--navy);">
+                  Total Volume: 36.00 m³<br/>
+                  Unit Cube Equivalence: 36 cubic meters of interior space
+                </p>
+              </div>
+              <div style="margin-top:14px; text-align:center;">
+                <svg width="220" height="90" viewBox="0 0 220 90" style="background:#fff; border-radius:10px; border:1px solid #cbd5e1;">
+                  <polygon points="40,30 140,30 160,18 60,18" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+                  <rect x="40" y="30" width="100" height="45" fill="#bae6fd" stroke="#0284c7" stroke-width="2"/>
+                  <polygon points="140,30 160,18 160,63 140,75" fill="#7dd3fc" stroke="#0284c7" stroke-width="2"/>
+                  <text x="90" y="58" text-anchor="middle" font-size="12" font-weight="800" fill="#0369a1">V = 4.5 × 3.2 × 2.5</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 2: Surface Area from 2D Nets -->
+        <section class="project-card">
+          <span class="step-num">STEP 2</span>
+          <h2 class="card-title">🧩 Surface Area &amp; Net Unfolding</h2>
+          <p style="margin-bottom:16px; color:var(--muted);">
+            Calculate total exterior surface area across all 6 rectangular faces to estimate glass &amp; paneling costs.
+          </p>
+          <div class="grid-2">
+            <div>
+              <div class="input-group">
+                <label>Top/Bottom Faces (2 × l × w):</label>
+                <input type="number" id="sa-tb" value="28.8" readonly style="background:#f1f5f9;" />
+              </div>
+              <div class="input-group">
+                <label>Front/Back Faces (2 × l × h):</label>
+                <input type="number" id="sa-fb" value="22.5" readonly style="background:#f1f5f9;" />
+              </div>
+              <div class="input-group">
+                <label>Left/Right Faces (2 × w × h):</label>
+                <input type="number" id="sa-lr" value="16.0" readonly style="background:#f1f5f9;" />
+              </div>
+              <div class="input-group">
+                <label>Material Cost ($ per m²):</label>
+                <input type="number" id="mat-cost" value="12.50" step="0.5" oninput="calcVol()" />
+              </div>
+            </div>
+            <div>
+              <div class="calc-box">
+                <div class="calc-title">Surface Area &amp; Material Cost:</div>
+                <p id="sa-result" style="font-size:16px; font-weight:700; color:var(--navy);">
+                  Total Surface Area: 67.30 m²<br/>
+                  Total Material Cost: $841.25
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 3: Self, Peer & World Reflection -->
+        <section class="project-card">
+          <span class="step-num">STEP 3</span>
+          <h2 class="card-title">🌍 Self, Peer &amp; World Architectural Debrief</h2>
+          <div style="margin-top:14px;">
+            <div class="input-group">
+              <label>Self Reflection — How does net unfolding help prevent calculation errors?</label>
+              <textarea rows="3" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);" placeholder="Unfolding a 3D shape into a 2D net helps me see all 6 faces so I don't miss any surface area..."></textarea>
+            </div>
+            <div class="input-group">
+              <label>Peer Review — Compare your volume efficiency with a partner's structure:</label>
+              <textarea rows="2" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);" placeholder="My partner designed a structure with 45 m³ volume using 72 m² surface area, which meant..."></textarea>
+            </div>
+            <div class="input-group">
+              <label>World Application — How do real architects use volume and surface area?</label>
+              <textarea rows="2" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);" placeholder="Architects use surface area to estimate glass and insulation costs, and volume to design HVAC heating..."></textarea>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      function setLevel(lvl) {
+        document.querySelectorAll('.level-btn').forEach((b, i) => {
+          b.classList.toggle('active', i === lvl - 1);
+        });
+      }
+      function toggleHint(id) {
+        const el = document.getElementById(id);
+        if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block';
+      }
+
+      function calcVol() {
+        const l = parseFloat(document.getElementById('vol-l').value) || 0;
+        const w = parseFloat(document.getElementById('vol-w').value) || 0;
+        const h = parseFloat(document.getElementById('vol-h').value) || 0;
+        const c = parseFloat(document.getElementById('mat-cost').value) || 0;
+
+        const vol = (l * w * h).toFixed(2);
+        const tb = (2 * l * w).toFixed(2);
+        const fb = (2 * l * h).toFixed(2);
+        const lr = (2 * w * h).toFixed(2);
+        const sa = (2 * l * w + 2 * l * h + 2 * w * h).toFixed(2);
+        const cost = (parseFloat(sa) * c).toFixed(2);
+
+        document.getElementById('vol-result').innerHTML = 
+          `Total Volume: ${vol} m³<br/>Unit Cube Equivalence: ${vol} cubic meters of interior space`;
+        document.getElementById('sa-tb').value = tb;
+        document.getElementById('sa-fb').value = fb;
+        document.getElementById('sa-lr').value = lr;
+        document.getElementById('sa-result').innerHTML = 
+          `Total Surface Area: ${sa} m²<br/>Total Material Cost: $${cost}`;
+      }
+    </script>
+    <script src="/assets/learning-supports/learning-supports.js" defer></script>
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
+    <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+  <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
+  <!-- projects-mode-pill-body:end -->
+  <!-- projects-publication-body:begin (Publication Studio — tools/inject-projects-publication.mjs) -->
+  <script src="/shared/projects/projects-publication.js?v=20260714" defer></script>
+  <!-- projects-publication-body:end -->
+  <!-- projects-award-body:begin (Community Math Studio — tools/inject-projects-award.mjs) -->
+  <script src="/shared/projects/projects-award.js?v=20260714" defer></script>
+  <!-- projects-award-body:end -->
+  <!-- projects-solve-injected:begin (guided worked examples — tools/inject-projects-solve.mjs) -->
+  <script src="/shared/projects/projects-solve.js" defer></script>
+  <!-- projects-solve-injected:end -->
+  <!-- projects-twist-body:begin (Design Twist — tools/inject-projects-twist.mjs) -->
+  <script src="/shared/projects/projects-twist.js?v=20260722" defer></script>
+  <!-- projects-twist-body:end -->
+  <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
+  <script src="/shared/projects/projects-complete.js" defer></script>
+  <!-- projects-complete-injected:end -->
+  <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
+  <script src="/shared/projects/projects-check.js" defer></script>
+  <!-- projects-check-injected:end -->
+  <!-- projects-discourse-injected:begin (Turn & Talk + structured peer compare — tools/inject-projects-discourse.mjs) -->
+  <script src="/shared/projects/projects-discourse.js" defer></script>
+  <!-- projects-discourse-injected:end -->
+  <!-- projects-answerkey-link-injected:begin (teacher-only answer-key link — tools/inject-projects-answerkey-link.mjs) -->
+  <script src="/shared/projects/projects-answerkey-link.js" defer></script>
+  <!-- projects-answerkey-link-injected:end -->
+  <!-- projects-partner-injected:begin (Level 0/1 partner guide — tools/inject-projects-partner.mjs) -->
+  <script src="/shared/projects/projects-partner.js" defer></script>
+  <!-- projects-partner-injected:end -->
+</body>
+</html>

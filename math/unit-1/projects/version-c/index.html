@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deep Space Number Sense Expedition — Unit 1 Culminating Project</title>
+    <meta
+      name="description"
+      content="Unit 1 Number Sense culminating project: Deep Space Expedition. Command an orbital station using GCF payload packing, LCM resupply docking, multi-digit decimal budgets, and long division."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
+    <style>
+      :root {
+        --navy: #0b192c;
+        --blue: #1e3e62;
+        --cyan: #008b8b;
+        --cyan-lt: #e6f7f7;
+        --gold: #d97706;
+        --gold-lt: #fef3c7;
+        --green: #15803d;
+        --green-lt: #dcfce7;
+        --coral: #b91c1c;
+        --ink: #0f172a;
+        --muted: #475569;
+        --line: #cbd5e1;
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 4px 20px rgba(11, 25, 44, 0.08);
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.6;
+      }
+      .hero {
+        background: linear-gradient(135deg, #0b192c 0%, #1e3e62 60%, #008b8b 100%);
+        color: #fff;
+        padding: 36px 24px 28px;
+        text-align: center;
+      }
+      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
+      .hero h1 { font-size: clamp(24px, 5vw, 38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+      .hero-sub { color: rgba(255, 255, 255, 0.9); font-size: 16px; max-width: 620px; margin: 0 auto 16px; }
+      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+      .tag { background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
+      .level-bar { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
+      .level-btn { background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.35); color: #fff; border-radius: 10px; padding: 8px 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+      .container { max-width: 960px; margin: 28px auto; padding: 0 20px; }
+      .project-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; margin-bottom: 24px; box-shadow: var(--shadow); }
+      .step-num { display: inline-block; background: var(--blue); color: #fff; font-weight: 800; padding: 2px 10px; border-radius: 6px; font-size: 13px; margin-bottom: 8px; }
+      .card-title { font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 12px; }
+      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+      @media(max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+      .input-group { margin-bottom: 14px; }
+      .input-group label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 4px; color: var(--muted); }
+      .input-group input, .input-group select { width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; font-size: 15px; font-weight: 600; }
+      .calc-box { background: var(--cyan-lt); border: 1px solid var(--cyan); border-radius: 12px; padding: 18px; margin-top: 14px; }
+      .calc-title { font-weight: 800; color: var(--cyan); margin-bottom: 6px; font-size: 15px; }
+      .btn-primary { background: var(--blue); color: #fff; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s; }
+      .btn-primary:hover { background: #122c47; }
+      .hint-box { background: var(--gold-lt); border: 1px solid var(--gold); border-radius: 10px; padding: 14px; margin-top: 12px; font-size: 14px; color: #78350f; display: none; }
+    </style>
+      <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
+    <!-- projects-mode-pill-head:end -->
+    <!-- projects-publication-head:begin (Publication Studio — tools/inject-projects-publication.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-publication.css?v=20260714" />
+    <!-- projects-publication-head:end -->
+    <!-- projects-award-head:begin (Community Math Studio — tools/inject-projects-award.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-award.css?v=20260714" />
+    <!-- projects-award-head:end -->
+    <!-- projects-solve-injected:begin (guided worked examples — tools/inject-projects-solve.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-solve.css" />
+    <!-- projects-solve-injected:end -->
+    <!-- projects-twist-head:begin (Design Twist — tools/inject-projects-twist.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-twist.css?v=20260722" />
+    <!-- projects-twist-head:end -->
+    <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-complete.css" />
+    <!-- projects-complete-injected:end -->
+    <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-check.css" />
+    <!-- projects-check-injected:end -->
+    <!-- projects-discourse-injected:begin (Turn & Talk + structured peer compare — tools/inject-projects-discourse.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-discourse.css" />
+    <!-- projects-discourse-injected:end -->
+    <!-- projects-answerkey-link-injected:begin (teacher-only answer-key link — tools/inject-projects-answerkey-link.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-answerkey-link.css" />
+    <!-- projects-answerkey-link-injected:end -->
+    <!-- projects-partner-injected:begin (Level 0/1 partner guide — tools/inject-projects-partner.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-partner.css" />
+    <!-- projects-partner-injected:end -->
+</head>
+  <body class="pro-projects">
+    <main class="page-shell">
+      <header class="hero">
+        <div class="hero-emoji">🚀</div>
+        <p class="eyebrow">Unit 1 · Culminating Project · Version C</p>
+        <h1>Deep Space Number Sense Expedition</h1>
+        <p class="hero-copy">
+          Command an orbital space station! Manage GCF supply toolkits, calculate LCM docking cycles, control multi-digit decimal budgets, and distribute energy with long division.
+        </p>
+        <div class="hero-tags">
+          <span class="tag gold">VERSION C · EXTENSION EXPEDITION</span>
+          <span class="tag">6.NOS.2 (Division)</span>
+          <span class="tag">6.NOS.3 (Decimals)</span>
+          <span class="tag">6.NOS.4 (GCF/LCM)</span>
+        </div>
+        <div class="level-bar">
+          <button class="level-btn active" onclick="setLevel(1)">Level 1 · Launch Specialist</button>
+          <button class="level-btn" onclick="setLevel(2)">Level 2 · Station Commander</button>
+          <button class="level-btn" onclick="setLevel(3)">Level 3 · Fleet Director</button>
+        </div>
+      </header>
+
+      <div class="container">
+        <!-- STEP 1: GCF Supply Toolkits -->
+        <div class="step-panel active" id="step-1">
+          <span class="step-num">STEP 1</span>
+          <h2 class="card-title">📦 GCF Supply Toolkit Packing</h2>
+          <p style="margin-bottom:16px; color:var(--muted);" data-research-find="gcf-logistics">
+            Pack identical emergency kits for space station modules using your supply reserves without leaving anything behind.
+          </p>
+          <div class="grid-2">
+            <div>
+              <div class="input-group">
+                <label>Oxygen Canisters Available:</label>
+                <input type="number" id="gcf-a" value="48" min="12" max="144" oninput="calcGCF()" />
+              </div>
+              <div class="input-group">
+                <label>Ration Packs Available:</label>
+                <input type="number" id="gcf-b" value="72" min="12" max="144" oninput="calcGCF()" />
+              </div>
+              <button class="btn-primary" onclick="toggleHint('hint-1')">💡 Need a Hint?</button>
+              <div id="hint-1" class="hint-box">
+                To find the Greatest Common Factor (GCF), list factors of both numbers or use prime factorization. The GCF gives the max number of identical kits!
+              </div>
+            </div>
+            <div>
+              <div class="calc-box">
+                <div class="calc-title">Mission Control Calculation:</div>
+                <p id="gcf-result" style="font-size:16px; font-weight:700; color:var(--navy);">
+                  Max Identical Kits (GCF): 24<br/>
+                  Each Kit Contains: 2 Oxygen Canisters &amp; 3 Ration Packs
+                </p>
+              </div>
+              <div style="margin-top:14px; text-align:center;">
+                <svg width="220" height="90" viewBox="0 0 220 90" style="background:#fff; border-radius:10px; border:1px solid #cbd5e1;">
+                  <rect x="20" y="20" width="180" height="50" rx="8" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+                  <text x="110" y="42" text-anchor="middle" font-size="13" font-weight="800" fill="#0369a1">ORBITAL TOOLKIT PACK</text>
+                  <text x="110" y="60" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">GCF(48, 72) = 24 Kits</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 2: LCM Docking Cycles -->
+        <section class="project-card">
+          <span class="step-num">STEP 2</span>
+          <h2 class="card-title">🛸 LCM Resupply Docking Alignment</h2>
+          <p style="margin-bottom:16px; color:var(--muted);">
+            Supply Shuttle Alpha docks every A days; Shuttle Beta docks every B days. Calculate when both shuttles will dock on the exact same day.
+          </p>
+          <div class="grid-2">
+            <div>
+              <div class="input-group">
+                <label>Shuttle Alpha Docking Cycle (Days):</label>
+                <input type="number" id="lcm-a" value="6" min="2" max="30" oninput="calcLCM()" />
+              </div>
+              <div class="input-group">
+                <label>Shuttle Beta Docking Cycle (Days):</label>
+                <input type="number" id="lcm-b" value="8" min="2" max="30" oninput="calcLCM()" />
+              </div>
+              <button class="btn-primary" onclick="toggleHint('hint-2')">💡 Need a Hint?</button>
+              <div id="hint-2" class="hint-box">
+                The Least Common Multiple (LCM) is the smallest positive number that is a multiple of both cycles.
+              </div>
+            </div>
+            <div>
+              <div class="calc-box">
+                <div class="calc-title">Docking Alignment Result:</div>
+                <p id="lcm-result" style="font-size:16px; font-weight:700; color:var(--navy);">
+                  Simultaneous Docking (LCM): Day 24<br/>
+                  Shuttle Alpha: 4 visits | Shuttle Beta: 3 visits
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 3: Multi-Digit Decimal Mission Budget -->
+        <section class="project-card">
+          <span class="step-num">STEP 3</span>
+          <h2 class="card-title">💳 Decimal Station Budget &amp; Long Division</h2>
+          <p style="margin-bottom:16px; color:var(--muted);">
+            Calculate total payload cost with decimals, then divide total power units among solar panels using multi-digit long division.
+          </p>
+          <div class="grid-2">
+            <div>
+              <div class="input-group">
+                <label>Solar Array Cost ($k):</label>
+                <input type="number" id="dec-a" value="142.75" step="0.25" oninput="calcBudget()" />
+              </div>
+              <div class="input-group">
+                <label>Life Support System ($k):</label>
+                <input type="number" id="dec-b" value="98.50" step="0.25" oninput="calcBudget()" />
+              </div>
+              <div class="input-group">
+                <label>Total Power Units to Divide:</label>
+                <input type="number" id="div-power" value="1248" oninput="calcBudget()" />
+              </div>
+              <div class="input-group">
+                <label>Number of Solar Modules:</label>
+                <input type="number" id="div-modules" value="16" oninput="calcBudget()" />
+              </div>
+            </div>
+            <div>
+              <div class="calc-box">
+                <div class="calc-title">Financial &amp; Energy Telemetry:</div>
+                <p id="budget-result" style="font-size:16px; font-weight:700; color:var(--navy);">
+                  Total Station Cost: $241.25k<br/>
+                  Power per Module: 78.00 units/module
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 4: Self, Peer & World Reflection -->
+        <section class="project-card">
+          <span class="step-num">STEP 4</span>
+          <h2 class="card-title">🌍 Self, Peer &amp; World Mission Debrief</h2>
+          <div style="margin-top:14px;">
+            <div class="input-group">
+              <label>Self Reflection — How did GCF and LCM help organize station logistics?</label>
+              <textarea rows="3" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);" placeholder="GCF helped me divide supplies into identical kits without waste, while LCM showed me..."></textarea>
+            </div>
+            <div class="input-group">
+              <label>Peer Review — Compare your docking schedule with a teammate's station:</label>
+              <textarea rows="2" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);" placeholder="My partner used cycles 4 and 10 (LCM 20), which meant..."></textarea>
+            </div>
+            <div class="input-group">
+              <label>World Application — How do real space agencies (NASA/ESA) use number sense?</label>
+              <textarea rows="2" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);" placeholder="Real agencies use decimal math for launch fuel calculations and GCF/LCM for orbital mechanics..."></textarea>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      function setLevel(lvl) {
+        document.querySelectorAll('.level-btn').forEach((b, i) => {
+          b.classList.toggle('active', i === lvl - 1);
+        });
+      }
+      function toggleHint(id) {
+        const el = document.getElementById(id);
+        if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block';
+      }
+      function gcf(a, b) { return b === 0 ? a : gcf(b, a % b); }
+      function lcm(a, b) { return (a * b) / gcf(a, b); }
+
+      function calcGCF() {
+        const a = parseInt(document.getElementById('gcf-a').value) || 1;
+        const b = parseInt(document.getElementById('gcf-b').value) || 1;
+        const g = gcf(a, b);
+        document.getElementById('gcf-result').innerHTML = 
+          `Max Identical Kits (GCF): ${g}<br/>Each Kit Contains: ${a / g} Oxygen &amp; ${b / g} Ration Packs`;
+      }
+      function calcLCM() {
+        const a = parseInt(document.getElementById('lcm-a').value) || 1;
+        const b = parseInt(document.getElementById('lcm-b').value) || 1;
+        const l = lcm(a, b);
+        document.getElementById('lcm-result').innerHTML = 
+          `Simultaneous Docking (LCM): Day ${l}<br/>Shuttle Alpha: ${l / a} visits | Shuttle Beta: ${l / b} visits`;
+      }
+      function calcBudget() {
+        const a = parseFloat(document.getElementById('dec-a').value) || 0;
+        const b = parseFloat(document.getElementById('dec-b').value) || 0;
+        const p = parseFloat(document.getElementById('div-power').value) || 0;
+        const m = parseFloat(document.getElementById('div-modules').value) || 1;
+        const totalCost = (a + b).toFixed(2);
+        const perModule = (p / m).toFixed(2);
+        document.getElementById('budget-result').innerHTML = 
+          `Total Station Cost: $${totalCost}k<br/>Power per Module: ${perModule} units/module`;
+      }
+    </script>
+    <script src="/assets/learning-supports/learning-supports.js" defer></script>
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
+    <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+  <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
+  <!-- projects-mode-pill-body:end -->
+  <!-- projects-publication-body:begin (Publication Studio — tools/inject-projects-publication.mjs) -->
+  <script src="/shared/projects/projects-publication.js?v=20260714" defer></script>
+  <!-- projects-publication-body:end -->
+  <!-- projects-award-body:begin (Community Math Studio — tools/inject-projects-award.mjs) -->
+  <script src="/shared/projects/projects-award.js?v=20260714" defer></script>
+  <!-- projects-award-body:end -->
+  <!-- projects-solve-injected:begin (guided worked examples — tools/inject-projects-solve.mjs) -->
+  <script src="/shared/projects/projects-solve.js" defer></script>
+  <!-- projects-solve-injected:end -->
+  <!-- projects-twist-body:begin (Design Twist — tools/inject-projects-twist.mjs) -->
+  <script src="/shared/projects/projects-twist.js?v=20260722" defer></script>
+  <!-- projects-twist-body:end -->
+  <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
+  <script src="/shared/projects/projects-complete.js" defer></script>
+  <!-- projects-complete-injected:end -->
+  <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
+  <script src="/shared/projects/projects-check.js" defer></script>
+  <!-- projects-check-injected:end -->
+  <!-- projects-discourse-injected:begin (Turn & Talk + structured peer compare — tools/inject-projects-discourse.mjs) -->
+  <script src="/shared/projects/projects-discourse.js" defer></script>
+  <!-- projects-discourse-injected:end -->
+  <!-- projects-answerkey-link-injected:begin (teacher-only answer-key link — tools/inject-projects-answerkey-link.mjs) -->
+  <script src="/shared/projects/projects-answerkey-link.js" defer></script>
+  <!-- projects-answerkey-link-injected:end -->
+  <!-- projects-partner-injected:begin (Level 0/1 partner guide — tools/inject-projects-partner.mjs) -->
+  <script src="/shared/projects/projects-partner.js" defer></script>
+  <!-- projects-partner-injected:end -->
+</body>
+</html>
