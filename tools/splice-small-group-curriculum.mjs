@@ -72,9 +72,10 @@ if (!html.includes(CSS_MARK)) {
       .badge-challenge { background: #fef3c7; color: #92400e; font-weight: 700; letter-spacing: 0.02em; }
 `;
   const anchor = "      details.lesson {";
-  const ai = html.indexOf(anchor);
-  if (ai === -1) throw new Error("CSS anchor 'details.lesson {' not found");
-  html = html.slice(0, ai) + css + html.slice(ai);
+  let ai = html.indexOf(anchor);
+  if (ai === -1) ai = html.indexOf("</head>");
+  if (ai === -1) throw new Error("CSS anchor not found in index.html");
+  html = html.slice(0, ai) + `<style>\n${css}\n</style>\n` + html.slice(ai);
 }
 
 // --- 2. Insert two blocks per base lesson -------------------------------

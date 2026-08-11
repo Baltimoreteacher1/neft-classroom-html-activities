@@ -100,6 +100,24 @@ function questionCard(index, stem, stemEs, item = {}) {
   }
   card.appendChild(p);
 
+  // Strategy Choice Bar (BCPS UIFR Level 4 T2: Student Strategy Choice & Voice)
+  const stratBar = el("div", "sg-strategy-bar");
+  stratBar.setAttribute("role", "group");
+  stratBar.setAttribute("aria-label", "Choose your strategy");
+  stratBar.innerHTML = `<span class="sg-strat-label">Strategy:</span>` +
+    `<button type="button" class="sg-strat-btn active" data-strat="calc">✍️ Write &amp; Calculate</button>` +
+    `<button type="button" class="sg-strat-btn" data-strat="model">🎨 Draw Visual Model</button>` +
+    `<button type="button" class="sg-strat-btn" data-strat="manip">🧱 Manipulatives</button>` +
+    `<button type="button" class="sg-strat-btn" data-strat="talk">💬 Talk Step-by-Step</button>`;
+
+  [...stratBar.querySelectorAll(".sg-strat-btn")].forEach((btn) => {
+    btn.onclick = () => {
+      [...stratBar.querySelectorAll(".sg-strat-btn")].forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+    };
+  });
+  card.appendChild(stratBar);
+
   const diagramDef = item.diagram || extractDivisionDiagram(item);
   if (diagramDef?.kind) {
     const fig = figureBlock(diagramDef);
