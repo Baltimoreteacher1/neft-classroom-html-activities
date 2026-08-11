@@ -13,9 +13,9 @@
 // carries that string. Re-running after a regeneration restores parity in one
 // command, and one English sentence has exactly one Spanish sentence site-wide.
 
-import { readFileSync, readdirSync } from "node:fs";
-import { translateChoice } from "./lib/es-unit-lexicon.mjs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { translateChoice } from "./lib/es-unit-lexicon.mjs";
 
 export const LESSONS_DIR = "lessons";
 export const TRANSLATIONS_DIR = "data/es-translations";
@@ -72,7 +72,9 @@ export function loadTranslations(dir = TRANSLATIONS_DIR) {
   const map = new Map();
   let parts = [];
   try {
-    parts = readdirSync(dir).filter((name) => name.endsWith(".json")).sort();
+    parts = readdirSync(dir)
+      .filter((name) => name.endsWith(".json"))
+      .sort();
   } catch {
     return map;
   }

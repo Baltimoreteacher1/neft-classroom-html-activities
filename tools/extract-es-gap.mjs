@@ -10,7 +10,13 @@
 // a data/es-translations/*.json part. Strings already translated are skipped, so
 // re-running after each batch always shows what is genuinely left.
 
-import { loadTranslations, missingStrings, practiceItems, readConfig, smallGroupLessons } from "./es-parity-lib.mjs";
+import {
+  loadTranslations,
+  missingStrings,
+  practiceItems,
+  readConfig,
+  smallGroupLessons,
+} from "./es-parity-lib.mjs";
 
 const arg = (flag, fallback = null) => {
   const index = process.argv.indexOf(flag);

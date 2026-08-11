@@ -13,8 +13,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  LESSONS_DIR,
   isNumericOnly,
+  LESSONS_DIR,
   loadTranslations,
   practiceItems,
   smallGroupLessons,
