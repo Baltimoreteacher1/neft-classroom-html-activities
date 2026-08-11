@@ -9,14 +9,14 @@ const html = readFileSync(join(root, "curriculum", "index.html"), "utf8");
 
 // Test 1: Check that top and bottom unit jump bars exist
 assert.ok(html.includes('class="unit-jump-bar"'), "Top unit jump bar present");
-assert.ok(html.includes('class="unit-jump-bar unit-jump-bar--bottom"'), "Bottom unit jump bar present");
+assert.ok(
+  html.includes('class="unit-jump-bar unit-jump-bar--bottom"'),
+  "Bottom unit jump bar present",
+);
 
 // Test 2: Check that bottom jump bar contains all 10 units
 for (let u = 1; u <= 10; u++) {
-  assert.ok(
-    html.includes(`href="#unit-${u}"`),
-    `Unit ${u} jump link present`
-  );
+  assert.ok(html.includes(`href="#unit-${u}"`), `Unit ${u} jump link present`);
 }
 
 // Test 3: Check bottom Back to Top button
@@ -29,4 +29,6 @@ assert.ok(html.includes('id="bottom-lesson-select"'), "Bottom lesson selector dr
 // Test 5: Check setupCurriculumNavSync script
 assert.ok(html.includes("setupCurriculumNavSync"), "Curriculum nav sync script present");
 
-console.log("curriculum-bottom-nav.test.mjs: PASS — Top and bottom unit & lesson controls are exact, seamless, and fully synchronized.");
+console.log(
+  "curriculum-bottom-nav.test.mjs: PASS — Top and bottom unit & lesson controls are exact, seamless, and fully synchronized.",
+);
