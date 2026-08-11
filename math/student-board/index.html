@@ -5191,6 +5191,12 @@
       tick();
       setInterval(tick, 1000 * 15);
       loadBoard();
+      if (params.get("unit")) {
+        const seqTag = document.createElement("div");
+        seqTag.style.cssText = "background: linear-gradient(135deg, #0284c7, #0369a1); color:#fff; padding:10px 18px; border-radius:10px; font-weight:800; font-size:13.5px; margin:12px 16px; display:inline-block; box-shadow:0 4px 12px rgba(2,132,199,0.3);";
+        seqTag.innerHTML = `🚀 Active District Pacing Context: <strong>${decodeURIComponent(params.get("unit"))}</strong> (Sequence ${params.get("seq") || "1"})`;
+        document.body.prepend(seqTag);
+      }
       if (params.get("edit") === "1") setTimeout(enterEdit, 300);
       // Students: poll for a fresh board every 25s (skips while a teacher edits).
       setInterval(() => {
