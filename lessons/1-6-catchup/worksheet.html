@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>1.4–1.6 Catch-Up — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">MPP.3</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">1.4–1.6 Catch-Up</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">argument</span><span class="ws-bankword">conjecture</span><span class="ws-bankword">counterexample</span><span class="ws-bankword">volume</span><span class="ws-bankword">cubic unit</span><span class="ws-bankword">pattern</span><span class="ws-bankword">pattern rule</span><span class="ws-bankword">generalization</span></div>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) An egg muffin is about 60 calories. A plate holds 4 egg muffins. About how many calories are on the plate?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>About 240</li><li class="ws-opt"><span class="ws-bub">B</span>About 64</li><li class="ws-opt"><span class="ws-bub">C</span>About 15</li><li class="ws-opt"><span class="ws-bub">D</span>About 600</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) A large cereal box is 8 in long, 3 in wide, and 10 in tall. What is its volume?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>240 cubic inches</li><li class="ws-opt"><span class="ws-bub">B</span>21 cubic inches</li><li class="ws-opt"><span class="ws-bub">C</span>80 cubic inches</li><li class="ws-opt"><span class="ws-bub">D</span>240 square inches</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) Each penny has a value of $0.01. What is the value of 100 pennies?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$1.00</li><li class="ws-opt"><span class="ws-bub">B</span>$0.10</li><li class="ws-opt"><span class="ws-bub">C</span>$10.00</li><li class="ws-opt"><span class="ws-bub">D</span>$100.00</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) Each quarter has a value of $0.25. Following the pattern, what is the value of 100 quarters?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$25.00</li><li class="ws-opt"><span class="ws-bub">B</span>$2.50</li><li class="ws-opt"><span class="ws-bub">C</span>$250.00</li><li class="ws-opt"><span class="ws-bub">D</span>$100.25</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">MPP.3</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">1.4–1.6 Catch-Up</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">argument</span><span class="ws-bankword">conjecture</span><span class="ws-bankword">counterexample</span><span class="ws-bankword">volume</span><span class="ws-bankword">cubic unit</span><span class="ws-bankword">pattern</span><span class="ws-bankword">pattern rule</span><span class="ws-bankword">generalization</span></div>
+  </section>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) An egg muffin is about 60 calories. A plate holds 4 egg muffins. About how many calories are on the plate?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>About 240</li><li class="ws-opt"><span class="ws-bub">B</span>About 64</li><li class="ws-opt"><span class="ws-bub">C</span>About 15</li><li class="ws-opt"><span class="ws-bub">D</span>About 600</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) A large cereal box is 8 in long, 3 in wide, and 10 in tall. What is its volume?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>240 cubic inches</li><li class="ws-opt"><span class="ws-bub">B</span>21 cubic inches</li><li class="ws-opt"><span class="ws-bub">C</span>80 cubic inches</li><li class="ws-opt"><span class="ws-bub">D</span>240 square inches</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) Each penny has a value of $0.01. What is the value of 100 pennies?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$1.00</li><li class="ws-opt"><span class="ws-bub">B</span>$0.10</li><li class="ws-opt"><span class="ws-bub">C</span>$10.00</li><li class="ws-opt"><span class="ws-bub">D</span>$100.00</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) Each quarter has a value of $0.25. Following the pattern, what is the value of 100 quarters?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$25.00</li><li class="ws-opt"><span class="ws-bub">B</span>$2.50</li><li class="ws-opt"><span class="ws-bub">C</span>$250.00</li><li class="ws-opt"><span class="ws-bub">D</span>$100.25</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.6) A bicycle rack holds 8 bikes, and each bike has 2 wheels. How many wheels are on the rack?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>16</li><li class="ws-opt"><span class="ws-bub">B</span>10</li><li class="ws-opt"><span class="ws-bub">C</span>4</li><li class="ws-opt"><span class="ws-bub">D</span>82</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.6) Another bicycle rack has 6 times as many wheels as the rack with 16 wheels. About how many wheels does it have?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>About 96</li><li class="ws-opt"><span class="ws-bub">B</span>About 22</li><li class="ws-opt"><span class="ws-bub">C</span>About 66</li><li class="ws-opt"><span class="ws-bub">D</span>About 616</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">MPP.3</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">1.4–1.6 Catch-Up</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) Three large boxes hold 240 cubic inches each. Two jumbo boxes hold 400 cubic inches each. Which is the correct volume comparison?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>720 cubic inches vs. 800 cubic inches — the jumbo option holds more</li><li class="ws-opt"><span class="ws-bub">B</span>720 cubic inches vs. 800 cubic inches — the large option holds more</li><li class="ws-opt"><span class="ws-bub">C</span>240 cubic inches vs. 400 cubic inches — the jumbo option holds more</li><li class="ws-opt"><span class="ws-bub">D</span>480 cubic inches vs. 800 cubic inches — the jumbo option holds more</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) One garden bed is 4 ft long, 3 ft wide, and 2 ft deep. A second bed is 6 ft long, 2 ft wide, and 2 ft deep. How much soil fills BOTH beds?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>48 cubic feet</li><li class="ws-opt"><span class="ws-bub">B</span>24 cubic feet</li><li class="ws-opt"><span class="ws-bub">C</span>19 cubic feet</li><li class="ws-opt"><span class="ws-bub">D</span>96 cubic feet</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) Player A had 18 points before making 10 two-pointers in a row. How many points does Player A have after the streak?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>38</li><li class="ws-opt"><span class="ws-bub">B</span>28</li><li class="ws-opt"><span class="ws-bub">C</span>20</li><li class="ws-opt"><span class="ws-bub">D</span>48</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) Akela's jar totals $53.50. Why can the number of pennies only be a multiple of 5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Because the total's cents end in 0, and only pennies make amounts that aren't multiples of 5 cents</li><li class="ws-opt"><span class="ws-bub">B</span>Because pennies always come in rolls of 5</li><li class="ws-opt"><span class="ws-bub">C</span>Because there are exactly 5 kinds of coins in the jar</li><li class="ws-opt"><span class="ws-bub">D</span>Because $53.50 is divisible by 5</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.6) You are solving a problem and realize your strategy is not making progress. What does the problem-solving process say to do?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Notice your progress has stalled and shift to a different strategy</li><li class="ws-opt"><span class="ws-bub">B</span>Keep using the same strategy no matter what</li><li class="ws-opt"><span class="ws-bub">C</span>Erase everything and decide the problem is impossible</li><li class="ws-opt"><span class="ws-bub">D</span>Copy a classmate's paper</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.6) The first rack has 16 wheels and the other rack has 6 times as many. How many BIKES does the bigger rack hold, if every bike has 2 wheels?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>48</li><li class="ws-opt"><span class="ws-bub">B</span>96</li><li class="ws-opt"><span class="ws-bub">C</span>24</li><li class="ws-opt"><span class="ws-bub">D</span>192</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">MPP.3</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">1.4–1.6 Catch-Up</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) A student claims: “Greater box volume ALWAYS means more cereal inside.” Which is the best counterexample?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>A jumbo box with more volume that is sold half-filled with air</li><li class="ws-opt"><span class="ws-bub">B</span>A large box that costs more than a jumbo box</li><li class="ws-opt"><span class="ws-bub">C</span>Two jumbo boxes that are easier to store than three large boxes</li><li class="ws-opt"><span class="ws-bub">D</span>A box of a different cereal brand</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) If both players kept their streaks going, after how many MORE shots would Player B tie Player A?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2 more shots</li><li class="ws-opt"><span class="ws-bub">B</span>1 more shot</li><li class="ws-opt"><span class="ws-bub">C</span>They can never tie</li><li class="ws-opt"><span class="ws-bub">D</span>10 more shots</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.6) A group solves a hard problem, but one student did all the talking while three stayed silent. By this lesson's standards, how did the GROUP do?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Not well — a community shares thinking and takes turns, so three voices went unheard</li><li class="ws-opt"><span class="ws-bub">B</span>Perfectly — the answer was right, and that is all that matters</li><li class="ws-opt"><span class="ws-bub">C</span>Not well — the talker should have stayed silent too</li><li class="ws-opt"><span class="ws-bub">D</span>Perfectly — silent members were being respectful</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">MPP.3</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">1.4–1.6 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) An egg muffin is about 60 calories. A plate holds 4 egg muffins. About how many calories are on the plate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>About 240</li><li class="ws-opt"><span class="ws-bub">B</span>About 64</li><li class="ws-opt"><span class="ws-bub">C</span>About 15</li><li class="ws-opt"><span class="ws-bub">D</span>About 600</li></ol><p class="ws-keynote">4 muffins at about 60 calories each is 60 × 4 = 240 calories.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) A large cereal box is 8 in long, 3 in wide, and 10 in tall. What is its volume?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>240 cubic inches</li><li class="ws-opt"><span class="ws-bub">B</span>21 cubic inches</li><li class="ws-opt"><span class="ws-bub">C</span>80 cubic inches</li><li class="ws-opt"><span class="ws-bub">D</span>240 square inches</li></ol><p class="ws-keynote">Volume of a rectangular prism is length × width × height: 8 × 3 × 10 = 240 cubic inches.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) Each penny has a value of $0.01. What is the value of 100 pennies?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$1.00</li><li class="ws-opt"><span class="ws-bub">B</span>$0.10</li><li class="ws-opt"><span class="ws-bub">C</span>$10.00</li><li class="ws-opt"><span class="ws-bub">D</span>$100.00</li></ol><p class="ws-keynote">100 × $0.01 = $1.00 — one hundred hundredths make one whole dollar.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) Each quarter has a value of $0.25. Following the pattern, what is the value of 100 quarters?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$25.00</li><li class="ws-opt"><span class="ws-bub">B</span>$2.50</li><li class="ws-opt"><span class="ws-bub">C</span>$250.00</li><li class="ws-opt"><span class="ws-bub">D</span>$100.25</li></ol><p class="ws-keynote">100 × $0.25 = $25.00 — the same pattern as 100 pennies making $1.00 and 100 nickels making $5.00.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">MPP.3</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">1.4–1.6 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) An egg muffin is about 60 calories. A plate holds 4 egg muffins. About how many calories are on the plate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>About 240</li><li class="ws-opt"><span class="ws-bub">B</span>About 64</li><li class="ws-opt"><span class="ws-bub">C</span>About 15</li><li class="ws-opt"><span class="ws-bub">D</span>About 600</li></ol><p class="ws-keynote">4 muffins at about 60 calories each is 60 × 4 = 240 calories.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) A large cereal box is 8 in long, 3 in wide, and 10 in tall. What is its volume?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>240 cubic inches</li><li class="ws-opt"><span class="ws-bub">B</span>21 cubic inches</li><li class="ws-opt"><span class="ws-bub">C</span>80 cubic inches</li><li class="ws-opt"><span class="ws-bub">D</span>240 square inches</li></ol><p class="ws-keynote">Volume of a rectangular prism is length × width × height: 8 × 3 × 10 = 240 cubic inches.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) Each penny has a value of $0.01. What is the value of 100 pennies?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$1.00</li><li class="ws-opt"><span class="ws-bub">B</span>$0.10</li><li class="ws-opt"><span class="ws-bub">C</span>$10.00</li><li class="ws-opt"><span class="ws-bub">D</span>$100.00</li></ol><p class="ws-keynote">100 × $0.01 = $1.00 — one hundred hundredths make one whole dollar.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) Each quarter has a value of $0.25. Following the pattern, what is the value of 100 quarters?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$25.00</li><li class="ws-opt"><span class="ws-bub">B</span>$2.50</li><li class="ws-opt"><span class="ws-bub">C</span>$250.00</li><li class="ws-opt"><span class="ws-bub">D</span>$100.25</li></ol><p class="ws-keynote">100 × $0.25 = $25.00 — the same pattern as 100 pennies making $1.00 and 100 nickels making $5.00.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.6) A bicycle rack holds 8 bikes, and each bike has 2 wheels. How many wheels are on the rack?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>16</li><li class="ws-opt"><span class="ws-bub">B</span>10</li><li class="ws-opt"><span class="ws-bub">C</span>4</li><li class="ws-opt"><span class="ws-bub">D</span>82</li></ol><p class="ws-keynote">8 bikes with 2 wheels each is 8 × 2 = 16 wheels.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.6) Another bicycle rack has 6 times as many wheels as the rack with 16 wheels. About how many wheels does it have?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>About 96</li><li class="ws-opt"><span class="ws-bub">B</span>About 22</li><li class="ws-opt"><span class="ws-bub">C</span>About 66</li><li class="ws-opt"><span class="ws-bub">D</span>About 616</li></ol><p class="ws-keynote">6 times as many as 16 is 16 × 6 = 96 wheels.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">MPP.3</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">1.4–1.6 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) Three large boxes hold 240 cubic inches each. Two jumbo boxes hold 400 cubic inches each. Which is the correct volume comparison?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>720 cubic inches vs. 800 cubic inches — the jumbo option holds more</li><li class="ws-opt"><span class="ws-bub">B</span>720 cubic inches vs. 800 cubic inches — the large option holds more</li><li class="ws-opt"><span class="ws-bub">C</span>240 cubic inches vs. 400 cubic inches — the jumbo option holds more</li><li class="ws-opt"><span class="ws-bub">D</span>480 cubic inches vs. 800 cubic inches — the jumbo option holds more</li></ol><p class="ws-keynote">240 × 3 = 720 and 400 × 2 = 800; since 800 &gt; 720, the two jumbo boxes hold more in total.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) One garden bed is 4 ft long, 3 ft wide, and 2 ft deep. A second bed is 6 ft long, 2 ft wide, and 2 ft deep. How much soil fills BOTH beds?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>48 cubic feet</li><li class="ws-opt"><span class="ws-bub">B</span>24 cubic feet</li><li class="ws-opt"><span class="ws-bub">C</span>19 cubic feet</li><li class="ws-opt"><span class="ws-bub">D</span>96 cubic feet</li></ol><p class="ws-keynote">First bed: 4 × 3 × 2 = 24 cubic feet. Second bed: 6 × 2 × 2 = 24 cubic feet. Together: 24 + 24 = 48 cubic feet.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) Player A had 18 points before making 10 two-pointers in a row. How many points does Player A have after the streak?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>38</li><li class="ws-opt"><span class="ws-bub">B</span>28</li><li class="ws-opt"><span class="ws-bub">C</span>20</li><li class="ws-opt"><span class="ws-bub">D</span>48</li></ol><p class="ws-keynote">Ten two-pointers add 10 × 2 = 20 points, and 18 + 20 = 38 points.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) Akela's jar totals $53.50. Why can the number of pennies only be a multiple of 5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Because the total's cents end in 0, and only pennies make amounts that aren't multiples of 5 cents</li><li class="ws-opt"><span class="ws-bub">B</span>Because pennies always come in rolls of 5</li><li class="ws-opt"><span class="ws-bub">C</span>Because there are exactly 5 kinds of coins in the jar</li><li class="ws-opt"><span class="ws-bub">D</span>Because $53.50 is divisible by 5</li></ol><p class="ws-keynote">Nickels, dimes, and quarters are each worth a multiple of 5 cents. For the total to land on a 0, the pennies must also add up to a multiple of 5 cents — so their count is a multiple of 5.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.6) You are solving a problem and realize your strategy is not making progress. What does the problem-solving process say to do?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Notice your progress has stalled and shift to a different strategy</li><li class="ws-opt"><span class="ws-bub">B</span>Keep using the same strategy no matter what</li><li class="ws-opt"><span class="ws-bub">C</span>Erase everything and decide the problem is impossible</li><li class="ws-opt"><span class="ws-bub">D</span>Copy a classmate's paper</li></ol><p class="ws-keynote">We are aware of our progress in solving the problem and shift strategies when needed.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.6) The first rack has 16 wheels and the other rack has 6 times as many. How many BIKES does the bigger rack hold, if every bike has 2 wheels?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>48</li><li class="ws-opt"><span class="ws-bub">B</span>96</li><li class="ws-opt"><span class="ws-bub">C</span>24</li><li class="ws-opt"><span class="ws-bub">D</span>192</li></ol><p class="ws-keynote">The bigger rack has 16 × 6 = 96 wheels, and 96 ÷ 2 = 48 bikes.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">MPP.3</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">1.4–1.6 Catch-Up</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.4) A student claims: “Greater box volume ALWAYS means more cereal inside.” Which is the best counterexample?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>A jumbo box with more volume that is sold half-filled with air</li><li class="ws-opt"><span class="ws-bub">B</span>A large box that costs more than a jumbo box</li><li class="ws-opt"><span class="ws-bub">C</span>Two jumbo boxes that are easier to store than three large boxes</li><li class="ws-opt"><span class="ws-bub">D</span>A box of a different cereal brand</li></ol><p class="ws-keynote">A counterexample must break the claim itself: a bigger box holding less cereal (more air) shows greater volume does not guarantee more cereal.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.5) If both players kept their streaks going, after how many MORE shots would Player B tie Player A?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2 more shots</li><li class="ws-opt"><span class="ws-bub">B</span>1 more shot</li><li class="ws-opt"><span class="ws-bub">C</span>They can never tie</li><li class="ws-opt"><span class="ws-bub">D</span>10 more shots</li></ol><p class="ws-keynote">The gap is 38 − 36 = 2 and shrinks by 1 each shot (3 − 2 = 1). After 2 more shots: Player A has 38 + 4 = 42 and Player B has 36 + 6 = 42.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">(Lesson 1.6) A group solves a hard problem, but one student did all the talking while three stayed silent. By this lesson's standards, how did the GROUP do?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Not well — a community shares thinking and takes turns, so three voices went unheard</li><li class="ws-opt"><span class="ws-bub">B</span>Perfectly — the answer was right, and that is all that matters</li><li class="ws-opt"><span class="ws-bub">C</span>Not well — the talker should have stayed silent too</li><li class="ws-opt"><span class="ws-bub">D</span>Perfectly — silent members were being respectful</li></ol><p class="ws-keynote">We share our thinking and take turns when sharing ideas — a right answer that silences three thinkers costs the community three sets of ideas.</p><p class="ws-watch"><b>Watch for:</b> Treating 'stuck' as a stop sign instead of a signal — waiting silently instead of trying a strategy: asking a question, drawing the problem, or recalling a similar problem.</p></div></li></ol>
+  </section>
+</main>
+</body>
+</html>

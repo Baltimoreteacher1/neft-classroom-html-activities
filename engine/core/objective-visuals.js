@@ -111,6 +111,8 @@ const BY_STANDARD = {
   "MPP.4": { topic: "mathPractice" },
   "MPP.7": { topic: "mathPractice" },
   "5.OA.B.3": { topic: "mathPractice" },
+  "5.NBT.B.7": { topic: "decimalSum" },
+  "6.AT.11": { topic: "equations" },
   "6.NOS.1": { topic: "fractionDivision" },
   "6.NOS.2": { topic: "division" },
   "6.NOS.3": {

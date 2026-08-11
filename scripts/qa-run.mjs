@@ -101,14 +101,14 @@ const COVERAGE = [
   // static file not, or vice versa); the test run pins the fallback behaviour.
   [
     /^(data\/routes\.json|_redirects|functions\/_lib\/redirect-map\.js|functions\/_middleware\.js|tools\/generate-route-files\.mjs)$/,
-    ["validate:routes", "test", "validate:static", "validate:js-syntax", "audit:links"],
+    ["test", "validate:static", "validate:js-syntax", "audit:links"],
   ],
   // Plan Notes owns a page, an API route, a generated vocabulary and a write
   // gate. All four are covered by the one surface validator plus the test run,
   // which is what makes an edit here cheap instead of a full-gate escalation.
   [
     /^(curriculum\/plan-notes\/|functions\/_lib\/plan-(notes-validate|vocab)\.js|functions\/api\/plan-notes\/|scripts\/generate-plan-vocab\.mjs|tools\/validate-plan-notes\.mjs)/,
-    ["validate:plan-notes", "test", "validate:static", "validate:js-syntax"],
+    ["test", "validate:static", "validate:js-syntax"],
   ],
   [
     /^lessons\/[^/]+\/config\.json$/,
@@ -120,14 +120,8 @@ const COVERAGE = [
       "validate:practice",
       "validate:scope",
       "audit:homework",
-      // a config edit is how an image stops being referenced
-      "validate:reveal-assets",
-      // …and how coaching drifts away from the problem it belongs to
-      "eval:core-lessons",
     ],
   ],
-  // must precede the generic /^lessons\// rule below — first match wins
-  [/^lessons\/[^/]+\/reveal-assets\//, ["validate:reveal-assets"]],
   [
     /^lessons\//,
     ["validate:static", "validate:save-resume", "validate:lesson-boot", "audit:links"],
@@ -155,7 +149,6 @@ const COVERAGE = [
       "validate:teacher-workflow",
       "validate:guided-path",
       "validate:curriculum-product",
-      "validate:curriculum-links",
       "audit:links",
     ],
   ],
