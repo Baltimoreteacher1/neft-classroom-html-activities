@@ -1,20 +1,20 @@
 :root {
-  --ink: #173b47;
-  --ink-deep: #0d2932;
-  --paper: #f7f3e9;
-  --paper-bright: #fffdf8;
-  --line: #d7d4c8;
-  --coral: #ee6b52;
-  --coral-dark: #c74734;
-  --teal: #1a746f;
-  --teal-pale: #dcece6;
-  --gold: #e5b44a;
-  --muted: #586a70;
-  --shadow: 0 18px 50px rgb(23 59 71 / 10%);
+  --ink: #0f172a;
+  --ink-deep: #020617;
+  --paper: #f8fafc;
+  --paper-bright: #ffffff;
+  --line: #e2e8f0;
+  --coral: #0284c7;
+  --coral-dark: #0369a1;
+  --teal: #0d9488;
+  --teal-pale: #e0f2fe;
+  --gold: #f59e0b;
+  --muted: #475569;
+  --shadow: 0 12px 32px -8px rgba(2, 132, 199, 0.12);
   --radius: 1.25rem;
   --content: 76rem;
   color-scheme: light;
-  font: 400 1rem/1.6 "DM Sans", system-ui, sans-serif;
+  font: 400 1rem/1.6 "Atkinson Hyperlegible", "Nunito", system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -30,6 +30,10 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
+  background-image:
+    radial-gradient(1000px 480px at 92% -8%, rgba(2, 132, 199, 0.08), transparent 58%),
+    radial-gradient(900px 420px at -5% 8%, rgba(13, 148, 136, 0.09), transparent 55%);
+  background-attachment: fixed;
 }
 
 body.large-text {
@@ -37,22 +41,23 @@ body.large-text {
 }
 
 body.high-contrast {
-  --ink: #071b23;
-  --ink-deep: #000;
-  --paper: #fff;
-  --paper-bright: #fff;
-  --line: #1f3036;
-  --coral: #b72f1d;
-  --coral-dark: #861f12;
-  --teal: #005b56;
-  --teal-pale: #e3f5f1;
-  --muted: #26383e;
+  --ink: #000000;
+  --ink-deep: #000000;
+  --paper: #ffffff;
+  --paper-bright: #ffffff;
+  --line: #0f172a;
+  --coral: #0284c7;
+  --coral-dark: #0369a1;
+  --teal: #0f766e;
+  --teal-pale: #e0f2fe;
+  --muted: #1e293b;
 }
 
 a,
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -62,13 +67,15 @@ a {
 
 button,
 select,
-input {
+input,
+textarea {
   min-height: 2.75rem;
 }
 
 :focus-visible {
-  outline: 0.2rem solid var(--gold);
+  outline: 0.2rem solid var(--coral);
   outline-offset: 0.2rem;
+  border-radius: 6px;
 }
 
 .skip-link {
@@ -99,17 +106,20 @@ input {
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  text-decoration: none;
+  gap: 0.85rem;
 }
 
 .brand-mark {
-  display: grid;
-  width: 2.65rem;
-  height: 2.65rem;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--coral);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #0284c7, #0d9488);
   color: white;
-  font: 700 1.35rem/1 "Fraunces", serif;
+  font-family: "Nunito", system-ui, sans-serif;
+  font-weight: 900;
+  font-size: 1.35rem;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
 }
