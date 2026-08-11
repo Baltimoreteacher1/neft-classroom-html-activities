@@ -216,7 +216,7 @@
       '<h3 style="margin:0 0 6px; font-family:Nunito,sans-serif; font-size:20px; font-weight:800; color:#0f172a;">Teacher Mode Access</h3>' +
       '<p style="margin:0 0 18px; font-size:13.5px; color:#64748b;">Enter your teacher PIN to unlock answer keys, lesson plans, IEP accommodations, and teacher tools.</p>' +
       '<input type="text" name="username" value="teacher" autocomplete="username" readonly tabindex="-1" aria-hidden="true" class="nt-credential-user" style="display:none;" />' +
-      '<input type="password" name="password" class="hub-teacher-pin" autocomplete="current-password" placeholder="Enter PIN (e.g. TeacherNeft)" aria-label="Enter teacher password" style="width:100%; min-height:46px; padding:0 16px; border:1.5px solid #cbd5e1; border-radius:12px; font-size:15px; margin-bottom:14px; outline:none;" />' +
+      '<input type="password" name="password" class="hub-teacher-pin" autocomplete="current-password" placeholder="Enter teacher password" aria-label="Enter teacher password" style="width:100%; min-height:46px; padding:0 16px; border:1.5px solid #cbd5e1; border-radius:12px; font-size:15px; margin-bottom:14px; outline:none;" />' +
       '<div style="display:flex; gap:10px;">' +
       '<button type="button" class="hub-teacher-cancel" style="flex:1; min-height:44px; border:1px solid #cbd5e1; background:#f8fafc; color:#475569; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer;">Cancel</button>' +
       '<button type="submit" class="hub-teacher-go" style="flex:1; min-height:44px; border:none; background:#0284c7; color:#ffffff; border-radius:10px; font-weight:800; font-size:14px; cursor:pointer;">Unlock</button>' +
