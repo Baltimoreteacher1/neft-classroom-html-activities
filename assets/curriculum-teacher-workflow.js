@@ -82,10 +82,29 @@
     var pacing = window.NTDistrictPacing;
     if (!pacing) return base;
     try {
-      var label = pacing.label(pacing.today());
-      return label ? `${base} · ${label}` : base;
+      // Quarter only — the <h2> already names the sequence and unit.
+      var item = pacing.today();
+      return item && item.quarter ? `${base} · ${item.quarter}` : base;
     } catch (_error) {
       return base;
+    }
+  }
+
+  /**
+   * The cockpit's own heading: the district sequence it is currently pointed
+   * at. Falls back to a plain title when pacing is unavailable, so the panel is
+   * never left headless.
+   */
+  function pacingHeadingText() {
+    var fallback = "Today's Teaching";
+    var pacing = window.NTDistrictPacing;
+    if (!pacing) return fallback;
+    try {
+      var item = pacing.today();
+      if (!item) return fallback;
+      return `Seq ${item.sequence} · ${item.district_title}`;
+    } catch (_error) {
+      return fallback;
     }
   }
 
@@ -829,12 +848,16 @@
     headrow.appendChild(el("p", "ctw-kicker", "🔒 Teacher Command Center · Local & private"));
     headrow.appendChild(el("p", "ctw-pacing-stamp", pacingStampText()));
     hero.appendChild(headrow);
-    hero.appendChild(el("h2", null, "Plan it. Teach it. Launch it."));
+    // Deliberately NOT "Plan it. Teach it. Launch it." — #district-pacing-console
+    // owns that hero ~2200px up this page, and printing it twice made the
+    // cockpit read as a duplicate of a panel the teacher already scrolled past.
+    // Naming the live sequence instead states what this cockpit is pointed at.
+    hero.appendChild(el("h2", null, pacingHeadingText()));
     hero.appendChild(
       el(
         "p",
         null,
-        "Start with today's lesson, then build the week, a student playlist, a unit map, or tomorrow's groups.",
+        "Everything for the lesson you pick — launch links, student supports, small groups and printables, plus the week ahead and tomorrow's plan.",
       ),
     );
     panel.appendChild(hero);

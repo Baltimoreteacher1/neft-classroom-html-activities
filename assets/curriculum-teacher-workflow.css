@@ -102,7 +102,10 @@ button.ctw-ql-card {
   line-height: 1.12;
 }
 
-.ctw-header p:last-child {
+/* Direct child ONLY. As a descendant selector this also matched
+   .ctw-pacing-stamp (last child of .ctw-headrow) and, at specificity 0,2,1,
+   beat the stamp's own 0,1,0 rule — rendering the stamp as 15px body copy. */
+.ctw-header > p:last-child {
   max-width: 72ch;
   margin: 0;
   color: #475569;
