@@ -40,9 +40,19 @@
  *  refuse novel-length stems whose numbers are mostly narrative. */
 const MAX_STEM_NUMBERS = 8;
 
-/** Tolerant numeric parse: $, commas, spaces, %, trailing units stripped. */
+/* An estimation answer is written "About 80", and that one leading word was
+   enough to make the whole item undiagnosable: the parse failed, so the model
+   could not be reconstructed, so a distractor of "About 24" (20 + 4 where the
+   problem multiplies) went unnamed across every estimation lesson in Unit 1.
+   Only these hedges are stripped — a leading word in general is prose, and prose
+   must still refuse to parse, or "Runner B" would become a number. */
+const HEDGE = /^(about|approximately|around|roughly|nearly|almost|exactly|≈)\s+/i;
+
+/** Tolerant numeric parse: hedge word, $, commas, spaces, %, trailing units. */
 export function parseQuantity(text) {
-  const raw = String(text ?? "").trim();
+  const raw = String(text ?? "")
+    .trim()
+    .replace(HEDGE, "");
   if (!raw) return null;
   const cleaned = raw
     .replace(/[$,\s]/g, "")
