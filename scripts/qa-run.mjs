@@ -122,6 +122,8 @@ const COVERAGE = [
       "audit:homework",
       // a config edit is how an image stops being referenced
       "validate:reveal-assets",
+      // …and how coaching drifts away from the problem it belongs to
+      "eval:core-lessons",
     ],
   ],
   // must precede the generic /^lessons\// rule below — first match wins
