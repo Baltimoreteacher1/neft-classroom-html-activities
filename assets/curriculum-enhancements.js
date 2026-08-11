@@ -593,6 +593,37 @@
     });
     controls.parentNode.insertBefore(hint, controls);
 
+    // Top-of-page mode banner. The mode controls live ~1300px down the hub, so
+    // a teacher in student view scrolls past a page where EVERY teacher panel
+    // (district pacing console, Teacher Command Center) has rendered nothing —
+    // which is indistinguishable from a broken site or a deploy that never
+    // landed. This states the view at the top, before any of that confusion.
+    // It reuses requestTeacher() rather than duplicating the PIN gate.
+    var header = document.querySelector(".curriculum-guide");
+    var h1 = header && header.querySelector("h1");
+    if (h1) {
+      var banner = document.createElement("p");
+      banner.id = "hub-mode-banner";
+      banner.className = "hub-mode-banner hub-student-only";
+      var bannerText = document.createElement("span");
+      bannerText.textContent = "🎒 You're in Student view — teacher tools are hidden. ";
+      var bannerBtn = document.createElement("button");
+      bannerBtn.type = "button";
+      bannerBtn.className = "hub-hint-link";
+      bannerBtn.id = "hub-mode-banner-switch";
+      bannerBtn.textContent = "Switch to Teacher view";
+      bannerBtn.addEventListener("click", function () {
+        requestTeacher(function (role) {
+          teacherMode = true;
+          saveTeacherMode(true, role);
+          applyTeacherMode();
+          updateProgressSummary();
+        });
+      });
+      banner.append(bannerText, bannerBtn);
+      h1.parentNode.insertBefore(banner, h1.nextSibling);
+    }
+
     controls.parentNode.insertBefore(bar, controls.nextSibling);
 
     var chips = document.createElement("div");
