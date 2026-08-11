@@ -61,6 +61,7 @@
     homework: /homework|family homework/i,
     games: /game|graphic novel|3d|project|bonus|arcade|lab|odyssey|netfold/i,
     notes: /guided notes|notes\.html|notes pdf|notes docx/i,
+    smallgroup: /small-group|group1|group2|foundation|challenge|socratic|catch-?up/i,
   };
 
   var realWorldMap = {};
@@ -591,6 +592,7 @@
     [
       { id: FILTER_ALL, label: "All" },
       { id: "lessons", label: "Lessons" },
+      { id: "smallgroup", label: "💡 Small-Group" },
       { id: "homework", label: "Homework" },
       { id: "games", label: "Games" },
       { id: "notes", label: "Notes" },
