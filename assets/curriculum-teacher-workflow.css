@@ -164,25 +164,31 @@ button.ctw-ql-card {
   font-weight: 700;
 }
 
+/* Tabs and stage continue the header's card rather than introducing a second
+   surface. The grey strip (#e8f0f5) and grey stage read as a different product
+   sitting under a white panel — the whole reason the bottom of the hub did not
+   look like the district console at the top. */
 .ctw-tabs {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding: 12px;
-  background: #e8f0f5;
-  border: 1px solid var(--ctw-line);
+  padding: 12px 16px;
+  background: #fff;
+  border: 1.5px solid #0284c7;
   border-top: 0;
+  border-bottom: 1px solid #e2e8f0;
   scrollbar-width: thin;
 }
 
 .ctw-stage {
-  padding: clamp(18px, 4vw, 32px);
-  border: 1px solid var(--ctw-line);
+  padding: clamp(18px, 4vw, 28px);
+  border: 1.5px solid #0284c7;
   border-top: 0;
-  border-radius: 0 0 22px 22px;
-  background: var(--ctw-paper);
+  border-radius: 0 0 18px 18px;
+  background: #fff;
 }
 
+/* One button language, matching the console's outlined blue pills. */
 .ctw-button {
   min-height: 44px;
   display: inline-flex;
@@ -190,10 +196,10 @@ button.ctw-ql-card {
   justify-content: center;
   gap: 7px;
   padding: 9px 15px;
-  border: 2px solid #a8bfd0;
+  border: 1.5px solid #7dd3fc;
   border-radius: 10px;
   background: #fff;
-  color: var(--ctw-navy);
+  color: #0369a1;
   font: inherit;
   font-size: 0.9rem;
   font-weight: 800;
@@ -204,47 +210,55 @@ button.ctw-ql-card {
 }
 
 .ctw-button:hover {
-  border-color: var(--ctw-blue);
-  color: var(--ctw-blue);
+  border-color: #0284c7;
+  background: #e0f2fe;
+  color: #075985;
 }
 
 .ctw-button[aria-pressed="true"] {
-  border-color: var(--ctw-teal);
-  background: #dff5f0;
-  color: #075f56;
+  border-color: #0284c7;
+  background: #0284c7;
+  color: #fff;
 }
 
+/* The one solid call-to-action per view, like "Launch Today's Lesson" up top. */
 .ctw-primary {
-  background: var(--ctw-blue);
-  border-color: var(--ctw-blue);
+  background: #0284c7;
+  border-color: #0284c7;
   color: #fff;
 }
 
 .ctw-primary:hover {
   color: #fff;
-  background: #0f548b;
+  background: #0369a1;
 }
 
+/* Student-facing and generator actions keep a distinct hue so a teacher can
+   still tell "this sends something to students" from "this opens a tool" at a
+   glance — but as tinted outlines, not solid green/purple slabs. Colour still
+   carries the meaning; it no longer looks like a different design system. */
 .ctw-student {
-  background: var(--ctw-teal);
-  border-color: var(--ctw-teal);
-  color: #fff;
+  background: #ecfdf5;
+  border-color: #6ee7b7;
+  color: #047857;
 }
 
 .ctw-student:hover {
-  color: #fff;
-  background: #087267;
+  color: #065f46;
+  background: #d1fae5;
+  border-color: #059669;
 }
 
 .ctw-generator {
-  background: #6b3fa0;
-  border-color: #6b3fa0;
-  color: #fff;
+  background: #f5f3ff;
+  border-color: #c4b5fd;
+  color: #6d28d9;
 }
 
 .ctw-generator:hover {
-  color: #fff;
-  background: #572f86;
+  color: #5b21b6;
+  background: #ede9fe;
+  border-color: #7c3aed;
 }
 
 .ctw-panel a:focus-visible,
@@ -817,8 +831,15 @@ button.ctw-ql-card {
   font-weight: 700;
 }
 .ctw-actions .ctw-warmup {
-  background: #7c2d12;
-  color: #fff;
+  background: #fff7ed;
+  border-color: #fdba74;
+  color: #9a3412;
+}
+
+.ctw-actions .ctw-warmup:hover {
+  background: #ffedd5;
+  border-color: #ea580c;
+  color: #7c2d12;
 }
 
 /* ---- Next move card (assets/curriculum-next-move.js) --------------------- */
