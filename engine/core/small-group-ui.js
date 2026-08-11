@@ -680,9 +680,8 @@ export function injectSmallGroupStyles(accent) {
     .sg-plot-grid{cursor:crosshair;touch-action:manipulation}
     .sg-tile-tray{min-height:56px;padding:9px;border:2px dashed var(--sg-line);border-radius:12px}
     .sg-tile{min-width:44px;min-height:52px;border-radius:10px;font-family:var(--sg-display);font-size:20px;font-weight:900;cursor:pointer;border:2px solid var(--sg-rule)}
-    .sg-tile.is-x{background:var(--sg);color:#fff;min-width:64px}
-    .sg-tile.is-one{background:var(--sg-pop);color:#332000}
-    .sg-es{display:block;margin-top:3px;color:var(--sg-muted);font-weight:600;font-size:.93em}
+    .sg-es{display:none;margin-top:3px;color:var(--sg-muted);font-weight:600;font-size:.93em}
+    html[data-lang="es"] .sg-es, body.es .sg-es, body.lang-es .sg-es, [data-es="true"] .sg-es {display:block;}
     /* Place-value giant workspace: the stacked column math IS the visual */
     .sg-big-work .colmath{min-width:320px;padding:24px 38px;border:3px solid var(--sg);border-radius:20px;background:var(--sg-figure);box-shadow:0 10px 25px rgba(23,32,51,.09);font-size:44px}
     .sg-big-work .colmath .fillin{width:220px;font-size:40px}
