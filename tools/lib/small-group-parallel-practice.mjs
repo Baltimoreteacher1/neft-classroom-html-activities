@@ -1149,14 +1149,14 @@ const LEGACY_TOPIC = {
   "10-4": [3, 1], // gear ratio, 40 teeth to 10 -> ratios
   "10-5": [1, 4], // position divided by pattern-unit length -> division with remainder
   "10-6": [4, 4], // 78.5 as 50% of 157 -> percent of a number
-  "2-8": [8, 2],
-  "4-3": [4, 3],
-  "7-1": [9, 2],
-  "7-7": [9, 5],
-  "9-1": [3, 2],
-  "9-2": [3, 3],
-  "9-3": [3, 4],
-  "9-4": [3, 7],
+  "2-8": [8, 2], //  measures of centre, which is where the mean lives
+  "4-3": [4, 4], //  estimating a percent OF a number, not percent-to-decimal conversion
+  "7-1": [9, 3], //  comparing and ordering integers — absolute value belongs to 7-3
+  "7-7": [9, 5], //  plotting ordered pairs, which is how a polygon's vertices go down
+  "9-1": [3, 2], //  building the table that shows one quantity depending on another
+  "9-2": [3, 3], //  GRAPHING that table — this lesson is about reading the graph
+  "9-3": [7, 1], //  writing the equation, not completing another ratio table
+  "9-4": [3, 7], //  applying a rate to solve a problem
 };
 
 export function buildParallelPractice(base, lessonId, group) {
