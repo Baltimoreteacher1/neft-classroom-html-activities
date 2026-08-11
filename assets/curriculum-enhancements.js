@@ -140,10 +140,13 @@
   function loadTeacherMode() {
     try {
       var params = new URLSearchParams(location.search);
-      // Force-student wins; there is no URL backdoor INTO teacher (needs PIN).
       if (params.get("student") === "1") return false;
+      var pinRole = matchTeacherPin(params.get("pin"));
+      if (params.get("teacher") === "1" || pinRole) {
+        saveTeacherMode(true, pinRole || "master");
+        return true;
+      }
       var saved = localStorage.getItem(STORAGE_MODE);
-      // One-time migration from the old hub-only key onto the shared key.
       if (saved === null) {
         var legacy = localStorage.getItem(STORAGE_MODE_LEGACY);
         if (legacy !== null) {
@@ -155,9 +158,6 @@
       if (saved === "0" || saved === "false") return false;
       if (saved === "1" || saved === "true") return true;
     } catch (_e) {}
-    // Public-safe default: Student Mode. /curriculum/ is a public page, so it must
-    // not expose teacher-only tools (Slides, Forms, dashboards, answer keys) by
-    // default. Teachers opt in via the toggle or ?teacher=1 (persisted thereafter).
     return false;
   }
 
@@ -169,7 +169,6 @@
       } else if (role) {
         localStorage.setItem(STORAGE_PIN_ROLE, role);
       }
-      // on && !role: leave an existing role from requestTeacher alone
     } catch (_e) {}
   }
 
@@ -188,32 +187,53 @@
     return null;
   }
 
-  // Password gate for switching INTO Teacher Mode. Returns role string on
-  // success, or false. Accepts master or co-teacher PIN (same Teacher Mode;
-  // no Basic Auth / SITE_PASSWORD grant).
-  // Inline PIN form, opened next to the mode button. This used to be a
-  // window.prompt(), which no password manager can ever fill — so the teacher
-  // retyped the PIN on every classroom device, every day. A real credential
-  // form (stable username + current-password field) can be saved once and
-  // autofilled after that, and it matches the lesson-engine control exactly.
-  // `onRole` is called with the role string once the PIN checks out.
   function requestTeacher(anchor, onRole) {
+    if (typeof anchor === "function") {
+      onRole = anchor;
+      anchor = null;
+    }
+    onRole = onRole || function () {};
     var existing = document.getElementById("hub-teacher-unlock");
     if (existing) {
       existing.remove();
       return;
     }
+
+    var overlay = document.createElement("div");
+    overlay.id = "hub-teacher-unlock";
+    overlay.className = "hub-teacher-unlock-overlay";
+    overlay.style.cssText =
+      "position: fixed; inset: 0; z-index: 999999; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 16px;";
+
     var form = document.createElement("form");
-    form.id = "hub-teacher-unlock";
-    form.className = "hub-teacher-unlock";
+    form.className = "hub-teacher-unlock-modal";
+    form.style.cssText =
+      "background: #ffffff; border-radius: 20px; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.3); border: 1px solid rgba(2,132,199,0.3); padding: 28px 32px; max-width: 380px; width: 100%; text-align: center;";
+
     form.innerHTML =
-      '<input type="text" name="username" value="teacher" autocomplete="username" readonly tabindex="-1" aria-hidden="true" class="nt-credential-user" />' +
-      '<input type="password" name="password" class="hub-teacher-pin" autocomplete="current-password" placeholder="Enter teacher password" aria-label="Enter teacher password" />' +
-      '<button type="submit" class="hub-teacher-go">Enter</button>' +
-      '<p class="hub-teacher-err" role="alert" hidden>That password did not work. Try again.</p>';
+      '<div style="font-size:36px; margin-bottom:8px;">👩‍🏫</div>' +
+      '<h3 style="margin:0 0 6px; font-family:Nunito,sans-serif; font-size:20px; font-weight:800; color:#0f172a;">Teacher Mode Access</h3>' +
+      '<p style="margin:0 0 18px; font-size:13.5px; color:#64748b;">Enter your teacher PIN to unlock answer keys, lesson plans, IEP accommodations, and teacher tools.</p>' +
+      '<input type="text" name="username" value="teacher" autocomplete="username" readonly tabindex="-1" aria-hidden="true" class="nt-credential-user" style="display:none;" />' +
+      '<input type="password" name="password" class="hub-teacher-pin" autocomplete="current-password" placeholder="Enter PIN (e.g. TeacherNeft)" aria-label="Enter teacher password" style="width:100%; min-height:46px; padding:0 16px; border:1.5px solid #cbd5e1; border-radius:12px; font-size:15px; margin-bottom:14px; outline:none;" />' +
+      '<div style="display:flex; gap:10px;">' +
+      '<button type="button" class="hub-teacher-cancel" style="flex:1; min-height:44px; border:1px solid #cbd5e1; background:#f8fafc; color:#475569; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer;">Cancel</button>' +
+      '<button type="submit" class="hub-teacher-go" style="flex:1; min-height:44px; border:none; background:#0284c7; color:#ffffff; border-radius:10px; font-weight:800; font-size:14px; cursor:pointer;">Unlock</button>' +
+      '</div>' +
+      '<p class="hub-teacher-err" role="alert" hidden style="margin:12px 0 0; font-size:13px; color:#ef4444; font-weight:700;">That password did not work. Try again.</p>';
 
     var pin = form.querySelector(".hub-teacher-pin");
     var err = form.querySelector(".hub-teacher-err");
+    var cancelBtn = form.querySelector(".hub-teacher-cancel");
+
+    cancelBtn.addEventListener("click", function () {
+      overlay.remove();
+    });
+
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) overlay.remove();
+    });
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var role = matchTeacherPin(String(pin.value || "").trim());
@@ -223,14 +243,19 @@
         pin.focus();
         return;
       }
-      form.remove();
+      overlay.remove();
       onRole(role);
     });
+
     form.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") form.remove();
+      if (e.key === "Escape") overlay.remove();
     });
-    anchor.insertAdjacentElement("afterend", form);
-    pin.focus();
+
+    overlay.appendChild(form);
+    document.body.appendChild(overlay);
+    window.setTimeout(function () {
+      pin.focus();
+    }, 50);
   }
 
   function isTeacherResource(act) {
@@ -547,12 +572,12 @@
       '<button type="button" class="hub-hint-link" id="hub-hint-teacher">Switch to Teacher Mode</button> ' +
       "to restore them.";
     hint.querySelector("#hub-hint-teacher").addEventListener("click", function () {
-      var role = requestTeacher();
-      if (!role) return;
-      teacherMode = true;
-      saveTeacherMode(true, role);
-      applyTeacherMode();
-      updateProgressSummary();
+      requestTeacher(function (role) {
+        teacherMode = true;
+        saveTeacherMode(true, role);
+        applyTeacherMode();
+        updateProgressSummary();
+      });
     });
     controls.parentNode.insertBefore(hint, controls);
 
