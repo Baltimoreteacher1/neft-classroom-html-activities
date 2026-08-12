@@ -446,6 +446,49 @@
     window.location.assign(url);
   };
 
+  // Download every lesson in the active unit as a Canvas-ready SCORM package.
+  //
+  // /api/scorm?activity=<lessonId> returns a finished SCORM 1.2 zip and is
+  // deliberately exempt from the site password, so this needs no auth detour —
+  // which is the whole point: the button used to navigate to the gated builder
+  // page, where a teacher had to authenticate and then pick lessons by hand to
+  // get files this endpoint already produces.
+  //
+  // One zip per lesson, not one bundle: Canvas imports SCORM one package per
+  // assignment, so a combined archive would have to be unzipped by hand before
+  // it was usable. Each download is triggered from its own anchor and staggered
+  // ~400ms apart, because browsers silently drop a burst of simultaneous
+  // programmatic downloads.
+  const downloadUnitScorm = (item) => {
+    const lessons = Array.isArray(item.lessons) ? item.lessons : [];
+    if (!lessons.length) {
+      window.alert("No lessons found for this unit yet.");
+      return;
+    }
+    const plural = lessons.length === 1 ? "package" : "packages";
+    window.alert(
+      `Downloading ${lessons.length} Canvas ${plural} for ${item.district_title}.\n\n` +
+        "They arrive as separate .zip files — upload one per Canvas assignment. " +
+        "Your browser may ask permission to download multiple files.",
+    );
+    lessons.forEach((l, i) => {
+      setTimeout(() => {
+        const a = document.createElement("a");
+        a.href =
+          "/api/scorm?activity=" +
+          encodeURIComponent(l.id) +
+          "&title=" +
+          encodeURIComponent(`${l.id} ${l.title || ""}`.trim());
+        a.download = "";
+        a.rel = "noopener";
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => a.remove(), 2000);
+      }, i * 400);
+    });
+  };
+
   window.executeQuickAction = function (actionType) {
     const item = window.getActiveDistrictSeq();
     const seq = item.sequence;
@@ -463,7 +506,7 @@
     } else if (actionType === "groups") {
       goToTool("/neft-math-lab-studio/?seq=" + seq + "&unit=" + unitTitle);
     } else if (actionType === "scorm") {
-      goToTool("/teacher-tools/canvas-scorm/?seq=" + seq + "&unit=" + unitTitle);
+      downloadUnitScorm(item);
     }
   };
 
