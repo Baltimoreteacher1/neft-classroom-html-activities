@@ -50,7 +50,7 @@ import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
 import { mountHintLadder } from "./hint-ladder.js";
 import { badgeName, getPreferredLang, phaseName, stackContent, stackHtml, t } from "./i18n.js";
-import { attachImageZoom, isLightboxOpen } from "./image-zoom.js";
+import { attachImageZoom, isLightboxOpen, observeContentImageZoom } from "./image-zoom.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { mountLevel3Launch } from "./level3-launch.js";
 import { getLevel, levelOverride, mountLevelSelector } from "./levels.js";
@@ -147,6 +147,9 @@ export function bootLesson(config) {
   // phases render lazily and practice regenerates, so watch the whole page and
   // auto-wire any stem marked data-annotate="word-problem" the moment it mounts.
   observeWordProblemAnnotation(document.body);
+  // Click-to-enlarge on every content image, including the ones no call site
+  // wired by hand and the ones lazily-rendered phases mount later.
+  observeContentImageZoom(document.body);
   // Hand-drawn chalk marks around key answers (warm-deck skin only, additive).
   mountChalkAnnotations(document);
   // Tools menu → "Interactive Tools" (?mode=tools) when the lesson has any.

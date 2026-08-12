@@ -4,6 +4,7 @@
 
 import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { createGoDeeper } from "./go-deeper.js";
+import { observeContentImageZoom } from "./image-zoom.js";
 import { enableKeyboardScrolling } from "./keyboard-scroll.js";
 import {
   detectMisconception,
@@ -1236,6 +1237,10 @@ export async function resolveAssignedVariant(config) {
 export function bootSmallGroup(config) {
   // Arrow / Page keys scroll the studio panels, not just the mouse wheel.
   enableKeyboardScrolling();
+  // The studio had no click-to-enlarge at all: every attachImageZoom call lived
+  // in the full-lesson renderer, so a small-group scene or diagram did nothing
+  // when a student tapped it.
+  observeContentImageZoom(document.body);
   const params = new URLSearchParams(window.location.search);
 
   // ?mode=tools deep-link: render the standalone Interactive Tools page instead
