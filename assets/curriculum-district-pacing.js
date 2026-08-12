@@ -446,47 +446,39 @@
     window.location.assign(url);
   };
 
-  // Download every lesson in the active unit as a Canvas-ready SCORM package.
+  // Download the whole unit as ONE Canvas-ready archive.
   //
-  // /api/scorm?activity=<lessonId> returns a finished SCORM 1.2 zip and is
-  // deliberately exempt from the site password, so this needs no auth detour —
-  // which is the whole point: the button used to navigate to the gated builder
-  // page, where a teacher had to authenticate and then pick lessons by hand to
-  // get files this endpoint already produces.
+  // /api/scorm-bundle returns a single .zip holding one ready-to-upload SCORM
+  // package per lesson, each still its own nested .zip — Canvas imports SCORM
+  // one package per assignment, so they cannot be merged, but a teacher setting
+  // up a unit should download once.
   //
-  // One zip per lesson, not one bundle: Canvas imports SCORM one package per
-  // assignment, so a combined archive would have to be unzipped by hand before
-  // it was usable. Each download is triggered from its own anchor and staggered
-  // ~400ms apart, because browsers silently drop a burst of simultaneous
-  // programmatic downloads.
+  // This replaced firing N staggered downloads: browsers meet that with a
+  // "this site wants to download multiple files" prompt, and it scatters N
+  // files loose in Downloads with nothing tying them to a unit. One archive
+  // unzips to one named folder with a README.
+  //
+  // A plain anchor, no fetch: the browser streams it straight to disk, the
+  // Content-Disposition filename is honoured, and the page never leaves the Hub.
   const downloadUnitScorm = (item) => {
     const lessons = Array.isArray(item.lessons) ? item.lessons : [];
     if (!lessons.length) {
       window.alert("No lessons found for this unit yet.");
       return;
     }
-    const plural = lessons.length === 1 ? "package" : "packages";
-    window.alert(
-      `Downloading ${lessons.length} Canvas ${plural} for ${item.district_title}.\n\n` +
-        "They arrive as separate .zip files — upload one per Canvas assignment. " +
-        "Your browser may ask permission to download multiple files.",
-    );
-    lessons.forEach((l, i) => {
-      setTimeout(() => {
-        const a = document.createElement("a");
-        a.href =
-          "/api/scorm?activity=" +
-          encodeURIComponent(l.id) +
-          "&title=" +
-          encodeURIComponent(`${l.id} ${l.title || ""}`.trim());
-        a.download = "";
-        a.rel = "noopener";
-        a.style.display = "none";
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => a.remove(), 2000);
-      }, i * 400);
-    });
+    const ids = lessons.map((l) => l.id).join(",");
+    const a = document.createElement("a");
+    a.href =
+      "/api/scorm-bundle?activities=" +
+      encodeURIComponent(ids) +
+      "&name=" +
+      encodeURIComponent(item.district_title || "SCORM packages");
+    a.download = "";
+    a.rel = "noopener";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => a.remove(), 2000);
   };
 
   window.executeQuickAction = function (actionType) {

@@ -316,7 +316,13 @@ export function zipStore(files) {
 
   for (const name of Object.keys(files)) {
     const nameBytes = enc.encode(name);
-    const data = enc.encode(files[name]);
+    // Values may be text (the SCO's index.html / imsmanifest.xml) or raw bytes.
+    // Bytes are what lets a zip hold other zips, which is how the bundle
+    // endpoint ships one download containing one ready-to-upload package per
+    // lesson — Canvas imports SCORM one package per assignment, so they must
+    // stay separate archives inside the outer one.
+    const value = files[name];
+    const data = value instanceof Uint8Array ? value : enc.encode(value);
     const crc = crc32(data);
 
     const lh = new Uint8Array(30 + nameBytes.length);

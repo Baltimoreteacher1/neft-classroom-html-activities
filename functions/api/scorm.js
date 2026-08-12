@@ -68,7 +68,7 @@ function errorPage(message, status = 400) {
 // a definitive 404 blocks — auth gates (401/403), method quirks (405), and
 // transient 5xx / network errors / timeouts all let the download through, so a
 // hiccup never blocks a legitimate package.
-async function targetExists(lessonUrl) {
+export async function targetExists(lessonUrl) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 4000);
   try {
