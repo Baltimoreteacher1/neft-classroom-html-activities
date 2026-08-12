@@ -136,7 +136,39 @@ const rules = [
         const value = parseAnswerValue(ans);
         if (value === null) continue;
         const filled = raw.replace(/___+|\[\s*\]/, `(${value.n}/${value.d})`);
-        const holds = equationHolds(filled, null, value);
+        let holds = equationHolds(filled, null, value);
+
+        // A leading label is not part of the mathematics. "Base area: 6 × 5 =
+        // ___" and "Add the x-coefficients: 4 + 2 = ___" are perfectly
+        // decidable, but evaluateExpression cannot parse the prose in front of
+        // them, so both were reported "not evaluable" and skipped. That hid
+        // 1,083 checkable equations from this gate — all of them correct, as it
+        // turned out, but invisible either way.
+        if (holds === null) {
+          // Trailing sentence punctuation defeats the expression parser too —
+          // "6 × 5 = (30/1)." is not evaluable, "6 × 5 = (30/1)" is.
+          const stripped = filled.replace(/^[^:=]{1,40}:\s*/, "").replace(/[.\s]+$/, "");
+          if (stripped !== filled) holds = equationHolds(stripped, null, value);
+        }
+
+        // Rounding is the intended answer in some lessons, not an error: a
+        // unit-rate comparison authors "5 ÷ 3 = 1.6667" on purpose. Accept an
+        // answer that is the exact value correctly rounded to its OWN stated
+        // precision — 1.6667 passes, 1.6668 and 1.67 do not.
+        if (holds === false) {
+          const sides = filled.replace(/^[^:=]{1,40}:\s*/, "").split("=");
+          if (sides.length === 2) {
+            const exact = evaluateExpression(sides[0]);
+            const decimals = (String(text(ans)).split(".")[1] || "").length;
+            if (exact !== null && decimals > 0) {
+              const scale = 10 ** decimals;
+              const scaled = (Number(exact.n) / Number(exact.d)) * scale;
+              const stated = (Number(value.n) / Number(value.d)) * scale;
+              if (Math.abs(Math.round(scaled) - stated) < 1e-9) holds = true;
+            }
+          }
+        }
+
         if (holds === null) {
           add.skip(`blank equation not evaluable: ${raw}`);
           continue;
