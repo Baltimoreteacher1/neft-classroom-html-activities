@@ -197,6 +197,28 @@ function baseDiagram(base) {
   );
 }
 
+/* Regeneration must never DELETE a hand-authored practice lab set.
+ *
+ * `baseDiagram()` returns ONE tool. A committed group can carry several — the
+ * 3-1 groups mount a tape diagram AND a double number line, the two
+ * representations official Reveal 3.1 builds its lesson on, scaled for each
+ * group's level. A plain re-run collapsed both back to a single shared tool and
+ * silently undid that authoring, the same class of loss withPriorVocabulary()
+ * exists to stop. Only an ARRAY on disk is treated as deliberate; a group whose
+ * committed diagram is a single object still tracks its base lesson.
+ */
+function withPriorDiagram(diagram, id) {
+  const priorPath = join(LESSONS, id, "config.json");
+  if (!existsSync(priorPath)) return diagram;
+  let prior;
+  try {
+    prior = JSON.parse(readFileSync(priorPath, "utf8")).practice?.diagram;
+  } catch {
+    return diagram; // unreadable prior config is not a reason to fail the run
+  }
+  return Array.isArray(prior) && prior.length ? prior : diagram;
+}
+
 function buildGroup1(base, u, m) {
   const out = clone(base);
   const id = `${u}-${m}-group1`;
@@ -255,7 +277,7 @@ function buildGroup1(base, u, m) {
     // `practice.diagram` at the top of the Practice & Check tab; rebuilding
     // `out.practice` from scratch used to drop it, so every small group lost
     // the one put-your-own-numbers-in tool the full lesson gives students.
-    diagram: baseDiagram(base),
+    diagram: withPriorDiagram(baseDiagram(base), id),
     approaching: practice.slice(0, 6),
     onLevel: practice.slice(6),
     extending: [],
@@ -367,7 +389,7 @@ function buildGroup2(base, u, m) {
   ).slice(0, 12);
   out.practice = {
     // Same rehearsal tool the full lesson mounts — see buildGroup1.
-    diagram: baseDiagram(base),
+    diagram: withPriorDiagram(baseDiagram(base), id),
     approaching: [],
     onLevel: practice.slice(0, 4),
     extending: practice.slice(4),
