@@ -51,6 +51,22 @@ const OPEN = { type: "open-response", stem: "Explain your reasoning." };
   // A tag with no taxonomy entry is not a diagnosis — reporting a label nobody
   // can look up is worse than silence.
   assert.equal(diagnose({ ...PLAIN, misconceptionTag: "invented-tag" }, 0), null);
+
+  // Authored tags come in two forms and BOTH must resolve. "place-value" is a
+  // short alias, not a taxonomy key, so testing the raw string against the
+  // taxonomy rejects it — and aliases are most of the authored coverage in the
+  // fleet, so getting this wrong silently costs ~6% of lessons their diagnostic.
+  assert.equal(
+    diagnose({ ...PLAIN, misconceptionTag: "place-value" }, 0),
+    "decimal-place-value",
+    "an aliased authored tag must resolve to its taxonomy id",
+  );
+  assert.equal(
+    diagnose({ ...PLAIN, misconceptionTag: "decimal-place-value" }, 0),
+    "decimal-place-value",
+    "a verbatim taxonomy id must resolve too",
+  );
+  assert.equal(isDiagnosable({ ...PLAIN, misconceptionTags: ["place-value", null, null, null] }), true);
 }
 
 // ── isDiagnosable ──
@@ -178,6 +194,33 @@ const pool = (n, diagnosableAt = []) =>
   assert.equal(repeatPhrase(0), "");
   assert.equal(repeatPhrase(2), " — twice");
   assert.equal(repeatPhrase(3), " — 3 times");
+}
+
+// ── The studio must actually LOAD the signal store it writes to ──
+//
+// This is here because it already happened. The studio recorded misconceptions
+// to window.NTSignal and window.NTSignal was undefined on every small-group
+// page — nothing threw, nothing logged, and the guard that makes a missing
+// store safe also made the omission invisible. The evidence went nowhere for as
+// long as nobody opened a console. A source check is crude, but it fails when
+// the loader is deleted, which is the failure this cannot afford to repeat.
+{
+  const { readFileSync } = await import("node:fs");
+  const src = readFileSync(new URL("./small-group-renderer.js", import.meta.url), "utf8");
+  assert.ok(
+    src.includes("/assets/nt-signal.js"),
+    "bootSmallGroup must lazy-load the signal store, or every write below is a no-op",
+  );
+  assert.ok(
+    /window\.NTSignal\?\.record\?\./.test(src),
+    "studio attempts must be recorded to the shared signal store",
+  );
+  // Under the BASE lesson id: "2-11-group1" and "2-11" are the same mathematics,
+  // and the core lesson's cross-lesson memory asks about the latter.
+  assert.ok(
+    /replace\(\/-\(\?:group\[12\]\|catchup\)\$\/, ""\)/.test(src),
+    "signals must be recorded under the base lesson id, not the variant",
+  );
 }
 
 console.log("PASS small-group-diagnostic: selection, diagnosis and summary contracts");

@@ -29,7 +29,12 @@
 //   - It never says "wrong". It names the thinking, in the taxonomy's student
 //     voice, and moves on.
 
-import { detectMisconception, misconceptionLabel, studentExplanation } from "./misconceptions.js";
+import {
+  detectMisconception,
+  misconceptionLabel,
+  resolveAuthoredTag,
+  studentExplanation,
+} from "./misconceptions.js";
 import { bi, el, esc, speak } from "./small-group-ui.js";
 
 /** Ceiling on questions asked. Three at ~30–40s each is the two-minute budget. */
@@ -86,8 +91,11 @@ export function diagnose(item, index) {
     item?.misconceptionTag ||
     null;
   const choiceText = Array.isArray(item?.choices) ? item.choices[index] : undefined;
-  const named = detectMisconception(item, choiceText, index);
-  const tag = authored || named;
+  // Authored tags come in two forms — a short alias ("place-value") and a
+  // taxonomy id verbatim ("decimal-place-value") — and only resolveAuthoredTag
+  // knows both. Testing the raw string against the taxonomy silently rejects
+  // every aliased tag, which is most of the authored coverage in the fleet.
+  const tag = resolveAuthoredTag(authored) || detectMisconception(item, choiceText, index);
   if (!tag) return null;
   // Round-trip through the taxonomy: a tag with no label is a tag we cannot
   // explain to anyone, and reporting it would be worse than silence.

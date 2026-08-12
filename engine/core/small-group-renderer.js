@@ -10,6 +10,7 @@ import {
   detectMisconception,
   MISCONCEPTIONS,
   recordMisconception,
+  resolveAuthoredTag,
   topMisconceptions,
 } from "./misconceptions.js";
 // NOTE: present-mode.css is NOT imported here. tools/small-group-modes.test.mjs
@@ -616,15 +617,54 @@ function renderStudio(config) {
       ) {
         document.dispatchEvent(new CustomEvent("sg:auto-support"));
       }
+      let namedThisAttempt = null;
       if (!correct && item) {
         // A wrong answer is the richest signal in the room; until now it was
         // rendered as a red outline and discarded. Name it when — and only
         // when — the arithmetic identifies exactly one mechanism.
-        const named = detectMisconception(item, response, choiceIndex);
+        //
+        // Authored distractor tags come first. The studio used to consult only
+        // the predictor, which can name an error solely from a stem it can parse
+        // as arithmetic — so on a prose word problem an author who had already
+        // named the distractor was ignored, and the miss recorded nothing.
+        const authored =
+          (Array.isArray(item.misconceptionTags) &&
+            choiceIndex != null &&
+            item.misconceptionTags[choiceIndex]) ||
+          item.misconceptionTag ||
+          null;
+        const named =
+          resolveAuthoredTag(authored) || detectMisconception(item, response, choiceIndex);
         if (named) {
           state.misconceptions = recordMisconception(store, named) || state.misconceptions;
           state.lastMisconception = named;
+          namedThisAttempt = named;
         }
+      }
+      // Close the loop back to the core lesson.
+      //
+      // The studio produces the most carefully diagnosed evidence in the product
+      // and, until now, kept every bit of it inside its own device store. Four
+      // surfaces read window.NTSignal — the review arcade picks its items from
+      // it, the practice arcade its tier, the curriculum hub its suggestions, and
+      // (since the diagnosis-routing change) the core lesson's Practice targets
+      // the error a student keeps repeating. The studio wrote to none of them, so
+      // a student could have their misconception precisely named in small group
+      // on Tuesday and meet Wednesday's core lesson as a stranger.
+      //
+      // Recorded under the BASE lesson id, not the variant, because "2-11-group1"
+      // and "2-11" are the same mathematics and the core lesson asks about the
+      // latter. Device-local, no PII (a standard code and a tag slug), and fully
+      // guarded — a missing signal store is a silent no-op.
+      try {
+        window.NTSignal?.record?.({
+          standard: config.standard || "",
+          correct: Boolean(correct),
+          misconceptionTag: namedThisAttempt || undefined,
+          lesson: String(config.lessonId || "").replace(/-(?:group[12]|catchup)$/, ""),
+        });
+      } catch {
+        /* signals must never break a studio */
       }
       if (correct) {
         state.streak = (state.streak || 0) + 1;
@@ -1258,7 +1298,43 @@ export async function resolveAssignedVariant(config) {
   }
 }
 
+/**
+ * Lazy-load the device-local signal store and stamp the lesson meta global that
+ * deep engine components read. Best-effort by construction: every failure path
+ * leaves window.NTSignal absent, which every consumer already tolerates.
+ */
+function loadLearningSignals(config) {
+  try {
+    // Under the BASE lesson id — "2-11-group1" and "2-11" are the same
+    // mathematics, and the core lesson asks about the latter.
+    const base = String(config.lessonId || "").replace(/-(?:group[12]|catchup)$/, "");
+    window.__ntLessonMeta = { standard: config.standard || "", lesson: base };
+    if (!window.NTSignal && !document.querySelector('script[src^="/assets/nt-signal.js"]')) {
+      const sig = document.createElement("script");
+      sig.src = "/assets/nt-signal.js";
+      sig.defer = true;
+      document.head.append(sig);
+    }
+  } catch {
+    /* signals must never break a studio */
+  }
+}
+
 export function bootSmallGroup(config) {
+  // Device-local learning signals (assets/nt-signal.js → window.NTSignal).
+  //
+  // The full-lesson entry (core/app.js) has lazy-loaded this for a while; the
+  // studio never did, so window.NTSignal was simply absent on every /lessons/
+  // <id>-group1/ page. That is not a missing feature so much as a broken one:
+  // the studio is where the most carefully diagnosed evidence in the product is
+  // produced, and it was the one surface structurally unable to contribute to
+  // the store that the arcades, the hub and (now) the core lesson all read.
+  //
+  // Loaded the same way and for the same reason: no HTML change to the lesson
+  // shells, and every consumer guards on window.NTSignal, so a failed load stays
+  // a silent no-op rather than a broken studio.
+  loadLearningSignals(config);
+
   // Arrow / Page keys scroll the studio panels, not just the mouse wheel.
   enableKeyboardScrolling();
   // The studio had no click-to-enlarge at all: every attachImageZoom call lived
