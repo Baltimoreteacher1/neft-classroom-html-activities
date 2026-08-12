@@ -89,7 +89,10 @@ check(
   unitsBytes >= MIN_UNITS_PAGE_BYTES,
   `units page too small: ${unitsBytes} bytes (< ${MIN_UNITS_PAGE_BYTES}) — possible clobber/stub`,
 );
-check(units >= MIN_UNITS, `only ${units} unit sections on the units page (expected >= ${MIN_UNITS})`);
+check(
+  units >= MIN_UNITS,
+  `only ${units} unit sections on the units page (expected >= ${MIN_UNITS})`,
+);
 check(
   /href="\/curriculum\/units\/"/.test(html),
   "the hub no longer links to the units browser at /curriculum/units/",

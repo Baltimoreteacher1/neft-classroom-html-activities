@@ -84,7 +84,7 @@
         });
       }
     </script>
-    <link rel="stylesheet" href="/assets/curriculum-hub.css?v=7fcc0814" />
+    <link rel="stylesheet" href="/assets/curriculum-hub.css?v=5a546480" />
     <link rel="stylesheet" href="/assets/curriculum-polish.css?v=msaoy7gp" />
     <link rel="stylesheet" href="/assets/curriculum-top1.css?v=msaoy7gp" />
     <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=msaoy7gp" />
@@ -191,13 +191,13 @@
     </style>
   </head>
   <body class="light-theme curriculum-units-page">
-    <a class="skip-link" href="#interactive-hub">Skip to units and lessons</a>
-    <header class="units-page-head">
+    <a class="skip-link" href="#interactive-hub">Skip to the units</a>
+    <header class="units-page-head" id="top">
       <p class="units-page-eyebrow">Neft Teacher · Grade 6 Math</p>
       <h1 class="units-page-title">Units &amp; Lessons</h1>
       <p class="units-page-sub">
-        Every unit, every lesson, and the resources that go with them. Looking for
-        planning tools, games, or the class dashboards? Those live on the
+        Every unit, every lesson, and the resources that go with them. Planning
+        tools, games and the class dashboards live on the
         <a href="/curriculum/">Curriculum Hub</a>.
       </p>
       <nav class="unit-jump-bar" aria-label="Quick jump to unit">
@@ -216,8 +216,22 @@
         </div>
       </nav>
     </header>
-    <main class="curriculum-units-main">
-      <!-- Static mount point for the interactive units browser. It exists in
+    <div class="wrap" role="main">
+      <div class="controls" id="hub-content" role="search">
+        <div class="search">
+          <label for="curr-search">Search</label>
+          <input
+            id="curr-search"
+            type="search"
+            placeholder="Filter by lesson, standard, or topic…"
+            aria-label="Filter lessons by title, standard, or topic"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+      <p class="result-count" id="result-count" role="status" aria-live="polite"></p>
+      <p class="no-results" id="no-results" role="status">No lessons match your search.</p>
+<!-- Static mount point for the interactive units browser. It exists in
            the HTML (not only after curriculum-hub-search.js runs) so the
            skip link and hero CTA that target #interactive-hub work before the
            deferred script executes — and still work if it never does. -->
@@ -6275,7 +6289,30 @@
           }
         })();
       </script>
-    </main>
+    </div>
+    <div
+      id="launch-modal"
+      class="modal-overlay"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title-text"
+      aria-hidden="true"
+    >
+      <div class="modal-card">
+        <button class="modal-close" id="modal-close-btn" aria-label="Close modal">&times;</button>
+        <div class="modal-content">
+          <span class="modal-eyebrow">Ready to Launch</span>
+          <h2 class="modal-title" id="modal-title-text">Assignment Name</h2>
+          <p class="modal-desc" id="modal-desc-text">
+            Click the button below to open this activity in a new tab.
+          </p>
+          <a class="modal-btn-launch" id="modal-launch-link" href="#" target="_blank"
+            >Open Activity ↗</a
+          >
+        </div>
+      </div>
+    </div>
     <footer class="units-page-foot">
       <a href="/curriculum/">← Back to the Curriculum Hub</a>
     </footer>

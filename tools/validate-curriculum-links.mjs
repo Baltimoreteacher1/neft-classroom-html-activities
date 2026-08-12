@@ -30,7 +30,10 @@ const check = (ok, msg) => {
   if (!ok) failures.push(msg);
 };
 
-const hub = read("curriculum/index.html");
+/* The unit blocks this gate carves up moved to their own page when the hub
+   stopped hosting the units browser; the check itself is unchanged, it just
+   reads them where they now live. */
+const hub = read("curriculum/units/index.html");
 const manifest = readJson("data/curriculum-manifest.json");
 
 // --- carve the hub into unit blocks, keyed by the "Unit N" label inside each ---

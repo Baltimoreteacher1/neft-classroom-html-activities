@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { validateSmallGroups } from "./validate-small-group-lessons.mjs";
 
-const html = readFileSync(new URL("../curriculum/index.html", import.meta.url), "utf8");
+/* The detector under test reads the unit/lesson markup, which now lives on the
+   units page; this fixture has to come from the same file the gate reads. */
+const html = readFileSync(new URL("../curriculum/units/index.html", import.meta.url), "utf8");
 const rows = JSON.parse(readFileSync(new URL("./small-group-rows.json", import.meta.url), "utf8"));
 const readLessonConfig = (lessonId) =>
   JSON.parse(readFileSync(new URL(`../lessons/${lessonId}/config.json`, import.meta.url), "utf8"));

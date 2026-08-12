@@ -216,7 +216,7 @@ export function validateSmallGroups({ html, rows, root = ROOT }) {
 }
 
 function main() {
-  const html = readFileSync(join(ROOT, "curriculum", "index.html"), "utf8");
+  const html = readFileSync(join(ROOT, "curriculum", "units", "index.html"), "utf8");
   const rows = JSON.parse(readFileSync(join(ROOT, "tools", "small-group-rows.json"), "utf8"));
   const result = validateSmallGroups({ html, rows });
   console.log(

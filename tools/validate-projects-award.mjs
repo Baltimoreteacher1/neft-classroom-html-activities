@@ -98,14 +98,17 @@ if (Object.keys(entries).length !== expectedProjectCount)
     `award configuration: expected ${expectedProjectCount} projects, found ${Object.keys(entries).length}`,
   );
 
-const curriculum = read("curriculum/index.html");
+/* The unit/lesson markup moved to curriculum/units/index.html when the hub
+   stopped hosting the units browser. Same assertion, new home. */
+const curriculum = read("curriculum/units/index.html");
 const expectedLinks = [
   'href="/math/unit-8/projects/">Culminating Project',
   'href="/math/statistics/projects/">Culminating Project',
   'href="/math/unit-7/projects/">Culminating Project',
 ];
 for (const expected of expectedLinks)
-  if (!curriculum.includes(expected)) failures.push(`curriculum/index.html: missing ${expected}`);
+  if (!curriculum.includes(expected))
+    failures.push(`curriculum/units/index.html: missing ${expected}`);
 
 /* answer-key-gate.js must carry no client-side teacher secret.
    This used to grep for the then-current PIN literal. A rotated PIN would have

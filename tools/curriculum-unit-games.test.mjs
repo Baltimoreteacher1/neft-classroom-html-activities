@@ -41,7 +41,9 @@ assert.equal(unitStandards.size, 10, "expected 10 curriculum units in the manife
 // leaves markup a regex still happily matches while the browser swallows the
 // anchor that follows it — which is how the Unit Game link vanished from seven
 // units while every source-text check stayed green.
-const dom = new JSDOM(read("curriculum/index.html"));
+/* The unit blocks moved to /curriculum/units/ when the hub stopped hosting the
+   units browser. The game-per-unit contract is unchanged; only the file is. */
+const dom = new JSDOM(read("curriculum/units/index.html"));
 const units = [...dom.window.document.querySelectorAll("details.unit")].map((el) => {
   const res = [...el.querySelectorAll("a.res")];
   const game = res.find((a) => a.textContent.includes("Unit Game"));

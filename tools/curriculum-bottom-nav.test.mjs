@@ -5,7 +5,9 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const root = join(__dirname, "..");
-const html = readFileSync(join(root, "curriculum", "index.html"), "utf8");
+/* Top and bottom unit navigation live with the units browser, which moved to
+   its own page; the parity contract this test pins is unchanged. */
+const html = readFileSync(join(root, "curriculum", "units", "index.html"), "utf8");
 
 // Test 1: Check that top and bottom unit jump bars exist
 assert.ok(html.includes('class="unit-jump-bar"'), "Top unit jump bar present");
