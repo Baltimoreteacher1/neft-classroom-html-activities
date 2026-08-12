@@ -241,6 +241,9 @@ const SYNONYMS = {
   "cross-multiply": "proportion",
   scale: "scale-factor",
   "better-buy": "unit-rate",
+  // A unit price IS a unit rate — the one that carries money. Official Reveal 3.2
+  // names it, so 3-2 teaches the term, and it shows the unit-rate picture.
+  "unit-price": "unit-rate",
   // markup / tax / tip used to resolve to percent.svg — a plain "50 out of 100"
   // grid. That picture says what a percent IS, not what these three words DO
   // (each adds an amount on top of a starting price), so the word wall showed
