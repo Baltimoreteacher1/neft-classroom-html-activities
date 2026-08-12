@@ -42,11 +42,23 @@
  * precisely the rot this file exists to prevent, on a page type it did not yet
  * cover.
  *
- * generate-notes.mjs owns FOUR page types (notes, notes-teacher, learn, vocab).
- * Only learn.html is gated here, deliberately: it is the one that bit, and the
- * other three were verified fresh across all 84 lessons when this was wired
- * (`--check --pages <name>` each). Adding them is a one-word change to the
- * `--pages` list below when someone wants to pay for the runtime.
+ * COVERAGE, and why it is now every committed lesson page.
+ *
+ * The rule that decides what belongs here is not "is it important" — it is
+ * "can it drift". A page rots only if it is BOTH a committed second copy of the
+ * config AND absent from `npm run build`. printable.html is deliberately not
+ * listed: generate-printable-lesson.mjs runs inside `npm run build`, so every
+ * deploy rebuilds it and it cannot go stale. Everything else that a student or
+ * teacher can open is here.
+ *
+ * Each generator was confirmed DETERMINISTIC before being made a hard gate:
+ * run twice from a clean tree, byte-identical output both times, and running it
+ * again over its own output changes nothing. A non-deterministic generator
+ * would have to be report-only, because a gate that flips on a timestamp
+ * teaches people to ignore it. None of these are.
+ *
+ * generate-notes.mjs owns four page types and takes `--pages` to select them;
+ * all four are gated. The others take a plain `--check`.
  * ========================================================================== */
 
 import assert from "node:assert/strict";
@@ -56,7 +68,13 @@ import { fileURLToPath } from "node:url";
 const GENERATORS = [
   ["worksheet.html", "../scripts/generate-worksheets.mjs", []],
   ["handout.html", "../scripts/generate-handout-html.mjs", []],
-  ["learn.html", "../scripts/generate-notes.mjs", ["--pages", "learn.html"]],
+  [
+    "notes.html, notes-teacher.html, learn.html, vocab.html",
+    "../scripts/generate-notes.mjs",
+    ["--pages", "notes.html,notes-teacher.html,learn.html,vocab.html"],
+  ],
+  ["slides.html", "../scripts/generate-slides.mjs", []],
+  ["homework.html", "../scripts/generate-homework-html.mjs", []],
 ];
 
 const stale = [];

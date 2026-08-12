@@ -16,7 +16,11 @@ const SLIDES_EDITORIAL = `
 }`;
 
 import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
-import { writeGenerated } from "./lib/preserve-injected.mjs";
+import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
+
+/** --check writes nothing and exits non-zero if any committed deck has drifted. */
+const CHECK = process.argv.includes("--check");
+
 import { REFERENCE_CSS, tokensToCssVars } from "./lib/slide-reference-theme.mjs";
 import { getUnitPalette, paletteToCssVars } from "./lib/slide-theme-palettes.mjs";
 import { linkifyDeck } from "./lib/vocab-linkify.mjs";
@@ -3893,6 +3897,8 @@ function main() {
   }
 
   let count = 0;
+  let checked = 0;
+  const staleDecks = [];
   lessons.forEach((id) => {
     try {
       const configPath = path.join(lessonsDir, id, "config.json");
@@ -3905,6 +3911,15 @@ function main() {
       const html = linkifyDeck(generateSlidesHtml(id, data, googleSlidesUrl));
 
       const outputPath = path.join(lessonsDir, id, "slides.html");
+      // --check: report drift, write nothing. slides.html is a committed second
+      // copy of the lesson and does NOT run in `npm run build`, so it rots
+      // silently — the C1 wave left seven decks teaching a Ferris wheel estimate
+      // the lesson no longer made. tools/generated-pages-fresh.test.mjs gates it.
+      if (CHECK) {
+        checked++;
+        if (!isGeneratedFresh(outputPath, html)) staleDecks.push(`lessons/${id}/slides.html`);
+        return;
+      }
       // writeGenerated, not fs.writeFileSync: the injectors (Save/Resume,
       // mobile-access, math-workbench) splice sentinel blocks into this page
       // AFTER it is generated, and a plain overwrite silently deletes them.
@@ -3917,6 +3932,18 @@ function main() {
     }
   });
 
+  if (CHECK) {
+    if (staleDecks.length) {
+      console.error(
+        `${staleDecks.length} slides page(s) are STALE — the committed HTML no longer matches its config.json:\n  ${staleDecks
+          .slice(0, 15)
+          .join("\n  ")}\n\nFix: node scripts/generate-slides.mjs`,
+      );
+      process.exit(1);
+    }
+    console.log(`Slides up to date (${checked} lessons).`);
+    return;
+  }
   console.log(`Successfully generated premium slides.html for ${count} lessons.`);
 }
 
