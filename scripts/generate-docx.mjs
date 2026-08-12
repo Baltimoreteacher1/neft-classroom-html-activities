@@ -126,18 +126,54 @@ function para(children, opts = {}) {
   });
 }
 
-// Section heading (Heading 1): bold navy with a teal rule beneath. Page breaks
-// are applied by callers via pageBreakBefore for clean print separation.
+// Section heading (Heading 1): bold navy with a teal rule beneath.
+//
+// `keepNext` is not optional here. Every section used to force a page break, so
+// a short section stranded the rest of its page — half a sheet of white paper
+// per packet, which is what "the PDF is off page" looked like in print. Now only
+// the sections that MUST start on a fresh sheet ask for a break (see callers),
+// and the rest flow. keepNext is what makes flowing safe: it binds the heading
+// to the block after it, so "Guided Practice" can never sit alone at the foot of
+// a page with its content overleaf.
 function sectionHeading(text, opts = {}) {
   return new Paragraph({
     heading: HeadingLevel.HEADING_1,
     pageBreakBefore: !!opts.pageBreak,
-    spacing: { before: opts.pageBreak ? 0 : 260, after: 140 },
+    keepNext: true,
+    keepLines: true,
+    spacing: { before: opts.pageBreak ? 0 : 300, after: 140 },
     border: {
       bottom: { style: BorderStyle.SINGLE, size: 14, space: 6, color: TEAL },
     },
     children: [new TextRun({ text, bold: true, color: NAVY, size: 30 })],
   });
+}
+
+// A blank a student can actually write on.
+//
+// Cloze sentences arrive from config carrying literal "___" — about 4mm at 11pt,
+// which is a mark on the page, not a space to write in. Underscores also print
+// as a lumpy dotted rule. This swaps every run of 2+ underscores for an
+// underlined span of non-breaking spaces: a clean continuous rule, sized so a
+// sixth-grader's handwriting fits, that never breaks across a line.
+// Plain underscores, deliberately — not an underlined span of spaces. Underlined
+// whitespace renders with visible gaps where the word processor kerns the run
+// (LibreOffice breaks it into segments), and the underline attribute is one of
+// the first things Google Docs drops when it converts a .docx. A straight run of
+// underscores is one unbroken rule in Word, LibreOffice, Google Docs and print
+// alike. 16 of them is roughly 3cm at 11pt — enough for a sixth-grader to write
+// a word, where the "___" that arrives in config is about 4mm.
+const BLANK_RULE = "_".repeat(16);
+function clozeRuns(sentence, size = 22) {
+  const parts = String(sentence).split(/_{2,}/);
+  const runs = [];
+  parts.forEach((part, i) => {
+    if (part) runs.push(new TextRun({ text: part, size }));
+    if (i < parts.length - 1) {
+      runs.push(new TextRun({ text: BLANK_RULE, size }));
+    }
+  });
+  return runs;
 }
 
 // Sub-heading (Heading 2) with optional italic tag (e.g. an "I Do" cue).
@@ -552,7 +588,7 @@ function workedExampleBlock(cfg, worked) {
   const hasWorked = Boolean(worked && worked.iDo);
   if (!hasLaunch && !hasExplore && !hasWorked) return [];
 
-  const out = [sectionHeading("Worked Example", { pageBreak: true })];
+  const out = [sectionHeading("Worked Example")];
   out.push(subHeading("Watch & Read", "I Do — follow along with your teacher", TEAL));
 
   const inner = [];
@@ -611,7 +647,7 @@ function guidedPracticeBlock(cfg, worked) {
   const hasWeDo = Boolean(worked && worked.weDo);
   if (!connect.scenario && !tt.length && !hasWeDo) return [];
 
-  const out = [sectionHeading("Guided Practice", { pageBreak: true })];
+  const out = [sectionHeading("Guided Practice")];
   out.push(subHeading("Solve Together", "We Do — work with your class", PURPLE));
 
   // We-Do worked problem: same step scaffold as the solved example, blank for
@@ -754,7 +790,7 @@ function independentPracticeBlock(cfg, excludeStems = new Set()) {
   const groups = gatherPracticeTiered(cfg.practice, excludeStems);
   if (!groups.length) return [];
 
-  const out = [sectionHeading("Independent Practice", { pageBreak: true })];
+  const out = [sectionHeading("Independent Practice")];
   out.push(subHeading("On Your Own", "You Do — show your work", AMBER));
   out.push(muted("Solve each problem. Show your thinking in the work box."));
 
@@ -796,7 +832,7 @@ function independentPracticeBlock(cfg, excludeStems = new Set()) {
 // ── WRITE ABOUT THE MATH (ESOL-SCAFFOLDED) ──────────────────────────────────
 function writingBlock(cfg) {
   const twr = deriveTWR(cfg);
-  const out = [sectionHeading("Write About the Math", { pageBreak: true })];
+  const out = [sectionHeading("Write About the Math")];
   out.push(muted("Use the support level you need. Every level answers the same math question."));
 
   out.push(subHeading("1. Understand the Question", twr.focus.action, AMBER));
@@ -906,7 +942,7 @@ function writingBlock(cfg) {
 function reflectBlock(cfg) {
   const et = (cfg.reflect || {}).exitTicket || {};
   if (!et.stem) return [];
-  const out = [sectionHeading("Exit Ticket", { pageBreak: true })];
+  const out = [sectionHeading("Exit Ticket")];
   out.push(muted("Answer on your own. This shows what you learned today."));
   out.push(
     para(
@@ -1112,14 +1148,16 @@ function guidedNotesBlock(cfg) {
     const sentence =
       v.cloze && /_{2,}/.test(v.cloze)
         ? v.cloze
-        : `__________  —  ${v.definition || "Write what this word means."}`;
+        : `___  —  ${v.definition || "Write what this word means."}`;
     out.push(
       para(
         [
           new TextRun({ text: `${i + 1}.  `, bold: true, color: NAVY, size: 22 }),
-          new TextRun({ text: sentence, size: 22 }),
+          ...clozeRuns(sentence, 22),
         ],
-        { spacing: { before: 80, after: 120 } },
+        // Roomier than the old 80/120: these lines are written on, so they need
+        // vertical space as well as horizontal.
+        { spacing: { before: 200, after: 260 }, keepLines: true },
       ),
     );
   });
