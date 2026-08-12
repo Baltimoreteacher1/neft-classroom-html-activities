@@ -1,4 +1,21 @@
+import { misconceptionLabel, studentExplanation } from "./misconceptions.js";
+
+// The ladder a student walks after a miss. Two orders, not one, because the
+// right first move depends on whether we know WHY they missed.
+//
+//   GENERIC — we only know the answer was wrong. Start with a nudge back to the
+//   problem, then escalate: worked example, guided steps, an easier retry.
+//
+//   DIAGNOSED — the misconception engine named the specific error (it names one
+//   only when exactly one predicted wrong result matches, so a tag here means
+//   one thing). The generic "reread the problem" rung is then actively worse
+//   than nothing: it spends a retry telling a student who inverted a ratio to
+//   read more carefully, which is not their problem. So the diagnosed ladder
+//   OPENS on the named error in student voice and is one rung shorter — the
+//   student who shows a known, addressed error gets back to the mathematics
+//   sooner, and clearing it is real evidence rather than a second guess.
 const STEP_ORDER = ["hint", "worked-example", "guided", "retry-easier", "done"];
+const DIAGNOSED_STEP_ORDER = ["diagnosis", "guided", "retry-easier", "done"];
 
 function clampInt(n, lo, hi) {
   n = Math.round(Number(n));
@@ -32,6 +49,37 @@ export function deriveHint(question) {
       ? `Reread the problem carefully and underline what is being asked: "${stem}"`
       : "Reread the problem carefully and identify exactly what is being asked.",
     hints: [],
+  };
+}
+
+/**
+ * The opening rung when the misconception engine named the error.
+ *
+ * Everything it says is authored content that already exists in the taxonomy —
+ * `student` (what the learner reads instead of "Not quite", written to name the
+ * thinking without blaming the thinker and to stop short of stating the answer)
+ * and `label` (the short name of the error). Nothing here invents mathematics
+ * or paraphrases the item, because a diagnosis the student can argue with is
+ * worse than no diagnosis.
+ *
+ * Returns null when the tag is unknown, so a typo or a retired tag degrades to
+ * the generic ladder rather than rendering an empty card.
+ */
+export function deriveDiagnosis(question, misconception, lang = "en") {
+  if (!misconception) return null;
+  const text = studentExplanation(misconception, lang);
+  if (!text) return null;
+  return {
+    tag: misconception,
+    label: misconceptionLabel(misconception, lang) || "",
+    text,
+    // The authored hints still exist and are still useful — they just stop
+    // being the FIRST thing said. Offered here as the follow-on nudge.
+    hints: Array.isArray(question?.hints)
+      ? question.hints.slice()
+      : question?.hint
+        ? [question.hint]
+        : [],
   };
 }
 
@@ -217,14 +265,28 @@ async function nudgeTier(state, direction) {
   }
 }
 
-/** @param {{ question?: any, state?: any, level?: string }} [opts] */
-export function createRemediation({ question, state, level } = {}) {
+/**
+ * @param {{ question?: any, state?: any, level?: string, misconception?: string,
+ *   lang?: string }} [opts]
+ *
+ * `misconception` is the tag the diagnosis engine named for THIS student's wrong
+ * answer (or, when the lesson pre-arms from cross-lesson history, the recurring
+ * error this item is known to trap). Supplying it swaps in the shorter, targeted
+ * ladder; omitting it keeps the generic one byte-for-byte as it was.
+ */
+export function createRemediation({ question, state, level, misconception, lang = "en" } = {}) {
   if (!question) throw new Error("createRemediation requires a question");
 
   let stage = -1;
   let misses = 0;
   let active = false;
   const supportLevel = level === "level1" || level === "support";
+
+  // Resolve the diagnosis ONCE, up front. A tag that resolves to nothing (typo,
+  // retired id) must fall back to the generic ladder here rather than at render
+  // time, or the student meets an empty first rung and loses a retry to it.
+  const diagnosis = deriveDiagnosis(question, misconception, lang);
+  const order = diagnosis ? DIAGNOSED_STEP_ORDER : STEP_ORDER;
 
   function step(kind, payload) {
     return { kind, payload: payload || {} };
@@ -233,6 +295,8 @@ export function createRemediation({ question, state, level } = {}) {
   return {
     isActive: () => active,
     misses: () => misses,
+    /** Which ladder is in play — read by the panel for its heading, and by tests. */
+    diagnosed: () => Boolean(diagnosis),
 
     nextStep(result) {
       const ok = result && result.correct === true;
@@ -243,25 +307,24 @@ export function createRemediation({ question, state, level } = {}) {
         misses = 1;
         stage = 0;
         nudgeTier(state, "down");
-        return step("hint", {
-          ...deriveHint(question),
-          attempt: misses,
-        });
+        return diagnosis
+          ? step("diagnosis", { ...diagnosis, attempt: misses })
+          : step("hint", { ...deriveHint(question), attempt: misses });
       }
 
       if (ok) {
         active = false;
         nudgeTier(state, "up");
         return step("done", {
-          reason: STEP_ORDER[Math.max(0, stage)] + "-recovered",
+          reason: order[Math.max(0, stage)] + "-recovered",
           recovered: true,
         });
       }
 
       misses++;
       if (misses >= 2 && stage === 0) nudgeTier(state, "down");
-      stage = Math.min(stage + 1, STEP_ORDER.length - 1);
-      const kind = STEP_ORDER[stage];
+      stage = Math.min(stage + 1, order.length - 1);
+      const kind = order[stage];
 
       switch (kind) {
         case "worked-example":
@@ -288,6 +351,7 @@ export function createRemediation({ question, state, level } = {}) {
     // Convenience for the renderer / tests: peek at all scaffolds up front.
     scaffolds() {
       return {
+        diagnosis,
         hint: deriveHint(question),
         workedExample: buildWorkedExample(question),
         guided: buildGuidedSteps(question),

@@ -953,6 +953,13 @@ async function completePhase(el, ctx, state, phaseIdx, name, correct, total, opt
  * reported here (recordAnswer already counts them). All sinks are optional:
  * lesson state (persists per student), NTtelemetry (teacher radar/mastery),
  * and NTSignal (device-local, drives arcade difficulty + hub suggestions).
+ *
+ * Returns the resolved tag (or null). It used to return nothing, which meant
+ * the richest signal in the lesson was computed, filed to three analytics sinks,
+ * and then thrown away before it could change anything the student experienced:
+ * the remediation ladder that opened one line later ran the same generic
+ * "reread the problem" script whether the student had inverted a ratio or
+ * forgotten to halve a triangle. The caller now threads this into that ladder.
  */
 function reportMisconception(problemDef, selected, state) {
   try {
@@ -979,12 +986,49 @@ function reportMisconception(problemDef, selected, state) {
         misconceptionTag: tag || undefined,
         lesson: meta.lesson,
       });
-    if (!tag) return;
+    if (!tag) return null;
     if (state && state.recordMisconception) state.recordMisconception(tag);
     if (window.NTtelemetry)
       window.NTtelemetry.track("misconception", { tag, standard: meta.standard || "" });
+    return tag;
   } catch {
     /* signals must never break a lesson */
+    return null;
+  }
+}
+
+// How many times an error has to have been named across previous lessons before
+// today's lesson will go looking for it. Two, not one: a single miss is as
+// likely to be a slip as a misconception, and targeting a slip spends a practice
+// item on nothing. Two independent sightings is the smallest evidence that
+// justifies changing what a student is served.
+const RECURRING_MIN_COUNT = 2;
+
+/**
+ * The error this student keeps making across lessons, or null.
+ *
+ * `window.NTSignal` has recorded a per-device misconception tally since the
+ * diagnosis engine shipped, and three surfaces already read it — the review
+ * arcade picks its items from it, the practice arcade picks its tier from it,
+ * and the teacher Insight Brief reports it. The lesson engine, the one surface
+ * that actually teaches, never opened it. So a student could invert the ratio in
+ * four consecutive lessons and each lesson would meet them as a stranger.
+ *
+ * Reading it here is what makes today's Practice know about yesterday. It is
+ * device-local and carries no PII (standard codes and tag slugs only), and every
+ * access is guarded, so a missing or failed signal store is a silent no-op that
+ * returns null and leaves the sequence exactly as it was.
+ */
+function recurringMisconception() {
+  try {
+    const sig = typeof window !== "undefined" ? window.NTSignal : null;
+    if (!sig || typeof sig.topMisconceptions !== "function") return null;
+    const top = sig.topMisconceptions(1);
+    const entry = Array.isArray(top) ? top[0] : null;
+    if (!entry || !entry.tag) return null;
+    return Number(entry.count) >= RECURRING_MIN_COUNT ? entry.tag : null;
+  } catch {
+    return null;
   }
 }
 
@@ -1027,8 +1071,13 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
 
   const wrappedOnAnswer = (isCorrect, selected) => {
     if (useShell) setResult(isCorrect ? "correct" : "incorrect");
-    if (!isCorrect) reportMisconception(problemDef, selected, shellOpts && shellOpts.state);
-    onAnswer?.(isCorrect);
+    // The named misconception (when there is one) travels with the result, so a
+    // caller that runs remediation can open on the specific error instead of a
+    // generic nudge. Callers that ignore the second argument are unaffected.
+    const tag = isCorrect
+      ? null
+      : reportMisconception(problemDef, selected, shellOpts && shellOpts.state);
+    onAnswer?.(isCorrect, tag);
   };
 
   // Optional per-item visual: an explicit or auto-extracted `diagram`
@@ -3949,6 +3998,12 @@ function renderPracticePhase(el, state, ctx, config) {
     shown = 0,
     coins = 0;
 
+  // The error this student most recently showed, cleared as soon as it has been
+  // re-tested. It is seeded from cross-lesson history (below) so the very first
+  // item of today's Practice can already target yesterday's unresolved error,
+  // then kept current by each diagnosed miss.
+  let lastMisconception = recurringMisconception();
+
   function updateScoreBar() {
     const coinEl = scoreBar.querySelector(".coin-count");
     const accEl = scoreBar.querySelector(".practice-score-accuracy");
@@ -3999,7 +4054,16 @@ function renderPracticePhase(el, state, ctx, config) {
   }
 
   function next() {
-    const prob = seq.nextProblem(levelOverride(state));
+    // `targetTag` asks the sequence to prefer an item that traps this student's
+    // live error, if one is left in the bucket it would have drawn from anyway.
+    // It is a preference, never a filter: when no such item exists the sequence
+    // returns exactly what it always returned.
+    const prob = seq.nextProblem(levelOverride(state), { targetTag: lastMisconception });
+    if (prob?.targetedFor && prob.targetedFor === lastMisconception) {
+      // Consumed: the student is about to meet this trap again, so the next
+      // miss should be diagnosed fresh rather than re-serving the same target.
+      lastMisconception = null;
+    }
     if (!prob) {
       area.innerHTML = "";
       // Optional, ungraded Extra Practice opt-in. Does not touch scoring,
@@ -4044,7 +4108,7 @@ function renderPracticePhase(el, state, ctx, config) {
     renderComponent(
       area,
       prob,
-      (isCorrect) => {
+      (isCorrect, misconception) => {
         totalAttempts++;
         if (isCorrect) {
           totalCorrect++;
@@ -4067,9 +4131,18 @@ function renderPracticePhase(el, state, ctx, config) {
         } else {
           ctx.engagement.recordIncorrect(null);
           updateScoreBar();
-          // Run the scaffolded remediation sequence (hint -> worked example ->
-          // guided steps -> easier retry) before advancing. The flow also biases
-          // the adaptive tier toward Level 1 on repeated misses via state hooks.
+          // Run the scaffolded remediation sequence before advancing. When the
+          // miss carried a named misconception, the ladder opens on THAT error
+          // (student voice, one rung shorter); otherwise it runs the generic
+          // hint -> worked example -> guided -> easier-retry escalation. Either
+          // way the flow biases the adaptive tier toward Level 1 on repeated
+          // misses via state hooks.
+          //
+          // The tag also steers what comes NEXT: `lastMisconception` is read by
+          // the adaptive sequence, which prefers a following item whose own
+          // distractors carry the same error, so the student meets the trap
+          // again while the correction is fresh.
+          if (misconception) lastMisconception = misconception;
           const remSlot = document.createElement("div");
           remSlot.className = "mt-4";
           area.append(remSlot);
@@ -4077,6 +4150,7 @@ function renderPracticePhase(el, state, ctx, config) {
             question: prob,
             state,
             level: prob.tier,
+            misconception,
             onComplete() {
               setTimeout(() => next(), 600);
             },
