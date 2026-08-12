@@ -69,7 +69,7 @@ const mid = (y, text, fill = INK, size = 13) => {
 };
 const chip = (x, y, w, text, fill = TEAL) =>
   `<rect x="${x}" y="${y}" width="${w}" height="22" rx="6" fill="${fill}"/><text x="${x + w / 2}" y="${y + 16}" text-anchor="middle" font-family="system-ui,-apple-system,Segoe UI,sans-serif" font-size="13" font-weight="700" fill="#fff">${text}</text>`;
-const arrow = (d, stroke = MUTE) => `${line(d, stroke, 3)}<path d="M0 0" fill="none"/>`;
+const _arrow = (d, stroke = MUTE) => `${line(d, stroke, 3)}<path d="M0 0" fill="none"/>`;
 /** Two-column table with a header row — the shape a student actually meets. */
 const table = (x, y, rows, headers) => {
   const cw = 44;

@@ -11,9 +11,13 @@ console.log("Running curriculum enhancements v2 assertions...");
 const presetPath = join(root, "assets", "math-workbench-presets.js");
 assert(existsSync(presetPath), "assets/math-workbench-presets.js must exist");
 const presetContent = readFileSync(presetPath, "utf8");
-assert(presetContent.includes("3D Net Cube"), "must contain netfold-cube preset");
-assert(presetContent.includes("Equation Balance Scale"), "must contain balance scale preset");
-assert(presetContent.includes("Ratio Color Mixer"), "must contain ratio mixer preset");
+// Anchored on preset IDs, not display titles. These assertions used to match
+// title text ("3D Net Cube"), which broke the moment the preset was renamed to
+// "3D Net Unfolder & Volume Studio" — the preset was still there, the gate just
+// could not see it. An id is the stable identity; a title is copy.
+assert(presetContent.includes("unit5-netfold-cube"), "must contain netfold-cube preset");
+assert(presetContent.includes("unit8-balance-scale"), "must contain balance scale preset");
+assert(presetContent.includes("unit3-ratio-mixer"), "must contain ratio mixer preset");
 
 // 2. Assert project readiness file exists and maps prerequisites
 const readinessPath = join(root, "assets", "project-readiness-pathways.js");

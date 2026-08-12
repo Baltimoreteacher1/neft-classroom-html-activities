@@ -293,7 +293,7 @@ function upsertLinkRel(rel, href) {
 // three student forms (Notes / Practice / Quiz). Teacher edit links are
 // intentionally NOT rendered here — the student lesson page must not expose any
 // teacher-facing Drive/edit links (teacherEditFolder is ignored).
-function formsCardHtml(config) {
+function _formsCardHtml(config) {
   const gf = config.googleForms;
   if (!gf || !gf.student) return "";
   const s = gf.student;
@@ -550,9 +550,9 @@ function showIdentityScreen(root, config) {
 
   const themeEmoji = config.themeEmoji || "📐";
   const saved = findSavedStudents(config.lessonId);
-  const homeworkHtmlHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.html`;
-  const handoutHref = `/lessons/${encodeURIComponent(config.lessonId)}/handout.html`;
-  const slidesHref = `/lessons/${encodeURIComponent(config.lessonId)}/slides.html`;
+  const _homeworkHtmlHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.html`;
+  const _handoutHref = `/lessons/${encodeURIComponent(config.lessonId)}/handout.html`;
+  const _slidesHref = `/lessons/${encodeURIComponent(config.lessonId)}/slides.html`;
 
   const screen = document.createElement("div");
   screen.className = "identity-screen";

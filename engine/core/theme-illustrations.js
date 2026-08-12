@@ -256,7 +256,7 @@ export function themeIllustration(theme, figure, config) {
           <img src="${visuals.content.src}" alt="${esc(visuals.content.alt || config.title || "")}" class="theme-hero-img cover-svg-animate" style="max-width:100%; max-height:210px; height:auto; object-fit:contain; display:block; margin:0 auto;" />
         </div>`;
       }
-    } catch (e) {
+    } catch (_e) {
       // Fallback
     }
   }
@@ -281,7 +281,7 @@ export function renderThemeIllustration(host, theme, caption, figure, config) {
           cleanCaption = visuals.content.caption;
         }
       }
-    } catch (e) {
+    } catch (_e) {
       // Fallback
     }
   }

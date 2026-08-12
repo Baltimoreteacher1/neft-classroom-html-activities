@@ -12,7 +12,8 @@
     {
       id: "unit1-decimal-grid",
       title: "✖️ Decimal Operations & Multi-Digit Division",
-      description: "Explore multi-digit whole number division and decimal budgeting (1.5 × 2.4) with hundredths area models.",
+      description:
+        "Explore multi-digit whole number division and decimal budgeting (1.5 × 2.4) with hundredths area models.",
       unit: "Unit 1",
       url: "/neft-math-lab-studio/?tool=decimal-product&preset=1.5x2.4",
       icon: "✖️",
@@ -21,7 +22,8 @@
     {
       id: "unit1-gcf-lcm",
       title: "🏷️ GCF & LCM Goodie Bag Builder",
-      description: "Split supplies evenly into goodie bags using Venn factor trees and common multiples.",
+      description:
+        "Split supplies evenly into goodie bags using Venn factor trees and common multiples.",
       unit: "Unit 1",
       url: "/neft-math-lab-studio/?tool=gcf-lcm&preset=goodie-bags",
       icon: "🏷️",
@@ -30,7 +32,8 @@
     {
       id: "unit3-ratio-mixer",
       title: "🎨 Ratio Color Mixer 3:2",
-      description: "Mix primary paint buckets in fixed ratios to explore equivalent ratio tables and scaling.",
+      description:
+        "Mix primary paint buckets in fixed ratios to explore equivalent ratio tables and scaling.",
       unit: "Unit 3",
       url: "/neft-math-lab-studio/?tool=ratio-mixer&preset=3-2",
       icon: "🎨",
@@ -39,7 +42,8 @@
     {
       id: "unit3-unit-rate",
       title: "⚡ Fleet Unit Rate Speedometer",
-      description: "Calculate miles per hour and unit costs with interactive double number lines and unit conversions.",
+      description:
+        "Calculate miles per hour and unit costs with interactive double number lines and unit conversions.",
       unit: "Unit 3",
       url: "/neft-math-lab-studio/?tool=unit-rate&preset=transit-fleet",
       icon: "⚡",
@@ -48,7 +52,8 @@
     {
       id: "unit4-percent-grid",
       title: "💯 10x10 Percent Grid & Tri-Way Model",
-      description: "Shade 100-grid squares to relate fractions, decimals, and percentages with benchmark discounts.",
+      description:
+        "Shade 100-grid squares to relate fractions, decimals, and percentages with benchmark discounts.",
       unit: "Unit 4",
       url: "/neft-math-lab-studio/?tool=percent-grid&preset=popup-shop",
       icon: "💯",
@@ -57,7 +62,8 @@
     {
       id: "unit6-distributive-alchemy",
       title: "🧪 Distributive Property Alchemy Array",
-      description: "Expand 3(2x + 4) with visual algebra tiles, fraction division bars, and exponent engines.",
+      description:
+        "Expand 3(2x + 4) with visual algebra tiles, fraction division bars, and exponent engines.",
       unit: "Unit 6",
       url: "/neft-math-lab-studio/?tool=expressions&preset=distributive-3x",
       icon: "🧪",
@@ -66,7 +72,8 @@
     {
       id: "unit7-coordinate-radar",
       title: "📍 Cartesian Coordinate Submarine Defender",
-      description: "Plot ordered pairs (x, y) across all 4 quadrants with distance radar and thermal elevation lines.",
+      description:
+        "Plot ordered pairs (x, y) across all 4 quadrants with distance radar and thermal elevation lines.",
       unit: "Unit 7",
       url: "/neft-math-lab-studio/?tool=coordinate-grid&preset=quadrants-1-4",
       icon: "📍",
@@ -75,7 +82,8 @@
     {
       id: "unit8-balance-scale",
       title: "⚖️ Equation Balance Scale & Inequality Line",
-      description: "Model 2x + 3 = 11 by balancing weights and graph open number line inequality safety limits.",
+      description:
+        "Model 2x + 3 = 11 by balancing weights and graph open number line inequality safety limits.",
       unit: "Unit 8",
       url: "/neft-math-lab-studio/?tool=balance&preset=2x3-11",
       icon: "⚖️",
@@ -84,7 +92,8 @@
     {
       id: "unit9-function-machine",
       title: "📈 Two-Variable Function Engine (y = kx)",
-      description: "Analyze independent (x) vs dependent (y) variable growth with real-time data tables and linear graphs.",
+      description:
+        "Analyze independent (x) vs dependent (y) variable growth with real-time data tables and linear graphs.",
       unit: "Unit 9",
       url: "/neft-math-lab-studio/?tool=two-variables&preset=streaming-growth",
       icon: "📈",
@@ -93,7 +102,8 @@
     {
       id: "unit5-netfold-cube",
       title: "📦 3D Net Unfolder & Volume Studio",
-      description: "Unfold 3D prisms and pyramids into 2D nets to compute surface area and volume V = l·w·h.",
+      description:
+        "Unfold 3D prisms and pyramids into 2D nets to compute surface area and volume V = l·w·h.",
       unit: "Unit 5",
       url: "/netfold-pro/?preset=cube-unfold",
       icon: "📦",
@@ -102,7 +112,8 @@
     {
       id: "unit2-box-plotter",
       title: "📊 Box Plot, Histogram & MAD Balance Beam",
-      description: "Compute 5-number summaries, median, IQR, mean, and MAD with interactive dot plots and histograms.",
+      description:
+        "Compute 5-number summaries, median, IQR, mean, and MAD with interactive dot plots and histograms.",
       unit: "Unit 2",
       url: "/neft-math-lab-studio/?tool=box-plot&preset=grade6-heights",
       icon: "📊",
@@ -111,7 +122,8 @@
     {
       id: "unit10-tessellation-studio",
       title: "🎨 Boundless Tessellation & Portfolio Studio",
-      description: "Create geometric tessellation art, solve logic mechanics, and curate your EOY Math Growth Portfolio.",
+      description:
+        "Create geometric tessellation art, solve logic mechanics, and curate your EOY Math Growth Portfolio.",
       unit: "Unit 10",
       url: "/neft-math-lab-studio/?tool=tessellation&preset=portfolio-showcase",
       icon: "🎨",
