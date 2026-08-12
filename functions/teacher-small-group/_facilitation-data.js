@@ -300,7 +300,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added the dimensions instead of multiplying. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Reported a data value where a frequency was asked; Added the dimensions instead of multiplying. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -388,7 +388,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Used the full range instead of the IQR; Confused a measure of center with a measure of spread. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -432,7 +432,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Used the full range instead of the IQR; Confused a measure of center with a measure of spread. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -650,7 +650,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Confused a measure of center with a measure of spread; Chose the mean when an outlier distorts it. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -2914,7 +2914,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Answered with a number already in the equation; Did not undo the operation. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -2956,7 +2956,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Did not undo the operation; Answered with a number already in the equation. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -2998,7 +2998,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Boundary value wrongly included or excluded; Right boundary, symbol reversed. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -3040,7 +3040,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Boundary value wrongly included or excluded; Graph shaded toward the wrong side. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
@@ -3082,7 +3082,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right boundary, symbol reversed. Group students who made the SAME error; they need different repairs.",
     moves: [
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
