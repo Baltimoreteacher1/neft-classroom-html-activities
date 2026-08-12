@@ -425,6 +425,27 @@
     lessonSelect.appendChild(groupLessons);
   };
 
+  // The four teacher-workspace actions navigate IN THIS TAB.
+  //
+  // They used to `window.open(..., "_blank")`, which is what made the SCORM
+  // button look broken: /teacher-tools/* answers 401 with a
+  // `WWW-Authenticate: Basic` challenge, and a challenge that arrives in a
+  // freshly-opened tab is the worst place for it — a blocked popup, a dismissed
+  // prompt, or credentials the new tab has not been given all leave the teacher
+  // staring at a blank error page with no way back.
+  //
+  // Same-tab navigation hands the 401 to the browser in the tab the teacher is
+  // already using, so the native password prompt appears and, once accepted,
+  // the browser loads THE URL IT WAS ALREADY GOING TO — the specific tool, with
+  // its ?seq/&unit intact. There is no second flow to build and nothing about
+  // the 401 gate changes; the auth simply happens where it can be answered.
+  //
+  // location.assign, never location.replace: assign leaves a history entry, so
+  // Back returns to the Hub. Replace would strand the teacher.
+  const goToTool = (url) => {
+    window.location.assign(url);
+  };
+
   window.executeQuickAction = function (actionType) {
     const item = window.getActiveDistrictSeq();
     const seq = item.sequence;
@@ -434,18 +455,15 @@
     if (actionType === "launch_first") {
       window.open("/lessons/" + firstLessonId + "/", "_blank");
     } else if (actionType === "build_week") {
-      window.open("/math/student-board/?seq=" + seq + "&unit=" + unitTitle + "&edit=1", "_blank");
+      goToTool("/math/student-board/?seq=" + seq + "&unit=" + unitTitle + "&edit=1");
     } else if (actionType === "playlist") {
-      window.open(
-        "/teacher-tools/tiered-differentiation-builder/?seq=" + seq + "&unit=" + unitTitle,
-        "_blank",
-      );
+      goToTool("/teacher-tools/tiered-differentiation-builder/?seq=" + seq + "&unit=" + unitTitle);
     } else if (actionType === "unit_map") {
       window.open("/curriculum/map/?seq=" + seq + "&unit=" + unitTitle, "_blank");
     } else if (actionType === "groups") {
-      window.open("/neft-math-lab-studio/?seq=" + seq + "&unit=" + unitTitle, "_blank");
+      goToTool("/neft-math-lab-studio/?seq=" + seq + "&unit=" + unitTitle);
     } else if (actionType === "scorm") {
-      window.open("/teacher-tools/canvas-scorm/?seq=" + seq + "&unit=" + unitTitle, "_blank");
+      goToTool("/teacher-tools/canvas-scorm/?seq=" + seq + "&unit=" + unitTitle);
     }
   };
 
