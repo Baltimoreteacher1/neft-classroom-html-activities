@@ -1128,3 +1128,81 @@
 .btn:active:not(:disabled) {
   transform: translateY(0);
 }
+
+/* ── Two-minute diagnostic launch ─────────────────────────────────────────
+   Deliberately unlike the practice cards below it. A diagnostic that looks
+   like practice gets worked like practice — slowly, with hints hunted for —
+   and the whole point is that it takes two minutes and measures a first
+   instinct. So: large tap targets in one column, no scaffolding furniture,
+   and an accent that reads as "quick" rather than "graded". */
+.sg-diagnostic .sg-diagnostic-stem {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  font-weight: 600;
+  margin: 0 0 var(--sp-3, 12px);
+}
+
+.sg-diagnostic-choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2, 8px);
+  margin: var(--sp-3, 12px) 0;
+}
+
+.sg-diagnostic-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3, 12px);
+  width: 100%;
+  text-align: left;
+  padding: var(--sp-3, 12px);
+  min-height: 52px;
+  line-height: 1.45;
+  white-space: normal;
+}
+
+.sg-diagnostic-letter {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-weight: 800;
+  background: color-mix(in srgb, var(--sg) 14%, transparent);
+  color: var(--sg);
+}
+
+.sg-diagnostic-choice.is-chosen {
+  border-color: var(--sg);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--sg) 35%, transparent);
+}
+
+/* Disabled choices stay READABLE. The set is a record of what was asked, and
+   a greyed-out column a student cannot read is a worse artifact than one they
+   simply cannot click. */
+.sg-diagnostic-choice:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.sg-diagnostic-choice:disabled:not(.is-chosen) {
+  opacity: 0.62;
+}
+
+.sg-diagnostic-skip {
+  margin-top: var(--sp-2, 8px);
+  font-size: 0.86rem;
+  opacity: 0.8;
+}
+
+.sg-diagnostic-result .sg-diagnostic-focus {
+  font-size: 1.05rem;
+  margin: var(--sp-2, 8px) 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sg-diagnostic-choice {
+    transition: none;
+  }
+}

@@ -20,6 +20,7 @@ import { mountPresentWidget } from "./present-mode.js";
 import { createAutoPilot } from "./small-group-adaptive.js";
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
 import { createBuildVisualizer } from "./small-group-build-visuals.js";
+import { createDiagnosticLaunch, selectDiagnosticItems } from "./small-group-diagnostic.js";
 import {
   createMissionSection,
   createReflectionSection,
@@ -759,7 +760,14 @@ function renderStudio(config) {
     reflection.reveal();
   };
 
-  const allPractice = collectPracticeItems(config);
+  // The two-minute diagnostic comes out of the practice pool's tail — the
+  // overflow items a fifteen-minute rotation rarely reaches — so opening with a
+  // measurement costs the practice sequence nothing it was reliably delivering.
+  // When no tail item can produce a NAMED diagnosis, `picked` is empty, the pool
+  // is returned untouched, and the studio renders exactly as it did before.
+  const { picked: diagnosticItems, remaining: allPractice } = selectDiagnosticItems(
+    collectPracticeItems(config),
+  );
   const preferredGuided =
     Number(config.smallGroupPractice?.guidedCount) || (variant === "group2" ? 3 : 4);
   const guidedCount =
@@ -775,6 +783,22 @@ function renderStudio(config) {
   const check = createCheckSection(config, revealReflection, tally, events, store);
   // Mission is the capstone — it renders after practice and supports.
   const mission = createMissionSection(config, variant, phaseDone("sg-tab-more", "launchDone"));
+  // Sits ahead of the readiness pulse deliberately: the pulse asks how ready a
+  // student FEELS, which is worth knowing and is not a finding. Ask what they
+  // actually do first, then how they feel about it.
+  const diagnostic = createDiagnosticLaunch({
+    items: diagnosticItems,
+    store,
+    events,
+    onDone(summary) {
+      // The focus error is the one thing worth carrying forward. The teacher
+      // console already reads state.misconceptions (fed through events.onAttempt
+      // above), so this only records what the diagnostic itself concluded.
+      state.diagnosticSummary = summary;
+      if (summary.focus) state.lastMisconception = summary.focus.tag;
+      document.dispatchEvent(new CustomEvent("sg:diagnostic-done", { detail: summary }));
+    },
+  });
   const pulseCard = el("div", "card sg-pulse-card");
   pulseCard.appendChild(el("p", "block-lab", "Private readiness pulse — how ready do you feel?"));
   pulseCard.appendChild(
@@ -954,7 +978,7 @@ function renderStudio(config) {
       id: "sg-tab-learn",
       label: "Learn It",
       sub: "Worked example",
-      panel: makePanel("sg-tab-learn", [pulseCard, build, explore, model]),
+      panel: makePanel("sg-tab-learn", [diagnostic, pulseCard, build, explore, model]),
     },
     {
       id: "sg-tab-guided",
