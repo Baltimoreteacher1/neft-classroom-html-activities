@@ -1,3 +1,4 @@
+import { interventionFor } from "./misconception-interventions.js";
 import { misconceptionLabel, studentExplanation } from "./misconceptions.js";
 
 // The ladder a student walks after a miss. Two orders, not one, because the
@@ -14,8 +15,22 @@ import { misconceptionLabel, studentExplanation } from "./misconceptions.js";
 //   OPENS on the named error in student voice and is one rung shorter — the
 //   student who shows a known, addressed error gets back to the mathematics
 //   sooner, and clearing it is real evidence rather than a second guess.
+//   The diagnosed ladder has TWO levels of misconception support, not one.
+//   `diagnosis` names the error in student voice — enough for a student who
+//   mis-stepped. `intervention` is what happens when that was not enough: a
+//   micro-task on tiny numbers where the error cannot hide (see
+//   misconception-interventions.js). Another sentence would be the wrong
+//   instrument at that point; the student has already shown that reading about
+//   the error did not shift it.
+//
+//   `level1Shown` exists because the item's OWN feedback often already showed
+//   the diagnosis — multiple-choice.js prints the named error as a chip plus the
+//   student-voice sentence and offers its own retry. When that has happened, the
+//   panel must not repeat it: two cards saying the same thing, each with its own
+//   retry button, is worse than one. The ladder then opens at `intervention`,
+//   which makes the panel purely additive.
 const STEP_ORDER = ["hint", "worked-example", "guided", "retry-easier", "done"];
-const DIAGNOSED_STEP_ORDER = ["diagnosis", "guided", "retry-easier", "done"];
+const DIAGNOSED_STEP_ORDER = ["diagnosis", "intervention", "guided", "retry-easier", "done"];
 
 function clampInt(n, lo, hi) {
   n = Math.round(Number(n));
@@ -274,7 +289,14 @@ async function nudgeTier(state, direction) {
  * error this item is known to trap). Supplying it swaps in the shorter, targeted
  * ladder; omitting it keeps the generic one byte-for-byte as it was.
  */
-export function createRemediation({ question, state, level, misconception, lang = "en" } = {}) {
+export function createRemediation({
+  question,
+  state,
+  level,
+  misconception,
+  lang = "en",
+  level1Shown = false,
+} = {}) {
   if (!question) throw new Error("createRemediation requires a question");
 
   let stage = -1;
@@ -286,10 +308,46 @@ export function createRemediation({ question, state, level, misconception, lang 
   // retired id) must fall back to the generic ladder here rather than at render
   // time, or the student meets an empty first rung and loses a retry to it.
   const diagnosis = deriveDiagnosis(question, misconception, lang);
+  // The second-level move. A tag with no authored micro-task simply has one
+  // fewer rung — the ladder still runs, it just steps past `intervention`.
+  const intervention = diagnosis ? interventionFor(misconception) : null;
   const order = diagnosis ? DIAGNOSED_STEP_ORDER : STEP_ORDER;
+
+  // Where the ladder starts. Normally rung 0; when the item's own feedback has
+  // already named the error, rung 1, so the panel adds a move instead of
+  // repeating the one the student just read.
+  const firstStage = diagnosis && level1Shown ? 1 : 0;
 
   function step(kind, payload) {
     return { kind, payload: payload || {} };
+  }
+
+  // Skip rungs that have no content to show (an `intervention` rung for a tag
+  // with no authored micro-task). Returns the index of the next renderable rung.
+  function advanceTo(from) {
+    let i = from;
+    while (i < order.length - 1 && order[i] === "intervention" && !intervention) i++;
+    return i;
+  }
+
+  function render(kind) {
+    switch (kind) {
+      case "diagnosis":
+        return step("diagnosis", { ...diagnosis, attempt: misses });
+      case "intervention":
+        return step("intervention", { ...intervention, attempt: misses });
+      case "hint":
+        return step("hint", { ...deriveHint(question), attempt: misses });
+      case "worked-example":
+        return step("worked-example", { ...buildWorkedExample(question), attempt: misses });
+      case "guided":
+        return step("guided", { ...buildGuidedSteps(question), attempt: misses });
+      case "retry-easier":
+        return step("retry-easier", { question: buildEasierQuestion(question), attempt: misses });
+      default:
+        active = false;
+        return step("done", { reason: "exhausted", recovered: false });
+    }
   }
 
   return {
@@ -297,6 +355,8 @@ export function createRemediation({ question, state, level, misconception, lang 
     misses: () => misses,
     /** Which ladder is in play — read by the panel for its heading, and by tests. */
     diagnosed: () => Boolean(diagnosis),
+    /** Whether a second-level micro-task exists for this error. */
+    hasIntervention: () => Boolean(intervention),
 
     nextStep(result) {
       const ok = result && result.correct === true;
@@ -305,11 +365,9 @@ export function createRemediation({ question, state, level, misconception, lang 
         if (ok) return step("done", { reason: "first-try-correct" });
         active = true;
         misses = 1;
-        stage = 0;
+        stage = advanceTo(firstStage);
         nudgeTier(state, "down");
-        return diagnosis
-          ? step("diagnosis", { ...diagnosis, attempt: misses })
-          : step("hint", { ...deriveHint(question), attempt: misses });
+        return render(order[stage]);
       }
 
       if (ok) {
@@ -318,40 +376,26 @@ export function createRemediation({ question, state, level, misconception, lang 
         return step("done", {
           reason: order[Math.max(0, stage)] + "-recovered",
           recovered: true,
+          // WHICH rung recovered them is the interesting part for the teacher
+          // view: recovering after the named diagnosis is a different event from
+          // recovering only after an easier problem.
+          recoveredAt: order[Math.max(0, stage)],
         });
       }
 
       misses++;
       if (misses >= 2 && stage === 0) nudgeTier(state, "down");
-      stage = Math.min(stage + 1, order.length - 1);
+      stage = advanceTo(Math.min(stage + 1, order.length - 1));
       const kind = order[stage];
 
-      switch (kind) {
-        case "worked-example":
-          return step("worked-example", {
-            ...buildWorkedExample(question),
-            attempt: misses,
-          });
-        case "guided":
-          return step("guided", {
-            ...buildGuidedSteps(question),
-            attempt: misses,
-          });
-        case "retry-easier":
-          return step("retry-easier", {
-            question: buildEasierQuestion(question),
-            attempt: misses,
-          });
-        default:
-          active = false;
-          return step("done", { reason: "exhausted", recovered: false });
-      }
+      return render(kind);
     },
 
     // Convenience for the renderer / tests: peek at all scaffolds up front.
     scaffolds() {
       return {
         diagnosis,
+        intervention,
         hint: deriveHint(question),
         workedExample: buildWorkedExample(question),
         guided: buildGuidedSteps(question),

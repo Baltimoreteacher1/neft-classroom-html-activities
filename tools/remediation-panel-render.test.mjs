@@ -86,15 +86,78 @@ const textOf = (el) => (el ? el.textContent.trim() : "");
   assert.ok(host.textContent.trim().length > 20, "the card must never render empty");
 }
 
-// ── The guided rung asks before it tells ──
+// ── The second-level micro-task renders, and asks before it tells ──
 //
 // renderRemediation() drives the first step itself at mount time (the wrong
 // answer IS the first signal), so the controller is already showing the opening
-// rung here — one more miss escalates to guided.
+// rung here — one more miss escalates to the intervention.
 {
   const { host, api } = mount({ misconception: "ratio-inverted" });
+  const step = api.controller.nextStep({ correct: false });
+  assert.equal(step.kind, "intervention", "naming the error twice is not an escalation");
+  assert.ok(step.payload.probe?.length, "the micro-task must have a question");
+  assert.ok(step.payload.accept?.length, "and a checkable answer");
+  assert.ok(host);
+}
+
+// Rendered through the panel: a student who misses again gets the micro-task,
+// with somewhere to answer it and no answer on screen until they try.
+{
+  const click = (el) => el.dispatchEvent(new dom.window.Event("click", { bubbles: true }));
+  const { host } = mount({ misconception: "ratio-inverted", level1Shown: true });
+
+  const probe = host.querySelector(".remediation-probe-input");
+  assert.ok(probe, "level1Shown opens directly on the micro-task");
+  assert.ok(
+    !host.querySelector(".remediation-diagnosis-label"),
+    "the panel must not repeat the diagnosis the item already showed",
+  );
+  // The correct answer is not on screen before an attempt.
+  assert.ok(!/\b2:5\b/.test(host.textContent), "the micro-task answer is not pre-revealed");
+
+  const check = [...host.querySelectorAll("button")].find((b) => /^Check$/.test(b.textContent));
+  assert.ok(check, "the micro-task offers a check control");
+
+  // A wrong answer coaches rather than settling.
+  probe.value = "5:2"; // the misconception itself
+  click(check);
+  assert.ok(/not quite/i.test(host.textContent), "a wrong micro-task answer coaches first");
+  assert.ok(host.querySelector(".remediation-probe-input"), "and keeps the task open");
+
+  // The right answer settles it and routes back to the real problem.
+  probe.value = "2:5";
+  click(check);
+  const back = [...host.querySelectorAll("button")].find((b) =>
+    /back to my problem/i.test(b.textContent),
+  );
+  assert.ok(back, "the micro-task always returns the student to their own problem");
+  assert.equal(probe.readOnly, true, "the answered task stays on screen, locked");
+}
+
+// The micro-task is never a dead end: a second miss on it shows the answer
+// rather than stranding a student on the scaffold meant to unstick them.
+{
+  const click = (el) => el.dispatchEvent(new dom.window.Event("click", { bubbles: true }));
+  const { host } = mount({ misconception: "ratio-inverted", level1Shown: true });
+  const probe = host.querySelector(".remediation-probe-input");
+  const check = [...host.querySelectorAll("button")].find((b) => /^Check$/.test(b.textContent));
+  probe.value = "5:2";
+  click(check);
+  probe.value = "5:2";
+  click(check);
+  assert.ok(/2:5/.test(host.textContent), "the second miss reveals the micro-task's answer");
+  assert.ok(
+    [...host.querySelectorAll("button")].some((b) => /back to my problem/i.test(b.textContent)),
+    "and still routes back to the student's own problem",
+  );
+}
+
+// ── The guided rung asks before it tells ──
+{
+  const { host, api } = mount({ misconception: "ratio-inverted" });
+  api.controller.nextStep({ correct: false }); // intervention
   const guided = api.controller.nextStep({ correct: false });
-  assert.equal(guided.kind, "guided", "the diagnosed ladder's second rung is the guided one");
+  assert.equal(guided.kind, "guided");
   assert.ok(Array.isArray(guided.payload.prompts) && guided.payload.prompts.length > 0);
   for (const p of guided.payload.prompts) {
     assert.ok(p.prompt && p.prompt.length, "each guided step asks the student something");
@@ -106,13 +169,20 @@ const textOf = (el) => (el ? el.textContent.trim() : "");
   assert.ok(host);
 }
 
-// Rendered, by clicking the way a student does: retry, miss again, and land on a
-// guided rung that gives you somewhere to write before it shows you anything.
+// Rendered, by clicking the way a student does: answer the micro-task, go back
+// to the real problem, miss it again, and land on a guided rung that gives you
+// somewhere to write before it shows you anything.
 {
   const click = (el) => el.dispatchEvent(new dom.window.Event("click", { bubbles: true }));
-  const { host } = mount({ misconception: "ratio-inverted" });
+  const { host } = mount({ misconception: "ratio-inverted", level1Shown: true });
 
-  click(host.querySelector(".btn-primary")); // "I see it — try again"
+  // Clear the micro-task, then take the route back to the student's own problem.
+  host.querySelector(".remediation-probe-input").value = "2:5";
+  click([...host.querySelectorAll("button")].find((b) => /^Check$/.test(b.textContent)));
+  click(
+    [...host.querySelectorAll("button")].find((b) => /back to my problem/i.test(b.textContent)),
+  );
+
   const radios = [...host.querySelectorAll("input[type=radio]")];
   assert.ok(radios.length, "the retry re-mounts the original question");
   radios[0].checked = true; // a wrong choice — correctIndex is 1

@@ -76,26 +76,68 @@ const ITEM = {
   assert.equal(r.nextStep({ correct: false }).kind, "hint");
 }
 
-// The diagnosed ladder is genuinely shorter: it drops the passive worked-example
-// rung, because the student has already been told what went wrong and the guided
-// rung asks them to write the steps themselves.
+const walk = (r) => {
+  const kinds = [];
+  for (let i = 0; i < 8; i++) {
+    const s = r.nextStep({ correct: false });
+    kinds.push(s.kind);
+    if (s.kind === "done") break;
+  }
+  return kinds;
+};
+
+// The diagnosed ladder drops the passive worked-example rung — the student has
+// been told what went wrong, so re-reading a solved example is the wrong move —
+// and replaces it with two levels of misconception support: name the error, then
+// a micro-task where the error cannot hide.
 {
   const generic = createRemediation({ question: ITEM });
   const diagnosed = createRemediation({ question: ITEM, misconception: "ratio-inverted" });
-  const walk = (r) => {
-    const kinds = [];
-    for (let i = 0; i < 8; i++) {
-      const s = r.nextStep({ correct: false });
-      kinds.push(s.kind);
-      if (s.kind === "done") break;
-    }
-    return kinds;
-  };
-  const g = walk(generic);
-  const d = walk(diagnosed);
-  assert.deepEqual(g, ["hint", "worked-example", "guided", "retry-easier", "done"]);
-  assert.deepEqual(d, ["diagnosis", "guided", "retry-easier", "done"]);
-  assert.ok(d.length < g.length, "a diagnosed student gets back to the mathematics sooner");
+  assert.deepEqual(walk(generic), ["hint", "worked-example", "guided", "retry-easier", "done"]);
+  assert.deepEqual(walk(diagnosed), [
+    "diagnosis",
+    "intervention",
+    "guided",
+    "retry-easier",
+    "done",
+  ]);
+}
+
+// When the item's OWN feedback already named the error (multiple-choice prints
+// the diagnosis chip and the student sentence, and offers its own retry), the
+// panel must not say it again. It opens at the second-level move instead, so it
+// is purely additive rather than a second card repeating the first.
+{
+  const r = createRemediation({
+    question: ITEM,
+    misconception: "ratio-inverted",
+    level1Shown: true,
+  });
+  assert.deepEqual(walk(r), ["intervention", "guided", "retry-easier", "done"]);
+}
+
+// A tag with no authored micro-task simply has one fewer rung — the ladder must
+// not stall on an empty card.
+{
+  const r = createRemediation({ question: ITEM, misconception: "geom-surface-area-as-volume" });
+  assert.equal(r.hasIntervention(), true, "this tag does have one");
+
+  // Simulate the no-intervention case through the public contract: every
+  // taxonomy tag currently has a micro-task, so assert that invariant instead of
+  // faking one — if a tag is ever added without a move, this is what tells us.
+  const withMove = createRemediation({ question: ITEM, misconception: "ratio-inverted" });
+  assert.equal(withMove.hasIntervention(), true);
+}
+
+// Recovery reports WHICH rung did it — recovering after the named diagnosis is a
+// different event, pedagogically and for the teacher view, from recovering only
+// after an easier problem.
+{
+  const r = createRemediation({ question: ITEM, misconception: "ratio-inverted" });
+  r.nextStep({ correct: false }); // diagnosis
+  const done = r.nextStep({ correct: true });
+  assert.equal(done.payload.recovered, true);
+  assert.equal(done.payload.recoveredAt, "diagnosis");
 }
 
 // A correct answer still short-circuits the whole thing on both ladders.

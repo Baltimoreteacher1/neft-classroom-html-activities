@@ -1,3 +1,4 @@
+import { checkIntervention } from "../core/misconception-interventions.js";
 import { createRemediation } from "../core/remediation.js";
 import { renderMultipleChoice } from "./multiple-choice.js";
 
@@ -200,10 +201,17 @@ function continueButton(label, onClick) {
  */
 export function renderRemediation(
   container,
-  { question, state, level, misconception, lang, onComplete },
+  { question, state, level, misconception, lang, level1Shown, onComplete, onProbe },
 ) {
   injectStyles();
-  const controller = createRemediation({ question, state, level, misconception, lang });
+  const controller = createRemediation({
+    question,
+    state,
+    level,
+    misconception,
+    lang,
+    level1Shown,
+  });
   const root = document.createElement("div");
   root.className = "remediation";
   root.style.position = "relative";
@@ -227,6 +235,8 @@ export function renderRemediation(
     switch (kind) {
       case "diagnosis":
         return showDiagnosis(payload);
+      case "intervention":
+        return showIntervention(payload);
       case "hint":
         return showHint(payload);
       case "worked-example":
@@ -284,6 +294,97 @@ export function renderRemediation(
     root.append(card);
     announce(`${payload.label ? payload.label + ". " : ""}${payload.text}`);
     focusStep(card);
+  }
+
+  // Level two: the micro-task. Reached when naming the error was not enough, so
+  // it deliberately stops talking about the student's problem and gives them one
+  // tiny case where the error cannot hide. Answering it correctly is the
+  // strongest signal we get that the misconception actually shifted — it is a
+  // fresh question, not a second guess at a four-option item.
+  function showIntervention(payload) {
+    clearSteps();
+    const { card, body } = stepCard("Let's try a smaller one", "🎯");
+
+    const probe = document.createElement("p");
+    probe.style.cssText = "margin:0 0 var(--sp-3); line-height:1.55; font-weight:600;";
+    probe.textContent = payload.probe;
+    body.append(probe);
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "text-input remediation-probe-input";
+    input.setAttribute("aria-label", payload.probe);
+    input.autocomplete = "off";
+    input.style.cssText =
+      "padding:var(--sp-2); border:1px solid var(--line); border-radius:var(--radius-sm); font:inherit; min-width:9rem;";
+    body.append(input);
+
+    const status = document.createElement("div");
+    status.setAttribute("aria-live", "polite");
+    status.style.cssText = "margin-top:var(--sp-2); line-height:1.5;";
+
+    const check = document.createElement("button");
+    check.type = "button";
+    check.className = "btn btn-primary";
+    check.style.marginLeft = "var(--sp-2)";
+    check.textContent = "Check";
+
+    let probeMisses = 0;
+    const settle = (correctedProbe) => {
+      input.readOnly = true;
+      check.remove();
+      const onward = document.createElement("button");
+      onward.type = "button";
+      onward.className = "btn btn-primary mt-4";
+      onward.textContent = "Back to my problem";
+      onward.addEventListener("click", () => {
+        tapFeedback(onward);
+        // The micro-task is not the assessment — the student's own problem is.
+        // Whatever happened here, they go back and retry it.
+        mountRetry(card, question, (ok) => drive({ correct: ok }));
+      });
+      body.append(onward);
+      onProbe?.({ tag: payload.tag, corrected: correctedProbe });
+    };
+
+    check.addEventListener("click", () => {
+      tapFeedback(check);
+      const typed = input.value.trim();
+      if (!typed) {
+        status.textContent = "Have a go — even a guess is worth more than skipping it.";
+        input.focus();
+        return;
+      }
+      if (checkIntervention(payload.tag, typed)) {
+        status.style.color = "var(--success, #2e9e5b)";
+        status.textContent = `✓ Yes. ${payload.then}`;
+        announce(`Correct. ${payload.then}`);
+        settle(true);
+        return;
+      }
+      probeMisses++;
+      if (probeMisses === 1) {
+        status.style.color = "";
+        status.textContent = "Not quite — picture it with objects, then try once more.";
+        announce("Not quite. Try once more.");
+        input.select?.();
+        input.focus();
+        return;
+      }
+      // Second miss on the micro-task: this is as small as the ladder goes, so
+      // show the answer rather than leaving a student stuck on the scaffold that
+      // was supposed to unstick them.
+      status.style.color = "";
+      status.innerHTML = `<strong>${esc(payload.accept[0])}.</strong> ${esc(payload.then)}`;
+      announce(`The answer is ${payload.accept[0]}. ${payload.then}`);
+      settle(false);
+    });
+
+    body.append(check, status);
+    root.append(card);
+    announce(`Let's try a smaller one. ${payload.probe}`);
+    focusStep(card);
+    input.focus?.();
   }
 
   function showHint(payload) {

@@ -56,7 +56,14 @@ import { mountLevel3Launch } from "./level3-launch.js";
 import { getLevel, levelOverride, mountLevelSelector } from "./levels.js";
 import { augmentVocabWithGlossary } from "./math-glossary.js";
 import { renderMathText } from "./math-typography.js";
-import { diagnoseChoice } from "./misconceptions.js";
+import { checkIntervention, interventionFor } from "./misconception-interventions.js";
+import {
+  detectMisconception,
+  diagnoseChoice,
+  misconceptionLabel,
+  resolveAuthoredTag,
+  studentExplanation,
+} from "./misconceptions.js";
 import {
   normalizeAcademicWord,
   resolveNoticeWonderAcademicWord,
@@ -994,6 +1001,39 @@ function reportMisconception(problemDef, selected, state) {
   } catch {
     /* signals must never break a lesson */
     return null;
+  }
+}
+
+/**
+ * Report whether a named misconception actually shifted after the intervention.
+ *
+ * Two strengths, deliberately, because they are not the same evidence and a
+ * teacher dashboard that conflates them will be optimistic and wrong:
+ *
+ *   "recovered" — the student got the SAME item right after being shown the
+ *                 diagnosis. Weak. They have seen the error named, they have
+ *                 fewer plausible choices left, and on a four-option item a
+ *                 second guess is worth about what you would expect.
+ *   "cleared"   — the student got a DIFFERENT item that traps the same error
+ *                 right. Strong: a fresh question, no elimination, no memory of
+ *                 which option was already refused. This is what the targeted
+ *                 re-exposure in the adaptive sequence exists to produce.
+ *
+ * "unresolved" is reserved for a miss on a fresh trap — never for a miss on the
+ * original item, which would flag every student who was simply careless once.
+ */
+function reportResolution(tag, outcome, extra = {}) {
+  if (!tag || !outcome) return;
+  try {
+    const meta = (typeof window !== "undefined" && window.__ntLessonMeta) || {};
+    window.NTtelemetry?.track?.(`misconception_${outcome}`, {
+      tag,
+      standard: meta.standard || "",
+      lesson: meta.lesson || "",
+      ...extra,
+    });
+  } catch {
+    /* signals must never break a lesson */
   }
 }
 
@@ -3696,6 +3736,155 @@ function workPairCaption(step, text) {
   return p;
 }
 
+/**
+ * Name the error behind a TYPED answer on the skill-practice surface.
+ *
+ * Two paths, same discipline as everywhere else. When the typed answer matches
+ * one of the item's own authored distractors, that author's tag is ground truth.
+ * Otherwise the predictor reads the stem and reports a tag only when exactly one
+ * named error would produce this number — so an unrecognised answer names
+ * nothing rather than guessing, which is the invariant the whole taxonomy rests
+ * on.
+ */
+function diagnoseTyped(item, typed) {
+  try {
+    const text = String(typed ?? "").trim();
+    if (!text) return null;
+    if (Array.isArray(item.choices)) {
+      const hit = item.choices.findIndex((c) => sameAnswerText(c, text));
+      if (hit >= 0) {
+        const authored =
+          (Array.isArray(item.misconceptionTags) && item.misconceptionTags[hit]) ||
+          item.misconceptionTag ||
+          null;
+        const resolved = resolveAuthoredTag(authored);
+        if (resolved) return resolved;
+      }
+    }
+    const inferred = detectMisconception(item, text, null);
+    return inferred && misconceptionLabel(inferred) ? inferred : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Loose text equality for comparing a typed answer against an authored choice. */
+function sameAnswerText(a, b) {
+  const norm = (v) =>
+    String(v ?? "")
+      .toLowerCase()
+      .replace(/[−–—]/g, "-")
+      .replace(/[$,\s]/g, "")
+      .replace(/\.0+$/, "")
+      .trim();
+  return norm(a) === norm(b) && norm(a) !== "";
+}
+
+/**
+ * Feed the same three sinks the multiple-choice path feeds, so a typed miss is
+ * worth exactly as much to the teacher radar and the cross-lesson memory as a
+ * clicked one. Until now it was worth nothing at all.
+ */
+function reportTypedMisconception(tag, state) {
+  try {
+    const meta = (typeof window !== "undefined" && window.__ntLessonMeta) || {};
+    window.NTSignal?.record?.({
+      standard: meta.standard || "",
+      correct: false,
+      misconceptionTag: tag,
+      lesson: meta.lesson,
+    });
+    if (state?.recordMisconception) state.recordMisconception(tag);
+    window.NTtelemetry?.track?.("misconception", { tag, standard: meta.standard || "" });
+  } catch {
+    /* signals must never break a lesson */
+  }
+}
+
+/**
+ * The second-level micro-task, rendered inline in the skill-practice reveal.
+ *
+ * Deliberately not a gate: "Just show me the answer" is present from the first
+ * paint. A student who is out of patience, out of time, or simply done gets the
+ * answer in one tap — the scaffold is an offer, not a toll.
+ */
+function renderSkillProbe(reveal, move, { answer, why, onSettled }) {
+  reveal.innerHTML = "";
+  const head = document.createElement("p");
+  head.style.cssText = "margin:0 0 var(--sp-2); font-weight:700;";
+  head.textContent = "🎯 Before the answer — one smaller question";
+  reveal.append(head);
+
+  const probe = document.createElement("p");
+  probe.style.cssText = "margin:0 0 var(--sp-2); line-height:1.55;";
+  probe.textContent = move.probe;
+  reveal.append(probe);
+
+  const row = document.createElement("div");
+  row.style.cssText = "display:flex; gap:var(--sp-2); flex-wrap:wrap; align-items:center;";
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "text-input";
+  input.setAttribute("aria-label", move.probe);
+  input.autocomplete = "off";
+  input.style.cssText =
+    "padding:var(--sp-2); border:1px solid var(--line,#d7dee6); border-radius:8px; font:inherit; min-width:8rem;";
+  const check = document.createElement("button");
+  check.type = "button";
+  check.className = "btn btn-secondary";
+  check.textContent = "Check";
+  const skip = document.createElement("button");
+  skip.type = "button";
+  skip.className = "btn btn-ghost";
+  skip.style.cssText = "font-size:0.9rem;";
+  skip.textContent = "Just show me the answer";
+  row.append(input, check, skip);
+  reveal.append(row);
+
+  const status = document.createElement("div");
+  status.setAttribute("aria-live", "polite");
+  status.style.cssText = "margin-top:var(--sp-2); line-height:1.5;";
+  reveal.append(status);
+
+  let settled = false;
+  const settle = (corrected, lead) => {
+    if (settled) return;
+    settled = true;
+    input.readOnly = true;
+    check.remove();
+    skip.remove();
+    const out = document.createElement("div");
+    out.style.cssText = "margin-top:var(--sp-2);";
+    out.innerHTML = `${lead}<br><strong>Your problem's answer:</strong> ${esc(answer)}${why}`;
+    reveal.append(out);
+    onSettled?.(corrected);
+  };
+
+  let probeMisses = 0;
+  check.addEventListener("click", () => {
+    const typed = input.value.trim();
+    if (!typed) {
+      status.textContent = "Have a go — even a guess beats skipping it.";
+      input.focus();
+      return;
+    }
+    if (checkIntervention(move.tag, typed)) {
+      settle(true, `<strong>✓ Yes.</strong> ${esc(move.then)}`);
+      return;
+    }
+    probeMisses++;
+    if (probeMisses === 1) {
+      status.textContent = "Not quite — picture it with objects, then try once more.";
+      input.select?.();
+      input.focus();
+      return;
+    }
+    settle(false, `<strong>${esc(move.accept[0])}.</strong> ${esc(move.then)}`);
+  });
+  skip.addEventListener("click", () => settle(false, "<strong>❌ Not quite.</strong>"));
+  input.focus?.();
+}
+
 function renderSkillPractice(host, config, state) {
   const p = config.practice || {};
   // The Worked Example panel above (renderWorkedExamplePanel) reveals the I-Do
@@ -3782,6 +3971,10 @@ function renderSkillPractice(host, config, state) {
     // a first miss coaches (no answer named) so "check again" stays meaningful;
     // only a second miss reveals the answer. No zero-effort giveaways.
     let spMisses = 0;
+    // The error named on this problem's first miss, if any — carried to the
+    // second miss so the stronger move is about THAT error rather than generic.
+    let spTag = null;
+    let spProbeShown = false;
     const checkBtn = wrap.querySelector(".sp-check");
     const runCheck = () => {
       reveal.hidden = false;
@@ -3810,11 +4003,45 @@ function renderSkillPractice(host, config, state) {
         spMisses = 1;
         reveal.style.background = "rgba(217,83,79,0.08)";
         reveal.style.borderColor = "#d9534f";
-        reveal.innerHTML = `<strong>🔍</strong> ${stackHtml(t("spFirstMiss", "en"), t("spFirstMiss", "es"))}`;
+        // Level one, on the surface every lesson renders.
+        //
+        // This branch used to print one fixed sentence — "check it again" — for
+        // every wrong answer in the curriculum. That was the whole gap: the
+        // misconception engine could name the error from a TYPED answer the
+        // entire time (detectMisconception takes the response string), and the
+        // adaptive loop lower down the page used it, but this surface, which is
+        // the one students actually meet first, never called it.
+        spTag = diagnoseTyped(it, ansEl.value);
+        if (spTag) {
+          reportTypedMisconception(spTag, state);
+          reveal.innerHTML =
+            `<strong>🔍 ${esc(misconceptionLabel(spTag) || "")}</strong><br>` +
+            `<span>${esc(studentExplanation(spTag) || "")}</span>`;
+        } else {
+          reveal.innerHTML = `<strong>🔍</strong> ${stackHtml(t("spFirstMiss", "en"), t("spFirstMiss", "es"))}`;
+        }
       } else if (r.graded) {
         reveal.style.background = "rgba(217,83,79,0.08)";
         reveal.style.borderColor = "#d9534f";
-        reveal.innerHTML = `<strong>❌ Not quite.</strong> The answer is <strong>${esc(answer)}</strong>.${why}`;
+        // Level two. Naming the error did not shift it, so another sentence is
+        // the wrong instrument — the student gets one tiny case where the error
+        // cannot hide, and the answer to their own problem stays one tap away so
+        // nobody is stranded on the scaffold meant to unstick them.
+        const move = spTag ? interventionFor(spTag) : null;
+        if (move && !spProbeShown) {
+          spProbeShown = true;
+          renderSkillProbe(reveal, move, {
+            answer,
+            why,
+            onSettled(corrected) {
+              reportResolution(spTag, corrected ? "recovered" : "unresolved", {
+                via: "skill-practice-probe",
+              });
+            },
+          });
+        } else {
+          reveal.innerHTML = `<strong>❌ Not quite.</strong> The answer is <strong>${esc(answer)}</strong>.${why}`;
+        }
       } else {
         reveal.style.background = "rgba(42,157,143,0.08)";
         reveal.style.borderColor = "var(--teal,#2a9d8f)";
@@ -4003,6 +4230,10 @@ function renderPracticePhase(el, state, ctx, config) {
   // item of today's Practice can already target yesterday's unresolved error,
   // then kept current by each diagnosed miss.
   let lastMisconception = recurringMisconception();
+  // Set when the item now on screen was chosen BECAUSE it traps `lastMisconception`.
+  // Clearing that item is the strong resolution signal; missing it is the only
+  // thing that flags the error unresolved to the teacher.
+  let pendingTrap = null;
 
   function updateScoreBar() {
     const coinEl = scoreBar.querySelector(".coin-count");
@@ -4062,7 +4293,13 @@ function renderPracticePhase(el, state, ctx, config) {
     if (prob?.targetedFor && prob.targetedFor === lastMisconception) {
       // Consumed: the student is about to meet this trap again, so the next
       // miss should be diagnosed fresh rather than re-serving the same target.
+      // The tag is remembered separately as `pendingTrap`, because how this
+      // ITEM goes is the strong evidence — a fresh question that traps the same
+      // error, with no elimination and no memory of which option was refused.
+      pendingTrap = lastMisconception;
       lastMisconception = null;
+    } else {
+      pendingTrap = null;
     }
     if (!prob) {
       area.innerHTML = "";
@@ -4111,6 +4348,12 @@ function renderPracticePhase(el, state, ctx, config) {
       (isCorrect, misconception) => {
         totalAttempts++;
         if (isCorrect) {
+          // Strong resolution: this item was served BECAUSE it traps the error
+          // the student showed, and they cleared it on a fresh question.
+          if (pendingTrap) {
+            reportResolution(pendingTrap, "cleared", { via: "targeted-reexposure" });
+            pendingTrap = null;
+          }
           totalCorrect++;
           coins++;
           state.awardCoin(1);
@@ -4143,6 +4386,21 @@ function renderPracticePhase(el, state, ctx, config) {
           // distractors carry the same error, so the student meets the trap
           // again while the correction is fresh.
           if (misconception) lastMisconception = misconception;
+
+          // Missing a FRESH trap is the one thing that flags an error unresolved.
+          // Missing the original item does not: every student is careless once,
+          // and a dashboard that cannot tell those apart is noise.
+          if (pendingTrap) {
+            reportResolution(pendingTrap, "unresolved", { via: "targeted-reexposure" });
+            pendingTrap = null;
+          }
+
+          // Multiple choice already printed the named error as a chip, the
+          // student-voice sentence beneath it, and its own "Try Again". Repeating
+          // all three in a card directly below — with a second retry button — is
+          // worse than saying it once, so the panel opens at the SECOND-level
+          // move instead and stays purely additive.
+          const level1Shown = prob.type === "multiple-choice" && Boolean(misconception);
           const remSlot = document.createElement("div");
           remSlot.className = "mt-4";
           area.append(remSlot);
@@ -4151,7 +4409,16 @@ function renderPracticePhase(el, state, ctx, config) {
             state,
             level: prob.tier,
             misconception,
-            onComplete() {
+            level1Shown,
+            onComplete(result) {
+              // Weak resolution: right on the SAME item after being shown what
+              // went wrong. Recorded so the teacher view can distinguish it from
+              // a clean clear, never treated as proof the idea landed.
+              if (misconception && result?.recovered) {
+                reportResolution(misconception, "recovered", {
+                  at: result.recoveredAt || "",
+                });
+              }
               setTimeout(() => next(), 600);
             },
           });
