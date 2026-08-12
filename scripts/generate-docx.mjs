@@ -758,6 +758,19 @@ function _gatherPractice(practice = {}) {
 // Tier metadata: the differentiation already encoded in every config. Student-
 // facing labels never say "approaching"/"ESOL" — they read Level 1 / On Level /
 // Level 2, matching the L0<L1<L2 scheme used across the math HTML activities.
+// The three leveled-mode tiers the HTML notes template renders (html.level-l1 /
+// l2 / l3), and the practice tier each one draws from. generate-pdf.mjs prints
+// these by flipping a CSS class; the DOCX has no CSS, so it selects the tier
+// directly. Same three names, same meaning, so a Word packet and its PDF twin
+// hold the same problems.
+const LEVELS = [
+  { key: "l1", label: "Level 1 · Support" },
+  { key: "l2", label: "Level 2 · Standard" },
+  { key: "l3", label: "Level 3 · Enrichment" },
+];
+const LEVEL_TIER = { l1: "approaching", l2: "onLevel", l3: "extending" };
+const LEVEL_LABEL = Object.fromEntries(LEVELS.map((l) => [l.key, l.label]));
+
 const PRACTICE_TIERS = [
   { key: "approaching", label: "Level 1 Support", cue: "extra scaffolding", color: TEAL },
   { key: "onLevel", label: "On Level", cue: "grade-level practice", color: NAVY },
@@ -768,10 +781,14 @@ const PRACTICE_TIERS = [
 // problems (the only items that render as numbered "You Do" questions), capping
 // the total so the packet stays a clean single section. Numbering is continuous
 // across tiers so the answer key lines up with the student copy.
-function gatherPracticeTiered(practice = {}, excludeStems = new Set(), maxTotal = 6) {
+function gatherPracticeTiered(practice = {}, excludeStems = new Set(), maxTotal = 6, level = null) {
   const groups = [];
   let count = 0;
-  for (const tier of PRACTICE_TIERS) {
+  // A leveled packet carries ONE tier. The differentiation already lives in the
+  // config as approaching / onLevel / extending, which is exactly L1 / L2 / L3 —
+  // so a leveled copy is that tier's problems, not a re-authored set.
+  const tiers = level ? PRACTICE_TIERS.filter((t) => t.key === LEVEL_TIER[level]) : PRACTICE_TIERS;
+  for (const tier of tiers) {
     if (count >= maxTotal) break;
     const items = (practice[tier.key] || []).filter(
       (it) => it && it.stem && !excludeStems.has(it.stem),
@@ -786,8 +803,8 @@ function gatherPracticeTiered(practice = {}, excludeStems = new Set(), maxTotal 
 }
 
 // ── INDEPENDENT PRACTICE / "You Do" (numbered problems + work space) ─────────
-function independentPracticeBlock(cfg, excludeStems = new Set()) {
-  const groups = gatherPracticeTiered(cfg.practice, excludeStems);
+function independentPracticeBlock(cfg, excludeStems = new Set(), level = null) {
+  const groups = gatherPracticeTiered(cfg.practice, excludeStems, 6, level);
   if (!groups.length) return [];
 
   const out = [sectionHeading("Independent Practice")];
@@ -1260,7 +1277,7 @@ function level0Block(cfg) {
 
 // ── DOCUMENT ASSEMBLY ─────────────────────────────────────────────────────────
 // variant: "student" (default) | "teacher" | "level0"
-function buildDoc(id, cfg, variant = "student") {
+function buildDoc(id, cfg, variant = "student", level = null) {
   const teacher = variant === "teacher";
   const level0 = variant === "level0";
   const worked = deriveWorkedSteps(cfg);
@@ -1270,6 +1287,13 @@ function buildDoc(id, cfg, variant = "student") {
   const excludeStems = new Set(
     [worked.iDo && worked.iDo.problem, worked.weDo && worked.weDo.problem].filter(Boolean),
   );
+  const levelStamp = level
+    ? [
+        para([new TextRun({ text: LEVEL_LABEL[level], bold: true, color: TEAL, size: 22 })], {
+          spacing: { before: 0, after: 200 },
+        }),
+      ]
+    : [];
   const body = level0
     ? [
         // Level 0 / IEP copy: the same supported vocab + worked model students
@@ -1286,13 +1310,17 @@ function buildDoc(id, cfg, variant = "student") {
       ]
     : [
         ...coverBlock(id, cfg),
+        ...levelStamp,
         ...objectivesBlock(cfg),
         ...vocabBlock(cfg.vocabulary),
         ...guidedNotesBlock(cfg),
         ...writingBlock(cfg),
         ...workedExampleBlock(cfg, worked),
-        ...guidedPracticeBlock(cfg, worked),
-        ...independentPracticeBlock(cfg, excludeStems),
+        // L3 drops the We-Do scaffold: an enrichment packet that walks the
+        // student through a second modelled problem is not enrichment. L1 and L2
+        // keep it — it is the bridge from watching to doing.
+        ...(level === "l3" ? [] : guidedPracticeBlock(cfg, worked)),
+        ...independentPracticeBlock(cfg, excludeStems, level),
         ...reflectBlock(cfg),
         // Answer Key & Teacher Guide only on the teacher copy.
         ...(teacher ? answerKeyBlock(cfg, worked, excludeStems) : []),
@@ -1408,6 +1436,7 @@ async function main() {
   const ids = lessonIds(filter);
   let ok = 0;
   let l0 = 0;
+  let leveled = 0;
   for (const id of ids) {
     const cfg = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
     const outDir = join(lessonsDir, id, "downloads");
@@ -1418,6 +1447,18 @@ async function main() {
     // Teacher copy — includes the Answer Key & Teacher Guide.
     const teacherBuf = await Packer.toBuffer(buildDoc(id, cfg, "teacher"));
     writeFileSync(join(outDir, `${id}-notes-teacher.docx`), teacherBuf);
+    // Leveled copies, student + teacher, named to match their PDF twins
+    // (<id>-notes-l1.pdf etc). generate-pdf.mjs has printed these three tiers
+    // since it learned the leveled mode; the DOCX side never did, so the L1
+    // support and L3 enrichment packets existed only as PDFs a teacher could
+    // not edit. Same filenames, same tiers — now both formats exist for all six.
+    for (const lv of LEVELS) {
+      const sBuf = await Packer.toBuffer(buildDoc(id, cfg, "student", lv.key));
+      writeFileSync(join(outDir, `${id}-notes-${lv.key}.docx`), sBuf);
+      const tBuf = await Packer.toBuffer(buildDoc(id, cfg, "teacher", lv.key));
+      writeFileSync(join(outDir, `${id}-notes-teacher-${lv.key}.docx`), tBuf);
+      leveled += 2;
+    }
     // Level 0 / IEP copy — only when the lesson supplies practice.level0.
     if (Array.isArray(cfg.practice && cfg.practice.level0) && cfg.practice.level0.length) {
       const l0Buf = await Packer.toBuffer(buildDoc(id, cfg, "level0"));
@@ -1427,7 +1468,7 @@ async function main() {
     ok++;
   }
   console.log(
-    `Generated ${ok}/${ids.length} notes DOCX files (student + teacher)` +
+    `Generated ${ok}/${ids.length} notes DOCX files (student + teacher) + ${leveled} leveled` +
       (l0 ? ` + ${l0} Level 0 copies` : ""),
   );
 }
