@@ -67,6 +67,39 @@ const TAG_LABELS = {
     "Distributed to the first term only",
     "Distribuyó solo al primer término",
   ],
+  "equation-not-inverse-operation": ["Did not undo the operation", "No deshizo la operación"],
+  "equation-answered-with-given-number": [
+    "Answered with a number already in the equation",
+    "Respondió con un número que ya estaba en la ecuación",
+  ],
+  "inequality-direction-flipped": [
+    "Right boundary, symbol reversed",
+    "Límite correcto, símbolo invertido",
+  ],
+  "inequality-boundary-inclusion": [
+    "Boundary value wrongly included or excluded",
+    "Valor límite incluido o excluido por error",
+  ],
+  "inequality-graph-direction": [
+    "Graph shaded toward the wrong side",
+    "Gráfica sombreada hacia el lado equivocado",
+  ],
+  "stat-range-for-iqr": [
+    "Used the full range instead of the IQR",
+    "Usó el rango completo en vez del rango intercuartílico",
+  ],
+  "stat-center-vs-spread": [
+    "Confused a measure of center with a measure of spread",
+    "Confundió una medida de centro con una de dispersión",
+  ],
+  "stat-mean-skewed-by-outlier": [
+    "Chose the mean when an outlier distorts it",
+    "Eligió la media cuando un valor atípico la distorsiona",
+  ],
+  "stat-frequency-vs-value": [
+    "Reported a data value where a frequency was asked",
+    "Dio un valor de los datos donde se pedía una frecuencia",
+  ],
   "coord-xy-swapped": ["Swapped the x and y coordinates", "Intercambió las coordenadas x e y"],
   "measure-area-perimeter-swap": ["Swapped area and perimeter", "Intercambió área y perímetro"],
   "op-added-instead-of-multiplied": [
@@ -126,6 +159,15 @@ const TAG_STANDARDS = {
   "geom-surface-area-as-volume": ["6.GR.4"],
   "geom-volume-added-dimensions": ["6.GR.2"],
   "algebra-distributive-partial": ["6.AT.7"],
+  "equation-not-inverse-operation": ["6.AT.8"],
+  "equation-answered-with-given-number": ["6.AT.8"],
+  "inequality-direction-flipped": ["6.AT.9", "6.AT.8"],
+  "inequality-boundary-inclusion": ["6.AT.9"],
+  "inequality-graph-direction": ["6.AT.9"],
+  "stat-range-for-iqr": ["6.DS.3", "6.DS.5"],
+  "stat-center-vs-spread": ["6.DS.3", "6.DS.4"],
+  "stat-mean-skewed-by-outlier": ["6.DS.6d", "6.DS.4"],
+  "stat-frequency-vs-value": ["6.DS.5"],
   "coord-xy-swapped": ["6.NOS.6", "6.NOS.7"],
   "measure-area-perimeter-swap": ["6.GR.1"],
   "op-added-instead-of-multiplied": ["6.AT.6a"],

@@ -249,6 +249,106 @@ export const MISCONCEPTIONS = {
     studentEs:
       "El número fuera del paréntesis debe multiplicar AMBOS términos de adentro, no solo el primero. Dibuja el modelo de área y revisa las dos partes.",
   },
+  // ── equations ────────────────────────────────────────────────────────────
+  // Both authored-only. An equation item's wrong answers are numbers the stem
+  // already contains (the addend, the divisor, the total), so a numeric
+  // predictor cannot tell "answered with the divisor" from "computed something
+  // that happens to equal the divisor". Only the item's own distractor knows.
+  "equation-not-inverse-operation": {
+    label: "Did not undo the operation",
+    labelEs: "No deshizo la operación",
+    watchFor: "Have them name the operation acting on the variable BEFORE they touch both sides.",
+    student:
+      "To get the variable alone you have to undo what is being done to it, and that means the opposite operation. Doing the same one again — multiplying a second time, adding again — moves you further away. What is happening to the variable right now?",
+    studentEs:
+      "Para dejar sola la variable hay que deshacer lo que se le está haciendo, y eso significa la operación opuesta. Repetir la misma —multiplicar otra vez, sumar otra vez— te aleja más. ¿Qué le está pasando a la variable ahora mismo?",
+  },
+  "equation-answered-with-given-number": {
+    label: "Answered with a number already in the equation",
+    labelEs: "Respondió con un número que ya estaba en la ecuación",
+    watchFor: "Ask them to substitute their answer back into the original equation out loud.",
+    student:
+      "That number is already in the equation — it is the amount being added, or the number you divide by. The unknown is the one nobody told you. Put your answer back into the equation and see whether both sides match.",
+    studentEs:
+      "Ese número ya está en la ecuación: es la cantidad que se suma o el número entre el que se divide. La incógnita es la que nadie te dio. Sustituye tu respuesta en la ecuación y fíjate si los dos lados coinciden.",
+  },
+
+  // ── inequalities ─────────────────────────────────────────────────────────
+  // Three entries, not one, because the repairs are genuinely different: one is
+  // about the symbol surviving a legal move, one about whether the endpoint is
+  // in the set, and one about reading a picture. A student can have any one of
+  // them right and the other two wrong.
+  "inequality-direction-flipped": {
+    label: "Right boundary, symbol reversed",
+    labelEs: "Límite correcto, símbolo invertido",
+    watchFor: "Ask which moves can flip a symbol — adding and subtracting never do.",
+    student:
+      "You found the right boundary number, but the symbol ended up pointing the other way. Adding or subtracting the same amount on both sides never changes which way an inequality points. Check the original symbol and keep it.",
+    studentEs:
+      "Encontraste el número límite correcto, pero el símbolo terminó apuntando al otro lado. Sumar o restar la misma cantidad en ambos lados nunca cambia hacia dónde apunta una desigualdad. Revisa el símbolo original y consérvalo.",
+  },
+  "inequality-boundary-inclusion": {
+    label: "Boundary value wrongly included or excluded",
+    labelEs: "Valor límite incluido o excluido por error",
+    watchFor: "Have them test the boundary value itself — does it make the statement true?",
+    student:
+      "The direction is right; what is off is whether the boundary number itself counts. Test that exact number in the inequality. If it makes a true statement it belongs in the set — a filled circle, ≤ or ≥. If not, it stays out.",
+    studentEs:
+      "La dirección está bien; lo que falla es si el número límite cuenta o no. Prueba ese número exacto en la desigualdad. Si la hace verdadera, pertenece al conjunto: círculo relleno, ≤ o ≥. Si no, queda fuera.",
+  },
+  "inequality-graph-direction": {
+    label: "Graph shaded toward the wrong side",
+    labelEs: "Gráfica sombreada hacia el lado equivocado",
+    watchFor: "Make them test one number from the shaded side out loud before accepting a graph.",
+    student:
+      "The shading is on the wrong side of the boundary. Pick any number from the shaded part and put it into the inequality — if it makes a false statement, the shading belongs on the other side.",
+    studentEs:
+      "El sombreado está del lado equivocado del límite. Escoge cualquier número de la parte sombreada y ponlo en la desigualdad: si resulta falso, el sombreado va del otro lado.",
+  },
+
+  // ── statistics ───────────────────────────────────────────────────────────
+  // Four entries, deliberately narrow. The statistics bank describes many
+  // distinct reasoning errors and it would be easy to collapse them into one
+  // "stats confusion" tag; that tag would be useless to a teacher, because the
+  // repair for "used the range when asked for the IQR" has nothing in common
+  // with the repair for "read a data value where a frequency was asked".
+  "stat-range-for-iqr": {
+    label: "Used the full range instead of the IQR",
+    labelEs: "Usó el rango completo en vez del rango intercuartílico",
+    watchFor: "Have them mark Q1 and Q3 on the plot and cover everything outside them.",
+    student:
+      "That is the whole spread, from the smallest value to the largest. The IQR only measures the middle half: it is Q3 − Q1, and it ignores the extremes entirely. Find those two quartiles and subtract.",
+    studentEs:
+      "Esa es la dispersión completa, del valor más pequeño al más grande. El rango intercuartílico solo mide la mitad central: es Q3 − Q1 e ignora por completo los extremos. Halla esos dos cuartiles y resta.",
+  },
+  "stat-center-vs-spread": {
+    label: "Confused a measure of center with a measure of spread",
+    labelEs: "Confundió una medida de centro con una de dispersión",
+    watchFor: "Ask what the question wants to know: a typical value, or how scattered the data is?",
+    student:
+      "Those two answer different questions. A measure of center says what a typical value is; a measure of spread says how far apart the values are. Read the question again and decide which one it is asking for.",
+    studentEs:
+      "Esas dos responden preguntas distintas. Una medida de centro dice cuál es un valor típico; una de dispersión dice qué tan separados están los valores. Vuelve a leer la pregunta y decide cuál te piden.",
+  },
+  "stat-mean-skewed-by-outlier": {
+    label: "Chose the mean when an outlier distorts it",
+    labelEs: "Eligió la media cuando un valor atípico la distorsiona",
+    watchFor: "Have them cover the outlier and recompute — how far does the mean move?",
+    student:
+      "The mean uses every value, so one unusually high or low number drags it away from what is typical. The median does not move like that. Look at the data: is there a value far from the rest?",
+    studentEs:
+      "La media usa todos los valores, así que un número inusualmente alto o bajo la aleja de lo típico. La mediana no se mueve así. Mira los datos: ¿hay un valor muy alejado de los demás?",
+  },
+  "stat-frequency-vs-value": {
+    label: "Reported a data value where a frequency was asked",
+    labelEs: "Dio un valor de los datos donde se pedía una frecuencia",
+    watchFor: "Ask them to point at the axis their number came from before they answer.",
+    student:
+      "That number came from the wrong axis. The bar's height counts HOW MANY, and the label underneath says WHICH values. The question is asking how many. Read the height, not the label.",
+    studentEs:
+      "Ese número viene del eje equivocado. La altura de la barra cuenta CUÁNTOS, y la etiqueta de abajo dice CUÁLES valores. La pregunta pide cuántos. Lee la altura, no la etiqueta.",
+  },
+
   // Authored-only, like geom-surface-area-as-volume, and for the same reason:
   // there is no honest numeric predictor. (3, 5) and (5, 3) are both perfectly
   // well-formed ordered pairs, and nothing about the VALUE reveals which one the

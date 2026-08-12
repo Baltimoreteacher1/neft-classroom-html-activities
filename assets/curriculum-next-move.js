@@ -44,6 +44,15 @@
     "order-of-operations-left-to-right": "Worked left to right instead of by operation order",
     "sign-dropped": "Right magnitude, lost the negative sign",
     "stat-summed-instead-of-averaged": "Added the data set instead of averaging it",
+    "equation-not-inverse-operation": "Did not undo the operation",
+    "equation-answered-with-given-number": "Answered with a number already in the equation",
+    "inequality-direction-flipped": "Right boundary, symbol reversed",
+    "inequality-boundary-inclusion": "Boundary value wrongly included or excluded",
+    "inequality-graph-direction": "Graph shaded toward the wrong side",
+    "stat-range-for-iqr": "Used the full range instead of the IQR",
+    "stat-center-vs-spread": "Confused a measure of center with a measure of spread",
+    "stat-mean-skewed-by-outlier": "Chose the mean when an outlier distorts it",
+    "stat-frequency-vs-value": "Reported a data value where a frequency was asked",
     "coord-xy-swapped": "Swapped the x and y coordinates",
     "measure-area-perimeter-swap": "Swapped area and perimeter",
     "geom-triangle-area-no-half": "Found base × height but forgot the half",
@@ -76,6 +85,23 @@
     "sign-dropped": "Place the answer on a number line — which side of zero?",
     "stat-summed-instead-of-averaged":
       "Ask whether the answer could be a real single value in that set.",
+    "equation-not-inverse-operation":
+      "Have them name the operation acting on the variable BEFORE they touch both sides.",
+    "equation-answered-with-given-number":
+      "Ask them to substitute their answer back into the original equation out loud.",
+    "inequality-direction-flipped":
+      "Ask which moves can flip a symbol — adding and subtracting never do.",
+    "inequality-boundary-inclusion":
+      "Have them test the boundary value itself — does it make the statement true?",
+    "inequality-graph-direction":
+      "Make them test one number from the shaded side out loud before accepting a graph.",
+    "stat-range-for-iqr": "Have them mark Q1 and Q3 on the plot and cover everything outside them.",
+    "stat-center-vs-spread":
+      "Ask what the question wants: a typical value, or how scattered the data is?",
+    "stat-mean-skewed-by-outlier":
+      "Have them cover the outlier and recompute — how far does the mean move?",
+    "stat-frequency-vs-value":
+      "Ask them to point at the axis their number came from before they answer.",
     "coord-xy-swapped":
       "Have them trace the horizontal move with a finger before the vertical one.",
     "measure-area-perimeter-swap": "Ask what the unit should be — units or square units?",

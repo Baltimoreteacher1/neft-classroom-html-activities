@@ -72,6 +72,69 @@ const EXPECT = {
   "rate-notebooks": (v) => [v.total / v.n, v.total],
   "rate-printer": (v) => [v.p / v.m, v.p],
 
+  // equation-not-inverse-operation — distractor applies the SAME operation again
+  // instead of its inverse, which is the error the tag names.
+  "inv-mul": (v) => [v.x, v.a * v.x * v.a],
+  "inv-div": (v) => [v.x, v.x / v.a / v.a],
+  "inv-add": (v) => [v.x, v.x + v.a + v.a],
+  "inv-sub": (v) => [v.x, v.x - v.a - v.a],
+
+  // equation-answered-with-given-number — distractor is the number printed in
+  // the equation rather than the unknown.
+  "given-add": (v) => [v.x, v.a],
+  "given-div": (v) => [v.x, v.a],
+  "given-mul": (v) => [v.x, v.a],
+  "given-sub": (v) => [v.x, v.a],
+
+  // inequality-direction-flipped — same boundary, symbol turned around.
+  "dir-add": (v) => [`x > ${v.b + v.a}`, `x < ${v.b + v.a}`],
+  "dir-sub": (v) => [`x < ${v.b - v.a}`, `x > ${v.b - v.a}`],
+  "dir-ge": (v) => [`x ≥ ${v.b + v.a}`, `x ≤ ${v.b + v.a}`],
+  "dir-le": (v) => [`x ≤ ${v.b - v.a}`, `x ≥ ${v.b - v.a}`],
+
+  // inequality-boundary-inclusion — same direction, boundary in/out swapped.
+  "inc-atleast": (v) => [`x ≥ ${v.b}`, `x > ${v.b}`],
+  "inc-atmost": (v) => [`x ≤ ${v.b}`, `x < ${v.b}`],
+  "inc-morethan": (v) => [`x > ${v.b}`, `x ≥ ${v.b}`],
+  "inc-fewerthan": (v) => [`x < ${v.b}`, `x ≤ ${v.b}`],
+
+  // inequality-graph-direction — same circle, shading on the wrong side.
+  "shade-gt": (v) => [`open circle at ${v.b}, shade right`, `open circle at ${v.b}, shade left`],
+  "shade-lt": (v) => [`open circle at ${v.b}, shade left`, `open circle at ${v.b}, shade right`],
+  "shade-ge": (v) => [
+    `filled circle at ${v.b}, shade right`,
+    `filled circle at ${v.b}, shade left`,
+  ],
+  "shade-le": (v) => [
+    `filled circle at ${v.b}, shade left`,
+    `filled circle at ${v.b}, shade right`,
+  ],
+
+  // stat-range-for-iqr — distractor is max − min, the full range.
+  "iqr-plot": (v) => [v.q3 - v.q1, v.max - v.min],
+  "iqr-quartiles": (v) => [v.q3 - v.q1, v.max - v.min],
+  "iqr-scores": (v) => [v.q3 - v.q1, v.max - v.min],
+  "iqr-times": (v) => [v.q3 - v.q1, v.max - v.min],
+
+  // stat-center-vs-spread — distractor is a measure of the other kind.
+  "cs-spread": (v) => [v.pick ? "range" : "interquartile range", "median"],
+  "cs-center": (v) => [v.pick ? "median" : "mean", "range"],
+  "cs-mode": () => ["mode", "range"],
+  "cs-iqr": () => ["interquartile range", "median"],
+
+  // stat-mean-skewed-by-outlier — distractor is the mean, the measure the
+  // outlier drags.
+  "out-times": () => ["median", "mean"],
+  "out-prices": () => ["median", "mean"],
+  "out-scores": () => ["median", "mean"],
+  "out-attendance": () => ["median", "mean"],
+
+  // stat-frequency-vs-value — distractor is a number off the value axis.
+  "freq-bar": (v) => [v.h, v.lo + 9],
+  "freq-tallest": (v) => [v.h, v.lo],
+  "freq-players": (v) => [v.h, v.lo + 4],
+  "freq-minutes": (v) => [v.h, v.lo + 9],
+
   // coord-xy-swapped — distractor is the pair with its coordinates traded.
   // Written out here rather than importing questions.js's point(), so this
   // stays an INDEPENDENT statement of the answer: importing the helper under

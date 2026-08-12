@@ -175,6 +175,75 @@ export const INTERVENTIONS = {
     then: "Both ways give 14, because the 2 multiplies BOTH terms. Multiplying only the first would give 10. Check both pieces in yours.",
     verify: { expr: "2*(3+4)", equals: 14 },
   },
+  // ── equations ────────────────────────────────────────────────────────────
+  "equation-not-inverse-operation": {
+    probe: "Quick one: n × 5 = 20. To get n alone, do you multiply by 5 again or divide by 5?",
+    accept: ["divide", "divide by 5", "division", "÷5", "÷ 5"],
+    rejects: ["multiply", "multiply by 5", "×5"],
+    then: "Division undoes multiplication. Find what is being done to your variable, then do the opposite.",
+  },
+  "equation-answered-with-given-number": {
+    probe: "Quick one: x + 6 = 10. What is x?",
+    accept: ["4"],
+    then: "6 and 10 were both printed in the equation; 4 is the one nobody gave you. Substitute yours back in and check both sides match.",
+    verify: { expr: "10-6", equals: 4 },
+  },
+
+  // ── inequalities ─────────────────────────────────────────────────────────
+  "inequality-direction-flipped": {
+    probe: "Quick one: start from x > 3 and add 2 to both sides. Write the result.",
+    accept: ["x>5", "x > 5", "5<x", "5 < x"],
+    rejects: ["x<5", "x < 5"],
+    then: "Adding the same amount to both sides moved the boundary but left the symbol pointing the same way. Keep your original symbol.",
+  },
+  "inequality-boundary-inclusion": {
+    probe: "Quick one: does x = 7 make x ≥ 7 true? Answer yes or no.",
+    accept: ["yes", "y", "true", "sí", "si"],
+    rejects: ["no", "n", "false"],
+    then: "≥ includes the boundary, so 7 counts and the circle is filled. Test your own boundary number the same way.",
+  },
+  "inequality-graph-direction": {
+    probe: "Quick one: for x < 4, is 6 part of the solution? Answer yes or no.",
+    accept: ["no", "n", "false"],
+    rejects: ["yes", "y", "true"],
+    then: "6 is not less than 4, so the shading cannot cover it — it belongs on the smaller side. Test a number from your shaded part the same way.",
+  },
+
+  // ── statistics ───────────────────────────────────────────────────────────
+  "stat-range-for-iqr": {
+    probe: "Quick one: Q1 = 10 and Q3 = 18. What is the IQR?",
+    accept: ["8"],
+    then: "IQR is Q3 − Q1, and the smallest and largest values never enter it. Find those two quartiles in your data and subtract.",
+    verify: { expr: "18-10", equals: 8 },
+  },
+  "stat-center-vs-spread": {
+    probe: "Quick one: which of these describes how SPREAD OUT data is — the median, or the range?",
+    accept: ["range", "the range"],
+    rejects: ["median", "the median"],
+    then: "The range measures spread; the median marks the center. Decide which one your question is asking for before you compute.",
+  },
+  "stat-mean-skewed-by-outlier": {
+    probe:
+      "Quick one: 4, 5, 6 and 85. Is the mean of these four numbers typical of the data? Answer yes or no.",
+    accept: ["no", "n", "false"],
+    rejects: ["yes", "y", "true"],
+    then: "The mean is 25, which is larger than three of the four values — the 85 dragged it. The median, 5.5, stays with the group. Look for a value far from the rest in your own data.",
+    // The task's own answer is yes/no, but the follow-up cites two numbers. Both
+    // are checked independently — a scaffold that states a wrong mean while
+    // teaching about means would be worse than saying nothing.
+    claims: [
+      { expr: "(4+5+6+85)/4", equals: 25 },
+      { expr: "(5+6)/2", equals: 5.5 },
+    ],
+  },
+  "stat-frequency-vs-value": {
+    probe:
+      "Quick one: a histogram bar covers scores 70–79 and stands 12 tall. How many students scored in that range?",
+    accept: ["12"],
+    rejects: ["79", "70"],
+    then: "The height counts the students; the label underneath names the scores. Read the height when a question asks how many.",
+  },
+
   // Order, not arithmetic — same shape as ratio-inverted. The reversed pair is
   // the misconception itself, so it must be refused rather than "close enough".
   "coord-xy-swapped": {

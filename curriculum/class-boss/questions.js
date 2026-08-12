@@ -26,6 +26,15 @@
 export const BOSS_TAGS = [
   "algebra-distributive-partial",
   "coord-xy-swapped",
+  "equation-answered-with-given-number",
+  "equation-not-inverse-operation",
+  "inequality-boundary-inclusion",
+  "inequality-direction-flipped",
+  "inequality-graph-direction",
+  "stat-center-vs-spread",
+  "stat-frequency-vs-value",
+  "stat-mean-skewed-by-outlier",
+  "stat-range-for-iqr",
   "decimal-place-value",
   "exponent-as-multiplication",
   "fraction-added-denominators",
@@ -744,6 +753,266 @@ export const QUESTION_BANK = {
   ],
 
   /* --- Swapped area and perimeter ---------------------------------------- */
+  /* --- Did not undo the operation ---------------------------------------- */
+  "equation-not-inverse-operation": [
+    T("inv-mul", (r) => {
+      const a = r.int(3, 12), x = r.int(3, 15);
+      return { values: { a, x }, correct: x, distractor: a * x * a,
+        prompt: { en: `Solve for x: ${a}x = ${a * x}.`, es: `Resuelve para x: ${a}x = ${a * x}.` } };
+    }),
+    T("inv-div", (r) => {
+      const a = r.int(2, 9), x = r.int(4, 15);
+      return { values: { a, x }, correct: x, distractor: x / a / a,
+        prompt: { en: `Solve for x: x ÷ ${a} = ${x / a}.`, es: `Resuelve para x: x ÷ ${a} = ${x / a}.` } };
+    }),
+    T("inv-add", (r) => {
+      const a = r.int(3, 19), x = r.int(5, 25);
+      return { values: { a, x }, correct: x, distractor: x + a + a,
+        prompt: { en: `Solve for x: x + ${a} = ${x + a}.`, es: `Resuelve para x: x + ${a} = ${x + a}.` } };
+    }),
+    T("inv-sub", (r) => {
+      const a = r.int(2, 15), x = r.int(18, 40);
+      return { values: { a, x }, correct: x, distractor: x - a - a,
+        prompt: { en: `Solve for x: x − ${a} = ${x - a}.`, es: `Resuelve para x: x − ${a} = ${x - a}.` } };
+    }),
+  ],
+
+  /* --- Answered with a number already in the equation --------------------- */
+  "equation-answered-with-given-number": [
+    T("given-add", (r) => {
+      const a = r.int(4, 18);
+      let x = r.int(6, 30);
+      if (x === a) x = a + 7; // the given number must never BE the unknown
+      return { values: { a, x }, correct: x, distractor: a,
+        prompt: { en: `Solve for n: n + ${a} = ${x + a}.`, es: `Resuelve para n: n + ${a} = ${x + a}.` } };
+    }),
+    T("given-div", (r) => {
+      const a = r.int(3, 11);
+      let x = r.int(4, 14);
+      if (x === a) x = a + 5;
+      return { values: { a, x }, correct: x, distractor: a,
+        prompt: { en: `Solve for y: y ÷ ${a} = ${x}.`, es: `Resuelve para y: y ÷ ${a} = ${x}.` } };
+    }),
+    T("given-mul", (r) => {
+      const a = r.int(3, 12);
+      let x = r.int(3, 14);
+      if (x === a) x = a + 4;
+      return { values: { a, x }, correct: x, distractor: a,
+        prompt: { en: `Solve for m: ${a}m = ${a * x}.`, es: `Resuelve para m: ${a}m = ${a * x}.` } };
+    }),
+    T("given-sub", (r) => {
+      const a = r.int(3, 16);
+      let x = r.int(20, 45);
+      if (x === a) x = a + 9;
+      return { values: { a, x }, correct: x, distractor: a,
+        prompt: { en: `Solve for d: d − ${a} = ${x - a}.`, es: `Resuelve para d: d − ${a} = ${x - a}.` } };
+    }),
+  ],
+
+  /* --- Right boundary, symbol reversed ------------------------------------ */
+  "inequality-direction-flipped": [
+    T("dir-add", (r) => {
+      const a = r.int(2, 9), b = r.int(5, 20);
+      return { values: { a, b }, correct: `x > ${b + a}`, distractor: `x < ${b + a}`,
+        decoys: [`x > ${b - a}`, `x < ${b - a}`],
+        prompt: { en: `Solve: x − ${a} > ${b}.`, es: `Resuelve: x − ${a} > ${b}.` } };
+    }),
+    T("dir-sub", (r) => {
+      const a = r.int(2, 9), b = r.int(10, 30);
+      return { values: { a, b }, correct: `x < ${b - a}`, distractor: `x > ${b - a}`,
+        decoys: [`x < ${b + a}`, `x > ${b + a}`],
+        prompt: { en: `Solve: x + ${a} < ${b}.`, es: `Resuelve: x + ${a} < ${b}.` } };
+    }),
+    T("dir-ge", (r) => {
+      const a = r.int(3, 12), b = r.int(8, 25);
+      return { values: { a, b }, correct: `x ≥ ${b + a}`, distractor: `x ≤ ${b + a}`,
+        decoys: [`x ≥ ${b - a}`, `x > ${b + a}`],
+        prompt: { en: `Solve: x − ${a} ≥ ${b}.`, es: `Resuelve: x − ${a} ≥ ${b}.` } };
+    }),
+    T("dir-le", (r) => {
+      const a = r.int(3, 12), b = r.int(15, 35);
+      return { values: { a, b }, correct: `x ≤ ${b - a}`, distractor: `x ≥ ${b - a}`,
+        decoys: [`x ≤ ${b + a}`, `x < ${b - a}`],
+        prompt: { en: `Solve: x + ${a} ≤ ${b}.`, es: `Resuelve: x + ${a} ≤ ${b}.` } };
+    }),
+  ],
+
+  /* --- Boundary value wrongly included or excluded ------------------------ */
+  "inequality-boundary-inclusion": [
+    T("inc-atleast", (r) => {
+      const b = r.int(10, 60);
+      return { values: { b }, correct: `x ≥ ${b}`, distractor: `x > ${b}`,
+        decoys: [`x ≤ ${b}`, `x < ${b}`],
+        prompt: { en: `Write it: a ride needs a height of AT LEAST ${b} cm.`, es: `Escríbelo: una atracción exige una estatura de AL MENOS ${b} cm.` } };
+    }),
+    T("inc-atmost", (r) => {
+      const b = r.int(10, 80);
+      return { values: { b }, correct: `x ≤ ${b}`, distractor: `x < ${b}`,
+        decoys: [`x ≥ ${b}`, `x > ${b}`],
+        prompt: { en: `Write it: a lift carries AT MOST ${b} kilograms.`, es: `Escríbelo: un ascensor carga COMO MÁXIMO ${b} kilogramos.` } };
+    }),
+    T("inc-morethan", (r) => {
+      const b = r.int(2, 30);
+      return { values: { b }, correct: `x > ${b}`, distractor: `x ≥ ${b}`,
+        decoys: [`x < ${b}`, `x ≤ ${b}`],
+        prompt: { en: `Write it: a stay costs extra after MORE THAN ${b} hours.`, es: `Escríbelo: una estancia cuesta más después de MÁS DE ${b} horas.` } };
+    }),
+    T("inc-fewerthan", (r) => {
+      const b = r.int(3, 40);
+      return { values: { b }, correct: `x < ${b}`, distractor: `x ≤ ${b}`,
+        decoys: [`x > ${b}`, `x ≥ ${b}`],
+        prompt: { en: `Write it: a class runs only with FEWER THAN ${b} students.`, es: `Escríbelo: una clase funciona solo con MENOS DE ${b} estudiantes.` } };
+    }),
+  ],
+
+  /* --- Graph shaded toward the wrong side ---------------------------------- */
+  "inequality-graph-direction": [
+    T("shade-gt", (r) => {
+      const b = r.int(2, 20);
+      return { values: { b }, correct: `open circle at ${b}, shade right`, distractor: `open circle at ${b}, shade left`,
+        decoys: [`filled circle at ${b}, shade right`, `filled circle at ${b}, shade left`],
+        prompt: { en: `Which graph shows x > ${b}?`, es: `¿Cuál gráfica muestra x > ${b}?` } };
+    }),
+    T("shade-lt", (r) => {
+      const b = r.int(2, 20);
+      return { values: { b }, correct: `open circle at ${b}, shade left`, distractor: `open circle at ${b}, shade right`,
+        decoys: [`filled circle at ${b}, shade left`, `filled circle at ${b}, shade right`],
+        prompt: { en: `Which graph shows x < ${b}?`, es: `¿Cuál gráfica muestra x < ${b}?` } };
+    }),
+    T("shade-ge", (r) => {
+      const b = r.int(2, 20);
+      return { values: { b }, correct: `filled circle at ${b}, shade right`, distractor: `filled circle at ${b}, shade left`,
+        decoys: [`open circle at ${b}, shade right`, `open circle at ${b}, shade left`],
+        prompt: { en: `Which graph shows x ≥ ${b}?`, es: `¿Cuál gráfica muestra x ≥ ${b}?` } };
+    }),
+    T("shade-le", (r) => {
+      const b = r.int(2, 20);
+      return { values: { b }, correct: `filled circle at ${b}, shade left`, distractor: `filled circle at ${b}, shade right`,
+        decoys: [`open circle at ${b}, shade left`, `open circle at ${b}, shade right`],
+        prompt: { en: `Which graph shows x ≤ ${b}?`, es: `¿Cuál gráfica muestra x ≤ ${b}?` } };
+    }),
+  ],
+
+  /* --- Used the full range instead of the IQR ------------------------------ */
+  "stat-range-for-iqr": [
+    T("iqr-plot", (r) => {
+      const min = r.int(2, 12), q1 = min + r.int(3, 8), q3 = q1 + r.int(4, 12), max = q3 + r.int(3, 9);
+      return { values: { min, q1, q3, max }, correct: q3 - q1, distractor: max - min,
+        prompt: { en: `A box plot shows min ${min}, Q1 ${q1}, Q3 ${q3}, max ${max}. What is the IQR?`,
+                  es: `Un diagrama de caja muestra mín ${min}, Q1 ${q1}, Q3 ${q3}, máx ${max}. ¿Cuál es el rango intercuartílico?` } };
+    }),
+    T("iqr-quartiles", (r) => {
+      const q1 = r.int(10, 30), q3 = q1 + r.int(5, 20), min = q1 - r.int(3, 8), max = q3 + r.int(3, 8);
+      return { values: { min, q1, q3, max }, correct: q3 - q1, distractor: max - min,
+        prompt: { en: `Q1 is ${q1} and Q3 is ${q3}; the least value is ${min} and the greatest is ${max}. Find the IQR.`,
+                  es: `Q1 es ${q1} y Q3 es ${q3}; el valor menor es ${min} y el mayor es ${max}. Halla el rango intercuartílico.` } };
+    }),
+    T("iqr-scores", (r) => {
+      const q1 = r.int(60, 75), q3 = q1 + r.int(6, 18), min = q1 - r.int(5, 12), max = q3 + r.int(4, 10);
+      return { values: { min, q1, q3, max }, correct: q3 - q1, distractor: max - min,
+        prompt: { en: `Test scores: least ${min}, Q1 ${q1}, Q3 ${q3}, greatest ${max}. What is the interquartile range?`,
+                  es: `Puntajes: menor ${min}, Q1 ${q1}, Q3 ${q3}, mayor ${max}. ¿Cuál es el rango intercuartílico?` } };
+    }),
+    T("iqr-times", (r) => {
+      const q1 = r.int(15, 28), q3 = q1 + r.int(4, 14), min = q1 - r.int(4, 9), max = q3 + r.int(5, 11);
+      return { values: { min, q1, q3, max }, correct: q3 - q1, distractor: max - min,
+        prompt: { en: `Ride times in minutes: min ${min}, Q1 ${q1}, Q3 ${q3}, max ${max}. Find the IQR.`,
+                  es: `Tiempos en minutos: mín ${min}, Q1 ${q1}, Q3 ${q3}, máx ${max}. Halla el rango intercuartílico.` } };
+    }),
+  ],
+
+  /* --- Confused a measure of center with a measure of spread --------------- */
+  "stat-center-vs-spread": [
+    T("cs-spread", (r) => {
+      const pick = r.int(0, 1);
+      return { values: { pick }, correct: pick ? "range" : "interquartile range", distractor: "median",
+        decoys: ["mean", "mode"],
+        prompt: { en: `Which one measures how SPREAD OUT the data is?`, es: `¿Cuál mide qué tan DISPERSOS están los datos?` } };
+    }),
+    T("cs-center", (r) => {
+      const pick = r.int(0, 1);
+      return { values: { pick }, correct: pick ? "median" : "mean", distractor: "range",
+        decoys: ["interquartile range", "the greatest value"],
+        prompt: { en: `Which one describes a TYPICAL value in the data?`, es: `¿Cuál describe un valor TÍPICO de los datos?` } };
+    }),
+    T("cs-mode", (r) => {
+      const pick = r.int(0, 1);
+      return { values: { pick }, correct: "mode", distractor: "range",
+        decoys: ["interquartile range", "the least value"],
+        prompt: { en: `Which one names the value that appears MOST OFTEN?`, es: `¿Cuál nombra el valor que aparece CON MÁS FRECUENCIA?` } };
+    }),
+    T("cs-iqr", (r) => {
+      const pick = r.int(0, 1);
+      return { values: { pick }, correct: "interquartile range", distractor: "median",
+        decoys: ["mean", "mode"],
+        prompt: { en: `Which one describes the spread of just the MIDDLE HALF of the data?`, es: `¿Cuál describe la dispersión solo de la MITAD CENTRAL de los datos?` } };
+    }),
+  ],
+
+  /* --- Chose the mean when an outlier distorts it -------------------------- */
+  "stat-mean-skewed-by-outlier": [
+    T("out-times", (r) => {
+      const b = r.int(6, 9), out = b + r.int(20, 40);
+      return { values: { b, out }, correct: "median", distractor: "mean",
+        decoys: ["mode", "range"],
+        prompt: { en: `Mile times are ${b}, ${b + 1}, ${b + 1}, ${b + 2} and ${out} minutes. Which measure best describes a typical run?`,
+                  es: `Los tiempos son ${b}, ${b + 1}, ${b + 1}, ${b + 2} y ${out} minutos. ¿Cuál medida describe mejor una carrera típica?` } };
+    }),
+    T("out-prices", (r) => {
+      const b = r.int(4, 9), out = b + r.int(30, 60);
+      return { values: { b, out }, correct: "median", distractor: "mean",
+        decoys: ["range", "the greatest value"],
+        prompt: { en: `Lunch prices are $${b}, $${b + 1}, $${b + 1}, $${b + 2} and $${out}. Which measure best describes a typical price?`,
+                  es: `Los precios son $${b}, $${b + 1}, $${b + 1}, $${b + 2} y $${out}. ¿Cuál medida describe mejor un precio típico?` } };
+    }),
+    T("out-scores", (r) => {
+      const b = r.int(80, 90), out = b - r.int(50, 70);
+      return { values: { b, out }, correct: "median", distractor: "mean",
+        decoys: ["mode", "interquartile range"],
+        prompt: { en: `Scores are ${b}, ${b + 2}, ${b + 3}, ${b + 4} and ${out}. Which measure best describes a typical score?`,
+                  es: `Los puntajes son ${b}, ${b + 2}, ${b + 3}, ${b + 4} y ${out}. ¿Cuál medida describe mejor un puntaje típico?` } };
+    }),
+    T("out-attendance", (r) => {
+      const b = r.int(20, 30), out = b + r.int(80, 150);
+      return { values: { b, out }, correct: "median", distractor: "mean",
+        decoys: ["range", "mode"],
+        prompt: { en: `Club attendance is ${b}, ${b + 1}, ${b + 2}, ${b + 3} and ${out}. Which measure best describes a typical night?`,
+                  es: `La asistencia es ${b}, ${b + 1}, ${b + 2}, ${b + 3} y ${out}. ¿Cuál medida describe mejor una noche típica?` } };
+    }),
+  ],
+
+  /* --- Reported a data value where a frequency was asked ------------------- */
+  "stat-frequency-vs-value": [
+    T("freq-bar", (r) => {
+      const lo = r.int(10, 60), h = r.int(3, 18);
+      return { values: { lo, h }, correct: h, distractor: lo + 9,
+        prompt: { en: `A histogram bar covers ${lo}–${lo + 9} and stands ${h} tall. How many values fall in that interval?`,
+                  es: `Una barra del histograma cubre ${lo}–${lo + 9} y mide ${h} de alto. ¿Cuántos valores caen en ese intervalo?` } };
+    }),
+    T("freq-tallest", (r) => {
+      const lo = r.int(20, 70), h = r.int(8, 20);
+      return { values: { lo, h }, correct: h, distractor: lo,
+        prompt: { en: `The tallest bar covers ${lo}–${lo + 9} with a height of ${h}. How many students are in it?`,
+                  es: `La barra más alta cubre ${lo}–${lo + 9} con altura ${h}. ¿Cuántos estudiantes hay en ella?` } };
+    }),
+    T("freq-players", (r) => {
+      const lo = r.int(0, 15);
+      let h = r.int(4, 16);
+      if (h === lo + 4) h = h + 1; // height must never equal the value read off the axis
+      return { values: { lo, h }, correct: h, distractor: lo + 4,
+        prompt: { en: `A bar for ${lo}–${lo + 4} goals reaches ${h}. How many players scored in that range?`,
+                  es: `Una barra de ${lo}–${lo + 4} goles llega a ${h}. ¿Cuántos jugadores anotaron en ese rango?` } };
+    }),
+    T("freq-minutes", (r) => {
+      const lo = r.int(5, 40);
+      let h = r.int(2, 14);
+      if (h === lo + 9) h = h - 1;
+      return { values: { lo, h }, correct: h, distractor: lo + 9,
+        prompt: { en: `A bar for ${lo}–${lo + 9} minutes has height ${h}. How many days fall in that interval?`,
+                  es: `Una barra de ${lo}–${lo + 9} minutos tiene altura ${h}. ¿Cuántos días caen en ese intervalo?` } };
+    }),
+  ],
+
   /* --- Swapped the x and y coordinates ---------------------------------- */
   // Every template keeps x !== y: on (4, 4) the swap IS the answer, so the
   // question could not tell a confident student from a confused one.
@@ -1718,7 +1987,13 @@ export function buildQuestion(tag, index, seed) {
   const template = templates[i];
   const r = makeRng(`${seed}|${tag}|${template.id}`);
   const built = template.build(r);
-  const decoys = pickDecoys(built.correct, built.distractor);
+  // A template may supply its own decoys. Numbers, ratios and ordered pairs can
+  // all be perturbed mechanically, but an inequality statement or a word answer
+  // ("range", "median") cannot — fractionDecoys would read "x > 5" as a number
+  // and offer nonsense. Those tags name their own near misses instead.
+  const decoys = Array.isArray(built.decoys)
+    ? built.decoys.filter((d) => String(d) !== String(built.correct) && String(d) !== String(built.distractor)).slice(0, 2)
+    : pickDecoys(built.correct, built.distractor);
   return {
     tag,
     id: template.id,

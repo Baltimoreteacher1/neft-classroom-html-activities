@@ -39,9 +39,25 @@ for (const [tag, entry] of Object.entries(INTERVENTIONS)) {
   // proves nothing about the thing that can actually be wrong. Those declare
   // `rejects` instead, and what gets enforced is that the reversed answer is
   // refused. Every entry must do one or the other; neither is optional.
+  // A follow-up sentence may cite numbers even when the task's own answer is a
+  // word ("no", "divide"). Those numbers get checked too: a scaffold that states
+  // a wrong mean while teaching about means is worse than saying nothing.
+  for (const claim of entry.claims || []) {
+    const got = evaluate(claim.expr);
+    assert.ok(
+      near(got, claim.equals),
+      `${tag}: claim ${claim.expr} = ${got}, but the follow-up says ${claim.equals}`,
+    );
+    assert.ok(
+      entry.then.includes(String(claim.equals)),
+      `${tag}: claim ${claim.expr}=${claim.equals} is verified but never actually stated in the follow-up`,
+    );
+  }
+
   if (!v) {
     assert.ok(
-      Array.isArray(entry.rejects) && entry.rejects.length,
+      (Array.isArray(entry.rejects) && entry.rejects.length) ||
+        (Array.isArray(entry.claims) && entry.claims.length),
       `${tag}: needs either verify arithmetic or a rejects list — an unchecked scaffold is how wrong mathematics ships`,
     );
     for (const bad of entry.rejects) {

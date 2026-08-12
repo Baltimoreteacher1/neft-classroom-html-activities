@@ -144,6 +144,36 @@ export const STANDARDS = Object.freeze({
     family: "using numbers above and under zero to describe real situations",
     familyEs: "usar números arriba y abajo de cero para describir situaciones reales",
   },
+  "6.AT.8": {
+    label: "Equations",
+    labelEs: "Ecuaciones",
+    family: "finding the missing number by undoing what was done to it",
+    familyEs: "hallar el número que falta deshaciendo lo que se le hizo",
+  },
+  "6.AT.9": {
+    label: "Inequalities",
+    labelEs: "Desigualdades",
+    family: "describing a whole range of allowed values, not just one",
+    familyEs: "describir todo un rango de valores permitidos, no solo uno",
+  },
+  "6.DS.3": {
+    label: "Spread of data",
+    labelEs: "Dispersión de los datos",
+    family: "saying how scattered a set of numbers is, not just where its middle sits",
+    familyEs: "decir qué tan dispersos están los números, no solo dónde está su centro",
+  },
+  "6.DS.4": {
+    label: "Choosing a measure",
+    labelEs: "Elegir una medida",
+    family: "picking the number that best describes a typical value",
+    familyEs: "escoger el número que mejor describe un valor típico",
+  },
+  "6.DS.5": {
+    label: "Reading data displays",
+    labelEs: "Leer gráficas de datos",
+    family: "reading how many from a graph's height and which values from its labels",
+    familyEs: "leer cuántos por la altura de la gráfica y cuáles valores por sus etiquetas",
+  },
   "6.NOS.6": {
     label: "Points on the coordinate plane",
     labelEs: "Puntos en el plano de coordenadas",
@@ -345,6 +375,41 @@ export const ASSETS = Object.freeze({
       path: "/lessons/7-2/",
     },
   ],
+  "6.AT.8": [
+    {
+      title: "8-2 Write and Solve Equations",
+      titleEs: "8-2 Escribir y resolver ecuaciones",
+      path: "/lessons/8-2/",
+    },
+  ],
+  "6.AT.9": [
+    {
+      title: "8-4 Write and Represent Inequalities",
+      titleEs: "8-4 Escribir y representar desigualdades",
+      path: "/lessons/8-4/",
+    },
+  ],
+  "6.DS.3": [
+    {
+      title: "2-5 Range and Interquartile Range",
+      titleEs: "2-5 Rango y rango intercuartílico",
+      path: "/lessons/2-5/",
+    },
+  ],
+  "6.DS.4": [
+    {
+      title: "2-3 Describe the Data Using the Median",
+      titleEs: "2-3 Describir los datos con la mediana",
+      path: "/lessons/2-3/",
+    },
+  ],
+  "6.DS.5": [
+    {
+      title: "2-2 Represent and Describe Data in a Histogram",
+      titleEs: "2-2 Representar y describir datos en un histograma",
+      path: "/lessons/2-2/",
+    },
+  ],
   "6.NOS.6": [
     {
       title: "7-5 Rational Numbers on the Coordinate Plane",
@@ -524,6 +589,69 @@ export const TAGS = Object.freeze({
     watchFor: "Draw the area model — the outside factor touches BOTH terms.",
     watchForEs: "Dibuje el modelo de área: el factor de afuera toca AMBOS términos.",
     standards: ["6.AT.7"],
+  },
+  "equation-not-inverse-operation": {
+    label: "Did not undo the operation",
+    labelEs: "No deshizo la operación",
+    watchFor: "Have them name the operation acting on the variable BEFORE they touch both sides.",
+    watchForEs: "Pídale que nombre la operación que actúa sobre la variable ANTES de tocar ambos lados.",
+    standards: ["6.AT.8"],
+  },
+  "equation-answered-with-given-number": {
+    label: "Answered with a number already in the equation",
+    labelEs: "Respondió con un número que ya estaba en la ecuación",
+    watchFor: "Ask them to substitute their answer back into the original equation out loud.",
+    watchForEs: "Pídale que sustituya su respuesta en la ecuación original en voz alta.",
+    standards: ["6.AT.8"],
+  },
+  "inequality-direction-flipped": {
+    label: "Right boundary, symbol reversed",
+    labelEs: "Límite correcto, símbolo invertido",
+    watchFor: "Ask which moves can flip a symbol — adding and subtracting never do.",
+    watchForEs: "Pregunte cuáles pasos pueden voltear un símbolo; sumar y restar nunca lo hacen.",
+    standards: ["6.AT.9"],
+  },
+  "inequality-boundary-inclusion": {
+    label: "Boundary value wrongly included or excluded",
+    labelEs: "Valor límite incluido o excluido por error",
+    watchFor: "Have them test the boundary value itself — does it make the statement true?",
+    watchForEs: "Pídale que pruebe el valor límite: ¿hace verdadero el enunciado?",
+    standards: ["6.AT.9"],
+  },
+  "inequality-graph-direction": {
+    label: "Graph shaded toward the wrong side",
+    labelEs: "Gráfica sombreada hacia el lado equivocado",
+    watchFor: "Make them test one number from the shaded side out loud before accepting a graph.",
+    watchForEs: "Pídale que pruebe en voz alta un número del lado sombreado antes de aceptar la gráfica.",
+    standards: ["6.AT.9"],
+  },
+  "stat-range-for-iqr": {
+    label: "Used the full range instead of the IQR",
+    labelEs: "Usó el rango completo en vez del rango intercuartílico",
+    watchFor: "Have them mark Q1 and Q3 on the plot and cover everything outside them.",
+    watchForEs: "Pídale que marque Q1 y Q3 y tape todo lo que quede fuera.",
+    standards: ["6.DS.3"],
+  },
+  "stat-center-vs-spread": {
+    label: "Confused a measure of center with a measure of spread",
+    labelEs: "Confundió una medida de centro con una de dispersión",
+    watchFor: "Ask what the question wants to know: a typical value, or how scattered the data is?",
+    watchForEs: "Pregunte qué quiere saber la pregunta: un valor típico o qué tan dispersos están los datos.",
+    standards: ["6.DS.3"],
+  },
+  "stat-mean-skewed-by-outlier": {
+    label: "Chose the mean when an outlier distorts it",
+    labelEs: "Eligió la media cuando un valor atípico la distorsiona",
+    watchFor: "Have them cover the outlier and recompute — how far does the mean move?",
+    watchForEs: "Pídale que tape el valor atípico y recalcule: ¿cuánto se mueve la media?",
+    standards: ["6.DS.4"],
+  },
+  "stat-frequency-vs-value": {
+    label: "Reported a data value where a frequency was asked",
+    labelEs: "Dio un valor de los datos donde se pedía una frecuencia",
+    watchFor: "Ask them to point at the axis their number came from before they answer.",
+    watchForEs: "Pídale que señale de qué eje salió su número antes de responder.",
+    standards: ["6.DS.5"],
   },
   "coord-xy-swapped": {
     label: "Swapped the x and y coordinates",
@@ -840,6 +968,195 @@ export const KITCHEN_TABLE = Object.freeze({
     ],
     why: "Three groups means three of EVERYTHING in the group — the parentheses travel together.",
     whyEs: "Tres grupos significa tres de TODO lo que hay en el grupo: el paréntesis viaja junto.",
+  },
+  "equation-not-inverse-operation": {
+    minutes: 5,
+    title: "Undo it, don't redo it",
+    titleEs: "Deshazlo, no lo repitas",
+    materials: "A cup, a few coins, and a small object to hide under the cup.",
+    materialsEs: "Un vaso, unas monedas y un objeto pequeño para esconder debajo.",
+    steps: [
+      "Hide some coins under the cup and put three more beside it. Say: 'together there are eight.'",
+      "Ask how many are hidden, and ask them to say the move out loud: 'take away the three.'",
+      "Do it wrong on purpose — add three MORE — and ask whether that helped find the hidden number.",
+      "Swap roles and let them set the puzzle for you."
+],
+    stepsEs: [
+      "Esconda unas monedas bajo el vaso y ponga tres al lado. Diga: 'en total hay ocho.'",
+      "Pregunte cuántas están escondidas y pida que diga el paso en voz alta: 'quitar las tres.'",
+      "Hágalo mal a propósito —agregue tres MÁS— y pregunte si eso ayudó a hallar el número escondido.",
+      "Cambien de papel y deje que le pongan el reto a usted."
+],
+    why: "Solving is undoing. Doing the same move again buries the answer deeper, and doing it with your hands makes that obvious.",
+    whyEs: "Resolver es deshacer. Repetir el mismo paso entierra más la respuesta, y hacerlo con las manos lo deja claro.",
+  },
+  "equation-answered-with-given-number": {
+    minutes: 5,
+    title: "Which number is the mystery?",
+    titleEs: "¿Cuál número es el misterio?",
+    materials: "Paper and a pen.",
+    materialsEs: "Papel y lápiz.",
+    steps: [
+      "Write a simple equation like n + 12 = 30 and read it aloud together.",
+      "Ask which numbers you can already see, and circle them.",
+      "Ask which number nobody has told you yet — that one is the answer you are hunting.",
+      "Check by putting their answer back in and reading the sentence out loud."
+],
+    stepsEs: [
+      "Escriba una ecuación simple como n + 12 = 30 y léanla juntos.",
+      "Pregunte cuáles números ya se ven y enciérrelos.",
+      "Pregunte cuál número nadie le ha dicho todavía: ese es el que busca.",
+      "Comprueben sustituyendo su respuesta y leyendo la oración en voz alta."
+],
+    why: "The answer is never a number already printed on the page. Substituting it back is the check that settles it.",
+    whyEs: "La respuesta nunca es un número ya impreso en la hoja. Sustituirla es la comprobación que lo resuelve.",
+  },
+  "inequality-direction-flipped": {
+    minutes: 5,
+    title: "Taller than, shorter than",
+    titleEs: "Más alto que, más bajo que",
+    materials: "Nothing — just the two of you and a doorway.",
+    materialsEs: "Nada: solo ustedes dos y una puerta.",
+    steps: [
+      "Stand back to back and say who is taller, out loud, as a sentence.",
+      "Both stand on a book. Ask whether that changed who is taller.",
+      "Say it as a rule: adding the same to both sides did not change the direction.",
+      "Try it with a different-sized book and check again."
+],
+    stepsEs: [
+      "Párense espalda con espalda y digan en voz alta quién es más alto, como oración.",
+      "Súbanse los dos a un libro. Pregunte si eso cambió quién es más alto.",
+      "Dígalo como regla: sumar lo mismo a ambos lados no cambió la dirección.",
+      "Prueben con un libro de otro tamaño y revisen otra vez."
+],
+    why: "Adding the same amount to both sides never changes which one is bigger. That is the whole rule, felt rather than memorised.",
+    whyEs: "Sumar la misma cantidad a ambos lados nunca cambia cuál es mayor. Esa es toda la regla, sentida en vez de memorizada.",
+  },
+  "inequality-boundary-inclusion": {
+    minutes: 5,
+    title: "Does exactly that count?",
+    titleEs: "¿Cuenta exactamente eso?",
+    materials: "Any household rule with a number in it.",
+    materialsEs: "Cualquier regla de la casa que tenga un número.",
+    steps: [
+      "Say a rule out loud: 'you may have at most two snacks.'",
+      "Ask whether exactly two is allowed. Then ask about exactly three.",
+      "Change the wording to 'fewer than two' and ask the same question again.",
+      "Notice together that one word changed who is allowed."
+],
+    stepsEs: [
+      "Diga una regla en voz alta: 'puedes tomar como máximo dos meriendas.'",
+      "Pregunte si exactamente dos se permite. Luego pregunte por exactamente tres.",
+      "Cambie las palabras a 'menos de dos' y vuelva a preguntar lo mismo.",
+      "Noten juntos que una sola palabra cambió a quién se le permite."
+],
+    why: "The boundary number is the whole question. Testing that exact value is faster than remembering which symbol is which.",
+    whyEs: "El número límite es toda la pregunta. Probar ese valor exacto es más rápido que recordar cuál símbolo es cuál.",
+  },
+  "inequality-graph-direction": {
+    minutes: 5,
+    title: "Test one and see",
+    titleEs: "Prueba uno y observa",
+    materials: "Paper, or the edge of a ruler as a number line.",
+    materialsEs: "Papel o el borde de una regla como recta numérica.",
+    steps: [
+      "Draw a line, mark a number on it, and shade one side.",
+      "Say what the shading claims: 'every number here works.'",
+      "Pick one number from the shaded part and test it against the rule out loud.",
+      "If it fails, move the shading and test again."
+],
+    stepsEs: [
+      "Dibuje una recta, marque un número y sombree un lado.",
+      "Diga qué afirma el sombreado: 'todos los números de aquí sirven.'",
+      "Escoja un número de la parte sombreada y pruébelo con la regla en voz alta.",
+      "Si falla, mueva el sombreado y prueben otra vez."
+],
+    why: "A shaded picture is a claim about every number in it. One test is enough to check the claim.",
+    whyEs: "Un dibujo sombreado afirma algo sobre cada número que contiene. Una sola prueba basta para revisarlo.",
+  },
+  "stat-range-for-iqr": {
+    minutes: 5,
+    title: "Cover the ends",
+    titleEs: "Tapa los extremos",
+    materials: "A list of numbers and two fingers.",
+    materialsEs: "Una lista de números y dos dedos.",
+    steps: [
+      "Write down about eight numbers and order them together.",
+      "Cover the smallest quarter and the largest quarter with your hands.",
+      "Ask what is left in the middle, and how wide that middle stretch is.",
+      "Uncover everything and compare: the whole spread is bigger."
+],
+    stepsEs: [
+      "Escriban unos ocho números y ordénenlos juntos.",
+      "Tape con las manos el cuarto más pequeño y el cuarto más grande.",
+      "Pregunte qué queda en el medio y qué tan ancho es ese tramo central.",
+      "Destapen todo y comparen: la dispersión completa es mayor."
+],
+    why: "The interquartile range is the middle stretch with the ends covered. Covering them with your hands makes the difference visible.",
+    whyEs: "El rango intercuartílico es el tramo central con los extremos tapados. Taparlos con las manos hace visible la diferencia.",
+  },
+  "stat-center-vs-spread": {
+    minutes: 5,
+    title: "Same middle, different spread",
+    titleEs: "Mismo centro, distinta dispersión",
+    materials: "Paper and a pen.",
+    materialsEs: "Papel y lápiz.",
+    steps: [
+      "Write two short lists that share a middle value, like 19, 20, 21 and 5, 20, 40.",
+      "Ask what is the same about them, and agree on the middle.",
+      "Ask whether the two lists look alike, and why not.",
+      "Name the second thing out loud: how spread out they are."
+],
+    stepsEs: [
+      "Escriba dos listas cortas con el mismo valor central, como 19, 20, 21 y 5, 20, 40.",
+      "Pregunte qué tienen igual y pónganse de acuerdo en el centro.",
+      "Pregunte si las dos listas se parecen, y por qué no.",
+      "Nombren en voz alta la segunda cosa: qué tan dispersas están."
+],
+    why: "A center and a spread answer different questions. Two lists with the same middle can look nothing alike.",
+    whyEs: "El centro y la dispersión responden preguntas distintas. Dos listas con el mismo centro pueden no parecerse en nada.",
+  },
+  "stat-mean-skewed-by-outlier": {
+    minutes: 5,
+    title: "The one that ruins the average",
+    titleEs: "El que arruina el promedio",
+    materials: "Paper and a pen.",
+    materialsEs: "Papel y lápiz.",
+    steps: [
+      "Write four similar numbers, then add one wildly different one.",
+      "Work out the average together and read it aloud.",
+      "Ask whether that average describes most of the numbers on the page.",
+      "Find the middle value instead and ask the same question."
+],
+    stepsEs: [
+      "Escriba cuatro números parecidos y luego agregue uno muy distinto.",
+      "Calculen juntos el promedio y léanlo en voz alta.",
+      "Pregunte si ese promedio describe a la mayoría de los números de la hoja.",
+      "Hallen el valor del medio y hagan la misma pregunta."
+],
+    why: "One unusual number drags an average away from the group. The middle value hardly moves, which is why it is often the fairer report.",
+    whyEs: "Un número inusual arrastra el promedio lejos del grupo. El valor del medio casi no se mueve, y por eso suele ser el reporte más justo.",
+  },
+  "stat-frequency-vs-value": {
+    minutes: 5,
+    title: "Two kinds of number",
+    titleEs: "Dos clases de número",
+    materials: "Any chart in a newspaper, on a cereal box, or on a phone.",
+    materialsEs: "Cualquier gráfica de un periódico, una caja de cereal o el teléfono.",
+    steps: [
+      "Find a bar chart together and point at the numbers along the bottom.",
+      "Point at the numbers up the side and ask what those count.",
+      "Ask one 'how many' question and have them point before they answer.",
+      "Ask one 'which values' question and notice they point somewhere else."
+],
+    stepsEs: [
+      "Busquen juntos una gráfica de barras y señalen los números de abajo.",
+      "Señalen los números del costado y pregunte qué cuentan esos.",
+      "Haga una pregunta de 'cuántos' y pida que señalen antes de responder.",
+      "Haga una pregunta de 'cuáles valores' y noten que señalan otro lugar."
+],
+    why: "Every bar chart carries two kinds of number. Pointing before answering is what keeps them apart.",
+    whyEs: "Toda gráfica de barras tiene dos clases de número. Señalar antes de responder es lo que los mantiene separados.",
   },
   "coord-xy-swapped": {
     minutes: 5,

@@ -277,6 +277,71 @@ const PROSE_PATTERNS = [
     "stat-summed-instead-of-averaged",
   ],
 
+  // --- equations -----------------------------------------------------------
+  // Claim forms only. "Undo the addition by subtracting it from both sides" is
+  // an instruction that fits a correct student too, so the trigger is the
+  // sentence that names what the STUDENT's number actually was.
+  [
+    /is undone by (?:addition|subtraction|multiplication|division)|does not undo a (?:multiplication|division|addition|subtraction)|the operation that undoes it is|the inverse operation is|multiplying (?:by \d+ )?a second time|multiplying again moves you|subtraction undoes addition, but/i,
+    "equation-not-inverse-operation",
+  ],
+  [
+    /already showing in the equation|that is the (?:total after|amount being (?:added|subtracted)|number \w+ is divided by|divisor, not the solution)/i,
+    "equation-answered-with-given-number",
+  ],
+
+  // --- inequalities --------------------------------------------------------
+  // Three tags, and the order matters: direction is tested before inclusion,
+  // because "leaves 3 out and shades the smaller side" names BOTH and the
+  // shading is the more actionable half. Bare "Not quite. Subtract 6 from both
+  // sides" is excluded everywhere — that is the method, not a diagnosis.
+  [
+    /symbol (?:changed direction|turned around|flipped|was reversed)|the symbol points the wrong way|boundary (?:number )?is (?:right|correct), but the (?:inequality )?symbol/i,
+    "inequality-direction-flipped",
+  ],
+  [
+    /this shades the (?:values|numbers) (?:below|above)|shaded toward the smaller|shades the (?:smaller|larger) side|fills in \d+ and shades/i,
+    "inequality-graph-direction",
+  ],
+  [
+    /does not include \d+, so the circle stays open|includes \d+, so the circle should be filled|lets the \w+ be exactly|leaves \d+ out\b/i,
+    "inequality-boundary-inclusion",
+  ],
+
+  // --- statistics ----------------------------------------------------------
+  // Deliberately narrow, and question forms are excluded throughout. "Both
+  // measures exist, but which resists the outlier?" and "Did you divide by the
+  // number of values (4)?" are coaching prompts that appear on items whose
+  // answers were wrong for other reasons; only the declarative claim counts.
+  //
+  // Two statistics errors are deliberately NOT tagged here because the taxonomy
+  // has no honest home for them: reading the wrong histogram bin ("5 is less
+  // than 10—which bar is tallest?") and misreading distribution shape (skew and
+  // symmetry). Both are real and repeated; neither is this tag.
+  [
+    /IQR is Q3 − Q1 only|IQR only uses the quartiles|but IQR is different|the range must be at least as large as the IQR|IQR is a difference, so subtract/i,
+    "stat-range-for-iqr",
+  ],
+  [
+    // `says nothing about how many` and `describes only the middle half` were
+    // tried here and REJECTED by --sample. Both come from sentences about what
+    // the IQR does not tell you ("The IQR says nothing about how many students
+    // are in a class"; "…it says nothing about the highest score"). Those are
+    // real errors — reading a sample size or a maximum off an IQR — but neither
+    // is a student swapping a center for a spread, and the repair is different.
+    // Tagging them would have put the wrong sentence in front of those students.
+    /is a measure of center, not of spread|also not a measure of spread|is a spread —|median ignores how far apart/i,
+    "stat-center-vs-spread",
+  ],
+  [
+    /outlier pulls it (?:too high|down)|the outlier pulls (?:the mean|it)/i,
+    "stat-mean-skewed-by-outlier",
+  ],
+  [
+    /compare the frequencies, not the (?:score )?ranges|that interval holds the highest (?:scores|values), but|count frequencies or find the highest value/i,
+    "stat-frequency-vs-value",
+  ],
+
   // --- coordinates ---------------------------------------------------------
   // Every alternative here is a CLAIM that the two numbers were used in the
   // wrong order, AND every one carries coordinate context.
