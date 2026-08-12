@@ -1137,7 +1137,19 @@ const LEGACY_TOPIC = {
   // by unit number served 10-2 ("Math is Beauty" — bilateral symmetry) twelve
   // surface-area-of-a-net problems. Each entry is the strand of the lesson's own
   // maths, named so the next person can check it against the deck.
-  "1-1": [1, 4], // estimating the Ferris wheel, 20 x 4 -> whole-number computation
+  // The comment here used to say "20 x 4 -> whole-number computation" while the
+  // tuple pointed at [1, 4], which is the DIVISION-with-remainder family that
+  // 1-3 and 10-5 legitimately use. So a lesson about estimating a Ferris wheel
+  // served twelve "Divide 252 by 6. Give the quotient and remainder." problems,
+  // with the long-division box lab attached — exactly the failure this map was
+  // written to prevent (see the 10-2 note above). Reported from the classroom,
+  // 2026-08-12.
+  //
+  // [1, 6] is the multiplication family. Unit 1 has no whole-number-product
+  // family — 5 is add/subtract, 6 is multiply, and both operate on decimals —
+  // and decimals are the right call here anyway: the lesson's own estimate
+  // lands on 78.5 people, not a whole number.
+  "1-1": [1, 6], // estimating the Ferris wheel, a product -> multiply
   "1-2": [1, 5], // decomposing 105.76 -> add and subtract decimals
   "1-3": [1, 4], // the tram: 4,000 passengers in rides of 80 -> division
   "1-4": [10, 1], // garden beds holding 48 cubic feet -> volume
