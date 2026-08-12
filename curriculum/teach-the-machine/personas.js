@@ -47,6 +47,7 @@ export const TAGS = [
   "geom-triangle-area-no-half",
   "geom-surface-area-as-volume",
   "geom-volume-added-dimensions",
+  "coord-xy-swapped",
   "measure-area-perimeter-swap",
   "op-added-instead-of-multiplied",
   "op-divided-instead-of-multiplied",
@@ -695,6 +696,113 @@ export const PERSONAS = {
       "3(4 + 5) son tres grupos de un par 4-y-5: 3 × 4 = 12 y 3 × 5 = 15, y 12 + 15 = 27. Por el otro camino, 4 + 5 = 9 y 3 × 9 = 27 — los dos caminos coinciden, y 17 pierde las tres copias del 5.",
     wordBank: ["distribute", "factor", "term", "equivalent", "area model", "expression"],
     wordBankEs: ["distribuir", "factor", "término", "equivalente", "modelo de área", "expresión"],
+  },
+
+  "coord-xy-swapped": {
+    tag: "coord-xy-swapped",
+    standards: ["6.NOS.6", "6.NOS.7"],
+    persona: {
+      name: "Pip",
+      blurb: "Plots points confidently, in whichever order they were written.",
+      blurbEs: "Marca puntos con confianza, en el orden en que estén escritos.",
+    },
+    wrongIdea:
+      "the two numbers in an ordered pair are interchangeable, so it does not matter which one you move along first",
+    wrongIdeaEs:
+      "los dos números de un par ordenado son intercambiables, así que no importa cuál muevas primero",
+    // Never names "across then up" — that is the giveaway the validator checks
+    // for. The opening states the confusion and stops.
+    openingLine:
+      "I plotted (2, 6) by going up 2 and across 6. It landed somewhere, so that must be the point, right?",
+    openingLineEs:
+      "Marqué (2, 6) subiendo 2 y avanzando 6. Cayó en algún lugar, así que ese debe ser el punto, ¿verdad?",
+    probes: [
+      "How would anyone even know which number I was supposed to use first?",
+      "If I plot (2, 6) and my friend plots (6, 2), are we not at the same place?",
+      "What is the point of having two axes if the numbers just mean the same thing?",
+    ],
+    probesEs: [
+      "¿Cómo sabría alguien cuál número debo usar primero?",
+      "Si yo marco (2, 6) y mi amigo marca (6, 2), ¿no estamos en el mismo lugar?",
+      "¿Para qué sirven dos ejes si los números significan lo mismo?",
+    ],
+    mustAddress: [
+      A(
+        "order-is-fixed",
+        "The order is a rule everyone agrees on, not a choice",
+        "El orden es una regla que todos acuerdan, no una elección",
+        [
+          ["order"],
+          ["first"],
+          ["always"],
+          ["rule"],
+          ["orden"],
+          ["primero"],
+          ["siempre"],
+          ["regla"],
+        ],
+      ),
+      A(
+        "x-is-horizontal",
+        "The first number moves you horizontally, along the x-axis",
+        "El primer número te mueve horizontalmente, sobre el eje x",
+        [
+          ["horizontal"],
+          ["x-axis"],
+          ["x axis"],
+          ["side"],
+          ["right"],
+          ["left"],
+          ["eje x"],
+          ["lado"],
+          ["derecha"],
+          ["izquierda"],
+        ],
+      ),
+      A(
+        "swap-is-different-point",
+        "Swapping them lands on a different point entirely",
+        "Intercambiarlos cae en un punto completamente distinto",
+        [
+          ["different"],
+          ["not the same"],
+          ["another point"],
+          ["distinto"],
+          ["diferente"],
+          ["no es el mismo"],
+        ],
+      ),
+    ],
+    giveawayPhrases: [
+      "across then up",
+      "over and up",
+      "right then up",
+      "run then rise",
+      "primero de lado",
+      "primero horizontal",
+    ],
+    worked:
+      "Plot (2, 6) and (6, 2) on the same grid and they land in different places: the first sits 2 along and 6 up, the second 6 along and 2 up. Both are real points, but only one of them is the point that was named. The order is what tells them apart, which is why the pair is called ordered.",
+    workedEs:
+      "Marca (2, 6) y (6, 2) en la misma cuadrícula y caen en lugares distintos: el primero queda a 2 de lado y 6 hacia arriba; el segundo, a 6 de lado y 2 hacia arriba. Los dos son puntos reales, pero solo uno es el punto que se nombró. El orden es lo que los distingue, y por eso el par se llama ordenado.",
+    wordBank: [
+      "ordered pair",
+      "x-coordinate",
+      "y-coordinate",
+      "horizontal",
+      "vertical",
+      "origin",
+      "axis",
+    ],
+    wordBankEs: [
+      "par ordenado",
+      "coordenada x",
+      "coordenada y",
+      "horizontal",
+      "vertical",
+      "origen",
+      "eje",
+    ],
   },
 
   "measure-area-perimeter-swap": {

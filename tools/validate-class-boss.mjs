@@ -72,6 +72,15 @@ const EXPECT = {
   "rate-notebooks": (v) => [v.total / v.n, v.total],
   "rate-printer": (v) => [v.p / v.m, v.p],
 
+  // coord-xy-swapped — distractor is the pair with its coordinates traded.
+  // Written out here rather than importing questions.js's point(), so this
+  // stays an INDEPENDENT statement of the answer: importing the helper under
+  // test would let one bad definition satisfy both sides.
+  "xy-plot": (v) => [`(${v.x}, ${v.y})`, `(${v.y}, ${v.x})`],
+  "xy-read": (v) => [`(${v.x}, ${v.y})`, `(${v.y}, ${v.x})`],
+  "xy-map": (v) => [`(${v.x}, ${v.y})`, `(${v.y}, ${v.x})`],
+  "xy-negative": (v) => [`(${v.x}, ${v.y})`, `(${v.y}, ${v.x})`],
+
   // ratio-inverted — distractor is the same ratio written back to front.
   "ratio-marbles": (v) => [R(v.first, v.second), R(v.second, v.first)],
   "ratio-pets": (v) => [R(v.first, v.second), R(v.second, v.first)],

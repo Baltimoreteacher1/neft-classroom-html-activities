@@ -175,6 +175,14 @@ export const INTERVENTIONS = {
     then: "Both ways give 14, because the 2 multiplies BOTH terms. Multiplying only the first would give 10. Check both pieces in yours.",
     verify: { expr: "2*(3+4)", equals: 14 },
   },
+  // Order, not arithmetic — same shape as ratio-inverted. The reversed pair is
+  // the misconception itself, so it must be refused rather than "close enough".
+  "coord-xy-swapped": {
+    probe: "Quick one: start at 0, move 3 across and 1 up. Write that point as an ordered pair.",
+    accept: ["(3,1)", "(3, 1)", "3,1", "3, 1"],
+    rejects: ["(1,3)", "(1, 3)", "1,3", "1, 3"],
+    then: "Across first, then up. Read your own point the same way — the first number never moves you vertically.",
+  },
   "measure-area-perimeter-swap": {
     probe: "Quick one: a 3 by 4 rectangle. What is the distance all the way around?",
     accept: ["14"],

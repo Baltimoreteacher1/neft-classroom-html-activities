@@ -249,12 +249,53 @@ const PROSE_PATTERNS = [
     /order of operations|multiply before adding|evaluate .* first, then add/i,
     "order-of-operations-left-to-right",
   ],
-  [/(?:touches|multiply) BOTH terms|only the first term/i, "algebra-distributive-partial"],
+  // 6-14 states this error two ways the original pattern could not read, and
+  // both are claims about what the student DID rather than coaching: "the 3 was
+  // copied down unchanged" and "Did you only multiply 6 by n?". The bare
+  // instruction "Distribute 6 to both terms inside the parentheses" is
+  // deliberately NOT here — it fits a correct student as well as a confused one,
+  // and would fire on every distributive item in the unit.
+  [
+    /(?:touches|multiply) BOTH terms|only the first term|copied down unchanged|did you only multiply|only multiplied the first/i,
+    "algebra-distributive-partial",
+  ],
 
   // --- statistics ----------------------------------------------------------
+  // "Did you forget to divide by the count of numbers?" names the omission that
+  // IS this error. Bare "Did you divide by the number of values (4)?" is left
+  // out on purpose — it is the method restated as a question, and it appears on
+  // items where the student's answer was wrong for other reasons.
+  //
+  // "Don't add all values and divide — find the middle two values" was tried
+  // here and REMOVED: that is a median item, and a student who averaged did not
+  // sum-instead-of-average, they averaged when the middle was asked. Tagging it
+  // would have told them "that is the total of the data, not its average" —
+  // false about what they actually did. Naming the wrong error is worse than
+  // naming none, and the taxonomy has no median entry to route it to.
   [
-    /added the data|sum(?:med)? (?:the )?(?:data|values) instead|that is the total, not the (?:mean|average)/i,
+    /added the data|sum(?:med)? (?:the )?(?:data|values) instead|that is the total, not the (?:mean|average)|forget to divide by the (?:count|number)/i,
     "stat-summed-instead-of-averaged",
+  ],
+
+  // --- coordinates ---------------------------------------------------------
+  // Every alternative here is a CLAIM that the two numbers were used in the
+  // wrong order, AND every one carries coordinate context.
+  //
+  // The context requirement is not decoration. A bare "traded places" was tried
+  // first and --sample caught it firing on two other units: 6-6's commutative
+  // property item ("no parentheses moved, but the two numbers traded places" —
+  // the student picked the wrong property) and 9-3's expression item ("the 5 and
+  // the 2 traded places … the 2 is the coefficient attached to x"). Both are
+  // real errors; neither is a coordinate swap, and tagging them would have told
+  // those students their x and y were backwards on a question with no plane in
+  // it.
+  //
+  // Deliberately excluded: "Quadrant I is where x is positive and y is positive"
+  // (quadrant identification, a different error with no taxonomy home yet) and
+  // bare "check the x-coordinate" (method coaching that fits a correct student).
+  [
+    /swapped the x and y|coordinates traded places|first number is the horizontal|x-coordinate tells you how far horizontal|first number controls horizontal|reflecting never swaps|reversed the coordinates|coordinates (?:are )?(?:reversed|backward)/i,
+    "coord-xy-swapped",
   ],
 
   // --- signs ---------------------------------------------------------------
@@ -283,15 +324,22 @@ const PROSE_PATTERNS = [
     /asks '?how many[^']*'?,? not multiplication|not the right operation\. division|uses the wrong operation\. division|"divided" means division, not multiplication/i,
     "op-multiplied-instead-of-divided",
   ],
+  // "That adds 60 + 4 instead of multiplying" is the same claim as "did you add
+  // … instead of multiplying", just in the declarative voice this curriculum
+  // uses more often. 6-5 states it as a contrast with the word "product", which
+  // is what that lesson is actually testing.
   [
-    /"times" means multiply, not add|did you add .* instead of multiplying|formula multiplies|means multiply, not add/i,
+    /"times" means multiply, not add|did you add .* instead of multiplying|that adds [^.]*instead of multiplying|adding [^.]*is not the same as [^.]*product|formula multiplies|means multiply, not add/i,
     "op-added-instead-of-multiplied",
   ],
   // "The two numbers got multiplied" appears on BOTH add- and subtract-based
   // equation items, and the taxonomy only has an add variant — so matching it
   // would mislabel every subtraction case. Explicit add language only.
   [/"plus" means add, not multiply|means add, not multiply/i, "op-multiplied-instead-of-added"],
-  [/divided when .* multipl|means multiply, not divide/i, "op-divided-instead-of-multiplied"],
+  [
+    /divided when .* multipl|means multiply, not divide|that divides [^.]*instead of multiplying/i,
+    "op-divided-instead-of-multiplied",
+  ],
 ];
 
 /**

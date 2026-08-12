@@ -67,6 +67,7 @@ const WORKERS_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
 // curriculum/teach-the-machine/personas.js TAGS.
 const ALLOWED_TAGS = [
   "algebra-distributive-partial",
+  "coord-xy-swapped",
   "decimal-place-value",
   "exponent-as-multiplication",
   "fraction-added-denominators",

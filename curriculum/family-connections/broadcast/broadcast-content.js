@@ -144,6 +144,18 @@ export const STANDARDS = Object.freeze({
     family: "using numbers above and under zero to describe real situations",
     familyEs: "usar números arriba y abajo de cero para describir situaciones reales",
   },
+  "6.NOS.6": {
+    label: "Points on the coordinate plane",
+    labelEs: "Puntos en el plano de coordenadas",
+    family: "naming a location with two numbers, in an order everyone agrees on",
+    familyEs: "nombrar un lugar con dos números, en un orden que todos acuerdan",
+  },
+  "6.NOS.7": {
+    label: "All four quadrants",
+    labelEs: "Los cuatro cuadrantes",
+    family: "plotting points that sit left of zero or under it, not just up and to the right",
+    familyEs: "marcar puntos que quedan a la izquierda del cero o debajo, no solo arriba y a la derecha",
+  },
   "6.NOS.6c": {
     label: "Opposites on the number line",
     labelEs: "Opuestos en la recta numérica",
@@ -333,6 +345,20 @@ export const ASSETS = Object.freeze({
       path: "/lessons/7-2/",
     },
   ],
+  "6.NOS.6": [
+    {
+      title: "7-5 Rational Numbers on the Coordinate Plane",
+      titleEs: "7-5 Números racionales en el plano de coordenadas",
+      path: "/lessons/7-5/",
+    },
+  ],
+  "6.NOS.7": [
+    {
+      title: "7-8 Ordered Pairs in All Four Quadrants",
+      titleEs: "7-8 Pares ordenados en los cuatro cuadrantes",
+      path: "/lessons/7-8/",
+    },
+  ],
   "6.NOS.6c": [
     {
       title: "9-4 Rational Numbers on the Number Line",
@@ -420,6 +446,12 @@ export const BRIDGES = Object.freeze({
     en: "Opposites are a statement about matching distance on either side of zero.",
     es: "Los opuestos son una afirmación sobre distancias iguales a cada lado del cero.",
   },
+  "6.NOS.7": {
+    from: "6.NOS.6",
+    en: "Naming a point in one quadrant is the same skill as naming it in any of the four.",
+    es: "Nombrar un punto en un cuadrante es la misma destreza que nombrarlo en cualquiera de los cuatro.",
+    es: "Los opuestos son una afirmación sobre distancias iguales a cada lado del cero.",
+  },
 });
 
 /* ---------------------------------------------------------------- tags -----
@@ -492,6 +524,13 @@ export const TAGS = Object.freeze({
     watchFor: "Draw the area model — the outside factor touches BOTH terms.",
     watchForEs: "Dibuje el modelo de área: el factor de afuera toca AMBOS términos.",
     standards: ["6.AT.7"],
+  },
+  "coord-xy-swapped": {
+    label: "Swapped the x and y coordinates",
+    labelEs: "Intercambió las coordenadas x e y",
+    watchFor: "Have them trace the horizontal move with a finger before the vertical one.",
+    watchForEs: "Pídale que trace con el dedo el movimiento horizontal antes del vertical.",
+    standards: ["6.NOS.6", "6.NOS.7"],
   },
   "measure-area-perimeter-swap": {
     label: "Swapped area and perimeter",
@@ -801,6 +840,27 @@ export const KITCHEN_TABLE = Object.freeze({
     ],
     why: "Three groups means three of EVERYTHING in the group — the parentheses travel together.",
     whyEs: "Tres grupos significa tres de TODO lo que hay en el grupo: el paréntesis viaja junto.",
+  },
+  "coord-xy-swapped": {
+    minutes: 5,
+    title: "Treasure on the kitchen floor",
+    titleEs: "Tesoro en el piso de la cocina",
+    materials: "Floor or wall tiles, or a sheet of graph paper, and a small object.",
+    materialsEs: "Baldosas del piso o de la pared, o una hoja cuadriculada, y un objeto pequeño.",
+    steps: [
+      "Pick a corner tile and call it the starting corner.",
+      "Hide the object on a tile, then give directions as two numbers only, like 'three, two'.",
+      "Agree out loud before you start: the first number always counts sideways, the second always counts away from you.",
+      "Swap roles. When someone lands on the wrong tile, ask which number they moved first.",
+    ],
+    stepsEs: [
+      "Elijan una baldosa de esquina y llámenla la esquina de inicio.",
+      "Esconda el objeto en una baldosa y dé las indicaciones con solo dos números, como 'tres, dos'.",
+      "Acuerden en voz alta antes de empezar: el primer número siempre cuenta de lado y el segundo siempre cuenta alejándose.",
+      "Cambien de papel. Cuando alguien caiga en la baldosa equivocada, pregunte cuál número movió primero.",
+    ],
+    why: "Two numbers only work as directions if both people agree which one goes first. That agreement is exactly what an ordered pair is.",
+    whyEs: "Dos números solo sirven como indicaciones si ambas personas acuerdan cuál va primero. Ese acuerdo es toda la idea del par ordenado.",
   },
   "measure-area-perimeter-swap": {
     minutes: 5,

@@ -249,6 +249,21 @@ export const MISCONCEPTIONS = {
     studentEs:
       "El número fuera del paréntesis debe multiplicar AMBOS términos de adentro, no solo el primero. Dibuja el modelo de área y revisa las dos partes.",
   },
+  // Authored-only, like geom-surface-area-as-volume, and for the same reason:
+  // there is no honest numeric predictor. (3, 5) and (5, 3) are both perfectly
+  // well-formed ordered pairs, and nothing about the VALUE reveals which one the
+  // student meant — only the item's own distractor knows. The coordinate unit
+  // (7-5, 7-8, 7-9) states this error in its feedback on ~60 distractors and,
+  // until this entry existed, could diagnose nothing at all.
+  "coord-xy-swapped": {
+    label: "Swapped the x and y coordinates",
+    labelEs: "Intercambió las coordenadas x e y",
+    watchFor: "Have them trace the horizontal move with a finger before the vertical one.",
+    student:
+      "The two numbers traded places. In an ordered pair the first number is the across move and the second is the up-or-down move. Trace across first, then up.",
+    studentEs:
+      "Los dos números cambiaron de lugar. En un par ordenado, el primer número es el movimiento horizontal y el segundo el vertical. Muévete primero de lado y luego hacia arriba o abajo.",
+  },
   "measure-area-perimeter-swap": {
     label: "Swapped area and perimeter",
     labelEs: "Confundió área y perímetro",

@@ -44,6 +44,7 @@
     "order-of-operations-left-to-right": "Worked left to right instead of by operation order",
     "sign-dropped": "Right magnitude, lost the negative sign",
     "stat-summed-instead-of-averaged": "Added the data set instead of averaging it",
+    "coord-xy-swapped": "Swapped the x and y coordinates",
     "measure-area-perimeter-swap": "Swapped area and perimeter",
     "geom-triangle-area-no-half": "Found base × height but forgot the half",
     "geom-surface-area-as-volume": "Found the volume instead of the surface area",
@@ -75,6 +76,8 @@
     "sign-dropped": "Place the answer on a number line — which side of zero?",
     "stat-summed-instead-of-averaged":
       "Ask whether the answer could be a real single value in that set.",
+    "coord-xy-swapped":
+      "Have them trace the horizontal move with a finger before the vertical one.",
     "measure-area-perimeter-swap": "Ask what the unit should be — units or square units?",
     "geom-triangle-area-no-half":
       "Draw the rectangle around the triangle — the triangle is half of it.",

@@ -25,6 +25,7 @@
 /** The closed tag vocabulary, sorted. Mirrors data/misconception-labels.json. */
 export const BOSS_TAGS = [
   "algebra-distributive-partial",
+  "coord-xy-swapped",
   "decimal-place-value",
   "exponent-as-multiplication",
   "fraction-added-denominators",
@@ -116,6 +117,11 @@ export function frac(n, d) {
 export function ratio(a, b) {
   const g = gcd(a, b);
   return `${a / g} : ${b / g}`;
+}
+
+/** An ordered pair, rendered the one way every coordinate question shows it. */
+export function point(x, y) {
+  return `(${x}, ${y})`;
 }
 
 /** Kill binary-float dust without turning 0.12 into "0.12000000000000001". */
@@ -738,6 +744,68 @@ export const QUESTION_BANK = {
   ],
 
   /* --- Swapped area and perimeter ---------------------------------------- */
+  /* --- Swapped the x and y coordinates ---------------------------------- */
+  // Every template keeps x !== y: on (4, 4) the swap IS the answer, so the
+  // question could not tell a confident student from a confused one.
+  "coord-xy-swapped": [
+    T("xy-plot", (r) => {
+      const x = r.int(1, 9);
+      let y = r.int(1, 9);
+      if (y === x) y = x === 9 ? x - 1 : x + 1;
+      return {
+        values: { x, y },
+        correct: point(x, y),
+        distractor: point(y, x),
+        prompt: {
+          en: `Start at the origin, move ${x} units RIGHT, then ${y} units UP. Which ordered pair is that point?`,
+          es: `Empieza en el origen, muévete ${x} unidades a la DERECHA y luego ${y} unidades hacia ARRIBA. ¿Cuál par ordenado es ese punto?`,
+        },
+      };
+    }),
+    T("xy-read", (r) => {
+      const x = r.int(2, 10);
+      let y = r.int(1, 9);
+      if (y === x) y = x - 1;
+      return {
+        values: { x, y },
+        correct: point(x, y),
+        distractor: point(y, x),
+        prompt: {
+          en: `A point sits ${x} units along the x-axis and ${y} units up the y-axis. Write it as an ordered pair.`,
+          es: `Un punto está a ${x} unidades sobre el eje x y a ${y} unidades hacia arriba en el eje y. Escríbelo como par ordenado.`,
+        },
+      };
+    }),
+    T("xy-map", (r) => {
+      const x = r.int(1, 8);
+      let y = r.int(2, 9);
+      if (y === x) y = x + 1;
+      return {
+        values: { x, y },
+        correct: point(x, y),
+        distractor: point(y, x),
+        prompt: {
+          en: `On a park map, the fountain is ${x} blocks east and ${y} blocks north of the entrance. What are its coordinates?`,
+          es: `En el mapa de un parque, la fuente está a ${x} cuadras al este y ${y} cuadras al norte de la entrada. ¿Cuáles son sus coordenadas?`,
+        },
+      };
+    }),
+    T("xy-negative", (r) => {
+      const x = -r.int(1, 8);
+      let y = r.int(1, 9);
+      if (Math.abs(y) === Math.abs(x)) y = Math.abs(x) + 1;
+      return {
+        values: { x, y },
+        correct: point(x, y),
+        distractor: point(y, x),
+        prompt: {
+          en: `Move ${Math.abs(x)} units LEFT of the origin, then ${y} units UP. Which ordered pair is that point?`,
+          es: `Muévete ${Math.abs(x)} unidades a la IZQUIERDA del origen y luego ${y} unidades hacia ARRIBA. ¿Cuál par ordenado es ese punto?`,
+        },
+      };
+    }),
+  ],
+
   "measure-area-perimeter-swap": [
     T("ap-area", (r) => {
       const l = r.int(4, 15);
@@ -1583,9 +1651,19 @@ function fractionDecoys(correct) {
   return [frac(n + 1, d), frac(n, d + 1), frac(n + 2, d), frac(n * 2, d + 1), frac(n + d, d)];
 }
 
+// Ordered pairs need their own near misses. Without this they fall through to
+// fractionDecoys, which reads "(3, 1)" as a number and offers nonsense.
+// Deliberately NOT the swapped pair — that is the tag's distractor, and a decoy
+// identical to the error would give a student two ways to be diagnosed wrong.
+function pointDecoys(correct) {
+  const [x, y] = correct.replace(/[()]/g, "").split(",").map(Number);
+  return [point(x + 1, y), point(x, y + 1), point(-x, y), point(x, -y), point(x + 2, y)];
+}
+
 function decoyPool(correct, distractor) {
   if (typeof correct === "number") return numericDecoys(correct, distractor);
   if (String(correct).includes(" : ")) return ratioDecoys(String(correct));
+  if (String(correct).startsWith("(")) return pointDecoys(String(correct));
   return fractionDecoys(String(correct));
 }
 

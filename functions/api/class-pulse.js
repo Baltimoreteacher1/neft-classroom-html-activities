@@ -67,6 +67,7 @@ const TAG_LABELS = {
     "Distributed to the first term only",
     "Distribuyó solo al primer término",
   ],
+  "coord-xy-swapped": ["Swapped the x and y coordinates", "Intercambió las coordenadas x e y"],
   "measure-area-perimeter-swap": ["Swapped area and perimeter", "Intercambió área y perímetro"],
   "op-added-instead-of-multiplied": [
     "Added when the problem multiplies",
@@ -125,6 +126,7 @@ const TAG_STANDARDS = {
   "geom-surface-area-as-volume": ["6.GR.4"],
   "geom-volume-added-dimensions": ["6.GR.2"],
   "algebra-distributive-partial": ["6.AT.7"],
+  "coord-xy-swapped": ["6.NOS.6", "6.NOS.7"],
   "measure-area-perimeter-swap": ["6.GR.1"],
   "op-added-instead-of-multiplied": ["6.AT.6a"],
   "op-divided-instead-of-multiplied": ["6.AT.3"],

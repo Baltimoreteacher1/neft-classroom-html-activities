@@ -74,8 +74,7 @@ const UI = {
     attackWord: "Attack",
     questionTag: (n, name, label) => `Attack ${n} — ${name}: ${label}`,
     hitTitle: "Direct hit!",
-    hitBody: (dmg) =>
-      `You knocked ${dmg} health off the boss. The whole class shares that hit.`,
+    hitBody: (dmg) => `You knocked ${dmg} health off the boss. The whole class shares that hit.`,
     landTitle: (name) => `The boss used ${name}.`,
     youPicked: (v) => `You picked ${v}.`,
     thatIs: (label) => `That answer matches one exact slip: "${label}".`,
@@ -127,8 +126,7 @@ const UI = {
     attackWord: "Ataque",
     questionTag: (n, name, label) => `Ataque ${n} — ${name}: ${label}`,
     hitTitle: "¡Golpe directo!",
-    hitBody: (dmg) =>
-      `Le quitaste ${dmg} de vida al jefe. Toda la clase comparte ese golpe.`,
+    hitBody: (dmg) => `Le quitaste ${dmg} de vida al jefe. Toda la clase comparte ese golpe.`,
     landTitle: (name) => `El jefe usó ${name}.`,
     youPicked: (v) => `Elegiste ${v}.`,
     thatIs: (label) => `Esa respuesta corresponde a un error muy concreto: "${label}".`,
@@ -151,6 +149,7 @@ const UI = {
 /* Spanish for the repo's English `watchFor` coaching lines. The English side is
  * read straight from data/misconception-labels.json so it never drifts. */
 const WATCH_ES = {
+  "coord-xy-swapped": "Pídeles que tracen el movimiento horizontal con el dedo antes del vertical.",
   "decimal-place-value":
     "Primero estima al número entero más cercano y luego cuenta en voz alta los lugares decimales.",
   "exponent-as-multiplication":
