@@ -27,6 +27,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { writeGenerated } from "../scripts/lib/preserve-injected.mjs";
 import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
+import { buildTeacherMoves } from "./lib/small-group-facilitation.mjs";
 import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
 
 const ROOT = process.env.REPO || resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -89,6 +90,20 @@ const LESSONS = join(ROOT, "lessons");
 const FACILITATION_MODULE = join(ROOT, "functions", "teacher-small-group", "_facilitation-data.js");
 const DRY = process.argv.includes("--dry");
 const CONFIGS_ONLY = process.argv.includes("--configs-only");
+/*
+ * --facilitation-only rebuilds ONLY the teacher-facing facilitation module and
+ * writes no lesson file at all.
+ *
+ * It exists because a full run is destructive in ways that have nothing to do
+ * with teacher moves: regenerating 3-1 alone deleted 142 lines from its two
+ * configs, including the `choicesEs` / `hintsEs` / `correctWorkEs` Spanish that
+ * lives in data/es-translations and is applied by a later step. Facilitation is
+ * derived data — it can be rebuilt from the base lessons at any time — so the
+ * maintainable answer is a pathway that regenerates it WITHOUT touching student
+ * content. This keeps the source of truth in the generator (edit the builder,
+ * re-run, done) while making a routine refresh safe.
+ */
+const FACILITATION_ONLY = process.argv.includes("--facilitation-only");
 const onlyIx = process.argv.indexOf("--only");
 const ONLY = onlyIx !== -1 ? process.argv[onlyIx + 1] : null;
 const MINIMUM_PRACTICE = 10;
@@ -321,15 +336,11 @@ function buildGroup1(base, u, m) {
         .slice(0, 3)
         .join("; ")}. Group students who made the SAME error; they need different repairs.`;
     })(),
-    moves: [
-      "Open with the worked example (I Do) — think aloud, don't just show.",
-      "Do the We Do together; require every student to say the sentence frame.",
-      "Release to the practice problems; the hint ladder is the safety net.",
-      p.commonMistake
-        ? `Watch for the common mistake: ${String(typeof p.commonMistake === "string" ? p.commonMistake : p.commonMistake.text || p.commonMistake.mistake || "see lesson note").replace(/\s*\.\s*$/, "")}.`
-        : "Watch for where this group's thinking breaks down and name it out loud.",
-      "Close with the exit-ticket check — celebrate the growth.",
-    ],
+    // ASK / LOOK FOR / IF STUCK, built from THIS lesson's misconception tags,
+    // common mistake and model. Replaces five prose bullets of which four were
+    // identical across all 84 support lessons.
+    teacherMoves: buildTeacherMoves({ base, group: 1, taxonomy: MISCONCEPTION_LABELS }),
+
     frames,
   };
   return { id, out };
@@ -423,13 +434,10 @@ function buildGroup2(base, u, m) {
     label: "Challenge",
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
-    moves: [
-      "Launch the challenge fast — skip the re-teach, they don't need it.",
-      "Step back. Let them wrestle; protect the productive struggle.",
-      'Ask "How do you know?" and "Can you show it a second way?" more than you explain.',
-      "Push for a generalization: when does this hold, and when would it break?",
-      "Close by having one student justify a claim to the group.",
-    ],
+    // ASK / LOOK FOR / IF STUCK / EXTEND — justification and generalisation,
+    // never the support move with bigger numbers. All 84 challenge lessons
+    // previously shared one identical move list.
+    teacherMoves: buildTeacherMoves({ base, group: 2, taxonomy: MISCONCEPTION_LABELS }),
   };
   return { id, out };
 }
@@ -471,7 +479,7 @@ function writeLesson(id, out) {
 // ---------------------------------------------------------------- Main
 const bases = readdirSync(LESSONS)
   .filter((d) => BASE_RE.test(d) && existsSync(join(LESSONS, d, "config.json")))
-  .filter((d) => !ONLY || d === ONLY)
+  .filter((d) => FACILITATION_ONLY || !ONLY || d === ONLY)
   .sort((a, b) => {
     const [au, am] = a.split("-").map(Number);
     const [bu, bm] = b.split("-").map(Number);
@@ -520,7 +528,7 @@ for (const baseId of bases) {
     const facilitation = extractFacilitation(out);
     const studentOut = toStudentConfig(out);
     facilitationByLesson[id] = facilitation;
-    if (!DRY) writeLesson(id, studentOut);
+    if (!DRY && !FACILITATION_ONLY) writeLesson(id, studentOut);
     const group = facilitation.group;
     rows.push({
       id,
@@ -545,13 +553,42 @@ for (const baseId of bases) {
 }
 
 if (!DRY) {
-  writeFileSync(
-    new URL("./small-group-rows.json", import.meta.url),
-    JSON.stringify(rows, null, 2) + "\n",
+  // `rows` describes only the lessons this run visited, so a scoped run must not
+  // republish it as if it were the whole fleet.
+  if (!ONLY && !FACILITATION_ONLY) {
+    writeFileSync(
+      new URL("./small-group-rows.json", import.meta.url),
+      JSON.stringify(rows, null, 2) + "\n",
+    );
+  }
+  /*
+   * MERGE, never replace. `facilitationByLesson` holds only the lessons this run
+   * built, and the previous code serialised it wholesale: `--only 3-1` rewrote
+   * the module with 2 entries and silently destroyed facilitation for the other
+   * 166 lessons, whose teacher route then had nothing to serve. A scoped run now
+   * updates its own keys and leaves every other lesson intact.
+   */
+  let merged = facilitationByLesson;
+  if (ONLY) {
+    let existing = {};
+    try {
+      const prior = readFileSync(FACILITATION_MODULE, "utf8");
+      const start = prior.indexOf("{");
+      const end = prior.lastIndexOf("}");
+      if (start !== -1 && end > start) existing = JSON.parse(prior.slice(start, end + 1));
+    } catch (_error) {
+      existing = {};
+    }
+    merged = { ...existing, ...facilitationByLesson };
+  }
+  const ordered = Object.fromEntries(
+    Object.keys(merged)
+      .sort()
+      .map((k) => [k, merged[k]]),
   );
   writeFileSync(
     FACILITATION_MODULE,
-    `// Generated by tools/generate-small-group-lessons.mjs. Teacher route only.\nexport const FACILITATION_BY_LESSON = ${JSON.stringify(facilitationByLesson, null, 2)};\n`,
+    `// Generated by tools/generate-small-group-lessons.mjs. Teacher route only.\nexport const FACILITATION_BY_LESSON = ${JSON.stringify(ordered, null, 2)};\n`,
   );
 }
 

@@ -307,9 +307,35 @@ const ICON_MAX = 64;
 const SVG_SKIP = "[data-iv-mounted], button, a, label, .iv-lab, .annotator, [data-no-zoom]";
 const SVG_MIN = 120;
 
+/**
+ * A figure the page has declared decorative is not content, and must never be
+ * made a keyboard stop.
+ *
+ * axe reports this as `aria-hidden-focus` on every small-group lesson: the
+ * themed hero banner ships as `<svg role="img" aria-hidden="true">`, this file
+ * measured it as a large picture and gave it `tabindex="0"`, and a screen-reader
+ * user then tabbed onto an element their reader is required to skip — a stop
+ * that announces nothing and has no way out but to keep tabbing.
+ *
+ * Zoom is dropped entirely rather than merely un-focused. Keeping the click and
+ * removing the tab stop would leave an affordance a mouse can reach and a
+ * keyboard cannot, which trades one accessibility defect for another.
+ *
+ * `aria-hidden` is inherited, so an ancestor hiding the subtree counts. The
+ * presentation roles are included because they make the same claim in different
+ * words, and `inert` because it removes the node from the tab order anyway.
+ */
+const DECORATIVE = '[aria-hidden="true"], [role="presentation"], [role="none"], [inert]';
+
+function isDecorative(node) {
+  if (!node || typeof node.closest !== "function") return false;
+  return !!node.closest(DECORATIVE);
+}
+
 function isContentFigure(svg) {
   if (!svg || svg.dataset?.zoomable === "1") return false;
   if (typeof svg.closest !== "function" || svg.closest(SVG_SKIP)) return false;
+  if (isDecorative(svg)) return false;
   if (svg.closest(ZOOM_SKIP)) return false;
   if (svg.querySelector("input, textarea, foreignObject")) return false;
   const box = typeof svg.getBoundingClientRect === "function" ? svg.getBoundingClientRect() : null;
@@ -325,6 +351,8 @@ function isContentFigure(svg) {
 /** Make one inline-SVG figure tap-to-enlarge. */
 export function attachFigureZoom(svg) {
   if (!svg || svg.dataset?.zoomable === "1") return;
+  // Exported, so a direct caller can reach here without isContentFigure().
+  if (isDecorative(svg)) return;
   svg.dataset.zoomable = "1";
   svg.classList.add("is-zoomable");
   svg.setAttribute("tabindex", "0");
@@ -350,6 +378,7 @@ export function attachFigureZoom(svg) {
 function isContentImage(img) {
   if (!img || img.dataset.zoomable === "1") return false;
   if (img.closest(ZOOM_SKIP)) return false;
+  if (isDecorative(img)) return false;
   const w = Number(img.getAttribute("width"));
   const h = Number(img.getAttribute("height"));
   if (Number.isFinite(w) && w > 0 && w < ICON_MAX) return false;

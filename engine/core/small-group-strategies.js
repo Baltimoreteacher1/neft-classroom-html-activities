@@ -393,7 +393,13 @@ export function appendTryAnotherWay(
   panel.setAttribute("aria-label", "Try another way for this problem");
   panel.append(
     el("div", "sg-another-kicker", "Same problem · new path"),
-    el("h3", null, "Choose a different strategy"),
+    // Not a heading. This panel repeats once per problem, so as an <h3> it put
+    // nine identically-titled entries into the document outline — a screen
+    // reader's heading list became "Choose a different strategy" nine times with
+    // nothing to tell them apart. The panel already carries an aria-label that
+    // names the problem it belongs to, which is the useful landmark; this line
+    // is a visible label, so it is styled as one.
+    el("p", "sg-another-title", "Choose a different strategy"),
     el(
       "p",
       "sg-another-lede",
