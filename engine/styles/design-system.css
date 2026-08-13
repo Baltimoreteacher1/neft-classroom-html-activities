@@ -5535,3 +5535,72 @@ body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-doc
     gap: var(--sp-3, 12px);
   }
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Minimum interactive target for the compact core-lesson controls.
+
+   Measured across 10 stratified lessons at 1366/1024/390: 16-18 of ~31 visible
+   controls fell under the 44px target this repo already enforces elsewhere
+   (tools/validate-curriculum-top1 checks it on progress controls). The offenders
+   are all deliberately small for good reasons — a 12px minimap dot is a phase
+   indicator, and `.obj-term` sits INLINE inside the objective sentence, so
+   inflating either box would wreck the thing it belongs to.
+
+   So the visual size is left exactly as authored and only the HIT AREA grows,
+   via a transparent pseudo-element centred on the control. This is the pattern
+   already proven on `.sg-vcard .sg-speak-inline`, and it survives inline styles:
+   `.minimap-dot` and `.pub-btn` set their width/height with style.cssText in
+   engine/core/app.js, which would beat any width rule here but cannot beat an
+   ::after.
+
+   Deliberately NOT applied to controls that are already >= 44px, and not used to
+   make anything look bigger — nothing about the rendered design changes.
+   ─────────────────────────────────────────────────────────────────────────── */
+.minimap-dot,
+.obj-term,
+.pub-btn,
+.nt-sb-toggle,
+.nt-utility-btn,
+#nsr-launcher,
+.ewl-supports-dock-reopen {
+  position: relative;
+}
+
+.minimap-dot::after,
+.obj-term::after,
+.pub-btn::after,
+.nt-sb-toggle::after,
+.nt-utility-btn::after,
+#nsr-launcher::after,
+.ewl-supports-dock-reopen::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 44px;
+  min-height: 44px;
+  width: 100%;
+  height: 100%;
+  /* The extender must not paint, and must not intercept anything the control
+     itself would not have received — it is a child of the button, so the click
+     still resolves to the button. */
+  background: transparent;
+  pointer-events: auto;
+}
+
+/* An inline vocabulary button inside a sentence must not have its 44px hit area
+   swallow the words on either side of it, so it grows vertically only. */
+.obj-term::after {
+  min-width: 0;
+}
+
+@media (pointer: fine) {
+  /* A mouse does not need the same slack as a finger, and overlapping targets
+     in a dense minimap column are worse than small ones. Keep the full 44px for
+     touch, relax it slightly for precise pointers. */
+  .minimap-dot::after {
+    min-width: 32px;
+    min-height: 32px;
+  }
+}
