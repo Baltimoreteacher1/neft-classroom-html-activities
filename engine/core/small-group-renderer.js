@@ -273,8 +273,34 @@ function conceptSection(config, onDone, voice, variant) {
 
 function teacherPanel(config, accent, talk) {
   const group = config.smallGroup;
-  if (!group || !(group.moves || group.who || talk?.listenFor)) return null;
+  if (!group || !(group.teacherMoves || group.moves || group.who || talk?.listenFor)) return null;
   const wrapper = el("aside", "sg-teacher");
+  /*
+   * ASK / LOOK FOR / IF STUCK / EXTEND, rendered as a labelled block rather
+   * than a bullet list. Small-group teaching is fast: a teacher glancing at the
+   * screen with 4-6 students waiting needs to find the next move by its LABEL,
+   * not read a paragraph. The labels are the scan targets, so they carry the
+   * weight and the prose stays one line each.
+   *
+   * `moves` (the old prose list) is gone from the data — 756 of its 840 lines
+   * repeated across 50+ lessons — but is still read here so a stale cached
+   * facilitation payload degrades to the old rendering instead of a blank panel.
+   */
+  const tm = group.teacherMoves || null;
+  const MOVE_LABELS = [
+    ["ask", "Ask"],
+    ["lookFor", "Look for"],
+    ["ifStuck", "If stuck"],
+    ["extend", "Extend"],
+  ];
+  const teacherMovesHtml = tm
+    ? `<dl class="sg-moves">${MOVE_LABELS.filter(([k]) => tm[k])
+        .map(
+          ([k, label]) =>
+            `<div class="sg-move sg-move--${k}"><dt>${esc(label)}</dt><dd>${esc(tm[k])}</dd></div>`,
+        )
+        .join("")}</dl>`
+    : "";
   const moves = (group.moves || []).map((move) => `<li>${esc(move)}</li>`).join("");
   const frames = (group.frames || [])
     .map((frame) => `<span class="sg-frame">${esc(frame)}</span>`)
@@ -312,6 +338,7 @@ function teacherPanel(config, accent, talk) {
     <div class="sg-tbody">
       ${group.who ? `<p><b>Pull:</b> ${esc(group.who)}</p>` : ""}
       <p><b>15–20 minute rhythm:</b> 2 min launch · 4 min build · 3 min talk · 7 min practice · 2 min check.</p>
+      ${teacherMovesHtml}
       ${moves ? `<p><b>High-leverage moves:</b></p><ul>${moves}</ul>` : ""}
       ${frames ? `<p><b>Reusable frames:</b></p><div class="sg-frames">${frames}</div>` : ""}
       ${talk?.listenFor ? `<p><b>Listen for during team talk:</b> ${esc(talk.listenFor)}</p>` : ""}
@@ -357,24 +384,24 @@ function hero(config, accent, voice) {
   const copy = el("div", "sg-hero-copy");
   copy.classList.add("sg-scene-enter");
   const badge = config.launch?.badge || `Small Group · ${accent.name}`;
-  copy.appendChild(el("div", null, `<span class="sg-kicker">${accent.emoji} ${esc(badge)}</span>`));
+  copy.appendChild(el("div", null, `<span class="sg-kicker">${esc(badge)}</span>`));
   copy.appendChild(el("h1", null, esc(studentTitle(config, badge))));
   if (config.contentObjective) {
     // One crisp kid-facing line up top; full content + language objectives fold
     // into a collapsible detail so the hero stays readable for Level 1 students.
-    copy.appendChild(el("p", "sg-obj", `🎯 Today: ${esc(coreObjective(config.contentObjective))}`));
+    copy.appendChild(el("p", "sg-obj", `Today: ${esc(coreObjective(config.contentObjective))}`));
     const more = el("details", "sg-obj-more");
     more.appendChild(el("summary", null, "Full objectives"));
-    more.appendChild(el("p", "sg-obj-full", `🎯 ${esc(studentVoice(config.contentObjective))}`));
+    more.appendChild(el("p", "sg-obj-full", esc(studentVoice(config.contentObjective))));
     if (config.languageObjective)
-      more.appendChild(el("p", "sg-langobj", `🗣️ ${esc(studentVoice(config.languageObjective))}`));
+      more.appendChild(el("p", "sg-langobj", esc(studentVoice(config.languageObjective))));
     copy.appendChild(more);
   }
   // Leveled coaching register — the one line that tells each group how this
   // studio will feel (supportive build / mathematician's press / fresh start).
   copy.appendChild(el("p", "sg-tagline", bi(voice.tagline, voice.taglineEs)));
   const chips = el("div", "sg-chips");
-  chips.appendChild(el("span", "sg-chip", `⏱ ${esc(config.timeEstimate || "15–20 min")}`));
+  chips.appendChild(el("span", "sg-chip", esc(config.timeEstimate || "15–20 min")));
   if (config.standard) chips.appendChild(el("span", "sg-chip", esc(config.standard)));
   chips.appendChild(el("span", "sg-chip", "Private · saved on this device"));
   copy.appendChild(chips);
@@ -1095,7 +1122,7 @@ function renderStudio(config) {
         el(
           "p",
           "sg-standard-line",
-          `📐 <b>${esc(entry.code)}${entry.shortLabel ? ` · ${esc(entry.shortLabel)}` : ""}:</b> ${esc(entry.fullText)}`,
+          `<b>${esc(entry.code)}${entry.shortLabel ? ` · ${esc(entry.shortLabel)}` : ""}:</b> ${esc(entry.fullText)}`,
         ),
       );
       const chip = [...heroNode.querySelectorAll(".sg-chip")].find(

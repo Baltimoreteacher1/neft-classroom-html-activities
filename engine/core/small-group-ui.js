@@ -520,6 +520,18 @@ export function injectSmallGroupStyles(accent) {
     .sg-teacher{margin:0 0 22px}
     .sg-teacher details{border:1px solid var(--sg-line);border-left:4px solid var(--sg-warn-line);border-radius:var(--sg-radius);background:var(--sg-card);box-shadow:var(--sg-shadow-sm)}
     .sg-teacher summary{cursor:pointer;padding:14px 17px;font-family:var(--sg-display);font-weight:700;color:var(--sg-ink)}
+    /* ── ASK / LOOK FOR / IF STUCK / EXTEND ──
+       The label is what a teacher scans for mid-group, so it is the loud part
+       and the move stays one readable line beside it. Grid rather than cards:
+       four bordered boxes here would add to exactly the containerisation the
+       rest of this panel is trying to avoid. */
+    .sg-moves{margin:10px 0 14px;padding:12px 14px;border-left:3px solid var(--sg);background:var(--sg-soft);border-radius:0 8px 8px 0}
+    .sg-move{display:grid;grid-template-columns:88px 1fr;gap:4px 12px;align-items:baseline}
+    .sg-move+.sg-move{margin-top:9px;padding-top:9px;border-top:1px solid color-mix(in srgb,var(--sg-line) 60%,transparent)}
+    .sg-move dt{margin:0;font-family:var(--sg-display);font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--sg)}
+    .sg-move dd{margin:0;font-size:14px;line-height:1.45;color:var(--sg-ink)}
+    .sg-move--extend dt{color:var(--sg-pop,#2f8f7d)}
+    @media (max-width:640px){.sg-move{grid-template-columns:1fr;gap:2px}}
     .sg-tbody{padding:0 18px 18px}.sg-tbody li{margin:5px 0}.sg-frames,.sg-wordbank{display:flex;flex-wrap:wrap;gap:8px}
     .sg-frame,.sg-word{padding:7px 12px;border:1px dashed color-mix(in srgb,var(--sg) 28%,transparent);border-radius:10px;background:var(--sg-soft);color:var(--sg-ink);font-weight:700}
     /* Full-bleed, not a slab. The old "margin:0 -24px" only cancelled #app's
@@ -754,6 +766,18 @@ export function injectSmallGroupStyles(accent) {
     .sg-mission-visual.has-figure .sg-figure{max-width:640px;margin:0 auto}
     .sg-mission-visual.has-figure .sg-figure svg{width:100%;height:auto}
     .sg-speak-inline{margin-left:7px;border:1px solid var(--sg-line);border-radius:50%;width:44px;height:44px;background:var(--sg-card);cursor:pointer;font-size:15px}
+    /* ── Minimum touch target for the compact controls ──
+       These read at 30-37px so they stay visually light beside body text, which
+       is the right LOOK and the wrong TARGET: 44px is the size this repo already
+       enforces elsewhere (tools/validate-curriculum-top1 checks it on progress
+       controls). Rather than inflate the boxes and break the inline rhythm, the
+       hit area is extended with a transparent pseudo-element — the same pattern
+       .sg-vcard .sg-speak-inline already uses successfully. Visual size
+       unchanged; finger and pointer target 44px. */
+    .sg-room-btn, .nt-toolchip, .sg-vocab-inline{position:relative}
+    .sg-room-btn::after, .nt-toolchip::after, .sg-vocab-inline::after{
+      content:"";position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
+      height:44px;min-height:100%;pointer-events:auto}
     /* ── Vocabulary languages + cloze ── */
     .sg-langbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px}
     .sg-langbtn{min-height:44px;padding:8px 14px;border:2px solid var(--sg-line);border-radius:999px;background:var(--sg-card);font-weight:800;cursor:pointer}
@@ -830,6 +854,8 @@ export function injectSmallGroupStyles(accent) {
     .sg-another-toggle{min-height:44px;padding:8px 13px}
     .sg-another-panel{margin-top:11px;padding:16px;border:2px solid var(--sg);border-radius:16px;background:linear-gradient(135deg,var(--sg-card),var(--sg-soft))}
     .sg-another-kicker{margin-bottom:3px;color:var(--sg);font-family:var(--sg-display);font-size:12px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}
+    /* Was an <h3>; see small-group-strategies.js. Keeps the h3 look, out of the outline. */
+    .sg-another-title{margin:0 0 6px;font-family:var(--sg-display);font-size:18px;font-weight:800;color:var(--sg-ink)}
     .sg-another-panel h3{font-size:20px}.sg-another-lede{margin:7px 0 12px;color:var(--sg-muted)}
     .sg-another-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px}
     .sg-another-choice{display:flex;min-height:48px;align-items:center;gap:8px;padding:9px 12px;border:2px solid var(--sg-line);border-radius:12px;color:var(--sg-text);background:var(--sg-card);font-weight:800;text-align:left;cursor:pointer}

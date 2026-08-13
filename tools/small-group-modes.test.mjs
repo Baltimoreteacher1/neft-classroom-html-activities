@@ -162,8 +162,33 @@ const teacherResponse = await teacherRouteHandler({
 });
 const teacherPayload = await teacherResponse.json();
 assert.equal(teacherPayload.facilitation.label, "Extra Support");
-assert.ok(teacherPayload.facilitation.moves.length >= 3);
 assert.ok(teacherPayload.facilitation.listenFor.length >= 1);
+
+/*
+ * Teacher moves are ASK / LOOK FOR / IF STUCK, not the old prose `moves` list.
+ * That list was replaced because 756 of its 840 lines across the fleet repeated
+ * in 50+ lessons; asserting only that three bullets existed is what let that
+ * happen unnoticed, so this pins the STRUCTURE and the specificity instead.
+ */
+const tm = teacherPayload.facilitation.teacherMoves;
+assert.ok(tm, "support facilitation must carry teacherMoves");
+for (const key of ["ask", "lookFor", "ifStuck"]) {
+  assert.equal(typeof tm[key], "string", `teacherMoves.${key} must be a string`);
+  assert.ok(tm[key].trim().length > 12, `teacherMoves.${key} must say something`);
+}
+assert.ok(!tm.extend, "a support group gets no EXTEND — the re-teach has to finish");
+
+const challengeResponse = await teacherRouteHandler({
+  request: new Request("https://example.test/teacher-small-group/1-1-group2/data"),
+  params: { path: ["1-1-group2", "data"] },
+});
+const challengePayload = await challengeResponse.json();
+const ctm = challengePayload.facilitation.teacherMoves;
+assert.ok(ctm, "challenge facilitation must carry teacherMoves");
+assert.ok(ctm.extend && ctm.extend.trim().length > 12, "challenge must carry an EXTEND move");
+// The two pathways must not be the same guidance with different numbers.
+assert.notEqual(ctm.ask, tm.ask, "challenge ASK must differ from support ASK");
+assert.notEqual(ctm.ifStuck, tm.ifStuck, "challenge IF STUCK must differ from support");
 
 const dom = new JSDOM(
   '<!doctype html><html><head></head><body><div id="app"></div></body></html>',
