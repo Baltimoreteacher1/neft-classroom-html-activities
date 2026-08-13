@@ -240,7 +240,9 @@ function numberLineFigure({ min, max, step = 0.25, marks = [], y = 46 }) {
     // A plotted point with no label still does work: it shows that an integer
     // occupies a point on the SAME line as the fractions, which is the whole
     // claim. The tick already prints its value, so labelling it twice is noise.
-    out.push(`<circle cx="${round(xOf(m.value))}" cy="${y}" r="${m.small ? 3.5 : 5}" fill="${CORAL}"/>`);
+    out.push(
+      `<circle cx="${round(xOf(m.value))}" cy="${y}" r="${m.small ? 3.5 : 5}" fill="${CORAL}"/>`,
+    );
     if (m.label) {
       // All mark labels sit ABOVE the line. Below-the-line placement was tried
       // and measured: the band under the line is already occupied by the tick
