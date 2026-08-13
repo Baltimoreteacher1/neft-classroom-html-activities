@@ -33,7 +33,13 @@ const order = manifest.lessons.map((l) => l.lessonId || l.id);
 const position = new Map(order.map((id, i) => [id, i]));
 
 /** Unresolved by the 2026-08-13 audit; see reports/warmup-sequencing-audit.md. */
-const KNOWN_STALE = new Set(["2-2", "2-5", "2-9", "3-7", "3-10", "5-10", "7-5"]);
+// Empty, and it should stay that way. All 24 stale references were resolved by
+// direct inspection: the last 7 were re-read against their questions, which
+// showed 5 to be genuine spirals (their named skill IS taught earlier) and 2 to
+// be sequencing defects — 2-2 assessed box plots taught at 2-4, and 3-10
+// assessed percent, which is unit 4. Adding an entry here requires the same
+// standard of proof that emptying it did.
+const KNOWN_STALE = new Set([]);
 
 const failures = [];
 for (const id of order) {
