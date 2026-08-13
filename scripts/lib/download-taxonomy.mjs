@@ -216,7 +216,10 @@ export function safeName(value, fallback = "resource") {
     .replace(/[\u2010-\u2015]/g, "-")
     // Emoji and pictographs are legal in filenames but render as boxes in
     // Windows Explorer and break some district file pickers.
-    .replace(/[\u{1F000}-\u{1FAFF}\u{2190}-\u{27BF}\u{FE00}-\u{FE0F}\u{2B00}-\u{2BFF}]/gu, " ")
+    .replace(
+      /[\u{1F000}-\u{1FAFF}\u{2190}-\u{27BF}\u{FE00}-\u{FE0F}\u{2B00}-\u{2BFF}\u{200D}]/gu,
+      " ",
+    )
     .replace(/[\u00b7\u2022]/g, " ")
     .replace(/&/g, " and ")
     // Reserved on Windows (< > : " / \\ | ? *), control chars, and whitespace.
@@ -226,6 +229,9 @@ export function safeName(value, fallback = "resource") {
     .replace(/\s/g, "-")
     .replace(/-{2,}/g, "-")
     .replace(/^[-.]+/, "")
+    // A stripped emoji leaves an orphan separator behind ("Unit-5_-Post-Test").
+    .replace(/_-+/g, "_")
+    .replace(/-+_/g, "_")
     .slice(0, 80)
     // A trailing dot or space makes a name unopenable on Windows.
     .replace(/[-.\s]+$/, "");

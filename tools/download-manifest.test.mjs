@@ -97,6 +97,17 @@ test("the browser's safeName matches the generator's", () => {
   }
 });
 
+test("the shipped downloader assets are plain text", () => {
+  // A literal control-character range inside safeName's regex put a raw NUL
+  // byte in the bundle. It ran fine, which is the problem: ripgrep saw a binary
+  // file, and any tool that normalises encodings could have silently mangled it.
+  for (const file of ["assets/curriculum-download.js", "assets/lib/zip-store.js"]) {
+    const source = readFileSync(resolve(ROOT, file), "utf8");
+    const at = source.search(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/);
+    assert.equal(at, -1, `${file} carries a raw control character at offset ${at}; escape it`);
+  }
+});
+
 /* ------------------------------------------------------------- taxonomy */
 
 test("every preset names only known resource types", () => {

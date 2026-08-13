@@ -367,6 +367,21 @@ interface Window {
    * simply will not have it.
    */
   openVocabModal?: (termOrKey: string) => void;
+  /**
+   * `assets/curriculum-download.js` publishes this so the Curriculum Hub's
+   * inline bootstrap can open the bulk downloader after lazily importing the
+   * module. Optional because the hub only loads it on demand.
+   */
+  NTCurriculumDownload?: {
+    open: (options?: {
+      unit?: string | number;
+      lesson?: string;
+      view?: string;
+      preset?: string;
+    }) => Promise<void>;
+  };
+  /** Memoized /data manifest reader (assets/curriculum-json-cache.js). */
+  NTJsonCache?: { json: (url: string) => Promise<any>; text: (url: string) => Promise<string> };
 }
 
 /**
@@ -374,3 +389,4 @@ interface Window {
  * time; there is no type to import, so declare the shape as a module.
  */
 declare module "*.css";
+

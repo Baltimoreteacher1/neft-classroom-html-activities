@@ -1,6 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /**
  * Bulk resource downloader for the Curriculum Hub.
  *
@@ -113,6 +110,8 @@ function decorate(data) {
       lesson?.id,
       lesson?.title,
       lesson?.standard,
+      // The pre-2025 CCSS code, so "6.RP.A.3" finds what is now "6.AT.3".
+      lesson?.legacyStandard,
       lesson?.objective,
       `unit ${unit.unit}`,
       unit.name,
@@ -680,7 +679,7 @@ function safeName(value, fallback = "resource") {
     .replace(/[\u{1F000}-\u{1FAFF}\u{2190}-\u{27BF}\u{FE00}-\u{FE0F}\u{2B00}-\u{2BFF}]/gu, " ")
     .replace(/[·•]/g, " ")
     .replace(/&/g, " and ")
-    .replace(/[<>:"/\\|?* -\s]+/g, " ")
+    .replace(/[<>:"/\\|?*\u0000-\u001f\s]+/g, " ")
     .replace(/\s+/g, " ")
     .trim()
     .replace(/\s/g, "-")
@@ -780,31 +779,49 @@ function linksByFolder(list, rootName) {
 /* ------------------------------------------------------------ HTML output */
 
 const PAGE_CSS = `
-  :root { color-scheme: light dark; }
-  body { margin:0; padding:2rem 1.25rem 3rem; font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;
-         background:#eaf0f7; color:#14223a; }
-  main { max-width:56rem; margin:0 auto; background:#fff; border-radius:14px;
+  :root { color-scheme: light dark;
+          --navy:#15487f; --teal:#205fa6; --green:#256b5b; --cream:#eaf0f7;
+          --ink:#14223a; --muted:#56627a; --line:#d6e0ec; --card:#fff; --surface:#f3f7fc; }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:0 1rem 3rem; font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;
+         background:var(--cream); color:var(--ink); }
+  .brand { background:var(--navy); color:#fff; margin:0 -1rem 1.5rem; padding:1rem 1.25rem; }
+  .brand-inner { max-width:56rem; margin:0 auto; display:flex; align-items:baseline;
+                 flex-wrap:wrap; gap:.5rem 1rem; }
+  .brand-name { font-weight:800; letter-spacing:.01em; }
+  .brand-sub { color:#c8dcf5; font-size:.9rem; }
+  main { max-width:56rem; margin:0 auto; background:var(--card); border-radius:14px;
          box-shadow:0 2px 16px rgba(21,72,127,.12); padding:1.75rem 1.5rem 2rem; }
-  h1 { margin:0 0 .25rem; font-size:1.5rem; color:#15487f; }
-  h2 { margin:2rem 0 .5rem; font-size:1.15rem; color:#15487f;
-       border-bottom:2px solid #d6e0ec; padding-bottom:.3rem; }
-  p.lede { margin:.25rem 0 1.25rem; color:#56627a; }
+  h1 { margin:0 0 .25rem; font-size:1.5rem; color:var(--navy); }
+  h2 { margin:2rem 0 .5rem; font-size:1.15rem; color:var(--navy);
+       border-bottom:2px solid var(--line); padding-bottom:.3rem; }
+  p.lede { margin:.25rem 0 1.25rem; color:var(--muted); }
   ul { list-style:none; margin:0; padding:0; }
-  li { padding:.6rem .75rem; border:1px solid #d6e0ec; border-radius:10px; margin-bottom:.5rem; }
-  a { color:#205fa6; font-weight:600; }
-  a:focus-visible, summary:focus-visible { outline:3px solid #256b5b; outline-offset:2px; }
-  .meta { display:block; color:#56627a; font-size:.9rem; font-weight:400; }
+  li { padding:.6rem .75rem; border:1px solid var(--line); border-radius:10px; margin-bottom:.5rem; }
+  li.plain { border:none; padding:.15rem 0; margin:0; }
+  a { color:var(--teal); font-weight:600; }
+  a:focus-visible, summary:focus-visible { outline:3px solid var(--green); outline-offset:2px; }
+  .meta { display:block; color:var(--muted); font-size:.9rem; font-weight:400; }
   .tag { display:inline-block; font-size:.75rem; font-weight:700; letter-spacing:.02em;
          text-transform:uppercase; padding:.1rem .45rem; border-radius:999px;
-         background:#e7eff9; color:#15487f; margin-right:.4rem; }
+         background:#e7eff9; color:var(--navy); margin-right:.4rem; }
+  .counts { display:grid; gap:.15rem 1.25rem; grid-template-columns:repeat(auto-fit,minmax(15rem,1fr)); }
+  .counts li strong { display:inline-block; min-width:2rem; color:var(--navy); }
+  .note { background:var(--surface); border:1px solid var(--line); border-radius:10px;
+          padding:.85rem 1rem; color:var(--muted); font-size:.94rem; }
   .warn { background:#fff6e8; border-color:#e6c489; }
-  footer { margin-top:2rem; color:#56627a; font-size:.9rem; }
+  details.files > summary { cursor:pointer; font-weight:600; color:var(--teal); padding:.35rem 0; }
+  .folder { margin:.75rem 0 .2rem; font-weight:700; color:var(--navy); font-size:.95rem; }
+  code { background:var(--surface); border-radius:4px; padding:.1rem .35rem; font-size:.9em; }
+  footer { max-width:56rem; margin:1.5rem auto 0; color:var(--muted); font-size:.9rem; }
   @media (prefers-color-scheme: dark) {
-    body { background:#101827; color:#e8eef7; }
-    main { background:#182333; box-shadow:none; }
-    h1,h2 { color:#9dc4f0; } h2 { border-color:#2c3d55; }
-    li { border-color:#2c3d55; } a { color:#8fc0f5; }
-    .tag { background:#22344b; color:#bfd8f5; } .warn { background:#3a2f1c; border-color:#7a6234; }
+    :root { --cream:#101827; --ink:#e8eef7; --muted:#9fb0c7; --line:#2c3d55;
+            --card:#182333; --surface:#1e2b3d; --navy:#9dc4f0; --teal:#8fc0f5; --green:#57c9a6; }
+    body { background:#101827; }
+    .brand { background:#0b1220; }
+    main { box-shadow:none; }
+    .tag { background:#22344b; color:#bfd8f5; }
+    .warn { background:#3a2f1c; border-color:#7a6234; }
   }
 `;
 
@@ -819,10 +836,16 @@ function page(title, bodyHtml) {
 <style>${PAGE_CSS}</style>
 </head>
 <body>
+<header class="brand">
+  <div class="brand-inner">
+    <span class="brand-name">EduWonderLab · Neft Teacher</span>
+    <span class="brand-sub">Grade 6 Math curriculum download</span>
+  </div>
+</header>
 <main>
 ${bodyHtml}
-<footer>EduWonderLab · Neft Teacher — Grade 6 Math. Links open the live site and need internet access.</footer>
 </main>
+<footer>Links open eduwonderlab.com and need an internet connection.</footer>
 </body>
 </html>
 `;
@@ -833,8 +856,8 @@ function linkItem(res) {
   const why = res.external
     ? "Lives in Google Drive — open it there to view, copy or download."
     : res.teacherOnly
-      ? "Teacher-only page. Sign in with the class password to open it."
-      : "A live, interactive page — it needs the website to run, so it cannot be packaged as a file.";
+      ? "Teacher page. Sign in with the class password to open it."
+      : "An interactive page that runs on the website, so there is no file to save.";
   return `<li>
     <span class="tag">${esc(res.typeLabel)}</span>
     <a href="${esc(href)}">${esc(res.label)}</a>
@@ -849,18 +872,49 @@ function linksPage(entries, folder) {
   return page(
     `Links — ${where}`,
     `<h1>Live &amp; Google resources</h1>
-     <p class="lede">These ${entries.length} resource${
+     <p class="lede">${entries.length} resource${
        entries.length === 1 ? "" : "s"
-} could not be saved as files. Each link below opens the real thing.</p>
+} in this folder open on the website or in Google Drive rather than as a saved file.
+     Each link below goes to the real thing.</p>
      <ul>${entries.map(linkItem).join("")}</ul>`,
   );
 }
 
+/** The packaged files, grouped by the folder they landed in. */
+function fileListMarkup(files) {
+  if (!files.length) return "";
+  const byFolder = new Map();
+  for (const res of files) {
+    const parts = res.zipPath.split("/");
+    const name = parts.pop();
+    const folder = parts.join("/") || ".";
+    if (!byFolder.has(folder)) byFolder.set(folder, []);
+    byFolder.get(folder).push({ name, res });
+  }
+  const blocks = [...byFolder.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(
+      ([folder, items]) =>
+        `<p class="folder">${esc(folder === "." ? "(top level)" : folder)}/</p>
+         <ul>${items
+           .map(
+             (item) =>
+               `<li class="plain"><code>${esc(item.name)}</code> — ${esc(item.res.label)}</li>`,
+           )
+           .join("")}</ul>`,
+    )
+    .join("");
+  return `<details class="files">
+    <summary>Show all ${files.length} file${files.length === 1 ? "" : "s"} and where they are</summary>
+    ${blocks}
+  </details>`;
+}
+
 function startHerePage({ list, failures, unit, preset }) {
-  const files = list.filter((r) => r.delivery === "file");
-  const scorm = list.filter((r) => r.delivery === "scorm");
+  const failed = new Set(failures.map((f) => f.res.id));
+  const packaged = list.filter((r) => r.delivery !== "link" && !failed.has(r.id));
+  const scorm = packaged.filter((r) => r.delivery === "scorm");
   const links = list.filter((r) => r.delivery === "link");
-  const included = files.length + scorm.length - failures.length;
 
   const heading = unit ? `${unit.icon} Unit ${unit.unit} — ${unit.name}` : "Selected resources";
   const counts = new Map();
@@ -869,32 +923,46 @@ function startHerePage({ list, failures, unit, preset }) {
   return page(
     `Start here — ${heading}`,
     `<h1>${esc(heading)}</h1>
-     <p class="lede">${
-       preset ? `${esc(preset.label)} · ` : ""
-}${list.length} resource${list.length === 1 ? "" : "s"} requested · ${included} packaged as file${
-       included === 1 ? "" : "s"
-} · ${links.length} listed as link${links.length === 1 ? "" : "s"}.</p>
+     <p class="lede">${preset ? `${esc(preset.label)} · ` : ""}${list.length} resource${
+       list.length === 1 ? "" : "s"
+} requested — ${packaged.length} saved into this folder, ${links.length} listed as link${
+       links.length === 1 ? "" : "s"
+}${failures.length ? `, ${failures.length} could not be included` : ""}.</p>
 
-     <h2>What is in this folder</h2>
-     <ul>${[...counts.entries()]
+     <h2>What's in this download</h2>
+     <ul class="counts">${[...counts.entries()]
        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-       .map(([label, n]) => `<li><strong>${n}</strong> ${esc(label)}</li>`)
+       .map(([label, n]) => `<li class="plain"><strong>${n}</strong> ${esc(label)}</li>`)
        .join("")}</ul>
+
+     <h2>Files saved in this folder (${packaged.length})</h2>
+     ${
+       packaged.length
+         ? `<p>These are real files on your computer. PDFs and Word documents open and print
+            with no internet connection.</p>
+            ${fileListMarkup(packaged)}
+            <p class="note">A few of these are saved web pages (<code>.html</code>). They open
+            and print like any page, and because they were built for the website, their pictures
+            and interactive parts load from eduwonderlab.com when you are online.</p>`
+         : `<p class="note">Nothing in this selection could be saved as a file — every item is a
+            live page or a Google resource. They are all listed below.</p>`
+}
 
      ${
        scorm.length
-         ? `<h2>Canvas / SCORM</h2>
+         ? `<h2>Canvas / SCORM (${scorm.length})</h2>
             <p>The <code>SCORM/</code> folders hold one ready-to-upload SCORM 1.2 package per
-            activity. Canvas imports SCORM one package per assignment, so upload them
-            individually — do not unzip them first.</p>`
+            activity. Canvas imports SCORM one package per assignment, so upload each
+            <code>.zip</code> as it is — do not unzip them first.</p>`
          : ""
 }
 
      ${
        links.length
          ? `<h2>Live &amp; Google resources (${links.length})</h2>
-            <p>These run on the website or in Google Drive, so there is no file to save.
-            Open them from here — or from the <code>LINKS.html</code> inside each lesson folder.</p>
+            <p>These run on the website or in Google Drive, so there is no file to save. Open them
+            from here, or from the <code>LINKS.html</code> inside each lesson folder. They need an
+            internet connection.</p>
             <ul>${links.map(linkItem).join("")}</ul>`
          : ""
 }
@@ -902,25 +970,20 @@ function startHerePage({ list, failures, unit, preset }) {
      ${
        failures.length
          ? `<h2>Could not be included (${failures.length})</h2>
-            <p>Every one of these was requested. None was skipped silently — open the live
-            version instead.</p>
+            <p>Every one of these was requested and none was skipped quietly. Open the live
+            version instead:</p>
             <ul>${failures
               .map(
                 (f) => `<li class="warn">
                   <span class="tag">${esc(f.res.typeLabel)}</span>
                   <a href="https://eduwonderlab.com${esc(f.res.url)}">${esc(f.res.title)}</a>
-                  <span class="meta">${esc(f.message)}</span>
+                  <span class="meta">Could not be added: ${esc(f.message)}</span>
                 </li>`,
               )
               .join("")}</ul>`
          : `<h2>Nothing was left out</h2>
-            <p>Every requested file was packaged.</p>`
-}
-     <h2>A note on saved web pages</h2>
-     <p>Guided notes, worksheets, homework and slide decks are saved as real
-     <code>.html</code> files you can print. They were built for the website, so pictures and
-     interactive parts still load from <a href="https://eduwonderlab.com/">eduwonderlab.com</a>
-     when you are online. PDFs and Word documents work fully offline.</p>`,
+            <p>Every file in this selection was packaged successfully.</p>`
+}`,
   );
 }
 
@@ -974,7 +1037,10 @@ async function open(options = {}) {
       saveSelection();
       activeUnit = lesson.unitRef.unit;
       setView("custom");
-      if (!dialog.open) dialog.showModal();
+      if (!dialog.open) {
+        dialog.showModal();
+        dialog.querySelector(".ntdl__tab.is-on")?.focus();
+      }
       const search = dialog.querySelector(".ntdl__search");
       if (search) {
         search.value = lesson.id;
@@ -992,7 +1058,12 @@ async function open(options = {}) {
   } else {
     setView(options.view || "packages");
   }
-  if (!dialog.open) dialog.showModal();
+  if (!dialog.open) {
+    dialog.showModal();
+    // <dialog> focuses nothing useful on its own here, so the first Tab escaped
+    // to the page behind the modal. Land on the active view tab instead.
+    dialog.querySelector(".ntdl__tab.is-on")?.focus();
+  }
 }
 
 window.NTCurriculumDownload = { open };
@@ -1012,6 +1083,7 @@ window.NTCurriculumDownload = { open };
  * The hub re-renders on search, so this re-attaches on mutation and is a no-op
  * when its buttons are already present.
  */
+/** @type {Array<[RegExp, (m: RegExpExecArray) => string]>} */
 const LESSON_ID_PATTERNS = [
   [/^Lesson\s+(\d+-\d+)/i, (m) => m[1]],
   [/^(\d+)\.(\d+)\s+Small Group:\s*Group\s*([12])/i, (m) => `${m[1]}-${m[2]}-group${m[3]}`],
@@ -1053,7 +1125,7 @@ function decorateUnitCards() {
       row.appendChild(button);
     }
 
-    const select = card.querySelector(".lesson-select");
+    const select = /** @type {HTMLSelectElement | null} */ (card.querySelector(".lesson-select"));
     const group = card.querySelector(".selector-group--lesson");
     if (!select || !group || group.querySelector("[data-nt-download-lesson]")) continue;
 
@@ -1096,7 +1168,8 @@ function wireUnitsPage() {
 function wire() {
   wireUnitsPage();
   document.addEventListener("click", (event) => {
-    const trigger = event.target.closest("[data-nt-download]");
+    const target = /** @type {Element | null} */ (event.target);
+    const trigger = /** @type {HTMLElement | null} */ (target?.closest("[data-nt-download]"));
     if (!trigger) return;
     event.preventDefault();
     open({

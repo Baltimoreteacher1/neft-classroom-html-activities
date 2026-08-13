@@ -57,6 +57,56 @@ function fileFor(sitePath) {
   return { file: rel, bytes: st.size };
 }
 
+/**
+ * The resource page's own topic, used to tell two same-typed resources apart.
+ *
+ * Units 2, 5 and 6 each merge two pre-TOC units, so they legitimately carry two
+ * pre-tests, two post-test projects, four graphic novels and two unit games. A
+ * bare "-2" tells a teacher nothing about which is which; every one of these
+ * pages states its topic in its own title, so that is what the filename uses.
+ */
+const topicCache = new Map();
+function topicOf(sitePath) {
+  const clean = String(sitePath || "").split(/[?#]/)[0];
+  if (topicCache.has(clean)) return topicCache.get(clean);
+  let topic = null;
+  const rel = clean.replace(/^\/+/, "").replace(/\/$/, "");
+  const strip = (raw) =>
+    String(raw)
+      .replace(/&amp;/g, "and")
+      // Leading emoji would otherwise defeat the boilerplate strip below and
+      // leave "Unit 10 Review" as the distinguishing token.
+      .replace(
+        /^[\s\u{1F000}-\u{1FAFF}\u{2190}-\u{27BF}\u{FE00}-\u{FE0F}\u{2B00}-\u{2BFF}\u{200D}]+/gu,
+        "",
+      )
+      .replace(/^\s*Unit\s+\d+\s+Review\s*:?\s*/i, "")
+      .replace(/^\s*Graphic Novel\s*#?\d*\s*[·:—-]\s*/i, "")
+      .split(/\s+[|—]\s+/)[0]
+      .replace(/\s+/g, " ")
+      .trim();
+
+  for (const candidate of [rel, `${rel}/index.html`]) {
+    const abs = join(root, candidate);
+    if (!candidate || !existsSync(abs) || !statSync(abs).isFile()) continue;
+    const html = readFileSync(abs, "utf8");
+    // Both headings are tried: /pre-test/unit10-review.html puts its topic in a
+    // nested span, so its <h1> strips down to nothing while its <title> is
+    // "Unit 10 Review: Volume and Surface Area".
+    for (const source of [/<h1[^>]*>([^<]+)/, /<title>([^<]+)/]) {
+      const raw = source.exec(html)?.[1];
+      const stripped = raw ? strip(raw) : "";
+      if (stripped) {
+        topic = stripped;
+        break;
+      }
+    }
+    break;
+  }
+  topicCache.set(clean, topic || null);
+  return topic || null;
+}
+
 const DOWNLOADABLE_EXT = new Set([
   ".pdf",
   ".docx",
@@ -109,22 +159,6 @@ const LINK_RULES = [
 // rule's exact href: "Notes PDF" matched /notes/i and filed 3-1-notes.pdf as
 // Guided Notes, and "Google Slides" matched /slides/i and filed slides.html as
 // an external Google deck.
-/**
- * Which unit a unit-level link belongs to.
- *
- * curriculum/units/index.html nests several End-of-Unit rows under the wrong
- * card — Unit 5's block contains Unit 10's row, Unit 2's contains Unit 8's, and
- * six more (verified against the source, 2026-08-13). Every one of those links
- * names its unit in the href, so the href decides and the containing card is
- * only the fallback. Without this, "Download Unit 5" hands a teacher Unit 10's
- * pre-test and Unit 10's package is empty.
- */
-function unitOfLink(href, fallbackUnit) {
-  const match = /(?:^|[/-])unit-?(\d{1,2})(?:[/-]|$)/i.exec(String(href || ""));
-  const n = match ? Number(match[1]) : NaN;
-  return Number.isFinite(n) && n >= 1 && n <= 10 ? n : fallbackUnit;
-}
-
 function classifyLink(href, text) {
   for (const [hrefRe, , type] of LINK_RULES) {
     if (hrefRe.test(href)) return type;
@@ -274,6 +308,7 @@ function scormResourceFor(res) {
     order: meta.order,
     label: `SCORM · ${res.label}`,
     scormTypeLabel: res.label || res.typeLabel,
+    note: res.note || null,
     title: `${res.title} — SCORM Package`,
     // The EXISTING generator. No second SCORM pipeline exists.
     url: `/api/scorm?activity=${encodeURIComponent(res.url)}&title=${encodeURIComponent(res.title)}`,
@@ -290,8 +325,19 @@ function scormResourceFor(res) {
   };
 }
 
-/** Assign a unique, readable path inside the package. */
+/**
+ * Assign a unique, readable path inside the package.
+ *
+ * Names are metadata, never counters. Units 2, 5 and 6 each merge two pre-TOC
+ * units and so legitimately hold two pre-tests, two post-test projects, four
+ * graphic novels and two unit games. When a name would be used twice, EVERY
+ * member of that group is qualified by its own topic — qualifying only the
+ * second produced "Unit-5-Pre-Test" beside "Unit-5-Pre-Test-+-L1-L2", where the
+ * qualifier was shared boilerplate and the pair still could not be told apart.
+ * Numbering is the last resort, when no metadata separates them.
+ */
 function assignZipPaths(resources, seen) {
+  const planned = [];
   for (const res of resources) {
     if (res.delivery === "link") {
       res.zipPath = null;
@@ -314,9 +360,6 @@ function assignZipPaths(resources, seen) {
     }
 
     const ext = res.delivery === "scorm" ? ".zip" : extname(res.file || "") || ".html";
-    // Readable names, never ids or hashes. A lesson resource is named for its
-    // lesson and type; a unit-level one for the label the Hub shows, which is
-    // the only thing that tells two graphic novels apart.
     const who = res.lesson || `Unit-${res.unit}`;
     const stem =
       res.delivery === "scorm"
@@ -324,17 +367,55 @@ function assignZipPaths(resources, seen) {
         : res.lesson
           ? safeName(`${who}-${res.typeLabel}`, "resource")
           : safeName(`${who}-${res.label || res.typeLabel}`, "resource");
-    let name = `${stem}${ext}`;
-    let path = [...parts, name].join("/");
-    // Two resources must never resolve to the same entry: a zip with duplicate
-    // paths silently keeps whichever the reader unpacks last.
-    let n = 2;
-    while (seen.has(path)) {
-      name = `${stem}-${n++}${ext}`;
-      path = [...parts, name].join("/");
+    planned.push({ res, parts, stem, ext });
+  }
+
+  const groups = new Map();
+  for (const item of planned) {
+    const key = `${item.parts.join("/")}/${item.stem}${item.ext}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  }
+
+  for (const group of groups.values()) {
+    if (group.length > 1) {
+      // Topic first: it is the one fact that actually differs between an Area
+      // review and a Volume review. res-sub and the URL slug are the fallbacks.
+      // res-sub first — it is the teacher-facing subtitle the Hub already shows
+      // ("Aquarium Architect"), and it beats a page whose own <h1> is generic
+      // ("Mission Briefing"). It is skipped automatically when it is shared
+      // boilerplate ("+ L1/L2"), because then it fails the distinctness test.
+      for (const pick of [
+        (item) => item.res.note,
+        (item) => topicOf(item.res.scormTarget || item.res.url),
+        (item) =>
+          (item.res.scormTarget || item.res.url)
+            .split(/[?#]/)[0]
+            .replace(/\/$/, "")
+            .split("/")
+            .pop()
+            .replace(/\.[a-z0-9]+$/i, ""),
+      ]) {
+        const named = group.map((item) => ({
+          item,
+          stem: safeName(`${item.stem}-${pick(item) || ""}`, item.stem),
+        }));
+        const distinct = new Set(named.map((n) => `${n.item.parts.join("/")}/${n.stem}`));
+        if (named.every((n) => pick(n.item)) && distinct.size === group.length) {
+          for (const n of named) n.item.stem = n.stem;
+          break;
+        }
+      }
     }
-    seen.add(path);
-    res.zipPath = path;
+    for (const item of group) {
+      let path = `${[...item.parts, `${item.stem}${item.ext}`].join("/")}`;
+      let n = 2;
+      while (seen.has(path)) {
+        path = [...item.parts, `${item.stem}-${n++}${item.ext}`].join("/");
+      }
+      seen.add(path);
+      item.res.zipPath = path;
+    }
   }
 }
 
@@ -343,6 +424,18 @@ function main() {
   const curriculum = readJson("data/curriculum-manifest.json");
   const launch = readJson("data/curriculum-launch-manifest.json");
   const identities = readJson("data/curriculum-unit-identities.json").units || {};
+  // Teachers still search by the CCSS codes ("6.RP.A.3") the district used
+  // before the 2025 MCCRS re-code, and lessons now carry the new ids ("6.AT.3").
+  // data/standards-crosswalk-2025.json already maps the two, so the old code
+  // becomes a search alias rather than a dead query.
+  const legacyStandards = new Map();
+  const dropCluster = (id) => String(id || "").replace(/\.[A-Z](?=\.)/, "");
+  for (const entry of readJson("data/standards-crosswalk-2025.json").entries || []) {
+    const key = dropCluster(entry.newId);
+    if (!key) continue;
+    const aliases = [entry.oldId, entry.oldShortForm].filter(Boolean);
+    legacyStandards.set(key, [...new Set([...(legacyStandards.get(key) || []), ...aliases])]);
+  }
   const parsed = parseUnitsPage();
 
   const lessonById = new Map(curriculum.lessons.map((l) => [l.id, l]));
@@ -373,13 +466,21 @@ function main() {
     });
   }
 
-  // Unit-level rows are bucketed by the unit their HREF names, across every
-  // card, before any of them is attached — see unitOfLink().
+  // Unit-level rows belong to the unit whose card contains them. The units page
+  // is the authority here and its nesting is now verified by
+  // tools/validate-unit-resource-placement.mjs.
+  //
+  // This deliberately does NOT infer the unit from the href. Most unit-level
+  // assets carry LEGACY numbering from before the 2026-08-10 Reveal-TOC
+  // renumber — /pre-test/unit9-review.html is titled "Integers and Coordinate
+  // Plane" and belongs to Unit 7; /math/unit-10/projects/ is "Volume & Surface
+  // Area in Action" and belongs to Unit 5. Trusting the href moved dozens of
+  // correctly-placed resources into the wrong package.
   const unitLevel = new Map();
   for (const pu of parsed) {
     for (const link of pu.unitResources) {
       if (!link.href) continue;
-      const target = unitOfLink(link.href, pu.unit);
+      const target = pu.unit;
       if (!unitLevel.has(target)) unitLevel.set(target, new Map());
       const bucket = unitLevel.get(target);
       if (bucket.has(link.href)) continue;
@@ -502,6 +603,10 @@ function main() {
         label: pl.head,
         title,
         standard: man?.standard || lax?.standard || "",
+        legacyStandard:
+          legacyStandards
+            .get(dropCluster(man?.standard || lax?.standard || "").replace(/[a-z]$/, ""))
+            ?.join(" ") || undefined,
         objective: pl.objective || man?.objective || "",
         folder: lessonFolder(pl.id),
         resources,
