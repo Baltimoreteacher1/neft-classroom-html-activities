@@ -60,13 +60,16 @@ const {
 /* ---------------------------------------- 1. bank covers every tag -------- */
 
 // A ratchet, not a fact: it moves 19 → 22 (2026-08-05) → 23 → 24 (coord-xy-
-// swapped) → 33 (2026-08-12, the equation/inequality/statistics clusters) only
+// swapped) → 33 (2026-08-12, the equation/inequality/statistics clusters) →
+// 37 (2026-08-13, the proportional-reasoning and data-display clusters:
+// ratio-scaled-additively, ratio-as-difference, stat-mean-vs-median,
+// stat-histogram-bin-misread — each with its own kitchen-table activity) only
 // when someone has authored the family-facing half of each new tag. Bumping it
 // to silence a failure is how a tag ships with a teacher label and no
 // kitchen-table activity for the family who gets the broadcast.
-if (canonicalTags.length !== 33) {
+if (canonicalTags.length !== 37) {
   fail(
-    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 33 — update this validator deliberately, not by accident`,
+    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 37 — update this validator deliberately, not by accident`,
   );
 }
 

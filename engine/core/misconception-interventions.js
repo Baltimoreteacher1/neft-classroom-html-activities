@@ -119,6 +119,33 @@ export const INTERVENTIONS = {
     rejects: ["5:2", "5 to 2", "5/2"],
     then: "The one named first goes first. Read your question again and underline which quantity it names first.",
   },
+  "ratio-scaled-additively": {
+    probe:
+      "Quick one: a recipe is 2 cups flour to 3 cups sugar. You use 4 cups of flour. How many cups of sugar?",
+    accept: ["6"],
+    then: "4 cups of flour is 2 batches, not 2 extra cups — so the sugar doubles too, 3 → 6. Ask your own problem how many TIMES bigger it got, then multiply both parts by that.",
+    verify: { expr: "3*2", equals: 6 },
+  },
+  "ratio-as-difference": {
+    probe:
+      "Quick one: 6 red counters and 10 blue. Write the ratio of RED to BLUE in simplest form.",
+    accept: ["3:5", "3 to 5", "3/5", "6:10", "6 to 10"],
+    rejects: ["4", "16"],
+    then: "A ratio keeps BOTH numbers — 4 is the difference and 16 is the total, and neither one can rebuild the picture. Say yours as 'for every ___ there are ___' before you write it.",
+  },
+  "stat-mean-vs-median": {
+    probe: "Quick one: find the MEDIAN of 12, 13, 15, 16, 24.",
+    accept: ["15"],
+    rejects: ["16"],
+    then: "Ordered, the middle value is 15. Adding and dividing gives 16 — that is the mean, a different measure. Check which word your question used before you start.",
+  },
+  "stat-histogram-bin-misread": {
+    probe:
+      "Quick one: a histogram shows 10–19 with height 8 and 20–29 with height 5. How many values are in the 20–29 interval?",
+    accept: ["5"],
+    rejects: ["13", "8"],
+    then: "Only the 20–29 bar counts here, so 5. Adding both bars answers a different question — how many are under 30. Every value belongs to exactly one interval.",
+  },
   "rate-not-per-one": {
     probe: "Quick one: 12 km in 3 hours. How many km in ONE hour?",
     accept: ["4"],

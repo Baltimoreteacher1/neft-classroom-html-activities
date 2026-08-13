@@ -150,6 +150,36 @@ const EXPECT = {
   "ratio-recipe": (v) => [R(v.first, v.second), R(v.second, v.first)],
   "ratio-class": (v) => [R(v.first, v.second), R(v.second, v.first)],
 
+  // ratio-scaled-additively — the second quantity is grown by the SAME amount
+  // the first one grew by (a·k − a), instead of by the same FACTOR (×k).
+  "rsa-recipe": (v) => [v.b * v.k, v.b + (v.a * v.k - v.a)],
+  "rsa-paint": (v) => [v.b * v.k, v.b + (v.a * v.k - v.a)],
+  "rsa-gears": (v) => [v.b * v.k, v.b + (v.a * v.k - v.a)],
+  "rsa-map": (v) => [v.b * v.k, v.b + (v.a * v.k - v.a)],
+
+  // ratio-as-difference — distractor collapses the pair into ONE number: the
+  // gap between them for the first two, their total for the last two.
+  "rad-marbles": (v) => [R(v.first, v.second), String(v.second - v.first)],
+  "rad-team": (v) => [R(v.first, v.second), String(v.second - v.first)],
+  "rad-fruit": (v) => [R(v.first, v.second), String(v.first + v.second)],
+  "rad-books": (v) => [R(v.first, v.second), String(v.first + v.second)],
+
+  // stat-mean-vs-median — the prompt asks for the median (the 3rd of 5 sorted
+  // values); the distractor is the mean of the same five. Both recomputed here
+  // from the offsets written into each prompt, not read off the bank.
+  "mvm-scores": (v) => [v.base + 3, sum([0, 1, 3, 4, 12].map((o) => v.base + o)) / 5],
+  "mvm-times": (v) => [v.base + 4, sum([0, 2, 4, 6, 18].map((o) => v.base + o)) / 5],
+  "mvm-points": (v) => [v.base + 2, sum([0, 1, 2, 3, 19].map((o) => v.base + o)) / 5],
+  "mvm-temps": (v) => [v.base + 5, sum([0, 3, 5, 7, 20].map((o) => v.base + o)) / 5],
+
+  // stat-histogram-bin-misread — each distractor is a specific misreading:
+  // sweeping in the next bin, dropping the shortest bar, answering with the
+  // interval's endpoint instead of the bar height, and stopping at one bin.
+  "hbm-bin-count": (v) => [v.f2, v.f2 + v.f3],
+  "hbm-total": (v) => [v.f1 + v.f2 + v.f3, v.f1 + v.f2],
+  "hbm-tallest": (v) => [v.f2, 29],
+  "hbm-two-bins": (v) => [v.f1 + v.f2, v.f1],
+
   // percent-scale-off-by-100 — distractor is the answer 100 times too big.
   "pct-plain": (v) => [(v.n * v.p) / 100, v.n * v.p],
   "pct-tax": (v) => [(v.n * v.p) / 100, v.n * v.p],

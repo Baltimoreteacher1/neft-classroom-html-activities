@@ -137,6 +137,22 @@ const TAG_LABELS = {
     "Dio el total en vez de la tasa unitaria",
   ],
   "ratio-inverted": ["Flipped the ratio", "Invirtió la razón"],
+  "ratio-scaled-additively": [
+    "Scaled a ratio by adding instead of multiplying",
+    "Escaló una razón sumando en vez de multiplicando",
+  ],
+  "ratio-as-difference": [
+    "Combined the two amounts instead of comparing them",
+    "Combinó las dos cantidades en vez de compararlas",
+  ],
+  "stat-mean-vs-median": [
+    "Used the mean where the median was asked (or the reverse)",
+    "Usó la media donde se pedía la mediana (o al revés)",
+  ],
+  "stat-histogram-bin-misread": [
+    "Misread the bins or the scale on a data display",
+    "Leyó mal los intervalos o la escala de una gráfica",
+  ],
   "sign-dropped": [
     "Right magnitude, lost the negative sign",
     "Magnitud correcta, perdió el signo negativo",
@@ -181,6 +197,10 @@ const TAG_STANDARDS = {
   "percent-used-as-whole-number": ["6.AT.4"],
   "rate-not-per-one": ["6.AT.2"],
   "ratio-inverted": ["6.AT.1"],
+  "ratio-scaled-additively": ["6.AT.1", "6.AT.3c"],
+  "ratio-as-difference": ["6.AT.1"],
+  "stat-mean-vs-median": ["6.DS.4", "6.DS.3"],
+  "stat-histogram-bin-misread": ["6.DS.5"],
   "sign-dropped": ["6.NOS.5", "6.NOS.6c"],
   "stat-summed-instead-of-averaged": ["6.DS.4"],
 };
