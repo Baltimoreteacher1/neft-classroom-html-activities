@@ -1,0 +1,617 @@
+/* Bulk resource downloader — scoped entirely under .ntdl so nothing here can
+   reach the Curriculum Hub's own layout. Tokens are the hub's
+   (assets/curriculum-hub.css); the fallbacks keep the dialog readable if it is
+   ever opened on a page that does not load them. */
+
+.ntdl {
+  width: min(64rem, calc(100vw - 2rem));
+  max-height: min(88vh, 56rem);
+  padding: 0;
+  border: 1px solid var(--line, #d6e0ec);
+  border-radius: 16px;
+  background: var(--card, #fff);
+  color: var(--ink, #14223a);
+  box-shadow: 0 18px 48px rgba(21, 72, 127, 0.24);
+  overflow: hidden;
+}
+
+.ntdl::backdrop {
+  background: rgba(20, 34, 58, 0.55);
+}
+
+.ntdl,
+.ntdl button,
+.ntdl input,
+.ntdl select {
+  font-family: inherit;
+}
+
+/* The dialog is a column: head + scrolling body + sticky action bar. */
+.ntdl[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------------------------------------------------------------- header */
+
+.ntdl__closeform {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  margin: 0;
+  z-index: 2;
+}
+
+.ntdl__close {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted, #56627a);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.ntdl__close:hover {
+  background: var(--surface-2, #f3f7fc);
+  color: var(--ink, #14223a);
+}
+
+.ntdl__head {
+  padding: 1.25rem 1.5rem 0;
+  border-bottom: 1px solid var(--line, #d6e0ec);
+}
+
+.ntdl__title {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--navy, #15487f);
+}
+
+.ntdl__lede {
+  margin: 0.25rem 0 0.9rem;
+  color: var(--muted, #56627a);
+  font-size: 0.95rem;
+}
+
+.ntdl__tabs {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.ntdl__tab {
+  padding: 0.55rem 1rem;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  background: transparent;
+  color: var(--muted, #56627a);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ntdl__tab.is-on {
+  border-color: var(--line, #d6e0ec);
+  background: var(--surface-2, #f3f7fc);
+  color: var(--navy, #15487f);
+  /* Selection is never signalled by colour alone. */
+  box-shadow: inset 0 3px 0 var(--teal, #205fa6);
+}
+
+/* ------------------------------------------------------------------ body */
+
+.ntdl__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.25rem 1.5rem;
+}
+
+.ntdl__field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.ntdl__field--grow {
+  flex: 1 1 16rem;
+  margin-bottom: 0;
+}
+
+.ntdl__field-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--muted, #56627a);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.ntdl__select,
+.ntdl__search {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line, #d6e0ec);
+  border-radius: 10px;
+  background: var(--card, #fff);
+  color: inherit;
+  font-size: 1rem;
+}
+
+/* --------------------------------------------------------------- presets */
+
+.ntdl__presets {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.ntdl__preset {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line, #d6e0ec);
+  border-radius: 12px;
+  background: var(--card, #fff);
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.ntdl__preset:hover:not([disabled]) {
+  border-color: var(--teal, #205fa6);
+  background: var(--surface-2, #f3f7fc);
+}
+
+.ntdl__preset[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ntdl__preset.is-on {
+  border-color: var(--teal, #205fa6);
+  background: var(--teal-light, #e7eff9);
+  box-shadow: inset 3px 0 0 var(--teal, #205fa6);
+}
+
+/* A checkmark, not just a tint — the chosen package must be visible without
+   relying on colour perception. */
+.ntdl__preset.is-on .ntdl__preset-name::after {
+  content: " ✓";
+  color: var(--amber, #256b5b);
+}
+
+.ntdl__preset-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--navy, #15487f);
+}
+
+.ntdl__preset-desc {
+  color: var(--muted, #56627a);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.ntdl__preset-count {
+  margin-top: auto;
+  padding-top: 0.35rem;
+  color: var(--amber, #256b5b);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------- summary */
+
+.ntdl__summary {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line, #d6e0ec);
+  border-radius: 12px;
+  background: var(--surface-2, #f3f7fc);
+}
+
+.ntdl__summary--empty {
+  color: var(--muted, #56627a);
+}
+
+.ntdl__summary-head {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--navy, #15487f);
+}
+
+.ntdl__summary-total {
+  margin: 0.2rem 0 0.7rem;
+  font-size: 1.05rem;
+}
+
+.ntdl__summary-list {
+  display: grid;
+  margin: 0 0 0.7rem;
+  padding: 0;
+  gap: 0.15rem 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  list-style: none;
+  font-size: 0.92rem;
+}
+
+.ntdl__summary-list span {
+  display: inline-block;
+  min-width: 1.8rem;
+  font-weight: 700;
+  color: var(--navy, #15487f);
+}
+
+.ntdl__summary-note {
+  margin: 0;
+  color: var(--muted, #56627a);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* ------------------------------------------------------------ custom view */
+
+.ntdl__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.ntdl__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.ntdl__chip {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line, #d6e0ec);
+  border-radius: 999px;
+  background: var(--card, #fff);
+  color: var(--muted, #56627a);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ntdl__chip.is-on {
+  border-color: var(--amber, #256b5b);
+  background: var(--amber-light, #e7f4ef);
+  color: var(--amber, #256b5b);
+}
+
+.ntdl__chip.is-on::before {
+  content: "✓ ";
+}
+
+.ntdl__tree {
+  margin-bottom: 1.1rem;
+}
+
+.ntdl__unit,
+.ntdl__lesson {
+  border: 1px solid var(--line, #d6e0ec);
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+  background: var(--card, #fff);
+}
+
+.ntdl__lesson {
+  margin: 0.4rem 0 0;
+  background: var(--surface-2, #f3f7fc);
+}
+
+.ntdl__unit-sum,
+.ntdl__lesson-sum {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.ntdl__unit-sum::-webkit-details-marker,
+.ntdl__lesson-sum::-webkit-details-marker {
+  display: none;
+}
+
+.ntdl__unit-sum::before,
+.ntdl__lesson-sum::before {
+  content: "▸";
+  margin-right: 0.4rem;
+  color: var(--muted, #56627a);
+}
+
+.ntdl__unit[open] > .ntdl__unit-sum::before,
+.ntdl__lesson[open] > .ntdl__lesson-sum::before {
+  content: "▾";
+}
+
+.ntdl__unit-name {
+  font-weight: 700;
+  color: var(--navy, #15487f);
+}
+
+.ntdl__lesson-name {
+  font-weight: 600;
+}
+
+.ntdl__unit-meta,
+.ntdl__lesson-meta {
+  color: var(--muted, #56627a);
+  font-size: 0.85rem;
+}
+
+.ntdl__unit-body,
+.ntdl__lesson-body {
+  padding: 0 0.9rem 0.8rem;
+}
+
+.ntdl__rowacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.ntdl__mini {
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--line, #d6e0ec);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--teal, #205fa6);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ntdl__mini:hover {
+  background: var(--teal-light, #e7eff9);
+}
+
+.ntdl__grouphead {
+  margin: 0.6rem 0 0.3rem;
+  color: var(--muted, #56627a);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.ntdl__reslist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ntdl__check {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.35rem 0.2rem;
+  cursor: pointer;
+  /* Comfortable target on a Chromebook trackpad and on a phone. */
+  min-height: 2.5rem;
+}
+
+.ntdl__check:hover {
+  background: var(--teal-light, #e7eff9);
+  border-radius: 8px;
+}
+
+.ntdl__check input {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: none;
+  accent-color: var(--teal, #205fa6);
+}
+
+.ntdl__res-name {
+  flex: 1 1 12rem;
+}
+
+.ntdl__tag {
+  flex: none;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.ntdl__tag--file {
+  background: var(--amber-light, #e7f4ef);
+  color: var(--amber, #256b5b);
+}
+
+.ntdl__tag--scorm {
+  background: #efe6fb;
+  color: #5b3b8c;
+}
+
+.ntdl__tag--link {
+  background: var(--teal-light, #e7eff9);
+  color: var(--teal, #205fa6);
+}
+
+.ntdl__empty {
+  padding: 1.25rem;
+  border: 1px dashed var(--line, #d6e0ec);
+  border-radius: 12px;
+  color: var(--muted, #56627a);
+  text-align: center;
+}
+
+/* ------------------------------------------------------------- action bar */
+
+.ntdl__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1.5rem;
+  border-top: 1px solid var(--line, #d6e0ec);
+  background: var(--surface-2, #f3f7fc);
+}
+
+.ntdl__count {
+  margin: 0;
+  font-weight: 700;
+  color: var(--navy, #15487f);
+}
+
+.ntdl__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ntdl__btn {
+  padding: 0.6rem 1.1rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ntdl__btn--go {
+  background: var(--navy, #15487f);
+  color: #fff;
+}
+
+.ntdl__btn--go:hover:not([disabled]) {
+  background: var(--teal, #205fa6);
+}
+
+.ntdl__btn--go[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ntdl__btn--ghost {
+  border-color: var(--line, #d6e0ec);
+  background: transparent;
+  color: var(--muted, #56627a);
+}
+
+.ntdl__btn--ghost:hover {
+  background: var(--card, #fff);
+  color: var(--ink, #14223a);
+}
+
+/* -------------------------------------------------------------- progress */
+
+.ntdl__progress {
+  padding: 1rem 1.5rem 1.25rem;
+  border-top: 1px solid var(--line, #d6e0ec);
+  background: var(--surface-2, #f3f7fc);
+}
+
+.ntdl__progress-label {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  color: var(--navy, #15487f);
+}
+
+.ntdl__meter {
+  height: 0.6rem;
+  margin-bottom: 0.75rem;
+  border-radius: 999px;
+  background: var(--line, #d6e0ec);
+  overflow: hidden;
+}
+
+.ntdl__meter-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--amber, #256b5b);
+  transition: width 0.2s ease;
+}
+
+/* ---------------------------------------------------------------- launchers */
+
+.ntdl-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--line, #d6e0ec);
+  border-radius: 999px;
+  background: var(--card, #fff);
+  color: var(--teal, #205fa6);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ntdl-trigger:hover {
+  border-color: var(--teal, #205fa6);
+  background: var(--teal-light, #e7eff9);
+}
+
+.ntdl-trigger--lesson {
+  font-size: 0.78rem;
+}
+
+/* ------------------------------------------------------------ focus + a11y */
+
+.ntdl :focus-visible,
+.ntdl-trigger:focus-visible {
+  outline: 3px solid var(--amber, #256b5b);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ntdl__meter-fill {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------- responsive */
+
+@media (max-width: 40rem) {
+  .ntdl {
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 100vh;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .ntdl__head,
+  .ntdl__body,
+  .ntdl__bar,
+  .ntdl__progress {
+    padding-inline: 1rem;
+  }
+
+  .ntdl__presets {
+    grid-template-columns: 1fr;
+  }
+
+  .ntdl__actions {
+    width: 100%;
+  }
+
+  .ntdl__btn {
+    flex: 1 1 auto;
+  }
+}

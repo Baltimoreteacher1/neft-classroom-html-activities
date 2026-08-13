@@ -95,6 +95,13 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // The bulk downloader is a generator + a gate + two front-end assets. The gate
+  // re-derives the inventory's invariants and also re-checks the ?v= cache stamps
+  // on both hub pages, which is the half of this feature a lint pass cannot see.
+  [
+    /^(scripts\/(generate-download-manifest\.mjs|lib\/download-taxonomy\.mjs)|data\/curriculum-download-manifest\.json|assets\/(curriculum-download\.(js|css)|lib\/zip-store\.js)|tools\/(validate-download-manifest|download-manifest\.test)\.mjs)$/,
+    ["test", "validate:downloads", "validate:js-syntax", "validate:scorm"],
+  ],
   // Routing: data/routes.json is the source of truth for BOTH _redirects and
   // functions/_lib/redirect-map.js, and the middleware replays the map on a 404.
   // validate:routes catches a half-applied edit (the map generated but the

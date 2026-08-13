@@ -518,6 +518,18 @@
           <strong>Plan the week</strong>
           <span>Sequence lessons, pacing, practice, and checks for understanding.</span>
         </button>
+        <button
+          class="curriculum-guide__action hub-teacher-only"
+          type="button"
+          data-nt-download
+          data-nt-download-view="packages"
+        >
+          <strong>⬇️ Download Resources</strong>
+          <span
+            >Package a whole unit, a preset pack, or any set of lessons and files into one
+            zip.</span
+          >
+        </button>
         <a class="curriculum-guide__action" href="/curriculum/units/">
           <strong>Explore by unit</strong>
           <span>Choose one unit and see only the lesson and resources you need.</span>
@@ -3863,6 +3875,34 @@
     <script src="/assets/curriculum-audit-badges.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-sidebar.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-top1.js?v=msaoy7gp" defer></script>
+    <!-- Bulk resource downloader — loaded on demand. This page is held to a
+         60-request budget (scripts/perf-curriculum.mjs) and is what a student
+         opens first on a school Chromebook, so a teacher-only tool must cost it
+         nothing until a teacher clicks. Capture phase: once the module is in,
+         window.NTCurriculumDownload exists and its own listener takes over. -->
+    <script>
+      (function () {
+        var loading = null;
+        document.addEventListener(
+          "click",
+          function (event) {
+            var target = event.target;
+            var trigger = target && target.closest && target.closest("[data-nt-download]");
+            if (!trigger || window.NTCurriculumDownload) return;
+            event.preventDefault();
+            loading = loading || import("/assets/curriculum-download.js?v=608dbe75");
+            loading.then(function () {
+              window.NTCurriculumDownload.open({
+                unit: trigger.dataset.ntDownloadUnit,
+                lesson: trigger.dataset.ntDownloadLesson,
+                view: trigger.dataset.ntDownloadView,
+              });
+            });
+          },
+          true,
+        );
+      })();
+    </script>
     <script src="/assets/curriculum-teacher-planning.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-live-signal.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-next-move.js?v=msaoy7gp" defer></script>
