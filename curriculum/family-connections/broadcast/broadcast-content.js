@@ -746,6 +746,37 @@ export const TAGS = Object.freeze({
     watchForEs: "Pídale que etiquete ambas cantidades con sus unidades antes de escribir la razón.",
     standards: ["6.AT.1"],
   },
+  "ratio-scaled-additively": {
+    label: "Scaled a ratio by adding instead of multiplying",
+    labelEs: "Escaló una razón sumando en vez de multiplicando",
+    watchFor: "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
+    watchForEs:
+      "Pregunte cuántas tandas está haciendo y luego revise ambas cantidades contra una sola tanda.",
+    standards: ["6.AT.1", "6.AT.3"],
+  },
+  "ratio-as-difference": {
+    label: "Combined the two amounts instead of comparing them",
+    labelEs: "Combinó las dos cantidades en vez de compararlas",
+    watchFor: "Have them say the comparison out loud — “for every ___ there are ___” — before writing anything.",
+    watchForEs: "Pídale que lo diga como “por cada ___ hay ___” antes de escribir nada.",
+    standards: ["6.AT.1"],
+  },
+  "stat-mean-vs-median": {
+    label: "Used the mean where the median was asked (or the reverse)",
+    labelEs: "Usó la media donde se pedía la mediana (o al revés)",
+    watchFor: "Ask them to say which word the question used, then what that word tells you to DO with the numbers.",
+    watchForEs:
+      "Pregunte qué palabra usó la pregunta y luego qué dice esa palabra que HAY QUE HACER con los números.",
+    standards: ["6.DS.4", "6.DS.3"],
+  },
+  "stat-histogram-bin-misread": {
+    label: "Misread the bins or the scale on a data display",
+    labelEs: "Leyó mal los intervalos o la escala de una gráfica",
+    watchFor: "Have them point to the interval's two endpoints and say which values belong inside it.",
+    watchForEs:
+      "Pídale que señale los dos extremos del intervalo y diga qué valores caben dentro.",
+    standards: ["6.DS.5"],
+  },
   "sign-dropped": {
     label: "Right magnitude, lost the negative sign",
     labelEs: "Magnitud correcta, perdió el signo negativo",
@@ -1440,6 +1471,94 @@ export const KITCHEN_TABLE = Object.freeze({
     why: "Words written under the numbers make the order of a ratio something you can see instead of remember.",
     whyEs:
       "Las palabras escritas debajo de los números hacen que el orden de una razón se vea, en vez de recordarse.",
+  },
+  "ratio-scaled-additively": {
+    minutes: 5,
+    title: "How many batches?",
+    titleEs: "¿Cuántas tandas?",
+    materials: "Any recipe from a box or a bottle, and paper.",
+    materialsEs: "Cualquier receta de una caja o botella, y papel.",
+    steps: [
+      "Find a recipe with two amounts, like two cups of rice to four cups of water.",
+      "Ask your student to make enough for twice as many people, and to say the word “twice” out loud.",
+      "Have them double BOTH amounts, then read the new recipe back to you.",
+      "Ask what would happen if they added two cups to each instead — would it still be the same food?",
+    ],
+    stepsEs: [
+      "Busque una receta con dos cantidades, como dos tazas de arroz por cuatro de agua.",
+      "Pida a su estudiante que haga para el doble de personas y que diga la palabra “doble” en voz alta.",
+      "Pídale que duplique AMBAS cantidades y que le lea la nueva receta.",
+      "Pregunte qué pasaría si en vez de eso le sumara dos tazas a cada una: ¿seguiría siendo la misma comida?",
+    ],
+    why: "Counting batches turns an abstract rule into something you can taste — adding to both sides quietly changes the recipe.",
+    whyEs:
+      "Contar tandas convierte una regla abstracta en algo que se puede probar: sumar a los dos lados cambia la receta sin avisar.",
+  },
+  "ratio-as-difference": {
+    minutes: 4,
+    title: "For every ___ there are ___",
+    titleEs: "Por cada ___ hay ___",
+    materials: "Two kinds of small objects — buttons, coins, or socks.",
+    materialsEs: "Dos tipos de objetos pequeños: botones, monedas o calcetines.",
+    steps: [
+      "Set out three of one object and five of the other.",
+      "Ask your student to compare them WITHOUT using the words plus or minus.",
+      "Listen for the sentence “for every three ___ there are five ___.”",
+      "Ask whether one single number could tell someone else what is on the table.",
+    ],
+    stepsEs: [
+      "Ponga tres de un objeto y cinco del otro.",
+      "Pida a su estudiante que los compare SIN usar las palabras más o menos.",
+      "Escuche la oración “por cada tres ___ hay cinco ___.”",
+      "Pregunte si un solo número podría decirle a otra persona qué hay sobre la mesa.",
+    ],
+    why: "Saying the comparison as a sentence keeps both numbers in the answer, where a single total or difference loses one of them.",
+    whyEs:
+      "Decir la comparación como oración conserva los dos números en la respuesta; un solo total o diferencia pierde uno.",
+  },
+  "stat-mean-vs-median": {
+    minutes: 5,
+    title: "Middle or share it out?",
+    titleEs: "¿El del medio o repartirlo?",
+    materials: "Five small slips of paper and a pencil.",
+    materialsEs: "Cinco papelitos y un lápiz.",
+    steps: [
+      "Write five ages, prices, or shoe sizes from around the house, one per slip.",
+      "Ask for the MIDDLE one: lay the slips in order and point at the one in the centre.",
+      "Now ask for the average: add them and share the total evenly.",
+      "Compare the two answers and ask why they are not the same.",
+    ],
+    stepsEs: [
+      "Escriba cinco edades, precios o tallas de zapato de la casa, uno por papelito.",
+      "Pida el del MEDIO: acomoden los papelitos en orden y señale el del centro.",
+      "Ahora pida el promedio: súmenlos y repartan el total en partes iguales.",
+      "Comparen las dos respuestas y pregunte por qué no son iguales.",
+    ],
+    why: "Doing both procedures side by side makes the two words mean two different actions instead of one vague idea of “typical”.",
+    whyEs:
+      "Hacer los dos procedimientos lado a lado hace que las dos palabras signifiquen dos acciones distintas y no una idea vaga de “típico”.",
+  },
+  "stat-histogram-bin-misread": {
+    minutes: 4,
+    title: "Which box does it go in?",
+    titleEs: "¿En qué caja va?",
+    materials: "Paper, a pencil, and a handful of small objects.",
+    materialsEs: "Papel, lápiz y un puñado de objetos pequeños.",
+    steps: [
+      "Draw three boxes on a page and label them 0–9, 10–19 and 20–29.",
+      "Call out numbers from around the house — prices, page numbers, ages.",
+      "Ask your student to say which box each number goes in, and why, before placing an object.",
+      "Count each box at the end and ask whether any number could have gone in two boxes.",
+    ],
+    stepsEs: [
+      "Dibuje tres cajas en una hoja y rotúlelas 0–9, 10–19 y 20–29.",
+      "Diga números de la casa: precios, números de página, edades.",
+      "Pida a su estudiante que diga en qué caja va cada número, y por qué, antes de poner un objeto.",
+      "Cuenten cada caja al final y pregunte si algún número pudo haber ido en dos cajas.",
+    ],
+    why: "Placing an object in exactly one box makes the rule physical: a value belongs to one interval, so the counts can never overlap.",
+    whyEs:
+      "Poner un objeto en una sola caja hace la regla física: un valor pertenece a un intervalo, así que los conteos nunca se traslapan.",
   },
   "sign-dropped": {
     minutes: 4,

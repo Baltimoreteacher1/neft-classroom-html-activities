@@ -216,6 +216,47 @@ const PROSE_PATTERNS = [
     /order (?:matters|got flipped|swapped|has to stay)|flipped the ratio|what is named first should be first/i,
     "ratio-inverted",
   ],
+  [
+    // ratio-scaled-additively. Anchored on sentences that coach the FACTOR,
+    // because that is what the author writes when the distractor stepped both
+    // parts up by the same amount instead. A bare "multiply" is not enough —
+    // most ratio feedback says that for reasons unrelated to this error.
+    /scale both numbers by the same factor|multiply both (?:parts|numbers|terms) by the same|re-?check how many times you need to (?:multiply|scale)|check if that'?s the right scale factor|add(?:ed|ing)? the same (?:number|amount) to both/i,
+    "ratio-scaled-additively",
+  ],
+  [
+    // ratio-as-difference. The distractor is one number where a comparison was
+    // required — the author states it as "not their sum" / "not the ratio".
+    /a ratio compares two amounts, not their (?:sum|difference)|that'?s the difference(?: between them)?,? not the ratio/i,
+    "ratio-as-difference",
+  ],
+  [
+    // stat-mean-vs-median. Deliberately narrow: only sentences that name the
+    // swap between the two measures of centre. "Did you order them first?" is a
+    // median-procedure slip and is left untagged — see the note below.
+    // `is median always the lowest` and `median is the middle—with N values`
+    // were tried here and REJECTED after reading their distractors. Both sit on
+    // choices that are the WRONG POSITION in the ordered list (the smallest
+    // value; the 3rd of 7 where the median is the 4th), never the mean — 2-12's
+    // set averages 6.86 and the offered choice is 5. Picking the wrong position
+    // is a median-procedure slip, and telling that student "you used the mean"
+    // would describe an operation they did not perform.
+    /don'?t add all values and divide—find the middle|add the numbers first—does \d+ equal the sum divided by|the line is always the middle value, not an average|the line shows center—but mean is a different measure|with an even count, take the average of the two middle|the two middle values are \d+ and \d+|is the MEAN — you added all five values/i,
+    "stat-mean-vs-median",
+  ],
+  [
+    // stat-histogram-bin-misread. Bin membership and bar-height/scale reading.
+    // Distribution SHAPE (skew, symmetry) matches none of these on purpose.
+    /that count sweeps in values from outside the interval|only numbers from \d+ through \d+ belong in this bin|did you count correctly which values fall in|not all values fit in that interval|which bar is tallest|there'?s no zero shown—count from the data given|add all frequencies|that total leaves out part of the data/i,
+    "stat-histogram-bin-misread",
+  ],
+  [
+    // Not a new family: these belong to the existing outlier entry. The author
+    // states them as a CHOICE between measures ("which resists the outlier"),
+    // which the previous pattern — written for "the outlier pulls it" — missed.
+    /which measure (?:resists|shows typical performance better)|both measures exist, but which resists|is mode about a typical game when there'?s an outlier|the mean is pulled higher by \d+|mode shows most common—but doesn'?t handle the outlier/i,
+    "stat-mean-skewed-by-outlier",
+  ],
   // NOTE: a sentence merely MENTIONING "unit rate" is usually coaching toward
   // the method ("Find the unit rate, then use it for 12 minutes"), not a claim
   // that the student answered with a total. Only the diagnosis form counts.

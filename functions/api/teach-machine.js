@@ -97,6 +97,10 @@ const ALLOWED_TAGS = [
   "percent-used-as-whole-number",
   "rate-not-per-one",
   "ratio-inverted",
+  "ratio-scaled-additively",
+  "ratio-as-difference",
+  "stat-mean-vs-median",
+  "stat-histogram-bin-misread",
   "sign-dropped",
   "stat-summed-instead-of-averaged",
 ];

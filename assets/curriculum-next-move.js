@@ -39,6 +39,10 @@
     "percent-used-as-whole-number": "Used the percent as a plain number",
     "percent-scale-off-by-100": "Percent answer off by a factor of 100",
     "ratio-inverted": "Flipped the ratio",
+    "ratio-scaled-additively": "Scaled a ratio by adding instead of multiplying",
+    "ratio-as-difference": "Combined the two amounts instead of comparing them",
+    "stat-mean-vs-median": "Used the mean where the median was asked (or the reverse)",
+    "stat-histogram-bin-misread": "Misread the bins or the scale on a data display",
     "rate-not-per-one": "Gave the total instead of the unit rate",
     "exponent-as-multiplication": "Multiplied the base by the exponent",
     "order-of-operations-left-to-right": "Worked left to right instead of by operation order",
@@ -79,6 +83,14 @@
     "percent-used-as-whole-number": "Make them say the percent as “per hundred” out loud.",
     "percent-scale-off-by-100": "Benchmark against 50% and 10% before trusting the number.",
     "ratio-inverted": "Have them label both quantities with units before writing the ratio.",
+    "ratio-scaled-additively":
+      "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
+    "ratio-as-difference":
+      "Have them say the comparison out loud — “for every ___ there are ___” — before writing anything.",
+    "stat-mean-vs-median":
+      "Ask them to say which word the question used, then what that word tells you to DO with the numbers.",
+    "stat-histogram-bin-misread":
+      "Have them point to the interval's two endpoints and say which values belong inside it.",
     "rate-not-per-one": "Ask “per ONE what?” and make them finish the sentence.",
     "exponent-as-multiplication": "Expand it once — write every factor before evaluating.",
     "order-of-operations-left-to-right": "Have them circle the operation that must go first.",

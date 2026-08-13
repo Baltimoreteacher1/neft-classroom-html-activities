@@ -149,6 +149,14 @@ const UI = {
 /* Spanish for the repo's English `watchFor` coaching lines. The English side is
  * read straight from data/misconception-labels.json so it never drifts. */
 const WATCH_ES = {
+  "ratio-scaled-additively":
+    "Pregunte cuánto vale UNA tanda y luego cuántas tandas — una razón crece por copias, no por pasos.",
+  "ratio-as-difference":
+    "Pídales decir la comparación en voz alta — “por cada ___ hay ___” — antes de escribir nada.",
+  "stat-mean-vs-median":
+    "Pídales decir qué palabra usó la pregunta y luego qué dice esa palabra que HAY QUE HACER con los números.",
+  "stat-histogram-bin-misread":
+    "Pídales señalar los dos extremos del intervalo y decir qué valores caben dentro.",
   "coord-xy-swapped": "Pídeles que tracen el movimiento horizontal con el dedo antes del vertical.",
   "decimal-place-value":
     "Primero estima al número entero más cercano y luego cuenta en voz alta los lugares decimales.",

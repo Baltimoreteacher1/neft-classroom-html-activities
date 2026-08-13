@@ -373,6 +373,72 @@ export const MISCONCEPTIONS = {
     studentEs:
       "Se confundieron área y perímetro. Revisa con qué unidad debes terminar: ¿unidades o unidades cuadradas?",
   },
+
+  // --- Proportional reasoning ----------------------------------------------
+  // Authored-only, and necessarily so. 2:3 → 4:5 and 2:3 → 4:6 are both pairs of
+  // whole numbers; the VALUE alone never says which move the student made, only
+  // the item's own distractor does. This is the defining Grade 6 proportional
+  // reasoning error — the jump from "add the same amount" to "multiply by the
+  // same factor" is the whole point of the ratio unit — and unit 3 states it in
+  // feedback on 65 distractors across 13 lessons that could diagnose nothing.
+  "ratio-scaled-additively": {
+    label: "Scaled a ratio by adding instead of multiplying",
+    labelEs: "Escaló una razón sumando en vez de multiplicando",
+    watchFor:
+      "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
+    student:
+      "You added the same amount to both numbers. Equivalent ratios come from multiplying both parts by the same factor, not from adding to both. Ask: how many times bigger is the new amount?",
+    studentEs:
+      "Sumaste la misma cantidad a los dos números. Las razones equivalentes se hacen multiplicando las dos partes por el mismo factor, no sumando. Pregúntate: ¿cuántas veces más grande es la nueva cantidad?",
+  },
+  // Distinct from ratio-scaled-additively: that one keeps a ratio and grows it
+  // wrongly; this one never forms a ratio at all, collapsing two quantities into
+  // a single sum or difference. Also authored-only — 3 and 5 give 8 and 2 by
+  // arithmetic the predictor can see, but nothing in the numbers says the
+  // student meant "compare" rather than "combine".
+  "ratio-as-difference": {
+    label: "Combined the two amounts instead of comparing them",
+    labelEs: "Combinó las dos cantidades en vez de compararlas",
+    watchFor:
+      "Have them say the comparison out loud — “for every ___ there are ___” — before writing anything.",
+    student:
+      "A ratio compares two amounts; it does not add or subtract them. Say it out loud first: “for every ___ there are ___.” Then write the two numbers in that order.",
+    studentEs:
+      "Una razón compara dos cantidades; no las suma ni las resta. Dilo primero en voz alta: “por cada ___ hay ___.” Luego escribe los dos números en ese orden.",
+  },
+
+  // --- Statistics ----------------------------------------------------------
+  // Deliberately narrower than stat-center-vs-spread (which is a centre swapped
+  // for a spread) and than stat-mean-skewed-by-outlier (which is choosing the
+  // mean when an outlier makes the median the better summary). This entry is
+  // only the procedural swap: the student computed or picked one measure of
+  // centre when the question named the other.
+  "stat-mean-vs-median": {
+    label: "Used the mean where the median was asked (or the reverse)",
+    labelEs: "Usó la media donde se pedía la mediana (o al revés)",
+    watchFor:
+      "Ask them to say which word the question used, then what that word tells you to DO with the numbers.",
+    student:
+      "Those are two different measures. The mean adds every value and divides; the median puts the values in order and takes the middle one. Read the question again and name which one it asked for.",
+    studentEs:
+      "Esas son dos medidas distintas. La media suma todos los valores y divide; la mediana ordena los valores y toma el del medio. Vuelve a leer la pregunta y di cuál te pidió.",
+  },
+  // Distinct from stat-frequency-vs-value, which is reading the wrong AXIS.
+  // This is reading the right axis wrongly: counting values into the wrong bin,
+  // comparing bar heights carelessly, or assuming a scale starts at zero when
+  // the display does not show it. Authored-only — the predictor cannot see a
+  // chart. Distribution SHAPE errors (skew, symmetry) are a separate error and
+  // are deliberately NOT folded in here; see reports/misconception-tagging.md.
+  "stat-histogram-bin-misread": {
+    label: "Misread the bins or the scale on a data display",
+    labelEs: "Leyó mal los intervalos o la escala de una gráfica",
+    watchFor:
+      "Have them point to the interval's two endpoints and say which values belong inside it.",
+    student:
+      "Check the display itself before you count. Every bar belongs to one interval, and a value counts only if it falls between that interval's endpoints. Point at the endpoints and count again.",
+    studentEs:
+      "Revisa la gráfica antes de contar. Cada barra pertenece a un intervalo, y un valor cuenta solo si cae entre los extremos de ese intervalo. Señala los extremos y cuenta otra vez.",
+  },
 };
 
 // Configs already carry a sparse authored vocabulary in `misconceptionTags` (a
