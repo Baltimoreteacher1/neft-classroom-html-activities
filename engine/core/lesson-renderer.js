@@ -3172,17 +3172,28 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
     feedbackBox.style.background = "#f0fdf4";
     feedbackBox.style.color = "#15803d";
     feedbackBox.style.border = "1px solid #bbf7d0";
+    // Deliberately terse. A student who got it right does not need the method
+    // re-explained, and saying so anyway is the over-scaffolding that trains
+    // students to skim feedback.
     feedbackBox.innerHTML = `<strong>Correct! ✓</strong>`;
   } else if (selectedIdx !== undefined) {
     feedbackBox.style.background = "#fef2f2";
     feedbackBox.style.color = "#b91c1c";
     feedbackBox.style.border = "1px solid #fecaca";
-    feedbackBox.innerHTML = `<strong>Incorrect. ✘</strong>`;
+    // All 807 authored warmup questions carry an `explanation`, and until now
+    // the warmup surface discarded every one of them — a student who missed a
+    // question was told only that they missed it. Show the reasoning on a miss;
+    // this is the one moment it is worth reading.
+    feedbackBox.innerHTML = `<strong>Incorrect. ✘</strong>${
+      q.explanation ? ` ${esc(q.explanation)}` : ""
+    }`;
   } else {
     feedbackBox.style.background = "#fffbe0";
     feedbackBox.style.color = "#92400e";
     feedbackBox.style.border = "1px solid #fef08a";
-    feedbackBox.innerHTML = `<strong>Unanswered.</strong>`;
+    feedbackBox.innerHTML = `<strong>Unanswered.</strong>${
+      q.explanation ? ` ${esc(q.explanation)}` : ""
+    }`;
   }
 }
 

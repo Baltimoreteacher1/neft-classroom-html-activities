@@ -237,6 +237,23 @@ const PROSE_PATTERNS = [
     /digits (?:are|here are) right[^.]*decimal|where is the decimal point|line up the decimal point|decimal point (?:moved|landed|still has to move)|count the decimal places|no decimal point placed|factor of 10/i,
     "decimal-place-value",
   ],
+  [
+    // Column-arithmetic prose. The 4.x lessons carry ~40 distractors whose
+    // feedback names a regrouping/borrowing slip by the COLUMN it happened in
+    // ("Recheck the tenths column: 5 tenths + 7 tenths + 8 tenths"). That is a
+    // place-value error stated in place-value words; the existing pattern only
+    // read sentences that used the phrase "decimal point".
+    /(?:tenths|hundredths) column|stack the decimal points|regroups?[^.]{0,20}whole ten tenths|digits look swapped[^.]*(?:tenths|hundredths)|subtract each column in its own place/i,
+    "decimal-place-value",
+  ],
+  [
+    // Long-division quotient digits landing in the wrong place. "12 × 480 =
+    // 5,760. Check where each digit of your quotient lands." A wrong-sized
+    // quotient is the same place-value error the decimal items name, stated
+    // over whole numbers. Kept separate so the intent stays readable.
+    /place value is off|missing a whole place value|quotient needs (?:two|three|four) digits|where each digit of your quotient lands|keep each digit in its correct place|reverses the digits of the quotient/i,
+    "decimal-place-value",
+  ],
 
   // --- expressions ---------------------------------------------------------
   [
@@ -334,6 +351,16 @@ const PROSE_PATTERNS = [
     "stat-center-vs-spread",
   ],
   [
+    // The 8.x MAD/IQR items state the same swap from the other direction: the
+    // student reached for an average when the question asked which data set is
+    // more consistent. "Same average doesn't tell you consistency—MAD does."
+    // Deliberately anchored on the consistency/variation claim; a bare mention
+    // of MAD or IQR is not enough, because most of those sentences are correct
+    // coaching about how to compute one.
+    /(?:MAD|IQR) (?:tells|is always about|directly measures) consistency|(?:Bigger|Smaller) (?:MAD|IQR) (?:means|doesn'?t mean)|(?:average|mean) doesn'?t tell you consistency|it means more variation/i,
+    "stat-center-vs-spread",
+  ],
+  [
     /outlier pulls it (?:too high|down)|the outlier pulls (?:the mean|it)/i,
     "stat-mean-skewed-by-outlier",
   ],
@@ -368,6 +395,14 @@ const PROSE_PATTERNS = [
   // is a dropped negative, so it is deliberately not a trigger.
   [
     /lost the negative|dropped the (?:negative|minus) sign|forgot the (?:negative|minus)/i,
+    "sign-dropped",
+  ],
+  [
+    // Absolute deviation reported as a signed value. "The deviation is
+    // negative; absolute deviation is the positive version." The student kept
+    // the sign the absolute value was there to remove — the same dropped-sign
+    // machinery, one step later in the MAD computation.
+    /deviation is negative[;,] absolute deviation|[Aa]bsolute means positive/i,
     "sign-dropped",
   ],
 
