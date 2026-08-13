@@ -74,7 +74,7 @@ for (const id of openers) {
 
   if (warmup.kind === "spiral") {
     if (!warmup.spiralFrom || !String(warmup.spiralFrom).trim()) {
-      fail(id, 'a spiral warmup must name the prerequisite skill in `spiralFrom`');
+      fail(id, "a spiral warmup must name the prerequisite skill in `spiralFrom`");
     }
     if (warmup.prevLessonId) {
       fail(id, "a spiral warmup must not also claim a prevLessonId");
@@ -94,11 +94,17 @@ for (const id of openers) {
     continue;
   }
   if (position.get(prev) >= position.get(id)) {
-    fail(id, `prevLessonId "${prev}" does not come before it — students have not taken that lesson`);
+    fail(
+      id,
+      `prevLessonId "${prev}" does not come before it — students have not taken that lesson`,
+    );
   }
   const prevUnit = prev.split("-")[0];
   if (prevUnit === id.split("-")[0]) {
-    fail(id, `prevLessonId "${prev}" is inside its own unit; a unit opener has no previous lesson there`);
+    fail(
+      id,
+      `prevLessonId "${prev}" is inside its own unit; a unit opener has no previous lesson there`,
+    );
   }
 }
 
