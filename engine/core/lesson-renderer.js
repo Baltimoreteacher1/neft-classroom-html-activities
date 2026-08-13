@@ -2535,6 +2535,11 @@ function fmtWarmupClock(seconds) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 }
 
+/** A unit-opening warmup: prerequisite retrieval, with no previous lesson. */
+function isSpiralWarmup(warmup) {
+  return String(warmup?.kind || "") === "spiral";
+}
+
 function renderWarmupPhase(el, state, ctx, config) {
   const warmup = config.warmup;
   if (!warmup || !Array.isArray(warmup.questions) || warmup.questions.length === 0) return;
@@ -2544,7 +2549,9 @@ function renderWarmupPhase(el, state, ctx, config) {
     "1",
     "section-icon-teal",
     "Phase 1: Warmup",
-    "Complete these 3–4 quick warmup questions reviewing previous lesson material before starting today's lesson.",
+    isSpiralWarmup(warmup)
+      ? "Answer these quick questions on the skills today's lesson builds on."
+      : "Complete these 3–4 quick warmup questions reviewing previous lesson material before starting today's lesson.",
   );
 
   // Spaced retrieval runs BEFORE today's warmup. The warmup reviews the previous
@@ -2563,19 +2570,41 @@ function renderWarmupPhase(el, state, ctx, config) {
   card.style.cssText =
     "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
 
+  /*
+   * Two kinds of warmup, because two situations are genuinely different.
+   *
+   * A mid-unit lesson checks the lesson before it — "Previous Lesson Check".
+   * A UNIT OPENER has no previous lesson in its unit, and naming one is either a
+   * fiction or (as 4-1 did) a pointer at a lesson students have not taken yet.
+   * Those open with prerequisite/spiral retrieval instead, so the heading says
+   * what the questions actually do.
+   */
+  // Compared via a helper rather than an inline literal. The visual-kind parser
+  // in scripts/validate-lesson-visuals.mjs harvests renderable kinds by scanning
+  // this file for a dot-kind equality against a quoted string, and a WARMUP kind
+  // is a different namespace entirely — written inline, it registered the warmup
+  // value as an interactive visual and failed the REGISTRY parity check.
+  const isSpiral = isSpiralWarmup(warmup);
+  const spiralFrom = warmup.spiralFrom ? ` (${warmup.spiralFrom})` : "";
   const prevTitle = warmup.prevLessonTitle ? ` (${warmup.prevLessonTitle})` : "";
+  const warmupHeading = isSpiral
+    ? `Warmup: Prerequisite Review${esc(spiralFrom)}`
+    : `Warmup: Previous Lesson Check${esc(prevTitle)}`;
+  const warmupLede = isSpiral
+    ? "Answer these warmup questions. They review the skills today's lesson builds on."
+    : "Answer these 3–4 warmup questions reviewing previous lesson material before starting today's lesson.";
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
       <div>
         <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 1 · Warmup</span>
-        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">⚡ Warmup: Previous Lesson Check${esc(prevTitle)}</h3>
+        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">⚡ ${warmupHeading}</h3>
       </div>
       <div id="warmupScoreBadge" style="font-size:14.5px; font-weight:800; color:#0b5a63; background:#f0fdf4; border:1px solid #bbf7d0; padding:7px 15px; border-radius:10px;">
         ${warmup.questions.length} Questions · Autograded
       </div>
     </div>
     <p style="margin:0 0 16px; font-size:16.5px; font-weight:600; line-height:1.55; color:#3f4a5f;">
-      Answer these 3–4 warmup questions reviewing previous lesson material before starting today's lesson.
+      ${warmupLede}
     </p>
   `;
 
@@ -3067,9 +3096,13 @@ function renderReteachHelper(container, warmup, _correctCount, _total, config) {
   reteachBox.style.cssText =
     "margin-top:20px; border:2px solid #eab308; border-radius:14px; padding:18px; background:#fefce8; box-shadow:0 4px 14px rgba(234,179,8,0.15);";
 
+  // On a unit opener the reteach is of the PREREQUISITE skill, not of a lesson
+  // that does not exist; spiralFrom names it.
   const prevTitle = warmup.prevLessonTitle
     ? esc(warmup.prevLessonTitle)
-    : "Previous Lesson Concept";
+    : warmup.spiralFrom
+      ? esc(warmup.spiralFrom)
+      : "Previous Lesson Concept";
 
   reteachBox.innerHTML = `
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
