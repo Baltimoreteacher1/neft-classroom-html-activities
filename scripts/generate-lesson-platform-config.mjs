@@ -11,8 +11,9 @@
  * scope-and-sequence (units 7/8/9 cross over — see project_unit_numbering),
  * so a number-based join produces WRONG standards. Instead we read the single
  * authoritative CCSS code each lesson already displays in its standard badge,
- * and theme by that standard's DOMAIN (RP/NS/EE/SP/G) — which is always correct
- * regardless of folder numbering. Theme palette is reused from
+ * and theme by the unit that CANONICALLY owns that standard (from
+ * data/curriculum-manifest.json) — which is always correct regardless of folder
+ * numbering or of what a legacy /unit-N/ path is called. Theme palette is reused from
  * data/curriculum-unit-identities.json (single source for accents/icons).
  *
  * Injects one inline <script> into the <head> of every lesson the platform was
@@ -54,15 +55,49 @@ function load(rel) {
   }
 }
 
-// Build domain -> theme from the identity palette (single source). Each Grade-6
-// domain maps to the scope-sequence unit that owns it; the accent/icon/title are
-// reused verbatim so themes stay consistent with the curriculum hub.
+// Theme comes from the identity palette (single source), looked up by the unit
+// that CANONICALLY owns the lesson's standard.
+//
+// This used to be a hand-written DOMAIN_UNIT = { RP:"3", NS:"1", EE:"7", SP:"8",
+// G:"5" } map. Both halves of it went stale: the CCSS domains were replaced by
+// the 2025 MCCRS codes (6.EE.C.8 is now 6.AT.C.8), and the unit numbers were the
+// pre-renumber ones, so "EE" pointed at the unit that is now Integers. The
+// curriculum manifest already records which unit owns each standard, so ask it
+// rather than restating it here.
 const identities = load("data/curriculum-unit-identities.json");
 const units = (identities && identities.units) || {};
-const DOMAIN_UNIT = { RP: "3", NS: "1", EE: "7", SP: "8", G: "5" };
-function themeForDomain(domain) {
-  const u = units[DOMAIN_UNIT[domain]];
-  if (!u) return null;
+const curriculum = load("data/curriculum-manifest.json");
+// Pages badge the cluster letter ("6.AT.C.8") while lesson configs omit it
+// ("6.AT.8"), so both forms are indexed and both are tried.
+const dropCluster = (id) => String(id || "").replace(/\.[A-Z](?=\.)/, "");
+const unitForStandard = new Map();
+for (const lesson of (curriculum && curriculum.lessons) || []) {
+  if (!lesson.standard) continue;
+  // First lesson wins: a standard taught in two units belongs to the earlier
+  // one, which is also where the hub lists it.
+  for (const key of [lesson.standard, dropCluster(lesson.standard)]) {
+    if (!unitForStandard.has(key)) unitForStandard.set(key, String(lesson.unit));
+  }
+}
+/** Canonical lesson id -> unit, the second way to reach the same answer. */
+const unitForLesson = new Map(
+  ((curriculum && curriculum.lessons) || []).map((l) => [l.id, String(l.unit)]),
+);
+
+/**
+ * A page's badge can carry an older standard than its lesson config does
+ * (6.GR.A.3 on what the manifest now records as 6.NOS.9), so fall back to the
+ * canonical lesson id in the page's own path. Both routes ask the curriculum
+ * manifest; neither reads a number out of a legacy /unit-N/ folder name.
+ */
+function themeFor(standard, file) {
+  const byLesson = /\/(\d{1,2}-\d{1,2})(?:-[^/]*)?\/[^/]*$/.exec(file || "")?.[1];
+  const unit =
+    unitForStandard.get(standard) ||
+    unitForStandard.get(dropCluster(standard)) ||
+    (byLesson && unitForLesson.get(byLesson));
+  const u = unit && units[unit];
+  if (!u) return null; // unresolvable -> no theme, never a guessed one
   return { name: u.title || "", emoji: u.icon || "", color: u.accent || "" };
 }
 
@@ -80,15 +115,14 @@ function extractTitle(html) {
   return m[1].replace(/^\s*Lesson\s+[\d-]+\s*:\s*/i, "").trim();
 }
 
-function buildConfig(html) {
+function buildConfig(html, file) {
   const m = html.match(CCSS_RE);
   if (!m) return null; // no detectable standard -> skip (no fabrication)
   const standard = m[0];
-  const domain = m[1];
   const cfg = { NT_LESSON_STANDARD: standard };
   const title = extractTitle(html);
   if (title) cfg.NT_LESSON_TITLE = title;
-  const theme = themeForDomain(domain);
+  const theme = themeFor(standard, file);
   if (theme) cfg.NT_UNIT_THEME = theme;
   return cfg;
 }
@@ -114,7 +148,7 @@ function processFile(file) {
   }
 
   html = stripBlock(html); // strip any prior config FIRST, then read clean content
-  const cfg = buildConfig(html);
+  const cfg = buildConfig(html, file);
   if (!cfg) {
     report.noStandard++;
     return;

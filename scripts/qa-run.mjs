@@ -102,6 +102,12 @@ const COVERAGE = [
     /^(scripts\/(generate-download-manifest\.mjs|lib\/download-taxonomy\.mjs)|data\/curriculum-download-manifest\.json|assets\/(curriculum-download\.(js|css)|lib\/zip-store\.js)|tools\/(validate-download-manifest|download-manifest\.test)\.mjs)$/,
     ["test", "validate:downloads", "validate:js-syntax", "validate:scorm"],
   ],
+  // Unit identity metadata is keyed by the CURRENT unit number; an edit here or
+  // to the units page must re-run the identity + placement pins.
+  [
+    /^(data\/curriculum-unit-identities\.json|tools\/unit-identities\.test\.mjs|scripts\/generate-lesson-platform-config\.mjs)$/,
+    ["test", "validate:downloads", "validate:curriculum-top1"],
+  ],
   // The units page is the authority on which unit an End-of-Unit resource belongs
   // to, so an edit there must re-run the placement gate.
   [
