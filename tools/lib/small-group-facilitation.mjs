@@ -104,14 +104,38 @@ const MODEL_SLOTS = [
    skipped in favour of one that does; if nothing fits, the generic phrase is
    better than a confidently wrong one. */
 const FAMILY_MODELS = {
-  ratio: ["tape-diagram", "ratio-table-builder", "double-number-line", "unit-rate-builder", "number-line"],
+  ratio: [
+    "tape-diagram",
+    "ratio-table-builder",
+    "double-number-line",
+    "unit-rate-builder",
+    "number-line",
+  ],
   percent: ["percent-grid", "percent-builder", "tape-diagram", "number-line"],
   expression: ["area-morph", "step-solver", "tape-diagram"],
   equation: ["equation-balance-lab", "step-solver", "tape-diagram", "number-line"],
-  data: ["histogram", "histogram-builder", "box-plot", "box-plot-builder", "dot-plot", "bar-chart", "stat-towers", "data-chips", "line-grapher"],
+  data: [
+    "histogram",
+    "histogram-builder",
+    "box-plot",
+    "box-plot-builder",
+    "dot-plot",
+    "bar-chart",
+    "stat-towers",
+    "data-chips",
+    "line-grapher",
+  ],
   geometry: ["net-folder", "cross-section", "area-morph", "coordinate-plane"],
   integer: ["number-line", "number-line-explorer", "coordinate-plane"],
-  number: ["decimal-columns", "decimal-product", "long-division-builder", "fraction-divide", "factor-tree", "factor-tree-lab", "number-line"],
+  number: [
+    "decimal-columns",
+    "decimal-product",
+    "long-division-builder",
+    "fraction-divide",
+    "factor-tree",
+    "factor-tree-lab",
+    "number-line",
+  ],
 };
 
 export function modelName(config, family) {
@@ -136,7 +160,6 @@ export function modelName(config, family) {
   return "the model";
 }
 
-
 /** Misconception tag ids actually used by a lesson's practice, most-used first. */
 export function lessonTags(config, taxonomy) {
   const counts = new Map();
@@ -153,11 +176,31 @@ export function lessonTags(config, taxonomy) {
 const trimDot = (s) => String(s || "").replace(/\s*\.\s*$/, "");
 const lower1 = (s) => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
 
+/**
+ * The authored `commonMistake` is written for a teacher READING a lesson, and
+ * runs to a paragraph — 2-1's is 805 characters. A teacher mid-group with four
+ * students waiting will not read that, so only its first sentence becomes a
+ * LOOK FOR. The full text is still on the lesson page where there is time for
+ * it; this field is the glance version.
+ */
 function commonMistakeText(config) {
   const m = config?.practice?.commonMistake;
   if (!m) return null;
-  if (typeof m === "string") return trimDot(m);
-  return trimDot(m.text || m.mistake || "") || null;
+  const raw = typeof m === "string" ? m : m.text || m.mistake || "";
+  let text = String(raw).trim();
+  if (!text) return null;
+  // Authored mistakes usually open "A common mistake in <lesson> is …", which
+  // made the LOOK FOR frame read "Students a common mistake in …". Strip the
+  // preamble so what is left is the error itself.
+  text = text
+    .replace(/^a common mistake\b(?:\s+in\s+[^.]{0,80}?)?\s+is\s+(?:that\s+)?/i, "")
+    .trim();
+  if (!text) return null;
+  // First sentence, but never cut mid-decimal ("-0.75") or mid-abbreviation.
+  const match = /^(.*?[a-z0-9)\]"'’”])\.(?:\s|$)/i.exec(text);
+  let first = match ? match[1] : text;
+  if (first.length > 150) first = `${first.slice(0, 147).replace(/[\s,;:—-]+$/, "")}…`;
+  return trimDot(first);
 }
 
 /* ------------------------------------------------------------------ ASK ---- */
@@ -173,7 +216,7 @@ const ASK_SUPPORT = {
   equation: (m) => `What is being done to the variable right now? Show me on ${m}.`,
   data: (m) => `What is one dot or bar on ${m} — one person, or one measurement?`,
   geometry: (m) => `Show me on ${m} which lengths you are using, and what they build.`,
-  integer: (m) => `Where does that number sit on ${m}, and which side of zero?`,
+  integer: (m) => `Between which two integers does this value belong? Show me on ${m}.`,
   number: (m) => `What does each place stand for on ${m}?`,
   general: (m) => `Show me on ${m} where your numbers came from.`,
 };
@@ -391,7 +434,9 @@ export function buildLookFor({ group, config, tags, taxonomy }) {
     const label = tags.length ? taxonomy[tags[0]]?.label : null;
     if (label) return `Students ${lower1(trimDot(label))} — that is this lesson's error.`;
     const mistake = commonMistakeText(config);
-    if (mistake) return `Students ${lower1(mistake)}.`;
+    // "Students …" only works in front of a verb phrase, which a taxonomy label
+    // is and free prose is not. Prose gets a frame that fits any shape.
+    if (mistake) return `Watch for: ${lower1(mistake)}.`;
     return `Which step a student stops at — name the stopping point out loud.`;
   }
   // Taxonomy labels are past-tense verb phrases ("Flipped the ratio"), so they
@@ -422,39 +467,66 @@ const IF_STUCK_CHALLENGE = {
   general: (m) => `Ask for a second representation on ${m} before any more explaining.`,
 };
 
-
 /* Challenge IF STUCK, per misconception: a smaller case or a constraint that
    makes the error visible, never a re-teach of the method. */
 const IF_STUCK_BY_TAG = {
-  "coord-xy-swapped": (m) => `Ask them to plot both (a, b) and (b, a) on ${m} and describe the line between them.`,
-  "ratio-scaled-additively": (m) => `Give them a 1-to-something row on ${m} and ask what one step of scaling does.`,
-  "ratio-inverted": () => `Ask them to write the question that WOULD make the flipped ratio correct.`,
-  "ratio-as-difference": () => `Give two pairs with the same difference and ask whether the ratios match.`,
-  "geom-volume-added-dimensions": (m) => `Ask how many unit cubes fit along each edge of ${m}, then what to do with the three numbers.`,
-  "geom-surface-area-as-volume": () => `Ask them to say the unit out loud before computing — square or cubic?`,
-  "geom-triangle-area-no-half": (m) => `Ask them to draw the enclosing rectangle on ${m} and name the fraction.`,
-  "measure-area-perimeter-swap": () => `Ask for two shapes with equal perimeter and different area.`,
-  "stat-center-vs-spread": () => `Give two sets with the same mean and ask which measure tells them apart.`,
+  "coord-xy-swapped": (m) =>
+    `Ask them to plot both (a, b) and (b, a) on ${m} and describe the line between them.`,
+  "ratio-scaled-additively": (m) =>
+    `Give them a 1-to-something row on ${m} and ask what one step of scaling does.`,
+  "ratio-inverted": () =>
+    `Ask them to write the question that WOULD make the flipped ratio correct.`,
+  "ratio-as-difference": () =>
+    `Give two pairs with the same difference and ask whether the ratios match.`,
+  "geom-volume-added-dimensions": (m) =>
+    `Ask how many unit cubes fit along each edge of ${m}, then what to do with the three numbers.`,
+  "geom-surface-area-as-volume": () =>
+    `Ask them to say the unit out loud before computing — square or cubic?`,
+  "geom-triangle-area-no-half": (m) =>
+    `Ask them to draw the enclosing rectangle on ${m} and name the fraction.`,
+  "measure-area-perimeter-swap": () =>
+    `Ask for two shapes with equal perimeter and different area.`,
+  "stat-center-vs-spread": () =>
+    `Give two sets with the same mean and ask which measure tells them apart.`,
   "stat-mean-vs-median": () => `Ask what has to be true of the data for the two measures to agree.`,
-  "stat-mean-skewed-by-outlier": () => `Ask them to move one value and report which measure shifted.`,
-  "stat-histogram-bin-misread": (m) => `Ask them to rebin the same data on ${m} and say whether the story changed.`,
-  "stat-range-for-iqr": () => `Ask for a data set where range and IQR are as far apart as possible.`,
-  "decimal-place-value": () => `Ask them to estimate first, then say which digit their answer disagrees with.`,
-  "op-added-instead-of-multiplied": () => `Ask them to write the repeated-addition version and count the terms.`,
-  "op-multiplied-instead-of-divided": () => `Ask whether the answer should grow or shrink, and why.`,
-  "op-reversed-division": () => `Ask them to state which quantity is being shared before computing.`,
-  "equation-not-inverse-operation": () => `Ask them to substitute their answer back and say what a false statement proves.`,
+  "stat-mean-skewed-by-outlier": () =>
+    `Ask them to move one value and report which measure shifted.`,
+  "stat-histogram-bin-misread": (m) =>
+    `Ask them to rebin the same data on ${m} and say whether the story changed.`,
+  "stat-range-for-iqr": () =>
+    `Ask for a data set where range and IQR are as far apart as possible.`,
+  "decimal-place-value": () =>
+    `Ask them to estimate first, then say which digit their answer disagrees with.`,
+  "op-added-instead-of-multiplied": () =>
+    `Ask them to write the repeated-addition version and count the terms.`,
+  "op-multiplied-instead-of-divided": () =>
+    `Ask whether the answer should grow or shrink, and why.`,
+  "op-reversed-division": () =>
+    `Ask them to state which quantity is being shared before computing.`,
+  "equation-not-inverse-operation": () =>
+    `Ask them to substitute their answer back and say what a false statement proves.`,
   "inequality-direction-flipped": (m) => `Ask them to test one value from each side on ${m}.`,
-  "algebra-distributive-partial": (m) => `Ask them to check the expansion against ${m} term by term.`,
-  "fraction-no-reciprocal": () => `Ask them to test the method on 1 ÷ ½, where they already know the answer.`,
-  "order-of-operations-left-to-right": () => `Ask them to write the same expression with parentheses that force their order.`,
+  "algebra-distributive-partial": (m) =>
+    `Ask them to check the expansion against ${m} term by term.`,
+  "fraction-no-reciprocal": () =>
+    `Ask them to test the method on 1 ÷ ½, where they already know the answer.`,
+  "order-of-operations-left-to-right": () =>
+    `Ask them to write the same expression with parentheses that force their order.`,
 };
 
 export function buildIfStuck({ group, family, model, tags, taxonomy }) {
   if (group === 1) {
     const watch = tags.length ? taxonomy[tags[0]]?.watchFor : null;
     if (watch) return trimDot(watch) + ".";
-    return `Go back to ${model} and rebuild the first step together before releasing them.`;
+    // Model-shaped first move rather than "rebuild the first step", which tells
+    // a teacher to do something without saying what.
+    if (/number line/.test(model)) {
+      return `Locate the two whole numbers it falls between first, then split that interval into equal parts.`;
+    }
+    if (/table/.test(model)) {
+      return `Cover every row but the first, and rebuild the next row from it one step at a time.`;
+    }
+    return `Work the first step together on ${model}, then hand the second one back to them.`;
   }
   /* Prefer the lesson's OWN error over its standard family. 7-5 is a coordinate
      lesson inside the integer family, so the family move ("which is further
