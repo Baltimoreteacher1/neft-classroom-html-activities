@@ -135,8 +135,20 @@ const MATH_KEYS = new Set([
   "yName",
 ]);
 
-/** Every `kind`-bearing object in the config, reduced to its mathematics. */
+/**
+ * Every `kind`-bearing object in the config, reduced to its mathematics.
+ *
+ * `kind` is not exclusively a visual discriminator: the warmup uses it for its
+ * SEQUENCING type (`kind: "spiral"`). Walking the whole config therefore
+ * reported a visual-mathematics change every time a warmup was reclassified,
+ * which is both wrong and the worst kind of wrong — it makes the field that
+ * exists to catch a moved plotted point fire on metadata. No warmup question in
+ * the fleet carries a visual (checked: 0 of 272), so the warmup subtree is
+ * skipped outright rather than special-casing the value.
+ */
 function visualMath(config) {
+  const { warmup: _warmup, ...visualScope } = config || {};
+  config = visualScope;
   const found = [];
   const walk = (node) => {
     if (!node || typeof node !== "object") return;
