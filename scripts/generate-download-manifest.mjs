@@ -423,6 +423,9 @@ function assignZipPaths(resources, seen) {
 function main() {
   const curriculum = readJson("data/curriculum-manifest.json");
   const launch = readJson("data/curriculum-launch-manifest.json");
+  // Decorative only (icon/identity blurb). This file is keyed by the
+  // PRE-renumber numbering — its "9" is "Integer Outpost", its "10" is "Volume
+  // Vault" — so it must never be used to decide which unit owns a resource.
   const identities = readJson("data/curriculum-unit-identities.json").units || {};
   // Teachers still search by the CCSS codes ("6.RP.A.3") the district used
   // before the 2025 MCCRS re-code, and lessons now carry the new ids ("6.AT.3").
@@ -466,15 +469,17 @@ function main() {
     });
   }
 
-  // Unit-level rows belong to the unit whose card contains them. The units page
-  // is the authority here and its nesting is now verified by
+  // Unit-level rows belong to the unit whose card contains them — rule 2 of the
+  // ownership order documented beside CANONICAL_UNIT in
+  // scripts/lib/download-taxonomy.mjs, and enforced by
   // tools/validate-unit-resource-placement.mjs.
   //
-  // This deliberately does NOT infer the unit from the href. Most unit-level
-  // assets carry LEGACY numbering from before the 2026-08-10 Reveal-TOC
-  // renumber — /pre-test/unit9-review.html is titled "Integers and Coordinate
-  // Plane" and belongs to Unit 7; /math/unit-10/projects/ is "Volume & Surface
-  // Area in Action" and belongs to Unit 5. Trusting the href moved dozens of
+  // This deliberately does NOT infer the unit from the href (rule 4: a path
+  // number is a diagnostic clue, never authority). Most unit-level assets carry
+  // LEGACY numbering from before the 2026-08-10 Reveal-TOC renumber —
+  // /pre-test/unit9-review.html is titled "Integers and Coordinate Plane" and
+  // belongs to Unit 7; /math/unit-10/projects/ is "Volume & Surface Area in
+  // Action" and belongs to Unit 5. Trusting the href moved dozens of
   // correctly-placed resources into the wrong package.
   const unitLevel = new Map();
   for (const pu of parsed) {

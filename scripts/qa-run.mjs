@@ -105,8 +105,8 @@ const COVERAGE = [
   // The units page is the authority on which unit an End-of-Unit resource belongs
   // to, so an edit there must re-run the placement gate.
   [
-    /^(curriculum\/units\/index\.html|tools\/validate-unit-resource-placement\.mjs)$/,
-    ["validate:unit-placement", "validate:downloads", "validate:hub", "validate:static"],
+    /^(curriculum\/units\/index\.html|tools\/(validate-unit-resource-placement|unit-placement\.test)\.mjs|scripts\/lib\/download-taxonomy\.mjs)$/,
+    ["validate:unit-placement", "test", "validate:downloads", "validate:hub", "validate:static"],
   ],
   // Routing: data/routes.json is the source of truth for BOTH _redirects and
   // functions/_lib/redirect-map.js, and the middleware replays the map on a 404.

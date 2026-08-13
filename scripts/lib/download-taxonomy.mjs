@@ -237,3 +237,69 @@ export function safeName(value, fallback = "resource") {
     .replace(/[-.\s]+$/, "");
   return cleaned || fallback;
 }
+
+/**
+ * WHO OWNS A UNIT-LEVEL RESOURCE — the order of authority.
+ * ---------------------------------------------------------------------------
+ * Lessons were renumbered to the publisher's Reveal TOC on 2026-08-10
+ * (data/toc-migration.json). Most unit-level ASSETS were never renamed, so the
+ * number inside a path is the unit that resource belonged to BEFORE the
+ * renumber. It is a historical fact about a filename, not a statement about the
+ * current curriculum, and it must never be treated as one:
+ *
+ *   /pre-test/unit9-review.html   titles itself "Integers and Coordinate Plane" -> Unit 7
+ *   /pre-test/unit7-review.html   titles itself "Equations and Inequalities"    -> Unit 8
+ *   /pre-test/unit8-review.html   titles itself "Statistics"                    -> Unit 2
+ *   /math/unit-10/projects/       titles itself "Volume & Surface Area in Action" -> Unit 5
+ *
+ * Resolve ownership in this order, and stop at the first that answers:
+ *
+ *   1. CANONICAL_UNIT below — an explicit, reviewed assignment.
+ *   2. The current curriculum structure: which unit card in
+ *      curriculum/units/index.html contains the link, and data/curriculum-manifest.json
+ *      for anything lesson-scoped. This is the working default.
+ *   3. The resource page's own <h1>/<title>, compared against the CURRENT unit
+ *      names. Used to catch a clear contradiction, never to reassign quietly.
+ *   4. The number in the path or filename — a diagnostic clue only. On its own
+ *      it may never move a resource or fail a build.
+ *
+ * Enforced by tools/validate-unit-resource-placement.mjs.
+ *
+ * Note for anyone reaching for more metadata: data/curriculum-unit-identities.json
+ * is ALSO keyed by the pre-renumber numbering (its "9" is "Integer Outpost",
+ * its "10" is "Volume Vault"). Do not use it to decide ownership.
+ */
+
+/**
+ * Explicit ownership for resources that rule 2 and rule 3 cannot settle. Build
+ * time only — nothing here reaches the teacher-facing UI.
+ *
+ * Keep this map as short as it can be. An entry earns its place by naming a
+ * resource whose own title does not identify a unit, so that without it the
+ * placement would rest on inference.
+ */
+export const CANONICAL_UNIT = new Map([
+  [
+    "/math/unit-1/projects/",
+    {
+      unit: 6,
+      title: "Number Sense in Action",
+      because:
+        "Joel's call, 2026-08-13: Unit 6 carries the prime-factorization and " +
+        "fraction-division content this project applies, which is a defensible " +
+        "instructional match. The 'unit-1' in the path is pre-renumber and is " +
+        "not authoritative. The title names no unit, so rule 3 cannot decide it.",
+    },
+  ],
+  [
+    "/math/unit-10/projects/",
+    {
+      unit: 5,
+      title: "Volume & Surface Area in Action",
+      because:
+        "Its own title is Volume & Surface Area, which is Unit 5 " +
+        "(Area, Surface Area & Volume). Pinned explicitly because the path says " +
+        "unit-10, and Unit 10 is a reflection unit with no culminating project.",
+    },
+  ],
+]);
