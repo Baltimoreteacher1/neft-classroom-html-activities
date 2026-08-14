@@ -2560,7 +2560,33 @@ function isSpiralWarmup(warmup) {
 
 function renderWarmupPhase(el, state, ctx, config) {
   const warmup = config.warmup;
-  if (!warmup || !Array.isArray(warmup.questions) || warmup.questions.length === 0) return;
+  // Phase 1 is always in the sidebar (phaseConfigs is a fixed eight-phase list),
+  // so returning empty here left a lesson with no authored warmup showing a
+  // blank screen — the student clicks "1 Warmup" and nothing is there. Never
+  // render nothing: say what happened and hand them the way forward.
+  if (!warmup || !Array.isArray(warmup.questions) || warmup.questions.length === 0) {
+    phaseHeader(
+      el,
+      "1",
+      "section-icon-teal",
+      "Phase 1: Warmup",
+      "There is no warmup for this lesson — go straight to Phase 2.",
+    );
+    instructionCallout(
+      el,
+      "🚀",
+      "This lesson starts with the learning objectives. Use the button below — or tap <strong>2 Objectives</strong> in the sidebar.",
+    );
+    const go = document.createElement("button");
+    go.type = "button";
+    go.className = "btn btn-primary btn-lg";
+    go.textContent = "Continue to Phase 2: Objectives 🎯";
+    go.addEventListener("click", () => {
+      if (ctx && typeof ctx.nextPhase === "function") ctx.nextPhase();
+    });
+    el.append(go);
+    return;
+  }
 
   phaseHeader(
     el,
@@ -4971,7 +4997,9 @@ function renderConnectPhase(el, state, ctx, config) {
 // ── Phase 6: Reflect ──
 function renderReflectPhase(el, state, ctx, config) {
   const cfg = config.reflect;
-  phaseHeader(el, "💡", "section-icon-coral", phaseName(4), t("reflectDesc"));
+  // phaseName(6) is Reflect. This read phaseName(4) — Practice — so every
+  // lesson's Phase 7 header announced "Practice" over the reflection copy.
+  phaseHeader(el, "💡", "section-icon-coral", phaseName(6), t("reflectDesc"));
 
   // Teacher-only: the Socratic question ladders this student worked through.
   // Reflect is where a teacher conferring with a student ends up, so the record
