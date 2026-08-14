@@ -17,6 +17,21 @@ function makeItem(
   index,
   { stem, stemEs, answer, visual, steps, hint, hintEs, explanation, explanationEs },
 ) {
+  // Hint ladder — nudge → strategy → worked first step, never the answer.
+  // Ported from small-group-parallel-practice.mjs's makeItem (2026-08-14):
+  // this file used to emit a single strategy hint, so every data/coordinate/
+  // two-variable item had a one-rung ladder while the rest of the fleet had
+  // three. Same answer-withholding rule as the original: when the first step's
+  // answer IS the item's answer, the hint points at the step and leaves the
+  // blank blank.
+  const strategy = hint || "Use the visual model, then complete one step at a time.";
+  const firstStepIsAnswer = steps[0] && String(steps[0][1]) === String(answer);
+  const firstStep = steps[0]
+    ? firstStepIsAnswer
+      ? String(steps[0][0])
+      : String(steps[0][0]).replace("___", String(steps[0][1]))
+    : null;
+  const firstStepLead = firstStepIsAnswer ? "Start with this step" : "Start like this";
   const hasEs = Boolean(stemEs);
   const item = {
     id: `${context.lessonId}-parallel-${String(index + 1).padStart(2, "0")}`,
@@ -29,13 +44,28 @@ function makeItem(
         ? { prompt, promptEs, answer: String(stepAnswer) }
         : { prompt, answer: String(stepAnswer) },
     ),
-    hints: [hint || "Use the visual model, then complete one step at a time."],
+    hints: [
+      "Re-read the question. What exactly is it asking you to find?",
+      strategy,
+      ...(firstStep ? [`${firstStepLead}: ${firstStep}`] : []),
+    ],
     explanation:
       explanation || steps.map(([prompt, value]) => prompt.replace("___", value)).join(" "),
   };
   if (hasEs) {
     item.stemEs = stemEs;
-    item.hintsEs = [hintEs || ES_DEFAULT_STRATEGY];
+    const firstStepEs =
+      steps[0] && steps[0][2]
+        ? firstStepIsAnswer
+          ? String(steps[0][2])
+          : String(steps[0][2]).replace("___", String(steps[0][1]))
+        : null;
+    const firstStepLeadEs = firstStepIsAnswer ? "Empieza con este paso" : "Empieza así";
+    item.hintsEs = [
+      "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?",
+      hintEs || ES_DEFAULT_STRATEGY,
+      ...(firstStepEs ? [`${firstStepLeadEs}: ${firstStepEs}`] : []),
+    ];
     const explEs =
       explanationEs ||
       (steps.every((step) => step[2])

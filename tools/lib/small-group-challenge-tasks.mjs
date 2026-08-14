@@ -216,6 +216,129 @@ export const CHALLENGE_TASKS = {
       },
     ],
   },
+
+  // -------------------------------------------------------------------------
+  // 6-14 · 6.AT.7 — The Distributive Property (2026-08-14 alignment audit).
+  //
+  // The objective reads "expand AND FACTOR", but the challenge variant's whole
+  // practice spine expanded only: the remix pulled three approaching-level
+  // items into the extending bucket — pure arithmetic 4(5 − 2), a recall item
+  // ("you must multiply 'a' by:"), and a third copy of Expand 3(x + 4) that
+  // also lives in optional's Light Cue 1. Factoring appeared nowhere a student
+  // could DO it. Dropped the three, added the factoring half: two factor-with-
+  // the-GCF items whose distractors are complete-but-not-GCF factorings (the
+  // real misconception), and an equivalence judgment where every choice must
+  // be expanded to find the impostor. Arithmetic checked: 6(2x+3)=12x+18;
+  // 2(6x+9)=12x+18 but not GCF; 8(3a+2)=24a+16; 4(6a+4)=24a+16 not GCF;
+  // 6(x+12)=6x+72 ≠ 6x+12 while 6(x+2), 2(3x+6), 3(2x+4) all equal it.
+  // -------------------------------------------------------------------------
+  "6-14-group2": {
+    drop: ["Expand 4(5", "must multiply", "Expand 3(x + 4) using"],
+    add: [
+      {
+        type: "multiple-choice",
+        stem: "Factor 12x + 18 using the GCF.",
+        stemEs: "Factoriza 12x + 18 usando el MCD.",
+        choices: ["6(2x + 3)", "2(6x + 9)", "12(x + 18)", "6(2x + 18)"],
+        choicesEs: ["6(2x + 3)", "2(6x + 9)", "12(x + 18)", "6(2x + 18)"],
+        correctIndex: 0,
+        explanation:
+          "The GCF of 12 and 18 is 6: 12x + 18 = 6(2x + 3). Check by expanding: 6 × 2x = 12x and 6 × 3 = 18.",
+        explanationEs:
+          "El MCD de 12 y 18 es 6: 12x + 18 = 6(2x + 3). Comprueba desarrollando: 6 × 2x = 12x y 6 × 3 = 18.",
+        choiceFeedback: [
+          "",
+          "Expand it — 2(6x + 9) does equal 12x + 18, but 6x and 9 still share a factor. Factoring with the GCF leaves nothing else to pull out.",
+          "Expand to check: 12 × 18 = 216, not 18. Only the 12x term was considered.",
+          "Expand to check: 6 × 18 = 108, not 18. The second term inside must multiply back to 18.",
+        ],
+        choiceFeedbackEs: [
+          "",
+          "Desarróllala: 2(6x + 9) sí es igual a 12x + 18, pero 6x y 9 todavía comparten un factor. Factorizar con el MCD no deja nada más por sacar.",
+          "Comprueba desarrollando: 12 × 18 = 216, no 18. Solo se consideró el término 12x.",
+          "Comprueba desarrollando: 6 × 18 = 108, no 18. El término de adentro debe multiplicar de vuelta a 18.",
+        ],
+        hints: [
+          "Factoring runs the distributive property backwards: what number divides BOTH 12 and 18?",
+          "The greatest common factor of 12 and 18 is 6. Divide each term by it.",
+          "12x ÷ 6 = 2x and 18 ÷ 6 = 3. Write the factored form, then expand it to check.",
+        ],
+        hintsEs: [
+          "Factorizar es la propiedad distributiva al revés: ¿qué número divide a 12 Y a 18?",
+          "El máximo común divisor de 12 y 18 es 6. Divide cada término entre él.",
+          "12x ÷ 6 = 2x y 18 ÷ 6 = 3. Escribe la forma factorizada y desarróllala para comprobar.",
+        ],
+      },
+      {
+        type: "multiple-choice",
+        stem: "Factor 24a + 16 completely, using the GCF.",
+        stemEs: "Factoriza 24a + 16 por completo, usando el MCD.",
+        choices: ["8(3a + 2)", "4(6a + 4)", "8(3a + 8)", "16(a + 1)"],
+        choicesEs: ["8(3a + 2)", "4(6a + 4)", "8(3a + 8)", "16(a + 1)"],
+        correctIndex: 0,
+        explanation:
+          "The GCF of 24 and 16 is 8: 24a + 16 = 8(3a + 2). Expanding gives 24a + 16 back, and 3a and 2 share no factor.",
+        explanationEs:
+          "El MCD de 24 y 16 es 8: 24a + 16 = 8(3a + 2). Al desarrollar regresa 24a + 16, y 3a y 2 no comparten factores.",
+        choiceFeedback: [
+          "",
+          "4(6a + 4) expands to 24a + 16, but 6a and 4 still share a 2 — the factoring is not complete. What is the GREATEST common factor?",
+          "Expand: 8 × 8 = 64, not 16. Check the second term inside the parentheses.",
+          "Expand: 16 × a = 16a, not 24a. The first term no longer matches.",
+        ],
+        choiceFeedbackEs: [
+          "",
+          "4(6a + 4) se desarrolla a 24a + 16, pero 6a y 4 todavía comparten un 2 — la factorización no está completa. ¿Cuál es el MÁXIMO factor común?",
+          "Desarrolla: 8 × 8 = 64, no 16. Revisa el segundo término de adentro.",
+          "Desarrolla: 16 × a = 16a, no 24a. El primer término ya no coincide.",
+        ],
+        hints: [
+          "List the factors 24 and 16 share; take the greatest.",
+          "The GCF is 8. Divide both terms by 8.",
+          "24a ÷ 8 = 3a and 16 ÷ 8 = 2. Write it, then expand to confirm nothing is lost.",
+        ],
+        hintsEs: [
+          "Enumera los factores que comparten 24 y 16; toma el mayor.",
+          "El MCD es 8. Divide ambos términos entre 8.",
+          "24a ÷ 8 = 3a y 16 ÷ 8 = 2. Escríbelo y desarrolla para confirmar que nada se pierde.",
+        ],
+      },
+      {
+        type: "multiple-choice",
+        stem: "Which expression is NOT equivalent to 6x + 12?",
+        stemEs: "¿Cuál expresión NO es equivalente a 6x + 12?",
+        choices: ["6(x + 12)", "6(x + 2)", "2(3x + 6)", "3(2x + 4)"],
+        choicesEs: ["6(x + 12)", "6(x + 2)", "2(3x + 6)", "3(2x + 4)"],
+        correctIndex: 0,
+        explanation:
+          "6(x + 12) expands to 6x + 72 — the 12 was left unmultiplied. The other three all expand to exactly 6x + 12.",
+        explanationEs:
+          "6(x + 12) se desarrolla a 6x + 72: el 12 quedó sin multiplicar por completo. Las otras tres sí dan exactamente 6x + 12.",
+        choiceFeedback: [
+          "",
+          "Expand it: 6 × x = 6x and 6 × 2 = 12. This one IS equivalent — you need the impostor.",
+          "Expand it: 2 × 3x = 6x and 2 × 6 = 12. Equivalent — keep hunting.",
+          "Expand it: 3 × 2x = 6x and 3 × 4 = 12. Equivalent — one of the others fails the check.",
+        ],
+        choiceFeedbackEs: [
+          "",
+          "Desarróllala: 6 × x = 6x y 6 × 2 = 12. Esta SÍ es equivalente — busca la impostora.",
+          "Desarróllala: 2 × 3x = 6x y 2 × 6 = 12. Equivalente — sigue buscando.",
+          "Desarróllala: 3 × 2x = 6x y 3 × 4 = 12. Equivalente — otra opción falla la comprobación.",
+        ],
+        hints: [
+          "Expand each choice and compare it with 6x + 12.",
+          "A factored form is equivalent only if BOTH products land back on the original terms.",
+          "Check the constant each expansion produces: 6 × 12, 6 × 2, 2 × 6, 3 × 4. Which is not 12?",
+        ],
+        hintsEs: [
+          "Desarrolla cada opción y compárala con 6x + 12.",
+          "Una forma factorizada es equivalente solo si AMBOS productos regresan a los términos originales.",
+          "Revisa la constante de cada desarrollo: 6 × 12, 6 × 2, 2 × 6, 3 × 4. ¿Cuál no es 12?",
+        ],
+      },
+    ],
+  },
 };
 
 /**
