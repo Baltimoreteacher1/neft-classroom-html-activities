@@ -167,6 +167,11 @@ const LESSON_1_1_SUPPORT = [
       "Her estimate is ___ riders away from the exact answer.",
       "That is a fair trade here because ___ .",
     ],
+    sentenceStemsEs: [
+      "Redondear 19 a 20 lo hizo más fácil porque ___ .",
+      "Su estimación queda a ___ pasajeros de la respuesta exacta.",
+      "Ese intercambio es justo aquí porque ___ .",
+    ],
   },
   {
     // 4. COMPARE TWO APPROACHES — the heart of MPP.3. Both students are right;
@@ -273,6 +278,11 @@ const LESSON_1_1_SUPPORT = [
       "I estimated by ___ .",
       "My estimate is about ___ riders in one hour.",
       "I chose that strategy because ___ .",
+    ],
+    sentenceStemsEs: [
+      "Estimé usando ___ .",
+      "Mi estimación es de unas ___ personas por hora.",
+      "Elegí esa estrategia porque ___ .",
     ],
   },
 ];
@@ -383,6 +393,11 @@ const LESSON_1_1_CHALLENGE = [
       "I made it low by ___ .",
       "A low estimate is the responsible one when ___ .",
     ],
+    sentenceStemsEs: [
+      "Mi estimación baja es de unos ___ pasajeros.",
+      "La hice baja al ___ .",
+      "Una estimación baja es la responsable cuando ___ .",
+    ],
   },
   {
     // 4. COMPARE STRATEGIES — rounding against compatible numbers, both valid.
@@ -488,6 +503,11 @@ const LESSON_1_1_CHALLENGE = [
       "My strategy was ___ , and my estimate is about ___ drinks.",
       "A classmate could instead ___ .",
       "Mine is better when ___ , and theirs is better when ___ .",
+    ],
+    sentenceStemsEs: [
+      "Mi estrategia fue ___ , y mi estimación es de unas ___ bebidas.",
+      "Un compañero podría en cambio ___ .",
+      "La mía es mejor cuando ___ , y la suya es mejor cuando ___ .",
     ],
   },
 ];
@@ -636,6 +656,7 @@ const LESSON_1_2_SUPPORT = [
       "We don't know ___ .",
       "My strategy is to ___ , and then ___ .",
     ],
+    sentenceStemsEs: ["Sabemos ___ .", "No sabemos ___ .", "Mi estrategia es ___ , y luego ___ ."],
   },
   {
     // 5. THE TRAP THE LESSON EXISTS FOR — a bigger fraction of a different whole
@@ -699,6 +720,11 @@ const LESSON_1_2_SUPPORT = [
       "In order from farthest: ___ .",
       "My strategy was to ___ .",
     ],
+    sentenceStemsEs: [
+      "Cam caminó ___ cuadras, porque ___ .",
+      "En orden desde el más lejano: ___ .",
+      "Mi estrategia fue ___ .",
+    ],
   },
 ];
 
@@ -718,6 +744,11 @@ const LESSON_1_2_CHALLENGE = [
       "Dana compared ___ instead of ___ .",
       "It works here only because ___ .",
       "If Ana's route were ___ blocks, then ___ .",
+    ],
+    sentenceStemsEs: [
+      "Dana comparó ___ en lugar de ___ .",
+      "Funciona aquí solo porque ___ .",
+      "Si la ruta de Ana midiera ___ cuadras, entonces ___ .",
     ],
   },
   {
@@ -813,6 +844,10 @@ const LESSON_1_2_CHALLENGE = [
       "My route is ___ blocks and my fraction is ___ .",
       "One part is ___ , so ___ parts is 18.",
     ],
+    sentenceStemsEs: [
+      "Mi ruta mide ___ cuadras y mi fracción es ___ .",
+      "Una parte es ___ , así que ___ partes son 18.",
+    ],
   },
   {
     // 5. COMPARE STRATEGIES — both correct, one easier, and the trap is the
@@ -873,6 +908,10 @@ const LESSON_1_2_CHALLENGE = [
     sentenceStems: [
       "Divide first when ___ . For example, ___ .",
       "Multiply first when ___ . For example, ___ .",
+    ],
+    sentenceStemsEs: [
+      "Divide primero cuando ___ . Por ejemplo, ___ .",
+      "Multiplica primero cuando ___ . Por ejemplo, ___ .",
     ],
   },
 ];
@@ -1126,6 +1165,11 @@ const LESSON_1_6_SUPPORT = [
       "Then I try a strategy: ___ .",
       "Last I check by ___ .",
     ],
+    sentenceStemsEs: [
+      "Primero le doy sentido al problema: sé ___ y necesito ___ .",
+      "Luego pruebo una estrategia: ___ .",
+      "Al final compruebo ___ .",
+    ],
   },
   {
     // 6. COMMUNITY TRANSFER — the "ours" half of the objective.
@@ -1141,6 +1185,11 @@ const LESSON_1_6_SUPPORT = [
       "I would say: '___' .",
       "Instead of the answer, I would ask: '___?' ",
       "That helps because ___ .",
+    ],
+    sentenceStemsEs: [
+      "Yo diría: '___' .",
+      "En vez de la respuesta, preguntaría: '¿___?' ",
+      "Eso ayuda porque ___ .",
     ],
   },
 ];
@@ -1205,6 +1254,11 @@ const LESSON_1_6_CHALLENGE = [
       "The answer is too small because ___ .",
       "My question: '___?' ",
     ],
+    sentenceStemsEs: [
+      "Leyó ___ como ___ .",
+      "La respuesta queda demasiado pequeña porque ___ .",
+      "Mi pregunta: '¿___?' ",
+    ],
   },
   {
     // 3. REVERSE + MULTI-STEP — run the process on a backward problem.
@@ -1265,6 +1319,11 @@ const LESSON_1_6_CHALLENGE = [
       "Correct answer: ___ . Trap answer: ___ .",
       "The difference: ___ .",
     ],
+    sentenceStemsEs: [
+      "Mi problema: ___ .",
+      "Respuesta correcta: ___ . Respuesta trampa: ___ .",
+      "La diferencia: ___ .",
+    ],
   },
   {
     // 5. STRATEGY SHIFT — the key idea's hardest clause: when to change course.
@@ -1324,6 +1383,11 @@ const LESSON_1_6_CHALLENGE = [
       "I hear you — ___ .",
       "But on the rack problem, a partner ___ .",
       "That matters because ___ .",
+    ],
+    sentenceStemsEs: [
+      "Te entiendo — ___ .",
+      "Pero en el problema del portabicicletas, un compañero ___ .",
+      "Eso importa porque ___ .",
     ],
   },
 ];

@@ -131,6 +131,11 @@ export const CHALLENGE_TASKS = {
           "That rule fails because the independent variable is the one that ___ .",
           "Here the shop chooses ___ , so ___ depends on ___ .",
         ],
+        sentenceStemsEs: [
+          "La regla de Devon fue ___ .",
+          "Esa regla falla porque la variable independiente es la que ___ .",
+          "Aquí la pizzería elige ___ , así que ___ depende de ___ .",
+        ],
       },
       {
         // ALWAYS / SOMETIMES / NEVER. Verified both directions before authoring:
@@ -194,6 +199,11 @@ export const CHALLENGE_TASKS = {
           "Time is dependent when ___ chooses ___ , and the time responds.",
           "The role changed because ___ .",
         ],
+        sentenceStemsEs: [
+          "El tiempo es independiente cuando ___ elige ___ , y ___ responde.",
+          "El tiempo es dependiente cuando ___ elige ___ , y el tiempo responde.",
+          "El papel cambió porque ___ .",
+        ],
       },
       {
         // REVERSE THE PROBLEM. Every other item hands over a situation and asks
@@ -212,6 +222,11 @@ export const CHALLENGE_TASKS = {
           "I would choose ___ , so that is the ___ variable.",
           "I would measure ___ , so that is the ___ variable.",
           "My two columns would be ___ and ___ .",
+        ],
+        sentenceStemsEs: [
+          "Yo elegiría ___ , así que esa es la variable ___ .",
+          "Yo mediría ___ , así que esa es la variable ___ .",
+          "Mis dos columnas serían ___ y ___ .",
         ],
       },
     ],
@@ -435,6 +450,11 @@ export const CHALLENGE_TASKS = {
           "Check: ( ___ + ___ ) ÷ 2 × ___ = 24.",
           "A different correct design could be ___ .",
         ],
+        sentenceStemsEs: [
+          "Mis bases son ___ y ___ , y mi altura es ___ .",
+          "Comprueba: ( ___ + ___ ) ÷ 2 × ___ = 24.",
+          "Otro diseño correcto podría ser ___ .",
+        ],
       },
     ],
   },
@@ -516,6 +536,11 @@ export const CHALLENGE_TASKS = {
           "At h = ___ , the first shop charges ___ and the rival charges ___ .",
           "The claim is ___ , because ___ .",
           "The rival is the better deal when ___ .",
+        ],
+        sentenceStemsEs: [
+          "Con h = ___ , el primer local cobra ___ y el rival cobra ___ .",
+          "La afirmación es ___ , porque ___ .",
+          "El rival es la mejor opción cuando ___ .",
         ],
       },
     ],
