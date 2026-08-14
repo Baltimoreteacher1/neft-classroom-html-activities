@@ -219,24 +219,44 @@ export function barChartSVG(cfg) {
     padB = 50;
   const plotW = W - padL - padR,
     plotH = H - padT - padB;
-  const maxV = Math.max(...bars.map((b) => Number(b.value) || 0), 1);
+  // Signed domain. Unit 7 charts values BELOW sea level, and pinning the
+  // baseline to the bottom of the plot made every negative bar a <rect> with a
+  // negative height — the browser rejected the attribute and the bar simply
+  // did not draw, which is exactly the bar the caption asks students to notice.
+  // Zero always sits inside the domain so the axis line means what it says.
+  const values = bars.map((b) => Number(b.value) || 0);
+  const minV = Math.min(0, ...values);
+  // All-positive charts keep the original domain exactly — including the `, 1`
+  // floor, without which a chart of fractions below 1 would rescale.
+  const maxV = minV < 0 ? Math.max(0, ...values) : Math.max(...values, 1);
+  const span = maxV - minV || 1;
+  const yOf = (v) => padT + (plotH * (maxV - v)) / span;
+  const zeroY = yOf(0);
   const slot = plotW / bars.length,
     bw = slot * 0.6,
     baseY = padT + plotH;
   const rects = bars
     .map((b, i) => {
       const v = Number(b.value) || 0;
-      const h = (v / maxV) * plotH;
+      const vy = yOf(v);
+      const y = Math.min(vy, zeroY);
+      const h = Math.abs(vy - zeroY);
       const x = padL + i * slot + (slot - bw) / 2;
-      const y = baseY - h;
+      // Keep the value readable outside its own bar, on whichever side the bar
+      // grows: above for positives, below for negatives.
+      const labelY = v < 0 ? vy + 15 : vy - 6;
       return (
         `<rect class="bar-rect" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${DATA_1}"/>` +
-        `<text class="bar-val" x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${v}</text>` +
-        `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 18).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${esc(b.label ?? "")}</text>`
+        `<text class="bar-val" x="${(x + bw / 2).toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${v}</text>` +
+        `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + (minV < 0 ? 32 : 18)).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${esc(b.label ?? "")}</text>`
       );
     })
     .join("");
-  const axis = `<line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>`;
+  const axis =
+    `<line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${W - padR}" y2="${zeroY.toFixed(1)}" stroke="var(--ink,#333)" stroke-width="1.5"/>` +
+    (minV < 0
+      ? `<text x="${padL - 6}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" font-size="11" font-weight="700" fill="var(--ink,#333)">0</text>`
+      : "");
   return svgFigure(cfg, `${axis}${rects}`, W, H, padT, "bar-chart-figure");
 }
 

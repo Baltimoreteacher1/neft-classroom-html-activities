@@ -316,30 +316,50 @@ function barFigure(host, cfg, opts) {
       focus = 0;
     },
     svg(state) {
-      const maxV = Math.max(...bars.map((b) => b.value), 1);
+      // Signed domain. Unit 7 plots depths below sea level, and anchoring the
+      // baseline to the bottom of the plot turned every negative bar into a
+      // <rect height="-214.7"> — invalid, so the browser drew nothing and the
+      // bar the caption asks about was simply missing. Zero always sits inside
+      // the domain, and each bar grows from the zero line in its own direction.
+      const minV = Math.min(0, ...bars.map((b) => b.value));
+      const signed = minV < 0;
+      // All-positive charts keep the original domain exactly — including the
+      // `, 1` floor, without which a chart of fractions below 1 would rescale.
+      const maxV = signed
+        ? Math.max(0, ...bars.map((b) => b.value))
+        : Math.max(...bars.map((b) => b.value), 1);
+      const span = maxV - minV || 1;
+      const yOf = (v) => padT + (plotH * (maxV - v)) / span;
+      const zeroY = signed ? yOf(0) : baseY;
+      const scale = (v) => (signed ? yOf(v) : baseY - (v / maxV) * plotH);
       const slot = plotW / bars.length,
         bw = touching ? slot - 1 : slot * 0.6;
       const rects = bars
         .map((b, i) => {
-          const h = (b.value / maxV) * plotH,
-            x = padL + i * slot + (touching ? 0 : (slot - bw) / 2),
-            y = baseY - h;
+          const vy = scale(b.value),
+            y = Math.min(vy, zeroY),
+            h = Math.abs(vy - zeroY),
+            x = padL + i * slot + (touching ? 0 : (slot - bw) / 2);
           const on = state.whatif && i === focus;
           const fill = on ? DATA_2 : DATA_1;
+          const valY = b.value < 0 ? vy + 15 : vy - 6;
           return (
             `<rect data-hit data-i="${i}" data-on="${on ? 1 : 0}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}"${touching ? ' stroke="#fff" stroke-width="1"' : ' rx="3"'} fill="${fill}"/>` +
-            `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${b.value}</text>` +
-            `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 18).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${esc(b.label)}</text>`
+            `<text x="${(x + bw / 2).toFixed(1)}" y="${valY.toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${b.value}</text>` +
+            `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + (signed ? 32 : 18)).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${esc(b.label)}</text>`
           );
         })
         .join("");
+      const zeroTick = signed
+        ? `<text x="${padL - 6}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" font-size="11" font-weight="700" fill="var(--ink,#333)">0</text>`
+        : "";
       const yl = cfg.yLabel
         ? `<text x="13" y="${(padT + plotH / 2).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)" transform="rotate(-90 13 ${(padT + plotH / 2).toFixed(1)})">${esc(cfg.yLabel)}</text>`
         : "";
       const xl = cfg.xLabel
         ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(cfg.xLabel)}</text>`
         : "";
-      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Interactive ${opts.title.toLowerCase()}"><line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>${rects}${xl}${yl}</svg>`;
+      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Interactive ${opts.title.toLowerCase()}"><line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${W - padR}" y2="${zeroY.toFixed(1)}" stroke="var(--ink,#333)" stroke-width="1.5"/>${zeroTick}${rects}${xl}${yl}</svg>`;
     },
     measures() {
       return opts.measures(bars);
@@ -355,7 +375,10 @@ function barFigure(host, cfg, opts) {
         api.repaint();
       };
       nudge.querySelector('[data-d="dn"]').onclick = () => {
-        bars[focus].value = Math.max(0, bars[focus].value - 1);
+        // Histogram frequencies floor at 0; a signed bar chart may legitimately
+        // go below it (Unit 7 plots depths), so only clamp the counting case.
+        const floored = touching || bars.every((b) => b.value >= 0);
+        bars[focus].value = floored ? Math.max(0, bars[focus].value - 1) : bars[focus].value - 1;
         api.repaint();
       };
     },
