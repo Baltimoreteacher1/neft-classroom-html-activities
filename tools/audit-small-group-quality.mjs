@@ -105,10 +105,18 @@ function demand(it) {
   if (
     /\bcreate (an?|your own)\b|\bwrite a problem\b|\bdesign a\b|\bfind (another|a different) (way|answer)/.test(
       s,
-    )
+    ) ||
+    // Constructing a situation to order is the same cognitive act as "create an
+    // example" — the fleet phrases it "describe one situation where ___ is the
+    // independent variable", which the create-verbs above cannot see.
+    /\bdescribe (one|a|two|three) (situation|example|case)s? where\b|\bwrite a situation\b/.test(s)
   )
     return "strategic";
-  if (/\bwhat happens if\b|\bsuppose\b|\bwould .* still\b|\bunfamiliar\b/.test(s))
+  if (
+    /\bwhat happens if\b|\bsuppose\b|\bwould .* still\b|\bunfamiliar\b/.test(s) ||
+    // Reverse-the-problem: handed the result, reconstruct the situation.
+    /\bworking backwards\b|\bwork backwards\b|\bgiven the result\b/.test(s)
+  )
     return "transfer";
   if (/\bexplain\b|\bdescribe\b|\bwhat does .* mean\b|\bhow do you know\b/.test(s))
     return "conceptual";

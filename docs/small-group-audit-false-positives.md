@@ -94,3 +94,28 @@ Kept here so the log is not read as "every finding was noise":
   questions" anti-pattern. A genuine C.
 - **9 support lessons carry no misconception tag on any item.** Verified against
   the item schema (`misconceptionTags`), not inferred from absence in one file.
+
+## FP-4 — "9-1-group2 practises ratios in a lesson about variables"
+
+**Claimed:** the lesson's `parallelPractice` bank opens with "Complete a new
+equivalent ratio: 2:3 = ___:___. Use a scale factor of 4" — ratio mathematics
+inside a 6.AT.11 lesson on independent and dependent variables. Wrong domain.
+
+**Reality:** deliberate and documented. `LEGACY_TOPIC` in
+`tools/lib/small-group-parallel-practice.mjs` dispatches each lesson to the
+strand it actually teaches, and its docblock states the decision outright:
+*"Unit 9's two-variable lessons [get] the ratio-table strand, which is the same
+two-column reasoning."* A ratio table and an independent/dependent pair are both
+two co-varying columns.
+
+**Why it was convincing:** the item's surface content ("equivalent ratio",
+"scale factor") shares no vocabulary at all with the lesson objective, so a
+domain check on words alone reports a mismatch with high confidence.
+
+**Not changed.** A worthwhile design *question* remains — the bank practises
+ratio-table mechanics while the objective is role identification — but that is a
+teacher's pedagogical call, not a defect for an automated pass to correct.
+
+**Rule learned:** before calling content misplaced, read the generator's own
+account of why it is there. A dispatch table with a docblock is a decision
+record; contradicting it needs an argument, not a regex.

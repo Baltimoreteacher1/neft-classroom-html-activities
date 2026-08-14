@@ -22,11 +22,13 @@
 // writeGenerated(), which re-splices the injected blocks. The flag survives
 // only as a SCOPE option: skip index.html and lesson.js when you just want the
 // configs refreshed. It is no longer protecting anything.
+import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { writeGenerated } from "../scripts/lib/preserve-injected.mjs";
 import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
+import { applyChallengeTasks, challengeFacilitation } from "./lib/small-group-challenge-tasks.mjs";
 import { buildTeacherMoves } from "./lib/small-group-facilitation.mjs";
 import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
 
@@ -392,12 +394,26 @@ function buildGroup2(base, u, m) {
     iDo: ci.iDo || { title: "Start from the answer", lines: [] },
   };
 
-  const practice = uniquePractice(
+  // Inherited core items first, then the authored challenge layer. A challenge
+  // group has already mastered the core target, so re-serving core items alone
+  // makes the extension "the same questions again" — see
+  // tools/lib/small-group-challenge-tasks.mjs for what is authored and why.
+  const inherited = uniquePractice(
     p.onLevel || [],
     p.extending || [],
     p.optional || [],
     p.approaching || [],
   ).slice(0, 12);
+  const challenge = applyChallengeTasks(id, inherited);
+  if (challenge.unmatchedDrops.length) {
+    // A drop fragment matching nothing means the core item was reworded, so this
+    // lesson is now serving an item the author decided to remove. Fail loudly:
+    // silence here quietly restores arithmetic filler to a challenge group.
+    throw new Error(
+      `${id}: challenge-task drop fragment matched no item — ${challenge.unmatchedDrops.join("; ")}`,
+    );
+  }
+  const practice = challenge.items;
   out.practice = {
     // Same rehearsal tool the full lesson mounts — see buildGroup1.
     diagram: withPriorDiagram(baseDiagram(base), id),
@@ -437,7 +453,11 @@ function buildGroup2(base, u, m) {
     // ASK / LOOK FOR / IF STUCK / EXTEND — justification and generalisation,
     // never the support move with bigger numbers. All 84 challenge lessons
     // previously shared one identical move list.
-    teacherMoves: buildTeacherMoves({ base, group: 2, taxonomy: MISCONCEPTION_LABELS }),
+    // Authored moves win where a lesson authored its own tasks: the generated
+    // ones key off an inherited item tag and can describe another lesson.
+    teacherMoves:
+      challengeFacilitation(id) ||
+      buildTeacherMoves({ base, group: 2, taxonomy: MISCONCEPTION_LABELS }),
   };
   return { id, out };
 }
@@ -572,12 +592,37 @@ if (!DRY) {
   if (ONLY) {
     let existing = {};
     try {
-      const prior = readFileSync(FACILITATION_MODULE, "utf8");
-      const start = prior.indexOf("{");
-      const end = prior.lastIndexOf("}");
-      if (start !== -1 && end > start) existing = JSON.parse(prior.slice(start, end + 1));
-    } catch (_error) {
-      existing = {};
+      /*
+       * Read the prior data by IMPORTING the module, not by slicing text out of
+       * it and JSON.parse-ing that.
+       *
+       * The text-slice version was broken in the worst possible way. This
+       * generator writes the file with JSON.stringify — quoted keys, valid JSON
+       * — and then Biome reformats it to idiomatic JS with UNQUOTED keys
+       * (`group: 1`). JSON.parse then threw on every subsequent scoped run, the
+       * catch swallowed it, `existing` stayed empty, and the merge below
+       * "merged" this run's handful of lessons over nothing — silently
+       * rewriting the module with 2 entries and destroying facilitation for the
+       * other 166 lessons, which is precisely the failure the comment above
+       * says was fixed. Discovered by running `--only 9-1` and reading the diff:
+       * 3454 lines deleted.
+       *
+       * Importing the module asks JavaScript to evaluate its own source, so no
+       * formatting choice can break it. The cache-buster matters because this
+       * process may already have imported the module.
+       */
+      const mod = await import(`file://${FACILITATION_MODULE}?t=${Date.now()}`);
+      existing = mod.FACILITATION_BY_LESSON || {};
+      if (!Object.keys(existing).length) {
+        throw new Error("facilitation module parsed but held no lessons");
+      }
+    } catch (error) {
+      // Never fall back to "start from empty" — that is the data-loss path.
+      throw new Error(
+        `${FACILITATION_MODULE}: could not read existing facilitation for a scoped run ` +
+          `(${error.message}). Refusing to continue: writing now would drop every lesson ` +
+          `this run did not build. Run without --only to rebuild the whole file.`,
+      );
     }
     merged = { ...existing, ...facilitationByLesson };
   }
@@ -590,6 +635,22 @@ if (!DRY) {
     FACILITATION_MODULE,
     `// Generated by tools/generate-small-group-lessons.mjs. Teacher route only.\nexport const FACILITATION_BY_LESSON = ${JSON.stringify(ordered, null, 2)};\n`,
   );
+  /*
+   * Format the file we just wrote. JSON.stringify quotes every key and omits
+   * trailing commas; Biome wants the opposite, so a plain write left
+   * `npm run check` failing after every regeneration — which is how a generated
+   * file ends up either hand-formatted or committed red.
+   *
+   * Calling the formatter is the right fix rather than emitting Biome's style by
+   * hand: half a reimplementation of a formatter drifts the moment its config
+   * changes. Best-effort — a generator that cannot format is not a generator
+   * that should fail, and `npm run check` still catches it.
+   */
+  try {
+    execFileSync("npx", ["biome", "format", "--write", FACILITATION_MODULE], { stdio: "ignore" });
+  } catch (_error) {
+    console.warn("  (biome format skipped — format the facilitation module before committing)");
+  }
 }
 
 console.log(

@@ -3333,11 +3333,13 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When does repeated addition stop being a practical method — and what replaces it?",
+      ask: "In this situation, who does the choosing — and how does that decide which variable is which?",
       lookFor:
-        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
-      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
-      extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
+        "A student who tests the claim by hunting for a case where it FAILS, instead of confirming one case where it works.",
+      ifStuck:
+        "Cover the numbers with your hand. Ask: what did someone decide, and what happened as a result? Then uncover them.",
+      extend:
+        "Ask them to write a situation where the two roles could be argued either way, then say what one extra sentence would settle it.",
     },
     listenFor: [
       "A strong answer names sunlight as chosen (independent) and height as responding (dependent), and can say the sentence 'height depends on sunlight.' A weak answer just says 'height is bigger' without naming which quantity was chosen.",
