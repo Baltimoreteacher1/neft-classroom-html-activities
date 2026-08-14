@@ -3871,11 +3871,13 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When does repeated addition stop being a practical method — and what replaces it?",
+      ask: "What does that point claim, in words, about tickets and dollars?",
       lookFor:
-        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
-      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
-      extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
+        "A student who reads a point as a PAIR of quantities — “4 tickets cost $100” — rather than as two numbers.",
+      ifStuck:
+        "Point at one plotted point and ask what its two numbers stand for. Then ask what swapping them would say.",
+      extend:
+        "Ask what a graph would look like if the price per ticket changed halfway through, and why.",
     },
     frames: [
       "I claim ___ , and my evidence is ___ .",

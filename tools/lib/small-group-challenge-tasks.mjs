@@ -76,6 +76,208 @@ export const CHALLENGE_TASKS = {
   // All four stay inside 6.AT.11; none reaches forward to graphing (9-2) or to
   // writing equations.
   // -------------------------------------------------------------------------
+  "9-2-group2": {
+    facilitation: {
+      ask: "What does that point claim, in words, about tickets and dollars?",
+      lookFor:
+        "A student who reads a point as a PAIR of quantities — “4 tickets cost $100” — rather than as two numbers.",
+      ifStuck:
+        "Point at one plotted point and ask what its two numbers stand for. Then ask what swapping them would say.",
+      extend:
+        "Ask what a graph would look like if the price per ticket changed halfway through, and why.",
+    },
+    drop: [
+      "A table pairs hours with kilometers", // rate-table lookup
+      "Using the ticket table, what are the coordinates of the point for", // recall of the iDo
+      "Nakai's savings account has a principal of $750", // pure interest computation
+      "Football tickets cost $45 each. What is the total cost of 3 tickets", // the iDo's own number
+      "Which ordered pair belongs on the ticket graph for 2 tickets", // the iDo's own pair
+    ],
+    add: [
+      {
+        // ERROR ANALYSIS — the reversed pair, which every identification item in
+        // the lesson would let a student keep believing.
+        type: "open-response",
+        stem: "The ticket graph has “Number of tickets” across the bottom and “Total cost ($)” up the side. Rowan plots the first ticket as the point (45, 1). What did Rowan misunderstand — and what does his point actually claim about tickets and money?",
+        stemEs:
+          "La gráfica de boletos tiene “Número de boletos” en la parte de abajo y “Costo total ($)” en el lado. Rowan grafica el primer boleto como el punto (45, 1). ¿Qué entendió mal Rowan y qué afirma en realidad su punto sobre los boletos y el dinero?",
+        modelAnswer:
+          "Rowan swapped the order. The independent variable goes first, so one ticket at $45 is the point (1, 45). His point (45, 1) says that 45 tickets cost one dollar altogether, which is not what the table shows.",
+        modelAnswerEs:
+          "Rowan invirtió el orden. La variable independiente va primero, así que un boleto de $45 es el punto (1, 45). Su punto (45, 1) dice que 45 boletos cuestan un dólar en total, que no es lo que muestra la tabla.",
+        sentenceStems: [
+          "Rowan put ___ first instead of ___ .",
+          "His point (45, 1) claims that ___ .",
+          "The correct point is ___ because ___ .",
+        ],
+      },
+      {
+        // STEEPNESS AS RATE — read the graph instead of computing points.
+        type: "multiple-choice",
+        stem: "Two trams both start at the bottom at 0 minutes. One climbs 1,200 feet each minute, the other 900. Both are graphed on the same axes with minutes across. Without working out a single point, how can you tell which line belongs to the faster tram?",
+        stemEs:
+          "Dos tranvías arrancan abajo a los 0 minutos. Uno sube 1,200 pies por minuto y el otro 900. Ambos se grafican en los mismos ejes con los minutos en el eje horizontal. Sin calcular ni un punto, ¿cómo sabes cuál recta es la del tranvía más rápido?",
+        choices: [
+          "Its line rises more steeply — it gains more feet in the same minute",
+          "Its line starts higher up the vertical axis",
+          "Its line is longer than the other one",
+          "You cannot tell without plotting points for both",
+        ],
+        choicesEs: [
+          "Su recta sube más empinada: gana más pies en el mismo minuto",
+          "Su recta empieza más arriba en el eje vertical",
+          "Su recta es más larga que la otra",
+          "No se puede saber sin graficar puntos de las dos",
+        ],
+        correctIndex: 0,
+        explanation:
+          "Both trams start at 0 feet at 0 minutes, so both lines begin at the same corner. The only thing that can differ is how fast they climb, and that is the steepness: 1,200 feet in one minute against 900.",
+        explanationEs:
+          "Los dos tranvías empiezan en 0 pies a los 0 minutos, así que las dos rectas parten de la misma esquina. Lo único que puede diferir es qué tan rápido suben, y eso es lo empinado: 1,200 pies en un minuto frente a 900.",
+        choiceFeedback: [
+          "",
+          "Both start at 0 feet at 0 minutes. Where do the two lines begin?",
+          "Length depends on how far the graph is drawn, not on the tram's speed.",
+          "Compare one minute on each line. Which one has climbed further by then?",
+        ],
+        choiceFeedbackEs: [
+          "",
+          "Los dos empiezan en 0 pies a los 0 minutos. ¿Dónde comienzan las dos rectas?",
+          "El largo depende de hasta dónde se dibuje la gráfica, no de la velocidad del tranvía.",
+          "Compara un minuto en cada recta. ¿Cuál ha subido más para entonces?",
+        ],
+        hints: [
+          "At 0 minutes, how high is each tram?",
+          "Look at what has happened to each line after exactly one minute.",
+        ],
+        hintsEs: [
+          "A los 0 minutos, ¿a qué altura está cada tranvía?",
+          "Mira qué le pasó a cada recta después de exactamente un minuto.",
+        ],
+      },
+      {
+        // ALWAYS / SOMETIMES / NEVER — the counterexample is a relationship the
+        // student can check by hand.
+        type: "multiple-choice",
+        stem: "Claim: “If two quantities grow together, the points on their graph always lie on a straight line.” Always, sometimes, or never true?",
+        stemEs:
+          "Afirmación: “Si dos cantidades crecen juntas, los puntos de su gráfica siempre quedan en línea recta”. ¿Siempre, a veces o nunca es verdadera?",
+        choices: [
+          "Sometimes — only when the quantity grows by the same amount each step",
+          "Always — growing together is what makes a line",
+          "Never — real data never lines up",
+          "Sometimes — only when both quantities are measured in the same unit",
+        ],
+        choicesEs: [
+          "A veces — solo cuando la cantidad crece la misma cantidad en cada paso",
+          "Siempre — crecer juntas es lo que forma una recta",
+          "Nunca — los datos reales nunca se alinean",
+          "A veces — solo cuando ambas cantidades se miden en la misma unidad",
+        ],
+        correctIndex: 0,
+        explanation:
+          "The tickets rise by the same $45 every time, so they line up. The side and area of a square both grow — (1, 1), (2, 4), (3, 9) — but the jumps are 3 then 5, so those points bend upward instead of forming a line.",
+        explanationEs:
+          "Los boletos suben los mismos $45 cada vez, así que se alinean. El lado y el área de un cuadrado crecen los dos — (1, 1), (2, 4), (3, 9) — pero los saltos son 3 y luego 5, así que esos puntos se curvan hacia arriba en vez de formar una recta.",
+        choiceFeedback: [
+          "",
+          "Try side and area of a square: (1, 1), (2, 4), (3, 9). Are the jumps equal?",
+          "The ticket graph does line up. Check the jumps between its points.",
+          "Tickets and dollars are different units and they still form a line.",
+        ],
+        choiceFeedbackEs: [
+          "",
+          "Prueba el lado y el área de un cuadrado: (1, 1), (2, 4), (3, 9). ¿Son iguales los saltos?",
+          "La gráfica de boletos sí se alinea. Revisa los saltos entre sus puntos.",
+          "Boletos y dólares son unidades distintas y aun así forman una recta.",
+        ],
+        hints: [
+          "Find one growing relationship whose points do NOT line up.",
+          "List (1, 1), (2, 4), (3, 9) and look at the size of each jump.",
+        ],
+        hintsEs: [
+          "Encuentra una relación creciente cuyos puntos NO se alineen.",
+          "Escribe (1, 1), (2, 4), (3, 9) y mira el tamaño de cada salto.",
+        ],
+      },
+      {
+        // REVERSE — from a plotted point back to the unit rate, then forward.
+        type: "multiple-choice",
+        stem: "A different event's ticket graph passes through the point (4, 100). What does one ticket cost, and where would the point for 7 tickets sit?",
+        stemEs:
+          "La gráfica de boletos de otro evento pasa por el punto (4, 100). ¿Cuánto cuesta un boleto y dónde quedaría el punto para 7 boletos?",
+        choices: [
+          "$25 each, and the point would be (7, 175)",
+          "$25 each, and the point would be (175, 7)",
+          "$400 each, and the point would be (7, 2800)",
+          "There is not enough information to find the cost of one ticket",
+        ],
+        choicesEs: [
+          "$25 cada uno, y el punto quedaría en (7, 175)",
+          "$25 cada uno, y el punto quedaría en (175, 7)",
+          "$400 cada uno, y el punto quedaría en (7, 2800)",
+          "No hay información suficiente para hallar el costo de un boleto",
+        ],
+        correctIndex: 0,
+        explanation:
+          "The point (4, 100) says 4 tickets cost $100 altogether, so one ticket is 100 ÷ 4 = $25. Seven tickets are 7 × 25 = $175, plotted as (7, 175) with the number of tickets first.",
+        explanationEs:
+          "El punto (4, 100) dice que 4 boletos cuestan $100 en total, así que un boleto cuesta 100 ÷ 4 = $25. Siete boletos son 7 × 25 = $175, graficado como (7, 175) con el número de boletos primero.",
+        choiceFeedback: [
+          "",
+          "The cost is right, but check the order — which quantity goes first?",
+          "That multiplies instead of dividing. 4 tickets cost $100 in total, not $100 each.",
+          "One point is enough here: it gives you 4 tickets and their total cost.",
+        ],
+        choiceFeedbackEs: [
+          "",
+          "El costo está bien, pero revisa el orden: ¿qué cantidad va primero?",
+          "Eso multiplica en vez de dividir. 4 boletos cuestan $100 en total, no $100 cada uno.",
+          "Un punto basta aquí: te da 4 boletos y su costo total.",
+        ],
+        hints: [
+          "What do the two numbers in (4, 100) stand for?",
+          "Split the $100 between the 4 tickets first.",
+        ],
+        hintsEs: [
+          "¿Qué representan los dos números de (4, 100)?",
+          "Primero reparte los $100 entre los 4 boletos.",
+        ],
+      },
+      {
+        // CREATE — a falling relationship, which no item in the lesson contains.
+        type: "open-response",
+        stem: "Every graph in this lesson rises to the right. Invent a situation where the dependent quantity goes DOWN as the independent quantity goes up. Give three ordered pairs, say what each quantity is, and describe what your graph looks like.",
+        stemEs:
+          "Todas las gráficas de esta lección suben hacia la derecha. Inventa una situación donde la cantidad dependiente BAJE mientras la independiente sube. Da tres pares ordenados, di qué es cada cantidad y describe cómo se ve tu gráfica.",
+        modelAnswer:
+          "Minutes riding the tram and miles still left to travel. At 0 minutes there are 12 miles left, at 1 minute 10 miles, at 2 minutes 8 miles: (0, 12), (1, 10), (2, 8). Two miles disappear every minute, so the points drop by the same amount each step and the line falls to the right.",
+        modelAnswerEs:
+          "Minutos viajando en el tranvía y millas que faltan por recorrer. A los 0 minutos faltan 12 millas, a 1 minuto 10 millas, a 2 minutos 8 millas: (0, 12), (1, 10), (2, 8). Desaparecen dos millas cada minuto, así que los puntos bajan lo mismo en cada paso y la recta cae hacia la derecha.",
+        sentenceStems: [
+          "My two quantities are ___ and ___ .",
+          "My ordered pairs are ___ , ___ , ___ .",
+          "The graph ___ because ___ .",
+        ],
+      },
+      {
+        // READ THE ORIGIN — a point students routinely dismiss.
+        type: "open-response",
+        stem: "On the tram graph — minutes across, feet climbed up the side — a classmate marks the point (0, 0) and says it is meaningless. Do you agree? Say what (0, 0) claims about the tram, and why the line passes through it.",
+        stemEs:
+          "En la gráfica del tranvía — minutos en el eje horizontal, pies subidos en el vertical — un compañero marca el punto (0, 0) y dice que no significa nada. ¿Estás de acuerdo? Di qué afirma (0, 0) sobre el tranvía y por qué la recta pasa por ahí.",
+        modelAnswer:
+          "I disagree. The point (0, 0) says that after 0 minutes the tram has climbed 0 feet, which is exactly where it starts. It is the most reliable point on the graph, and the line passes through it because the tram begins the climb from the bottom.",
+        modelAnswerEs:
+          "No estoy de acuerdo. El punto (0, 0) dice que después de 0 minutos el tranvía ha subido 0 pies, que es justo donde empieza. Es el punto más confiable de la gráfica, y la recta pasa por ahí porque el tranvía comienza la subida desde abajo.",
+        sentenceStems: [
+          "I agree / disagree because ___ .",
+          "The point (0, 0) says that ___ .",
+          "The line passes through it because ___ .",
+        ],
+      },
+    ],
+  },
   "9-1-group2": {
     /*
      * Authored facilitation, because the generated moves were about another
