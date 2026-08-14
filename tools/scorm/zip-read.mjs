@@ -67,4 +67,3 @@ export function readZip(buf) {
   }
   return entries;
 }
-
