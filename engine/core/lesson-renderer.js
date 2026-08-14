@@ -28,6 +28,11 @@ import {
 import { attachRegenPractice } from "../components/regen-practice.js";
 import { attachAnnotator } from "../components/scene-annotate.js";
 import { attachVoiceInput } from "../components/voice-explain.js";
+import {
+  noticeWonderCaption,
+  noticeWonderImageAlt,
+  renderAcademicVocabulary as renderAcademicVocabularyCard,
+} from "./academic-vocabulary.js";
 import { createAdaptiveSequence } from "./adaptive.js";
 import { enableWordProblemAnnotation, observeWordProblemAnnotation } from "./annotate.js";
 import { fullerFormHint, isRight } from "./answer-match.js";
@@ -1441,10 +1446,15 @@ function renderNoticeAndWonder(host, config, state) {
     <h3 class="nw-title">👀 Notice &amp; Wonder</h3>`;
   card.append(head);
 
-  if (nw.context) {
+  // Notice & Wonder defaults to NO visible caption — printing `nw.context`
+  // above the image told students what to see before they looked. The decision
+  // (and why it is an explicit opt-in rather than "render caption when present")
+  // lives in academic-vocabulary.js, where it is unit-tested.
+  const visibleCaption = noticeWonderCaption(nw);
+  if (visibleCaption) {
     const ctxP = document.createElement("p");
     ctxP.className = "nw-context";
-    ctxP.textContent = String(nw.context);
+    ctxP.textContent = visibleCaption;
     card.append(ctxP);
   }
 
@@ -1472,9 +1482,17 @@ function renderNoticeAndWonder(host, config, state) {
     img.setAttribute("loading", "lazy");
     img.setAttribute("decoding", "async");
     img.src = String(imgSrc);
-    img.alt = nw.context
-      ? String(nw.context)
-      : objVisuals?.content?.caption || config.title || "Notice and Wonder data display";
+    // Accessibility text comes from the authored `imageAlt`, NOT from `context`.
+    // All 252 configs author both and they do different jobs: `imageAlt`
+    // describes what is drawn, `context` is the framing prose. This used to read
+    // `context`, so the visible caption and the screen reader said the same
+    // sentence and the authored alt text was dead data — hiding the caption
+    // without this change would have downgraded the accessible name, not fixed
+    // it. Resolution order is unit-tested in academic-vocabulary.js.
+    img.alt = noticeWonderImageAlt(nw, {
+      caption: objVisuals?.content?.caption,
+      title: config.title,
+    });
     fig.append(img);
     attachImageZoom(img);
     // "Annotate the scene": a draw overlay so students can circle/underline what
@@ -3230,6 +3248,23 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
   }
 }
 
+// ── Academic Vocabulary ─────────────────────────────────────────────────────
+// A concise, readable list of the lesson's OWN academic vocabulary, rendered in
+// Launch so students meet the words before the instruction that uses them.
+//
+// The card itself lives in academic-vocabulary.js so it can be unit-tested
+// (nothing in THIS file is importable from `npm test` — see that module's
+// header). `wireObjectiveTermPopups` is injected rather than imported there, so
+// a term opens the SAME shared glossary popup the objectives use — picture plus
+// a kid-friendly EN/ES explanation — and never a second popup system.
+//
+// This restores a reading surface, NOT the graded Vocabulary phase removed in
+// 2f5b382fd: no scoring, no XP, no phase index, so save/resume and the 8-phase
+// structure are untouched.
+function renderAcademicVocabulary(host, config) {
+  return renderAcademicVocabularyCard(host, config, { wirePopups: wireObjectiveTermPopups });
+}
+
 function renderLaunchPhase(el, state, ctx, config) {
   const cfg = config.launch;
 
@@ -3333,6 +3368,12 @@ function renderLaunchPhase(el, state, ctx, config) {
   nwStack.append(nwMain);
   renderNoticeWonderSupport(nwStack, cfg.beCurious, config, nwStack);
   el.append(nwStack);
+
+  // Academic Vocabulary sits AFTER the notice/wonder work and before the
+  // application scenario: students look and wonder first (the words would give
+  // the scene away if they came before it), then meet the language they need for
+  // the instruction that follows. No-op when the lesson authors no vocabulary.
+  renderAcademicVocabulary(el, config);
 
   // Note: Objectives card sits directly in between Warmup and Launch (rendered at bottom of Warmup phase).
 

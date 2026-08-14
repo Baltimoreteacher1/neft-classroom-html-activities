@@ -4604,6 +4604,97 @@ html[lang^="es"] .i18n-es {
   outline-offset: -3px;
 }
 
+/* ── Academic Vocabulary (config.vocabulary) ───────────────────────────────
+   The lesson's own academic words, listed in Launch. Reuses the card surface
+   and the `.obj-term` glossary button, so a term looks and behaves exactly as
+   it does when underlined inside an objective. Two columns on wide screens,
+   one on narrow; the term column is sized to the longest realistic term rather
+   than a fixed width, so "statistical question" and "mean" both wrap cleanly.
+   Rendered only when the lesson authors vocabulary — see
+   renderAcademicVocabulary in engine/core/lesson-renderer.js. */
+.av-card {
+  border-top: 4px solid var(--amber, #d99a3d);
+  margin-top: var(--sp-4);
+}
+.av-title {
+  margin: 0 0 var(--sp-1);
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  color: var(--navy);
+}
+.av-title-es {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--muted);
+}
+.av-hint {
+  margin: 0 0 var(--sp-4);
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  line-height: 1.5;
+}
+.av-hint [lang="es"] {
+  font-style: italic;
+}
+.av-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-3) var(--sp-5);
+  margin: 0;
+}
+.av-item {
+  display: grid;
+  gap: 2px;
+  /* `start`, not the default `stretch`: grid rows are as tall as the tallest
+     item across BOTH columns, so a short entry ("Quotient — The answer when you
+     divide.") beside a long one had its definition pushed to the bottom of the
+     row with a gap under the term. */
+  align-content: start;
+  padding: var(--sp-2) 0;
+  border-top: 1px solid rgba(15, 23, 42, 0.1);
+  min-width: 0;
+}
+.av-term {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+/* The term itself is a `.obj-term` button, already styled site-wide. Only the
+   weight is lifted here so it reads as the heading of its row. */
+.av-term .obj-term {
+  font-size: var(--fs-md);
+  font-weight: 800;
+}
+.av-term-es {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.av-def {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.av-def-es {
+  display: block;
+  margin-top: 2px;
+  font-style: italic;
+  color: var(--muted);
+}
+@media (max-width: 480px) {
+  .av-list {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Reveal Word Problem (config.revealWordProblem) ────────────────────────
    Opt-in display card. The renderer only emits `.wp-card` when
    config.revealWordProblem exists. */
