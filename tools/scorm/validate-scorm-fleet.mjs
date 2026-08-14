@@ -332,10 +332,19 @@ const problems = [];
 const sizes = [];
 let built = 0;
 
-for (const t of targets) {
+// Both delivery modes, because they are two different packages of the same
+// activity and a teacher can legitimately post both. Building only the default
+// mode is how `mode=codes` shipped sharing its manifest identifier with the
+// interactive package — caught by a live probe after deploy, not by this gate.
+const variants = targets.flatMap((t) => [
+  { ...t, codes: false },
+  { ...t, codes: true },
+]);
+
+for (const t of variants) {
   let pkg;
   try {
-    pkg = buildScormFiles({ target: t.target, title: t.title });
+    pkg = buildScormFiles({ target: t.target, title: t.title, codes: t.codes });
   } catch (e) {
     problems.push(`${t.target}: package build threw — ${e.message}`);
     continue;
@@ -354,7 +363,9 @@ for (const t of targets) {
 
   // Determinism: identical input must produce identical bytes, or a diff
   // between two "same" packages is unreadable and regressions hide in noise.
-  const again = zipStore(buildScormFiles({ target: t.target, title: t.title }).files);
+  const again = zipStore(
+    buildScormFiles({ target: t.target, title: t.title, codes: t.codes }).files,
+  );
   if (again.length !== bytes.length || !again.every((b, i) => b === bytes[i]))
     problems.push(`${name}: package is not deterministic (two builds differ)`);
 }
@@ -362,7 +373,7 @@ for (const t of targets) {
 sizes.sort((a, b) => b.bytes - a.bytes);
 const median = sizes.length ? sizes[Math.floor(sizes.length / 2)].bytes : 0;
 
-console.log(`  packages built        : ${built} / ${targets.length}`);
+console.log(`  packages built        : ${built} / ${variants.length} (both delivery modes)`);
 console.log(`  unique manifest ids   : ${seenIds.size}`);
 console.log(`  unique download names : ${seenNames.size}`);
 if (sizes.length) {

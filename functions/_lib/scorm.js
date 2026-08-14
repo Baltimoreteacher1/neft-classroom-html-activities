@@ -509,13 +509,15 @@ function sco(lessonUrl, launchQuery, origin, title) {
  */
 export function packageFileName(id, codes) {
   const suffix = codes ? "_SaveCodes" : "_Interactive";
-  const m = /^(\d+)-(\d+)$/.exec(String(id));
-  const base = m
+  // The mode already lives in the id (…-codes) so the SCORM identifier is
+  // distinct; strip it here so the name still reads Unit-1_Lesson-1-1_SaveCodes
+  // rather than falling through to the opaque fallback form.
+  const base = codes ? String(id).replace(/-codes$/, "") : String(id);
+  const m = /^(\d+)-(\d+)$/.exec(base);
+  const name = m
     ? `Unit-${m[1]}_Lesson-${m[1]}-${m[2]}${suffix}_SCORM`
-    : `Neft_${String(id)
-        .replace(/[^A-Za-z0-9._-]+/g, "-")
-        .replace(/^-+|-+$/g, "")}${suffix}_SCORM`;
-  return `${base.slice(0, 120)}.zip`;
+    : `Neft_${base.replace(/[^A-Za-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "")}${suffix}_SCORM`;
+  return `${name.slice(0, 120)}.zip`;
 }
 
 /** Build the two package files. Returns { id, lessonUrl, files }. */
@@ -531,13 +533,19 @@ export function buildScormFiles({ target, title, codes, supports, lang }, site =
   // language) into the launch query so they activate for the student on load.
   const safeSupports = sanitizeSupports(supports);
   const safeLang = sanitizeLang(lang);
-  let personalId = id;
+  // Save-codes mode is a DIFFERENT package (different launch query, different
+  // grade path), so it needs a different SCORM identity. It used to differ only
+  // in the zip filename: a teacher who posted both the interactive and the
+  // save-codes variant of one lesson uploaded two packages that declared the
+  // same manifest identifier, which an LMS keying content by identifier treats
+  // as the same activity.
+  let personalId = codes ? slug(`${id}-codes`) : id;
   if (safeSupports) {
     launchQuery += `&supports=${safeSupports}`;
     if (safeLang) launchQuery += `&lang=${safeLang}`;
     // Distinct id/filename so a personalized package doesn't collide with the
     // standard one (e.g. neft-1-1-supports-... .zip).
-    personalId = slug(`${id}-supports-${safeSupports}${safeLang ? "-" + safeLang : ""}`);
+    personalId = slug(`${personalId}-supports-${safeSupports}${safeLang ? "-" + safeLang : ""}`);
   }
 
   return {
