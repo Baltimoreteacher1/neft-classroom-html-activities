@@ -8,7 +8,7 @@ import { figureBlock } from "./small-group-labs.js";
 import { mountReasoningReader } from "./small-group-reasoning.js";
 import { createRubricDetails } from "./small-group-rubric.js";
 import { appendTryAnotherWay } from "./small-group-strategies.js";
-import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
+import { bi, biHtml, celebrate, el, esc, framesRow, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
 import { mountSymbolPad, needsSymbolPad } from "./symbol-pad.js";
 import { renderToolChip } from "./tool-drawer.js";
@@ -576,7 +576,30 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
     );
     card.appendChild(control);
   } else {
+    /*
+     * Sentence frames, finally rendered.
+     *
+     * 209 `sentenceStems` blocks are authored across 44 lesson configs and NOT
+     * ONE of them reached a student: nothing in engine/, assets/ or shared/ read
+     * the field. The content-preservation baseline fingerprints them, so they
+     * were protected — but protected and invisible. A struggling writer was
+     * being handed a blank box while the scaffold written for that exact task
+     * sat in the config.
+     *
+     * They belong here, above the box, where a student looks before writing.
+     */
+    const stems = framesRow(item.sentenceStems);
+    if (stems) {
+      const label = el("p", "block-lab", bi("Sentence frames", "Marcos de oración"));
+      label.id = `sg-frames-${index}`;
+      card.appendChild(label);
+      card.appendChild(stems);
+    }
+
     const response = el("textarea", "sg-ta");
+    // Point assistive tech at the frames, so the scaffold is announced with the
+    // box rather than sitting near it visually and nowhere semantically.
+    if (stems) response.setAttribute("aria-describedby", `sg-frames-${index}`);
     response.placeholder =
       variant === "group2"
         ? "Make a claim, use evidence, and explain why…"

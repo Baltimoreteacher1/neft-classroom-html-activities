@@ -12,6 +12,7 @@ import {
   createVoiceMemo,
   el,
   esc,
+  framesRow,
   sectionHeading as heading,
   speak,
   studentVoice,
@@ -844,15 +845,12 @@ export function createTalkSection(config, variant, onDone) {
 
   const stems = (talk.stems || []).slice(0, 3);
   if (stems.length) {
+    // The {en, es} stem shape and its markup now live in one place
+    // (framesRow in small-group-ui.js), shared with the practice renderer, so
+    // the two cannot drift apart.
     card.appendChild(el("p", "block-lab", "Sentence frames"));
-    const frames = el("div", "sg-frames");
-    stems.forEach((stem) => {
-      const text = typeof stem === "string" ? stem : stem.en;
-      const spanish =
-        typeof stem === "object" && stem.es ? ` <span lang="es">· ${esc(stem.es)}</span>` : "";
-      frames.appendChild(el("span", "sg-frame", `${esc(text)}${spanish}`));
-    });
-    card.appendChild(frames);
+    const frames = framesRow(stems);
+    if (frames) card.appendChild(frames);
   }
   if (talk.wordBank?.length) {
     card.appendChild(el("p", "block-lab", "Word bank"));

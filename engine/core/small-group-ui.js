@@ -143,6 +143,43 @@ export const esLane = () => {
 export const bi = (en, es) =>
   es && esLane() ? `${esc(en)}<span class="sg-es" lang="es">${esc(es)}</span>` : esc(en);
 
+/**
+ * Sentence frames, in the fleet's existing bilingual shape.
+ *
+ * A stem is EITHER a plain string (English only) OR `{ en, es }`. That is the
+ * convention `talk.stems` already uses in small-group-engagement.js; this is the
+ * one implementation of it, so the two places that render frames cannot drift.
+ *
+ * Deliberately NOT a parallel `sentenceStemsEs` array: the repository already
+ * had a coherent answer for localized sentence frames, and a second one would be
+ * a third localization architecture. (tools/esol-lane-coverage.test.mjs enforces
+ * that — it fails on any authored `*Es` field no renderer consumes, which is
+ * exactly how the wrong shape was caught.)
+ *
+ * Spanish renders inline after a middot, matching the established frame layout,
+ * and carries lang="es" so screen readers and TTS switch voice.
+ */
+export function frameHtml(stem) {
+  const en = typeof stem === "string" ? stem : stem?.en;
+  if (!en) return "";
+  const es = typeof stem === "object" && stem ? stem.es : "";
+  // Spanish shows only when the lane is on — same rule as bi(), so a student in
+  // English mode never sees doubled text.
+  return es && esLane() ? `${esc(en)} <span lang="es">· ${esc(es)}</span>` : esc(en);
+}
+
+/** A `.sg-frames` row of `.sg-frame` chips, or null when there is nothing to show. */
+export function framesRow(stems, limit = 3) {
+  const list = (Array.isArray(stems) ? stems : []).slice(0, limit).filter(Boolean);
+  if (!list.length) return null;
+  const row = el("div", "sg-frames");
+  for (const stem of list) {
+    const html = frameHtml(stem);
+    if (html) row.appendChild(el("span", "sg-frame", html));
+  }
+  return row.childNodes.length ? row : null;
+}
+
 // Rich bilingual line for feedback that carries markup (<b> emphasis): the
 // caller supplies pre-escaped HTML per lane; Spanish stacks beneath English
 // exactly like bi(). Never pass raw student/config text without esc().
