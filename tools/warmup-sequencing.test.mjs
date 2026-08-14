@@ -31,6 +31,12 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = JSON.parse(readFileSync(join(ROOT, "data/curriculum-manifest.json"), "utf8"));
 const order = manifest.lessons.map((l) => l.lessonId || l.id);
 const position = new Map(order.map((id, i) => [id, i]));
+const titleOf = new Map(
+  order.map((id) => [
+    id,
+    JSON.parse(readFileSync(join(ROOT, "lessons", id, "config.json"), "utf8")).title,
+  ]),
+);
 
 /** Unresolved by the 2026-08-13 audit; see reports/warmup-sequencing-audit.md. */
 // Empty, and it should stay that way. All 24 stale references were resolved by
@@ -67,6 +73,27 @@ for (const id of order) {
       `${id}: prevLessonId "${prev}" comes at or after it — the warmup would assess ` +
         "mathematics students have not been taught",
     );
+  }
+
+  // The card PRINTS prevLessonTitle, so a title that no longer belongs to
+  // prevLessonId is a student-facing lie even when the sequence is sound. This
+  // is the half the position check cannot see: 39 warmups printed a pre-renumber
+  // Reveal name — "Warmup: Previous Lesson Check (Write Inequalities)" on 8-5,
+  // whose prevLessonId 7-4 is "Compare and Order Integers and Rational Numbers"
+  // — and 26 of those names were not lessons in this curriculum at all. A
+  // warmup that cannot name its predecessor honestly should be kind:"spiral"
+  // and name the SKILL instead.
+  const claimed = String(warmup.prevLessonTitle || "")
+    .replace(/^Lesson \d+-\d+:?\s*/, "")
+    .trim();
+  if (claimed) {
+    const actual = titleOf.get(prev);
+    if (actual && claimed !== actual) {
+      failures.push(
+        `${id}: prevLessonTitle "${claimed}" is not the title of ${prev} ("${actual}") — ` +
+          "the warmup card prints this to students",
+      );
+    }
   }
 }
 
