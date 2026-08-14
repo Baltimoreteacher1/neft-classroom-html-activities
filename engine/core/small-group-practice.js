@@ -588,7 +588,7 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
      *
      * They belong here, above the box, where a student looks before writing.
      */
-    const stems = framesRow(item.sentenceStems);
+    const stems = framesRow(item.sentenceStems, item.sentenceStemsEs);
     if (stems) {
       const label = el("p", "block-lab", bi("Sentence frames", "Marcos de oración"));
       label.id = `sg-frames-${index}`;

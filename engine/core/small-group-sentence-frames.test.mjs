@@ -27,6 +27,7 @@
  *   - an item with no stems renders no frames block and no dangling aria reference
  */
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
 
 const dom = new JSDOM("<!doctype html><body></body>", { url: "https://eduwonderlab.com/" });
@@ -116,18 +117,19 @@ check("stem text is escaped, never injected as markup", () => {
 });
 
 // --- the practice card wires the frames to the response box ------------------
-check("the open-response card labels the frames and ties them to the textarea", async () => {
-  const src = await import("node:fs").then((fs) =>
-    fs.readFileSync(new URL("./small-group-practice.js", import.meta.url), "utf8"),
+check("the open-response card labels the frames and ties them to the textarea", () => {
+  const src = readFileSync(new URL("./small-group-practice.js", import.meta.url), "utf8");
+  assert.match(
+    src,
+    /framesRow\(item\.sentenceStems, item\.sentenceStemsEs\)/,
+    "the practice renderer stopped reading sentenceStems / its Spanish parallel",
   );
-  assert.match(src, /framesRow\(item\.sentenceStems\)/, "the practice renderer stopped reading sentenceStems");
   assert.match(src, /aria-describedby/, "the frames are no longer announced with the response box");
 });
 
 // --- one implementation, not two --------------------------------------------
-check("engagement and practice share one frame renderer", async () => {
-  const fs = await import("node:fs");
-  const engagement = fs.readFileSync(new URL("./small-group-engagement.js", import.meta.url), "utf8");
+check("engagement and practice share one frame renderer", () => {
+  const engagement = readFileSync(new URL("./small-group-engagement.js", import.meta.url), "utf8");
   assert.match(engagement, /framesRow/, "engagement re-inlined its own frame markup");
   assert.doesNotMatch(
     engagement,

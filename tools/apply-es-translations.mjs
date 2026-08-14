@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // apply-es-translations.mjs — projects data/es-translations/*.json onto every
-// small-group practice item, filling stemEs / choicesEs / explanationEs / hintsEs.
+// small-group practice item, filling stemEs / choicesEs / explanationEs / hintsEs /
+// sentenceStemsEs.
 //
 //   node tools/apply-es-translations.mjs [--dry-run]
 //
@@ -69,6 +70,20 @@ for (const lesson of smallGroupLessons()) {
       const translated = translateArray(item.hints);
       if (translated) {
         item.hintsEs = translated;
+        changed++;
+      }
+    }
+    // Sentence frames. Same all-or-nothing rule as hints: a half-translated set
+    // would show a student two English frames and one Spanish one, which reads
+    // as a bug rather than as support.
+    if (
+      Array.isArray(item.sentenceStems) &&
+      item.sentenceStems.length &&
+      !Array.isArray(item.sentenceStemsEs)
+    ) {
+      const translated = translateArray(item.sentenceStems);
+      if (translated) {
+        item.sentenceStemsEs = translated;
         changed++;
       }
     }

@@ -168,15 +168,30 @@ export function frameHtml(stem) {
   return es && esLane() ? `${esc(en)} <span lang="es">· ${esc(es)}</span>` : esc(en);
 }
 
-/** A `.sg-frames` row of `.sg-frame` chips, or null when there is nothing to show. */
-export function framesRow(stems, limit = 3) {
-  const list = (Array.isArray(stems) ? stems : []).slice(0, limit).filter(Boolean);
+/**
+ * A `.sg-frames` row of `.sg-frame` chips, or null when there is nothing to show.
+ *
+ * Two authored shapes, because the fleet has two and both are canonical in their
+ * own place:
+ *   - `talk.stems`  — `{ en, es }` objects (engagement/turn-and-talk)
+ *   - practice items — a `sentenceStems` array with a parallel `sentenceStemsEs`,
+ *     matching stemEs / hintsEs / choicesEs / explanationEs, which is what
+ *     tools/apply-es-translations.mjs fills from data/es-translations.
+ *
+ * Passing the parallel array here keeps practice items on the localization
+ * pipeline they already use instead of inventing a third convention.
+ */
+export function framesRow(stems, stemsEs, limit = 3) {
+  const list = (Array.isArray(stems) ? stems : []).slice(0, limit);
+  const es = Array.isArray(stemsEs) ? stemsEs : [];
   if (!list.length) return null;
   const row = el("div", "sg-frames");
-  for (const stem of list) {
-    const html = frameHtml(stem);
+  list.forEach((stem, i) => {
+    // A parallel Spanish entry upgrades a plain string to the { en, es } shape.
+    const merged = typeof stem === "string" && es[i] ? { en: stem, es: es[i] } : stem;
+    const html = frameHtml(merged);
     if (html) row.appendChild(el("span", "sg-frame", html));
-  }
+  });
   return row.childNodes.length ? row : null;
 }
 
