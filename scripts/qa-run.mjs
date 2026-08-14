@@ -154,8 +154,14 @@ const COVERAGE = [
       "validate:practice",
       "validate:scope",
       "audit:homework",
+      // a config edit is how an image stops being referenced
+      "validate:reveal-assets",
     ],
   ],
+  // must precede the generic /^lessons\// rule below — first match wins
+  [/^lessons\/[^/]+\/reveal-assets\//, ["validate:reveal-assets"]],
+  // the retention manifest is part of the same contract as the files it records
+  [/^data\/reveal-assets-retained\.json$/, ["validate:reveal-assets"]],
   [
     /^lessons\//,
     ["validate:static", "validate:save-resume", "validate:lesson-boot", "audit:links"],
