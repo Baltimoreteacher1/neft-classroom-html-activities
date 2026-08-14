@@ -964,7 +964,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right magnitude, lost the negative sign; Added the dimensions instead of multiplying; Added the data set instead of averaging it. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right magnitude, lost the negative sign; Added the data set instead of averaging it; Confused a measure of center with a measure of spread. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Does the question want a typical value, or how spread out the data is?",
       lookFor:
