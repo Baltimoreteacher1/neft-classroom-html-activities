@@ -212,9 +212,11 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the bar graph, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
-      ifStuck: "Ask what the operation *does* to the quantity before they compute.",
+      ask: "Before any numbers: what does '6 times as many' point back to in this problem?",
+      lookFor:
+        "A student who finds the first rack's 16 wheels before touching the 6 — sense-making before computing.",
+      ifStuck:
+        "Cover the second rack entirely. Ask only: how many wheels are on 8 bikes? Then uncover the comparison.",
     },
     frames: [
       "The multiples/steps I need are ___ , and the answer is ___ .",
@@ -233,11 +235,13 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When does repeated addition stop being a practical method — and what replaces it?",
+      ask: "Your strategy worked — now name it. What would you tell a classmate to DO, in one sentence?",
       lookFor:
-        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
-      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
-      extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
+        "A student who narrates the process (make sense → plan → check) rather than reciting the answer, and who shifts strategies when one stalls instead of grinding.",
+      ifStuck:
+        "Have them re-solve the 96-wheels-to-bikes question with a drawing of just 4 wheels first, then scale the idea up.",
+      extend:
+        "Ask them to write a 'times as many' problem with the add-instead-of-multiply trap built in, and to explain how a partner would catch it.",
     },
     listenFor: [
       "A strong answer names a specific first move (like finding 8×2=16 before tackling '6 times as many') rather than jumping to the final answer. A weak answer just states a number with no process described.",
@@ -1590,10 +1594,10 @@ export const FACILITATION_BY_LESSON = {
       "I know because ___ .",
     ],
     listenFor: [
-      "Students sort discount as lowering price and tax/tip/markup as raising it, and recognize all are a percent of a price.",
-      "Students explain the discount lowers the price first, then tax is applied to that new lower price (e.g., 5% of 72 = 3.6).",
-      "Students compute $15 discount, $35 sale price, $2.10 tax, and $37.10 total, confirming the friend is correct with shown steps.",
-      'Listen for students naming a specific strategy tied to 6.AT.4 — not just "I multiplied." They should connect steps to the key idea.',
+      "Students reason from 60% < 100% to whole > part, without computing anything.",
+      "Students explain WHY dividing by 6 gives 10% (60% is six 10%-steps), not just the arithmetic.",
+      "Students identify that ÷7-then-×10 and ÷0.7 are the same move, and that both give a whole LARGER than $26,600.",
+      "Students name the size check (whole > part for percents under 100%) — not just 'I divided.'",
     ],
   },
   "4-5-group2": {
@@ -1609,10 +1613,10 @@ export const FACILITATION_BY_LESSON = {
       extend: "Ask which is larger: 20% of 50, or 50% of 20 — and why that happens.",
     },
     listenFor: [
-      "Students sort discount as lowering price and tax/tip/markup as raising it, and recognize all are a percent of a price.",
-      "Students explain the discount lowers the price first, then tax is applied to that new lower price (e.g., 5% of 72 = 3.6).",
-      "Students compute $15 discount, $35 sale price, $2.10 tax, and $37.10 total, confirming the friend is correct with shown steps.",
-      'Listen for students naming a specific strategy tied to 6.AT.4 — not just "I multiplied." They should connect steps to the key idea.',
+      "Students reason from 60% < 100% to whole > part, without computing anything.",
+      "Students explain WHY dividing by 6 gives 10% (60% is six 10%-steps), not just the arithmetic.",
+      "Students identify that ÷7-then-×10 and ÷0.7 are the same move, and that both give a whole LARGER than $26,600.",
+      "Students name the size check (whole > part for percents under 100%) — not just 'I divided.'",
     ],
   },
   "5-1-group1": {

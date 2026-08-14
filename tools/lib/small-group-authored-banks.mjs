@@ -920,9 +920,437 @@ const LESSON_1_1_MOVES = {
   },
 };
 
+/**
+ * 1-6 · MPP.3 — "Math is Ours"
+ *
+ * Objective: describe my problem-solving process, name strategies for getting
+ * unstuck, and identify the behaviors that make our class a community of math
+ * thinkers. Deck mathematics: one rack holds 8 bikes × 2 wheels = 16 wheels;
+ * another rack has 6 times as many wheels, 16 × 6 = 96. The mapped family
+ * ([3, 1]) served twelve "write the ratio blue:gold" drills whose guided steps
+ * restated the given numbers — no process, no strategies, no community.
+ * Found by the 2026-08-14 task-alignment audit; same class as 1-1/1-2.
+ *
+ * ARITHMETIC CHECKED
+ *   8 × 2 = 16 ; 16 × 6 = 96 ; 96 ÷ 2 = 48 bikes
+ *   (8 × 6) × 2 = 48 × 2 = 96 (both strategy orders agree)
+ *   16 + 6 = 22 (the added-instead-of-multiplied error)
+ *   half of 96 = 48 wheels → 24 bikes
+ */
+const LESSON_1_6_SUPPORT = [
+  {
+    // 1. MAKE SENSE — separate what we know from what we're finding.
+    type: "multiple-choice",
+    stem: "A rack holds 8 bikes, and each bike has 2 wheels. Another rack has 6 times as many wheels. Before computing anything: what do you need to find FIRST?",
+    stemEs:
+      "Un portabicicletas tiene 8 bicicletas, y cada una tiene 2 ruedas. Otro portabicicletas tiene 6 veces más ruedas. Antes de calcular nada: ¿qué necesitas encontrar PRIMERO?",
+    choices: [
+      "How many wheels the first rack has — 6 times as many needs a starting number",
+      "How many bikes are in the whole school",
+      "The answer 96, because that is what the book says",
+      "Nothing — you can multiply 8 × 6 right away and be done",
+    ],
+    choicesEs: [
+      "Cuántas ruedas tiene el primer portabicicletas — '6 veces más' necesita un número de partida",
+      "Cuántas bicicletas hay en toda la escuela",
+      "La respuesta 96, porque eso dice el libro",
+      "Nada — puedes multiplicar 8 × 6 de inmediato y terminar",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Making sense comes before computing. '6 times as many wheels' compares to the FIRST rack's wheels, so that count — 8 × 2 = 16 — has to exist before the 6 can multiply anything.",
+    explanationEs:
+      "Dar sentido va antes que calcular. '6 veces más ruedas' se compara con las ruedas del PRIMER portabicicletas, así que ese conteo — 8 × 2 = 16 — tiene que existir antes de que el 6 multiplique algo.",
+    choiceFeedback: [
+      "",
+      "The problem never asks about the whole school. What does '6 times as many' point back to?",
+      "An answer without a process is not making sense of the problem — where would 96 come from?",
+      "8 × 6 = 48 counts bikes-times-six, but the comparison is about WHEELS. What number should the 6 multiply?",
+    ],
+    choiceFeedbackEs: [
+      "",
+      "El problema nunca pregunta por toda la escuela. ¿A qué se refiere '6 veces más'?",
+      "Una respuesta sin proceso no es darle sentido al problema: ¿de dónde saldría el 96?",
+      "8 × 6 = 48 cuenta bicicletas por seis, pero la comparación es de RUEDAS. ¿Qué número debería multiplicar el 6?",
+    ],
+    hints: [
+      "Read the comparison again: 6 times as many WHAT?",
+      "The first rack's wheels: 8 bikes × 2 wheels each. Find that first.",
+    ],
+    hintsEs: [
+      "Vuelve a leer la comparación: ¿6 veces más QUÉ?",
+      "Las ruedas del primer portabicicletas: 8 bicicletas × 2 ruedas. Encuentra eso primero.",
+    ],
+  },
+  {
+    // 2. CHOOSE A REPRESENTATION — the plan step, isolated.
+    type: "multiple-choice",
+    stem: "You decided to find 16 × 6 for the second rack. Which representation matches the problem?",
+    stemEs:
+      "Decidiste calcular 16 × 6 para el segundo portabicicletas. ¿Qué representación corresponde al problema?",
+    choices: [
+      "6 equal groups of 16 wheels",
+      "16 groups of 6 bikes",
+      "One group of 16 wheels plus one group of 6 wheels",
+      "6 wheels shared equally among 16 bikes",
+    ],
+    choicesEs: [
+      "6 grupos iguales de 16 ruedas",
+      "16 grupos de 6 bicicletas",
+      "Un grupo de 16 ruedas más un grupo de 6 ruedas",
+      "6 ruedas repartidas por igual entre 16 bicicletas",
+    ],
+    correctIndex: 0,
+    explanation:
+      "'6 times as many wheels as 16' means six copies of the 16: 6 groups of 16 = 96. A drawing of six 16s IS the plan — the multiplication just carries it out.",
+    explanationEs:
+      "'6 veces más ruedas que 16' significa seis copias del 16: 6 grupos de 16 = 96. Un dibujo de seis 16 ES el plan — la multiplicación solo lo ejecuta.",
+    choiceFeedback: [
+      "",
+      "That mixes the units — the 16 counts wheels, not groups of bikes.",
+      "Adding one 16 and one 6 gives 22. Does '6 times as many' mean add?",
+      "Sharing is division. Does the second rack have FEWER wheels than the first?",
+    ],
+    choiceFeedbackEs: [
+      "",
+      "Eso mezcla las unidades: el 16 cuenta ruedas, no grupos de bicicletas.",
+      "Sumar un 16 y un 6 da 22. ¿'6 veces más' significa sumar?",
+      "Repartir es dividir. ¿El segundo portabicicletas tiene MENOS ruedas que el primero?",
+    ],
+    hints: [
+      "Say the comparison in group language: 6 times as many = how many groups of what?",
+      "Sketch it: how many circles, with how many wheels in each?",
+    ],
+    hintsEs: [
+      "Di la comparación en lenguaje de grupos: 6 veces más = ¿cuántos grupos de qué?",
+      "Dibújalo: ¿cuántos círculos y cuántas ruedas en cada uno?",
+    ],
+  },
+  {
+    // 3. CARRY OUT + CHECK — compute, then verify against the plan.
+    type: "multiple-choice",
+    stem: "Carry out the plan: 16 × 6 = ___. Then check your progress — which check actually tests the answer?",
+    stemEs:
+      "Ejecuta el plan: 16 × 6 = ___. Luego revisa tu progreso: ¿qué comprobación realmente pone a prueba la respuesta?",
+    choices: [
+      "96 — and 96 ÷ 6 = 16 brings back the first rack's wheels",
+      "96 — and 96 looks like a big number, so it must be right",
+      "22 — because 16 + 6 = 22",
+      "48 — because 8 × 6 = 48",
+    ],
+    choicesEs: [
+      "96 — y 96 ÷ 6 = 16 devuelve las ruedas del primer portabicicletas",
+      "96 — y 96 se ve como un número grande, así que debe estar bien",
+      "22 — porque 16 + 6 = 22",
+      "48 — porque 8 × 6 = 48",
+    ],
+    correctIndex: 0,
+    explanation:
+      "16 × 6 = 96, and the check runs the plan backward: 96 ÷ 6 = 16 ✓. A check that could FAIL is worth doing; 'it looks big' can never fail, so it checks nothing.",
+    explanationEs:
+      "16 × 6 = 96, y la comprobación corre el plan al revés: 96 ÷ 6 = 16 ✓. Una comprobación que PODRÍA fallar vale la pena; 'se ve grande' nunca puede fallar, así que no comprueba nada.",
+    choiceFeedback: [
+      "",
+      "A feeling about the size is not a check. What operation would UNDO your multiplication?",
+      "16 + 6 adds the numbers. The problem says 6 TIMES as many.",
+      "That multiplied the bikes, not the wheels. The comparison is about wheels: 16 of them.",
+    ],
+    choiceFeedbackEs: [
+      "",
+      "Una sensación sobre el tamaño no es una comprobación. ¿Qué operación DESHARÍA tu multiplicación?",
+      "16 + 6 suma los números. El problema dice 6 VECES más.",
+      "Eso multiplicó las bicicletas, no las ruedas. La comparación es de ruedas: 16.",
+    ],
+    hints: ["Multiply first: 16 × 6.", "Now undo it: your answer ÷ 6 should land back on 16."],
+    hintsEs: [
+      "Primero multiplica: 16 × 6.",
+      "Ahora deshazlo: tu respuesta ÷ 6 debe regresar a 16.",
+    ],
+  },
+  {
+    // 4. GET UNSTUCK — the lesson's named strategies, applied to a real stall.
+    type: "multiple-choice",
+    stem: "You read: 'The second rack has 96 wheels. How many BIKES is that?' — and you freeze. Which move is one of this lesson's get-unstuck strategies?",
+    stemEs:
+      "Lees: 'El segundo portabicicletas tiene 96 ruedas. ¿Cuántas BICICLETAS son?' — y te quedas en blanco. ¿Cuál movimiento es una de las estrategias de esta lección para destrabarte?",
+    choices: [
+      "Draw the situation — one bike per 2 wheels — or think of a problem like it you already solved",
+      "Skip it and answer the next one instead",
+      "Copy what the student next to you wrote",
+      "Multiply the two numbers you see, because that worked last time",
+    ],
+    choicesEs: [
+      "Dibuja la situación — una bicicleta por cada 2 ruedas — o piensa en un problema parecido que ya resolviste",
+      "Sáltalo y contesta el siguiente",
+      "Copia lo que escribió el estudiante de al lado",
+      "Multiplica los dos números que ves, porque eso funcionó la última vez",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Visualizing and connecting to a problem you have seen are two of the lesson's strategies. A drawing shows 2 wheels making 1 bike, so 96 wheels make 96 ÷ 2 = 48 bikes.",
+    explanationEs:
+      "Visualizar y conectar con un problema conocido son dos estrategias de la lección. Un dibujo muestra que 2 ruedas hacen 1 bicicleta, así que 96 ruedas hacen 96 ÷ 2 = 48 bicicletas.",
+    choiceFeedback: [
+      "",
+      "Skipping is stopping. The lesson's strategies keep you IN the problem.",
+      "Asking a classmate a QUESTION is a strategy; copying skips the thinking the question is for.",
+      "Multiplying blindly gives 96 × 2 = 192 — more bikes than wheels. Does that make sense?",
+    ],
+    choiceFeedbackEs: [
+      "",
+      "Saltar es detenerse. Las estrategias de la lección te mantienen DENTRO del problema.",
+      "Hacer una PREGUNTA a un compañero es una estrategia; copiar se salta el pensamiento.",
+      "Multiplicar a ciegas da 96 × 2 = 192 — más bicicletas que ruedas. ¿Tiene sentido?",
+    ],
+    hints: [
+      "Which of the four choices comes from the lesson's We-Do list of strategies?",
+      "Draw two wheels. How many bikes is that? Now scale up.",
+    ],
+    hintsEs: [
+      "¿Cuál de las cuatro opciones viene de la lista de estrategias de la lección?",
+      "Dibuja dos ruedas. ¿Cuántas bicicletas son? Ahora aumenta la escala.",
+    ],
+  },
+  {
+    // 5. DESCRIBE THE PROCESS — the objective's own language, in order.
+    type: "open-response",
+    stem: "Describe your problem-solving process for the rack problem, in order. Use the phrases make sense of, try a strategy, and check.",
+    stemEs:
+      "Describe en orden tu proceso para resolver el problema del portabicicletas. Usa las frases darle sentido, probar una estrategia y comprobar.",
+    modelAnswer:
+      "First I make sense of the problem: I know 8 bikes with 2 wheels each, and I need the wheels on a rack with 6 times as many. Then I try a strategy: I draw 6 groups of 16 and multiply 16 × 6 = 96. Last I check: 96 ÷ 6 = 16, which matches the first rack, so my answer holds.",
+    modelAnswerEs:
+      "Primero le doy sentido al problema: sé que hay 8 bicicletas con 2 ruedas cada una, y necesito las ruedas de un portabicicletas con 6 veces más. Luego pruebo una estrategia: dibujo 6 grupos de 16 y multiplico 16 × 6 = 96. Al final compruebo: 96 ÷ 6 = 16, que coincide con el primer portabicicletas, así que mi respuesta se sostiene.",
+    sentenceStems: [
+      "First I make sense of the problem: I know ___ and I need ___ .",
+      "Then I try a strategy: ___ .",
+      "Last I check by ___ .",
+    ],
+  },
+  {
+    // 6. COMMUNITY TRANSFER — the "ours" half of the objective.
+    type: "open-response",
+    stem: "A classmate is stuck on the rack problem and says, 'I'm just bad at math.' Write what you would say and do — one sentence that helps them re-enter the problem, and one question you would ask instead of giving the answer.",
+    stemEs:
+      "Un compañero está atascado en el problema del portabicicletas y dice: 'Soy malo para las mates'. Escribe qué dirías y harías: una oración que lo ayude a volver al problema y una pregunta que harías en lugar de dar la respuesta.",
+    modelAnswer:
+      "I would say: 'Being stuck is part of doing math — let's find where it stopped making sense.' Then I would ask a question instead of telling: 'How many wheels does the FIRST rack have? Could you draw it?' Helping with a question keeps the thinking theirs, which is what makes our class a community of math thinkers.",
+    modelAnswerEs:
+      "Le diría: 'Atascarse es parte de hacer matemáticas — busquemos dónde dejó de tener sentido'. Luego haría una pregunta en vez de decirle: '¿Cuántas ruedas tiene el PRIMER portabicicletas? ¿Puedes dibujarlo?' Ayudar con una pregunta deja el pensamiento en sus manos, y eso hace de nuestra clase una comunidad de pensadores matemáticos.",
+    sentenceStems: [
+      "I would say: '___' .",
+      "Instead of the answer, I would ask: '___?' ",
+      "That helps because ___ .",
+    ],
+  },
+];
+
+const LESSON_1_6_CHALLENGE = [
+  {
+    // 1. COMPARE STRATEGIES — two valid orders, same answer, different insight.
+    type: "multiple-choice",
+    stem: "For the rack with 6 times as many wheels, Maya computes (8 × 2) × 6 = 96. Jon computes (8 × 6) × 2 = 96. Which statement describes the two strategies fairly?",
+    stemEs:
+      "Para el portabicicletas con 6 veces más ruedas, Maya calcula (8 × 2) × 6 = 96. Jon calcula (8 × 6) × 2 = 96. ¿Qué afirmación describe con justicia las dos estrategias?",
+    choices: [
+      "Both are valid: Maya scales the wheels, Jon imagines 6 racks of bikes first — the grouping changes, the count does not",
+      "Only Maya's is right, because you must find the wheels before multiplying by 6",
+      "Only Jon's is right, because bikes come before wheels in the problem",
+      "One of them must have made an error, since they used different orders",
+    ],
+    choicesEs: [
+      "Ambas valen: Maya escala las ruedas, Jon imagina primero 6 portabicicletas de bicicletas — cambia la agrupación, no el conteo",
+      "Solo la de Maya está bien, porque debes hallar las ruedas antes de multiplicar por 6",
+      "Solo la de Jon está bien, porque las bicicletas van antes que las ruedas en el problema",
+      "Alguno se equivocó, porque usaron órdenes distintos",
+    ],
+    correctIndex: 0,
+    explanation:
+      "(8 × 2) × 6 and (8 × 6) × 2 both equal 96 — regrouping factors never changes a product. Two students, two mental pictures, one count. Comparing the pictures is the MPP.3 move.",
+    explanationEs:
+      "(8 × 2) × 6 y (8 × 6) × 2 dan 96 — reagrupar factores nunca cambia un producto. Dos estudiantes, dos imágenes mentales, un solo conteo. Comparar las imágenes es el movimiento de MPP.3.",
+    choiceFeedback: [
+      "",
+      "Work Jon's out: 8 × 6 = 48, then 48 × 2 = 96. Did his order break anything?",
+      "Work Maya's out: 8 × 2 = 16, then 16 × 6 = 96. Hers lands there too.",
+      "Same answer from both — so the different orders are a property, not an error. Which property?",
+    ],
+    choiceFeedbackEs: [
+      "",
+      "Calcula la de Jon: 8 × 6 = 48, luego 48 × 2 = 96. ¿Su orden rompió algo?",
+      "Calcula la de Maya: 8 × 2 = 16, luego 16 × 6 = 96. La suya también llega ahí.",
+      "El mismo resultado en ambas — los órdenes distintos son una propiedad, no un error. ¿Cuál propiedad?",
+    ],
+    hints: [
+      "Finish both computations before judging either.",
+      "What does each first step COUNT? Maya's 16 counts ___; Jon's 48 counts ___.",
+    ],
+    hintsEs: [
+      "Termina los dos cálculos antes de juzgar.",
+      "¿Qué CUENTA cada primer paso? El 16 de Maya cuenta ___; el 48 de Jon cuenta ___.",
+    ],
+  },
+  {
+    // 2. ERROR ANALYSIS — the additive misreading of "times as many".
+    type: "open-response",
+    stem: "A student answers: 'The second rack has 16 + 6 = 22 wheels.' Explain what they misread, why the wrong answer is SO much smaller than 96, and write the question you would ask to help them find it themselves.",
+    stemEs:
+      "Un estudiante responde: 'El segundo portabicicletas tiene 16 + 6 = 22 ruedas'. Explica qué leyó mal, por qué su respuesta queda TAN por debajo de 96, y escribe la pregunta que harías para que lo descubra por sí mismo.",
+    modelAnswer:
+      "They read '6 times as many' as '6 more.' Adding puts in one extra group of 6 wheels; the problem needs six whole copies of 16, so the miss is 96 − 22 = 74 wheels. I would ask: 'If a rack had 2 times as many wheels as 16, would it have 18 — or 32? What does times mean?'",
+    modelAnswerEs:
+      "Leyó '6 veces más' como '6 más'. Sumar agrega un solo grupo de 6 ruedas; el problema necesita seis copias completas de 16, así que faltan 96 − 22 = 74 ruedas. Yo preguntaría: 'Si un portabicicletas tuviera 2 veces más ruedas que 16, ¿tendría 18 — o 32? ¿Qué significa veces?'",
+    sentenceStems: [
+      "They read ___ as ___ .",
+      "The answer is too small because ___ .",
+      "My question: '___?' ",
+    ],
+  },
+  {
+    // 3. REVERSE + MULTI-STEP — run the process on a backward problem.
+    type: "multiple-choice",
+    stem: "A third rack has HALF as many wheels as the 96-wheel rack. How many BIKES does it hold, and which plan gets there?",
+    stemEs:
+      "Un tercer portabicicletas tiene la MITAD de ruedas que el de 96. ¿Cuántas BICICLETAS caben, y qué plan llega a eso?",
+    choices: [
+      "24 bikes — halve the wheels (96 ÷ 2 = 48), then 2 wheels per bike gives 48 ÷ 2 = 24",
+      "48 bikes — half of 96 is 48, and that is the answer",
+      "192 bikes — double 96 because each bike has 2 wheels",
+      "12 bikes — divide 96 by 6 and then by... something",
+    ],
+    choicesEs: [
+      "24 bicicletas — la mitad de las ruedas (96 ÷ 2 = 48), y con 2 ruedas por bicicleta, 48 ÷ 2 = 24",
+      "48 bicicletas — la mitad de 96 es 48, y esa es la respuesta",
+      "192 bicicletas — duplica 96 porque cada bicicleta tiene 2 ruedas",
+      "12 bicicletas — divide 96 entre 6 y luego entre... algo",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Two steps, each with a reason: 96 ÷ 2 = 48 wheels on the third rack, and 48 wheels ÷ 2 wheels per bike = 24 bikes. Watching your progress means noticing WHICH quantity each number counts.",
+    explanationEs:
+      "Dos pasos, cada uno con su razón: 96 ÷ 2 = 48 ruedas en el tercer portabicicletas, y 48 ruedas ÷ 2 ruedas por bicicleta = 24 bicicletas. Vigilar tu progreso es notar QUÉ cantidad cuenta cada número.",
+    choiceFeedback: [
+      "",
+      "48 counts WHEELS on the third rack. The question asks for bikes — one more step.",
+      "Doubling moves the wrong way: bikes are FEWER than wheels, not more.",
+      "The 6 belongs to a different comparison. Which two numbers does THIS question need?",
+    ],
+    choiceFeedbackEs: [
+      "",
+      "48 cuenta RUEDAS del tercer portabicicletas. La pregunta pide bicicletas — falta un paso.",
+      "Duplicar va en la dirección equivocada: hay MENOS bicicletas que ruedas, no más.",
+      "El 6 pertenece a otra comparación. ¿Qué dos números necesita ESTA pregunta?",
+    ],
+    hints: [
+      "Step 1: how many wheels does the third rack have?",
+      "Step 2: every 2 wheels is one bike. Convert your wheels to bikes.",
+    ],
+    hintsEs: [
+      "Paso 1: ¿cuántas ruedas tiene el tercer portabicicletas?",
+      "Paso 2: cada 2 ruedas es una bicicleta. Convierte tus ruedas a bicicletas.",
+    ],
+  },
+  {
+    // 4. CREATE TO A CONSTRAINT — author a problem with a planted trap.
+    type: "open-response",
+    stem: "Write your own 'times as many' problem about our school that a classmate could solve, and build in the trap from this lesson (a reader might add instead of multiply). Then give the correct answer AND the trap answer, with a sentence telling them apart.",
+    stemEs:
+      "Escribe tu propio problema de 'veces más' sobre nuestra escuela que un compañero pueda resolver, e incluye la trampa de esta lección (que alguien sume en vez de multiplicar). Da la respuesta correcta Y la respuesta trampa, con una oración que las distinga.",
+    modelAnswer:
+      "Problem: The art room has 7 tables with 4 chairs each. The cafeteria has 5 times as many chairs. How many cafeteria chairs? Correct: 7 × 4 = 28 chairs, then 28 × 5 = 140. Trap: 28 + 5 = 33. The trap adds one small group of 5; 'times' demands five whole copies of 28.",
+    modelAnswerEs:
+      "Problema: El salón de arte tiene 7 mesas con 4 sillas cada una. La cafetería tiene 5 veces más sillas. ¿Cuántas sillas hay en la cafetería? Correcto: 7 × 4 = 28 sillas, luego 28 × 5 = 140. Trampa: 28 + 5 = 33. La trampa suma un solo grupo de 5; 'veces' exige cinco copias completas de 28.",
+    sentenceStems: [
+      "My problem: ___ .",
+      "Correct answer: ___ . Trap answer: ___ .",
+      "The difference: ___ .",
+    ],
+  },
+  {
+    // 5. STRATEGY SHIFT — the key idea's hardest clause: when to change course.
+    type: "multiple-choice",
+    stem: "Priya tries to answer 'how many bikes fit 96 wheels?' by drawing every single wheel. After two minutes she has 30 wheels drawn and is losing track. By this lesson's process, what should she do?",
+    stemEs:
+      "Priya intenta responder '¿cuántas bicicletas usan 96 ruedas?' dibujando cada rueda. Tras dos minutos lleva 30 ruedas dibujadas y está perdiendo la cuenta. Según el proceso de esta lección, ¿qué debería hacer?",
+    choices: [
+      "Notice the strategy is not making progress and shift — her drawing already shows every 2 wheels is a bike, so compute 96 ÷ 2",
+      "Keep drawing: quitting a strategy means the strategy failed",
+      "Erase everything and start guessing numbers",
+      "Decide the problem is unsolvable and move on",
+    ],
+    choicesEs: [
+      "Notar que la estrategia no avanza y cambiar — su dibujo ya muestra que cada 2 ruedas es una bicicleta, así que calcula 96 ÷ 2",
+      "Seguir dibujando: abandonar una estrategia significa que la estrategia fracasó",
+      "Borrar todo y empezar a adivinar números",
+      "Decidir que el problema no tiene solución y pasar a otra cosa",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Watching progress and shifting strategies is the process working, not failing. The drawing did its job — it exposed the 2-wheels-per-bike structure — and the structure finishes the problem: 96 ÷ 2 = 48 bikes.",
+    explanationEs:
+      "Vigilar el progreso y cambiar de estrategia es el proceso funcionando, no fracasando. El dibujo cumplió su papel — reveló la estructura de 2 ruedas por bicicleta — y la estructura termina el problema: 96 ÷ 2 = 48 bicicletas.",
+    choiceFeedback: [
+      "",
+      "A strategy that showed you the structure already succeeded. What did the drawing reveal about wheels and bikes?",
+      "Guessing throws away what the drawing taught her. What pattern was in those 30 wheels?",
+      "The problem is one division away from solved. What did the drawing show about every pair of wheels?",
+    ],
+    choiceFeedbackEs: [
+      "",
+      "Una estrategia que te mostró la estructura ya tuvo éxito. ¿Qué reveló el dibujo sobre ruedas y bicicletas?",
+      "Adivinar desecha lo que el dibujo le enseñó. ¿Qué patrón había en esas 30 ruedas?",
+      "El problema está a una división de resolverse. ¿Qué mostró el dibujo sobre cada par de ruedas?",
+    ],
+    hints: [
+      "The lesson's key idea: watch your progress, and shift when a strategy stalls.",
+      "Her drawing groups wheels in twos. What operation does that grouping suggest for 96?",
+    ],
+    hintsEs: [
+      "La idea clave de la lección: vigila tu progreso y cambia cuando una estrategia se estanca.",
+      "Su dibujo agrupa ruedas de dos en dos. ¿Qué operación sugiere esa agrupación para 96?",
+    ],
+  },
+  {
+    // 6. COMMUNITY ARGUMENT — defend collaboration with mathematical content.
+    type: "open-response",
+    stem: "A classmate claims: 'Group work slows me down — I solve faster alone.' Using the rack problem, write a respectful response that names ONE specific mathematical thing a partner caught or contributed that solo work would likely miss.",
+    stemEs:
+      "Un compañero afirma: 'El trabajo en grupo me atrasa — resuelvo más rápido solo'. Usando el problema del portabicicletas, escribe una respuesta respetuosa que nombre UNA contribución matemática específica de un compañero que el trabajo en solitario probablemente no lograría.",
+    modelAnswer:
+      "I hear you — alone is faster when the path is clear. But on the rack problem my partner caught that my 48 counted bikes-times-six, not wheels, before I multiplied by the wrong 2. A partner checks the MEANING of your numbers while you compute them, and that catch is exactly what our class community is for.",
+    modelAnswerEs:
+      "Te entiendo — solo es más rápido cuando el camino está claro. Pero en el problema del portabicicletas mi compañero notó que mi 48 contaba bicicletas por seis, no ruedas, antes de que multiplicara por el 2 equivocado. Un compañero revisa el SIGNIFICADO de tus números mientras calculas, y esa atrapada es exactamente para lo que sirve nuestra comunidad.",
+    sentenceStems: [
+      "I hear you — ___ .",
+      "But on the rack problem, a partner ___ .",
+      "That matters because ___ .",
+    ],
+  },
+];
+
+const LESSON_1_6_MOVES = {
+  1: {
+    ask: "Before any numbers: what does '6 times as many' point back to in this problem?",
+    lookFor:
+      "A student who finds the first rack's 16 wheels before touching the 6 — sense-making before computing.",
+    ifStuck:
+      "Cover the second rack entirely. Ask only: how many wheels are on 8 bikes? Then uncover the comparison.",
+  },
+  2: {
+    ask: "Your strategy worked — now name it. What would you tell a classmate to DO, in one sentence?",
+    lookFor:
+      "A student who narrates the process (make sense → plan → check) rather than reciting the answer, and who shifts strategies when one stalls instead of grinding.",
+    ifStuck:
+      "Have them re-solve the 96-wheels-to-bikes question with a drawing of just 4 wheels first, then scale the idea up.",
+    extend:
+      "Ask them to write a 'times as many' problem with the add-instead-of-multiply trap built in, and to explain how a partner would catch it.",
+  },
+};
+
 export const AUTHORED_BANKS = {
   "1-1": { 1: LESSON_1_1_SUPPORT, 2: LESSON_1_1_CHALLENGE, moves: LESSON_1_1_MOVES },
   "1-2": { 1: LESSON_1_2_SUPPORT, 2: LESSON_1_2_CHALLENGE, moves: LESSON_1_2_MOVES },
+  "1-6": { 1: LESSON_1_6_SUPPORT, 2: LESSON_1_6_CHALLENGE, moves: LESSON_1_6_MOVES },
 };
 
 /** Authored teacher moves for a lesson + group, or null. */

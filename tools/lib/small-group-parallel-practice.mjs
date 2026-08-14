@@ -2,6 +2,7 @@ import { authoredBank } from "./small-group-authored-banks.mjs";
 import {
   buildCoordinatePractice,
   buildDataPractice,
+  buildTwoVariablePractice,
 } from "./small-group-parallel-practice-data.mjs";
 
 const gcd = (a, b) => {
@@ -539,6 +540,78 @@ function unit4(context) {
           ["Percent means divide by ___.", 100, "Porcentaje significa dividir entre ___."],
           [`${percent} ÷ 100 = ___.`, decimal, `${percent} ÷ 100 = ___.`],
         ],
+      });
+    }
+    if (lesson === 8) {
+      // Find the whole given the part and percent (4-5, 6.AT.4) — added by the
+      // 2026-08-14 alignment audit. The identity mapping [4, 5] pointed at the
+      // OLD 4-5's discount family, so a find-the-whole lesson drilled sale
+      // prices. The whole is constructed first, so every quotient is exact.
+      const percent = [50, 25, 20, 10, 40, 75][index % 6];
+      const whole = 40 + (index + 2 + context.group) * 10;
+      const part = tidy((whole * percent) / 100);
+      const decimal = percent / 100;
+      return makeItem(context, index, {
+        stem: `${percent}% of a number is ${part}. Find the whole (the 100%).`,
+        stemEs: `El ${percent}% de un número es ${part}. Encuentra el entero (el 100%).`,
+        answer: whole,
+        visual: { kind: "percent-grid", percent },
+        steps: [
+          [
+            `Write ${percent}% as a decimal: ___.`,
+            decimal,
+            `Escribe ${percent}% como decimal: ___.`,
+          ],
+          [
+            `The part ÷ the percent gives the whole: ${part} ÷ ${decimal} = ___.`,
+            whole,
+            `La parte ÷ el porcentaje da el entero: ${part} ÷ ${decimal} = ___.`,
+          ],
+          [
+            `Check: ${percent}% of ${whole} = ___.`,
+            part,
+            `Comprueba: el ${percent}% de ${whole} = ___.`,
+          ],
+        ],
+        hint: "You already HAVE the part — the question runs backward, so divide instead of multiplying.",
+        hintEs:
+          "Ya TIENES la parte: la pregunta va hacia atrás, así que divide en vez de multiplicar.",
+      });
+    }
+    if (lesson === 9) {
+      // Benchmark estimation of a percent (4-3, 6.AT.4) — added by the
+      // 2026-08-14 alignment audit. The [4, 4] family computed exact percents
+      // with the decimal algorithm, coaching the opposite of the objective
+      // ("estimate using benchmark percents, rounding, compatible numbers").
+      const percent = [19, 21, 52, 48, 9, 11][index % 6];
+      const benchmark = [20, 20, 50, 50, 10, 10][index % 6];
+      const base = 38 + (index + 2 + context.group) * 11;
+      const friendly = Math.round(base / 10) * 10;
+      const estimate = tidy((friendly * benchmark) / 100);
+      return makeItem(context, index, {
+        stem: `Estimate ${percent}% of ${base} using benchmarks — no exact computing.`,
+        stemEs: `Estima el ${percent}% de ${base} usando puntos de referencia, sin calcular exacto.`,
+        answer: estimate,
+        visual: { kind: "percent-grid", percent: benchmark },
+        steps: [
+          [
+            `Round ${percent}% to a benchmark percent: ___%.`,
+            benchmark,
+            `Redondea ${percent}% a un porcentaje de referencia: ___%.`,
+          ],
+          [
+            `Round ${base} to a friendly number: ___.`,
+            friendly,
+            `Redondea ${base} a un número amigable: ___.`,
+          ],
+          [
+            `${benchmark}% of ${friendly} = ___.`,
+            estimate,
+            `El ${benchmark}% de ${friendly} = ___.`,
+          ],
+        ],
+        hint: `Benchmarks are the percents you can do in your head — 10% slides the decimal, 50% halves, 20% is double 10%.`,
+        hintEs: `Los puntos de referencia son porcentajes mentales: 10% corre el decimal, 50% es la mitad, 20% es el doble de 10%.`,
       });
     }
     const base = 40 + n * 10;
@@ -1091,7 +1164,11 @@ const LEGACY_TOPIC = {
   "4-2": [4, 2],
   "4-1": [4, 3],
   "4-4": [4, 4],
-  "4-5": [4, 5],
+  // 2026-08-14 task-alignment audit: the identity tuple [4, 5] pointed at the
+  // OLD 4-5's discount/sale-price family, while the renumbered 4-5 teaches
+  // find-the-WHOLE given the part and percent. [4, 8] is the find-the-whole
+  // family written for exactly this objective (part ÷ percent, with a check).
+  "4-5": [4, 8],
   "3-10": [4, 6],
   "3-8": [4, 7],
   "5-1": [5, 1],
@@ -1152,9 +1229,17 @@ const LEGACY_TOPIC = {
   // lands on 78.5 people, not a whole number.
   "1-1": [1, 6], // estimating the Ferris wheel, a product -> multiply
   "1-2": [1, 5], // decomposing 105.76 -> add and subtract decimals
-  "1-3": [1, 4], // the tram: 4,000 passengers in rides of 80 -> division
+  // 2026-08-14 task-alignment audit: [1, 4] (division with remainder) matched
+  // one deck subtask's domain but none of the objective — "represent with a
+  // tape diagram or TABLE and use DECIMAL operations". [11, 6] is the decimal
+  // scaling-table family, the lesson's own youDo (35 min → 1 trip, 350 → 10).
+  "1-3": [11, 6],
   "1-4": [10, 1], // garden beds holding 48 cubic feet -> volume
-  "1-5": [3, 2], // scores growing by a fixed rule -> ratio tables
+  // 2026-08-14 task-alignment audit: [3, 2] delivered equivalent-ratio scaling
+  // ("2:3 = 4:6"), which carries no pattern RULE, no table of values and no
+  // generalization — the objective's three verbs. [11, 5] is the pattern-rule
+  // family (rule → table → predict a far position without listing rows).
+  "1-5": [11, 5],
   "1-6": [3, 1], // "6 times as many wheels" -> multiplicative comparison
   "10-1": [10, 1], // the 4 x 2 x 1 planter -> volume
   "10-2": [9, 7], // bilateral symmetry -> reflection across a line
@@ -1163,13 +1248,28 @@ const LEGACY_TOPIC = {
   "10-5": [1, 4], // position divided by pattern-unit length -> division with remainder
   "10-6": [4, 4], // 78.5 as 50% of 157 -> percent of a number
   "2-8": [8, 2], //  measures of centre, which is where the mean lives
-  "4-3": [4, 4], //  estimating a percent OF a number, not percent-to-decimal conversion
-  "7-1": [9, 3], //  comparing and ordering integers — absolute value belongs to 7-3
+  // 2026-08-14 task-alignment audit: [4, 4] computes EXACT percents with the
+  // decimal algorithm, coaching the opposite of "estimate using benchmark
+  // percents, rounding, and compatible numbers". [4, 9] is the benchmark
+  // estimation family (round the percent, round the base, estimate mentally).
+  "4-3": [4, 9],
+  // 2026-08-14 task-alignment audit: [9, 3] is compare/order — 7-4's objective,
+  // not 7-1's "represent quantities, explain what 0 means, name the opposite".
+  // [9, 8] is the opposites family (situation → integer → opposite → zero).
+  "7-1": [9, 8],
   "7-7": [9, 5], //  plotting ordered pairs, which is how a polygon's vertices go down
-  "9-1": [3, 2], //  building the table that shows one quantity depending on another
-  "9-2": [3, 3], //  GRAPHING that table — this lesson is about reading the graph
-  "9-3": [7, 1], //  writing the equation, not completing another ratio table
-  "9-4": [3, 7], //  applying a rate to solve a problem
+  // 2026-08-14 task-alignment audit: Unit 9 (6.AT.11) now has its own family,
+  // [11, x] = buildTwoVariablePractice. The old tuples were the audit's worst
+  // class — 9-1/9-2 drew equivalent-ratio SCALING (no two quantities, no
+  // dependence), and 9-3 drew one-variable "x + 2 = 4" translation under an
+  // objective about equations for TWO-variable relationships. The rationale
+  // comments those tuples carried were honest about the topic and wrong about
+  // the reasoning, which is exactly the 1-1 failure documented in
+  // small-group-authored-banks.mjs.
+  "9-1": [11, 1], // covariation table + name the dependent variable
+  "9-2": [11, 2], // read the relationship from its table, extend it
+  "9-3": [11, 3], // write the equation the table shows (y = kx / y = x + b)
+  "9-4": [11, 4], // use a given rate equation to solve
 };
 
 export function buildParallelPractice(base, lessonId, group) {
@@ -1192,6 +1292,7 @@ export function buildParallelPractice(base, lessonId, group) {
   else if (unit === 6 || unit === 7) items = unit6or7(context);
   else if (unit === 8) items = buildDataPractice(context);
   else if (unit === 9) items = buildCoordinatePractice(context);
+  else if (unit === 11) items = buildTwoVariablePractice(context);
   else throw new Error(`${lessonId}: no parallel-practice builder for unit ${unit}`);
   if (items.length !== 12) throw new Error(`${lessonId}: expected 12 parallel items`);
   return items;
