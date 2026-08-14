@@ -2,7 +2,7 @@
   "_doc": "Reveal assets deliberately kept on disk while unreferenced. Read by tools/validate-reveal-assets.mjs. EXACT paths only — no globs, no wildcards, no directories. An unreferenced file that is NOT listed here fails the gate; that is the point. Adding an entry is a decision, and the reason field is where the decision is recorded. The gate also fails if an entry stops existing or becomes referenced again, so this file cannot silently rot.",
   "_status": {
     "superseded": "Replaced by better artwork. Kept because deleting a lesson image is not a QA decision — see the reason for what replaced it and when.",
-    "unwired": "Artwork that exists but no lesson references. Awaiting an authoring decision on whether to wire it or retire it. NOT a licence to leave it forever."
+    "unwired": "Artwork that exists but no lesson references, and that no decision has yet retired. None currently — 6-7's was restored on 2026-08-14 once its reference proved to be a rebuild regression. Kept in the vocabulary because that shape recurs."
   },
   "retained": [
     {
@@ -25,15 +25,9 @@
     },
     {
       "path": "lessons/4-5/reveal-assets/word-problem.png",
-      "status": "unwired",
+      "status": "superseded",
       "date": "2026-08-14",
-      "reason": "A Book Fair attendance table (Mon 55, Tue 80, Wed 70, Thu 112, Fri 65). 4-5's Apply problem is about percentages of a puzzle stock, so this artwork belongs to no current word problem — the data shape suits a Unit 2 statistics question. Predates the 2026-08-14 experience pass. Needs an owner: wire it to a lesson that wants it, or retire it."
-    },
-    {
-      "path": "lessons/6-7/reveal-assets/word-problem.png",
-      "status": "unwired",
-      "date": "2026-08-14",
-      "reason": "Hot dogs labelled '10 count' beside buns labelled '8 count' — an exact match for 6-7's Apply problem, which states hot dogs come in packs of 10 and buns in packs of 8. The artwork was produced and never wired: revealWordProblem carries a title and text but no image field. Ready to wire; held back only because adding it changes what students see, which is an authoring call, not a QA one."
+      "reason": "A Book Fair attendance table (Mon 55, Tue 80, Wed 70, Thu 112, Fri 65). It illustrated 4-5's own Apply problem, \"Apply: Book Fair\", which surveyed which night students planned to attend. Commit c087b0a5b rebuilt 4-5 from its Reveal deck, replaced that problem with \"Apply: Puzzle Problem\" (percentages of a puzzle stock) and correctly dropped the image, since the artwork no longer matched. The file is byte-identical to the one that commit orphaned. Kept as the artwork of a retired word problem; it fits no current lesson."
     }
   ]
 }
