@@ -173,6 +173,8 @@
   //   lesson → SCO  {source:"neft-lesson", type:"state", state, location}
   //   SCO → lesson  {source:"neft-sco",    type:"restore", state, location}
   var lastSent = null;
+  // What counts as "the student did something worth persisting".
+  var ACTIVITY_EVENTS = ["input", "change", "click", "keyup"];
 
   function toParent(msg) {
     safe(function () {
@@ -283,7 +285,24 @@
       toParent({ source: "neft-lesson", type: "ready" });
       global.addEventListener("pagehide", syncScormState);
       global.addEventListener("beforeunload", syncScormState);
-      setInterval(syncScormState, 10000);
+      document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === "hidden") syncScormState();
+      });
+      // Driven by student activity, NOT by a standing interval. A setInterval
+      // here would never be cleared: it keeps a timer alive for the whole
+      // lesson (and pins the event loop open in any headless harness) to ask a
+      // question that only has a new answer after the student does something.
+      // The debounce collapses a burst of typing into one sync.
+      var idle = null;
+      var onActivity = function () {
+        if (idle) clearTimeout(idle);
+        idle = setTimeout(function () {
+          idle = null;
+          syncScormState();
+        }, 5000);
+      };
+      for (var i = 0; i < ACTIVITY_EVENTS.length; i++)
+        document.addEventListener(ACTIVITY_EVENTS[i], onActivity, { passive: true });
     });
   }
 
