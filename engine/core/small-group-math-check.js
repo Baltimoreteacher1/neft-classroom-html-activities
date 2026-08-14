@@ -522,6 +522,130 @@ export const MATH_CHECKS = {
   ),
 };
 
+// The interpretation frame for step 3.
+//
+// Step 2 ("run the check") and step 3 ("tell what the result means") used to
+// print the SAME sentence frame, on all 84 Group 2 lessons — `topic.frame` was
+// rendered twice. Those frames are written for whichever step the author had in
+// mind, so half the fleet handed the verification frame to the interpretation
+// step and half did the reverse. Either way a student could finish step 3 by
+// restating step 2, which is the one move that step exists to prevent.
+//
+// Keyed identically to MATH_CHECKS; the lockstep is enforced by
+// engine/core/math-check-frames.test.mjs.
+export const CONNECT_FRAMES = {
+  "6-13": "The original number is ___, and multiplying my prime factors gives ___, so ___.",
+  "6-7": "The GCF ___ represents ___ in this problem.",
+  "6-12": "The first shared multiple is ___, which means ___ happens again after ___.",
+  "2-6": "The quotient ___ counts ___, and the remainder ___ is ___ left over.",
+  "2-11":
+    "My estimate was ___ and my exact answer is ___, so the answer is reasonable because ___.",
+  "2-12":
+    "The decimal point belongs after ___ places because ___, which makes the product about ___.",
+  "2-7": "The quotient ___ means ___ in this situation.",
+  "6-1": "One whole group in my model looks like ___, so the quotient counts ___.",
+  "6-9": "The quotient counts how many ___ fit inside ___, which is ___.",
+  "6-2": "Multiplying back gives ___ × ___ = ___, which is the number I started with, so ___.",
+  "6-10": "The quotient ___ describes ___ in this situation.",
+  "6-11": "In the story, the quotient ___ means ___.",
+  "3-1": "My ratio compares ___ with ___, so it describes ___.",
+  "3-3": "Every row keeps ___ constant, because ___.",
+  "3-4": "The points show ___, which happens because ___.",
+  "3-9":
+    "Both ratios describe the same comparison because ___ compared with ___ is ___ either way.",
+  "3-5": "___ is the better option because its rate of ___ per ___ means ___.",
+  "3-6": "Scaling changed the quantities to ___ and ___, but the ratio stayed ___ because ___.",
+  "3-7": "A rate of ___ per one ___ means that in this situation ___.",
+  "3-2": "___ is the better buy because it costs $___ less per ___.",
+  "4-2": "All three forms show the same amount because ___ out of 100 is ___, which is also ___.",
+  "4-1": "A percent of ___ tells me the quantity is ___ because ___.",
+  "4-4": "___% of ___ is ___, which is reasonable because ___% of ___ would be about ___.",
+  "4-5": "The final amount is $___, and the step that changed it most was ___ because ___.",
+  "3-10": "The measurement is still the same size because ___ ___ and ___ ___ describe ___.",
+  "3-8": "Option ___ meets the goal best because ___ per ___ means ___.",
+  "5-1":
+    "Cutting the ___ triangle off and sliding it to the other side makes a rectangle ___ by ___, which has the same area because ___.",
+  "5-3":
+    "The trapezoid formula works because two copies make a parallelogram with base ___ and height ___, so one trapezoid is ___.",
+  "5-2":
+    "A triangle is half of a ___ by ___ parallelogram, so its area is half of ___, which is ___.",
+  "5-9": "Decomposing gave ___ identical triangles, so the total area is ___ × ___ = ___.",
+  "5-4":
+    "My decomposition matches the whole figure because ___ and ___ cover it with no gaps or overlaps.",
+  "6-3": "The base ___ tells me ___, and the exponent ___ tells me ___.",
+  "6-4":
+    "Before substitution the expression was ___; after replacing ___ with ___ it became ___ because ___.",
+  "6-5":
+    "My expression tells the same story because ___ in the words matches ___ in the expression.",
+  "6-8": "The ___ property allowed the rewrite because it lets me ___.",
+  "6-14":
+    "Both forms show the same value because distributing ___ over ___ counts ___ the same way.",
+  "6-6":
+    "The two expressions are equivalent because ___, so they give the same value for every ___.",
+  "6-15": "I combined ___ because they share ___. I could not combine ___ because ___.",
+  "8-1": "The variable ___ represents ___ in this situation.",
+  "8-2": "I isolated the variable using ___, because it undoes ___.",
+  "8-3": "I isolated the variable using ___, because it undoes ___.",
+  "8-4": "The symbol ___ means ___ in this situation, so the answer includes ___.",
+  "8-5": "The shaded ray represents every value that is ___, which in this situation means ___.",
+  "8-6":
+    "Testing ___ and ___ confirms the graph because ___ makes the inequality true and ___ does not.",
+  "8-7": "In this situation the solution means ___, so ___.",
+  "2-1": "The answers could vary in ___, because different ___ would give different ___.",
+  "2-3": "The ___ describes this data best because the distribution ___.",
+  "2-9":
+    "A MAD of ___ says the data is ___ consistent, because a typical value sits ___ from the mean.",
+  "2-10": "The ___ represents this data fairly because ___ would be pulled by ___.",
+  "2-4": "The middle 50% of the data runs from ___ to ___, which shows that ___.",
+  "2-2": "The interval ___ is most common and ___ is least common, which tells me ___.",
+  "2-5": "The features that support my description are ___ and ___, because ___.",
+  "7-5":
+    "The ordered pair (___, ___) names the location ___, because x tells me ___ and y tells me ___.",
+  "7-3":
+    "The absolute value ___ means ___ in this situation, because distance from zero ignores ___.",
+  "7-4":
+    "Position settles it because ___ sits to the ___ of ___ on the number line, and numbers to the right are ___.",
+  "7-2": "The number belongs between the benchmarks ___ and ___, because ___.",
+  "7-8": "The signs (___, ___) put the point in Quadrant ___, because x is ___ and y is ___.",
+  "7-6": "The distance ___ represents ___ on the grid.",
+  "7-9":
+    "The ___-coordinate changed because reflecting across the ___-axis ___, while the other coordinate ___.",
+  "5-5":
+    "The ___ counts ___, the ___ counts ___, and the ___ counts how many layers, so the product counts ___.",
+  "5-10":
+    "The fractional edges mean each cube is smaller than one unit, so the volume is ___ than the whole-number version because ___.",
+  "5-6":
+    "The net accounts for the whole outside because it shows all ___ faces laid flat, and every face of the solid appears ___.",
+  "5-7": "The faces that make up the surface area are ___, and they pair up because ___.",
+  "5-8":
+    "The base contributes ___ and the ___ lateral faces contribute ___, which together build the total because ___.",
+  "1-1":
+    "My estimate is ___ because I rounded ___ ___, and rounding that way makes the result ___.",
+  "1-2": "My parts rebuild the original number because ___ + ___ = ___.",
+  "1-3": "My quotient counts ___ in this situation, because I divided ___ by ___.",
+  "1-4": "The unit is cubic because I multiplied ___ dimensions, and each one contributes ___.",
+  "1-5": "My rule still works on a new row because testing ___ gives ___, which matches ___.",
+  "1-6": "The step that did the real work was ___, because it turned ___ into ___.",
+  "2-8": "My mean ___ sits inside the range ___ to ___, which makes sense because ___.",
+  "4-3": "My rounding pushed the estimate ___, because I changed ___ to ___.",
+  "7-1": "Zero represents ___ in this situation, so ___ above it and ___ below it are opposites.",
+  "7-7": "Only the ___-coordinate changes along that side, so the side length is ___.",
+  "9-1": "___ depends on ___, because changing ___ is what makes ___ change.",
+  "9-2":
+    "The point agrees with my rate because ___ of ___ gives ___, which matches ___ per one ___.",
+  "9-3": "My equation holds for a second pair because substituting ___ gives ___ = ___.",
+  "9-4": "My solution makes sense here because ___ means ___, and that is ___ for this situation.",
+  "10-1": "One unit of my rate stands for ___, so ___ units means ___.",
+  "10-2": "I put the line ___ because folding along it makes ___ land exactly on ___.",
+  "10-3": "Each step builds on the one before because ___, so the pattern keeps ___.",
+  "10-4": "For the machine, a simplified ratio of ___ to ___ means ___.",
+  "10-5":
+    "The remainder ___ tells me the pattern has gone ___ full cycles and landed ___, so position ___ is ___.",
+  "10-6": "Now I can ___, which I could not do before because ___.",
+};
+
+const fallbackConnectFrame = "My result means ___, because ___.";
+
 const fallbackCheck = check(
   "Strategy",
   "Use the inverse operation or a second representation to check each step against the original problem.",
@@ -531,7 +655,8 @@ const fallbackCheck = check(
 
 export function mathCheckFor(config = {}) {
   const lessonKey = String(config.lessonId || "").match(/^\d+-\d+/)?.[0];
-  return MATH_CHECKS[lessonKey] || fallbackCheck;
+  const topic = MATH_CHECKS[lessonKey] || fallbackCheck;
+  return { ...topic, connectFrame: CONNECT_FRAMES[lessonKey] || fallbackConnectFrame };
 }
 
 // Lower-case a check title for use mid-sentence ("use the ratio table check")
@@ -654,7 +779,7 @@ export function createMathCheckLab(config, state, onDone, store = null) {
   connect.classList.add("locked");
   connect.append(
     el("p", "sg-talk-q", esc(topic.connect)),
-    el("p", "sg-frame", `<b>Sentence frame:</b> ${esc(topic.frame)}`),
+    el("p", "sg-frame", `<b>Sentence frame:</b> ${esc(topic.connectFrame || topic.frame)}`),
   );
   const meaning = responseBox(
     "What your result means",
