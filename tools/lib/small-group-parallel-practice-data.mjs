@@ -60,19 +60,24 @@ export function buildDataPractice(context) {
     const mean = tidy(data.reduce((sum, value) => sum + value, 0) / data.length);
     if (lesson === 1) {
       const answer = index % 2 ? "statistical" : "not statistical";
+      // [EN base-form for "did … X", ES third-person preterite] — the stem
+      // template reads "did each student ___ yesterday?", so past-tense slot
+      // values produced "did each student practiced music" (and the ES lane
+      // mixed English verbs into Spanish stems). Both lanes now carry the
+      // grammatical form their own template needs.
       const topics = [
-        "read",
-        "practiced music",
-        "walked",
-        "played outside",
-        "studied",
-        "slept",
-        "used a tablet",
-        "helped at home",
-        "drew",
-        "exercised",
-        "played a game",
-        "traveled",
+        ["read", "leyó"],
+        ["practice music", "practicó música"],
+        ["walk", "caminó"],
+        ["play outside", "jugó afuera"],
+        ["study", "estudió"],
+        ["sleep", "durmió"],
+        ["use a tablet", "usó una tableta"],
+        ["help at home", "ayudó en casa"],
+        ["draw", "dibujó"],
+        ["exercise", "hizo ejercicio"],
+        ["play a game", "jugó un juego"],
+        ["travel", "viajó"],
       ];
       const names = [
         "Maya",
@@ -88,14 +93,15 @@ export function buildDataPractice(context) {
         "Nia",
         "Omar",
       ];
+      const [topicEn, topicEs] = topics[index];
       const stem =
         index % 2
-          ? `Classify: “How many minutes did each student ${topics[index]} yesterday?”`
-          : `Classify: “How many minutes did ${names[index]} ${topics[index]} yesterday?”`;
+          ? `Classify: “How many minutes did each student ${topicEn} yesterday?”`
+          : `Classify: “How many minutes did ${names[index]} ${topicEn} yesterday?”`;
       const stemEs =
         index % 2
-          ? `Clasifica: “¿Cuántos minutos ${topics[index]} cada estudiante ayer?”`
-          : `Clasifica: “¿Cuántos minutos ${names[index]} ${topics[index]} ayer?”`;
+          ? `Clasifica: “¿Cuántos minutos ${topicEs} cada estudiante ayer?”`
+          : `Clasifica: “¿Cuántos minutos ${topicEs} ${names[index]} ayer?”`;
       return makeItem(context, index, {
         stem,
         stemEs,
