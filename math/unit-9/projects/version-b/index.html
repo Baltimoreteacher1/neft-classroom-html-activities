@@ -1417,6 +1417,7 @@
                 min="0"
                 placeholder=""
                 oninput="
+                  _eqSolved = false;
                   updatePlanVisuals();
                   updatePlanEquationFeedback();
                 "
@@ -1433,6 +1434,7 @@
                 min="0"
                 placeholder=""
                 oninput="
+                  _eqSolved = false;
                   updatePlanVisuals();
                   updatePlanEquationFeedback();
                 "
@@ -2767,11 +2769,16 @@
                 : `Your cost per gigabyte of $${rate} should be multiplied by g (e.g. ${rate}g).`,
             };
           }
+          // The two checks above already name the specific missing piece using
+          // the student's OWN design values, which is the useful feedback. This
+          // fallback used to print the finished equation instead — the very
+          // thing the input asks the student to write — on their first wrong
+          // try. Describe the SHAPE it must have, not the answer.
           return {
             ok: false,
             msg: isEs
-              ? `Revisa tu ecuación. Debería ser: C = ${rate}g${fee > 0 ? " + " + fee : ""}`
-              : `Check your equation. It should be: C = ${rate}g${fee > 0 ? " + " + fee : ""}`,
+              ? "Revisa tu ecuación. El costo total es tu costo por gigabyte multiplicado por g, más tu tarifa fija — y nada más."
+              : "Check your equation. Total cost is your cost per gigabyte times g, plus your flat fee — and nothing else.",
           };
         }
       }
@@ -2797,9 +2804,11 @@
         document.getElementById("eq-svg-f").textContent = fee;
 
         if (fee === 0) {
-          document.getElementById("eq-svg-full-eq").textContent = `C = ${rate}g`;
+          document.getElementById("eq-svg-full-eq").textContent = _eqSolved ? `C = ${rate}g` : "C = ?";
         } else {
-          document.getElementById("eq-svg-full-eq").textContent = `C = ${rate}g + ${fee}`;
+          document.getElementById("eq-svg-full-eq").textContent = _eqSolved
+            ? `C = ${rate}g + ${fee}`
+            : "C = ?";
         }
 
         // Update Step 2 SVG text
@@ -2827,6 +2836,13 @@
         document.getElementById("comp-cost-5").textContent = (rate * 5 + fee).toFixed(2);
       }
 
+      /* The Equation Structure diagram assembled "C = 9g + 9" from the flat fee
+         and per-GB rate as soon as they were typed — and the input directly below
+         asks the student to WRITE that equation. The labelled parts stay (they are
+         the student's own design values shown in position, which is the scaffold);
+         only the finished equation waits until the student has written it. */
+      let _eqSolved = false;
+
       function updatePlanEquationFeedback() {
         const rate = parseFloat(document.getElementById("plan-rate").value);
         const fee = parseFloat(document.getElementById("plan-fee").value);
@@ -2841,6 +2857,10 @@
 
         const check = checkEquation(eqInput.value, rate, fee);
         if (check.ok) {
+          if (!_eqSolved) {
+            _eqSolved = true;
+            updatePlanVisuals();
+          }
           feedback.className = "feedback ok";
           feedback.textContent = "✅ " + check.msg;
           eqInput.style.borderColor = "var(--green)";
