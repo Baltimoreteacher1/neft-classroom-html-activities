@@ -257,7 +257,14 @@ function buildGroup1(base, u, m) {
   // "multiples/steps" for all 84 topics, which read as nonsense in a median or
   // inequality group. The middle frame pulls the lesson's own first vocabulary
   // term, so students speak the word the objective is about (TEACH 5).
-  const keyTerm = (base.vocabulary || []).map((v) => v.term).find(Boolean);
+  // Skip the lesson-concept statement authored at vocabulary[0] on most
+  // lessons: this frame puts the term in a student's mouth ("in this problem,
+  // ___ means ___"), and "display data with histograms means ___" is not a
+  // sentence a support group can finish. See engine/core/vocab-match.js.
+  const keyTerm = (base.vocabulary || [])
+    .filter((v) => !(v && v.role === "concept"))
+    .map((v) => v.term)
+    .find(Boolean);
   const frames = [
     `My first step is ___ , because the problem asks for ___ .`,
     keyTerm

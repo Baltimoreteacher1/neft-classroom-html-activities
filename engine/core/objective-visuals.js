@@ -31,6 +31,7 @@
 // lessons contain `<` and `>`.
 
 import { OBJECTIVE_IMAGES } from "./objective-art-catalog.js";
+import { firstVocabularyWord } from "./vocab-match.js";
 
 export { MANIPULATIVES, OBJECTIVE_IMAGES } from "./objective-art-catalog.js";
 
@@ -560,7 +561,14 @@ export function resolveContentTalkPrompts(config) {
 export function resolveLanguageTalkPrompts(config) {
   const cfg = config || {};
   const vocabList = vocabTerms(cfg);
-  const word = firstTerm(vocabList);
+  // These bullets put the term in a student's mouth — "I used the word ___" —
+  // so they need a word, not the lesson-concept statement that sits at
+  // vocabulary[0] on 55 of the 84 lessons. firstVocabularyWord skips entries
+  // authored as role:"concept"; see engine/core/vocab-match.js.
+  const chosen = firstVocabularyWord(cfg.vocabulary);
+  const word =
+    (chosen && typeof chosen === "object" ? chosen.term || chosen.word : chosen) ||
+    firstTerm(vocabList);
 
   const wordSay = word ? `I used the word "${word}".` : "I used today's math words.";
   const wordSayEs = word ? `Usé la palabra "${word}".` : "Usé las palabras de hoy.";
