@@ -49,7 +49,11 @@ const MANIFEST = path.join(ROOT, "night-shift", "render-manifest.json");
 // getting killed mid-probe produced the recurring "-1 content" / connection-
 // refused false failures. SMOKE_PORT=<n> pins a port when determinism matters.
 const PORT = Number(process.env.SMOKE_PORT || 0) || 0;
-const LESSON_MIN = 800; // a rendered lesson is ~10k chars; a blank shell is 0
+// A rendered lesson is ~10k chars; a blank shell is 0. The floor sits well above
+// the ~900-char mission cover + identity card that `enterLesson` now clicks
+// through, so a lesson that stalls on its doorway can no longer clear the bar by
+// measuring the doorway. (It was 800, which the cover alone satisfied.)
+const LESSON_MIN = 3000;
 const NAV_TIMEOUT = 25000;
 const RENDER_TIMEOUT = 12000; // how long to wait for the mount to fill
 
@@ -233,6 +237,49 @@ async function startPreviewServer() {
  * route = { url, label, selector?, min, measure: "html" | "text" }
  *   measure "html" → selector.innerHTML length; "text" → body.innerText length.
  */
+/**
+ * Click through a lesson's cover and identity gate so the probe measures the
+ * LESSON, not the doorway.
+ *
+ * Third time in this file's history that a byte count implied a render it never
+ * saw. A lesson opens on a themed mission cover ("Board the Station →"), then an
+ * identity card asking for a name and period; only after that does the engine
+ * mount the phases. That cover measures ~900 characters — over the 800-char
+ * floor — so every lesson "passed" on the doorway alone and nothing behind it
+ * was ever executed. A bar chart in two Unit 9 lessons emitted a console error
+ * on the Launch phase and rendered no bars for months, entirely inside this
+ * tool's blind spot.
+ *
+ * Best-effort by design: a lesson without a gate is untouched, and a gate that
+ * does not yield is left to the measurement below to judge.
+ */
+async function enterLesson(page) {
+  // The cover CTA is themed per lesson ("Set Sail", "Open the Case File"), so
+  // match the class the template gives it, never the words.
+  const cover = await page
+    .$('button[class*="flagship-mission"], button.btn-lg.btn-primary')
+    .catch(() => null);
+  if (cover) {
+    await cover.click().catch(() => {});
+    await page.waitForTimeout(700);
+  }
+  const nameField = await page.$("#id-name").catch(() => null);
+  if (nameField) {
+    await page.fill("#id-name", "Smoke Test").catch(() => {});
+    const period = await page.$("#id-period").catch(() => null);
+    if (period) {
+      const tag = await period.evaluate((el) => el.tagName).catch(() => "INPUT");
+      if (tag === "SELECT") await page.selectOption("#id-period", { index: 1 }).catch(() => {});
+      else await page.fill("#id-period", "1").catch(() => {});
+    }
+    await page.click("#id-start").catch(() => {});
+  }
+  // Wait for the phase rail (launchers) or tab strip (small-group) to mount.
+  await page
+    .waitForSelector(".phase-nav .phase-btn, .sg-tabs .sg-step", { timeout: RENDER_TIMEOUT })
+    .catch(() => {});
+}
+
 async function probeRoute(page, base, route) {
   const pageErrors = [];
   const consoleErrors = [];
@@ -261,6 +308,7 @@ async function probeRoute(page, base, route) {
   } catch (e) {
     navError = e.message;
   }
+  if (route.enter && !navError) await enterLesson(page);
   const len = await page
     .evaluate(
       ({ selector, measure }) => {
@@ -334,6 +382,7 @@ async function main() {
       selector: "#app",
       min: LESSON_MIN,
       measure: "html",
+      enter: true,
     });
   }
   if (args.routes && !args.lessons) {

@@ -29,6 +29,14 @@ export const norm = (value) =>
     .replace(/[.,;:]+$/, "")
     .replace(/(\d),(?=\d{3}(?!\d))/g, "$1")
     .replace(/\s*([x+\-=:/(),<>≤≥])\s*/g, "$1")
+    // Restore the leading zero students drop (".5" becomes "0.5"). The numeric
+    // parse below already accepts a bare ".5", but only when that number is the
+    // WHOLE answer — so a composite answer like "0.5 = 50%" still red-X'd a
+    // student who typed ".5 = 50%". Normalizing here covers every shape, and
+    // because both sides run through this same function it can only equate
+    // values that were already equal. Anchored on a non-digit, non-dot so an
+    // interior point ("2.5") and a run of dots are left alone.
+    .replace(/(^|[^\d.])\.(\d)/g, (_m, before, digit) => before + "0." + digit)
     .replace(/(\d)\s*r\s*(\d)/g, "$1r$2");
 
 // Strict full-string numeric parse: mixed number, fraction, or plain number

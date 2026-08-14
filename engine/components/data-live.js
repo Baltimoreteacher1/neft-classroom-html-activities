@@ -316,19 +316,35 @@ function barFigure(host, cfg, opts) {
       focus = 0;
     },
     svg(state) {
-      const maxV = Math.max(...bars.map((b) => b.value), 1);
+      // Negative values have to be drawable here for two reasons: lessons 9-2
+      // and 9-3 author sea-level charts that go below zero, and the "What if?"
+      // sandbox lets a student drive ANY bar negative with the ▼ control. Both
+      // used to emit height="-122.7", which SVG rejects, so the bar vanished.
+      // The zero line therefore floats to wherever zero falls in the domain,
+      // and bars are drawn from it with an absolute height. When nothing is
+      // negative the arithmetic below collapses to the original geometry.
+      const values = bars.map((b) => b.value);
+      const maxV = Math.max(...values, 0);
+      const minV = Math.min(...values, 0);
+      const hasNegative = minV < 0;
+      // Reserve a lane under the deepest bar for its value label, which now
+      // hangs below the bar instead of sitting above it.
+      const plotHNow = hasNegative ? plotH - 16 : plotH;
+      const span = hasNegative ? maxV - minV : Math.max(maxV, 1);
+      const zeroY = hasNegative ? padT + (maxV / span) * plotHNow : baseY;
       const slot = plotW / bars.length,
         bw = touching ? slot - 1 : slot * 0.6;
       const rects = bars
         .map((b, i) => {
-          const h = (b.value / maxV) * plotH,
+          const h = (Math.abs(b.value) / span) * plotHNow,
             x = padL + i * slot + (touching ? 0 : (slot - bw) / 2),
-            y = baseY - h;
+            y = b.value >= 0 ? zeroY - h : zeroY;
+          const valueY = b.value >= 0 ? y - 6 : y + h + 13;
           const on = state.whatif && i === focus;
           const fill = on ? DATA_2 : DATA_1;
           return (
             `<rect data-hit data-i="${i}" data-on="${on ? 1 : 0}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}"${touching ? ' stroke="#fff" stroke-width="1"' : ' rx="3"'} fill="${fill}"/>` +
-            `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${b.value}</text>` +
+            `<text x="${(x + bw / 2).toFixed(1)}" y="${valueY.toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${b.value}</text>` +
             `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 18).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${esc(b.label)}</text>`
           );
         })
@@ -339,7 +355,8 @@ function barFigure(host, cfg, opts) {
       const xl = cfg.xLabel
         ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(cfg.xLabel)}</text>`
         : "";
-      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Interactive ${opts.title.toLowerCase()}"><line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>${rects}${xl}${yl}</svg>`;
+      // The axis is the ZERO line — it only leaves the bottom when data is negative.
+      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Interactive ${opts.title.toLowerCase()}"><line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${W - padR}" y2="${zeroY.toFixed(1)}" stroke="var(--ink,#333)" stroke-width="1.5"/>${rects}${xl}${yl}</svg>`;
     },
     measures() {
       return opts.measures(bars);
