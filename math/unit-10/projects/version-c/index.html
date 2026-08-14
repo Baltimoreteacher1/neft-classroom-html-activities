@@ -59,6 +59,38 @@
       .btn-primary { background: var(--teal); color: #fff; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s; }
       .btn-primary:hover { background: #08514a; }
       .hint-box { background: var(--amber-lt); border: 1px solid var(--amber); border-radius: 10px; padding: 14px; margin-top: 12px; font-size: 14px; color: #78350f; display: none; }
+      .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.75); margin-bottom: 6px; }
+      .level-bar { flex-wrap: wrap; }
+      .mission-brief { background: var(--card); border: 1px solid var(--line); border-left: 5px solid var(--gold); border-radius: var(--radius); padding: 22px 26px; margin-bottom: 24px; box-shadow: var(--shadow); }
+      .brief-title { font-size: 19px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+      .brief-rules { margin: 10px 0 12px 20px; }
+      .brief-rules li { margin-bottom: 6px; font-size: 15px; }
+      .brief-product { font-size: 15px; color: var(--muted); }
+      .step-lead { margin-bottom: 16px; color: var(--muted); }
+      .answer-box { background: #fff; border: 2px solid var(--cyan); border-radius: 12px; padding: 16px 18px 4px; }
+      .answer-title { font-weight: 800; color: var(--cyan); margin-bottom: 10px; font-size: 15px; }
+      .input-group textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--line); font-family: inherit; font-size: 15px; }
+      .input-group.justify { margin-top: 16px; }
+      .support-box { background: #fff7ed; border: 1px solid var(--gold); border-radius: 10px; padding: 12px 14px; margin-top: 12px; font-size: 14px; color: #7c2d12; }
+      .challenge-box { background: #eff6ff; border: 1px solid #1d4ed8; border-radius: 10px; padding: 12px 14px; margin-top: 12px; font-size: 14px; color: #1e3a8a; }
+      .lvl0-only, .lvl2-only { display: none; }
+      body.lvl-0 .lvl0-only { display: block; }
+      body.lvl-2 .lvl2-only { display: block; }
+      /* ---- Bilingual Support CSS ---- */
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text { display: none; }
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-weight: 800; font-size: 13px; }
+      .rubric th.score-4 { background: var(--green); }
+      .rubric th.score-3 { background: var(--cyan); }
+      .rubric th.score-2 { background: var(--gold); }
+      .rubric tbody tr:nth-child(even) { background: #f8fafc; }
+      .checklist-head { font-size: 15px; font-weight: 800; color: var(--navy); margin: 18px 0 6px; }
+      .success-checklist { margin: 0 0 6px 20px; font-size: 15px; }
+      .success-checklist li { margin-bottom: 5px; }
+      @media (max-width: 640px) { .rubric { display: block; overflow-x: auto; } }
     </style>
       <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
@@ -110,161 +142,629 @@
       <header class="hero">
         <div class="hero-emoji">🏛️</div>
         <p class="eyebrow">Unit 10 · Culminating Project · Version C</p>
-        <h1>3D Geo-Architect Expedition</h1>
-        <p class="hero-copy">
-          Design 3D architectural structures! Unfold 2D nets, calculate surface area and fractional edge volume, and optimize glass/cardboard material costs.
+        <h1>
+          <span class="en-text">3D Geo-Architect Expedition</span>
+          <span class="es-text">Expedición del arquitecto geométrico 3D</span>
+        </h1>
+        <p class="hero-sub">
+          <span class="en-text"
+            >You are the architect for a research pavilion. Size the module, unfold it into its net
+            to price the panels, and then prove your design is the efficient one.</span
+          >
+          <span class="es-text"
+            >Eres el arquitecto de un pabellón de investigación. Dimensiona el módulo, desdóblalo en
+            su plantilla para calcular el precio de los paneles y luego demuestra que tu diseño es
+            el más eficiente.</span
+          >
         </p>
         <div class="hero-tags">
-          <span class="tag gold">VERSION C · EXTENSION EXPEDITION</span>
-          <span class="tag">6.GR.2 (Volume Fractional Edges)</span>
-          <span class="tag">6.GR.4 (Surface Area Nets)</span>
+          <span class="tag gold">
+            <span class="en-text">VERSION C · EXTENSION EXPEDITION</span>
+            <span class="es-text">VERSIÓN C · EXPEDICIÓN DE EXTENSIÓN</span>
+          </span>
+          <span class="tag">6.GR.2 (Volume, Fractional Edges)</span>
+          <span class="tag">6.GR.4 (Surface Area / Nets)</span>
+          <span class="tag">
+            <span class="en-text">≈ 60–75 minutes</span>
+            <span class="es-text">≈ 60–75 minutos</span>
+          </span>
         </div>
         <div class="level-bar">
-          <button class="level-btn active" onclick="setLevel(1)">Level 1 · Foundation Architect</button>
-          <button class="level-btn" onclick="setLevel(2)">Level 2 · Project Manager</button>
-          <button class="level-btn" onclick="setLevel(3)">Level 3 · Master Engineer</button>
-        </div>
+          <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+            <span class="en-text">🟠 Level 0 · Extra Support</span>
+            <span class="es-text">🟠 Nivel 0 · Apoyo extra</span>
+          </button>
+          <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+            <span class="en-text">🟢 Level 1 · Foundation Architect</span>
+            <span class="es-text">🟢 Nivel 1 · Arquitecto de base</span>
+          </button>
+          <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+            <span class="en-text">🔵 Level 2 · Master Engineer</span>
+            <span class="es-text">🔵 Nivel 2 · Ingeniero maestro</span>
+          </button>
+          </div>
+          <div class="level-bar" style="margin-top: 10px">
+            <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+          </div>
       </header>
-
       <div class="container">
+        <div class="mission-brief">
+          <h2 class="brief-title">
+            <span class="en-text">📐 Design Brief</span>
+            <span class="es-text">📐 Informe de diseño</span>
+          </h2>
+          <p>
+            <span class="en-text"
+              >The review board approves a pavilion only if it meets <strong>both</strong> rules.
+              You choose the dimensions; the rules decide whether it gets built.</span
+            >
+            <span class="es-text"
+              >El comité aprueba un pabellón solo si cumple <strong>las dos</strong> reglas. Tú
+              eliges las dimensiones; las reglas deciden si se construye.</span
+            >
+          </p>
+          <ul class="brief-rules">
+            <li>
+              <span class="en-text"
+                >Interior volume of <strong>at least 30 m³</strong>, so the research team fits.</span
+              >
+              <span class="es-text"
+                >Un volumen interior de <strong>al menos 30 m³</strong>, para que quepa el equipo de
+                investigación.</span
+              >
+            </li>
+            <li>
+              <span class="en-text"
+                >Panel cost of <strong>$900 or less</strong> — and surface area is what you pay
+                for.</span
+              >
+              <span class="es-text"
+                >Un costo de paneles de <strong>$900 o menos</strong>; y lo que pagas es el área de
+                superficie.</span
+              >
+            </li>
+          </ul>
+          <p class="brief-product">
+            <span class="en-text"
+              ><strong>Final product:</strong> an approved pavilion design — your dimensions, your
+              net calculation, and a written argument that your design is efficient.</span
+            >
+            <span class="es-text"
+              ><strong>Producto final:</strong> un diseño de pabellón aprobado: tus dimensiones, tu
+              cálculo de la plantilla y un argumento escrito de que tu diseño es eficiente.</span
+            >
+          </p>
+        </div>
+
         <!-- STEP 1: Fractional Edge Volume -->
-        <div class="step-panel active" id="step-1">
+        <div class="step-panel active project-card" id="step-1">
           <span class="step-num">STEP 1</span>
-          <h2 class="card-title">📦 Fractional Edge Volume ($V = l \cdot w \cdot h$)</h2>
-          <p style="margin-bottom:16px; color:var(--muted);" data-research-find="volume-architect">
-            Calculate total internal volume for custom architectural modules with fractional dimensions.
+          <h2 class="card-title">
+            <span class="en-text">📦 Fractional Edge Volume (V = l &times; w &times; h)</span>
+            <span class="es-text">📦 Volumen con aristas fraccionarias (V = l &times; a &times; h)</span>
+          </h2>
+          <p class="step-lead" data-research-find="volume-architect">
+            <span class="en-text"
+              >Choose the pavilion's length, width and height — half-metre steps are allowed, so
+              your edges will not all be whole numbers. Then work out the interior volume
+              yourself.</span
+            >
+            <span class="es-text"
+              >Elige el largo, el ancho y la altura del pabellón; se permiten pasos de medio metro,
+              así que no todas tus aristas serán números enteros. Luego calcula tú mismo el volumen
+              interior.</span
+            >
           </p>
           <div class="grid-2">
             <div>
               <div class="input-group">
-                <label>Length (m):</label>
-                <input type="number" id="vol-l" value="4.5" step="0.5" min="1" max="20" oninput="calcVol()" />
+                <label for="vol-l">
+                  <span class="en-text">Length (m):</span>
+                  <span class="es-text">Largo (m):</span>
+                </label>
+                <input type="number" id="vol-l" value="4.5" step="0.5" min="1" max="20" />
               </div>
               <div class="input-group">
-                <label>Width (m):</label>
-                <input type="number" id="vol-w" value="3.2" step="0.1" min="1" max="20" oninput="calcVol()" />
+                <label for="vol-w">
+                  <span class="en-text">Width (m):</span>
+                  <span class="es-text">Ancho (m):</span>
+                </label>
+                <input type="number" id="vol-w" value="3.5" step="0.5" min="1" max="20" />
               </div>
               <div class="input-group">
-                <label>Height (m):</label>
-                <input type="number" id="vol-h" value="2.5" step="0.5" min="1" max="20" oninput="calcVol()" />
+                <label for="vol-h">
+                  <span class="en-text">Height (m):</span>
+                  <span class="es-text">Altura (m):</span>
+                </label>
+                <input type="number" id="vol-h" value="2.5" step="0.5" min="1" max="20" />
               </div>
-              <button class="btn-primary" onclick="toggleHint('hint-1')">💡 Need a Hint?</button>
+              <button class="btn-primary" onclick="toggleHint('hint-1')">
+                <span class="en-text">💡 Need a Hint?</span>
+                <span class="es-text">💡 ¿Necesitas una pista?</span>
+              </button>
               <div id="hint-1" class="hint-box">
-                Volume of a rectangular prism is V = l × w × h. Convert decimals to fractions or multiply directly!
+                <span class="en-text"
+                  >Volume is length × width × height. With half-metre edges, think of it as filling
+                  the box with half-metre cubes: eight of them make one cubic metre.</span
+                >
+                <span class="es-text"
+                  >El volumen es largo × ancho × altura. Con aristas de medio metro, imagina que
+                  llenas la caja con cubos de medio metro: ocho de ellos forman un metro cúbico.</span
+                >
+              </div>
+              <div class="lvl0-only support-box">
+                <span class="en-text"
+                  >🟠 <strong>Level 0:</strong> Do it in two moves. First multiply length × width to
+                  get the floor area. Then multiply that answer by the height. Write each step
+                  down.</span
+                >
+                <span class="es-text"
+                  >🟠 <strong>Nivel 0:</strong> Hazlo en dos pasos. Primero multiplica largo × ancho
+                  para obtener el área del piso. Luego multiplica ese resultado por la altura.
+                  Escribe cada paso.</span
+                >
               </div>
             </div>
             <div>
-              <div class="calc-box">
-                <div class="calc-title">Architectural Volume Telemetry:</div>
-                <p id="vol-result" style="font-size:16px; font-weight:700; color:var(--navy);">
-                  Total Volume: 36.00 m³<br/>
-                  Unit Cube Equivalence: 36 cubic meters of interior space
-                </p>
+              <div class="answer-box">
+                <div class="answer-title">
+                  <span class="en-text">✍️ Your calculation</span>
+                  <span class="es-text">✍️ Tu cálculo</span>
+                </div>
+                <div class="input-group">
+                  <label for="student-floor">
+                    <span class="en-text">Floor area, length &times; width (m²):</span>
+                    <span class="es-text">Área del piso, largo &times; ancho (m²):</span>
+                  </label>
+                  <input type="number" id="student-floor" step="0.01" min="0" placeholder="?" />
+                </div>
+                <div class="input-group">
+                  <label for="student-vol">
+                    <span class="en-text">Interior volume (m³):</span>
+                    <span class="es-text">Volumen interior (m³):</span>
+                  </label>
+                  <input type="number" id="student-vol" step="0.01" min="0" placeholder="?" />
+                </div>
               </div>
-              <div style="margin-top:14px; text-align:center;">
-                <svg width="220" height="90" viewBox="0 0 220 90" style="background:#fff; border-radius:10px; border:1px solid #cbd5e1;">
-                  <polygon points="40,30 140,30 160,18 60,18" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
-                  <rect x="40" y="30" width="100" height="45" fill="#bae6fd" stroke="#0284c7" stroke-width="2"/>
-                  <polygon points="140,30 160,18 160,63 140,75" fill="#7dd3fc" stroke="#0284c7" stroke-width="2"/>
-                  <text x="90" y="58" text-anchor="middle" font-size="12" font-weight="800" fill="#0369a1">V = 4.5 × 3.2 × 2.5</text>
-                </svg>
+              <div class="input-group justify">
+                <label for="vol-why">
+                  <span class="en-text"
+                    >💬 Does your pavilion clear the 30 m³ rule? Say by how much, and explain what
+                    the volume number actually counts.</span
+                  >
+                  <span class="es-text"
+                    >💬 ¿Tu pabellón cumple la regla de 30 m³? Di por cuánto, y explica qué cuenta
+                    realmente el número del volumen.</span
+                  >
+                </label>
+                <textarea
+                  id="vol-why"
+                  rows="3"
+                  placeholder="My volume is ___ m³, which is ___ the 30 m³ minimum. Volume counts how many unit cubes fit inside, so..."
+                ></textarea>
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
         <!-- STEP 2: Surface Area from 2D Nets -->
-        <section class="project-card">
+        <section class="step-panel active project-card" id="step-2">
           <span class="step-num">STEP 2</span>
-          <h2 class="card-title">🧩 Surface Area &amp; Net Unfolding</h2>
-          <p style="margin-bottom:16px; color:var(--muted);">
-            Calculate total exterior surface area across all 6 rectangular faces to estimate glass &amp; paneling costs.
+          <h2 class="card-title">
+            <span class="en-text">🧩 Surface Area &amp; Net Unfolding</span>
+            <span class="es-text">🧩 Área de superficie y plantilla desdoblada</span>
+          </h2>
+          <p class="step-lead">
+            <span class="en-text"
+              >Unfold your pavilion into its net. It has three pairs of matching faces — find the
+              area of each pair, add them for the total surface area, then price the panels.</span
+            >
+            <span class="es-text"
+              >Desdobla tu pabellón en su plantilla. Tiene tres pares de caras iguales: halla el
+              área de cada par, súmalas para el área total y luego calcula el precio de los
+              paneles.</span
+            >
           </p>
           <div class="grid-2">
             <div>
-              <div class="input-group">
-                <label>Top/Bottom Faces (2 × l × w):</label>
-                <input type="number" id="sa-tb" value="28.8" readonly style="background:#f1f5f9;" />
+              <div class="answer-box">
+                <div class="answer-title">
+                  <span class="en-text">✍️ Face by face</span>
+                  <span class="es-text">✍️ Cara por cara</span>
+                </div>
+                <div class="input-group">
+                  <label for="sa-tb">
+                    <span class="en-text">Top + bottom, 2 &times; l &times; w (m²):</span>
+                    <span class="es-text">Techo + piso, 2 &times; l &times; a (m²):</span>
+                  </label>
+                  <input type="number" id="sa-tb" step="0.01" min="0" placeholder="?" />
+                </div>
+                <div class="input-group">
+                  <label for="sa-fb">
+                    <span class="en-text">Front + back, 2 &times; l &times; h (m²):</span>
+                    <span class="es-text">Frente + atrás, 2 &times; l &times; h (m²):</span>
+                  </label>
+                  <input type="number" id="sa-fb" step="0.01" min="0" placeholder="?" />
+                </div>
+                <div class="input-group">
+                  <label for="sa-lr">
+                    <span class="en-text">Left + right, 2 &times; w &times; h (m²):</span>
+                    <span class="es-text">Izquierda + derecha, 2 &times; a &times; h (m²):</span>
+                  </label>
+                  <input type="number" id="sa-lr" step="0.01" min="0" placeholder="?" />
+                </div>
               </div>
-              <div class="input-group">
-                <label>Front/Back Faces (2 × l × h):</label>
-                <input type="number" id="sa-fb" value="22.5" readonly style="background:#f1f5f9;" />
+              <button class="btn-primary" onclick="toggleHint('hint-2')">
+                <span class="en-text">💡 Need a Hint?</span>
+                <span class="es-text">💡 ¿Necesitas una pista?</span>
+              </button>
+              <div id="hint-2" class="hint-box">
+                <span class="en-text"
+                  >Every face on a rectangular prism has a twin on the opposite side. Find one
+                  face's area, double it, and you have that pair.</span
+                >
+                <span class="es-text"
+                  >Cada cara de un prisma rectangular tiene su gemela en el lado opuesto. Halla el
+                  área de una cara, duplícala y ya tienes ese par.</span
+                >
               </div>
-              <div class="input-group">
-                <label>Left/Right Faces (2 × w × h):</label>
-                <input type="number" id="sa-lr" value="16.0" readonly style="background:#f1f5f9;" />
-              </div>
-              <div class="input-group">
-                <label>Material Cost ($ per m²):</label>
-                <input type="number" id="mat-cost" value="12.50" step="0.5" oninput="calcVol()" />
+              <div class="lvl0-only support-box">
+                <span class="en-text"
+                  >🟠 <strong>Level 0:</strong> Sketch the flat net first — six rectangles. Label
+                  each one with its two side lengths before you multiply anything.</span
+                >
+                <span class="es-text"
+                  >🟠 <strong>Nivel 0:</strong> Dibuja primero la plantilla plana: seis rectángulos.
+                  Rotula cada uno con sus dos lados antes de multiplicar.</span
+                >
               </div>
             </div>
             <div>
-              <div class="calc-box">
-                <div class="calc-title">Surface Area &amp; Material Cost:</div>
-                <p id="sa-result" style="font-size:16px; font-weight:700; color:var(--navy);">
-                  Total Surface Area: 67.30 m²<br/>
-                  Total Material Cost: $841.25
-                </p>
+              <div class="input-group">
+                <label for="mat-cost">
+                  <span class="en-text">Panel price ($ per m²):</span>
+                  <span class="es-text">Precio del panel ($ por m²):</span>
+                </label>
+                <input type="number" id="mat-cost" value="12.50" step="0.5" min="0" />
+              </div>
+              <div class="answer-box">
+                <div class="answer-title">
+                  <span class="en-text">✍️ Your totals</span>
+                  <span class="es-text">✍️ Tus totales</span>
+                </div>
+                <div class="input-group">
+                  <label for="student-sa">
+                    <span class="en-text">Total surface area (m²):</span>
+                    <span class="es-text">Área de superficie total (m²):</span>
+                  </label>
+                  <input type="number" id="student-sa" step="0.01" min="0" placeholder="?" />
+                </div>
+                <div class="input-group">
+                  <label for="student-cost">
+                    <span class="en-text">Total panel cost ($):</span>
+                    <span class="es-text">Costo total de los paneles ($):</span>
+                  </label>
+                  <input type="number" id="student-cost" step="0.01" min="0" placeholder="?" />
+                </div>
+              </div>
+              <div class="input-group justify">
+                <label for="sa-why">
+                  <span class="en-text"
+                    >💬 Does your design come in at $900 or less? If not, name the one dimension you
+                    would change and say what it does to BOTH the volume and the cost.</span
+                  >
+                  <span class="es-text"
+                    >💬 ¿Tu diseño cuesta $900 o menos? Si no, di qué dimensión cambiarías y explica
+                    qué le hace TANTO al volumen COMO al costo.</span
+                  >
+                </label>
+                <textarea
+                  id="sa-why"
+                  rows="3"
+                  placeholder="My panel cost is $___. If I lower the height by 0.5 m, the surface area drops by ___ m² but the volume also drops by ___ m³, so..."
+                ></textarea>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- STEP 3: Self, Peer & World Reflection -->
-        <section class="project-card">
+        <!-- STEP 3: The efficiency argument -->
+        <section class="step-panel active project-card" id="step-3">
           <span class="step-num">STEP 3</span>
-          <h2 class="card-title">🌍 Self, Peer &amp; World Architectural Debrief</h2>
-          <div style="margin-top:14px;">
-            <div class="input-group">
-              <label>Self Reflection — How does net unfolding help prevent calculation errors?</label>
-              <textarea rows="3" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);" placeholder="Unfolding a 3D shape into a 2D net helps me see all 6 faces so I don't miss any surface area..."></textarea>
+          <h2 class="card-title">
+            <span class="en-text">⚖️ The Efficiency Argument</span>
+            <span class="es-text">⚖️ El argumento de eficiencia</span>
+          </h2>
+          <p class="step-lead">
+            <span class="en-text"
+              >Two pavilions can hold the same volume and still cost different amounts, because
+              surface area is what you pay for. Test a second set of dimensions and make your
+              case.</span
+            >
+            <span class="es-text"
+              >Dos pabellones pueden tener el mismo volumen y aun así costar distinto, porque lo que
+              se paga es el área de superficie. Prueba un segundo juego de dimensiones y defiende tu
+              elección.</span
+            >
+          </p>
+          <div class="grid-2">
+            <div>
+              <div class="answer-box">
+                <div class="answer-title">
+                  <span class="en-text">✍️ Your rival design</span>
+                  <span class="es-text">✍️ Tu diseño rival</span>
+                </div>
+                <div class="input-group">
+                  <label for="alt-l">
+                    <span class="en-text">Length (m):</span>
+                    <span class="es-text">Largo (m):</span>
+                  </label>
+                  <input type="number" id="alt-l" step="0.5" min="1" max="20" placeholder="?" />
+                </div>
+                <div class="input-group">
+                  <label for="alt-w">
+                    <span class="en-text">Width (m):</span>
+                    <span class="es-text">Ancho (m):</span>
+                  </label>
+                  <input type="number" id="alt-w" step="0.5" min="1" max="20" placeholder="?" />
+                </div>
+                <div class="input-group">
+                  <label for="alt-h">
+                    <span class="en-text">Height (m):</span>
+                    <span class="es-text">Altura (m):</span>
+                  </label>
+                  <input type="number" id="alt-h" step="0.5" min="1" max="20" placeholder="?" />
+                </div>
+                <div class="input-group">
+                  <label for="alt-sa">
+                    <span class="en-text">Its total surface area (m²):</span>
+                    <span class="es-text">Su área de superficie total (m²):</span>
+                  </label>
+                  <input type="number" id="alt-sa" step="0.01" min="0" placeholder="?" />
+                </div>
+              </div>
+              <div class="lvl2-only challenge-box">
+                <span class="en-text"
+                  >🔵 <strong>Level 2:</strong> Hold the volume as close to your original as you can
+                  while cutting the surface area. What shape are your dimensions drifting toward,
+                  and why does that shape win?</span
+                >
+                <span class="es-text"
+                  >🔵 <strong>Nivel 2:</strong> Mantén el volumen lo más cercano posible al original
+                  mientras reduces el área de superficie. ¿Hacia qué forma se acercan tus
+                  dimensiones, y por qué gana esa forma?</span
+                >
+              </div>
             </div>
-            <div class="input-group">
-              <label>Peer Review — Compare your volume efficiency with a partner's structure:</label>
-              <textarea rows="2" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);" placeholder="My partner designed a structure with 45 m³ volume using 72 m² surface area, which meant..."></textarea>
-            </div>
-            <div class="input-group">
-              <label>World Application — How do real architects use volume and surface area?</label>
-              <textarea rows="2" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);" placeholder="Architects use surface area to estimate glass and insulation costs, and volume to design HVAC heating..."></textarea>
+            <div>
+              <div class="input-group justify">
+                <label for="argue">
+                  <span class="en-text"
+                    >💬 Which design would you build, and why? Use both numbers — volume AND surface
+                    area — as your evidence. A design that is cheaper but too small does not
+                    win.</span
+                  >
+                  <span class="es-text"
+                    >💬 ¿Cuál diseño construirías y por qué? Usa los dos números —volumen Y área de
+                    superficie— como evidencia. Un diseño más barato pero demasiado pequeño no
+                    gana.</span
+                  >
+                </label>
+                <textarea
+                  id="argue"
+                  rows="6"
+                  placeholder="I would build ___ because its volume is ___ m³ (over the 30 m³ minimum) while its surface area is only ___ m², which costs $___. The other design ___."
+                ></textarea>
+              </div>
             </div>
           </div>
+        </section>
+
+        <!-- STEP 4: Self, Peer & World Reflection -->
+        <section class="step-panel active project-card" id="step-4">
+          <span class="step-num">STEP 4</span>
+          <h2 class="card-title">
+            <span class="en-text">🌍 Self, Peer &amp; World Architectural Debrief</span>
+            <span class="es-text">🌍 Informe final de arquitectura</span>
+          </h2>
+          <div style="margin-top: 14px">
+            <div class="input-group">
+              <label for="debrief-self">
+                <span class="en-text"
+                  >Self — How did unfolding the net change the way you counted faces? What mistake
+                  did it stop you from making?</span
+                >
+                <span class="es-text"
+                  >Tú — ¿Cómo cambió tu forma de contar las caras el desdoblar la plantilla? ¿Qué
+                  error te evitó?</span
+                >
+              </label>
+              <textarea
+                id="debrief-self"
+                rows="3"
+                placeholder="Unfolding the shape into six rectangles meant I could see..."
+              ></textarea>
+            </div>
+            <div class="input-group">
+              <label for="debrief-peer">
+                <span class="en-text"
+                  >Peer — Compare pavilions with a partner. Whose design gets more volume per square
+                  metre of panel, and what in the numbers proves it?</span
+                >
+                <span class="es-text"
+                  >Compañero — Comparen sus pabellones. ¿Cuál diseño logra más volumen por metro
+                  cuadrado de panel, y qué número lo demuestra?</span
+                >
+              </label>
+              <textarea
+                id="debrief-peer"
+                rows="2"
+                placeholder="My partner's pavilion holds ___ m³ using ___ m² of panel, so per square metre..."
+              ></textarea>
+            </div>
+            <div class="input-group">
+              <label for="debrief-world">
+                <span class="en-text"
+                  >World — Architects pay for surface and sell for space. Where else does that
+                  trade-off show up in the real world?</span
+                >
+                <span class="es-text"
+                  >Mundo — Los arquitectos pagan por la superficie y venden el espacio. ¿Dónde más
+                  aparece ese intercambio en el mundo real?</span
+                >
+              </label>
+              <textarea
+                id="debrief-world"
+                rows="2"
+                placeholder="Packaging designers face the same trade-off because..."
+              ></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="step-panel active project-card" id="step-rubric">
+          <h2 class="card-title">
+            <span class="en-text">📊 Rubric — How the Review Board Scores Your Pavilion</span><span class="es-text">📊 Rúbrica — Cómo califica tu pabellón el comité de revisión</span>
+          </h2>
+          <p class="step-lead">
+            <span class="en-text">Your pavilion is judged on the mathematics and on the strength of your argument — not on how it is decorated.</span><span class="es-text">Tu pabellón se califica por la matemática y por la fuerza de tu argumento, no por su decoración.</span>
+          </p>
+          <h3 class="checklist-head">
+            <span class="en-text">✅ Before you submit</span><span class="es-text">✅ Antes de entregar</span>
+          </h3>
+          <ul class="success-checklist">
+            <li><span class="en-text">My interior volume is at least 30 m³.</span><span class="es-text">Mi volumen interior es de al menos 30 m³.</span></li>
+            <li><span class="en-text">My panel cost is $900 or less.</span><span class="es-text">El costo de mis paneles es de $900 o menos.</span></li>
+            <li><span class="en-text">All six faces are counted exactly once.</span><span class="es-text">Las seis caras están contadas exactamente una vez.</span></li>
+            <li><span class="en-text">I tested a rival design and compared both numbers.</span><span class="es-text">Probé un diseño rival y comparé los dos números.</span></li>
+            <li><span class="en-text">My argument uses volume AND surface area as evidence.</span><span class="es-text">Mi argumento usa el volumen Y el área de superficie como evidencia.</span></li>
+          </ul>
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th><span class="en-text">Skill</span><span class="es-text">Habilidad</span></th>
+                <th class="score-4"><span class="en-text">4 — Expert</span><span class="es-text">4 — Experto</span></th>
+                <th class="score-3"><span class="en-text">3 — Proficient</span><span class="es-text">3 — Competente</span></th>
+                <th class="score-2"><span class="en-text">2 — Developing</span><span class="es-text">2 — En desarrollo</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <strong><span class="en-text">Volume with fractional edges (6.GR.2)</span><span class="es-text">Volumen con aristas fraccionarias (6.GR.2)</span></strong>
+                </td>
+                <td>
+                  <span class="en-text">Computes the volume accurately from decimal edge lengths, shows the floor-area step, and explains what the volume counts.</span><span class="es-text">Calcula el volumen con exactitud a partir de aristas decimales, muestra el paso del área del piso y explica qué cuenta el volumen.</span>
+                </td>
+                <td>
+                  <span class="en-text">Computes the volume accurately from the chosen dimensions.</span><span class="es-text">Calcula el volumen con exactitud a partir de las dimensiones elegidas.</span>
+                </td>
+                <td>
+                  <span class="en-text">Multiplies only two dimensions, or the decimal multiplication is inaccurate.</span><span class="es-text">Multiplica solo dos dimensiones, o la multiplicación decimal es inexacta.</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong><span class="en-text">Surface area from the net (6.GR.4)</span><span class="es-text">Área de superficie con la plantilla (6.GR.4)</span></strong>
+                </td>
+                <td>
+                  <span class="en-text">Finds all three face pairs correctly and totals all six faces exactly once, with the net used to organise the work.</span><span class="es-text">Halla correctamente los tres pares de caras y suma las seis caras exactamente una vez, usando la plantilla para organizar el trabajo.</span>
+                </td>
+                <td>
+                  <span class="en-text">Finds the three face pairs and the correct total surface area.</span><span class="es-text">Halla los tres pares de caras y el área de superficie total correcta.</span>
+                </td>
+                <td>
+                  <span class="en-text">Misses a face pair, or doubles a face that should be counted once.</span><span class="es-text">Le falta un par de caras, o duplica una cara que debería contarse una vez.</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong><span class="en-text">Material cost</span><span class="es-text">Costo del material</span></strong>
+                </td>
+                <td>
+                  <span class="en-text">Prices the panels from the SURFACE AREA and states how far the design is from the $900 limit.</span><span class="es-text">Calcula el precio de los paneles a partir del ÁREA DE SUPERFICIE e indica qué tan lejos está el diseño del límite de $900.</span>
+                </td>
+                <td>
+                  <span class="en-text">Prices the panels correctly from the surface area.</span><span class="es-text">Calcula correctamente el precio de los paneles a partir del área de superficie.</span>
+                </td>
+                <td>
+                  <span class="en-text">Prices from the volume instead of the surface area, or the multiplication is inaccurate.</span><span class="es-text">Calcula a partir del volumen en vez del área de superficie, o la multiplicación es inexacta.</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong><span class="en-text">Design decision</span><span class="es-text">Decisión de diseño</span></strong>
+                </td>
+                <td>
+                  <span class="en-text">Tests a rival design and chooses between them using BOTH volume and surface area, showing that the winner still clears the 30 m³ minimum.</span><span class="es-text">Prueba un diseño rival y elige entre ambos usando TANTO el volumen COMO el área de superficie, mostrando que el ganador aún cumple el mínimo de 30 m³.</span>
+                </td>
+                <td>
+                  <span class="en-text">Tests a rival design and names which one to build with a reason.</span><span class="es-text">Prueba un diseño rival y dice cuál construir con una razón.</span>
+                </td>
+                <td>
+                  <span class="en-text">Picks the cheaper design without checking whether it still meets the volume rule.</span><span class="es-text">Elige el diseño más barato sin comprobar si aún cumple la regla del volumen.</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong><span class="en-text">Explaining the trade-off</span><span class="es-text">Explicación del intercambio</span></strong>
+                </td>
+                <td>
+                  <span class="en-text">Explains why changing one dimension moves volume and surface area by different amounts, using the student’s own numbers.</span><span class="es-text">Explica por qué cambiar una dimensión mueve el volumen y el área de superficie en cantidades distintas, usando sus propios números.</span>
+                </td>
+                <td>
+                  <span class="en-text">Explains that volume and surface area both change, and refers to the numbers.</span><span class="es-text">Explica que el volumen y el área de superficie cambian, y menciona los números.</span>
+                </td>
+                <td>
+                  <span class="en-text">States that a change helps or hurts without connecting it to either measurement.</span><span class="es-text">Dice que un cambio ayuda o perjudica sin conectarlo con ninguna de las dos medidas.</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </section>
       </div>
     </main>
 
     <script>
+      /* The page deliberately computes NOTHING for the student. Every number in
+         Steps 1-3 is theirs to find; the shared "Check my work" layer
+         (/shared/projects/projects-check.js, configured in
+         projects-check-config.json) validates each entry against the student's
+         OWN inputs, so any legal pavilion design is accepted and no answer is
+         ever printed. Earlier versions of this page called calcVol()
+         on input and displayed the results, which left nothing to solve. */
       function setLevel(lvl) {
-        document.querySelectorAll('.level-btn').forEach((b, i) => {
-          b.classList.toggle('active', i === lvl - 1);
+        document.body.classList.remove("lvl-0", "lvl-1", "lvl-2");
+        document.body.classList.add("lvl-" + lvl);
+        ["btn-lv0", "btn-lv1", "btn-lv2"].forEach(function (id, i) {
+          var b = document.getElementById(id);
+          if (b) b.classList.toggle("active", i === lvl);
         });
+        try {
+          localStorage.setItem("nt-u10c-level", String(lvl));
+        } catch (_e) {}
       }
       function toggleHint(id) {
         const el = document.getElementById(id);
-        if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        if (el) el.style.display = el.style.display === "block" ? "none" : "block";
       }
-
-      function calcVol() {
-        const l = parseFloat(document.getElementById('vol-l').value) || 0;
-        const w = parseFloat(document.getElementById('vol-w').value) || 0;
-        const h = parseFloat(document.getElementById('vol-h').value) || 0;
-        const c = parseFloat(document.getElementById('mat-cost').value) || 0;
-
-        const vol = (l * w * h).toFixed(2);
-        const tb = (2 * l * w).toFixed(2);
-        const fb = (2 * l * h).toFixed(2);
-        const lr = (2 * w * h).toFixed(2);
-        const sa = (2 * l * w + 2 * l * h + 2 * w * h).toFixed(2);
-        const cost = (parseFloat(sa) * c).toFixed(2);
-
-        document.getElementById('vol-result').innerHTML = 
-          `Total Volume: ${vol} m³<br/>Unit Cube Equivalence: ${vol} cubic meters of interior space`;
-        document.getElementById('sa-tb').value = tb;
-        document.getElementById('sa-fb').value = fb;
-        document.getElementById('sa-lr').value = lr;
-        document.getElementById('sa-result').innerHTML = 
-          `Total Surface Area: ${sa} m²<br/>Total Material Cost: $${cost}`;
+      function toggleLanguage() {
+        const isEs = document.body.classList.toggle("es");
+        const btn = document.getElementById("btn-lang");
+        if (btn) btn.textContent = isEs ? "🌐 Idioma: ES" : "🌐 Language: EN";
+        try {
+          localStorage.setItem("nt-u10c-lang", isEs ? "es" : "en");
+        } catch (_e) {}
       }
+      (function restore() {
+        var lvl = 1;
+        try {
+          var saved = localStorage.getItem("nt-u10c-level");
+          if (saved !== null) lvl = Number(saved);
+          if (localStorage.getItem("nt-u10c-lang") === "es") toggleLanguage();
+        } catch (_e) {}
+        setLevel(lvl);
+      })();
     </script>
     <script src="/assets/learning-supports/learning-supports.js" defer></script>
     <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
@@ -310,5 +810,9 @@
   <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
   <script src="/shared/projects/projects-pro.js" defer></script>
   <!-- projects-pro-injected:end -->
-</body>
+    <link rel="stylesheet" href="/shared/projects/projects-future.css" />
+    <script src="/shared/projects/projects-future.js" defer></script>
+    <link rel="stylesheet" href="/shared/projects/projects-coach.css" />
+    <script src="/shared/projects/projects-coach.js" defer></script>
+  </body>
 </html>

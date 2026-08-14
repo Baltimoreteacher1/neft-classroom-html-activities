@@ -73,6 +73,38 @@
       .btn-primary { background: var(--blue); color: #fff; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 800; font-size: 15px; cursor: pointer; transition: background 0.2s; }
       .btn-primary:hover { background: #122c47; }
       .hint-box { background: var(--gold-lt); border: 1px solid var(--gold); border-radius: 10px; padding: 14px; margin-top: 12px; font-size: 14px; color: #78350f; display: none; }
+      .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.75); margin-bottom: 6px; }
+      .level-bar { flex-wrap: wrap; }
+      .mission-brief { background: var(--card); border: 1px solid var(--line); border-left: 5px solid var(--gold); border-radius: var(--radius); padding: 22px 26px; margin-bottom: 24px; box-shadow: var(--shadow); }
+      .brief-title { font-size: 19px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+      .brief-rules { margin: 10px 0 12px 20px; }
+      .brief-rules li { margin-bottom: 6px; font-size: 15px; }
+      .brief-product { font-size: 15px; color: var(--muted); }
+      .step-lead { margin-bottom: 16px; color: var(--muted); }
+      .answer-box { background: #fff; border: 2px solid var(--cyan); border-radius: 12px; padding: 16px 18px 4px; }
+      .answer-title { font-weight: 800; color: var(--cyan); margin-bottom: 10px; font-size: 15px; }
+      .input-group textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--line); font-family: inherit; font-size: 15px; }
+      .input-group.justify { margin-top: 16px; }
+      .support-box { background: #fff7ed; border: 1px solid var(--gold); border-radius: 10px; padding: 12px 14px; margin-top: 12px; font-size: 14px; color: #7c2d12; }
+      .challenge-box { background: #eff6ff; border: 1px solid #1d4ed8; border-radius: 10px; padding: 12px 14px; margin-top: 12px; font-size: 14px; color: #1e3a8a; }
+      .lvl0-only, .lvl2-only { display: none; }
+      body.lvl-0 .lvl0-only { display: block; }
+      body.lvl-2 .lvl2-only { display: block; }
+      /* ---- Bilingual Support CSS ---- */
+      body.es .en-text { display: none !important; }
+      body.es .es-text { display: inline !important; }
+      span.es-text { display: none; }
+      .rubric { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+      .rubric th, .rubric td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+      .rubric th { background: var(--navy); color: #fff; font-weight: 800; font-size: 13px; }
+      .rubric th.score-4 { background: var(--green); }
+      .rubric th.score-3 { background: var(--cyan); }
+      .rubric th.score-2 { background: var(--gold); }
+      .rubric tbody tr:nth-child(even) { background: #f8fafc; }
+      .checklist-head { font-size: 15px; font-weight: 800; color: var(--navy); margin: 18px 0 6px; }
+      .success-checklist { margin: 0 0 6px 20px; font-size: 15px; }
+      .success-checklist li { margin-bottom: 5px; }
+      @media (max-width: 640px) { .rubric { display: block; overflow-x: auto; } }
     </style>
       <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
@@ -124,196 +156,661 @@
       <header class="hero">
         <div class="hero-emoji">🚀</div>
         <p class="eyebrow">Unit 1 · Culminating Project · Version C</p>
-        <h1>Deep Space Number Sense Expedition</h1>
-        <p class="hero-copy">
-          Command an orbital space station! Manage GCF supply toolkits, calculate LCM docking cycles, control multi-digit decimal budgets, and distribute energy with long division.
+        <h1>
+          <span class="en-text">Deep Space Number Sense Expedition</span>
+          <span class="es-text">Expedición de sentido numérico al espacio profundo</span>
+        </h1>
+        <p class="hero-sub">
+          <span class="en-text"
+            >You are the logistics officer for an orbital station. Pack the supply kits, schedule
+            the resupply shuttles, and sign off on the power budget — then defend every number to
+            Mission Control.</span
+          >
+          <span class="es-text"
+            >Eres el oficial de logística de una estación orbital. Prepara los kits de suministros,
+            programa los transbordadores de reabastecimiento y aprueba el presupuesto de energía;
+            luego defiende cada número ante el Control de la Misión.</span
+          >
         </p>
         <div class="hero-tags">
-          <span class="tag gold">VERSION C · EXTENSION EXPEDITION</span>
+          <span class="tag gold">
+            <span class="en-text">VERSION C · EXTENSION EXPEDITION</span>
+            <span class="es-text">VERSIÓN C · EXPEDICIÓN DE EXTENSIÓN</span>
+          </span>
           <span class="tag">6.NOS.2 (Division)</span>
           <span class="tag">6.NOS.3 (Decimals)</span>
           <span class="tag">6.NOS.4 (GCF/LCM)</span>
+          <span class="tag">
+            <span class="en-text">≈ 60–75 minutes</span>
+            <span class="es-text">≈ 60–75 minutos</span>
+          </span>
         </div>
         <div class="level-bar">
-          <button class="level-btn active" onclick="setLevel(1)">Level 1 · Launch Specialist</button>
-          <button class="level-btn" onclick="setLevel(2)">Level 2 · Station Commander</button>
-          <button class="level-btn" onclick="setLevel(3)">Level 3 · Fleet Director</button>
-        </div>
+          <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+            <span class="en-text">🟠 Level 0 · Extra Support</span>
+            <span class="es-text">🟠 Nivel 0 · Apoyo extra</span>
+          </button>
+          <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+            <span class="en-text">🟢 Level 1 · Launch Specialist</span>
+            <span class="es-text">🟢 Nivel 1 · Especialista de lanzamiento</span>
+          </button>
+          <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+            <span class="en-text">🔵 Level 2 · Fleet Director</span>
+            <span class="es-text">🔵 Nivel 2 · Director de flota</span>
+          </button>
+          </div>
+          <div class="level-bar" style="margin-top: 10px">
+            <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+          </div>
       </header>
-
       <div class="container">
+        <div class="mission-brief">
+          <h2 class="brief-title">
+            <span class="en-text">🛰️ Mission Brief</span>
+            <span class="es-text">🛰️ Informe de la misión</span>
+          </h2>
+          <p>
+            <span class="en-text"
+              >Mission Control will only approve a station plan that meets <strong>all three</strong>
+              rules below. You choose the numbers; the rules decide whether your plan flies.</span
+            >
+            <span class="es-text"
+              >El Control de la Misión solo aprueba un plan que cumpla <strong>las tres</strong>
+              reglas de abajo. Tú eliges los números; las reglas deciden si tu plan despega.</span
+            >
+          </p>
+          <ul class="brief-rules">
+            <li>
+              <span class="en-text"
+                >Every supply kit must be <strong>identical</strong>, with nothing left over.</span
+              >
+              <span class="es-text"
+                >Cada kit de suministros debe ser <strong>idéntico</strong>, sin que sobre nada.</span
+              >
+            </li>
+            <li>
+              <span class="en-text"
+                >Both shuttles must dock together <strong>within the first 30 days</strong>.</span
+              >
+              <span class="es-text"
+                >Los dos transbordadores deben acoplarse juntos <strong>dentro de los primeros 30
+                días</strong>.</span
+              >
+            </li>
+            <li>
+              <span class="en-text"
+                >The build must cost <strong>$250k or less</strong>, and power must split into
+                <strong>whole units</strong> per module.</span
+              >
+              <span class="es-text"
+                >La construcción debe costar <strong>$250k o menos</strong>, y la energía debe
+                dividirse en <strong>unidades enteras</strong> por módulo.</span
+              >
+            </li>
+          </ul>
+          <p class="brief-product">
+            <span class="en-text"
+              ><strong>Final product:</strong> an approved station plan — your numbers, your work,
+              and a short defense of each decision.</span
+            >
+            <span class="es-text"
+              ><strong>Producto final:</strong> un plan de estación aprobado: tus números, tu
+              trabajo y una defensa breve de cada decisión.</span
+            >
+          </p>
+        </div>
+
         <!-- STEP 1: GCF Supply Toolkits -->
-        <div class="step-panel active" id="step-1">
+        <div class="step-panel active project-card" id="step-1">
           <span class="step-num">STEP 1</span>
-          <h2 class="card-title">📦 GCF Supply Toolkit Packing</h2>
-          <p style="margin-bottom:16px; color:var(--muted);" data-research-find="gcf-logistics">
-            Pack identical emergency kits for space station modules using your supply reserves without leaving anything behind.
+          <h2 class="card-title">
+            <span class="en-text">📦 GCF Supply Toolkit Packing</span>
+            <span class="es-text">📦 Empaque de kits con el MCD</span>
+          </h2>
+          <p class="step-lead" data-research-find="gcf-logistics">
+            <span class="en-text"
+              >Choose how many oxygen canisters and ration packs the station carries. Then pack them
+              into identical emergency kits with <strong>nothing left over</strong> — and make the
+              number of kits as large as you can.</span
+            >
+            <span class="es-text"
+              >Elige cuántos tanques de oxígeno y paquetes de raciones lleva la estación. Luego
+              empácalos en kits de emergencia idénticos <strong>sin que sobre nada</strong>, y haz
+              que la cantidad de kits sea la mayor posible.</span
+            >
           </p>
           <div class="grid-2">
             <div>
               <div class="input-group">
-                <label>Oxygen Canisters Available:</label>
-                <input type="number" id="gcf-a" value="48" min="12" max="144" oninput="calcGCF()" />
+                <label for="gcf-a">
+                  <span class="en-text">Oxygen Canisters Available:</span>
+                  <span class="es-text">Tanques de oxígeno disponibles:</span>
+                </label>
+                <input type="number" id="gcf-a" value="48" min="12" max="144" />
               </div>
               <div class="input-group">
-                <label>Ration Packs Available:</label>
-                <input type="number" id="gcf-b" value="72" min="12" max="144" oninput="calcGCF()" />
+                <label for="gcf-b">
+                  <span class="en-text">Ration Packs Available:</span>
+                  <span class="es-text">Paquetes de raciones disponibles:</span>
+                </label>
+                <input type="number" id="gcf-b" value="72" min="12" max="144" />
               </div>
-              <button class="btn-primary" onclick="toggleHint('hint-1')">💡 Need a Hint?</button>
+              <button class="btn-primary" onclick="toggleHint('hint-1')">
+                <span class="en-text">💡 Need a Hint?</span>
+                <span class="es-text">💡 ¿Necesitas una pista?</span>
+              </button>
               <div id="hint-1" class="hint-box">
-                To find the Greatest Common Factor (GCF), list factors of both numbers or use prime factorization. The GCF gives the max number of identical kits!
+                <span class="en-text"
+                  >List the factors of both numbers, or use prime factorization. The factor they
+                  share that is <em>largest</em> tells you the most identical kits you can pack.</span
+                >
+                <span class="es-text"
+                  >Haz la lista de los factores de ambos números, o usa la factorización prima. El
+                  factor que comparten y que es <em>el mayor</em> te dice cuántos kits idénticos
+                  puedes empacar como máximo.</span
+                >
+              </div>
+              <div class="lvl0-only support-box">
+                <span class="en-text"
+                  >🟠 <strong>Level 0:</strong> Start small. Factors of 12: 1, 2, 3, 4, 6, 12.
+                  Factors of 18: 1, 2, 3, 6, 9, 18. The largest one in BOTH lists is 6 — so 6 kits.
+                  Now do it with your two numbers.</span
+                >
+                <span class="es-text"
+                  >🟠 <strong>Nivel 0:</strong> Empieza con números pequeños. Factores de 12: 1, 2,
+                  3, 4, 6, 12. Factores de 18: 1, 2, 3, 6, 9, 18. El mayor que está en AMBAS listas
+                  es 6, así que son 6 kits. Ahora hazlo con tus dos números.</span
+                >
               </div>
             </div>
             <div>
-              <div class="calc-box">
-                <div class="calc-title">Mission Control Calculation:</div>
-                <p id="gcf-result" style="font-size:16px; font-weight:700; color:var(--navy);">
-                  Max Identical Kits (GCF): 24<br/>
-                  Each Kit Contains: 2 Oxygen Canisters &amp; 3 Ration Packs
-                </p>
+              <div class="answer-box">
+                <div class="answer-title">
+                  <span class="en-text">✍️ Your calculation</span>
+                  <span class="es-text">✍️ Tu cálculo</span>
+                </div>
+                <div class="input-group">
+                  <label for="student-gcf">
+                    <span class="en-text">Greatest number of identical kits (GCF):</span>
+                    <span class="es-text">Mayor número de kits idénticos (MCD):</span>
+                  </label>
+                  <input type="number" id="student-gcf" min="1" placeholder="?" />
+                </div>
+                <div class="input-group">
+                  <label for="kit-oxy">
+                    <span class="en-text">Oxygen canisters in each kit:</span>
+                    <span class="es-text">Tanques de oxígeno en cada kit:</span>
+                  </label>
+                  <input type="number" id="kit-oxy" min="1" placeholder="?" />
+                </div>
+                <div class="input-group">
+                  <label for="kit-ration">
+                    <span class="en-text">Ration packs in each kit:</span>
+                    <span class="es-text">Paquetes de raciones en cada kit:</span>
+                  </label>
+                  <input type="number" id="kit-ration" min="1" placeholder="?" />
+                </div>
               </div>
-              <div style="margin-top:14px; text-align:center;">
-                <svg width="220" height="90" viewBox="0 0 220 90" style="background:#fff; border-radius:10px; border:1px solid #cbd5e1;">
-                  <rect x="20" y="20" width="180" height="50" rx="8" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
-                  <text x="110" y="42" text-anchor="middle" font-size="13" font-weight="800" fill="#0369a1">ORBITAL TOOLKIT PACK</text>
-                  <text x="110" y="60" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">GCF(48, 72) = 24 Kits</text>
-                </svg>
+              <div class="input-group justify">
+                <label for="gcf-why">
+                  <span class="en-text"
+                    >💬 Mission Control asks: why does the <em>greatest</em> common factor give the
+                    most kits, and why would the LCM be the wrong tool here?</span
+                  >
+                  <span class="es-text"
+                    >💬 El Control de la Misión pregunta: ¿por qué el <em>máximo</em> común divisor
+                    da la mayor cantidad de kits, y por qué el mcm sería la herramienta
+                    equivocada?</span
+                  >
+                </label>
+                <textarea
+                  id="gcf-why"
+                  rows="3"
+                  placeholder="The GCF is the biggest number that divides both amounts with no remainder, so..."
+                ></textarea>
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
         <!-- STEP 2: LCM Docking Cycles -->
-        <section class="project-card">
+        <section class="step-panel active project-card" id="step-2">
           <span class="step-num">STEP 2</span>
-          <h2 class="card-title">🛸 LCM Resupply Docking Alignment</h2>
-          <p style="margin-bottom:16px; color:var(--muted);">
-            Supply Shuttle Alpha docks every A days; Shuttle Beta docks every B days. Calculate when both shuttles will dock on the exact same day.
+          <h2 class="card-title">
+            <span class="en-text">🛸 LCM Resupply Docking Alignment</span>
+            <span class="es-text">🛸 Alineación de acoplamiento con el mcm</span>
+          </h2>
+          <p class="step-lead">
+            <span class="en-text"
+              >Shuttle Alpha docks every few days; Shuttle Beta runs on its own cycle. Pick both
+              cycles, then work out the first day they dock <em>together</em>.
+              <strong>Mission rule: that day must fall within the first 30 days.</strong></span
+            >
+            <span class="es-text"
+              >El transbordador Alfa se acopla cada cierto número de días; el Beta tiene su propio
+              ciclo. Elige los dos ciclos y luego halla el primer día en que se acoplan
+              <em>juntos</em>.
+              <strong>Regla de la misión: ese día debe caer dentro de los primeros 30
+              días.</strong></span
+            >
           </p>
           <div class="grid-2">
             <div>
               <div class="input-group">
-                <label>Shuttle Alpha Docking Cycle (Days):</label>
-                <input type="number" id="lcm-a" value="6" min="2" max="30" oninput="calcLCM()" />
+                <label for="lcm-a">
+                  <span class="en-text">Shuttle Alpha docking cycle (days):</span>
+                  <span class="es-text">Ciclo de acoplamiento del Alfa (días):</span>
+                </label>
+                <input type="number" id="lcm-a" value="6" min="2" max="30" />
               </div>
               <div class="input-group">
-                <label>Shuttle Beta Docking Cycle (Days):</label>
-                <input type="number" id="lcm-b" value="8" min="2" max="30" oninput="calcLCM()" />
+                <label for="lcm-b">
+                  <span class="en-text">Shuttle Beta docking cycle (days):</span>
+                  <span class="es-text">Ciclo de acoplamiento del Beta (días):</span>
+                </label>
+                <input type="number" id="lcm-b" value="8" min="2" max="30" />
               </div>
-              <button class="btn-primary" onclick="toggleHint('hint-2')">💡 Need a Hint?</button>
+              <button class="btn-primary" onclick="toggleHint('hint-2')">
+                <span class="en-text">💡 Need a Hint?</span>
+                <span class="es-text">💡 ¿Necesitas una pista?</span>
+              </button>
               <div id="hint-2" class="hint-box">
-                The Least Common Multiple (LCM) is the smallest positive number that is a multiple of both cycles.
+                <span class="en-text"
+                  >Count out the multiples of each cycle — 6, 12, 18, 24… and 8, 16, 24… The first
+                  day that shows up in <em>both</em> lists is the one you want.</span
+                >
+                <span class="es-text"
+                  >Cuenta los múltiplos de cada ciclo: 6, 12, 18, 24… y 8, 16, 24… El primer día
+                  que aparece en <em>ambas</em> listas es el que buscas.</span
+                >
+              </div>
+              <div class="lvl0-only support-box">
+                <span class="en-text"
+                  >🟠 <strong>Level 0:</strong> Skip-count on paper. Write Alpha's days in one row
+                  and Beta's in another. Circle the first day that appears in both rows.</span
+                >
+                <span class="es-text"
+                  >🟠 <strong>Nivel 0:</strong> Cuenta salteado en papel. Escribe los días del Alfa
+                  en una fila y los del Beta en otra. Encierra el primer día que aparece en las
+                  dos.</span
+                >
               </div>
             </div>
             <div>
-              <div class="calc-box">
-                <div class="calc-title">Docking Alignment Result:</div>
-                <p id="lcm-result" style="font-size:16px; font-weight:700; color:var(--navy);">
-                  Simultaneous Docking (LCM): Day 24<br/>
-                  Shuttle Alpha: 4 visits | Shuttle Beta: 3 visits
-                </p>
+              <div class="answer-box">
+                <div class="answer-title">
+                  <span class="en-text">✍️ Your calculation</span>
+                  <span class="es-text">✍️ Tu cálculo</span>
+                </div>
+                <div class="input-group">
+                  <label for="student-lcm">
+                    <span class="en-text">First day both shuttles dock together (LCM):</span>
+                    <span class="es-text">Primer día en que ambos se acoplan juntos (mcm):</span>
+                  </label>
+                  <input type="number" id="student-lcm" min="1" placeholder="?" />
+                </div>
+                <div class="input-group">
+                  <label for="alpha-visits">
+                    <span class="en-text">Alpha's visits by that day:</span>
+                    <span class="es-text">Visitas del Alfa hasta ese día:</span>
+                  </label>
+                  <input type="number" id="alpha-visits" min="1" placeholder="?" />
+                </div>
+                <div class="input-group">
+                  <label for="beta-visits">
+                    <span class="en-text">Beta's visits by that day:</span>
+                    <span class="es-text">Visitas del Beta hasta ese día:</span>
+                  </label>
+                  <input type="number" id="beta-visits" min="1" placeholder="?" />
+                </div>
+              </div>
+              <div class="input-group justify">
+                <label for="lcm-why">
+                  <span class="en-text"
+                    >💬 Does your plan meet the 30-day rule? If it does, say how you know. If it
+                    does not, change one cycle, then explain what you changed and why that
+                    worked.</span
+                  >
+                  <span class="es-text"
+                    >💬 ¿Tu plan cumple la regla de los 30 días? Si la cumple, explica cómo lo
+                    sabes. Si no, cambia un ciclo y explica qué cambiaste y por qué funcionó.</span
+                  >
+                </label>
+                <textarea
+                  id="lcm-why"
+                  rows="3"
+                  placeholder="My shared docking day is day ___, which is ___ the 30-day limit, because..."
+                ></textarea>
               </div>
             </div>
           </div>
         </section>
 
         <!-- STEP 3: Multi-Digit Decimal Mission Budget -->
-        <section class="project-card">
+        <section class="step-panel active project-card" id="step-3">
           <span class="step-num">STEP 3</span>
-          <h2 class="card-title">💳 Decimal Station Budget &amp; Long Division</h2>
-          <p style="margin-bottom:16px; color:var(--muted);">
-            Calculate total payload cost with decimals, then divide total power units among solar panels using multi-digit long division.
+          <h2 class="card-title">
+            <span class="en-text">💳 Decimal Station Budget &amp; Long Division</span>
+            <span class="es-text">💳 Presupuesto decimal y división larga</span>
+          </h2>
+          <p class="step-lead">
+            <span class="en-text"
+              >Price the two big systems and split the station's power across its solar modules.
+              <strong>Mission rules: the build must come in at $250k or less, and every module must
+              get a whole number of power units.</strong></span
+            >
+            <span class="es-text"
+              >Pon precio a los dos sistemas grandes y reparte la energía entre los módulos solares.
+              <strong>Reglas de la misión: la construcción debe costar $250k o menos, y cada módulo
+              debe recibir un número entero de unidades de energía.</strong></span
+            >
           </p>
           <div class="grid-2">
             <div>
               <div class="input-group">
-                <label>Solar Array Cost ($k):</label>
-                <input type="number" id="dec-a" value="142.75" step="0.25" oninput="calcBudget()" />
+                <label for="dec-a">
+                  <span class="en-text">Solar array cost ($k):</span>
+                  <span class="es-text">Costo del arreglo solar ($k):</span>
+                </label>
+                <input type="number" id="dec-a" value="142.75" step="0.25" min="0" />
               </div>
               <div class="input-group">
-                <label>Life Support System ($k):</label>
-                <input type="number" id="dec-b" value="98.50" step="0.25" oninput="calcBudget()" />
+                <label for="dec-b">
+                  <span class="en-text">Life support system ($k):</span>
+                  <span class="es-text">Sistema de soporte vital ($k):</span>
+                </label>
+                <input type="number" id="dec-b" value="98.50" step="0.25" min="0" />
               </div>
               <div class="input-group">
-                <label>Total Power Units to Divide:</label>
-                <input type="number" id="div-power" value="1248" oninput="calcBudget()" />
+                <label for="div-power">
+                  <span class="en-text">Total power units to divide:</span>
+                  <span class="es-text">Unidades de energía por repartir:</span>
+                </label>
+                <input type="number" id="div-power" value="1248" min="1" />
               </div>
               <div class="input-group">
-                <label>Number of Solar Modules:</label>
-                <input type="number" id="div-modules" value="16" oninput="calcBudget()" />
+                <label for="div-modules">
+                  <span class="en-text">Number of solar modules:</span>
+                  <span class="es-text">Número de módulos solares:</span>
+                </label>
+                <input type="number" id="div-modules" value="16" min="1" />
+              </div>
+              <button class="btn-primary" onclick="toggleHint('hint-3')">
+                <span class="en-text">💡 Need a Hint?</span>
+                <span class="es-text">💡 ¿Necesitas una pista?</span>
+              </button>
+              <div id="hint-3" class="hint-box">
+                <span class="en-text"
+                  >Line up the decimal points before you add. For the split, use long division — and
+                  if it leaves a remainder, that module count breaks the whole-units rule.</span
+                >
+                <span class="es-text"
+                  >Alinea los puntos decimales antes de sumar. Para el reparto, usa división larga; y
+                  si queda residuo, ese número de módulos rompe la regla de unidades enteras.</span
+                >
+              </div>
+              <div class="lvl2-only challenge-box">
+                <span class="en-text"
+                  >🔵 <strong>Level 2:</strong> Find <em>every</em> module count between 2 and 30
+                  that divides your power units evenly, and say which one you would actually build
+                  and why.</span
+                >
+                <span class="es-text"
+                  >🔵 <strong>Nivel 2:</strong> Halla <em>todos</em> los números de módulos entre 2 y
+                  30 que dividan tus unidades de energía exactamente, y di cuál construirías de
+                  verdad y por qué.</span
+                >
               </div>
             </div>
             <div>
-              <div class="calc-box">
-                <div class="calc-title">Financial &amp; Energy Telemetry:</div>
-                <p id="budget-result" style="font-size:16px; font-weight:700; color:var(--navy);">
-                  Total Station Cost: $241.25k<br/>
-                  Power per Module: 78.00 units/module
-                </p>
+              <div class="answer-box">
+                <div class="answer-title">
+                  <span class="en-text">✍️ Your calculation</span>
+                  <span class="es-text">✍️ Tu cálculo</span>
+                </div>
+                <div class="input-group">
+                  <label for="student-total">
+                    <span class="en-text">Total station cost ($k):</span>
+                    <span class="es-text">Costo total de la estación ($k):</span>
+                  </label>
+                  <input type="number" id="student-total" step="0.01" min="0" placeholder="?" />
+                </div>
+                <div class="input-group">
+                  <label for="student-per">
+                    <span class="en-text">Power units per module:</span>
+                    <span class="es-text">Unidades de energía por módulo:</span>
+                  </label>
+                  <input type="number" id="student-per" step="0.01" min="0" placeholder="?" />
+                </div>
+              </div>
+              <div class="input-group justify">
+                <label for="budget-why">
+                  <span class="en-text"
+                    >💬 You had to pick a module count that divides your power units evenly. Which
+                    did you pick, how did you know it would work, and how much of the $250k budget is
+                    left?</span
+                  >
+                  <span class="es-text"
+                    >💬 Tuviste que elegir un número de módulos que dividiera la energía
+                    exactamente. ¿Cuál elegiste, cómo supiste que funcionaría y cuánto queda del
+                    presupuesto de $250k?</span
+                  >
+                </label>
+                <textarea
+                  id="budget-why"
+                  rows="3"
+                  placeholder="I chose ___ modules because ___ divides evenly into ___. My total is $___k, which leaves $___k under the ceiling."
+                ></textarea>
               </div>
             </div>
           </div>
         </section>
 
         <!-- STEP 4: Self, Peer & World Reflection -->
-        <section class="project-card">
+        <section class="step-panel active project-card" id="step-4">
           <span class="step-num">STEP 4</span>
-          <h2 class="card-title">🌍 Self, Peer &amp; World Mission Debrief</h2>
-          <div style="margin-top:14px;">
+          <h2 class="card-title">
+            <span class="en-text">🌍 Self, Peer &amp; World Mission Debrief</span>
+            <span class="es-text">🌍 Informe final: tú, tu compañero y el mundo</span>
+          </h2>
+          <div style="margin-top: 14px">
             <div class="input-group">
-              <label>Self Reflection — How did GCF and LCM help organize station logistics?</label>
-              <textarea rows="3" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);" placeholder="GCF helped me divide supplies into identical kits without waste, while LCM showed me..."></textarea>
+              <label for="debrief-self">
+                <span class="en-text"
+                  >Self — Which of the three mission rules was hardest to satisfy, and what did you
+                  change to satisfy it?</span
+                >
+                <span class="es-text"
+                  >Tú — ¿Cuál de las tres reglas fue la más difícil de cumplir, y qué cambiaste para
+                  lograrlo?</span
+                >
+              </label>
+              <textarea
+                id="debrief-self"
+                rows="3"
+                placeholder="The hardest rule was ___. At first my numbers gave ___, so I changed ___ because..."
+              ></textarea>
             </div>
             <div class="input-group">
-              <label>Peer Review — Compare your docking schedule with a teammate's station:</label>
-              <textarea rows="2" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);" placeholder="My partner used cycles 4 and 10 (LCM 20), which meant..."></textarea>
+              <label for="debrief-peer">
+                <span class="en-text"
+                  >Peer — Compare stations with a teammate. Whose plan leaves more room to grow, and
+                  what in the numbers shows it?</span
+                >
+                <span class="es-text"
+                  >Compañero — Comparen sus estaciones. ¿Cuál plan deja más espacio para crecer, y
+                  qué número lo demuestra?</span
+                >
+              </label>
+              <textarea
+                id="debrief-peer"
+                rows="2"
+                placeholder="My partner used cycles ___ and ___ (shared day ___), which meant..."
+              ></textarea>
             </div>
             <div class="input-group">
-              <label>World Application — How do real space agencies (NASA/ESA) use number sense?</label>
-              <textarea rows="2" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);" placeholder="Real agencies use decimal math for launch fuel calculations and GCF/LCM for orbital mechanics..."></textarea>
+              <label for="debrief-world">
+                <span class="en-text"
+                  >World — Real agencies plan resupply windows years ahead. Which of your three
+                  calculations would matter most to them, and why?</span
+                >
+                <span class="es-text"
+                  >Mundo — Las agencias reales planean el reabastecimiento con años de
+                  anticipación. ¿Cuál de tus tres cálculos les importaría más, y por qué?</span
+                >
+              </label>
+              <textarea
+                id="debrief-world"
+                rows="2"
+                placeholder="The docking alignment matters most because a missed window means..."
+              ></textarea>
             </div>
           </div>
+        </section>
+
+        <section class="step-panel active project-card" id="step-rubric">
+          <h2 class="card-title">
+            <span class="en-text">📊 Rubric — How Mission Control Scores Your Plan</span><span class="es-text">📊 Rúbrica — Cómo califica tu plan el Control de la Misión</span>
+          </h2>
+          <p class="step-lead">
+            <span class="en-text">Your plan is judged on the mathematics and on how well you defend it — not on how it looks.</span><span class="es-text">Tu plan se califica por la matemática y por cómo la defiendes, no por su apariencia.</span>
+          </p>
+          <h3 class="checklist-head">
+            <span class="en-text">✅ Before you submit</span><span class="es-text">✅ Antes de entregar</span>
+          </h3>
+          <ul class="success-checklist">
+            <li><span class="en-text">My kits use the GREATEST common factor, and nothing is left over.</span><span class="es-text">Mis kits usan el MÁXIMO común divisor y no sobra nada.</span></li>
+            <li><span class="en-text">My shared docking day falls within the first 30 days.</span><span class="es-text">Mi día de acoplamiento compartido cae dentro de los primeros 30 días.</span></li>
+            <li><span class="en-text">My total cost is $250k or less.</span><span class="es-text">Mi costo total es de $250k o menos.</span></li>
+            <li><span class="en-text">Every module gets a whole number of power units.</span><span class="es-text">Cada módulo recibe un número entero de unidades de energía.</span></li>
+            <li><span class="en-text">I explained WHY behind each number, not just what I did.</span><span class="es-text">Expliqué el PORQUÉ de cada número, no solo lo que hice.</span></li>
+          </ul>
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th><span class="en-text">Skill</span><span class="es-text">Habilidad</span></th>
+                <th class="score-4"><span class="en-text">4 — Expert</span><span class="es-text">4 — Experto</span></th>
+                <th class="score-3"><span class="en-text">3 — Proficient</span><span class="es-text">3 — Competente</span></th>
+                <th class="score-2"><span class="en-text">2 — Developing</span><span class="es-text">2 — En desarrollo</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <strong><span class="en-text">Packing with the GCF (6.NOS.4)</span><span class="es-text">Empaque con el MCD (6.NOS.4)</span></strong>
+                </td>
+                <td>
+                  <span class="en-text">Finds the greatest common factor and uses it to pack the largest number of identical kits with nothing left over; per-kit amounts are exact.</span><span class="es-text">Halla el máximo común divisor y lo usa para empacar la mayor cantidad de kits idénticos sin que sobre nada; las cantidades por kit son exactas.</span>
+                </td>
+                <td>
+                  <span class="en-text">Finds the greatest common factor and the correct per-kit amounts.</span><span class="es-text">Halla el máximo común divisor y las cantidades correctas por kit.</span>
+                </td>
+                <td>
+                  <span class="en-text">Finds a common factor, but not the greatest, or the kits do not come out even.</span><span class="es-text">Halla un factor común, pero no el mayor, o los kits no salen exactos.</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong><span class="en-text">Scheduling with the LCM (6.NOS.4)</span><span class="es-text">Programación con el mcm (6.NOS.4)</span></strong>
+                </td>
+                <td>
+                  <span class="en-text">Finds the FIRST shared docking day, reports both shuttles’ visit counts, and adjusts a cycle when needed to meet the 30-day rule.</span><span class="es-text">Halla el PRIMER día de acoplamiento compartido, informa las visitas de ambos transbordadores y ajusta un ciclo cuando hace falta para cumplir la regla de 30 días.</span>
+                </td>
+                <td>
+                  <span class="en-text">Finds the first shared docking day and both visit counts correctly.</span><span class="es-text">Halla correctamente el primer día compartido y las visitas de cada transbordador.</span>
+                </td>
+                <td>
+                  <span class="en-text">Finds a day both shuttles dock, but not the first one, or the visit counts do not match the cycles.</span><span class="es-text">Halla un día en que ambos se acoplan, pero no el primero, o las visitas no corresponden a los ciclos.</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong><span class="en-text">Decimal budget (6.NOS.3)</span><span class="es-text">Presupuesto decimal (6.NOS.3)</span></strong>
+                </td>
+                <td>
+                  <span class="en-text">Adds the multi-digit decimal costs accurately and states how much of the $250k ceiling remains.</span><span class="es-text">Suma con exactitud los costos decimales de varios dígitos e indica cuánto queda del límite de $250k.</span>
+                </td>
+                <td>
+                  <span class="en-text">Adds the decimal costs accurately and checks the total against the ceiling.</span><span class="es-text">Suma con exactitud los costos decimales y compara el total con el límite.</span>
+                </td>
+                <td>
+                  <span class="en-text">Misaligns the decimal points or does not check the total against the ceiling.</span><span class="es-text">Desalinea los puntos decimales o no compara el total con el límite.</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong><span class="en-text">Long division (6.NOS.2)</span><span class="es-text">División larga (6.NOS.2)</span></strong>
+                </td>
+                <td>
+                  <span class="en-text">Divides the power units into whole units per module AND chooses a module count that divides evenly, explaining how they knew it would.</span><span class="es-text">Divide las unidades de energía en unidades enteras por módulo Y elige un número de módulos que divida exactamente, explicando cómo lo supo.</span>
+                </td>
+                <td>
+                  <span class="en-text">Divides the power units correctly and gets whole units per module.</span><span class="es-text">Divide correctamente las unidades de energía y obtiene unidades enteras por módulo.</span>
+                </td>
+                <td>
+                  <span class="en-text">Quotient is incorrect, or a module count is used that leaves a remainder.</span><span class="es-text">El cociente es incorrecto, o usa un número de módulos que deja residuo.</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong><span class="en-text">Defending the plan</span><span class="es-text">Defensa del plan</span></strong>
+                </td>
+                <td>
+                  <span class="en-text">Every decision is justified with the student’s own numbers, including why the GCF — not the LCM — is the right tool for packing.</span><span class="es-text">Cada decisión se justifica con los propios números del estudiante, incluyendo por qué el MCD —y no el mcm— es la herramienta correcta para empacar.</span>
+                </td>
+                <td>
+                  <span class="en-text">Explains each decision and refers to the numbers that support it.</span><span class="es-text">Explica cada decisión y menciona los números que la respaldan.</span>
+                </td>
+                <td>
+                  <span class="en-text">Describes what was done without saying why, or the reasoning does not use the numbers.</span><span class="es-text">Describe lo que hizo sin decir por qué, o el razonamiento no usa los números.</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </section>
       </div>
     </main>
 
     <script>
+      /* The page deliberately computes NOTHING for the student. Every number in
+         Steps 1-3 is theirs to find; the shared "Check my work" layer
+         (/shared/projects/projects-check.js, configured in
+         projects-check-config.json) validates each entry against the student's
+         OWN inputs, so any legal station design is accepted and no answer is
+         ever printed. Earlier versions of this page called calcGCF()/calcLCM()
+         on input and displayed the results, which left nothing to solve. */
       function setLevel(lvl) {
-        document.querySelectorAll('.level-btn').forEach((b, i) => {
-          b.classList.toggle('active', i === lvl - 1);
+        document.body.classList.remove("lvl-0", "lvl-1", "lvl-2");
+        document.body.classList.add("lvl-" + lvl);
+        ["btn-lv0", "btn-lv1", "btn-lv2"].forEach(function (id, i) {
+          var b = document.getElementById(id);
+          if (b) b.classList.toggle("active", i === lvl);
         });
+        try {
+          localStorage.setItem("nt-u1c-level", String(lvl));
+        } catch (_e) {}
       }
       function toggleHint(id) {
         const el = document.getElementById(id);
-        if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        if (el) el.style.display = el.style.display === "block" ? "none" : "block";
       }
-      function gcf(a, b) { return b === 0 ? a : gcf(b, a % b); }
-      function lcm(a, b) { return (a * b) / gcf(a, b); }
-
-      function calcGCF() {
-        const a = parseInt(document.getElementById('gcf-a').value) || 1;
-        const b = parseInt(document.getElementById('gcf-b').value) || 1;
-        const g = gcf(a, b);
-        document.getElementById('gcf-result').innerHTML = 
-          `Max Identical Kits (GCF): ${g}<br/>Each Kit Contains: ${a / g} Oxygen &amp; ${b / g} Ration Packs`;
+      function toggleLanguage() {
+        const isEs = document.body.classList.toggle("es");
+        const btn = document.getElementById("btn-lang");
+        if (btn) btn.textContent = isEs ? "🌐 Idioma: ES" : "🌐 Language: EN";
+        try {
+          localStorage.setItem("nt-u1c-lang", isEs ? "es" : "en");
+        } catch (_e) {}
       }
-      function calcLCM() {
-        const a = parseInt(document.getElementById('lcm-a').value) || 1;
-        const b = parseInt(document.getElementById('lcm-b').value) || 1;
-        const l = lcm(a, b);
-        document.getElementById('lcm-result').innerHTML = 
-          `Simultaneous Docking (LCM): Day ${l}<br/>Shuttle Alpha: ${l / a} visits | Shuttle Beta: ${l / b} visits`;
-      }
-      function calcBudget() {
-        const a = parseFloat(document.getElementById('dec-a').value) || 0;
-        const b = parseFloat(document.getElementById('dec-b').value) || 0;
-        const p = parseFloat(document.getElementById('div-power').value) || 0;
-        const m = parseFloat(document.getElementById('div-modules').value) || 1;
-        const totalCost = (a + b).toFixed(2);
-        const perModule = (p / m).toFixed(2);
-        document.getElementById('budget-result').innerHTML = 
-          `Total Station Cost: $${totalCost}k<br/>Power per Module: ${perModule} units/module`;
-      }
+      (function restore() {
+        var lvl = 1;
+        try {
+          var saved = localStorage.getItem("nt-u1c-level");
+          if (saved !== null) lvl = Number(saved);
+          if (localStorage.getItem("nt-u1c-lang") === "es") toggleLanguage();
+        } catch (_e) {}
+        setLevel(lvl);
+      })();
     </script>
     <script src="/assets/learning-supports/learning-supports.js" defer></script>
     <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
@@ -359,5 +856,9 @@
   <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
   <script src="/shared/projects/projects-pro.js" defer></script>
   <!-- projects-pro-injected:end -->
-</body>
+    <link rel="stylesheet" href="/shared/projects/projects-future.css" />
+    <script src="/shared/projects/projects-future.js" defer></script>
+    <link rel="stylesheet" href="/shared/projects/projects-coach.css" />
+    <script src="/shared/projects/projects-coach.js" defer></script>
+  </body>
 </html>

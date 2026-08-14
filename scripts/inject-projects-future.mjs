@@ -41,9 +41,13 @@ const INCLUDES = [
   },
 ];
 
+/* Glob the version folder, never a hardcoded ["version-a","version-b"] list.
+   That list is why unit-8/version-c was invisible to nearly every projects-*
+   layer, and it was still here: all three version-c pages were missing the
+   coach/reflect layer, so `.ntf-reflect textarea` did not exist on them and the
+   Publication Quality Check reported "0 explanation reflections" forever. */
 const patterns = [
-  "math/unit-*/projects/version-a/index.html",
-  "math/unit-*/projects/version-b/index.html",
+  "math/unit-*/projects/version-*/index.html",
   "math/statistics/projects/version-*/index.html",
 ];
 

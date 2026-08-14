@@ -44,14 +44,19 @@ const MAP = {
     intro:
       "Split the goodie bags (GCF), sync the entertainment (LCM), and set the budget to get the party ready.",
   },
+  // Canonical Unit 2 is "Data Detectives" (statistics) — see
+  // data/curriculum-unit-identities.json. math/unit-2/projects is a mirror of
+  // math/statistics/projects, so it MUST get the same stat-draft widget.
+  // It previously mapped to recipe-rush (fraction division), which is the
+  // legacy Reveal-era Unit 2. Never re-derive this unit from a path number.
   "math/unit-2/projects": {
-    kind: "recipe-rush",
-    emoji: "🧁",
+    kind: "stat-draft",
+    emoji: "🔍",
     attrs: {},
-    title: "Portion the batter",
-    es: "Reparte la masa en porciones",
+    title: "Read the data",
+    es: "Interpreta los datos",
     intro:
-      "Slice the batter into servings and watch how dividing by a smaller fraction makes MORE portions.",
+      "Spot the outlier that yanks the mean, then pick the measure — mean or median — that tells the truth.",
   },
   "math/unit-3/projects": {
     kind: "mix-lab",

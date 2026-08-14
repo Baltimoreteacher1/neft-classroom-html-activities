@@ -1352,10 +1352,23 @@
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcUnitRate()">
-            <span class="en-text">🧮 Calculate Scoring Unit Rate</span>
-            <span class="es-text">🧮 Calcular Tasa Unitaria de Anotación</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="ss-user-rate" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter the Scoring Unit Rate (points per minute)</span>
+              <span class="es-text">✍️ Calcula e ingresa la tasa unitaria de anotación (puntos por minuto)</span>
+            </label>
+            <input
+              type="number"
+              id="ss-user-rate"
+              step="0.01"
+              placeholder="e.g. 0.75"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn" onclick="checkRateSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Unit Rate</span>
+              <span class="es-text">✓ Comprobar mi tasa unitaria</span>
+            </button>
+          </div>
           <div class="readout" id="unit-rate-out"></div>
 
           <details class="hint">
@@ -1658,10 +1671,23 @@
             <input type="number" id="proj-mpg" min="1" placeholder="" />
           </div>
 
-          <button class="calc-btn teal" onclick="calcSeasonProject()">
-            <span class="en-text">🧮 Generate Ratio Table</span>
-            <span class="es-text">🧮 Generar Tabla de Razones</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="ss-user-ppg" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter the Projected Points Per Game</span>
+              <span class="es-text">✍️ Calcula e ingresa los puntos proyectados por partido</span>
+            </label>
+            <input
+              type="number"
+              id="ss-user-ppg"
+              step="0.01"
+              placeholder="e.g. 22.5"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn teal" onclick="checkSeasonSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Projection</span>
+              <span class="es-text">✓ Comprobar mi proyección</span>
+            </button>
+          </div>
           <div class="readout" id="season-out"></div>
 
           <div class="lvl2-block lvl2-only" style="margin-top: 18px">
@@ -2990,6 +3016,63 @@
       }
 
       // ---- Calc Step 1: Scoring Unit Rate ----
+      /* Step 2 says "Calculate how fast your athlete scores" and Step 3 asks
+         what a constant-rate model projects; before this gate the page printed
+         both the instant the box score was typed. */
+      const SOLVED = { rate: false, season: false };
+
+      function ssWarn(out, en, es) {
+        showReadout(out, '<span style="color:#ef4444;font-weight:bold;">⚠️ ' + (isSpanish() ? es : en) + '</span>');
+      }
+      function ssMiss(out, en, es) {
+        showReadout(out, '<span style="color:#ef4444;font-weight:bold;">🤔 ' + (isSpanish() ? es : en) + '</span>');
+      }
+
+      function checkRateSolve() {
+        const pts = parseInt(document.getElementById("ath-pts").value);
+        const min = parseInt(document.getElementById("ath-min").value);
+        const user = parseFloat(document.getElementById("ss-user-rate").value);
+        if (isNaN(pts) || isNaN(min) || min <= 0 || pts < 0) {
+          ssWarn("unit-rate-out", "Enter the points scored and minutes played above first!", "¡Ingresa los puntos anotados y los minutos jugados primero!");
+          return;
+        }
+        if (isNaN(user)) {
+          ssWarn("unit-rate-out", "Type your calculated unit rate in the box before checking!", "¡Escribe tu tasa unitaria calculada antes de comprobar!");
+          return;
+        }
+        const expected = pts / min;
+        if (Math.abs(user - expected) < 0.02) { SOLVED.rate = true; calcUnitRate(); return; }
+        const flipped = Math.abs(user - min / pts) < 0.02;
+        ssMiss("unit-rate-out",
+          "You entered " + user + ". " + (flipped ? "That is minutes per point — you divided the wrong way round. A scoring rate answers how many POINTS come from ONE minute." : "A unit rate per minute means points divided by minutes.") + " Try " + pts + " ÷ " + min + ".",
+          "Ingresaste " + user + ". " + (flipped ? "Eso son minutos por punto: dividiste al revés. Una tasa de anotación dice cuántos PUNTOS salen de UN minuto." : "Una tasa unitaria por minuto es puntos dividido entre minutos.") + " Intenta " + pts + " ÷ " + min + ".");
+      }
+
+      function checkSeasonSolve() {
+        if (!SOLVED.rate) {
+          ssWarn("season-out", "Check your scoring unit rate in Step 2 first.", "Primero comprueba tu tasa unitaria en el Paso 2.");
+          return;
+        }
+        const pts = parseInt(document.getElementById("ath-pts").value);
+        const min = parseInt(document.getElementById("ath-min").value);
+        const mpg = parseFloat(document.getElementById("proj-mpg").value);
+        const user = parseFloat(document.getElementById("ss-user-ppg").value);
+        if (isNaN(mpg) || mpg <= 0) {
+          ssWarn("season-out", "Enter the average minutes per game above first!", "¡Ingresa el promedio de minutos por partido primero!");
+          return;
+        }
+        if (isNaN(user)) {
+          ssWarn("season-out", "Type your projected points per game in the box before checking!", "¡Escribe tus puntos proyectados por partido antes de comprobar!");
+          return;
+        }
+        const expected = (pts / min) * mpg;
+        if (Math.abs(user - expected) < 0.15) { SOLVED.season = true; calcSeasonProject(); return; }
+        const addedInstead = Math.abs(user - (pts / min + mpg)) < 0.15;
+        ssMiss("season-out",
+          "You entered " + user + ". " + (addedInstead ? "It looks like you added the rate to the minutes — scaling a rate up means multiplying." : "Scale the per-minute rate up to a whole game.") + " Try your rate × " + mpg + " minutes.",
+          "Ingresaste " + user + ". " + (addedInstead ? "Parece que sumaste la tasa y los minutos: escalar una tasa significa multiplicar." : "Escala la tasa por minuto a un partido completo.") + " Intenta tu tasa × " + mpg + " minutos.");
+      }
+
       function calcUnitRate() {
         const isEs = isSpanish();
         const defaultName = isEs ? "ATLETA EVALUADO" : "SCOUT ATHLETE";
@@ -3003,8 +3086,11 @@
         if (!isNaN(min))
           document.getElementById("sb-min").textContent = String(min).padStart(2, "0");
 
-        if (isNaN(pts) || isNaN(min) || min <= 0 || pts < 0) {
-          document.getElementById("sb-rate").textContent = "0.00";
+        // The unit rate is what this step asks the student to find, so neither
+        // the scoreboard nor the readout shows it until they have submitted
+        // their own value and it checked out.
+        if (isNaN(pts) || isNaN(min) || min <= 0 || pts < 0 || !SOLVED.rate) {
+          document.getElementById("sb-rate").textContent = SOLVED.rate ? "0.00" : "?";
           document.getElementById("unit-rate-out").classList.remove("show");
           return;
         }
@@ -3041,7 +3127,7 @@
         const mpg = parseFloat(document.getElementById("proj-mpg").value);
         const isEs = isSpanish();
 
-        if (isNaN(mpg) || mpg <= 0 || rate <= 0) {
+        if (isNaN(mpg) || mpg <= 0 || rate <= 0 || !SOLVED.season) {
           document.getElementById("season-out").classList.remove("show");
           return;
         }

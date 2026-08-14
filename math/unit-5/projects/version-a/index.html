@@ -798,10 +798,23 @@
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="calcNook()">
-            <span class="en-text">📐 Calculate Triangle Nook Area</span>
-            <span class="es-text">📐 Calcular el área del rincón triangular</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="t-user-area" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter Reading Nook Area (sq ft)</span>
+              <span class="es-text">✍️ Calcula e ingresa el área del rincón de lectura (pies²)</span>
+            </label>
+            <input
+              type="number"
+              id="t-user-area"
+              step="0.1"
+              placeholder="e.g. 12"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn teal" onclick="checkNookSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Nook Area Calculation</span>
+              <span class="es-text">✓ Comprobar mi cálculo del área del rincón</span>
+            </button>
+          </div>
           <div class="readout" id="nook-out"></div>
 
           <details class="hint">
@@ -947,10 +960,23 @@
             </div>
           </div>
 
-          <button class="calc-btn gold" onclick="calcFlooring()">
-            <span class="en-text">💵 Calculate Total Flooring Cost</span>
-            <span class="es-text">💵 Calcular costo total del piso</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="c-user-cost" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter Total Flooring Cost ($)</span>
+              <span class="es-text">✍️ Calcula e ingresa el costo total del piso ($)</span>
+            </label>
+            <input
+              type="number"
+              id="c-user-cost"
+              step="0.01"
+              placeholder="e.g. 546.00"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn gold" onclick="checkCostSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Cost Calculation</span>
+              <span class="es-text">✓ Comprobar mi cálculo del costo</span>
+            </button>
+          </div>
           <div class="readout" id="flooring-out"></div>
 
           <div style="margin-top:22px;">
@@ -1526,6 +1552,11 @@
 
       // ---- Math helpers ----
       function fmt(n) { return Number.isInteger(n) ? n.toFixed(0) : n.toFixed(2); }
+      /* Which results the student has already worked out for themselves. Every
+         computed AREA or COST on this page stays hidden until the matching flag
+         flips, so no step prints the number it is asking the student to find. */
+      const SOLVED = { floor: false, nook: false, cost: false };
+
       function showReadout(id, html) {
         const el = document.getElementById(id);
         el.innerHTML = html;
@@ -1548,6 +1579,13 @@
         
         if (isNaN(len) || isNaN(wid) || len <= 0 || wid <= 0) return;
         const area = len * wid;
+        // The area is the thing the student is asked to find, so it stays hidden
+        // until they submit their own value. Only the dimensions they typed —
+        // updated above — are echoed back while they work.
+        if (!SOLVED.floor) {
+          if (sa) sa.textContent = isEs ? '?' : '?';
+          return;
+        }
         if (sa) sa.textContent = isEs ? `${fmt(area)} pies²` : `${fmt(area)} sq ft`;
         
         const html = isEs ? `
@@ -1585,6 +1623,9 @@
         const isCorrect = Math.abs(userArea - expectedArea) < 0.2;
 
         if (isCorrect) {
+          SOLVED.floor = true;
+          calcFloor();
+          recalcTotal();
           const html = isEs ? `
             <strong>¡Cálculo de Área Correcto! 🎉</strong><br>
             Cálculo: <strong>${len} pies × ${wid} pies = ${fmt(expectedArea)} pies²</strong><br>
@@ -1607,6 +1648,75 @@
         }
       }
 
+      function checkNookSolve() {
+        const base = parseFloat(document.getElementById('t-base').value);
+        const height = parseFloat(document.getElementById('t-height').value);
+        const userArea = parseFloat(document.getElementById('t-user-area').value);
+        const isEs = document.body.classList.contains('es');
+
+        if (isNaN(base) || isNaN(height) || base <= 0 || height <= 0) {
+          showReadout('nook-out', isEs ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Ingresa la base y la altura del rincón arriba primero!</span>' : '<span style="color:#ef4444;font-weight:bold;">⚠️ Enter the nook base and height above first!</span>');
+          return;
+        }
+        if (isNaN(userArea)) {
+          showReadout('nook-out', isEs ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Escribe tu área calculada en la casilla antes de comprobar!</span>' : '<span style="color:#ef4444;font-weight:bold;">⚠️ Type your calculated area in the input box before checking!</span>');
+          return;
+        }
+
+        const expectedArea = 0.5 * base * height;
+        if (Math.abs(userArea - expectedArea) < 0.2) {
+          SOLVED.nook = true;
+          calcNook();
+          recalcTotal();
+          return;
+        }
+
+        const halved = Math.abs(userArea - base * height) < 0.2;
+        const html = isEs ? `
+          <span style="color:#ef4444;font-weight:bold;">🤔 Ingresaste ${userArea}. ${halved ? 'Eso es base × altura — un triángulo es la MITAD de ese rectángulo.' : 'El área de un triángulo es ½ × base × altura.'}</span><br>
+          <small>Intenta calcular: <strong>½ × ${base} × ${height}</strong> y vuelve a intentar.</small>
+        ` : `
+          <span style="color:#ef4444;font-weight:bold;">🤔 You entered ${userArea}. ${halved ? 'That is base × height — a triangle is HALF of that rectangle.' : 'The area of a triangle is ½ × base × height.'}</span><br>
+          <small>Try calculating: <strong>½ × ${base} × ${height}</strong> and try again.</small>
+        `;
+        showReadout('nook-out', html);
+      }
+
+      function checkCostSolve() {
+        const area = parseFloat(document.getElementById('c-total-area').value);
+        const price = parseFloat(document.getElementById('f-price').value);
+        const userCost = parseFloat(document.getElementById('c-user-cost').value);
+        const isEs = document.body.classList.contains('es');
+
+        if (!SOLVED.floor || !SOLVED.nook) {
+          showReadout('flooring-out', isEs ? '<span style="color:#ef4444;font-weight:bold;">⚠️ Primero comprueba el área de la habitación (Paso 2) y la del rincón (Paso 3).</span>' : '<span style="color:#ef4444;font-weight:bold;">⚠️ Check your bedroom area (Step 2) and nook area (Step 3) first.</span>');
+          return;
+        }
+        if (isNaN(area) || isNaN(price) || price <= 0) {
+          showReadout('flooring-out', isEs ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Elige un piso y su precio por pie² arriba primero!</span>' : '<span style="color:#ef4444;font-weight:bold;">⚠️ Pick a flooring type and price per sq ft above first!</span>');
+          return;
+        }
+        if (isNaN(userCost)) {
+          showReadout('flooring-out', isEs ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Escribe tu costo calculado en la casilla antes de comprobar!</span>' : '<span style="color:#ef4444;font-weight:bold;">⚠️ Type your calculated cost in the input box before checking!</span>');
+          return;
+        }
+
+        const expected = area * price;
+        if (Math.abs(userCost - expected) < 0.05) {
+          SOLVED.cost = true;
+          calcFlooring();
+          return;
+        }
+        const html = isEs ? `
+          <span style="color:#ef4444;font-weight:bold;">🤔 Ingresaste $${userCost.toFixed(2)}, pero el costo es el área total × el precio por pie².</span><br>
+          <small>Intenta calcular: <strong>${fmt(area)} × $${price.toFixed(2)}</strong> y vuelve a intentar.</small>
+        ` : `
+          <span style="color:#ef4444;font-weight:bold;">🤔 You entered $${userCost.toFixed(2)}, but the cost is your total area × the price per sq ft.</span><br>
+          <small>Try calculating: <strong>${fmt(area)} × $${price.toFixed(2)}</strong> and try again.</small>
+        `;
+        showReadout('flooring-out', html);
+      }
+
       // ---- Triangle Nook Area ----
       function calcNook() {
         const base = parseFloat(document.getElementById('t-base').value);
@@ -1622,6 +1732,10 @@
         
         if (isNaN(base) || isNaN(height) || base <= 0 || height <= 0) return;
         const area = 0.5 * base * height;
+        if (!SOLVED.nook) {
+          if (sa) sa.textContent = '?';
+          return;
+        }
         if (sa) sa.textContent = isEs ? `${fmt(area)} pies²` : `${fmt(area)} sq ft`;
         
         const html = isEs ? `
@@ -1658,7 +1772,11 @@
         if (svgn) svgn.textContent = `${fmt(nookArea)} ${unit}`;
         if (svgt) svgt.textContent = `${fmt(totalArea)} ${unit}`;
         
-        document.getElementById('c-total-area').value = fmt(totalArea);
+        // The composite total is the sum of the two areas the student is
+        // assessed on in Steps 2 and 3 — carrying it forward before either is
+        // solved would hand back both answers from the costing step.
+        document.getElementById('c-total-area').value =
+          SOLVED.floor && SOLVED.nook ? fmt(totalArea) : '';
         calcFlooring();
       }
 
@@ -1690,6 +1808,7 @@
         const totalCost = totalArea * price;
         
         if (totalArea === 0) return;
+        if (!SOLVED.cost) return;
         
         const html = isEs ? `
           <strong>Costo total del piso = $${totalCost.toFixed(2)}</strong><br>

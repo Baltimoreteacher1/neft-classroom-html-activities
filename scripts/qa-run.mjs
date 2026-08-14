@@ -172,6 +172,7 @@ const COVERAGE = [
       "validate:projects-publication",
       "validate:projects-award",
       "validate:solve-along",
+      "validate:projects-check",
       "validate:injection",
     ],
   ],

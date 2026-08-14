@@ -160,6 +160,26 @@
      Refs are written {input-id} so hyphenated ids never collide with minus.
   --------------------------------------------------------------------- */
 
+  /* gcd/lcm are here so a project can ask the student to FIND the greatest
+     common factor and then check their answer against their own inputs, rather
+     than having the page compute and print it. Without them the only way to
+     validate a student-entered GCF was to hand-roll it on the page and add the
+     field to `skipFields` (see unit-1/version-a), which is why unit-1/version-c
+     ended up simply displaying the answer instead. Both coerce to non-negative
+     integers and return NaN for a non-integer or non-positive input, so a
+     mistyped decimal fails the check instead of silently passing. */
+  function gcdOf(a, b) {
+    a = Math.abs(a);
+    b = Math.abs(b);
+    if (!isFinite(a) || !isFinite(b) || a !== Math.floor(a) || b !== Math.floor(b)) return NaN;
+    if (a === 0 && b === 0) return NaN;
+    while (b) {
+      var t = a % b;
+      a = b;
+      b = t;
+    }
+    return a;
+  }
   var FUNCS = {
     abs: Math.abs,
     min: Math.min,
@@ -168,6 +188,12 @@
     floor: Math.floor,
     ceil: Math.ceil,
     sqrt: Math.sqrt,
+    gcd: gcdOf,
+    lcm: function (a, b) {
+      var g = gcdOf(a, b);
+      if (isNaN(g) || g === 0) return NaN;
+      return Math.abs(a * b) / g;
+    },
   };
 
   function tokenize(src) {
