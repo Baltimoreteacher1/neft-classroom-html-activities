@@ -4,6 +4,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { MATH_CHECKS } from "../engine/core/small-group-math-check.js";
 import { FACILITATION_BY_LESSON } from "../functions/teacher-small-group/_facilitation-data.js";
+import { authoredBank } from "./lib/small-group-authored-banks.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE_RE = /^\d+-\d+$/;
@@ -165,8 +166,26 @@ function assertConfig(root, parent, row) {
     0,
   );
   if (practiceCount < 3) fail(`${row.id} needs at least three practice items`);
+  // The 12 is a truncation detector for the GENERATED families, which all emit
+  // twelve. A lesson with an authored bank declares its own length, and a
+  // teacher-led group is better served by six tasks worth discussing than by
+  // twelve worth finishing — so assert against the authored length instead of
+  // relaxing the check.
+  // The 12 is a truncation detector for the GENERATED guided-fill families, which
+  // all emit twelve. A lesson whose practice was authored against its own
+  // objective has NO generated family — its tasks are reasoning items living in
+  // the practice tiers, and parallelPractice is a guided-fill slot. Assert the
+  // absence rather than relaxing the count, so a truncated run is still caught
+  // everywhere else and an authored lesson cannot quietly regain a drill bank.
   const parallel = config.parallelPractice || [];
-  if (parallel.length !== 12) fail(`${row.id} needs exactly 12 parallel-practice problems`);
+  if (authoredBank(parent, row.group)) {
+    if (parallel.length)
+      fail(
+        `${row.id} has an authored practice set, so it should carry no parallel-practice bank (has ${parallel.length})`,
+      );
+  } else if (parallel.length !== 12) {
+    fail(`${row.id} needs exactly 12 parallel-practice problems (has ${parallel.length})`);
+  }
   const parentConfig = JSON.parse(
     readFileSync(join(root, "lessons", parent, "config.json"), "utf8"),
   );

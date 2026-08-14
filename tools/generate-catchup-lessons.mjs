@@ -194,7 +194,12 @@ for (const band of bands) {
   const parallelSources = [];
   for (const s of srcs) {
     try {
-      parallelSources.push({ n: s.n, items: buildParallelPractice(s.c, `${u}-${s.n}`, 1) });
+      // A lesson whose practice was authored against its own objective has no
+      // generated guided-fill family (see small-group-authored-banks.mjs). A
+      // catch-up reviewing it simply draws its spiral items from the OTHER
+      // lessons in the range rather than crashing on a null bank.
+      const items = buildParallelPractice(s.c, `${u}-${s.n}`, 1);
+      if (items) parallelSources.push({ n: s.n, items });
     } catch {
       // No parallel-practice builder for this lesson; skip it.
     }

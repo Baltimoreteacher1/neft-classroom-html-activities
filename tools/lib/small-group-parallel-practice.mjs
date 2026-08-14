@@ -1,3 +1,4 @@
+import { authoredBank } from "./small-group-authored-banks.mjs";
 import {
   buildCoordinatePractice,
   buildDataPractice,
@@ -1173,6 +1174,12 @@ const LEGACY_TOPIC = {
 
 export function buildParallelPractice(base, lessonId, group) {
   const parentId = lessonId.replace(/-group[12]$/, "");
+  // A lesson whose practice was written against its own objective gets NO
+  // generated family: parallelPractice is a guided-fill drill slot, and authored
+  // reasoning tasks belong in the practice tiers instead. See
+  // tools/lib/small-group-authored-banks.mjs for the rule — a family must be
+  // justified by the current canonical objective, not by a historical mapping.
+  if (authoredBank(parentId, group)) return null;
   // Dispatch on the lesson's TOPIC, not its book number — see LEGACY_TOPIC.
   const [unit, lesson] = LEGACY_TOPIC[parentId] ?? parentId.split("-").map(Number);
   const context = { base, lessonId, parentId, unit, lesson, group };

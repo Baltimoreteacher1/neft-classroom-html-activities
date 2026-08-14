@@ -6,9 +6,12 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the bar graph, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
-      ifStuck: "Ask what the operation *does* to the quantity before they compute.",
+      ask: "Which number did you make friendlier — and what did that cost you?",
+      lookFor: "A student who names the strategy they used, not only the number they landed on.",
+      ifStuck:
+        "Before any multiplying, ask for a friendly number near 19. Then ask what 20 fours would be.",
+      extend:
+        "Ask whether an estimate that lands high or one that lands low would be safer for the ride operator, and why.",
     },
     frames: [
       "The multiples/steps I need are ___ , and the answer is ___ .",
@@ -27,11 +30,12 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When does repeated addition stop being a practical method — and what replaces it?",
+      ask: "Your estimate is close — but is it high or low, and does that direction matter for this decision?",
       lookFor:
-        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
-      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
-      extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
+        "A student who defends a strategy by what the number will be USED for, rather than by how close it is.",
+      ifStuck:
+        "Have them work the exact answer once, then ask which of the two estimates would have misled the operator.",
+      extend: "Ask them to state the rule: when is rounding both numbers up the wrong move?",
     },
     listenFor: [
       "A strong answer says the 4-riders-per-car is a reasoned guess, not a real count, so the total (about 80) is close enough to be useful. A weak answer just restates '80' with no reasoning about why it's an estimate.",

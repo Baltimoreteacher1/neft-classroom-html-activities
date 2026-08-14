@@ -28,6 +28,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { writeGenerated } from "../scripts/lib/preserve-injected.mjs";
 import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
+import { authoredBank, authoredMoves } from "./lib/small-group-authored-banks.mjs";
 import { applyChallengeTasks, challengeFacilitation } from "./lib/small-group-challenge-tasks.mjs";
 import { buildTeacherMoves } from "./lib/small-group-facilitation.mjs";
 import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
@@ -310,7 +311,13 @@ function buildGroup1(base, u, m) {
       : undefined,
   };
   out.smallGroupPractice = { guidedCount: 4, minimum: MINIMUM_PRACTICE };
-  out.parallelPractice = buildParallelPractice(base, id, 1);
+  const bank1 = buildParallelPractice(base, id, 1);
+  if (bank1) out.parallelPractice = bank1;
+  else delete out.parallelPractice;
+  // Authored tasks written against this lesson objective become its on-level
+  // practice — they ARE the lesson, not an addition to a drill set.
+  const authored1 = authoredBank(base.lessonId, 1);
+  if (authored1) out.practice.onLevel = authored1;
 
   if (out.explore?.instructions)
     out.explore.instructions = `Quick warm-up together: ${out.explore.instructions}`;
@@ -341,7 +348,11 @@ function buildGroup1(base, u, m) {
     // ASK / LOOK FOR / IF STUCK, built from THIS lesson's misconception tags,
     // common mistake and model. Replaces five prose bullets of which four were
     // identical across all 84 support lessons.
-    teacherMoves: buildTeacherMoves({ base, group: 1, taxonomy: MISCONCEPTION_LABELS }),
+    // Authored moves win where the lesson authored its own bank — the generated
+    // ones describe the mathematics the mapped family contained.
+    teacherMoves:
+      authoredMoves(base.lessonId, 1) ||
+      buildTeacherMoves({ base, group: 1, taxonomy: MISCONCEPTION_LABELS }),
 
     frames,
   };
@@ -433,7 +444,17 @@ function buildGroup2(base, u, m) {
       : undefined,
   };
   out.smallGroupPractice = { guidedCount: 3, minimum: MINIMUM_PRACTICE };
-  out.parallelPractice = buildParallelPractice(base, id, 2);
+  const bank2 = buildParallelPractice(base, id, 2);
+  if (bank2) out.parallelPractice = bank2;
+  else delete out.parallelPractice;
+  // Authored tasks LEAD the practice rather than replacing it: the inherited
+  // items for this lesson (the math-story open responses) are aligned and the
+  // group still needs its minimum count.
+  const authored2 = authoredBank(base.lessonId, 2);
+  if (authored2) {
+    out.practice.onLevel = [...authored2.slice(0, 3), ...out.practice.onLevel];
+    out.practice.extending = [...authored2.slice(3), ...out.practice.extending];
+  }
 
   if (out.explore?.instructions)
     out.explore.instructions = `Go deeper: ${out.explore.instructions} As you work, ask yourself WHY it works.`;
@@ -456,6 +477,7 @@ function buildGroup2(base, u, m) {
     // Authored moves win where a lesson authored its own tasks: the generated
     // ones key off an inherited item tag and can describe another lesson.
     teacherMoves:
+      authoredMoves(base.lessonId, 2) ||
       challengeFacilitation(id) ||
       buildTeacherMoves({ base, group: 2, taxonomy: MISCONCEPTION_LABELS }),
   };
