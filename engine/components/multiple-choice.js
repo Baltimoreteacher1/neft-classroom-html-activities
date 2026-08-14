@@ -213,6 +213,7 @@ export function renderMultipleChoice(container, opts) {
     onAnswer,
     hideStem,
     choiceFeedback,
+    choiceFeedbackEs,
     hint,
     scaffold,
   } = opts || {};
@@ -391,7 +392,17 @@ export function renderMultipleChoice(container, opts) {
         // never translated, so compare before wrapping — otherwise the Spanish
         // lane reads "No exactamente." followed by the English sentence, which
         // is worse than showing no Spanish at all.
-        const coachEs = !useful && diagnosis?.student ? studentExplanation(diagnosis.id, "es") : "";
+        // Authored per-choice feedback outranks the misconception table above, so
+        // where a lesson authored Spanish for THAT choice it has to be used —
+        // otherwise a Spanish-lane student reads the English sentence, which is
+        // precisely the gap the misconception fallback was written to avoid.
+        const authoredEs =
+          (useful && Array.isArray(choiceFeedbackEs) && choiceFeedbackEs[selected]) || "";
+        const coachEs = authoredEs
+          ? authoredEs
+          : !useful && diagnosis?.student
+            ? studentExplanation(diagnosis.id, "es")
+            : "";
         fbMsgEs = coach
           ? coachEs && coachEs !== coach
             ? `No exactamente. ${coachEs}`

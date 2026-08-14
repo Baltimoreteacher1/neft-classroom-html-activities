@@ -350,13 +350,13 @@ const LESSON_1_1_CHALLENGE = [
       "",
       "Order does not change a product. Try 20 × 5 and 5 × 20.",
       "Try a close pair, like 19 and 18, rounding both up. Does the estimate ever land below?",
-      "Try two examples before deciding it is unpredictable — the direction is the same every time.",
+      "Rounding up cannot lower a product — check 19 × 4 = 76 against 20 × 5 = 100.",
     ],
     choiceFeedbackEs: [
       "",
       "El orden no cambia un producto. Prueba 20 × 5 y 5 × 20.",
       "Prueba un par cercano, como 19 y 18, redondeando ambos hacia arriba. ¿Alguna vez queda por debajo?",
-      "Prueba dos ejemplos antes de decidir que es impredecible: la dirección es la misma siempre.",
+      "Redondear hacia arriba no puede bajar un producto: compara 19 × 4 = 76 con 20 × 5 = 100.",
     ],
     hints: [
       "Test it. Pick a pair, round both up, and compare with the exact product.",
@@ -884,7 +884,6 @@ const LESSON_1_2_MOVES = {
       "A student who converts each fraction to a distance BEFORE deciding who walked farther.",
     ifStuck:
       "Cover Ben's route. Ask for one part of Ana's 24 first, then how many parts she walked.",
-    extend: "Ask what route length would make Ana the farther walker, and how they found it.",
   },
   2: {
     ask: "Dana reached the right answer with the wrong reasoning. What made it work this time?",
@@ -910,8 +909,6 @@ const LESSON_1_1_MOVES = {
     lookFor: "A student who names the strategy they used, not only the number they landed on.",
     ifStuck:
       "Before any multiplying, ask for a friendly number near 19. Then ask what 20 fours would be.",
-    extend:
-      "Ask whether an estimate that lands high or one that lands low would be safer for the ride operator, and why.",
   },
   2: {
     ask: "Your estimate is close — but is it high or low, and does that direction matter for this decision?",

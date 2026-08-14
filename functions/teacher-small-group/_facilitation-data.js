@@ -10,8 +10,6 @@ export const FACILITATION_BY_LESSON = {
       lookFor: "A student who names the strategy they used, not only the number they landed on.",
       ifStuck:
         "Before any multiplying, ask for a friendly number near 19. Then ask what 20 fours would be.",
-      extend:
-        "Ask whether an estimate that lands high or one that lands low would be safer for the ride operator, and why.",
     },
     frames: [
       "The multiples/steps I need are ___ , and the answer is ___ .",
@@ -55,7 +53,6 @@ export const FACILITATION_BY_LESSON = {
         "A student who converts each fraction to a distance BEFORE deciding who walked farther.",
       ifStuck:
         "Cover Ben's route. Ask for one part of Ana's 24 first, then how many parts she walked.",
-      extend: "Ask what route length would make Ana the farther walker, and how they found it.",
     },
     frames: [
       "The multiples/steps I need are ___ , and the answer is ___ .",

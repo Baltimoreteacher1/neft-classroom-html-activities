@@ -5,6 +5,7 @@ import { isRight } from "../engine/core/answer-match.js";
 import { resolveVocabImage } from "../engine/core/vocab-images.js";
 import { onRequest as middleware } from "../functions/_middleware.js";
 import { onRequest as teacherRouteHandler } from "../functions/teacher-small-group/[[path]].js";
+import { authoredBank } from "./lib/small-group-authored-banks.mjs";
 
 const teacherRoute = new URL("../functions/teacher-small-group/[[path]].js", import.meta.url);
 assert.equal(existsSync(teacherRoute), true, "teacher facilitation needs a protected server route");
@@ -79,7 +80,20 @@ for (const lessonId of readdirSync(new URL("../lessons", import.meta.url)).filte
       ),
     ),
   );
-  assert.equal(config.parallelPractice?.length, 12, `${lessonId} needs 12 parallel problems`);
+  // A lesson whose practice was authored against its own objective carries no
+  // generated guided-fill bank — its tasks are reasoning items in the practice
+  // tiers. Assert the absence there rather than dropping the count, so a
+  // truncated generator run is still caught for every other lesson.
+  const parent2 = lessonId.replace(/-group[12]$/, "");
+  if (authoredBank(parent2, lessonId.endsWith("group2") ? 2 : 1)) {
+    assert.equal(
+      config.parallelPractice,
+      undefined,
+      `${lessonId} has an authored practice set and should carry no parallel bank`,
+    );
+  } else {
+    assert.equal(config.parallelPractice?.length, 12, `${lessonId} needs 12 parallel problems`);
+  }
   const ids = new Set();
   const parallelStems = new Set();
   for (const item of config.parallelPractice || []) {
