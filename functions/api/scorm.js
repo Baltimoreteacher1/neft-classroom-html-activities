@@ -10,7 +10,7 @@
 // Open by design (/api/* is exempt from the site password) and safe: it only
 // packages activities on eduwonderlab.com (enforced in _lib/scorm.js).
 
-import { buildScormFiles, packageFileName, zipStore } from "../_lib/scorm.js";
+import { buildScormFiles, packageFileName, TeacherSurfaceError, zipStore } from "../_lib/scorm.js";
 
 function esc(s) {
   return String(s == null ? "" : s)
@@ -110,6 +110,11 @@ export async function onRequest(context) {
   try {
     pkg = buildScormFiles({ target, title, codes, supports, lang });
   } catch (e) {
+    // A teacher-only target is a refusal (403), not a malformed request. The
+    // message says what happened and nothing about how the gate decides.
+    if (e instanceof TeacherSurfaceError || e?.name === "TeacherSurfaceError") {
+      return errorPage(e.message, 403);
+    }
     return errorPage("Could not build package: " + (e.message || e));
   }
 

@@ -17,6 +17,7 @@
 // gate to keep students/public out of teacher material, not strong security.
 
 import { EXACT, PREFIX } from "./_lib/redirect-map.js";
+import { isTeacherSurface as isTeacherPath } from "./_lib/teacher-surface.js";
 
 // Resolve a path against the generated redirect map. Returns a Response or null.
 //
@@ -119,19 +120,14 @@ export async function onRequest(context) {
   const isSharedStudentAsset = p.startsWith("/assets/") || p.startsWith("/data/");
   const isApiWithOwnPolicy =
     (p.startsWith("/api/") && !isFamilyPublishingApi) || p.endsWith("/config.json");
+  // The path rules live in _lib/teacher-surface.js, which the SCORM endpoint and
+  // the download taxonomy also import — one predicate, so a copy cannot drift
+  // into calling a teacher page "student". The family-publishing API is an
+  // additional gate specific to this middleware (it is an /api/ route, which the
+  // shared predicate deliberately leaves to each endpoint's own policy).
   const isTeacherSurface =
-    !isSharedStudentAsset &&
-    !isApiWithOwnPolicy &&
-    (isFamilyPublishingApi ||
-      p.includes("teacher") ||
-      p.includes("dashboard") ||
-      p.includes("answer-key") ||
-      // Plan Notes is a teacher surface whose path contains none of the
-      // substrings above, so it would otherwise serve to anyone. Matched as an
-      // exact path PREFIX, never as a substring — a loose "plan" match would
-      // 401 lesson-plan pages students legitimately open.
-      p.startsWith("/curriculum/plan-notes") ||
-      p.startsWith("/admin"));
+    (!isSharedStudentAsset && !isApiWithOwnPolicy && isTeacherPath(p)) ||
+    (!isSharedStudentAsset && isFamilyPublishingApi);
 
   // Student small-group configs never include facilitation fields. The
   // authenticated teacher route reads the original asset directly.

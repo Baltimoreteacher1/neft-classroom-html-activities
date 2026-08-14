@@ -86,6 +86,8 @@ export const onRequest = handler({
         }
         entries[path] = inner;
       } catch (e) {
+        // Includes TeacherSurfaceError: a teacher-only id fails the whole
+        // bundle rather than quietly shipping a unit pack one activity short.
         failed.push(`${id}: ${e?.message || e}`);
       }
     }

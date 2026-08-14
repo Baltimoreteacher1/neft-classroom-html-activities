@@ -190,23 +190,11 @@ export const SCORMABLE_TYPES = new Set([
   "study-guide",
 ]);
 
-/**
- * Mirror of the teacher-surface predicate in functions/_middleware.js. A resource
- * matching this is behind HTTP Basic Auth: the downloader links it instead of
- * fetching it, so a package never becomes a way around the password.
- */
-export function isTeacherSurface(path) {
-  const p = String(path || "").toLowerCase();
-  if (!p.startsWith("/")) return false;
-  if (p.startsWith("/assets/") || p.startsWith("/data/") || p.startsWith("/api/")) return false;
-  return (
-    p.includes("teacher") ||
-    p.includes("dashboard") ||
-    p.includes("answer-key") ||
-    p.startsWith("/curriculum/plan-notes") ||
-    p.startsWith("/admin")
-  );
-}
+// The teacher-surface predicate lives in functions/_lib/teacher-surface.js — the
+// same module the HTTP Basic Auth gate and the SCORM endpoint use. This file
+// used to carry a hand-maintained "mirror" of it, which is how a security
+// predicate drifts: the stale copy does not throw, it just answers "student".
+export { isTeacherSurface } from "../../functions/_lib/teacher-surface.js";
 
 /** Filenames safe on Windows and macOS: no <>:"/\|?* and no trailing dot/space. */
 export function safeName(value, fallback = "resource") {

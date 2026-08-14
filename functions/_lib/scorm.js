@@ -15,6 +15,22 @@
  * Web-runtime only: TextEncoder / Uint8Array / DataView (Workers + Node 18+).
  */
 
+import { isTeacherSurface } from "./teacher-surface.js";
+
+/**
+ * Thrown when a caller asks for a package of a teacher-only surface. A distinct
+ * type so the endpoints can answer 403 rather than 400 without string-matching
+ * an error message. The message is deliberately plain: it tells a teacher what
+ * happened and nothing about how the gate decides.
+ */
+export class TeacherSurfaceError extends Error {
+  constructor() {
+    super("That page is teacher-only, so it can't be packaged as a student activity.");
+    this.name = "TeacherSurfaceError";
+    this.status = 403;
+  }
+}
+
 const SITE_DEFAULT = "https://eduwonderlab.com";
 // Only generate wrappers for our own site, so the endpoint can't be abused to
 // package arbitrary third-party origins as SCORM.
@@ -97,6 +113,16 @@ export function resolveTarget(target, site = SITE_DEFAULT) {
   if (!ALLOWED_HOSTS.includes(u.hostname)) {
     throw new Error("activity must be on eduwonderlab.com");
   }
+  // A student SCORM package may only ever be built from a student surface.
+  // Packaging a teacher route was never a content leak — the launch URL still
+  // 401s — but a teacher who uploads that package gives a class an assignment
+  // that opens a password prompt, and the endpoint should not manufacture one.
+  // The check runs on the PARSED, normalized path, so encoded, doubled-slash
+  // and traversal spellings are judged the same as the plain one.
+  if (isTeacherSurface(u.pathname)) {
+    throw new TeacherSurfaceError();
+  }
+
   // Use the PARSED href, never the caller's raw string. The raw form is echoed
   // into an HTML attribute in the SCO, so a target carrying a quote (or any
   // markup) would break out of it — `new URL()` percent-encodes those away.

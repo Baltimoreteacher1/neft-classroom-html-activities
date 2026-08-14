@@ -142,6 +142,32 @@ drawing, speaking and self-check work is not auto-graded, and no numeric score i
 invented for it — those activities report completion and nothing else. A lesson
 that merely loaded is never marked complete.
 
+## The teacher boundary
+
+`/api/scorm` builds packages only for **student** surfaces. A teacher-only
+target (`/teacher-tools/`, teacher notes, answer keys, dashboards, Plan Notes,
+`/admin`) is refused with **403** before any package is created.
+
+This was never a content leak — the launch URL 401s either way — but the
+endpoint should not manufacture an assignment that opens a password prompt for a
+class.
+
+The rules live in **one** place, `functions/_lib/teacher-surface.js`, imported by:
+
+- `functions/_middleware.js` — the HTTP Basic Auth gate, the definition of record
+- `functions/_lib/scorm.js` — the generation boundary
+- `scripts/lib/download-taxonomy.mjs` — the bulk downloader
+
+It previously existed three times, once inline in the middleware and once as a
+comment-labelled "mirror". A duplicated security predicate fails silently in the
+dangerous direction: the stale copy does not throw, it answers "student".
+
+The check runs on a **normalized** path — percent-decoded (repeatedly, so
+`%2574` is caught), backslashes folded, query and fragment stripped, duplicate
+slashes collapsed, `.`/`..` resolved, lowercased — so every spelling of a
+teacher path is judged the same as the plain one. The refusal message says what
+happened and nothing about how the gate decides.
+
 ## Gates
 
 | Command                                 | What it proves                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -154,6 +180,13 @@ that merely loaded is never marked complete.
 
 `tools/scorm/mock-lms.mjs` is **test-only** and never packaged; the fleet gate
 fails if the string `mock-lms` appears in any archive.
+
+## Status
+
+- SCORM runtime/package hardening: **production-ready**
+- Canvas interoperability: **awaiting real-course acceptance testing** — run
+  [`docs/scorm-canvas-acceptance.md`](scorm-canvas-acceptance.md) in a real Canvas
+  course. Nothing in this repo can change that second line.
 
 ## Known limitations
 
