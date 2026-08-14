@@ -137,6 +137,15 @@ const COVERAGE = [
     /^(data\/routes\.json|_redirects|functions\/_lib\/redirect-map\.js|functions\/_middleware\.js|tools\/generate-route-files\.mjs)$/,
     ["test", "validate:static", "validate:js-syntax", "audit:links"],
   ],
+  // The Pacing Planner spans a page, a shared engine, an API route, the seeded
+  // baseline and a surface gate. The gate cross-checks the day-type vocabulary
+  // across all three places it appears, and the test run covers the engine's
+  // cascade rules, the D1 round-trip and the workbook export — so an edit here
+  // stays on the fast lane instead of escalating to the full gate.
+  [
+    /^(curriculum\/planning\/|shared\/pacing\/|functions\/api\/pacing\/|data\/pacing-(baseline-2026-27|unit-ranges)\.json|docs\/pacing-sources\/|tools\/(validate-planning|import-pacing-baseline)\.mjs)/,
+    ["test", "validate:planning", "validate:static", "validate:js-syntax", "typecheck"],
+  ],
   // Plan Notes owns a page, an API route, a generated vocabulary and a write
   // gate. All four are covered by the one surface validator plus the test run,
   // which is what makes an edit here cheap instead of a full-gate escalation.

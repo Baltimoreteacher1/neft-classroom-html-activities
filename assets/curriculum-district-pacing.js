@@ -528,7 +528,60 @@
     }
   };
 
+  /* The dates below the unit names used to be typed into the `crosswalk` array
+   * above and nowhere else, so they drifted from the validated pacing plan: the
+   * Pre-Unit ran to 9/10/26 here and to 9/8/26 in the plan Joel actually
+   * teaches from, and Unit 3 opened five days late. There is now one source —
+   * data/pacing-unit-ranges.json, generated from the same import that seeds the
+   * Pacing Planner — and this reconciles the inline copy against it on load.
+   *
+   * The inline dates are KEPT as the fallback rather than deleted: this script
+   * also decides which unit the hub opens on, and a failed fetch must not leave
+   * the hub with no dates at all. The generated file is small (11 rows) for the
+   * same reason the whole baseline is not fetched here — this page is
+   * student-facing and already sits against a request budget.
+   *
+   * LIVE pacing changes are deliberately NOT reflected here. They live behind
+   * the teacher gate in /curriculum/planning/; this page shows the plan of
+   * record. */
+  function loadJson(url) {
+    var cache = window.NTJsonCache;
+    var request = cache
+      ? cache.json(url)
+      : fetch(url).then(function (r) {
+          return r.ok ? r.json() : {};
+        });
+    return request.catch(function () {
+      return {};
+    });
+  }
+
+  const usDate = (iso) => {
+    if (!iso) return null;
+    const [y, m, d] = iso.split("-").map(Number);
+    return `${m}/${d}/${String(y).slice(2)}`;
+  };
+
+  function reconcileDates() {
+    return loadJson("/data/pacing-unit-ranges.json").then(function (data) {
+      const bySeq = new Map((data.units || []).map((u) => [u.sequence, u]));
+      crosswalk.forEach(function (item) {
+        const live = bySeq.get(item.sequence);
+        if (!live || !live.startDate || !live.endDate) return;
+        item.start_date = usDate(live.startDate);
+        item.end_date = usDate(live.endDate);
+        item.instructional_days = live.instructionalDays;
+      });
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
+    const select = document.getElementById("district-seq-select");
+    if (!select) return;
+    reconcileDates().then(startHub);
+  });
+
+  function startHub() {
     const select = document.getElementById("district-seq-select");
     if (!select) return;
     // Open on where the district actually is today, not on Seq 1 in June.
@@ -537,5 +590,5 @@
       select.value = String(today.sequence);
     }
     if (select.value) window.onDistrictSeqChange(select.value);
-  });
+  }
 })();

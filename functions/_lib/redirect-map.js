@@ -523,6 +523,7 @@ export const EXACT = {
   "/lessons/9-7-group1": ["/lessons/7-9-group1/", 301],
   "/lessons/9-7-group2": ["/lessons/7-9-group2/", 301],
   "/lessons/9-7-catchup": ["/lessons/7-9-catchup/", 301],
+  "/planning": ["/curriculum/planning/", 301],
 };
 
 /** [prefix, destination, status, destinationTakesSplat] */

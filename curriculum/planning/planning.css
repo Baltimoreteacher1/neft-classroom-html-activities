@@ -1,0 +1,754 @@
+/* planning.css — styles for /curriculum/planning/.
+ *
+ * Every selector is scoped under .planning-wrap on purpose: shared stylesheets
+ * on this site have leaked onto lesson pages before, and the generated validator
+ * fails if a bare element selector appears here.
+ *
+ * DESIGN INTENT — this is an operational tool, not a decorative calendar. The
+ * page is information-dense and quiet: one accent, muted unit tints, no
+ * animation, no card-per-field. Two rules are load-bearing rather than
+ * aesthetic:
+ *
+ *   1. Colour is never the only cue. Every status, day type and lock is also a
+ *      word, so the page works in greyscale, in print, and for a reader who
+ *      cannot distinguish the tints.
+ *   2. Below 720px the grid views are hidden and the agenda list shows instead.
+ *      A five-column month grid at 390px is a picture of a calendar. Both are
+ *      always rendered; this is where one of them is chosen.
+ */
+
+.planning-wrap {
+  --ink: #15233b;
+  --muted: #55617a;
+  --accent: #15487f;
+  --line: #d7dfec;
+  --tint: #f5f7fb;
+  --warn-ink: #7a4a05;
+  --warn-bg: #fdf5e6;
+  --stop-ink: #8a2020;
+  --stop-bg: #fdeeee;
+  max-width: 82rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 4rem;
+  font-family: "Hanken Grotesk", system-ui, sans-serif;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.planning-wrap .backlink {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.planning-wrap .backlink:hover,
+.planning-wrap .backlink:focus-visible {
+  text-decoration: underline;
+}
+
+.planning-wrap h1 {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  margin: 0 0 0.25rem;
+}
+
+.planning-wrap .lede {
+  font-size: 1rem;
+  color: var(--muted);
+  margin: 0;
+  max-width: 46rem;
+}
+
+.planning-wrap .pp-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.planning-wrap .pp-muted {
+  color: var(--muted);
+}
+
+/* ── Header and save state ─────────────────────────────────────────────────── */
+
+.planning-wrap .pp-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.planning-wrap .pp-status {
+  text-align: right;
+}
+
+/* The save pill states. Each one already reads as a word; the tint only
+ * reinforces it. */
+.planning-wrap .pp-save {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: var(--tint);
+  border: 1px solid var(--line);
+  display: inline-block;
+}
+
+.planning-wrap .pp-save[data-state="pending"],
+.planning-wrap .pp-save[data-state="read-only"] {
+  background: var(--warn-bg);
+  border-color: #e6cf9c;
+  color: var(--warn-ink);
+}
+
+.planning-wrap .pp-save[data-state="failed"] {
+  background: var(--stop-bg);
+  border-color: #e0a5a5;
+  color: var(--stop-ink);
+}
+
+.planning-wrap .pp-keyform {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.planning-wrap .pp-keyform input {
+  font: inherit;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  max-width: 12rem;
+}
+
+/* ── Buttons and view tabs ─────────────────────────────────────────────────── */
+
+.planning-wrap .pp-btn {
+  font: inherit;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+
+.planning-wrap .pp-btn:hover {
+  border-color: var(--accent);
+}
+
+.planning-wrap .pp-btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.planning-wrap .pp-btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.planning-wrap .pp-views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  border-bottom: 2px solid var(--line);
+  margin-bottom: 1rem;
+}
+
+.planning-wrap .pp-view {
+  font: inherit;
+  font-weight: 700;
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  padding: 0.6rem 1rem;
+  color: var(--muted);
+  cursor: pointer;
+  margin-bottom: -2px;
+}
+
+/* The current view is marked by weight and colour AND by aria-current, which is
+ * what a screen reader announces. */
+.planning-wrap .pp-view[aria-current="page"] {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.planning-wrap .pp-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.planning-wrap .pp-move,
+.planning-wrap .pp-find {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.planning-wrap .pp-range {
+  margin: 0 0 0 0.5rem;
+  font-weight: 700;
+}
+
+.planning-wrap input[type="search"],
+.planning-wrap select,
+.planning-wrap input[type="date"],
+.planning-wrap textarea {
+  font: inherit;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: #fff;
+  color: var(--ink);
+}
+
+.planning-wrap input[type="search"] {
+  min-width: 16rem;
+}
+
+/* ── Chips ─────────────────────────────────────────────────────────────────── */
+
+.planning-wrap .pp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0;
+}
+
+.planning-wrap .pp-chip {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--tint);
+}
+
+.planning-wrap .pp-chip-short,
+.planning-wrap .pp-chip-shift {
+  background: var(--warn-bg);
+  border-color: #e6cf9c;
+  color: var(--warn-ink);
+}
+
+.planning-wrap .pp-chip-lock {
+  background: #eef1f8;
+  border-color: #b9c5da;
+}
+
+.planning-wrap .pp-chip-mcap {
+  background: #eef6f2;
+  border-color: #a9cbba;
+  color: #1c5b3d;
+}
+
+/* ── Today ─────────────────────────────────────────────────────────────────── */
+
+.planning-wrap .pp-today {
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.planning-wrap .pp-today-date {
+  font-family: "Outfit", system-ui, sans-serif;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.planning-wrap .pp-today-unit {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.planning-wrap .pp-today-lesson {
+  font-family: "Outfit", system-ui, sans-serif;
+  margin: 0.5rem 0 0.25rem;
+  font-size: 1.25rem;
+}
+
+.planning-wrap .pp-today-meta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 0.25rem 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.planning-wrap .pp-id,
+.planning-wrap .pp-std {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.planning-wrap .pp-objective {
+  margin: 0.5rem 0;
+  max-width: 48rem;
+}
+
+.planning-wrap .pp-sub {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 1rem 0 0.4rem;
+}
+
+.planning-wrap .pp-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.planning-wrap .pp-link {
+  display: inline-block;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  text-decoration: none;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.9rem;
+  background: #fff;
+}
+
+.planning-wrap .pp-link-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.planning-wrap .pp-link:hover,
+.planning-wrap .pp-link:focus-visible {
+  border-color: var(--accent);
+  text-decoration: underline;
+}
+
+.planning-wrap .pp-record {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.planning-wrap .pp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.planning-wrap .pp-summary {
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--tint);
+}
+
+.planning-wrap .pp-dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0;
+}
+
+.planning-wrap .pp-dl dt {
+  color: var(--muted);
+}
+
+.planning-wrap .pp-dl dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ── Tables (week, month, year) ────────────────────────────────────────────── */
+
+.planning-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+.planning-wrap th,
+.planning-wrap td {
+  border: 1px solid var(--line);
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+  font-size: 0.92rem;
+}
+
+.planning-wrap thead th {
+  background: var(--tint);
+  font-family: "Outfit", system-ui, sans-serif;
+}
+
+.planning-wrap .pp-row-closed,
+.planning-wrap .pp-cell-closed {
+  background: #f2f4f8;
+  color: var(--muted);
+}
+
+.planning-wrap .pp-week-day {
+  white-space: nowrap;
+}
+
+.planning-wrap .pp-week-name,
+.planning-wrap .pp-week-title,
+.planning-wrap .pp-week-was,
+.planning-wrap .pp-week-note {
+  display: block;
+}
+
+.planning-wrap .pp-week-was,
+.planning-wrap .pp-week-note {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.planning-wrap .pp-week-status {
+  font-weight: 600;
+}
+
+.planning-wrap .pp-month-caption {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: left;
+  padding-bottom: 0.5rem;
+}
+
+.planning-wrap .pp-cell {
+  padding: 0;
+  height: 7rem;
+}
+
+.planning-wrap .pp-cell-empty {
+  background: #fafbfd;
+}
+
+.planning-wrap .pp-cell-btn {
+  font: inherit;
+  text-align: left;
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: 0;
+  padding: 0.4rem 0.5rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.planning-wrap .pp-cell-btn:hover {
+  background: var(--tint);
+}
+
+.planning-wrap .pp-cell-date {
+  font-weight: 800;
+}
+
+.planning-wrap .pp-cell-event,
+.planning-wrap .pp-cell-unit,
+.planning-wrap .pp-cell-status {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.planning-wrap .pp-cell-id {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.planning-wrap .pp-cell-title {
+  font-size: 0.8rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ── Units ─────────────────────────────────────────────────────────────────── */
+
+.planning-wrap .pp-units {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  gap: 1rem;
+}
+
+.planning-wrap .pp-unit {
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.planning-wrap .pp-unit-title {
+  font-family: "Outfit", system-ui, sans-serif;
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+}
+
+.planning-wrap .pp-event-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  columns: 2;
+}
+
+.planning-wrap .pp-event-date {
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+/* ── Agenda (mobile) ───────────────────────────────────────────────────────── */
+
+.planning-wrap .pp-agenda {
+  display: none;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.planning-wrap .pp-agenda li {
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  padding: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.planning-wrap .pp-agenda-closed {
+  background: #f2f4f8;
+}
+
+.planning-wrap .pp-agenda-day {
+  font-family: "Outfit", system-ui, sans-serif;
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.planning-wrap .pp-agenda-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.planning-wrap .pp-agenda-std,
+.planning-wrap .pp-agenda-status {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.planning-wrap .pp-linkish {
+  font: inherit;
+  font-weight: 700;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ── Dialogs ───────────────────────────────────────────────────────────────── */
+
+.planning-wrap .pp-dialog,
+.pp-dialog {
+  border: 1px solid var(--line, #d7dfec);
+  border-radius: 0.75rem;
+  padding: 0;
+  max-width: 44rem;
+  width: calc(100vw - 2rem);
+  color: #15233b;
+  font-family: "Hanken Grotesk", system-ui, sans-serif;
+}
+
+.pp-dialog::backdrop {
+  background: rgb(21 35 59 / 45%);
+}
+
+.pp-dialog .pp-dialog-body {
+  padding: 1.25rem;
+}
+
+.pp-dialog h2 {
+  font-family: "Outfit", system-ui, sans-serif;
+  margin: 0 0 0.75rem;
+}
+
+.pp-dialog .pp-dialog-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+.pp-dialog .pp-field {
+  display: block;
+  margin: 0.75rem 0;
+  font-weight: 600;
+}
+
+.pp-dialog .pp-field select,
+.pp-dialog .pp-field textarea,
+.pp-dialog .pp-field input[type="date"] {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font: inherit;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #d7dfec;
+  border-radius: 0.5rem;
+}
+
+.pp-dialog .pp-field-check {
+  font-weight: 400;
+}
+
+.pp-dialog .pp-preview-list {
+  margin: 0.75rem 0;
+  padding-left: 1.25rem;
+}
+
+.pp-dialog .pp-preview-date {
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+.pp-dialog .pp-preview-note {
+  background: #f5f7fb;
+  border-left: 3px solid #15487f;
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.pp-dialog .pp-preview-warn {
+  background: #fdf5e6;
+  border-left: 3px solid #b8860b;
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.pp-dialog .pp-refusal,
+.planning-wrap .pp-refusal {
+  background: #fdeeee;
+  border-left: 3px solid #8a2020;
+  color: #8a2020;
+  padding: 0.6rem 0.85rem;
+  font-weight: 600;
+}
+
+.pp-dialog .pp-history-list {
+  font-size: 0.85rem;
+  color: #55617a;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.planning-wrap .pp-footnote {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.planning-wrap .pp-assumptions {
+  padding-left: 1rem;
+}
+
+.planning-wrap .pp-assumptions li {
+  margin-bottom: 0.4rem;
+}
+
+.planning-wrap .skip-link:focus-visible,
+.planning-wrap :focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Mobile: the grid views give way to the agenda ─────────────────────────── */
+
+@media (max-width: 720px) {
+  .planning-wrap .pp-week,
+  .planning-wrap .pp-month,
+  .planning-wrap .pp-year {
+    display: none;
+  }
+
+  .planning-wrap .pp-agenda {
+    display: block;
+  }
+
+  .planning-wrap .pp-event-list {
+    columns: 1;
+  }
+
+  .planning-wrap .pp-header,
+  .planning-wrap .pp-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .planning-wrap .pp-status {
+    text-align: left;
+  }
+
+  .planning-wrap input[type="search"] {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* ── Print: one clean calendar, no chrome ──────────────────────────────────── */
+
+@media print {
+  .planning-wrap .pp-views,
+  .planning-wrap .pp-toolbar,
+  .planning-wrap .backlink,
+  .planning-wrap .pp-status,
+  .planning-wrap .pp-actions,
+  .planning-wrap .pp-agenda,
+  .planning-wrap .pp-week-more {
+    display: none;
+  }
+
+  .planning-wrap {
+    max-width: none;
+    padding: 0;
+  }
+
+  .planning-wrap .pp-cell,
+  .planning-wrap tr {
+    break-inside: avoid;
+  }
+
+  .planning-wrap thead {
+    display: table-header-group;
+  }
+}

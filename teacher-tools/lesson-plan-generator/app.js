@@ -1500,14 +1500,24 @@
   }
 
   /* ===================== EXPORTS ===================== */
+  /* The required planning-document name is `Neft.Alba — [date]`, and it is the
+   * name Joel's plans are filed under, so it is produced here rather than left
+   * to whoever exports. The date is spelled out because that is how the
+   * convention is written; the ISO date is kept only as the fallback when the
+   * plan carries a date this cannot parse. */
   function readyName(plan, ext) {
-    const date = plan.header.date || new Date().toISOString().slice(0, 10);
-    const topic = (plan.header.unit || plan.header.title || "Lesson")
-      .replace(/[^\w\s-]/g, "")
-      .trim()
-      .replace(/\s+/g, "-")
-      .slice(0, 40);
-    return `Ready-Lesson-${date}${topic ? "-" + topic : ""}.${ext}`;
+    const iso = plan.header.date || new Date().toISOString().slice(0, 10);
+    let pretty = iso;
+    const parsed = new Date(`${iso}T12:00:00Z`);
+    if (!Number.isNaN(parsed.getTime())) {
+      pretty = parsed.toLocaleDateString("en-US", {
+        timeZone: "UTC",
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+    return `Neft.Alba — ${pretty}.${ext}`;
   }
 
   function buildDocHtml(plan) {

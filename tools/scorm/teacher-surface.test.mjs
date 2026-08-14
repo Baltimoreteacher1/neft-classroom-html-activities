@@ -76,6 +76,8 @@ check("teacher-only categories are refused at generation", () => {
     "/math/unit-1/projects/answer-key/",
     "/curriculum/plan-notes",
     "/curriculum/plan-notes/unit-3",
+    "/curriculum/planning/",
+    "/curriculum/planning/index.html",
     "/admin/",
     "/teacher-dashboard/",
     "/lessons/2-4/teacher-notes/index.html",
@@ -231,6 +233,7 @@ check("every path the middleware would gate, generation also refuses", () => {
     "/some/dashboard/",
     "/x/answer-key/",
     "/curriculum/plan-notes",
+    "/curriculum/planning/",
     "/admin/anything",
   ]) {
     assert.ok(isTeacherSurface(p), `shared predicate missed ${p}`);

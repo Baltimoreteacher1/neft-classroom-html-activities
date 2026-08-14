@@ -78,7 +78,78 @@
       grid.appendChild(row);
     });
     card.appendChild(grid);
+
+    /* Fill from the pacing plan.
+     *
+     * Plan Week decides HOW the week is taught; the Pacing Planner decides WHEN
+     * each lesson happens. Before this, the two did not speak, so the teacher
+     * picked the same five lessons twice — once in the planner and again here.
+     *
+     * The planner's live overlay is read from this device first
+     * (localStorage["nt-pacing:overlay"], written by curriculum/planning/
+     * planning-store.js) and the published baseline is the fallback, so this
+     * still fills sensibly on a device that has never opened the planner. The
+     * baseline is fetched ON CLICK, not on load: it is ~400 KB and this page is
+     * student-facing with a request budget. */
+    var status = context.el("p", "ctw-muted");
+    card.appendChild(status);
+
+    function mondayOf(date) {
+      var d = new Date(date.getTime());
+      d.setHours(12, 0, 0, 0);
+      d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+      return d.toISOString().slice(0, 10);
+    }
+
+    function readOverlay() {
+      try {
+        return JSON.parse(localStorage.getItem("nt-pacing:overlay")) || {};
+      } catch (_e) {
+        return {};
+      }
+    }
+
+    function fillFromPlan() {
+      status.textContent = "Reading the pacing plan…";
+      fetch("/data/pacing-baseline-2026-27.json")
+        .then(function (r) {
+          if (!r.ok) throw new Error("unavailable");
+          return r.json();
+        })
+        .then(function (baseline) {
+          var overlay = readOverlay();
+          var monday = mondayOf(new Date());
+          if (monday < baseline.firstStudentDay)
+            monday = mondayOf(new Date(baseline.firstStudentDay + "T12:00:00Z"));
+          var filled = 0;
+          DAYS.forEach(function (day, i) {
+            var iso = new Date(Date.parse(monday + "T12:00:00Z") + i * 86400000)
+              .toISOString()
+              .slice(0, 10);
+            var entry = baseline.days.find(function (d) {
+              return d.date === iso;
+            });
+            if (!entry) return;
+            var plan = Object.assign({}, entry.plan, (overlay[iso] || {}).plan || {});
+            var id = context.lessonsById[plan.lessonId] ? plan.lessonId : "";
+            context.state.week[day] = id;
+            if (id) filled++;
+          });
+          context.saveState();
+          renderWeek(stage, context);
+          status.textContent =
+            filled > 0
+              ? `Filled ${filled} day${filled === 1 ? "" : "s"} from the pacing plan for the week of ${monday}.`
+              : `The pacing plan has no core lessons scheduled for the week of ${monday}.`;
+        })
+        .catch(function () {
+          status.textContent =
+            "The pacing plan could not be read just now. Choose lessons by hand, or open the Pacing Planner.";
+        });
+    }
+
     var actions = context.el("div", "ctw-planning-actions");
+    actions.appendChild(context.button("Fill from the pacing plan", fillFromPlan));
     actions.appendChild(
       context.button("Copy week", function (event) {
         var text = DAYS.map(function (day) {

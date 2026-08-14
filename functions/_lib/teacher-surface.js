@@ -86,6 +86,11 @@ export function isTeacherSurface(path) {
     // above. Matched as a path PREFIX, never a substring — a loose "plan" match
     // would refuse lesson-plan pages students legitimately open.
     p.startsWith("/curriculum/plan-notes") ||
+    // The Pacing Planner, for the same reason and matched the same way: it is a
+    // teacher surface whose path names none of the substrings above. A prefix,
+    // never a substring — "planning" as a substring would gate any lesson page
+    // that ever mentions it in a path.
+    p.startsWith("/curriculum/planning") ||
     p.startsWith("/admin")
   );
 }
