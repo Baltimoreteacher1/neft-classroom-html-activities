@@ -2768,6 +2768,7 @@
         if (Math.abs(user - expected) < 0.5) {
           SOLVED.volume = true;
           calcVolume();
+          comparePartner();
           return;
         }
         const flat = Math.abs(user - l * w) < 0.5;
@@ -2828,6 +2829,7 @@
         if (Math.abs(user - expected) < 0.05) {
           SOLVED.cost = true;
           calcCost();
+          comparePartner();
           return;
         }
         const forgotAcc = Math.abs(user - sa * rate) < 0.05;
@@ -2981,6 +2983,21 @@
         const myData = getMyVolumeAndCost();
         const peerOut = document.getElementById("peer-out");
         if (!peerOut) return;
+
+        /* Comparing needs YOUR numbers, and this panel computed them: a student
+           could skip steps 2 and 4 entirely, type a partner's figures here, and
+           read their own tank volume and total cost straight off the comparison.
+           Ask for the two findings first — which is also the honest order, since
+           there is nothing to compare until you have computed your own. */
+        if (!SOLVED.volume || !SOLVED.cost) {
+          const needEs = document.getElementById("body").classList.contains("es");
+          peerOut.innerHTML = needEs
+            ? '<strong>Primero termina los Pasos 2 y 4.</strong><br><small>Necesitas el volumen y el costo total de TU tanque antes de compararlos con los de tu compañero.</small>'
+            : '<strong>Finish Steps 2 and 4 first.</strong><br><small>You need YOUR tank\'s volume and total cost before you can compare them with your partner\'s.</small>';
+          peerOut.classList.add("show");
+          drawPartnerSVG(0, 0, 0, 0, pName);
+          return;
+        }
 
         if (
           myData.gal === 0 ||
@@ -3180,7 +3197,7 @@
           <text x="441" y="94" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">V = l × w × h</text>
           <text x="441" y="118" text-anchor="middle" font-size="15" font-weight="800" fill="#0369a1">${solvedMask(volCalc, SOLVED.volume)} in³</text>
           <rect x="391" y="132" width="100" height="24" rx="6" fill="#0369a1" />
-          <text x="441" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">≈ ${galCalc} gal</text>
+          <text x="441" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">≈ ${solvedMask(galCalc, SOLVED.volume)} gal</text>
           <text x="441" y="172" text-anchor="middle" font-size="9" fill="#64748b">(1 gal = 231 in³)</text>
         `;
       }
