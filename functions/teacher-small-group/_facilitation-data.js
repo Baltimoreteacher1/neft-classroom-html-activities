@@ -1495,10 +1495,10 @@ export const FACILITATION_BY_LESSON = {
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
-      "Students divide $18 by 3 to get $6 per pound and explain the unit rate lets them find the cost of any number of pounds.",
-      "Students state the rate (5 cupcakes per 4 minutes) and set up a proportion or unit rate (1.25 cupcakes/min) to scale to the needed time.",
-      "Students give a real rate (speed, hourly pay, price per item) and explain how the unit rate lets them predict or compare.",
-      'Listen for students naming a specific strategy tied to 6.AT.3 — not just "I multiplied." They should connect steps to the key idea.',
+      "Students reason about UNIT SIZE before touching arithmetic — same number, different units, different lengths.",
+      "Students connect the conversion factor to equivalent-ratio scaling — both parts multiplied by the same number.",
+      "Students explain the paradox — a larger number with a smaller unit can mean a slower speed — and both methods land on ≈60.",
+      "Students name the size-direction check, not just the multiplication or division they performed.",
     ],
   },
   "3-7-group2": {
@@ -1519,10 +1519,10 @@ export const FACILITATION_BY_LESSON = {
       "I can check my answer by ___ .",
     ],
     listenFor: [
-      "Students divide $18 by 3 to get $6 per pound and explain the unit rate lets them find the cost of any number of pounds.",
-      "Students state the rate (5 cupcakes per 4 minutes) and set up a proportion or unit rate (1.25 cupcakes/min) to scale to the needed time.",
-      "Students give a real rate (speed, hourly pay, price per item) and explain how the unit rate lets them predict or compare.",
-      'Listen for students naming a specific strategy tied to 6.AT.3 — not just "I multiplied." They should connect steps to the key idea.',
+      "Students reason about UNIT SIZE before touching arithmetic — same number, different units, different lengths.",
+      "Students connect the conversion factor to equivalent-ratio scaling — both parts multiplied by the same number.",
+      "Students explain the paradox — a larger number with a smaller unit can mean a slower speed — and both methods land on ≈60.",
+      "Students name the size-direction check, not just the multiplication or division they performed.",
     ],
   },
   "3-8-group1": {
