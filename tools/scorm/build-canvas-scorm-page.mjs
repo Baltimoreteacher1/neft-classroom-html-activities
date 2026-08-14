@@ -13,6 +13,7 @@ import { execFileSync } from "child_process";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import { packageFileName } from "../../functions/_lib/scorm.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");
@@ -76,7 +77,7 @@ for (const l of lessons) {
   const title = l.title || `Lesson ${l.id}`;
   try {
     build(l.id, title);
-    const file = `neft-lesson-${l.id}.zip`;
+    const file = `${packageFileName(l.id, false)}`;
     copyFileSync(resolve(scormOut, file), resolve(pkgDir, file));
     index.lessons.push({
       id: l.id,
@@ -100,7 +101,7 @@ for (const l of allLessons) {
   const title = `Homework ${l.id}: ${l.title || l.id}`;
   try {
     build(`${SITE}/${rel}`, title, slug);
-    const file = `neft-lesson-${slug}.zip`;
+    const file = `${packageFileName(slug, false)}`;
     copyFileSync(resolve(scormOut, file), resolve(pkgDir, file));
     index.homework.push({ id: l.id, unit: l.unit ?? null, title, file });
     ok++;
@@ -114,7 +115,7 @@ for (const a of activities) {
   const { url, slug } = resolveEntry(a);
   try {
     build(url, a.title, slug);
-    const file = `neft-lesson-${slug}.zip`;
+    const file = `${packageFileName(slug, false)}`;
     copyFileSync(resolve(scormOut, file), resolve(pkgDir, file));
     index.activities.push({ id: slug, title: a.title, grade: a.grade || "completion", file });
     ok++;

@@ -16,7 +16,7 @@
 // _lib/scorm.js only ever packages activities on eduwonderlab.com.
 
 import { badRequest, handler } from "../_lib/http.js";
-import { buildScormFiles, zipStore } from "../_lib/scorm.js";
+import { buildScormFiles, packageFileName, zipStore } from "../_lib/scorm.js";
 import { targetExists } from "./scorm.js";
 
 // A unit is at most ~15 lessons; the cap is a runaway guard, not a policy. Each
@@ -75,7 +75,16 @@ export const onRequest = handler({
           continue;
         }
         const inner = zipStore(pkg.files);
-        entries[`${bundleName}/neft-${pkg.id}${pkg.codes ? "-codes" : ""}.zip`] = inner;
+        const path = `${bundleName}/${packageFileName(pkg.id, pkg.codes)}`;
+        // Two different activities can slug to the same id (the slug is
+        // truncated), and assigning over an existing key loses a package
+        // silently — the teacher gets an archive that looks complete and is
+        // short one lesson. Fail the bundle instead.
+        if (path in entries) {
+          failed.push(`${id}: package name collides with an earlier activity (${path})`);
+          continue;
+        }
+        entries[path] = inner;
       } catch (e) {
         failed.push(`${id}: ${e?.message || e}`);
       }

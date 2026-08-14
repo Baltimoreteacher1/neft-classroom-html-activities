@@ -95,6 +95,21 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // The SCORM pipeline: the SCO builder, the ZIP writer, the two endpoints, the
+  // CLI builders and the lesson-side bridge. `validate:scorm` greps the source
+  // for the hardening guards, `validate:scorm:fleet` opens every generated
+  // archive, and `test` runs the jsdom lifecycle suite against a mock LMS —
+  // three different failure classes, none of which subsumes the others.
+  [
+    /^(functions\/(_lib\/scorm\.js|api\/scorm(-bundle)?\.js)|assets\/(lib\/zip-store\.js|canvas-bridge\.js)|tools\/scorm\/.*)$/,
+    [
+      "test",
+      "validate:scorm",
+      "validate:scorm:fleet",
+      "validate:canvas-coverage",
+      "validate:js-syntax",
+    ],
+  ],
   // The bulk downloader is a generator + a gate + two front-end assets. The gate
   // re-derives the inventory's invariants and also re-checks the ?v= cache stamps
   // on both hub pages, which is the half of this feature a lint pass cannot see.

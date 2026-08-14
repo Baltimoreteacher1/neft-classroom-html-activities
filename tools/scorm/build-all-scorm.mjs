@@ -12,10 +12,11 @@ import { execFileSync } from "child_process";
 // Usage:
 //   node tools/scorm/build-all-scorm.mjs            # build all
 //   node tools/scorm/build-all-scorm.mjs --unit 3   # one unit only
-// Output: scorm-packages/neft-lesson-<id>.zip  +  scorm-packages/UPLOAD-CHECKLIST.md
+// Output: scorm-packages/<Teacher-Readable-Name>.zip  +  scorm-packages/UPLOAD-CHECKLIST.md
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import { packageFileName } from "../../functions/_lib/scorm.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");
@@ -73,7 +74,7 @@ const unitNum = (u) => (u === "?" ? Infinity : Number(u));
 for (const u of [...byUnit.keys()].sort((a, b) => unitNum(a) - unitNum(b))) {
   lines.push(`## Unit ${u}`);
   for (const l of byUnit.get(u))
-    lines.push(`- [ ] \`neft-lesson-${l.id}.zip\` — ${l.title || l.id}`);
+    lines.push(`- [ ] \`${packageFileName(l.id, false)}\` — ${l.title || l.id}`);
   lines.push("");
 }
 writeFileSync(resolve(outRoot, "UPLOAD-CHECKLIST.md"), lines.join("\n"));

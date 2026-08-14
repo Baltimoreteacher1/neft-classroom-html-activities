@@ -161,6 +161,132 @@
     });
   }
 
+  // --- SCORM resume relay ----------------------------------------------------
+  // The SCO can only persist what the activity hands it. Without this the sole
+  // resume store is this browser's localStorage, so a student who switches to a
+  // Chromebook, a lab machine or a second profile restarts the assignment with
+  // no warning — and the LMS, which is the one place their identity is stable,
+  // holds nothing.
+  //
+  // Contract (both directions are origin-checked by the SCO):
+  //   lesson → SCO  {source:"neft-lesson", type:"ready"}
+  //   lesson → SCO  {source:"neft-lesson", type:"state", state, location}
+  //   SCO → lesson  {source:"neft-sco",    type:"restore", state, location}
+  var lastSent = null;
+
+  function toParent(msg) {
+    safe(function () {
+      if (!global.parent || global.parent === global) return;
+      global.parent.postMessage(msg, "*");
+    });
+  }
+
+  // SCORM 1.2 caps cmi.suspend_data at 4096 characters — not bytes of intent,
+  // characters — and a full save/resume capture (every field, navigation, drag
+  // targets, provider payloads) routinely exceeds that on a long lesson. The SCO
+  // refuses an oversize write rather than truncating, so the trimming decision
+  // has to be made HERE, where it is possible to know what matters least.
+  var SUSPEND_BUDGET = 4000; // headroom under 4096 for the SCO's own accounting
+
+  /** Drop the least resume-critical slices until the payload fits, in order. */
+  function compactForScorm(state) {
+    var trimmed = {
+      fields: state.fields,
+      navigation: state.navigation,
+      dragDrop: state.dragDrop,
+      custom: state.custom,
+      progressPercent: state.progressPercent,
+    };
+    var order = ["custom", "dragDrop", "navigation"];
+    var out = JSON.stringify(trimmed);
+    for (var i = 0; i < order.length && out.length > SUSPEND_BUDGET; i++) {
+      delete trimmed[order[i]];
+      out = JSON.stringify(trimmed);
+    }
+    // Typed answers are the last thing to go; if even those do not fit, persist
+    // nothing rather than a half-record that restores as wrong answers.
+    return out.length > SUSPEND_BUDGET ? "" : out;
+  }
+
+  /** Serialize the activity's own save/resume state, or "" when unavailable. */
+  function snapshotState() {
+    return safe(function () {
+      var sr = global.NeftSaveResume;
+      if (!sr) return "";
+      // Live capture when available: getState() returns the last SAVED record,
+      // which under a SCORM launch may never exist (the save-code prompt that
+      // starts a session is hidden by ?lms=scorm).
+      var st =
+        typeof sr._captureState === "function"
+          ? sr._captureState()
+          : typeof sr.getState === "function"
+            ? sr.getState()
+            : null;
+      return st ? compactForScorm(st) : "";
+    }, "");
+  }
+
+  function currentLocation() {
+    return safe(function () {
+      var sr = global.NeftSaveResume;
+      var sum = sr && sr.getTeacherSummary ? sr.getTeacherSummary() : null;
+      // A bookmark the LMS can show and a human can read. Deliberately NOT an
+      // internal index — lesson_location survives content edits, indices do not.
+      return sum && sum.phase ? String(sum.phase) : "";
+    }, "");
+  }
+
+  /** Push state to the SCO. Cheap and idempotent: unchanged state is skipped. */
+  function syncScormState() {
+    if (!isScormLaunch()) return;
+    var state = snapshotState();
+    if (!state || state === lastSent) return;
+    lastSent = state;
+    toParent({
+      source: "neft-lesson",
+      type: "state",
+      state: state,
+      location: currentLocation(),
+    });
+  }
+
+  function applyRestore(payload) {
+    safe(function () {
+      var sr = global.NeftSaveResume;
+      if (!sr || !payload || !payload.state) return;
+      var st = JSON.parse(payload.state);
+      // Only ever ADD to an empty session. If this browser already holds local
+      // work, that work is newer than whatever the LMS was last told, and
+      // overwriting it would destroy answers the student can see on screen.
+      var existing = safe(function () {
+        return sr._captureState ? sr._captureState() : null;
+      }, null);
+      var hasLocalWork = !!(
+        existing &&
+        ((existing.fields && Object.keys(existing.fields).length) ||
+          (existing.progressPercent || 0) > 0)
+      );
+      if (hasLocalWork) return;
+      if (typeof sr._restoreState === "function") sr._restoreState(st);
+    });
+  }
+
+  if (isScormLaunch()) {
+    global.addEventListener("message", function (e) {
+      var d = e && e.data;
+      if (!d || d.source !== "neft-sco" || d.type !== "restore") return;
+      applyRestore(d);
+    });
+    // Announce readiness once the page can receive a restore, then mirror state
+    // as the student works. The SCO coalesces and rate-limits the writes.
+    safe(function () {
+      toParent({ source: "neft-lesson", type: "ready" });
+      global.addEventListener("pagehide", syncScormState);
+      global.addEventListener("beforeunload", syncScormState);
+      setInterval(syncScormState, 10000);
+    });
+  }
+
   /** Minimal styled popup with the completion code + copy button. */
   function renderCode(code, needName) {
     if (document.getElementById("nt-canvas-bridge-code")) return;

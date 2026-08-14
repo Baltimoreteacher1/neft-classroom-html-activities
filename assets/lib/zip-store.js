@@ -26,9 +26,41 @@ function crc32(bytes) {
   return ~crc >>> 0;
 }
 
+/**
+ * Reject an entry path that would escape the extraction directory or that no
+ * archiver can represent portably. A ZIP is just a list of names — nothing in
+ * the format stops `../../etc/passwd`, and "Zip Slip" is exactly that hole. The
+ * check lives HERE, in the one writer, so no caller can forget it.
+ *
+ * Duplicate names are rejected for a quieter reason: a repeated path is a
+ * packaging bug that most unzip tools resolve by silently keeping the last
+ * copy, which is how a 10-lesson bundle ships 9 lessons and looks complete.
+ */
+export function assertSafeZipPath(name) {
+  const n = String(name);
+  if (!n) throw new Error("zipStore: empty entry name");
+  if (n.length > 240) throw new Error(`zipStore: entry name too long: ${n.slice(0, 60)}…`);
+  if (n.includes("\\")) throw new Error(`zipStore: backslash in entry name: ${n}`);
+  if (n.startsWith("/")) throw new Error(`zipStore: absolute entry path: ${n}`);
+  if (/^[A-Za-z]:/.test(n)) throw new Error(`zipStore: drive-letter entry path: ${n}`);
+  if (n.split("/").some((seg) => seg === ".." || seg === "."))
+    throw new Error(`zipStore: path traversal in entry: ${n}`);
+  // Encoded traversal — some extractors decode before writing.
+  if (/%2e%2e|%2f|%5c/i.test(n)) throw new Error(`zipStore: encoded traversal in entry: ${n}`);
+  // Regex-free on purpose: a control-character class cannot be written here
+  // without putting literal control bytes in this file.
+  for (let i = 0; i < n.length; i++) {
+    const c = n.charCodeAt(i);
+    if (c < 0x20 || c === 0x7f)
+      throw new Error(`zipStore: control character in entry: ${JSON.stringify(n)}`);
+  }
+  return n;
+}
+
 /** files: { name: string } → Uint8Array of a valid (uncompressed) .zip. */
 export function zipStore(files) {
   const enc = new TextEncoder();
+  const seen = new Set();
   const DOS_DATE = 0x21; // 1980-01-01, fixed for reproducible output
   const locals = [];
   const centrals = [];
@@ -36,6 +68,9 @@ export function zipStore(files) {
   let count = 0;
 
   for (const name of Object.keys(files)) {
+    assertSafeZipPath(name);
+    if (seen.has(name)) throw new Error(`zipStore: duplicate entry: ${name}`);
+    seen.add(name);
     const nameBytes = enc.encode(name);
     // Values may be text (the SCO's index.html / imsmanifest.xml) or raw bytes.
     // Bytes are what lets a zip hold other zips, which is how the bundle

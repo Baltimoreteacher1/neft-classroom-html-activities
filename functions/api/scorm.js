@@ -10,7 +10,7 @@
 // Open by design (/api/* is exempt from the site password) and safe: it only
 // packages activities on eduwonderlab.com (enforced in _lib/scorm.js).
 
-import { buildScormFiles, zipStore } from "../_lib/scorm.js";
+import { buildScormFiles, packageFileName, zipStore } from "../_lib/scorm.js";
 
 function esc(s) {
   return String(s == null ? "" : s)
@@ -124,7 +124,7 @@ export async function onRequest(context) {
   }
 
   const zip = zipStore(pkg.files);
-  const fname = `neft-${pkg.id}${pkg.codes ? "-codes" : ""}.zip`;
+  const fname = packageFileName(pkg.id, pkg.codes);
   return new Response(zip, {
     headers: {
       "Content-Type": "application/zip",
