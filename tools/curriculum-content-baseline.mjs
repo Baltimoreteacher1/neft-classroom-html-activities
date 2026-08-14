@@ -237,7 +237,18 @@ function fingerprint(id) {
 
     // ── instructional spine
     workedExample: h(JSON.stringify(config.launch?.conceptIntro ?? null).replace(/\s+/g, " ")),
-    vocabulary: h((config.vocabulary || []).map((v) => [v.term, norm(v.definition)])),
+    // Term + definition + the worked examples that carry the concept. The
+    // examples matter as much as the wording: both algebra lessons were found
+    // carrying FRACTION examples ("2/4 written as 1/2") copy-pasted from the
+    // fraction lessons, which a term/definition-only fingerprint could not see.
+    vocabulary: h(
+      (config.vocabulary || []).map((v) => [
+        v.term,
+        norm(v.definition),
+        (v.examples || []).map((e) => [norm(e.text), e.isExample, norm(e.why)]),
+        norm(v.cloze),
+      ]),
+    ),
     visualMath: h(visualMath(config)),
     links: h(links(config)),
     reflect: h(JSON.stringify(config.reflect ?? null).replace(/\s+/g, " ")),
