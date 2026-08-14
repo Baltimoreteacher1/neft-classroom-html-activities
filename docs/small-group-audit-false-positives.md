@@ -119,3 +119,48 @@ teacher's pedagogical call, not a defect for an automated pass to correct.
 **Rule learned:** before calling content misplaced, read the generator's own
 account of why it is there. A dispatch table with a docblock is a decision
 record; contradicting it needs an argument, not a regex.
+
+## FP-5 — "1-1 'Math is Mine' has a stale decimal-multiplication bank"
+
+**Claimed:** the support and challenge groups for 1-1 (MPP.3 — "describe the ways
+we are all doers of math, and compare my math story with a classmate's") carry a
+twelve-item bank of decimal multiplication (4.38 × 1.2 … 12.08 × 1.45, each
+first factor 0.70 above the last), rendered in the Guided phase with nothing
+marking it as review. Traced to `LEGACY_TOPIC` and reported as a coordinate
+collision: 1-1 looked unmapped, so it appeared to fall through to its literal
+`[1, 1]` — the slot `6-13` (Prime Factorization) claims.
+
+**Reality: 1-1 is explicitly mapped, with its reasoning written down.**
+
+```
+// [1, 6] is the multiplication family. Unit 1 has no whole-number-product
+// family — 5 is add/subtract, 6 is multiply, and both operate on decimals —
+// and decimals are the right call here anyway: the lesson's own estimate
+// lands on 78.5 people, not a whole number.
+"1-1": [1, 6], // estimating the Ferris wheel, a product -> multiply
+```
+
+All 17 lessons that looked "unmapped" are mapped, each with a one-line rationale
+tied to its own content.
+
+**Where the error came from:** the mapping table has 84 entries; the analysis
+read a fixed 2,200-character slice of it and concluded that everything not in
+that slice was absent. A measurement window mistaken for the data.
+
+**Reverted.** The generator change (a `NO_PARALLEL_BANK` opt-out) and the matching
+validator relaxation were both backed out.
+
+**Rule learned:** when a lookup table decides something, read ALL of it. "Not
+found" from a partial scan is not "not there" — and here it produced a confident
+story about a collision that never happened.
+
+### What remains a fair question, for a human to decide
+
+The mapping's stated rationale is **estimation** ("estimating the Ferris wheel"),
+but the generated items are **exact** decimal products with no Ferris wheel and
+no estimation — the bank realizes the mapping's domain, not its reasoning. And
+in the rendered lesson those twelve drills are 12 of the 18 items a struggling
+student meets, in the Guided phase, unlabelled as fluency review.
+
+That is a curricular judgement about a deliberate authoring decision, not a
+defect an automated pass should overturn. Flagged, not changed.
