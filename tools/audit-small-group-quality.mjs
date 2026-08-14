@@ -80,18 +80,38 @@ function demand(it) {
   if (/transfer|apply-new/.test(t)) return "transfer";
 
   const s = itemText(it);
-  if (/\balways\b.*\bsometimes\b|\bcounterexample\b|\bwill (this|it) always\b|\bin general\b|\bgeneraliz/.test(s))
+  if (
+    /\balways\b.*\bsometimes\b|\bcounterexample\b|\bwill (this|it) always\b|\bin general\b|\bgeneraliz/.test(
+      s,
+    )
+  )
     return "generalization";
-  if (/\bwhat did .* misunderstand|\bwhat error\b|\bwhat mistake\b|\bcritique\b|is .* correct\b|\bwho is right\b/.test(s))
+  if (
+    /\bwhat did .* misunderstand|\bwhat error\b|\bwhat mistake\b|\bcritique\b|is .* correct\b|\bwho is right\b/.test(
+      s,
+    )
+  )
     return "reasoning";
-  if (/\bjustify\b|\bexplain why\b|\bprove\b|\bdefend\b|\bconvince\b|\bwhy does\b|\bwhy is\b/.test(s))
+  if (
+    /\bjustify\b|\bexplain why\b|\bprove\b|\bdefend\b|\bconvince\b|\bwhy does\b|\bwhy is\b/.test(s)
+  )
     return "reasoning";
-  if (/\bwhich (method|strategy) is more efficient|\bcompare .* (method|strategy|approach)|\bsolve .* two ways/.test(s))
+  if (
+    /\bwhich (method|strategy) is more efficient|\bcompare .* (method|strategy|approach)|\bsolve .* two ways/.test(
+      s,
+    )
+  )
     return "strategic";
-  if (/\bcreate (an?|your own)\b|\bwrite a problem\b|\bdesign a\b|\bfind (another|a different) (way|answer)/.test(s))
+  if (
+    /\bcreate (an?|your own)\b|\bwrite a problem\b|\bdesign a\b|\bfind (another|a different) (way|answer)/.test(
+      s,
+    )
+  )
     return "strategic";
-  if (/\bwhat happens if\b|\bsuppose\b|\bwould .* still\b|\bunfamiliar\b/.test(s)) return "transfer";
-  if (/\bexplain\b|\bdescribe\b|\bwhat does .* mean\b|\bhow do you know\b/.test(s)) return "conceptual";
+  if (/\bwhat happens if\b|\bsuppose\b|\bwould .* still\b|\bunfamiliar\b/.test(s))
+    return "transfer";
+  if (/\bexplain\b|\bdescribe\b|\bwhat does .* mean\b|\bhow do you know\b/.test(s))
+    return "conceptual";
   return "procedural";
 }
 
@@ -142,12 +162,14 @@ const MISC_GENERIC = /more practice|needs practice|struggles with the concept|ge
 function auditOne(id, cfg, fac, coreCfg) {
   const its = items(cfg);
   const variant = cfg.variant || (id.endsWith("-catchup") ? "catchup" : "");
-  const pathway = variant === "group1" ? "support" : variant === "group2" ? "challenge" : "catch-up";
+  const pathway =
+    variant === "group1" ? "support" : variant === "group2" ? "challenge" : "catch-up";
   const moves = fac?.teacherMoves || {};
   const reps = representation(cfg);
   const demands = its.map(demand);
   const tally = (d) => demands.filter((x) => x === d).length;
-  const deep = tally("reasoning") + tally("generalization") + tally("strategic") + tally("transfer");
+  const deep =
+    tally("reasoning") + tally("generalization") + tally("strategic") + tally("transfer");
   const tagged = its.filter((it) => (it.misconceptionTags || []).some(Boolean)).length;
   const explains = explanationOpportunities(cfg, its);
 
@@ -174,7 +196,8 @@ function auditOne(id, cfg, fac, coreCfg) {
     explanationOpportunities: explains,
     sentenceFrames: hasSentenceFrames(cfg),
     hasWorkedExample: !!cfg.launch?.conceptIntro?.iDo,
-    hasGuided: (cfg.practice?.approaching || []).length > 0 || (cfg.practice?.onLevel || []).length > 0,
+    hasGuided:
+      (cfg.practice?.approaching || []).length > 0 || (cfg.practice?.onLevel || []).length > 0,
     hasCheck: !!(cfg.reflect?.exitTicket || cfg.reflect?.checkForUnderstanding || cfg.readiness),
     facilitation: {
       ask: moves.ask || "",
@@ -202,7 +225,10 @@ function auditOne(id, cfg, fac, coreCfg) {
   // ---- D: instructional defects ------------------------------------------
   if (!rec.objective) R("D", "no content objective");
   if (coreCfg && !rec.core.sameStandard)
-    R("D", `standard ${cfg.standard} does not match core lesson ${coreCfg.lessonId} (${coreCfg.standard})`);
+    R(
+      "D",
+      `standard ${cfg.standard} does not match core lesson ${coreCfg.lessonId} (${coreCfg.standard})`,
+    );
   if (rec.itemCount === 0) R("D", "no practice items at all");
 
   // ---- C: weak use of a teacher-led small group ---------------------------
@@ -212,10 +238,14 @@ function auditOne(id, cfg, fac, coreCfg) {
       `challenge lesson is ${Math.round((1 - rec.demand.deepShare) * 100)}% procedural/conceptual items — depth comes from bigger numbers, not deeper thinking (§27)`,
     );
   if (pathway === "support" && tagged === 0 && !MISC_GENERIC.test(rec.misconceptionTarget))
-    R("C", "no item carries a misconception tag — the intervention cannot say what it repairs (§13)");
+    R(
+      "C",
+      "no item carries a misconception tag — the intervention cannot say what it repairs (§13)",
+    );
   if (pathway === "support" && MISC_GENERIC.test(rec.misconceptionTarget))
     R("C", `generic instructional target: "${rec.misconceptionTarget.slice(0, 60)}…" (§4)`);
-  if (reps.length === 0) R("C", "no mathematical representation — nothing is made visible (§8, §17)");
+  if (reps.length === 0)
+    R("C", "no mathematical representation — nothing is made visible (§8, §17)");
   // Catch-up lessons are a different delivery model and are not in the teacher
   // facilitation dataset by design. Flagging all 36 of them as a design defect
   // says nothing about the lesson — it says they were not in the file we read.
@@ -235,8 +265,7 @@ function auditOne(id, cfg, fac, coreCfg) {
     R("B", `ASK is ${rec.facilitation.askWords} words — not something a teacher says aloud (§11)`);
   if (pathway === "support" && !rec.sentenceFrames && explains > 0)
     R("B", "asks for explanation with no sentence support (§21, §22)");
-  if (pathway === "challenge" && !moves.extend)
-    R("B", "challenge lesson has no EXTEND move (§11)");
+  if (pathway === "challenge" && !moves.extend) R("B", "challenge lesson has no EXTEND move (§11)");
 
   const codes = new Set(rec.reasons.map((r) => r[0]));
   rec.grade = codes.has("D") ? "D" : codes.has("C") ? "C" : codes.has("B") ? "B" : "A";
@@ -284,7 +313,9 @@ const md = [
   "",
   `Generated by \`tools/audit-small-group-quality.mjs\`. **Reports only.**`,
   "",
-  `- lessons audited: **${records.length}** (${Object.entries(paths).map(([k, v]) => `${v} ${k}`).join(", ")})`,
+  `- lessons audited: **${records.length}** (${Object.entries(paths)
+    .map(([k, v]) => `${v} ${k}`)
+    .join(", ")})`,
   `- total practice items: **${records.reduce((n, r) => n + r.itemCount, 0)}**`,
   "",
   "## Instructional classification",
@@ -344,9 +375,7 @@ writeFileSync(
 );
 
 console.log(`Small-group quality audit — ${records.length} lessons`);
-console.log(
-  `  A ${grades.A || 0}   B ${grades.B || 0}   C ${grades.C || 0}   D ${grades.D || 0}`,
-);
+console.log(`  A ${grades.A || 0}   B ${grades.B || 0}   C ${grades.C || 0}   D ${grades.D || 0}`);
 console.log("\n  top findings:");
 for (const [r, n] of topReasons.slice(0, 12)) console.log(`   ${String(n).padStart(4)}  ${r}`);
 console.log("\n  report: reports/small-group-quality-audit.md");

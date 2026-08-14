@@ -1206,3 +1206,55 @@
     transition: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Go Deeper, in small-group colours.
+
+   engine/core/go-deeper.js ships its own violet palette (#f5f3ff / #faf5ff /
+   #ede9fe with a #5b21b6 rule). That is fine where it was designed — but inside
+   a small-group lesson it is the only violet on the page, in a system whose
+   identity is teal on navy over warm paper, so the one component a student
+   meets at the END of the lesson reads as if it came from somewhere else.
+
+   Scoped to `.sg-panel`, which is the small-group shell's own container, so the
+   core interactive lessons keep the component exactly as it is.
+
+   Surfaces are mapped onto the EXISTING --sg-* tokens rather than to new
+   values. The small-group system already has a semantic palette (paper / card /
+   soft / good / bad / warn) and the failure this pass is correcting is
+   components inventing a near-duplicate of a token that already exists — so
+   adding "the Go Deeper colour" would have been the same mistake in a nicer
+   shade.
+   --------------------------------------------------------------------------- */
+
+.sg-panel .ntgd {
+  background: var(--sg-card, #fff);
+  border-color: var(--sg-line, #d8dfe6);
+  /* The accent edge carries the "this is the stretch" signal that the violet
+     rule used to carry. */
+  border-left: 4px solid var(--sg, #1fa6a2);
+  color: var(--sg-text, #1d2a36);
+}
+
+.sg-panel .ntgd-stem {
+  background: var(--sg-paper, #fdfaf3);
+  border-left-color: var(--sg-deep, #0a5b57);
+  color: var(--sg-text, #1d2a36);
+}
+
+.sg-panel .ntgd-frame {
+  background: var(--sg-soft, #eaf0f7);
+  color: var(--sg-text, #1d2a36);
+}
+
+/* The component sets its own dark-mode surfaces; without matching overrides the
+   scoped light ones above would win in dark mode and produce dark-on-dark. */
+:root[data-theme="dark"] .sg-panel .ntgd {
+  background: var(--sg-card, #16202b);
+  border-color: var(--sg-line, #2c3a49);
+}
+
+:root[data-theme="dark"] .sg-panel .ntgd-stem,
+:root[data-theme="dark"] .sg-panel .ntgd-frame {
+  background: var(--sg-soft, #1d2a36);
+}
