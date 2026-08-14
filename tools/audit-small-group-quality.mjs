@@ -183,6 +183,15 @@ function auditOne(id, cfg, fac, coreCfg) {
     misconceptionTarget: fac?.who || "",
     representations: reps,
     itemCount: its.length,
+    // How many lessons this one reviews. Catch-up objectives name a range
+    // ("Lessons 6.4–6.15"); everything else reviews itself.
+    lessonsCovered: (() => {
+      const m = /Lessons?\s*([\d.]+)\s*[–-]\s*([\d.]+)/.exec(cfg.contentObjective || "");
+      if (!m) return 1;
+      const a = Number(String(m[1]).split(".")[1]);
+      const b = Number(String(m[2]).split(".")[1]);
+      return Number.isFinite(a) && Number.isFinite(b) ? Math.max(1, b - a + 1) : 1;
+    })(),
     demand: {
       procedural: tally("procedural"),
       conceptual: tally("conceptual"),
@@ -257,8 +266,22 @@ function auditOne(id, cfg, fac, coreCfg) {
   if (!rec.hasCheck) R("B", "no exit check — no evidence the gap was closed (§29)");
   if (!rec.hasWorkedExample && pathway === "support")
     R("B", "no worked example to connect representation to notation (§20)");
-  if (rec.itemCount > 14)
+  // Practice quantity (§10). A catch-up lesson is a MULTI-LESSON spiral review —
+  // "caught up on Lessons 6.4–6.15" is twelve lessons — so its raw item count
+  // scales with how much it reviews and a flat threshold flags the design, not a
+  // defect. Measured across all 36: every one sits at 5–6 items per reviewed
+  // lesson, none above 9. Judge catch-up per reviewed lesson; judge a single-
+  // lesson support/challenge group on its raw count.
+  const perLesson = rec.itemCount / (rec.lessonsCovered || 1);
+  if (pathway === "catch-up") {
+    if (perLesson > 9)
+      R(
+        "B",
+        `${rec.itemCount} items across ${rec.lessonsCovered} reviewed lessons (${perLesson.toFixed(1)}/lesson) — heavier than the fleet's uniform 5–6 (§10)`,
+      );
+  } else if (rec.itemCount > 14) {
     R("B", `${rec.itemCount} practice items — small group should be fewer, purposeful tasks (§10)`);
+  }
   if (rec.facilitation.lookForWords > 40)
     R("B", `LOOK FOR is ${rec.facilitation.lookForWords} words — not glanceable mid-group (§12)`);
   if (rec.facilitation.askWords > 40)
