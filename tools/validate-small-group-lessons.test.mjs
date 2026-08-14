@@ -51,7 +51,9 @@ for (const lessonId of ["6-2", "6-2-group1", "6-2-group2"]) {
 // parallel-practice contract as the small-group lessons (typed-in visual
 // models + guided steps, unique ids/stems, catch-up-scoped ids).
 const catchups = JSON.parse(readFileSync(new URL("./catchup-rows.json", import.meta.url), "utf8"));
-assert.equal(catchups.length, 20, "expected 20 catch-up stations");
+// 20 unit-slice bands + 16 legacy-strand stations the generator adopted on
+// 2026-08-14 (see LEGACY_STRAND_BANDS in generate-catchup-lessons.mjs).
+assert.equal(catchups.length, 36, "expected 36 catch-up stations");
 for (const row of catchups) {
   const config = readLessonConfig(row.id);
   const parallel = config.parallelPractice || [];

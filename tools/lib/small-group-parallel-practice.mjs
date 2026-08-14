@@ -375,6 +375,18 @@ function unit2(context) {
       stem = `Divide the mixed-number amounts: ${mixedText(left)} ÷ ${mixedText(right)}.`;
       stemEs = `Divide las cantidades de números mixtos: ${mixedText(left)} ÷ ${mixedText(right)}.`;
     } else {
+      if (lesson === 5) {
+        // "How many pieces can be cut?" demands a WHOLE number of pieces, and
+        // arbitrary fraction pairs answered it with 5/12 of a piece — a piece
+        // longer than the ribbon, and the exact signature this strand's own
+        // commonMistake teaches students to treat as an error. A unit-fraction
+        // piece 1/(b·m) divides a/b into exactly a·m pieces, so the context
+        // and the arithmetic agree by construction (2026-08-14 audit).
+        // m varies by index BLOCK, not index%3 — the simplified ribbons repeat
+        // ((2,4) and (3,6) both give 1/2), and a same-cycle m would then
+        // duplicate whole stems.
+        right = fraction(1, left.d * (1 + (Math.floor(index / 4) % 3)));
+      }
       stem =
         lesson === 5
           ? `A ribbon is ${fractionText(left)} meter long. Each piece is ${fractionText(right)} meter. How many pieces can be cut?`
