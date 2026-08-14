@@ -3041,7 +3041,7 @@
           return;
         }
         const expected = pts / min;
-        if (Math.abs(user - expected) < 0.02) { SOLVED.rate = true; calcUnitRate(); return; }
+        if (Math.abs(user - expected) < 0.02) { SOLVED.rate = true; calcUnitRate(); calcPartnerCompare(); return; }
         const flipped = Math.abs(user - min / pts) < 0.02;
         ssMiss("unit-rate-out",
           "You entered " + user + ". " + (flipped ? "That is minutes per point — you divided the wrong way round. A scoring rate answers how many POINTS come from ONE minute." : "A unit rate per minute means points divided by minutes.") + " Try " + pts + " ÷ " + min + ".",
@@ -3379,6 +3379,21 @@
       // ---- Calc Step 4: Partner Compare ----
       function calcPartnerCompare() {
         const isEs = isSpanish();
+        /* This panel derives the student's OWN points-per-game — step 2's unit
+           rate — and projects it over a common number of games, printing both.
+           `compare-out` beside it already withholds that ("Your turn: average =
+           points ÷ games (PPG). Type both…"), so step 4 was the way around it.
+           Ask for the rate first; a projection you did not compute teaches
+           nothing about rates. */
+        if (!SOLVED.rate) {
+          showReadout(
+            "partner-out",
+            isEs
+              ? "<strong>Primero halla tu tasa unitaria (PPG) en el Paso 2.</strong><br><small>Necesitas los puntos por partido de tu atleta antes de proyectarlos y compararlos.</small>"
+              : "<strong>Find your unit rate (PPG) in Step 2 first.</strong><br><small>You need your athlete's points per game before you can project it and compare.</small>",
+          );
+          return;
+        }
         // Player 1 PPG from Step 2/3
         const p1Pts = parseFloat(document.getElementById("comp-p1-pts").value) || 0;
         const p1Games = parseFloat(document.getElementById("comp-p1-games").value) || 1;

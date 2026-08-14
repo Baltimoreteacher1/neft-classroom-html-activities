@@ -3565,7 +3565,7 @@
         }
         const discount = price * (pct / 100);
         const sale = price - discount;
-        if (Math.abs(user - sale) < 0.02) { SOLVED.savings = true; calcPercentSavings(); return; }
+        if (Math.abs(user - sale) < 0.02) { SOLVED.savings = true; calcPercentSavings(); comparePeer(); return; }
         const gaveDiscount = Math.abs(user - discount) < 0.02;
         shMiss("savings-out",
           "You entered $" + user.toFixed(2) + ". " + (gaveDiscount ? "That is how much you SAVE, not what you PAY. Subtract the saving from the original price." : "Find " + pct + "% of $" + price.toFixed(2) + " first, then take it off the original price.") + "",
@@ -3588,7 +3588,7 @@
           return;
         }
         const total = subtotal * (1 + tax / 100);
-        if (Math.abs(user - total) < 0.02) { SOLVED.bill = true; calcTotalBill(); return; }
+        if (Math.abs(user - total) < 0.02) { SOLVED.bill = true; calcTotalBill(); comparePeer(); return; }
         const noTax = Math.abs(user - subtotal) < 0.02;
         const taxOnly = Math.abs(user - subtotal * (tax / 100)) < 0.02;
         shMiss("bill-out",
@@ -3722,6 +3722,24 @@
 
       // ---- Step 4: Showdown (Peer Compare) ----
       function comparePeer() {
+        /* Recomputes the student's OWN sale savings and final bill — the two
+           findings steps 2 and 3 ask them to produce — and prints both, in the
+           readout and on the SVG labels. Without this gate step 5 was a way to
+           read your own savings and bill without doing either step. */
+        if (!SOLVED.savings || !SOLVED.bill) {
+          const needEs = document.body.classList.contains("es");
+          showReadout(
+            "peer-out",
+            needEs
+              ? "<strong>Primero termina tus propios cálculos.</strong><br><small>Necesitas tu ahorro y tu cuenta final antes de compararlos con los de tu compañero.</small>"
+              : "<strong>Finish your own calculations first.</strong><br><small>You need your savings and your final bill before you can compare them with your partner's.</small>",
+          );
+          for (const id of ["svg-txt-my-save", "svg-txt-my-bill"]) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = "?";
+          }
+          return;
+        }
         const myPrice =
           parseFloat(document.getElementById("s-price").value) || 0;
         const myPercent =
