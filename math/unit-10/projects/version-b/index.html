@@ -1278,7 +1278,7 @@
                 min="1"
                 data-save
                 placeholder=""
-                oninput="recalcAll()"
+                oninput="onTankDimsChanged()"
               />
             </div>
             <div>
@@ -1294,7 +1294,7 @@
                 min="1"
                 data-save
                 placeholder=""
-                oninput="recalcAll()"
+                oninput="onTankDimsChanged()"
               />
             </div>
             <div>
@@ -1310,7 +1310,7 @@
                 min="1"
                 data-save
                 placeholder=""
-                oninput="recalcAll()"
+                oninput="onTankDimsChanged()"
               />
             </div>
           </div>
@@ -2664,6 +2664,24 @@
       }
 
       // ---- Recalc All ----
+      /* Wired to the three tank dimensions. Resizing the tank invalidates every
+         total the student had already earned, so the gates close again and the
+         earned readouts are cleared — leaving "2,400 in³" up for a tank that no
+         longer exists both states a wrong number and hands over the new one. */
+      function onTankDimsChanged() {
+        SOLVED.volume = false;
+        SOLVED.sa = false;
+        SOLVED.cost = false;
+        for (const id of ["volume-out", "sa-out", "cost-out"]) {
+          const el = document.getElementById(id);
+          if (el) {
+            el.classList.remove("show");
+            el.innerHTML = "";
+          }
+        }
+        recalcAll();
+      }
+
       function recalcAll() {
         calcVolume();
         calcSurfaceArea();
@@ -2701,6 +2719,15 @@
          page printed the volume, all five face areas, the total surface area and
          the full cost breakdown the moment the dimensions were typed. */
       const SOLVED = { volume: false, sa: false, cost: false };
+
+      /* The readouts above were gated by SOLVED, but the two DIAGRAMS were not:
+         the blueprint's VOLUME SUMMARY card and the net's SURFACE AREA card
+         printed both totals from the preset dimensions, so the answers to steps
+         2 and 3 were on screen before the student typed anything at all.
+         Withhold ONLY the totals — the formula, the labelled dimensions and each
+         face's product stay, because those are the givens the student works
+         from, not the findings the steps ask for. */
+      const solvedMask = (value, solved) => (solved ? value : "?");
 
       function dims() {
         return {
@@ -3151,7 +3178,7 @@
           <text x="441" y="68" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a">${isEs ? "RESUMEN DE VOLUMEN" : "VOLUME SUMMARY"}</text>
           <line x1="387" y1="76" x2="495" y2="76" stroke="#cbd5e1" stroke-width="1" />
           <text x="441" y="94" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">V = l × w × h</text>
-          <text x="441" y="118" text-anchor="middle" font-size="15" font-weight="800" fill="#0369a1">${volCalc} in³</text>
+          <text x="441" y="118" text-anchor="middle" font-size="15" font-weight="800" fill="#0369a1">${solvedMask(volCalc, SOLVED.volume)} in³</text>
           <rect x="391" y="132" width="100" height="24" rx="6" fill="#0369a1" />
           <text x="441" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">≈ ${galCalc} gal</text>
           <text x="441" y="172" text-anchor="middle" font-size="9" fill="#64748b">(1 gal = 231 in³)</text>
@@ -3274,7 +3301,7 @@
           <text x="387" y="108" font-size="9" fill="#475569">Front/Back (2): ${2*l*h} in²</text>
           <text x="387" y="123" font-size="9" fill="#475569">Sides (2): ${2*w*h} in²</text>
           <rect x="387" y="133" width="108" height="24" rx="6" fill="#0f766e" />
-          <text x="441" y="149" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">SA = ${saVal} in²</text>
+          <text x="441" y="149" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">SA = ${solvedMask(saVal, SOLVED.sa)} in²</text>
           <text x="441" y="173" text-anchor="middle" font-size="9" font-style="italic" fill="#0f766e">(5 ${isEs ? "caras" : "faces total"})</text>
         `;
       }
