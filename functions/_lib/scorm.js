@@ -547,8 +547,23 @@ export function packageFileName(id, codes) {
 }
 
 /** Build the two package files. Returns { id, lessonUrl, files }. */
-export function buildScormFiles({ target, title, codes, supports, lang }, site = SITE_DEFAULT) {
-  const { lessonUrl, id, origin } = resolveTarget(target, site);
+export function buildScormFiles(
+  { target, title, codes, supports, lang, id: idOverride },
+  site = SITE_DEFAULT,
+) {
+  const { lessonUrl, id: derivedId, origin } = resolveTarget(target, site);
+  /*
+   * An explicit id wins over the path-derived one. The Canvas packages page
+   * (tools/scorm/build-canvas-scorm-page.mjs) names its own packages —
+   * "homework-1-1" rather than the path-derived "1-1-homework" — and passes that
+   * name to the CLI builder, then copies the file it expects by name.
+   *
+   * The CLI rewrite dropped this third argument, so every homework and activity
+   * package was written under a name the caller did not expect and the copy
+   * failed with ENOENT for all 84 homework packages. Restored, and routed
+   * through slug() so a caller cannot inject a path or an XML-unsafe identifier.
+   */
+  const id = idOverride ? slug(idOverride) : derivedId;
   const t = xmlEsc(title && String(title).trim() ? title.trim() : `Activity ${id}`);
   // Joined with "&" when the target already carries a query (?unit=3 etc.) —
   // mirrors tools/scorm/build-scorm.mjs so both builders stay in lockstep.

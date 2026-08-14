@@ -38,7 +38,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // Sheets gradebook. Default mode keeps the Canvas auto-grade (SCORM) behavior.
 const rawArgs = process.argv.slice(2);
 const CODES_MODE = rawArgs.some((a) => a === "--codes" || a === "--sheets");
-const [target, titleArg] = rawArgs.filter((a) => !a.startsWith("--"));
+// Third argument is an explicit package id. The Canvas packages page names its
+// own packages and then copies them by that name, so dropping this silently
+// broke all 84 homework packages with ENOENT.
+const [target, titleArg, idArg] = rawArgs.filter((a) => !a.startsWith("--"));
 
 if (!target) {
   console.error(
@@ -56,7 +59,7 @@ const SITE = (process.env.NEFT_SITE || "https://eduwonderlab.com").replace(/\/$/
 
 let pkg;
 try {
-  pkg = buildScormFiles({ target, title: titleArg, codes: CODES_MODE }, SITE);
+  pkg = buildScormFiles({ target, title: titleArg, codes: CODES_MODE, id: idArg }, SITE);
 } catch (e) {
   console.error("✗ " + (e?.message || e));
   process.exit(1);
