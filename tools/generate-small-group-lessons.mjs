@@ -253,9 +253,17 @@ function buildGroup1(base, u, m) {
   out.languageObjective = `I can talk through each step out loud using a sentence frame and the lesson's key words.`;
 
   const ci = clone(base.launch?.conceptIntro || {});
+  // Sentence frames tied to THIS lesson: the old pair hard-coded
+  // "multiples/steps" for all 84 topics, which read as nonsense in a median or
+  // inequality group. The middle frame pulls the lesson's own first vocabulary
+  // term, so students speak the word the objective is about (TEACH 5).
+  const keyTerm = (base.vocabulary || []).map((v) => v.term).find(Boolean);
   const frames = [
-    `The multiples/steps I need are ___ , and the answer is ___ .`,
-    `I know because ___ .`,
+    `My first step is ___ , because the problem asks for ___ .`,
+    keyTerm
+      ? `In this problem, ${String(keyTerm).toLowerCase()} means ___ .`
+      : `The most important value in this problem is ___ , because ___ .`,
+    `I know my answer makes sense because ___ .`,
   ];
   out.launch = out.launch || {};
   out.launch.badge = "Small Group · Foundations";
@@ -480,6 +488,15 @@ function buildGroup2(base, u, m) {
       authoredMoves(base.lessonId, 2) ||
       challengeFacilitation(id) ||
       buildTeacherMoves({ base, group: 2, taxonomy: MISCONCEPTION_LABELS }),
+
+    // Challenge groups never carried frames at all. These are argumentation
+    // frames — claim/evidence, strategy comparison, self-check — because the
+    // challenge variant's work is justification, not step recitation.
+    frames: [
+      `I claim ___ , and my evidence is ___ .`,
+      `A different strategy would be ___ ; mine fits here because ___ .`,
+      `I can check my answer by ___ .`,
+    ],
   };
   return { id, out };
 }

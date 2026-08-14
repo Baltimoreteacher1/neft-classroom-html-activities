@@ -12,8 +12,9 @@ export const FACILITATION_BY_LESSON = {
         "Before any multiplying, ask for a friendly number near 19. Then ask what 20 fours would be.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, doer of math means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer says the 4-riders-per-car is a reasoned guess, not a real count, so the total (about 80) is close enough to be useful. A weak answer just restates '80' with no reasoning about why it's an estimate.",
@@ -35,6 +36,11 @@ export const FACILITATION_BY_LESSON = {
         "Have them work the exact answer once, then ask which of the two estimates would have misled the operator.",
       extend: "Ask them to state the rule: when is rounding both numbers up the wrong move?",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer says the 4-riders-per-car is a reasoned guess, not a real count, so the total (about 80) is close enough to be useful. A weak answer just restates '80' with no reasoning about why it's an estimate.",
       "Listen for students naming the underlying reasoning (comparing amounts, splitting fairly, estimating time or cost) rather than just saying 'it uses numbers.' A weak answer lists a card without explaining why it counts as math.",
@@ -55,8 +61,9 @@ export const FACILITATION_BY_LESSON = {
         "Cover Ben's route. Ask for one part of Ana's 24 first, then how many parts she walked.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, quantity means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer explains that each digit must land in its correct place value so the parts add back to exactly 105.76. A weak answer just says '100 and 5.76 are parts' without checking they sum correctly.",
@@ -79,6 +86,11 @@ export const FACILITATION_BY_LESSON = {
       extend:
         "Ask when dividing first beats multiplying first, and to name a case where it does not.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer explains that each digit must land in its correct place value so the parts add back to exactly 105.76. A weak answer just says '100 and 5.76 are parts' without checking they sum correctly.",
       "Listen for students distinguishing between a relationship (comparison) and an exact value — a relationship is still usable information. A weak answer says we 'know nothing' because there are no numbers.",
@@ -97,8 +109,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, representation means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer identifies division because you're splitting a total into equal-sized groups (rides of 80). A weak answer just says 'divide' without connecting it to splitting the total passengers into groups.",
@@ -119,6 +132,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer identifies division because you're splitting a total into equal-sized groups (rides of 80). A weak answer just says 'divide' without connecting it to splitting the total passengers into groups.",
       "Listen for students explaining that division splits a total into equal groups while multiplication combines equal groups into a total. A weak answer just names the operation without the reasoning.",
@@ -137,8 +155,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, argument means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer calculates both totals (720 and 800) and compares them to recommend the jumbo boxes. A weak answer picks an option without computing and comparing both volumes.",
@@ -159,6 +178,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer calculates both totals (720 and 800) and compares them to recommend the jumbo boxes. A weak answer picks an option without computing and comparing both volumes.",
       "Listen for students explaining that both types of arguments can convince someone, just using different evidence (numbers vs. reasoning). A weak answer dismisses word arguments as 'not real math.'",
@@ -177,8 +201,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, pattern means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer explains a pattern applies to any number of coins (it generalizes), while a fact like $53.50 is fixed to this one jar. A weak answer just labels each card without explaining the difference.",
@@ -199,6 +224,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer explains a pattern applies to any number of coins (it generalizes), while a fact like $53.50 is fixed to this one jar. A weak answer just labels each card without explaining the difference.",
       "A strong answer names both the starting value and the growth rule, and explains that both are needed to predict future terms. A weak answer names only one piece.",
@@ -219,8 +249,9 @@ export const FACILITATION_BY_LESSON = {
         "Cover the second rack entirely. Ask only: how many wheels are on 8 bikes? Then uncover the comparison.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, make sense of a problem means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer names a specific first move (like finding 8×2=16 before tackling '6 times as many') rather than jumping to the final answer. A weak answer just states a number with no process described.",
@@ -243,6 +274,11 @@ export const FACILITATION_BY_LESSON = {
       extend:
         "Ask them to write a 'times as many' problem with the add-instead-of-multiply trap built in, and to explain how a partner would catch it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer names a specific first move (like finding 8×2=16 before tackling '6 times as many') rather than jumping to the final answer. A weak answer just states a number with no process described.",
       "A strong answer explains that getting unstuck moves (asking questions, redrawing) are legitimate problem-solving steps, not signs you can't do math. A weak answer treats the get-unstuck column as less valuable than planning.",
@@ -261,8 +297,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, profession means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer names area (4 × 2 = 8 square feet, a flat surface) and volume (4 × 2 × 1 = 8 cubic feet, a filled space) and explains why one is squared and one is cubed. A weak answer just says 'they use math' without naming either calculation.",
@@ -283,6 +320,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer names area (4 × 2 = 8 square feet, a flat surface) and volume (4 × 2 × 1 = 8 cubic feet, a filled space) and explains why one is squared and one is cubed. A weak answer just says 'they use math' without naming either calculation.",
       "Listen for students distinguishing a flat, 2D measurement (area, plants fitting on top) from a 3D measurement that fills space (volume, soil filling the box) — not just guessing based on the word 'planter.'",
@@ -301,8 +343,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, symmetric means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer explains the line gives you something to compare the two sides across — without it, you can't test whether the sides actually match. A weak answer just says 'it looks the same.'",
@@ -323,6 +366,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer explains the line gives you something to compare the two sides across — without it, you can't test whether the sides actually match. A weak answer just says 'it looks the same.'",
       "Listen for students applying the same mirror-line test to both cards, not just stating an opinion about which 'looks' symmetric.",
@@ -343,8 +391,9 @@ export const FACILITATION_BY_LESSON = {
         "Work the first step together on the bar graph, then hand the second one back to them.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, puzzle means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer states 'double and add 1' and checks it against both jumps (1→3 and 3→7). A weak answer only notices the numbers are growing without naming the rule.",
@@ -364,6 +413,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask for a second representation on the bar graph before any more explaining.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer states 'double and add 1' and checks it against both jumps (1→3 and 3→7). A weak answer only notices the numbers are growing without naming the rule.",
       "Listen for students naming the size-order rule specifically — a larger disc may never sit on a smaller one — not just 'that one felt wrong.'",
@@ -382,8 +436,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask “what is being split, and into how many?” before they write it.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, ingenuity means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer connects the 1-to-1 ratio to the wheel's perimeter, explaining a bigger wheel travels farther per pedal push. A weak answer just says 'bigger is faster' without naming the ratio or perimeter.",
@@ -404,6 +459,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to state which quantity is being shared before computing.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer connects the 1-to-1 ratio to the wheel's perimeter, explaining a bigger wheel travels farther per pedal push. A weak answer just says 'bigger is faster' without naming the ratio or perimeter.",
       "Listen for students explaining that fewer teeth means the gear completes a full turn sooner (48 ÷ 12 = 4), not just repeating 'smaller is faster' without the division.",
@@ -424,8 +484,9 @@ export const FACILITATION_BY_LESSON = {
         "Work the first step together on the bar graph, then hand the second one back to them.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, repetition means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer divides 12 by 3, gets remainder 0, and explains that means the LAST shape in the unit. A weak answer just guesses the shape without dividing.",
@@ -445,6 +506,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask for a second representation on the bar graph before any more explaining.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer divides 12 by 3, gets remainder 0, and explains that means the LAST shape in the unit. A weak answer just guesses the shape without dividing.",
       "Listen for students naming the missing repeating unit as the reason it's rhythm, not just 'it looks random.'",
@@ -463,8 +529,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, math biography means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer multiplies 80 × 6 = 480 correctly and names 'rate' as the new tool. A weak answer gives 480 with no explanation of what changed since September.",
@@ -485,6 +552,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer multiplies 80 × 6 = 480 correctly and names 'rate' as the new tool. A weak answer gives 480 with no explanation of what changed since September.",
       "Listen for students distinguishing skills that existed before the year started from skills built during Grade 6 — not just listing skills without sorting them.",
@@ -505,8 +577,9 @@ export const FACILITATION_BY_LESSON = {
         "Work the first step together on the dot plot, then hand the second one back to them.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, statistical questions and data means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       'Students identify "How tall is each player?" as statistical because heights vary, while "How tall is our point guard?" has one fixed answer.',
@@ -527,6 +600,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Hand them a second data set on the dot plot and ask which claim survives both.",
       extend: "Ask which measure they would report to argue each side, and what that reveals.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       'Students identify "How tall is each player?" as statistical because heights vary, while "How tall is our point guard?" has one fixed answer.',
       'A strong answer notes words like "each" or "per player" signal variability, so you must collect data from many cases rather than look up one fact.',
@@ -546,8 +624,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Have them cover the outlier and recompute — how far does the mean move?.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, appropriate measures of center means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students choose the median (23) and identify 58 as an outlier that pulls the mean up to 27.6, making it unrepresentative.",
@@ -569,6 +648,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to move one value and report which measure shifted.",
       extend: "Ask which measure they would report to argue each side, and what that reveals.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students choose the median (23) and identify 58 as an outlier that pulls the mean up to 27.6, making it unrepresentative.",
       "A strong answer says the presence of an outlier or skew signals the median, while symmetric data with no outliers fits the mean.",
@@ -588,8 +672,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, add and subtract decimals means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain that aligning decimal points lines up matching place values (tenths under tenths, hundredths under hundredths) so the addition and subtraction are correct.",
@@ -611,6 +696,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to estimate first, then say which digit their answer disagrees with.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain that aligning decimal points lines up matching place values (tenths under tenths, hundredths under hundredths) so the addition and subtraction are correct.",
       "Students annex a zero to write 46.80, aligning hundredths, and explain regrouping happens when a column sum is 10 or more (or borrowing is needed when subtracting).",
@@ -630,8 +720,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, multiply decimals means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students round to about 5 × $13 = $65 (or 4 × $13) to predict the cost is in the $50-$65 range, naming 4.5 and 12.60 as the factors.",
@@ -653,6 +744,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students round to about 5 × $13 = $65 (or 4 × $13) to predict the cost is in the $50-$65 range, naming 4.5 and 12.60 as the factors.",
       "Students count the decimal places, multiply the digits, then place the point to get $56.70, and use the estimate to confirm placement.",
@@ -674,8 +770,9 @@ export const FACILITATION_BY_LESSON = {
         "Have them point to the interval's two endpoints and say which values belong inside it.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, display data with histograms means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain grouping into intervals makes 30 values readable and that each bar's height is the frequency for that interval.",
@@ -698,6 +795,11 @@ export const FACILITATION_BY_LESSON = {
         "Ask them to rebin the same data on the histogram and say whether the story changed.",
       extend: "Ask which measure they would report to argue each side, and what that reveals.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain grouping into intervals makes 30 values readable and that each bar's height is the frequency for that interval.",
       "A strong answer states the bar height equals how many players' averages fall in that interval (the frequency) and locates the tallest bar.",
@@ -719,8 +821,9 @@ export const FACILITATION_BY_LESSON = {
         "Ask them to say which word the question used, then what that word tells you to DO with the numbers.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, describe the data using the median means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students distinguish the three measures and justify a choice, noting the mode (38) is the most repeated and the mean/median sit near the center.",
@@ -742,6 +845,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what has to be true of the data for the two measures to agree.",
       extend: "Ask which measure they would report to argue each side, and what that reveals.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students distinguish the three measures and justify a choice, noting the mode (38) is the most repeated and the mean/median sit near the center.",
       "A strong answer orders the data, finds the middle value as the median, and explains the mean is found by summing all values and dividing.",
@@ -763,8 +871,9 @@ export const FACILITATION_BY_LESSON = {
         "Ask what the question wants to know: a typical value, or how scattered the data is?.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, display data with box plots means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students name the five-number summary (min, Q1, median, Q3, max) and find the median (14) for the 11 ordered scores.",
@@ -786,6 +895,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Give two sets with the same mean and ask which measure tells them apart.",
       extend: "Ask which measure they would report to argue each side, and what that reveals.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students name the five-number summary (min, Q1, median, Q3, max) and find the median (14) for the 11 ordered scores.",
       "A strong answer explains the box covers the middle 50% (Q1 to Q3), its length is the IQR, and a longer box means greater spread.",
@@ -805,8 +919,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Have them mark Q1 and Q3 on the plot and cover everything outside them.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, range and interquartile range means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students name a measure of spread rather than another measure of center.",
@@ -827,6 +942,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask for a data set where range and IQR are as far apart as possible.",
       extend: "Ask which measure they would report to argue each side, and what that reveals.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students name a measure of spread rather than another measure of center.",
       "Students point at WHICH values each measure subtracts, not just at the results.",
@@ -845,8 +965,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, divide multi-digit numbers means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students estimate using 1,200 ÷ 12 = 100 (or similar) to predict roughly 100+ bars per section, identifying 1,344 as the dividend and 12 as the divisor.",
@@ -868,6 +989,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to estimate first, then say which digit their answer disagrees with.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students estimate using 1,200 ÷ 12 = 100 (or similar) to predict roughly 100+ bars per section, identifying 1,344 as the dividend and 12 as the divisor.",
       "Students walk the cycle: 13 ÷ 12 → 1, then 1 × 12 = 12, then 13 − 12 = 1, then bring down the 4 to make 14 — repeating until the quotient is 112 with no remainder.",
@@ -887,8 +1013,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, divide decimals means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain you move the decimal in the divisor to make it whole (6.3 to 63) and move the dividend the same way, naming 18.9 as the dividend and 6.3 as the divisor.",
@@ -910,6 +1037,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to estimate first, then say which digit their answer disagrees with.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain you move the decimal in the divisor to make it whole (6.3 to 63) and move the dividend the same way, naming 18.9 as the dividend and 6.3 as the divisor.",
       "Students rewrite 18.9 ÷ 6.3 as 189 ÷ 63 = 3, explaining moving both points one place keeps the division equivalent, so 3 pods are filled.",
@@ -929,8 +1061,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask whether the answer could be a realistic single value in that set.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, mean means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students say a typical day is the equal-share amount, and that sharing $60 across 4 days means dividing.",
@@ -952,6 +1085,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Hand them a second data set on the dot plot and ask which claim survives both.",
       extend: "Ask which measure they would report to argue each side, and what that reveals.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students say a typical day is the equal-share amount, and that sharing $60 across 4 days means dividing.",
       "Students connect combining to addition and equal redistribution to division by the number of days, landing on 60 ÷ 4 = 15.",
@@ -973,8 +1111,9 @@ export const FACILITATION_BY_LESSON = {
         "Ask what the question wants to know: a typical value, or how scattered the data is?.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, mean absolute deviation means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students choose Player A as more consistent and recognize that equal means hide different spreads.",
@@ -996,6 +1135,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Give two sets with the same mean and ask which measure tells them apart.",
       extend: "Ask which measure they would report to argue each side, and what that reveals.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students choose Player A as more consistent and recognize that equal means hide different spreads.",
       "A strong answer explains deviations above and below the mean would cancel to zero, so absolute value keeps each as a positive distance.",
@@ -1015,8 +1159,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Have them label both quantities with units before writing the ratio.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, understand ratios means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer names that apple juice and sparkling water are being compared and states the relationship as 3 to 2 (or 'for every 3 apple juice, 2 sparkling water'), not just that there is more apple juice.",
@@ -1037,6 +1182,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the question that WOULD make the flipped ratio correct.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer names that apple juice and sparkling water are being compared and states the relationship as 3 to 2 (or 'for every 3 apple juice, 2 sparkling water'), not just that there is more apple juice.",
       "Listen for the idea that a ratio must compare two quantities (using 'to', 'for every', 'out of', or a colon), while a single count or a description is not a comparison.",
@@ -1055,8 +1205,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, convert measurement units means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain a foot is the larger customary unit (12 inches) and that mixed units must be converted to the same unit before working with them.",
@@ -1077,6 +1228,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain a foot is the larger customary unit (12 inches) and that mixed units must be converted to the same unit before working with them.",
       "Students use the conversion factor as a ratio, multiply going to smaller units (5 ft x 12 = 60 in) and divide going to larger units (48 in / 12 = 4 ft).",
@@ -1095,8 +1251,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask “per ONE what?” and make them finish the sentence.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, rates and unit rates means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students notice the prices cannot be compared directly because the number of games differs, so they need the cost for one game (the unit rate) to compare fairly.",
@@ -1118,6 +1275,11 @@ export const FACILITATION_BY_LESSON = {
         "Shrink it: give them a 1-to-something case on the unit-rate table, then ask what changed.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students notice the prices cannot be compared directly because the number of games differs, so they need the cost for one game (the unit rate) to compare fairly.",
       "Students explain they divided total cost by number of games (e.g., $5.00 div 8 = $0.625) and state the result as a cost per one game.",
@@ -1138,8 +1300,9 @@ export const FACILITATION_BY_LESSON = {
         "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, ratio tables means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer says BOTH quantities are multiplied by the same number (4), so 2:3 becomes 8:12, keeping the ratio equivalent.",
@@ -1161,6 +1324,11 @@ export const FACILITATION_BY_LESSON = {
         "Give them a 1-to-something row on the ratio table and ask what one step of scaling does.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer says BOTH quantities are multiplied by the same number (4), so 2:3 becomes 8:12, keeping the ratio equivalent.",
       "Listen for use of a scale factor (multiplying both parts) and recognition that every row in the table is an equivalent ratio showing the same pattern.",
@@ -1181,8 +1349,9 @@ export const FACILITATION_BY_LESSON = {
         "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, graph ratio tables means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer chooses sundaes (x) and ounces of sauce (y), and predicts a straight line because each sundae always needs 2 more ounces.",
@@ -1204,6 +1373,11 @@ export const FACILITATION_BY_LESSON = {
         "Give them a 1-to-something row on the tape diagram and ask what one step of scaling does.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer chooses sundaes (x) and ounces of sauce (y), and predicts a straight line because each sundae always needs 2 more ounces.",
       "Listen for 'straight line through the origin' and the connection that the constant 2-ounce step shows a proportional relationship.",
@@ -1224,8 +1398,9 @@ export const FACILITATION_BY_LESSON = {
         "Cover every row but the first, and rebuild the next row from it one step at a time.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, compare ratios means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students recognize that 3:5 and 4:7 have different milk amounts, so a fair comparison needs equal milk (a common amount) or a unit rate (cocoa per 1 oz).",
@@ -1246,6 +1421,11 @@ export const FACILITATION_BY_LESSON = {
         "Shrink it: give them a 1-to-something case on the unit-rate table, then ask what changed.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students recognize that 3:5 and 4:7 have different milk amounts, so a fair comparison needs equal milk (a common amount) or a unit rate (cocoa per 1 oz).",
       "Students explain that equal milk (35 oz) makes the comparison fair, so 21 tbsp > 20 tbsp means Chef Reyes is more chocolatey.",
@@ -1264,8 +1444,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, convert measurements within the same system means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students find the scale factor of 15 and explain that multiplying both ingredients by 15 keeps the recipe proportional (5 cups tomatoes becomes 75, 3 cups mozzarella becomes 45).",
@@ -1286,6 +1467,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students find the scale factor of 15 and explain that multiplying both ingredients by 15 keeps the recipe proportional (5 cups tomatoes becomes 75, 3 cups mozzarella becomes 45).",
       "Students show 4 × 21 = 84 and 7 × 12 = 84 (or that 4:7 scales by 3 to 12:21), proving the ratios are equivalent.",
@@ -1304,8 +1490,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, convert measurements between systems means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students divide $18 by 3 to get $6 per pound and explain the unit rate lets them find the cost of any number of pounds.",
@@ -1326,6 +1513,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students divide $18 by 3 to get $6 per pound and explain the unit rate lets them find the cost of any number of pounds.",
       "Students state the rate (5 cupcakes per 4 minutes) and set up a proportion or unit rate (1.25 cupcakes/min) to scale to the needed time.",
@@ -1344,8 +1536,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask “per ONE what?” and make them finish the sentence.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, unit rate problem solving means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain the packages have different quantities, so the per-unit cost (unit rate) is needed to compare deals fairly.",
@@ -1367,6 +1560,11 @@ export const FACILITATION_BY_LESSON = {
         "Shrink it: give them a 1-to-something case on the unit-rate table, then ask what changed.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain the packages have different quantities, so the per-unit cost (unit rate) is needed to compare deals fairly.",
       "Students divide price by quantity for each deal (e.g., 350 for $38.50 = $0.11 each) and choose the supplier with the lower unit rate as the better buy.",
@@ -1387,8 +1585,9 @@ export const FACILITATION_BY_LESSON = {
         "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, equivalent ratios means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer finds the scale factor 4 (32 ÷ 8) and explains both ingredients must be multiplied by 4 to make equivalent ratios.",
@@ -1410,6 +1609,11 @@ export const FACILITATION_BY_LESSON = {
         "Give them a 1-to-something row on the ratio table and ask what one step of scaling does.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer finds the scale factor 4 (32 ÷ 8) and explains both ingredients must be multiplied by 4 to make equivalent ratios.",
       "Listen for proof by simplifying (all reduce to 3:2) or scaling (each multiplied by the same factor), not just 'they look similar.'",
@@ -1428,8 +1632,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, understand percent means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain 150% is more than one whole (the player beat the goal) and 0.5% is far less than one whole (a tiny boost), connecting to the idea of 100% as the whole.",
@@ -1450,6 +1655,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask which is larger: 20% of 50, or 50% of 20 — and why that happens.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain 150% is more than one whole (the player beat the goal) and 0.5% is far less than one whole (a tiny boost), connecting to the idea of 100% as the whole.",
       "Students state 150% = 1.5 (greater than 1) and 0.5% = 0.005 (much less than 0.01), and recognize these forms are equivalent.",
@@ -1470,8 +1680,9 @@ export const FACILITATION_BY_LESSON = {
         "Work the first step together on the percent grid, then hand the second one back to them.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, fractions, decimals, and percents means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students give 3/4 = 0.75 = 75% and recognize these are three forms of one value, not three different scores.",
@@ -1491,6 +1702,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask for 10% first, then build the target percent from it.",
       extend: "Ask which is larger: 20% of 50, or 50% of 20 — and why that happens.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students give 3/4 = 0.75 = 75% and recognize these are three forms of one value, not three different scores.",
       "Students name the scale factor (3/5 → multiply top and bottom by 20 → 60/100 → 60%) and call the three forms equivalent. Listen for them multiplying BOTH the numerator and the denominator.",
@@ -1509,8 +1725,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, estimate means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer names both landmark percents (50% and 75%) and explains why 4 GB sits closer to one than the other. A weak answer just says 'it's close to 70%' without placing it between benchmarks.",
@@ -1531,6 +1748,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to estimate first, then say which digit their answer disagrees with.",
       extend: "Ask which is larger: 20% of 50, or 50% of 20 — and why that happens.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer names both landmark percents (50% and 75%) and explains why 4 GB sits closer to one than the other. A weak answer just says 'it's close to 70%' without placing it between benchmarks.",
       "Listen for students naming WHICH part of the problem each strategy changes — the percent or the quantity — not just labeling the cards by feel.",
@@ -1551,8 +1773,9 @@ export const FACILITATION_BY_LESSON = {
         "Work the first step together on the percent grid, then hand the second one back to them.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, percent of a number means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students identify 60 as the base, the 25% discount as the part to find, and connect 'of' to the base.",
@@ -1572,6 +1795,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask for 10% first, then build the target percent from it.",
       extend: "Ask which is larger: 20% of 50, or 50% of 20 — and why that happens.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students identify 60 as the base, the 25% discount as the part to find, and connect 'of' to the base.",
       "Students describe the equation part = percent x base, converting the percent to a decimal first (e.g., 0.40 x 80 = 32).",
@@ -1590,8 +1818,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Estimate first — should the answer be bigger or smaller than you started?.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, determine the whole given the part and percent means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students reason from 60% < 100% to whole > part, without computing anything.",
@@ -1612,6 +1841,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask whether the answer should grow or shrink, and why.",
       extend: "Ask which is larger: 20% of 50, or 50% of 20 — and why that happens.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students reason from 60% < 100% to whole > part, without computing anything.",
       "Students explain WHY dividing by 6 gives 10% (60% is six 10%-steps), not just the arithmetic.",
@@ -1630,8 +1864,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, area of parallelograms means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students connect 'height' to the perpendicular (straight-up) distance from base to top, and recognize the slanted side is longer and would overstate the area.",
@@ -1652,6 +1887,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students connect 'height' to the perpendicular (straight-up) distance from base to top, and recognize the slanted side is longer and would overstate the area.",
       "A strong answer names a rectangle, states the area is 14 x 9 = 126 sq ft, and explains the rearranged rectangle has the same base and height as the parallelogram.",
@@ -1671,8 +1911,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Build one layer of unit cubes first, then count the layers.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, volume of rectangular prisms means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain the formula stays the same (V = l × w × h = 2 × 1.5 × 1 = 3 ft³) and that a fractional edge just means multiplying with a fraction or decimal.",
@@ -1695,6 +1936,11 @@ export const FACILITATION_BY_LESSON = {
         "Ask how many unit cubes fit along each edge of the cross-section, then what to do with the three numbers.",
       extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain the formula stays the same (V = l × w × h = 2 × 1.5 × 1 = 3 ft³) and that a fractional edge just means multiplying with a fraction or decimal.",
       "Students show 2 × 1.5 × 1 = 3 and 3 × 1 × 1 = 3, and explain that the same product means equal volume even with different shapes.",
@@ -1714,8 +1960,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Draw the rectangle around the triangle — the triangle is half of it.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, area of a triangle means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students identify the height as the perpendicular (straight-up, 90-degree) distance from the base to the opposite vertex, not the slanted side.",
@@ -1736,6 +1983,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to draw the enclosing rectangle on the area model and name the fraction.",
       extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students identify the height as the perpendicular (straight-up, 90-degree) distance from the base to the opposite vertex, not the slanted side.",
       "A strong answer states the triangle is half of the 12 x 8 = 96 rectangle, so the triangle area is 48 sq ft, and connects the 1/2 to that halving.",
@@ -1754,8 +2006,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Draw the rectangle around the triangle — the triangle is half of it.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, area of trapezoids means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain a trapezoid has two parallel sides of different lengths, so using only one would over- or under-count the area; strong answers mention averaging the bases.",
@@ -1776,6 +2029,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to draw the enclosing rectangle on the area model and name the fraction.",
       extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain a trapezoid has two parallel sides of different lengths, so using only one would over- or under-count the area; strong answers mention averaging the bases.",
       "A strong answer names a parallelogram, links the 1/2 to taking half of two combined trapezoids, and computes area = 1/2 x 12 x 5 = 30 sq ft.",
@@ -1794,8 +2052,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the unit should be — units or square units?.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, area of composite figures means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain that the L-shape is hard to measure directly, so breaking it into two rectangles lets them use A = l x w on each piece and add the results.",
@@ -1816,6 +2075,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask for two shapes with equal perimeter and different area.",
       extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain that the L-shape is hard to measure directly, so breaking it into two rectangles lets them use A = l x w on each piece and add the results.",
       "A strong answer states you subtract when a piece is cut out (pool = 140 - 24 = 116 sq ft) and add when shapes are joined, with a clear reason for each.",
@@ -1835,8 +2099,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Build one layer of unit cubes first, then count the layers.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, volume with whole-number edges means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain that volume is three-dimensional, so all three edges (length, width, height) are needed; two measurements only give area of one face.",
@@ -1859,6 +2124,11 @@ export const FACILITATION_BY_LESSON = {
         "Ask how many unit cubes fit along each edge of the cross-section, then what to do with the three numbers.",
       extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain that volume is three-dimensional, so all three edges (length, width, height) are needed; two measurements only give area of one face.",
       "Students compute Container C = 8 × 3 × 4 = 96 in³ and Container B = 5 × 5 × 2 = 50 in³, and conclude C holds more by connecting volume to multiplying all three edges.",
@@ -1880,8 +2150,9 @@ export const FACILITATION_BY_LESSON = {
         "Ask what the unit has to be — square units cover a surface, cubic units fill a space.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, surface area using nets means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain a rectangular prism has 6 faces, and the net unfolds the solid into a flat (two-dimensional) pattern so every face is visible to measure.",
@@ -1903,6 +2174,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to say the unit out loud before computing — square or cubic?",
       extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain a rectangular prism has 6 faces, and the net unfolds the solid into a flat (two-dimensional) pattern so every face is visible to measure.",
       "Students explain opposite faces are congruent (3 pairs), identify the top/bottom 8×5 = 40 as largest (80 in² for the pair), and total to 158 in².",
@@ -1924,8 +2200,9 @@ export const FACILITATION_BY_LESSON = {
         "Ask what the unit has to be — square units cover a surface, cubic units fill a space.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, surface area of prisms means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain both methods add up all face areas, but a rectangular prism has 6 rectangular faces while a triangular prism has 5 faces (2 triangles + 3 rectangles).",
@@ -1947,6 +2224,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to say the unit out loud before computing — square or cubic?",
       extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain both methods add up all face areas, but a rectangular prism has 6 rectangular faces while a triangular prism has 5 faces (2 triangles + 3 rectangles).",
       "Students compute the two triangle bases (24 in²) and the three rectangles (60 + 50 + 50 = 160 in²), totaling SA = 184 in², and distinguish bases from lateral faces.",
@@ -1968,8 +2250,9 @@ export const FACILITATION_BY_LESSON = {
         "Ask what the unit has to be — square units cover a surface, cubic units fill a space.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, surface area of pyramids means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain a square pyramid's surface area = base area + the four triangular lateral faces, and that you add every face together.",
@@ -1991,6 +2274,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to say the unit out loud before computing — square or cubic?",
       extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain a square pyramid's surface area = base area + the four triangular lateral faces, and that you add every face together.",
       "Students compute base = 36 in², one face = 24 in², four faces = 96 in², total SA = 132 in², distinguishing base from lateral faces.",
@@ -2010,8 +2298,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Draw the rectangle around the triangle — the triangle is half of it.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, area of regular polygons means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain that splitting the hexagon into 6 equal triangles lets them use the triangle area formula they already know, then combine the parts.",
@@ -2032,6 +2321,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to draw the enclosing rectangle on the area model and name the fraction.",
       extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain that splitting the hexagon into 6 equal triangles lets them use the triangle area formula they already know, then combine the parts.",
       "A strong answer states the number of triangles equals the number of sides, because each side becomes the base of one triangle drawn to the center.",
@@ -2050,8 +2344,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Estimate first — should the answer be bigger or smaller than you started?.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, division of fractions means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students reason that dividing by a number less than 1 gives a quotient greater than the dividend, so there are more than 3 sections.",
@@ -2072,6 +2367,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask whether the answer should grow or shrink, and why.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students reason that dividing by a number less than 1 gives a quotient greater than the dividend, so there are more than 3 sections.",
       "Students name 3 as the dividend and 1/4 as the divisor, and explain the model shows 12 fourths fit into 3.",
@@ -2090,8 +2390,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask “what is being split, and into how many?” before they write it.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, divide mixed numbers means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain that the mixed number must be converted to an improper fraction (7/2) before applying Keep, Change, Flip.",
@@ -2112,6 +2413,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to state which quantity is being shared before computing.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain that the mixed number must be converted to an improper fraction (7/2) before applying Keep, Change, Flip.",
       "Students correctly convert (multiply whole by denominator, add numerator) before flipping the divisor and simplifying.",
@@ -2130,8 +2436,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask “what is being split, and into how many?” before they write it.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, fraction division problem solving means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students identify 2/3 as the total being split (dividend) and 1/6 as the group size (divisor), writing 2/3 ÷ 1/6.",
@@ -2152,6 +2459,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to state which quantity is being shared before computing.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students identify 2/3 as the total being split (dividend) and 1/6 as the group size (divisor), writing 2/3 ÷ 1/6.",
       "Students point to 'how many fit / how many groups' language and contrast it with 'a fraction of' which signals multiplication.",
@@ -2170,8 +2482,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, least common multiple means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students reason that each astronaut repeats on multiples of their own number, so they only overlap at a common multiple, and adding 4 + 6 does not land on both schedules.",
@@ -2193,6 +2506,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students reason that each astronaut repeats on multiples of their own number, so they only overlap at a common multiple, and adding 4 + 6 does not land on both schedules.",
       "Students skip count 4, 8, 12 and 6, 12 and identify 12 as the LCM because it is the smallest number appearing in both lists.",
@@ -2214,8 +2532,9 @@ export const FACILITATION_BY_LESSON = {
         "Work the first step together on the factor tree, then hand the second one back to them.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, prime factorization means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students say 60 is composite because it has more than two factors (it is divisible by numbers other than 1 and 60, such as 2, 3, 5, 6), so it can be broken down.",
@@ -2236,6 +2555,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to test the claim on a friendlier number first, then return.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students say 60 is composite because it has more than two factors (it is divisible by numbers other than 1 and 60, such as 2, 3, 5, 6), so it can be broken down.",
       "Students explain they keep splitting composite branches and stop only when every leaf is prime, ending with 60 = 2 × 2 × 3 × 5.",
@@ -2255,8 +2579,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Draw the area model — the outside factor touches BOTH terms.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, the distributive property means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain the 3 distributes to both the ticket and the snack (3 × 15 + 3 × 5 = 45 + 15 = 60), matching 3 × 20, and use the word equivalent.",
@@ -2277,6 +2602,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to check the expansion against the tape diagram term by term.",
       extend: "Ask them to write an expression a classmate would simplify wrongly, and say why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain the 3 distributes to both the ticket and the snack (3 × 15 + 3 × 5 = 45 + 15 = 60), matching 3 × 20, and use the word equivalent.",
       "A strong answer expands 5(2x + 4) = 10x + 20 and explains the parentheses mean 5 copies of the whole sum, so both 2x and 4 are multiplied.",
@@ -2295,8 +2625,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Have them restate the problem as a story, then name the operation.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, simplify algebraic expressions means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain microphones combine with microphones (4 + 2 + 6 = 12) but not with stands, connecting this to combining like terms in algebra.",
@@ -2317,6 +2648,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to substitute one number into both expressions and compare.",
       extend: "Ask them to write an expression a classmate would simplify wrongly, and say why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain microphones combine with microphones (4 + 2 + 6 = 12) but not with stands, connecting this to combining like terms in algebra.",
       "A strong answer combines 6x + 2x = 8x and 4 + 7 = 11 to get 8x + 11, adding coefficients of like terms and keeping the variable.",
@@ -2335,8 +2671,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to check with a whole-number case they already trust.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, divide fractions means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students recognize the divisor 1/8 is smaller than the dividend 3/4, so the quotient is greater than 1.",
@@ -2357,6 +2694,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to test the method on 1 ÷ ½, where they already know the answer.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students recognize the divisor 1/8 is smaller than the dividend 3/4, so the quotient is greater than 1.",
       "Students explain that flipping the divisor turns division into multiplication, and they simplify the final quotient.",
@@ -2376,8 +2718,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Have them circle the operation that must go first, then compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, powers and exponents means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students connect each switch flip to one more factor of 2 and explain that 2³ = 2 × 2 × 2 = 8, distinguishing repeated multiplication from repeated addition (which would give 6).",
@@ -2398,6 +2741,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the same expression with parentheses that force their order.",
       extend: "Ask them to write an expression a classmate would simplify wrongly, and say why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students connect each switch flip to one more factor of 2 and explain that 2³ = 2 × 2 × 2 = 8, distinguishing repeated multiplication from repeated addition (which would give 6).",
       "A strong answer states that the value gets multiplied by the base (e.g., 2³ = 8 becomes 2⁴ = 16, times 2) and ties it to adding one more factor, using the words base and exponent.",
@@ -2418,8 +2766,9 @@ export const FACILITATION_BY_LESSON = {
         "Work the first step together on the step-by-step solver, then hand the second one back to them.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, write and evaluate numerical expressions with exponents means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students substitute s = 5 (150 + 12 × 5 = 210), explain 150 is the fixed venue fee and 12 is the cost per speaker, and note s can be any number.",
@@ -2439,6 +2788,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to substitute one number into both expressions and compare.",
       extend: "Ask them to write an expression a classmate would simplify wrongly, and say why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students substitute s = 5 (150 + 12 × 5 = 210), explain 150 is the fixed venue fee and 12 is the cost per speaker, and note s can be any number.",
       "A strong answer substitutes the value first, then applies the exponent before multiplying (e.g., 4 × 2² = 4 × 4 = 16, not (4 × 2)² ), citing order of operations.",
@@ -2457,8 +2811,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, write algebraic expressions means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students write 12t + 50, identify t as the variable number of tickets, 12 as the coefficient (price per ticket), and 50 as the constant venue fee that does not change.",
@@ -2479,6 +2834,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to write an expression a classmate would simplify wrongly, and say why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students write 12t + 50, identify t as the variable number of tickets, 12 as the coefficient (price per ticket), and 50 as the constant venue fee that does not change.",
       "A strong answer matches key words to operations (sum/more than = add, less than = subtract, product = multiply) and explains '12 less than g' starts with g, giving g − 12.",
@@ -2497,8 +2857,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Have them restate the problem as a story, then name the operation.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, equivalent expressions means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain 3x + 2x = 5x (combining like terms), so both equal 5x + 10, and verify by substituting a value like x = 4 to get 30 both ways.",
@@ -2519,6 +2880,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to substitute one number into both expressions and compare.",
       extend: "Ask them to write an expression a classmate would simplify wrongly, and say why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain 3x + 2x = 5x (combining like terms), so both equal 5x + 10, and verify by substituting a value like x = 4 to get 30 both ways.",
       "A strong answer uses the distributive property (2(n + 4) = 2n + 8) and/or substitutes a value into both to confirm equal results.",
@@ -2539,8 +2905,9 @@ export const FACILITATION_BY_LESSON = {
         "Work the first step together on the factor tree, then hand the second one back to them.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, find factors and multiples means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students see the number of pods has to be a common factor of 24 and 36, so it must divide both with nothing left over, ruling out numbers that only divide one of them.",
@@ -2561,6 +2928,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to test the claim on a friendlier number first, then return.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students see the number of pods has to be a common factor of 24 and 36, so it must divide both with nothing left over, ruling out numbers that only divide one of them.",
       "Students list common factors 1, 2, 3, 4, 6, 12 of 24 and 36 and identify 12 as the GCF because it is the largest factor shared by both.",
@@ -2582,8 +2954,9 @@ export const FACILITATION_BY_LESSON = {
         "Work the first step together on the step-by-step solver, then hand the second one back to them.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, properties of operations means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students name the commutative property and explain that 3 + 5 + 2 gives 10 in any order because reordering addends does not change the sum.",
@@ -2603,6 +2976,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to substitute one number into both expressions and compare.",
       extend: "Ask them to write an expression a classmate would simplify wrongly, and say why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students name the commutative property and explain that 3 + 5 + 2 gives 10 in any order because reordering addends does not change the sum.",
       "A strong answer connects commutative to changed order and associative to changed parentheses (grouping), noting both keep the same value.",
@@ -2621,8 +2999,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Estimate first — should the answer be bigger or smaller than you started?.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, divide whole numbers by fractions means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students see that 4 ÷ 1/2 = 8 and explain there are 2 halves in each whole pound.",
@@ -2643,6 +3022,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask whether the answer should grow or shrink, and why.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students see that 4 ÷ 1/2 = 8 and explain there are 2 halves in each whole pound.",
       "Students correctly flip the divisor to its reciprocal (3) and explain multiplying by the reciprocal gives the same result as dividing.",
@@ -2663,8 +3047,9 @@ export const FACILITATION_BY_LESSON = {
         "Locate the two whole numbers it falls between first, then split that interval into equal parts.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, integer means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Student explains 0 is a chosen reference point (sea level), so values above it are positive and values below it are negative.",
@@ -2685,6 +3070,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Put both values on the number line and ask which is further from zero.",
       extend: "Ask when a negative answer is larger than a positive one, and why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Student explains 0 is a chosen reference point (sea level), so values above it are positive and values below it are negative.",
       "Student links direction words (below, loss, under) to negative integers and left of 0, and (above, gain) to positive integers and right of 0.",
@@ -2706,8 +3096,9 @@ export const FACILITATION_BY_LESSON = {
         "Locate the two whole numbers it falls between first, then split that interval into equal parts.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, rational numbers on the number line means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Student explains a rational number is any number that can be written as a fraction, including integers and decimals.",
@@ -2728,6 +3119,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Put both values on the number line and ask which is further from zero.",
       extend: "Ask when a negative answer is larger than a positive one, and why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Student explains a rational number is any number that can be written as a fraction, including integers and decimals.",
       "Student places -1 1/2 between -1 and -2, halfway, reasoning from the value of the fraction part.",
@@ -2749,8 +3145,9 @@ export const FACILITATION_BY_LESSON = {
         "Locate the two whole numbers it falls between first, then split that interval into equal parts.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, integers and absolute value means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Student says both are 5 units from zero (same absolute value) but are opposites because of their signs.",
@@ -2771,6 +3168,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Put both values on the number line and ask which is further from zero.",
       extend: "Ask when a negative answer is larger than a positive one, and why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Student says both are 5 units from zero (same absolute value) but are opposites because of their signs.",
       "Student uses absolute value to show both are 30 feet from sea level (zero), ignoring direction.",
@@ -2792,8 +3194,9 @@ export const FACILITATION_BY_LESSON = {
         "Locate the two whole numbers it falls between first, then split that interval into equal parts.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, compare and order integers means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Student explains that -3 is farther left on the number line than 2, and numbers decrease moving left.",
@@ -2814,6 +3217,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Put both values on the number line and ask which is further from zero.",
       extend: "Ask when a negative answer is larger than a positive one, and why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Student explains that -3 is farther left on the number line than 2, and numbers decrease moving left.",
       "Student orders -8, -1, 3, 5 and uses left-to-right position on the number line to justify the order.",
@@ -2833,8 +3241,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Have them trace the horizontal move with a finger before the vertical one.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, graph on the coordinate plane means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Student states the x-coordinate is the sideways (horizontal) move and the y-coordinate is the up/down (vertical) move, both starting from the origin.",
@@ -2857,6 +3266,11 @@ export const FACILITATION_BY_LESSON = {
         "Ask them to plot both (a, b) and (b, a) on the coordinate plane and describe the line between them.",
       extend: "Ask when a negative answer is larger than a positive one, and why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Student states the x-coordinate is the sideways (horizontal) move and the y-coordinate is the up/down (vertical) move, both starting from the origin.",
       "Student moves 4 right along the x-axis and 2 up along the y-axis, naming each axis and the origin as the start.",
@@ -2876,8 +3290,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Have them restate the problem as a story, then name the operation.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, distance on the coordinate plane means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Student finds the distance by subtracting the x-coordinates (7 - 2 = 5) since the points share a horizontal line.",
@@ -2899,6 +3314,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to test the claim on a friendlier number first, then return.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Student finds the distance by subtracting the x-coordinates (7 - 2 = 5) since the points share a horizontal line.",
       "Student adds the absolute values (3 + 4 = 7) because the points are on opposite sides of zero.",
@@ -2918,8 +3338,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the unit should be — units or square units?.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, vertex means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer explains that the SHARED coordinate tells you the direction of the side, and the DIFFERING coordinate is what you subtract. A weak answer just says 'subtract the numbers' without identifying which pair.",
@@ -2940,6 +3361,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask for two shapes with equal perimeter and different area.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer explains that the SHARED coordinate tells you the direction of the side, and the DIFFERING coordinate is what you subtract. A weak answer just says 'subtract the numbers' without identifying which pair.",
       "Listen for students checking BOTH coordinates for a match, not just glancing at the numbers. A strong answer states clearly that neither the x's nor the y's match for the slanted pair.",
@@ -2958,8 +3384,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Have them trace the horizontal move with a finger before the vertical one.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, ordered pairs in all four quadrants means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Student matches sign combinations to quadrants (e.g., (+,+) is I, (-,+) is II).",
@@ -2982,6 +3409,11 @@ export const FACILITATION_BY_LESSON = {
         "Ask them to plot both (a, b) and (b, a) on the coordinate plane and describe the line between them.",
       extend: "Ask when a negative answer is larger than a positive one, and why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Student matches sign combinations to quadrants (e.g., (+,+) is I, (-,+) is II).",
       "Student moves left for negative x and down for negative y, landing in quadrant III.",
@@ -3001,8 +3433,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Have them trace the horizontal move with a finger before the vertical one.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, reflect points across axes means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Student states reflecting over the y-axis flips the sign of the x-coordinate while the y-coordinate stays the same, so (3,2) becomes (-3,2).",
@@ -3025,6 +3458,11 @@ export const FACILITATION_BY_LESSON = {
         "Ask them to plot both (a, b) and (b, a) on the coordinate plane and describe the line between them.",
       extend: "Ask when a negative answer is larger than a positive one, and why.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Student states reflecting over the y-axis flips the sign of the x-coordinate while the y-coordinate stays the same, so (3,2) becomes (-3,2).",
       "Student flips the sign of the y-coordinate, so (4, -5) becomes (4, 5), and explains the x stays the same.",
@@ -3044,8 +3482,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Have them restate the problem as a story, then name the operation.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, write equations means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students choose a variable (such as n) for the unknown gems, build n + 8 = 20, and connect 'plus 8 more' to + 8 and 'equals 20 total' to = 20.",
@@ -3066,6 +3505,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to check a wrong answer by substitution and say what it proves.",
       extend: "Ask them to build an equation with no solution, then one true for every value.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students choose a variable (such as n) for the unknown gems, build n + 8 = 20, and connect 'plus 8 more' to + 8 and 'equals 20 total' to = 20.",
       "Students place the expression n + 8 on one side and the total 20 on the other, explaining the equal sign means both sides have the same value.",
@@ -3085,8 +3529,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to substitute their answer back into the original equation out loud.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, solve one-step addition and subtraction equations means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students recognize 23 is added to n and that subtracting 23 (the inverse operation) from both sides will isolate n.",
@@ -3107,6 +3552,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to check a wrong answer by substitution and say what it proves.",
       extend: "Ask them to build an equation with no solution, then one true for every value.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students recognize 23 is added to n and that subtracting 23 (the inverse operation) from both sides will isolate n.",
       "Students subtract 23 from both sides to get n = 35 and explain that doing the same to both sides keeps the equation balanced and the solution true.",
@@ -3125,8 +3575,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Have them name the operation acting on the variable BEFORE they touch both sides.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, solve multiplication and division equations means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students read 3x as 3 groups of x, recognize multiplication, and contrast it with addition, knowing they will divide (not subtract) to solve.",
@@ -3147,6 +3598,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to substitute their answer back and say what a false statement proves.",
       extend: "Ask them to build an equation with no solution, then one true for every value.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students read 3x as 3 groups of x, recognize multiplication, and contrast it with addition, knowing they will divide (not subtract) to solve.",
       "Students divide both sides by 3 to get x = 7 (or multiply by 4 to get x = 36) and name division/multiplication as inverse operations.",
@@ -3166,8 +3622,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Have them test the boundary value itself — does it make the statement true?.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, write inequalities means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students explain that 'at least 18' allows many values (18 and up), so an inequality with ≥ captures it while an equation would force one value.",
@@ -3188,6 +3645,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to check a wrong answer by substitution and say what it proves.",
       extend: "Ask them to build an equation with no solution, then one true for every value.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students explain that 'at least 18' allows many values (18 and up), so an inequality with ≥ captures it while an equation would force one value.",
       "Students match 'at least' to ≥ and 'at most' to ≤ (include the value), and 'more than'/'fewer than' to > and < (exclude the value).",
@@ -3206,8 +3668,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Make them test one number from the shaded side out loud before accepting a graph.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, graph inequalities means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students choose a closed circle at 2 (because 'no earlier than' includes 2) and shade to the right since later times satisfy t ≥ 2.",
@@ -3228,6 +3691,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to check a wrong answer by substitution and say what it proves.",
       extend: "Ask them to build an equation with no solution, then one true for every value.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students choose a closed circle at 2 (because 'no earlier than' includes 2) and shade to the right since later times satisfy t ≥ 2.",
       "Students connect > and < to open circles (boundary not included) and ≥ and ≤ to closed circles, and shade toward the values in the solution set.",
@@ -3246,8 +3714,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask which moves can flip a symbol — adding and subtracting never do.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, solve and graph inequalities means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students note both use inverse operations to isolate the variable, but an inequality's solution is many values (a range) while an equation's is a single value.",
@@ -3268,6 +3737,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to test one value from each side on the number line.",
       extend: "Ask them to build an equation with no solution, then one true for every value.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students note both use inverse operations to isolate the variable, but an inequality's solution is many values (a range) while an equation's is a single value.",
       "Students isolate the variable, graph the solution set with the correct circle and shading, and substitute a test value to confirm it makes the inequality true.",
@@ -3286,8 +3760,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Estimate first — should the answer be bigger or smaller than you started?.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, equations and inequalities problem solving means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "Students use signal words ('equals/total' for an equation; 'at least/at most/no more than' for an inequality) to choose the correct model.",
@@ -3308,6 +3783,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask whether the answer should grow or shrink, and why.",
       extend: "Ask them to build an equation with no solution, then one true for every value.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "Students use signal words ('equals/total' for an equation; 'at least/at most/no more than' for an inequality) to choose the correct model.",
       "Students describe modeling the situation, solving with inverse operations, and judging reasonableness by checking the answer fits the real context.",
@@ -3326,8 +3806,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, independent variable means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer names sunlight as chosen (independent) and height as responding (dependent), and can say the sentence 'height depends on sunlight.' A weak answer just says 'height is bigger' without naming which quantity was chosen.",
@@ -3350,6 +3831,11 @@ export const FACILITATION_BY_LESSON = {
       extend:
         "Ask them to write a situation where the two roles could be argued either way, then say what one extra sentence would settle it.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer names sunlight as chosen (independent) and height as responding (dependent), and can say the sentence 'height depends on sunlight.' A weak answer just says 'height is bigger' without naming which quantity was chosen.",
       "Listen for the test 'who gets to choose this' rather than which number is bigger or which was mentioned first in the problem. A weak answer just repeats the card's category without justifying it.",
@@ -3368,8 +3854,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, graph means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer names tickets as independent and explains that independent always goes first, then checks the arithmetic (3 × 45 = 135). A weak answer just says 'because that's the order' without connecting it to independent/dependent.",
@@ -3390,6 +3877,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer names tickets as independent and explains that independent always goes first, then checks the arithmetic (3 × 45 = 135). A weak answer just says 'because that's the order' without connecting it to independent/dependent.",
       "Listen for students actually multiplying to verify rather than guessing by how 'close' the numbers looked. A strong answer catches that 4 × 45 = 180, not 190, so the point is off by exactly $10.",
@@ -3408,8 +3900,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, equation means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer tests the equation against a table row (2 months should give $49.90) rather than just stating a rule. A weak answer picks multiplication without checking it against the actual numbers.",
@@ -3430,6 +3923,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer tests the equation against a table row (2 months should give $49.90) rather than just stating a rule. A weak answer picks multiplication without checking it against the actual numbers.",
       "Listen for actual substitution and multiplication, not matching by 'it sounds like hours so it's the canoe one.' A strong answer shows the check: 15 × 2 = 30.",
@@ -3448,8 +3946,9 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
-      "The multiples/steps I need are ___ , and the answer is ___ .",
-      "I know because ___ .",
+      "My first step is ___ , because the problem asks for ___ .",
+      "In this problem, solution means ___ .",
+      "I know my answer makes sense because ___ .",
     ],
     listenFor: [
       "A strong answer names division as the inverse of multiplication and checks the solution by substituting it back in. A weak answer just says 'because that's what you do' without the inverse-operation reasoning.",
@@ -3470,6 +3969,11 @@ export const FACILITATION_BY_LESSON = {
       ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
+    frames: [
+      "I claim ___ , and my evidence is ___ .",
+      "A different strategy would be ___ ; mine fits here because ___ .",
+      "I can check my answer by ___ .",
+    ],
     listenFor: [
       "A strong answer names division as the inverse of multiplication and checks the solution by substituting it back in. A weak answer just says 'because that's what you do' without the inverse-operation reasoning.",
       "Listen for actual multiplication (42 × 12 = 504) rather than matching by which numbers 'look like' cars versus hours. A strong answer verifies the arithmetic, not just the units.",
