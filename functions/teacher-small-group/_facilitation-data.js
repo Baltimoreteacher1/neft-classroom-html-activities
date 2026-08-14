@@ -50,11 +50,12 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
     teacherMoves: {
-      ask: "Show me on the number line where your numbers came from.",
+      ask: "Which two numbers are you actually comparing — the fractions, or the blocks?",
       lookFor:
-        "Watch for: expecting a fraction of a number to be bigger than the number — 5/6 × 540 must be LESS than 540 because 5/6 is less than 1; only a fraction greater….",
+        "A student who converts each fraction to a distance BEFORE deciding who walked farther.",
       ifStuck:
-        "Locate the two whole numbers it falls between first, then split that interval into equal parts.",
+        "Cover Ben's route. Ask for one part of Ana's 24 first, then how many parts she walked.",
+      extend: "Ask what route length would make Ana the farther walker, and how they found it.",
     },
     frames: [
       "The multiples/steps I need are ___ , and the answer is ___ .",
@@ -73,10 +74,13 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Would this strategy always work? How do you know?",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
-      ifStuck: "Ask for a second representation on the number line before any more explaining.",
-      extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
+      ask: "Dana reached the right answer with the wrong reasoning. What made it work this time?",
+      lookFor:
+        "A student who tests a claim by changing one quantity to try to break it, rather than by re-checking the arithmetic.",
+      ifStuck:
+        "Ask them to keep both fractions and change only Ana's route length until the answer flips.",
+      extend:
+        "Ask when dividing first beats multiplying first, and to name a case where it does not.",
     },
     listenFor: [
       "A strong answer explains that each digit must land in its correct place value so the parts add back to exactly 105.76. A weak answer just says '100 and 5.76 are parts' without checking they sum correctly.",

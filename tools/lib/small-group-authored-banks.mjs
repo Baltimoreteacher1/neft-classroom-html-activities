@@ -492,6 +492,411 @@ const LESSON_1_1_CHALLENGE = [
   },
 ];
 
+/**
+ * 1-2 · 5.NF.B.4 — "Math is Exploring and Thinking"
+ *
+ * Objective: make sense of a problem, plan a strategy, and use FRACTIONS OF A
+ * WHOLE NUMBER to compare quantities. Language objective: explain the plan using
+ * "we know", "we don't know", "my strategy is ___". Key idea: make sense, plan,
+ * check, and try another strategy at a dead end.
+ *
+ * The mapped family gave this lesson decimal ADDITION ("decomposing 105.76 ->
+ * add and subtract decimals"). Its objective is fractions of a whole number used
+ * to COMPARE — a different operation on different numbers, and no comparing.
+ *
+ * The bank uses the lesson's own Notice-and-Wonder: three students walking
+ * different routes. That context carries the objective exactly — each student
+ * has walked a fraction of a different whole, so comparing requires finding the
+ * quantities first, which is the trap the lesson is built to expose.
+ *
+ * ARITHMETIC CHECKED
+ *   1/2 of 24 = 12 ; 3/4 of 20 = 15 ; 1/4 of 20 = 5 (unit-fraction-only error)
+ *   2/3 of 18 = 12 (ties Ana) ; 1/2 of 40 = 20 > 15 (breaks "bigger fraction wins")
+ *   2/3 of 21 = 14 (reverse) ; 3/2 of 8 = 12 > 8 (breaks "always smaller")
+ *   3/4 of 24 = 18 ; 2/3 of 27 = 18 ; 3/4 of 20 both ways = 15
+ *   2/3 of 14 = 9 1/3 (14 is not divisible by 3)
+ */
+const LESSON_1_2_SUPPORT = [
+  {
+    // 1. MAKE SENSE — name the question before touching a number. This is the
+    // planning half of the objective, and it is where the lesson starts.
+    type: "multiple-choice",
+    stem: "Ana's route is 24 blocks long and she has walked 1/2 of it. Ben's route is 20 blocks and he has walked 3/4 of it. Before you calculate anything: which question do you have to answer to tell who has walked farther?",
+    stemEs:
+      "La ruta de Ana mide 24 cuadras y ha caminado 1/2 de ella. La ruta de Ben mide 20 cuadras y ha caminado 3/4 de ella. Antes de calcular nada: ¿qué pregunta tienes que responder para saber quién ha caminado más lejos?",
+    choices: [
+      "How many blocks each student has actually walked",
+      "Whose whole route is longer",
+      "Which student started walking first",
+      "How many blocks Ana still has left",
+    ],
+    choicesEs: [
+      "Cuántas cuadras ha caminado realmente cada estudiante",
+      "Cuál ruta completa es más larga",
+      "Cuál estudiante empezó a caminar primero",
+      "Cuántas cuadras le faltan a Ana",
+    ],
+    correctIndex: 0,
+    explanation:
+      "The fractions are of different whole routes, so they cannot be compared directly. Turning each fraction into a number of blocks is the plan.",
+    explanationEs:
+      "Las fracciones son de rutas completas distintas, así que no se pueden comparar directamente. Convertir cada fracción en un número de cuadras es el plan.",
+    hints: [
+      "You are comparing distances. What unit would a distance be measured in here?",
+      "Each fraction is a fraction OF something different. What do you need before you can compare?",
+    ],
+    hintsEs: [
+      "Estás comparando distancias. ¿En qué unidad se mediría una distancia aquí?",
+      "Cada fracción es una fracción DE algo distinto. ¿Qué necesitas antes de poder comparar?",
+    ],
+  },
+  {
+    // 2. FRACTION OF A WHOLE NUMBER — one quantity, cleanly.
+    type: "multiple-choice",
+    stem: "Ana has walked 1/2 of her 24-block route. How many blocks has she walked?",
+    stemEs: "Ana ha caminado 1/2 de su ruta de 24 cuadras. ¿Cuántas cuadras ha caminado?",
+    choices: ["12 blocks", "24 blocks", "2 blocks", "48 blocks"],
+    choicesEs: ["12 cuadras", "24 cuadras", "2 cuadras", "48 cuadras"],
+    correctIndex: 0,
+    explanation: "1/2 of 24 means 24 split into 2 equal parts: 24 ÷ 2 = 12 blocks.",
+    explanationEs: "1/2 de 24 significa 24 dividido en 2 partes iguales: 24 ÷ 2 = 12 cuadras.",
+    choiceFeedback: [
+      "",
+      "That is the whole route, not the part she has walked.",
+      "That is the denominator, not a number of blocks. Split the 24 into 2 equal parts.",
+      "That doubles the route. Half of something is smaller than the whole.",
+    ],
+    choiceFeedbackEs: [
+      "",
+      "Esa es la ruta completa, no la parte que ha caminado.",
+      "Ese es el denominador, no un número de cuadras. Divide las 24 en 2 partes iguales.",
+      "Eso duplica la ruta. La mitad de algo es menor que el entero.",
+    ],
+    hints: ["Split 24 into 2 equal parts.", "24 ÷ 2 = ___ ."],
+    hintsEs: ["Divide 24 en 2 partes iguales.", "24 ÷ 2 = ___ ."],
+  },
+  {
+    // 3. THE OTHER QUANTITY, then the comparison. The 5-block distractor is the
+    // unit-fraction-only error: finding 1/4 and forgetting the 3.
+    type: "multiple-choice",
+    stem: "Ben has walked 3/4 of his 20-block route. How many blocks is that, and who has walked farther — Ana (12 blocks) or Ben?",
+    stemEs:
+      "Ben ha caminado 3/4 de su ruta de 20 cuadras. ¿Cuántas cuadras son, y quién ha caminado más lejos: Ana (12 cuadras) o Ben?",
+    choices: [
+      "15 blocks — Ben has walked farther",
+      "5 blocks — Ana has walked farther",
+      "15 blocks — Ana has walked farther",
+      "16 blocks — Ben has walked farther",
+    ],
+    choicesEs: [
+      "15 cuadras — Ben ha caminado más lejos",
+      "5 cuadras — Ana ha caminado más lejos",
+      "15 cuadras — Ana ha caminado más lejos",
+      "16 cuadras — Ben ha caminado más lejos",
+    ],
+    correctIndex: 0,
+    explanation:
+      "20 ÷ 4 = 5, and 3 of those parts is 5 × 3 = 15 blocks. 15 is greater than Ana's 12, so Ben has walked farther.",
+    explanationEs:
+      "20 ÷ 4 = 5, y 3 de esas partes son 5 × 3 = 15 cuadras. 15 es mayor que las 12 de Ana, así que Ben ha caminado más lejos.",
+    choiceFeedback: [
+      "",
+      "5 is 1/4 of the route. The fraction is 3/4, so you need three of those parts.",
+      "Check the two numbers again: is 15 more or less than 12?",
+      "20 ÷ 4 is 5, not 4. Find one part first, then take three of them.",
+    ],
+    choiceFeedbackEs: [
+      "",
+      "5 es 1/4 de la ruta. La fracción es 3/4, así que necesitas tres de esas partes.",
+      "Revisa los dos números otra vez: ¿15 es más o menos que 12?",
+      "20 ÷ 4 es 5, no 4. Encuentra una parte primero y luego toma tres.",
+    ],
+    hints: [
+      "First find 1/4 of 20 — that is one part.",
+      "Now take 3 of those parts. Then compare with Ana's 12.",
+    ],
+    hintsEs: [
+      "Primero encuentra 1/4 de 20: esa es una parte.",
+      "Ahora toma 3 de esas partes. Luego compara con las 12 de Ana.",
+    ],
+  },
+  {
+    // 4. EXPLAIN THE PLAN — in the exact language the lesson's language
+    // objective names.
+    type: "open-response",
+    stem: "Explain your plan for comparing Ana's and Ben's distances. Use the words we know, we don't know, and my strategy is.",
+    stemEs:
+      "Explica tu plan para comparar las distancias de Ana y Ben. Usa las palabras sabemos, no sabemos y mi estrategia es.",
+    modelAnswer:
+      "We know how long each route is and what fraction each student has walked. We don't know how many blocks each one actually walked. My strategy is to find the fraction of each whole number first — 1/2 of 24 is 12 and 3/4 of 20 is 15 — and then compare those two distances.",
+    modelAnswerEs:
+      "Sabemos cuánto mide cada ruta y qué fracción ha caminado cada estudiante. No sabemos cuántas cuadras caminó cada uno en realidad. Mi estrategia es encontrar primero la fracción de cada número entero — 1/2 de 24 es 12 y 3/4 de 20 es 15 — y luego comparar esas dos distancias.",
+    sentenceStems: [
+      "We know ___ .",
+      "We don't know ___ .",
+      "My strategy is to ___ , and then ___ .",
+    ],
+  },
+  {
+    // 5. THE TRAP THE LESSON EXISTS FOR — a bigger fraction of a different whole
+    // is not a bigger quantity. Ben IS farther here, so the wrong reasoning
+    // reaches the right answer, which is exactly why it needs exposing.
+    type: "multiple-choice",
+    stem: "Ben walked 3/4 of his route and Ana walked 1/2 of hers, and Ben did walk farther. Does a bigger fraction ALWAYS mean a longer distance?",
+    stemEs:
+      "Ben caminó 3/4 de su ruta y Ana 1/2 de la suya, y Ben sí caminó más lejos. ¿Una fracción más grande SIEMPRE significa una distancia más larga?",
+    choices: [
+      "No — each fraction is of a different route, so you have to compare the actual blocks",
+      "Yes — 3/4 is greater than 1/2, so the person with 3/4 always walked farther",
+      "No — fractions of different numbers can never be compared at all",
+      "Yes, but only when both routes are longer than 20 blocks",
+    ],
+    choicesEs: [
+      "No — cada fracción es de una ruta distinta, así que hay que comparar las cuadras reales",
+      "Sí — 3/4 es mayor que 1/2, así que quien caminó 3/4 siempre fue más lejos",
+      "No — las fracciones de números distintos nunca se pueden comparar",
+      "Sí, pero solo cuando las dos rutas miden más de 20 cuadras",
+    ],
+    correctIndex: 0,
+    explanation:
+      "If Ana's route were 40 blocks instead, 1/2 of 40 = 20 blocks, which beats Ben's 15 — same fractions, opposite answer. The size of the whole decides as much as the fraction does.",
+    explanationEs:
+      "Si la ruta de Ana midiera 40 cuadras, 1/2 de 40 = 20 cuadras, más que las 15 de Ben — las mismas fracciones, respuesta opuesta. El tamaño del entero decide tanto como la fracción.",
+    choiceFeedback: [
+      "",
+      "Try it with a longer route for Ana — say 40 blocks. Does 3/4 still win?",
+      "They can be compared — you just have to turn each one into a number of blocks first.",
+      "Try Ana's route at 40 blocks. The rule breaks without any route being short.",
+    ],
+    choiceFeedbackEs: [
+      "",
+      "Pruébalo con una ruta más larga para Ana, digamos 40 cuadras. ¿Sigue ganando 3/4?",
+      "Sí se pueden comparar: solo hay que convertir cada una en un número de cuadras primero.",
+      "Prueba la ruta de Ana con 40 cuadras. La regla se rompe sin que ninguna ruta sea corta.",
+    ],
+    hints: [
+      "Try changing Ana's route length and see whether the answer changes.",
+      "What is 1/2 of 40? Compare it with Ben's 15.",
+    ],
+    hintsEs: [
+      "Prueba a cambiar la longitud de la ruta de Ana y mira si cambia la respuesta.",
+      "¿Cuánto es 1/2 de 40? Compáralo con las 15 de Ben.",
+    ],
+  },
+  {
+    // 6. TRANSFER — a third student, and the answer is a TIE, which forces a
+    // real comparison rather than a scan for the biggest fraction.
+    type: "open-response",
+    stem: "A third student, Cam, has walked 2/3 of an 18-block route. Work out how far Cam has walked, then place all three students in order. Say what strategy you used.",
+    stemEs:
+      "Un tercer estudiante, Cam, ha caminado 2/3 de una ruta de 18 cuadras. Calcula cuánto ha caminado Cam y luego ordena a los tres estudiantes. Di qué estrategia usaste.",
+    modelAnswer:
+      "18 ÷ 3 = 6, and 2 parts is 6 × 2 = 12 blocks. So Cam walked 12, the same as Ana, and Ben walked 15. Ben is farthest, and Cam and Ana are tied. My strategy was to divide by the denominator to get one part, then multiply by the numerator.",
+    modelAnswerEs:
+      "18 ÷ 3 = 6, y 2 partes son 6 × 2 = 12 cuadras. Así que Cam caminó 12, igual que Ana, y Ben caminó 15. Ben es el que más lejos llegó, y Cam y Ana están empatados. Mi estrategia fue dividir entre el denominador para obtener una parte y luego multiplicar por el numerador.",
+    sentenceStems: [
+      "Cam walked ___ blocks, because ___ .",
+      "In order from farthest: ___ .",
+      "My strategy was to ___ .",
+    ],
+  },
+];
+
+const LESSON_1_2_CHALLENGE = [
+  {
+    // 1. ERROR ANALYSIS on reasoning that reaches the RIGHT answer — the hardest
+    // kind to catch, and the one this lesson's trap produces.
+    type: "open-response",
+    stem: "Ana walked 1/2 of 24 blocks; Ben walked 3/4 of 20. Dana says: “3/4 is bigger than 1/2, so Ben walked farther.” Her conclusion is correct — but her reasoning is not. Explain why the reasoning fails, and give a route length for Ana that would make her conclusion wrong.",
+    stemEs:
+      "Ana caminó 1/2 de 24 cuadras; Ben caminó 3/4 de 20. Dana dice: “3/4 es mayor que 1/2, así que Ben caminó más lejos”. Su conclusión es correcta, pero su razonamiento no. Explica por qué falla el razonamiento y da una longitud de ruta para Ana que haría su conclusión incorrecta.",
+    modelAnswer:
+      "Dana compared the fractions instead of the distances, and the two fractions are of different wholes — 24 and 20. She got lucky: 3/4 of 20 is 15 and 1/2 of 24 is 12. If Ana's route were 40 blocks, 1/2 of 40 = 20, which is more than Ben's 15, so the same reasoning would give the wrong answer.",
+    modelAnswerEs:
+      "Dana comparó las fracciones en vez de las distancias, y las dos fracciones son de enteros distintos: 24 y 20. Tuvo suerte: 3/4 de 20 es 15 y 1/2 de 24 es 12. Si la ruta de Ana midiera 40 cuadras, 1/2 de 40 = 20, más que las 15 de Ben, así que el mismo razonamiento daría la respuesta equivocada.",
+    sentenceStems: [
+      "Dana compared ___ instead of ___ .",
+      "It works here only because ___ .",
+      "If Ana's route were ___ blocks, then ___ .",
+    ],
+  },
+  {
+    // 2. REVERSE THE PROBLEM — given the part, find the whole.
+    type: "multiple-choice",
+    stem: "A student has walked 2/3 of her route and has covered 14 blocks. How long is the whole route?",
+    stemEs:
+      "Una estudiante ha caminado 2/3 de su ruta y ha recorrido 14 cuadras. ¿Cuánto mide la ruta completa?",
+    choices: ["21 blocks", "28 blocks", "9 1/3 blocks", "42 blocks"],
+    choicesEs: ["21 cuadras", "28 cuadras", "9 1/3 cuadras", "42 cuadras"],
+    correctIndex: 0,
+    explanation:
+      "If 2 parts are 14 blocks, one part is 7, and the whole is 3 parts: 21 blocks. Check: 2/3 of 21 = 14.",
+    explanationEs:
+      "Si 2 partes son 14 cuadras, una parte son 7, y el entero son 3 partes: 21 cuadras. Comprueba: 2/3 de 21 = 14.",
+    choiceFeedback: [
+      "",
+      "That doubles the 14. The 14 is already two of the three parts.",
+      "That takes 2/3 OF 14, but 14 is the part, not the whole.",
+      "That trebles the 14. Check by taking 2/3 of your answer — do you get back to 14?",
+    ],
+    choiceFeedbackEs: [
+      "",
+      "Eso duplica el 14. El 14 ya son dos de las tres partes.",
+      "Eso toma 2/3 DE 14, pero 14 es la parte, no el entero.",
+      "Eso triplica el 14. Comprueba tomando 2/3 de tu respuesta: ¿vuelves a 14?",
+    ],
+    hints: [
+      "The 14 blocks are 2 of the 3 equal parts. How big is one part?",
+      "One part is 7. How many parts make the whole route?",
+    ],
+    hintsEs: [
+      "Las 14 cuadras son 2 de las 3 partes iguales. ¿Cuánto mide una parte?",
+      "Una parte son 7. ¿Cuántas partes forman la ruta completa?",
+    ],
+  },
+  {
+    // 3. ALWAYS / SOMETIMES / NEVER — improper fractions break the rule most
+    // students carry from Grade 5.
+    type: "multiple-choice",
+    stem: "Claim: “Taking a fraction of a whole number always gives you a smaller number.” Always, sometimes, or never true?",
+    stemEs:
+      "Afirmación: “Tomar una fracción de un número entero siempre da un número más pequeño”. ¿Siempre, a veces o nunca es verdadera?",
+    choices: [
+      "Sometimes — only when the fraction is less than 1",
+      "Always — a fraction is a part, and a part is smaller",
+      "Never — the answer is always larger",
+      "Sometimes — it depends on whether the whole number is even",
+    ],
+    choicesEs: [
+      "A veces — solo cuando la fracción es menor que 1",
+      "Siempre — una fracción es una parte, y una parte es más pequeña",
+      "Nunca — la respuesta siempre es más grande",
+      "A veces — depende de si el número entero es par",
+    ],
+    correctIndex: 0,
+    explanation:
+      "3/2 of 8 is 12, which is larger than 8, and 4/4 of 8 is exactly 8. The claim holds only while the fraction is below 1.",
+    explanationEs:
+      "3/2 de 8 es 12, mayor que 8, y 4/4 de 8 es exactamente 8. La afirmación solo se cumple mientras la fracción sea menor que 1.",
+    choiceFeedback: [
+      "",
+      "Try a fraction greater than 1, like 3/2 of 8.",
+      "Try 1/2 of 8 — the answer is smaller. So it is not never.",
+      "Try 3/2 of 8 and 3/2 of 9. Evenness is not what decides it.",
+    ],
+    choiceFeedbackEs: [
+      "",
+      "Prueba una fracción mayor que 1, como 3/2 de 8.",
+      "Prueba 1/2 de 8: la respuesta es más pequeña. Así que no es nunca.",
+      "Prueba 3/2 de 8 y 3/2 de 9. Ser par no es lo que lo decide.",
+    ],
+    hints: [
+      "Try to find one fraction that breaks the claim.",
+      "What happens with a fraction bigger than 1, like 3/2?",
+    ],
+    hintsEs: [
+      "Intenta encontrar una fracción que rompa la afirmación.",
+      "¿Qué pasa con una fracción mayor que 1, como 3/2?",
+    ],
+  },
+  {
+    // 4. CREATE TO A CONSTRAINT — 1/2 is excluded so the easy route is closed.
+    type: "open-response",
+    stem: "Invent a route length and a fraction so that the student walks exactly 18 blocks. Your fraction may NOT be 1/2. Show that your example works.",
+    stemEs:
+      "Inventa una longitud de ruta y una fracción para que el estudiante camine exactamente 18 cuadras. Tu fracción NO puede ser 1/2. Muestra que tu ejemplo funciona.",
+    modelAnswer:
+      "A 24-block route walked 3/4 of the way: 24 ÷ 4 = 6, and 6 × 3 = 18 blocks. Another that works is 2/3 of a 27-block route: 27 ÷ 3 = 9, and 9 × 2 = 18.",
+    modelAnswerEs:
+      "Una ruta de 24 cuadras caminada 3/4: 24 ÷ 4 = 6, y 6 × 3 = 18 cuadras. Otra que funciona es 2/3 de una ruta de 27 cuadras: 27 ÷ 3 = 9, y 9 × 2 = 18.",
+    sentenceStems: [
+      "My route is ___ blocks and my fraction is ___ .",
+      "One part is ___ , so ___ parts is 18.",
+    ],
+  },
+  {
+    // 5. COMPARE STRATEGIES — both correct, one easier, and the trap is the
+    // invented rule in choice D.
+    type: "multiple-choice",
+    stem: "To find 3/4 of 20, Sam divides by 4 and then multiplies by 3. Nia multiplies by 3 and then divides by 4. Both get 15. Which is easier for these numbers, and why?",
+    stemEs:
+      "Para hallar 3/4 de 20, Sam divide entre 4 y luego multiplica por 3. Nia multiplica por 3 y luego divide entre 4. Ambos obtienen 15. ¿Cuál es más fácil con estos números y por qué?",
+    choices: [
+      "Sam's — 20 divides evenly by 4, so the numbers stay small",
+      "Nia's — multiplying first is always easier than dividing first",
+      "They cannot both be correct, so one of them made an error",
+      "Sam's — because you must always divide before you multiply",
+    ],
+    choicesEs: [
+      "La de Sam — 20 se divide exactamente entre 4, así que los números se mantienen pequeños",
+      "La de Nia — multiplicar primero siempre es más fácil que dividir primero",
+      "No pueden ser correctas las dos, así que uno se equivocó",
+      "La de Sam — porque siempre hay que dividir antes de multiplicar",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Sam works 20 ÷ 4 = 5, then 5 × 3 = 15. Nia works 20 × 3 = 60, then 60 ÷ 4 = 15. Both are valid; Sam's keeps the numbers small because 4 divides 20 evenly. Neither order is a rule.",
+    explanationEs:
+      "Sam hace 20 ÷ 4 = 5 y luego 5 × 3 = 15. Nia hace 20 × 3 = 60 y luego 60 ÷ 4 = 15. Las dos son válidas; la de Sam mantiene pequeños los números porque 4 divide exactamente a 20. Ningún orden es una regla.",
+    choiceFeedback: [
+      "",
+      "Try 2/3 of 14 both ways — does multiplying first stay easier there?",
+      "Work both out. 20 ÷ 4 × 3 and 20 × 3 ÷ 4 both land on 15.",
+      "There is no such rule. Nia's order works too — it just makes bigger numbers here.",
+    ],
+    choiceFeedbackEs: [
+      "",
+      "Prueba 2/3 de 14 de las dos formas: ¿multiplicar primero sigue siendo más fácil ahí?",
+      "Calcula las dos. 20 ÷ 4 × 3 y 20 × 3 ÷ 4 dan 15 igual.",
+      "No existe tal regla. El orden de Nia también funciona: solo genera números más grandes aquí.",
+    ],
+    hints: [
+      "Work both methods all the way through before choosing.",
+      "Which method never makes you handle a number bigger than 20?",
+    ],
+    hintsEs: [
+      "Haz los dos métodos completos antes de elegir.",
+      "¿Qué método nunca te hace manejar un número mayor que 20?",
+    ],
+  },
+  {
+    // 6. GENERALIZE the strategy choice, with one example each way — the lesson's
+    // key idea is trying another strategy when one hits a dead end.
+    type: "open-response",
+    stem: "When is it easier to divide first, and when is it easier to multiply first, when finding a fraction of a whole number? Give one example of each.",
+    stemEs:
+      "¿Cuándo es más fácil dividir primero y cuándo multiplicar primero al hallar una fracción de un número entero? Da un ejemplo de cada caso.",
+    modelAnswer:
+      "Divide first when the denominator goes into the whole number evenly: for 3/4 of 20, 20 ÷ 4 = 5 and 5 × 3 = 15, and every number stays small. Multiply first when it does not divide evenly: for 2/3 of 14, dividing gives a messy 14 ÷ 3, but 14 × 2 = 28 and 28 ÷ 3 = 9 1/3.",
+    modelAnswerEs:
+      "Divide primero cuando el denominador cabe exacto en el número entero: para 3/4 de 20, 20 ÷ 4 = 5 y 5 × 3 = 15, y todos los números quedan pequeños. Multiplica primero cuando no cabe exacto: para 2/3 de 14, dividir da un 14 ÷ 3 incómodo, pero 14 × 2 = 28 y 28 ÷ 3 = 9 1/3.",
+    sentenceStems: [
+      "Divide first when ___ . For example, ___ .",
+      "Multiply first when ___ . For example, ___ .",
+    ],
+  },
+];
+
+const LESSON_1_2_MOVES = {
+  1: {
+    ask: "Which two numbers are you actually comparing — the fractions, or the blocks?",
+    lookFor:
+      "A student who converts each fraction to a distance BEFORE deciding who walked farther.",
+    ifStuck:
+      "Cover Ben's route. Ask for one part of Ana's 24 first, then how many parts she walked.",
+    extend: "Ask what route length would make Ana the farther walker, and how they found it.",
+  },
+  2: {
+    ask: "Dana reached the right answer with the wrong reasoning. What made it work this time?",
+    lookFor:
+      "A student who tests a claim by changing one quantity to try to break it, rather than by re-checking the arithmetic.",
+    ifStuck:
+      "Ask them to keep both fractions and change only Ana's route length until the answer flips.",
+    extend:
+      "Ask when dividing first beats multiplying first, and to name a case where it does not.",
+  },
+};
+
 /*
  * Facilitation for an authored bank. The generated moves are derived from a
  * lesson's misconception tags, which for 1-1 produced teacher language about
@@ -520,6 +925,7 @@ const LESSON_1_1_MOVES = {
 
 export const AUTHORED_BANKS = {
   "1-1": { 1: LESSON_1_1_SUPPORT, 2: LESSON_1_1_CHALLENGE, moves: LESSON_1_1_MOVES },
+  "1-2": { 1: LESSON_1_2_SUPPORT, 2: LESSON_1_2_CHALLENGE, moves: LESSON_1_2_MOVES },
 };
 
 /** Authored teacher moves for a lesson + group, or null. */
