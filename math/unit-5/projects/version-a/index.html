@@ -1705,6 +1705,7 @@
         if (Math.abs(userCost - expected) < 0.05) {
           SOLVED.cost = true;
           calcFlooring();
+          comparePeer();
           return;
         }
         const html = isEs ? `
@@ -1824,6 +1825,19 @@
 
       // ---- Peer Comparison ----
       function comparePeer() {
+        /* This panel computes the student's OWN total area and flooring cost —
+           the two findings steps 2/3 and 4 ask them to produce. Without this
+           gate a student could skip those steps, type a partner's two numbers
+           here, and read their own area and cost off the comparison. Ask for
+           the student's own work first; there is nothing to compare until then.
+           (Unit 10 version-a's partner panel already worked this way.) */
+        if (!SOLVED.floor || !SOLVED.nook || !SOLVED.cost) {
+          const needEs = document.body.classList.contains('es');
+          showReadout('peer-out', needEs
+            ? '<strong>Primero termina tus propios cálculos.</strong><br><small>Necesitas el área de tu habitación, el área del rincón y tu costo total antes de compararlos con los de tu compañero.</small>'
+            : '<strong>Finish your own calculations first.</strong><br><small>You need your room area, your nook area, and your total cost before you can compare them with your partner\'s.</small>');
+          return;
+        }
         const len = parseFloat(document.getElementById('f-length').value) || 0;
         const wid = parseFloat(document.getElementById('f-width').value) || 0;
         const base = parseFloat(document.getElementById('t-base').value) || 0;

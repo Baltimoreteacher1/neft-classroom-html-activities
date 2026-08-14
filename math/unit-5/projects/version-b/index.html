@@ -1732,7 +1732,7 @@
         if (pSel === 'custom') pPrice = parseFloat(document.getElementById('custom-paint-price').value) || 0;
         const gallons = Math.max(0, Math.ceil(Math.max(0, 2 * (l + w) * h - win - door) / 350)) || 0;
         const expected = l * w * fPrice + gallons * pPrice;
-        if (Math.abs(user - expected) < 0.05) { SOLVED.cost = true; calcCost(); return; }
+        if (Math.abs(user - expected) < 0.05) { SOLVED.cost = true; calcCost(); comparePeer(); return; }
         const floorOnly = Math.abs(user - l * w * fPrice) < 0.05;
         mbMiss('cost-out',
           'You entered ' + '$' + user.toFixed(2) + '. ' + (floorOnly ? 'That is the flooring only — the paint still has to be added.' : 'Total = (floor area x flooring price) + (gallons x paint price). Remember you buy WHOLE gallons.') + '',
@@ -1914,6 +1914,18 @@
       }
 
       function comparePeer() {
+      /* This panel computes the student's OWN floor area, paint gallons and
+         total cost — the three findings the steps ask them to produce. Without
+         this gate a student could skip those steps, type a partner's numbers
+         here, and read their own results off the comparison. Ask for the
+         student's own work first; there is nothing to compare until then. */
+      if (!SOLVED.floor || !SOLVED.paint || !SOLVED.cost) {
+        const needEs = document.body.classList.contains('es');
+        showReadout('peer-out', needEs
+          ? '<strong>Primero termina tus propios cálculos.</strong><br><small>Necesitas el área del piso, los galones de pintura y tu costo total antes de compararlos con los de tu compañero.</small>'
+          : '<strong>Finish your own calculations first.</strong><br><small>You need your floor area, your paint gallons, and your total cost before you can compare them with your partner\'s.</small>');
+        return;
+      }
         const l = parseFloat(document.getElementById('floor-length').value);
         const w = parseFloat(document.getElementById('floor-width').value);
         const floorArea = l * w;
