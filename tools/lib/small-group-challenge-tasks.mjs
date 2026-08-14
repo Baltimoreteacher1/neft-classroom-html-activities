@@ -339,6 +339,187 @@ export const CHALLENGE_TASKS = {
       },
     ],
   },
+
+  // -------------------------------------------------------------------------
+  // 2026-08-14 alignment audit — challenge buckets carrying approaching-level
+  // recall. The remix promotes inherited core items into the challenge
+  // sequence; in these four lessons the promoted items were one-step
+  // computations or duplicates, so mastery students spent extension time on
+  // work below the guided set. Each spec drops the confirmed recall items and
+  // adds one authored deepening task. Depth already present (error analyses,
+  // interpretation items) is untouched.
+  // -------------------------------------------------------------------------
+  "2-9-group2": {
+    // ext3/ext5 are single-subtraction items; ext4 is the CORE APPROACHING
+    // MAD item promoted verbatim. ext6 (interpretation) and ext7 (the full
+    // deviation table) stay.
+    drop: [
+      "The mean of a data set is 15. One value is 11",
+      "A data set has absolute deviations of 3, 1, 5, 2, 4",
+      "The mean of a data set is 20. A value is 26",
+    ],
+    add: [
+      {
+        // Always/sometimes/never on MAD = 0 — a generalization no computation
+        // item can reach. Checked: identical values ⇒ every deviation 0 ⇒
+        // MAD 0; any two different values ⇒ some positive deviation ⇒ MAD > 0.
+        type: "multiple-choice",
+        stem: "Claim: “A data set's MAD can equal 0.” Always, sometimes, or never true — and when?",
+        stemEs:
+          "Afirmación: “La MAD de un conjunto de datos puede ser 0”. ¿Siempre, a veces o nunca es verdadera — y cuándo?",
+        choices: [
+          "Sometimes — exactly when every value in the set is identical",
+          "Never — absolute values are always positive, so their average is too",
+          "Always — every data set has SOME value equal to its mean",
+          "Sometimes — whenever the mean happens to be 0",
+        ],
+        choicesEs: [
+          "A veces — exactamente cuando todos los valores del conjunto son idénticos",
+          "Nunca — los valores absolutos siempre son positivos, así que su promedio también",
+          "Siempre — todo conjunto tiene ALGÚN valor igual a su media",
+          "A veces — siempre que la media resulte ser 0",
+        ],
+        correctIndex: 0,
+        explanation:
+          "If every value is the same — say 7, 7, 7, 7 — the mean is 7, every deviation is 0, and the MAD is 0: zero spread. The moment any two values differ, some deviation is positive and the MAD rises above 0. MAD measures spread, and 0 spread means no variation at all.",
+        explanationEs:
+          "Si todos los valores son iguales — por ejemplo 7, 7, 7, 7 — la media es 7, cada desviación es 0 y la MAD es 0: cero dispersión. En cuanto dos valores difieren, alguna desviación es positiva y la MAD sube de 0. La MAD mide la dispersión, y dispersión 0 significa ninguna variación.",
+        choiceFeedback: [
+          "",
+          "|0| = 0, which is not positive. Try the data set 7, 7, 7, 7 — what is each deviation?",
+          "Having one value at the mean does not make ALL deviations zero. What would every value have to be?",
+          "Try 5, 5, 5 (mean 5, MAD 0) against −2, 0, 2 (mean 0, MAD above 0). Is the mean's value what decides?",
+        ],
+        choiceFeedbackEs: [
+          "",
+          "|0| = 0, que no es positivo. Prueba el conjunto 7, 7, 7, 7: ¿cuánto vale cada desviación?",
+          "Que un valor esté en la media no hace cero TODAS las desviaciones. ¿Cómo tendrían que ser todos los valores?",
+          "Prueba 5, 5, 5 (media 5, MAD 0) contra −2, 0, 2 (media 0, MAD mayor que 0). ¿Decide el valor de la media?",
+        ],
+        hints: [
+          "Build a tiny data set and compute its MAD by hand.",
+          "What data set would make EVERY deviation equal 0?",
+          "Try 7, 7, 7, 7 — then change one value to 8 and watch what happens to the MAD.",
+        ],
+        hintsEs: [
+          "Construye un conjunto pequeño y calcula su MAD a mano.",
+          "¿Qué conjunto haría que TODAS las desviaciones fueran 0?",
+          "Prueba 7, 7, 7, 7 — luego cambia un valor a 8 y observa qué pasa con la MAD.",
+        ],
+      },
+    ],
+  },
+
+  "5-3-group2": {
+    // ext3 repeats the guided computation, ext5 is first-step recall, ext7
+    // repeats ext2's forgot-the-half error with near-identical numbers.
+    drop: [
+      "What is the area of a trapezoid with bases 6 cm and 10 cm",
+      "What is the first step when finding the area of a trapezoid",
+      "Find the Missing Half", // ext2 is "Level 2 Extension — The Missing Half"; this fragment hits only the duplicate
+    ],
+    add: [
+      {
+        // CREATE to a constraint — checked: (4 + 8) ÷ 2 × 4 = 24, and the
+        // alternative (2 + 6) ÷ 2 × 6 = 24 shows multiple valid designs.
+        type: "open-response",
+        stem: "Design a trapezoid whose area is exactly 24 sq ft, where one base is 4 ft LONGER than the other. Give both bases and the height, and show your design checks out. Could a classmate's correct design use different numbers than yours?",
+        stemEs:
+          "Diseña un trapecio cuya área sea exactamente 24 pies², donde una base sea 4 pies MÁS LARGA que la otra. Da las dos bases y la altura, y demuestra que tu diseño cumple. ¿Podría el diseño correcto de un compañero usar números distintos a los tuyos?",
+        modelAnswer:
+          "Bases 4 ft and 8 ft with height 4 ft: (4 + 8) ÷ 2 = 6, and 6 × 4 = 24 sq ft ✓. Yes — a classmate could use bases 2 ft and 6 ft with height 6 ft: (2 + 6) ÷ 2 = 4, and 4 × 6 = 24 sq ft. Any base pair 4 apart whose average divides 24 gives a valid height.",
+        modelAnswerEs:
+          "Bases de 4 y 8 pies con altura 4: (4 + 8) ÷ 2 = 6, y 6 × 4 = 24 pies² ✓. Sí — un compañero podría usar bases de 2 y 6 con altura 6: (2 + 6) ÷ 2 = 4, y 4 × 6 = 24 pies². Cualquier par de bases con diferencia 4 cuya media divida a 24 da una altura válida.",
+        sentenceStems: [
+          "My bases are ___ and ___ , and my height is ___ .",
+          "Check: ( ___ + ___ ) ÷ 2 × ___ = 24.",
+          "A different correct design could be ___ .",
+        ],
+      },
+    ],
+  },
+
+  "7-6-group2": {
+    // ext4 duplicates the guided same-side case (both points in quadrant I);
+    // ext5/ext6 stay — they cross zero, which is this lesson's real hurdle.
+    drop: ["The Bank is at (2, 3) and the Library is at (2, 9)"],
+    add: [
+      {
+        // Run the distance backwards — two valid endpoints. Checked:
+        // −2 + 7 = 5 and −2 − 7 = −9; the distractors measure 11, 3, and a
+        // horizontal move.
+        type: "multiple-choice",
+        stem: "A vertical path starts at (3, −2) and is exactly 7 blocks long. Where could it end?",
+        stemEs:
+          "Un camino vertical empieza en (3, −2) y mide exactamente 7 cuadras. ¿Dónde podría terminar?",
+        choices: [
+          "(3, 5) or (3, −9) — seven blocks up, or seven blocks down",
+          "(3, 5) only — distances always count upward",
+          "(10, −2) or (−4, −2)",
+          "(3, 9) or (3, −5)",
+        ],
+        choicesEs: [
+          "(3, 5) o (3, −9) — siete cuadras hacia arriba o siete hacia abajo",
+          "(3, 5) solamente — las distancias siempre se cuentan hacia arriba",
+          "(10, −2) o (−4, −2)",
+          "(3, 9) o (3, −5)",
+        ],
+        correctIndex: 0,
+        explanation:
+          "Vertical means x stays 3 and y moves 7: up gives −2 + 7 = 5, down gives −2 − 7 = −9. Both check: |5 − (−2)| = 7 and |−9 − (−2)| = 7. A distance fixes how far, never which direction.",
+        explanationEs:
+          "Vertical significa que x se queda en 3 y y se mueve 7: hacia arriba, −2 + 7 = 5; hacia abajo, −2 − 7 = −9. Ambos cumplen: |5 − (−2)| = 7 y |−9 − (−2)| = 7. Una distancia fija cuánto, nunca hacia dónde.",
+        choiceFeedback: [
+          "",
+          "Check the downward option: is |−9 − (−2)| also 7? Distance has no preferred direction.",
+          "Those endpoints changed the x-coordinate — that is a HORIZONTAL path.",
+          "Measure them: |9 − (−2)| = 11 and |−5 − (−2)| = 3. Neither is 7 blocks.",
+        ],
+        choiceFeedbackEs: [
+          "",
+          "Revisa la opción hacia abajo: ¿|−9 − (−2)| también es 7? La distancia no tiene dirección preferida.",
+          "Esos extremos cambiaron la coordenada x: ese es un camino HORIZONTAL.",
+          "Mídelos: |9 − (−2)| = 11 y |−5 − (−2)| = 3. Ninguno mide 7 cuadras.",
+        ],
+        hints: [
+          "A vertical path keeps x the same. Which coordinate moves?",
+          "From y = −2, travel 7 in each direction along the y-axis.",
+          "−2 + 7 and −2 − 7. Check each candidate with |end − start| = 7.",
+        ],
+        hintsEs: [
+          "Un camino vertical mantiene la x igual. ¿Qué coordenada se mueve?",
+          "Desde y = −2, viaja 7 en cada dirección por el eje y.",
+          "−2 + 7 y −2 − 7. Comprueba cada candidato con |final − inicio| = 7.",
+        ],
+      },
+    ],
+  },
+
+  "9-3-group2": {
+    // ext6 is one multiplication the guided bank now rehearses; ext7 is
+    // definition recall. The lesson also had no open-response anywhere — the
+    // added task is the missing written-justification artifact.
+    drop: ["What is the total cost of 2 months of membership", "what does m represent"],
+    add: [
+      {
+        // Compare two rate equations. Checked: 15(1)=15 vs 12(1)+6=18;
+        // 15(2)=30 vs 12(2)+6=30; 15(4)=60 vs 12(4)+6=54.
+        type: "open-response",
+        stem: "The canoe shop's equation is c = 15h. A rival shop advertises c = 12h + 6 and claims “we are ALWAYS cheaper.” Test the claim with at least two values of h, then tell the truth about when each shop is the better deal.",
+        stemEs:
+          "La ecuación del local de canoas es c = 15h. Un local rival anuncia c = 12h + 6 y afirma: “SIEMPRE somos más baratos”. Pon a prueba la afirmación con al menos dos valores de h y di la verdad sobre cuándo conviene cada local.",
+        modelAnswer:
+          "At h = 1: the first shop charges 15(1) = $15, the rival 12(1) + 6 = $18 — the claim already fails. At h = 2 both charge $30. At h = 4: 15(4) = $60 against 12(4) + 6 = $54, so the rival wins. The truth: the rival is cheaper only for rentals LONGER than 2 hours, because its lower rate needs time to make up the $6 fee.",
+        modelAnswerEs:
+          "Con h = 1: el primero cobra 15(1) = $15 y el rival 12(1) + 6 = $18 — la afirmación ya falla. Con h = 2 ambos cobran $30. Con h = 4: 15(4) = $60 contra 12(4) + 6 = $54, y gana el rival. La verdad: el rival es más barato solo para rentas de MÁS de 2 horas, porque su tarifa menor necesita tiempo para compensar los $6 fijos.",
+        sentenceStems: [
+          "At h = ___ , the first shop charges ___ and the rival charges ___ .",
+          "The claim is ___ , because ___ .",
+          "The rival is the better deal when ___ .",
+        ],
+      },
+    ],
+  },
 };
 
 /**
@@ -358,10 +539,10 @@ export function applyChallengeTasks(lessonId, inherited) {
   const unmatchedDrops = [];
   for (const fragment of spec.drop || []) {
     const needle = fragment.toLowerCase();
+    // Match stem OR title: error-analysis items carry their identity in
+    // `title` and have no stem, so a stem-only matcher could never drop one.
     const hit = inherited.find((it) =>
-      String(it.stem || "")
-        .toLowerCase()
-        .includes(needle),
+      `${it.stem || ""} ${it.title || ""}`.toLowerCase().includes(needle),
     );
     if (hit) dropped.push(hit);
     else unmatchedDrops.push(fragment);
