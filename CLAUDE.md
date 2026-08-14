@@ -307,11 +307,21 @@ ratchet).
 >
 > `pre-bash-guard.sh` is now committed, so the wiring resolves on a fresh clone.
 >
-> **There is no `validate:graph` script.** This paragraph used to tell you to run
-> one, claiming it checks every hook command in `settings.json` against the
-> filesystem. It was never written, so nothing gates that today and a hook
-> pointing at a missing script would once again go unnoticed — the exact failure
-> the paragraph above describes. Corrected 2026-08-14, when
-> `tools/documented-gates-wired.test.mjs` — added for the identical mismatch in
-> the reveal-assets gate — found it. Verify a hook by RUNNING it, which is what
-> the paragraph above already tells you and is now the only check there is.
+> **`npm run validate:graph` now gates this.** For eight days this paragraph told
+> you to run a script that did not exist; the correction that replaced it then
+> went too far the other way and said the check "was never written". Both were
+> wrong. `tools/graph/validate-graph.mjs` HAS been in the repo the whole time and
+> does exactly the documented job — plus two more invariants — it simply had no
+> npm script, so nothing ever ran it:
+>
+>   1. every artifact in `tools/graph/deploy-graph.json` exists at the path claimed;
+>   2. every mirror names the artifact it mirrors AND a gate (an ungated mirror is
+>      how fix-it-design-challenge drifted 3,800 lines behind the page it mirrored);
+>   3. **every hook command in `.claude/settings.json` points at a file that
+>      exists** — the check that would have caught `pre-bash-guard.sh` being wired
+>      into `PreToolUse` while absent from the repo.
+>
+> Wired 2026-08-14 into `validate` and into `qa:fast` coverage for
+> `tools/graph/**` and `.claude/{settings.json,hooks/}`. Cross-repo paths are
+> reported as un-checkable rather than passed silently. Verify a hook by RUNNING
+> it as well — the gate proves the file exists, not that it behaves.

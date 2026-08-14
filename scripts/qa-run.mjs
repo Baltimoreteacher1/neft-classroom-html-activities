@@ -162,6 +162,10 @@ const COVERAGE = [
   [/^lessons\/[^/]+\/reveal-assets\//, ["validate:reveal-assets"]],
   // the retention manifest is part of the same contract as the files it records
   [/^data\/reveal-assets-retained\.json$/, ["validate:reveal-assets"]],
+  // the deploy graph maps artifacts, mirrors and hook commands to real files;
+  // editing any of those three is how the map starts lying
+  [/^tools\/graph\//, ["validate:graph"]],
+  [/^\.claude\/(settings\.json|hooks\/)/, ["validate:graph"]],
   [
     /^lessons\//,
     ["validate:static", "validate:save-resume", "validate:lesson-boot", "audit:links"],
