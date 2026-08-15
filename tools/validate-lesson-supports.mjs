@@ -31,6 +31,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildOverrides } from "../scripts/generate-support-overrides.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MODULE_PATH = join(ROOT, "shared", "supports", "lesson-supports.js");
@@ -39,6 +40,17 @@ const SCHEMA_PATH = join(ROOT, "assets", "learning-supports", "supports-schema.j
 const ADAPT_PATH = join(ROOT, "assets", "learning-supports", "supports-adaptations.js");
 const MANIFEST_PATH = join(ROOT, "assets", "learning-supports", "manifest.json");
 const OVERRIDES_PATH = join(ROOT, "data", "lesson-support-overrides.json");
+const REVIEW_PATH = join(ROOT, "data", "lesson-support-applicability-review.json");
+
+/* The generated print surfaces. Each must stamp the lesson id, load the print
+ * support layer, and emit at least one semantic slot — otherwise a teacher who
+ * configured supports gets a packet that silently ignores them. */
+const PRINT_GENERATORS = [
+  ["scripts/generate-printable-lesson.mjs", "the printable lesson packet"],
+  ["scripts/generate-worksheets.mjs", "practice worksheets"],
+  ["scripts/generate-handout-html.mjs", "the student handout"],
+  ["scripts/generate-notes.mjs", "the guided-notes packet"],
+];
 
 const errors = [];
 const fail = (msg) => errors.push(msg);
@@ -65,7 +77,15 @@ function loadModule() {
 }
 
 function main() {
-  for (const p of [MODULE_PATH, LS_PATH, SCHEMA_PATH, ADAPT_PATH, MANIFEST_PATH, OVERRIDES_PATH]) {
+  for (const p of [
+    MODULE_PATH,
+    LS_PATH,
+    SCHEMA_PATH,
+    ADAPT_PATH,
+    MANIFEST_PATH,
+    OVERRIDES_PATH,
+    REVIEW_PATH,
+  ]) {
     if (!existsSync(p)) {
       console.error(`FAIL validate:lesson-supports — missing ${p}`);
       process.exit(1);
@@ -101,6 +121,7 @@ function main() {
   }
 
   const LS = loadModule();
+  const manifestForReview = JSON.parse(readFileSync(MANIFEST_PATH, "utf8"));
 
   /* -- 1. capability reality ---------------------------------------------- */
   const seen = new Set();
@@ -178,7 +199,7 @@ function main() {
   if (profile.keys.length !== 1) fail("normalizeProfile did not reduce to the one valid key");
 
   /* -- 5. manifest variant data -------------------------------------------- */
-  const manifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf8"));
+  const manifest = manifestForReview;
   const lessonIds = Object.keys(manifest);
   let variantCount = 0;
   for (const id of lessonIds) {
@@ -203,7 +224,115 @@ function main() {
     );
   }
 
-  /* -- 6. overrides -------------------------------------------------------- */
+  /* -- 6a. MODALITY: every support declares what it does on every surface ---
+   *
+   * This is the check that makes the print surface trustworthy. A support with
+   * no modality rule would be free to be active on screen and simply absent
+   * from the printed packet — the exact divergence this feature exists to
+   * remove — and nothing else in the build could see it. */
+  for (const s of LS.CATALOG) {
+    const m = LS.MODALITY[s.key];
+    if (!m) {
+      fail(
+        `Support ${s.key} has no MODALITY rule — screen and print are free to disagree about it silently`,
+      );
+      continue;
+    }
+    for (const surface of LS.SURFACES) {
+      const v = m[surface];
+      if (!["active", "teacher-note", "n/a"].includes(v)) {
+        fail(
+          `Support ${s.key} declares modality "${v}" for ${surface}; must be active | teacher-note | n/a`,
+        );
+      }
+    }
+    // A teacher-note modality without the note is a promise with nothing behind it.
+    const needsNote = LS.SURFACES.some((x) => m[x] === "teacher-note");
+    if (needsNote && !m.note) {
+      fail(`Support ${s.key} degrades to a teacher note on some surface but records no note text`);
+    }
+    if (m.screen !== "active") {
+      fail(`Support ${s.key} is offered to teachers but is not active on screen`);
+    }
+  }
+  for (const key of Object.keys(LS.MODALITY)) {
+    if (!LS.byKey[key]) fail(`MODALITY names "${key}", which is not in the catalogue`);
+  }
+
+  /* -- 6b. every modification states its consequence in teacher language ---- */
+  for (const s of LS.CATALOG) {
+    if (s.impact !== "modification") continue;
+    if (!LS.MODIFICATION_CONSEQUENCE[s.key]) {
+      fail(
+        `Modification ${s.key} has no recorded consequence — a teacher would not be told what changes`,
+      );
+    }
+  }
+
+  /* -- 6c. the derived override file matches the authored review ------------ */
+  const review = JSON.parse(readFileSync(REVIEW_PATH, "utf8"));
+  const derived = buildOverrides(review);
+  const onDisk = JSON.parse(readFileSync(OVERRIDES_PATH, "utf8"));
+  if (JSON.stringify(derived.lessons) !== JSON.stringify(onDisk.lessons)) {
+    fail(
+      "data/lesson-support-overrides.json is stale — run node scripts/generate-support-overrides.mjs. " +
+        "A suppression that exists only in the derived file has no reason and no evidence behind it.",
+    );
+  }
+  for (const r of review.reviews || []) {
+    if (!manifestForReview[r.lessonId])
+      fail(`Review names lesson "${r.lessonId}", which has no manifest entry`);
+    if (!LS.byKey[r.support])
+      fail(`Review names support "${r.support}", which is not in the catalogue`);
+    if (!["suppress", "allow", "pin"].includes(r.decision)) {
+      fail(`Review for ${r.lessonId}/${r.support} has decision "${r.decision}"`);
+    }
+    if (!r.reason || r.reason.length < 25) {
+      fail(`Review for ${r.lessonId}/${r.support} has no substantive reason recorded`);
+    }
+    if (!Array.isArray(r.evidence) || !r.evidence.length) {
+      fail(`Review for ${r.lessonId}/${r.support} cites no evidence`);
+    }
+    if (!["reviewed", "teacher-review"].includes(r.status)) {
+      fail(`Review for ${r.lessonId}/${r.support} has status "${r.status}"`);
+    }
+    // Titles are not evidence. An earlier pass suppressed a support on 6-7 by
+    // reading its title, and was wrong; this keeps that class of mistake out.
+    if (r.evidence.every((e) => /^title[: ]/i.test(String(e)))) {
+      fail(`Review for ${r.lessonId}/${r.support} cites only the lesson TITLE as evidence`);
+    }
+  }
+
+  /* -- 6d. print surfaces are wired ---------------------------------------- */
+  for (const [file, what] of PRINT_GENERATORS) {
+    const src = readFileSync(join(ROOT, file), "utf8");
+    if (!src.includes("data-ewl-supports-lesson")) {
+      fail(
+        `${file} does not stamp data-ewl-supports-lesson — ${what} would print without supports`,
+      );
+    }
+    if (!src.includes("/shared/supports/print-supports.js")) {
+      fail(`${file} does not load the print support layer — ${what} would print without supports`);
+    }
+    if (!src.includes("data-support-slot")) {
+      fail(`${file} emits no semantic support slot — support blocks would have nowhere to attach`);
+    }
+  }
+  const printLayer = readFileSync(join(ROOT, "shared", "supports", "print-supports.js"), "utf8");
+  if (!printLayer.includes("resolveEffectiveSupports")) {
+    fail(
+      "print-supports.js does not call resolveEffectiveSupports — a second adaptation implementation for print is exactly what must not exist",
+    );
+  }
+  for (const banned of ["applicableSupports(", "MODE_KEYS", "PROFILE_KEYS"]) {
+    if (printLayer.includes(banned)) {
+      fail(
+        `print-supports.js reaches for ${banned} — it must consume the resolver's result, not re-derive it`,
+      );
+    }
+  }
+
+  /* -- 7. overrides -------------------------------------------------------- */
   const overrides = JSON.parse(readFileSync(OVERRIDES_PATH, "utf8"));
   for (const [id, o] of Object.entries(overrides.lessons || {})) {
     if (!manifest[id]) fail(`Override names lesson "${id}", which has no manifest entry`);

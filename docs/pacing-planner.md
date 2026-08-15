@@ -125,6 +125,33 @@ username + `devpw`) and enter `devkey` in the teacher-key field.
 `npm run preview` serves the static page but **not** `/api/pacing`, so the
 planner opens read-only there — which is itself worth checking occasionally.
 
+### Running the AUTHENTICATED smoke test
+
+`npm run smoke:planning` skips its authenticated phase without credentials, and
+production credentials are the wrong thing to reach for: the round trip writes
+and undoes a real day. Point it at the local dev server above instead, whose
+D1 is a disposable local SQLite file:
+
+```sh
+npm run build
+TEACHER_KEY=devkey npx wrangler pages dev dist --port 4577 --local   --binding TEACHER_KEY=devkey SITE_PASSWORD=devpw   --d1 DB=neft-student-progress --compatibility-date=2026-05-25 &
+
+TEACHER_KEY=devkey PLANNER_BASIC_AUTH="teacher:devpw"   node tools/smoke-planning.mjs --base http://localhost:4577
+```
+
+All 14 checks run, including preview-purity, apply, reload, undo and the
+residual-mutation check. Two things were found the first time this phase
+actually executed, both in the TEST rather than the planner:
+
+- it POSTed `writes` with no `inverse`, so `undo` correctly refused with 409
+  "recorded without a reversal" — a shape the real client never sends;
+- it compared the overlay byte for byte afterwards, which can never pass for a
+  day touched for the first time, because the client's own inverse
+  (`note: prior.note ?? null`) leaves an all-null row where there was none.
+
+That is what a permanently-skipped test costs: two years of green reports about
+a phase that had never run.
+
 ---
 
 ## Gates

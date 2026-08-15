@@ -102,10 +102,11 @@ const COVERAGE = [
   // naming a capability the engine does not implement, which lints clean, types
   // clean, renders a correct-looking toggle, and does nothing.
   [
-    /^(shared\/supports\/.*|assets\/learning-supports\/(learning-supports|supports-schema|supports-adaptations)\.js|curriculum\/student-supports\/.*|scripts\/generate-learning-supports-manifest\.mjs|tools\/(validate-lesson-supports|validate-learning-supports|validate-student-supports|lesson-supports\.test|learning-supports\.test)\.mjs|data\/lesson-support-overrides\.json)$/,
+    /^(shared\/supports\/.*|assets\/learning-supports\/(learning-supports|supports-schema|supports-adaptations)\.js|curriculum\/student-supports\/.*|teacher-tools\/support-audit\/.*|scripts\/(generate-learning-supports-manifest|generate-support-overrides|generate-printable-lesson|generate-worksheets|generate-handout-html|generate-notes)\.mjs|engine\/core\/export\.js|tools\/(validate-lesson-supports|validate-support-equivalence|validate-learning-supports|validate-student-supports|lesson-supports\.test|learning-supports\.test|support-print\.test)\.mjs|data\/(lesson-support-overrides|lesson-support-applicability-review)\.json)$/,
     [
       "test",
       "validate:lesson-supports",
+      "validate:support-equivalence",
       "validate:supports",
       "validate:student-supports",
       "validate:js-syntax",

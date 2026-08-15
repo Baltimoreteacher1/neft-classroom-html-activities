@@ -330,7 +330,7 @@ function buildWorksheet(cfg) {
   const pages = [...practicePages, ...keyPages].join("\n");
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ewl-supports-lesson="${esc(cfg.lessonId)}" data-support-audience="student">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -412,9 +412,12 @@ ${EDITORIAL_OVERRIDES}
 </style>
 </head>
 <body>
-<main>
+<main data-support-slot="practice">
 ${pages}
 </main>
+<!-- Same effective support configuration as the interactive lesson; see
+     shared/supports/print-supports.js. Inert until supports are configured. -->
+<script src="/shared/supports/print-supports.js" defer></script>
 </body>
 </html>`;
 }

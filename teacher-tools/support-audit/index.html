@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Teacher review of every instructional decision the lesson support system makes."
+    />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Support Decisions — Neft Teacher</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="./support-audit.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to the table</a>
+    <div class="sa-wrap">
+      <p class="sa-back"><a href="/curriculum/student-supports/">← Student Supports</a></p>
+
+      <header>
+        <span class="sa-icon" aria-hidden="true">⚖️</span>
+        <h1>Support decisions</h1>
+        <p class="sa-lede">
+          Every instructional judgement the support system makes, and why. A support is offered when
+          the lesson can deliver it and withheld when offering it would remove the thing the lesson
+          teaches — this is where those calls are written down so you can disagree with them.
+        </p>
+        <p class="sa-privacy">
+          Lessons and supports only. Nothing on this page is about a student.
+        </p>
+      </header>
+
+      <form class="sa-filters" id="sa-filters" aria-label="Filter decisions">
+        <p class="sa-field">
+          <label for="f-search">Lesson or support</label>
+          <input type="search" id="f-search" placeholder="e.g. 5-3, calculator, trapezoid" />
+        </p>
+        <p class="sa-field">
+          <label for="f-unit">Unit</label>
+          <select id="f-unit">
+            <option value="">All units</option>
+          </select>
+        </p>
+        <p class="sa-field">
+          <label for="f-support">Support</label>
+          <select id="f-support">
+            <option value="">All supports</option>
+          </select>
+        </p>
+        <p class="sa-field">
+          <label for="f-decision">Decision</label>
+          <select id="f-decision">
+            <option value="">All decisions</option>
+            <option value="offered">Offered</option>
+            <option value="suppress">Withheld</option>
+            <option value="allow">Reviewed &amp; allowed</option>
+            <option value="pin">Always visible</option>
+            <option value="intrinsic">Built into a small group</option>
+            <option value="modification">Changes the task</option>
+            <option value="teacher-review">Needs your review</option>
+          </select>
+        </p>
+        <p class="sa-field sa-field-btn">
+          <button type="button" id="f-clear" class="sa-btn">Clear filters</button>
+        </p>
+      </form>
+
+      <p class="sa-count" id="sa-count" role="status" aria-live="polite"></p>
+
+      <main id="main" tabindex="-1">
+        <div class="sa-tablewrap">
+          <table class="sa-table" id="sa-table">
+            <caption class="sa-sr">
+              Instructional decisions by lesson and support
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Lesson</th>
+                <th scope="col">Support</th>
+                <th scope="col">Decision</th>
+                <th scope="col">Why</th>
+                <th scope="col">Where it comes from</th>
+              </tr>
+            </thead>
+            <tbody id="sa-body">
+              <tr>
+                <td colspan="5" class="sa-empty">Loading the decision table…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <script src="/shared/supports/lesson-supports.js"></script>
+    <script src="./support-audit.js" type="module"></script>
+  </body>
+</html>

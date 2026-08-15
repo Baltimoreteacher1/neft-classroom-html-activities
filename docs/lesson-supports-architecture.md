@@ -1,7 +1,8 @@
-# The lesson adaptation layer
+# Lesson supports architecture
 
-How a teacher's support selection reaches an interactive lesson without touching
-the lesson.
+How a teacher's support selection reaches the interactive lesson, its
+small-group variants, the printed packet and the exported document — without
+touching any of them.
 
 ## The shape of it
 
@@ -29,8 +30,14 @@ there is nothing to resolve.
 | `scripts/generate-learning-supports-manifest.mjs`  | Builds that manifest from lesson `config.json`, including each variant's `intrinsic` supports.                                                                     |
 | `assets/learning-supports/learning-supports.js`    | The in-lesson consumer: resolves the profile, applies capabilities, renders the student-facing supports.                                                           |
 | `assets/learning-supports/supports-adaptations.js` | The behaviour modes (chunking, workload, praise, nudges) that `adapt` keys turn on.                                                                                |
+| `shared/supports/print-supports.js`                | The paper surface. Draws the resolver's result; decides nothing itself.                                                                                            |
 | `curriculum/student-supports/`                     | The teacher surface: select → preview → apply → teach.                                                                                                             |
-| `data/lesson-support-overrides.json`               | Authored exceptions, as data.                                                                                                                                      |
+| `teacher-tools/support-audit/`                     | The instructional-decision audit table. Read-only, derived, teacher-gated.                                                                                        |
+| `data/lesson-support-applicability-review.json`    | AUTHORED instructional decisions, each with reason and evidence.                                                                                                   |
+| `scripts/generate-support-overrides.mjs`           | Derives the runtime override file from that review. `--check` fails on stale.                                                                                       |
+| `tools/validate-support-equivalence.mjs`           | Screen / print / export must not disagree except where MODALITY says so.                                                                                            |
+| `tools/support-print.test.mjs`                     | The printed packet, asserted against real generated markup.                                                                                                             |
+| `data/lesson-support-overrides.json`               | GENERATED runtime shape of those decisions. Never hand-edit.                                                                                                       |
 | `tools/validate-lesson-supports.mjs`               | The gate.                                                                                                                                                          |
 | `tools/lesson-supports.test.mjs`         | The invariants.                                                                                                                                                    |
 
@@ -121,3 +128,95 @@ Every consumer treats the layer as optional:
 
 A support-system failure must never stop instruction. That is the reason each of
 those paths returns a value instead of raising.
+
+## Surfaces and modality
+
+Four surfaces render the same effective configuration:
+
+| Surface | Consumer |
+| --- | --- |
+| screen | `assets/learning-supports/learning-supports.js` |
+| small group | the same file — a variant resolves to its parent for content |
+| print | `shared/supports/print-supports.js` on printable / worksheet / handout / notes |
+| export | `engine/core/export.js` (the in-lesson `.docx`) |
+
+All four call `resolveEffectiveSupports({lessonId, store, entry, surface, ctx})`.
+None of them works out "what is on" for itself. That is the single most
+load-bearing rule in this document: the moment print decides for itself, the
+worksheet in a student's hand can disagree with the lesson the teacher just
+taught, and nobody finds out until the middle of a class.
+
+Surfaces are still allowed to differ, because media differ. Every difference is
+declared in the `MODALITY` table, per support, per surface:
+
+- `active` — delivered on this surface.
+- `teacher-note` — the medium cannot do it; the **teacher copy** carries a
+  one-line delivery note and the **student copy** carries nothing. Read-aloud,
+  speak-instead-of-type, reduced visual load, calculator and extension are all
+  teacher notes on paper.
+- `n/a` — the surface has nothing to adapt.
+
+`validate:support-equivalence` resolves every applicable configuration on every
+lesson through all three surfaces and fails on any difference `MODALITY` does
+not declare — and on any support declared `active` on paper that contributes
+nothing to a printed page.
+
+### The one thing print does not do
+
+The exported `.docx` is a record of what a student **did**, not a blank task, so
+it carries the provenance block and not word banks. Pasting scaffolds into a
+completed answer sheet would be decoration. A teacher reading that document
+needs the context the work was produced under, and that is what it gets.
+
+## Provenance
+
+Teacher-facing surfaces print a short summary: supports applied, any task
+modification with its consequence, and delivery notes. It says what the lesson
+**does**, never why a learner might need it — no disability category, no plan
+status, no proficiency level. A packet travels around a building.
+
+Student copies get the supports and no commentary about them.
+
+## Modification guardrails
+
+There is exactly one modification (`shorter-practice-set`). It is:
+
+- excluded from every preset, by a gate;
+- counted and named separately from supports in every summary — the in-lesson
+  status block, the planner status line, the print provenance;
+- required to record a plain-language consequence, by a gate;
+- **not inherited into small-group variants.** Those lessons are already the
+  more scaffolded pathway, and shortening their practice set on top of that
+  compounds a change in demand nobody chose. A teacher who wants it there
+  configures that variant directly.
+
+On paper it marks the tail of the practice set optional, with a floor of three
+required problems. The problems stay on the page; what changes is what is
+required.
+
+## Instructional applicability
+
+`data/lesson-support-applicability-review.json` is where a decision like "no
+calculator in the long-division lesson" lives, with its reason and the evidence
+it was read from. `data/lesson-support-overrides.json` is generated from it.
+
+**Titles are not evidence.** An earlier pass suppressed the multiplication chart
+on 6-7 because the title read "Find Factors and Multiples", when that lesson's
+objective is GCF/LCM reasoning and a chart is straightforward access to it. The
+gate now fails a review whose evidence is only a title.
+
+Ambiguous calls are recorded with `"status": "teacher-review"` rather than
+guessed. `/teacher-tools/support-audit/?decision=teacher-review` lists them.
+
+## Privacy boundary
+
+Stored: a lesson id, support keys, an optional preset name, a schema version.
+Not stored, and unreachable through this layer's interface: student name,
+initials, section, disability category, plan status, proficiency level.
+
+The per-student roster remains a separate, teacher-gated D1 system. If it is
+ever connected — behind its own privacy review — the interface already exists
+and needs no change: it would ask for `resolveEffectiveSupports({lessonId,
+requestedSupportKeys})` and this layer would never learn *why* those keys were
+requested. A test pins that the resolver ignores any student field a caller
+tries to pass.

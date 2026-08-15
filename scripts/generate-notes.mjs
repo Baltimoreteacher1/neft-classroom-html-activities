@@ -1570,7 +1570,7 @@ function notesSection(cfg = {}, _worked = null, fillHtml = "") {
     ? `<p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p>${fillHtml}`
     : "";
 
-  return `<section class="section notes">
+  return `<section class="section notes" data-support-slot="response">
   <h2>My Notes
     <span class="level-tag level-1 l1-only">Level 1 Support</span>
     <span class="level-tag level-2 l2-only">Level 2 Standard</span>
@@ -2800,7 +2800,7 @@ function buildPacket(id, cfg, isFlagship, teacher = false) {
   const unit = cfg.unit != null ? `Unit ${esc(cfg.unit)}` : "";
   const flagBadge = isFlagship ? `<span class="flagship-badge">Flagship</span>` : "";
   return `<!doctype html>
-<html lang="en">
+<html lang="en" data-ewl-supports-lesson="${esc(id)}" data-support-audience="${teacher ? "teacher" : "student"}">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -3169,6 +3169,13 @@ ${autoSaveScript(`nt-notes:${esc(id)}`)}
   ${teacher ? answerKeySection({}, cfg.reflect, cfg, null, new Set(), gn.keyRows) : ""}
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}${teacher ? " · Teacher Copy" : ""}</footer>
 </main>
+<!-- The lesson adaptation layer, on paper. Renders the SAME effective support
+     configuration the interactive lesson renders (one resolver, in
+     shared/supports/lesson-supports.js). The TEACHER copy additionally carries
+     the provenance summary and the delivery notes for supports paper cannot
+     carry; the student copy carries the supports and no commentary about them.
+     Inert until a teacher configures supports for this lesson. -->
+<script src="/shared/supports/print-supports.js" defer></script>
 </body>
 </html>`;
 }

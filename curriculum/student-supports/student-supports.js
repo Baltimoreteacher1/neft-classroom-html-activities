@@ -102,8 +102,36 @@ function overrideCtx(lessonId) {
   return {
     computationIsObjective: !!o.computationIsObjective,
     factRecallIsObjective: !!o.factRecallIsObjective,
+    pin: Array.isArray(o.pin) ? o.pin.slice() : [],
     excluded: Array.isArray(o.exclude) ? o.exclude.map((e) => e.key || e) : [],
   };
+}
+
+/* WHY A SUPPORT IS NOT ON THE LIST.
+ *
+ * A control that silently is not there reads as an oversight. Naming the
+ * reason — in instructional language, never in engine language — turns a
+ * missing checkbox into a deliberate decision the teacher can agree or
+ * disagree with. Only supports a reader would EXPECT to see are explained;
+ * listing all eighteen absences would be noise. */
+function unavailableNotes(lessonId) {
+  const entry = DATA.supportManifest?.[lessonId];
+  if (!LS || !entry) return [];
+  const ctx = overrideCtx(lessonId);
+  const offered = new Set(applicableFor(lessonId).map((s) => s.key));
+  const worthExplaining = [
+    "calculator",
+    "multiplication-chart",
+    "bilingual-vocabulary",
+    "word-bank",
+    "sentence-frames",
+    "worked-example",
+    "readiness-review",
+  ];
+  return worthExplaining
+    .filter((k) => !offered.has(k))
+    .map((k) => LS.explainUnavailable(k, ctx))
+    .filter(Boolean);
 }
 
 function applicableFor(lessonId) {
@@ -162,9 +190,16 @@ function renderChooser(lessonId) {
     (n) => `<li><b>${esc(n.label)}</b> — ${esc(n.reason)} <em>${esc(n.insteadDo)}</em></li>`,
   ).join("");
 
+  const notes = unavailableNotes(lessonId);
+  const notesHtml = notes.length
+    ? `<div class="sup-unavailable"><p class="sup-unavailable-head">Not offered for this lesson</p>` +
+      `<ul>${notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></div>`
+    : "";
+
   return (
     `<div class="sup-presets"><span class="sup-presets-label">Start from</span>${presets}</div>` +
     groups +
+    notesHtml +
     `<details class="sup-not-implemented"><summary>Accommodations this software cannot provide</summary>
        <ul>${notImplemented}</ul></details>`
   );
@@ -214,23 +249,47 @@ function renderPreview(lessonId) {
 function renderApplyTargets(lessonId) {
   const entry = DATA.supportManifest?.[lessonId];
   const keys = [...selection];
-  if (!keys.length) return "";
-  const rows = [`<li><b>Whole-group lesson</b> — ${keys.length} support(s)</li>`];
+  if (!keys.length || !LS) return "";
+
+  // A provisional store, so "where will this land" is answered by the SAME
+  // resolver the lesson, the small-group variant and the printable will use.
+  // Computing it here a second way is exactly how a preview comes to promise
+  // something the lesson then does not do.
+  const trial = { [lessonId]: LS.normalizeProfile({ keys }, lessonId) };
+  const ctx = overrideCtx(lessonId);
+  const at = (id, surface) =>
+    LS.resolveEffectiveSupports({ lessonId: id, store: trial, entry, surface, ctx });
+
+  const labels = (list) => list.map((k) => LS.byKey[k]?.label || k).join(", ");
+  const rows = [];
+
+  const screen = at(lessonId, "screen");
+  rows.push(`<li><b>Whole-group lesson</b> — ${screen.active.length} support(s)</li>`);
+
   const variants = (entry && entry.variants) || {};
   for (const name of Object.keys(variants).sort()) {
     const v = variants[name];
-    const suppressed = keys.filter((k) => (v.intrinsic || []).includes(k));
-    const applied = keys.filter((k) => !(v.intrinsic || []).includes(k));
+    const eff = at(v.id, "screen");
     rows.push(
-      `<li><b>${esc(v.title || v.id)}</b> — ${applied.length} inherited` +
-        (suppressed.length
-          ? `; ${esc(
-              suppressed.map((k) => LS.byKey[k]?.label || k).join(", "),
-            )} already written into this version, so it is not added twice`
+      `<li><b>${esc(v.title || v.id)}</b> — ${eff.active.length} inherited` +
+        (eff.suppressed.length
+          ? `; ${esc(eff.suppressed.map((k) => LS.explainSuppressed(k, v.title)).join(" "))}`
           : "") +
         `</li>`,
     );
   }
+
+  // PAPER. Stated separately because it is the surface a teacher is most likely
+  // to assume works by magic, and because the differences are real: paper
+  // cannot speak, so read-aloud becomes a delivery note in the teacher copy.
+  const print = at(lessonId, "print");
+  let paper = `<li><b>Printable, worksheet, handout and notes</b> — ${print.active.length} support(s)`;
+  if (print.teacherNotes.length) {
+    paper += `; ${esc(labels(print.teacherNotes.map((t) => t.key)))} cannot be done by a printed page, so the teacher copy carries a delivery note instead`;
+  }
+  paper += `</li>`;
+  rows.push(paper);
+
   return `<ul class="routes sup-targets">${rows.join("")}</ul>`;
 }
 

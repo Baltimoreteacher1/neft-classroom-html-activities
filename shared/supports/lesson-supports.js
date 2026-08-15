@@ -610,6 +610,15 @@
         suppressed.push(k);
         return false;
       }
+      // A MODIFICATION never rides inheritance into a small-group variant.
+      // Those lessons are already the more scaffolded pathway; shortening their
+      // practice set on top of that compounds a change in instructional demand
+      // that nobody chose. A teacher who wants it there configures that variant
+      // directly — at which point `overridden` is true and this does not apply.
+      if (!overridden && parsed.variant && BY_KEY[k] && BY_KEY[k].impact === "modification") {
+        suppressed.push(k);
+        return false;
+      }
       return true;
     });
 
@@ -711,6 +720,145 @@
     };
   }
 
+  /* ==========================================================================
+   * MODALITY — what each support does on each SURFACE.
+   *
+   * Screen, paper and a downloaded document are different media, and a support
+   * that is real on one can be meaningless on another. Read-aloud on paper is
+   * not "read-aloud, broken" — it is a thing the teacher does, and the honest
+   * output is a delivery note in the TEACHER copy, not a dead speaker icon on a
+   * student worksheet.
+   *
+   * This table is the reason the cross-surface equivalence gate can exist at
+   * all: a difference between screen and print is a FAILURE unless a rule here
+   * declares it and says what happens instead. "Sentence frames on screen,
+   * absent in print" has no rule and fails the build. Every value is one of:
+   *
+   *   "active"       — the support is delivered on this surface.
+   *   "teacher-note" — it cannot be delivered by this medium; the teacher copy
+   *                    carries a one-line delivery note and the STUDENT copy
+   *                    carries nothing.
+   *   "n/a"          — the surface has no such affordance to adapt, and saying
+   *                    anything at all would be noise.
+   * ======================================================================= */
+  var MODALITY = {
+    "visual-vocabulary": { screen: "active", print: "active", export: "active" },
+    "bilingual-vocabulary": { screen: "active", print: "active", export: "active" },
+    "word-bank": { screen: "active", print: "active", export: "active" },
+    "sentence-frames": { screen: "active", print: "active", export: "active" },
+    "chunk-directions": { screen: "active", print: "active", export: "active" },
+    "step-checklist": { screen: "active", print: "active", export: "active" },
+    "worked-example": { screen: "active", print: "active", export: "active" },
+    "readiness-review": { screen: "active", print: "active", export: "active" },
+    "visual-model": { screen: "active", print: "active", export: "active" },
+    "number-line": { screen: "active", print: "active", export: "active" },
+    "multiplication-chart": { screen: "active", print: "active", export: "active" },
+    "place-value-chart": { screen: "active", print: "active", export: "active" },
+    "shorter-practice-set": { screen: "active", print: "active", export: "active" },
+    // Extension is a task a teacher hands out, not a block that belongs on
+    // every student's packet. On paper it is a note in the teacher copy.
+    extension: {
+      screen: "active",
+      print: "teacher-note",
+      export: "teacher-note",
+      note: "Have the extension task ready for students who finish the grade-level work.",
+    },
+    // A calculator is a device, not a printable. The teacher copy records that
+    // one is permitted for this task; the student page grows no fake keypad.
+    calculator: {
+      screen: "active",
+      print: "teacher-note",
+      export: "teacher-note",
+      note: "Allow a calculator for this task.",
+    },
+
+    // Paper cannot speak, listen, or reflow. Each of these carries a delivery
+    // note into the TEACHER copy and nothing into the student copy.
+    "read-aloud": {
+      screen: "active",
+      print: "teacher-note",
+      export: "teacher-note",
+      note: "Read the directions and the problem stems aloud before students begin.",
+    },
+    dictation: {
+      screen: "active",
+      print: "teacher-note",
+      export: "teacher-note",
+      note: "Accept a spoken explanation in place of a written one, and scribe or record it.",
+    },
+    "reduced-visual-load": {
+      screen: "active",
+      print: "teacher-note",
+      export: "teacher-note",
+      note: "Hand out one page at a time rather than the whole packet.",
+    },
+  };
+
+  var SURFACES = ["screen", "print", "export"];
+
+  function modalityFor(key, surface) {
+    var m = MODALITY[key];
+    if (!m) return "n/a";
+    return m[surface] || "n/a";
+  }
+
+  /* ==========================================================================
+   * THE RESOLVER. One function, called by every surface.
+   *
+   * Screen, print and export each used to be free to work out "what is on" for
+   * themselves, which is exactly how a printed worksheet comes to disagree with
+   * the lesson a teacher just taught from. They now all call this, differing
+   * only in the `surface` they pass, and every difference in the result is
+   * traceable to a MODALITY rule above.
+   * ======================================================================= */
+  function resolveEffectiveSupports(opts) {
+    var o = opts || {};
+    var surface = SURFACES.indexOf(o.surface) > -1 ? o.surface : "screen";
+    var entry = o.entry || null;
+    var resolved;
+    try {
+      resolved = resolveForLesson(o.lessonId, o.store || {}, entry);
+    } catch (_e) {
+      // Canonical-first: an unreadable configuration is no configuration.
+      resolved = { keys: [], inherited: [], suppressed: [], overridden: false };
+    }
+
+    var active = [];
+    var teacherNotes = [];
+    var notApplicable = [];
+    resolved.keys.forEach(function (k) {
+      var mode = modalityFor(k, surface);
+      if (mode === "active") active.push(k);
+      else if (mode === "teacher-note") {
+        teacherNotes.push({ key: k, label: (BY_KEY[k] || {}).label || k, note: MODALITY[k].note });
+      } else notApplicable.push(k);
+    });
+
+    var modifications = active.concat(teacherNotes.map((t) => t.key)).filter(function (k) {
+      return BY_KEY[k] && BY_KEY[k].impact === "modification";
+    });
+
+    return {
+      surface: surface,
+      lessonId: o.lessonId || null,
+      /** Everything the teacher selected that survives to this lesson. */
+      selected: resolved.keys.slice(),
+      /** What this surface actually delivers. */
+      active: active,
+      /** Real supports this medium cannot deliver, with what to do instead. */
+      teacherNotes: teacherNotes,
+      /** Selected, but this surface has nothing to adapt. */
+      notApplicable: notApplicable,
+      /** Dropped because the lesson variant already authors them. */
+      suppressed: resolved.suppressed.slice(),
+      inherited: resolved.inherited.slice(),
+      overridden: resolved.overridden,
+      modifications: modifications,
+      capabilities: resolveCapabilities(active),
+      conflicts: resolveConflicts(active, o.ctx),
+    };
+  }
+
   /* --------------------------------------------------------------------------
    * CONFLICT PRECEDENCE — documented, not left to CSS order.
    *
@@ -721,15 +869,272 @@
    * ----------------------------------------------------------------------- */
   var ALWAYS_ON_OVER_COLLAPSE = ["word-bank", "sentence-frames", "visual-vocabulary"];
 
-  function resolveConflicts(keys) {
+  function resolveConflicts(keys, ctx) {
     var set = {};
     (keys || []).forEach(function (k) {
       set[k] = true;
     });
+    // Two sources of pinning, both outranking the collapse:
+    //   1. the standing rule — an explicitly chosen language support was chosen
+    //      to be there, and collapsing it defeats the choice;
+    //   2. an AUTHORED pin for this lesson — a geometry figure whose labels ARE
+    //      the given quantities. Hiding those does not simplify the task, it
+    //      makes it unsolvable, which is a different thing entirely.
+    var authored = (ctx && Array.isArray(ctx.pin) ? ctx.pin : []).filter(function (k) {
+      return set[k];
+    });
     var pinned = ALWAYS_ON_OVER_COLLAPSE.filter(function (k) {
       return set[k];
     });
+    authored.forEach(function (k) {
+      if (pinned.indexOf(k) === -1) pinned.push(k);
+    });
     return { collapseOptional: !!set["reduced-visual-load"], pinned: pinned };
+  }
+
+  /* ==========================================================================
+   * PAPER + EXPORT CONTENT.
+   *
+   * The blocks a support contributes to a printed or exported document, built
+   * from THIS lesson's authored content. Returned as data — `{key, slot, title,
+   * kind, items}` — so the print layer and the in-lesson export renderer share
+   * the decision about WHAT a support adds and differ only in how they draw it.
+   *
+   * `slot` names a semantic lesson region, never a selector. A generator emits
+   * `data-support-slot="vocabulary"` and the print layer attaches there; when
+   * the page layout moves, the anchor moves with it.
+   * ======================================================================= */
+  var SLOT_ORDER = ["directions", "vocabulary", "workedExample", "practice", "response"];
+
+  function supportBlocks(keys, entry) {
+    var e = entry || {};
+    var blocks = [];
+    var has = {};
+    (keys || []).forEach(function (k) {
+      has[k] = true;
+    });
+
+    if (has["visual-vocabulary"] || has["bilingual-vocabulary"]) {
+      var bilingual = !!has["bilingual-vocabulary"];
+      var vocab = (e.vocabulary || [])
+        .map(function (v) {
+          if (bilingual && (v.termEs || v.definitionEs)) {
+            return {
+              term: v.term + (v.termEs ? " · " + v.termEs : ""),
+              definition: v.definition + (v.definitionEs ? " · " + v.definitionEs : ""),
+              visual: v.visual || "",
+            };
+          }
+          return { term: v.term, definition: v.definition, visual: v.visual || "" };
+        })
+        .filter(function (v) {
+          return v.term && v.definition;
+        });
+      if (vocab.length) {
+        blocks.push({
+          key: bilingual ? "bilingual-vocabulary" : "visual-vocabulary",
+          slot: "vocabulary",
+          title: bilingual ? "Words to know · Palabras clave" : "Words to know",
+          kind: "definitions",
+          items: vocab,
+        });
+      }
+    }
+
+    if (has["word-bank"] && (e.wordBank || []).length) {
+      blocks.push({
+        key: "word-bank",
+        slot: "response",
+        title: "Word bank",
+        kind: "chips",
+        items: e.wordBank.slice(0, 20),
+      });
+    }
+
+    if (has["sentence-frames"] && (e.sentenceFrames || []).length) {
+      blocks.push({
+        key: "sentence-frames",
+        slot: "response",
+        title: "Sentence frames",
+        kind: "lines",
+        // Three is a scaffold; seventeen is a wall of text that buries the task.
+        items: e.sentenceFrames.slice(0, 3),
+      });
+    }
+
+    if (has["chunk-directions"]) {
+      blocks.push({
+        key: "chunk-directions",
+        slot: "directions",
+        title: "One step at a time",
+        kind: "steps",
+        // Deliberately generic and deliberately NOT the problem: chunking
+        // re-presents the task's shape. It may not restate a value, because a
+        // restated value is a value that can drift from the one being solved.
+        items: [
+          "Read the whole problem once.",
+          "Underline what you are asked to find.",
+          "Circle the numbers you were given, with their units.",
+          "Solve one step at a time and show each step.",
+          "Check that your answer answers the question.",
+        ],
+      });
+    }
+
+    if (has["step-checklist"]) {
+      blocks.push({
+        key: "step-checklist",
+        slot: "practice",
+        title: "My checklist",
+        kind: "checkboxes",
+        items: [
+          "I read the directions.",
+          "I showed my work.",
+          "I labelled my answer with units.",
+          "I explained how I know.",
+        ],
+      });
+    }
+
+    if (has["worked-example"] && e.workedExample) {
+      blocks.push({
+        key: "worked-example",
+        slot: "workedExample",
+        title: "Worked example",
+        kind: "lines",
+        items: String(e.workedExample).split("\n").filter(Boolean),
+      });
+    }
+
+    if (has["readiness-review"] && e.readinessHref) {
+      blocks.push({
+        key: "readiness-review",
+        slot: "practice",
+        title: "Before you start",
+        kind: "lines",
+        items: ["Warm up with the readiness practice for this lesson: " + e.readinessHref],
+      });
+    }
+
+    // The math tools are workspace on paper: a blank number line, a grid, a
+    // chart. They are drawn by the print layer, which is why these carry a
+    // `kind` and no items — the content IS the empty tool.
+    if (has["number-line"]) {
+      blocks.push({
+        key: "number-line",
+        slot: "practice",
+        title: "Number line",
+        kind: "number-line",
+        items: [],
+      });
+    }
+    if (has["multiplication-chart"]) {
+      blocks.push({
+        key: "multiplication-chart",
+        slot: "practice",
+        title: "Multiplication chart",
+        kind: "mult-chart",
+        items: [],
+      });
+    }
+    if (has["place-value-chart"]) {
+      blocks.push({
+        key: "place-value-chart",
+        slot: "practice",
+        title: "Place-value chart",
+        kind: "place-value",
+        items: [],
+      });
+    }
+    if (has["visual-model"]) {
+      blocks.push({
+        key: "visual-model",
+        slot: "practice",
+        title: "Model your thinking",
+        kind: "model-space",
+        items: ["Draw a model of the problem. Label every part with what it represents."],
+      });
+    }
+
+    blocks.sort(function (a, b) {
+      return SLOT_ORDER.indexOf(a.slot) - SLOT_ORDER.indexOf(b.slot);
+    });
+    return blocks;
+  }
+
+  /* --------------------------------------------------------------------------
+   * PROVENANCE — the teacher-facing "what was applied" summary.
+   *
+   * Says what the lesson DOES, never why a learner might need it. No disability
+   * category, no plan status, no language-proficiency level: a printed packet
+   * travels around a building, and a support list is instructional information
+   * while a reason is a student's private business.
+   * ----------------------------------------------------------------------- */
+  function provenance(effective) {
+    var eff = effective || { active: [], teacherNotes: [], modifications: [] };
+    var label = function (k) {
+      return (BY_KEY[k] || {}).label || k;
+    };
+    var mods = (eff.modifications || []).slice();
+    var supports = (eff.active || []).filter(function (k) {
+      return mods.indexOf(k) === -1;
+    });
+    return {
+      supports: supports.map(label),
+      modifications: mods.map(function (k) {
+        return { label: label(k), consequence: MODIFICATION_CONSEQUENCE[k] || "" };
+      }),
+      delivery: (eff.teacherNotes || []).map(function (t) {
+        return { label: t.label, note: t.note };
+      }),
+      isEmpty: !supports.length && !mods.length && !(eff.teacherNotes || []).length,
+    };
+  }
+
+  /* One plain sentence per modification, stating the consequence in
+   * instructional terms. Alarmist wording gets ignored; vague wording gets
+   * misread; this is the middle. */
+  var MODIFICATION_CONSEQUENCE = {
+    "shorter-practice-set":
+      "Reduces the number of required practice problems. The mathematical target " +
+      "stays the same and stays visible; the student completes a shorter task.",
+  };
+
+  /* --------------------------------------------------------------------------
+   * EXPLANATIONS — system behaviour, said in instructional language.
+   *
+   * A teacher asking "why is the calculator greyed out?" is owed an answer
+   * about the lesson, not about the implementation. Nothing here may leak the
+   * words intrinsic, suppression, manifest, MODE_KEYS or PROFILE_KEYS.
+   * ----------------------------------------------------------------------- */
+  function explainSuppressed(key, variantTitle) {
+    var l = (BY_KEY[key] || {}).label || key;
+    return (
+      l +
+      " is already built into " +
+      (variantTitle || "this small-group lesson") +
+      ", so it is not added a second time."
+    );
+  }
+
+  function explainUnavailable(key, ctx) {
+    var c = ctx || {};
+    if (key === "calculator" && c.computationIsObjective) {
+      return "Calculator is not offered here because doing the computation is what this lesson teaches.";
+    }
+    if (key === "multiplication-chart" && c.factRecallIsObjective) {
+      return "The multiplication chart is not offered here because recalling these facts is what this lesson teaches.";
+    }
+    var s = BY_KEY[key];
+    if (!s) return "";
+    if (key === "worked-example") return "This lesson has no worked example to show again.";
+    if (key === "readiness-review")
+      return "This lesson has no readiness practice to send students to.";
+    if (key === "bilingual-vocabulary")
+      return "This lesson's vocabulary has no Spanish translation yet.";
+    if (key === "word-bank") return "This lesson has no word bank authored yet.";
+    if (key === "sentence-frames") return "This lesson has no sentence frames authored yet.";
+    return s.label + " does not apply to this lesson.";
   }
 
   /* --------------------------------------------------------------------------
@@ -862,6 +1267,15 @@
     previewFor: previewFor,
     resolveConflicts: resolveConflicts,
     copyProfileTo: copyProfileTo,
+    MODALITY: MODALITY,
+    SURFACES: SURFACES,
+    MODIFICATION_CONSEQUENCE: MODIFICATION_CONSEQUENCE,
+    modalityFor: modalityFor,
+    resolveEffectiveSupports: resolveEffectiveSupports,
+    supportBlocks: supportBlocks,
+    provenance: provenance,
+    explainSuppressed: explainSuppressed,
+    explainUnavailable: explainUnavailable,
     readStore: readStore,
     writeStore: writeStore,
     saveProfile: saveProfile,

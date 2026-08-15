@@ -160,6 +160,7 @@
   // variant already authored so the profile did not re-apply them. Both are
   // teacher-facing reporting only; neither is shown to students.
   let appliedLessonSupports = [];
+  let activeLessonProfile = null;
   let suppressedLessonSupports = [];
 
   /* Adaptation keys have TWO independent sources — the teacher's lesson profile
@@ -196,26 +197,80 @@
     const wrap = document.createElement("div");
     wrap.className = "ewl-supports-lesson-profile";
     const h = document.createElement("h3");
-    h.textContent = "This lesson's supports";
+    h.textContent = "Student supports";
     wrap.appendChild(h);
+
+    const mod = lessonSupports();
+    const nameOf = (k) => (mod && mod.byKey[k] ? mod.byKey[k].label : k);
+    // Modifications are counted and named SEPARATELY from supports everywhere a
+    // teacher reads a number. "8 active" that quietly includes a shortened task
+    // is the one summary this system must never print.
+    const mods = appliedLessonSupports.filter(
+      (k) => mod && mod.byKey[k] && mod.byKey[k].impact === "modification",
+    );
+    const supports = appliedLessonSupports.filter((k) => mods.indexOf(k) === -1);
 
     const status = document.createElement("p");
     status.className = "ewl-supports-lesson-profile-status";
-    const mod = lessonSupports();
-    const labels = appliedLessonSupports.map((k) => (mod && mod.byKey[k] ? mod.byKey[k].label : k));
-    status.textContent = labels.length
-      ? `${labels.length} active · ${labels.join(", ")}`
-      : "None selected — this lesson is rendering exactly as written.";
+    if (!appliedLessonSupports.length) {
+      status.textContent = "None selected — this lesson is rendering exactly as written.";
+    } else {
+      const preset = activeLessonProfile && activeLessonProfile.preset;
+      const presetLabel =
+        preset && mod
+          ? (mod.PRESETS.filter((p) => p.key === preset)[0] || {}).label || "Custom"
+          : "Custom selection";
+      status.textContent = supports.length + " active · " + presetLabel;
+    }
     wrap.appendChild(status);
 
-    if (suppressedLessonSupports.length) {
+    if (supports.length) {
+      const names = document.createElement("p");
+      names.className = "ewl-supports-lesson-profile-names";
+      names.textContent = supports.map(nameOf).join(" · ");
+      wrap.appendChild(names);
+    }
+
+    if (mods.length) {
+      const m = document.createElement("p");
+      m.className = "ewl-supports-lesson-profile-mod";
+      m.textContent =
+        mods.length +
+        " task modification active — " +
+        mods
+          .map((k) => nameOf(k) + ": " + ((mod && mod.MODIFICATION_CONSEQUENCE[k]) || ""))
+          .join(" ");
+      wrap.appendChild(m);
+    }
+
+    if (suppressedLessonSupports.length && mod) {
       const dedup = document.createElement("p");
       dedup.className = "ewl-supports-lesson-profile-dedup";
-      const names = suppressedLessonSupports.map((k) =>
-        mod && mod.byKey[k] ? mod.byKey[k].label : k,
-      );
-      dedup.textContent = `Already written into this version, so not added again: ${names.join(", ")}.`;
+      dedup.textContent = suppressedLessonSupports
+        .map((k) => mod.explainSuppressed(k, document.title.split(" — ")[0]))
+        .join(" ");
       wrap.appendChild(dedup);
+    }
+
+    // Paper differs from screen wherever the medium cannot do the thing. Saying
+    // so HERE — while the teacher is looking at the lesson they are about to
+    // print from — is cheaper than discovering it at the copier.
+    if (mod && appliedLessonSupports.length) {
+      const printEff = mod.resolveEffectiveSupports({
+        lessonId: activeLessonId,
+        store: mod.readStore(),
+        entry: manifestData,
+        surface: "print",
+      });
+      if (printEff.teacherNotes.length) {
+        const p = document.createElement("p");
+        p.className = "ewl-supports-lesson-profile-dedup";
+        p.textContent =
+          "On paper, " +
+          printEff.teacherNotes.map((t) => t.label.toLowerCase()).join(" and ") +
+          " becomes a delivery note in the teacher copy — a printed page cannot do it.";
+        wrap.appendChild(p);
+      }
     }
 
     const row = document.createElement("p");
@@ -224,10 +279,23 @@
     const edit = document.createElement("a");
     edit.className = "ewl-supports-preset-chip";
     edit.href = `/curriculum/student-supports/?lesson=${encodeURIComponent(parent)}`;
-    edit.textContent = "Edit supports for this lesson";
+    edit.textContent = "Edit supports";
     row.appendChild(edit);
 
-    if (labels.length && mod) {
+    // PREVIEW AS STUDENT. The same page, the same renderer, the same effective
+    // supports — with teacher mode forced off by the URL. There is deliberately
+    // no second preview renderer: a preview drawn by different code is a
+    // preview that can be wrong in exactly the way previews exist to prevent.
+    const preview = document.createElement("a");
+    preview.className = "ewl-supports-preset-chip";
+    const previewUrl = new URL(window.location.href);
+    previewUrl.searchParams.set("student", "1");
+    previewUrl.searchParams.set("preview", "1");
+    preview.href = previewUrl.pathname + previewUrl.search;
+    preview.textContent = "Preview as student";
+    row.appendChild(preview);
+
+    if (appliedLessonSupports.length && mod) {
       const reset = document.createElement("button");
       reset.type = "button";
       reset.className = "ewl-supports-preset-chip";
@@ -591,7 +659,10 @@
     try {
       const mod = await loadLessonSupports();
       if (mod) {
-        const resolved = mod.resolveForLesson(activeLessonId, mod.readStore(), manifestData);
+        const store = mod.readStore();
+        activeLessonProfile =
+          store[activeLessonId] || store[parentLessonIdOf(activeLessonId)] || null;
+        const resolved = mod.resolveForLesson(activeLessonId, store, manifestData);
         if (resolved.keys.length) {
           const caps = mod.resolveCapabilities(resolved.keys);
           caps.profiles.concat(caps.tools).forEach((k) => {
@@ -4618,6 +4689,12 @@
       parentLessonId: activeLessonId ? parentLessonIdOf(activeLessonId) : null,
       applied: appliedLessonSupports.slice(),
       suppressed: suppressedLessonSupports.slice(),
+      /* The resolved manifest entry for THIS page — the parent lesson's when
+       * this is a variant. Exposed so other in-lesson surfaces (the .docx
+       * export) can resolve effective supports without a second manifest
+       * fetch, and, more importantly, without their own idea of which lesson's
+       * content a variant inherits. */
+      manifestEntry: manifestData,
     }),
   };
 

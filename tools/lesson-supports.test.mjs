@@ -341,4 +341,142 @@ t("mutation: reset leaving one delta behind would be visible", () => {
   assert.deepEqual(LS.resolveForLesson("5-3-group1", store, ENTRY).keys, ["visual-model"]);
 });
 
+/* ===========================================================================
+ * 9. EVERY VARIANT CLASS, SYSTEMATICALLY.
+ *
+ * The first inheritance fix was verified on one lesson's group1. That proves
+ * one lesson's group1. These sweep the real manifest so a variant class nobody
+ * tested by hand — catch-up, group2, group3 — cannot quietly behave differently.
+ * ======================================================================== */
+import { readFileSync as _readFileSync } from "node:fs";
+
+const MANIFEST = JSON.parse(
+  _readFileSync(join(ROOT, "assets", "learning-supports", "manifest.json"), "utf8"),
+);
+
+t("every variant in the curriculum resolves to its parent and de-duplicates", () => {
+  const classes = new Set();
+  let checked = 0;
+  let dedupedSomewhere = 0;
+  for (const [lessonId, entry] of Object.entries(MANIFEST)) {
+    const applicable = LS.applicableSupports(entry, {}).map((s) => s.key);
+    const store = { [lessonId]: LS.normalizeProfile({ keys: applicable }, lessonId) };
+    for (const [name, v] of Object.entries(entry.variants || {})) {
+      classes.add(name.replace(/\d+$/, "N"));
+      const r = LS.resolveForLesson(v.id, store, entry);
+      checked++;
+      // Nothing a variant already authors is added again …
+      for (const k of v.intrinsic || []) {
+        assert.ok(!r.keys.includes(k), `${v.id} re-applied its own ${k}`);
+      }
+      // … and nothing else is lost on the way, except a task modification,
+      // which is deliberately parent-only (see the modification test below).
+      const expected = applicable.filter(
+        (k) => !(v.intrinsic || []).includes(k) && LS.byKey[k].impact !== "modification",
+      );
+      assert.deepEqual(r.keys.slice().sort(), expected.slice().sort(), v.id);
+      if (r.suppressed.length) dedupedSomewhere++;
+      // An intrinsic scaffold may never suppress an UNRELATED support. The
+      // only other thing allowed in `suppressed` is a task modification.
+      for (const k of r.suppressed) {
+        assert.ok(
+          (v.intrinsic || []).includes(k) || LS.byKey[k].impact === "modification",
+          `${v.id} suppressed ${k} for no authored reason`,
+        );
+      }
+    }
+  }
+  assert.ok(checked > 200, `only ${checked} variants checked`);
+  assert.deepEqual([...classes].sort(), ["catchup", "groupN"]);
+  assert.ok(dedupedSomewhere > 100, "de-duplication is barely firing — check the intrinsic data");
+});
+
+t("a modification does NOT propagate into a small-group variant by default", () => {
+  // Small-group lessons are already the more scaffolded pathway. Silently
+  // shortening their practice set on top of that is a compounding change to
+  // instructional demand that no teacher asked for, so the modification is
+  // recorded as parent-only and a variant must opt in for itself.
+  const entry = MANIFEST["5-3"];
+  // visual-vocabulary, not word-bank: group1 authors its own word bank, so that
+  // one is legitimately suppressed and would not prove anything here.
+  const store = {
+    "5-3": LS.normalizeProfile({ keys: ["shorter-practice-set", "visual-vocabulary"] }, "5-3"),
+  };
+  const parent = LS.resolveEffectiveSupports({ lessonId: "5-3", store, entry, surface: "screen" });
+  assert.deepEqual(parent.modifications, ["shorter-practice-set"]);
+  const variant = LS.resolveEffectiveSupports({
+    lessonId: "5-3-group1",
+    store,
+    entry,
+    surface: "screen",
+  });
+  assert.deepEqual(variant.modifications, [], "a task modification propagated into a small group");
+  assert.ok(
+    variant.active.includes("visual-vocabulary"),
+    "de-modifying dropped an unrelated support",
+  );
+  // A teacher who configures the VARIANT itself is obeyed.
+  const opted = LS.resolveEffectiveSupports({
+    lessonId: "5-3-group1",
+    store: {
+      ...store,
+      "5-3-group1": LS.normalizeProfile({ keys: ["shorter-practice-set"] }, "5-3-group1"),
+    },
+    entry,
+    surface: "screen",
+  });
+  assert.deepEqual(opted.modifications, ["shorter-practice-set"]);
+});
+
+/* ===========================================================================
+ * 17. RE-PACING. Support configuration is keyed by LESSON, so it travels with
+ * the lesson wherever the calendar moves it. These pin that, because the
+ * alternative — a date key — would silently drop every support the first time
+ * a snow day rippled the plan.
+ * ======================================================================== */
+t("supports follow the lesson, not the day it was scheduled on", () => {
+  const store = { "5-3": LS.normalizeProfile({ keys: ["word-bank"] }, "5-3") };
+  // Moving a lesson changes nothing this layer can see: there is no date in it.
+  assert.equal(JSON.stringify(store).includes("2026"), false);
+  assert.deepEqual(LS.resolveForLesson("5-3", store, MANIFEST["5-3"]).keys, ["word-bank"]);
+});
+
+t("replacing lesson A with lesson B on a day shows B's configuration, not A's", () => {
+  const store = {
+    "5-3": LS.normalizeProfile({ keys: ["word-bank", "sentence-frames"] }, "5-3"),
+    "3-1": LS.normalizeProfile({ keys: ["visual-vocabulary"] }, "3-1"),
+  };
+  assert.deepEqual(LS.resolveForLesson("3-1", store, MANIFEST["3-1"]).keys, ["visual-vocabulary"]);
+  // And a lesson that was never configured reads as unconfigured even when its
+  // neighbour on the calendar is fully configured.
+  assert.deepEqual(LS.resolveForLesson("3-2", store, MANIFEST["3-2"]).keys, []);
+});
+
+/* ===========================================================================
+ * 14. THE FUTURE ROSTER INTERFACE.
+ *
+ * A per-student system, if one is ever built behind its own privacy review,
+ * should be able to ask for support KEYS without this layer learning anything
+ * about a student. `resolveEffectiveSupports` already takes a store and a
+ * lesson and returns supports; it has no parameter through which a name, a
+ * plan status or a proficiency level could arrive. This pins that shape.
+ * ======================================================================== */
+t("the resolver's interface cannot carry student information", () => {
+  const eff = LS.resolveEffectiveSupports({
+    lessonId: "5-3",
+    store: { "5-3": LS.normalizeProfile({ keys: ["word-bank"] }, "5-3") },
+    entry: MANIFEST["5-3"],
+    surface: "screen",
+    // A caller that tries to smuggle a student through is ignored, not obeyed.
+    studentName: "A. B.",
+    widaLevel: 2,
+    iep: true,
+  });
+  const serialized = JSON.stringify(eff);
+  assert.equal(serialized.includes("A. B."), false);
+  assert.equal(serialized.includes("wida"), false);
+  assert.equal(serialized.includes("iep"), false);
+  assert.deepEqual(eff.active, ["word-bank"]);
+});
+
 console.log(`lesson-supports: ${pass} assertions passed`);

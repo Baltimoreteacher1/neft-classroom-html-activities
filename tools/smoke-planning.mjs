@@ -186,6 +186,16 @@ async function phaseB() {
     headers: key,
     body: JSON.stringify({
       writes: [{ date: testDate, note: "e2e-smoke", updatedAt: Date.now() }],
+      /* The INVERSE is what makes the write undoable, and the planner client
+       * (curriculum/planning/planning-store.js) always sends one. This test did
+       * not, so `undo` correctly refused with 409 "recorded without a reversal"
+       * — and because the authenticated phase had never actually run for want
+       * of credentials, that read as a planner defect the first time it did.
+       * Send what the real client sends, or this exercises a shape nothing in
+       * production ever produces. */
+      inverse: [{ date: testDate, note: candidate.note ?? null, updatedAt: Date.now() }],
+      kind: "edit",
+      summary: "e2e smoke note",
     }),
   });
   if (applied.status !== 200) {
@@ -204,10 +214,38 @@ async function phaseB() {
   if (undone.status !== 200) fail("undo accepted", `HTTP ${undone.status}`);
   else pass("undo accepted");
 
+  /* Compare the day's MEANING, not the row's presence.
+   *
+   * Undoing the first change to a day leaves an overlay row whose fields are
+   * all null — that is what the planner client's own inverse produces (see
+   * `note: prior.note ?? null` in planning.js), and an all-null row and an
+   * absent row render identically. A byte-for-byte comparison can therefore
+   * never pass for a day being touched for the first time, which would leave
+   * this check permanently red and duly ignored. */
   const finalRead = await get("/api/pacing/state", { headers: key });
   const overlayAfter = JSON.parse(finalRead.text).overlay || {};
-  if (JSON.stringify(overlayAfter) === JSON.stringify(overlayBefore))
-    pass("no residual test mutation", "overlay restored byte for byte");
+  const meaning = (o) => {
+    const d = o[testDate] || {};
+    return JSON.stringify({
+      plan: d.plan ?? null,
+      actual: d.actual ?? null,
+      note: d.note ?? null,
+      locked: Boolean(d.locked),
+    });
+  };
+  const otherDaysUnchanged =
+    JSON.stringify(
+      Object.keys(overlayAfter)
+        .filter((d) => d !== testDate)
+        .sort(),
+    ) ===
+    JSON.stringify(
+      Object.keys(overlayBefore)
+        .filter((d) => d !== testDate)
+        .sort(),
+    );
+  if (meaning(overlayAfter) === meaning(overlayBefore) && otherDaysUnchanged)
+    pass("no residual test mutation", `${testDate} is back to its starting state`);
   else
     fail(
       "no residual test mutation",

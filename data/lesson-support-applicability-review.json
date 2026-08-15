@@ -1,0 +1,174 @@
+{
+  "_note": "AUTHORED source of truth for instructional applicability decisions. Each entry records a decision, the reason, and the evidence it was read from. data/lesson-support-overrides.json is GENERATED from this file by scripts/generate-support-overrides.mjs — never hand-edit that one. The audit surface at /teacher-tools/support-audit/ renders this file.",
+  "_decisions": {
+    "suppress": "The support is never offered for this lesson, because offering it would remove the thing the lesson teaches.",
+    "allow": "Recorded explicitly because a reasonable reader might expect a suppression here. The support IS offered.",
+    "pin": "The support's content stays visible even under reduced visual load."
+  },
+  "_status": {
+    "reviewed": "Decided against the lesson's own objective and worked example.",
+    "teacher-review": "Genuinely arguable. The system applies the recorded decision, and this flag says a human should confirm it."
+  },
+  "_evidenceNote": "Evidence names WHERE the judgement came from inside the lesson config — `contentObjective`, `launch.conceptIntro.iDo`. Titles are not evidence: an earlier pass suppressed the multiplication chart on 6-7 because the title said 'Find Factors and Multiples', when that lesson's objective is GCF/LCM reasoning and a chart is straightforward access to it.",
+  "reviews": [
+    {
+      "lessonId": "2-6",
+      "support": "calculator",
+      "decision": "suppress",
+      "reason": "The lesson's objective IS the long-division algorithm. A calculator returns the quotient and skips every step being taught.",
+      "evidence": [
+        "contentObjective: I can divide multi-digit whole numbers and explain the meaning of the quotient and remainder.",
+        "launch.conceptIntro.iDo walks DIVIDE / MULTIPLY / SUBTRACT / BRING DOWN by hand"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "lessonId": "2-7",
+      "support": "calculator",
+      "decision": "suppress",
+      "reason": "The objective is the decimal-division procedure — moving the point to make a whole-number divisor. A calculator bypasses the procedure entirely.",
+      "evidence": [
+        "contentObjective: I can divide with decimals by making the divisor a whole number first.",
+        "launch.conceptIntro.iDo: STEP 0 — MOVE THE POINT"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "lessonId": "2-11",
+      "support": "calculator",
+      "decision": "suppress",
+      "reason": "The objective names the procedure: lining up place values and decimal points. That alignment is the skill being assessed.",
+      "evidence": [
+        "contentObjective: I can add and subtract decimals by lining up the place values and the decimal points.",
+        "launch.conceptIntro.iDo annexes a zero to align 46.8 as 46.80"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "lessonId": "2-12",
+      "support": "calculator",
+      "decision": "suppress",
+      "reason": "The objective is placing the decimal point in the product by counting decimal places. A calculator places it for the student.",
+      "evidence": [
+        "contentObjective: I can multiply decimals and place the decimal point correctly in the product.",
+        "launch.conceptIntro.iDo: multiply without points, then count decimal places"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "lessonId": "4-3",
+      "support": "calculator",
+      "decision": "suppress",
+      "reason": "The objective is ESTIMATION with benchmark percents and compatible numbers. An exact answer from a calculator does not just shortcut the work — it defeats the point of the lesson.",
+      "evidence": [
+        "contentObjective: I can estimate the percent of a number using benchmark percents, rounding, and compatible numbers.",
+        "launch.conceptIntro.iDo marks benchmark jumps of 25% on a double number line"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "lessonId": "6-9",
+      "support": "calculator",
+      "decision": "suppress",
+      "reason": "The objective is the reciprocal strategy (keep–change–flip), and a calculator that accepts fractions returns the quotient without it. Arguable: most classroom calculators do not take fraction input, in which case suppressing this costs the student access without protecting anything.",
+      "evidence": [
+        "contentObjective: I can divide a whole number by a fraction by multiplying by the reciprocal.",
+        "launch.conceptIntro.iDo: Keep the 4. Change ÷ to ×. Flip 1/2."
+      ],
+      "status": "teacher-review"
+    },
+    {
+      "lessonId": "6-10",
+      "support": "calculator",
+      "decision": "suppress",
+      "reason": "Same judgement as 6-9: the objective is the conversion-then-reciprocal procedure, not the arithmetic.",
+      "evidence": [
+        "contentObjective: I can divide mixed numbers by first changing them to improper fractions.",
+        "launch.conceptIntro.iDo converts 3 1/2 to an improper fraction before dividing"
+      ],
+      "status": "teacher-review"
+    },
+    {
+      "lessonId": "6-12",
+      "support": "multiplication-chart",
+      "decision": "suppress",
+      "reason": "The method being taught is listing and comparing multiples. A multiplication chart IS a printed list of multiples, so it performs the method rather than supporting it.",
+      "evidence": [
+        "contentObjective: I can find the least common multiple (LCM) of two numbers by listing or comparing their multiples.",
+        "launch.conceptIntro.iDo: I skip count the multiples of 4 … then the multiples of 6"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "lessonId": "6-7",
+      "support": "multiplication-chart",
+      "decision": "allow",
+      "reason": "REVERSED a previous suppression. The objective is GCF/LCM reasoning applied to a real problem, not multiplication-fact recall. A chart reduces recall load so the reasoning stays in view — the textbook case for an access support. The earlier decision was read off the lesson TITLE.",
+      "evidence": [
+        "contentObjective: I can find the greatest common factor and the least common multiple of two numbers, and use each to solve a real problem.",
+        "launch.conceptIntro.iDo reasons about equal combo packs, not about recalling facts"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "lessonId": "2-6",
+      "support": "multiplication-chart",
+      "decision": "allow",
+      "reason": "Long division consumes multiplication facts but does not teach them. Reducing recall load keeps the algorithm itself in view.",
+      "evidence": ["contentObjective names the division algorithm, not fact fluency"],
+      "status": "reviewed"
+    },
+    {
+      "lessonId": "8-2",
+      "support": "calculator",
+      "decision": "allow",
+      "reason": "The objective is reasoning with inverse operations. The arithmetic (58 − 23) is incidental to it, so a calculator is access rather than a shortcut past the skill.",
+      "evidence": [
+        "contentObjective: I can solve one-step addition and subtraction equations using inverse operations."
+      ],
+      "status": "reviewed"
+    },
+    {
+      "lessonId": "8-3",
+      "support": "calculator",
+      "decision": "allow",
+      "reason": "As 8-2: the inverse operation is the skill; the division is incidental.",
+      "evidence": [
+        "contentObjective: I can solve one-step multiplication and division equations using inverse operations."
+      ],
+      "status": "reviewed"
+    },
+    {
+      "lessonId": "6-13",
+      "support": "multiplication-chart",
+      "decision": "allow",
+      "reason": "The objective is building a factor tree. A chart supports the factor recall the tree consumes without building the tree.",
+      "evidence": [
+        "contentObjective: I can write a number as a product of its prime factors using a factor tree."
+      ],
+      "status": "reviewed"
+    },
+    {
+      "lessonId": "5-1",
+      "support": "visual-model",
+      "decision": "pin",
+      "reason": "The labelled base and height ARE the mathematics of this lesson. Under reduced visual load the labels must stay — a parallelogram with its measurements hidden is not a simplified task, it is an unsolvable one.",
+      "evidence": [
+        "contentObjective concerns area from base and height",
+        "vocabulary defines base and height as the perpendicular pair"
+      ],
+      "status": "reviewed"
+    },
+    {
+      "lessonId": "5-3",
+      "support": "visual-model",
+      "decision": "pin",
+      "reason": "Same as 5-1: b1, b2 and h are the given quantities, not decoration.",
+      "evidence": [
+        "contentObjective: A = ½(b1 + b2) × h",
+        "vocabulary defines Base 1, Base 2 and height"
+      ],
+      "status": "reviewed"
+    }
+  ]
+}

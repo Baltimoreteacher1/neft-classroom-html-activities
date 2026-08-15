@@ -36,6 +36,37 @@ export function indexCurriculum(launch) {
  * of them. */
 const GROUP_LABELS = { 1: "Extra Support", 2: "Challenge" };
 
+/* PLANNER SUPPORT STATUS.
+ *
+ * The planner says WHETHER a scheduled lesson has supports configured, and
+ * nothing more: configuration stays on the supports surface, one place, so the
+ * two cannot drift. A count is enough to answer the only question a planner
+ * needs to answer — "is this one ready?".
+ *
+ * Modifications are counted separately and never folded into the support total.
+ * "7 active" that silently includes a shortened task is precisely the summary
+ * this system exists to prevent.
+ *
+ * Reads through the shared module when it is present, and degrades to no
+ * suffix at all when it is not — a planner that cannot reach the support layer
+ * still plans.
+ */
+export function supportStatusSuffix(lessonId) {
+  try {
+    const LS = globalThis.EWLLessonSupports;
+    if (!LS) return "";
+    const profile = LS.loadProfile(lessonId);
+    if (!profile.keys.length) return ": not configured";
+    const mods = profile.keys.filter((k) => LS.byKey[k]?.impact === "modification");
+    const supports = profile.keys.length - mods.length;
+    return mods.length
+      ? `: ${supports} active + ${mods.length} task modification`
+      : `: ${supports} active`;
+  } catch {
+    return "";
+  }
+}
+
 /** The canonical identity of whatever is scheduled on a day, or null. */
 export function identify(index, day) {
   const id = day.plan.lessonId;
@@ -134,7 +165,7 @@ export function resourcesFor(index, day) {
   if (entry && entry.kind !== "endOfUnit" && /^\d+-\d+$/.test(entry.id)) {
     teacher.push(
       link(
-        "Student supports for this lesson",
+        `Student supports${supportStatusSuffix(entry.id)}`,
         `/curriculum/student-supports/?lesson=${encodeURIComponent(entry.id)}`,
         "teacher",
       ),
