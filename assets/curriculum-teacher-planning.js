@@ -458,6 +458,316 @@
    * the DOM (the resume strip's lesson), because a navigation surface that
    * waits on data is slower than the page it replaced.
    */
+  /* ── Section → Unit → Lesson ───────────────────────────────────────────────
+   * The Teach band's browse control.
+   *
+   * SECTION is the MCCRS DOMAIN — the curriculum's own top-level grouping above
+   * Unit, authored in data/ccss-standards.json and already enforced by
+   * validate:ccss. It is read off each lesson's `standard`, so it needs no new
+   * data and cannot drift from the standards the lessons actually carry. The
+   * word "section" also means a class period elsewhere in this repo (601/602/
+   * 603), but a class period cannot determine which units are valid, so that
+   * reading is not the one being asked for here.
+   *
+   * SOURCE OF TRUTH. data/curriculum-launch-manifest.json, the same file the
+   * planner, the student launcher and the supports surface read — routed
+   * through window.NTJsonCache, which three other hub scripts already use for
+   * this exact file. The selector therefore costs the page NO additional
+   * request: it is served the parse the hub already paid for.
+   *
+   * FAILURE. Anything that goes wrong is confined to this band. The rest of
+   * /curriculum/ is untouched, and the band falls back to the browse and search
+   * links that were always there.
+   */
+
+  /* The six domain labels, verbatim from data/ccss-standards.json. Held here
+   * rather than fetched because the file is 15 KB and the hub has a request
+   * budget; tools/hub-lesson-picker.test.mjs reads the real file and fails if
+   * these six strings ever drift from it. */
+  var SECTION_LABELS = {
+    NOS: "Number and Operation Sense",
+    AT: "Algebraic Thinking",
+    GR: "Geometric Reasoning and Measurement",
+    DS: "Reasoning with Data and Statistics",
+    MPP: "Mathematical Practices and Processes",
+    G5: "Grade 5 Review (Math Is... units)",
+  };
+  var SECTION_ORDER = ["MPP", "G5", "NOS", "AT", "GR", "DS"];
+  var PICK_LS = "nt-hub-lesson-pick";
+
+  /** A lesson's section, from its standard. `6.NOS.2` → NOS; `5.NF.B.4` → G5. */
+  function sectionOf(lesson) {
+    var std = String((lesson && lesson.standard) || "");
+    if (/^5\./.test(std)) return "G5";
+    var m = /^(?:6\.)?([A-Z]+)\./.exec(std);
+    return m && SECTION_LABELS[m[1]] ? m[1] : null;
+  }
+
+  function fillOptions(select, items, placeholder) {
+    select.replaceChildren();
+    select.appendChild(option(document, "", placeholder));
+    items.forEach(function (item) {
+      select.appendChild(option(document, item.value, item.label));
+    });
+  }
+
+  function mountLessonPicker(ws) {
+    var sectionSel = ws.querySelector("#tws-section");
+    var unitSel = ws.querySelector("#tws-unit");
+    var lessonSel = ws.querySelector("#tws-lesson");
+    var openBox = ws.querySelector("#tws-open");
+    if (!sectionSel || !unitSel || !lessonSel || !openBox) return;
+
+    var cache = window.NTJsonCache;
+    var request = cache
+      ? cache.json("/data/curriculum-launch-manifest.json")
+      : fetch("/data/curriculum-launch-manifest.json", { credentials: "same-origin" }).then(
+          function (r) {
+            if (!r.ok) throw new Error(String(r.status));
+            return r.json();
+          },
+        );
+
+    request.then(setup, function () {
+      fillOptions(sectionSel, [], "Lessons could not be loaded");
+      sectionSel.disabled = true;
+      openBox.replaceChildren();
+      var p = document.createElement("p");
+      p.className = "tws-pick-error";
+      p.textContent = "The lesson list could not be loaded. ";
+      var retry = document.createElement("button");
+      retry.type = "button";
+      retry.className = "tws-btn ghost";
+      retry.textContent = "Try again";
+      retry.addEventListener("click", function () {
+        window.location.reload();
+      });
+      p.appendChild(retry);
+      openBox.appendChild(p);
+    });
+
+    function setup(manifest) {
+      var lessons = (manifest && manifest.lessons) || [];
+      // Small-group and catch-up variants, keyed by the core lesson they belong
+      // to — the manifest already carries the relationship, so nothing here
+      // infers a variant's purpose from its number.
+      var variantsByParent = Object.create(null);
+      function addVariant(entry, fallbackLabel) {
+        if (!entry || !entry.parent || !entry.resources || !entry.resources.lesson) return;
+        (variantsByParent[entry.parent] = variantsByParent[entry.parent] || []).push({
+          id: entry.id,
+          title: entry.title || fallbackLabel,
+          href: entry.resources.lesson,
+        });
+      }
+      (manifest.smallGroups || []).forEach(function (g) {
+        addVariant(g, "Small group");
+      });
+      (manifest.catchUps || []).forEach(function (c) {
+        addVariant(c, "Catch-up");
+      });
+
+      var bySection = Object.create(null);
+      lessons.forEach(function (l) {
+        var sec = sectionOf(l);
+        if (!sec) return;
+        (bySection[sec] = bySection[sec] || []).push(l);
+      });
+
+      var sections = SECTION_ORDER.filter(function (key) {
+        return bySection[key] && bySection[key].length;
+      }).map(function (key) {
+        return { value: key, label: SECTION_LABELS[key] };
+      });
+
+      if (!sections.length) {
+        fillOptions(sectionSel, [], "No lessons available");
+        sectionSel.disabled = true;
+        return;
+      }
+      fillOptions(sectionSel, sections, "Select a section");
+
+      function unitsFor(sec) {
+        var seen = Object.create(null);
+        (bySection[sec] || []).forEach(function (l) {
+          seen[l.unit] = true;
+        });
+        return Object.keys(seen)
+          .map(Number)
+          .sort(function (a, b) {
+            return a - b;
+          })
+          .map(function (u) {
+            return { value: String(u), label: "Unit " + u };
+          });
+      }
+
+      function lessonsFor(sec, unit) {
+        return (bySection[sec] || [])
+          .filter(function (l) {
+            return String(l.unit) === String(unit);
+          })
+          .sort(function (a, b) {
+            return a.lesson - b.lesson;
+          })
+          .map(function (l) {
+            return { value: l.id, label: l.id + " · " + l.title };
+          });
+      }
+
+      function setDisabled(select, disabled, placeholder) {
+        select.disabled = disabled;
+        if (disabled) fillOptions(select, [], placeholder);
+      }
+
+      function renderOpen() {
+        openBox.replaceChildren();
+        var lesson = lessons.filter(function (l) {
+          return l.id === lessonSel.value;
+        })[0];
+        if (!lesson) return;
+
+        var head = document.createElement("p");
+        head.className = "tws-open-title";
+        head.textContent = "Lesson " + lesson.id + " — " + lesson.title;
+        openBox.appendChild(head);
+
+        var row = document.createElement("p");
+        row.className = "tws-actions tws-open-actions";
+
+        // Only actions the manifest actually carries a route for. A dead button
+        // on a lesson that has no small-group version is worse than no button,
+        // because the teacher finds out at 7:55am.
+        var lessonHref = (lesson.resources && lesson.resources.lesson) || null;
+        if (lessonHref) {
+          var a = document.createElement("a");
+          a.className = "tws-btn";
+          a.href = lessonHref;
+          a.textContent = "Open whole-group lesson";
+          row.appendChild(a);
+        }
+        var supports = document.createElement("a");
+        supports.className = "tws-btn ghost";
+        supports.href = "/curriculum/student-supports/?lesson=" + encodeURIComponent(lesson.id);
+        supports.textContent = "Student supports";
+        row.appendChild(supports);
+        openBox.appendChild(row);
+
+        var variants = variantsByParent[lesson.id] || [];
+        if (variants.length) {
+          var group = document.createElement("p");
+          group.className = "tws-actions tws-open-variants";
+          var label = document.createElement("span");
+          label.className = "tws-open-label";
+          label.textContent = "Small-group lessons";
+          group.appendChild(label);
+          variants.forEach(function (v) {
+            var va = document.createElement("a");
+            va.className = "tws-btn ghost";
+            va.href = v.href;
+            va.textContent = v.title;
+            group.appendChild(va);
+          });
+          openBox.appendChild(group);
+        }
+      }
+
+      function remember() {
+        try {
+          localStorage.setItem(
+            PICK_LS,
+            JSON.stringify({
+              section: sectionSel.value,
+              unit: unitSel.value,
+              lesson: lessonSel.value,
+            }),
+          );
+        } catch (_e) {
+          /* private mode — the picker still works, it just does not remember */
+        }
+      }
+
+      sectionSel.addEventListener("change", function () {
+        var sec = sectionSel.value;
+        // A parent change clears its children rather than leaving a stale
+        // grandchild selected under a unit that no longer contains it.
+        if (!sec) {
+          setDisabled(unitSel, true, "Choose a section first");
+          setDisabled(lessonSel, true, "Choose a unit first");
+        } else {
+          var units = unitsFor(sec);
+          fillOptions(unitSel, units, units.length ? "Select a unit" : "No units in this section");
+          unitSel.disabled = !units.length;
+          setDisabled(lessonSel, true, "Choose a unit first");
+        }
+        openBox.replaceChildren();
+        remember();
+      });
+
+      unitSel.addEventListener("change", function () {
+        var unit = unitSel.value;
+        if (!unit) {
+          setDisabled(lessonSel, true, "Choose a unit first");
+        } else {
+          var items = lessonsFor(sectionSel.value, unit);
+          fillOptions(
+            lessonSel,
+            items,
+            items.length ? "Select a lesson" : "No lessons in this unit",
+          );
+          lessonSel.disabled = !items.length;
+        }
+        openBox.replaceChildren();
+        remember();
+      });
+
+      lessonSel.addEventListener("change", function () {
+        renderOpen();
+        remember();
+      });
+
+      /* Restore the last pick, but only if all three still resolve against the
+       * CURRENT curriculum. A renumbered or retired lesson clears the memory
+       * instead of selecting something near it. */
+      var saved = null;
+      try {
+        saved = JSON.parse(localStorage.getItem(PICK_LS) || "null");
+      } catch (_e) {
+        saved = null;
+      }
+      if (saved && bySection[saved.section]) {
+        sectionSel.value = saved.section;
+        var units = unitsFor(saved.section);
+        fillOptions(unitSel, units, "Select a unit");
+        unitSel.disabled = !units.length;
+        if (
+          units.some(function (u) {
+            return u.value === String(saved.unit);
+          })
+        ) {
+          unitSel.value = String(saved.unit);
+          var items = lessonsFor(saved.section, saved.unit);
+          fillOptions(lessonSel, items, "Select a lesson");
+          lessonSel.disabled = !items.length;
+          if (
+            items.some(function (i) {
+              return i.value === saved.lesson;
+            })
+          ) {
+            lessonSel.value = saved.lesson;
+            renderOpen();
+          }
+        }
+      } else if (saved) {
+        try {
+          localStorage.removeItem(PICK_LS);
+        } catch (_e) {
+          /* nothing to clean up */
+        }
+      }
+    }
+  }
+
   function buildWorkspace(plannerCard) {
     if (document.querySelector(".tws")) return null;
     var ws = document.createElement("section");
@@ -474,9 +784,27 @@
       '<div class="tws-lead">' +
       '<p class="tws-kicker">Teach</p>' +
       "<h2>Lessons</h2>" +
-      '<p class="tws-sub">All 10 units — interactive whole-group lessons, small-group lessons, and every lesson resource.</p>' +
+      '<p class="tws-sub">Choose a lesson to open it, its small-group versions, and its supports.</p>' +
+      // Three native <select>s. Native because a teacher gets their platform's
+      // own picker — including the phone one — keyboard support, screen-reader
+      // naming and type-ahead for free, and none of that is worth rebuilding.
+      '<div class="tws-pick" role="group" aria-label="Choose a lesson">' +
+      '<p class="tws-pick-field">' +
+      '<label for="tws-section">Section</label>' +
+      '<select id="tws-section"><option value="">Loading…</option></select>' +
+      "</p>" +
+      '<p class="tws-pick-field">' +
+      '<label for="tws-unit">Unit</label>' +
+      '<select id="tws-unit" disabled><option value="">Choose a section first</option></select>' +
+      "</p>" +
+      '<p class="tws-pick-field">' +
+      '<label for="tws-lesson">Lesson</label>' +
+      '<select id="tws-lesson" disabled><option value="">Choose a unit first</option></select>' +
+      "</p>" +
+      "</div>" +
+      '<div class="tws-open" id="tws-open" role="status" aria-live="polite"></div>' +
       '<p class="tws-actions">' +
-      '<a class="tws-btn" href="/curriculum/units/">Browse units &amp; lessons</a>' +
+      '<a class="tws-btn ghost" href="/curriculum/units/">Browse units &amp; lessons</a>' +
       '<a class="tws-btn ghost" href="#hub-content" data-tws="search">Search lessons</a>' +
       (resumeHref && resumeText
         ? '<a class="tws-btn ghost" href="' + resumeHref + '">' + resumeText + "</a>"
@@ -517,6 +845,8 @@
       drawer.scrollIntoView({ block: "start", behavior: "smooth" });
       drawer.querySelector("summary")?.focus();
     });
+
+    mountLessonPicker(ws);
 
     // The planner card keeps its full description below the workspace: the
     // workspace answers "where do I plan", the card explains what the planner

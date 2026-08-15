@@ -1026,3 +1026,116 @@ button.ctw-ql-card {
 .cns-lifted.tws-has-card {
   margin-top: 0 !important;
 }
+
+/* ── Lesson picker (Teach band) ─────────────────────────────────────────────
+   Section → Unit → Lesson, then the lesson's own actions. A compact teacher
+   control, deliberately not three cards: these are one decision made in three
+   steps, and boxing each step would say they were three separate things. */
+.tws-pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin: 14px 0 0;
+}
+
+.tws-pick-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  /* Lesson titles are long; the lesson control gets the room it needs and the
+     three wrap to a stack on a narrow screen rather than shrinking the text. */
+  flex: 1 1 15rem;
+  min-width: 0;
+}
+
+/* Section holds the longest labels ("Geometric Reasoning and Measurement") and
+   Lesson holds the longest values, so those two get the room. Unit is "Unit 7". */
+.tws-pick-field:first-child {
+  flex: 1.3 1 17rem;
+}
+
+.tws-pick-field:nth-child(2) {
+  flex: 0.6 1 8rem;
+}
+
+.tws-pick-field:last-child {
+  flex: 2 1 22rem;
+}
+
+.tws-pick-field label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #55617a;
+}
+
+.tws-pick-field select {
+  font: inherit;
+  font-size: 0.96rem;
+  min-height: 44px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #9db0cb;
+  border-radius: 10px;
+  background: #fff;
+  color: #12355b;
+}
+
+.tws-pick-field select:disabled {
+  background: #f2f5f9;
+  color: #55617a;
+}
+
+.tws-pick-field select:focus-visible {
+  outline: 3px solid #0b2f57;
+  outline-offset: 2px;
+}
+
+.tws-open:empty {
+  display: none;
+}
+
+.tws-open {
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  border: 1px solid #d7e2ed;
+  border-radius: 12px;
+  background: #f7fafd;
+}
+
+.tws-open-title {
+  margin: 0;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #12355b;
+}
+
+.tws-open-actions {
+  margin-top: 10px;
+}
+
+.tws-open-variants {
+  margin-top: 8px;
+  align-items: center;
+}
+
+.tws-open-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #55617a;
+}
+
+.tws-pick-error {
+  margin: 14px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: #85381f;
+  font-size: 0.95rem;
+}

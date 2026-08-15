@@ -36,6 +36,10 @@ const CONSUMERS = [
   "curriculum-teacher-workflow.js",
   "curriculum-studio-journey.js",
   "curriculum-product-upgrades.js",
+  // The Teach band's Section → Unit → Lesson picker reads the launch manifest.
+  // Three scripts above already fetch that exact file, so routing this one
+  // through the cache is what makes the picker cost the hub no extra request.
+  "curriculum-teacher-planning.js",
 ];
 
 let failures = 0;
