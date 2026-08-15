@@ -36,6 +36,13 @@ let lessons = [];
 let smallGroupsByParent = new Map();
 let LS = null; // shared/supports/lesson-supports.js, once loaded
 let currentLessonId = null;
+/* The class being taught: 601 / 602 / 603, or null for the configuration that
+ * applies to every class. It arrives as ?section= from the hub's Teach band and
+ * otherwise from the teacher state that already owns it
+ * (curriculumTeacherWorkflow:v1.section). A class is CONTEXT — the canonical
+ * lesson is identical for all three; only the teacher's support selection
+ * differs. Nothing about a student is stored, read or displayed here. */
+let currentSection = null;
 let selection = new Set();
 let activePreset = null;
 let dirty = false;
@@ -307,12 +314,15 @@ function renderLesson(lesson) {
   const id = lesson.id;
   const groups = smallGroupsByParent.get(id) || [];
   const bbs = f.becauseButSo || {};
-  const stored = LS ? LS.loadProfile(id) : { keys: [] };
+  const stored = LS ? LS.loadProfile(id, currentSection) : { keys: [] };
   const appliedCount = stored.keys.length;
 
   main.innerHTML =
     `<p class="sup-context">Supports for <strong>${esc(lesson.title)}</strong> · Lesson ${esc(id)} · ${esc(lesson.standard || "")}` +
     ` <span class="sup-family">${esc(f.label || key)}</span></p>` +
+    (currentSection
+      ? `<p class="sup-class">Configuring supports for <strong>class ${esc(currentSection)}</strong>. Your other classes keep their own selections; the lesson itself is the same for all of them.</p>`
+      : `<p class="sup-class">Configuring supports for <strong>every class</strong>. Open this from a class on the Curriculum Hub to set them for one class only.</p>`) +
     `<p class="sup-rigor">These scaffold <em>access</em> to the grade-level standard. None of them lowers the mathematics.</p>` +
     block("q-choose", "Which supports do I want for this lesson?", renderChooser(id), "") +
     `<section class="sup-block" aria-labelledby="q-preview"><h2 id="q-preview">What will this change?</h2>` +
@@ -423,19 +433,20 @@ function bindLessonControls(id) {
       if (st) st.textContent = "Supports could not be saved. The lesson still opens as written.";
       return;
     }
-    const ok = LS.saveProfile(id, [...selection], activePreset);
+    const ok = LS.saveProfile(id, [...selection], activePreset, currentSection);
     dirty = false;
     if (st) {
+      const forClass = currentSection ? ` for class ${currentSection}` : "";
       st.textContent = ok
         ? selection.size
-          ? `Applied. ${selection.size} support(s) are now part of Lesson ${id} and its small-group versions.`
-          : `Cleared. Lesson ${id} opens exactly as written.`
+          ? `Applied${forClass}. ${selection.size} support(s) are now part of Lesson ${id} and its small-group versions.`
+          : `Cleared${forClass}. Lesson ${id} opens exactly as written.`
         : "Could not save on this device (private browsing?). The lesson still opens as written.";
     }
   });
 
   document.getElementById("sup-reset")?.addEventListener("click", () => {
-    if (LS) LS.resetProfile(id);
+    if (LS) LS.resetProfile(id, currentSection);
     selection = new Set();
     activePreset = null;
     dirty = false;
@@ -445,7 +456,11 @@ function bindLessonControls(id) {
     main.querySelectorAll(".sup-preset").forEach((b) => b.setAttribute("aria-pressed", "false"));
     refreshPreview(id);
     const st = document.getElementById("sup-status");
-    if (st) st.textContent = `Reset. Lesson ${id} opens exactly as written.`;
+    if (st) {
+      st.textContent = currentSection
+        ? `Reset for class ${currentSection}. Lesson ${id} opens exactly as written for that class.`
+        : `Reset. Lesson ${id} opens exactly as written.`;
+    }
   });
 }
 
@@ -468,7 +483,7 @@ function show(id) {
   // has no business in a ratio lesson, and a support the new lesson cannot
   // deliver is dropped by the applicability filter on render.
   currentLessonId = lesson.id;
-  const stored = LS ? LS.loadProfile(lesson.id) : { keys: [], preset: null };
+  const stored = LS ? LS.loadProfile(lesson.id, currentSection) : { keys: [], preset: null };
   selection = new Set(stored.keys);
   activePreset = stored.preset || null;
   dirty = false;
@@ -522,7 +537,22 @@ async function boot() {
     LS = null; // strategy guidance still renders; configuration simply is not offered
   }
 
-  const requested = new URLSearchParams(location.search).get("lesson");
+  /* CLASS CONTEXT. `?section=` from the hub's Teach band wins; otherwise the
+   * class already in teacher state is used, so arriving here by any other route
+   * still lands on the right class. An unrecognised value is ignored rather
+   * than trusted — the all-class configuration is the safe default. */
+  const params = new URLSearchParams(location.search);
+  const requestedSection = params.get("section");
+  if (LS) {
+    if (requestedSection && LS.isSection(requestedSection)) {
+      currentSection = requestedSection;
+      LS.setActiveSection(currentSection);
+    } else {
+      currentSection = LS.activeSection();
+    }
+  }
+
+  const requested = params.get("lesson");
   const known = requested ? lessons.find((l) => l.id === requested) : null;
   if (requested && !known) {
     // INVALID LESSON. Say so, apply nothing, and offer the picker — never fall

@@ -1174,73 +1174,208 @@
     }
   }
 
-  function readStore() {
+  /* --------------------------------------------------------------------------
+   * CLASS SECTION.
+   *
+   * 601 / 602 / 603 are the teacher's class periods. They are CONTEXT, not
+   * curriculum: all three classes are taught the same canonical lessons, and
+   * nothing here forks a lesson per class. What can legitimately differ is the
+   * teacher's SUPPORT SELECTION — 601 may need visual vocabulary and sentence
+   * frames where 603 needs nothing.
+   *
+   * The list itself lives in assets/learning-supports/supports-schema.js
+   * (`SECTIONS`), which is the canonical roster source; this reads it when that
+   * schema is loaded and otherwise falls back to the same three values, pinned
+   * against the schema file by tools/hub-lesson-picker.test.mjs.
+   *
+   * The SELECTED section lives in the existing teacher-workflow state
+   * (`curriculumTeacherWorkflow:v1`.section), written by the Teacher Workflow
+   * card's own class selector since long before this. Reading the same key is
+   * what makes the hub picker, the lesson, the supports surface and the printed
+   * packet agree about which class is being taught, without a new store.
+   */
+  var SECTION_FALLBACK = ["601", "602", "603"];
+  var TEACHER_STATE_KEY = "curriculumTeacherWorkflow:v1";
+
+  function sections() {
+    try {
+      var schema = typeof window !== "undefined" && window.EWLSupportsSchema;
+      if (schema && Array.isArray(schema.sections) && schema.sections.length) {
+        return schema.sections.slice();
+      }
+    } catch (_e) {
+      /* fall through to the pinned list */
+    }
+    return SECTION_FALLBACK.slice();
+  }
+
+  function isSection(value) {
+    return sections().indexOf(String(value)) !== -1;
+  }
+
+  /** The class currently being taught, or null. Never throws, never guesses. */
+  function activeSection() {
     var ls = storage();
-    if (!ls) return {};
+    if (!ls) return null;
+    try {
+      var raw = ls.getItem(TEACHER_STATE_KEY);
+      if (!raw) return null;
+      var state = JSON.parse(raw);
+      var value = state && state.section;
+      return isSection(value) ? String(value) : null;
+    } catch (_e) {
+      return null;
+    }
+  }
+
+  function setActiveSection(value) {
+    var ls = storage();
+    if (!ls) return false;
+    var next = isSection(value) ? String(value) : null;
+    try {
+      var state = {};
+      try {
+        state = JSON.parse(ls.getItem(TEACHER_STATE_KEY) || "{}") || {};
+      } catch (_e) {
+        state = {};
+      }
+      if (next) state.section = next;
+      else delete state.section;
+      ls.setItem(TEACHER_STATE_KEY, JSON.stringify(state));
+      return true;
+    } catch (_e) {
+      return false;
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+   * THE STORE.
+   *
+   *   { schemaVersion, lessons: {…}, sections: { "601": {…} } }
+   *
+   * `lessons` is the configuration that applies to EVERY class — the shape this
+   * store has always had, and what a teacher sets when no class is selected.
+   * `sections["601"]` overrides it for one class only.
+   *
+   * readStore(section) flattens those two into the same shape resolveForLesson
+   * has always taken, which is why class scoping needed no change to the
+   * resolver, the inheritance rules, the print layer or the equivalence gate.
+   *
+   * ISOLATION. 602 never sees 601's entries. It sees its own if it has them and
+   * the all-class default otherwise — never another class's.
+   * ----------------------------------------------------------------------- */
+  function readRaw() {
+    var ls = storage();
+    if (!ls) return null;
     var raw;
     try {
       raw = ls.getItem(STORAGE_KEY);
     } catch (_e) {
-      return {};
+      return null;
     }
-    if (!raw) return {};
+    if (!raw) return null;
     var parsed;
     try {
       parsed = JSON.parse(raw);
     } catch (_e) {
-      return {};
+      return null;
     }
-    if (!parsed || typeof parsed !== "object") return {};
+    if (!parsed || typeof parsed !== "object") return null;
     // A record written by a NEWER schema is ignored, not migrated and not
     // crashed on — this version cannot know what its keys mean.
-    if (parsed.schemaVersion && parsed.schemaVersion > SCHEMA_VERSION) return {};
-    var lessons = parsed.lessons && typeof parsed.lessons === "object" ? parsed.lessons : {};
+    if (parsed.schemaVersion && parsed.schemaVersion > SCHEMA_VERSION) return null;
+    return parsed;
+  }
+
+  function normalizeMap(source) {
     var out = {};
-    Object.keys(lessons).forEach(function (id) {
-      if (parseLessonId(id)) out[id] = normalizeProfile(lessons[id], id);
+    if (!source || typeof source !== "object") return out;
+    Object.keys(source).forEach(function (id) {
+      if (parseLessonId(id)) out[id] = normalizeProfile(source[id], id);
     });
     return out;
   }
 
-  function writeStore(store) {
+  /** @param {string=} section  omit to read the all-class configuration. */
+  function readStore(section) {
+    var parsed = readRaw();
+    if (!parsed) return {};
+    var base = normalizeMap(parsed.lessons);
+    var sec = section === undefined ? activeSection() : section;
+    if (!sec || !isSection(sec)) return base;
+    var perSection = normalizeMap((parsed.sections || {})[sec]);
+    Object.keys(perSection).forEach(function (id) {
+      base[id] = perSection[id];
+    });
+    return base;
+  }
+
+  function writeStore(store, section) {
     var ls = storage();
     if (!ls) return false;
+    var parsed = readRaw() || {};
+    var next = { schemaVersion: SCHEMA_VERSION, lessons: parsed.lessons || {} };
+    if (parsed.sections && typeof parsed.sections === "object") next.sections = parsed.sections;
+    if (section && isSection(section)) {
+      next.sections = next.sections || {};
+      next.sections[section] = store || {};
+    } else {
+      next.lessons = store || {};
+    }
     try {
-      ls.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ schemaVersion: SCHEMA_VERSION, lessons: store || {} }),
-      );
+      ls.setItem(STORAGE_KEY, JSON.stringify(next));
       return true;
     } catch (_e) {
       return false; // quota / private mode — the lesson still renders
     }
   }
 
-  /** Apply: persist the selection for one lesson. Touches no other lesson. */
-  function saveProfile(lessonId, keys, presetKey) {
+  /** The configuration a class OWNS — not what it inherits from the all-class
+   * default. This is what the supports surface edits, so that saving for 602
+   * cannot silently rewrite 601. */
+  function ownStore(section) {
+    var parsed = readRaw();
+    if (!parsed) return {};
+    if (section && isSection(section)) return normalizeMap((parsed.sections || {})[section]);
+    return normalizeMap(parsed.lessons);
+  }
+
+  /** Apply: persist the selection for one lesson, for one class (or for every
+   * class when no section is given). Touches no other lesson and no other
+   * class. */
+  function saveProfile(lessonId, keys, presetKey, section) {
     if (!parseLessonId(lessonId)) return false;
-    var store = readStore();
+    var sec = section === undefined ? activeSection() : section;
+    var store = ownStore(sec);
     var profile = normalizeProfile({ keys: keys, preset: presetKey }, lessonId);
     if (!profile.keys.length) {
       delete store[lessonId];
     } else {
       store[lessonId] = profile;
     }
-    return writeStore(store);
+    return writeStore(store, sec);
   }
 
-  /** Reset to original: drop THIS lesson's delta and nothing else. Canonical
-   * rendering is what remains, because canonical rendering is what happens when
-   * no delta exists. */
-  function resetProfile(lessonId) {
-    var store = readStore();
-    if (!Object.prototype.hasOwnProperty.call(store, lessonId)) return writeStore(store);
+  /** Reset to original: drop THIS lesson's delta for THIS class and nothing
+   * else. Canonical rendering is what remains, because canonical rendering is
+   * what happens when no delta exists. */
+  function resetProfile(lessonId, section) {
+    var sec = section === undefined ? activeSection() : section;
+    var store = ownStore(sec);
+    if (!Object.prototype.hasOwnProperty.call(store, lessonId)) return writeStore(store, sec);
     delete store[lessonId];
-    return writeStore(store);
+    return writeStore(store, sec);
   }
 
-  function loadProfile(lessonId) {
-    return normalizeProfile(readStore()[lessonId], lessonId);
+  function loadProfile(lessonId, section) {
+    return normalizeProfile(readStore(section)[lessonId], lessonId);
+  }
+
+  /** Copy one class's whole support setup onto another. Intent only — the
+   * stored records are support keys, so no lesson content can travel. */
+  function copySectionSetup(from, to) {
+    if (!isSection(from) || !isSection(to) || from === to) return false;
+    return writeStore(ownStore(from), to);
   }
 
   return {
@@ -1276,6 +1411,14 @@
     provenance: provenance,
     explainSuppressed: explainSuppressed,
     explainUnavailable: explainUnavailable,
+    SECTION_FALLBACK: SECTION_FALLBACK,
+    TEACHER_STATE_KEY: TEACHER_STATE_KEY,
+    sections: sections,
+    isSection: isSection,
+    activeSection: activeSection,
+    setActiveSection: setActiveSection,
+    ownStore: ownStore,
+    copySectionSetup: copySectionSetup,
     readStore: readStore,
     writeStore: writeStore,
     saveProfile: saveProfile,

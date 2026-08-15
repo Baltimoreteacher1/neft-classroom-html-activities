@@ -458,49 +458,74 @@
    * the DOM (the resume strip's lesson), because a navigation surface that
    * waits on data is slower than the page it replaced.
    */
-  /* ── Section → Unit → Lesson ───────────────────────────────────────────────
+  /* ── Class Section → Unit → Lesson ─────────────────────────────────────────
    * The Teach band's browse control.
    *
-   * SECTION is the MCCRS DOMAIN — the curriculum's own top-level grouping above
-   * Unit, authored in data/ccss-standards.json and already enforced by
-   * validate:ccss. It is read off each lesson's `standard`, so it needs no new
-   * data and cannot drift from the standards the lessons actually carry. The
-   * word "section" also means a class period elsewhere in this repo (601/602/
-   * 603), but a class period cannot determine which units are valid, so that
-   * reading is not the one being asked for here.
+   * CLASS SECTION is 601 / 602 / 603 — the teacher's class periods. It
+   * establishes WHICH CLASS is being taught; it does NOT filter the
+   * curriculum, because all three classes are taught the same Grade 6
+   * curriculum. Unit filters lessons; class does not filter units.
    *
-   * SOURCE OF TRUTH. data/curriculum-launch-manifest.json, the same file the
-   * planner, the student launcher and the supports surface read — routed
-   * through window.NTJsonCache, which three other hub scripts already use for
-   * this exact file. The selector therefore costs the page NO additional
-   * request: it is served the parse the hub already paid for.
+   * This replaced a first cut that read "section" as the MCCRS standards
+   * DOMAIN (Algebraic Thinking, Geometric Reasoning, …) and filtered units by
+   * it. That was the wrong noun: it made the class period look like a
+   * curricular hierarchy and hid two thirds of the curriculum behind a choice
+   * that has nothing to do with which lessons exist. The domain data is
+   * untouched and still used elsewhere — it simply is not this control.
+   *
+   * SOURCES OF TRUTH, both existing:
+   *   the class list      assets/learning-supports/supports-schema.js SECTIONS
+   *   the chosen class    curriculumTeacherWorkflow:v1.section, the key the
+   *                       Teacher Workflow card's own class selector already
+   *                       writes — so picking 602 here and picking 602 there
+   *                       are the same act
+   *   units + lessons     data/curriculum-launch-manifest.json, via
+   *                       window.NTJsonCache, which three other hub scripts
+   *                       already use for this exact file. No extra request.
    *
    * FAILURE. Anything that goes wrong is confined to this band. The rest of
    * /curriculum/ is untouched, and the band falls back to the browse and search
    * links that were always there.
    */
 
-  /* The six domain labels, verbatim from data/ccss-standards.json. Held here
-   * rather than fetched because the file is 15 KB and the hub has a request
-   * budget; tools/hub-lesson-picker.test.mjs reads the real file and fails if
-   * these six strings ever drift from it. */
-  var SECTION_LABELS = {
-    NOS: "Number and Operation Sense",
-    AT: "Algebraic Thinking",
-    GR: "Geometric Reasoning and Measurement",
-    DS: "Reasoning with Data and Statistics",
-    MPP: "Mathematical Practices and Processes",
-    G5: "Grade 5 Review (Math Is... units)",
-  };
-  var SECTION_ORDER = ["MPP", "G5", "NOS", "AT", "GR", "DS"];
+  /* The canonical class list is supports-schema.js SECTIONS. It is read from
+   * window.EWLSupportsSchema when that schema is loaded and otherwise falls
+   * back to this, which tools/hub-lesson-picker.test.mjs pins against the
+   * schema file so the two cannot drift. */
+  var SECTION_FALLBACK = ["601", "602", "603"];
+  var TEACHER_STATE_KEY = "curriculumTeacherWorkflow:v1";
   var PICK_LS = "nt-hub-lesson-pick";
 
-  /** A lesson's section, from its standard. `6.NOS.2` → NOS; `5.NF.B.4` → G5. */
-  function sectionOf(lesson) {
-    var std = String((lesson && lesson.standard) || "");
-    if (/^5\./.test(std)) return "G5";
-    var m = /^(?:6\.)?([A-Z]+)\./.exec(std);
-    return m && SECTION_LABELS[m[1]] ? m[1] : null;
+  function classSections() {
+    try {
+      var schema = window.EWLSupportsSchema;
+      if (schema && Array.isArray(schema.sections) && schema.sections.length) {
+        return schema.sections.slice();
+      }
+    } catch (_e) {
+      /* fall through */
+    }
+    return SECTION_FALLBACK.slice();
+  }
+
+  /** Read/write the class through the teacher state that already owns it. */
+  function readTeacherState() {
+    try {
+      return JSON.parse(localStorage.getItem(TEACHER_STATE_KEY) || "{}") || {};
+    } catch (_e) {
+      return {};
+    }
+  }
+
+  function writeTeacherSection(value) {
+    try {
+      var state = readTeacherState();
+      if (value) state.section = value;
+      else delete state.section;
+      localStorage.setItem(TEACHER_STATE_KEY, JSON.stringify(state));
+    } catch (_e) {
+      /* private mode — the picker still works, it just does not remember */
+    }
   }
 
   function fillOptions(select, items, placeholder) {
@@ -567,52 +592,42 @@
         addVariant(c, "Catch-up");
       });
 
-      var bySection = Object.create(null);
+      /* Units come from the curriculum, in the order the manifest lists them.
+       * NOT sorted: the manifest is the taught sequence, and re-sorting it
+       * numerically would quietly assert that the curriculum is taught in
+       * numeric order. Class section does not appear in this derivation at all
+       * — that is the whole correction. */
+      var unitOrder = [];
+      var lessonsByUnit = Object.create(null);
       lessons.forEach(function (l) {
-        var sec = sectionOf(l);
-        if (!sec) return;
-        (bySection[sec] = bySection[sec] || []).push(l);
+        var key = String(l.unit);
+        if (!lessonsByUnit[key]) {
+          lessonsByUnit[key] = [];
+          unitOrder.push(key);
+        }
+        lessonsByUnit[key].push(l);
       });
 
-      var sections = SECTION_ORDER.filter(function (key) {
-        return bySection[key] && bySection[key].length;
-      }).map(function (key) {
-        return { value: key, label: SECTION_LABELS[key] };
+      var classes = classSections().map(function (id) {
+        return { value: id, label: id };
       });
-
-      if (!sections.length) {
-        fillOptions(sectionSel, [], "No lessons available");
+      if (!classes.length || !unitOrder.length) {
+        fillOptions(sectionSel, [], "No classes available");
         sectionSel.disabled = true;
         return;
       }
-      fillOptions(sectionSel, sections, "Select a section");
+      fillOptions(sectionSel, classes, "Select class");
 
-      function unitsFor(sec) {
-        var seen = Object.create(null);
-        (bySection[sec] || []).forEach(function (l) {
-          seen[l.unit] = true;
+      function unitItems() {
+        return unitOrder.map(function (u) {
+          return { value: u, label: "Unit " + u };
         });
-        return Object.keys(seen)
-          .map(Number)
-          .sort(function (a, b) {
-            return a - b;
-          })
-          .map(function (u) {
-            return { value: String(u), label: "Unit " + u };
-          });
       }
 
-      function lessonsFor(sec, unit) {
-        return (bySection[sec] || [])
-          .filter(function (l) {
-            return String(l.unit) === String(unit);
-          })
-          .sort(function (a, b) {
-            return a.lesson - b.lesson;
-          })
-          .map(function (l) {
-            return { value: l.id, label: l.id + " · " + l.title };
-          });
+      function lessonsFor(unit) {
+        return (lessonsByUnit[String(unit)] || []).map(function (l) {
+          return { value: l.id, label: l.id + " · " + l.title };
+        });
       }
 
       function setDisabled(select, disabled, placeholder) {
@@ -646,12 +661,26 @@
           a.textContent = "Open whole-group lesson";
           row.appendChild(a);
         }
+        /* The class travels with the lesson, so the supports surface opens on
+         * the configuration for the class being taught rather than the
+         * all-class default. The lesson itself is canonical either way — this
+         * is context, not a different lesson. */
         var supports = document.createElement("a");
         supports.className = "tws-btn ghost";
-        supports.href = "/curriculum/student-supports/?lesson=" + encodeURIComponent(lesson.id);
+        supports.href =
+          "/curriculum/student-supports/?lesson=" +
+          encodeURIComponent(lesson.id) +
+          (sectionSel.value ? "&section=" + encodeURIComponent(sectionSel.value) : "");
         supports.textContent = "Student supports";
         row.appendChild(supports);
         openBox.appendChild(row);
+
+        if (sectionSel.value) {
+          var ctx = document.createElement("p");
+          ctx.className = "tws-open-context";
+          ctx.textContent = "Teaching class " + sectionSel.value + ".";
+          openBox.appendChild(ctx);
+        }
 
         var variants = variantsByParent[lesson.id] || [];
         if (variants.length) {
@@ -688,33 +717,25 @@
       }
 
       sectionSel.addEventListener("change", function () {
-        var sec = sectionSel.value;
-        // A parent change clears its children rather than leaving a stale
-        // grandchild selected under a unit that no longer contains it.
-        if (!sec) {
-          setDisabled(unitSel, true, "Choose a section first");
-          setDisabled(lessonSel, true, "Choose a unit first");
-        } else {
-          var units = unitsFor(sec);
-          fillOptions(unitSel, units, units.length ? "Select a unit" : "No units in this section");
-          unitSel.disabled = !units.length;
-          setDisabled(lessonSel, true, "Choose a unit first");
-        }
-        openBox.replaceChildren();
+        /* Changing class keeps Unit and Lesson exactly where they are. All
+         * three classes are taught the same curriculum, so clearing them would
+         * make "show me this same lesson for my next class" — the single most
+         * common reason to touch this control — into a three-step chore. What
+         * DOES change is the class context the expansion carries, and the class
+         * the rest of the teacher tools consider current. */
+        writeTeacherSection(sectionSel.value || null);
+        renderOpen();
         remember();
       });
 
       unitSel.addEventListener("change", function () {
+        // Changing unit resets the lesson: a Unit 5 lesson is not in Unit 6.
         var unit = unitSel.value;
         if (!unit) {
           setDisabled(lessonSel, true, "Choose a unit first");
         } else {
-          var items = lessonsFor(sectionSel.value, unit);
-          fillOptions(
-            lessonSel,
-            items,
-            items.length ? "Select a lesson" : "No lessons in this unit",
-          );
+          var items = lessonsFor(unit);
+          fillOptions(lessonSel, items, items.length ? "Select lesson" : "No lessons in this unit");
           lessonSel.disabled = !items.length;
         }
         openBox.replaceChildren();
@@ -726,37 +747,50 @@
         remember();
       });
 
-      /* Restore the last pick, but only if all three still resolve against the
-       * CURRENT curriculum. A renumbered or retired lesson clears the memory
-       * instead of selecting something near it. */
+      /* Restore. The class comes from the teacher state that already owns it,
+       * so a class chosen in the Teacher Workflow card is the class this
+       * control opens on. Unit and lesson come from this control's own memory,
+       * and each is dropped rather than approximated if it stops resolving
+       * against the CURRENT curriculum. */
+      var savedSection = readTeacherState().section;
+      if (
+        classes.some(function (c) {
+          return c.value === savedSection;
+        })
+      ) {
+        sectionSel.value = savedSection;
+      }
+
+      /* Unit and Lesson are available as soon as there is a curriculum. The
+       * class is context, not a gate on the curriculum existing — which is the
+       * correction this control exists to make. */
+      var units = unitItems();
+      fillOptions(unitSel, units, "Select unit");
+      unitSel.disabled = !units.length;
+
       var saved = null;
       try {
         saved = JSON.parse(localStorage.getItem(PICK_LS) || "null");
       } catch (_e) {
         saved = null;
       }
-      if (saved && bySection[saved.section]) {
-        sectionSel.value = saved.section;
-        var units = unitsFor(saved.section);
-        fillOptions(unitSel, units, "Select a unit");
-        unitSel.disabled = !units.length;
+      if (
+        saved &&
+        units.some(function (u) {
+          return u.value === String(saved.unit);
+        })
+      ) {
+        unitSel.value = String(saved.unit);
+        var items = lessonsFor(saved.unit);
+        fillOptions(lessonSel, items, "Select lesson");
+        lessonSel.disabled = !items.length;
         if (
-          units.some(function (u) {
-            return u.value === String(saved.unit);
+          items.some(function (i) {
+            return i.value === saved.lesson;
           })
         ) {
-          unitSel.value = String(saved.unit);
-          var items = lessonsFor(saved.section, saved.unit);
-          fillOptions(lessonSel, items, "Select a lesson");
-          lessonSel.disabled = !items.length;
-          if (
-            items.some(function (i) {
-              return i.value === saved.lesson;
-            })
-          ) {
-            lessonSel.value = saved.lesson;
-            renderOpen();
-          }
+          lessonSel.value = saved.lesson;
+          renderOpen();
         }
       } else if (saved) {
         try {
@@ -784,18 +818,18 @@
       '<div class="tws-lead">' +
       '<p class="tws-kicker">Teach</p>' +
       "<h2>Lessons</h2>" +
-      '<p class="tws-sub">Choose a lesson to open it, its small-group versions, and its supports.</p>' +
+      '<p class="tws-sub">Choose your class, unit, and lesson.</p>' +
       // Three native <select>s. Native because a teacher gets their platform's
       // own picker — including the phone one — keyboard support, screen-reader
       // naming and type-ahead for free, and none of that is worth rebuilding.
       '<div class="tws-pick" role="group" aria-label="Choose a lesson">' +
       '<p class="tws-pick-field">' +
-      '<label for="tws-section">Section</label>' +
-      '<select id="tws-section"><option value="">Loading…</option></select>' +
+      '<label for="tws-section">Class Section</label>' +
+      '<select id="tws-section"><option value="">Select class</option></select>' +
       "</p>" +
       '<p class="tws-pick-field">' +
       '<label for="tws-unit">Unit</label>' +
-      '<select id="tws-unit" disabled><option value="">Choose a section first</option></select>' +
+      '<select id="tws-unit" disabled><option value="">Choose a class first</option></select>' +
       "</p>" +
       '<p class="tws-pick-field">' +
       '<label for="tws-lesson">Lesson</label>' +

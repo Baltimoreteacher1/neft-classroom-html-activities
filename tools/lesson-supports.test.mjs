@@ -479,4 +479,127 @@ t("the resolver's interface cannot carry student information", () => {
   assert.deepEqual(eff.active, ["word-bank"]);
 });
 
+/* ===========================================================================
+ * CLASS SECTIONS (601 / 602 / 603).
+ *
+ * A class is CONTEXT, not curriculum. All three are taught the same canonical
+ * lessons; what differs is the teacher's support selection. These pin the
+ * isolation that makes that safe — and pin it against a real localStorage,
+ * because the whole point is what crosses a storage boundary.
+ * ======================================================================== */
+{
+  // A minimal localStorage for the module's storage() to find.
+  const mem = new Map();
+  globalThis.localStorage = {
+    getItem: (k) => (mem.has(k) ? mem.get(k) : null),
+    setItem: (k, v) => mem.set(k, String(v)),
+    removeItem: (k) => mem.delete(k),
+    clear: () => mem.clear(),
+  };
+  const LS2 = load(); // a fresh module instance that can see that storage
+  const reset = () => mem.clear();
+
+  t("the section list is 601 / 602 / 603", () => {
+    assert.deepEqual(LS2.sections(), ["601", "602", "603"]);
+    assert.ok(LS2.isSection("602"));
+    assert.ok(!LS2.isSection("Other"));
+    assert.ok(!LS2.isSection("GR"), "a standards domain is not a class section");
+  });
+
+  t("the active class is read from the existing teacher-workflow state", () => {
+    reset();
+    assert.equal(LS2.activeSection(), null);
+    // The key the Teacher Workflow card has always written.
+    mem.set("curriculumTeacherWorkflow:v1", JSON.stringify({ section: "602", other: "kept" }));
+    assert.equal(LS2.activeSection(), "602");
+    LS2.setActiveSection("603");
+    const state = JSON.parse(mem.get("curriculumTeacherWorkflow:v1"));
+    assert.equal(state.section, "603");
+    assert.equal(state.other, "kept", "writing the section clobbered the rest of teacher state");
+  });
+
+  t("an invalid stored class reads as no class, and is never guessed at", () => {
+    reset();
+    mem.set("curriculumTeacherWorkflow:v1", JSON.stringify({ section: "Other" }));
+    assert.equal(LS2.activeSection(), null);
+    mem.set("curriculumTeacherWorkflow:v1", "{not json");
+    assert.equal(LS2.activeSection(), null);
+  });
+
+  t("601's configuration never appears as 602's", () => {
+    reset();
+    LS2.saveProfile("5-1", ["visual-vocabulary", "sentence-frames"], null, "601");
+    assert.deepEqual(LS2.loadProfile("5-1", "601").keys, ["visual-vocabulary", "sentence-frames"]);
+    assert.deepEqual(LS2.loadProfile("5-1", "602").keys, [], "602 inherited 601's configuration");
+    assert.deepEqual(LS2.loadProfile("5-1", "603").keys, []);
+
+    LS2.saveProfile("5-1", ["reduced-visual-load", "step-checklist"], null, "602");
+    assert.deepEqual(LS2.loadProfile("5-1", "601").keys, ["visual-vocabulary", "sentence-frames"]);
+    assert.deepEqual(LS2.loadProfile("5-1", "602").keys, ["reduced-visual-load", "step-checklist"]);
+    assert.deepEqual(LS2.loadProfile("5-1", "603").keys, []);
+  });
+
+  t("an all-class configuration applies to every class until one overrides it", () => {
+    reset();
+    // No section: the shape this store has always had.
+    LS2.saveProfile("5-1", ["word-bank"], null, null);
+    for (const sec of ["601", "602", "603"]) {
+      assert.deepEqual(LS2.loadProfile("5-1", sec).keys, ["word-bank"], `${sec} lost the default`);
+    }
+    LS2.saveProfile("5-1", ["visual-model"], null, "602");
+    assert.deepEqual(LS2.loadProfile("5-1", "601").keys, ["word-bank"]);
+    assert.deepEqual(LS2.loadProfile("5-1", "602").keys, ["visual-model"]);
+  });
+
+  t("resetting one class leaves the others alone", () => {
+    reset();
+    LS2.saveProfile("5-1", ["word-bank"], null, "601");
+    LS2.saveProfile("5-1", ["visual-model"], null, "602");
+    LS2.resetProfile("5-1", "601");
+    assert.deepEqual(LS2.loadProfile("5-1", "601").keys, []);
+    assert.deepEqual(LS2.loadProfile("5-1", "602").keys, ["visual-model"], "reset crossed classes");
+  });
+
+  t("inheritance and de-duplication still work inside a class", () => {
+    reset();
+    LS2.saveProfile("5-3", ["sentence-frames", "word-bank", "visual-vocabulary"], null, "601");
+    const store = LS2.readStore("601");
+    const r = LS2.resolveForLesson("5-3-group1", store, ENTRY);
+    assert.ok(!r.keys.includes("sentence-frames"), "the variant re-applied its own frame");
+    // The fixture's group1 authors a sentence frame and a worked example, so
+    // only the frame is suppressed here; word-bank is not one of its intrinsics.
+    assert.deepEqual(r.suppressed, ["sentence-frames"]);
+    assert.ok(r.keys.includes("visual-vocabulary"));
+    assert.ok(r.keys.includes("word-bank"));
+    // …and the same variant sees nothing at all in a class that configured nothing.
+    assert.deepEqual(LS2.resolveForLesson("5-3-group1", LS2.readStore("603"), ENTRY).keys, []);
+  });
+
+  t("copying a class setup transfers keys, and nothing else", () => {
+    reset();
+    LS2.saveProfile("5-1", ["word-bank"], null, "601");
+    LS2.saveProfile("5-3", ["visual-model"], null, "601");
+    assert.equal(LS2.copySectionSetup("601", "603"), true);
+    assert.deepEqual(LS2.loadProfile("5-1", "603").keys, ["word-bank"]);
+    assert.deepEqual(LS2.loadProfile("5-3", "603").keys, ["visual-model"]);
+    // 602 was not in the transaction.
+    assert.deepEqual(LS2.loadProfile("5-1", "602").keys, []);
+    assert.equal(LS2.copySectionSetup("601", "601"), false, "copying onto itself is a no-op");
+    assert.equal(LS2.copySectionSetup("601", "GR"), false, "a domain is not a copy target");
+  });
+
+  t("the store holds no student information, per class or otherwise", () => {
+    reset();
+    LS2.saveProfile("5-1", ["word-bank"], null, "601");
+    const raw = mem.get("ewl-lesson-supports:v1");
+    assert.match(raw, /601/);
+    assert.deepEqual(Object.keys(JSON.parse(raw)).sort(), ["lessons", "schemaVersion", "sections"]);
+    for (const banned of [/name/i, /initial/i, /iep/i, /wida/i, /student/i]) {
+      assert.doesNotMatch(raw, banned, `class-scoped store carries ${banned}`);
+    }
+  });
+
+  delete globalThis.localStorage;
+}
+
 console.log(`lesson-supports: ${pass} assertions passed`);
