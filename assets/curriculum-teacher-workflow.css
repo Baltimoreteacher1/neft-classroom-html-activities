@@ -903,3 +903,126 @@ button.ctw-ql-card {
   font-weight: 640;
   color: var(--ctw-navy);
 }
+
+/* ── Teacher workspace ──────────────────────────────────────────────────────
+   The first thing a teacher sees on /curriculum/: Teach, Plan, Support
+   Students. Built by assets/curriculum-teacher-planning.js.
+
+   Hierarchy is carried by SIZE and ORDER, not by colour alone: Lessons is a
+   full-width band with the largest heading, Planner and Supports are a pair
+   beneath it, and More is body text with a link. Deliberately not four equal
+   cards — equal weight would say these are four equal choices, and they are
+   not. */
+.tws {
+  max-width: 1180px;
+  margin: 0 auto 18px;
+  padding: 0 clamp(18px, 4vw, 36px);
+}
+
+.tws-lead {
+  padding: clamp(18px, 3vw, 28px) clamp(18px, 3vw, 30px);
+  border: 1px solid #d7e2ed;
+  border-left: 6px solid #15487f;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.tws-pair {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  margin-top: 12px;
+}
+
+.tws-card {
+  padding: clamp(14px, 2vw, 20px) clamp(16px, 2vw, 22px);
+  border: 1px solid #d7e2ed;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.tws-kicker {
+  margin: 0 0 2px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #55617a;
+}
+
+.tws-lead h2 {
+  margin: 0 0 6px;
+  font-size: clamp(1.9rem, 3.4vw, 2.5rem);
+  line-height: 1.1;
+  color: #12355b;
+}
+
+.tws-card h2 {
+  margin: 0 0 6px;
+  font-size: clamp(1.15rem, 1.9vw, 1.4rem);
+  line-height: 1.2;
+  color: #12355b;
+}
+
+.tws-sub {
+  margin: 0;
+  max-width: 62ch;
+  color: #3d4a60;
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+
+.tws-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0;
+}
+
+.tws-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 18px;
+  border: 2px solid #15487f;
+  border-radius: 10px;
+  background: #15487f;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.94rem;
+  text-decoration: none;
+}
+
+.tws-btn.ghost {
+  background: #fff;
+  color: #15487f;
+}
+
+.tws-btn:hover,
+.tws-btn:focus-visible {
+  text-decoration: underline;
+}
+
+.tws-btn:focus-visible {
+  outline: 3px solid #0b2f57;
+  outline-offset: 2px;
+}
+
+.tws-more {
+  margin: 14px 0 0;
+  color: #55617a;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.tws-more a {
+  color: #15487f;
+  font-weight: 700;
+}
+
+/* The planner card keeps its full description below the workspace, but the
+   workspace is now what announces the planner, so the card no longer needs to
+   shout. */
+.cns-lifted.tws-has-card {
+  margin-top: 0 !important;
+}

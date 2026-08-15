@@ -442,6 +442,89 @@
     stage.replaceChildren(card);
   }
 
+  /* ── The teacher workspace ──────────────────────────────────────────────────
+   * /curriculum/ had grown into a directory of everything the platform can do:
+   * 42 teacher destinations, 21 of them inside a drawer that is collapsed by
+   * default. A teacher opening it could not answer "where do I teach, plan and
+   * find supports" without reading the whole page.
+   *
+   * This block answers those three questions above everything else, in the
+   * order they actually matter — Lessons dominant, Planner and Supports beside
+   * each other, More as a plain link. It ADDS no destinations and REMOVES none:
+   * every link here already existed somewhere on the page, and everything that
+   * was on the page is still on the page below it.
+   *
+   * No fetches. Everything rendered here is either a static route or already in
+   * the DOM (the resume strip's lesson), because a navigation surface that
+   * waits on data is slower than the page it replaced.
+   */
+  function buildWorkspace(plannerCard) {
+    if (document.querySelector(".tws")) return null;
+    var ws = document.createElement("section");
+    ws.className = "tws hub-teacher-only";
+    ws.setAttribute("aria-label", "Teacher workspace");
+
+    // "Continue Lesson 5-3" beats any description we could write — but only if
+    // the resume strip actually resolved one. No invention.
+    var resumeLink = document.querySelector("#resume-strip a[href]");
+    var resumeHref = resumeLink && resumeLink.getAttribute("href");
+    var resumeText = resumeLink && resumeLink.textContent.replace(/\s+/g, " ").trim();
+
+    ws.innerHTML =
+      '<div class="tws-lead">' +
+      '<p class="tws-kicker">Teach</p>' +
+      "<h2>Lessons</h2>" +
+      '<p class="tws-sub">All 10 units — interactive whole-group lessons, small-group lessons, and every lesson resource.</p>' +
+      '<p class="tws-actions">' +
+      '<a class="tws-btn" href="/curriculum/units/">Browse units &amp; lessons</a>' +
+      '<a class="tws-btn ghost" href="#hub-content" data-tws="search">Search lessons</a>' +
+      (resumeHref && resumeText
+        ? '<a class="tws-btn ghost" href="' + resumeHref + '">' + resumeText + "</a>"
+        : "") +
+      "</p>" +
+      "</div>" +
+      '<div class="tws-pair">' +
+      '<div class="tws-card">' +
+      '<p class="tws-kicker">Plan</p>' +
+      "<h2>Math Planner</h2>" +
+      '<p class="tws-sub">Today, this week, the whole year. Move a lesson and see what shifts, and record what you actually taught.</p>' +
+      '<p class="tws-actions"><a class="tws-btn" href="/curriculum/planning/">Open the planner</a></p>' +
+      "</div>" +
+      '<div class="tws-card">' +
+      '<p class="tws-kicker">Support students</p>' +
+      "<h2>Student Supports &amp; Accommodations</h2>" +
+      '<p class="tws-sub">Language frames and vocabulary for multilingual students, accommodations that keep the objective, and scaffolded small-group pathways.</p>' +
+      '<p class="tws-actions"><a class="tws-btn" href="/curriculum/student-supports/">Open supports</a></p>' +
+      "</div>" +
+      "</div>" +
+      '<p class="tws-more"><a href="#ctw-more-tools" data-tws="more">More teacher tools</a> — planning documents, exports, Canvas, gradebook, AI tools and classroom utilities.</p>';
+
+    // The Search action focuses the search box that already exists rather than
+    // adding a second one.
+    ws.querySelector('[data-tws="search"]').addEventListener("click", function (e) {
+      var box = document.getElementById("curr-search");
+      if (!box) return;
+      e.preventDefault();
+      box.scrollIntoView({ block: "center", behavior: "smooth" });
+      box.focus();
+    });
+    // "More" opens the drawer it points at, so the link is never a dead anchor.
+    ws.querySelector('[data-tws="more"]').addEventListener("click", function (e) {
+      var drawer = document.querySelector("details.ctw-tools-drawer");
+      if (!drawer) return;
+      e.preventDefault();
+      drawer.open = true;
+      drawer.scrollIntoView({ block: "start", behavior: "smooth" });
+      drawer.querySelector("summary")?.focus();
+    });
+
+    // The planner card keeps its full description below the workspace: the
+    // workspace answers "where do I plan", the card explains what the planner
+    // does. Losing it would trade discoverability for tidiness.
+    if (plannerCard) plannerCard.classList.add("tws-has-card");
+    return ws;
+  }
+
   function organizeTools() {
     var tools = document.querySelector(".curriculum-tools-bar");
     if (!tools || tools.closest(".ctw-tools-drawer")) return;
@@ -597,6 +680,33 @@
         el.style.setProperty("display", "block", "important");
       });
       details.parentNode.insertBefore(planner, details);
+    }
+
+    // The drawer needs a stable id for the workspace's "More teacher tools"
+    // link to point at.
+    details.id = details.id || "ctw-more-tools";
+
+    /* Workspace goes at the TOP OF THE PAGE, directly under the "Curriculum
+     * Hub" heading — not merely above the drawer.
+     *
+     * Placing it above the drawer put it at 3297px on desktop and 7552px on
+     * mobile, because the page header alone is ~1780px tall and the preset bar
+     * another ~1030px. Something a teacher must scroll seven screens to reach
+     * has not been made primary; it has been made present, which is the exact
+     * trap the planner card fell into. Anchor to the header's own lede/H1 so
+     * the three pathways are the first thing under the title, and everything
+     * that was on the page stays on the page beneath them. */
+    var workspace = buildWorkspace(planner);
+    if (workspace) {
+      var header = document.querySelector("header.curriculum-guide");
+      var afterTitle =
+        header && (header.querySelector(".curriculum-guide__lede") || header.querySelector("h1"));
+      if (afterTitle && afterTitle.parentNode) {
+        afterTitle.insertAdjacentElement("afterend", workspace);
+      } else {
+        var anchor = planner && planner.parentNode ? planner : details;
+        anchor.parentNode.insertBefore(workspace, anchor);
+      }
     }
   }
 
