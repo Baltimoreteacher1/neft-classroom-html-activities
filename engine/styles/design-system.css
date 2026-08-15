@@ -6,9 +6,15 @@
 
 :root {
   /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(18, 53, 91, 0.06);
-  --shadow-md: 0 8px 24px rgba(18, 53, 91, 0.1);
-  --shadow-lg: 0 18px 38px rgba(18, 53, 91, 0.13);
+  /* SEPARATION COMES FROM THE CANVAS, NOT FROM SHADOWS.
+     A white card on a flat ground already reads as a card. These were a
+     24px and a 38px lift used on ordinary surfaces, which is what made a
+     screen of mathematics look like a stack of floating panels. --shadow-lg
+     stays a real lift because genuinely floating chrome — docks, dialogs, the
+     teacher rail — still floats. */
+  --shadow-sm: 0 1px 2px rgba(18, 53, 91, 0.05);
+  --shadow-md: 0 2px 6px rgba(18, 53, 91, 0.07);
+  --shadow-lg: 0 6px 18px -8px rgba(18, 53, 91, 0.16);
   --shadow-glow: 0 0 0 3px rgba(31, 166, 162, 0.25);
 
   /* Radii (engine-only extensions) */
@@ -68,10 +74,14 @@ body {
   font-family: var(--font-body);
   font-weight: 700;
   color: var(--ink, #0f172a);
-  background:
-    radial-gradient(ellipse 85% 55% at 100% 0%, var(--theme-glow) 0%, transparent 58%),
-    radial-gradient(ellipse 70% 45% at 0% 100%, var(--theme-glow-alt) 0%, transparent 52%),
-    linear-gradient(180deg, var(--bg) 0%, #f3efe6 100%);
+  /* A QUIET CANVAS. One flat colour, no image, nothing behind the words.
+     This carried two themed glow washes and a vertical gradient — the same
+     treatment the small-group shell had before 2026-08-15, removed there for
+     the same reason: a tinted, moving ground competes with the mathematics on
+     a classroom Chromebook and reads as a product demo rather than a place to
+     work. The per-lesson THEME is not lost; it still colours the hero, which
+     is where lesson identity belongs. */
+  background: var(--bg);
   font-size: var(--fs-base);
   line-height: var(--lh-base);
   letter-spacing: 0.005em;
@@ -144,7 +154,7 @@ h4 {
   top: 0;
   height: 100vh;
   overflow-y: auto;
-  background: linear-gradient(180deg, var(--navy) 0%, var(--navy-light) 100%);
+  background: var(--navy);
   color: white;
   padding: var(--sp-6) var(--sp-5);
   display: flex;
@@ -166,14 +176,14 @@ h4 {
   width: 48px;
   height: 48px;
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, var(--amber), var(--teal));
+  background: var(--teal);
   display: grid;
   place-items: center;
   font-size: var(--fs-xl);
   font-weight: 900;
   color: var(--navy);
   flex-shrink: 0;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-sm);
 }
 
 .sidebar-title {
@@ -265,7 +275,7 @@ h4 {
 
 .xp-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--amber), var(--teal));
+  background: var(--teal);
   border-radius: var(--radius-full);
   transition: width var(--duration-slow) var(--ease-out);
   width: 0%;
@@ -334,7 +344,7 @@ h4 {
   font-weight: 900;
   font-size: var(--fs-md);
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-sm);
   transition: all var(--duration-fast) ease;
 }
 
@@ -2132,7 +2142,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 .phase-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--amber), var(--teal));
+  background: var(--teal);
   border-radius: var(--radius-full);
   transition: width var(--duration-slow) var(--ease-out);
 }
@@ -2168,7 +2178,7 @@ body:has(.identity-screen) .export-toolbar {
   gap: var(--sp-3);
   align-items: flex-start;
   padding: var(--sp-4);
-  background: linear-gradient(180deg, #fffdf8 0%, var(--card) 100%);
+  background: var(--card);
   border: 1px solid rgba(242, 193, 91, 0.35);
   border-left: 4px solid var(--amber);
   border-radius: var(--radius-md);
@@ -5086,8 +5096,7 @@ textarea.syw-input {
 #nt-read-progress .nt-read-progress-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--amber, #f59e0b), var(--gold, #d4952a));
-  box-shadow: 0 0 6px rgba(212, 149, 42, 0.5);
+  background: var(--amber, #f59e0b);
   transition: width 0.12s linear;
 }
 @media print {

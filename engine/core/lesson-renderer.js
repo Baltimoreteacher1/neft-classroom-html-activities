@@ -2212,7 +2212,7 @@ function renderObjectives(el, config, state, opts = {}) {
       <p style="margin:0; font-size:1.32rem; font-weight:800; color:#0f172a; line-height:1.55; letter-spacing:-0.005em; -webkit-font-smoothing:antialiased;">${o.text}</p>
       
       <!-- PUBLISHER-GRADE VISUAL MODEL CARD DIRECTLY BELOW OBJECTIVE TEXT -->
-      <div class="visual-model-wrapper" style="margin-top:16px; margin-bottom:16px; border-radius:14px; overflow:hidden; border:1.5px solid rgba(15,23,42,0.18); box-shadow:0 6px 20px rgba(0,0,0,0.08); background:#0b0f19; cursor:zoom-in;">
+      <div class="visual-model-wrapper" style="margin-top:16px; margin-bottom:16px; border-radius:14px; overflow:hidden; border:1.5px solid rgba(15,23,42,0.18); box-shadow:0 1px 2px rgba(18,53,91,0.05); background:#0b0f19; cursor:zoom-in;">
         <img src="${o.img}" alt="${esc(o.alt)}" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
         <div style="padding:12px 16px; background:#ffffff; border-top:1.5px solid #e2e8f0; font-size:0.96rem; color:#0f172a; font-weight:800; line-height:1.5; -webkit-font-smoothing:antialiased;">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:7px;">
@@ -2612,7 +2612,7 @@ function renderWarmupPhase(el, state, ctx, config) {
   const card = document.createElement("div");
   card.className = "card card-warmup-phase";
   card.style.cssText =
-    "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
+    "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 1px 2px rgba(18,53,91,0.05);";
 
   /*
    * Two kinds of warmup, because two situations are genuinely different.
@@ -3096,7 +3096,7 @@ function renderObjectivesIntroPhase(el, state, ctx, config) {
   const card = document.createElement("div");
   card.className = "card card-objectives-intro-phase";
   card.style.cssText =
-    "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
+    "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 1px 2px rgba(18,53,91,0.05);";
 
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
@@ -3138,7 +3138,7 @@ function renderReteachHelper(container, warmup, _correctCount, _total, config) {
   const reteachBox = document.createElement("div");
   reteachBox.className = "warmup-reteach-card";
   reteachBox.style.cssText =
-    "margin-top:20px; border:2px solid #eab308; border-radius:14px; padding:18px; background:#fefce8; box-shadow:0 4px 14px rgba(234,179,8,0.15);";
+    "margin-top:20px; border:2px solid #eab308; border-radius:14px; padding:18px; background:#fefce8; box-shadow:0 1px 2px rgba(18,53,91,0.05);";
 
   // On a unit opener the reteach is of the PREREQUISITE skill, not of a lesson
   // that does not exist; spiralFrom names it.
@@ -5516,7 +5516,7 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
   const card = document.createElement("div");
   card.className = "card card-objectives-review-phase";
   card.style.cssText =
-    "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
+    "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 1px 2px rgba(18,53,91,0.05);";
 
   // Name the student in the goals themselves: "Samuel can now …" reads as
   // evidence of growth rather than as the same goal repeated. Falls back to the

@@ -75,9 +75,14 @@ body.editorial.skin-warm-deck {
   --radius-sm: 12px;
   --radius-md: 16px;
   --radius-lg: 22px;
-  --shadow-sm: 0 3px 10px rgba(74, 52, 44, 0.08);
-  --shadow-md: 0 8px 22px rgba(74, 52, 44, 0.12);
-  --shadow-lg: 0 16px 34px rgba(74, 52, 44, 0.16);
+  /* The warm skin re-declares the shadow scale in its own palette. It is kept
+     on the same weights as the base scale — separation comes from the flat
+     canvas, not from lift — or every surface in this skin floats at a
+     different depth from the same surface in every other skin. --shadow-lg
+     stays a real lift for chrome that genuinely floats. */
+  --shadow-sm: 0 1px 2px rgba(74, 52, 44, 0.07);
+  --shadow-md: 0 2px 6px rgba(74, 52, 44, 0.09);
+  --shadow-lg: 0 6px 18px -8px rgba(74, 52, 44, 0.22);
 
   background: var(--fl-paper);
   color: var(--ink);
@@ -118,7 +123,11 @@ body.editorial.skin-warm-deck .lesson-hero-title {
   font-family: var(--fl-serif);
   font-weight: 800;
   letter-spacing: 0.01em;
-  color: var(--wd-teal);
+  /* --wd-teal (#2e9e97) on the warm ground measures 2.93:1 — under the 3:1
+     WCAG AA floor for large text, and this is the lesson TITLE. The deeper
+     teal of the same family clears it while keeping the skin's identity.
+     Pre-existing; caught while auditing this shell. */
+  color: var(--wd-teal-deep);
 }
 body.editorial.skin-warm-deck .lesson-hero-meta {
   font-family: "Fredoka", var(--fl-body);

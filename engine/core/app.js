@@ -1081,7 +1081,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     const drawHud = document.createElement("div");
     drawHud.id = "lesson-draw-hud";
     drawHud.style.cssText =
-      "position:fixed; bottom:24px; left:270px; background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.15); border-radius:30px; padding:6px 12px; display:none; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.25);";
+      "position:fixed; bottom:24px; left:270px; background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.15); border-radius:30px; padding:6px 12px; display:none; gap:8px; z-index:9999; box-shadow:0 6px 18px -8px rgba(0,0,0,0.35);";
     drawHud.innerHTML = `
       <button class="color-btn" data-color="#ef4444" style="width:20px; height:20px; border-radius:50%; border:2px solid #fff; background:#ef4444; cursor:pointer; padding:0;"></button>
       <button class="color-btn" data-color="#3b82f6" style="width:20px; height:20px; border-radius:50%; border:none; background:#3b82f6; cursor:pointer; padding:0;"></button>
@@ -1154,7 +1154,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // `left` is deliberately NOT set here — design-system.css offsets it past
     // the phase rail (--nt-rail-w) so the pill cannot cover a phase button's
     // label. An inline left would beat that rule and re-break it.
-    "position:fixed; bottom:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; display:flex; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:0.3s;";
+    "position:fixed; bottom:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; display:flex; gap:8px; z-index:9999; box-shadow:0 6px 18px -8px rgba(15,23,42,0.22); transition:0.3s;";
   document.body.append(minimapHUD);
 
   // The phase dots PERSIST across renders, and that is the whole point.
@@ -1936,7 +1936,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       "position:fixed; right:16px; bottom:16px; z-index:9999; display:inline-flex; " +
       "align-items:center; gap:8px; min-height:48px; padding:0 22px; border:0; " +
       "border-radius:99px; background:#12355b; color:#fff; font-weight:800; " +
-      "font-size:1rem; cursor:pointer; box-shadow:0 4px 14px rgba(12,27,42,.28);";
+      "font-size:1rem; cursor:pointer; box-shadow:0 1px 2px rgba(18,53,91,.06);";
     document.body.appendChild(nextBtn);
 
     function refresh() {
@@ -2203,7 +2203,7 @@ function buildLessonHero(config, _state, phaseConfigs) {
         <span class="lesson-hero-badge">⭐ <span data-bind="hero-stars">0</span>/18</span>
       </div>
     </div>
-    <div class="phase-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" data-bind="hero-progressbar">
+    <div class="phase-progress-bar" role="progressbar" aria-label="Lesson progress" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" data-bind="hero-progressbar">
       <div class="phase-progress-fill" data-bind="hero-progress" style="width:0%"></div>
     </div>
     <div class="phase-progress-label">
