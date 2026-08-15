@@ -474,6 +474,15 @@
     // lift it out of the bar so collapsing the drawer never hides it.
     var resume = tools.querySelector(".resume-strip");
 
+    // Same treatment for the Pacing Planner, and for the same reason. The
+    // planner answers "what am I teaching today", so it cannot live behind a
+    // drawer that is collapsed by default: moving its card to the TOP of the
+    // bar (7ee9e8745) put it at the top of something nobody had open, which is
+    // why it read as missing from /curriculum/ even though the markup, the
+    // route and the teacher gate were all correct. It stays hub-teacher-only,
+    // so students still never see it.
+    var planner = tools.querySelector("section.cns-feature");
+
     // Compact menu derived from the existing cards — the card markup stays the
     // single source of truth. Items copy hub-teacher-only so the existing
     // class-based student-mode gating applies to them unchanged.
@@ -495,6 +504,10 @@
       }
     }
     tools.querySelectorAll("section").forEach(function (card) {
+      // The planner card is lifted out of the drawer below, so a menu row for
+      // it would be a second control with the same accessible name pointing at
+      // the same place.
+      if (card === planner) return;
       var titleEl = card.querySelector("h2");
       if (!titleEl) return;
       var iconEl = card.querySelector(".mf-icon");
@@ -533,6 +546,9 @@
     details.appendChild(tools);
     tools.classList.add("ctw-cards-hidden");
     if (resume) details.parentNode.insertBefore(resume, details);
+    // Above the drawer, below the resume strip — the first teacher-facing thing
+    // on the page, and no longer dependent on the drawer's remembered state.
+    if (planner) details.parentNode.insertBefore(planner, details);
 
     // Escape hatch: the classic full-card wall, one toggle away.
     var showAll = document.createElement("button");
@@ -562,7 +578,26 @@
     var topAnchor =
       document.getElementById("curriculum-teacher-workflow") || document.querySelector(".wrap");
     if (topAnchor && topAnchor.parentNode) topAnchor.parentNode.insertBefore(details, topAnchor);
+    // Re-anchor both lifted blocks AFTER the drawer moves — inserting relative
+    // to its old parent above would otherwise strand them mid-page.
     if (resume && details.parentNode) details.parentNode.insertBefore(resume, details);
+    if (planner && details.parentNode) {
+      // Out of the tools rail, the rail's own layout rules no longer fit: at
+      // >=1080px curriculum-polish.css compacts every .mailbox-feature to
+      // icon+title+button (correct for a narrow rail, wrong for a full-width
+      // band), and the rail was also what constrained the card's width. The
+      // class re-states both for the lifted copy only.
+      planner.classList.add("cns-lifted");
+      // Inline + important: .mailbox-feature is styled by this file's sheet,
+      // by curriculum-polish.css and by the hub's own inline <style>, so a
+      // class-level rule wins or loses on load order. Inline always wins.
+      planner.style.setProperty("max-width", "1180px", "important");
+      planner.style.setProperty("margin", "0 auto 14px", "important");
+      planner.querySelectorAll(".mf-sub, .mf-text").forEach(function (el) {
+        el.style.setProperty("display", "block", "important");
+      });
+      details.parentNode.insertBefore(planner, details);
+    }
   }
 
   function render(view, stage, context) {
