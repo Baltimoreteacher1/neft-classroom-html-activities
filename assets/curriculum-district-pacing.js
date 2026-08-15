@@ -392,7 +392,7 @@
       "⚡ Quick Unit Planning Actions (Synced to " + item.quarter + " Seq " + item.sequence + ")";
     groupActions.innerHTML = `
       <option value="launch_first">🚀 Launch First Lesson of Unit (${item.lessons[0] ? item.lessons[0].id : ""})</option>
-      <option value="build_week">🗓️ Plan the Week on Class Board (Seq ${item.sequence})</option>
+      <option value="build_week">📺 Build the Week's Class Board Display (Seq ${item.sequence})</option>
       <option value="playlist">🎵 Tiered Student Playlist (Seq ${item.sequence})</option>
       <option value="unit_map">🗺️ Unit Scope & Prerequisites Map</option>
       <option value="groups">👥 Studio Small-Group Rotation Console</option>

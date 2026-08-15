@@ -183,6 +183,69 @@ for (const [rel, body] of files) {
   );
 }
 
+/* --- 8b. The planner is reachable from the Curriculum Hub ------------------
+ * A planner nobody can find is a planner nobody uses, and the failure is silent:
+ * every file below still passes, the route still 200s for a teacher, and the
+ * card is simply gone from /curriculum/. These are structural checks against the
+ * hub markup — the link, the heading, and the one-authoritative-card rule —
+ * rather than a full-page text match, so ordinary copy edits do not trip them. */
+{
+  const hub = read("curriculum/index.html");
+
+  const links = hub.match(/href="\/curriculum\/planning\/?(?:\?[^"]*)?"/g) || [];
+  check(links.length > 0, "/curriculum/ no longer links to /curriculum/planning/ at all");
+
+  // The primary entry: a Pacing Planner heading with a CTA into the planner.
+  const primary = /<h2[^>]*id="cns-planning-feature-title"[^>]*>\s*Pacing Planner\s*<\/h2>/.test(
+    hub,
+  );
+  check(
+    primary,
+    'the hub\'s primary planning card (h2#cns-planning-feature-title, "Pacing Planner") is gone or renamed',
+  );
+  check(
+    /<a[^>]+class="mf-btn solid"[^>]+href="\/curriculum\/planning\/"/.test(hub),
+    "the primary planning card no longer carries an Open-the-planner CTA to /curriculum/planning/",
+  );
+
+  // Exactly one card may present itself as the live planning system. The static
+  // year view is allowed to exist, but not to compete: it is titled as the
+  // reference view it is. Two equally-authoritative cards is the state this
+  // whole section exists to prevent.
+  const planningHeadings = [
+    ...hub.matchAll(/<h2[^>]*>([^<]*(?:Pacing|Scope|Planning)[^<]*)<\/h2>/g),
+  ]
+    .map((m) => m[1].trim())
+    .filter(Boolean);
+  const authoritative = planningHeadings.filter((h) => /^Pacing Planner$/.test(h));
+  check(
+    authoritative.length === 1,
+    `expected exactly one authoritative "Pacing Planner" card on the hub, found ${authoritative.length}: ${planningHeadings.join(" | ")}`,
+  );
+  const legacy = planningHeadings.find((h) => /Scope/.test(h));
+  check(
+    !legacy || /^Original Scope/.test(legacy),
+    `the static year view is titled "${legacy}" — title it "Original Scope & Sequence" so it reads as reference, not as a second planning system`,
+  );
+
+  // Every planner deep link the hub emits must name a view the planner renders.
+  const views = [
+    ...(
+      files
+        .get("curriculum/planning/planning.js")
+        .match(/^const RENDERERS = \{([\s\S]*?)\};/m)?.[1] || ""
+    ).matchAll(/^\s*(\w+):/gm),
+  ].map((m) => m[1]);
+  check(views.length === 5, `could not read the planner's view list (found ${views.length})`);
+  for (const link of links) {
+    const requested = link.match(/[?&]view=([^"&]+)/)?.[1];
+    check(
+      !requested || views.includes(requested),
+      `the hub deep-links to ?view=${requested}, which the planner does not render (${views.join(", ")})`,
+    );
+  }
+}
+
 /* --- 9. No student data may be stored -------------------------------------- */
 {
   const api = files.get("functions/api/pacing/[[path]].js");

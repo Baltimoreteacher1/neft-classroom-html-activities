@@ -128,6 +128,35 @@ function searchMatches(days) {
   });
 }
 
+/* The five views, keyed by the same token the toolbar buttons carry in
+ * `data-view` and the one `?view=` accepts. This map is the single list of
+ * valid views: `readViewParam` tests membership against it, so a URL can never
+ * select a view that has no renderer. */
+const RENDERERS = {
+  today: renderToday,
+  week: renderWeek,
+  month: renderMonth,
+  unit: renderUnits,
+  year: renderYear,
+};
+
+/** `?view=week` → "week". Anything unrecognised (or absent) returns null and the
+ * planner opens on its default Today view rather than a blank page. */
+function readViewParam() {
+  const requested = new URLSearchParams(location.search).get("view");
+  return requested && Object.hasOwn(RENDERERS, requested) ? requested : null;
+}
+
+/** Keep the address bar on the view being shown, so a teacher can bookmark or
+ * paste "the Week view". `replaceState` — switching views is not a navigation,
+ * and pushing would make Back walk the toolbar instead of leaving the planner. */
+function writeViewParam() {
+  const url = new URL(location.href);
+  if (ui.view === "today") url.searchParams.delete("view");
+  else url.searchParams.set("view", ui.view);
+  history.replaceState(null, "", url);
+}
+
 function render() {
   const days = resolved();
   const main = $("main");
@@ -140,14 +169,7 @@ function render() {
     return;
   }
 
-  const renderer = {
-    today: renderToday,
-    week: renderWeek,
-    month: renderMonth,
-    unit: renderUnits,
-    year: renderYear,
-  }[ui.view];
-  main.appendChild(renderer(days, ui.index, ui));
+  main.appendChild(RENDERERS[ui.view](days, ui.index, ui));
   $("range").textContent = rangeLabel();
 
   for (const b of root.querySelectorAll(".pp-view")) {
@@ -217,7 +239,8 @@ function preview(op) {
  * distinguishes them, so it is shown whenever there is one. */
 const describe = (plan) => {
   if (!plan) return "nothing";
-  if (plan.planTitle) return plan.lessonId ? `${plan.lessonId} · ${plan.planTitle}` : plan.planTitle;
+  if (plan.planTitle)
+    return plan.lessonId ? `${plan.lessonId} · ${plan.planTitle}` : plan.planTitle;
   return plan.lessonId || plan.dayType || "nothing";
 };
 
@@ -464,6 +487,7 @@ document.addEventListener("click", async (event) => {
     ui.view = trigger.dataset.view;
     ui.search = "";
     $("search").value = "";
+    writeViewParam();
     render();
     return;
   }
@@ -485,6 +509,7 @@ document.addEventListener("click", async (event) => {
       ui.view = "today";
       ui.search = "";
       $("search").value = "";
+      writeViewParam();
       render();
       break;
     case "open-day":
@@ -627,6 +652,7 @@ async function boot() {
   ui.index = indexCurriculum(launch);
   ui.today = openingDate(baseline);
   ui.focusDate = ui.today;
+  ui.view = readViewParam() || ui.view;
   ui.overlay = store.cachedOverlay();
   render();
 
