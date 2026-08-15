@@ -300,10 +300,20 @@ export function renderNumberLine(container, config) {
   checkBtn.textContent = "Check Placement";
 
   let completed = false;
+  /* Attempt counter for the reveal ladder. The first check used to light up a
+   * green target circle on every wrong dot, so a student who got 3 of 5 was
+   * immediately shown where the other two belong — the task was over on the
+   * first press. Now the first check marks which dots are wrong and names the
+   * error on one of them; the targets appear from the second check onward, so
+   * the answer is still reachable and nothing can stall. */
+  let attempts = 0;
 
   checkBtn.addEventListener("click", () => {
     if (completed) return;
+    attempts += 1;
+    const revealTargets = attempts >= 2;
     let correct = 0;
+    const misses = [];
 
     dots.forEach(({ g, getVal, target }, i) => {
       const val = getVal();
@@ -320,10 +330,13 @@ export function renderNumberLine(container, config) {
       } else {
         dot.setAttribute("fill", "#b64e2f");
         dot.setAttribute("stroke", "#b64e2f");
-        const marker = targetMarkers[i].marker;
-        marker.style.display = "";
-        // Trigger the grow + fade-in on the now-revealed target marker.
-        triggerTargetMarker(marker);
+        misses.push({ placed: val, target: target.value, label: target.label });
+        if (revealTargets) {
+          const marker = targetMarkers[i].marker;
+          marker.style.display = "";
+          // Trigger the grow + fade-in on the now-revealed target marker.
+          triggerTargetMarker(marker);
+        }
       }
     });
 
@@ -344,11 +357,32 @@ export function renderNumberLine(container, config) {
       );
       if (onComplete) onComplete(correct, targets.length);
     } else {
-      showFb(
-        feedbackSlot,
-        "hint",
-        `${correct} of ${targets.length} correct. The line snapped your dots to nearby ticks — green circles show where the remaining points belong and why.`,
-      );
+      /* Diagnose ONE miss rather than all of them: a list of four corrections
+       * is a solution, not a hint, and the student still has to do the others
+       * themselves. Pick the miss whose error type is nameable. */
+      const diagnosed = misses
+        .map((m) => ({ m, msg: diagnosePlacement(m.placed, m.target, { step }) }))
+        .find((x) => x.msg);
+      const count = `${correct} of ${targets.length} correct.`;
+      if (!revealTargets && diagnosed) {
+        showFb(
+          feedbackSlot,
+          "hint",
+          `${count} Look at ${diagnosed.m.label || formatNum(diagnosed.m.target)}: ${diagnosed.msg}`,
+        );
+      } else if (!revealTargets) {
+        showFb(
+          feedbackSlot,
+          "hint",
+          `${count} The red dots are not on their values yet. Find a labelled tick near each one and count the ticks from there.`,
+        );
+      } else {
+        showFb(
+          feedbackSlot,
+          "hint",
+          `${count} The line snapped your dots to nearby ticks — green circles show where the remaining points belong and why.`,
+        );
+      }
     }
   });
 
@@ -594,10 +628,16 @@ function renderSequentialNumberLine(container, config) {
       targetMarker.style.display = "";
       triggerTargetMarker(targetMarker);
       const delta = Math.abs(curVal - Number(t.value));
+      /* Name the kind of error when the two values support one — an opposite,
+       * a place-value slip, negative ordering, a tick miscount. The distance
+       * message is the fallback, not the default: "6 away" describes the
+       * mistake without teaching anything about it. */
+      const diagnosis = diagnosePlacement(curVal, Number(t.value), { step: snapStep });
       showFb(
         feedbackSlot,
         "hint",
-        `Not yet — you landed near ${formatNum(curVal)}. ${formatNum(t.value)} is ${formatNum(delta)} away. The green circle shows the snap target.`,
+        diagnosis ||
+          `Not yet — you landed near ${formatNum(curVal)}. ${formatNum(t.value)} is ${formatNum(delta)} away. The green circle shows the snap target.`,
       );
     }
   });
@@ -658,6 +698,68 @@ export function parseInequality(text) {
     direction: rel === ">" || rel === ">=" ? "right" : "left",
     inclusive: rel === ">=" || rel === "<=",
   };
+}
+
+/**
+ * Name the KIND of placement error, not just its size.
+ *
+ * "You landed near -3. 3 is 6 away" is arithmetic about the mistake; it does
+ * not tell a student what they misunderstood. A misplaced point on a number
+ * line is usually one of a small number of specific errors, and each is
+ * knowable by comparing the two values:
+ *
+ *   opposite       right distance from zero, wrong side  (-3 for 3)
+ *   place value    right digits, wrong scale             (0.7 for 0.07)
+ *   negative order thinks -5 sits right of -2            (further left = smaller)
+ *   off by ticks   the count slipped, usually by one
+ *
+ * Returns null when the evidence is ambiguous, so the caller falls back to the
+ * plain distance message rather than asserting a misconception it invented.
+ *
+ * @param {number} placed value the student left the dot on
+ * @param {number} target correct value
+ * @param {{step?: number}} [opts] tick size, for counting ticks
+ * @returns {string|null}
+ */
+export function diagnosePlacement(placed, target, { step = 1 } = {}) {
+  if (!Number.isFinite(placed) || !Number.isFinite(target)) return null;
+  const near = (a, b) => Math.abs(a - b) < 1e-9;
+  if (near(placed, target)) return null;
+
+  // Opposite: same distance from zero, other side. Checked first because it is
+  // the most specific claim the two numbers can support.
+  if (target !== 0 && near(placed, -target)) {
+    return `You are the right distance from 0, but on the wrong side. ${formatNum(placed)} and ${formatNum(target)} are opposites — they sit the same distance from 0 in opposite directions. Which side of 0 does ${formatNum(target)} belong on?`;
+  }
+
+  // Place value: the digits are right, the scale is off by a power of ten.
+  if (placed !== 0 && target !== 0) {
+    const ratio = target / placed;
+    for (const factor of [10, 100, 0.1, 0.01]) {
+      if (near(ratio, factor)) {
+        return `Your digits are right but the size is off: ${formatNum(placed)} is ${factor > 1 ? `${factor} times smaller` : `${1 / factor} times larger`} than ${formatNum(target)}. Check which place each digit is in, then count the ticks again.`;
+      }
+    }
+  }
+
+  // Ordering negatives: both negative, and the student put the more negative
+  // number on the wrong side of the other.
+  if (placed < 0 && target < 0 && Math.abs(placed) !== Math.abs(target)) {
+    if (placed > target) {
+      return `On a number line, further LEFT means smaller. ${formatNum(target)} is less than ${formatNum(placed)}, so it belongs further to the left, not to the right.`;
+    }
+  }
+
+  // A small whole number of ticks off — the count slipped.
+  if (step > 0) {
+    const ticks = (target - placed) / step;
+    if (near(ticks, Math.round(ticks)) && Math.abs(Math.round(ticks)) <= 3) {
+      const n = Math.round(ticks);
+      return `Close — you are ${Math.abs(n)} tick${Math.abs(n) === 1 ? "" : "s"} to the ${n > 0 ? "left" : "right"} of ${formatNum(target)}. Each tick is ${formatNum(step)}. Count them from a labelled mark rather than from where you started.`;
+    }
+  }
+
+  return null;
 }
 
 /**

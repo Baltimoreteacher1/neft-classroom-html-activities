@@ -17,7 +17,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { diagnoseInequality, matchesInequality, parseInequality } from "./number-line.js";
+import {
+  diagnoseInequality,
+  diagnosePlacement,
+  matchesInequality,
+  parseInequality,
+} from "./number-line.js";
 
 const prob = (inequality, boundary, circleType, direction) => ({
   inequality,
@@ -196,4 +201,59 @@ test("the parser round-trips every authored inequality in the curriculum", async
   assert.ok(checked > 20, `only ${checked} authored inequalities seen — the sweep found nothing`);
   assert.ok(simple > 10, `only ${simple} one-step answers checked — the round-trip proved little`);
   console.log(`    (${checked} authored: ${simple} one-step round-tripped, ${multiStep} multi-step correctly declined)`);
+});
+
+/* ── Placement diagnosis (the plot-a-point modes) ──────────────────────────── */
+
+test("an opposite is named as an opposite, not as a distance", () => {
+  const msg = diagnosePlacement(-3, 3, { step: 1 });
+  assert.match(msg, /opposites/);
+  assert.match(msg, /wrong side/);
+  assert.ok(!/6 away/.test(msg), "fell back to the distance message");
+});
+
+test("opposites work in both directions and are not claimed for zero", () => {
+  assert.match(diagnosePlacement(5, -5, { step: 1 }), /opposites/);
+  assert.equal(diagnosePlacement(0, 0, { step: 1 }), null, "a correct placement was diagnosed");
+});
+
+test("a place-value slip is named by scale, not by subtraction", () => {
+  const msg = diagnosePlacement(0.7, 0.07, { step: 0.01 });
+  assert.match(msg, /digits are right/);
+  assert.match(msg, /place/);
+  const other = diagnosePlacement(0.07, 0.7, { step: 0.1 });
+  assert.match(other, /digits are right/);
+});
+
+test("negative ordering is explained as further left means smaller", () => {
+  // Student put -5 to the RIGHT of where it belongs (treated -5 as bigger).
+  const msg = diagnosePlacement(-2, -5, { step: 1 });
+  assert.match(msg, /further LEFT means smaller|further to the left/);
+  assert.ok(!/opposites/.test(msg));
+});
+
+test("a small tick miscount says which way and how far, in ticks", () => {
+  const msg = diagnosePlacement(4, 5, { step: 1 });
+  assert.match(msg, /1 tick\b/);
+  assert.match(msg, /left/);
+  const two = diagnosePlacement(7, 5, { step: 1 });
+  assert.match(two, /2 ticks/);
+  assert.match(two, /right/);
+});
+
+test("ticks are counted in the line's own step, not in whole numbers", () => {
+  const msg = diagnosePlacement(0.25, 0.5, { step: 0.25 });
+  assert.match(msg, /1 tick\b/);
+  assert.match(msg, /Each tick is 0\.25/);
+});
+
+test("an ambiguous miss returns null so the caller uses the distance message", () => {
+  // Not an opposite, not a power of ten, not both negative, and 7 ticks off.
+  assert.equal(diagnosePlacement(1, 8, { step: 1 }), null);
+});
+
+test("a correct placement is never diagnosed", () => {
+  for (const v of [0, 3, -3, 0.25, -7.5]) {
+    assert.equal(diagnosePlacement(v, v, { step: 0.25 }), null, `${v} was diagnosed`);
+  }
 });
