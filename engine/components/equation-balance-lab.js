@@ -126,6 +126,61 @@ function applyOp(side, op, k) {
   return side;
 }
 
+/**
+ * Did that move get the student CLOSER to an isolated variable, or just keep
+ * the scale balanced?
+ *
+ * Every legal move used to produce the same sentence — "Applied − 3 to both
+ * sides — still balanced" — which is true of a move that removes the constant
+ * and equally true of a move that doubles it. Both sides staying equal is the
+ * rule the student already followed; whether they are nearer to `x = ` is the
+ * thing they are actually trying to judge, and the lab holds the symbolic state
+ * to say so.
+ *
+ * A side is `a·x + b`. Isolation means the variable side reaches a = 1, b = 0.
+ * So "closer" is |b| shrinking toward 0, or |a| moving toward 1.
+ *
+ * @returns {{tone: "ok"|"warn", text: string}}
+ */
+export function describeProgress(before, after, v) {
+  // The variable lives on whichever side carries a non-zero coefficient.
+  const pick = (st) => (st.left.a !== 0 ? st.left : st.right);
+  const b0 = pick(before);
+  const b1 = pick(after);
+
+  const constBefore = Math.abs(b0.b);
+  const constAfter = Math.abs(b1.b);
+  const coefBefore = Math.abs(b0.a - 1);
+  const coefAfter = Math.abs(b1.a - 1);
+
+  if (constAfter < constBefore - 1e-9) {
+    return constAfter === 0
+      ? { tone: "ok", text: `The number is gone from the ${v} side — that is what you wanted. ` }
+      : {
+          tone: "ok",
+          text: `Closer: the number beside ${v} went from ${fmt(b0.b)} to ${fmt(b1.b)}. `,
+        };
+  }
+  if (coefAfter < coefBefore - 1e-9) {
+    return coefAfter === 0
+      ? { tone: "ok", text: `${v} now has a coefficient of 1 — it stands alone. ` }
+      : { tone: "ok", text: `Closer: the coefficient moved from ${fmt(b0.a)} to ${fmt(b1.a)}. ` };
+  }
+  if (constAfter > constBefore + 1e-9) {
+    return {
+      tone: "warn",
+      text: `Both sides stayed equal, so that move was legal — but it went the wrong way: the number beside ${v} grew from ${fmt(b0.b)} to ${fmt(b1.b)}. To clear ${fmt(b0.b)}, apply its inverse. `,
+    };
+  }
+  if (coefAfter > coefBefore + 1e-9) {
+    return {
+      tone: "warn",
+      text: `Legal, but further from the goal: ${v}'s coefficient moved from ${fmt(b0.a)} to ${fmt(b1.a)}, and you need it to be 1. `,
+    };
+  }
+  return { tone: "ok", text: "Still balanced, but nothing about the equation changed. " };
+}
+
 const isSolved = (left, right, _v) =>
   (left.a === 1 && left.b === 0 && right.a === 0) ||
   (right.a === 1 && right.b === 0 && left.a === 0);
@@ -316,9 +371,11 @@ export function renderEquationBalanceLab(container, cfg = {}) {
         `🎉 <strong>Solved!</strong> The variable is alone: <strong>${v} = ${fmt(sol)}</strong>. Every move kept both sides equal, so the scale stayed balanced. Substitute ${fmt(sol)} back into the original equation to prove it.`,
       );
     } else {
+      const progress = describeProgress(s, { left, right }, v);
       feed(
-        "ok",
-        `Applied <strong>${esc(note)}</strong> to both sides — still balanced. What's left to remove from the ${v} side?`,
+        progress.tone,
+        `Applied <strong>${esc(note)}</strong> to both sides — still balanced. ${esc(progress.text)}` +
+          (progress.tone === "ok" ? `What's left to remove from the ${v} side?` : ""),
       );
     }
   }

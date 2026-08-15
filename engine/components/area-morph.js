@@ -514,6 +514,55 @@ export function renderAreaMorph(container, cfg = {}) {
     "; font-size:1rem; margin:0 4px 12px; min-height:3.1em; font-weight:600; line-height:1.35;";
   root.appendChild(caption);
 
+  /* ── Predict first ──────────────────────────────────────────────────────────
+   * Every one of these transformations rearranges a figure without adding or
+   * removing anything, and the closing caption says so. But a student who
+   * watches an animation and then reads "zero area lost" has not decided
+   * anything — the conservation of area is the entire mathematical content
+   * here, and it lands only if they commit to an answer that can be wrong.
+   *
+   * Deliberately NOT a gate: the slider works whether or not a prediction is
+   * made, because a teacher demonstrating this to a class must not have to
+   * answer a student prompt first (whole-group use). Committing simply changes
+   * who the ending is addressed to. */
+  let prediction = null;
+  const predictionVerdict = (choice) =>
+    choice === "same"
+      ? "You predicted the area would stay the same — watch why that is right:"
+      : `You predicted the area would get ${choice}. Look closely:`;
+
+  const predictRow = document.createElement("div");
+  predictRow.style.cssText =
+    "display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; margin:0 4px 12px;";
+  const predictQ = document.createElement("span");
+  predictQ.textContent =
+    "Before you move it — does the AREA get bigger, smaller, or stay the same?";
+  predictQ.style.cssText = `flex:1 1 100%; text-align:center; font-size:.9rem; font-weight:700; color:${C.navy};`;
+  predictRow.appendChild(predictQ);
+  const predictLive = document.createElement("span");
+  predictLive.setAttribute("aria-live", "polite");
+  predictLive.style.cssText = "flex:1 1 100%; text-align:center; font-size:.85rem; color:" + C.ink;
+  for (const choice of ["bigger", "smaller", "same"]) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = choice === "same" ? "Stays the same" : `Gets ${choice}`;
+    btn.style.cssText = `min-height:44px; padding:6px 14px; border:1.5px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:.85rem; font-weight:700; cursor:pointer;`;
+    btn.setAttribute("aria-pressed", "false");
+    btn.addEventListener("click", () => {
+      prediction = choice;
+      for (const other of predictRow.querySelectorAll("button")) {
+        const on = other === btn;
+        other.setAttribute("aria-pressed", on ? "true" : "false");
+        other.style.borderColor = on ? C.navy : C.line;
+        other.style.background = on ? "#eef4ff" : "#fff";
+      }
+      predictLive.textContent = "Prediction locked in — now move the slider and find out.";
+    });
+    predictRow.appendChild(btn);
+  }
+  predictRow.appendChild(predictLive);
+  root.appendChild(predictRow);
+
   // PRIMARY control: one labelled slider, with its two endpoints named so a
   // student can see what the axis MEANS before touching it.
   const sliderWrap = document.createElement("div");
@@ -671,7 +720,14 @@ export function renderAreaMorph(container, cfg = {}) {
     for (const d of def.dims(t)) body += drawDim(d);
 
     svg.innerHTML = body;
-    caption.textContent = def.caption(t);
+    /* The closing caption states the invariant ("Same pieces, zero area lost").
+     * Stating it is not the same as a student deciding it — so if they made a
+     * prediction, the end of the transformation answers THEIR answer instead of
+     * announcing the result to nobody in particular. */
+    caption.textContent =
+      t >= 0.95 && prediction
+        ? `${predictionVerdict(prediction)} ${def.caption(t)}`
+        : def.caption(t);
     // Blanks fill in one part at a time, so the formula is visibly derived from
     // the picture rather than announced at the end.
     // An unearned part is ONE uniform slot, not a run of underscores sized to
