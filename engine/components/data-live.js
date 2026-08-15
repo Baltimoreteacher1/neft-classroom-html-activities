@@ -94,6 +94,22 @@ function fiveNum(values) {
     max: s[n - 1],
   };
 }
+/**
+ * Mean absolute deviation — the average distance of the data from its own mean.
+ *
+ * 6.SP.B.5c asks students to describe variability, and MAD is the measure the
+ * standard names. It was the one statistic this lab could not show, which left
+ * the What-if sandbox able to demonstrate that moving a point changes the mean
+ * while silently unable to demonstrate the more interesting fact: that moving a
+ * point AWAY from the mean changes the typical distance far more than it moves
+ * the centre.
+ */
+function mad(v) {
+  if (!v.length) return 0;
+  const m = v.reduce((a, b) => a + b, 0) / v.length;
+  return v.reduce((a, b) => a + Math.abs(b - m), 0) / v.length;
+}
+
 function mean(v) {
   return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
 }
@@ -137,7 +153,7 @@ function shell(host, cfg, ctrl) {
     `<div class="dlive-note" data-el="note" role="status" aria-live="polite"></div>`;
   host.appendChild(root);
   const el = (n) => root.querySelector(`[data-el="${n}"]`);
-  const state = { whatif: false, revealed: false, note: "" };
+  const state = { whatif: false, revealed: false, note: "", lastSummary: null };
 
   function paint() {
     el("plot").innerHTML = ctrl.svg(state);
@@ -152,9 +168,48 @@ function shell(host, cfg, ctrl) {
       state.note = t;
       el("note").textContent = t;
     },
-    repaint: paint,
+    /* Repaint, and when the student is editing data, say what the edit did to
+     * the centre and to the spread. The instructional point of a dot-plot
+     * sandbox is that moving a value AWAY from the mean barely shifts the
+     * centre but moves MAD a lot — and that is invisible if the numbers simply
+     * change while the student is looking at the dots. */
+    /* Repaint, and when the student is editing data, say what the edit did to
+     * the centre and to the spread. The instructional point of a dot-plot
+     * sandbox is that moving a value AWAY from the mean barely shifts the
+     * centre but moves MAD a lot — and that is invisible if the numbers simply
+     * change while the student is looking at the dots.
+     *
+     * The comparison is against the LAST PAINTED summary, not one snapshotted
+     * at the top of this function: the controllers mutate their data array and
+     * then call repaint(), so a snapshot taken here is already the new value
+     * and every edit reported "nothing changed". */
+    repaint() {
+      const before = state.lastSummary;
+      paint();
+      const after = ctrl.summary?.() || null;
+      state.lastSummary = after;
+      if (!state.whatif || !before || !after) return;
+      const moved = (a, b) => Math.abs(a - b) > 1e-9;
+      const bits = [];
+      if (moved(before.mean, after.mean))
+        bits.push(`mean ${num(before.mean)} → ${num(after.mean)}`);
+      if (moved(before.median, after.median))
+        bits.push(`median ${num(before.median)} → ${num(after.median)}`);
+      if (moved(before.mad, after.mad)) bits.push(`MAD ${num(before.mad)} → ${num(after.mad)}`);
+      if (!bits.length) {
+        api.say("The data changed, but the mean, median and MAD all stayed the same.");
+        return;
+      }
+      const spread =
+        moved(before.mad, after.mad) && !moved(before.median, after.median)
+          ? " The typical distance from the mean changed while the middle value did not."
+          : "";
+      api.say(`${bits.join(" · ")}.${spread}`);
+    },
     state,
   };
+
+  state.lastSummary = ctrl.summary?.() || null;
 
   el("reveal").addEventListener("click", () => {
     state.revealed = !state.revealed;
@@ -252,8 +307,18 @@ function dotPlot(host, cfg, viewOpts) {
         statCard("Range", num(s[s.length - 1] - s[0])) +
         statCard("Mean", num(mn), true) +
         statCard("Median", num(md), true) +
+        statCard("MAD", num(mad(data)), true) +
         statCard("Mode", mo.length ? mo.map(num).join(", ") : "none")
       );
+    },
+    /* The three numbers the What-if sandbox exists to move. Exposed so the
+     * repaint wrapper can report what a student's edit actually DID, rather
+     * than silently redrawing and leaving them to spot the difference across
+     * six stat cards. Only the numeric plots implement this; a bar chart of
+     * categories has no mean to report. */
+    summary() {
+      if (!data.length) return null;
+      return { mean: mean(data), median: median([...data].sort((x, y) => x - y)), mad: mad(data) };
     },
     bind(plot, state, api) {
       const svg = plot.querySelector("svg");
