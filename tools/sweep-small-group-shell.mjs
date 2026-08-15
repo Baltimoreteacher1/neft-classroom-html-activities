@@ -20,7 +20,10 @@ import { chromium } from "playwright";
 
 const BASE = (process.env.BASE || "http://localhost:4499").replace(/\/$/, "");
 const VIEWPORT = { width: 1366, height: 768 }; // the classroom laptop
-const CONCURRENCY = 6;
+/* 6 is right against a local preview server. Against production, six parallel
+ * `networkidle` waits over a CDN time out on their own contention rather than
+ * on anything about the page, so SWEEP_CONCURRENCY lowers it. */
+const CONCURRENCY = Number(process.env.SWEEP_CONCURRENCY || 6);
 
 /* The masthead used to run 581-615px on this viewport, putting the first
  * mathematical task at or below the fold. This is the ceiling that regression
@@ -42,8 +45,16 @@ async function check(id) {
   const ctx = await browser.newContext({ viewport: VIEWPORT });
   const page = await ctx.newPage();
   try {
-    await page.goto(`${BASE}/lessons/${id}/`, { waitUntil: "networkidle", timeout: 45000 });
-    await page.waitForSelector(".sg-hero", { timeout: 20000 });
+    /* `domcontentloaded` + wait for the shell, NOT `networkidle`. These pages
+     * hold a telemetry connection open, so on production network-idle never
+     * arrives and the sweep times out on 16 of 204 lessons that render
+     * perfectly in 3.3s — a wait condition failing, reported as a page
+     * failing. What this sweep is actually waiting for is the shell. */
+    await page.goto(`${BASE}/lessons/${id}/`, { waitUntil: "domcontentloaded", timeout: 60000 });
+    await page.waitForSelector(".sg-hero", { timeout: 30000 });
+    // The shell paints its styles from JS; give the stylesheet a beat to land
+    // before measuring computed values.
+    await page.waitForTimeout(1200);
     const m = await page.evaluate(() => {
       const de = document.documentElement;
       const hero = document.querySelector(".sg-hero");
