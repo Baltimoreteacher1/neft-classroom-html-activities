@@ -23,6 +23,19 @@ const check = (name, ok, detail = "") => {
   results.push({ name, ok, detail });
   console.log(`  ${ok ? "PASS" : "FAIL"} ${name}${detail ? " — " + detail : ""}`);
 };
+/* A teacher-gated page cannot be reached anonymously in production, and saying
+ * so is the honest outcome — never a PASS, never a FAIL for a check that did
+ * not run. Locally (vite preview, no middleware) these pages are reachable and
+ * the checks execute for real. */
+const skip = (name, detail) => {
+  results.push({ name, skipped: true, detail });
+  console.log(`  SKIP ${name} — ${detail}`);
+};
+async function reachable(page, url) {
+  const res = await page.goto(url);
+  if (res && res.status() === 401) return false;
+  return true;
+}
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
@@ -81,30 +94,36 @@ check("printable carries this lesson's vocabulary", /Trapecio|trapezoid/i.test(p
 check("student printable shows no teacher provenance", printed.provenance === 0);
 check("student printable has no plan terminology", !/\bIEP\b|\bWIDA\b|\bESOL\b/.test(printed.text));
 
-// 6 — teacher notes copy carries provenance
-await page.goto(`${BASE}/lessons/5-3/notes-teacher.html`);
-await page.waitForTimeout(2000);
-const teacherCopy = await page.evaluate(() => ({
-  provenance: [...document.querySelectorAll("[data-support-provenance]")].map((n) =>
-    n.getAttribute("data-support-provenance"),
-  ),
-  text: document.body.innerText,
-}));
-check(
-  "teacher copy lists supports applied",
-  teacherCopy.provenance.includes("supports"),
-  teacherCopy.provenance.join(","),
-);
-check("teacher copy carries the read-aloud delivery note", /aloud/i.test(teacherCopy.text));
+// 6 — teacher notes copy carries provenance (teacher-gated in production)
+if (await reachable(page, `${BASE}/lessons/5-3/notes-teacher.html`)) {
+  await page.waitForTimeout(2000);
+  const teacherCopy = await page.evaluate(() => ({
+    provenance: [...document.querySelectorAll("[data-support-provenance]")].map((n) =>
+      n.getAttribute("data-support-provenance"),
+    ),
+    text: document.body.innerText,
+  }));
+  check(
+    "teacher copy lists supports applied",
+    teacherCopy.provenance.includes("supports"),
+    teacherCopy.provenance.join(","),
+  );
+  check("teacher copy carries the read-aloud delivery note", /aloud/i.test(teacherCopy.text));
+} else {
+  skip("teacher copy provenance", "401 — the teacher gate is active, as it should be");
+}
 
-// 7 — the audit surface
-await page.goto(`${BASE}/teacher-tools/support-audit/?decision=teacher-review`);
-await page.waitForTimeout(1500);
-const audit = await page.evaluate(() => ({
-  rows: document.querySelectorAll("#sa-body tr").length,
-  count: document.getElementById("sa-count").textContent,
-}));
-check("audit table lists decisions flagged for review", audit.rows > 0, audit.count);
+// 7 — the audit surface (teacher-gated in production)
+if (await reachable(page, `${BASE}/teacher-tools/support-audit/?decision=teacher-review`)) {
+  await page.waitForTimeout(1500);
+  const audit = await page.evaluate(() => ({
+    rows: document.querySelectorAll("#sa-body tr").length,
+    count: document.getElementById("sa-count")?.textContent || "",
+  }));
+  check("audit table lists decisions flagged for review", audit.rows > 0, audit.count);
+} else {
+  skip("support audit table", "401 — the teacher gate is active, as it should be");
+}
 
 // 8 — reset returns everything to canonical
 await page.goto(`${BASE}/curriculum/student-supports/?lesson=5-3`);
@@ -122,6 +141,15 @@ const wgAfter = await page.evaluate(() => window.EWLLearningSupports?.lessonSupp
 check("reset restores the canonical lesson", wgAfter.applied.length === 0);
 
 await browser.close();
-const failed = results.filter((r) => !r.ok);
-console.log(`\n${results.length - failed.length} passed, ${failed.length} failed`);
+const failed = results.filter((r) => !r.skipped && !r.ok);
+const skipped = results.filter((r) => r.skipped);
+console.log(
+  `\n${results.length - failed.length - skipped.length} passed, ${failed.length} failed, ${skipped.length} skipped — ${BASE}`,
+);
+if (skipped.length) {
+  console.log(
+    `\ne2e-supports: ${skipped.length} check(s) SKIPPED — teacher-gated pages are not reachable ` +
+      `anonymously. Run against a local preview server to execute them.`,
+  );
+}
 process.exit(failed.length ? 1 : 0);
