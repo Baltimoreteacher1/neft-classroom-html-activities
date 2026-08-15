@@ -139,6 +139,26 @@ function readModel(rows) {
  * count — anything else is an authored figure whose meaning this code cannot
  * infer, and guessing at it would be worse than leaving it static.
  *
+ * WHY THE REMAINING 71 DIAGRAMS STAY STATIC (investigated 2026-08-15). They are
+ * only 22 distinct figures; the rest is parent/variant duplication. Grouping
+ * them by structure and then READING them settles it — two of the families are
+ * structurally identical and mathematically opposite:
+ *
+ *   4-1  "Two kittens: 100% and 150%"   [50,50] / [50,50,50]
+ *   4-2  "3/5 Off a $40 Game"           [8,8,8] / [8,8]
+ *
+ * Both are two uniform rows with unequal group counts. In 4-1 the top row is
+ * the WHOLE and the bottom is a multiple of it (150%); in 4-2 the rows are two
+ * PARTS of one partitioned whole (3/5 off, 2/5 paid). Any rule that made one
+ * manipulable would describe the other one wrongly — it would announce "3/5 off
+ * a $40 game" as 150%. The others are equally distinct: 6-4 is 150 + 12n linear
+ * growth, 6-15 is like terms being summed per row.
+ *
+ * So this is not a gap waiting for a cleverer heuristic. Making them
+ * manipulable requires authored configuration per family, and each family is
+ * one parent lesson plus its variants — which is not enough repetition to earn
+ * a new config type. Static is the correct rendering.
+ *
  * @returns {{a: number, b: number, groups: number, rowA: any, rowB: any}|null}
  */
 export function readRatioModel(rows) {
