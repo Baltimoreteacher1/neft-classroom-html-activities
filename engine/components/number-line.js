@@ -624,6 +624,96 @@ function normalizeIneq(s) {
     .replace(/⩽/g, "<=");
 }
 
+/**
+ * Parse a written inequality into the two facts a graph shows: which side of
+ * the boundary is shaded, and whether the boundary itself is included.
+ *
+ * Accepts both orders, because a student reading a graph left-to-right often
+ * writes the boundary first: "x > 4" and "4 < x" describe the same ray, and
+ * flipping the relation when the variable is on the right is what makes them
+ * comparable. Returns null for anything it cannot read, so the caller falls
+ * back to a general prompt rather than accusing the student of a mistake the
+ * parser invented.
+ *
+ * @returns {{boundary: number, direction: "left"|"right", inclusive: boolean}|null}
+ */
+export function parseInequality(text) {
+  const s = normalizeIneq(text);
+  const m = s.match(/^([a-z]|-?\d+(?:\.\d+)?)(>=|<=|>|<)([a-z]|-?\d+(?:\.\d+)?)$/);
+  if (!m) return null;
+  let [, left, rel, right] = m;
+  const leftIsVar = /^[a-z]$/.test(left);
+  const rightIsVar = /^[a-z]$/.test(right);
+  // Exactly one side must be the variable and the other a number.
+  if (leftIsVar === rightIsVar) return null;
+  if (rightIsVar) {
+    // "4 < x" → "x > 4": swap the operands and mirror the relation.
+    [left, right] = [right, left];
+    rel = { ">=": "<=", "<=": ">=", ">": "<", "<": ">" }[rel];
+  }
+  const boundary = Number(right);
+  if (!Number.isFinite(boundary)) return null;
+  return {
+    boundary,
+    direction: rel === ">" || rel === ">=" ? "right" : "left",
+    inclusive: rel === ">=" || rel === "<=",
+  };
+}
+
+/**
+ * Is the student's inequality the same statement as the answer key?
+ *
+ * String comparison alone said no to "4 < x" for a key of "x > 4" — the same
+ * ray, written the way a student who reads the graph left-to-right naturally
+ * writes it, marked wrong. When both sides parse, compare the three facts a
+ * graph actually carries; otherwise fall back to the normalised string, which
+ * is what multi-step keys like "x + 4 > 10" need.
+ */
+export function matchesInequality(written, key) {
+  const a = parseInequality(written);
+  const b = parseInequality(key);
+  if (a && b)
+    return a.boundary === b.boundary && a.direction === b.direction && a.inclusive === b.inclusive;
+  return normalizeIneq(written) === normalizeIneq(key);
+}
+
+/**
+ * Name the specific thing the student's inequality gets wrong about the graph
+ * in front of them. A graph carries exactly three facts — where the boundary
+ * is, whether it is filled, and which way it shades — so a wrong answer is
+ * wrong in one or more of exactly those three ways, and saying which one is
+ * the difference between feedback that teaches and "check the circle type and
+ * shading direction", which just restates the task.
+ *
+ * @returns {string|null} null when nothing specific can be said.
+ */
+export function diagnoseInequality(written, prob) {
+  const got = parseInequality(written);
+  if (!got) return null;
+  const wantInclusive = prob.circleType === "closed";
+  const b = prob.boundary;
+
+  const wrongBoundary = got.boundary !== b;
+  const wrongDirection = got.direction !== prob.direction;
+  const wrongCircle = got.inclusive !== wantInclusive;
+
+  if (wrongBoundary) {
+    return `Your inequality turns at ${got.boundary}, but the circle on the graph sits at ${b}. Read the tick the circle is on first — that number is the boundary.`;
+  }
+  if (wrongDirection && wrongCircle) {
+    return `Two things to fix: the shading runs to the ${prob.direction}, so the solutions are the numbers ${prob.direction === "right" ? "greater" : "less"} than ${b} — and the circle is ${prob.circleType}, so ${b} itself ${wantInclusive ? "IS" : "is NOT"} a solution.`;
+  }
+  if (wrongDirection) {
+    return `You have the boundary right, but you shaded the wrong way. The ray points ${prob.direction}, so the solutions are the numbers ${prob.direction === "right" ? "greater" : "less"} than ${b}. Pick a number on the shaded part and test it in your inequality.`;
+  }
+  if (wrongCircle) {
+    return wantInclusive
+      ? `The circle at ${b} is filled in, so ${b} itself IS a solution. Is ${b} ${got.direction === "right" ? ">" : "<"} ${b} true? You need the symbol that also allows equal.`
+      : `The circle at ${b} is open, so ${b} itself is NOT a solution. Your symbol allows ${b} = ${b}, which the open circle rules out.`;
+  }
+  return null;
+}
+
 // Draw a single inequality graph (open/closed boundary circle + shaded ray) on
 // a fresh number line centered on the boundary. Used by renderInequalityGraphs.
 function drawInequalityLine(boundary, circleType, direction) {
@@ -755,26 +845,38 @@ function renderInequalityGraphs(container, config) {
         showFb(fb, "hint", "Type the inequality first.");
         return;
       }
-      if (normalizeIneq(val) === normalizeIneq(prob.inequality)) {
+      if (matchesInequality(val, prob.inequality)) {
         input.style.borderColor = "var(--success)";
         input.style.background = "var(--success-bg)";
         showFb(fb, "success", `Correct! ${prob.inequality}`);
         resolve(true);
       } else {
         attempts += 1;
-        if (attempts >= 2) {
+        /* A three-step ladder instead of "wrong, wrong, here's the answer".
+         * Step 1 names which of the graph's three facts the student's
+         * inequality disagrees with — the component already knows the
+         * boundary, the circle and the direction, so a generic "check the
+         * circle type and shading direction" was throwing that away. Step 2 is
+         * the authored hint. Only step 3 gives the answer, so the queue still
+         * never stalls. */
+        const diagnosis = diagnoseInequality(val, prob);
+        if (attempts === 1 && diagnosis) {
+          showFb(fb, "hint", diagnosis);
+        } else if (attempts < 3) {
+          showFb(
+            fb,
+            "hint",
+            (hints && hints[idx]) ||
+              diagnosis ||
+              `Write it as a letter, a symbol, then a number — like x > ${prob.boundary}. Read the circle first, then the shading.`,
+          );
+        } else {
           showFb(
             fb,
             "hint",
             `The answer is ${prob.inequality}. ${(hints && hints[idx]) || ""}`.trim(),
           );
           resolve(false);
-        } else {
-          showFb(
-            fb,
-            "hint",
-            (hints && hints[idx]) || "Check the circle type and shading direction.",
-          );
         }
       }
     });
