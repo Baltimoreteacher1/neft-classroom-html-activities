@@ -95,6 +95,16 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // Shared interactive components + anything that ships CSS. `validate:css-integrity`
+  // is the only check that can see the three ways malformed style reaches a
+  // browser and is silently recovered from: a committed conflict marker, a file
+  // losing a third of its rules to a parse error, and a <style> block inside a
+  // JS template literal that a stray backtick in a COMMENT truncated — which
+  // parses clean, throws at runtime, and renders the component unstyled.
+  [
+    /^(engine\/components\/(tool-tokens|long-division-[a-z]+)\.js|tools\/validate-css-integrity\.mjs)$/,
+    ["test", "validate:css-integrity", "validate:js-syntax", "check"],
+  ],
   // The small-group visual shell. Styled centrally for all 204 variants, so a
   // token change here is a change to every one of them. The browser sweep that
   // proves it (`sweep:small-group`) needs a preview server and is not in the
