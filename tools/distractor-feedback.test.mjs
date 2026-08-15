@@ -6,8 +6,12 @@
 // "Check your work." teaches nothing, and a self-contradicting sentence
 // ("6² = 36, not 36.") actively confuses.
 //
-// Two checks, both written to be false-positive free so the gate stays trusted:
+// Three checks, all written to be false-positive free so the gate stays trusted:
 //
+//   0. COVERAGE — every wrong choice of a multiple-choice item has a message.
+//      Auditing only the text that exists let six items ship with a blank or
+//      absent `choiceFeedback`, which silently falls back to the generic
+//      "Not quite — take another look and try again."
 //   1. VAGUE — opens with a hedge verb AND carries no concrete detail.
 //      "Check the units — a wrapped surface is square, not cubic" passes:
 //      it opens with a hedge but names the actual error.
@@ -47,6 +51,7 @@ function walk(node, visit) {
 
 const vague = [];
 const contradictions = [];
+const uncovered = [];
 let lessonCount = 0;
 let feedbackCount = 0;
 
@@ -63,6 +68,24 @@ for (const entry of readdirSync(LESSONS).sort()) {
   const config = JSON.parse(raw);
 
   walk(config, (obj) => {
+    // Coverage: a wrong choice with no message falls back to the generic
+    // "Not quite" and teaches nothing. Run before the text checks so an
+    // absent `choiceFeedback` array is caught rather than skipped.
+    if (
+      obj.type === "multiple-choice" &&
+      Array.isArray(obj.choices) &&
+      Number.isInteger(obj.correctIndex)
+    ) {
+      const messages = Array.isArray(obj.choiceFeedback) ? obj.choiceFeedback : [];
+      obj.choices.forEach((_, index) => {
+        if (index === obj.correctIndex) return;
+        const text = messages[index];
+        if (typeof text !== "string" || text.trim().length <= 10) {
+          uncovered.push(`${entry} [choice ${index}]: ${String(obj.stem || "").slice(0, 70)}`);
+        }
+      });
+    }
+
     const feedback = obj.choiceFeedback;
     if (!Array.isArray(feedback)) return;
     feedback.forEach((text, index) => {
@@ -76,6 +99,12 @@ for (const entry of readdirSync(LESSONS).sort()) {
 }
 
 const problems = [];
+if (uncovered.length) {
+  problems.push(
+    `${uncovered.length} wrong choice(s) with no feedback — these fall back to the generic "Not quite":\n` +
+      uncovered.map((u) => `    ${u}`).join("\n"),
+  );
+}
 if (vague.length) {
   problems.push(
     `${vague.length} vague wrong-answer message(s) — name the student's actual error instead:\n` +
