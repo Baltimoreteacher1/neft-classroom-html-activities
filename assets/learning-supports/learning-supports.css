@@ -12,7 +12,12 @@
   --ewl-color-text-muted: #475569;
   --ewl-color-white: #ffffff;
   --ewl-color-focus: #3b82f6;
-  --ewl-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+  /* The supports chrome genuinely floats over the lesson — a fixed rail, a
+     dialog, a panel — so it keeps elevation rather than a hairline. It is
+     softened from a 30px/15% double shadow because everything it now floats
+     ABOVE is flat: at the old weight the dock read as a different application
+     sitting on top of the page rather than part of it. */
+  --ewl-shadow: 0 6px 18px -8px rgba(15, 23, 42, 0.16);
 }
 
 /* Base Namespaced Reset & Typography */
@@ -307,13 +312,18 @@
   max-height: 86vh;
 }
 
-/* Collapse (hide) button — small circle riding just right of the tools pill. */
+/* Collapse (hide) button — a circle riding just right of the tools pill.
+   44px, not 36px: this and the reopen pill are the two controls a student uses
+   to get the dock out of the way and bring it back, and they were the only
+   controls in the whole supports layer under the 44px floor the rest of it
+   holds to. The circle is the TARGET, not just the paint — a pseudo-element
+   patch would leave the two of them overlapping, since they sit 8px apart. */
 .ewl-supports-dock-collapse {
   pointer-events: auto;
   align-self: center;
   margin-left: 8px;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1px solid var(--ewl-color-border);
   background: var(--ewl-color-bg-glass);
@@ -335,7 +345,8 @@
   display: none;
   align-items: center;
   gap: 6px;
-  min-height: 40px;
+  min-height: 44px;
+  min-width: 44px;
   padding: 0 18px;
   border-radius: 99px;
   border: 1px solid var(--ewl-color-border);
