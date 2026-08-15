@@ -559,8 +559,12 @@ export function injectSmallGroupStyles(accent) {
     .sg-kicker{display:inline-flex;align-items:center;gap:8px;padding:0;border:0;border-radius:0;background:none;color:var(--sg-muted);font-family:var(--sg-display);font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
     .sg-hero h1{max-width:780px;margin:9px 0 7px;font-size:clamp(24px,2.6vw,32px);font-weight:800;letter-spacing:-.02em;text-wrap:balance}
     .sg-obj{max-width:760px;margin-bottom:8px;color:var(--sg-ink);font-size:17px;font-weight:700;line-height:1.45;text-wrap:pretty}
-    .sg-obj-more{max-width:760px;margin-top:2px}
-    .sg-obj-more>summary{display:inline-flex;align-items:center;min-height:34px;cursor:pointer;padding:4px 13px;border:1px solid var(--sg-line);border-radius:999px;background:var(--sg-card);font-family:var(--sg-display);font-size:12.5px;font-weight:700;letter-spacing:.02em;color:var(--sg-muted);list-style:none}
+    /* A flex item in .sg-chips: closed it is a pill on the meta row, open it
+       takes a row of its own so the full objective reads as a paragraph rather
+       than as a column squeezed between two chips. */
+    .sg-obj-more{max-width:760px;margin-top:0;flex:0 0 auto}
+    .sg-obj-more[open]{flex:1 0 100%;margin-top:4px}
+    .sg-obj-more>summary{display:inline-flex;align-items:center;min-height:30px;cursor:pointer;padding:3px 12px;border:1px solid var(--sg-line);border-radius:999px;background:var(--sg-card);font-family:var(--sg-display);font-size:12.5px;font-weight:700;letter-spacing:.02em;color:var(--sg-muted);list-style:none}
     .sg-obj-more>summary:hover{border-color:var(--sg);color:var(--sg-ink)}
     .sg-obj-more>summary::-webkit-details-marker{display:none}
     .sg-obj-more[open]>summary{margin-bottom:10px}
@@ -568,8 +572,8 @@ export function injectSmallGroupStyles(accent) {
     .sg-langobj{max-width:760px;font-size:15px;color:var(--sg-muted)}
     .sg-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
     .sg-chip{display:inline-flex;align-items:center;padding:5px 12px;border:1px solid var(--sg-line);border-radius:999px;background:var(--sg-card);color:var(--sg-muted);font-size:13px;font-weight:700}
-    .sg-hero-scene-chip{display:inline-flex;align-items:center;margin-top:10px;padding:4px 11px;border:1px solid var(--sg-line);border-radius:999px;background:var(--sg-soft);color:var(--sg-muted);font-family:var(--sg-display);font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
-    .sg-hero-mark{display:grid;width:132px;height:132px;place-items:center;overflow:hidden;border:1px solid var(--sg-line);border-radius:18px;background:var(--sg-card);font-size:58px;box-shadow:var(--sg-shadow)}
+    .sg-hero-scene-chip{display:inline-flex;align-items:center;margin-top:0;padding:4px 11px;border:1px solid var(--sg-line);border-radius:999px;background:var(--sg-soft);color:var(--sg-muted);font-family:var(--sg-display);font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+    .sg-hero-mark{display:grid;width:132px;height:132px;place-items:center;overflow:hidden;border:1px solid var(--sg-line);border-radius:var(--sg-radius-lg);background:var(--sg-card);font-size:58px;box-shadow:var(--sg-shadow)}
     .sg-hero-mark.has-theme svg,.sg-hero-mark.has-art img{display:block;width:100%;height:100%;object-fit:cover}
     .sg-teacher{margin:0 0 22px}
     .sg-teacher details{border:1px solid var(--sg-line);border-left:4px solid var(--sg-warn-line);border-radius:var(--sg-radius);background:var(--sg-card);box-shadow:var(--sg-shadow-sm)}
@@ -600,7 +604,7 @@ export function injectSmallGroupStyles(accent) {
        The left padding clears the fixed passport pill (12px + 82px + gap),
        which used to sit on top of the bar's own label. */
     .sg-mode{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0;padding:10px 28px 10px 110px;color:#fff;background:var(--sg-deep);font-family:var(--sg-display);font-size:14px;font-weight:700;letter-spacing:.01em}
-    .sg-mode-action{display:inline-flex;align-items:center;min-height:44px;padding:9px 14px;border:1px solid rgba(255,255,255,.34);border-radius:10px;background:rgba(255,255,255,.1);color:#fff;text-decoration:none}
+    .sg-mode-action{display:inline-flex;align-items:center;min-height:44px;padding:9px 14px;border:1px solid rgba(255,255,255,.34);border-radius:var(--sg-radius-sm);background:rgba(255,255,255,.1);color:#fff;text-decoration:none}
     .sg-mode-action:hover{background:rgba(255,255,255,.2)}
     .sg-mode--teacher{background:#5c3c05}.sg-mode-notice{margin:12px 0;padding:11px 14px;border:1px solid var(--sg-warn-line);border-radius:11px;color:var(--sg-warn-ink);background:var(--sg-warn-bg)}
     /* ── Step rail ─────────────────────────────────────────────────────────
@@ -856,7 +860,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-write-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:11px}
     .sg-write-actions .btn{min-height:44px}
     .sg-write-status{min-height:0;color:var(--sg-ink)}
-    .sg-write-model{margin-top:11px;padding:12px 14px;border-left:5px solid var(--sg-good);border-radius:10px;background:var(--sg-soft);font-size:16px;line-height:1.6}
+    .sg-write-model{margin-top:11px;padding:12px 14px;border-left:5px solid var(--sg-good);border-radius:0 var(--sg-radius-sm) var(--sg-radius-sm) 0;background:var(--sg-soft);font-size:16px;line-height:1.6}
     .sg-write-model[hidden]{display:none}
     .sg-write-modellab{display:block;color:var(--sg-good);font-family:var(--sg-display);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
     /* ── Learning map + progress meter ── */
@@ -926,7 +930,7 @@ export function injectSmallGroupStyles(accent) {
     /* ── Success criteria checklist ── */
     .sg-criteria{margin:0 0 16px;display:grid;gap:7px}
     .sg-criteria .block-lab{margin-bottom:2px}
-    .sg-solo-note{margin:0 0 12px;padding:10px 13px;border-radius:11px;background:var(--sg-soft);color:var(--sg-ink);font-weight:600;font-size:15px}
+    .sg-solo-note{margin:0 0 12px;padding:10px 13px;border-radius:var(--sg-radius-sm);background:var(--sg-soft);color:var(--sg-ink);font-weight:600;font-size:15px}
     /* ── Welcome-back strip ── */
     .sg-welcome{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 18px;padding:12px 16px;border:1px solid var(--sg-line);border-left:6px solid var(--sg);border-radius:12px;background:var(--sg-card);font-weight:700}
     .sg-welcome .btn{min-height:44px;padding:8px 13px;font-size:13px}

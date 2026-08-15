@@ -213,6 +213,134 @@ function renderChooser(lessonId) {
 }
 
 /* ---------------------------------------------------------------------------
+ * SCOPE.
+ *
+ * The store has always been a two-level thing — a lesson default that applies
+ * to every class, and a per-class override that replaces it for one class —
+ * and it has always behaved correctly. What it did not do was SAY so. A
+ * teacher arriving from the hub with ?section=602 saw one sentence of prose
+ * and, from then on, had to infer the whole inheritance model from what
+ * happened after pressing Apply.
+ *
+ * These three functions render the model instead of leaving it to be inferred:
+ * which scope is being edited, whether this class is reading the default or
+ * has diverged from it, and — before Apply, not after — where the changes are
+ * about to land.
+ *
+ * NOTHING ABOUT A STUDENT. A class here is 601/602/603: a period on a
+ * timetable. The store holds support keys and a lesson id, and this UI adds no
+ * field to it.
+ * ------------------------------------------------------------------------ */
+
+/** The one-line answer to "what am I editing?", shown at the chooser and again
+ * beside Apply so it cannot scroll out of sight at the moment it matters. */
+function scopeLabel() {
+  return currentSection ? `Class ${currentSection} only` : "All class sections";
+}
+
+function renderScopePicker(lessonId) {
+  if (!LS) return "";
+  const list = LS.sections();
+  const overriding = LS.sectionsOverriding(lessonId);
+  const tab = (value, label, note) => {
+    const on = (currentSection || "") === value;
+    return (
+      `<button type="button" class="sup-scope-tab" data-scope="${esc(value)}"` +
+      ` aria-pressed="${on ? "true" : "false"}">` +
+      `<span class="sup-scope-tab-label">${esc(label)}</span>` +
+      (note ? `<span class="sup-scope-tab-note">${esc(note)}</span>` : "") +
+      `</button>`
+    );
+  };
+  return (
+    `<div class="sup-scope">` +
+    `<p class="sup-scope-head" id="sup-scope-head">Configure supports for</p>` +
+    `<div class="sup-scope-tabs" role="group" aria-labelledby="sup-scope-head">` +
+    tab("", "All classes", "the lesson default") +
+    list
+      .map((s) => tab(s, `Class ${s}`, overriding.includes(s) ? "own override" : "lesson default"))
+      .join("") +
+    `</div></div>`
+  );
+}
+
+/** WHAT THIS SCOPE MEANS, in the three states it can be in. Each one names the
+ * scope, says what it inherits or overrides, and offers the one action that
+ * changes that relationship — never a bare "Reset". */
+function renderInheritance(lessonId) {
+  if (!LS) return "";
+  const list = LS.sections();
+
+  if (!currentSection) {
+    const overriding = LS.sectionsOverriding(lessonId);
+    const following = list.filter((s) => !overriding.includes(s));
+    let body =
+      `<p class="sup-inherit-body">${esc(list.join(" · "))} use this lesson configuration ` +
+      `unless a class has its own override.</p>`;
+    if (overriding.length) {
+      body +=
+        `<p class="sup-inherit-warn">Class ${esc(overriding.join(", "))} ` +
+        `${overriding.length === 1 ? "has" : "have"} an override, so changes here will not reach ` +
+        `${overriding.length === 1 ? "that class" : "those classes"}` +
+        (following.length ? ` — only ${esc(following.join(" and "))}.` : ".") +
+        `</p>`;
+    }
+    return (
+      `<section class="sup-inherit is-default" aria-label="Scope">` +
+      `<p class="sup-inherit-head">Applies to all class sections</p>${body}</section>`
+    );
+  }
+
+  const owns = LS.hasOwnOverride(lessonId, currentSection);
+  if (!owns) {
+    return (
+      `<section class="sup-inherit is-inheriting" aria-label="Scope">` +
+      `<p class="sup-inherit-head">Class ${esc(currentSection)}</p>` +
+      `<p class="sup-inherit-body">Using the lesson default. Changing anything below and ` +
+      `applying it gives this class its own override; the other classes keep the default.</p>` +
+      `<p class="sup-actions"><button type="button" class="btn ghost" id="sup-customize">` +
+      `Customize for ${esc(currentSection)}</button></p></section>`
+    );
+  }
+  return (
+    `<section class="sup-inherit is-override" aria-label="Scope">` +
+    `<p class="sup-inherit-head">Class ${esc(currentSection)} override</p>` +
+    // One string literal, not two. tools/validate-student-supports.mjs greps
+    // for this sentence, and a phrase split across a `+` is invisible to a
+    // grep — the gate would report the sentence gone while the page renders it.
+    `<p class="sup-inherit-body">This class uses its own support configuration instead of the lesson default.</p>` +
+    `<p class="sup-actions"><button type="button" class="btn ghost" id="sup-drop-override">` +
+    `Reset ${esc(currentSection)} to lesson default</button></p></section>`
+  );
+}
+
+/** COPY BETWEEN CLASSES — lesson-scoped, like every other control on this page.
+ * The destination becomes its own explicit override; nothing else moves. */
+function renderCopy(lessonId) {
+  if (!LS || !currentSection) return "";
+  const targets = LS.sections().filter((s) => s !== currentSection);
+  if (!targets.length) return "";
+  return (
+    `<section class="sup-copy" aria-labelledby="sup-copy-head">` +
+    `<p class="sup-copy-head" id="sup-copy-head">Copy class ${esc(currentSection)} supports for ` +
+    `this lesson to</p>` +
+    `<div class="sup-copy-targets">` +
+    targets
+      .map(
+        (s) =>
+          `<label class="sup-choice"><input type="checkbox" data-copy-to="${esc(s)}" />` +
+          `<span class="sup-choice-label">Class ${esc(s)}</span></label>`,
+      )
+      .join("") +
+    `</div>` +
+    `<p class="sup-actions"><button type="button" class="btn ghost" id="sup-copy-go">Copy</button>` +
+    `<span class="sup-copy-note">The classes you tick get their own override for Lesson ` +
+    `${esc(lessonId)}. The lesson default, class ${esc(currentSection)} and any class you do not ` +
+    `tick are left exactly as they are.</span></p></section>`
+  );
+}
+
+/* ---------------------------------------------------------------------------
  * PREVIEW. Built from THIS lesson's authored content, so a teacher sees the
  * actual frame and the actual vocabulary before applying anything.
  * ------------------------------------------------------------------------ */
@@ -320,22 +448,50 @@ function renderLesson(lesson) {
   main.innerHTML =
     `<p class="sup-context">Supports for <strong>${esc(lesson.title)}</strong> · Lesson ${esc(id)} · ${esc(lesson.standard || "")}` +
     ` <span class="sup-family">${esc(f.label || key)}</span></p>` +
-    (currentSection
-      ? `<p class="sup-class">Configuring supports for <strong>class ${esc(currentSection)}</strong>. Your other classes keep their own selections; the lesson itself is the same for all of them.</p>`
-      : `<p class="sup-class">Configuring supports for <strong>every class</strong>. Open this from a class on the Curriculum Hub to set them for one class only.</p>`) +
+    renderScopePicker(id) +
+    `<div id="sup-inherit">${renderInheritance(id)}</div>` +
     `<p class="sup-rigor">These scaffold <em>access</em> to the grade-level standard. None of them lowers the mathematics.</p>` +
-    block("q-choose", "Which supports do I want for this lesson?", renderChooser(id), "") +
+    block(
+      "q-choose",
+      "Which supports do I want for this lesson?",
+      `<p class="sup-editing" id="sup-editing">Editing: <strong>${esc(scopeLabel())}</strong></p>` +
+        renderChooser(id),
+      "",
+    ) +
     `<section class="sup-block" aria-labelledby="q-preview"><h2 id="q-preview">What will this change?</h2>` +
     `<div id="sup-preview">${renderPreview(id)}</div>` +
     `<div id="sup-targets">${renderApplyTargets(id)}</div>` +
+    /* The scope is repeated here on purpose. The chooser can be a screen and a
+     * half of checkboxes, so by the time a teacher reaches Apply the scope line
+     * above it has scrolled away — and "which class did I have selected?" at
+     * the moment of pressing Apply is the exact confusion this pass is for. */
+    `<p class="sup-editing" id="sup-editing-apply">Editing: <strong>${esc(scopeLabel())}</strong></p>` +
     `<p class="sup-actions">` +
-    `<button type="button" class="btn" id="sup-apply">Apply supports</button>` +
-    `<button type="button" class="btn ghost" id="sup-reset">Reset to original</button>` +
+    `<button type="button" class="btn" id="sup-apply">${
+      currentSection ? `Apply to class ${esc(currentSection)} only` : "Apply to all classes"
+    }</button>` +
+    `<button type="button" class="btn ghost" id="sup-reset">${
+      currentSection
+        ? `Reset ${esc(currentSection)} to lesson default`
+        : "Clear the lesson default"
+    }</button>` +
     `<span class="sup-status" id="sup-status" role="status" aria-live="polite">${
       appliedCount
-        ? `${appliedCount} support(s) applied to this lesson.`
+        ? `${appliedCount} support(s) applied to ${esc(scopeLabel()).toLowerCase()}.`
         : "No supports applied yet."
-    }</span></p></section>` +
+    }</span></p>` +
+    /* RESET SEMANTICS, stated rather than discovered. Verified against
+     * resetProfile() in shared/supports/lesson-supports.js: with no section it
+     * deletes the lesson's entry from `lessons` and never touches `sections`,
+     * so clearing the default leaves every class override standing. */
+    (currentSection
+      ? `<p class="sup-reset-note">Reset removes only class ${esc(currentSection)}'s override for
+         this lesson. The lesson default and your other classes are untouched.</p>`
+      : `<p class="sup-reset-note">Clearing the lesson default removes it for the classes that
+         follow it. A class with its own override keeps that override — reset it from its own tab
+         above.</p>`) +
+    `</section>` +
+    renderCopy(id) +
     block(
       "q-teach",
       "Open the lesson with these supports",
@@ -394,7 +550,74 @@ function refreshPreview(id) {
   if (st && dirty) st.textContent = "Not applied yet — choose Apply supports.";
 }
 
+/** The two buttons inside the inheritance panel. Separate from
+ * bindLessonControls because the panel is re-rendered on its own (refreshScope)
+ * while the rest of the form stays put. */
+function bindInheritanceActions(id) {
+  /* "Customize for 602" pins the default this class is currently reading as
+   * 602's own override, so the teacher starts from what they were looking at
+   * instead of from an empty list. */
+  document.getElementById("sup-customize")?.addEventListener("click", () => {
+    if (!LS) return;
+    LS.saveProfile(id, [...selection], activePreset, currentSection);
+    dirty = false;
+    refreshScope(id);
+    const st = document.getElementById("sup-status");
+    if (st) {
+      st.textContent = `Class ${currentSection} now has its own override for Lesson ${id}, starting from the lesson default. Changes here no longer affect your other classes.`;
+    }
+  });
+
+  document.getElementById("sup-drop-override")?.addEventListener("click", () => {
+    if (!LS) return;
+    LS.resetProfile(id, currentSection);
+    show(id);
+    const st = document.getElementById("sup-status");
+    if (st) {
+      st.textContent = `Class ${currentSection}'s override removed. It follows the lesson default again.`;
+    }
+  });
+}
+
 function bindLessonControls(id) {
+  /* SCOPE TABS. Switching scope re-reads the store for that scope — it never
+   * carries the current screen across, because carrying a 601 selection into
+   * the 602 tab and then pressing Apply is precisely how a teacher would give
+   * 602 an override they never chose. */
+  main.querySelectorAll("[data-scope]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const value = btn.getAttribute("data-scope") || "";
+      currentSection = value && LS && LS.isSection(value) ? value : null;
+      if (LS) LS.setActiveSection(currentSection);
+      const url = new URL(location.href);
+      if (currentSection) url.searchParams.set("section", currentSection);
+      else url.searchParams.delete("section");
+      history.replaceState(null, "", url);
+      show(id);
+    });
+  });
+
+  bindInheritanceActions(id);
+
+  document.getElementById("sup-copy-go")?.addEventListener("click", () => {
+    const targets = [...main.querySelectorAll("[data-copy-to]")]
+      .filter((box) => box.checked)
+      .map((box) => box.getAttribute("data-copy-to"));
+    const st = document.getElementById("sup-status");
+    if (!LS || !targets.length) {
+      if (st) st.textContent = "Choose at least one class to copy to.";
+      return;
+    }
+    const done = targets.filter((to) => LS.copyLessonToSection(id, currentSection, to));
+    show(id);
+    const after = document.getElementById("sup-status");
+    if (after) {
+      after.textContent = done.length
+        ? `Copied Lesson ${id} from class ${currentSection} to class ${done.join(" and ")}. Each is now its own override; nothing else changed.`
+        : "Could not copy on this device (private browsing?).";
+    }
+  });
+
   main.querySelectorAll("[data-support]").forEach((box) => {
     box.addEventListener("change", () => {
       const key = box.getAttribute("data-support");
@@ -435,14 +658,18 @@ function bindLessonControls(id) {
     }
     const ok = LS.saveProfile(id, [...selection], activePreset, currentSection);
     dirty = false;
+    const scope = currentSection ? `class ${currentSection} only` : "all class sections";
     if (st) {
-      const forClass = currentSection ? ` for class ${currentSection}` : "";
       st.textContent = ok
         ? selection.size
-          ? `Applied${forClass}. ${selection.size} support(s) are now part of Lesson ${id} and its small-group versions.`
-          : `Cleared${forClass}. Lesson ${id} opens exactly as written.`
+          ? `Applied to ${scope}. ${selection.size} support(s) are now part of Lesson ${id} and its small-group versions.`
+          : `Cleared for ${scope}. Lesson ${id} opens exactly as written.`
         : "Could not save on this device (private browsing?). The lesson still opens as written.";
     }
+    // Applying can change the inheritance state — a class that was following
+    // the default now owns an override — so the panel that describes it has to
+    // be re-read from the store rather than left showing the previous answer.
+    refreshScope(id);
   });
 
   document.getElementById("sup-reset")?.addEventListener("click", () => {
@@ -458,9 +685,32 @@ function bindLessonControls(id) {
     const st = document.getElementById("sup-status");
     if (st) {
       st.textContent = currentSection
-        ? `Reset for class ${currentSection}. Lesson ${id} opens exactly as written for that class.`
-        : `Reset. Lesson ${id} opens exactly as written.`;
+        ? `Class ${currentSection}'s override removed. It follows the lesson default again; your other classes are untouched.`
+        : `Lesson default cleared. Any class with its own override keeps it.`;
     }
+    refreshScope(id);
+  });
+}
+
+/** Re-read the scope panel and the tab notes from the store. Called after any
+ * action that can change whether a class owns an override.
+ *
+ * It re-binds ONLY the two buttons it just re-rendered. Calling the full
+ * bindLessonControls here would add a second change listener to every checkbox
+ * that was not replaced, and a support would then toggle twice per click. */
+function refreshScope(id) {
+  const panel = document.getElementById("sup-inherit");
+  if (panel) {
+    panel.innerHTML = renderInheritance(id);
+    bindInheritanceActions(id);
+  }
+  if (!LS) return;
+  const overriding = LS.sectionsOverriding(id);
+  main.querySelectorAll("[data-scope]").forEach((btn) => {
+    const value = btn.getAttribute("data-scope") || "";
+    if (!value) return;
+    const note = btn.querySelector(".sup-scope-tab-note");
+    if (note) note.textContent = overriding.includes(value) ? "own override" : "lesson default";
   });
 }
 

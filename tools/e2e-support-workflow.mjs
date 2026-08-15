@@ -58,9 +58,23 @@ check("preview quotes this lesson's own frame", /trapezoid|Trapecio/i.test(previ
 const targets = await page.locator("#sup-targets").innerText();
 check("preview names the paper surface", /Printable, worksheet/i.test(targets));
 check("preview explains the paper difference", /delivery note/i.test(targets));
+/* The scope has to be in the confirmation, not just in the store. "Applied."
+ * was the old wording, and it is the wording this pass exists to remove: on a
+ * page that can be editing one class or all three, a confirmation that does not
+ * name the scope leaves the teacher to infer which classes just changed. */
+const scopeBefore = await page.locator("#sup-editing-apply").innerText();
+check(
+  "the scope is stated at the Apply button",
+  /Editing:\s*All class sections/i.test(scopeBefore),
+  scopeBefore,
+);
 await page.click("#sup-apply");
 const status = await page.locator("#sup-status").innerText();
-check("apply confirms", /Applied\./.test(status), status);
+check(
+  "apply confirms, and names its scope",
+  /Applied to all class sections\./.test(status),
+  status,
+);
 
 // 3 — whole-group lesson
 await page.goto(`${BASE}/lessons/5-3/`);
@@ -139,6 +153,118 @@ await page.goto(`${BASE}/lessons/5-3/`);
 await page.waitForTimeout(2500);
 const wgAfter = await page.evaluate(() => window.EWLLearningSupports?.lessonSupportStatus());
 check("reset restores the canonical lesson", wgAfter.applied.length === 0);
+
+/* 9 — CLASS SCOPE, in the browser.
+ *
+ * The store's isolation is pinned by tools/lesson-supports.test.mjs. What that
+ * cannot see is the WIRING: a scope tab that switches the label but saves to
+ * the previous scope produces exactly the failure this pass is about — a
+ * teacher believing they changed 602 when they changed all three — and it
+ * passes every unit test, because the unit under test was never called with
+ * the wrong argument. Only clicking through it can tell. */
+await page.goto(`${BASE}/curriculum/student-supports/?lesson=5-3`);
+await page.waitForSelector(".sup-scope-tab");
+await page.evaluate(() => localStorage.removeItem("ewl-lesson-supports:v1"));
+await page.reload();
+await page.waitForSelector(".sup-scope-tab");
+
+const readStore = () =>
+  page.evaluate(() => {
+    try {
+      return JSON.parse(localStorage.getItem("ewl-lesson-supports:v1") || "{}");
+    } catch {
+      return {};
+    }
+  });
+
+// An all-class default.
+await page.locator('[data-scope=""]').click();
+await page.waitForTimeout(300);
+await page.locator("[data-support]").first().check();
+await page.click("#sup-apply");
+await page.waitForTimeout(300);
+const afterDefault = await readStore();
+check(
+  "the all-class default is stored as the lesson default, not as a class",
+  Object.keys(afterDefault.lessons || {}).includes("5-3") &&
+    !Object.keys(afterDefault.sections || {}).length,
+  JSON.stringify(afterDefault.sections || {}),
+);
+
+// A class with no override reads the default and says so.
+await page.locator('[data-scope="602"]').click();
+await page.waitForTimeout(400);
+const inherit602 = await page.locator("#sup-inherit").innerText();
+check(
+  "a class with no override says it is using the lesson default",
+  /Using the lesson default/i.test(inherit602),
+  inherit602,
+);
+check(
+  "a class with no override shows the default it inherits",
+  (await page.locator("[data-support]:checked").count()) === 1,
+);
+
+// Diverging gives that class — and only that class — its own override.
+await page.locator("[data-support]").nth(1).check();
+await page.click("#sup-apply");
+await page.waitForTimeout(400);
+const after602 = await readStore();
+check(
+  "editing a class writes only that class",
+  Object.keys(after602.sections || {}).join(",") === "602",
+  JSON.stringify(Object.keys(after602.sections || {})),
+);
+check(
+  "editing a class leaves the lesson default alone",
+  (after602.lessons?.["5-3"]?.keys || []).length === 1,
+  JSON.stringify(after602.lessons?.["5-3"]?.keys),
+);
+const override602 = await page.locator("#sup-inherit").innerText();
+check(
+  "a class that has diverged is labelled an override",
+  /override/i.test(override602),
+  override602,
+);
+
+// Copy 602 → 603 only.
+await page.locator('[data-copy-to="603"]').check();
+await page.click("#sup-copy-go");
+await page.waitForTimeout(500);
+const afterCopy = await readStore();
+check(
+  "copy reaches only the class that was ticked",
+  Object.keys(afterCopy.sections || {})
+    .sort()
+    .join(",") === "602,603",
+  JSON.stringify(Object.keys(afterCopy.sections || {})),
+);
+check(
+  "copy does not touch the lesson default",
+  (afterCopy.lessons?.["5-3"]?.keys || []).length === 1,
+  JSON.stringify(afterCopy.lessons?.["5-3"]?.keys),
+);
+
+// Clearing the lesson default leaves the class overrides standing.
+await page.locator('[data-scope=""]').click();
+await page.waitForTimeout(400);
+await page.click("#sup-reset");
+await page.waitForTimeout(400);
+const afterClear = await readStore();
+check(
+  "clearing the lesson default does not erase a class override",
+  (afterClear.sections?.["603"]?.["5-3"]?.keys || []).length === 2,
+  JSON.stringify(afterClear.sections?.["603"]?.["5-3"]?.keys),
+);
+const warned = await page.locator("#sup-inherit").innerText();
+check(
+  "the all-class scope warns which classes it will not reach",
+  /has an override|have an override/i.test(warned),
+  warned,
+);
+
+// Leave no state behind for the next run.
+await page.evaluate(() => localStorage.removeItem("ewl-lesson-supports:v1"));
 
 await browser.close();
 const failed = results.filter((r) => !r.skipped && !r.ok);

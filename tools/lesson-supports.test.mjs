@@ -588,6 +588,95 @@ t("the resolver's interface cannot carry student information", () => {
     assert.equal(LS2.copySectionSetup("601", "GR"), false, "a domain is not a copy target");
   });
 
+  /* ------------------------------------------------------------------------
+   * SCOPE, AS THE UI ASKS ABOUT IT.
+   *
+   * The supports surface stopped describing the inheritance model in prose and
+   * started rendering it: a tab per scope, each labelled with whether that
+   * class is reading the lesson default or has its own override, and a copy
+   * control scoped to one lesson. Those three questions are answered by the
+   * store, so they are pinned here rather than in the page.
+   * --------------------------------------------------------------------- */
+  t("the store can say which classes override a lesson, and which follow it", () => {
+    reset();
+    assert.deepEqual(
+      LS2.sectionsOverriding("5-1"),
+      [],
+      "nothing configured, yet a class overrides",
+    );
+    LS2.saveProfile("5-1", ["word-bank"], null, null); // the all-class default
+    assert.deepEqual(
+      LS2.sectionsOverriding("5-1"),
+      [],
+      "the all-class default was reported as a class override",
+    );
+    assert.equal(LS2.hasOwnOverride("5-1", "602"), false);
+
+    LS2.saveProfile("5-1", ["visual-model"], null, "602");
+    assert.deepEqual(LS2.sectionsOverriding("5-1"), ["602"]);
+    assert.equal(LS2.hasOwnOverride("5-1", "602"), true);
+    assert.equal(
+      LS2.hasOwnOverride("5-1", "601"),
+      false,
+      "601 follows the default, it does not own it",
+    );
+    // Per LESSON, not per class: 602 overriding 5-1 says nothing about 5-3.
+    assert.deepEqual(LS2.sectionsOverriding("5-3"), []);
+  });
+
+  t("clearing the lesson default does NOT erase a class override", () => {
+    // The behaviour the surface now states out loud next to the reset button.
+    // If this ever changes, the sentence on the page becomes a lie.
+    reset();
+    LS2.saveProfile("5-1", ["word-bank"], null, null);
+    LS2.saveProfile("5-1", ["visual-model"], null, "603");
+    LS2.resetProfile("5-1", null);
+    assert.deepEqual(LS2.loadProfile("5-1", "601").keys, [], "601 kept a cleared default");
+    assert.deepEqual(
+      LS2.loadProfile("5-1", "603").keys,
+      ["visual-model"],
+      "clearing the lesson default silently erased 603's own override",
+    );
+  });
+
+  t("copying one lesson between classes touches only the destination", () => {
+    reset();
+    LS2.saveProfile("5-1", ["word-bank"], null, null); // default for everyone
+    LS2.saveProfile("5-1", ["visual-model", "step-checklist"], null, "601");
+    LS2.saveProfile("5-3", ["sentence-frames"], null, "601"); // a DIFFERENT lesson
+
+    assert.equal(LS2.copyLessonToSection("5-1", "601", "602"), true);
+    assert.deepEqual(LS2.loadProfile("5-1", "602").keys, ["visual-model", "step-checklist"]);
+    // …and nothing else moved.
+    assert.deepEqual(LS2.loadProfile("5-1", null).keys, ["word-bank"], "the lesson default moved");
+    assert.deepEqual(
+      LS2.loadProfile("5-1", "601").keys,
+      ["visual-model", "step-checklist"],
+      "the source class was mutated",
+    );
+    assert.equal(LS2.hasOwnOverride("5-1", "603"), false, "an unnamed class was given an override");
+    assert.equal(
+      LS2.hasOwnOverride("5-3", "602"),
+      false,
+      "a lesson-scoped copy carried another lesson across",
+    );
+    assert.equal(LS2.copyLessonToSection("5-1", "601", "601"), false, "copying onto itself");
+    assert.equal(LS2.copyLessonToSection("5-1", "601", "GR"), false, "a domain is not a class");
+    assert.equal(LS2.copyLessonToSection("nope", "601", "602"), false, "not a lesson id");
+  });
+
+  t("copying from a class that is only inheriting pins what the teacher saw", () => {
+    // The 602 tab shows the default's ticks. Copying 602 to 603 must produce
+    // that same configuration as 603's own override — not an empty one.
+    reset();
+    LS2.saveProfile("5-1", ["word-bank"], null, null);
+    assert.equal(LS2.hasOwnOverride("5-1", "602"), false);
+    assert.equal(LS2.copyLessonToSection("5-1", "602", "603"), true);
+    assert.deepEqual(LS2.loadProfile("5-1", "603").keys, ["word-bank"]);
+    assert.equal(LS2.hasOwnOverride("5-1", "603"), true, "the copy did not become an override");
+    assert.equal(LS2.hasOwnOverride("5-1", "602"), false, "the source class gained an override");
+  });
+
   t("the store holds no student information, per class or otherwise", () => {
     reset();
     LS2.saveProfile("5-1", ["word-bank"], null, "601");
