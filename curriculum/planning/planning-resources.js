@@ -127,6 +127,20 @@ export function resourcesFor(index, day) {
     }
   }
 
+  /* PLAN → SUPPORT. The planner stays planning-focused: this is a link into
+   * the supports surface with the scheduled lesson already selected, not a
+   * configuration UI embedded in a day card. Only real lessons get it — a
+   * Review or Assessment day has no lesson to configure supports for. */
+  if (entry && entry.kind !== "endOfUnit" && /^\d+-\d+$/.test(entry.id)) {
+    teacher.push(
+      link(
+        "Student supports for this lesson",
+        `/curriculum/student-supports/?lesson=${encodeURIComponent(entry.id)}`,
+        "teacher",
+      ),
+    );
+  }
+
   if (unit) teacher.push(link(`Unit ${unit} hub`, `/curriculum/units/#unit-${unit}`, "teacher"));
   if (entry?.standard) {
     teacher.push(

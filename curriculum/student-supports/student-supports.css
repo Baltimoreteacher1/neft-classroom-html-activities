@@ -228,3 +228,183 @@
   font-size: 0.93rem;
   line-height: 1.55;
 }
+
+/* --- Support configuration (Phase 3: select → preview → apply → teach) ----
+ * Everything below stays scoped under .student-supports-wrap, like the rest of
+ * this file: shared stylesheets on this site have leaked onto lesson pages
+ * before, and the generated validator fails on a bare element selector here. */
+
+.student-supports-wrap .sup-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.student-supports-wrap .sup-presets-label {
+  font-weight: 700;
+  color: var(--muted);
+  margin-right: 0.25rem;
+}
+
+.student-supports-wrap .sup-preset[aria-pressed="true"] {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.student-supports-wrap .sup-category {
+  border: 1px solid #d7e0ee;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.student-supports-wrap .sup-category.is-modification {
+  border-color: #e0b48a;
+  background: #fffaf4;
+}
+
+.student-supports-wrap .sup-category legend {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-weight: 700;
+  padding: 0 0.4rem;
+}
+
+.student-supports-wrap .sup-modification-note {
+  margin: 0.25rem 0 0.75rem;
+  color: #8a5a22;
+  font-size: 0.95rem;
+}
+
+.student-supports-wrap .sup-choices {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.student-supports-wrap .sup-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  /* 44px is the touch-target floor the rest of the site holds to; a support
+   * control that is fiddly on a phone is a support control that goes unused. */
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+
+.student-supports-wrap .sup-choice input {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: none;
+}
+
+.student-supports-wrap .sup-choice-label {
+  font-weight: 600;
+}
+
+.student-supports-wrap .sup-impact {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+
+/* Impact is never signalled by colour alone — each badge carries its own words,
+ * so the distinction survives greyscale, colour blindness and high contrast. */
+.student-supports-wrap .sup-impact.is-access {
+  color: #1c6152;
+}
+
+.student-supports-wrap .sup-impact.is-scaffold {
+  color: #2f5aa8;
+}
+
+.student-supports-wrap .sup-impact.is-modification {
+  color: #93500f;
+}
+
+.student-supports-wrap .sup-not-implemented {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.student-supports-wrap .sup-not-implemented summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.student-supports-wrap .sup-preview-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.student-supports-wrap .sup-preview-item {
+  border-left: 4px solid #cddaeb;
+  padding-left: 0.9rem;
+}
+
+.student-supports-wrap .sup-preview-head {
+  font-weight: 700;
+  margin: 0 0 0.2rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.student-supports-wrap .sup-preview-where,
+.student-supports-wrap .sup-preview-none,
+.student-supports-wrap .sup-preview-guard {
+  margin: 0.15rem 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.student-supports-wrap .sup-preview-adds {
+  margin: 0.35rem 0;
+  padding-left: 1.1rem;
+}
+
+.student-supports-wrap .sup-preview-adds li {
+  margin: 0.2rem 0;
+}
+
+.student-supports-wrap .sup-preview-mod-warning {
+  font-weight: 700;
+  color: #8a5a22;
+}
+
+.student-supports-wrap .sup-preview-unchanged,
+.student-supports-wrap .sup-preview-empty,
+.student-supports-wrap .sup-empty-note {
+  color: var(--muted);
+}
+
+.student-supports-wrap .sup-targets {
+  margin-top: 1rem;
+}
+
+.student-supports-wrap .sup-status {
+  display: inline-block;
+  margin-left: 0.5rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+@media (max-width: 40rem) {
+  .student-supports-wrap .sup-choice {
+    align-items: flex-start;
+  }
+}

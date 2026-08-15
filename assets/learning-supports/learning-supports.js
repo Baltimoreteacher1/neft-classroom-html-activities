@@ -113,6 +113,145 @@
   // State
   let initialized = false;
   let activeLessonId = null;
+  let activeVariant = null; // "group1" | "catchup" | … when this page is a variant
+
+  /* The lesson adaptation layer (shared/supports/lesson-supports.js) is the
+   * source of truth for lesson identity, the teacher's lesson support profile,
+   * and inheritance. It is OPTIONAL by contract: if it did not load, this layer
+   * still resolves a variant to its parent so the dock and the lesson's
+   * vocabulary survive, and simply applies no teacher-selected profile. A
+   * support-system failure must never cost a lesson its content. */
+  function lessonSupports() {
+    return window.EWLLessonSupports || null;
+  }
+
+  /* Lazy-loaded the same way as the schema and the adaptations module, so no
+   * lesson page had to be re-injected to gain the adaptation layer — 288 lesson
+   * shells carry the supports script already, and rewriting all of them to add
+   * a second <script> is the kind of bulk edit that has corrupted lesson HTML in
+   * this repo before. Resolves to null on any failure, and every caller treats
+   * null as "no teacher profile", which renders the canonical lesson. */
+  let lessonSupportsLoading = null;
+  function loadLessonSupports() {
+    if (window.EWLLessonSupports) return Promise.resolve(window.EWLLessonSupports);
+    if (lessonSupportsLoading) return lessonSupportsLoading;
+    lessonSupportsLoading = new Promise((resolve) => {
+      // Bounded, because init() awaits this before rendering anything. A script
+      // tag that neither loads nor errors — a hung request, a document that
+      // does not fetch subresources — would otherwise leave the lesson blank
+      // waiting for an optional enhancement.
+      let settled = false;
+      const done = () => {
+        if (settled) return;
+        settled = true;
+        resolve(window.EWLLessonSupports || null);
+      };
+      const s = document.createElement("script");
+      s.src = "/shared/supports/lesson-supports.js";
+      s.onload = done;
+      s.onerror = done;
+      document.head.appendChild(s);
+      setTimeout(done, 3000);
+    });
+    return lessonSupportsLoading;
+  }
+
+  // Support keys the teacher's LESSON profile contributed, and the ones a
+  // variant already authored so the profile did not re-apply them. Both are
+  // teacher-facing reporting only; neither is shown to students.
+  let appliedLessonSupports = [];
+  let suppressedLessonSupports = [];
+
+  /* Adaptation keys have TWO independent sources — the teacher's lesson profile
+   * and the per-student roster — and EWLSupportsAdaptations.apply() takes the
+   * COMPLETE set each time, turning off anything absent from it. Calling it from
+   * both places with only that source's keys means whichever runs last silently
+   * cancels the other. These two sets are therefore kept apart and unioned at
+   * the single call site below. */
+  let lessonAdaptKeys = [];
+  let rosterAdaptKeys = [];
+
+  function applyAdaptationKeys() {
+    const union = Array.from(new Set(lessonAdaptKeys.concat(rosterAdaptKeys)));
+    if (window.EWLSupportsAdaptations) {
+      window.EWLSupportsAdaptations.apply(union);
+      return;
+    }
+    if (!union.length) return;
+    loadAdaptations().then((mod) => {
+      if (mod) mod.apply(Array.from(new Set(lessonAdaptKeys.concat(rosterAdaptKeys))));
+    });
+  }
+
+  function applyLessonAdaptations(keys) {
+    lessonAdaptKeys = Array.isArray(keys) ? keys.slice() : [];
+    applyAdaptationKeys();
+  }
+
+  /* Teacher-facing summary of the lesson support profile: what is on, what a
+   * variant already carried so it was not doubled, and the two actions a
+   * teacher wants mid-lesson — edit and reset. Built with DOM calls rather than
+   * innerHTML because lesson titles and support labels are content. */
+  function buildLessonSupportSection() {
+    const wrap = document.createElement("div");
+    wrap.className = "ewl-supports-lesson-profile";
+    const h = document.createElement("h3");
+    h.textContent = "This lesson's supports";
+    wrap.appendChild(h);
+
+    const status = document.createElement("p");
+    status.className = "ewl-supports-lesson-profile-status";
+    const mod = lessonSupports();
+    const labels = appliedLessonSupports.map((k) => (mod && mod.byKey[k] ? mod.byKey[k].label : k));
+    status.textContent = labels.length
+      ? `${labels.length} active · ${labels.join(", ")}`
+      : "None selected — this lesson is rendering exactly as written.";
+    wrap.appendChild(status);
+
+    if (suppressedLessonSupports.length) {
+      const dedup = document.createElement("p");
+      dedup.className = "ewl-supports-lesson-profile-dedup";
+      const names = suppressedLessonSupports.map((k) =>
+        mod && mod.byKey[k] ? mod.byKey[k].label : k,
+      );
+      dedup.textContent = `Already written into this version, so not added again: ${names.join(", ")}.`;
+      wrap.appendChild(dedup);
+    }
+
+    const row = document.createElement("p");
+    row.className = "ewl-supports-lesson-profile-actions";
+    const parent = activeLessonId ? parentLessonIdOf(activeLessonId) || activeLessonId : "";
+    const edit = document.createElement("a");
+    edit.className = "ewl-supports-preset-chip";
+    edit.href = `/curriculum/student-supports/?lesson=${encodeURIComponent(parent)}`;
+    edit.textContent = "Edit supports for this lesson";
+    row.appendChild(edit);
+
+    if (labels.length && mod) {
+      const reset = document.createElement("button");
+      reset.type = "button";
+      reset.className = "ewl-supports-preset-chip";
+      reset.textContent = "Reset to original";
+      reset.addEventListener("click", () => {
+        // Drops THIS lesson's delta and nothing else, then reloads so the
+        // canonical lesson renders from the canonical path rather than from a
+        // partially unwound DOM.
+        mod.resetProfile(activeLessonId);
+        if (activeVariant) mod.resetProfile(parent);
+        location.reload();
+      });
+      row.appendChild(reset);
+    }
+    wrap.appendChild(row);
+    return wrap;
+  }
+
+  function parentLessonIdOf(id) {
+    const mod = lessonSupports();
+    if (mod) return mod.parentLessonId(id);
+    const m = /^(\d+-\d+)-(?:group\d+|catchup|flagship)$/.exec(String(id || ""));
+    return m ? m[1] : null;
+  }
   let manifestData = null;
   let fullManifestData = null; // whole manifest — titles for assigned-lesson lists
   let activeProfiles = {};
@@ -301,8 +440,25 @@
     return ALL_SUPPORT_KEYS.filter((k) => settings[k]).join(",");
   }
 
-  // Idempotent initialization
-  async function init() {
+  /* Idempotent initialization.
+   *
+   * The PROMISE is what is cached, not just a boolean. init() now awaits the
+   * lesson adaptation layer before rendering, so a second caller arriving while
+   * the first is still awaiting must wait for the SAME work to finish rather
+   * than return early — a boolean guard let the auto-boot claim "initialized"
+   * mid-await and an explicit init() call return before anything had rendered.
+   */
+  let initPromise = null;
+  function init() {
+    if (initPromise) return initPromise;
+    initPromise = initOnce().catch((e) => {
+      // A failure here must leave the canonical lesson alone, not propagate.
+      console.warn("Learning supports: initialization failed.", e);
+    });
+    return initPromise;
+  }
+
+  async function initOnce() {
     if (initialized) return;
 
     const htmlEl = document.documentElement;
@@ -329,7 +485,24 @@
       return;
     }
     fullManifestData = data; // kept for "My Lessons" titles (assigned lessons)
+
+    // SMALL-GROUP INHERITANCE. The manifest is keyed by the 84 CANONICAL lesson
+    // ids; the 204 generated variants (`5-3-group1`, `5-3-catchup`, …) have no
+    // entry of their own and never will, because their vocabulary, frames and
+    // worked example are the parent lesson's. Before this fallback existed the
+    // lookup missed, `init()` returned, and the entire supports layer — dock,
+    // vocabulary, frames, read-aloud — was dark on every generated small-group
+    // and catch-up lesson. The bail-out logged a warning to a console nobody was
+    // reading during instruction, which is why it went unnoticed.
+    activeVariant = null;
     manifestData = data[activeLessonId];
+    if (!manifestData) {
+      const parentId = parentLessonIdOf(activeLessonId);
+      if (parentId && data[parentId]) {
+        manifestData = data[parentId];
+        activeVariant = activeLessonId.slice(parentId.length + 1);
+      }
+    }
     if (!manifestData) {
       console.warn(`Learning supports: No manifest data for lesson ${activeLessonId}. Skipping.`);
       return;
@@ -402,6 +575,38 @@
           activeQuickSetup = stored.quickSetup;
         }
       }
+    }
+
+    // TEACHER'S LESSON SUPPORT PROFILE (Phase 3).
+    //
+    // Resolved from the lesson adaptation layer: the parent lesson's selection,
+    // minus anything this variant already authors for itself, plus a
+    // variant-specific override if the teacher made one. Applied as a UNION over
+    // whatever is already on, for two reasons: these supports are additive
+    // access, and a student who turned on read-aloud for themselves must not
+    // lose it because a teacher configured a different support for the lesson.
+    //
+    // The whole block is guarded — the lesson renders with or without it.
+    appliedLessonSupports = [];
+    try {
+      const mod = await loadLessonSupports();
+      if (mod) {
+        const resolved = mod.resolveForLesson(activeLessonId, mod.readStore(), manifestData);
+        if (resolved.keys.length) {
+          const caps = mod.resolveCapabilities(resolved.keys);
+          caps.profiles.concat(caps.tools).forEach((k) => {
+            if (ALL_SUPPORT_KEYS.includes(k)) activeProfiles[k] = true;
+          });
+          appliedLessonSupports = resolved.keys.slice();
+          suppressedLessonSupports = resolved.suppressed.slice();
+          // Behaviour adaptations (chunking, workload) are owned by
+          // supports-adaptations.js, which is idempotent and reversible; it is
+          // loaded on demand by the same path bootSupportsV2 uses.
+          if (caps.adapt.length) applyLessonAdaptations(caps.adapt);
+        }
+      }
+    } catch (e) {
+      console.warn("Learning supports: lesson profile unavailable; rendering canonical lesson.", e);
     }
 
     // Render components
@@ -551,6 +756,13 @@
     explainer.textContent =
       "Assign IEP accommodations and WIDA/ESOL supports to individual students. Assignments follow each student into every lesson automatically.";
     dialogBody.appendChild(explainer);
+
+    // THIS LESSON'S SUPPORTS (Phase 3). A restrained status block, not a second
+    // configuration surface: the selection is made once on Student Supports and
+    // this reports what it did here. It lives inside the teacher dialog, which
+    // is already teacher-gated, so a student never sees it — and the supports
+    // themselves stay applied whether or not this panel is ever opened.
+    dialogBody.appendChild(buildLessonSupportSection());
 
     // v2 per-student assignment surface — built lazily on open (ensureAssignmentUI).
     const assignRoot = document.createElement("div");
@@ -2855,6 +3067,7 @@
     dialogTrigger = null;
 
     initialized = false;
+    initPromise = null;
     manifestData = null;
     fullManifestData = null;
     activeLessonId = null;
@@ -3010,8 +3223,9 @@
   // assignment also clears its adaptations). Fail-soft: no module, no change.
   function v2ApplyAdaptations(set) {
     const keys = Object.keys(set).filter((k) => set[k]);
+    rosterAdaptKeys = keys;
     if (window.EWLSupportsAdaptations) {
-      window.EWLSupportsAdaptations.apply(keys);
+      applyAdaptationKeys();
       return;
     }
     const schema = window.EWLSupportsSchema;
@@ -3030,10 +3244,8 @@
           NUDGE_KEYS[it.key] ||
           (it.apply === "interactive" && ADAPT_TOOLS[it.tool])),
     );
-    if (!needed) return;
-    loadAdaptations().then((mod) => {
-      if (mod) mod.apply(keys);
-    });
+    if (!needed && !lessonAdaptKeys.length) return;
+    applyAdaptationKeys();
   }
 
   function v2TeacherKey() {
@@ -4397,6 +4609,16 @@
     serializeSettings,
     applyAssignedItems,
     enhanceObjectiveVisuals,
+    /* Teacher-facing status for the in-lesson "Supports" control. Reports what
+     * the LESSON profile contributed — never the per-student roster, which is a
+     * different system with a different privacy posture. */
+    lessonSupportStatus: () => ({
+      lessonId: activeLessonId,
+      variant: activeVariant,
+      parentLessonId: activeLessonId ? parentLessonIdOf(activeLessonId) : null,
+      applied: appliedLessonSupports.slice(),
+      suppressed: suppressedLessonSupports.slice(),
+    }),
   };
 
   window.EWLLearningSupports = EWLLearningSupports;

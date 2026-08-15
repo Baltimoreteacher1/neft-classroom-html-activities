@@ -95,6 +95,23 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // The lesson ADAPTATION layer: the shared catalogue, the in-lesson layer that
+  // consumes it, the manifest generator that supplies variant/intrinsic data,
+  // and the teacher surface that writes the profile. `validate:lesson-supports`
+  // is the only check that can see the failure that matters here — a support
+  // naming a capability the engine does not implement, which lints clean, types
+  // clean, renders a correct-looking toggle, and does nothing.
+  [
+    /^(shared\/supports\/.*|assets\/learning-supports\/(learning-supports|supports-schema|supports-adaptations)\.js|curriculum\/student-supports\/.*|scripts\/generate-learning-supports-manifest\.mjs|tools\/(validate-lesson-supports|validate-learning-supports|validate-student-supports|lesson-supports\.test|learning-supports\.test)\.mjs|data\/lesson-support-overrides\.json)$/,
+    [
+      "test",
+      "validate:lesson-supports",
+      "validate:supports",
+      "validate:student-supports",
+      "validate:js-syntax",
+      "typecheck",
+    ],
+  ],
   // The SCORM pipeline: the SCO builder, the ZIP writer, the two endpoints, the
   // CLI builders and the lesson-side bridge. `validate:scorm` greps the source
   // for the hardening guards, `validate:scorm:fleet` opens every generated

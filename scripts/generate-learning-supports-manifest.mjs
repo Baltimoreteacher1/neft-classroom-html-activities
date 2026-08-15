@@ -35,7 +35,68 @@ function cleanText(str, maxLength = 1000) {
   return cleaned;
 }
 
-function processLesson(lessonId) {
+/* ---------------------------------------------------------------------------
+ * VARIANTS — the small-group / catch-up lessons that inherit from this one.
+ *
+ * Two jobs. First, it is how the in-lesson supports layer learns that
+ * `5-3-group1` should read `5-3`'s vocabulary and frames: without this the
+ * layer found no manifest entry for the variant id and bailed out entirely, so
+ * every generated small-group lesson shipped with the whole supports dock dark.
+ *
+ * Second, `intrinsic` is the DEDUPLICATION signal. A small-group lesson that
+ * already authored its own sentence frame does not want a second, more generic
+ * one stacked on top of it — "sentence frames on" means "ensure sentence
+ * support exists", not "append another". Detection is over the variant's OWN
+ * config, so a variant that loses its authored frame stops being credited with
+ * one on the next regeneration.
+ * ------------------------------------------------------------------------ */
+function deepHas(node, key, depth = 0) {
+  if (!node || typeof node !== "object" || depth > 8) return false;
+  if (!Array.isArray(node) && Object.prototype.hasOwnProperty.call(node, key)) {
+    const v = node[key];
+    if (typeof v === "string" ? v.trim() : Array.isArray(v) ? v.length : v != null) return true;
+  }
+  for (const v of Array.isArray(node) ? node : Object.values(node)) {
+    if (deepHas(v, key, depth + 1)) return true;
+  }
+  return false;
+}
+
+function intrinsicSupportsFor(config) {
+  const intrinsic = [];
+  if (deepHas(config, "sentenceFrame") || deepHas(config, "sentenceFrames")) {
+    intrinsic.push("sentence-frames");
+  }
+  if (deepHas(config, "wordBank")) intrinsic.push("word-bank");
+  if (deepHas(config, "workedExample")) intrinsic.push("worked-example");
+  return intrinsic;
+}
+
+function variantsFor(lessonId, lessonDirs) {
+  const prefix = `${lessonId}-`;
+  const out = {};
+  for (const dir of lessonDirs) {
+    if (!dir.startsWith(prefix)) continue;
+    const suffix = dir.slice(prefix.length);
+    if (!/^(group\d+|catchup|flagship)$/.test(suffix)) continue;
+    const configPath = join(LESSONS_DIR, dir, "config.json");
+    if (!existsSync(configPath)) continue;
+    let config;
+    try {
+      config = JSON.parse(readFileSync(configPath, "utf8"));
+    } catch {
+      continue; // a variant with an unreadable config simply inherits everything
+    }
+    out[suffix] = {
+      id: dir,
+      title: cleanText(config.title),
+      intrinsic: intrinsicSupportsFor(config),
+    };
+  }
+  return out;
+}
+
+function processLesson(lessonId, lessonDirs) {
   const configPath = join(LESSONS_DIR, lessonId, "config.json");
   if (!existsSync(configPath)) {
     throw new Error(`Missing config.json for lesson ${lessonId}`);
@@ -133,15 +194,19 @@ function processLesson(lessonId) {
     wordBank,
     readinessHref,
     profiles,
+    variants: variantsFor(lessonId, lessonDirs),
   };
 }
 
 function main() {
   console.log("Generating learning supports manifest...");
 
-  const canonicalLessonIds = readdirSync(LESSONS_DIR, { withFileTypes: true })
-    .filter((d) => d.isDirectory() && /^\d+-\d+$/.test(d.name))
-    .map((d) => d.name)
+  const lessonDirs = readdirSync(LESSONS_DIR, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name);
+
+  const canonicalLessonIds = lessonDirs
+    .filter((name) => /^\d+-\d+$/.test(name))
     .sort((a, b) => {
       const [au, al] = a.split("-").map(Number);
       const [bu, bl] = b.split("-").map(Number);
@@ -155,7 +220,7 @@ function main() {
 
   const manifest = {};
   for (const lessonId of canonicalLessonIds) {
-    manifest[lessonId] = processLesson(lessonId);
+    manifest[lessonId] = processLesson(lessonId, lessonDirs);
   }
 
   if (!existsSync(OUT_DIR)) {
@@ -163,7 +228,10 @@ function main() {
   }
 
   writeFileSync(OUT_PATH, JSON.stringify(manifest, null, 2), "utf8");
-  console.log(`Generated manifest at ${OUT_PATH} containing 64 lessons.`);
+  console.log(
+    `Generated manifest at ${OUT_PATH}: ${canonicalLessonIds.length} lessons, ` +
+      `${Object.values(manifest).reduce((n, e) => n + Object.keys(e.variants).length, 0)} variants.`,
+  );
 }
 
 main();

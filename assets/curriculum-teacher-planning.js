@@ -493,7 +493,7 @@
       '<div class="tws-card">' +
       '<p class="tws-kicker">Support students</p>' +
       "<h2>Student Supports &amp; Accommodations</h2>" +
-      '<p class="tws-sub">Language frames and vocabulary for multilingual students, accommodations that keep the objective, and scaffolded small-group pathways.</p>' +
+      '<p class="tws-sub">Choose the supports a lesson needs, see exactly what they change, and apply them — the interactive lesson and its small-group versions open with them already in place.</p>' +
       '<p class="tws-actions"><a class="tws-btn" href="/curriculum/student-supports/">Open supports</a></p>' +
       "</div>" +
       "</div>" +
