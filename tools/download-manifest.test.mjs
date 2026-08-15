@@ -133,14 +133,36 @@ test("the SCORM preset selects nothing but SCORM", () => {
 
 /* ---------------------------------------------------------- determinism */
 
-test("the generator is deterministic", () => {
-  const before = readFileSync(resolve(ROOT, "data/curriculum-download-manifest.json"), "utf8");
-  execFileSync(process.execPath, ["scripts/generate-download-manifest.mjs"], {
-    cwd: ROOT,
-    stdio: "pipe",
-  });
-  const after = readFileSync(resolve(ROOT, "data/curriculum-download-manifest.json"), "utf8");
-  assert.equal(after, before, "re-running the generator changed the committed manifest");
+/* The committed manifest still matches what the generator would produce.
+ *
+ * `--stdout`, NOT a re-run that overwrites the file. This test used to invoke
+ * the generator normally and compare the file to itself afterwards, which made
+ * it a ratchet that repaired the thing it measured: the first run failed and
+ * left the fresh manifest on disk, so every run after it passed regardless.
+ * That is how a stale manifest reaches main — someone sees one red run, runs
+ * the suite again, and it is green.
+ *
+ * It also made `npm test` a WRITER. scripts/qa-run.mjs states that the gate is
+ * "read-only apart from build" and schedules its members concurrently, so this
+ * test was rewriting data/curriculum-download-manifest.json while
+ * validate:downloads was reading it.
+ *
+ * The failure it caught for real: regenerating the print packets changed 372
+ * recorded file sizes (84 notes + 84 handouts + 204 worksheets), because the
+ * manifest stores `bytes` per file. That was a true staleness report, not a
+ * flake. */
+test("the committed manifest is what the generator would write", () => {
+  const committed = readFileSync(resolve(ROOT, "data/curriculum-download-manifest.json"), "utf8");
+  const fresh = execFileSync(
+    process.execPath,
+    ["scripts/generate-download-manifest.mjs", "--stdout"],
+    { cwd: ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
+  );
+  assert.equal(
+    fresh,
+    committed,
+    "data/curriculum-download-manifest.json is stale — run `npm run generate-download-manifest`",
+  );
 });
 
 if (failures) {

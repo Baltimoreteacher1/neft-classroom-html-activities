@@ -95,6 +95,15 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // The small-group visual shell. Styled centrally for all 204 variants, so a
+  // token change here is a change to every one of them. The browser sweep that
+  // proves it (`sweep:small-group`) needs a preview server and is not in the
+  // gate; what IS checkable without one is that the sheets still parse and the
+  // shell's own tests still hold.
+  [
+    /^(assets\/small-group-[a-z]+\.css|engine\/core\/small-group-ui\.js|tools\/sweep-small-group-shell\.mjs)$/,
+    ["test", "validate:js-syntax", "validate:small-groups", "eval:small-groups", "check"],
+  ],
   // The lesson ADAPTATION layer: the shared catalogue, the in-lesson layer that
   // consumes it, the manifest generator that supplies variant/intrinsic data,
   // and the teacher surface that writes the profile. `validate:lesson-supports`

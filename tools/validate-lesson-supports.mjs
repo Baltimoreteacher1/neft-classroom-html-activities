@@ -376,9 +376,21 @@ function main() {
     for (const e of errors) console.error(`  - ${e}`);
     process.exit(1);
   }
+  /* Surfaced on every build rather than gated. An unresolved decision is a
+   * legitimate state — the alternative to flagging one is guessing — but it
+   * should never be able to sit unnoticed for a term. */
+  const awaiting = (review.reviews || []).filter((r) => r.status === "teacher-review");
+  if (awaiting.length) {
+    console.log(
+      `  ${awaiting.length} instructional decision(s) awaiting teacher review: ` +
+        awaiting.map((r) => `${r.lessonId}/${r.support}`).join(", ") +
+        " — /teacher-tools/support-audit/?decision=teacher-review",
+    );
+  }
   console.log(
     `PASS validate:lesson-supports — ${LS.CATALOG.length} supports, ${LS.PRESETS.length} presets, ` +
-      `${lessonIds.length} lessons, ${variantCount} variants, ${LS.NOT_IMPLEMENTED.length} documented non-capabilities.`,
+      `${lessonIds.length} lessons, ${variantCount} variants, ${LS.NOT_IMPLEMENTED.length} documented non-capabilities, ` +
+      `${(review.reviews || []).length} reviewed decisions (${awaiting.length} awaiting review).`,
   );
 }
 

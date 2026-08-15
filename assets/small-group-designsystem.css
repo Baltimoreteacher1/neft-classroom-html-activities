@@ -228,7 +228,7 @@
   border: 1px solid var(--sg-line);
   border-radius: var(--sg-radius);
   background: color-mix(in srgb, var(--sg-card) 94%, var(--sg-paper));
-  box-shadow: 0 10px 28px -15px rgba(17, 34, 56, 0.34);
+  box-shadow: var(--sg-shadow);
 }
 
 .sg-step {
@@ -236,7 +236,7 @@
 }
 
 .sg-step[aria-selected="true"] {
-  box-shadow: 0 8px 18px -9px color-mix(in srgb, var(--sg) 85%, transparent);
+  box-shadow: none;
 }
 
 /* ---------------------------------------------------------------------------
@@ -293,10 +293,7 @@
 
 .sg-stage.done {
   border-color: color-mix(in srgb, var(--sg-good) 45%, var(--sg-line));
-  background: linear-gradient(
-    var(--sg-card),
-    color-mix(in srgb, var(--sg-good-bg) 55%, var(--sg-card))
-  );
+  background: color-mix(in srgb, var(--sg-good-bg) 40%, var(--sg-card));
 }
 
 .sg-donechip {
@@ -333,11 +330,7 @@
   min-height: 150px;
   margin: -5px -5px 17px;
   border-radius: var(--sg-radius-sm);
-  background: linear-gradient(
-    160deg,
-    var(--sg-soft),
-    color-mix(in srgb, var(--sg-soft) 55%, var(--sg-card))
-  );
+  background: color-mix(in srgb, var(--sg-soft) 70%, var(--sg-card));
 }
 
 .sg-vterm {
@@ -386,12 +379,7 @@
 .sg-match,
 .sg-cloze {
   border-left-width: 6px;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--sg-soft) 78%, var(--sg-card)),
-    var(--sg-card)
-  );
-  box-shadow: var(--sg-shadow-sm);
+  background: color-mix(in srgb, var(--sg-soft) 45%, var(--sg-card));
 }
 
 .sg-cloze-sentence {
@@ -421,7 +409,7 @@
 
 .choice:hover:not(:disabled) {
   transform: translateX(2px);
-  box-shadow: 0 6px 16px -9px color-mix(in srgb, var(--sg) 80%, transparent);
+  box-shadow: none;
 }
 
 .choice .k {
@@ -597,14 +585,14 @@
   border-radius: var(--sg-radius-sm);
   background: var(--sg-good);
   font-size: 17.5px;
-  box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--sg-good) 80%, transparent);
+  box-shadow: none;
 }
 
 .sg-next-btn:hover:not(:disabled) {
   transform: translateY(-1px);
   border-color: #0a5b57;
   background: #0a5b57;
-  box-shadow: 0 10px 22px -8px color-mix(in srgb, var(--sg-good) 85%, transparent);
+  box-shadow: none;
 }
 
 .sg-foot {
@@ -624,7 +612,7 @@
   border-style: solid;
   border-color: color-mix(in srgb, var(--sg-good) 40%, var(--sg-line));
   border-radius: var(--sg-radius-lg);
-  background: linear-gradient(150deg, var(--sg-good-bg), var(--sg-card));
+  background: color-mix(in srgb, var(--sg-good-bg) 55%, var(--sg-card));
   font-size: 17px;
   line-height: 1.5;
 }
@@ -870,8 +858,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-<<<<<<< HEAD
-   14 · STRATEGY CHOICE CHIPS (BCPS Level 4 T2)
+   12 · STRATEGY CHOICE CHIPS (BCPS Level 4 T2)
    --------------------------------------------------------------------------- */
 
 .sg-strategy-bar {
@@ -918,12 +905,11 @@
   background: var(--sg-palette-deep, #12355b);
   color: #ffffff;
   border-color: var(--sg-palette-deep, #12355b);
-  box-shadow: 0 2px 6px rgba(18, 53, 91, 0.2);
+  box-shadow: var(--sg-shadow);
 }
 
-||||||| 540ecb4e3
-=======
-   14 · DESIGN REVIEW PASS (2026-08-04)
+/* ---------------------------------------------------------------------------
+   13 · DESIGN REVIEW PASS (2026-08-04)
 
    Findings from a page-level design review of the small-group shell. Every rule
    here is structure-guarded: it styles a class the renderer only emits when the
@@ -1041,11 +1027,7 @@
    lesson that authored a cloze has one. */
 .sg-cloze {
   border-left-color: var(--sg-pop);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--sg-pop) 10%, var(--sg-card)),
-    var(--sg-card)
-  );
+  background: color-mix(in srgb, var(--sg-pop) 7%, var(--sg-card));
 }
 
 .sg-cloze-blank {
@@ -1053,16 +1035,20 @@
 }
 
 /* ---------------------------------------------------------------------------
-   15 · GOOGLE PUBLISHER-GRADE STYLING OVERHAUL (2026-08-11)
+   15 · TYPOGRAPHY + INTERACTION DETAIL (2026-08-11, elevation removed 2026-08-15)
 
-   Refines the visual hierarchy, elevation, micro-interactions, glassmorphism,
-   and crisp typography of Small-Group Studio lessons to Google level standards.
+   This section arrived as an "elevation, micro-interaction and glassmorphism"
+   pass. The typography and the focus treatment in it are good and are kept.
+   The ELEVATION is not: it put a 32px drop shadow under the masthead, a 28px
+   one under every card on hover, and a translateY lift on cards, tabs and
+   buttons — which is most of what made a screen of mathematics read as a
+   dashboard, and which moves the page under a student's finger on a
+   touchscreen. Hover is now carried by the border, focus by the ring.
    --------------------------------------------------------------------------- */
 
 .sg-hero {
   border-radius: var(--sg-radius, 16px);
-  box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.12), 0 0 0 1px color-mix(in srgb, var(--sg-line) 90%, var(--sg-ink));
-  transition: box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: none;
 }
 
 .sg-vcard,
@@ -1078,8 +1064,7 @@
 .sg-vcard:hover,
 .prob:hover,
 .sg-stage:hover:not(.locked) {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px -10px rgba(15, 23, 42, 0.15), 0 0 0 1px color-mix(in srgb, var(--sg-pop) 35%, var(--sg-line));
+  border-color: color-mix(in srgb, var(--sg-pop) 45%, var(--sg-line));
 }
 
 .sg-step {
@@ -1089,7 +1074,6 @@
 
 .sg-step:hover:not([aria-selected="true"]) {
   background: color-mix(in srgb, var(--sg-pop) 12%, var(--sg-card));
-  transform: translateY(-1px);
 }
 
 .sg-step-input,
@@ -1106,7 +1090,7 @@
 .stepfill:focus {
   outline: none;
   border-color: var(--sg-pop);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sg-pop) 25%, transparent), 0 2px 8px -2px rgba(15, 23, 42, 0.1);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sg-pop) 25%, transparent);
   background: var(--sg-card);
 }
 
@@ -1257,4 +1241,178 @@
 :root[data-theme="dark"] .sg-panel .ntgd-stem,
 :root[data-theme="dark"] .sg-panel .ntgd-frame {
   background: var(--sg-soft, #1d2a36);
+}
+
+/* ---------------------------------------------------------------------------
+   14 · QUIET CANVAS (2026-08-15)
+
+   The small-group shell read as a colourful dashboard rather than a place to
+   do mathematics. Measured on three lessons at 1366x768 — the laptop these
+   students actually use — the masthead ran 581-615px, so the first
+   mathematical task was at or below the fold before a student had done
+   anything; the page carried 195-305 shadowed elements, 48-100 gradient
+   fills, and 19-22 distinct corner radii.
+
+   The base sheet now handles the ground, the shadow scale and the radius
+   scale. What is left here is DENSITY: the masthead was not only decorated,
+   it was a container of cards. Sub-panels inside a header are the clearest
+   case of "card soup" on the page, because none of them is content — they are
+   a room code, a tool shelf and a scene label wrapped in the same chrome as
+   the lesson itself.
+
+   Nothing is removed. Every control keeps its function; it stops keeping its
+   own card.
+   --------------------------------------------------------------------------- */
+
+/* The theme mark is identity, not furniture: smaller, flat, no lift. */
+.sg-hero-mark {
+  width: 92px;
+  height: 92px;
+  border-radius: var(--sg-radius);
+  box-shadow: none;
+  font-size: 40px;
+}
+
+/* Encouragement copy is worth keeping and not worth a line of its own at
+   reading size — it is read once, on the first visit. */
+.sg-tagline {
+  margin-top: 6px;
+  font-size: 14.5px;
+}
+
+.sg-chips {
+  margin-top: 12px;
+  gap: 6px;
+}
+
+.sg-hero-scene-chip {
+  margin-top: 0;
+}
+
+/* The room code and the tool shelf are ACTIONS. They sit on the masthead's own
+   surface with a hairline above them instead of each floating in its own
+   bordered, tinted, rounded panel. */
+.sg-room-chip,
+.sg-hero > .nt-toolpoint {
+  min-height: 0;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 1px solid var(--sg-line);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+/* Instructional, so it stays — as a note in the margin, not a filled card. */
+.sg-math-move {
+  border: 0;
+  border-left: 3px solid var(--sg-pop);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  padding: 2px 0 2px 14px;
+}
+
+/* ---------------------------------------------------------------------------
+   15 · THE MATHEMATICS IS THE LOUDEST THING ON THE PAGE
+
+   With the chrome quietened, the figure surface is what should now read as
+   distinct. It is the only surface that keeps a visible lift, because it is
+   the one a student is meant to look at and manipulate.
+   --------------------------------------------------------------------------- */
+.sg-problem-visual,
+.sg-figure,
+.sg-model,
+.sg-lab-stage,
+.sg-step-visual {
+  border: 1px solid color-mix(in srgb, var(--sg) 22%, var(--sg-line));
+  border-radius: var(--sg-radius);
+  background: var(--sg-figure);
+  box-shadow: var(--sg-shadow-sm);
+}
+
+/* ---------------------------------------------------------------------------
+   16 · STRATEGY CHOICE — a strategy selector, not novelty buttons
+
+   Write / Draw / Build / Explain keep their emoji (they are how students name
+   the modes aloud) and gain the restraint of everything around them: one
+   surface, a hairline, an unmistakable selected state that is not carried by
+   colour alone.
+   --------------------------------------------------------------------------- */
+.sg-strategy-bar {
+  gap: 8px;
+  border-radius: var(--sg-radius-sm);
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--sg-line);
+  border-bottom: 1px solid var(--sg-line);
+  padding: 8px 0;
+}
+
+.sg-strat-btn {
+  /* 44px, because a strategy is chosen with a thumb as often as a mouse.
+     Section 12 sized these at 4px/0.82rem, which is a chip, not a control. */
+  min-height: 44px;
+  padding: 6px 14px;
+  font-size: 0.95rem;
+  border-radius: var(--sg-radius-sm);
+  border-color: var(--sg-line);
+  box-shadow: none;
+}
+
+.sg-strat-btn:hover {
+  /* No lift. Every other control on the page stopped moving on hover. */
+  transform: none;
+  background: color-mix(in srgb, var(--sg-soft) 60%, var(--sg-card));
+  border-color: var(--sg);
+}
+
+.sg-strat-btn.active {
+  /* State is carried by fill, weight AND an inset rule, so it survives
+     greyscale, high contrast and colour-vision differences. */
+  border-color: var(--sg-palette-deep, #12355b);
+  box-shadow: inset 0 -3px 0 var(--sg-pop);
+  font-weight: 800;
+}
+
+/* ---------------------------------------------------------------------------
+   17 · NESTING
+
+   Surfaces nest up to four deep here — a panel inside a stage inside a card
+   inside the page — which is structural and belongs to the renderer, not to
+   this sheet. What this sheet can stop is each of those levels REPEATING the
+   same chrome: at depth three, a border plus a radius plus a fill is no longer
+   telling a student anything they did not already know from the level above.
+
+   The rule is one step of chrome per level of meaning: the card is a sheet,
+   the stage is a task, and everything inside those is content.
+   --------------------------------------------------------------------------- */
+.sg-panel .sg-stage .sg-callout,
+.sg-panel .sg-stage .sg-note,
+.sg-panel .sg-stage .sg-hintbox,
+.sg-stage .sg-tbody > .sg-card,
+.sg-panel .sg-panel {
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------------------
+   18 · TOUCH TARGETS IN THE MASTHEAD ACTION ROW
+
+   Section 14 took the card chrome off the room code and the tool shelf. The
+   controls inside them were already below the 44px floor this repo holds to —
+   37px and below — which was easier to miss while they sat inside their own
+   padded panels. Now that the row is bare, they are sized properly.
+
+   The vocabulary speaker buttons are deliberately NOT in this list: they paint
+   at 34px so they fit inside a line of running text, and section 13 restores a
+   44px hit area with a pseudo-element. Painted size and target size are
+   different things.
+   --------------------------------------------------------------------------- */
+.sg-room-btn,
+.sg-room-code,
+.sg-hero .nt-toolchip,
+.sg-hero .nt-conversion-chip {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }

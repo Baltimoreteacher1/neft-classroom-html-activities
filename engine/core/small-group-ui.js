@@ -485,7 +485,7 @@ export function injectSmallGroupStyles(accent) {
        — so a callout inside a card inside the page read as one flat surface and
        the studio looked unfinished no matter how good the type was. Keep the
        steps visible. */
-    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#d8dfe6;--sg-paper:#fdfaf3;--sg-card:#fff;--sg-text:#1d2a36;--sg-muted:#5a6b7c;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e0f3ef;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fcede7;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fffdf8;--sg-fill:#e8eff6;
+    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#dde3ea;--sg-paper:#eef1f5;--sg-card:#fff;--sg-text:#1d2a36;--sg-muted:#5a6b7c;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e4f3f0;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fceee9;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fff;--sg-fill:#eaeff5;
       /* Type pairing. Outfit (the site display face, already loaded by the
          lesson shell) for anything that acts as a heading or a label; Atkinson
          Hyperlegible — chosen for these pathways because it is the most legible
@@ -496,36 +496,35 @@ export function injectSmallGroupStyles(accent) {
       --sg-display:"Outfit","Atkinson Hyperlegible",system-ui,sans-serif;
       --sg-body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
       --sg-mono:"Outfit",ui-monospace,SFMono-Regular,Menlo,monospace;
-      --sg-shadow-sm:0 1px 2px rgba(17,34,56,.06),0 4px 12px -5px rgba(17,34,56,.15);
-      --sg-shadow:0 1px 2px rgba(17,34,56,.06),0 14px 32px -16px rgba(17,34,56,.3);
-      --sg-shadow-lg:0 2px 5px rgba(17,34,56,.07),0 26px 56px -26px rgba(17,34,56,.38);
-      --sg-radius:14px;--sg-radius-lg:20px;--sg-radius-sm:10px}
+      /* SEPARATION COMES FROM THE CANVAS, NOT FROM SHADOWS.
+         A white sheet on a neutral ground is already legible as a sheet, so
+         the shadows here are hairlines rather than lift. The page previously
+         carried 195-305 shadowed elements; at that density a drop shadow is
+         not depth, it is grain, and it makes a screen of mathematics look
+         like a dashboard. --sg-shadow-lg is kept as a token because floating
+         chrome (docks, popovers, the tool drawer) genuinely floats. */
+      --sg-shadow-sm:0 1px 1px rgba(17,34,56,.04);
+      --sg-shadow:0 1px 2px rgba(17,34,56,.05);
+      --sg-shadow-lg:0 6px 18px -10px rgba(17,34,56,.28);
+      /* Three steps, used everywhere. The sheet used to compute 19-22 distinct
+         radii from hardcoded pixel values, which is why no two panels agreed. */
+      --sg-radius:12px;--sg-radius-lg:16px;--sg-radius-sm:8px}
     /* Neutralize any global dark theme applied to the shell so the sg tokens
        above always win — light mode only. */
     :root[data-theme="dark"]{color-scheme:light}
     *{box-sizing:border-box}
     html{scroll-behavior:smooth;background:var(--sg-paper)}
-    /* The ground uses a restrained 40px math rule and two document-anchored
-       washes. It keeps the studio identity without competing with lesson text.
-       Not background-attachment:fixed. A fixed layer repaints on every scroll
-       frame — measurable jank on a classroom Chromebook — and at these
-       document lengths it also left whole screens unpainted mid-scroll.
-       Anchoring to the document costs nothing and paints reliably. */
-    /* Warm paper, and nothing tiled behind the words.
-       This used to lay a 40px graph-paper grid across the entire document —
-       two repeating 1px gradients — under every paragraph, worked example and
-       vocabulary card. A ruled texture reads as "math notebook" in a mockup and
-       as visual noise on a Chromebook an hour into a rotation, because the
-       lines never stop and they sit directly beneath the text the student is
-       trying to track. The two soft washes stay: they are large, static, and
-       nowhere near reading size. */
-    body{margin:0;color:var(--sg-text);font-family:var(--sg-body);font-size:17px;line-height:1.62;background-color:var(--sg-paper);background-image:
-      radial-gradient(120% 90% at 88% 0%,color-mix(in srgb,var(--sg-pop) 9%,transparent),transparent 72%),
-      radial-gradient(95% 78% at 4% 100%,rgba(18,53,91,.045),transparent 74%);
-      background-position:top right,bottom left;
-      background-repeat:no-repeat,no-repeat;
-      background-size:100% 780px,100% 620px;
-      background-attachment:scroll;
+    /* A QUIET CANVAS. One flat neutral, no image, nothing behind the words.
+       The ground is here to make a white sheet read as a sheet and then stop
+       existing. It used to be warm sand carrying two large accent washes, on
+       top of an earlier pass that had already removed a 40px graph-paper grid
+       for the same reason — a ruled or tinted ground reads as "studio" in a
+       mockup and as one more thing competing with the mathematics on a
+       Chromebook an hour into a rotation. The washes went the way of the grid.
+       Neutral rather than warm because the sheet is white: sand next to white
+       reads as a slightly dirty white, and the contrast between ground and
+       sheet is what carries the layout now that the shadows are hairlines. */
+    body{margin:0;color:var(--sg-text);font-family:var(--sg-body);font-size:17px;line-height:1.62;background-color:var(--sg-paper);background-image:none;
       -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-optical-sizing:auto}
     button,input,textarea{font:inherit}
     button,a,input,textarea,summary{outline-offset:4px}
@@ -534,29 +533,32 @@ export function injectSmallGroupStyles(accent) {
     h1,h2,h3{font-family:var(--sg-display);line-height:1.16;letter-spacing:-.015em;margin:0;color:var(--sg-ink)}
     p{margin:0 0 12px}
     /* ── Hero ──────────────────────────────────────────────────────────────
-       A masthead card, not a full-bleed colour band. It reads as the first
-       sheet in the stack rather than as chrome bolted above it, and — the
-       reason it is light — every student here is either rebuilding a skill or
-       being pushed past one, so the page opens calm instead of loud. Pathway
-       identity is carried by the accent rule along the top edge, the tinted
-       corner wash and the kicker; the palette underneath is identical for all
-       three, exactly as the 2026-07-17 uniform-palette directive requires.
-       The whole hero used to be white-on-navy here and navy-on-cream two
-       sheets later; it is defined once now. */
-    .sg-hero{position:relative;overflow:hidden;margin:0 0 28px;padding:34px 36px 32px;border:1px solid var(--sg-line);border-left:7px solid var(--sg-pop);border-radius:var(--sg-radius-lg);background:linear-gradient(118deg,var(--sg-card) 0 72%,color-mix(in srgb,var(--sg-soft) 72%,var(--sg-card)));box-shadow:var(--sg-shadow-lg)}
-    /* Corner wash in the pathway accent + the same graph rule as the page, so
-       the masthead belongs to the ground it sits on. */
-    .sg-hero::before{content:"";position:absolute;inset:0;pointer-events:none;background:
-      radial-gradient(92% 110% at 100% 0%,color-mix(in srgb,var(--sg-pop) 17%,transparent),transparent 61%),
-      linear-gradient(rgba(18,53,91,.022) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(18,53,91,.022) 1px,transparent 1px);
-      background-size:100% 100%,40px 40px,40px 40px}
-    .sg-hero::after{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--sg-pop),color-mix(in srgb,var(--sg-pop) 38%,var(--sg)),transparent 88%)}
+       A masthead, not a title screen. It names the lesson and the pathway and
+       then gets out of the way.
+
+       It used to occupy 581-615px of a 1366x768 laptop — measured, on three
+       different lessons — so the first mathematical task on the page was at or
+       below the fold on the machine most of these students actually use. It
+       carried, all at once: a diagonal gradient, a radial corner wash, a 40px
+       graph-paper grid, a gradient top rule, a 7px accent edge, a large drop
+       shadow, a 46px title and two nested panels. Five decorative treatments
+       on the one element a student sees before any mathematics.
+
+       What is left is the identity (accent edge, kicker) and the information
+       (title, objective, meta). Pathway identity stays carried by the accent
+       and the kicker, with the palette identical for all three pathways, per
+       the 2026-07-17 uniform-palette directive. */
+    .sg-hero{position:relative;margin:0 0 20px;padding:20px 24px 18px;border:1px solid var(--sg-line);border-left:4px solid var(--sg-pop);border-radius:var(--sg-radius-lg);background:var(--sg-card)}
+    .sg-hero::before{content:none}
+    .sg-hero::after{content:none}
     .sg-tagline{max-width:760px;margin-top:10px;color:var(--sg-muted);font-size:16px;font-weight:400;line-height:1.5}
-    .sg-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:34px;align-items:center}
-    .sg-kicker{display:inline-flex;align-items:center;gap:8px;padding:6px 13px;border:1px solid color-mix(in srgb,var(--sg-pop) 42%,transparent);border-radius:999px;background:color-mix(in srgb,var(--sg-pop) 14%,#fff);color:var(--sg-ink);font-family:var(--sg-display);font-size:12.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
-    .sg-hero h1{max-width:780px;margin:15px 0 11px;font-size:clamp(31px,4.2vw,46px);font-weight:800;letter-spacing:-.034em;text-wrap:balance}
-    .sg-obj{max-width:760px;margin-bottom:10px;color:var(--sg-ink);font-size:18.5px;font-weight:700;line-height:1.45;text-wrap:pretty}
+    .sg-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center}
+    /* Group identity is a LABEL, not a badge with a background. It has to be
+       readable at a glance and forgettable a second later; the pathway is
+       already carried by the accent edge beside it. */
+    .sg-kicker{display:inline-flex;align-items:center;gap:8px;padding:0;border:0;border-radius:0;background:none;color:var(--sg-muted);font-family:var(--sg-display);font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+    .sg-hero h1{max-width:780px;margin:9px 0 7px;font-size:clamp(24px,2.6vw,32px);font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+    .sg-obj{max-width:760px;margin-bottom:8px;color:var(--sg-ink);font-size:17px;font-weight:700;line-height:1.45;text-wrap:pretty}
     .sg-obj-more{max-width:760px;margin-top:2px}
     .sg-obj-more>summary{display:inline-flex;align-items:center;min-height:34px;cursor:pointer;padding:4px 13px;border:1px solid var(--sg-line);border-radius:999px;background:var(--sg-card);font-family:var(--sg-display);font-size:12.5px;font-weight:700;letter-spacing:.02em;color:var(--sg-muted);list-style:none}
     .sg-obj-more>summary:hover{border-color:var(--sg);color:var(--sg-ink)}
@@ -662,7 +664,7 @@ export function injectSmallGroupStyles(accent) {
        tool, and the accent colour is never a button fill (it is identity, and
        a student should not have to work out whether amber means "primary"). */
     .btn,.sg-pulse-btn,.sg-role-btn,.sg-match-btn,.choice,.wchip{min-height:46px;border-radius:var(--sg-radius-sm);cursor:pointer;transition:transform .12s ease,border-color .14s ease,background .14s ease,box-shadow .14s ease}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border:2px solid var(--sg);color:#fff;background:var(--sg);font-family:var(--sg-display);font-size:15.5px;font-weight:700;text-decoration:none;box-shadow:0 4px 12px -5px color-mix(in srgb,var(--sg) 75%,transparent)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border:2px solid var(--sg);color:#fff;background:var(--sg);font-family:var(--sg-display);font-size:15.5px;font-weight:700;text-decoration:none;box-shadow:none}
     .btn:hover:not(:disabled){transform:translateY(-1px);background:var(--sg-deep);border-color:var(--sg-deep);box-shadow:0 8px 18px -7px color-mix(in srgb,var(--sg) 80%,transparent)}
     .btn:active:not(:disabled){transform:translateY(1px);box-shadow:none}
     .btn.ghost{color:var(--sg-ink);background:var(--sg-card);box-shadow:none}
@@ -751,7 +753,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-big-work .colmath .fillin{width:220px;font-size:40px}
     .sg-big-work .eqcap{font-size:22px}
     .sg-math-tool,.sg-guided-steps{margin:12px 0;border:2px solid var(--sg);border-radius:16px;background:var(--sg-card)}.sg-math-tool summary,.sg-guided-steps>summary{cursor:pointer;padding:12px 15px;color:var(--sg-ink);font-family:var(--sg-display);font-weight:900}.sg-tool-body,.sg-step-sequence{padding:0 15px 15px}.sg-tool-directions,.sg-step-intro{color:var(--sg-muted);font-weight:700}.sg-model-slider{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;margin:12px 0;padding:12px;border-radius:12px;background:var(--sg-soft);font-weight:900}.sg-model-slider input{width:100%;accent-color:var(--sg)}.sg-value-tray,.sg-operator-tray,.sg-value-work,.sg-model-expression{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}.sg-operator-tray{padding-top:10px;border-top:1px dashed var(--sg-line)}.sg-value-chip{min-width:52px;min-height:46px;padding:7px 12px;border:2px solid var(--sg);border-radius:11px;color:var(--sg-ink);background:var(--sg-card);font-size:20px;font-weight:900;cursor:pointer}.sg-operator-chip{min-width:46px;color:#fff;background:var(--sg-deep)}.sg-value-work{min-height:76px;padding:10px;border:2px dashed var(--sg-line);border-radius:12px}.sg-model-label{font-weight:900}.sg-model-expression{min-width:150px;flex:1;margin:0}.sg-work-chip{min-width:44px;min-height:44px;padding:6px 11px;border:2px solid color-mix(in srgb,var(--sg-pop) 45%,black);border-radius:9px;color:color-mix(in srgb,var(--sg-pop) 20%,black);background:var(--sg-pop);font-weight:900;cursor:pointer}.sg-clear-model{margin-left:auto}
-    .sg-guided-steps{padding:15px;background:linear-gradient(135deg,var(--sg-card),var(--sg-soft))}.sg-guided-steps>summary{margin:-15px}.sg-guided-steps[open]>summary{margin:-15px -15px 12px}.sg-fill-step{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;margin:10px 0;padding:14px;border:2px solid var(--sg-line);border-radius:14px;background:var(--sg-card)}.sg-fill-step[hidden]{display:none}.sg-fill-step.complete{border-color:var(--sg-good);background:var(--sg-good-bg)}.sg-fill-step.needs-revision{border-color:var(--sg-warn-line);background:var(--sg-warn-bg)}.sg-fill-number{display:grid;width:36px;height:36px;place-items:center;border-radius:11px;color:#fff;background:var(--sg);font-family:var(--sg-display);font-weight:900}.sg-fill-prompt{font-size:19px;font-weight:800}.sg-step-input{width:min(180px,100%);margin:0 5px;padding:5px 8px;border:0;border-bottom:3px solid var(--sg);color:var(--sg-ink);background:var(--sg-card);font-size:20px;font-weight:900;text-align:center}.sg-step-check{min-height:44px;padding:8px 12px}.sg-step-status{grid-column:2/-1;color:var(--sg-muted);font-weight:700}
+    .sg-guided-steps{padding:15px;background:var(--sg-card)}.sg-guided-steps>summary{margin:-15px}.sg-guided-steps[open]>summary{margin:-15px -15px 12px}.sg-fill-step{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;margin:10px 0;padding:14px;border:1px solid var(--sg-line);border-radius:var(--sg-radius);background:var(--sg-card)}.sg-fill-step[hidden]{display:none}.sg-fill-step.complete{border-color:var(--sg-good);background:var(--sg-good-bg)}.sg-fill-step.needs-revision{border-color:var(--sg-warn-line);background:var(--sg-warn-bg)}.sg-fill-number{display:grid;width:36px;height:36px;place-items:center;border-radius:var(--sg-radius-sm);color:#fff;background:var(--sg);font-family:var(--sg-display);font-weight:900}.sg-fill-prompt{font-size:19px;font-weight:800}.sg-step-input{width:min(180px,100%);margin:0 5px;padding:5px 8px;border:0;border-bottom:3px solid var(--sg);color:var(--sg-ink);background:var(--sg-card);font-size:20px;font-weight:900;text-align:center}.sg-step-check{min-height:44px;padding:8px 12px}.sg-step-status{grid-column:2/-1;color:var(--sg-muted);font-weight:700}
     .choices{display:grid;gap:9px}.choice{display:flex;width:100%;align-items:center;gap:10px;padding:11px 14px;border:2px solid var(--sg-line);color:var(--sg-text);background:var(--sg-card);text-align:left}.choice:hover:not(:disabled){border-color:var(--sg);background:var(--sg-soft)}.choice .k{display:grid;width:27px;height:27px;flex:none;place-items:center;border-radius:8px;background:var(--sg-fill);font-weight:900}.choice.correct{border-color:var(--sg-good);background:var(--sg-good-bg);animation:sg-okpulse .5s ease}.choice.wrong{border-color:var(--sg-bad);background:var(--sg-bad-bg);animation:sg-nudge .3s ease}.choice:disabled{cursor:default;opacity:.75}
     @keyframes sg-okpulse{0%{box-shadow:0 0 0 0 rgba(22,115,75,.45)}100%{box-shadow:0 0 0 14px rgba(22,115,75,0)}}
     @keyframes sg-nudge{0%,100%{transform:none}30%{transform:translateX(-4px)}60%{transform:translateX(4px)}}
@@ -760,7 +762,7 @@ export function injectSmallGroupStyles(accent) {
     .eqcap{margin-bottom:7px;color:var(--sg-ink);font-family:var(--sg-display);font-size:19px;font-weight:900}.colmath{display:inline-grid;min-width:160px;justify-items:end;gap:2px;padding:11px 18px;border-radius:13px;background:var(--sg-soft);font-family:var(--sg-mono);font-size:27px;font-weight:900}.col-op{margin-right:15px;color:var(--sg)}.col-rule{width:100%;height:3px;margin:3px 0;background:var(--sg-rule)}
     .fillline,.stepline,.gs-row{display:flex;align-items:center;flex-wrap:wrap;gap:7px}.fillline{margin:5px 0}.fillin,.stepfill{border:0;border-bottom:3px solid var(--sg);color:var(--sg-ink);background:transparent;font-weight:900;text-align:center}.fillin{width:150px;padding:3px 7px;font-size:24px}.stepfill{width:90px;padding:2px 4px}.fillin.ok,.stepfill.ok{color:var(--sg-good);border-color:var(--sg-good);animation:sg-okpulse .5s ease}.fillin.bad,.stepfill.bad{color:var(--sg-bad);border-color:var(--sg-bad);animation:sg-nudge .3s ease}.filllab{font-weight:900}.fillunit{color:var(--sg-muted);font-weight:700}
     .wbank{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}.wbank-lab{font-size:13px;font-weight:900;text-transform:uppercase}.wchip{padding:7px 12px;border:2px solid var(--sg);color:var(--sg-ink);background:var(--sg-soft);font-weight:700}.stepline,.gs-row{padding:9px 0;border-bottom:1px dashed var(--sg-line)}.stepline:last-child,.gs-row:last-child{border:0}.sn{display:grid;width:25px;height:25px;flex:none;place-items:center;border-radius:8px;color:var(--sg-ink);background:var(--sg-soft);font-weight:900}.gs-row.locked{opacity:.35;pointer-events:none}.gs-check{min-height:44px;padding:8px 12px}.gs-intro,.mistake{padding:11px 14px;border-radius:12px}.gs-intro{color:var(--sg-ink);background:var(--sg-soft)}.mistake{margin-bottom:13px;border:1px solid var(--sg-warn-line);color:var(--sg-warn-ink);background:var(--sg-warn-bg)}.sg-tick{color:var(--sg-good);font-size:20px;font-weight:900}
-    .sg-reflect{padding:24px;border:2px solid var(--sg);border-radius:18px;background:linear-gradient(135deg,var(--sg-card),var(--sg-soft))}.sg-growth{display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:center;margin-bottom:16px}.sg-growth-icon{font-size:48px}.sg-done{margin-top:20px;padding:20px;border:2px dashed var(--sg);border-radius:17px;color:var(--sg-ink);background:var(--sg-soft);text-align:center}.sg-foot{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:28px}
+    .sg-reflect{padding:22px;border:1px solid var(--sg-line);border-left:4px solid var(--sg);border-radius:var(--sg-radius-lg);background:var(--sg-card)}.sg-growth{display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:center;margin-bottom:16px}.sg-growth-icon{font-size:48px}.sg-done{margin-top:20px;padding:20px;border:1px dashed var(--sg);border-radius:var(--sg-radius-lg);color:var(--sg-ink);background:var(--sg-soft);text-align:center}.sg-foot{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:28px}
     /* ── Interactive labs (Explore / Model / Apply) ── */
     .sg-lab{--sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:20px;--sp-6:24px;--radius-sm:8px;--radius:12px;--teal:var(--sg);--teal-light:var(--sg-soft);--teal-dark:var(--sg-deep);--navy:var(--sg-deep);--coral:#d9795d;--muted:var(--sg-muted);--ink:var(--sg-text)}
     .sg-lab-note{padding:11px 14px;border-radius:12px;background:var(--sg-soft);color:var(--sg-ink);font-weight:700}
@@ -871,8 +873,8 @@ export function injectSmallGroupStyles(accent) {
     .sg-path .min{color:var(--sg);font-size:13px;font-weight:900;white-space:nowrap}
     .sg-meter{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:2px 6px 4px}
     .sg-meter-track{height:8px;flex:1;overflow:hidden;border-radius:999px;background:var(--sg-fill)}
-    .sg-meter-fill{position:relative;overflow:hidden;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--sg),var(--sg-pop));transition:width .35s ease}
-    .sg-meter-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);animation:sg-shine 2.6s linear infinite}
+    .sg-meter-fill{position:relative;overflow:hidden;height:100%;width:0;border-radius:999px;background:var(--sg);transition:width .35s ease}
+    .sg-meter-fill::after{content:none}
     @keyframes sg-shine{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
     .sg-meter-lab{font-size:13px;font-weight:900;color:var(--sg-muted);font-family:var(--sg-display);white-space:nowrap}
     .sg-streak{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border:1px solid var(--sg-warn-line);border-radius:999px;background:var(--sg-warn-bg);color:var(--sg-warn-ink);font-family:var(--sg-display);font-size:12px;font-weight:900;white-space:nowrap;animation:sg-stepin .3s ease}
@@ -904,7 +906,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-another{margin-top:14px;padding-top:14px;border-top:1px dashed var(--sg-line)}
     .sg-another [hidden]{display:none!important}
     .sg-another-toggle{min-height:44px;padding:8px 13px}
-    .sg-another-panel{margin-top:11px;padding:16px;border:2px solid var(--sg);border-radius:16px;background:linear-gradient(135deg,var(--sg-card),var(--sg-soft))}
+    .sg-another-panel{margin-top:11px;padding:16px;border:1px solid var(--sg-line);border-left:4px solid var(--sg);border-radius:var(--sg-radius-lg);background:var(--sg-card)}
     .sg-another-kicker{margin-bottom:3px;color:var(--sg);font-family:var(--sg-display);font-size:12px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}
     /* Was an <h3>; see small-group-strategies.js. Keeps the h3 look, out of the outline. */
     .sg-another-title{margin:0 0 6px;font-family:var(--sg-display);font-size:18px;font-weight:800;color:var(--sg-ink)}

@@ -26,7 +26,7 @@
  * Writes exactly one file and never touches a lesson folder.
  */
 
-import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, renameSync, statSync, writeFileSync } from "node:fs";
 import { dirname, extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
@@ -682,10 +682,32 @@ function main() {
     units,
   };
 
-  writeFileSync(
-    join(root, "data/curriculum-download-manifest.json"),
-    `${JSON.stringify(manifest, null, 2)}\n`,
-  );
+  const body = `${JSON.stringify(manifest, null, 2)}\n`;
+  const out = join(root, "data/curriculum-download-manifest.json");
+
+  /* --stdout: produce the manifest WITHOUT touching the tracked file.
+   *
+   * This is how the freshness ratchet in tools/download-manifest.test.mjs asks
+   * "would the generator write something different?" without answering it by
+   * overwriting the very file it is checking. A ratchet that repairs what it
+   * measures fails once and passes forever after, which is worse than no
+   * ratchet: a stale manifest reaches main as soon as anyone runs the suite
+   * twice. */
+  if (process.argv.includes("--stdout")) {
+    process.stdout.write(body);
+    return;
+  }
+
+  /* Atomic write: full content to a temp sibling, then rename over the target.
+   * `writeFileSync` truncates first, so a reader that opens the file mid-write
+   * sees a partial document. Inside `npm run qa:loop` the readers are real —
+   * validate:downloads runs concurrently with the rest of the gate — and a
+   * partial JSON read there would surface as a baffling parse error in a check
+   * that had nothing to do with the cause. rename(2) is atomic on the same
+   * filesystem, so a reader sees either the old file or the new one. */
+  const tmp = `${out}.tmp-${process.pid}`;
+  writeFileSync(tmp, body);
+  renameSync(tmp, out);
   console.log(
     `✓ Wrote ${manifest.total} resources across ${manifest.counts.units} units ` +
       `(${manifest.counts.files} files, ${manifest.counts.links} links, ${manifest.counts.scorm} SCORM) ` +
