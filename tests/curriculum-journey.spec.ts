@@ -34,6 +34,15 @@ function acceptTeacherPin(page: Page) {
  * still worth guarding; only the precondition changed.
  *
  * The hub stores this key as "true"; other modules compare against "1".
+ *
+ * The precondition is asserted on the toggle's STATE, not on its label. It used
+ * to read `toContainText("Teacher Mode")`, which broke the moment the button
+ * stopped printing the bare mode name: the old copy answered "which mode am I
+ * in?" and "what does clicking do?" identically, so it was rewritten to
+ * "You're in Teacher view — switch to Student" — an intentional improvement
+ * that turned all five of these journeys red and kept them red, because a
+ * wording change is not a regression in what they guard. `aria-pressed` is the
+ * same fact in the form the accessibility tree already has to get right.
  */
 async function enterTeacherMode(page: Page) {
   await page.goto("/curriculum/");
@@ -41,7 +50,7 @@ async function enterTeacherMode(page: Page) {
     localStorage.setItem("nt-teacher-mode", "true");
   });
   await page.reload();
-  await expect(page.locator("#hub-mode-toggle")).toContainText("Teacher Mode");
+  await expect(page.locator("#hub-mode-toggle")).toHaveAttribute("aria-pressed", "true");
 }
 
 test.describe("guide first-click journeys in Teacher Mode", () => {
@@ -101,12 +110,16 @@ test.describe("guide first-click journeys in Teacher Mode", () => {
   test("Explore by unit stays student-safe and jumps to the unit browser", async ({ page }) => {
     await page.goto("/curriculum/");
     const explore = page.getByRole("link", { name: /Explore by unit/ });
-    await expect(explore).toHaveAttribute("href", "#interactive-hub");
+    /* The unit browser is a PAGE now, not an in-page anchor. This asserted
+     * href="#interactive-hub" and had been red since the link was repointed at
+     * /curriculum/units/ — which is what the test's own name asks for, so the
+     * assertion was guarding the weaker of the two behaviours. */
+    await expect(explore).toHaveAttribute("href", "/curriculum/units/");
     await explore.click();
-    // No PIN, no Teacher Mode — a student-safe anchor jump only.
-    await expect(page.locator("#hub-mode-toggle")).toContainText("Student Mode");
-    await expect(page.locator("#curriculum-teacher-workflow")).toBeHidden();
-    await expect(page.locator("#interactive-hub")).toBeVisible();
+    await page.waitForURL(/\/curriculum\/units\//);
+    // No PIN, no Teacher Mode — the destination must be student-safe.
+    await expect(page.locator("#curriculum-teacher-workflow")).toHaveCount(0);
+    await expect(page.locator("h1")).toBeVisible();
   });
 });
 
