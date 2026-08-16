@@ -744,6 +744,23 @@ export const TOOL_CATALOG = {
       "What is the distance between your lowest and highest marker?",
     ],
   },
+  "prism-volume": {
+    name: "Prism Volume Builder",
+    nameEs: "Constructor de volumen de prismas",
+    purpose:
+      "Shade the base of a rectangular prism, stack it up the height, and read the volume both as base area × height and as length × width × height — with edges that can be halves.",
+    purposeEs:
+      "Sombrea la base de un prisma rectangular, apílala a lo alto y lee el volumen como área de la base × altura y como largo × ancho × alto, con aristas que pueden ser mitades.",
+    howTo: [
+      "Set the length, width, and height. Each tap changes an edge by one half.",
+      "Read the shaded base first: B = l × w.",
+      "Then read V = B × h, and check it matches l × w × h.",
+    ],
+    tryThis: [
+      "Make one edge a half. Does the rule change, or just the numbers?",
+      "Keep the base the same and double the height. What happens to the volume?",
+    ],
+  },
   "manip:cube-builder": {
     name: "Cube Builder",
     nameEs: "Constructor de cubos",

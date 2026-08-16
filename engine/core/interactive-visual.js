@@ -316,6 +316,20 @@ const REGISTRY = {
     const { renderDistExplorer } = await import("../components/dist-explorer.js");
     return renderDistExplorer(host, { max: cfg.max, unit: cfg.unit, label: cfg.label });
   },
+  // Volume of a rectangular prism as base area × height, with half-unit edges.
+  // Deliberately narrower than `cube-builder`: no surface area, no water fill,
+  // no nets — those are 6.GR.4 and belong to the lesson that teaches them.
+  "prism-volume": async (host, cfg) => {
+    const { renderPrismVolume } = await import("../components/prism-volume.js");
+    return renderPrismVolume(host, {
+      l: cfg.l,
+      w: cfg.w,
+      h: cfg.h,
+      unit: cfg.unit,
+      max: cfg.max,
+      label: cfg.label,
+    });
+  },
   "cross-section": async (host, cfg) => {
     const { renderCrossSection } = await import("../components/cross-section.js");
     return renderCrossSection(host, {
