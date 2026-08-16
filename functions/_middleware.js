@@ -101,11 +101,61 @@ async function privateTeacherResponse(next) {
   });
 }
 
+/**
+ * The one hostname authenticated teachers use.
+ *
+ * WHY THIS IS HERE AND NOT IN `_redirects`. Cloudflare honours only the first
+ * 100 rules of this project's `_redirects` — verified live, and it had already
+ * silently killed 231 short links once (see tools/generate-route-files.mjs).
+ * A canonical-host rule has to run BEFORE everything, so it would have to go in
+ * at position 1, pushing rule 100 to 101 and killing whichever short link
+ * happened to be last. The middleware has no such cliff and, more importantly,
+ * runs before the teacher gate — which is the actual requirement.
+ *
+ * WHAT IT FIXES. www and the apex were two fully independent, equally
+ * functional hosts: both served every page, both minted sessions, and neither
+ * redirected to the other. The session cookie is host-only (deliberately — a
+ * host-only cookie is the stronger default), so a teacher who signed in on
+ * www.eduwonderlab.com and then reached eduwonderlab.com by any route — a
+ * bookmark, an omnibox completion, a search result, the canonical <link> every
+ * page already advertises — arrived with no cookie and was told to sign in
+ * again. Authentication succeeded; it just did not travel.
+ *
+ * The fix is to have one canonical host rather than to widen the cookie to
+ * `Domain=.eduwonderlab.com`. Broadening it would hand the session to every
+ * current and future subdomain, which is a real cost to fix a routing problem.
+ *
+ * 308, not 301: it preserves method and body, so a POST that arrives on www —
+ * including the sign-in POST itself — is replayed to the apex intact instead of
+ * being silently downgraded to a GET.
+ *
+ * Only www is redirected. *.pages.dev is left alone: preview deployments must
+ * keep serving themselves, and ship.sh's own smoke checks run against them.
+ */
+const CANONICAL_HOST = "eduwonderlab.com";
+
+export function canonicalRedirect(url) {
+  if (url.hostname !== `www.${CANONICAL_HOST}`) return null;
+  const target = new URL(url);
+  target.hostname = CANONICAL_HOST;
+  return target.toString();
+}
+
 export async function onRequest(context) {
   const { request, env, next } = context;
   const password = env.SITE_PASSWORD;
 
   const url = new URL(request.url);
+
+  // Canonicalize the host BEFORE anything reads or writes a session, so a sign-in
+  // can never be issued on a hostname the next page will not be served from.
+  const canonical = canonicalRedirect(url);
+  if (canonical) {
+    return new Response(null, {
+      status: 308,
+      headers: { Location: canonical, "Cache-Control": "no-store" },
+    });
+  }
 
   // Verify the teacher session ONCE, here, before any branch returns. Every
   // downstream endpoint then authorizes synchronously off context.data.teacher
