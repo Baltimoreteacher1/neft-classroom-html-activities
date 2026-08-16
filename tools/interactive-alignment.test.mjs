@@ -23,6 +23,7 @@ import assert from "node:assert/strict";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  elementKey,
   extractElements,
   labelContextMisses,
   lessonNumbers,
@@ -104,6 +105,35 @@ t("the leak that shipped is caught, in the lesson it shipped in", () => {
     topicAgrees("area-morph", byId.get("1-4").config.standard, topics),
     false,
     "a plane-area tool on a volume lesson is no longer a topic mismatch",
+  );
+});
+
+t("a manip widget is known by its widget name, not by the bridge", () => {
+  // The `kind:"manip"` bridge made every shared/projects widget arrive as the
+  // single key "manip", which is absent from TOOL_TOPICS and therefore exempt
+  // from the topic detector. Lesson 5-10 shipped through that hole.
+  assert.equal(elementKey({ kind: "manip", manip: "cube-builder" }), "manip:cube-builder");
+  assert.equal(elementKey({ kind: "prism-volume" }), "prism-volume");
+  assert.ok(TOOL_TOPICS["manip:cube-builder"], "the widget has no topic, so it is still invisible");
+});
+
+t("5-10's shipped tank builder is caught against 5-10's own standard", () => {
+  // Verbatim, as it was in production: whole-number steppers and an open-top
+  // SURFACE AREA readout, in a lesson whose objective is volume with fractional
+  // edges. 6.GR.2 is `volume`; the widget also claims `surface-area`, which is
+  // 6.GR.4 — lesson 5-6's mathematics, not this lesson's.
+  const shipped = { kind: "manip", manip: "cube-builder", attrs: { unit: "in", mode: "tank" } };
+  assert.equal(elementKey(shipped), "manip:cube-builder");
+  assert.deepEqual(TOOL_TOPICS["manip:cube-builder"], ["volume", "surface-area"]);
+  assert.deepEqual(TOOL_TOPICS["prism-volume"], ["volume"]);
+  const config = byId.get("5-10").config;
+  assert.ok(
+    !extractElements(config).some((el) => el.key === "manip:cube-builder"),
+    "5-10 mounts the tank builder again",
+  );
+  assert.ok(
+    extractElements(config).some((el) => el.key === "prism-volume"),
+    "5-10 no longer mounts a volume tool",
   );
 });
 
