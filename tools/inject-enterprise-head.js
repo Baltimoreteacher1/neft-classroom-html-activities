@@ -138,11 +138,23 @@ const SHELL_BLOCK = [
   SHELL_END,
 ].join("\n  ");
 
+/**
+ * A page whose body is mounted by JavaScript, and which therefore needs the
+ * no-JS notice and the boot-failure guard.
+ *
+ * The mount point is `<div id="app">`; what it CONTAINS before the module runs
+ * is not part of that question. This used to require the div be empty
+ * (`<div id="app">\s*</div>`), which was true when it was written and stopped
+ * being true when the small-group shells gained a "Loading your math studio…"
+ * placeholder inside it. Since this tool strips its own block and rebuilds,
+ * that made re-running it DESTRUCTIVE: 212 lesson pages carry the guard today
+ * and only 85 still match the empty-div form, so a single run would have
+ * silently removed the no-JS fallback and lesson-shell-guard.js from the other
+ * ~127 — the guard whose absence validate:lesson-boot exists to notice.
+ */
 function isLauncherShell(html, file) {
   return (
-    basename(file) === "index.html" &&
-    /<div id="app">\s*<\/div>/.test(html) &&
-    /type="module"/.test(html)
+    basename(file) === "index.html" && /<div id="app"[\s>]/.test(html) && /type="module"/.test(html)
   );
 }
 
