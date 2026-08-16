@@ -1,3 +1,19 @@
+/* ── Accent ──────────────────────────────────────────────────────────────────
+ * One accent value, defined once, chosen for CONTRAST rather than by eye.
+ *
+ * `.ewl-preset-btn` ("Launch Preset ↗") was white on #0284c7 at 13px/800 —
+ * 4.10:1, which is not large text, so AA wants 4.5:1. Twelve of them on the
+ * page, and it was the hub's only serious axe violation. #0369a1 is the same
+ * hue one step darker and reaches 5.93:1.
+ *
+ * It is a token rather than five literals because the value appeared five
+ * times — two backgrounds behind white text and three borders — and the two
+ * that mattered could be fixed while the three drifted a shade away.
+ * ────────────────────────────────────────────────────────────────────────── */
+:root {
+  --ewl-accent: #0369a1;
+}
+
 .lesson-standard-badge {
   display: inline-block;
   margin: 0 0 8px;
@@ -965,7 +981,7 @@ body.light-theme .lesson-real-world {
 /* ── Interactive Math Workbench Presets Bar ───────────────────────────────── */
 .ewl-preset-bar {
   background: #ffffff;
-  border: 1.5px solid #0284c7;
+  border: 1.5px solid var(--ewl-accent);
   border-radius: 18px;
   padding: 24px 28px;
   margin: 24px 0;
@@ -1018,7 +1034,7 @@ body.light-theme .lesson-real-world {
 }
 .ewl-preset-card:hover {
   transform: translateY(-2px);
-  border-color: #0284c7;
+  border-color: var(--ewl-accent);
   box-shadow: 0 8px 20px -8px rgba(2, 132, 199, 0.25);
 }
 .ewl-preset-icon {
@@ -1046,7 +1062,7 @@ body.light-theme .lesson-real-world {
   line-height: 1.4;
 }
 .ewl-preset-btn {
-  background: #0284c7;
+  background: var(--ewl-accent);
   color: #ffffff;
   font-weight: 800;
   font-size: 13px;
@@ -1145,7 +1161,7 @@ body.light-theme .lesson-real-world {
   transition: all 0.15s ease;
 }
 .ewl-rd-opt:hover:not(:disabled) {
-  border-color: #0284c7;
+  border-color: var(--ewl-accent);
   background: #f0f9ff;
 }
 .ewl-rd-opt.selected.correct {
@@ -1181,7 +1197,7 @@ body.light-theme .lesson-real-world {
   flex: 1 1 180px;
 }
 .ewl-rd-action-btn.primary {
-  background: #0284c7;
+  background: var(--ewl-accent);
   color: #ffffff;
 }
 .ewl-rd-action-btn.secondary {
