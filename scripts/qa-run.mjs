@@ -95,6 +95,19 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // AUTHENTICATION — frozen at 4c2e13dab, documented in AUTH_CONTRACT.md.
+  // Nothing here may change as a side effect of unrelated work: on 2026-08-16 a
+  // teacher sign-in rewrite left teachers locked out for eleven hours while
+  // every gate in this repo stayed green, because each one asked whether the
+  // code was well-formed and none asked whether the auth MODEL was still the one
+  // that works. `validate:auth-contract` holds the invariants AND a content pin
+  // over these files, so touching one is a blocking event rather than an
+  // invisible one. The browser half (`e2e:auth`, both engines) needs a server and
+  // is not in the gate — run it before shipping any change to these paths.
+  [
+    /^(functions\/_middleware\.js|functions\/_lib\/teacher-surface\.js|engine\/core\/teacher-mode\.js|curriculum\/planning\/planning-store\.js|functions\/api\/pacing\/.*|tools\/(validate-auth-contract|auth-contract\.test|e2e-auth)\.mjs|data\/auth-baseline\.json|AUTH_CONTRACT\.md)$/,
+    ["test", "validate:auth-contract", "validate:planning", "validate:js-syntax", "check"],
+  ],
   // Shared interactive components + anything that ships CSS. `validate:css-integrity`
   // is the only check that can see the three ways malformed style reaches a
   // browser and is silently recovered from: a committed conflict marker, a file
