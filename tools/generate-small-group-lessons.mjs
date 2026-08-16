@@ -27,11 +27,18 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { writeGenerated } from "../scripts/lib/preserve-injected.mjs";
+import { authoredPaths, mergeAuthoredOverlay } from "./lib/authored-overlay.mjs";
 import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
 import { authoredBank, authoredMoves } from "./lib/small-group-authored-banks.mjs";
 import { applyChallengeTasks, challengeFacilitation } from "./lib/small-group-challenge-tasks.mjs";
 import { buildTeacherMoves } from "./lib/small-group-facilitation.mjs";
 import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
+import {
+  assertWriteSetContained,
+  recordWrite,
+  setWriteSetRoot,
+  writtenPaths,
+} from "./lib/write-set.mjs";
 
 const ROOT = process.env.REPO || resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -91,7 +98,10 @@ function diagnosedErrors(base) {
 }
 const LESSONS = join(ROOT, "lessons");
 const FACILITATION_MODULE = join(ROOT, "functions", "teacher-small-group", "_facilitation-data.js");
-const DRY = process.argv.includes("--dry");
+/* `--dry-run` is the name every other generator here uses; `--dry` predates it
+ * and still works. A safety flag that only answers to a spelling nobody guesses
+ * is a safety flag nobody uses. */
+const DRY = process.argv.includes("--dry") || process.argv.includes("--dry-run");
 const CONFIGS_ONLY = process.argv.includes("--configs-only");
 /*
  * --facilitation-only rebuilds ONLY the teacher-facing facilitation module and
@@ -107,6 +117,10 @@ const CONFIGS_ONLY = process.argv.includes("--configs-only");
  * re-run, done) while making a routine refresh safe.
  */
 const FACILITATION_ONLY = process.argv.includes("--facilitation-only");
+/* Deliberately rebuild from the base, discarding authored layers. The escape
+ * hatch exists so "the overlay always wins" can never become a reason a
+ * correction cannot be applied — but it is opt-in, and it says so. */
+const PRUNE = process.argv.includes("--prune");
 const onlyIx = process.argv.indexOf("--only");
 const ONLY = onlyIx !== -1 ? process.argv[onlyIx + 1] : null;
 const MINIMUM_PRACTICE = 10;
@@ -527,18 +541,75 @@ function assertValid(id, out) {
 }
 
 // ---------------------------------------------------------------- Write
+
+/* Every authored value this run carried forward, and every one it could not,
+ * so a regeneration reports what it protected instead of hoping. */
+const overlayKept = [];
+const overlayDropped = [];
+const plannedWrites = [];
+
+/**
+ * A small-group config is GENERATED, and it is also the file two later steps
+ * write into: tools/apply-es-translations.mjs adds the Spanish overlay, and the
+ * alignment pass adds `launch.conceptIntro.interactiveVisual`. Writing `out`
+ * straight over the file erased both — reproduced on main, where `--only 5-10`
+ * deleted 74 lines from 5-10-group1 including ten Spanish arrays.
+ *
+ * The rule is now one sentence: the generator owns what it emits, and anything
+ * on disk it does not emit is authored and survives. `--prune` opts out for a
+ * deliberate clean rebuild. See tools/lib/authored-overlay.mjs for why array
+ * elements are paired by identity and never by index.
+ */
+function withAuthoredOverlay(id, out) {
+  const file = join(LESSONS, id, "config.json");
+  if (PRUNE || !existsSync(file)) return out;
+  let prior;
+  try {
+    prior = JSON.parse(readFileSync(file, "utf8"));
+  } catch {
+    return out; // an unreadable prior config is not a reason to lose this run
+  }
+  for (const path of authoredPaths(out, prior)) overlayKept.push(`${id}.${path}`);
+  return mergeAuthoredOverlay(out, prior, {
+    onDrop: (path) => overlayDropped.push(`${id}.${path}`),
+  });
+}
+
+/* --dry-run: say exactly what a real run would touch, and what authored content
+ * it would be protecting, without writing anything. */
+function planLesson(id, out) {
+  const file = join(LESSONS, id, "config.json");
+  for (const p of ["config.json", "index.html", "lesson.js"]) {
+    plannedWrites.push(
+      `${existsSync(join(LESSONS, id, p)) ? "change" : "create"}  lessons/${id}/${p}`,
+    );
+  }
+  if (!existsSync(file)) return;
+  try {
+    const prior = JSON.parse(readFileSync(file, "utf8"));
+    for (const path of authoredPaths(out, prior)) overlayKept.push(`${id}.${path}`);
+    mergeAuthoredOverlay(out, prior, { onDrop: (path) => overlayDropped.push(`${id}.${path}`) });
+  } catch {
+    /* unreadable prior config: nothing to report about its overlay */
+  }
+}
+
 function writeLesson(id, out) {
   mkdirSync(join(LESSONS, id), { recursive: true });
-  writeFileSync(join(LESSONS, id, "config.json"), JSON.stringify(out, null, 2) + "\n");
+  const merged = withAuthoredOverlay(id, out);
+  recordWrite(join(LESSONS, id, "config.json"));
+  writeFileSync(join(LESSONS, id, "config.json"), JSON.stringify(merged, null, 2) + "\n");
   if (CONFIGS_ONLY) return;
   // writeGenerated, not writeFileSync — see tools/generators-preserve-injected.test.mjs.
   // All 148 group/catch-up index.html shells carry injected sentinel blocks, and a
   // plain overwrite strips every one. On a brand-new lesson there is nothing to
   // preserve and this behaves identically to a plain write.
+  recordWrite(join(LESSONS, id, "index.html"));
   writeGenerated(
     join(LESSONS, id, "index.html"),
     shellHtml(id, out.title, `Grade 6 Reveal Math small-group lesson — ${out.title}`),
   );
+  recordWrite(join(LESSONS, id, "lesson.js"));
   writeFileSync(join(LESSONS, id, "lesson.js"), LESSON_JS);
 }
 
@@ -595,6 +666,7 @@ for (const baseId of bases) {
     const studentOut = toStudentConfig(out);
     facilitationByLesson[id] = facilitation;
     if (!DRY && !FACILITATION_ONLY) writeLesson(id, studentOut);
+    else if (DRY && !FACILITATION_ONLY) planLesson(id, studentOut);
     const group = facilitation.group;
     rows.push({
       id,
@@ -622,6 +694,7 @@ if (!DRY) {
   // `rows` describes only the lessons this run visited, so a scoped run must not
   // republish it as if it were the whole fleet.
   if (!ONLY && !FACILITATION_ONLY) {
+    recordWrite(new URL("./small-group-rows.json", import.meta.url).pathname);
     writeFileSync(
       new URL("./small-group-rows.json", import.meta.url),
       JSON.stringify(rows, null, 2) + "\n",
@@ -677,6 +750,7 @@ if (!DRY) {
       .sort()
       .map((k) => [k, merged[k]]),
   );
+  recordWrite(FACILITATION_MODULE);
   writeFileSync(
     FACILITATION_MODULE,
     `// Generated by tools/generate-small-group-lessons.mjs. Teacher route only.\nexport const FACILITATION_BY_LESSON = ${JSON.stringify(ordered, null, 2)};\n`,
@@ -706,3 +780,44 @@ for (const r of rows)
   console.log(
     `${r.id.padEnd(16)} after ${r.afterLesson.padEnd(6)} g${r.group} ${r.label.padEnd(14)} v${r.counts.vocab} a${r.counts.approaching} o${r.counts.onLevel} e${r.counts.extending} opt${r.counts.optional}`,
   );
+
+/* ── Write-set containment ───────────────────────────────────────────────────
+ *
+ * The declared dependent artifact is the facilitation module: it is derived
+ * from the lessons this run built, and a lesson changing without it changing
+ * leaves the teacher route serving stale moves. Everything else must be a
+ * variant of the targeted base.
+ */
+setWriteSetRoot(ROOT);
+if (DRY) {
+  console.log(`\n--dry-run — nothing was written.`);
+  console.log(plannedWrites.map((l) => `  ${l}`).join("\n"));
+  console.log(`  change  functions/teacher-small-group/_facilitation-data.js`);
+  console.log(`\nauthored values that would be preserved: ${overlayKept.length}`);
+  if (overlayDropped.length) {
+    console.warn(
+      `authored values AT RISK (${overlayDropped.length}) — the item they belong to is no ` +
+        `longer generated:\n  ${overlayDropped.join("\n  ")}`,
+    );
+  }
+}
+if (!DRY) {
+  if (ONLY) {
+    const allowed = new RegExp(`^lessons/${ONLY}(?:-group\\d+|-catchup)?/`);
+    assertWriteSetContained({
+      scope: `--only ${ONLY}`,
+      allow: (p) => allowed.test(p) || p === "functions/teacher-small-group/_facilitation-data.js",
+    });
+  }
+  const files = writtenPaths();
+  console.log(`\nwrote ${files.length} file(s)${ONLY ? ` (scope: --only ${ONLY})` : ""}`);
+  if (overlayKept.length) {
+    console.log(`authored values preserved: ${overlayKept.length}`);
+  }
+  if (overlayDropped.length) {
+    console.warn(
+      `authored values that could NOT be placed (${overlayDropped.length}) — the item they ` +
+        `belonged to is no longer generated:\n  ${overlayDropped.join("\n  ")}`,
+    );
+  }
+}
