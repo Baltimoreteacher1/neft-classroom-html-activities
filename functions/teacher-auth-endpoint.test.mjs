@@ -33,10 +33,13 @@
  * supplies its own env.
  */
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { onRequest } from "./api/teacher-auth/[[path]].js";
 import {
   acceptedKeys,
   clearedSessionCookie,
+  credentialAvailability,
+  hasCredentialConflict,
   identityForKey,
   mintSession,
   readCookie,
@@ -47,9 +50,16 @@ import {
   verifySession,
 } from "./_lib/teacher-auth.js";
 
+/*
+ * Throwaway fixtures. No production credential appears in this file and none is
+ * needed — every test supplies its own env. The four slots below stand in for
+ * the four approved production credentials without being them.
+ */
 const ENV = {
-  TEACHER_KEY_NEFT: "test-only-neft-key",
-  TEACHER_KEY_ALBA: "test-only-alba-key",
+  TEACHER_KEY_NEFT: "test-only-neft-primary",
+  TEACHER_KEY_NEFT_ALT: "test-only-neft-alternate",
+  TEACHER_KEY_ALBA: "test-only-alba-primary",
+  TEACHER_KEY_ALBA_ALT: "test-only-alba-alternate",
   TEACHER_KEY: "test-only-legacy-key",
 };
 
@@ -77,7 +87,9 @@ const call = (request, env = ENV, data = {}) =>
 
 await t("each configured key maps to its own teacher, and nothing else does", () => {
   assert.equal(identityForKey(ENV, ENV.TEACHER_KEY_NEFT), "Neft");
+  assert.equal(identityForKey(ENV, ENV.TEACHER_KEY_NEFT_ALT), "Neft");
   assert.equal(identityForKey(ENV, ENV.TEACHER_KEY_ALBA), "Alba");
+  assert.equal(identityForKey(ENV, ENV.TEACHER_KEY_ALBA_ALT), "Alba");
   assert.equal(identityForKey(ENV, ENV.TEACHER_KEY), "Teacher");
   assert.equal(identityForKey(ENV, "not-a-key"), null);
   assert.equal(identityForKey(ENV, ""), null);
@@ -157,10 +169,12 @@ await t("the cookie the endpoint sets is the cookie the reader reads", async () 
 
 /* ── The endpoint ──────────────────────────────────────────────────────────── */
 
-await t("a valid key signs in and returns a session cookie", async () => {
+await t("every approved credential slot signs in as its own teacher", async () => {
   for (const [key, identity] of [
     [ENV.TEACHER_KEY_NEFT, "Neft"],
+    [ENV.TEACHER_KEY_NEFT_ALT, "Neft"],
     [ENV.TEACHER_KEY_ALBA, "Alba"],
+    [ENV.TEACHER_KEY_ALBA_ALT, "Alba"],
   ]) {
     const res = await call(post("login", { key }));
     assert.equal(res.status, 200, `${identity} could not sign in`);
@@ -214,7 +228,7 @@ await t("/session counts the configured keys, so a PARTIAL binding is visible", 
   // legacy key is set and Alba's is missing" reported exactly the same health
   // as "all three are set" — while locking a teacher out. The count separates
   // them without naming a variable or revealing a value.
-  assert.equal((await (await call(get("session"), ENV)).json()).keys, 3);
+  assert.equal((await (await call(get("session"), ENV)).json()).keys, 5);
   const partial = { TEACHER_KEY: "test-only-legacy-key" };
   const body = await (await call(get("session"), partial)).json();
   assert.equal(body.configured, true, "a partial binding still reports configured");
@@ -236,6 +250,92 @@ await t("logout clears the cookie", async () => {
   assert.equal(res.status, 200);
   assert.match(res.headers.get("Set-Cookie") || "", /Max-Age=0/);
   assert.equal((await res.json()).authenticated, false);
+});
+
+
+/* ── Alternates are explicit, not a rule ───────────────────────────────────── */
+
+await t("an alternate is one exact extra value, NOT case-insensitive matching", () => {
+  // The point of a second binding rather than a comparison rule: authorizing a
+  // specific second spelling must not authorize every spelling. Case folding
+  // would silently enlarge the valid password space for every current and
+  // future key, which is not what anyone chose.
+  const variants = [
+    ENV.TEACHER_KEY_NEFT.toUpperCase(),
+    ENV.TEACHER_KEY_NEFT.toLowerCase(),
+    `${ENV.TEACHER_KEY_NEFT}X`,
+    ENV.TEACHER_KEY_NEFT.replace("neft", "Neft"),
+  ].filter((v) => v !== ENV.TEACHER_KEY_NEFT && v !== ENV.TEACHER_KEY_NEFT_ALT);
+  for (const v of variants) {
+    assert.equal(identityForKey(ENV, v), null, `an unapproved variant was accepted: ${v}`);
+  }
+});
+
+await t("nothing in the auth path lowercases or folds the supplied value", () => {
+  const src = readFileSync(new URL("./_lib/teacher-auth.js", import.meta.url), "utf8");
+  assert.ok(!/toLowerCase\(\)|toUpperCase\(\)|localeCompare|normalize\(/.test(src),
+    "the credential path now normalizes case, which authorizes values nobody approved");
+});
+
+await t("a missing ALTERNATE still lets the primary work", async () => {
+  const partial = { TEACHER_KEY_NEFT: ENV.TEACHER_KEY_NEFT, TEACHER_KEY_ALBA: ENV.TEACHER_KEY_ALBA };
+  const res = await call(post("login", { key: partial.TEACHER_KEY_NEFT }), partial);
+  assert.equal(res.status, 200);
+  assert.equal((await res.json()).teacher, "Neft");
+});
+
+await t("a missing PRIMARY still lets the alternate work", async () => {
+  const partial = { TEACHER_KEY_NEFT_ALT: ENV.TEACHER_KEY_NEFT_ALT };
+  const res = await call(post("login", { key: partial.TEACHER_KEY_NEFT_ALT }), partial);
+  assert.equal(res.status, 200);
+  assert.equal((await res.json()).teacher, "Neft");
+});
+
+await t("a teacher with NO binding at all cannot sign in, and it is not a 401 lie", async () => {
+  const onlyAlba = { TEACHER_KEY_ALBA: ENV.TEACHER_KEY_ALBA };
+  const avail = credentialAvailability(onlyAlba);
+  assert.deepEqual(avail.Neft, { primary: false, alternate: false });
+  assert.deepEqual(avail.Alba, { primary: true, alternate: false });
+  // Alba can still sign in; the diagnostics say plainly that Neft has nothing.
+  assert.equal((await (await call(post("login", { key: ENV.TEACHER_KEY_ALBA }), onlyAlba)).json()).teacher, "Alba");
+});
+
+await t("one value for two teachers authenticates NOBODY, and reports a config error", async () => {
+  // Picking one would attribute a teacher's edits to their colleague; picking
+  // by binding order would make that depend on the order of a list in a file.
+  const clash = { TEACHER_KEY_NEFT: "same-value", TEACHER_KEY_ALBA: "same-value" };
+  assert.equal(hasCredentialConflict(clash), true);
+  assert.equal(identityForKey(clash, "same-value"), null);
+  const res = await call(post("login", { key: "same-value" }), clash);
+  assert.equal(res.status, 503, "a conflicted credential was reported as a teacher error");
+  assert.equal((await res.json()).error, "credential-conflict");
+});
+
+await t("an alternate colliding with the OTHER teacher is a conflict too", () => {
+  const clash = { TEACHER_KEY_NEFT: "shared", TEACHER_KEY_ALBA_ALT: "shared" };
+  assert.equal(hasCredentialConflict(clash), true);
+  assert.equal(identityForKey(clash, "shared"), null);
+});
+
+await t("the legacy key sharing a named teacher's value resolves to the TEACHER, not a conflict", () => {
+  // TEACHER_KEY predates the split, so it plausibly still holds a named
+  // teacher's string. Failing on that would take the site down to punish a
+  // historical artifact; attributing it to the named human is more correct than
+  // "Teacher" anyway.
+  const legacyShared = { TEACHER_KEY_NEFT: "one-value", TEACHER_KEY: "one-value" };
+  assert.equal(hasCredentialConflict(legacyShared), false);
+  assert.equal(identityForKey(legacyShared, "one-value"), "Neft");
+});
+
+await t("/session names which slot is missing, without naming a value", async () => {
+  const body = await (await call(get("session"), ENV)).json();
+  assert.deepEqual(body.credentials.Neft, { primary: true, alternate: true });
+  assert.deepEqual(body.credentials.Alba, { primary: true, alternate: true });
+  assert.equal(body.credentials.conflict, false);
+  const text = JSON.stringify(body);
+  for (const value of Object.values(ENV)) {
+    assert.ok(!text.includes(value), "a configured credential value reached the response");
+  }
 });
 
 /* ── The predicate every gated endpoint uses ───────────────────────────────── */
