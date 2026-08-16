@@ -482,6 +482,11 @@
         // Selected Google calendar IDs to include (read-only). Only the ID
         // strings are persisted — never tokens. Empty = default to "primary".
         gcalCalendars: [],
+        // Parent/setup gate. Empty = no gate (the default for a fresh install).
+        parentPin: "",
+        // Bounds on the after-school work window the planner may fill.
+        bedtime: "21:00",
+        maxWorkMin: 150,
       },
       classes: [
         c("Math", "#147c78"),
@@ -554,6 +559,19 @@
         rememberText: "",
       },
       health: { log: {} },
+      // --- School OS -------------------------------------------------------
+      // The real school timetable (periods, rotation, no-school days,
+      // after-school commitments). Owned/validated by PlannerCore.
+      schedule: {},
+      // { assessmentId: [ { id, date, minutes, focus, detail, done } ] }
+      studyPlans: {},
+      // { classId: ["PE clothes", ...] } — what each class always needs.
+      subjectNeeds: {},
+      // { dateIso: { index: true } } — packing checkboxes, per day.
+      packLog: {},
+      // { classId|"_": { ratio, n } } — how long work in that class really
+      // takes vs. the guess. Not a judgment, just a better default.
+      estimateModel: {},
       importInbox: [],
       changeLog: [],
       supportStats: {
@@ -603,12 +621,26 @@
     s.gcalCalendars = (Array.isArray(s.gcalCalendars) ? s.gcalCalendars : [])
       .filter((id) => typeof id === "string" && id.trim())
       .slice(0, 50);
+    // Classes were historically re-seeded whenever a device's list was
+    // momentarily empty, and `mergeStates` unions by id — so every fresh
+    // browser appended another 4 duplicate defaults. Noam's live account had
+    // grown to ~120 classes this way. Collapse identical ones, keeping the
+    // oldest id so existing assignments keep pointing at a real class.
+    const dedupedClasses = dedupeClasses(
+      Array.isArray(x.classes) && x.classes.length
+        ? x.classes.map(normalizeClass)
+        : base.classes,
+    );
     return {
       ...base,
       ...x,
       settings: s,
-      classes:
-        Array.isArray(x.classes) && x.classes.length ? x.classes.map(normalizeClass) : base.classes,
+      schedule: PlannerCoreRef().normalizeSchedule(x.schedule),
+      studyPlans: plainObject(x.studyPlans),
+      subjectNeeds: plainObject(x.subjectNeeds),
+      packLog: plainObject(x.packLog),
+      estimateModel: plainObject(x.estimateModel),
+      classes: dedupedClasses,
       assignments: Array.isArray(x.assignments) ? x.assignments.map(normalizeTask) : [],
       // Reminders merged into the to-do list — migrate once, then keep empty.
       reminders: [],
@@ -918,6 +950,30 @@
     }
     return { items, removedItems };
   }
+  const plainObject = (v) => (v && typeof v === "object" && !Array.isArray(v) ? v : {});
+  // PlannerCore is a plain script loaded before app.js. Resolve it lazily so a
+  // load-order hiccup degrades to "no schedule" instead of a blank app.
+  function PlannerCoreRef() {
+    return (
+      (typeof window !== "undefined" && window.PlannerCore) || {
+        normalizeSchedule: () => ({ enabled: false, periods: [], exceptions: [], activities: [] }),
+      }
+    );
+  }
+
+  // Collapse duplicate classes created by the historic re-seed bug. Two classes
+  // are "the same" when their names match; the oldest id survives so existing
+  // assignment.classId references stay valid.
+  function dedupeClasses(list) {
+    const byName = new Map();
+    for (const c of list) {
+      const key = String(c.name || "").trim().toLowerCase();
+      const prev = byName.get(key);
+      if (!prev || (c.updatedAt || 0) < (prev.updatedAt || 0)) byName.set(key, c);
+    }
+    return [...byName.values()];
+  }
+
   function normalizeClass(c) {
     c = c || {};
     return {
@@ -990,6 +1046,9 @@
             text: st.text || "",
             done: !!st.done,
             credited: !!st.credited,
+            // Project steps are scheduled onto real days before the deadline.
+            ...(DATE_RE.test(st.date) ? { date: st.date } : {}),
+            ...(Number(st.minutes) ? { minutes: Number(st.minutes) } : {}),
             // Per-step toggle stamp — lets the sync merge keep the most recent
             // check/uncheck per step across devices (same rule as routines).
             ...(Number(st.__ts) ? { __ts: Number(st.__ts) } : {}),
@@ -1002,6 +1061,31 @@
       assignmentType: String(a.assignmentType || "").slice(0, 40),
       created: a.created || todayKey(),
       completedAt: a.completedAt || "",
+      // --- School OS fields ------------------------------------------------
+      // What kind of school work this is. Assessments are never "done" as
+      // tasks — they are studied for; projects carry dated steps.
+      kind: ["assignment", "assessment", "project", "study"].includes(a.kind)
+        ? a.kind
+        : "assignment",
+      assessmentType: ["quiz", "test"].includes(a.assessmentType) ? a.assessmentType : "",
+      // The date the WORK is planned for, deliberately separate from `due`.
+      plannedDate: DATE_RE.test(a.plannedDate) ? a.plannedDate : "",
+      // The deadline as originally entered. Rescheduling planned work must
+      // never silently rewrite reality, so this is set once and kept.
+      originalDue: DATE_RE.test(a.originalDue) ? a.originalDue : "",
+      planHistory: Array.isArray(a.planHistory) ? a.planHistory.slice(-20) : [],
+      importance: ["low", "normal", "high"].includes(a.importance) ? a.importance : "normal",
+      // { reason, since, nextAction } — work that genuinely cannot proceed.
+      blocked:
+        a.blocked && a.blocked.reason
+          ? {
+              reason: String(a.blocked.reason).slice(0, 120),
+              since: a.blocked.since || todayKey(),
+              nextAction: String(a.blocked.nextAction || "").slice(0, 160),
+            }
+          : null,
+      studySessionId: String(a.studySessionId || ""),
+      assessmentId: String(a.assessmentId || ""),
       updatedAt: a.updatedAt || Date.now(),
     };
   }
@@ -1827,7 +1911,11 @@
   // tap away under the "Daily" section of More. Every view still exists and is
   // reachable by URL/command-bar; only what sits in the bar changed.
   const TABS = [
-    ["home", "Now", "🎯"],
+    // The four the student needs every day lead the bar; everything the owner
+    // added stays reachable behind them (nothing was removed).
+    ["home", "Today", "🎯"],
+    ["school", "School", "🏫"],
+    ["study", "Study", "📗"],
     ["homework", "Homework", "📋"],
     ["reading", "Reading", "📚"],
     ["calendar", "Calendar", "📆"],
@@ -3646,6 +3734,13 @@
 
   function renderHero() {
     const hero = $("#hero");
+    // The hero is the single most valuable pixel real-estate in the app, so it
+    // answers the product's one question directly: what is next, and why.
+    const entry = typeof nextUpEntry === "function" ? nextUpEntry() : null;
+    if (entry && !overwhelm) {
+      renderNextUpHero(hero, entry);
+      return;
+    }
     const t = rightNowTask();
     const open = openTasks();
     const today = open.filter((a) => daysUntil(a.due) === 0);
@@ -3724,6 +3819,39 @@
           <button class="btn sm" data-act="nav" data-arg="tasks">✅ All tasks</button>
         </div>
       </details>`;
+  }
+
+  // The Next-Up hero: one task, one reason, one button. Everything else on the
+  // screen is secondary to this.
+  function renderNextUpHero(hero, entry) {
+    const item = entry.item;
+    const c = item.classId ? cls(item.classId) : null;
+    const remaining = remainingMinutesToday();
+    const count = todaysWork().length;
+    hero.innerHTML = `
+      <div class="now-head">
+        <span class="eyebrow">${esc(greeting())}</span>
+        <button class="btn sm now-quickadd" data-act="quick-entry" aria-label="Add something">＋ Add</button>
+      </div>
+      <div class="now-task">
+        <span class="eyebrow">NEXT UP</span>
+        <div class="now-title">${esc(item.title)}</div>
+        <p class="now-cue">${esc(entry.reason)}</p>
+        <div class="now-meta">
+          ${c ? `<span class="tag" style="background:${esc(c.color)}55">${c.emoji || "📚"} ${esc(c.name)}</span>` : ""}
+          ${item.estimateMin ? `<span class="tag">~${mins(item.estimateMin)}</span>` : ""}
+          ${count > 1 ? `<span class="tag">${count} things · ${mins(remaining)} left</span>` : ""}
+        </div>
+      </div>
+      <div class="now-actions">
+        <button class="btn go big" data-act="start-item" data-id="${esc(entry.id)}">▶ Start</button>
+        <button class="btn" data-act="start-plan">🗂️ Start My Plan</button>
+      </div>
+      <div class="now-rest-actions">
+        <button class="btn sm" data-act="not-next">Not this?</button>
+        <button class="btn sm" data-act="im-stuck">🤔 I'm stuck</button>
+        <button class="btn sm" data-act="im-overwhelmed">😮‍💨 I'm overwhelmed</button>
+      </div>`;
   }
 
   // ---------------------------------------------------------------------------
@@ -5083,7 +5211,18 @@
   }
 
   const VIEWS = {
+    school() {
+      return schoolScreen();
+    },
+    study() {
+      return studyScreen();
+    },
+    setup() {
+      return setupScreen();
+    },
     home() {
+      // "I'm overwhelmed" collapses the whole screen to one tiny action.
+      if (overwhelm) return overwhelmScreen();
       const open = openTasks();
       const recoveryPlan = buildCatchUpPlan(open, todayKey(), state.settings.defaultFocusMin);
       const next = sortByUrgency(
@@ -5157,7 +5296,7 @@
       const catchUpBanner = recoveryPlan.some((item) => item.due < todayKey())
         ? `<section class="catch-up-banner" aria-label="Catch-up mode"><div><span class="eyebrow">CALM RECOVERY PLAN</span><h3>Only three things—not the whole backlog</h3><p>Start with one small block. The rest can wait.</p></div><button class="btn primary" data-act="catch-up-mode">Open catch-up mode</button></section>`
         : "";
-      return `${welcomeBanner}${checkinBanner()}${captureBanner()}${catchUpBanner}${arrangeBar}<div class="home-grid${arrangeMode ? " arranging" : ""}">${order.map((k) => map[k] || "").join("")}${arrangeMode ? "" : customizeTile}</div>`;
+      return `${welcomeBanner}${todayScreen()}${checkinBanner()}${captureBanner()}${catchUpBanner}${arrangeBar}<div class="home-grid${arrangeMode ? " arranging" : ""}">${order.map((k) => map[k] || "").join("")}${arrangeMode ? "" : customizeTile}</div>`;
     },
 
     calendar() {
@@ -7815,6 +7954,8 @@ Due May 31"></textarea>
   function closeModal() {
     $("#modalBack").classList.remove("open");
     $("#modalBack").setAttribute("aria-hidden", "true");
+    // Clear the body so stale controls can't linger in the accessibility tree.
+    $("#modalBody").innerHTML = "";
     // Return focus to whatever opened the modal (WCAG 2.4.3).
     if (modalLastFocus) {
       try {
@@ -7892,6 +8033,13 @@ Due May 31"></textarea>
       </div>
       <div class="field"><label>About how long? (minutes)</label><input type="number" id="tEst" min="0" step="5" value="${a.estimateMin || ""}" placeholder="20"></div>
       <div class="field"><label>Notes (optional)</label><textarea id="tNotes">${esc(a.notes || "")}</textarea></div>
+      <div class="field"><label for="tKind">What kind is it?</label>
+        <select id="tKind">
+          <option value="assignment"${(a.kind || "assignment") === "assignment" ? " selected" : ""}>Homework</option>
+          <option value="quiz"${a.assessmentType === "quiz" ? " selected" : ""}>Quiz</option>
+          <option value="test"${a.assessmentType === "test" ? " selected" : ""}>Test</option>
+          <option value="project"${a.kind === "project" ? " selected" : ""}>Project</option>
+        </select></div>
       <button class="btn primary block" data-act="save-task" data-id="${esc(a.id || "")}">${editing ? "Save changes" : "Add assignment"}</button>`;
   }
 
@@ -10325,6 +10473,241 @@ Due May 31"></textarea>
   }
 
   const ACTIONS = {
+    // --- School OS actions ---------------------------------------------------
+    "start-item": (id) => {
+      const entry = PC.prioritize(plannerCtx()).find((e) => e.id === id);
+      startWorkItem(entry ? entry.item : null);
+    },
+    // Automation is only safe if it's trivially correctable (§24).
+    "not-next": () => {
+      const ranked = todaysWork();
+      openModal(
+        "Pick what to do instead",
+        `<div class="stuck-list">${ranked
+          .slice(0, 8)
+          .map(
+            (e) =>
+              `<button class="btn stuck-opt" data-act="start-item" data-id="${esc(e.id)}">${esc(e.item.title)}<small>${esc(e.reason)}</small></button>`,
+          )
+          .join("")}</div>`,
+      );
+    },
+    "start-plan": () => planModal(),
+    "plan-go": () => {
+      closeModal();
+      const first = activePlan && activePlan.workBlocks[0];
+      if (!first) return;
+      const entry = PC.prioritize(plannerCtx()).find((e) => e.id === first.itemId);
+      startWorkItem(entry ? entry.item : null);
+    },
+    "less-time": () => lessTimeModal(),
+    "less-time-set": (_, arg) => {
+      const ctx = plannerCtx();
+      const plan = PC.buildPlan({ ...ctx, availableMin: Number(arg) || 30, startMin: nowMin() });
+      activePlan = plan;
+      openModal(
+        `You have ${arg} minutes`,
+        `<ol class="plan-list">${plan.blocks
+          .map((b) =>
+            b.kind === "break"
+              ? `<li class="plan-break">Break · ${mins(b.minutes)}</li>`
+              : `<li><b>${esc(b.title)}</b> · ${mins(b.minutes)}</li>`,
+          )
+          .join("")}</ol>
+         ${plan.leftOver.length ? `<p class="sub">Moving to tomorrow: ${plan.leftOver.map((i) => esc(i.title)).join(", ")}. Their due dates don't change.</p>` : ""}
+         <button class="btn primary" data-act="plan-go">▶ Start</button>`,
+      );
+    },
+    "im-stuck": () => stuckModal(),
+    "stuck-pick": (_, id) => stuckAnswer(id),
+    "stuck-do": (_, id) => {
+      const o = PC.STUCK_OPTIONS.find((x) => x.id === id);
+      closeModal();
+      if (!o) return;
+      if (o.action.act === "focus-launch") {
+        const entry = nextUpEntry();
+        state.settings.defaultFocusMin = Number(o.action.arg) || 5;
+        if (entry) startWorkItem({ ...entry.item, estimateMin: Number(o.action.arg) || 5 });
+      } else if (o.action.act === "capture-missing") {
+        blockCurrentTask();
+      } else if (o.action.act === "calming") {
+        setView("calming");
+      } else {
+        setView("ai");
+      }
+    },
+    "im-overwhelmed": () => {
+      const entry = nextUpEntry();
+      overwhelm = { index: 0, steps: PC.overwhelmedSteps(entry ? entry.item : null) };
+      render();
+    },
+    "overwhelm-next": () => {
+      const step = overwhelm.steps[overwhelm.index];
+      if (step.action && step.action.act === "focus-launch") {
+        const entry = nextUpEntry();
+        state.settings.defaultFocusMin = Number(step.action.arg) || 5;
+        overwhelm = null;
+        if (entry) startWorkItem({ ...entry.item, estimateMin: Number(step.action.arg) || 5 });
+        render();
+        return;
+      }
+      if (overwhelm.index >= overwhelm.steps.length - 1) {
+        overwhelm = null;
+      } else {
+        overwhelm.index++;
+      }
+      render();
+    },
+    "overwhelm-exit": () => {
+      overwhelm = null;
+      render();
+    },
+    "pack-tomorrow": () => packModal(),
+    "quick-entry": () => quickEntryModal(),
+    "quick-entry-save": () => saveQuickEntry(),
+    "add-assessment": () => quickEntryModal("quiz "),
+    "start-study": (id) => {
+      const item = dueStudySessions().find((s) => s.id === id);
+      if (item) startWorkItem(item);
+    },
+    "study-tool": (_, mode) => {
+      const entry = nextUpEntry();
+      // The coach opens already knowing what he's working on (§22) — he should
+      // never have to re-explain his own assignment.
+      studyCoachContext = entry
+        ? { title: entry.item.title, classId: entry.item.classId, mode }
+        : { mode };
+      setView("ai");
+    },
+    // Blocked work: real, named, and out of the way (§11/§12).
+    "unblock": (id) => {
+      const a = state.assignments.find((x) => x.id === id);
+      if (!a) return;
+      a.blocked = null;
+      a.updatedAt = Date.now();
+      save();
+      render();
+      toast("Back on your list");
+    },
+    "setup-unlock": () => {
+      const pin = ($("#setupPin") || {}).value || "";
+      if (pin && pin === state.settings.parentPin) {
+        setupUnlocked = true;
+        render();
+      } else {
+        toast("That PIN didn't match");
+      }
+    },
+    "setup-pin": () => {
+      openModal(
+        "Setup PIN",
+        `<div class="field"><label for="newPin">New PIN (leave blank to remove)</label><input id="newPin" type="text" inputmode="numeric" value="${esc(state.settings.parentPin)}"></div>
+         <button class="btn primary" data-act="setup-pin-save">Save</button>`,
+      );
+    },
+    "setup-pin-save": () => {
+      state.settings.parentPin = String(($("#newPin") || {}).value || "").slice(0, 12);
+      save();
+      closeModal();
+      toast("Saved");
+    },
+    "setup-schedule": () => scheduleEditor(),
+    "setup-schedule-save": () => saveScheduleEditor(),
+    "setup-period-add": () => {
+      const s = PC.normalizeSchedule(state.schedule);
+      s.periods.push({ id: uid("p"), name: "", start: "", end: "", days: ["Mon", "Tue", "Wed", "Thu", "Fri"] });
+      state.schedule = s;
+      scheduleEditor();
+    },
+    "setup-period-del": (id) => {
+      const s = PC.normalizeSchedule(state.schedule);
+      s.periods = s.periods.filter((p) => p.id !== id);
+      state.schedule = s;
+      save();
+      scheduleEditor();
+    },
+    "setup-exceptions": () => exceptionsEditor(),
+    "setup-exception-add": () => {
+      const date = ($("#exDate") || {}).value || "";
+      const type = ($("#exType") || {}).value || "no-school";
+      const label = ($("#exLabel") || {}).value || "";
+      if (!DATE_RE.test(date)) {
+        toast("Pick a date first");
+        return;
+      }
+      const s = PC.normalizeSchedule(state.schedule);
+      s.exceptions = [...s.exceptions.filter((e) => e.date !== date), { date, type, label, dismissTime: ($("#exDismiss") || {}).value || "" }];
+      state.schedule = s;
+      save();
+      exceptionsEditor();
+    },
+    "setup-exception-del": (_, date) => {
+      const s = PC.normalizeSchedule(state.schedule);
+      s.exceptions = s.exceptions.filter((e) => e.date !== date);
+      state.schedule = s;
+      save();
+      exceptionsEditor();
+    },
+    "setup-activities": () => activitiesEditor(),
+    "setup-activity-add": () => {
+      const s = PC.normalizeSchedule(state.schedule);
+      s.activities.push({ id: uid("act"), name: "", days: [], start: "", end: "", place: "" });
+      state.schedule = s;
+      activitiesEditor();
+    },
+    "setup-activities-save": () => saveActivitiesEditor(),
+    "block-save": (id) => {
+      const a = state.assignments.find((x) => x.id === id);
+      const what = String(($("#blkWhat") || {}).value || "").trim();
+      if (!what) {
+        toast("Tell me what's missing first");
+        return;
+      }
+      if (!a) {
+        // Should be unreachable now that ids resolve to a real assignment, but
+        // never leave the student staring at a modal that does nothing.
+        closeModal();
+        toast("Couldn't set that one aside — open the task and try there");
+        return;
+      }
+      a.blocked = {
+        reason: `Need: ${what}`,
+        since: todayKey(),
+        nextAction: `Get ${what} at school`,
+      };
+      a.updatedAt = Date.now();
+      // A school-context reminder, not another homework task — this belongs to
+      // tomorrow morning, not tonight.
+      state.reminders.push(
+        normalizeReminder({
+          id: uid("rm"),
+          text: `At school: get ${what}`,
+          date: PC.addDays(todayKey(), 1),
+          time: "08:00",
+        }),
+      );
+      save();
+      closeModal();
+      render();
+      toast("Set aside — you'll be reminded at school");
+    },
+    "setup-packing": () => packingEditor(),
+    "setup-packing-save": () => {
+      const next = {};
+      for (const c of state.classes) {
+        const el = $(`#pk_${c.id}`);
+        if (!el) continue;
+        const list = String(el.value || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean);
+        if (list.length) next[c.id] = list;
+      }
+      state.subjectNeeds = next;
+      save();
+      closeModal();
+      toast("Saved");
+    },
     "undo-last": () => {
       if (!undoRecord || Date.now() > undoRecord.expiresAt) return;
       const run = undoRecord.run;
@@ -10844,7 +11227,16 @@ Due May 31"></textarea>
       obj.dueTime = $("#tTime").value;
       obj.estimateMin = Number($("#tEst").value) || 0;
       obj.notes = $("#tNotes").value;
+      const kindEl = $("#tKind");
+      if (kindEl) {
+        obj.kind = kindEl.value === "quiz" || kindEl.value === "test" ? "assessment" : kindEl.value;
+        obj.assessmentType = kindEl.value === "quiz" || kindEl.value === "test" ? kindEl.value : "";
+      }
       if (!id) state.assignments.push(obj);
+      // Adding or re-dating a test rebuilds its study plan; moving a project
+      // deadline re-spreads its steps. Noam never does either by hand.
+      if (obj.kind === "assessment") regenerateStudyPlan(obj);
+      if (obj.kind === "project" && obj.due && !obj.steps.some((st) => st.date)) autoBreakdown(obj);
       logChange("assignment", `${id ? "Updated" : "Added"} ${obj.title}`, obj.id);
       save();
       closeModal();
@@ -12488,6 +12880,22 @@ ${name}`;
       const kind = box.dataset.check,
         id = box.dataset.id,
         sid = box.dataset.sid;
+      if (kind === "planner-item") {
+        // One checkbox for every kind of work on Today — assignment, project
+        // step, or study session — so completing is always the same gesture.
+        completePlannerItem(id);
+        return;
+      }
+      if (kind === "study-session") {
+        completeStudySession(id, box.checked);
+        return;
+      }
+      if (kind === "pack") {
+        const day = (state.packLog[id] = state.packLog[id] || {});
+        day[sid] = box.checked;
+        save();
+        return;
+      }
       if (kind === "step") {
         const a = state.assignments.find((x) => x.id === id);
         const st = a?.steps.find((s) => s.id === sid);
@@ -13093,6 +13501,23 @@ ${name}`;
       if (e.key === HEBREW_EARN_KEY && drainHebrewEarnings()) render();
     });
 
+    // Boot-time repair: nothing accusatory, just a quietly corrected plan.
+    // Both are idempotent and derived, so running them every load is safe.
+    try {
+      const movedItems = repairMissedWork();
+      for (const a of state.assignments) {
+        if (a.status === "done") continue;
+        if (a.kind === "assessment") regenerateStudyPlan(a);
+        // A project with no steps yet — however it arrived (sync, import, an
+        // older build) — gets decomposed and paced now. Without this it sits
+        // on the list as one giant "History project" until the night before.
+        if (a.kind === "project" && a.due && !a.steps.some((st) => st.date)) autoBreakdown(a);
+      }
+      if (movedItems.length) save();
+    } catch (err) {
+      console.warn("planner repair skipped", err);
+    }
+
     wire();
     render();
 
@@ -13212,6 +13637,1011 @@ ${name}`;
     }
   }
 
+// ===========================================================================
+// SCHOOL OS LAYER — Today / School / Study / Setup
+// ===========================================================================
+// Everything here is presentation + wiring on top of `PlannerCore`
+// (planner-core.js), which owns all the actual scheduling decisions. Keeping
+// the rules in a pure module is what lets them be unit-tested without the
+// DOM; this layer must stay thin enough that it never re-implements one.
+const PC =
+  typeof window !== "undefined" && window.PlannerCore
+    ? window.PlannerCore
+    : null;
+
+const nowMin = () => {
+  const d = new Date();
+  return d.getHours() * 60 + d.getMinutes();
+};
+
+// --- The single list the planner reasons over -----------------------------
+// Assignments, project steps and generated study sessions are all folded
+// into ONE ranked pool so nothing can be prioritized in isolation. Routines
+// deliberately stay out: they are not academic work and have their own
+// time-window system that already works.
+function plannerItems(todayIso = todayKey()) {
+  const out = [];
+  for (const a of state.assignments) {
+    if (a.status === "done") continue;
+    if (isBlocked(a)) continue; // blocked work can't be "next" — §11/§12
+    if (a.kind === "assessment") continue; // assessments are studied for, not "done"
+    if (a.kind === "project" && a.steps.length) {
+      const step = PC.currentProjectStep(a, todayIso);
+      if (!step) continue;
+      out.push({
+        ...a,
+        title: `${a.title} — ${step.text}`,
+        projectId: a.id,
+        stepId: step.id,
+        estimateMin: step.minutes || 20,
+        plannedDate: step.date || a.plannedDate,
+      });
+      continue;
+    }
+    out.push(a);
+  }
+  // Study sessions for upcoming assessments become first-class work items.
+  for (const s of dueStudySessions(todayIso)) out.push(s);
+  return out;
+}
+
+// Study sessions planned for today (or any earlier missed one) as work items.
+function dueStudySessions(todayIso = todayKey()) {
+  const out = [];
+  for (const a of state.assignments) {
+    if (a.kind !== "assessment" || a.status === "done") continue;
+    const plan = state.studyPlans[a.id] || [];
+    for (const s of plan) {
+      if (s.done || s.date > todayIso) continue;
+      out.push({
+        id: s.id,
+        title: `Study ${a.title}: ${s.focus}`,
+        classId: a.classId,
+        kind: "study",
+        assessmentId: a.id,
+        due: s.date,
+        dueTime: "",
+        plannedDate: s.date,
+        status: "todo",
+        importance: "normal",
+        estimateMin: s.minutes,
+        steps: [],
+        detail: s.detail,
+      });
+    }
+  }
+  return out;
+}
+
+const isBlocked = (a) => !!(a.blocked && a.blocked.reason);
+
+// Map a planner item (which may be a VIRTUAL project step or study session)
+// back to the real assignment that owns it. Every mutation goes through this —
+// without it, "set this aside" silently no-ops on a study session, because a
+// study session's id is not an assignment id.
+function owningAssignmentId(item) {
+  if (!item) return "";
+  if (item.projectId) return item.projectId;
+  if (item.kind === "study" && item.assessmentId) return item.assessmentId;
+  return item.id;
+}
+
+function plannerCtx(todayIso = todayKey()) {
+  const items = plannerItems(todayIso);
+  return {
+    items,
+    todayIso,
+    availableMin: PC.availableMinutes(state.schedule, todayIso, nowMin(), {
+      bedtime: state.settings.bedtime,
+      maxWorkMin: state.settings.maxWorkMin,
+    }),
+    breakMin: state.settings.breakMin,
+    defaultFocusMin: state.settings.defaultFocusMin,
+  };
+}
+
+// The one thing Noam should do next, with the sentence that explains it.
+function nextUpEntry(todayIso = todayKey()) {
+  return PC.nextUp(plannerCtx(todayIso));
+}
+
+// Work planned for today = anything due today/overdue, plus anything he (or
+// the planner) explicitly parked on today.
+function todaysWork(todayIso = todayKey()) {
+  return PC.prioritize(plannerCtx(todayIso)).filter((e) => {
+    const wd = PC.workDate(e.item);
+    return !wd || wd <= todayIso || (e.item.due && e.item.due <= todayIso);
+  });
+}
+
+function remainingMinutesToday(todayIso = todayKey()) {
+  return todaysWork(todayIso).reduce(
+    (n, e) => n + Math.max(5, e.estimateMin || 15),
+    0,
+  );
+}
+
+// --- Starting work --------------------------------------------------------
+// Task → Start → Focus. Never "open a timer, then go find the task".
+function startWorkItem(item) {
+  if (!item) return;
+  // Study sessions and project steps are real assignments underneath, or get
+  // promoted into one so the focus timer has something to log against.
+  const target =
+    item.kind === "study" ? ensureStudyTask(item) : item.projectId || item.id;
+  const a = state.assignments.find((x) => x.id === target);
+  if (!a) return;
+  // Auto-pick a sane duration: the item's own estimate, rounded to a real
+  // focus block, capped so a 7th grader is never handed a 60-minute wall.
+  const want = Math.max(
+    5,
+    Math.min(30, Number(item.estimateMin) || state.settings.defaultFocusMin),
+  );
+  focusGoal = {
+    itemId: item.id,
+    title: item.title,
+    minutes: want,
+    detail: item.detail || "",
+  };
+  state.settings.defaultFocusMin = want;
+  focus.start(a.id);
+}
+let focusGoal = null;
+
+// A study session becomes a real, completable task the first time it starts,
+// so focus minutes and completion have somewhere to live.
+function ensureStudyTask(item) {
+  const existing = state.assignments.find((x) => x.studySessionId === item.id);
+  if (existing) return existing.id;
+  const a = normalizeTask({
+    id: uid("a"),
+    title: item.title,
+    classId: item.classId,
+    kind: "study",
+    due: item.due,
+    estimateMin: item.estimateMin,
+    status: "doing",
+  });
+  a.studySessionId = item.id;
+  a.assessmentId = item.assessmentId;
+  state.assignments.push(a);
+  save();
+  return a.id;
+}
+
+// --- Assessments ----------------------------------------------------------
+// Adding a test/quiz automatically produces its study plan. Noam never picks
+// which days to study — that is exactly the executive-function load this
+// product exists to remove.
+function regenerateStudyPlan(assessment, { force = false } = {}) {
+  if (!assessment || assessment.kind !== "assessment" || !assessment.due)
+    return;
+  const existing = state.studyPlans[assessment.id] || [];
+  const fresh = PC.buildStudyPlan(assessment, todayKey());
+  if (!force && existing.some((s) => s.done)) {
+    // Preserve completed study history; only re-plan the sessions still ahead.
+    const doneDates = new Set(
+      existing.filter((s) => s.done).map((s) => s.date),
+    );
+    state.studyPlans[assessment.id] = [
+      ...existing.filter((s) => s.done),
+      ...fresh.filter((s) => !doneDates.has(s.date)),
+    ].sort((a, b) => a.date.localeCompare(b.date));
+    return;
+  }
+  state.studyPlans[assessment.id] = fresh;
+}
+
+const assessments = () =>
+  state.assignments
+    .filter((a) => a.kind === "assessment" && a.status !== "done")
+    .sort((a, b) => String(a.due).localeCompare(String(b.due)));
+
+// --- Rendering helpers ----------------------------------------------------
+const mins = (n) => PC.durationLabel(n);
+const clock = (m) => (m === null || m === undefined ? "" : PC.minToLabel(m));
+
+function itemChip(item) {
+  const c = item.classId ? cls(item.classId) : null;
+  const tags = [];
+  if (c)
+    tags.push(
+      `<span class="tag" style="background:${esc(c.color)}55">${esc(c.name)}</span>`,
+    );
+  if (item.kind === "study") tags.push(`<span class="tag study">Study</span>`);
+  if (item.kind === "project")
+    tags.push(`<span class="tag project">Project</span>`);
+  if (item.estimateMin)
+    tags.push(`<span class="tag">~${mins(item.estimateMin)}</span>`);
+  return tags.join("");
+}
+
+// ===========================================================================
+// TODAY — the primary screen
+// ===========================================================================
+function todayScreen() {
+  const todayIso = todayKey();
+  const tomorrowIso = PC.addDays(todayIso, 1);
+  const ranked = todaysWork(todayIso);
+  const next = ranked[0] || null;
+  const remaining = remainingMinutesToday(todayIso);
+  const school = PC.nowNext(state.schedule, todayIso, nowMin());
+  const dayNow = PC.dayPlan(state.schedule, todayIso);
+
+  // During the school day the top of Today is the timetable, not homework.
+  const schoolStrip =
+    dayNow.school && school.inSchool
+      ? `<section class="today-school" aria-label="Right now at school">
+             <div class="ts-col"><span class="eyebrow">NOW</span><b>${esc(school.now ? school.now.name : "Between classes")}</b>${school.now ? `<small>${clock(school.now.startMin)}–${clock(school.now.endMin)}</small>` : ""}</div>
+             ${school.next ? `<div class="ts-col"><span class="eyebrow">NEXT</span><b>${esc(school.next.name)}</b><small>Starts in ${mins(school.minsToNext)}</small></div>` : ""}
+           </section>`
+      : "";
+
+  const nextUp = next
+    ? `<section class="nextup" aria-label="Next up">
+           <span class="eyebrow">NEXT UP</span>
+           <h2>${esc(next.item.title)}</h2>
+           <p class="nextup-why">${esc(next.reason)}</p>
+           <div class="nextup-meta">${itemChip(next.item)}</div>
+           <div class="nextup-actions">
+             <button class="btn go big" data-act="start-item" data-id="${esc(next.id)}">▶ Start</button>
+             <button class="btn sm" data-act="not-next">Not this?</button>
+           </div>
+         </section>`
+    : `<section class="nextup done" aria-label="Caught up">
+           <span class="eyebrow">TODAY</span>
+           <h2>You're done for today.</h2>
+           <p class="nextup-why">Nothing else is waiting. Enjoy your evening.</p>
+           <div class="nextup-actions"><button class="btn go" data-act="pack-tomorrow">🎒 Pack for tomorrow</button></div>
+         </section>`;
+
+  const list = ranked.length
+    ? `<ul class="today-list">${ranked
+        .map(
+          (e) =>
+            `<li${e === next ? ' class="is-next"' : ""}>
+                 <input class="check" type="checkbox" data-check="planner-item" data-id="${esc(e.id)}" aria-label="Mark ${esc(e.item.title)} done">
+                 <span class="tl-title">${esc(e.item.title)}</span>
+                 <span class="tl-min">${e.estimateMin ? mins(e.estimateMin) : ""}</span>
+               </li>`,
+        )
+        .join("")}</ul>
+         <p class="today-total"><b>${mins(remaining)} left</b></p>`
+    : emptyState("✅", "You're caught up.");
+
+  const soon = comingUp(todayIso);
+  const comingSection = `<section class="card" aria-label="Coming up"><div class="head"><div><h3>Coming up</h3></div></div>${
+    soon.length
+      ? `<ul class="coming">${soon
+          .map(
+            (x) =>
+              `<li><span class="coming-day">${esc(PC.dayName(x.due).toUpperCase())}</span><span class="coming-badge ${esc(x.badge.toLowerCase())}">${esc(x.badge)}</span><span>${esc(x.title)}</span></li>`,
+          )
+          .join("")}</ul>`
+      : emptyState("📭", "No tests or projects coming up.")
+  }</section>`;
+
+  const tmr = PC.dayPlan(state.schedule, tomorrowIso);
+  const tomorrowSection = `<section class="card" aria-label="Tomorrow"><div class="head"><div><h3>Tomorrow</h3></div></div>${
+    tmr.school
+      ? `<p class="tmr-line">School starts at ${clock(tmr.startMin)}${tmr.earlyDismissal ? ` · early dismissal ${clock(tmr.dismissMin)}` : ""}</p>
+           <p class="tmr-line">${tmr.classPeriods.length} classes${tmr.classPeriods.some((p) => /pe|gym/i.test(p.name)) ? " · PE day" : ""}</p>
+           <button class="btn sm" data-act="pack-tomorrow">🎒 Pack for tomorrow</button>`
+      : `<p class="tmr-line">${esc(tmr.label || "No school tomorrow.")}</p>`
+  }</section>`;
+
+  const support = `<div class="today-support">
+        <button class="btn sm" data-act="im-stuck">🤔 I'm stuck</button>
+        <button class="btn sm" data-act="im-overwhelmed">😮‍💨 I'm overwhelmed</button>
+        <button class="btn sm" data-act="quick-entry">＋ Add something</button>
+      </div>`;
+
+  const planBtn = ranked.length
+    ? `<div class="plan-cta"><button class="btn primary big" data-act="start-plan">🗂️ Start My Plan</button><small>${ranked.length} thing${ranked.length === 1 ? "" : "s"} · about ${mins(remaining)}</small></div>`
+    : "";
+
+  const blockedList = state.assignments.filter(
+    (a) => isBlocked(a) && a.status !== "done",
+  );
+  const blockedSection = blockedList.length
+    ? `<section class="card blocked-card" aria-label="Waiting on something"><div class="head"><div><h3>Waiting on something</h3><p class="sub">These can't be done right now — that's fine.</p></div></div>
+         <ul class="coming">${blockedList
+           .map(
+             (a) =>
+               `<li><span>${esc(a.title)}</span><small>${esc(a.blocked.reason)}</small><button class="btn sm" data-act="unblock" data-id="${a.id}">I have it now</button></li>`,
+           )
+           .join("")}</ul></section>`
+    : "";
+
+  return `${schoolStrip}${nextUp}${planBtn}
+      <section class="card" aria-label="Today"><div class="head"><div><h3>Today</h3></div></div>${list}</section>
+      ${blockedSection}${comingSection}${tomorrowSection}${support}`;
+}
+
+// Tests, quizzes and project deadlines in the next two weeks.
+function comingUp(todayIso = todayKey(), days = 14) {
+  const end = PC.addDays(todayIso, days);
+  return state.assignments
+    .filter(
+      (a) => a.status !== "done" && a.due && a.due > todayIso && a.due <= end,
+    )
+    .map((a) => ({
+      title: a.title,
+      due: a.due,
+      badge:
+        a.kind === "assessment"
+          ? a.assessmentType === "test"
+            ? "TEST"
+            : "QUIZ"
+          : a.kind === "project"
+            ? "PROJECT"
+            : "DUE",
+    }))
+    .sort((a, b) => a.due.localeCompare(b.due))
+    .slice(0, 6);
+}
+
+// ===========================================================================
+// SCHOOL — schedule + two-week view
+// ===========================================================================
+function schoolScreen() {
+  const todayIso = todayKey();
+  const plan = PC.dayPlan(state.schedule, todayIso);
+  const nn = PC.nowNext(state.schedule, todayIso, nowMin());
+  const hasSchedule = PC.normalizeSchedule(state.schedule).periods.length > 0;
+
+  if (!hasSchedule) {
+    return `<section class="card"><div class="head"><div><h3>Your school day</h3></div></div>
+        ${emptyState("🏫", "No class schedule yet.")}
+        <p class="sub">Add your classes and times once, and the app will know what's now, what's next, and what to pack.</p>
+        <button class="btn primary" data-act="setup-schedule">Set up my schedule</button></section>`;
+  }
+
+  const todayCard = `<section class="card"><div class="head"><div><h3>${esc(plan.dayName)} — today</h3>${plan.label ? `<p class="sub">${esc(plan.label)}</p>` : ""}</div></div>
+      ${
+        plan.school
+          ? `<ul class="periods">${plan.periods
+              .map((p) => {
+                const isNow = nn.now && nn.now.id === p.id;
+                return `<li class="${isNow ? "is-now" : ""}"><span class="p-time">${clock(p.startMin)}</span><span class="p-name">${esc(p.name)}</span><span class="p-room">${esc(p.room || "")}</span>${isNow ? '<span class="pill">Now</span>' : ""}</li>`;
+              })
+              .join("")}</ul>`
+          : emptyState("🎉", plan.label || "No school today.")
+      }</section>`;
+
+  // Two weeks, student-legible: one row per school day with its markers.
+  const rows = [];
+  for (let i = 0; i < 14; i++) {
+    const iso = PC.addDays(todayIso, i);
+    const d = PC.dayPlan(state.schedule, iso);
+    const marks = state.assignments
+      .filter((a) => a.status !== "done" && a.due === iso)
+      .map((a) => ({
+        badge:
+          a.kind === "assessment"
+            ? a.assessmentType === "test"
+              ? "TEST"
+              : "QUIZ"
+            : a.kind === "project"
+              ? "PROJECT"
+              : "DUE",
+        title: a.title,
+      }));
+    if (!d.school && !marks.length && i > 0 && PC.isWeekend(iso)) continue;
+    rows.push(`<li class="wk-row${i === 0 ? " is-today" : ""}${d.school ? "" : " no-school"}">
+        <span class="wk-day">${esc(PC.dayName(iso).toUpperCase())} ${esc(iso.slice(8))}</span>
+        <span class="wk-marks">${
+          !d.school
+            ? `<span class="coming-badge noschool">${esc(d.label || "NO SCHOOL")}</span>`
+            : (d.earlyDismissal
+                ? `<span class="coming-badge early">EARLY OUT</span>`
+                : "") +
+              marks
+                .map(
+                  (m) =>
+                    `<span class="coming-badge ${m.badge.toLowerCase()}">${m.badge}</span> ${esc(m.title)}`,
+                )
+                .join(" ")
+        }</span></li>`);
+  }
+
+  return `${todayCard}
+      <section class="card"><div class="head"><div><h3>Next two weeks</h3></div></div>
+        <ul class="wk-list">${rows.join("")}</ul></section>
+      <div class="row"><button class="btn sm" data-act="setup-schedule">⚙️ Edit schedule</button><button class="btn sm" data-act="nav" data-arg="calendar">📆 Month view</button></div>`;
+}
+
+// ===========================================================================
+// STUDY — assessments, study plans, and the coach
+// ===========================================================================
+function studyScreen() {
+  const todayIso = todayKey();
+  const list = assessments();
+  if (!list.length) {
+    return `<section class="card"><div class="head"><div><h3>Studying</h3></div></div>
+        ${emptyState("📗", "No tests or quizzes coming up.")}
+        <button class="btn primary" data-act="add-assessment">＋ Add a test or quiz</button></section>
+        ${studyToolsCard()}`;
+  }
+  const cards = list
+    .map((a) => {
+      const plan = state.studyPlans[a.id] || [];
+      const pr = PC.studyProgress(plan);
+      const today = plan.find((s) => !s.done && s.date <= todayIso);
+      return `<section class="card"><div class="head"><div>
+            <h3>${esc(a.title)}</h3>
+            <p class="sub">${esc(PC.friendlyDate(a.due, todayIso))}${a.classId ? ` · ${esc(cls(a.classId).name)}` : ""}</p>
+          </div><span class="coming-badge ${a.assessmentType === "test" ? "test" : "quiz"}">${a.assessmentType === "test" ? "TEST" : "QUIZ"}</span></div>
+          <div class="study-prog"><div class="study-bar"><span style="width:${pr.pct}%"></span></div><small>${pr.done} of ${pr.total} study sessions done</small></div>
+          <ul class="study-plan">${plan
+            .map(
+              (s) =>
+                `<li class="${s.done ? "done" : ""}${s.date <= todayIso && !s.done ? " is-now" : ""}">
+                   <input class="check" type="checkbox" data-check="study-session" data-id="${esc(s.id)}" ${s.done ? "checked" : ""} aria-label="${esc(s.focus)} on ${esc(s.date)}">
+                   <span><b>${esc(PC.friendlyDate(s.date, todayIso))} · ${mins(s.minutes)}</b><br><small>${esc(s.focus)} — ${esc(s.detail)}</small></span>
+                 </li>`,
+            )
+            .join("")}</ul>
+          ${today ? `<button class="btn primary" data-act="start-study" data-id="${esc(today.id)}">▶ Start today's study</button>` : `<p class="sub">All caught up on studying for this one.</p>`}
+          <button class="btn sm" data-act="open-task" data-id="${a.id}">Edit</button>
+        </section>`;
+    })
+    .join("");
+  return `${cards}<button class="btn primary" data-act="add-assessment">＋ Add a test or quiz</button>${studyToolsCard()}`;
+}
+
+function studyToolsCard() {
+  return `<section class="card"><div class="head"><div><h3>Study tools</h3><p class="sub">Pick what kind of help you want.</p></div></div>
+      <div class="row study-tools">
+        <button class="btn sm" data-act="study-tool" data-arg="explain">Explain this</button>
+        <button class="btn sm" data-act="study-tool" data-arg="example">Show an example</button>
+        <button class="btn sm" data-act="study-tool" data-arg="quiz">Quiz me</button>
+        <button class="btn sm" data-act="study-tool" data-arg="check">Check my answer</button>
+        <button class="btn sm" data-act="study-tool" data-arg="teach">Teach it back</button>
+      </div></section>`;
+}
+
+// ===========================================================================
+// SETUP (parent) — configuration lives here, out of the daily student flow
+// ===========================================================================
+let setupUnlocked = false;
+
+function setupScreen() {
+  if (state.settings.parentPin && !setupUnlocked) {
+    return `<section class="card"><div class="head"><div><h3>Parent &amp; setup</h3><p class="sub">Classes, schedule, and how the planner behaves.</p></div></div>
+        <div class="field"><label for="setupPin">Enter the setup PIN</label><input id="setupPin" type="password" inputmode="numeric" autocomplete="off"></div>
+        <button class="btn primary" data-act="setup-unlock">Unlock</button></section>`;
+  }
+  const s = PC.normalizeSchedule(state.schedule);
+  const weekAhead = parentSummary();
+  return `
+      <section class="card"><div class="head"><div><h3>How this week looks</h3></div></div>
+        ${weekAhead.lines.map((l) => `<p class="tmr-line">${esc(l)}</p>`).join("")}
+        <p class="sub">${esc(weekAhead.verdict)}</p></section>
+      <section class="card"><div class="head"><div><h3>School schedule</h3><p class="sub">${s.periods.length} periods · day starts ${esc(s.startTime)} · out at ${esc(s.dismissTime)}</p></div></div>
+        <button class="btn primary" data-act="setup-schedule">Edit classes &amp; times</button>
+        <button class="btn sm" data-act="setup-exceptions">No-school &amp; early-out days</button>
+        <button class="btn sm" data-act="setup-activities">After-school activities</button></section>
+      <section class="card"><div class="head"><div><h3>Packing</h3><p class="sub">What each class always needs.</p></div></div>
+        <button class="btn sm" data-act="setup-packing">Edit packing needs</button></section>
+      <section class="card"><div class="head"><div><h3>Everything else</h3></div></div>
+        <div class="row">
+          <button class="btn sm" data-act="nav" data-arg="classes">Classes</button>
+          <button class="btn sm" data-act="nav" data-arg="routines">Routines</button>
+          <button class="btn sm" data-act="nav" data-arg="settings">App settings</button>
+          <button class="btn sm" data-act="nav" data-arg="sync">Sync &amp; devices</button>
+          <button class="btn sm" data-act="setup-pin">Set setup PIN</button>
+        </div></section>`;
+}
+
+// A parent needs one question answered: does he need help? Not a keystroke log.
+function parentSummary() {
+  const todayIso = todayKey();
+  const lines = [];
+  const risks = [];
+  const open = state.assignments.filter((a) => a.status !== "done");
+  const doneThisWeek = state.assignments.filter(
+    (a) =>
+      a.status === "done" &&
+      a.completedAt &&
+      a.completedAt >= PC.addDays(todayIso, -7),
+  ).length;
+  lines.push(
+    `${doneThisWeek} assignment${doneThisWeek === 1 ? "" : "s"} finished in the last week.`,
+  );
+
+  for (const a of assessments()) {
+    const plan = state.studyPlans[a.id] || [];
+    const pr = PC.studyProgress(plan);
+    if (pr.total && pr.done === 0 && PC.daysBetween(todayIso, a.due) <= 2) {
+      risks.push(
+        `${a.title} is ${PC.friendlyDate(a.due, todayIso)} and no study sessions are done yet.`,
+      );
+    }
+  }
+  for (const a of open) {
+    if (a.kind === "project" && a.due) {
+      const left = a.steps.filter((s) => !s.done).length;
+      const daysLeft = PC.daysBetween(todayIso, a.due);
+      if (left >= 3 && daysLeft !== null && daysLeft <= 3) {
+        risks.push(
+          `${a.title} has ${left} steps left and is due ${PC.friendlyDate(a.due, todayIso)}.`,
+        );
+      }
+    }
+    if (
+      (a.planHistory || []).length >= 2 &&
+      a.due &&
+      PC.daysBetween(todayIso, a.due) <= 1
+    ) {
+      risks.push(
+        `${a.title} has been moved ${a.planHistory.length} times and is due soon.`,
+      );
+    }
+    if (isBlocked(a))
+      risks.push(`${a.title} is waiting on: ${a.blocked.reason}.`);
+  }
+  for (const r of risks) lines.push(`⚠ ${r}`);
+  return {
+    lines,
+    verdict: risks.length
+      ? "Might be worth a quick check-in."
+      : "No help needed right now.",
+  };
+}
+
+// ===========================================================================
+// SUPPORT FLOWS
+// ===========================================================================
+function stuckModal() {
+  openModal(
+    "What's getting in the way?",
+    `<div class="stuck-list">${PC.STUCK_OPTIONS.map(
+      (o) =>
+        `<button class="btn stuck-opt" data-act="stuck-pick" data-arg="${o.id}">${esc(o.label)}</button>`,
+    ).join("")}</div>`,
+  );
+}
+
+function stuckAnswer(id) {
+  const o = PC.STUCK_OPTIONS.find((x) => x.id === id);
+  if (!o) return;
+  openModal(
+    o.title,
+    `<ol class="stuck-steps">${o.steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>
+       <button class="btn primary" data-act="stuck-do" data-arg="${o.id}">${esc(o.action.label)}</button>`,
+  );
+}
+
+// Overwhelmed mode: everything else is hidden, one tiny action at a time.
+let overwhelm = null;
+function overwhelmScreen() {
+  const step = overwhelm.steps[overwhelm.index];
+  return `<div class="overwhelm">
+        <h2>Just do this.</h2>
+        <p class="ow-step">${esc(step.text)}</p>
+        <button class="btn go big" data-act="overwhelm-next">${esc(step.cta)}</button>
+        <button class="btn sm ow-exit" data-act="overwhelm-exit">Back to my day</button>
+      </div>`;
+}
+
+// ===========================================================================
+// PACK FOR TOMORROW
+// ===========================================================================
+function packModal() {
+  const iso = PC.addDays(todayKey(), 1);
+  const list = PC.packList({
+    schedule: state.schedule,
+    items: state.assignments.filter((a) => a.status !== "done"),
+    classes: state.classes,
+    dateIso: iso,
+    subjectNeeds: state.subjectNeeds,
+  });
+  if (!list.school) {
+    openModal(
+      "Tomorrow",
+      `<p>${esc(list.label || "No school tomorrow.")}</p><p class="sub">Nothing to pack. 🎉</p>`,
+    );
+    return;
+  }
+  const done = state.packLog[iso] || {};
+  openModal(
+    "Tomorrow",
+    `<p class="pack-classes">${list.classNames.map(esc).join(" · ")}</p>
+       ${list.alerts.length ? `<div class="pack-alert">${list.alerts.map((a) => `<p>⚠ ${esc(a)}</p>`).join("")}</div>` : ""}
+       <h4>Bring</h4>
+       <ul class="pack-list">${list.bring
+         .map(
+           (b, i) =>
+             `<li><label><input class="check" type="checkbox" data-check="pack" data-id="${esc(iso)}" data-sid="${i}" ${done[i] ? "checked" : ""}> ${esc(b)}</label></li>`,
+         )
+         .join("")}</ul>`,
+  );
+}
+
+// ===========================================================================
+// QUICK ENTRY — type it the way you'd say it
+// ===========================================================================
+function quickEntryModal(prefill = "") {
+  openModal(
+    "Add something",
+    `<div class="field"><label for="qeInput">What is it?</label>
+         <input id="qeInput" type="text" autocomplete="off" placeholder="science quiz friday chapters 3-4" value="${esc(prefill)}"></div>
+       <p class="sub">Type it however you'd say it. Dates, times and subjects are picked up automatically.</p>
+       <div id="qePreview" class="qe-preview" aria-live="polite"></div>
+       <button class="btn primary" data-act="quick-entry-save">Add it</button>`,
+  );
+  const input = $("#qeInput");
+  if (input) {
+    const update = () => renderQuickEntryPreview(input.value);
+    input.addEventListener("input", update);
+    update();
+  }
+}
+
+function renderQuickEntryPreview(text) {
+  const el = $("#qePreview");
+  if (!el) return;
+  const p = PC.parseEntry(text, {
+    todayIso: todayKey(),
+    classes: state.classes,
+  });
+  if (!p) {
+    el.innerHTML = "";
+    return;
+  }
+  // Uncertainty is never laundered into fact: a low-confidence parse says so
+  // and asks, rather than silently inventing a due date.
+  el.innerHTML = `<div class="qe-card">
+        <b>${esc(p.title)}</b>
+        <div class="qe-rows">
+          <span>${p.className ? esc(p.className) : "No subject"}</span>
+          <span>${p.due ? esc(p.dueLabel) : "No due date"}</span>
+          ${p.estimateMin ? `<span>~${mins(p.estimateMin)}</span>` : ""}
+          ${p.detail ? `<span>${esc(p.detail)}</span>` : ""}
+          ${p.assessmentType ? `<span class="coming-badge ${esc(p.assessmentType)}">${esc(p.assessmentType.toUpperCase())}</span>` : ""}
+        </div>
+        ${p.confidence === "low" ? `<p class="qe-warn">Not sure about this one — check it before adding.</p>` : ""}
+      </div>`;
+}
+
+function saveQuickEntry() {
+  const text = ($("#qeInput") || {}).value || "";
+  const p = PC.parseEntry(text, {
+    todayIso: todayKey(),
+    classes: state.classes,
+  });
+  if (!p) return;
+  const a = normalizeTask({
+    id: uid("a"),
+    title: p.title,
+    classId: p.classId,
+    due: p.due,
+    estimateMin: p.estimateMin,
+    notes: p.detail,
+  });
+  a.kind = p.kind;
+  a.assessmentType = p.assessmentType;
+  state.assignments.push(a);
+  if (a.kind === "assessment") regenerateStudyPlan(a, { force: true });
+  if (a.kind === "project" && a.due) autoBreakdown(a);
+  save();
+  closeModal();
+  render();
+  toast(a.kind === "assessment" ? "Added — study plan ready" : "Added");
+}
+
+// Break a project into steps and spread them across the days before it's due.
+function autoBreakdown(a) {
+  if (!a || !a.due) return;
+  const steps = a.steps.length ? a.steps : PC.defaultProjectSteps(a.title);
+  a.steps = PC.scheduleProjectSteps(steps, todayKey(), a.due).map((s) => ({
+    id: s.id && String(s.id).startsWith("st_") ? uid("s") : s.id || uid("s"),
+    text: s.text,
+    done: !!s.done,
+    credited: false,
+    date: s.date,
+    minutes: s.minutes,
+  }));
+  a.kind = "project";
+  a.updatedAt = Date.now();
+}
+
+// ===========================================================================
+// START MY PLAN
+// ===========================================================================
+let activePlan = null;
+
+function planModal() {
+  const ctx = plannerCtx();
+  const plan = PC.buildPlan({ ...ctx, startMin: nowMin() });
+  activePlan = plan;
+  if (!plan.workBlocks.length) {
+    openModal(
+      "Your plan",
+      `<p>Nothing to plan right now — you're caught up. 🎉</p>`,
+    );
+    return;
+  }
+  const over = plan.leftOver.length;
+  openModal(
+    "Your plan",
+    `<ol class="plan-list">${plan.blocks
+      .map((b) =>
+        b.kind === "break"
+          ? `<li class="plan-break">Break · ${mins(b.minutes)}</li>`
+          : `<li><b>${esc(b.title)}</b> · ${mins(b.minutes)}${b.partial ? ` <small>(${mins(b.remainingMin)} left for later)</small>` : ""}<br><small>${esc(b.reason)}</small></li>`,
+      )
+      .join("")}</ol>
+       <p class="plan-total"><b>About ${mins(plan.totalMin)}</b>${plan.finishByMin ? ` · done by ${clock(plan.finishByMin)}` : ""}</p>
+       ${over ? `<p class="sub">${over} other thing${over === 1 ? "" : "s"} will wait for tomorrow — nothing is due sooner than what's planned.</p>` : ""}
+       <button class="btn primary big" data-act="plan-go">▶ Start My Plan</button>
+       <button class="btn sm" data-act="less-time">I have less time today</button>`,
+  );
+}
+
+function lessTimeModal() {
+  openModal(
+    "How much time do you have?",
+    `<div class="row">${[15, 30, 45, 60]
+      .map(
+        (n) =>
+          `<button class="btn" data-act="less-time-set" data-arg="${n}">${n} min</button>`,
+      )
+      .join("")}</div>`,
+  );
+}
+
+// ===========================================================================
+// Two-week + recovery: repair yesterday instead of accusing him about it
+// ===========================================================================
+function repairMissedWork() {
+  const todayIso = todayKey();
+  const moved = [];
+  for (const a of state.assignments) {
+    if (a.status === "done" || a.kind === "assessment") continue;
+    const wd = PC.workDate(a);
+    if (!wd || wd >= todayIso) continue;
+    // It was planned for a day that has passed and isn't done.
+    const rec = PC.recoveryFor(a, todayIso, {
+      tomorrowLoadMin: PC.loadForDay(
+        state.assignments,
+        PC.addDays(todayIso, 1),
+      ),
+      dailyCapacityMin: state.settings.maxWorkMin,
+    });
+    if (rec.action === "finish-now") continue; // stays on today, no rewrite
+    Object.assign(a, PC.applyRecovery(a, rec, todayIso));
+    moved.push({ title: a.title, reason: rec.reason });
+  }
+  return moved;
+}
+
+  // Completing whatever kind of thing is on the Today list.
+  function completePlannerItem(id) {
+    const study = dueStudySessions().find((s) => s.id === id);
+    if (study) {
+      completeStudySession(id, true);
+      return;
+    }
+    const entry = PC.prioritize(plannerCtx()).find((e) => e.id === id);
+    const item = entry ? entry.item : null;
+    if (item && item.projectId && item.stepId) {
+      // Finishing a project STEP is not finishing the project.
+      const project = state.assignments.find((x) => x.id === item.projectId);
+      const step = project && project.steps.find((x) => x.id === item.stepId);
+      if (step) {
+        step.done = true;
+        step.__ts = Date.now();
+        project.updatedAt = Date.now();
+        if (project.steps.every((x) => x.done)) completeTask(project.id);
+        else save();
+        render();
+        toast("Step done");
+        return;
+      }
+    }
+    completeTask(id);
+    render();
+  }
+
+  function completeStudySession(id, done) {
+    for (const key of Object.keys(state.studyPlans)) {
+      const s = (state.studyPlans[key] || []).find((x) => x.id === id);
+      if (!s) continue;
+      s.done = !!done;
+      s.__ts = Date.now();
+      save();
+      render();
+      if (done) toast("Study session done");
+      return;
+    }
+  }
+
+  // ===========================================================================
+  // Setup editors (parent side)
+  // ===========================================================================
+  let studyCoachContext = null;
+
+  const DAY_KEYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+
+  function scheduleEditor() {
+    const s = PC.normalizeSchedule(state.schedule);
+    openModal(
+      "Classes & times",
+      `<div class="row two">
+         <div class="field"><label for="schStart">School starts</label><input id="schStart" type="time" value="${esc(s.startTime)}"></div>
+         <div class="field"><label for="schEnd">School ends</label><input id="schEnd" type="time" value="${esc(s.dismissTime)}"></div>
+       </div>
+       <div class="field"><label for="schRot">Rotating schedule</label>
+         <select id="schRot">
+           <option value="none"${s.rotation.type === "none" ? " selected" : ""}>Same every week</option>
+           <option value="ab"${s.rotation.type === "ab" ? " selected" : ""}>A / B days</option>
+         </select></div>
+       <div class="field"><label for="schAnchor">First A day (only for A/B)</label><input id="schAnchor" type="date" value="${esc(s.rotation.anchorDate)}"></div>
+       <div class="sched-rows">${s.periods
+         .map(
+           (p) => `<div class="sched-row" data-pid="${esc(p.id)}">
+             <input class="sr-name" type="text" placeholder="Class name" value="${esc(p.name)}" aria-label="Class name">
+             <input class="sr-start" type="time" value="${esc(p.start)}" aria-label="Start time">
+             <input class="sr-end" type="time" value="${esc(p.end)}" aria-label="End time">
+             <input class="sr-room" type="text" placeholder="Room" value="${esc(p.room)}" aria-label="Room">
+             <select class="sr-rot" aria-label="Which days it meets">
+               <option value=""${!p.rotationDays.length ? " selected" : ""}>Every day</option>
+               <option value="A"${p.rotationDays.includes("A") ? " selected" : ""}>A days</option>
+               <option value="B"${p.rotationDays.includes("B") ? " selected" : ""}>B days</option>
+             </select>
+             <button class="btn sm danger" data-act="setup-period-del" data-id="${esc(p.id)}" aria-label="Remove ${esc(p.name || "class")}">✕</button>
+           </div>`,
+         )
+         .join("")}</div>
+       <button class="btn sm" data-act="setup-period-add">＋ Add a class</button>
+       <button class="btn primary" data-act="setup-schedule-save">Save schedule</button>`,
+    );
+  }
+
+  function saveScheduleEditor() {
+    const s = PC.normalizeSchedule(state.schedule);
+    s.startTime = ($("#schStart") || {}).value || s.startTime;
+    s.dismissTime = ($("#schEnd") || {}).value || s.dismissTime;
+    s.rotation.type = ($("#schRot") || {}).value || "none";
+    s.rotation.anchorDate = ($("#schAnchor") || {}).value || "";
+    s.periods = [...document.querySelectorAll(".sched-row")].map((row) => {
+      const rot = row.querySelector(".sr-rot").value;
+      return {
+        id: row.dataset.pid,
+        name: row.querySelector(".sr-name").value,
+        start: row.querySelector(".sr-start").value,
+        end: row.querySelector(".sr-end").value,
+        room: row.querySelector(".sr-room").value,
+        days: DAY_KEYS,
+        rotationDays: rot ? [rot] : [],
+        // A period named "lunch" is not a class — packing and NEXT both care.
+        kind: /lunch/i.test(row.querySelector(".sr-name").value) ? "lunch" : "class",
+        classId: matchClassId(row.querySelector(".sr-name").value),
+      };
+    });
+    s.enabled = s.periods.length > 0;
+    state.schedule = PC.normalizeSchedule(s);
+    save();
+    closeModal();
+    render();
+    toast("Schedule saved");
+  }
+
+  // Link a period to an existing class so assignments, packing and colors all
+  // line up without asking him to pick from a dropdown.
+  function matchClassId(name) {
+    const n = String(name || "").trim().toLowerCase();
+    if (!n) return "";
+    const hit = state.classes.find(
+      (c) => c.name.toLowerCase() === n || c.name.toLowerCase().startsWith(n.split(/[\s/]+/)[0]),
+    );
+    return hit ? hit.id : "";
+  }
+
+  function exceptionsEditor() {
+    const s = PC.normalizeSchedule(state.schedule);
+    const upcoming = s.exceptions.filter((e) => e.date >= todayKey()).sort((a, b) => a.date.localeCompare(b.date));
+    openModal(
+      "No-school & early-out days",
+      `<ul class="ex-list">${
+        upcoming.length
+          ? upcoming
+              .map(
+                (e) =>
+                  `<li><b>${esc(e.date)}</b> — ${esc(e.label || e.type)} <button class="btn sm danger" data-act="setup-exception-del" data-arg="${esc(e.date)}" aria-label="Remove ${esc(e.date)}">✕</button></li>`,
+              )
+              .join("")
+          : "<li class='sub'>None set.</li>"
+      }</ul>
+       <div class="row two">
+         <div class="field"><label for="exDate">Date</label><input id="exDate" type="date"></div>
+         <div class="field"><label for="exType">What kind</label>
+           <select id="exType">
+             <option value="no-school">No school</option>
+             <option value="early-dismissal">Early dismissal</option>
+             <option value="modified">Modified schedule</option>
+             <option value="event">Special event</option>
+           </select></div>
+       </div>
+       <div class="row two">
+         <div class="field"><label for="exLabel">Name it</label><input id="exLabel" type="text" placeholder="Teacher workday"></div>
+         <div class="field"><label for="exDismiss">Out at (early days)</label><input id="exDismiss" type="time"></div>
+       </div>
+       <button class="btn primary" data-act="setup-exception-add">Add day</button>`,
+    );
+  }
+
+  function activitiesEditor() {
+    const s = PC.normalizeSchedule(state.schedule);
+    openModal(
+      "After-school activities",
+      `<p class="sub">The planner works around these instead of pretending every afternoon is free.</p>
+       <div class="act-rows">${s.activities
+         .map(
+           (a) => `<div class="act-row" data-aid="${esc(a.id)}">
+             <input class="ar-name" type="text" placeholder="Baseball practice" value="${esc(a.name)}" aria-label="Activity name">
+             <input class="ar-start" type="time" value="${esc(a.start)}" aria-label="Starts">
+             <input class="ar-end" type="time" value="${esc(a.end)}" aria-label="Ends">
+             <span class="ar-days">${DAY_KEYS.map(
+               (d) =>
+                 `<label><input type="checkbox" class="ar-day" value="${d}" ${a.days.includes(d) ? "checked" : ""}> ${d}</label>`,
+             ).join("")}</span>
+           </div>`,
+         )
+         .join("")}</div>
+       <button class="btn sm" data-act="setup-activity-add">＋ Add activity</button>
+       <button class="btn primary" data-act="setup-activities-save">Save</button>`,
+    );
+  }
+
+  function saveActivitiesEditor() {
+    const s = PC.normalizeSchedule(state.schedule);
+    s.activities = [...document.querySelectorAll(".act-row")]
+      .map((row) => ({
+        id: row.dataset.aid,
+        name: row.querySelector(".ar-name").value,
+        start: row.querySelector(".ar-start").value,
+        end: row.querySelector(".ar-end").value,
+        days: [...row.querySelectorAll(".ar-day")].filter((c) => c.checked).map((c) => c.value),
+        place: "",
+      }))
+      .filter((a) => a.name.trim());
+    state.schedule = PC.normalizeSchedule(s);
+    save();
+    closeModal();
+    toast("Saved");
+  }
+
+  function packingEditor() {
+    openModal(
+      "Packing needs",
+      `<p class="sub">What each class always needs. Separate with commas.</p>
+       ${state.classes
+         .map(
+           (c) =>
+             `<div class="field"><label for="pk_${c.id}">${esc(c.name)}</label><input id="pk_${c.id}" type="text" value="${esc((state.subjectNeeds[c.id] || []).join(", "))}" placeholder="PE clothes, sneakers"></div>`,
+         )
+         .join("")}
+       <button class="btn primary" data-act="setup-packing-save">Save</button>`,
+    );
+  }
+
+  // "I don't have what I need" -> capture the real blocker instead of
+  // pretending the work can proceed, and get out of his way.
+  function blockCurrentTask() {
+    const entry = nextUpEntry();
+    if (!entry) return;
+    const id = owningAssignmentId(entry.item);
+    openModal(
+      "What's missing?",
+      `<div class="field"><label for="blkWhat">What do you need?</label><input id="blkWhat" type="text" placeholder="Science worksheet"></div>
+       <p class="sub">We'll move this task aside, put the next thing up, and remind you at school tomorrow.</p>
+       <button class="btn primary" data-act="block-save" data-id="${esc(id)}">Set it aside</button>`,
+    );
+  }
+
   if (window.__FOCUS_SCHOOL_TEST__) {
     Object.assign(window.__FOCUS_SCHOOL_TEST__, {
       academicHelpPrompt,
@@ -13247,6 +14677,17 @@ ${name}`;
       seed,
       teacherHelpDraft,
       offlineStrategies,
+      plannerItems,
+      owningAssignmentId,
+      plannerCtx,
+      nextUpEntry,
+      todaysWork,
+      dedupeClasses,
+      regenerateStudyPlan,
+      autoBreakdown,
+      repairMissedWork,
+      parentSummary,
+      comingUp,
       setState: (s) => {
         state = s;
       },
