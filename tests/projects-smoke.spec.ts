@@ -48,6 +48,12 @@ for (const u of UNITS) {
   ROUTES.push({ url: `/math/${u}/projects/version-b/`, kind: "version" });
   ROUTES.push({ url: `/math/${u}/projects/answer-key/`, kind: "key" });
 }
+// The Pre-Unit is the district's assembled unit, not a numbered one, and it
+// ships a single version. It joins the same fleet gate so it cannot silently
+// miss a shared layer.
+ROUTES.push({ url: "/math/pre-unit/projects/", kind: "hub" });
+ROUTES.push({ url: "/math/pre-unit/projects/version-a/", kind: "version" });
+ROUTES.push({ url: "/math/pre-unit/projects/answer-key/", kind: "key" });
 // Unit 8 ships a real third student experience. Keep it in the same fleet gate
 // so a stretch project cannot silently miss shared layers or break at runtime.
 ROUTES.push({ url: "/math/unit-8/projects/version-c/", kind: "version" });
