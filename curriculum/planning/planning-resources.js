@@ -78,18 +78,29 @@ export function identify(index, day) {
   return null;
 }
 
-/** The EduWonderLab unit a day belongs to, read from what is scheduled on it. */
+/**
+ * The EduWonderLab unit a day belongs to — the unit the teacher is IN on that
+ * date, not the unit that owns the lesson.
+ *
+ * Those two differ, and only for assembled units. The Pre-Unit teaches 2-6 on
+ * Aug 26 as prerequisite fluency; Unit 2 still teaches it in April. Reading the
+ * lesson's own unit first labelled the first two weeks of school "Unit 2" and
+ * "Unit 6" in the Week rows and the Month grid — text, cell colour and the
+ * cell's aria-label, all naming units the teacher will not reach for months.
+ * The pacing key is what the plan actually asserts about the date, so it is
+ * read first; the lesson is the fallback for a day the plan does not key.
+ */
 export function unitNumberOf(index, day) {
-  const entry = day.plan.lessonId ? index.byId.get(day.plan.lessonId) : null;
-  if (entry) return entry.unit;
-  /* A Project, Review or Assessment day carries no lesson id. Its unit is the
-   * unit of the nearest scheduled lesson in the same planning block, which the
-   * baseline records as `unitKey` — "U7" and "PRE" being the two shapes. */
   const key = day.plan.unitKey;
-  if (!key) return null;
-  if (key === "PRE") return 1;
-  const m = /^U(\d+)$/.exec(key);
-  return m ? Number(m[1]) : null;
+  if (key) {
+    if (key === "PRE") return 1;
+    const m = /^U(\d+)$/.exec(key);
+    /* MSTAR and friends key no curriculum unit. Fall through to the lesson
+     * rather than returning null, so a keyed day with a lesson still resolves. */
+    if (m) return Number(m[1]);
+  }
+  const entry = day.plan.lessonId ? index.byId.get(day.plan.lessonId) : null;
+  return entry ? entry.unit : null;
 }
 
 const link = (label, href, kind) => ({ label, href, kind });
