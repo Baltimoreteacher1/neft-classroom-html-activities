@@ -7,6 +7,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { writeGenerated } from "../scripts/lib/preserve-injected.mjs";
+import { mergeAuthoredOverlay } from "./lib/authored-overlay.mjs";
 import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
 import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
 
@@ -273,7 +274,21 @@ for (const band of bands) {
   const baseId = lastSrc.id;
   if (!DRY) {
     mkdirSync(join(LESSONS, id), { recursive: true });
-    writeFileSync(join(LESSONS, id, "config.json"), JSON.stringify(out, null, 2) + "\n");
+    /* Generated base + authored overlay: the same rule the small-group
+     * generator now follows. A catch-up config is regenerated from its source
+     * lessons AND is written into afterwards by the Spanish overlay step, so a
+     * plain overwrite erases translations nobody re-derives. See
+     * tools/lib/authored-overlay.mjs. */
+    const file = join(LESSONS, id, "config.json");
+    let merged = out;
+    if (existsSync(file)) {
+      try {
+        merged = mergeAuthoredOverlay(out, JSON.parse(readFileSync(file, "utf8")));
+      } catch {
+        merged = out; // an unreadable prior config is not a reason to lose this run
+      }
+    }
+    writeFileSync(file, JSON.stringify(merged, null, 2) + "\n");
     // writeGenerated, not writeFileSync — see tools/generators-preserve-injected.test.mjs.
     // These catch-up shells carry injected sentinel blocks; a plain overwrite
     // strips them. No-op on a brand-new lesson, which has nothing to preserve.
