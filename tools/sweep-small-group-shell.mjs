@@ -27,8 +27,20 @@ const CONCURRENCY = Number(process.env.SWEEP_CONCURRENCY || 6);
 
 /* The masthead used to run 581-615px on this viewport, putting the first
  * mathematical task at or below the fold. This is the ceiling that regression
- * has to cross to come back. */
-const HERO_MAX = 520;
+ * has to cross to come back.
+ *
+ * A RATCHET, not a target. It was 520px, and at 520px this sweep FAILED on 156
+ * of the 204 variants — the ceiling had been set from three hand-picked
+ * lessons and the fleet had never been measured against it. The 2026-08-15
+ * density pass (design system §19: the scene label and the full-objectives
+ * disclosure fold into the chip row, the tool-shelf hint stops forcing the
+ * action row to wrap) brought the tallest masthead in the fleet to 478px.
+ *
+ * 495 is that measured maximum plus 17px of headroom for web-font jitter. Do
+ * not raise it to make a failure go away: the number exists because "the
+ * masthead is a bit tall on this one lesson" is invisible one lesson at a
+ * time and is the whole complaint 204 lessons at a time. */
+const HERO_MAX = 495;
 
 const ids = readdirSync("lessons", { withFileTypes: true })
   .filter((d) => d.isDirectory() && /^\d+-\d+-(group\d+|catchup)$/.test(d.name))

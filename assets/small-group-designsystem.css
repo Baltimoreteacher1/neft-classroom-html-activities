@@ -1417,3 +1417,299 @@
   display: inline-flex;
   align-items: center;
 }
+
+/* ---------------------------------------------------------------------------
+   19 · THE MASTHEAD STOPS EATING THE FIRST SCREEN (2026-08-15)
+
+   Section 14 took the decoration off the masthead. It did not make it short
+   enough. `npm run sweep:small-group`, run against production source before
+   this section existed, FAILED on 156 of 204 variants — every one of them for
+   masthead height, the tallest at 588px against a 520px ceiling. On a 1366x768
+   classroom laptop that is the whole first screen: a student opened a lesson
+   and saw a title, an objective, an encouragement line, a scene label, a room
+   code and a tool shelf before one line of mathematics.
+
+   The height was not in the type. It was in the STACKING: five secondary facts
+   about the lesson, each on a row of its own.
+
+     kicker            28px   pathway label
+     h1                53px   title
+     .sg-obj          112px   the objective — the one line that must stay big
+     .sg-obj-more      36px   "Full objectives" disclosure, alone on a row
+     .sg-tagline       62px   generic encouragement, identical across a pathway
+     .sg-chips         45px   time · standard · privacy
+     .sg-hero-scene-chip 39px scene label, alone on a row
+     action row       109px   room code + tool shelf, wrapped to two lines
+
+   The disclosure and the scene label are now flex items in `.sg-chips` (see
+   `hero()` in engine/core/small-group-renderer.js) — they are the same KIND of
+   thing as the chips they now sit beside. What is left here is the sizing.
+
+   The objective is deliberately NOT shrunk. It is the sentence the lesson is
+   about, and section 22 makes it the loudest text in the masthead now that
+   nothing else is competing. --------------------------------------------- */
+
+/* The encouragement line is real content and it is read once. It does not need
+   reading size, and it does not need a blank row above and below it. */
+.sg-tagline {
+  margin: 2px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.sg-chips {
+  align-items: center;
+  margin-top: 10px;
+}
+
+/* Open, the full objective is a paragraph and claims the row. Closed, it is a
+   pill. Both states live in the chip row. */
+.sg-chips .sg-obj-more[open] {
+  margin-top: 6px;
+}
+
+.sg-chips .sg-obj-more[open] > summary {
+  margin-bottom: 8px;
+}
+
+/* PAINTED SIZE AND TARGET SIZE ARE DIFFERENT THINGS (design system §18).
+   The disclosure paints at 30px so it sits on the chip row without setting the
+   row's height — a 44px chip would put ~14px back into the masthead §19 just
+   took out. The 44px target is restored with a pseudo-element, expanded
+   VERTICALLY only: the row's neighbours are horizontal, so growing sideways
+   would overlap the chip next to it and steal its taps. */
+.sg-chips .sg-obj-more > summary {
+  position: relative;
+}
+
+.sg-chips .sg-obj-more > summary::after {
+  position: absolute;
+  content: "";
+  inset: -7px 0;
+}
+
+/* MATH TOOLS · "2 hands-on models for this lesson, open any time." · [Open the
+   tools] — the sentence restates the button beside it, and it is what forced
+   the action row to wrap to two lines. It stays in the accessible tree; it
+   stops taking a line of the first screen. The buttons carry their own names.
+   Scoped to `.sg-hero`: the same row rendered lower down the page keeps its
+   hint, where vertical space is not the constraint. */
+.sg-hero .nt-toolpoint-hint {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.sg-hero {
+  padding: 16px 22px 14px;
+}
+
+.sg-hero h1 {
+  margin: 6px 0 6px;
+}
+
+.sg-obj {
+  line-height: 1.38;
+}
+
+@media (min-width: 861px) {
+  /* One line, not two. 44px control + 10px rule = 54px, down from 109px. */
+  .sg-room-chip,
+  .sg-hero > .nt-toolpoint {
+    min-height: 0;
+    padding-top: 10px;
+  }
+
+  .sg-hero-grid {
+    gap: 10px 14px;
+  }
+
+  .sg-math-move {
+    margin-top: 12px;
+  }
+}
+
+/* On a phone the masthead stacks into one column, so every row it carries
+   costs a full screen-width band: measured at 885px on a 390x844 handset,
+   which is a whole screen and then some before any mathematics. The objective
+   still leads — it is just sized for a 390px column rather than for a 760px
+   one, and the secondary facts shrink to match. */
+@media (max-width: 760px) {
+  .sg-hero {
+    padding: 16px 16px 14px;
+  }
+
+  .sg-hero h1 {
+    font-size: clamp(23px, 6vw, 28px);
+  }
+
+  .sg-obj {
+    font-size: 16px;
+  }
+
+  .sg-tagline {
+    font-size: 13.5px;
+  }
+
+  .sg-chips {
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .sg-chips .sg-chip,
+  .sg-chips .sg-hero-scene-chip,
+  .sg-chips .sg-obj-more > summary {
+    padding: 3px 9px;
+    font-size: 12px;
+  }
+
+  .sg-math-move {
+    margin-top: 10px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   20 · ONE SURFACE SCALE
+
+   Measured on 3-4-group2 at 1366x768: the shell painted NINE different pale
+   blue-greys, all of them doing the same job — an informational fill inside a
+   white card — and none of them more than three or four steps from its
+   neighbours:
+
+     #f2f6fa  .sg-apply-step .sg-guide-panel
+     #eaf0f7  --sg-soft, the token that already means this
+     #fcfdfe  .sg-speak .sg-speak-inline
+     #f0f5f9  .sg-vcard-picture .sg-directions .sg-lab-note .sg-voice
+     #f0f4f8  .sg-chip
+     #f3f6f9  .sg-stage
+     #f6f8fb  .sg-match
+     #f3f7fb  .sg-consensus-problem
+     #f7f8fa  .sg-annotation-btn
+
+   A reader cannot tell nine of these apart, so the differences carry no
+   information — they only add surfaces. Two fills carry all of it:
+
+     --sg-soft  an informational fill inside a card
+     --sg-fill  an inert track or a disabled/secondary surface
+
+   The SEMANTIC fills are untouched and must stay: good/bad on `.sg-vexample`,
+   warn on `.sg-streak`, done on `.sg-done`, and the literal highlighter yellow
+   on `.sg-annotation-btn`, which is the colour the button applies. Collapsing
+   those would be removing meaning, not removing noise.
+   --------------------------------------------------------------------------- */
+.sg-apply-step,
+.sg-guide-panel,
+.sg-speak,
+.sg-speak-inline,
+.sg-vcard-picture,
+.sg-directions,
+.sg-lab-note,
+.sg-voice,
+.sg-chip,
+.sg-stage,
+.sg-match,
+.sg-consensus-problem,
+.sg-annotation-btn:not([data-tool="highlight"]),
+.sg-symbolic-view,
+.sg-cloze {
+  background: var(--sg-soft);
+}
+
+.sg-tabs {
+  background: var(--sg-card);
+}
+
+/* ---------------------------------------------------------------------------
+   21 · ONE RADIUS SCALE
+
+   The base sheet declares three steps — 8 / 12 / 16 — plus the pill. The shell
+   was painting FIFTEEN, because component sheets written at different times
+   each picked their own pixel value: 9, 10, 11, 13, 14, 20, 22. No two panels
+   agreed, and disagreement at that scale reads as sloppiness rather than as
+   hierarchy.
+
+   `50%` (dots, avatars, speaker buttons) and the two left-rule idioms
+   (`0 8px 8px 0` on `.sg-directions`, `14px 0 0 14px` on the annotation rail)
+   are shapes, not surfaces, and are left alone. `.sg-vocab-inline` keeps its
+   2px: it is an inline token inside running text, not a panel.
+   --------------------------------------------------------------------------- */
+.sg-model-cell,
+.sg-value-chip,
+.sg-radio,
+.sg-plan,
+.sg-plan-why,
+.sg-another-prompt,
+.sg-frame,
+.sg-word,
+.sg-annotation-btn,
+.sg-level-num,
+.sg-proof-button,
+.sg-vocab-example-wrap,
+.sg-num {
+  border-radius: var(--sg-radius-sm);
+}
+
+.sg-write-item,
+.sg-studio-packet,
+.sg-adaptive-banner,
+.sg-guide-panel,
+.sg-discourse,
+.sg-rolebar {
+  border-radius: var(--sg-radius);
+}
+
+.sg-symbolic-view,
+.sg-hero-mark,
+.sg-vocab-dialog {
+  border-radius: var(--sg-radius-lg);
+}
+
+.sg-reasoning-out,
+.sg-standard-line {
+  border-radius: 0 var(--sg-radius-sm) var(--sg-radius-sm) 0;
+}
+
+/* ---------------------------------------------------------------------------
+   22 · THE MATHEMATICS IS THE ONLY THING THAT LIFTS
+
+   Section 15 said the figure surface should be the only one with a visible
+   lift. It was not: measured on 3-4-group2, NINETY-ONE shell elements carried
+   a box-shadow, and the largest groups were chrome, not mathematics — 19
+   strategy buttons, 14 inline speaker buttons, 7 vocabulary cards, 7 apply
+   steps, 5 phase tabs. At that density a shadow stops meaning "this floats"
+   and starts meaning nothing at all, which is exactly why the figures did not
+   read as special: they were shadowed like everything else.
+
+   This is a POLICY, expressed as a policy: nothing in the shell lifts, and
+   then the four things that earn a lift take it back. Written as a wildcard
+   rather than a list on purpose — a list is a snapshot, and the next component
+   to be added would arrive shadowed by default and nobody would notice.
+
+   Focus rings are unaffected: they are set by `button:focus-visible` (0,1,1),
+   which outranks `[class*="sg-"]` (0,1,0).
+   --------------------------------------------------------------------------- */
+[class*="sg-"] {
+  box-shadow: none;
+}
+
+/* The mathematics. A student is meant to look at these and manipulate them,
+   and the lift is what says so. */
+.sg-problem-visual,
+.sg-problem-model,
+.sg-figure,
+.sg-model,
+.sg-lab-stage,
+.sg-step-visual {
+  box-shadow: var(--sg-shadow);
+}
+
+/* Genuinely floating chrome: the annotation rail hovers over the page and the
+   vocabulary dialog is a modal. Both need to read as above the sheet. */
+.sg-annotation-tools,
+.sg-vocab-dialog {
+  box-shadow: var(--sg-shadow-lg);
+}

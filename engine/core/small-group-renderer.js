@@ -386,29 +386,39 @@ function hero(config, accent, voice) {
   const badge = config.launch?.badge || `Small Group · ${accent.name}`;
   copy.appendChild(el("div", null, `<span class="sg-kicker">${esc(badge)}</span>`));
   copy.appendChild(el("h1", null, esc(studentTitle(config, badge))));
+  let more = null;
   if (config.contentObjective) {
     // One crisp kid-facing line up top; full content + language objectives fold
     // into a collapsible detail so the hero stays readable for Level 1 students.
     copy.appendChild(el("p", "sg-obj", `Today: ${esc(coreObjective(config.contentObjective))}`));
-    const more = el("details", "sg-obj-more");
+    more = el("details", "sg-obj-more");
     more.appendChild(el("summary", null, "Full objectives"));
     more.appendChild(el("p", "sg-obj-full", esc(studentVoice(config.contentObjective))));
     if (config.languageObjective)
       more.appendChild(el("p", "sg-langobj", esc(studentVoice(config.languageObjective))));
-    copy.appendChild(more);
   }
   // Leveled coaching register — the one line that tells each group how this
   // studio will feel (supportive build / mathematician's press / fresh start).
   copy.appendChild(el("p", "sg-tagline", bi(voice.tagline, voice.taglineEs)));
+  /* ONE META ROW.
+   *
+   * Time, standard, privacy, scene and the full-objectives disclosure used to
+   * occupy three stacked rows of the masthead — measured at 39px for the scene
+   * label and 36px for the disclosure, on every one of the 204 variants. They
+   * are all the same KIND of thing (a short, secondary fact about the lesson),
+   * so they belong on the same line. `.sg-obj-more` is a flex item here: closed
+   * it is one more pill, open it claims a full row of its own (section 14b of
+   * the design system) so the expanded objective still reads as a paragraph. */
   const chips = el("div", "sg-chips");
   chips.appendChild(el("span", "sg-chip", esc(config.timeEstimate || "15–20 min")));
   if (config.standard) chips.appendChild(el("span", "sg-chip", esc(config.standard)));
-  chips.appendChild(el("span", "sg-chip", "Private · saved on this device"));
-  copy.appendChild(chips);
   const sceneName = themeDisplayName(config.theme);
   if (sceneName) {
-    copy.appendChild(el("div", "sg-hero-scene-chip", `Scene · ${esc(sceneName)}`));
+    chips.appendChild(el("span", "sg-hero-scene-chip", `Scene · ${esc(sceneName)}`));
   }
+  chips.appendChild(el("span", "sg-chip", "Private · saved on this device"));
+  if (more) chips.appendChild(more);
+  copy.appendChild(chips);
   const mathMove = mathMoveOfTheDay(config);
   const mark = el("div", "sg-hero-mark sg-scene-enter");
   // Code-drawn theme SVG / emoji is the fallback; if the lesson carries authored

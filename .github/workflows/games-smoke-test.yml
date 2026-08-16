@@ -32,7 +32,19 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          # 22, like the repo's other ten workflows. This was the last one left
+          # on 20, and on 2026-08-15 that stopped being survivable: the build
+          # this job's webServer runs reaches generate-download-manifest.mjs,
+          # which imports jsdom, and the pinned jsdom (30.x) declares
+          # `engines: node ^22.22.2 || ^24.15.0 || >=26` while its undici (8.x)
+          # needs >=22.19. On Node 20 undici throws
+          # `webidl.util.markAsUncloneable is not a function` at import time, so
+          # the web server never starts and every browser check in this job is
+          # reported as a failure of the pages rather than of the runtime.
+          #
+          # It went unnoticed because this workflow only runs on pull_request
+          # and no PR had opened between jsdom entering the build path and now.
+          node-version: "22"
           cache: "npm"
 
       - name: Install dependencies

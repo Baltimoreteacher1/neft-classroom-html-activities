@@ -34,6 +34,19 @@ function acceptTeacherPin(page: Page) {
  * still worth guarding; only the precondition changed.
  *
  * The hub stores this key as "true"; other modules compare against "1".
+ *
+ * ASSERT THE STATE, NOT THE COPY. This line used to read
+ * `toContainText("Teacher Mode")` and went red again on 2026-08-15 when the
+ * Teach band rewrite (0dd1194d, 1f3859a6) relabelled the toggle to
+ * "👩‍🏫 You're in Teacher view — switch to Student". All five journeys in this
+ * file failed on their PRECONDITION, so none of the regressions they actually
+ * guard — one-click routing, keyboard operability, mobile layout — was being
+ * checked at all, and the gate's red said "the hub is broken" when the hub was
+ * fine and the sentence had moved.
+ *
+ * That is the second time this helper has been left asserting superseded
+ * behaviour (see the note above), so it now checks `aria-pressed`, which is the
+ * toggle's contract with assistive technology and cannot be reworded.
  */
 async function enterTeacherMode(page: Page) {
   await page.goto("/curriculum/");
@@ -41,7 +54,7 @@ async function enterTeacherMode(page: Page) {
     localStorage.setItem("nt-teacher-mode", "true");
   });
   await page.reload();
-  await expect(page.locator("#hub-mode-toggle")).toContainText("Teacher Mode");
+  await expect(page.locator("#hub-mode-toggle")).toHaveAttribute("aria-pressed", "true");
 }
 
 test.describe("guide first-click journeys in Teacher Mode", () => {
@@ -101,12 +114,19 @@ test.describe("guide first-click journeys in Teacher Mode", () => {
   test("Explore by unit stays student-safe and jumps to the unit browser", async ({ page }) => {
     await page.goto("/curriculum/");
     const explore = page.getByRole("link", { name: /Explore by unit/ });
-    await expect(explore).toHaveAttribute("href", "#interactive-hub");
+    /* The Teach band rewrite (0dd1194d, 1f3859a6) pointed this at the real unit
+       browser page instead of the in-page `#interactive-hub` anchor it used to
+       scroll to. Confirmed as the intended destination, 2026-08-16.
+
+       What this test guards is unchanged and is NOT the destination: following
+       it must stay student-safe — no PIN prompt, no Teacher Mode, no teacher
+       workflow — which is the property that would actually hurt a student if it
+       regressed. */
+    await expect(explore).toHaveAttribute("href", "/curriculum/units/");
     await explore.click();
-    // No PIN, no Teacher Mode — a student-safe anchor jump only.
-    await expect(page.locator("#hub-mode-toggle")).toContainText("Student Mode");
-    await expect(page.locator("#curriculum-teacher-workflow")).toBeHidden();
-    await expect(page.locator("#interactive-hub")).toBeVisible();
+    await page.waitForURL(/\/curriculum\/units\/?$/);
+    await expect(page.locator("#curriculum-teacher-workflow")).toHaveCount(0);
+    await expect(page.locator("main, .units-wrap, h1").first()).toBeVisible();
   });
 });
 
