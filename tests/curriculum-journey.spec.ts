@@ -34,6 +34,19 @@ function acceptTeacherPin(page: Page) {
  * still worth guarding; only the precondition changed.
  *
  * The hub stores this key as "true"; other modules compare against "1".
+ *
+ * ASSERT THE STATE, NOT THE COPY. This line used to read
+ * `toContainText("Teacher Mode")` and went red again on 2026-08-15 when the
+ * Teach band rewrite (0dd1194d, 1f3859a6) relabelled the toggle to
+ * "👩‍🏫 You're in Teacher view — switch to Student". All five journeys in this
+ * file failed on their PRECONDITION, so none of the regressions they actually
+ * guard — one-click routing, keyboard operability, mobile layout — was being
+ * checked at all, and the gate's red said "the hub is broken" when the hub was
+ * fine and the sentence had moved.
+ *
+ * That is the second time this helper has been left asserting superseded
+ * behaviour (see the note above), so it now checks `aria-pressed`, which is the
+ * toggle's contract with assistive technology and cannot be reworded.
  */
 async function enterTeacherMode(page: Page) {
   await page.goto("/curriculum/");
@@ -41,7 +54,7 @@ async function enterTeacherMode(page: Page) {
     localStorage.setItem("nt-teacher-mode", "true");
   });
   await page.reload();
-  await expect(page.locator("#hub-mode-toggle")).toContainText("Teacher Mode");
+  await expect(page.locator("#hub-mode-toggle")).toHaveAttribute("aria-pressed", "true");
 }
 
 test.describe("guide first-click journeys in Teacher Mode", () => {
