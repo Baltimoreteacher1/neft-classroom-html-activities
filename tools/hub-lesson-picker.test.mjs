@@ -24,6 +24,7 @@ const MANIFEST = JSON.parse(
 );
 const STANDARDS = JSON.parse(readFileSync(join(ROOT, "data", "ccss-standards.json"), "utf8"));
 const PACING = JSON.parse(readFileSync(join(ROOT, "data", "pacing-unit-ranges.json"), "utf8"));
+const AUTHORED = JSON.parse(readFileSync(join(ROOT, "data", "pacing-unit-lessons.json"), "utf8"));
 
 /** The district sequence the Unit dropdown must follow, derived from the same
  *  generated file the picker reads — never a list retyped into this test, which
@@ -46,6 +47,7 @@ async function mount({
   savedPick = null,
   manifest = MANIFEST,
   pacing = PACING,
+  authored = AUTHORED,
   failFetch = false,
   teacherState = null,
 } = {}) {
@@ -69,6 +71,9 @@ async function mount({
     // unit-order assertion pass by accident, on manifest order, for weeks.
     json: (path) => {
       if (failFetch) return Promise.reject(new Error("offline"));
+      if (String(path).includes("pacing-unit-lessons")) {
+        return authored ? Promise.resolve(authored) : Promise.reject(new Error("no authored"));
+      }
       if (String(path).includes("pacing-unit-ranges")) {
         return pacing ? Promise.resolve(pacing) : Promise.reject(new Error("no pacing"));
       }
@@ -220,6 +225,127 @@ await t("the unit dropdown uses the district's own label for a unit", async () =
   assert.ok(
     labels.includes(pre.districtLabel),
     `the Pre-Unit is shown as something other than "${pre.districtLabel}"`,
+  );
+});
+
+/* ===========================================================================
+ * AUTHORED UNIT MEMBERSHIP — the Pre-Unit is assembled, not inherited
+ * ======================================================================== */
+
+/** The Pre-Unit's instructional sequence, read from the authored source rather
+ *  than retyped here — a list typed into the test only proves two typists
+ *  agreed. */
+const PRE_SEQUENCE = AUTHORED.units.PRE.lessons;
+
+await t("the Pre-Unit lesson list is the authored sequence, in order", async () => {
+  const p = await mount();
+  p.change(p.unit, "1"); // the Pre-Unit maps to curriculum unit 1
+  assert.deepEqual(
+    p.values(p.lesson),
+    PRE_SEQUENCE,
+    "the Pre-Unit dropdown does not match the authored instructional sequence",
+  );
+  // And the exact expected order, so a change to the authored file is a
+  // deliberate act that has to update this line too.
+  assert.deepEqual(PRE_SEQUENCE, ["1-1", "2-6", "2-7", "6-1", "6-2"]);
+});
+
+await t("the Pre-Unit list is authored, not derived from unit membership", async () => {
+  /* NOT stated as "is not sorted": this particular sequence happens to ascend
+   * (1-1 < 2-6 < 2-7 < 6-1 < 6-2), so a not-sorted assertion would be false for
+   * the correct answer and would have to be deleted the moment it mattered. The
+   * real property is where the list COMES FROM — the authored file, not the
+   * manifest's `unit` field, which is what produced 1-1 … 1-6. */
+  const p = await mount();
+  p.change(p.unit, "1");
+  const shown = p.values(p.lesson);
+  const fromUnitField = MANIFEST.lessons.filter((l) => String(l.unit) === "1").map((l) => l.id);
+  assert.deepEqual(shown, PRE_SEQUENCE);
+  assert.notDeepEqual(
+    shown,
+    fromUnitField,
+    "the Pre-Unit fell back to curriculum unit-1 membership instead of the authored sequence",
+  );
+  assert.ok(
+    shown.some((id) => !id.startsWith("1-")),
+    "the Pre-Unit shows only unit-1 lessons, so it is not the assembled review sequence",
+  );
+});
+
+await t("Pre-Unit lesson titles come from the manifest, never the authored file", async () => {
+  const p = await mount();
+  p.change(p.unit, "1");
+  const labels = [...p.lesson.options].map((o) => o.textContent).filter(Boolean);
+  for (const id of PRE_SEQUENCE) {
+    const lesson = MANIFEST.lessons.find((l) => l.id === id);
+    assert.ok(
+      labels.some((label) => label.includes(lesson.title)),
+      `${id} is not labelled with its manifest title "${lesson.title}"`,
+    );
+  }
+  // The authored file must carry ids only — a title in it would be a second
+  // source of truth that silently goes stale when the curriculum is renamed.
+  assert.ok(
+    !JSON.stringify(AUTHORED.units).includes(MANIFEST.lessons.find((l) => l.id === "2-6").title),
+    "the authored sequence file has started storing lesson titles",
+  );
+});
+
+await t("every authored lesson id exists in the manifest", () => {
+  for (const [key, entry] of Object.entries(AUTHORED.units)) {
+    for (const id of entry.lessons) {
+      assert.ok(
+        MANIFEST.lessons.some((l) => l.id === id),
+        `${key} lists ${id}, which the curriculum manifest does not have`,
+      );
+    }
+    assert.equal(new Set(entry.lessons).size, entry.lessons.length, `${key} lists a lesson twice`);
+    assert.ok(entry.reason && entry.reason.length > 40, `${key} has no substantive reason`);
+  }
+});
+
+await t("borrowing a lesson into the Pre-Unit does not move it", async () => {
+  // 2-6 and 6-1 appear in the Pre-Unit sequence AND must still appear in their
+  // own canonical units, in those units' normal order. Assembling a review
+  // sequence is not a re-filing of the curriculum.
+  const p = await mount();
+  for (const [unit, expectedId] of [
+    ["2", "2-6"],
+    ["6", "6-1"],
+  ]) {
+    p.change(p.unit, unit);
+    const shown = p.values(p.lesson);
+    assert.ok(shown.includes(expectedId), `${expectedId} vanished from Unit ${unit}`);
+    const manifestOrder = MANIFEST.lessons.filter((l) => String(l.unit) === unit).map((l) => l.id);
+    assert.deepEqual(
+      shown,
+      manifestOrder,
+      `Unit ${unit}'s own lesson list changed when the Pre-Unit borrowed from it`,
+    );
+  }
+});
+
+await t("switching away from the Pre-Unit restores normal membership", async () => {
+  const p = await mount();
+  p.change(p.unit, "1");
+  assert.deepEqual(p.values(p.lesson), PRE_SEQUENCE);
+  p.change(p.unit, "5");
+  assert.deepEqual(
+    p.values(p.lesson),
+    MANIFEST.lessons.filter((l) => String(l.unit) === "5").map((l) => l.id),
+    "Unit 5 inherited the Pre-Unit's authored sequence",
+  );
+  p.change(p.unit, "1");
+  assert.deepEqual(p.values(p.lesson), PRE_SEQUENCE, "returning to the Pre-Unit lost its sequence");
+});
+
+await t("an unreadable authored file falls back to manifest membership", async () => {
+  const p = await mount({ authored: null });
+  p.change(p.unit, "1");
+  assert.deepEqual(
+    p.values(p.lesson),
+    MANIFEST.lessons.filter((l) => String(l.unit) === "1").map((l) => l.id),
+    "a missing authored file emptied the Pre-Unit instead of falling back",
   );
 });
 

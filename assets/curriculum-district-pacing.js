@@ -11,29 +11,38 @@
       instructional_days: 14.0,
       additional_days: 1.0,
       assessments: ["Unit Quiz (9/9/26)", "iReady Placement Window"],
+      /* THE PRE-UNIT IS ASSEMBLED, and its membership lives in exactly one
+       * place: data/pacing-unit-lessons.json. This crosswalk used to carry its
+       * own nine-lesson version (1-1 … 1-6 plus 2-6, 2-7, 2-11, 2-12) while the
+       * Teach picker on this same page derived a different one — two Pre-Units
+       * on one screen, neither aware of the other.
+       *
+       * Titles and standards for these five are copied from the curriculum
+       * manifest and PINNED to it by validate:pacing-unit-order, so they cannot
+       * go stale the way the previous ones had: 2-6 read "Divide
+       * Multi-Digit Whole Numbers (Computation Bridge)" against a manifest that
+       * says "Divide Multi-Digit Numbers Using an Algorithm", and carried the
+       * 2010 code 6.NS.B.2 against a registry re-coded to 6.NOS.2. The other ten
+       * units below still hold uncorrected inline copies; that is a known,
+       * separate debt, not something this change quietly fixed. */
       lessons: [
         { id: "1-1", title: "Math is Mine", standards: ["MPP.3"] },
-        { id: "1-2", title: "Math is Exploring Thinking", standards: ["5.NF.B.4"] },
-        { id: "1-3", title: "Math is My World", standards: ["5.NBT.B.7", "5.G.A.2"] },
-        { id: "1-4", title: "Math is Explaining and Sharing", standards: ["5.MD.C.5"] },
-        { id: "1-5", title: "Math is Finding Patterns", standards: ["5.OA.A.2"] },
-        { id: "1-6", title: "Math is Ours", standards: ["MPP.3"] },
         {
           id: "2-6",
-          title: "Divide Multi-Digit Whole Numbers (Computation Bridge)",
-          standards: ["6.NS.B.2"],
+          title: "Divide Multi-Digit Numbers Using an Algorithm",
+          standards: ["6.NOS.2"],
+        },
+        { id: "2-7", title: "Divide Decimals Using an Algorithm", standards: ["6.NOS.3"] },
+        {
+          id: "6-1",
+          title: "Division Expressions with Fractions and Whole Numbers",
+          standards: ["6.NOS.1"],
         },
         {
-          id: "2-7",
-          title: "Divide Decimals Using Algorithm (Computation Bridge)",
-          standards: ["6.NS.B.2", "6.NS.B.3"],
+          id: "6-2",
+          title: "Division Expressions with Fractions and Mixed Numbers",
+          standards: ["6.NOS.1"],
         },
-        {
-          id: "2-11",
-          title: "Add & Subtract Decimals (Computation Bridge)",
-          standards: ["6.NS.B.3"],
-        },
-        { id: "2-12", title: "Multiply Decimals (Computation Bridge)", standards: ["6.NS.B.3"] },
       ],
     },
     {

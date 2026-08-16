@@ -192,8 +192,95 @@ for (const [unit, ids] of byUnit) {
   }
 }
 
-// 5. The picker actually consumes the plan.
+/* 5. AUTHORED UNIT MEMBERSHIP — one definition, resolved against the manifest.
+ *
+ * Some paced units are ASSEMBLED rather than inherited from the curriculum's
+ * numbering. The Pre-Unit is one: a Grade 5 review sequence drawn from several
+ * canonical units. Before data/pacing-unit-lessons.json existed there were TWO
+ * definitions of it rendering on the same page — the Teach picker derived
+ * 1-1 … 1-6 from the `unit` field, while assets/curriculum-district-pacing.js
+ * carried its own hardcoded nine-lesson list. Neither knew about the other.
+ *
+ * This holds the single source and the two consumers together. */
+const authored = read("data/pacing-unit-lessons.json");
+const manifestIds = new Set(lessons.map((l) => l.id));
+const byId = new Map(lessons.map((l) => [l.id, l]));
+const pacedKeys = new Set((pacing.units || []).map((u) => u.key));
+
+for (const [key, entry] of Object.entries(authored.units || {})) {
+  if (!pacedKeys.has(key)) {
+    fail(`data/pacing-unit-lessons.json authors "${key}", which the pacing plan does not schedule`);
+  }
+  if (!entry.reason || entry.reason.length < 40) {
+    fail(`authored unit "${key}" has no substantive reason — an assembled unit must say why`);
+  }
+  if (!Array.isArray(entry.lessons) || entry.lessons.length === 0) {
+    fail(`authored unit "${key}" lists no lessons`);
+    continue;
+  }
+  if (new Set(entry.lessons).size !== entry.lessons.length) {
+    fail(`authored unit "${key}" lists a lesson twice`);
+  }
+  for (const id of entry.lessons) {
+    if (!manifestIds.has(id)) {
+      fail(`authored unit "${key}" lists ${id}, which the curriculum manifest does not have`);
+    }
+  }
+  /* Ids only. A title stored here is a second source of truth that goes stale
+   * the moment the curriculum is renamed. */
+  const blob = JSON.stringify(entry.lessons);
+  for (const id of entry.lessons) {
+    const title = byId.get(id)?.title;
+    if (title && blob.includes(title)) {
+      fail(`authored unit "${key}" stores the title for ${id}; store ids only`);
+    }
+  }
+}
+
+/* The district-pacing crosswalk must agree with the authored sequence, exactly,
+ * and its inline titles/standards for those lessons must match the manifest. */
+{
+  const src = readFileSync(join(ROOT, "assets/curriculum-district-pacing.js"), "utf8");
+  for (const [key, entry] of Object.entries(authored.units || {})) {
+    const paced = (pacing.units || []).find((u) => u.key === key);
+    const label = paced?.districtLabel?.split(":")[0];
+    if (!label) continue;
+    /* Match on letters and digits only: the pacing plan says "Pre-Unit" and the
+     * crosswalk says "Pre Unit". A literal comparison reported "not checked",
+     * which is the safe failure but still leaves the two files unchecked. */
+    const squash = (t) => t.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const titles = [...src.matchAll(/district_title: "([^"]+)"/g)];
+    const hit = titles.find((m) => squash(m[1]).startsWith(squash(label)));
+    if (!hit) {
+      fail(`the district-pacing crosswalk has no entry for "${label}" — it cannot be reconciled`);
+      continue;
+    }
+    const at = hit.index;
+    const block = src.slice(at, src.indexOf("sequence:", at + 10));
+    /* Formatting-independent: Biome wraps a long entry across lines, so the ids
+     * are matched on `id:` alone rather than on `{ id:` with its brace and
+     * spacing. A brittle regex here reports a drift that is only a reflow. */
+    const ids = [...block.matchAll(/\bid:\s*"([0-9]+-[0-9]+)"/g)].map((m) => m[1]);
+    if (ids.join(",") !== entry.lessons.join(",")) {
+      fail(
+        `the district-pacing crosswalk lists [${ids.join(", ")}] for ${key} but the authored ` +
+          `sequence is [${entry.lessons.join(", ")}] — two definitions of the same unit`,
+      );
+    }
+    for (const id of entry.lessons) {
+      const lesson = byId.get(id);
+      if (lesson && !block.includes(lesson.title)) {
+        fail(`the crosswalk's title for ${id} does not match the manifest ("${lesson.title}")`);
+      }
+    }
+  }
+}
+
+// 6. The picker actually consumes the plan.
 const picker = readFileSync(join(ROOT, "assets", "curriculum-teacher-planning.js"), "utf8");
+if (!picker.includes("/data/pacing-unit-lessons.json")) {
+  fail("the hub picker no longer reads the authored unit sequences");
+}
 if (!picker.includes("/data/pacing-unit-ranges.json")) {
   fail("the hub picker no longer reads the district pacing plan — its Unit order is unsourced");
 }
