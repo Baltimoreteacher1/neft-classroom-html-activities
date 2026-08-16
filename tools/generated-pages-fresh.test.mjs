@@ -75,6 +75,7 @@ const GENERATORS = [
   ],
   ["slides.html", "../scripts/generate-slides.mjs", []],
   ["homework.html", "../scripts/generate-homework-html.mjs", []],
+  ["editable-slides.html", "../scripts/generate-editable-slides-page.mjs", []],
 ];
 
 const stale = [];

@@ -26,7 +26,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
-import { writeGenerated } from "./lib/preserve-injected.mjs";
+import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -211,6 +211,19 @@ ${objBlock}
 </html>`;
 }
 
+/*
+ * --check: fail if a committed page is not what this generator would write.
+ *
+ * Without it these pages drifted invisibly. 55 of the 64 committed launchers
+ * still identified themselves as their PRE-TOC-renumber lesson — the page at
+ * lessons/2-1/ was titled "Unit 8, Lesson 1" and carried `lesson=8-1` — and
+ * they referenced a `--teal-ink` custom property their own :root does not
+ * define, so the breadcrumb and standard chip lost their colour. Every other
+ * generated lesson page has been gated by tools/generated-pages-fresh.test.mjs
+ * for exactly this reason; this one was not in the list.
+ */
+const CHECK = process.argv.includes("--check");
+
 function main() {
   console.log("Generating editable-slides.html launcher pages...");
   const lessons = fs
@@ -220,7 +233,27 @@ function main() {
 
   let count = 0;
   let skipped = [];
+  const stale = [];
+  const noDeck = [];
   for (const id of lessons) {
+    /*
+     * PREFLIGHT. Every route on this page is the .pptx: "Edit in PowerPoint"
+     * downloads it, and "Edit in Google Slides" tells the teacher to download it
+     * first and upload it. A page for a lesson with no deck is not a reduced
+     * page, it is a page whose every button 404s.
+     *
+     * It used to generate one for all 84 lessons regardless. 20 have no
+     * slides.pptx, so a routine run created 20 pages advertising a download that
+     * does not exist — caught only because `audit:links` failed afterwards, and
+     * only because those pages happened to be new files someone looked at.
+     * Skipping is explicit and reported: the answer to a missing deck is to
+     * build the deck, not to publish a broken launcher.
+     */
+    const deck = path.join(lessonsDir, id, "slides.pptx");
+    if (!fs.existsSync(deck) || fs.statSync(deck).size === 0) {
+      noDeck.push(id);
+      continue;
+    }
     try {
       const cfg = JSON.parse(fs.readFileSync(path.join(lessonsDir, id, "config.json"), "utf8"));
       const m = id.match(LESSON_DIR_RE);
@@ -238,7 +271,13 @@ function main() {
       // writeGenerated, not fs.writeFileSync — see tools/generators-preserve-injected.test.mjs.
       // All 74 editable-slides.html pages carry injected sentinel blocks; a plain
       // overwrite deletes them and no gate notices, because zero blocks balance.
-      writeGenerated(path.join(lessonsDir, id, "editable-slides.html"), html);
+      const file = path.join(lessonsDir, id, "editable-slides.html");
+      if (CHECK) {
+        if (!isGeneratedFresh(file, html)) stale.push(id);
+        count++;
+        continue;
+      }
+      writeGenerated(file, html);
       count++;
     } catch (e) {
       skipped.push(id);
@@ -246,8 +285,25 @@ function main() {
     }
   }
 
+  if (CHECK) {
+    if (stale.length) {
+      console.error(
+        `${stale.length} editable-slides page(s) are STALE — the committed HTML no longer ` +
+          `matches its config.json:\n  ${stale.join(", ")}\n\nFix: node scripts/generate-editable-slides-page.mjs`,
+      );
+      process.exit(1);
+    }
+    console.log(`editable-slides: ${count} page(s) match their configs.`);
+    return;
+  }
   console.log(`Successfully generated editable-slides.html for ${count} lessons.`);
-  if (skipped.length) console.warn(`Skipped: ${skipped.join(", ")}`);
+  if (noDeck.length) {
+    console.log(
+      `Skipped ${noDeck.length} lesson(s) with no slides.pptx — a launcher whose every ` +
+        `button downloads a missing file is worse than no launcher:\n  ${noDeck.join(", ")}`,
+    );
+  }
+  if (skipped.length) console.warn(`Skipped (error): ${skipped.join(", ")}`);
 }
 
 main();
