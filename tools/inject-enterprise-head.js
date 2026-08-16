@@ -72,13 +72,29 @@ const report = {
 const escapeAttr = (s) =>
   s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+/**
+ * Remove one sentinel block, leaving the seam in the SAME shape the injector
+ * will re-insert into — so that strip → inject is a fixed point.
+ *
+ * Collapsing the run of blank lines is the whole point. Without it this tool is
+ * not idempotent: the strip left the newline the block sat on, the insert added
+ * its own, and every run grew one more blank line before every block, forever.
+ * That did not matter while it was run by hand once; it matters now that
+ * `npm run build` runs it, because tools/build-injectors-idempotent.test.mjs
+ * requires a build to leave committed source alone — and a build that rewrites
+ * 1,080 files on every run is a diff nobody can read and a deploy that is never
+ * a no-op.
+ */
 const stripBlock = (html, begin, end) => {
   const b = html.indexOf(begin);
   if (b === -1) return html;
   const e = html.indexOf(end, b);
   if (e === -1) return html; // unbalanced — leave for validate:injection to flag
   return (
-    html.slice(0, b).replace(/[ \t]*$/, "") + html.slice(e + end.length).replace(/^\s*\n/, "\n")
+    html
+      .slice(0, b)
+      .replace(/[ \t]*$/, "")
+      .replace(/\n{2,}$/, "\n") + html.slice(e + end.length).replace(/^\s*\n/, "\n")
   );
 };
 
