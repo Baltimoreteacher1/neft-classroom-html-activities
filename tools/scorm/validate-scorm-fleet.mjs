@@ -78,7 +78,7 @@ const NMTOKEN = /^[A-Za-z_][\w.-]*$/;
  * style problem, it is an answer key in a 12-year-old's hands.
  */
 const TEACHER_LEAKS = [
-  ["teacher PIN", /TeacherNeft/],
+  ["teacher PIN", /BlueHeron2026/],
   ["teacher key", /TEACHER_KEY|neft\.teacher\.key/],
   ["teacher-only route", /\/teacher-tools\/|teacher-notes|answer-key|answerKey/i],
   ["teacher mode flag", /nt-teacher-mode/],
@@ -226,7 +226,7 @@ function selfTest() {
   );
   expect(
     "teacher leak",
-    { ...good, "notes.html": "<p>PIN TeacherNeft</p>" },
+    { ...good, "notes.html": "<p>PIN BlueHeron2026</p>" },
     "a.zip",
     /teacher PIN/,
   );

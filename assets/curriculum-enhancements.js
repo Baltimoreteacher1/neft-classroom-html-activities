@@ -21,10 +21,10 @@
   // same Teacher Mode sticky flag; neither is SITE_PASSWORD.
   // ⚠️ KEEP IN SYNC with TEACHER_PINS in engine/core/teacher-mode.js.
   var TEACHER_PINS = {
-    master: "TeacherNeft",
-    coteacher: "TeacherAlba",
-    masterAlt: "BlueHeron2026",
-    coteacherAlt: "RiverStone2026",
+    master: "BlueHeron2026",
+    coteacher: "RiverStone2026",
+    masterAlt: "CedarLoop2026",
+    coteacherAlt: "SableCreek2026",
   };
   // Order is load-bearing: matchTeacherPin() derives the role from the index
   // (even = master, odd = co-teacher), so the two roles must keep alternating.

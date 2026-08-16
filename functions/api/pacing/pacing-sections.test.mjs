@@ -395,6 +395,32 @@ test("a FUTURE schema version is refused rather than misread", async () => {
   );
 });
 
+test("a stale v1 index is rebuilt to its declared definition", async () => {
+  // CREATE INDEX IF NOT EXISTS does not alter an existing index, so a v1 index
+  // survives a migration with v1 columns while the schema claims otherwise.
+  // Production proved it: pacing_change_date came through without `section`.
+  const { db, sqlite } = legacyDb();
+  sqlite.exec(
+    `CREATE INDEX pacing_change_date ON pacing_change (school_year, date, ts DESC)`,
+  );
+  await ensureSchema(db);
+  const sql = all(
+    sqlite,
+    `SELECT sql FROM sqlite_master WHERE type='index' AND name='pacing_change_date'`,
+  )[0].sql;
+  assert.match(sql, /section/, "the stale index survived the migration without section");
+
+  // …and rebuilding is idempotent: a second run leaves it alone.
+  const before = sql;
+  await ensureSchema(db);
+  assert.equal(
+    all(sqlite, `SELECT sql FROM sqlite_master WHERE type='index' AND name='pacing_change_date'`)[0]
+      .sql,
+    before,
+    "the index was rebuilt again on a clean run",
+  );
+});
+
 test("a fresh database is created at the current version, already class-aware", async () => {
   const { sqlite } = await freshDb();
   const cols = all(sqlite, `PRAGMA table_info(pacing_day)`).map((c) => c.name);

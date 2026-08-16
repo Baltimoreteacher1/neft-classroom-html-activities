@@ -172,6 +172,33 @@ async function rebuildPacingDay(db) {
   return { migrated: copied, alreadyDone: false };
 }
 
+/**
+ * Bring an index up to its declared definition.
+ *
+ * `CREATE INDEX IF NOT EXISTS` does NOT alter an index that already exists, so a
+ * v1 index survives the migration with its v1 columns while the schema file
+ * claims otherwise. Production proved it: after migrating, `pacing_change_date`
+ * was still `(school_year, date, ts DESC)` — no `section` — even though this
+ * file declares it with one. The query it serves filters on section, so it kept
+ * working and simply scanned more than it needed to, which is the kind of drift
+ * that is never noticed and never fixed.
+ *
+ * Dropping and recreating an index is safe and cheap: an index holds no data.
+ */
+async function ensureIndex(db, name, definition) {
+  const { results } = await db
+    .prepare(`SELECT sql FROM sqlite_master WHERE type='index' AND name = ?`)
+    .bind(name)
+    .all();
+  const live = results?.[0]?.sql;
+  if (live && live.replace(/\s+/g, " ").trim() === definition.replace(/\s+/g, " ").trim()) {
+    return false;
+  }
+  if (live) await db.prepare(`DROP INDEX ${name}`).run();
+  await db.prepare(definition).run();
+  return true;
+}
+
 /** `pacing_op` and `pacing_change` only need a column, which SQLite can add in
  *  place — no rebuild, no window where the data is in two tables. */
 async function addSectionColumn(db, table) {
@@ -210,6 +237,23 @@ export async function ensureSchema(db) {
   }
 
   await db.batch(createStatements(db));
+
+  /* Indexes last, and by definition rather than by existence — see ensureIndex.
+   * Written as the exact text SQLite stores so the comparison is stable. */
+  report.indexes = [];
+  for (const [name, definition] of [
+    [
+      "pacing_op_section_ts",
+      "CREATE INDEX pacing_op_section_ts ON pacing_op (school_year, section, ts DESC)",
+    ],
+    [
+      "pacing_change_date",
+      "CREATE INDEX pacing_change_date ON pacing_change (school_year, section, date, ts DESC)",
+    ],
+  ]) {
+    if (await ensureIndex(db, name, definition)) report.indexes.push(name);
+  }
+
   await db
     .prepare(
       `INSERT INTO pacing_meta (key, value) VALUES ('schema_version', ?)

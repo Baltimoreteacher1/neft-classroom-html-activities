@@ -41,6 +41,7 @@ import {
 } from "../../../shared/pacing/sections.js";
 import { handler, json } from "../../_lib/http.js";
 import { ensureSchema, SCHEMA_VERSION } from "../../_lib/pacing-schema.js";
+import { teacherAuthorized } from "../../_lib/teacher-auth.js";
 
 const SCHOOL_YEAR = "2026-2027";
 const MAX_WRITES_PER_OP = 220; // one op can touch at most a whole year of dates
@@ -72,12 +73,6 @@ const ALLOWED_DAY_TYPES = new Set([
 ]);
 
 const isIsoDate = (s) => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
-
-function teacherAuthorized(env, request, url) {
-  if (!env.TEACHER_KEY) return "not-configured";
-  const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
-  return key === env.TEACHER_KEY ? "ok" : "unauthorized";
-}
 
 function shortId() {
   const alphabet = "23456789abcdefghijkmnpqrstuvwxyz";
@@ -267,10 +262,10 @@ function parseField(row, field) {
 export const onRequest = handler({
   methods: ["GET", "POST", "DELETE"],
   rateLimit: { max: 120, windowMs: 60_000 },
-  async handle({ request, env, body }) {
+  async handle({ request, env, body, data }) {
     const url = new URL(request.url);
     const path = url.pathname.replace(/^\/api\/pacing\/?/, "").replace(/\/+$/, "");
-    const auth = teacherAuthorized(env, request, url);
+    const auth = teacherAuthorized(env, request, url, data);
 
     if (auth === "not-configured") {
       return json(
@@ -278,7 +273,7 @@ export const onRequest = handler({
           ok: false,
           error: "not-configured",
           message:
-            "TEACHER_KEY is not set on this deployment, so the planner cannot save. It still opens read-only on the published baseline.",
+            "No teacher key is configured on this deployment, so the planner cannot save. It still opens read-only on the published baseline.",
         },
         503,
       );

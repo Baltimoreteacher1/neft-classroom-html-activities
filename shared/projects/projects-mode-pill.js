@@ -44,7 +44,7 @@
   var TEACHER_KEY = "nt-teacher-mode";
   /* ⚠️ KEEP IN SYNC with engine/core/teacher-mode.js and
      assets/curriculum-enhancements.js — all three hold this same literal. */
-  var TEACHER_PIN = "TeacherNeft";
+  var TEACHER_PIN = "BlueHeron2026";
 
   function isTeacher() {
     try {
