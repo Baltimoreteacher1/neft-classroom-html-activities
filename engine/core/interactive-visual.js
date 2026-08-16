@@ -327,6 +327,7 @@ const REGISTRY = {
       h: cfg.h,
       unit: cfg.unit,
       max: cfg.max,
+      step: cfg.step,
       label: cfg.label,
     });
   },

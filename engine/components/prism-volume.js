@@ -31,7 +31,7 @@
  * is what put this lesson out of scope in the first place.
  *
  * Public API:
- *   renderPrismVolume(container, { l, w, h, unit, max, label }) -> { destroy }
+ *   renderPrismVolume(container, { l, w, h, unit, max, step, label }) -> { destroy }
  */
 
 import { injectToolTokens } from "./tool-tokens.js";
@@ -45,7 +45,14 @@ const C = {
   layer: "rgba(18,53,91,.16)",
 };
 
-/** Half-unit granularity, held as integers so 0.5 + 0.5 is exactly 1. */
+/**
+ * Granularity, held as integer multiples so 0.5 + 0.5 is exactly 1.
+ *
+ * `step` is per-lesson and matters instructionally, not cosmetically. Lesson
+ * 5-5 teaches volume with WHOLE-number edges and lesson 5-10 introduces
+ * fractional ones; a half-step builder in 5-5 hands students the next lesson's
+ * mathematics early, which is the same drift in the opposite direction.
+ */
 const HALVES = 2;
 const toHalves = (n) => Math.round(Number(n) * HALVES);
 const fromHalves = (n) => n / HALVES;
@@ -71,14 +78,15 @@ function el(name, attrs) {
 
 export function renderPrismVolume(
   container,
-  /** @type {{l?:number,w?:number,h?:number,unit?:string,max?:number,label?:string}} */
-  { l = 2, w = 1.5, h = 1, unit = "units", max = 5, label = "" } = {},
+  /** @type {{l?:number,w?:number,h?:number,unit?:string,max?:number,step?:number,label?:string}} */
+  { l = 2, w = 1.5, h = 1, unit = "units", max = 5, step: stepSize = 0.5, label = "" } = {},
 ) {
   injectToolTokens();
 
+  const STEP = Math.max(1, toHalves(stepSize)); // stepper increment, in halves
   const MAXH = toHalves(Math.max(2, max)); // ceiling, in halves
   const dims = { l: toHalves(l), w: toHalves(w), h: toHalves(h) };
-  const clamp = (v) => Math.max(1, Math.min(MAXH, v));
+  const clamp = (v) => Math.max(STEP, Math.min(MAXH - (MAXH % STEP), Math.round(v / STEP) * STEP));
   for (const k of Object.keys(dims)) dims[k] = clamp(dims[k]);
 
   const root = document.createElement("div");
@@ -132,12 +140,12 @@ export function renderPrismVolume(
     dec.className = "tool-btn";
     dec.style.cssText = "padding:0;width:44px;font-size:1.3rem;";
     dec.textContent = "−";
-    dec.setAttribute("aria-label", `decrease ${name} by one half ${unit}`);
+    dec.setAttribute("aria-label", `decrease ${name} by ${num(fromHalves(STEP))} ${unit}`);
     const out = document.createElement("output");
     out.style.cssText = "min-width:46px;text-align:center;font-size:1.15rem;font-weight:800;";
     const inc = dec.cloneNode(false);
     inc.textContent = "+";
-    inc.setAttribute("aria-label", `increase ${name} by one half ${unit}`);
+    inc.setAttribute("aria-label", `increase ${name} by ${num(fromHalves(STEP))} ${unit}`);
     row.append(dec, out, inc);
     wrap.appendChild(row);
     controls.appendChild(wrap);
@@ -147,7 +155,11 @@ export function renderPrismVolume(
   }
 
   const half = document.createElement("p");
-  half.textContent = `Each tap changes an edge by one half ${unit}.`;
+  half.textContent =
+    STEP === 1
+      ? `Each tap changes an edge by one half ${unit}.`
+      : `Each tap changes an edge by ${num(fromHalves(STEP))} ${unit}.`;
+
   half.style.cssText = "margin:-6px 0 12px;font-size:.85rem;color:var(--tool-muted,#54677c);";
   side.appendChild(half);
 
@@ -171,7 +183,7 @@ export function renderPrismVolume(
   math.append(lineB, lineBh, lineLwh);
 
   function step(key, dir) {
-    dims[key] = clamp(dims[key] + dir);
+    dims[key] = clamp(dims[key] + dir * STEP);
     draw();
   }
 
@@ -189,8 +201,8 @@ export function renderPrismVolume(
     for (const [key] of FIELDS) {
       const r = readouts[key];
       r.out.value = num(fromHalves(dims[key]));
-      r.dec.disabled = dims[key] <= 1;
-      r.inc.disabled = dims[key] >= MAXH;
+      r.dec.disabled = dims[key] <= STEP;
+      r.inc.disabled = dims[key] + STEP > MAXH;
     }
 
     lineB.textContent = `Base area  B = l × w = ${num(L)} × ${num(W)} = ${num(B)} square ${unit}`;
@@ -223,11 +235,11 @@ export function renderPrismVolume(
       "stroke-width": 2.5,
     });
     // Half-unit grid ON the base, so a 1.5 edge reads as three half-columns.
-    for (let i = 1; i < dims.l; i++) {
+    for (let i = STEP; i < dims.l; i += STEP) {
       const x = fromHalves(i);
       seg(p(x, 0, 0), p(x, W, 0), { stroke: C.grid, "stroke-width": 0.8 });
     }
-    for (let j = 1; j < dims.w; j++) {
+    for (let j = STEP; j < dims.w; j += STEP) {
       const y = fromHalves(j);
       seg(p(0, y, 0), p(L, y, 0), { stroke: C.grid, "stroke-width": 0.8 });
     }
@@ -250,7 +262,7 @@ export function renderPrismVolume(
     });
 
     // Layer rules up the height: V = B × h is "this base, h units tall".
-    for (let k = 1; k < dims.h; k++) {
+    for (let k = STEP; k < dims.h; k += STEP) {
       const z = fromHalves(k);
       seg(p(0, 0, z), p(L, 0, z), { stroke: C.layer, "stroke-width": 1 });
       seg(p(L, 0, z), p(L, W, z), { stroke: C.layer, "stroke-width": 1 });
