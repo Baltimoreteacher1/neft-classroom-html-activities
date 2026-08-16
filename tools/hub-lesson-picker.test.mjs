@@ -23,6 +23,15 @@ const MANIFEST = JSON.parse(
   readFileSync(join(ROOT, "data", "curriculum-launch-manifest.json"), "utf8"),
 );
 const STANDARDS = JSON.parse(readFileSync(join(ROOT, "data", "ccss-standards.json"), "utf8"));
+const PACING = JSON.parse(readFileSync(join(ROOT, "data", "pacing-unit-ranges.json"), "utf8"));
+
+/** The district sequence the Unit dropdown must follow, derived from the same
+ *  generated file the picker reads — never a list retyped into this test, which
+ *  would only prove the two typists agreed. MSTAR carries no curriculumUnit and
+ *  owns no lessons, so it is not an option. */
+const DISTRICT_UNIT_ORDER = PACING.units
+  .filter((u) => u.curriculumUnit != null)
+  .map((u) => String(u.curriculumUnit));
 
 let pass = 0;
 async function t(name, fn) {
@@ -36,6 +45,7 @@ async function t(name, fn) {
 async function mount({
   savedPick = null,
   manifest = MANIFEST,
+  pacing = PACING,
   failFetch = false,
   teacherState = null,
 } = {}) {
@@ -54,7 +64,16 @@ async function mount({
     window.localStorage.setItem("curriculumTeacherWorkflow:v1", JSON.stringify(teacherState));
   }
   window.NTJsonCache = {
-    json: () => (failFetch ? Promise.reject(new Error("offline")) : Promise.resolve(manifest)),
+    // Route by path. The picker asks for two different files and they answer two
+    // different questions; a stub that returns the manifest for both made the
+    // unit-order assertion pass by accident, on manifest order, for weeks.
+    json: (path) => {
+      if (failFetch) return Promise.reject(new Error("offline"));
+      if (String(path).includes("pacing-unit-ranges")) {
+        return pacing ? Promise.resolve(pacing) : Promise.reject(new Error("no pacing"));
+      }
+      return Promise.resolve(manifest);
+    },
     text: () => Promise.resolve({ ok: true, status: 200, text: "" }),
   };
   window.eval(SCRIPT);
@@ -131,25 +150,77 @@ await t("the visible label says Class Section, not Section", async () => {
  * ======================================================================== */
 await t("every unit is available whichever class is selected", async () => {
   const p = await mount();
-  const allUnits = [...new Set(MANIFEST.lessons.map((l) => String(l.unit)))];
+  const allUnits = new Set(MANIFEST.lessons.map((l) => String(l.unit)));
   for (const cls of ["601", "602", "603"]) {
     p.change(p.section, cls);
+    // A SET, deliberately: which units exist is this assertion's subject, and
+    // the order they appear in is the district's, not the manifest's. Comparing
+    // arrays here would silently re-pin numbering as the sequence.
     assert.deepEqual(
-      p.values(p.unit),
+      new Set(p.values(p.unit)),
       allUnits,
       `class ${cls} changed which units exist — class is context, not curriculum`,
     );
   }
 });
 
-await t("units are offered in the curriculum's own order, not re-sorted", async () => {
+await t("units follow the district pacing sequence, not the numbering", async () => {
   const p = await mount();
+  assert.deepEqual(p.values(p.unit), DISTRICT_UNIT_ORDER);
+  // Stated as a property, so this fails even if the generated plan changes to
+  // some other non-numeric order: the point is that the dropdown is NOT sorted.
+  const shown = p.values(p.unit);
+  const numeric = [...shown].sort((a, b) => Number(a) - Number(b));
+  assert.notDeepEqual(shown, numeric, "the unit dropdown fell back to numeric order");
+  const alphabetical = [...shown].sort();
+  assert.notDeepEqual(shown, alphabetical, "the unit dropdown fell back to alphabetical order");
+});
+
+await t("a pacing entry with no curriculum unit is not offered as a unit", async () => {
+  // MSTAR is a pacing entry: real instructional days, no curriculum unit, no
+  // lessons. Offering it would produce a Unit whose Lesson dropdown is empty.
+  const p = await mount();
+  const nonUnits = PACING.units.filter((u) => u.curriculumUnit == null);
+  assert.ok(nonUnits.length > 0, "the fixture no longer covers this case");
+  for (const entry of nonUnits) {
+    for (const value of p.values(p.unit)) {
+      assert.notEqual(value, entry.key, `${entry.key} was offered as a unit`);
+    }
+  }
+});
+
+await t("units the pacing plan omits are appended, never dropped", async () => {
+  // The curriculum decides what exists; a schedule that forgets a unit must not
+  // be able to hide it. Pacing is the ORDER, not the allow-list.
+  const thin = { ...PACING, units: PACING.units.slice(0, 2) };
+  const p = await mount({ pacing: thin });
+  const shown = p.values(p.unit);
+  const everyUnit = new Set(MANIFEST.lessons.map((l) => String(l.unit)));
+  assert.equal(shown.length, everyUnit.size, "a real unit disappeared from the picker");
+  assert.deepEqual(shown.slice(0, 2), ["1", "3"], "the paced units did not lead");
+});
+
+await t("unreadable pacing data leaves the lesson list working", async () => {
+  // Teaching continues when planning data does not. The order degrades to the
+  // manifest's; the picker does not.
+  const p = await mount({ pacing: null });
   const manifestOrder = [];
   for (const l of MANIFEST.lessons) {
     const u = String(l.unit);
     if (!manifestOrder.includes(u)) manifestOrder.push(u);
   }
   assert.deepEqual(p.values(p.unit), manifestOrder);
+  assert.equal(p.unit.disabled, false);
+});
+
+await t("the unit dropdown uses the district's own label for a unit", async () => {
+  const p = await mount();
+  const labels = [...p.unit.options].map((o) => o.textContent).filter(Boolean);
+  const pre = PACING.units.find((u) => u.curriculumUnit === 1);
+  assert.ok(
+    labels.includes(pre.districtLabel),
+    `the Pre-Unit is shown as something other than "${pre.districtLabel}"`,
+  );
 });
 
 await t("unit and lesson do not wait on a class being chosen", async () => {
