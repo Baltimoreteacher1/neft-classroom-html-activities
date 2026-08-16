@@ -624,6 +624,22 @@
         addVariant(c, "Catch-up");
       });
 
+      /* End-of-unit culminating projects, keyed by unit. They are offered at the
+       * BOTTOM of the Lesson dropdown (see lessonsFor) and open through the same
+       * expansion as a lesson, so a teacher reaches the project the same way
+       * they reach anything else they teach. */
+      var projectsByUnit = Object.create(null);
+      (manifest.endOfUnit || []).forEach(function (p) {
+        if (!p || !p.resources || !p.resources.lesson) return;
+        var key = String(p.unit);
+        (projectsByUnit[key] = projectsByUnit[key] || []).push(p);
+      });
+
+      /* renderOpen resolves whatever the Lesson dropdown selected, and that is
+       * now lessons AND projects. Looking only at `lessons` is why an option can
+       * be selectable and expand to nothing. */
+      var openable = lessons.concat(manifest.endOfUnit || []);
+
       /* WHICH units exist is the curriculum's answer; WHAT ORDER they are taught
        * in is the district's, and they are not the same answer.
        *
@@ -738,9 +754,19 @@
         /* An authored sequence wins for THIS unit only; every other unit keeps
          * its ordinary manifest membership and order. */
         var key = String(unit);
-        return (authoredLessons[key] || lessonsByUnit[key] || []).map(function (l) {
+        var items = (authoredLessons[key] || lessonsByUnit[key] || []).map(function (l) {
           return { value: l.id, label: l.id + " · " + l.title };
         });
+        /* The culminating project goes LAST, because that is when it is taught —
+         * it is the multi-day performance task at the end of the unit, not
+         * lesson zero. The manifest already carries it as an `endOfUnit` entry
+         * with `lesson: 999` precisely so it sorts there, and it is appended
+         * rather than merged into the lesson list so a unit with no project
+         * simply does not get the option instead of getting a dead one. */
+        (projectsByUnit[key] || []).forEach(function (p) {
+          items.push({ value: p.id, label: p.title });
+        });
+        return items;
       }
 
       function setDisabled(select, disabled, placeholder) {
@@ -748,16 +774,55 @@
         if (disabled) fillOptions(select, [], placeholder);
       }
 
+      /* The lesson's parts, in the order a teacher meets them: what they teach
+       * from, then what the student writes on, then what goes home. Each entry
+       * is [manifest resource key, button label]. Nothing is rendered for a key
+       * the manifest does not carry — see the note on dead buttons below. */
+      var TEACH_PARTS = [
+        ["guidedNotes", "Guided notes"],
+        ["handout", "Student handout"],
+        ["exitTicket", "Exit ticket"],
+      ];
+      var HOME_PARTS = [
+        ["homework", "Family homework"],
+        ["familyPage", "Family page"],
+        ["studentHelp", "Student help"],
+      ];
+
+      /** One labelled row of links, appended only if it has something in it. */
+      function partRow(lesson, parts, labelText, className) {
+        var present = parts.filter(function (p) {
+          return lesson.resources && lesson.resources[p[0]];
+        });
+        if (!present.length) return;
+        var row = document.createElement("p");
+        row.className = "tws-actions " + className;
+        var label = document.createElement("span");
+        label.className = "tws-open-label";
+        label.textContent = labelText;
+        row.appendChild(label);
+        present.forEach(function (p) {
+          var a = document.createElement("a");
+          a.className = "tws-btn ghost";
+          a.href = lesson.resources[p[0]];
+          a.textContent = p[1];
+          row.appendChild(a);
+        });
+        openBox.appendChild(row);
+      }
+
       function renderOpen() {
         openBox.replaceChildren();
-        var lesson = lessons.filter(function (l) {
+        var lesson = openable.filter(function (l) {
           return l.id === lessonSel.value;
         })[0];
         if (!lesson) return;
 
+        var isProject = lesson.kind === "endOfUnit";
+
         var head = document.createElement("p");
         head.className = "tws-open-title";
-        head.textContent = "Lesson " + lesson.id + " — " + lesson.title;
+        head.textContent = isProject ? lesson.title : "Lesson " + lesson.id + " — " + lesson.title;
         openBox.appendChild(head);
 
         var row = document.createElement("p");
@@ -771,21 +836,28 @@
           var a = document.createElement("a");
           a.className = "tws-btn";
           a.href = lessonHref;
-          a.textContent = "Open whole-group lesson";
+          a.textContent = isProject ? "Open culminating project" : "Open whole-group lesson";
           row.appendChild(a);
         }
         /* The class travels with the lesson, so the supports surface opens on
          * the configuration for the class being taught rather than the
          * all-class default. The lesson itself is canonical either way — this
-         * is context, not a different lesson. */
-        var supports = document.createElement("a");
-        supports.className = "tws-btn ghost";
-        supports.href =
-          "/curriculum/student-supports/?lesson=" +
-          encodeURIComponent(lesson.id) +
-          (sectionSel.value ? "&section=" + encodeURIComponent(sectionSel.value) : "");
-        supports.textContent = "Student supports";
-        row.appendChild(supports);
+         * is context, not a different lesson.
+         *
+         * Not offered for a culminating project: the supports catalogue is keyed
+         * by lesson id, and `?lesson=unit-1-project` resolves to nothing there.
+         * A button that opens an empty surface is the dead button this file
+         * already refuses to render elsewhere. */
+        if (!isProject) {
+          var supports = document.createElement("a");
+          supports.className = "tws-btn ghost";
+          supports.href =
+            "/curriculum/student-supports/?lesson=" +
+            encodeURIComponent(lesson.id) +
+            (sectionSel.value ? "&section=" + encodeURIComponent(sectionSel.value) : "");
+          supports.textContent = "Student supports";
+          row.appendChild(supports);
+        }
         openBox.appendChild(row);
 
         if (sectionSel.value) {
@@ -812,6 +884,13 @@
           });
           openBox.appendChild(group);
         }
+
+        /* Everything else the lesson ships with. Choosing a lesson here used to
+         * offer two buttons and then send the teacher to /curriculum/units/ to
+         * find the notes, the homework and the family page — the parts are all
+         * in the manifest already, so the trip was pure navigation cost. */
+        partRow(lesson, TEACH_PARTS, "Lesson materials", "tws-open-parts");
+        partRow(lesson, HOME_PARTS, "Home & student support", "tws-open-home");
       }
 
       function remember() {

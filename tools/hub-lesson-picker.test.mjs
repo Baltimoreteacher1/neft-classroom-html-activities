@@ -34,6 +34,14 @@ const DISTRICT_UNIT_ORDER = PACING.units
   .filter((u) => u.curriculumUnit != null)
   .map((u) => String(u.curriculumUnit));
 
+/** The Lesson dropdown offers the unit's lessons AND, at the bottom, its
+ *  culminating project. Assertions about LESSON membership take the lesson
+ *  portion — identified from the manifest's own endOfUnit ids, never from an id
+ *  shape, so a lesson that starts looking like a project id cannot be dropped
+ *  silently. The project's own placement is asserted separately below. */
+const PROJECT_IDS = new Set((MANIFEST.endOfUnit || []).map((p) => p.id));
+const lessonsOnly = (values) => values.filter((v) => !PROJECT_IDS.has(v));
+
 let pass = 0;
 async function t(name, fn) {
   await fn();
@@ -240,8 +248,12 @@ const PRE_SEQUENCE = AUTHORED.units.PRE.lessons;
 await t("the Pre-Unit lesson list is the authored sequence, in order", async () => {
   const p = await mount();
   p.change(p.unit, "1"); // the Pre-Unit maps to curriculum unit 1
+  /* The culminating project is appended after the lessons (asserted separately
+   * below), so the LESSON portion is what this assertion is about — compared by
+   * taking the same number of leading entries rather than by filtering on an id
+   * shape, which would keep passing if a lesson silently vanished. */
   assert.deepEqual(
-    p.values(p.lesson),
+    lessonsOnly(p.values(p.lesson)),
     PRE_SEQUENCE,
     "the Pre-Unit dropdown does not match the authored instructional sequence",
   );
@@ -258,7 +270,7 @@ await t("the Pre-Unit list is authored, not derived from unit membership", async
    * manifest's `unit` field, which is what produced 1-1 … 1-6. */
   const p = await mount();
   p.change(p.unit, "1");
-  const shown = p.values(p.lesson);
+  const shown = lessonsOnly(p.values(p.lesson));
   const fromUnitField = MANIFEST.lessons.filter((l) => String(l.unit) === "1").map((l) => l.id);
   assert.deepEqual(shown, PRE_SEQUENCE);
   assert.notDeepEqual(
@@ -314,7 +326,7 @@ await t("borrowing a lesson into the Pre-Unit does not move it", async () => {
     ["6", "6-1"],
   ]) {
     p.change(p.unit, unit);
-    const shown = p.values(p.lesson);
+    const shown = lessonsOnly(p.values(p.lesson));
     assert.ok(shown.includes(expectedId), `${expectedId} vanished from Unit ${unit}`);
     const manifestOrder = MANIFEST.lessons.filter((l) => String(l.unit) === unit).map((l) => l.id);
     assert.deepEqual(
@@ -328,22 +340,26 @@ await t("borrowing a lesson into the Pre-Unit does not move it", async () => {
 await t("switching away from the Pre-Unit restores normal membership", async () => {
   const p = await mount();
   p.change(p.unit, "1");
-  assert.deepEqual(p.values(p.lesson), PRE_SEQUENCE);
+  assert.deepEqual(lessonsOnly(p.values(p.lesson)), PRE_SEQUENCE);
   p.change(p.unit, "5");
   assert.deepEqual(
-    p.values(p.lesson),
+    lessonsOnly(p.values(p.lesson)),
     MANIFEST.lessons.filter((l) => String(l.unit) === "5").map((l) => l.id),
     "Unit 5 inherited the Pre-Unit's authored sequence",
   );
   p.change(p.unit, "1");
-  assert.deepEqual(p.values(p.lesson), PRE_SEQUENCE, "returning to the Pre-Unit lost its sequence");
+  assert.deepEqual(
+    lessonsOnly(p.values(p.lesson)),
+    PRE_SEQUENCE,
+    "returning to the Pre-Unit lost its sequence",
+  );
 });
 
 await t("an unreadable authored file falls back to manifest membership", async () => {
   const p = await mount({ authored: null });
   p.change(p.unit, "1");
   assert.deepEqual(
-    p.values(p.lesson),
+    lessonsOnly(p.values(p.lesson)),
     MANIFEST.lessons.filter((l) => String(l.unit) === "1").map((l) => l.id),
     "a missing authored file emptied the Pre-Unit instead of falling back",
   );
@@ -363,7 +379,7 @@ await t("selecting a unit shows only that unit's lessons, in order", async () =>
   const p = await mount();
   p.change(p.unit, "5");
   const expected = MANIFEST.lessons.filter((l) => String(l.unit) === "5").map((l) => l.id);
-  assert.deepEqual(p.values(p.lesson), expected);
+  assert.deepEqual(lessonsOnly(p.values(p.lesson)), expected);
   const first = MANIFEST.lessons.find((l) => l.id === expected[0]);
   assert.ok(p.labels(p.lesson).includes(`${first.id} · ${first.title}`));
 });
@@ -451,14 +467,79 @@ await t("a selected lesson resolves its own routes, and only real ones", async (
     ...(MANIFEST.catchUps || []).filter((c) => c.parent === "5-3"),
   ].map((v) => v.resources.lesson);
   for (const href of expectedVariants) assert.ok(hrefs.includes(href), `variant ${href} missing`);
+
+  /* EVERY part the manifest carries for this lesson is offered. Derived from the
+   * manifest rather than listed here, so adding a resource to the curriculum
+   * without surfacing it in the expansion fails this test instead of quietly
+   * shipping a lesson whose homework the teacher cannot reach from the picker. */
+  const own = MANIFEST.lessons.find((l) => l.id === "5-3").resources;
+  for (const [key, href] of Object.entries(own)) {
+    assert.ok(hrefs.includes(href), `the lesson's ${key} (${href}) is not offered`);
+  }
+
+  /* And nothing else. The expansion may only contain routes this lesson owns —
+   * a hand-built path or another lesson's URL is the class of bug that sends a
+   * teacher to the wrong homework at 7:55am. */
+  const allowed = new Set([...Object.values(own), ...expectedVariants]);
   for (const href of hrefs) {
     assert.ok(
-      href === "/lessons/5-3/" ||
-        href.startsWith("/curriculum/student-supports/?lesson=5-3") ||
-        expectedVariants.includes(href),
+      allowed.has(href) || href.startsWith("/curriculum/student-supports/?lesson=5-3"),
       `unexpected route in the expansion: ${href}`,
     );
   }
+});
+
+/* ===========================================================================
+ * CULMINATING PROJECTS — offered at the BOTTOM of the Lesson dropdown
+ * ======================================================================== */
+await t("each unit's culminating project is the LAST option in the Lesson list", async () => {
+  const p = await mount();
+  for (const project of MANIFEST.endOfUnit || []) {
+    const unit = String(project.unit);
+    p.change(p.unit, unit);
+    const values = p.values(p.lesson);
+    if (!values.length) continue; // a unit this district does not pace
+    assert.equal(
+      values[values.length - 1],
+      project.id,
+      `Unit ${unit}'s culminating project is not the last option`,
+    );
+    assert.ok(
+      lessonsOnly(values).length > 0,
+      `Unit ${unit} lost its lessons when the project was appended`,
+    );
+  }
+});
+
+await t("the project option is labelled from the manifest, not composed here", async () => {
+  const p = await mount();
+  const project = (MANIFEST.endOfUnit || []).find((x) => String(x.unit) === "5");
+  p.change(p.unit, "5");
+  assert.ok(
+    p.labels(p.lesson).includes(project.title),
+    `the Lesson dropdown does not offer "${project.title}"`,
+  );
+});
+
+await t("choosing a project expands to the project, not to nothing", async () => {
+  /* The expansion used to resolve the selection against `lessons` only, so a
+   * project was selectable and then expanded to an empty box — which reads as a
+   * broken picker rather than as a missing feature. */
+  const p = await mount();
+  const project = (MANIFEST.endOfUnit || []).find((x) => String(x.unit) === "5");
+  p.change(p.unit, "5");
+  p.change(p.lesson, project.id);
+  const hrefs = [...p.open.querySelectorAll("a")].map((a) => a.getAttribute("href"));
+  assert.ok(hrefs.includes(project.resources.lesson), "the project route is missing");
+  assert.ok(
+    p.open.textContent.includes(project.title),
+    "the expansion does not name the project it opened",
+  );
+  // Supports are keyed by lesson id and resolve to nothing for a project.
+  assert.ok(
+    !hrefs.some((h) => h.startsWith("/curriculum/student-supports/")),
+    "a project offered a supports link that would open an empty surface",
+  );
 });
 
 await t("a lesson with no small-group version shows no small-group buttons", async () => {
