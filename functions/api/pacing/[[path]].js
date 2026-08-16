@@ -33,7 +33,14 @@
  * "wrong password"), 401 when wrong.
  * ========================================================================== */
 
+import {
+  effectiveOverlay,
+  isValidSection,
+  normalizeSection,
+  SHARED,
+} from "../../../shared/pacing/sections.js";
 import { handler, json } from "../../_lib/http.js";
+import { ensureSchema, SCHEMA_VERSION } from "../../_lib/pacing-schema.js";
 
 const SCHOOL_YEAR = "2026-2027";
 const MAX_WRITES_PER_OP = 220; // one op can touch at most a whole year of dates
@@ -83,34 +90,14 @@ function shortId() {
 
 /* ── Schema ────────────────────────────────────────────────────────────────── */
 
-export async function ensureTables(db) {
-  await db.batch([
-    db.prepare(
-      `CREATE TABLE IF NOT EXISTS pacing_day (
-         school_year TEXT NOT NULL, date TEXT NOT NULL,
-         plan TEXT, actual TEXT, note TEXT,
-         locked INTEGER NOT NULL DEFAULT 0,
-         updated_at INTEGER NOT NULL,
-         PRIMARY KEY (school_year, date))`,
-    ),
-    db.prepare(
-      `CREATE TABLE IF NOT EXISTS pacing_op (
-         id TEXT PRIMARY KEY, school_year TEXT NOT NULL, ts INTEGER NOT NULL,
-         kind TEXT NOT NULL, summary TEXT NOT NULL DEFAULT '',
-         inverse TEXT NOT NULL DEFAULT '[]', undone_at INTEGER)`,
-    ),
-    db.prepare(`CREATE INDEX IF NOT EXISTS pacing_op_ts ON pacing_op (school_year, ts DESC)`),
-    db.prepare(
-      `CREATE TABLE IF NOT EXISTS pacing_change (
-         id TEXT PRIMARY KEY, op_id TEXT NOT NULL, school_year TEXT NOT NULL,
-         ts INTEGER NOT NULL, date TEXT NOT NULL, field TEXT NOT NULL,
-         prev TEXT, next TEXT)`,
-    ),
-    db.prepare(
-      `CREATE INDEX IF NOT EXISTS pacing_change_date ON pacing_change (school_year, date, ts DESC)`,
-    ),
-  ]);
-}
+/**
+ * Schema now lives in functions/_lib/pacing-schema.js, which owns the v1 -> v2
+ * class-aware migration as well as the CREATE statements. Re-exported under the
+ * old name because functions/api/pacing/pacing-api.test.mjs and the local dev
+ * seeder both import `ensureTables`, and a rename would have been churn in
+ * files this change has no other reason to touch.
+ */
+export const ensureTables = ensureSchema;
 
 const parse = (v, fallback = null) => {
   if (v == null) return fallback;
@@ -179,14 +166,19 @@ export function validateWrite(w) {
  * D1 batch, and the inverse is stored alongside it before the writes land. That
  * ordering is what makes "Undo Last Adjustment" honest: an undo that has to be
  * reconstructed after the fact can only ever be a guess at what was there. */
-export async function applyBatch(db, { writes, inverse, kind, summary, now }) {
+export async function applyBatch(db, { writes, inverse, kind, summary, now, section = SHARED }) {
   const dates = writes.map((w) => w.date);
   const existing = new Map();
   if (dates.length) {
     const placeholders = dates.map(() => "?").join(",");
+    // Scoped to the section: the prior value a write merges over is THIS class's
+    // prior value, never another class's, and never the shared plan's. Reading
+    // unscoped here is the single easiest way to leak one class into another.
     const { results } = await db
-      .prepare(`SELECT * FROM pacing_day WHERE school_year = ? AND date IN (${placeholders})`)
-      .bind(SCHOOL_YEAR, ...dates)
+      .prepare(
+        `SELECT * FROM pacing_day WHERE school_year = ? AND section = ? AND date IN (${placeholders})`,
+      )
+      .bind(SCHOOL_YEAR, section, ...dates)
       .all();
     for (const r of results || []) existing.set(r.date, r);
   }
@@ -195,10 +187,10 @@ export async function applyBatch(db, { writes, inverse, kind, summary, now }) {
   const statements = [
     db
       .prepare(
-        `INSERT INTO pacing_op (id, school_year, ts, kind, summary, inverse)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO pacing_op (id, school_year, section, ts, kind, summary, inverse)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
       )
-      .bind(opId, SCHOOL_YEAR, now, kind, summary, JSON.stringify(inverse || [])),
+      .bind(opId, SCHOOL_YEAR, section, now, kind, summary, JSON.stringify(inverse || [])),
   ];
 
   for (const w of writes) {
@@ -213,14 +205,15 @@ export async function applyBatch(db, { writes, inverse, kind, summary, now }) {
     statements.push(
       db
         .prepare(
-          `INSERT INTO pacing_day (school_year, date, plan, actual, note, locked, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?)
-           ON CONFLICT (school_year, date) DO UPDATE SET
+          `INSERT INTO pacing_day (school_year, section, date, plan, actual, note, locked, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+           ON CONFLICT (school_year, section, date) DO UPDATE SET
              plan = excluded.plan, actual = excluded.actual, note = excluded.note,
              locked = excluded.locked, updated_at = excluded.updated_at`,
         )
         .bind(
           SCHOOL_YEAR,
+          section,
           w.date,
           merged.plan ? JSON.stringify(merged.plan) : null,
           merged.actual ? JSON.stringify(merged.actual) : null,
@@ -241,13 +234,14 @@ export async function applyBatch(db, { writes, inverse, kind, summary, now }) {
       statements.push(
         db
           .prepare(
-            `INSERT INTO pacing_change (id, op_id, school_year, ts, date, field, prev, next)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO pacing_change (id, op_id, school_year, section, ts, date, field, prev, next)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             shortId(),
             opId,
             SCHOOL_YEAR,
+            section,
             now,
             w.date,
             field,
@@ -305,43 +299,108 @@ export const onRequest = handler({
         503,
       );
     }
-    await ensureTables(db);
+    /* SECTION SCOPE. Every route below is scoped to exactly one layer: '' is the
+     * shared plan that all three classes inherit, '601'|'602'|'603' is one class.
+     * Validated against the canonical list rather than accepted as free text —
+     * an unrecognised section would otherwise create a silent fourth plan that
+     * no teacher can ever see again. Absent means the shared plan, which is what
+     * every pre-class-awareness caller sends. */
+    const rawSection = url.searchParams.get("section") ?? body?.section ?? SHARED;
+    if (!isValidSection(rawSection)) {
+      return json(
+        {
+          ok: false,
+          error: "bad-section",
+          message: "Unknown class section. Expected 601, 602, 603, or none for the shared plan.",
+        },
+        400,
+      );
+    }
+    const section = normalizeSection(rawSection);
+
+    try {
+      await ensureTables(db);
+    } catch (err) {
+      /* Fail CLOSED. A half-migrated or future-schema database must refuse to
+       * serve rather than answer from a shape it does not understand. */
+      return json(
+        {
+          ok: false,
+          error: "schema",
+          message: `The planner database is not in a readable state: ${err.message}`,
+        },
+        503,
+      );
+    }
     const now = Date.now();
     const method = request.method.toUpperCase();
 
     if (method === "GET" && path === "health") {
       const { results } = await db
-        .prepare(`SELECT COUNT(*) AS n FROM pacing_day WHERE school_year = ?`)
+        .prepare(
+          `SELECT section, COUNT(*) AS n FROM pacing_day WHERE school_year = ? GROUP BY section`,
+        )
         .bind(SCHOOL_YEAR)
         .all();
+      const bySection = {};
+      let total = 0;
+      for (const r of results || []) {
+        bySection[r.section === SHARED ? "shared" : r.section] = r.n;
+        total += Number(r.n);
+      }
       return {
         ok: true,
         schoolYear: SCHOOL_YEAR,
-        editedDays: results?.[0]?.n ?? 0,
+        schemaVersion: SCHEMA_VERSION,
+        editedDays: total,
+        editedDaysBySection: bySection,
         database: true,
       };
     }
 
     if (method === "GET" && (path === "state" || path === "")) {
+      /* BOTH LAYERS, in one round trip. The client needs the shared plan and the
+       * class plan separately — not just their merge — so it can label a day
+       * "your class changed this" versus "this came from the shared plan", and
+       * so switching class re-composes locally instead of re-fetching. Composing
+       * server-side would be one less field and one more request per class. */
+      const wantedSections = section === SHARED ? [SHARED] : [SHARED, section];
+      const placeholders = wantedSections.map(() => "?").join(",");
       const [days, ops] = await Promise.all([
-        db.prepare(`SELECT * FROM pacing_day WHERE school_year = ?`).bind(SCHOOL_YEAR).all(),
         db
           .prepare(
-            `SELECT id, ts, kind, summary, undone_at FROM pacing_op
-             WHERE school_year = ? ORDER BY ts DESC LIMIT ?`,
+            `SELECT * FROM pacing_day WHERE school_year = ? AND section IN (${placeholders})`,
           )
-          .bind(SCHOOL_YEAR, OP_LOG_LIMIT)
+          .bind(SCHOOL_YEAR, ...wantedSections)
+          .all(),
+        db
+          .prepare(
+            `SELECT id, section, ts, kind, summary, undone_at FROM pacing_op
+             WHERE school_year = ? AND section = ? ORDER BY ts DESC LIMIT ?`,
+          )
+          .bind(SCHOOL_YEAR, section, OP_LOG_LIMIT)
           .all(),
       ]);
-      const overlay = {};
-      for (const r of days.results || []) overlay[r.date] = rowToOverlay(r);
+      const shared = {};
+      const classOverlay = {};
+      for (const r of days.results || []) {
+        (r.section === SHARED ? shared : classOverlay)[r.date] = rowToOverlay(r);
+      }
       return {
         ok: true,
         schoolYear: SCHOOL_YEAR,
+        schemaVersion: SCHEMA_VERSION,
+        section,
         serverTime: now,
-        overlay,
+        /* `overlay` is the EFFECTIVE overlay and keeps the v1 field name, so a
+         * client that has not been updated still receives something correct for
+         * the layer it asked for. */
+        overlay: effectiveOverlay(shared, classOverlay),
+        sharedOverlay: shared,
+        classOverlay,
         operations: (ops.results || []).map((o) => ({
           id: o.id,
+          section: o.section,
           ts: o.ts,
           kind: o.kind,
           summary: o.summary,
@@ -355,19 +414,24 @@ export const onRequest = handler({
       const stmt = date
         ? db
             .prepare(
-              `SELECT * FROM pacing_change WHERE school_year = ? AND date = ?
+              `SELECT * FROM pacing_change WHERE school_year = ? AND section = ? AND date = ?
                ORDER BY ts DESC LIMIT 200`,
             )
-            .bind(SCHOOL_YEAR, date)
+            .bind(SCHOOL_YEAR, section, date)
         : db
-            .prepare(`SELECT * FROM pacing_change WHERE school_year = ? ORDER BY ts DESC LIMIT 200`)
-            .bind(SCHOOL_YEAR);
+            .prepare(
+              `SELECT * FROM pacing_change WHERE school_year = ? AND section = ?
+               ORDER BY ts DESC LIMIT 200`,
+            )
+            .bind(SCHOOL_YEAR, section);
       const { results } = await stmt.all();
       return {
         ok: true,
+        section,
         changes: (results || []).map((c) => ({
           id: c.id,
           opId: c.op_id,
+          section: c.section,
           ts: c.ts,
           date: c.date,
           field: c.field,
@@ -404,17 +468,20 @@ export const onRequest = handler({
         kind: String(body?.kind || "edit").slice(0, 40),
         summary: String(body?.summary || "").slice(0, 300),
         now,
+        section,
       });
-      return { ok: true, opId, savedAt: now };
+      return { ok: true, opId, savedAt: now, section };
     }
 
     if (method === "POST" && path === "undo") {
       const { results } = await db
+        /* Scoped: undoing in 602 reverses 602's last change, never 601's, and
+         * never a shared-plan change the teacher cannot see from here. */
         .prepare(
-          `SELECT * FROM pacing_op WHERE school_year = ? AND undone_at IS NULL
+          `SELECT * FROM pacing_op WHERE school_year = ? AND section = ? AND undone_at IS NULL
            ORDER BY ts DESC LIMIT 1`,
         )
-        .bind(SCHOOL_YEAR)
+        .bind(SCHOOL_YEAR, section)
         .all();
       const op = results?.[0];
       if (!op) return json({ ok: false, error: "nothing-to-undo" }, 404);
@@ -437,20 +504,21 @@ export const onRequest = handler({
         kind: "undo",
         summary: `Undo: ${op.summary}`,
         now,
+        section,
       });
       await db.prepare(`UPDATE pacing_op SET undone_at = ? WHERE id = ?`).bind(now, op.id).run();
-      return { ok: true, undoneOpId: op.id, opId: undoId, summary: op.summary };
+      return { ok: true, undoneOpId: op.id, opId: undoId, summary: op.summary, section };
     }
 
     if (method === "DELETE" && path.startsWith("day/")) {
       const date = path.slice(4);
       if (!isIsoDate(date)) return json({ ok: false, error: "bad date" }, 400);
       const { results } = await db
-        .prepare(`SELECT * FROM pacing_day WHERE school_year = ? AND date = ?`)
-        .bind(SCHOOL_YEAR, date)
+        .prepare(`SELECT * FROM pacing_day WHERE school_year = ? AND section = ? AND date = ?`)
+        .bind(SCHOOL_YEAR, section, date)
         .all();
       const prior = results?.[0];
-      if (!prior) return { ok: true, date, alreadyBaseline: true };
+      if (!prior) return { ok: true, date, section, alreadyBaseline: true };
 
       /* Restoring the baseline is itself an operation, with the removed overlay
        * as its inverse — so "reset this day" is as undoable as any other edit. */
@@ -467,10 +535,17 @@ export const onRequest = handler({
         writes: [{ date, plan: null, actual: null, note: null, locked: false }],
         inverse,
         kind: "reset-day",
-        summary: `Restore ${date} to the original plan`,
+        /* Wording matters here: resetting a CLASS day drops that class's
+         * override and returns it to the shared plan, which is not the same as
+         * returning to the district baseline. */
+        summary:
+          section === SHARED
+            ? `Restore ${date} to the original plan`
+            : `Reset ${date} for Class ${section} to the shared plan`,
         now,
+        section,
       });
-      return { ok: true, date, opId };
+      return { ok: true, date, section, opId };
     }
 
     return json({ ok: false, error: "not found" }, 404);
