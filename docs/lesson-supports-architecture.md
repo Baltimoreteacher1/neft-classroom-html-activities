@@ -66,6 +66,57 @@ Precedence, in `resolveForLesson`:
 variant that loses its authored frame stops being credited with one on the next
 regeneration.
 
+## Class scope
+
+A second, independent axis. A class here is **601 / 602 / 603** — a period on a
+timetable, never a student. The canonical lesson is identical for all three;
+only the teacher's support selection differs.
+
+The store is two levels:
+
+```
+lessons: { "3-4": … }              the LESSON DEFAULT — every class follows it
+sections: { "602": { "3-4": … } }  an OVERRIDE — replaces it for one class
+```
+
+`readStore(section)` flattens the two into the shape `resolveForLesson` has
+always taken, which is why class scoping needed no change to the resolver, the
+inheritance rules above, the print layer or the equivalence gate.
+
+**The rules, each pinned by a test in `tools/lesson-supports.test.mjs`:**
+
+| Action | What it touches | What it does **not** touch |
+| --- | --- | --- |
+| Apply with no class | the lesson default | every existing class override |
+| Apply with a class | that class only | the default, and the other two classes |
+| Reset a class | that class's entry for that lesson | the default, and the other two classes |
+| Clear the lesson default | the default only | **every class override survives** |
+| Copy A → B | B's entry for **that one lesson** | the default, A, and any class not named |
+
+The last two are the ones worth reading twice.
+
+**Clearing the lesson default does not erase class overrides.** A class that
+has diverged keeps its own configuration and has to be reset from its own tab.
+This is deliberate — an override is a decision a teacher made about one class,
+and clearing a shared default is not a statement about it — and the supports
+surface says so in as many words next to the button. If this behaviour ever
+changes, that sentence becomes a lie, so
+`clearing the lesson default does NOT erase a class override` fails first.
+
+**Copy is lesson-scoped.** `copyLessonToSection(lessonId, from, to)` moves one
+lesson. The whole-setup `copySectionSetup(from, to)` still exists and still
+moves every lesson a class owns; it is deliberately not what the supports
+surface offers, because that page is about one lesson and every other control
+on it is lesson-scoped. Copying *from* a class that is only inheriting pins
+what the teacher was looking at — the default's selection — as the
+destination's own explicit override.
+
+**Isolation is a property of the store, but the failure is in the wiring.** A
+scope tab that switches the label and saves to the previous scope passes every
+unit test, because the unit under test was never called with the wrong
+argument. Only clicking through it can tell, which is what step 9 of
+`npm run e2e:supports` does in a real browser.
+
 ## Accommodation vs modification
 
 Every catalogue entry declares one `impact`:
