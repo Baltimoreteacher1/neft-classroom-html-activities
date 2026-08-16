@@ -88,7 +88,15 @@ const stateFor = (page, section) => api(page, `/api/pacing/state?section=${secti
 
 console.log(`planner class E2E → ${BASE}${READ_ONLY ? "  (read-only)" : ""}`);
 
-const browser = await chromium.launch();
+/* PW_CHROMIUM_PATH points at a system Chromium when Playwright's own managed
+ * download is missing or version-mismatched — the same escape hatch
+ * validate:lesson-boot carries, and for the same reason: without it this suite
+ * cannot run at all in an environment that has a browser but not THAT browser,
+ * and a class-isolation check that never runs is indistinguishable from one
+ * that passes. */
+const browser = await chromium.launch(
+  process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
+);
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const page = await context.newPage();
 const pageErrors = [];
@@ -159,6 +167,13 @@ try {
 
   /* ── 2. The planner opens class-aware ────────────────────────────────────── */
 
+  /* WAIT for the scope control, do not sample it. The fixed 2s pause above is
+   * enough for the cookie jar to settle but not always for the planner to
+   * finish its first render after the sign-in redirect, so reading the tabs
+   * once reported "tabs were []" — which reads as "the class control is gone"
+   * and is really "the class control is not built yet". A check that fails on
+   * timing is a check people learn to ignore. */
+  await page.waitForSelector(".pp-scope-tabs label", { timeout: 15000 }).catch(() => {}); // Let the assertion below report it, with the tab list.
   const tabs = await page.$$eval(".pp-scope-tabs label", (e) => e.map((x) => x.textContent.trim()));
   check(
     "the planner offers the shared plan and all three classes",
