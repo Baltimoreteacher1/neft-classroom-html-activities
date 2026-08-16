@@ -972,3 +972,179 @@
     transition: none;
   }
 }
+
+/* ── Week: unit and flags ──────────────────────────────────────────────────── */
+
+.planning-wrap .pp-week-unit {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--ink-soft, #4a5563);
+}
+
+.planning-wrap .pp-week-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+/* ── Month: a planning surface, not a wall of titles ───────────────────────────
+   The cell shows shorthand — lesson id, a day-type marker, the unit — because a
+   full lesson title at a month column's width wrapped to four lines and still
+   could not be read at a glance. The title is in the cell's accessible name and
+   one click away in the day drawer. */
+
+.planning-wrap .pp-cell-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  width: 100%;
+  min-height: 84px;
+  padding: 0.4rem 0.45rem;
+  text-align: left;
+  background: none;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 0.4rem;
+}
+
+.planning-wrap .pp-cell-btn:focus-visible {
+  outline: 3px solid var(--navy, #26415e);
+  outline-offset: -2px;
+}
+
+.planning-wrap .pp-cell-date {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  font-weight: 800;
+}
+
+/* "Today" as a WORD beside the number. The border below is the glance; this is
+   what a screen reader and a colour-blind reader actually get. */
+.planning-wrap .pp-cell-today-tag {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--navy, #26415e);
+}
+
+.planning-wrap .pp-cell-today {
+  outline: 2px solid var(--navy, #26415e);
+  outline-offset: -2px;
+}
+
+.planning-wrap .pp-cell-id {
+  font-weight: 700;
+}
+
+.planning-wrap .pp-cell-marker,
+.planning-wrap .pp-cell-unit,
+.planning-wrap .pp-cell-flag {
+  font-size: 0.75rem;
+  color: var(--ink-soft, #4a5563);
+}
+
+.planning-wrap .pp-cell-flag {
+  font-weight: 700;
+}
+
+/* ONE accent per cell: a single left edge keyed to the unit. Ten hues chosen for
+   distinguishability at low saturation — the calendar identifies units, it does
+   not decorate itself, and unit identity is always ALSO printed as text. */
+.planning-wrap .pp-cell[class*="pp-unit-"] {
+  border-left: 4px solid var(--pp-unit-accent, var(--line, #d9dee5));
+}
+.planning-wrap .pp-unit-1 { --pp-unit-accent: #6b7f99; }
+.planning-wrap .pp-unit-2 { --pp-unit-accent: #7a8f6b; }
+.planning-wrap .pp-unit-3 { --pp-unit-accent: #99786b; }
+.planning-wrap .pp-unit-4 { --pp-unit-accent: #6b8f99; }
+.planning-wrap .pp-unit-5 { --pp-unit-accent: #8f6b99; }
+.planning-wrap .pp-unit-6 { --pp-unit-accent: #997f6b; }
+.planning-wrap .pp-unit-7 { --pp-unit-accent: #6b996b; }
+.planning-wrap .pp-unit-8 { --pp-unit-accent: #996b7f; }
+.planning-wrap .pp-unit-9 { --pp-unit-accent: #6b6b99; }
+.planning-wrap .pp-unit-10 { --pp-unit-accent: #8a8a6b; }
+
+/* ── Month on a phone: grouped by week ─────────────────────────────────────── */
+
+.planning-wrap .pp-month-agenda {
+  display: none;
+}
+
+.planning-wrap .pp-month-week + .pp-month-week {
+  margin-top: 1rem;
+}
+
+.planning-wrap .pp-month-week-title {
+  font-size: 0.9375rem;
+  margin: 0 0 0.4rem;
+}
+
+.planning-wrap .pp-month-days {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.planning-wrap .pp-month-day {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--line, #d9dee5);
+  cursor: pointer;
+}
+
+.planning-wrap .pp-month-day-date {
+  flex: 0 0 5.5rem;
+  font-weight: 700;
+}
+
+.planning-wrap .pp-month-day-what {
+  flex: 1 1 auto;
+}
+
+@media (max-width: 45rem) {
+  .planning-wrap .pp-month {
+    display: none;
+  }
+  .planning-wrap .pp-month-agenda {
+    display: block;
+  }
+}
+
+/* ── Year: where we are, and how far each unit has moved ───────────────────── */
+
+.planning-wrap .pp-year-current {
+  background: var(--tint, #f2f5f8);
+}
+
+.planning-wrap .pp-year-unit {
+  display: block;
+  font-weight: 700;
+}
+
+.planning-wrap .pp-year-now {
+  display: inline-block;
+  margin-top: 0.15rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--navy, #26415e);
+}
+
+.planning-wrap .pp-year-variance {
+  color: var(--ink-soft, #4a5563);
+}

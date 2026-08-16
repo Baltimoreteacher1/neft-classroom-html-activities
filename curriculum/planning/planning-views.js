@@ -407,6 +407,12 @@ export function renderWeek(days, index, ui) {
     const th = el("th", "pp-week-day");
     th.scope = "row";
     th.appendChild(el("span", "pp-week-name", shortDate(day.date)));
+    /* The unit rides under the day name rather than in a sixth column. A week
+     * table that a teacher scans in two seconds is worth more than one that
+     * tabulates everything, and the unit is context for the row, not a value
+     * being compared down the column. */
+    const weekUnit = day.schoolStatus === "school" ? unitNumberOf(index, day) : null;
+    if (weekUnit) th.appendChild(el("span", "pp-week-unit", `Unit ${weekUnit}`));
     if (day.calendarNote) th.appendChild(el("span", "pp-week-note", day.calendarNote));
     tr.appendChild(th);
 
@@ -420,7 +426,26 @@ export function renderWeek(days, index, ui) {
     tr.appendChild(planned);
 
     tr.appendChild(el("td", null, day.actual?.lessonId || (day.actual ? "—" : "")));
-    tr.appendChild(el("td", "pp-week-status", statusWord(day)));
+
+    /* Status plus the day's exceptional states, as WORDS. Locked and Shifted
+     * were only visible after opening the row's details, so a week with three
+     * locked days looked identical to a week with none. */
+    const statusCell = el("td", "pp-week-status");
+    statusCell.appendChild(el("span", null, statusWord(day)));
+    if (day.schoolStatus === "school") {
+      const flags = [];
+      if (day.locked) flags.push(["lock", "Locked"]);
+      if (shifted(day)) flags.push(["shift", "Changed"]);
+      if (day.earlyRelease) flags.push(["short", "Half day"]);
+      if (flags.length) {
+        const wrap = el("span", "pp-week-flags");
+        for (const [kind, label] of flags) {
+          wrap.appendChild(el("span", `pp-chip pp-chip-${kind}`, label));
+        }
+        statusCell.appendChild(wrap);
+      }
+    }
+    tr.appendChild(statusCell);
 
     const resCell = el("td");
     if (day.schoolStatus === "school") {
@@ -465,6 +490,23 @@ function renderAgenda(week, index) {
 
 /* ── Month ─────────────────────────────────────────────────────────────────── */
 
+/**
+ * A one-or-two word marker for a day type that is not an ordinary lesson.
+ * Assessment, Review, Catch-Up, Flex and Project are the days a teacher scans a
+ * month FOR — they are where the give is and where the deadlines are — so they
+ * get a word of their own rather than being inferred from a missing lesson id.
+ */
+const MONTH_MARKER = {
+  Assessment: "Assessment",
+  Review: "Review",
+  "Catch-Up": "Catch-up",
+  Flex: "Flex",
+  Project: "Project",
+  "MCAP / Testing": "MCAP",
+  "Lost Day": "Lost day",
+  "Continued Lesson": "Continued",
+};
+
 export function renderMonth(days, index, ui) {
   const frag = document.createDocumentFragment();
   const [year, month] = ui.focusDate.split("-").map(Number);
@@ -495,21 +537,70 @@ export function renderMonth(days, index, ui) {
   let col = firstCol;
 
   for (const day of inMonth) {
-    const td = el("td", `pp-cell ${day.schoolStatus === "school" ? "" : "pp-cell-closed"}`.trim());
+    const isToday = day.date === ui.today;
+    const classes = ["pp-cell"];
+    if (day.schoolStatus !== "school") classes.push("pp-cell-closed");
+    if (isToday) classes.push("pp-cell-today");
+    const td = el("td", classes.join(" "));
     td.dataset.date = day.date;
+
     const btn = el("button", "pp-cell-btn");
     btn.type = "button";
     btn.dataset.action = "open-day";
     btn.dataset.date = day.date;
-    btn.appendChild(el("span", "pp-cell-date", String(Number(day.date.slice(8)))));
+
+    const dateLine = el("span", "pp-cell-date");
+    dateLine.append(String(Number(day.date.slice(8))));
+    /* "Today" as a word, not only a coloured border — the border is the glance,
+     * the word is what a screen reader and a colour-blind reader get. */
+    if (isToday) dateLine.appendChild(el("span", "pp-cell-today-tag", "Today"));
+    btn.appendChild(dateLine);
+
     if (day.calendarNote) btn.appendChild(el("span", "pp-cell-event", day.calendarNote));
+
     if (day.schoolStatus === "school") {
+      /* SHORTHAND, NOT THE TITLE. The full lesson title used to go in this cell;
+       * at a month's column width it wrapped to four lines, pushed every row
+       * taller than the screen, and still could not be read at a glance. The
+       * lesson id is the shorthand a teacher already thinks in, and the full
+       * title is one click away in the day drawer. */
       const unit = unitNumberOf(index, day);
-      if (unit) btn.appendChild(el("span", "pp-cell-unit", `Unit ${unit}`));
-      if (day.plan.lessonId) btn.appendChild(el("span", "pp-cell-id", day.plan.lessonId));
-      btn.appendChild(el("span", "pp-cell-title", titleFor(index, day)));
-      btn.appendChild(el("span", "pp-cell-status", statusWord(day)));
+      const marker = MONTH_MARKER[day.plan.dayType];
+      if (day.plan.lessonId) {
+        btn.appendChild(el("span", "pp-cell-id", day.plan.lessonId));
+      } else if (marker) {
+        btn.appendChild(el("span", "pp-cell-marker", marker));
+      }
+      /* A lesson day that is ALSO a marked type (a continued lesson) says both. */
+      if (day.plan.lessonId && marker) {
+        btn.appendChild(el("span", "pp-cell-marker", marker));
+      }
+      if (unit) {
+        /* Unit identity is carried by a single left edge colour, keyed by unit
+         * number, plus the unit as text. One accent per cell — not a rainbow. */
+        td.classList.add(`pp-unit-${unit}`);
+        btn.appendChild(el("span", "pp-cell-unit", `Unit ${unit}`));
+      }
+      if (day.locked) btn.appendChild(el("span", "pp-cell-flag", "Locked"));
+      else if (shifted(day)) btn.appendChild(el("span", "pp-cell-flag", "Changed"));
+
+      /* The accessible name carries everything the cell shows plus the title the
+       * cell deliberately omits, so the drill-in target is never just a number. */
+      btn.setAttribute(
+        "aria-label",
+        [
+          longDate(day.date),
+          unit ? `Unit ${unit}` : null,
+          titleFor(index, day),
+          statusWord(day),
+          day.locked ? "Locked" : shifted(day) ? "Changed from the district plan" : null,
+          isToday ? "Today" : null,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      );
     }
+
     td.appendChild(btn);
     row.appendChild(td);
     col++;
@@ -525,8 +616,54 @@ export function renderMonth(days, index, ui) {
   }
   table.appendChild(tbody);
   frag.appendChild(table);
-  frag.appendChild(renderAgenda(inMonth, index));
+  frag.appendChild(renderMonthAgenda(inMonth, index, ui));
   return frag;
+}
+
+/**
+ * The month's mobile presentation: grouped BY WEEK, not one flat list of
+ * twenty-odd days.
+ *
+ * Month used to reuse the week agenda, which rendered every day of the month as
+ * a card with a full action row — a 390px scroll of roughly two thousand pixels
+ * with no structure to orient in. Weeks are the unit a teacher navigates a month
+ * in, so they are the grouping, and the day rows are one line each with the
+ * drill-in button doing the work.
+ */
+function renderMonthAgenda(inMonth, index, ui) {
+  const wrap = el("div", "pp-month-agenda");
+  let current = null;
+  let list = null;
+  for (const day of inMonth) {
+    const start = weekStart(day.date);
+    if (start !== current) {
+      current = start;
+      const section = el("section", "pp-month-week");
+      section.appendChild(el("h3", "pp-month-week-title", `Week of ${rangeDate(start)}`));
+      list = el("ol", "pp-month-days");
+      section.appendChild(list);
+      wrap.appendChild(section);
+    }
+    const li = el("li", day.schoolStatus === "school" ? "" : "pp-agenda-closed");
+    const btn = el("button", "pp-month-day");
+    btn.type = "button";
+    btn.dataset.action = "open-day";
+    btn.dataset.date = day.date;
+    btn.appendChild(el("span", "pp-month-day-date", shortDate(day.date)));
+    btn.appendChild(
+      el(
+        "span",
+        "pp-month-day-what",
+        day.schoolStatus === "school"
+          ? titleFor(index, day)
+          : day.calendarNote || day.statusLabel,
+      ),
+    );
+    if (day.date === ui.today) btn.appendChild(el("span", "pp-cell-today-tag", "Today"));
+    li.appendChild(btn);
+    list.appendChild(li);
+  }
+  return wrap;
 }
 
 /* ── Units ─────────────────────────────────────────────────────────────────── */
@@ -632,42 +769,93 @@ export function renderYear(days, index, ui) {
   const frag = document.createDocumentFragment();
   frag.appendChild(renderPacingSummary(days, ui));
 
+  /* WHERE ARE WE. The year view's first job is to answer that, and it could not:
+   * it listed every unit identically, so finding the current one meant reading
+   * eleven date ranges against today's date. */
+  const todayDay = days.find((d) => d.date === ui.today);
+  const currentUnitKey = todayDay?.plan?.unitKey ?? null;
+
   const table = el("table", "pp-year");
   table.appendChild(el("caption", "pp-sr", "Unit pacing across the year"));
   const thead = el("thead");
   const hr = el("tr");
+  /* Seven headers for seven cells. The last column holds the drill-in button;
+     its header is visually hidden but present, because a data cell with no
+     column header is exactly what a screen-reader table walk trips over. */
   for (const h of [
     "Unit",
     "Quarter",
-    "Dates",
-    "Days",
-    "Assessments",
-    "Projects",
-    "Flex",
-    "Recorded",
+    "District plan",
+    "Current plan",
+    "Core lessons",
+    "Change",
+    "Open",
   ]) {
-    const th = el("th", null, h);
+    const th = el("th", h === "Open" ? "pp-sr" : null, h);
     th.scope = "col";
     hr.appendChild(th);
   }
   thead.appendChild(hr);
   table.appendChild(thead);
+
   const tbody = el("tbody");
   for (const unit of ui.baseline.units) {
     const s = unitSummary(days, unit.key);
     if (!s.days) continue;
-    const tr = el("tr");
-    const th = el("th", null, unit.districtLabel);
+    const isCurrent = unit.key === currentUnitKey;
+    const tr = el("tr", isCurrent ? "pp-year-current" : "");
+
+    const th = el("th", null);
     th.scope = "row";
+    th.appendChild(el("span", "pp-year-unit", unit.districtLabel));
+    /* The current unit says so in a word. Row shading alone is a colour-only
+     * signal, and this table is read at a glance by exactly the person who most
+     * needs to find this row. */
+    if (isCurrent) th.appendChild(el("span", "pp-year-now", "Teaching now"));
     tr.appendChild(th);
+
     const q = days.find((d) => d.date === s.currentStart)?.quarter || "";
     tr.appendChild(el("td", null, q));
+
+    /* Both spans, side by side. The district plan was not shown at all, so a
+     * unit that had moved three weeks looked exactly like one that had not. */
+    tr.appendChild(
+      el("td", null, `${rangeDate(s.plannedStart)} – ${rangeDate(s.plannedEnd)}`),
+    );
     tr.appendChild(el("td", null, `${rangeDate(s.currentStart)} – ${rangeDate(s.currentEnd)}`));
-    tr.appendChild(el("td", null, String(s.days)));
-    tr.appendChild(el("td", null, String(s.assessments)));
-    tr.appendChild(el("td", null, String(s.projectDays)));
-    tr.appendChild(el("td", null, String(s.flexDays)));
-    tr.appendChild(el("td", null, `${s.completed}/${s.days}`));
+
+    /* Core lessons, not days: the old column read "completed/days", which counted
+     * the review, the assessment and the flex day as things to complete. */
+    const progress = coreProgress(days, unit.key);
+    tr.appendChild(
+      el("td", null, progress ? `${progress.taught} of ${progress.total}` : "—"),
+    );
+
+    const variance = unitVariance(days, s);
+    tr.appendChild(
+      el(
+        "td",
+        "pp-year-variance",
+        variance === null
+          ? "—"
+          : variance === 0
+            ? "On the district date"
+            : variance > 0
+              ? `${variance} day${variance === 1 ? "" : "s"} later`
+              : `${-variance} day${variance === -1 ? "" : "s"} earlier`,
+      ),
+    );
+
+    /* Year → Unit → date, without navigating back through Units first. */
+    const openCell = el("td", "pp-year-open");
+    const jump = el("button", "pp-btn pp-btn-quiet", "Open");
+    jump.type = "button";
+    jump.dataset.action = "goto";
+    jump.dataset.date = s.currentStart;
+    jump.setAttribute("aria-label", `Open ${unit.districtLabel} at ${rangeDate(s.currentStart)}`);
+    openCell.appendChild(jump);
+    tr.appendChild(openCell);
+
     tbody.appendChild(tr);
   }
   table.appendChild(tbody);
