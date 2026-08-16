@@ -104,6 +104,37 @@ export function extractElements(config) {
   return out;
 }
 
+/**
+ * The Learn It tool a student is ACTUALLY handed, resolved through the same
+ * module the browser runs.
+ *
+ * extractElements() above sees only what a lesson AUTHORED, and almost no
+ * lesson authors its Learn It tool — that one is chosen by the standard/keyword
+ * ladder in engine/core/lesson-tool-resolver.js. So the tool most students
+ * spend the most time with was the one thing this audit could not see, and
+ * lesson 5-10's cube-with-a-net came from exactly there.
+ *
+ * `source: "resolved"` distinguishes it from an authored element, and
+ * `fallback: true` marks a lesson the ladder could not identify at all — it
+ * matched no standard and no keyword and was handed the default anyway.
+ * Returns [] when the lesson declares it wants no interactive.
+ */
+export async function resolvedLearnItElement(config) {
+  const { resolveInteractiveToolForLesson } = await import(
+    "../../engine/core/lesson-tool-resolver.js"
+  );
+  const tool = resolveInteractiveToolForLesson(config);
+  if (!tool || typeof tool !== "object" || typeof tool.kind !== "string") return [];
+  return [
+    {
+      slot: "launch.conceptIntro:resolved",
+      key: elementKey(tool),
+      source: tool.fallback ? "fallback" : "resolved",
+      config: tool,
+    },
+  ];
+}
+
 /* ── Evidence 1: the numbers the lesson actually uses ──────────────────────── */
 
 /**
@@ -302,6 +333,26 @@ export function labelContextMisses(toolConfig, text) {
  * means "no opinion", never "aligned".
  */
 export const TOOL_TOPICS = {
+  // Kinds the RESOLVER produces. Before lesson-tool-resolver.js was extracted,
+  // nothing outside a browser could ask which tool a lesson actually gets, so
+  // these nine were never audited at all — the topic detector only ever saw
+  // tools a lesson had authored, and most lessons author none. Each topic below
+  // was read off the lessons the resolver routes to it, not off the tool's name.
+  "equation-balance-lab": ["inequalities", "expressions"],
+  "stats-data-lab": ["statistics"],
+  "box-plot-builder": ["statistics"],
+  "unit-rate-builder": ["ratios"],
+  "percent-builder": ["ratios"],
+  "lcm-lab": ["factors"],
+  "factor-tree-lab": ["factors"],
+  "combine-like-terms": ["expressions"],
+  "distributive-builder": ["expressions"],
+  // Exponents AND expressions: 6-4 is "Write and Evaluate Numerical Expressions
+  // WITH EXPONENTS" (6.AT.6c, whose standard topic is "expressions") and its
+  // objective says "including powers". The tool is right; the standard's topic
+  // field is coarser than the lesson, as it was for 4-2's fraction bar.
+  "power-builder": ["exponents", "expressions"],
+
   // Volume as base area × height, with half-unit edges and NO surface area.
   // Narrow on purpose — see engine/components/prism-volume.js.
   "prism-volume": ["volume"],
