@@ -26,6 +26,13 @@
        * units below still hold uncorrected inline copies; that is a known,
        * separate debt, not something this change quietly fixed. */
       lessons: [{ id: "1-1" }, { id: "2-6" }, { id: "2-7" }, { id: "6-1" }, { id: "6-2" }],
+      /* The culminating project sits AFTER 6-2 and is not a lesson, so it is
+       * not in the `lessons` array — validate:pacing-unit-order pins that array
+       * to data/pacing-unit-lessons.json, and a non-lesson id in it would make
+       * the Pre-Unit's membership disagree with itself again. It renders as a
+       * trailing entry in the Teach picker instead. It consumes the Pre-Unit's
+       * existing `additional_days: 1.0`, so no later unit's dates move. */
+      project: { path: "/math/pre-unit/projects/", title: "Pre-Unit Culminating Project" },
     },
     {
       sequence: 2,
@@ -329,6 +336,15 @@
       optG2.textContent = `    ↳ 🚀 Lesson ${l.id} Group 2 (Level 2 Enrichment Pathway)`;
       groupLessons.appendChild(optG2);
     });
+
+    /* The culminating project closes the unit, so it renders last — after the
+     * final lesson, never between lessons. */
+    if (item.project && item.project.path) {
+      const optProject = document.createElement("option");
+      optProject.value = "project";
+      optProject.textContent = `🏆 ${item.project.title}`;
+      groupLessons.appendChild(optProject);
+    }
     lessonSelect.appendChild(groupLessons);
   };
 
@@ -406,6 +422,8 @@
       goToTool("/neft-math-lab-studio/?seq=" + seq + "&unit=" + unitTitle);
     } else if (actionType === "scorm") {
       downloadUnitScorm(item);
+    } else if (actionType === "project") {
+      if (item.project && item.project.path) window.open(item.project.path, "_blank");
     }
   };
 
