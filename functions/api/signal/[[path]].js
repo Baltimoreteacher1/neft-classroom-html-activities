@@ -118,11 +118,7 @@ function normalizeDevice(raw) {
   return raw === "mobile" || raw === "tablet" || raw === "desktop" ? raw : "desktop";
 }
 
-function teacherAuthorized(env, request, url) {
-  if (!env.TEACHER_KEY) return "not-configured";
-  const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
-  return key === env.TEACHER_KEY ? "ok" : "unauthorized";
-}
+import { teacherAuthorized } from "../../_lib/teacher-auth.js";
 
 async function ensureSchema(db) {
   await db.batch([
@@ -331,7 +327,7 @@ async function fieldStatus(db) {
 }
 
 export async function onRequest(context) {
-  const { request, env, params } = context;
+  const { request, env, params, data } = context;
   const url = new URL(request.url);
   const route = (
     Array.isArray(params.path) ? params.path.join("/") : params.path || ""
@@ -372,7 +368,7 @@ export async function onRequest(context) {
       request.method === "GET" &&
       (route === "usage" || route === "errors" || route === "vitals")
     ) {
-      const auth = teacherAuthorized(env, request, url);
+      const auth = teacherAuthorized(env, request, url, data);
       if (auth !== "ok") {
         return json(
           {

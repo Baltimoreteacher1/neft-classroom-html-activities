@@ -29,6 +29,7 @@
 import { handler } from "../../_lib/http.js";
 import { validateNote } from "../../_lib/plan-notes-validate.js";
 import { ACTIVITIES, LESSONS, MISCONCEPTIONS, STANDARDS } from "../../_lib/plan-vocab.js";
+import { teacherAuthorized } from "../../_lib/teacher-auth.js";
 
 const JSON_HEADERS = {
   "Content-Type": "application/json",
@@ -54,12 +55,6 @@ const MAX_NOTES_PER_BATCH = 40;
 
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), { status, headers: JSON_HEADERS });
-
-function teacherAuthorized(env, request, url) {
-  if (!env.TEACHER_KEY) return "not-configured";
-  const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
-  return key === env.TEACHER_KEY ? "ok" : "unauthorized";
-}
 
 function shortId() {
   const alphabet = "23456789abcdefghijkmnpqrstuvwxyz";
@@ -581,13 +576,13 @@ export const onRequest = handler({
   // The annotate route calls a paid model. This is not a security control — it
   // is there so a stuck retry loop cannot burn the API budget overnight.
   rateLimit: { max: 60, windowMs: 60_000 },
-  async handle({ request, env, params, body }) {
+  async handle({ request, env, params, body, data }) {
     const method = request.method.toUpperCase();
     const url = new URL(request.url);
     const segments = Array.isArray(params.path) ? params.path : params.path ? [params.path] : [];
     const [route, arg] = segments;
 
-    const auth = teacherAuthorized(env, request, url);
+    const auth = teacherAuthorized(env, request, url, data);
     if (auth === "not-configured") {
       return json(
         {

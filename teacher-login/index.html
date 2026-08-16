@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Teacher Sign In · EduWonderLab</title>
+    <!--
+      The one sign-in surface for every teacher tool.
+
+      This page is deliberately public: it is the page that OBTAINS teacher
+      authorization, so it cannot require it (functions/_lib/teacher-surface.js
+      exempts it by exact prefix). It renders no teacher material — a heading and
+      a key field — and it holds no credential of its own. The key is POSTed to
+      /api/teacher-auth/login, which is the only code in the platform that
+      compares it against the environment, and the answer comes back as an
+      HttpOnly cookie this page cannot read.
+
+      No framework, no bundle, no import. A sign-in page that cannot render
+      because a bundle failed is a sign-in page that locks the teacher out of
+      their own planner on a Monday morning.
+    -->
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f6f7f9;
+        --surface: #ffffff;
+        --ink: #17202a;
+        --muted: #5b6672;
+        --line: #d9dee5;
+        --accent: #1f5f8b;
+        --accent-ink: #ffffff;
+        --danger: #8b1f2b;
+        --danger-bg: #fdeef0;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #12161b;
+          --surface: #1a2027;
+          --ink: #eef2f6;
+          --muted: #9aa7b4;
+          --line: #2c3540;
+          --accent: #6fb3dd;
+          --accent-ink: #10161c;
+          --danger: #f2b8bf;
+          --danger-bg: #3a1f25;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 1.5rem;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          16px/1.5 system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+      }
+      main {
+        width: min(26rem, 100%);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 2rem;
+      }
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.375rem;
+        letter-spacing: -0.01em;
+      }
+      p.sub {
+        margin: 0 0 1.5rem;
+        color: var(--muted);
+        font-size: 0.9375rem;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        margin-bottom: 0.375rem;
+      }
+      input {
+        width: 100%;
+        min-height: 44px;
+        padding: 0.5rem 0.75rem;
+        font: inherit;
+        color: inherit;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+      input:focus-visible,
+      button:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+      button {
+        margin-top: 1rem;
+        width: 100%;
+        min-height: 44px;
+        font: inherit;
+        font-weight: 600;
+        color: var(--accent-ink);
+        background: var(--accent);
+        border: 1px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      button[disabled] {
+        opacity: 0.6;
+        cursor: progress;
+      }
+      .msg {
+        margin-top: 1rem;
+        padding: 0.625rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.9375rem;
+        background: var(--danger-bg);
+        color: var(--danger);
+      }
+      .msg:empty {
+        display: none;
+      }
+      .foot {
+        margin: 1.5rem 0 0;
+        font-size: 0.8125rem;
+        color: var(--muted);
+      }
+      a {
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Teacher sign in</h1>
+      <p class="sub" id="sub">Enter your teacher key to unlock planning and teacher tools.</p>
+
+      <form id="form" novalidate>
+        <label for="key">Teacher key</label>
+        <input
+          id="key"
+          name="key"
+          type="password"
+          autocomplete="current-password"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          required
+        />
+        <button type="submit" id="go">Unlock</button>
+      </form>
+
+      <p class="msg" id="msg" role="status" aria-live="polite"></p>
+
+      <p class="foot">
+        This unlocks teacher planning, notes and dashboards on this device for the school day.
+        Student lessons never need it.
+      </p>
+    </main>
+
+    <script>
+      (function () {
+        var form = document.getElementById("form");
+        var input = document.getElementById("key");
+        var button = document.getElementById("go");
+        var msg = document.getElementById("msg");
+
+        // Where to land after a successful unlock. Only a same-origin PATH is
+        // honoured — an absolute or protocol-relative `next` would turn this
+        // page into an open redirect that a phishing link could point anywhere.
+        function destination() {
+          var raw = new URLSearchParams(location.search).get("next") || "";
+          if (!raw.startsWith("/") || raw.startsWith("//")) return "/curriculum/planning/";
+          return raw;
+        }
+
+        function say(text) {
+          msg.textContent = text;
+        }
+
+        form.addEventListener("submit", async function (event) {
+          event.preventDefault();
+          var key = input.value.trim();
+          if (!key) {
+            say("Enter your teacher key.");
+            input.focus();
+            return;
+          }
+          button.disabled = true;
+          say("");
+          try {
+            var res = await fetch("/api/teacher-auth/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "same-origin",
+              body: JSON.stringify({ key: key }),
+            });
+            var data = await res.json().catch(function () {
+              return null;
+            });
+            if (res.ok && data && data.ok) {
+              // Clear the field before navigating so the key is not sitting in
+              // a restored form value if the teacher hits Back.
+              input.value = "";
+              location.replace(destination());
+              return;
+            }
+            if (res.status === 429) say("Too many attempts. Wait a minute and try again.");
+            else if (res.status === 503) say("Teacher access is not configured on this site.");
+            else say("Teacher key not recognized.");
+          } catch (_error) {
+            say("Could not reach the server. Check your connection and try again.");
+          }
+          button.disabled = false;
+          input.select();
+        });
+
+        // Already signed in? Don't make a teacher who bookmarked this page type
+        // a key they don't need to.
+        fetch("/api/teacher-auth/session", { credentials: "same-origin" })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (d) {
+            if (d && d.authenticated) location.replace(destination());
+          })
+          .catch(function () {});
+      })();
+    </script>
+  </body>
+</html>

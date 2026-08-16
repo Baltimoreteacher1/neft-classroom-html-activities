@@ -290,11 +290,7 @@ async function ensureSchema(db) {
 }
 
 // Gating mirrors progress: no key configured -> not-configured; else compare.
-function teacherAuthorized(env, request, url) {
-  if (!env.TEACHER_KEY) return "not-configured";
-  const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
-  return key === env.TEACHER_KEY ? "ok" : "unauthorized";
-}
+import { teacherAuthorized } from "../../_lib/teacher-auth.js";
 
 function rowToEntry(r) {
   return {
@@ -308,7 +304,7 @@ function rowToEntry(r) {
 }
 
 export async function onRequest(context) {
-  const { request, env, params } = context;
+  const { request, env, params, data } = context;
   const method = request.method.toUpperCase();
   const url = new URL(request.url);
 
@@ -393,7 +389,7 @@ export async function onRequest(context) {
 
   // --- TEACHER roster (read / upsert / delete) -----------------------------
   if (seg === "roster") {
-    const auth = teacherAuthorized(env, request, url);
+    const auth = teacherAuthorized(env, request, url, data);
     if (auth === "not-configured")
       return json(
         {

@@ -17,6 +17,7 @@
 // gate to keep students/public out of teacher material, not strong security.
 
 import { EXACT, PREFIX } from "./_lib/redirect-map.js";
+import { acceptedKeys, resolveTeacherSession } from "./_lib/teacher-auth.js";
 import { isTeacherSurface as isTeacherPath } from "./_lib/teacher-surface.js";
 
 // Resolve a path against the generated redirect map. Returns a Response or null.
@@ -105,6 +106,17 @@ export async function onRequest(context) {
   const password = env.SITE_PASSWORD;
 
   const url = new URL(request.url);
+
+  // Verify the teacher session ONCE, here, before any branch returns. Every
+  // downstream endpoint then authorizes synchronously off context.data.teacher
+  // instead of repeating the HMAC verify fifteen times. This runs for /api/
+  // routes too — they return early below, but they read context.data, and the
+  // data has to be on it before the early return happens.
+  // Pages always supplies context.data; a hand-built context in a unit test may
+  // not, and the gate must not crash on the way to deciding what to serve.
+  if (!context.data) context.data = {};
+  context.data.teacher = await resolveTeacherSession(env, request);
+  const teacherKeysConfigured = acceptedKeys(env).size > 0;
   const p = url.pathname.toLowerCase();
   const isFamilyPublishedFeed = p === "/api/family-connections/canvas-feed";
   const isPublicFamilySchedulingApi = [
@@ -143,7 +155,11 @@ export async function onRequest(context) {
 
   // Public pages remain open when the gate is unavailable. Publishing edits
   // are the exception and fail closed instead of becoming publicly writable.
-  if (!password) {
+  //
+  // "Unavailable" now means BOTH gates are unconfigured. A deployment that has
+  // teacher keys but no SITE_PASSWORD is fully functional — the session cookie
+  // authorizes the page — and must not 503 the teacher out of their own site.
+  if (!password && !teacherKeysConfigured) {
     if (isTeacherSurface) {
       return new Response("Teacher access is not configured.", { status: 503 });
     }
@@ -173,10 +189,24 @@ export async function onRequest(context) {
   // Everything else is student-facing -> open, no password.
   if (!isTeacherSurface) return nextWithRedirectFallback(next, request, url);
 
-  // Teacher surface -> require the shared password.
+  // Teacher surface. Two ways in, and they authorize the SAME thing:
+  //
+  //   1. The signed session cookie, obtained once at /teacher-login/. This is
+  //      the path a teacher in a browser takes, and it is also what authorizes
+  //      the /api/* writes the page then makes — one sign-in, both gates. That
+  //      unification is the point: the previous split meant a teacher could pass
+  //      the page gate and still be refused by every editing endpoint.
+  //   2. HTTP Basic Auth against SITE_PASSWORD. Retained unchanged for the
+  //      shared class password and for tooling that already sends it.
+  if (context.data.teacher) {
+    context.data.teacherAccessConfigured = true;
+    context.data.teacherAuthorized = true;
+    return privateTeacherResponse(next);
+  }
+
   const header = request.headers.get("Authorization") || "";
   const [scheme, encoded] = header.split(" ");
-  if (scheme === "Basic" && encoded) {
+  if (password && scheme === "Basic" && encoded) {
     const decoded = decodeBase64(encoded);
     const supplied = decoded.slice(decoded.indexOf(":") + 1);
     if (supplied === password) {
@@ -186,10 +216,22 @@ export async function onRequest(context) {
     }
   }
 
-  return new Response("Authentication required.", {
-    status: 401,
-    headers: {
-      "WWW-Authenticate": 'Basic realm="EduWonderLab", charset="UTF-8"',
-    },
-  });
+  // Send a person to the sign-in page; send a machine a status code. A browser
+  // navigating to the planner should land on a key field, not a Basic Auth
+  // dialog it has no credential for. Anything that is not a top-level document
+  // request (fetch, XHR, an image, curl) keeps the 401 its caller can act on.
+  const wantsHtml =
+    (request.method === "GET" || request.method === "HEAD") &&
+    request.headers.get("Sec-Fetch-Mode") === "navigate";
+  if (teacherKeysConfigured && wantsHtml) {
+    const login = new URL("/teacher-login/", url);
+    login.searchParams.set("next", `${url.pathname}${url.search}`);
+    return Response.redirect(login.toString(), 302);
+  }
+
+  const headers = { "Cache-Control": "private, no-store" };
+  if (password) {
+    headers["WWW-Authenticate"] = 'Basic realm="EduWonderLab", charset="UTF-8"';
+  }
+  return new Response("Authentication required.", { status: 401, headers });
 }
