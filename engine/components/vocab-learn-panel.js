@@ -54,6 +54,13 @@ export function resolveInteractiveToolForLesson(config) {
   const cfg = config || {};
 
   const authored =
+    // A lesson config nests Learn It under `launch`. This chain checked
+    // `cfg.conceptIntro` and never `cfg.launch.conceptIntro`, so the one escape
+    // hatch an author has — "this lesson knows which tool it wants" — was
+    // unreachable from the canonical config shape, and every lesson silently
+    // took the keyword guess below. validate:interactive-alignment reads the
+    // nested path, so the audit and the runtime were reading different fields.
+    cfg.launch?.conceptIntro?.interactiveVisual ||
     cfg.conceptIntro?.interactiveVisual ||
     cfg.interactiveVisual ||
     cfg.visualModel ||
@@ -321,7 +328,17 @@ export function resolveInteractiveToolForLesson(config) {
       label: "Interactive Area Morph & Transformation Explorer",
     };
   }
-  // 6.GR.2, 6.GR.4 — Solids / Nets
+  // 6.GR.2 — VOLUME. Kept apart from 6.GR.4 deliberately. These two standards
+  // used to share one branch, and it returned a cube "Solid & Net Explorer" for
+  // both — so lesson 5-10 ("Volume of Rectangular Prisms": fractional edges,
+  // base area × height) opened its Learn It panel on a unit cube offering to
+  // UNFOLD ITS NET, which is 6.GR.4, lesson 5-6's mathematics. The panel
+  // computed no volume at all, and the solid it drew was not the lesson's
+  // prism. One shared branch, every 6.GR.2 lesson.
+  if (std === "6.GR.2" && !wb("net|nets|surface area")) {
+    return { kind: "prism-volume", label: "Interactive Prism Volume Builder" };
+  }
+  // 6.GR.4 — Surface area and nets, where a net folder is the point.
   if (std === "6.GR.2" || std === "6.GR.4") {
     if (wb("net|fold|surface area"))
       return {
@@ -563,6 +580,12 @@ export function resolveInteractiveToolForLesson(config) {
   if (wb("nets?|surface area") && !wb("internet|planet")) {
     return { kind: "net-folder", solid: "cube", label: "Interactive 3D Net Folder" };
   }
+  // A lesson that says "volume" and does not say "pyramid" wants a tool that
+  // COMPUTES a volume, not one that rotates a cube. Pyramids stay on solid-3d:
+  // prism-volume draws rectangular prisms and would show the wrong solid.
+  if (wb("volume") && !wb("pyramids?")) {
+    return { kind: "prism-volume", label: "Interactive Prism Volume Builder" };
+  }
   if (wb("prisms?|pyramids?|volume")) {
     return {
       kind: "solid-3d",
@@ -638,7 +661,19 @@ function resolveLessonMisconception(config) {
       es: "¡Siempre alinea los puntos decimales verticalmente antes de sumar o restar decimales para sumar dígitos en el mismo valor posicional!",
     };
   }
-  if (text.includes("area")) {
+  // VOLUME BEFORE AREA, and both narrowed. `text.includes("area")` is a
+  // SUBSTRING test, so lesson 5-10 — whose objective is "volume ... using base
+  // area × height" — matched on the "area" inside "base area" and was warned
+  // about the slant height of a PARALLELOGRAM, in a lesson with no
+  // parallelogram in it. The volume branch below is the warning that lesson
+  // actually needs, and it is the mistake its own practice section names.
+  if (/\bvolumes?\b/.test(text)) {
+    return {
+      en: "Multiply all three edges — do not add them, and do not round a fractional edge like 1.5 down to 1 before you multiply. Volume answers are in CUBIC units (ft³), not square units.",
+      es: "Multiplica las tres aristas: no las sumes ni redondees una arista fraccionaria como 1.5 a 1 antes de multiplicar. El volumen se mide en unidades CÚBICAS (ft³), no cuadradas.",
+    };
+  }
+  if (/\bareas?\b/.test(text)) {
     return {
       en: "When finding the area of a triangle or parallelogram, the height MUST be perpendicular (forms a 90° right angle) to the base. Do not use the slanted side length!",
       es: "Al calcular el área de un triángulo o paralelogramo, la altura DEBE ser perpendicular (formar un ángulo recto de 90°) a la base. ¡No uses el lado inclinado!",
