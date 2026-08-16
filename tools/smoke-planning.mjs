@@ -122,7 +122,10 @@ async function phaseB() {
   if (!TEACHER_KEY) {
     skip(
       "authenticated planner round trip",
-      "requires TEACHER_KEY (and PLANNER_BASIC_AUTH as user:pass for the page gate)",
+      "set TEACHER_KEY to any accepted teacher key and point --base at `wrangler pages dev`. " +
+        "PLANNER_BASIC_AUTH is no longer needed for this phase: it talks to /api/pacing with " +
+        "x-teacher-key, and since the unified sign-in landed a teacher session also opens the " +
+        "page gate, so SITE_PASSWORD is not required to verify the planner",
     );
     return;
   }
