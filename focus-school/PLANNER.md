@@ -214,3 +214,115 @@ ALLOW_DEPLOY=1 npm run deploy:noam       # the real noam.eduwonderlab.com
 
 `test/focus-school-school-os.test.mjs` asserts index.html and sw.js agree on
 every asset version, and that `planner-core.js` loads before `app.js`.
+
+---
+
+# Phase II — dependability rules
+
+## Seeding is a one-time event (do not regress this)
+
+Starter classes and routines are seeded **only for a genuinely new document**.
+`normalize()` computes `everSeeded` from a `seededAt` stamp, an `updatedAt`, or
+any existing content; if the document has ever been seeded, an **empty list
+means the user deleted them** — never "seed again".
+
+This was the root cause of the 113 duplicate classes in production: an empty
+list re-seeded defaults with fresh ids, and `mergeStates` unions by id, so every
+fresh device added another four. Phase I deduped the symptom; this closes the
+source. Regression tests cover: empty-list, twelve devices merging, and repeated
+normalize.
+
+**Rule for any future default data:** seed behind `everSeeded`, use stable ids,
+and add an idempotency test.
+
+## The integrity boundary
+
+`normalize()` → `repairState()` runs on first load, on import, and after every
+sync merge. It repairs rather than throws, and is idempotent. Rules live in
+`PlannerCore.repairItem` / `repairCollections`:
+
+- durations clamped to 0…8h (negative and absurd values rejected)
+- `completedAt` never before `created`, never present on unfinished work
+- `submitted` implies `status === "done"`
+- `plannedDate` never after `due`
+- project steps never after the project deadline
+- study plans for a deleted assessment dropped; for a **past** assessment,
+  pending sessions dropped and completed ones kept as history
+- packing needs for deleted classes dropped
+- pack-log entries older than 14 days pruned
+
+Deliberately **not** repaired: a `plannedDate` in the past. That is missed work,
+not an impossible state, and `recoveryFor` owns it — that path records the move
+in `planHistory` and can explain it. Snapping it silently would erase history.
+
+## Duplicates
+
+`findDuplicates` returns tiers, never auto-merges:
+
+- **certain** — same external `sourceId` (safe to merge)
+- **likely** — same class + due date + ≥0.34 title overlap, or ≥0.6 overlap
+- **possible** — same class + same due date + any shared wording
+
+Different `kind`, different class, or different due date disqualifies a pair.
+`mergeDuplicates` keeps the larger estimate (under-planning is the costlier
+mistake), sums logged minutes, preserves progress, notes, steps, `sourceId` and
+history, and records `mergedFrom`. Merging is undoable; "Keep both" is remembered
+in `state.dupDismissed` so the same suggestion never nags twice.
+
+## Estimate learning
+
+Wired at **completion only** (`learnFromCompletion`), never mid-session. Ignores
+samples with an implausible ratio (>4× or <0.15×, i.e. a timer left running) and
+requires 3+ samples per class before it changes anything. The model is a rolling
+ratio per class, clamped to 0.5…3. Surfaced as a neutral sentence — *"Similar
+Math work usually takes about 25 minutes"* — never a label about the student.
+
+## The daily loop
+
+`dayPhase()` returns `morning` | `school` | `afterschool` | `evening` | `offday`
+from the real bell schedule. Today renders a different lead per phase:
+
+- **morning / school** — the day ahead, what to bring, "At school today";
+  tonight's work is collapsed
+- **afterschool** — overload warning (if any), Next Up, Start My Plan
+- **evening** — Next Up and tomorrow, backlog collapsed
+
+## Tonight's work
+
+`todaysWork()` = overdue + due today + **due tomorrow** + planned today + undated.
+Due-tomorrow is the single most common item a 7th-grader has; an earlier version
+filtered on `due <= today` and silently dropped it from the Today list.
+
+## Overload
+
+`overloadReport()` compares tonight's work against `availableMinutes`. When it
+does not fit, the UI states it plainly ("Tonight is tight"), shows the plan that
+*does* fit, and names what moves — while due dates stay untouched.
+
+## Submission
+
+Finishing homework or a project asks once: *"Did you turn it in?"* Study
+sessions never ask. "Not yet" creates an `At school:` reminder for the morning.
+
+## Deployed-artifact integrity
+
+`tools/focus-school-assets.mjs [baseUrl]` verifies every `<script>`, `<link>`,
+service-worker precache entry and manifest icon. Against a live URL it checks
+the real content type — a `.js` served as `text/html` means the file is missing
+and Pages returned the SPA fallback. Run it after every deploy.
+
+## Test commands
+
+```bash
+node test/focus-school-planner-core.test.mjs   # pure rules
+node test/focus-school-school-os.test.mjs      # integration + migration
+node test/focus-school-phase2.test.mjs         # regressions, fuzz, acceptance
+node tools/focus-school-assets.mjs [url]       # artifact integrity
+node tools/focus-school-qa.mjs [url]           # real browser user flows
+```
+
+The Phase II suite includes a 300-seed property test asserting nine planner
+invariants (due dates never change, completed stays completed, blocked work
+never surfaces, Next Up is always actionable and resolves to a real assignment,
+study never after an assessment, steps never past a deadline, plans never exceed
+available time or duplicate work, ranking is stable, durations stay sane).

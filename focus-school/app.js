@@ -572,6 +572,9 @@
       // { classId|"_": { ratio, n } } — how long work in that class really
       // takes vs. the guess. Not a judgment, just a better default.
       estimateModel: {},
+      // { "idA~idB": ts } — duplicate pairs he chose to keep separate, so the
+      // same suggestion never nags twice.
+      dupDismissed: {},
       importInbox: [],
       changeLog: [],
       supportStats: {
@@ -626,12 +629,25 @@
     // browser appended another 4 duplicate defaults. Noam's live account had
     // grown to ~120 classes this way. Collapse identical ones, keeping the
     // oldest id so existing assignments keep pointing at a real class.
+    // Has this document ever been seeded before? Anything that carries prior
+    // state (a seed stamp, an updatedAt, or any real content) counts as an
+    // existing install — only a genuinely blank object gets starter data.
+    const everSeeded =
+      !!x.seededAt ||
+      !!x.updatedAt ||
+      (Array.isArray(x.classes) && x.classes.length > 0) ||
+      (Array.isArray(x.routines) && x.routines.length > 0) ||
+      (Array.isArray(x.assignments) && x.assignments.length > 0) ||
+      (Array.isArray(x.todos) && x.todos.length > 0);
+    const seededAt = x.seededAt || (everSeeded ? 1 : Date.now());
     const dedupedClasses = dedupeClasses(
       Array.isArray(x.classes) && x.classes.length
         ? x.classes.map(normalizeClass)
-        : base.classes,
+        : everSeeded
+          ? []
+          : base.classes,
     );
-    return {
+    const normalized = {
       ...base,
       ...x,
       settings: s,
@@ -640,6 +656,7 @@
       subjectNeeds: plainObject(x.subjectNeeds),
       packLog: plainObject(x.packLog),
       estimateModel: plainObject(x.estimateModel),
+      dupDismissed: plainObject(x.dupDismissed),
       classes: dedupedClasses,
       assignments: Array.isArray(x.assignments) ? x.assignments.map(normalizeTask) : [],
       // Reminders merged into the to-do list — migrate once, then keep empty.
@@ -648,10 +665,15 @@
         ...(Array.isArray(x.todos) ? x.todos.map(normalizeTodo) : []),
         ...(Array.isArray(x.reminders) ? x.reminders.map(reminderToTodo) : []),
       ],
+      // Same one-time rule as classes: an empty routine list on an existing
+      // install means they were deleted, not that starters should reappear.
       routines:
         Array.isArray(x.routines) && x.routines.length
           ? pruneDefaultRoutines(x.routines.map(normalizeRoutine))
-          : base.routines,
+          : everSeeded
+            ? []
+            : base.routines,
+      seededAt,
       routineLog: normalizeRoutineLog(x.routineLog),
       activity: x.activity && typeof x.activity === "object" ? x.activity : {},
       wins: Array.isArray(x.wins) ? x.wins : [],
@@ -715,6 +737,44 @@
         },
       },
     };
+    return repairState(normalized);
+  }
+
+  // The integrity boundary. Every path into `state` — first load, import, and
+  // every sync merge — goes through normalize, so this is the one place that
+  // can guarantee the app never renders an impossible fact (a study session
+  // for a quiz already taken, work planned after its own deadline, a negative
+  // duration). Repairs are silent and idempotent by design; they are recorded
+  // on `__integrity` only so a developer can see what was touched.
+  function repairState(st) {
+    const PCr = PlannerCoreRef();
+    if (!PCr.repairItem) return st;
+    const today = todayKey();
+    const fixes = [];
+    st.assignments = st.assignments.map((a) => {
+      const r = PCr.repairItem(a, today);
+      if (r.fixes.length) fixes.push(`${a.id}:${r.fixes.join("+")}`);
+      return r.item;
+    });
+    const coll = PCr.repairCollections(
+      {
+        items: st.assignments,
+        classes: st.classes,
+        studyPlans: st.studyPlans,
+        subjectNeeds: st.subjectNeeds,
+      },
+      today,
+    );
+    st.studyPlans = coll.studyPlans;
+    st.subjectNeeds = coll.subjectNeeds;
+    fixes.push(...coll.fixes);
+    // Packing checkboxes for days long past are pure noise.
+    const cutoff = PCr.addDays(today, -14);
+    for (const day of Object.keys(st.packLog)) {
+      if (day < cutoff) delete st.packLog[day];
+    }
+    st.__integrity = fixes.slice(0, 50);
+    return st;
   }
 
   // Validate/clamp the rewards ledger from an imported or synced backup so a
@@ -1084,6 +1144,12 @@
               nextAction: String(a.blocked.nextAction || "").slice(0, 160),
             }
           : null,
+      // Finished and turned in are different things. This is the single most
+      // common middle-school failure: "I did it, I just forgot to submit it."
+      submitted: !!a.submitted,
+      // Whether this kind of work needs a submission step at all — inferred,
+      // so trivial tasks never get an extra question.
+      needsSubmission: a.needsSubmission === undefined ? undefined : !!a.needsSubmission,
       studySessionId: String(a.studySessionId || ""),
       assessmentId: String(a.assessmentId || ""),
       updatedAt: a.updatedAt || Date.now(),
@@ -5296,7 +5362,12 @@
       const catchUpBanner = recoveryPlan.some((item) => item.due < todayKey())
         ? `<section class="catch-up-banner" aria-label="Catch-up mode"><div><span class="eyebrow">CALM RECOVERY PLAN</span><h3>Only three things—not the whole backlog</h3><p>Start with one small block. The rest can wait.</p></div><button class="btn primary" data-act="catch-up-mode">Open catch-up mode</button></section>`
         : "";
-      return `${welcomeBanner}${todayScreen()}${checkinBanner()}${captureBanner()}${catchUpBanner}${arrangeBar}<div class="home-grid${arrangeMode ? " arranging" : ""}">${order.map((k) => map[k] || "").join("")}${arrangeMode ? "" : customizeTile}</div>`;
+      const board = `${arrangeBar}<div class="home-grid${arrangeMode ? " arranging" : ""}">${order.map((k) => map[k] || "").join("")}${arrangeMode ? "" : customizeTile}</div>`;
+      // Arrange mode is a deliberate visit to the board — keep it open then.
+      const boardSection = arrangeMode
+        ? board
+        : `<details class="board-drawer"><summary>Your cards &amp; extras</summary>${board}</details>`;
+      return `${welcomeBanner}${todayScreen()}${checkinBanner()}${captureBanner()}${catchUpBanner}${boardSection}`;
     },
 
     calendar() {
@@ -8033,6 +8104,11 @@ Due May 31"></textarea>
       </div>
       <div class="field"><label>About how long? (minutes)</label><input type="number" id="tEst" min="0" step="5" value="${a.estimateMin || ""}" placeholder="20"></div>
       <div class="field"><label>Notes (optional)</label><textarea id="tNotes">${esc(a.notes || "")}</textarea></div>
+      ${
+        estimateHint(a.classId, Number(a.estimateMin) || 20)
+          ? `<p class="est-hint">${esc(estimateHint(a.classId, Number(a.estimateMin) || 20))}</p>`
+          : ""
+      }
       <div class="field"><label for="tKind">What kind is it?</label>
         <select id="tKind">
           <option value="assignment"${(a.kind || "assignment") === "assignment" ? " selected" : ""}>Homework</option>
@@ -10444,6 +10520,7 @@ Due May 31"></textarea>
   function completeTask(id) {
     const a = state.assignments.find((x) => x.id === id);
     if (!a || a.status === "done") return;
+    learnFromCompletion(a);
     const previous = { status: a.status, completedAt: a.completedAt, updatedAt: a.updatedAt };
     a.status = "done";
     a.completedAt = new Date().toISOString();
@@ -10474,6 +10551,83 @@ Due May 31"></textarea>
 
   const ACTIONS = {
     // --- School OS actions ---------------------------------------------------
+    // Duplicates are only ever merged on an explicit tap, and the merge is
+    // undoable — collapsing two assignments is exactly the kind of automation
+    // that must never happen behind his back.
+    "dupe-merge": (aId, bId) => {
+      const a = state.assignments.find((x) => x.id === aId);
+      const b = state.assignments.find((x) => x.id === bId);
+      if (!a || !b) return;
+      const before = JSON.parse(JSON.stringify({ a, b }));
+      const merged = PC.mergeDuplicates(a, b);
+      Object.assign(a, merged);
+      state.assignments = state.assignments.filter((x) => x.id !== bId);
+      state.deletedIds[bId] = Date.now();
+      save();
+      render();
+      toast("Merged", () => {
+        Object.assign(a, before.a);
+        delete state.deletedIds[bId];
+        state.assignments.push(normalizeTask(before.b));
+        save();
+        render();
+      });
+    },
+    "dupe-keep": (aId, bId) => {
+      state.dupDismissed = state.dupDismissed || {};
+      state.dupDismissed[[aId, bId].sort().join("~")] = Date.now();
+      save();
+      render();
+    },
+    // Submission is tracked only where forgetting to turn work in is a real
+    // failure mode, so it is asked once, right after finishing.
+    "mark-submitted": (id) => {
+      const a = state.assignments.find((x) => x.id === id);
+      if (!a) return;
+      a.submitted = true;
+      a.updatedAt = Date.now();
+      save();
+      closeModal();
+      render();
+      toast("Turned in 👍");
+    },
+    "submit-later": (id) => {
+      const a = state.assignments.find((x) => x.id === id);
+      if (!a) return;
+      a.submitted = false;
+      a.updatedAt = Date.now();
+      state.reminders.push(
+        normalizeReminder({
+          id: uid("rm"),
+          text: `At school: turn in ${a.title}`,
+          date: PC.addDays(todayKey(), 1),
+          time: "08:00",
+        }),
+      );
+      save();
+      closeModal();
+      render();
+      toast("You'll be reminded at school");
+    },
+    "weekly-reset": () => {
+      const r = weeklyReset();
+      openModal(
+        "This week",
+        `<ul class="coming">${r.notes.map((n) => `<li><span>${esc(n.text)}</span></li>`).join("") || "<li class='sub'>Nothing unusual.</li>"}</ul>
+         <p><b>${esc(r.verdict)}</b></p>
+         <button class="btn primary" data-act="close-modal">Got it</button>`,
+      );
+    },
+    // "I'm Home" reuses the existing after-school routine rather than adding a
+    // second routine system, then hands straight off to the plan.
+    "im-home": () => {
+      const routine = state.routines.find((r) => r.slot === "afterSchool");
+      if (routine) {
+        guide.start(routine.id);
+        return;
+      }
+      planModal();
+    },
     "start-item": (id) => {
       const entry = PC.prioritize(plannerCtx()).find((e) => e.id === id);
       startWorkItem(entry ? entry.item : null);
@@ -12880,6 +13034,24 @@ ${name}`;
       const kind = box.dataset.check,
         id = box.dataset.id,
         sid = box.dataset.sid;
+      if (kind === "at-school") {
+        const r = state.reminders.find((x) => x.id === id);
+        if (r) {
+          r.done = box.checked;
+          r.updatedAt = Date.now();
+        } else {
+          // A blocked assignment's next action: checking it means he got the
+          // thing, so the work becomes actionable again.
+          const a = state.assignments.find((x) => x.id === id);
+          if (a && a.blocked) {
+            a.blocked = null;
+            a.updatedAt = Date.now();
+          }
+        }
+        save();
+        render();
+        return;
+      }
       if (kind === "planner-item") {
         // One checkbox for every kind of work on Today — assignment, project
         // step, or study session — so completing is always the same gesture.
@@ -13690,6 +13862,13 @@ function dueStudySessions(todayIso = todayKey()) {
   const out = [];
   for (const a of state.assignments) {
     if (a.kind !== "assessment" || a.status === "done") continue;
+    // If the assessment itself is blocked (no study guide, materials at
+    // school), its sessions are blocked too — otherwise blocked work sneaks
+    // back onto Today through the study-session door.
+    if (isBlocked(a)) continue;
+    // The assessment already happened — studying for it is over, whatever a
+    // stale synced plan still says.
+    if (a.due && a.due < todayIso) continue;
     const plan = state.studyPlans[a.id] || [];
     for (const s of plan) {
       if (s.done || s.date > todayIso) continue;
@@ -13747,10 +13926,20 @@ function nextUpEntry(todayIso = todayKey()) {
 
 // Work planned for today = anything due today/overdue, plus anything he (or
 // the planner) explicitly parked on today.
+// What he should actually work on tonight.
+//
+// Deliberately NOT "things due today": a 7th-grader's single most common item
+// is homework due TOMORROW, and an earlier version filtered exactly that out
+// of the Today list. Tonight's work is anything overdue, due today, due
+// tomorrow, or explicitly planned for today.
 function todaysWork(todayIso = todayKey()) {
+  const tomorrow = PC.addDays(todayIso, 1);
   return PC.prioritize(plannerCtx(todayIso)).filter((e) => {
     const wd = PC.workDate(e.item);
-    return !wd || wd <= todayIso || (e.item.due && e.item.due <= todayIso);
+    if (wd && wd <= todayIso) return true;
+    const due = e.item.due;
+    if (!due) return true; // undated work is always available to pick up
+    return due <= tomorrow;
   });
 }
 
@@ -13773,10 +13962,10 @@ function startWorkItem(item) {
   if (!a) return;
   // Auto-pick a sane duration: the item's own estimate, rounded to a real
   // focus block, capped so a 7th grader is never handed a 60-minute wall.
-  const want = Math.max(
-    5,
-    Math.min(30, Number(item.estimateMin) || state.settings.defaultFocusMin),
-  );
+  const base =
+    Number(item.estimateMin) ||
+    suggestedEstimate(item.classId, state.settings.defaultFocusMin);
+  const want = Math.max(5, Math.min(30, base));
   focusGoal = {
     itemId: item.id,
     title: item.title,
@@ -13923,14 +14112,78 @@ function todayScreen() {
 
   const tmr = PC.dayPlan(state.schedule, tomorrowIso);
   const tomorrowSection = `<section class="card" aria-label="Tomorrow"><div class="head"><div><h3>Tomorrow</h3></div></div>${
-    tmr.school
-      ? `<p class="tmr-line">School starts at ${clock(tmr.startMin)}${tmr.earlyDismissal ? ` · early dismissal ${clock(tmr.dismissMin)}` : ""}</p>
+    !tmr.school
+      ? `<p class="tmr-line">${esc(tmr.label || "No school tomorrow.")}</p>`
+      : tmr.classPeriods.length
+        ? `<p class="tmr-line">School starts at ${clock(tmr.startMin)}${tmr.earlyDismissal ? ` · early dismissal ${clock(tmr.dismissMin)}` : ""}</p>
            <p class="tmr-line">${tmr.classPeriods.length} classes${tmr.classPeriods.some((p) => /pe|gym/i.test(p.name)) ? " · PE day" : ""}</p>
            <button class="btn sm" data-act="pack-tomorrow">🎒 Pack for tomorrow</button>`
-      : `<p class="tmr-line">${esc(tmr.label || "No school tomorrow.")}</p>`
+        // No timetable entered yet: never invent one ("0 classes" reads as a
+        // bug). Offer the one-time setup that makes this card useful instead.
+        : `<p class="tmr-line">Add your class schedule once and this shows what to bring.</p>
+           <button class="btn sm" data-act="setup-schedule">Set up my schedule</button>
+           <button class="btn sm" data-act="pack-tomorrow">🎒 Pack for tomorrow</button>`
   }</section>`;
 
+  const phase = dayPhase();
+  const load = overloadReport(todayIso);
+  const dupes = duplicateCandidates();
+  const atSchool = atSchoolItems(todayIso);
+
+  // Before and during school, homework is NOT the lead — the day ahead is.
+  // Opening a 7am screen with an overdue backlog is how a planner gets closed.
+  const morningLead =
+    phase === "morning" || phase === "school"
+      ? `<section class="card morning-card"><div class="head"><div><h3>${esc(dayNow.dayName)}</h3>${dayNow.label ? `<p class="sub">${esc(dayNow.label)}</p>` : ""}</div></div>
+           ${dayNow.classPeriods.length ? `<p class="tmr-line">First: <b>${esc(dayNow.classPeriods[0].name)}</b>${dayNow.classPeriods[0].room ? ` · ${esc(dayNow.classPeriods[0].room)}` : ""}</p>` : ""}
+           ${morningBringLine(todayIso)}
+           ${ranked.some((e) => e.item.due === todayIso) ? `<p class="tmr-line">Due today: ${ranked.filter((e) => e.item.due === todayIso).map((e) => esc(e.item.title)).join(", ")}</p>` : ""}
+         </section>`
+      : "";
+
+  const atSchoolCard =
+    atSchool.length && (phase === "morning" || phase === "school")
+      ? `<section class="card"><div class="head"><div><h3>At school today</h3></div></div>
+           <ul class="coming">${atSchool
+             .map(
+               (x) =>
+                 `<li><input class="check" type="checkbox" data-check="at-school" data-id="${esc(x.id)}" aria-label="Done: ${esc(x.text)}"><span>${esc(x.text)}</span></li>`,
+             )
+             .join("")}</ul></section>`
+      : "";
+
+  // Overload is stated plainly and immediately followed by the fix — the point
+  // is to reduce panic, not to report a backlog.
+  const overloadCard = load.overloaded
+    ? `<section class="card overload-card" aria-label="Tonight is tight"><div class="head"><div><h3>Tonight is tight</h3><p class="sub">About ${mins(load.have)} free and ${mins(load.need)} of work.</p></div></div>
+         <ol class="plan-list">${load.keep
+           .map(
+             (b) =>
+               `<li><b>${esc(b.title)}</b> · ${mins(b.minutes)}<br><small>${esc(b.reason)}</small></li>`,
+           )
+           .join("")}</ol>
+         ${load.move.length ? `<p class="sub">Moving to tomorrow: ${load.move.map((i) => esc(i.title)).join(", ")}. Their due dates don't change.</p>` : ""}
+         <button class="btn primary" data-act="start-plan">Use this plan</button>
+       </section>`
+    : "";
+
+  const dupeCard = dupes.length
+    ? `<section class="card"><div class="head"><div><h3>These might be the same thing</h3></div></div>
+         ${dupes
+           .slice(0, 3)
+           .map(
+             (d) =>
+               `<div class="dupe"><p><b>${esc(d.aItem.title)}</b> &amp; <b>${esc(d.bItem.title)}</b></p><p class="sub">${esc(d.why)}</p>
+                <div class="row"><button class="btn sm primary" data-act="dupe-merge" data-id="${esc(d.a)}" data-arg="${esc(d.b)}">Merge them</button>
+                <button class="btn sm" data-act="dupe-keep" data-id="${esc(d.a)}" data-arg="${esc(d.b)}">Keep both</button></div></div>`,
+           )
+           .join("")}</section>`
+    : "";
+
   const support = `<div class="today-support">
+        ${phase === "afterschool" ? `<button class="btn sm" data-act="im-home">🎒 I'm home</button>` : ""}
+        ${phase === "afterschool" || phase === "evening" ? `<button class="btn sm" data-act="less-time">⏱️ Less time today</button>` : ""}
+        ${PC.isWeekend(todayIso) ? `<button class="btn sm" data-act="weekly-reset">📅 Look at the week</button>` : ""}
         <button class="btn sm" data-act="im-stuck">🤔 I'm stuck</button>
         <button class="btn sm" data-act="im-overwhelmed">😮‍💨 I'm overwhelmed</button>
         <button class="btn sm" data-act="quick-entry">＋ Add something</button>
@@ -13953,9 +14206,34 @@ function todayScreen() {
            .join("")}</ul></section>`
     : "";
 
-  return `${schoolStrip}${nextUp}${planBtn}
+  // Order the screen by what actually matters at this hour: the day ahead
+  // before school, a plan after it, tomorrow in the evening.
+  if (phase === "morning" || phase === "school") {
+    return `${schoolStrip}${morningLead}${atSchoolCard}${dupeCard}
+      <details class="today-later"><summary>Tonight's work (${ranked.length})</summary>${list}</details>
+      ${comingSection}${support}`;
+  }
+  if (phase === "evening") {
+    return `${nextUp}${tomorrowSection}
+      <details class="today-later"><summary>Still open (${ranked.length})</summary>${list}</details>
+      ${blockedSection}${support}`;
+  }
+  return `${schoolStrip}${overloadCard}${nextUp}${planBtn}${dupeCard}
       <section class="card" aria-label="Today"><div class="head"><div><h3>Today</h3></div></div>${list}</section>
       ${blockedSection}${comingSection}${tomorrowSection}${support}`;
+}
+
+// The one line a student actually needs before leaving the house.
+function morningBringLine(iso) {
+  const list = PC.packList({
+    schedule: state.schedule,
+    items: state.assignments.filter((a) => a.status !== "done"),
+    classes: state.classes,
+    dateIso: iso,
+    subjectNeeds: state.subjectNeeds,
+  });
+  if (!list.school || !list.bring.length) return "";
+  return `<p class="tmr-line">Bring: ${list.bring.slice(0, 5).map(esc).join(" · ")}</p>`;
 }
 
 // Tests, quizzes and project deadlines in the next two weeks.
@@ -14317,7 +14595,11 @@ function saveQuickEntry() {
     title: p.title,
     classId: p.classId,
     due: p.due,
-    estimateMin: p.estimateMin,
+    // If he didn't say how long, use what work in this class has actually
+    // taken rather than a flat guess.
+    estimateMin: p.matched.includes("duration")
+      ? p.estimateMin
+      : suggestedEstimate(p.classId, p.estimateMin),
     notes: p.detail,
   });
   a.kind = p.kind;
@@ -14417,7 +14699,202 @@ function repairMissedWork() {
   return moved;
 }
 
+  // ===========================================================================
+  // THE DAILY LOOP — the app should mean different things at different hours
+  // ===========================================================================
+  // Before school he needs the day ahead and what to bring, NOT a homework
+  // backlog. During school he needs now/next and fast capture. After school he
+  // needs a plan. In the evening he needs tomorrow. Same data, different lead.
+  function dayPhase(atMin, todayIso) {
+    const now = Number.isFinite(atMin) ? atMin : nowMin();
+    const iso = todayIso || todayKey();
+    const plan = PC.dayPlan(state.schedule, iso);
+    if (!plan.school) return now >= 19 * 60 ? "evening" : "offday";
+    const start = plan.startMin === null ? 8 * 60 : plan.startMin;
+    const out = plan.dismissMin === null ? 15 * 60 : plan.dismissMin;
+    if (now < start) return "morning";
+    if (now < out) return "school";
+    if (now < 19 * 60) return "afterschool";
+    return "evening";
+  }
+
+  // "At school today" — actions that belong to the school building, not to
+  // homework. They are reminders dated today/tomorrow whose text is school
+  // context, plus the next action of anything blocked for missing materials.
+  function atSchoolItems(todayIso = todayKey()) {
+    const out = [];
+    for (const r of state.reminders) {
+      if (r.done || !/^at school/i.test(r.text || "")) continue;
+      if (r.date && r.date > todayIso) continue;
+      out.push({ id: r.id, text: r.text.replace(/^at school:?\s*/i, ""), kind: "reminder" });
+    }
+    for (const a of state.assignments) {
+      if (a.status === "done" || !isBlocked(a) || !a.blocked.nextAction) continue;
+      out.push({ id: a.id, text: a.blocked.nextAction, kind: "blocked" });
+    }
+    return out;
+  }
+
+  // ===========================================================================
+  // OVERLOAD — say it plainly, then fix it
+  // ===========================================================================
+  function overloadReport(todayIso = todayKey()) {
+    const ctx = plannerCtx(todayIso);
+    const need = remainingMinutesToday(todayIso);
+    const have = ctx.availableMin;
+    if (!need || have <= 0 || need <= have) {
+      return { overloaded: false, need, have };
+    }
+    const plan = PC.buildPlan({ ...ctx, startMin: nowMin() });
+    return {
+      overloaded: true,
+      need,
+      have,
+      keep: plan.workBlocks,
+      move: plan.leftOver,
+    };
+  }
+
+  // ===========================================================================
+  // DUPLICATES — offer, never merge behind his back
+  // ===========================================================================
+  function duplicateCandidates() {
+    const pairs = PC.findDuplicates(state.assignments);
+    const byId = new Map(state.assignments.map((a) => [a.id, a]));
+    return pairs
+      .map((p) => ({ ...p, aItem: byId.get(p.a), bItem: byId.get(p.b) }))
+      .filter((p) => p.aItem && p.bItem && !isDupDismissed(p));
+  }
+  const dupKey = (p) => [p.a, p.b].sort().join("~");
+  const isDupDismissed = (p) => !!(state.dupDismissed || {})[dupKey(p)];
+
+  // ===========================================================================
+  // WEEKLY RESET — the app does the analysis, he just confirms
+  // ===========================================================================
+  function weeklyReset(todayIso = todayKey()) {
+    const notes = [];
+    const end = PC.addDays(todayIso, 8);
+    const unfinished = state.assignments.filter(
+      (a) => a.status !== "done" && a.due && a.due < todayIso,
+    );
+    if (unfinished.length) {
+      notes.push({
+        kind: "unfinished",
+        text: `${unfinished.length} thing${unfinished.length === 1 ? "" : "s"} from last week still open.`,
+        ids: unfinished.map((a) => a.id),
+      });
+    }
+    const tests = state.assignments.filter(
+      (a) => a.kind === "assessment" && a.status !== "done" && a.due > todayIso && a.due <= end,
+    );
+    for (const t of tests) {
+      notes.push({
+        kind: "assessment",
+        text: `${t.title} on ${PC.friendlyDate(t.due, todayIso)}.`,
+        ids: [t.id],
+      });
+    }
+    const projects = state.assignments.filter(
+      (a) => a.kind === "project" && a.status !== "done" && a.due > todayIso && a.due <= end,
+    );
+    for (const p of projects) {
+      const left = p.steps.filter((x) => !x.done).length;
+      notes.push({
+        kind: "project",
+        text: `${p.title} due ${PC.friendlyDate(p.due, todayIso)} — ${left} step${left === 1 ? "" : "s"} left.`,
+        ids: [p.id],
+      });
+    }
+    // Which day next week is heaviest?
+    let heaviest = null;
+    for (let i = 0; i < 7; i++) {
+      const iso = PC.addDays(todayIso, i);
+      const load = PC.loadForDay(state.assignments, iso);
+      if (!heaviest || load > heaviest.load) heaviest = { iso, load };
+    }
+    if (heaviest && heaviest.load > 0) {
+      notes.push({
+        kind: "load",
+        text: `${PC.dayName(heaviest.iso)} looks busiest — about ${mins(heaviest.load)}.`,
+        ids: [],
+      });
+    }
+    const exceptions = PC.normalizeSchedule(state.schedule).exceptions.filter(
+      (e) => e.date >= todayIso && e.date <= end,
+    );
+    for (const e of exceptions) {
+      notes.push({
+        kind: "schedule",
+        text: `${e.label || e.type} on ${PC.friendlyDate(e.date, todayIso)}.`,
+        ids: [],
+      });
+    }
+    return {
+      notes,
+      verdict: notes.some((n) => n.kind === "unfinished" || n.kind === "project")
+        ? "A couple of things need room this week."
+        : "Next week looks manageable.",
+    };
+  }
+
+  // Turn one finished assignment into a slightly better future guess.
+  //
+  // Deliberately conservative: only completed work counts (a partial session
+  // would teach that everything is fast), only sessions with BOTH a real guess
+  // and real logged minutes, and the ratio is clamped so one abandoned timer
+  // left running overnight cannot distort anything. The model holds a rolling
+  // ratio per class — never a label about the student.
+  function learnFromCompletion(a) {
+    if (!PC || !PC.updateEstimateModel) return;
+    const est = Number(a.estimateMin) || 0;
+    const act = Number(a.actualMin) || 0;
+    if (est < 5 || act < 3) return;
+    // A session 4x longer than planned is almost always a timer left running,
+    // not a real measurement. Ignore rather than let it poison the average.
+    if (act / est > 4 || act / est < 0.15) return;
+    state.estimateModel = PC.updateEstimateModel(state.estimateModel, {
+      classId: a.classId,
+      estimateMin: est,
+      actualMin: act,
+    });
+  }
+
+  // What the app should PRE-FILL as a time guess, given what similar work in
+  // this class has actually taken. Shown as a suggestion he can overwrite.
+  function suggestedEstimate(classId, baseMin) {
+    if (!PC || !PC.suggestEstimate) return baseMin;
+    return PC.suggestEstimate(state.estimateModel, classId, baseMin);
+  }
+
+  // Plain, neutral sentence about typical time — never "you are slow at math".
+  function estimateHint(classId, baseMin) {
+    const entry = (state.estimateModel || {})[classId || "_"];
+    if (!entry || entry.n < 3) return "";
+    const suggested = suggestedEstimate(classId, baseMin);
+    if (suggested === baseMin) return "";
+    const name = classId ? cls(classId).name : "similar";
+    return `Similar ${name} work usually takes about ${mins(suggested)}.`;
+  }
+
   // Completing whatever kind of thing is on the Today list.
+  // Work that gets handed in (not a study session, not a routine) gets ONE
+  // question after finishing. Trivial tasks never see it.
+  function maybeAskSubmission(a) {
+    if (!a || a.kind === "study" || a.submitted) return false;
+    const needs =
+      a.needsSubmission === undefined
+        ? a.kind === "project" || a.kind === "assignment"
+        : a.needsSubmission;
+    if (!needs) return false;
+    openModal(
+      "One more thing",
+      `<p>Nice — <b>${esc(a.title)}</b> is finished.</p><p>Did you turn it in?</p>
+       <div class="row"><button class="btn primary" data-act="mark-submitted" data-id="${esc(a.id)}">Yes, turned in</button>
+       <button class="btn" data-act="submit-later" data-id="${esc(a.id)}">Not yet</button></div>`,
+    );
+    return true;
+  }
+
   function completePlannerItem(id) {
     const study = dueStudySessions().find((s) => s.id === id);
     if (study) {
@@ -14443,6 +14920,7 @@ function repairMissedWork() {
     }
     completeTask(id);
     render();
+    maybeAskSubmission(state.assignments.find((x) => x.id === id));
   }
 
   function completeStudySession(id, done) {
@@ -14679,6 +15157,15 @@ function repairMissedWork() {
       offlineStrategies,
       plannerItems,
       owningAssignmentId,
+      learnFromCompletion,
+      suggestedEstimate,
+      estimateHint,
+      repairState,
+      duplicateCandidates,
+      atSchoolItems,
+      dayPhase,
+      weeklyReset,
+      overloadReport,
       plannerCtx,
       nextUpEntry,
       todaysWork,

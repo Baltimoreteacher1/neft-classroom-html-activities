@@ -174,7 +174,11 @@
       .filter((p) => {
         if (p.days.length && !p.days.includes(dn)) return false;
         if (p.rotationDays.length && rot && !p.rotationDays.includes(rot)) return false;
-        if (p.rotationDays.length && !rot) return false;
+        // A period restricted to A/B days when no rotation anchor is configured
+        // would otherwise vanish from the timetable entirely — a class silently
+        // disappearing from School view and the packing list. Until the anchor
+        // is set, show it every day rather than hide it.
+        if (p.rotationDays.length && !rot) return true;
         return hhmmToMin(p.start) !== null && hhmmToMin(p.end) !== null;
       })
       .map((p) => ({ ...p, startMin: hhmmToMin(p.start), endMin: hhmmToMin(p.end) }))
@@ -504,7 +508,12 @@
     if (!list.length) return [];
     const span = daysBetween(todayIso, dueIso);
     if (span === null || span <= 0) {
-      return list.map((s, i) => ({ ...toStep(s, i), date: todayIso }));
+      // Due today, or already overdue. Everything collapses onto one day — but
+      // never a day AFTER the deadline, or the project would claim work is
+      // scheduled past its own due date. An overdue project keeps its real
+      // (past) due date; `currentProjectStep` still surfaces it today.
+      const day = dueIso && dueIso < todayIso ? dueIso : todayIso;
+      return list.map((st, i) => ({ ...toStep(st, i), date: day }));
     }
     // Working days available = today .. day before due, plus the due date for
     // the final "turn it in" step.
@@ -1031,6 +1040,261 @@
     return Math.max(5, Math.round((base * entry.ratio) / 5) * 5);
   }
 
+  // ---------------------------------------------------------------------------
+  // DATA INTEGRITY — repair impossible states instead of trusting them
+  // ---------------------------------------------------------------------------
+  // Bad data reaches this app from three directions: an older schema, a
+  // half-finished edit, and a merge between two devices. None of them should be
+  // able to produce a planner that tells a student something impossible, so
+  // every rule below REPAIRS rather than throws, and reports what it changed.
+  const MAX_MINUTES = 8 * 60;
+
+  function clampMinutes(v, fallback) {
+    const n = Number(v);
+    if (!Number.isFinite(n) || n <= 0) return fallback;
+    return Math.min(MAX_MINUTES, Math.round(n));
+  }
+
+  // Repair one work item. `todayIso` is only used to bound nonsense dates.
+  function repairItem(item, todayIso) {
+    const fixes = [];
+    const a = { ...item };
+
+    // Durations can never be negative or absurd (a corrupt sync or a typo).
+    const est = clampMinutes(a.estimateMin, 0);
+    if (est !== (Number(a.estimateMin) || 0)) {
+      fixes.push("estimateMin");
+      a.estimateMin = est;
+    }
+    const act = clampMinutes(a.actualMin, 0);
+    if (act !== (Number(a.actualMin) || 0)) {
+      fixes.push("actualMin");
+      a.actualMin = act;
+    }
+
+    // You cannot finish something before it existed.
+    if (a.completedAt && a.created && a.completedAt < a.created) {
+      fixes.push("completedAt");
+      a.completedAt = a.created;
+    }
+    // ...nor have a completion date on something that isn't done.
+    if (a.completedAt && a.status !== "done") {
+      fixes.push("completedAt-orphan");
+      a.completedAt = "";
+    }
+    // Submitted implies finished — never the reverse.
+    if (a.submitted && a.status !== "done") {
+      fixes.push("submitted");
+      a.submitted = false;
+    }
+
+    // Planned work may not sit past its own deadline: that is precisely the
+    // state where a student would be told "do it Friday" for Tuesday's work.
+    if (a.plannedDate && a.due && a.plannedDate > a.due) {
+      fixes.push("plannedDate");
+      a.plannedDate = a.due;
+    }
+    // NOTE: a planned date in the PAST is deliberately NOT repaired here. It is
+    // not an impossible state, it is missed work — and `recoveryFor` owns it,
+    // because that path records the move in planHistory and can explain it.
+    // Silently snapping it to today here would erase that history.
+
+    // Project steps may never be scheduled past the project deadline.
+    if (Array.isArray(a.steps) && a.due) {
+      let touched = false;
+      a.steps = a.steps.map((st) => {
+        if (st.date && st.date > a.due) {
+          touched = true;
+          return { ...st, date: a.due };
+        }
+        if (st.minutes !== undefined) {
+          const m = clampMinutes(st.minutes, 20);
+          if (m !== st.minutes) {
+            touched = true;
+            return { ...st, minutes: m };
+          }
+        }
+        return st;
+      });
+      if (touched) fixes.push("stepDate");
+    }
+
+    if (a.planHistory && !Array.isArray(a.planHistory)) {
+      a.planHistory = [];
+      fixes.push("planHistory");
+    }
+    return { item: a, fixes };
+  }
+
+  // Cross-entity repair: drop study plans and packing needs whose owner is
+  // gone, and stop study sessions for assessments that have already happened.
+  function repairCollections(input, todayIso) {
+    const items = Array.isArray(input.items) ? input.items : [];
+    const studyPlans =
+      input.studyPlans && typeof input.studyPlans === "object" ? input.studyPlans : {};
+    const subjectNeeds =
+      input.subjectNeeds && typeof input.subjectNeeds === "object" ? input.subjectNeeds : {};
+    const classIds = new Set((Array.isArray(input.classes) ? input.classes : []).map((c) => c.id));
+    const byId = new Map(items.map((i) => [i.id, i]));
+    const fixes = [];
+
+    const nextPlans = {};
+    for (const key of Object.keys(studyPlans)) {
+      const plan = studyPlans[key];
+      const owner = byId.get(key);
+      if (!owner) {
+        fixes.push(`studyPlan-orphan:${key}`);
+        continue;
+      }
+      // The assessment has happened (or is marked done) — studying is over.
+      const past = owner.status === "done" || (owner.due && todayIso && owner.due < todayIso);
+      if (past) {
+        fixes.push(`studyPlan-past:${key}`);
+        // Keep completed sessions as history; drop pending ones so they can
+        // never resurface as work for a quiz he already took.
+        const kept = (Array.isArray(plan) ? plan : []).filter((x) => x.done);
+        if (kept.length) nextPlans[key] = kept;
+        continue;
+      }
+      const cleaned = (Array.isArray(plan) ? plan : []).filter((x) => {
+        if (owner.due && x.date > owner.due) {
+          fixes.push(`studySession-after:${key}`);
+          return false;
+        }
+        return true;
+      });
+      nextPlans[key] = cleaned;
+    }
+
+    const nextNeeds = {};
+    for (const classId of Object.keys(subjectNeeds)) {
+      if (classIds.size && !classIds.has(classId)) {
+        fixes.push(`packing-orphan:${classId}`);
+        continue;
+      }
+      nextNeeds[classId] = subjectNeeds[classId];
+    }
+
+    return { studyPlans: nextPlans, subjectNeeds: nextNeeds, fixes };
+  }
+
+  // ---------------------------------------------------------------------------
+  // DUPLICATE DETECTION — the same work entered twice, or imported twice
+  // ---------------------------------------------------------------------------
+  // Two assignments are only ever *suggested* as duplicates, never merged
+  // automatically: "math pg 82 #1-12" and "Math Practice 3.2" may or may not be
+  // the same thing, and silently collapsing them loses real work. A shared
+  // external source id is the one signal strong enough to be certain.
+  const STOP_WORDS = new Set([
+    "the","a","an","and","or","of","for","to","my","do","due","page","pages","pg","p",
+    "problems","problem","questions","question","worksheet","assignment","hw","homework",
+    "read","reading","chapter","chapters","ch","practice","review","study",
+  ]);
+
+  function titleTokens(title) {
+    return new Set(
+      String(title || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .split(/\s+/)
+        .filter((w) => w && !STOP_WORDS.has(w)),
+    );
+  }
+
+  // Jaccard overlap of meaningful words, 0..1.
+  function titleSimilarity(a, b) {
+    const A = titleTokens(a);
+    const B = titleTokens(b);
+    if (!A.size || !B.size) return 0;
+    let shared = 0;
+    for (const w of A) if (B.has(w)) shared++;
+    return shared / (A.size + B.size - shared);
+  }
+
+  // Returns candidate pairs, most confident first. `certain` pairs share an
+  // external source id and may be merged without asking.
+  function findDuplicates(items, opts) {
+    const o = opts || {};
+    const list = (Array.isArray(items) ? items : []).filter((i) => i && i.status !== "done");
+    const out = [];
+    for (let i = 0; i < list.length; i++) {
+      for (let j = i + 1; j < list.length; j++) {
+        const a = list[i];
+        const b = list[j];
+        // Never pair different kinds of thing — a quiz is not its homework.
+        if ((a.kind || "assignment") !== (b.kind || "assignment")) continue;
+        if (a.sourceId && b.sourceId && a.sourceId === b.sourceId) {
+          out.push({ a: a.id, b: b.id, confidence: "certain", why: "Same assignment from your school's system." });
+          continue;
+        }
+        // Different classes are strong evidence they are NOT the same work.
+        if (a.classId && b.classId && a.classId !== b.classId) continue;
+        // Different due dates likewise, unless one is simply undated.
+        if (a.due && b.due && a.due !== b.due) continue;
+        const sim = titleSimilarity(a.title, b.title);
+        const sameDay = a.due && b.due && a.due === b.due;
+        if (sim >= 0.6 || (sameDay && sim >= 0.34)) {
+          out.push({
+            a: a.id,
+            b: b.id,
+            confidence: "likely",
+            similarity: Number(sim.toFixed(2)),
+            why: sameDay
+              ? "Same class and same due date, with a very similar name."
+              : "Almost the same name in the same class.",
+          });
+        } else if (sameDay && a.classId && a.classId === b.classId && sim > 0) {
+          // Weakest tier: same class, same due date, some shared wording —
+          // e.g. "Math Practice 3.2" (imported) vs "math pg 82 #1-12" (typed).
+          // Genuinely ambiguous, so this is only ever *offered* for review with
+          // "Keep both" as the safe default. Never auto-merged.
+          out.push({
+            a: a.id,
+            b: b.id,
+            confidence: "possible",
+            similarity: Number(sim.toFixed(2)),
+            why: "Same class, due the same day — these might be the same thing.",
+          });
+        }
+      }
+    }
+    const rank = { certain: 3, likely: 2, possible: 1 };
+    return out
+      .sort(
+        (x, y) =>
+          rank[y.confidence] - rank[x.confidence] || (y.similarity || 1) - (x.similarity || 1),
+      )
+      .slice(0, o.limit || 10);
+  }
+
+  // Merge b INTO a without losing anything either side knows.
+  function mergeDuplicates(a, b) {
+    const keepDue = a.due || b.due;
+    const notes = [a.notes, b.notes].filter(Boolean).join("\n").trim();
+    const steps = a.steps && a.steps.length ? a.steps : b.steps || [];
+    return {
+      ...a,
+      title: a.title.length >= b.title.length ? a.title : b.title,
+      classId: a.classId || b.classId,
+      due: keepDue,
+      dueTime: a.dueTime || b.dueTime,
+      // Keep the LARGER estimate: under-planning is the costlier mistake.
+      estimateMin: Math.max(Number(a.estimateMin) || 0, Number(b.estimateMin) || 0),
+      actualMin: (Number(a.actualMin) || 0) + (Number(b.actualMin) || 0),
+      // Progress on either copy is real progress.
+      status: a.status === "doing" || b.status === "doing" ? "doing" : a.status,
+      submitted: !!(a.submitted || b.submitted),
+      notes,
+      steps,
+      sourceId: a.sourceId || b.sourceId || "",
+      source: a.source || b.source,
+      originalDue: a.originalDue || b.originalDue || "",
+      planHistory: [...(a.planHistory || []), ...(b.planHistory || [])].slice(-20),
+      mergedFrom: [...(a.mergedFrom || []), b.id],
+      updatedAt: Date.now(),
+    };
+  }
+
   const api = {
     // dates
     parseLocal,
@@ -1055,6 +1319,13 @@
     availableMinutes,
     // priority
     scoreItem,
+    // integrity
+    repairItem,
+    findDuplicates,
+    mergeDuplicates,
+    titleSimilarity,
+    repairCollections,
+    clampMinutes,
     prioritize,
     nextUp,
     workDate,

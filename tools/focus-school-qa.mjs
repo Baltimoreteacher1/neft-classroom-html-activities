@@ -112,6 +112,9 @@ await page.addInitScript((seed) => {
   // Opt into the app's own test hook so QA can read real state, not the DOM.
   window.__FOCUS_SCHOOL_TEST__ = {};
 }, SEED);
+// Today deliberately shows different things at different hours. Pin the clock
+// to 4pm so this suite always exercises the after-school (planning) phase.
+await page.clock.install({ time: new Date(new Date().setHours(16, 0, 0, 0)) });
 
 // --- Boot -----------------------------------------------------------------
 await page.goto(BASE, { waitUntil: "domcontentloaded" });
@@ -170,10 +173,13 @@ ok(
 
 // --- Scenario: Start My Plan ---------------------------------------------
 await page.click('[data-act="start-plan"]');
-await page.waitForSelector(".plan-list", { timeout: 5000 });
+await page.waitForSelector("#modalBody .plan-list", { timeout: 5000 });
 const planText = await page.locator("#modalBody").innerText();
 ok("Start My Plan builds a sequence with a total", /About \d+ min|About \d+ hr/.test(planText));
-ok("each plan step says why it's there", (await page.locator(".plan-list li small").count()) > 0);
+ok(
+  "each plan step says why it's there",
+  (await page.locator("#modalBody .plan-list li small").count()) > 0,
+);
 await page.click('[data-act="close-modal"]');
 
 // --- Scenario: task -> Start -> focus session ----------------------------
@@ -200,6 +206,21 @@ const topId = await page
 // Math Workbench pill, exactly as a real tap would.
 await page.locator(`.today-list input[data-id="${topId}"]`).click();
 await page.waitForTimeout(600);
+// Finishing real homework now asks the one question that matters: did you
+// actually turn it in? (The single most common middle-school failure.)
+const askedSubmission = await page
+  .locator('#modalBody [data-act="mark-submitted"]')
+  .isVisible()
+  .catch(() => false);
+ok("finishing homework asks whether it was submitted", askedSubmission);
+if (askedSubmission) {
+  await page.click('[data-act="submit-later"]');
+  await page.waitForTimeout(500);
+  const reminded = await page.evaluate(() =>
+    window.__FOCUS_SCHOOL_TEST__.getState().reminders.some((r) => /turn in/i.test(r.text)),
+  );
+  ok("'not yet' creates a school reminder to turn it in", reminded);
+}
 const completed = await page.evaluate(
   (id) =>
     (window.__FOCUS_SCHOOL_TEST__.getState().assignments.find((a) => a.id === id) || {}).status,
@@ -421,6 +442,156 @@ for (const [name, width, height] of [
   const nextVisible = await page.locator("#hero .now-title, .nextup h2").first().isVisible();
   ok(`${name} (${width}px): Next Up stays visible`, nextVisible);
 }
+
+// --- Phase II: the legacy card board is demoted, not deleted -------------
+await page.click('[data-act="nav"][data-arg="home"]');
+await page.waitForTimeout(400);
+const drawer = page.locator(".board-drawer");
+ok(
+  "the old card board is collapsed below Today, not competing with it",
+  (await drawer.count()) === 1,
+);
+ok("...and it is closed by default", !(await drawer.evaluate((el) => el.hasAttribute("open"))));
+await drawer.locator("> summary").click();
+await page.waitForTimeout(300);
+ok(
+  "...but every old card is still one tap away",
+  (await page.locator(".home-grid .card").count()) > 0,
+);
+
+// --- Phase II: overload is stated plainly, with the fix attached ----------
+await page.evaluate(() => {
+  const api = window.__FOCUS_SCHOOL_TEST__;
+  const s = api.getState();
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  const due = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  for (let i = 0; i < 6; i++) {
+    s.assignments.push({
+      id: `over${i}`,
+      title: `Big task ${i}`,
+      due,
+      estimateMin: 45,
+      status: "todo",
+      kind: "assignment",
+      steps: [],
+      classId: "",
+      priority: "med",
+      createdAt: Date.now(),
+      created: due,
+      plannedDate: "",
+      originalDue: "",
+      planHistory: [],
+      importance: "normal",
+      blocked: null,
+      actualMin: 0,
+      submitted: false,
+      updatedAt: Date.now(),
+    });
+  }
+  api.setState(s);
+});
+await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+await page.click('[data-act="nav"][data-arg="school"]');
+await page.click('[data-act="nav"][data-arg="home"]');
+await page.waitForTimeout(500);
+const overloadText = await page.locator("#main").innerText();
+ok("an overloaded evening says so in plain words", /Tonight is tight/.test(overloadText));
+ok("...and immediately shows what to do instead", /Use this plan/.test(overloadText));
+ok(
+  "...and names what moves, without changing due dates",
+  /Moving to tomorrow|due dates don't change/.test(overloadText),
+);
+ok("it never shouts a raw overdue count", !/\d+ TASKS OVERDUE/i.test(overloadText));
+
+// --- Phase II: duplicates are offered, never merged silently -------------
+await page.evaluate(() => {
+  const api = window.__FOCUS_SCHOOL_TEST__;
+  const s = api.getState();
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  const due = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const mk = (id, title) => ({
+    id,
+    title,
+    due,
+    estimateMin: 20,
+    status: "todo",
+    kind: "assignment",
+    steps: [],
+    classId: "c_sci",
+    priority: "med",
+    created: due,
+    plannedDate: "",
+    originalDue: "",
+    planHistory: [],
+    importance: "normal",
+    blocked: null,
+    actualMin: 0,
+    submitted: false,
+    updatedAt: Date.now(),
+  });
+  s.assignments.push(mk("dupA", "Science worksheet"), mk("dupB", "science worksheet"));
+  api.setState(s);
+});
+await page.click('[data-act="nav"][data-arg="school"]');
+await page.click('[data-act="nav"][data-arg="home"]');
+await page.waitForTimeout(500);
+const dupText = await page.locator("#main").innerText();
+ok("a likely duplicate is surfaced for review", /might be the same thing/i.test(dupText));
+ok(
+  "...with Keep both as an equal option",
+  (await page.locator('[data-act="dupe-keep"]').count()) >= 1,
+);
+const beforeMerge = await page.evaluate(
+  () => window.__FOCUS_SCHOOL_TEST__.getState().assignments.length,
+);
+await page.locator('[data-act="dupe-merge"]').first().click();
+await page.waitForTimeout(500);
+const afterMerge = await page.evaluate(
+  () => window.__FOCUS_SCHOOL_TEST__.getState().assignments.length,
+);
+ok(
+  "merging removes exactly one copy",
+  afterMerge === beforeMerge - 1,
+  `${beforeMerge} -> ${afterMerge}`,
+);
+
+// --- Phase II: the MORNING phase is a different screen entirely ----------
+// (An undefined helper in this branch once threw only before school — the
+// after-school path never touched it. Always exercise both.)
+// A fresh context: IndexedDB is shared per-context, so reusing the first one
+// would inherit everything the after-school run wrote.
+const morningCtx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+const morning = await morningCtx.newPage();
+const morningErrors = [];
+morning.on("pageerror", (e) => morningErrors.push(e.message));
+await morning.addInitScript((seed) => {
+  localStorage.setItem("focus-school:state", JSON.stringify(seed));
+  window.__FOCUS_SCHOOL_TEST__ = {};
+}, SEED);
+await morning.clock.install({ time: new Date(new Date().setHours(7, 10, 0, 0)) });
+await morning.goto(BASE, { waitUntil: "domcontentloaded" });
+await morning.waitForSelector("#main", { timeout: 15000 });
+await morning.waitForTimeout(1200);
+const morningText = await morning.locator("#main").innerText();
+ok(
+  "the morning screen renders without throwing",
+  morningErrors.length === 0,
+  morningErrors[0] || "",
+);
+ok(
+  "morning leads with the day ahead, not a homework backlog",
+  /Bring:|First:|No school|Weekend/.test(morningText) || /NEXT UP/.test(morningText),
+  morningText.split("\n").slice(0, 3).join(" / "),
+);
+const morningPhase = await morning.evaluate(() => window.__FOCUS_SCHOOL_TEST__.dayPhase());
+ok(
+  "before school, tonight's workload is not the headline",
+  morningPhase !== "morning" || !/Tonight is tight/.test(morningText),
+  `phase=${morningPhase}`,
+);
+await morningCtx.close();
 
 // --- Console cleanliness --------------------------------------------------
 ok(

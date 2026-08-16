@@ -4597,3 +4597,83 @@ html[data-theme="dark"] .bg-blob-2 {
     transition: none;
   }
 }
+
+/* ==========================================================================
+   Phase II — daily loop, overload, duplicates, demoted card board
+   ========================================================================== */
+
+/* The legacy card board is still fully functional, just no longer competing
+   with Today for attention. */
+.board-drawer,
+.today-later {
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.board-drawer > summary,
+.today-later > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 8px 4px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+.board-drawer > summary::-webkit-details-marker,
+.today-later > summary::-webkit-details-marker {
+  display: none;
+}
+.board-drawer > summary::before,
+.today-later > summary::before {
+  content: "▸";
+  margin-right: 8px;
+  transition: transform 0.15s ease;
+}
+.board-drawer[open] > summary::before,
+.today-later[open] > summary::before {
+  transform: rotate(90deg);
+}
+.board-drawer > summary:focus-visible,
+.today-later > summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Morning: the day ahead, not the backlog. */
+.morning-card {
+  border-left: 5px solid var(--accent);
+}
+
+/* Overload states the problem, then immediately shows the fix. Amber, not red:
+   a tight evening is a planning fact, not a failure. */
+.overload-card {
+  border-left: 5px solid var(--amber-text, #7a4d0a);
+}
+
+.dupe {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.dupe:last-child {
+  border-bottom: 0;
+}
+.dupe p {
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+
+.est-hint {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-drawer > summary::before,
+  .today-later > summary::before {
+    transition: none;
+  }
+}
