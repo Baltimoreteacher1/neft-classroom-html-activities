@@ -226,7 +226,14 @@ body.editorial .btn:focus-visible {
 
 /* ── Sidebar: tighten typography, keep navy ───────────────────────────────── */
 body.editorial .sidebar {
-  background: linear-gradient(180deg, #0e2c4c 0%, var(--navy) 100%);
+  /* Whole-group shell audit, 2026-08-16: was a vertical wash between #0e2c4c and
+     --navy (#12355b) — two shades close enough that the gradient was invisible
+     over 768px of sidebar.
+     Flattened to the DARKER stop, not the lighter one. Flattening to --navy
+     raised the ground under the sidebar's light-grey secondary text and dropped
+     it to 4.32:1, which axe caught. The darker ground keeps every ratio at or
+     above where the gradient's own midpoint had it. */
+  background: #0e2c4c;
   border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
 body.editorial .sidebar-title,

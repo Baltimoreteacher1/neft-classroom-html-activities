@@ -42,23 +42,30 @@
 }
 
 /* ---- Floating Math Workbench ---- */
+/* Whole-group shell audit, 2026-08-16. This floating entry point carried an
+   indigo-to-teal gradient that encoded nothing, a 30px-blur shadow on a 30px-tall
+   control, and a 30px-tall hit target. It floats, so it keeps SOME elevation —
+   that is real depth, not decoration — but a quarter of the shadow, a flat brand
+   fill, and a hit area a finger can find. */
 #nsr-workbench {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  background: linear-gradient(135deg, #4f46e5, #0e8a7d);
+  min-height: 44px;
+  /* #0e8a7d put white at 4.24:1 — the indigo end of the old gradient had been
+     carrying that text. Darkened until white clears 4.5:1 on the flat fill. */
+  background: #0b6f65;
   color: #ffffff;
   border: 2px solid transparent;
   border-radius: 999px;
-  padding: 4px 9px;
+  padding: 4px 12px;
   font-size: 0.68rem;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
-  box-shadow: var(--nsr-shadow);
-  transition:
-    transform 0.12s ease,
-    filter 0.12s ease;
+  box-shadow: 0 2px 6px rgba(10, 25, 50, 0.18);
+  transition: filter 0.12s ease;
 }
 #nsr-workbench:hover {
   filter: brightness(1.1);

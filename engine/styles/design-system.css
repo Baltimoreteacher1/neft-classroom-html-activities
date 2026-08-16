@@ -315,7 +315,10 @@ h4 {
   background: white;
   color: var(--navy);
   border-color: white;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  /* Shell audit 2026-08-16: 18px blur on the active phase button. The state is
+     real and worth showing, but it is already carried by fill and aria-current;
+     the shadow only needs to lift the tab, not float it. */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
   font-weight: 800;
 }
 
@@ -351,7 +354,9 @@ h4 {
 .phase-btn.active .phase-num {
   background: #10b981;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  /* Shell audit 2026-08-16: a coloured glow on a number badge inside an already
+     elevated button — elevation inside elevation, communicating nothing. */
+  box-shadow: none;
 }
 
 .phase-btn.completed .phase-num {
@@ -532,13 +537,15 @@ h4 {
 .btn-primary {
   background: var(--teal-ink);
   color: white;
-  box-shadow: 0 4px 12px rgba(12, 111, 107, 0.32);
+  /* Shell audit 2026-08-16: a primary button sits ON the page, it does not float
+     above it. Enough shadow to separate it from the card, no glow. */
+  box-shadow: 0 1px 3px rgba(12, 111, 107, 0.22);
 }
 
 .btn-primary:hover {
   background: #0a5b58;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(31, 166, 162, 0.4);
+  box-shadow: 0 2px 6px rgba(31, 166, 162, 0.3);
 }
 
 .btn-primary:active {
@@ -1881,14 +1888,24 @@ body.obj-popup-open {
   border-color: var(--teal);
   background: var(--teal-light);
 }
+/* These sit in `.student-info`, a 10% white veil inside the NAVY sidebar, and
+   they were styled dark: --navy text on a barely-lightened navy is 1.18:1, and
+   --muted is 1.54:1. Effectively invisible, and it had been that way for a long
+   time — axe could not measure it because the sidebar behind them was a
+   GRADIENT, and the contrast rule skips backgrounds it cannot resolve to a
+   single colour. Flattening the sidebar in this pass is what made the failure
+   measurable; the text was always unreadable.
+
+   Light text on the dark ground, which is what every other label in this sidebar
+   already does. */
 .student-name-display {
   font-weight: 700;
-  color: var(--navy);
+  color: #ffffff;
   font-size: var(--fs-sm);
 }
 .student-period-display {
   font-size: var(--fs-xs);
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.82);
 }
 
 /* ── Export Toolbar ── */
@@ -5218,7 +5235,9 @@ html.nt-extra-fullpage-open body {
   font-weight: 800;
   font-size: var(--fs-sm);
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(18, 53, 91, 0.3);
+  /* Shell audit 2026-08-16: the Tools button is chrome pinned to the corner,
+     not a floating surface. */
+  box-shadow: 0 1px 4px rgba(18, 53, 91, 0.22);
 }
 .nt-utility-btn:hover {
   filter: brightness(1.15);
