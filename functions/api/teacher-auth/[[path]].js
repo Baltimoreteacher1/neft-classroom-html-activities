@@ -72,9 +72,22 @@ export const onRequest = handler({
     if (request.method === "GET") {
       if (path !== "session") return badRequest("unknown route");
       const teacher = data?.teacher || (await resolveTeacherSession(env, request));
+      /*
+       * `keys` is a COUNT, never a name and never a value.
+       *
+       * When sign-in broke in production, every signal available said the
+       * system was healthy: the endpoint answered, a wrong key returned a
+       * correct 401, and `configured` was true. But `configured` is true when
+       * ANY of the three accepted bindings is set, so "the legacy key is set
+       * and Alba's is missing" and "all three are set" are the same answer —
+       * and the first of those locks a teacher out while reporting health. The
+       * count separates them, and it discloses nothing: an attacker learns how
+       * many keys exist, which they could already assume.
+       */
       return json({
         ok: true,
         configured: acceptedKeys(env).size > 0,
+        keys: acceptedKeys(env).size,
         authenticated: Boolean(teacher),
         teacher: teacher || null,
       });
