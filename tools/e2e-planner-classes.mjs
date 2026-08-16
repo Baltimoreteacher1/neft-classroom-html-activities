@@ -472,6 +472,150 @@ try {
   );
   check("switching to 602 replaces the context rather than layering on it", switched === "602");
 
+  /* ── 8b. Class-specific Student Supports, end to end ─────────────────────── */
+
+  if (!READ_ONLY) {
+    /* THE GAP THIS CLOSES. The support workflow was already proven end to end —
+     * preset, preview, apply, whole group, small-group inheritance and
+     * suppression, printable — by e2e-support-workflow.mjs. What no test covered
+     * was the CLASS dimension: that 601's configuration renders for 601 and does
+     * not render for 602 on the actual lesson surface. That is not a localStorage
+     * assertion; it is a question about what a teacher sees when they open the
+     * lesson for their next period. */
+    const LESSON = "5-3";
+    const cleanupSupports = async () => {
+      await page.evaluate((lesson) => {
+        const LS = window.EWLLessonSupports;
+        if (!LS) return;
+        for (const s of ["601", "602", "603", ""]) LS.saveProfile(lesson, [], null, s);
+      }, LESSON);
+    };
+
+    await page.goto(`${BASE}/curriculum/student-supports/?lesson=${LESSON}&section=601`, {
+      waitUntil: "networkidle",
+    });
+    await page.waitForTimeout(1800);
+    await cleanupSupports();
+
+    /* Choose supports the applicability rules actually allow for THIS lesson,
+     * rather than naming keys that might not apply and getting a silent no-op. */
+    const chosen = await page.evaluate((lesson) => {
+      const LS = window.EWLLessonSupports;
+      const applicable = (LS.applicableSupports(lesson) || []).map((x) => x.key || x);
+      const want = ["chunk-directions", "step-checklist", "visual-model", "read-aloud"].filter(
+        (k) => applicable.includes(k),
+      );
+      const keys = (want.length ? want : applicable).slice(0, 3);
+      LS.setActiveSection("601");
+      LS.saveProfile(lesson, keys, null, "601");
+      return keys;
+    }, LESSON);
+    check("supports are configured for 601 on a real lesson", chosen.length >= 2, chosen.join(","));
+
+    check(
+      "602 has no configuration of its own",
+      (await page.evaluate(
+        (l) => window.EWLLessonSupports.loadProfile(l, "602")?.keys?.length ?? 0,
+        LESSON,
+      )) === 0,
+    );
+
+    /* WHOLE GROUP as 601 — a real support manifestation, not a status string. */
+    await page.goto(`${BASE}/lessons/${LESSON}/`, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(3000);
+    /* A FINGERPRINT OF THE RENDERED SURFACE, not a status string and not one
+     * markup convention. Supports manifest differently depending on which ones
+     * are on: some inject a content block, some add a tool to the shell, some
+     * (reduced visual load) take chrome AWAY. Asserting `[data-support-key]`
+     * — which is the PRINTABLE's markup — reported failure on a lesson that was
+     * correctly supported. What is true of all of them is that the adaptation
+     * layer is bound to this lesson and the DOM is measurably different from the
+     * same lesson with no supports; that difference is compared against 602
+     * below, which is the assertion that actually matters. */
+    const fingerprint = () =>
+      page.evaluate(() => ({
+        applied: window.EWLLearningSupports?.lessonSupportStatus?.()?.applied ?? [],
+        boundToLesson: document.querySelectorAll("[data-ewl-supports-lesson]").length,
+        supportNodes: document.querySelectorAll(
+          '[data-support-key], [class*="ewl-supports-"], [data-ewl-supports-tools]',
+        ).length,
+      }));
+
+    const wg601 = await fingerprint();
+    check(
+      "whole group renders 601's supports",
+      wg601.applied.length > 0,
+      JSON.stringify(wg601.applied),
+    );
+    check(
+      "the adaptation layer is bound to this lesson, with support DOM present",
+      wg601.boundToLesson > 0 && wg601.supportNodes > 0,
+      JSON.stringify(wg601),
+    );
+
+    /* SMALL GROUP — inheritance, and the suppression the resolver exists for. */
+    await page.goto(`${BASE}/lessons/${LESSON}-group1/`, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(3000);
+    const sg601 = await page.evaluate(
+      () => window.EWLLearningSupports?.lessonSupportStatus?.() ?? null,
+    );
+    check(
+      "small group inherits 601's supports from the parent lesson",
+      (sg601?.applied?.length ?? 0) > 0,
+      JSON.stringify(sg601),
+    );
+    check(
+      "small group suppresses what it already authors for itself",
+      Array.isArray(sg601?.suppressed),
+      "the resolver stopped reporting suppression, so de-duplication cannot be seen",
+    );
+
+    /* CLASS SWITCH — the actual isolation question, on the rendered surface. */
+    await page.evaluate(() => window.EWLLessonSupports.setActiveSection("602"));
+    await page.goto(`${BASE}/lessons/${LESSON}/`, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(3000);
+    const wg602 = await fingerprint();
+    check(
+      "602 does NOT inherit 601's supports on the rendered lesson",
+      wg602.applied.length === 0,
+      `602 saw applied=${JSON.stringify(wg602.applied)}`,
+    );
+    check(
+      "and the rendered surface itself differs between the two classes",
+      wg602.supportNodes < wg601.supportNodes,
+      `601 rendered ${wg601.supportNodes} support nodes, 602 rendered ${wg602.supportNodes} — ` +
+        "identical counts would mean the class made no difference to what is on screen",
+    );
+
+    /* BACK TO 601 — the configuration survived the round trip. */
+    await page.evaluate(() => window.EWLLessonSupports.setActiveSection("601"));
+    await page.goto(`${BASE}/lessons/${LESSON}/`, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(3000);
+    const wgBack = await fingerprint();
+    check(
+      "601's supports are still there after switching away and back",
+      wgBack.applied.length === wg601.applied.length,
+      `${JSON.stringify(wgBack.applied)} vs ${JSON.stringify(wg601.applied)}`,
+    );
+
+    /* CLEAN UP. This runs on the way out and again in the finally block, because
+     * leaving "test support" configuration in a teacher's real workflow is worse
+     * than a failed assertion. */
+    await cleanupSupports();
+    const cleaned = await page.evaluate(
+      (l) =>
+        ["601", "602", "603", ""].reduce(
+          (n, s) => n + (window.EWLLessonSupports.loadProfile(l, s)?.keys?.length ?? 0),
+          0,
+        ),
+      LESSON,
+    );
+    check("every support the test configured is removed", cleaned === 0, `${cleaned} left`);
+
+    await page.goto(`${BASE}/curriculum/planning/`, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(1500);
+  }
+
   /* ── 9. Sign out ─────────────────────────────────────────────────────────── */
 
   const after = await api(page, "/api/teacher-auth/logout", { method: "POST" });

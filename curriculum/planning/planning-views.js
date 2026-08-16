@@ -339,9 +339,13 @@ export function supportStatus(lessonId, section) {
   if (!LS || typeof LS.loadProfile !== "function") return null;
   try {
     const profile = LS.loadProfile(lessonId, section);
-    if (!profile) return { count: 0 };
-    const keys = Object.keys(profile).filter((k) => k !== "lessonId" && profile[k] === true);
-    return { count: keys.length };
+    /* A profile stores its supports in `keys`, an ARRAY — not as boolean
+     * properties on the profile object. Counting truthy own-properties (the
+     * first version of this) counted `schemaVersion` and `lessonId` and missed
+     * every actual support, so the planner reported "No supports configured" for
+     * a lesson that had five. */
+    const keys = Array.isArray(profile?.keys) ? profile.keys : [];
+    return { count: keys.length, preset: profile?.preset ?? null };
   } catch {
     return null;
   }
