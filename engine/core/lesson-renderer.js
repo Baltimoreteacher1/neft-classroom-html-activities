@@ -463,6 +463,18 @@ function buildVisual(v) {
           "Interactive distribution explorer. Turn on JavaScript to build a data set and see the mean, median, and mode.",
       });
     }
+    case "prism-volume": {
+      const unit = String(v.unit || "units");
+      const dims = `${v.l ?? 2} by ${v.w ?? 1.5} by ${v.h ?? 1} ${unit}`;
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          `Interactive rectangular prism, ${dims}. Change any edge by one half at a time and read ` +
+          `the volume as base area times height, and as length times width times height.`,
+        fallback:
+          `Volume builder for a rectangular prism ${dims}. Turn on JavaScript to change the edges ` +
+          `and see the base area and the volume.`,
+      });
+    }
     case "cross-section": {
       const shapeName = String(v.shape || "rectangular-prism").replace(/-/g, " ");
       return interactiveVisualHost(v, {

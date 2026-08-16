@@ -468,6 +468,24 @@ const RAW = {
       "Two partners read the same three figures and name the parts out loud — base, height, and " +
       "why the height has to meet the base at a right angle.",
   },
+  prismVolumeContent: {
+    shows: ["prism"],
+    alt:
+      "A 3D isometric rectangular prism 2 feet long, 1.5 feet wide and 1 foot tall, with its bottom " +
+      "face shaded and divided into half-foot squares. Two steps read: base area B = 2 × 1.5 = 3 " +
+      "square feet, then volume V = B × 1 = 3 cubic feet, which is the same as 2 × 1.5 × 1.",
+    scene:
+      "A rectangular prism stands with its base shaded, showing how the base area of 3 square feet stacked 1 foot high gives a volume of 3 cubic feet.",
+  },
+  prismVolumeTalk: {
+    shows: ["prism"],
+    alt:
+      "The same prism with its shaded base and two partners drawn beneath it. Their speech bubbles say " +
+      "the base is the face the prism sits on with an area of 2 × 1.5 = 3 square feet, and that stacking " +
+      "that base 1 foot high gives 3 cubic feet, the same as 2 × 1.5 × 1.",
+    scene:
+      "Two partners talk through the prism's shaded base and its height out loud — base area, height, cubic feet, and why base area × height gives the same volume as length × width × height.",
+  },
   solidsContent: {
     shows: ["net", "prism"],
     alt:

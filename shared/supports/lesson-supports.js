@@ -292,7 +292,7 @@
         may: ["reduce fact-recall load so the reasoning stays in view"],
         mustNot: ["be offered where fact recall IS the objective"],
       },
-      requires: function (entry, ctx) {
+      requires: function (_entry, ctx) {
         return !(ctx && ctx.factRecallIsObjective);
       },
     },
@@ -319,7 +319,7 @@
         may: ["remove computation load from a lesson whose objective is reasoning"],
         mustNot: ["be offered where the computation IS the objective"],
       },
-      requires: function (entry, ctx) {
+      requires: function (_entry, ctx) {
         return !(ctx && ctx.computationIsObjective);
       },
     },

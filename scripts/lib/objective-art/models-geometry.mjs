@@ -298,6 +298,58 @@ export function solids() {
   return s;
 }
 
+// ── Volume of a Rectangular Prism: base area × height ───────────────────────
+// A SEPARATE model from solids() on purpose. 6.GR.2 (volume) and 6.GR.4
+// (surface area / nets) shared one picture, so lesson 5-10 — volume with
+// FRACTIONAL edges, taught as base area × height — opened on a prism beside its
+// unfolded net with SA = 2(lw + lh + wh) printed next to it, in 8 × 4 × 5 whole
+// inches it never uses. This draws the lesson's own capsule, its base shaded as
+// the B in V = Bh, and nothing about surface area.
+export function prismVolume() {
+  let s = T(600, 48, 30, C.navy, "Volume = base area × height", { weight: 800 });
+
+  // Isometric prism. Base (z = 0) is the shaded quadrilateral; the body rises
+  // from it so "stack the base up the height" is the picture, not a caption.
+  const baseTop = "150,300 330,300 420,250 240,250"; // the shaded base face
+  s += poly("150,180 330,180 420,130 240,130", { fill: "#fff", stroke: C.navy, sw: 2.5 });
+  s += poly("330,180 420,130 420,250 330,300", { fill: C.tealLight, stroke: C.navy, sw: 2.5 });
+  s += poly("150,180 330,180 330,300 150,300", { fill: C.tealLight, stroke: C.navy, sw: 2.5 });
+  s += poly(baseTop, { fill: C.amberLight, stroke: C.amber, sw: 3.5 });
+
+  // Half-unit grid on the base: the 1.5 ft edge is a visible one-and-a-half.
+  s += ln(210, 300, 300, 250, { stroke: C.amber, sw: 1.5 });
+  s += ln(270, 300, 360, 250, { stroke: C.amber, sw: 1.5 });
+  s += ln(150, 275, 330, 275, { stroke: C.amber, sw: 1.5 });
+
+  s += arrow(150, 330, 330, 330, { stroke: C.navy, sw: 2 });
+  s += T(240, 392, 24, C.navy, "l = 2 ft", { weight: 800 });
+  s += arrow(130, 180, 130, 300, { stroke: C.navy, sw: 2 });
+  s += T(96, 246, 24, C.navy, "h = 1 ft", { weight: 800 });
+  s += arrow(344, 310, 430, 262, { stroke: C.navy, sw: 2 });
+  s += T(424, 320, 24, C.navy, "w = 1.5 ft", { weight: 800 });
+
+  s += chip(760, 130, "Step 1 — shade the base", {
+    fill: C.amberLight,
+    stroke: C.amber,
+    textFill: C.amberInk,
+    size: 26,
+  });
+  s += T(760, 190, 28, C.navy, "B = l × w = 2 × 1.5", { weight: 800 });
+  s += T(760, 230, 28, C.amberInk, "B = 3 square feet", { weight: 800 });
+
+  s += chip(760, 296, "Step 2 — stack it up the height", {
+    fill: C.tealLight,
+    stroke: C.teal,
+    textFill: C.tealInk,
+    size: 26,
+  });
+  s += T(760, 356, 28, C.navy, "V = B × h = 3 × 1", { weight: 800 });
+  s += T(760, 396, 28, C.tealInk, "V = 3 cubic feet (ft³)", { weight: 800 });
+
+  s += T(760, 446, 24, C.muted, "same as l × w × h = 2 × 1.5 × 1 = 3", { weight: 700 });
+  return s;
+}
+
 export const GEOMETRY_MODELS = {
   rationalNumberLine,
   integers,
@@ -305,4 +357,5 @@ export const GEOMETRY_MODELS = {
   quadrants,
   distance,
   solids,
+  prismVolume,
 };

@@ -23,12 +23,14 @@ import assert from "node:assert/strict";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  elementKey,
   extractElements,
   labelContextMisses,
   lessonNumbers,
   lessonText,
   loadStandardTopics,
   readFleet,
+  resolvedLearnItElement,
   TOOL_TOPICS,
   toolNumbers,
   topicAgrees,
@@ -41,8 +43,8 @@ const fleet = readFleet(ROOT);
 const byId = new Map(fleet.map((l) => [l.id, l]));
 
 let passed = 0;
-function t(name, fn) {
-  fn();
+async function t(name, fn) {
+  await fn();
   passed++;
   console.log(`  ok  ${name}`);
 }
@@ -52,7 +54,7 @@ const bareNumbers = (id) => lessonNumbers(withoutInteractives(byId.get(id).confi
 
 /* ── The fleet is actually being read ──────────────────────────────────────── */
 
-t("the sweep sees the whole fleet, not a subset", () => {
+await t("the sweep sees the whole fleet, not a subset", () => {
   assert.equal(fleet.filter((l) => l.canonical).length, 84, "canonical lesson count moved");
   assert.equal(fleet.filter((l) => !l.canonical).length, 204, "variant count moved");
   const elements = fleet.reduce((n, l) => n + extractElements(l.config).length, 0);
@@ -64,7 +66,7 @@ t("the sweep sees the whole fleet, not a subset", () => {
 
 /* ── Cross-lesson leakage ──────────────────────────────────────────────────── */
 
-t("a label from another lesson is detected as foreign", () => {
+await t("a label from another lesson is detected as foreign", () => {
   // 5-6 is surface area of a gift box; 7-3 is absolute value at sea level.
   // Nothing about one belongs in the other.
   const giftBox = { label: "Gift Box Face Pairs in square inches" };
@@ -75,7 +77,7 @@ t("a label from another lesson is detected as foreign", () => {
   assert.ok(foreign.includes("gift"), `expected "gift" to be foreign to 7-3, got ${foreign}`);
 });
 
-t("numbers from another lesson are detected as foreign", () => {
+await t("numbers from another lesson are detected as foreign", () => {
   // 5-7's chest is 3 x 2 x 2 ft with a 32 sq ft surface; 2-1 is a statistics
   // lesson that never mentions any of it.
   const chest = { kind: "bar-chart", a: 12, b: 8, total: 32 };
@@ -85,7 +87,7 @@ t("numbers from another lesson are detected as foreign", () => {
   assert.ok(there.length < here.length, "a foreign lesson matched the numbers just as well");
 });
 
-t("the leak that shipped is caught, in the lesson it shipped in", () => {
+await t("the leak that shipped is caught, in the lesson it shipped in", () => {
   // Verbatim, as it was in production.
   const shipped = {
     kind: "area-morph",
@@ -107,7 +109,107 @@ t("the leak that shipped is caught, in the lesson it shipped in", () => {
   );
 });
 
-t("no lesson currently mounts a tool whose topic contradicts its standard", () => {
+await t("a manip widget is known by its widget name, not by the bridge", () => {
+  // The `kind:"manip"` bridge made every shared/projects widget arrive as the
+  // single key "manip", which is absent from TOOL_TOPICS and therefore exempt
+  // from the topic detector. Lesson 5-10 shipped through that hole.
+  assert.equal(elementKey({ kind: "manip", manip: "cube-builder" }), "manip:cube-builder");
+  assert.equal(elementKey({ kind: "prism-volume" }), "prism-volume");
+  assert.ok(TOOL_TOPICS["manip:cube-builder"], "the widget has no topic, so it is still invisible");
+});
+
+await t("5-10's shipped tank builder is caught against 5-10's own standard", () => {
+  // Verbatim, as it was in production: whole-number steppers and an open-top
+  // SURFACE AREA readout, in a lesson whose objective is volume with fractional
+  // edges. 6.GR.2 is `volume`; the widget also claims `surface-area`, which is
+  // 6.GR.4 — lesson 5-6's mathematics, not this lesson's.
+  const shipped = { kind: "manip", manip: "cube-builder", attrs: { unit: "in", mode: "tank" } };
+  assert.equal(elementKey(shipped), "manip:cube-builder");
+  assert.deepEqual(TOOL_TOPICS["manip:cube-builder"], ["volume", "surface-area"]);
+  assert.deepEqual(TOOL_TOPICS["prism-volume"], ["volume"]);
+  const config = byId.get("5-10").config;
+  assert.ok(
+    !extractElements(config).some((el) => el.key === "manip:cube-builder"),
+    "5-10 mounts the tank builder again",
+  );
+  assert.ok(
+    extractElements(config).some((el) => el.key === "prism-volume"),
+    "5-10 no longer mounts a volume tool",
+  );
+});
+
+await t("the RESOLVED Learn It tool is audited, not just authored ones", async () => {
+  // Almost no lesson authors its Learn It tool; the ladder in
+  // engine/core/lesson-tool-resolver.js chooses it. That made the tool students
+  // spend the most time with the one thing this audit could not see.
+  const el = await resolvedLearnItElement({
+    standard: "6.GR.2",
+    title: "Volume of Rectangular Prisms",
+  });
+  assert.equal(el.length, 1, "the resolved Learn It tool is no longer collected");
+  assert.equal(el[0].key, "prism-volume");
+  assert.equal(el[0].source, "resolved");
+});
+
+await t("a lesson the ladder cannot identify is reported, not silently defaulted", async () => {
+  const el = await resolvedLearnItElement({ standard: "MPP.3", title: "Math is Mine" });
+  assert.equal(el[0].source, "fallback", "the unsafe-fallback marker has stopped being set");
+});
+
+await t("a lesson may declare that it wants no interactive", async () => {
+  const el = await resolvedLearnItElement({
+    standard: "MPP.7",
+    title: "Math is Beauty",
+    launch: { conceptIntro: { interactiveVisual: "none" } },
+  });
+  assert.deepEqual(el, [], "an explicit no-interactive declaration is being overridden");
+});
+
+await t(
+  "an authored choice beats the keyword ladder, at the path a config actually uses",
+  async () => {
+    // The runtime read cfg.conceptIntro.interactiveVisual and the audit read
+    // cfg.launch.conceptIntro.interactiveVisual, so the escape hatch was
+    // unreachable and the two disagreed about what a lesson had chosen.
+    const authored = { kind: "tape-diagram", label: "authored" };
+    const el = await resolvedLearnItElement({
+      standard: "6.GR.2",
+      title: "Volume of Rectangular Prisms",
+      launch: { conceptIntro: { interactiveVisual: authored } },
+    });
+    assert.equal(el[0].key, "tape-diagram", "the authored Learn It tool is being ignored");
+    assert.equal(el[0].source, "resolved");
+  },
+);
+
+await t("validator and runtime resolve the same tool for every canonical lesson", async () => {
+  // The consistency property, stated once. Both sides go through
+  // engine/core/lesson-tool-resolver.js on purpose: a validator that approves a
+  // configuration the runtime ignores is worse than no validator, and that is
+  // exactly the shape of the 5-10 defect.
+  const { resolveInteractiveToolForLesson } = await import(
+    "../engine/core/lesson-tool-resolver.js"
+  );
+  let checked = 0;
+  for (const lesson of fleet) {
+    if (!lesson.canonical) continue;
+    const runtime = resolveInteractiveToolForLesson(lesson.config);
+    const audited = await resolvedLearnItElement(lesson.config);
+    if (runtime == null) {
+      assert.deepEqual(audited, [], `${lesson.id}: runtime mounts nothing, the audit sees a tool`);
+    } else {
+      assert.equal(
+        audited[0]?.key,
+        elementKey(runtime),
+        `${lesson.id}: the audit and the runtime disagree about the Learn It tool`,
+      );
+    }
+    checked++;
+  }
+  assert.ok(checked > 50, `only ${checked} lessons compared — the sweep found almost nothing`);
+});
+
+await t("no lesson currently mounts a tool whose topic contradicts its standard", () => {
   const bad = [];
   for (const lesson of fleet) {
     for (const el of extractElements(lesson.config)) {
@@ -121,7 +223,7 @@ t("no lesson currently mounts a tool whose topic contradicts its standard", () =
 
 /* ── Variant drift ─────────────────────────────────────────────────────────── */
 
-t("no variant points at different mathematics from its parent", () => {
+await t("no variant points at different mathematics from its parent", () => {
   // Differentiation is protected: a variant may use a MORE CONCRETE tool than its
   // parent, and a different `kind` in the same slot is expected and fine. What is
   // not fine is a variant whose tool serves a topic the parent's mathematics
@@ -141,7 +243,7 @@ t("no variant points at different mathematics from its parent", () => {
   assert.deepEqual(drift, [], `variants drifted from their parent's mathematics: ${drift}`);
 });
 
-t("a variant inheriting a corrected parent tool has the corrected one", () => {
+await t("a variant inheriting a corrected parent tool has the corrected one", () => {
   const parent = extractElements(byId.get("1-4").config).find((e) => e.slot === "practice.diagram");
   for (const id of ["1-4-group1", "1-4-group2"]) {
     const child = extractElements(byId.get(id).config).find((e) => e.slot === "practice.diagram");
@@ -152,14 +254,14 @@ t("a variant inheriting a corrected parent tool has the corrected one", () => {
 
 /* ── The detectors' own honesty ────────────────────────────────────────────── */
 
-t("an unknown tool kind or standard yields no opinion, never a false pass claim", () => {
+await t("an unknown tool kind or standard yields no opinion, never a false pass claim", () => {
   assert.equal(topicAgrees("some-new-widget", "6.GR.1", topics), true);
   assert.equal(topicAgrees("area-morph", "NOT.A.STANDARD", topics), true);
   // A practice standard constrains no representation, so it must not flag.
   assert.equal(topicAgrees("area-morph", "MPP.3", topics), true);
 });
 
-t("every topic named in TOOL_TOPICS exists in the standards registry", () => {
+await t("every topic named in TOOL_TOPICS exists in the standards registry", () => {
   const known = new Set(topics.values());
   const unknown = new Set();
   for (const list of Object.values(TOOL_TOPICS)) {
@@ -168,7 +270,7 @@ t("every topic named in TOOL_TOPICS exists in the standards registry", () => {
   assert.deepEqual([...unknown], [], `TOOL_TOPICS names topics no standard has: ${[...unknown]}`);
 });
 
-t("stripping interactives does not damage the rest of the lesson", () => {
+await t("stripping interactives does not damage the rest of the lesson", () => {
   const full = byId.get("1-4").config;
   const bare = withoutInteractives(full);
   assert.equal(bare.title, full.title);

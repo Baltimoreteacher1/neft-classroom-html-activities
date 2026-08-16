@@ -93,6 +93,7 @@ export const TOPICS = {
   quadrants: { content: "quadrantsContent", language: "quadrantsTalk" },
   distance: { content: "distanceContent", language: "distanceTalk" },
   planeArea: { content: "planeAreaContent", language: "planeAreaTalk" },
+  prismVolume: { content: "prismVolumeContent", language: "prismVolumeTalk" },
   solids: { content: "solidsContent", language: "solidsTalk" },
 };
 
@@ -147,7 +148,10 @@ const BY_STANDARD = {
   "6.DS.6c": { topic: "mad" },
   "6.DS.6d": { topic: "centre" },
   "6.GR.1": { topic: "planeArea" },
-  "6.GR.2": { topic: "solids" },
+  // 6.GR.2 is VOLUME and 6.GR.4 is surface area and nets. They pointed at one
+  // picture — a prism beside its unfolded net with SA = 2(lw + lh + wh) — so a
+  // volume lesson opened on the next lesson's formula. Separated 2026-08-16.
+  "6.GR.2": { topic: "prismVolume" },
   "6.GR.4": { topic: "solids" },
 };
 

@@ -74,6 +74,21 @@ else
   echo "⚠ curriculum/math-workbench/ not found in origin/main — skipping vendor." >&2
 fi
 
+# --- vendor the shared assets index.html references --------------------------
+# focus-school/index.html loads /assets/formula-popup.js. On noam's own Pages
+# project that path does not exist, so Pages serves the SPA fallback (HTML) and
+# the browser refuses the script on strict MIME checking — a console error on
+# every page load. Copy it at deploy time so the root repo stays the single
+# source of truth (no committed duplicate to drift).
+mkdir -p "$WT/$APP_DIR/assets"
+for shared in formula-popup.js; do
+  if [ -f "$WT/assets/$shared" ]; then
+    cp "$WT/assets/$shared" "$WT/$APP_DIR/assets/$shared"
+  else
+    echo "⚠ assets/$shared not found in origin/main — noam will 404 it." >&2
+  fi
+done
+
 # --- cache hygiene check ----------------------------------------------------
 # An unchanged SW VERSION with a CHANGED bundle is a broken release: installed
 # PWAs keep serving the old precached app.js indefinitely. Detect it by

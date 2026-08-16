@@ -56,6 +56,7 @@ import {
   lessonText,
   loadStandardTopics,
   readFleet,
+  resolvedLearnItElement,
   SECTION_ORDER,
   TOOL_TOPICS,
   toolNumbers,
@@ -140,14 +141,26 @@ const fleet = readFleet(ROOT);
 if (fleet.length === 0) fail("no lessons were read — the sweep found nothing to audit");
 
 const flagged = [];
+// Every (lesson, slot, kind) that actually exists. A review entry naming
+// something absent from this set is a decision about a tool that is not there —
+// an invalid mapping, not a deliberate examination.
+const presentKeys = new Set();
 let elementCount = 0;
 const kinds = new Set();
 
+let fallbackCount = 0;
+let noneCount = 0;
 for (const lesson of fleet) {
   const bare = withoutInteractives(lesson.config);
   const numbers = lessonNumbers(bare);
   const text = lessonText(bare);
-  for (const element of extractElements(lesson.config)) {
+  // Canonical lessons only for the RESOLVED tool: variants inherit the parent's
+  // standard and title, so the ladder returns the parent's answer three more
+  // times and reports one mapping as four.
+  const resolved = lesson.canonical ? await resolvedLearnItElement(lesson.config) : [];
+  if (lesson.canonical && !resolved.length) noneCount++;
+  if (resolved[0]?.source === "fallback") fallbackCount++;
+  for (const element of [...extractElements(lesson.config), ...resolved]) {
     elementCount++;
     kinds.add(element.key);
     const flags = [];
@@ -166,9 +179,32 @@ for (const lesson of fleet) {
       );
     }
 
-    const misses = labelContextMisses(element.config, text);
-    if (misses.length)
-      flags.push(`context: label says "${misses.join('", "')}", the lesson does not`);
+    // CONTEXT applies to AUTHORED labels only. Its premise is that a label
+    // naming a scenario the lesson never mentions was copied from another
+    // lesson ("Garden footprint" in a cereal-box lesson). A resolved tool's
+    // label is a UI title naming the WIDGET — "Interactive Expression Step
+    // Solver" — not a claim about this lesson's story, and checking those words
+    // against the lesson text flagged twenty correct tools for containing the
+    // word "solver". A detector that has to be ignored twenty times is a
+    // detector nobody reads.
+    if (element.source === "authored") {
+      const misses = labelContextMisses(element.config, text);
+      if (misses.length)
+        flags.push(`context: label says "${misses.join('", "')}", the lesson does not`);
+    }
+
+    // An unsafe fallback is a finding in its own right, even when its topic
+    // happens not to contradict the standard — which for the MPP practice
+    // standards it never can, because they carry no topic at all. "No opinion"
+    // is not the same as "reviewed", and a tool nobody chose is the class of
+    // defect this whole audit exists for.
+    if (element.source === "fallback") {
+      flags.push(
+        `fallback: no standard or keyword matched, so ${element.key} was mounted by default`,
+      );
+    }
+
+    presentKeys.add(`${lesson.id}|${element.slot}|${element.key}`);
 
     if (flags.length) {
       flagged.push({ lessonId: lesson.id, slot: element.slot, key: element.key, flags });
@@ -243,6 +279,12 @@ for (const [key, entry] of reviewed) {
     fail(`review entry ${key} names a lesson that no longer exists`);
     continue;
   }
+  if (!presentKeys.has(key)) {
+    fail(
+      `review entry ${key} names an element the lesson no longer mounts — the tool was removed, so remove the entry (its reasoning belongs wherever the removal is recorded)`,
+    );
+    continue;
+  }
   // Entries a human wrote for an UNflagged element are allowed and valuable —
   // that is a deliberate examination, not a stale absolution. Only entries whose
   // stated purpose was to excuse a detector flag are checked here.
@@ -265,6 +307,10 @@ if (failures.length) {
   process.exit(1);
 }
 
+console.log(
+  `   resolved Learn It tools: ${canonical} canonical lessons · ` +
+    `${fallbackCount} unsafe fallback assignment(s) · ${noneCount} deliberately no-interactive`,
+);
 console.log(
   `✓ interactive alignment holds — ${elementCount} elements across ${canonical} canonical lessons ` +
     `and ${variants} variants, ${kinds.size} kinds, ${flagged.length} flagged and ${reviewed.size} reviewed.\n` +

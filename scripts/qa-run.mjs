@@ -202,7 +202,16 @@ const COVERAGE = [
       "audit:homework",
       // a config edit is how an image stops being referenced
       "validate:reveal-assets",
+      // vocabulary, the objective and the worked example all live here, and
+      // scope drift is a change to one of them without the others
+      "validate:interactive-alignment",
+      "validate:learn-it-scope",
     ],
+  ],
+  // the two scope audits and the artifacts they read
+  [
+    /^(tools\/(lib\/)?(interactive-alignment|learn-it-scope)[.a-z-]*\.mjs|data\/(interactive-alignment|learn-it-scope)-review\.json)$/,
+    ["test", "validate:interactive-alignment", "validate:learn-it-scope", "check"],
   ],
   // must precede the generic /^lessons\// rule below — first match wins
   [/^lessons\/[^/]+\/reveal-assets\//, ["validate:reveal-assets"]],

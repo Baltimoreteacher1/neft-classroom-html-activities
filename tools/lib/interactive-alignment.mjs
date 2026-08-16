@@ -49,6 +49,25 @@ export function toolsModeSlots(root) {
 
 /* ── Extraction ────────────────────────────────────────────────────────────── */
 
+/**
+ * The name this audit knows a mounted element by.
+ *
+ * `kind: "manip"` is a BRIDGE, not a tool: engine/core/interactive-visual.js
+ * routes it to whichever `shared/projects/manip-<name>.js` widget the sibling
+ * `manip` field names, so every one of them arrived here as the single key
+ * "manip" — absent from TOOL_TOPICS, therefore domain-neutral, therefore never
+ * flagged on topic grounds. That hole is not hypothetical: lesson 5-10
+ * ("Volume of Rectangular Prisms", 6.GR.2, fractional edges, base area ×
+ * height) shipped `manip:cube-builder` in TANK mode, whose steppers truncate to
+ * whole numbers and whose readout prints the open-top SURFACE AREA of five
+ * glass faces — 6.GR.4 mathematics the lesson does not teach and cannot use.
+ * The topic detector could not see it, because the tool never told it its name.
+ */
+export function elementKey(node) {
+  if (node.kind === "manip" && typeof node.manip === "string") return `manip:${node.manip}`;
+  return node.kind;
+}
+
 /** Every interactive element in a lesson config, with where it came from. */
 export function extractElements(config) {
   const out = [];
@@ -61,7 +80,7 @@ export function extractElements(config) {
     const fingerprint = `${slot}|${node.kind}|${JSON.stringify(node)}`;
     if (seen.has(fingerprint)) return;
     seen.add(fingerprint);
-    out.push({ slot, key: node.kind, source, config: node });
+    out.push({ slot, key: elementKey(node), source, config: node });
   };
 
   for (const section of SECTION_ORDER) {
@@ -83,6 +102,37 @@ export function extractElements(config) {
     push(config?.[key], key, "authored");
   }
   return out;
+}
+
+/**
+ * The Learn It tool a student is ACTUALLY handed, resolved through the same
+ * module the browser runs.
+ *
+ * extractElements() above sees only what a lesson AUTHORED, and almost no
+ * lesson authors its Learn It tool — that one is chosen by the standard/keyword
+ * ladder in engine/core/lesson-tool-resolver.js. So the tool most students
+ * spend the most time with was the one thing this audit could not see, and
+ * lesson 5-10's cube-with-a-net came from exactly there.
+ *
+ * `source: "resolved"` distinguishes it from an authored element, and
+ * `fallback: true` marks a lesson the ladder could not identify at all — it
+ * matched no standard and no keyword and was handed the default anyway.
+ * Returns [] when the lesson declares it wants no interactive.
+ */
+export async function resolvedLearnItElement(config) {
+  const { resolveInteractiveToolForLesson } = await import(
+    "../../engine/core/lesson-tool-resolver.js"
+  );
+  const tool = resolveInteractiveToolForLesson(config);
+  if (!tool || typeof tool !== "object" || typeof tool.kind !== "string") return [];
+  return [
+    {
+      slot: "launch.conceptIntro:resolved",
+      key: elementKey(tool),
+      source: tool.fallback ? "fallback" : "resolved",
+      config: tool,
+    },
+  ];
 }
 
 /* ── Evidence 1: the numbers the lesson actually uses ──────────────────────── */
@@ -283,6 +333,43 @@ export function labelContextMisses(toolConfig, text) {
  * means "no opinion", never "aligned".
  */
 export const TOOL_TOPICS = {
+  // Kinds the RESOLVER produces. Before lesson-tool-resolver.js was extracted,
+  // nothing outside a browser could ask which tool a lesson actually gets, so
+  // these nine were never audited at all — the topic detector only ever saw
+  // tools a lesson had authored, and most lessons author none. Each topic below
+  // was read off the lessons the resolver routes to it, not off the tool's name.
+  "equation-balance-lab": ["inequalities", "expressions"],
+  "stats-data-lab": ["statistics"],
+  "box-plot-builder": ["statistics"],
+  "unit-rate-builder": ["ratios"],
+  "percent-builder": ["ratios"],
+  "lcm-lab": ["factors"],
+  "factor-tree-lab": ["factors"],
+  "combine-like-terms": ["expressions"],
+  "distributive-builder": ["expressions"],
+  // Exponents AND expressions: 6-4 is "Write and Evaluate Numerical Expressions
+  // WITH EXPONENTS" (6.AT.6c, whose standard topic is "expressions") and its
+  // objective says "including powers". The tool is right; the standard's topic
+  // field is coarser than the lesson, as it was for 4-2's fraction bar.
+  "power-builder": ["exponents", "expressions"],
+
+  // Volume as base area × height, with half-unit edges and NO surface area.
+  // Narrow on purpose — see engine/components/prism-volume.js.
+  "prism-volume": ["volume"],
+  // The `shared/projects/manip-*.js` widgets, reached through the `kind:"manip"`
+  // bridge and keyed here by elementKey(). Until 2026-08-16 they all arrived as
+  // the single key "manip" and were therefore invisible to this detector.
+  "manip:cube-builder": ["volume", "surface-area"],
+  "manip:composite-split": ["area"],
+  "manip:frac-divide": ["fractions"],
+  // A part-whole bar. Tagged for ratios as well as fractions because 4-2
+  // ("Relate Fractions, Decimals, and Percentages", 6.AT.4, whose standard topic
+  // is "ratios") shades one half beside two fourths — the tool is exactly right
+  // and the standard's topic field is simply coarser than the lesson.
+  "manip:fraction-bar": ["fractions", "ratios"],
+  "manip:percent-bar": ["ratios"],
+  "manip:ratio-build": ["ratios"],
+  "manip:dot-plot": ["statistics"],
   "area-morph": ["area"],
   "shape-area": ["area"],
   "composite-area": ["area"],
