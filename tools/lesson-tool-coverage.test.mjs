@@ -290,12 +290,31 @@ assert.deepEqual(
  */
 const TOOL_EXEMPT = new Map([
   // lessonId -> why this lesson's mathematics needs no tool in that slot.
-  // Empty today: 1-4, the lesson that motivated this, turned out to have a
-  // genuinely aligned practice tool available (a bar-chart of the two packaging
-  // volumes its argument compares), so it was corrected rather than exempted.
+  [
+    "1-4",
+    "EXPLORE. The Explore task is a drag-sort of KINDS OF ARGUMENT — equations, " +
+      "drawings, words — not a computation, so there is no quantity to manipulate " +
+      "there. The lesson's volume mathematics is carried by the two tools that do " +
+      "belong: prism-volume in Learn It on the lesson's own 8 x 3 x 10 cereal box, " +
+      "and the Practice bar-chart comparing the two packaging options' volumes. It " +
+      "previously held a cross-section slicer on the same box, which showed a third " +
+      "solid-geometry idea (slicing) the lesson never uses and duplicated the solid " +
+      "Learn It already models. This slot is empty because a human chose it.",
+  ],
 ]);
 
-const unexplained = (list) => list.filter((id) => !TOOL_EXEMPT.has(id));
+/**
+ * A variant inherits its parent's exemption.
+ *
+ * Small-group and catch-up lessons are GENERATED from the canonical lesson and
+ * carry its Explore task, so a slot the parent deliberately leaves empty is
+ * empty in all three. Listing `1-4`, `1-4-group1` and `1-4-group2` separately
+ * would be three copies of one decision, and the day a fourth variant kind is
+ * added it would silently fail instead of inheriting.
+ */
+const parentOf = (id) => id.replace(/-(?:group\d+|catchup)$/, "");
+const unexplained = (list) =>
+  list.filter((id) => !TOOL_EXEMPT.has(id) && !TOOL_EXEMPT.has(parentOf(id)));
 
 assert.deepEqual(
   unexplained(noExplore),
