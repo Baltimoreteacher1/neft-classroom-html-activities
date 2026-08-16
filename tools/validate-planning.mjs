@@ -32,7 +32,9 @@ const OWNED_FILES = [
   "curriculum/planning/planning-resources.js",
   "curriculum/planning/planning-export.js",
   "shared/pacing/engine.js",
+  "shared/pacing/sections.js",
   "shared/pacing/xlsx.js",
+  "functions/_lib/pacing-schema.js",
   "functions/api/pacing/[[path]].js",
   "data/pacing-baseline-2026-27.json",
   "tools/validate-planning.mjs",
@@ -255,6 +257,92 @@ for (const [rel, body] of files) {
       `the pacing endpoint references ${word}; this store holds curriculum pacing only`,
     );
   }
+}
+
+/* ── Class awareness ───────────────────────────────────────────────────────────
+ * Three properties that, if they broke, would each be invisible from any single
+ * file and expensive in exactly the way a planner must never be.
+ */
+{
+  const api = files.get("functions/api/pacing/[[path]].js");
+  const store = files.get("curriculum/planning/planning-store.js");
+  const sections = files.get("shared/pacing/sections.js");
+  const schema = files.get("functions/_lib/pacing-schema.js");
+
+  /* 1. ONE PACING ENGINE. Class awareness is composed into the overlay BEFORE
+   * resolveYear sees it; the engine must never learn what a section is, or the
+   * ripple/absorber/lock behaviour would have to be re-validated per class. */
+  const engine = files.get("shared/pacing/engine.js");
+  check(
+    !/\bsection\b/i.test(engine.replace(/\/\*[\s\S]*?\*\//g, "")),
+    "shared/pacing/engine.js mentions a section — the engine must stay class-agnostic, " +
+      "with classes composed into the overlay before resolveYear()",
+  );
+
+  /* 2. EVERY QUERY IS SCOPED. An unscoped SELECT or upsert against pacing_day is
+   * how one class's plan becomes another's, and it reads as a correct query. */
+  for (const m of api.matchAll(/FROM pacing_(day|op|change)\b([\s\S]{0,120})/g)) {
+    /* `GROUP BY section` counts as scoped: an aggregate that reports per-section
+     * totals (the health route) is answering about every layer on purpose, and
+     * cannot leak one class's plan into another's view. */
+    const tail = m[2];
+    check(
+      /section\s*(=|IN)/.test(tail) || /GROUP BY section/.test(tail),
+      `an unscoped query against pacing_${m[1]} in the pacing endpoint — every read must ` +
+        "name a section, or one class will see another's plan",
+    );
+  }
+  check(
+    /INSERT INTO pacing_day \(school_year, section, date/.test(api),
+    "pacing_day writes do not carry a section",
+  );
+
+  /* 3. THE SECTION LIST IS NOT RETYPED. supports-schema.js is the roster source;
+   * sections.js pins a copy; nothing else may invent a fourth list. */
+  const roster = read("assets/learning-supports/supports-schema.js").match(
+    /var SECTIONS = \[([^\]]*)\]/,
+  );
+  check(Boolean(roster), "could not read SECTIONS out of supports-schema.js");
+  if (roster) {
+    const canonical = [...roster[1].matchAll(/"(\d+)"/g)].map((x) => x[1]);
+    const pinned = [
+      ...(sections.match(/SECTIONS = Object\.freeze\(\[([^\]]*)\]/)?.[1] || "").matchAll(
+        /"(\d+)"/g,
+      ),
+    ].map((x) => x[1]);
+    check(
+      canonical.join(",") === pinned.join(","),
+      `shared/pacing/sections.js lists [${pinned}] but the roster says [${canonical}]`,
+    );
+  }
+  for (const [label, source] of [
+    ["planning.js", js],
+    ["planning-store.js", store],
+  ]) {
+    check(
+      !/\[\s*"601"\s*,\s*"602"/.test(source),
+      `${label} hardcodes the class list — import SECTIONS from shared/pacing/sections.js`,
+    );
+  }
+
+  /* 4. THE MIGRATION FAILS CLOSED. A future schema must be refused, not read
+   * with older assumptions, and the endpoint must turn that into a 503. */
+  check(
+    /Refusing to read it/.test(schema),
+    "the schema module no longer refuses a future version — an old reader would misinterpret it",
+  );
+  check(
+    /error: "schema"/.test(api),
+    "the pacing endpoint does not fail closed when the schema cannot be brought up to date",
+  );
+
+  /* 5. THE OUTBOX CARRIES ITS OWN SCOPE. An offline edit must replay into the
+   * class it was made in, not the class selected when the network returns. */
+  check(
+    /section: op\.section/.test(store),
+    "the outbox drains without the section recorded on each queued operation — " +
+      "an offline 601 edit would replay into whichever class is selected later",
+  );
 }
 
 /* -------------------------------------------------------------------------- */

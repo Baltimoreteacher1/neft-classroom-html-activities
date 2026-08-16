@@ -109,7 +109,15 @@ export const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b|(^|[/\\])printable\
 //     holds no student work of its own, so a Save widget on it would offer to
 //     save an empty page — and would sit directly under the "Continue" button,
 //     which is exactly the confusion this screen exists to remove.
+//   - teacher-login/            → the teacher sign-in page. It holds a password
+//     field and nothing else, and Save/Resume exists to preserve STUDENT work.
+//     Injecting the widget here would offer to save a credential form, and would
+//     add two script tags to the one page that must render even when everything
+//     else on the site is broken — it is how a teacher gets back in. Note the
+//     existing `teacher(\/|$)` rule does NOT cover it: that matches a path
+//     SEGMENT called exactly "teacher", and "teacher-login" is a different
+//     segment, which is why this needs its own entry rather than being assumed.
 // (The math/intervention/<topic>/ pages DO carry student self-assessment +
 // quiz state and are intentionally NOT excluded.)
 export const SKIP_PATH_RE =
-  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/(?:intervention|student-board)\/index\.html$|today\/index\.html$)/i;
+  /(^|\/)(?:teacher(\/|$)|teacher-login\/|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/(?:intervention|student-board)\/index\.html$|today\/index\.html$)/i;
