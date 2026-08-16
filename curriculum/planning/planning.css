@@ -842,3 +842,133 @@
   color: var(--ink-soft, #4a5563);
   font-weight: 600;
 }
+
+/* ── Today: planned against actual ─────────────────────────────────────────────
+   These two facts are what the view exists to deliver, so they sit at the top as
+   a pair rather than as two sentences below four lists of links. Neither is
+   labelled "Current" — that word was doing double duty and meant whichever of
+   the two the reader already had in mind. */
+
+.planning-wrap .pp-today-scope {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 0 0 0.75rem;
+}
+
+.planning-wrap .pp-today-class {
+  font-weight: 800;
+  color: var(--navy, #26415e);
+}
+
+.planning-wrap .pp-today-date {
+  color: var(--ink-soft, #4a5563);
+}
+
+.planning-wrap .pp-pa {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+@media (max-width: 30rem) {
+  .planning-wrap .pp-pa {
+    grid-template-columns: 1fr;
+  }
+}
+
+.planning-wrap .pp-pa-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line, #d9dee5);
+  border-radius: 0.6rem;
+  background: var(--surface, #fff);
+}
+
+.planning-wrap .pp-pa-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-soft, #4a5563);
+}
+
+.planning-wrap .pp-pa-value {
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+/* A recorded actual gets a quiet left edge — never a red alarm. A class that
+   finished somewhere other than the plan is ordinary teaching, and the planner
+   should not editorialise about it. */
+.planning-wrap .pp-pa-recorded {
+  border-left: 4px solid var(--navy, #26415e);
+}
+
+/* ── Today: the three places a teacher actually goes ───────────────────────── */
+
+.planning-wrap .pp-go {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+}
+
+.planning-wrap .pp-today-supports {
+  margin: 0 0 1rem;
+  font-weight: 600;
+  color: var(--ink-soft, #4a5563);
+}
+
+.planning-wrap .pp-more {
+  margin-top: 1rem;
+  border-top: 1px solid var(--line, #d9dee5);
+  padding-top: 0.75rem;
+}
+
+.planning-wrap .pp-more > summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+/* ── Units: progress, drift and where the give is ──────────────────────────── */
+
+.planning-wrap .pp-unit-progress {
+  margin: 0.35rem 0 0.4rem;
+}
+
+.planning-wrap .pp-meter {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--line, #d9dee5);
+  overflow: hidden;
+  margin: 0 0 0.6rem;
+}
+
+.planning-wrap .pp-meter-fill {
+  display: block;
+  height: 100%;
+  background: var(--navy, #26415e);
+}
+
+.planning-wrap .pp-unit-variance,
+.planning-wrap .pp-unit-slack {
+  margin: 0 0 0.35rem;
+  font-size: 0.9375rem;
+  color: var(--ink-soft, #4a5563);
+}
+
+/* Reduced motion: nothing here animates, and the meter must not start doing so
+   if a future change adds a transition to shared button styles. */
+@media (prefers-reduced-motion: reduce) {
+  .planning-wrap .pp-meter-fill {
+    transition: none;
+  }
+}

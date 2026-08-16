@@ -140,7 +140,16 @@ export function renderToday(days, index, ui) {
   if (!day) return frag;
 
   const card = el("section", "pp-today");
-  card.appendChild(el("h2", "pp-today-date", longDate(day.date)));
+
+  /* CLASS AND DATE TOGETHER. The scope banner above says which class, but Today
+   * is the view a teacher reads at 7:40am without looking anywhere else, so it
+   * repeats it rather than relying on chrome further up the page. */
+  const head = el("p", "pp-today-scope");
+  head.append(
+    el("span", "pp-today-class", ui.section ? `Class ${ui.section}` : "Shared plan"),
+    el("span", "pp-today-date", longDate(day.date)),
+  );
+  card.appendChild(head);
 
   if (day.schoolStatus !== "school") {
     card.appendChild(el("p", "pp-today-closed", day.calendarNote || day.statusLabel));
@@ -149,6 +158,25 @@ export function renderToday(days, index, ui) {
     frag.appendChild(renderPacingSummary(days, ui));
     return frag;
   }
+
+  /* PLANNED VERSUS ACTUAL, FIRST AND SIDE BY SIDE.
+   *
+   * These used to be two plain sentences at the bottom of the card, below four
+   * lists of links. They are the two facts the whole view exists to deliver —
+   * "what was I going to teach" and "where did this class actually get to" — and
+   * when they disagree that difference is the single most important thing on the
+   * screen. Neither is labelled "Current": that word was doing double duty and
+   * meant whichever of the two the reader already had in mind. */
+  const pair = el("div", "pp-pa");
+  const planned = el("div", "pp-pa-cell");
+  planned.append(el("span", "pp-pa-label", "Planned"), el("strong", "pp-pa-value", titleFor(index, day)));
+  const actual = el("div", "pp-pa-cell");
+  actual.append(el("span", "pp-pa-label", "Actual"), el("strong", "pp-pa-value", statusWord(day)));
+  if (day.actual && day.actual.status && day.actual.status !== "not-yet-taught") {
+    actual.classList.add("pp-pa-recorded");
+  }
+  pair.append(planned, actual);
+  card.appendChild(pair);
 
   const unit = unitNumberOf(index, day);
   if (unit) card.appendChild(el("p", "pp-today-unit", unitLabel(ui.baseline, day, unit)));
@@ -165,30 +193,158 @@ export function renderToday(days, index, ui) {
   }
   card.appendChild(dayChips(day));
 
+  /* THE THREE DIRECT ACTIONS. The planner must not be a dead-end calendar, and
+   * these are the three places a teacher actually goes from it. They are lifted
+   * out of the general resource lists — which remain below, collapsed — because
+   * being one of nine links is not the same as being the thing you came for. */
   const res = resourcesFor(index, day);
-  if (res.whole.length) card.appendChild(linkList(res.whole, "pp-links-primary"));
+  const go = el("div", "pp-go");
+  const primary = res.whole[0];
+  if (primary) {
+    const a = el("a", "pp-btn pp-btn-primary", "Open Whole Group");
+    a.href = primary.href;
+    go.appendChild(a);
+  }
   if (res.smallGroup.length) {
-    card.appendChild(el("h4", "pp-sub", "Small group"));
-    card.appendChild(linkList(res.smallGroup));
+    const a = el("a", "pp-btn", "Small Groups");
+    a.href = res.smallGroup[0].href;
+    go.appendChild(a);
   }
-  if (res.student.length) {
-    card.appendChild(el("h4", "pp-sub", "Student materials"));
-    card.appendChild(linkList(res.student));
+  if (detail?.id) {
+    const a = el("a", "pp-btn", "Student Supports");
+    /* The class travels with the link, so Supports opens on the same class the
+     * planner is showing rather than whatever it last remembered. */
+    a.href = `/curriculum/student-supports/?lesson=${encodeURIComponent(detail.id)}${
+      ui.section ? `&section=${encodeURIComponent(ui.section)}` : ""
+    }`;
+    go.appendChild(a);
   }
-  card.appendChild(el("h4", "pp-sub", "Planning"));
-  card.appendChild(linkList(res.teacher));
+  if (go.childNodes.length) card.appendChild(go);
 
+  /* SUPPORT STATUS — a restrained count, never the editor itself. */
+  const supports = detail?.id ? supportStatus(detail.id, ui.section) : null;
+  if (supports) {
+    card.appendChild(
+      el(
+        "p",
+        "pp-today-supports",
+        supports.count > 0
+          ? `Supports · ${supports.count} active${ui.section ? ` for Class ${ui.section}` : ""}`
+          : "No supports configured for this class and lesson",
+      ),
+    );
+  }
+
+  /* ROUTINE PLANNING ACTIONS, in reach without opening an editor. */
   const record = el("section", "pp-record");
-  record.appendChild(el("h4", "pp-sub", "Today"));
-  record.appendChild(el("p", null, `Planned: ${titleFor(index, day)}`));
-  record.appendChild(el("p", null, `Actual: ${statusWord(day)}`));
+  record.appendChild(el("h4", "pp-sub", "Record and adjust"));
   if (day.note) record.appendChild(el("p", "pp-note", day.note));
   record.appendChild(dayActions(day));
   card.appendChild(record);
 
+  /* Everything else the day offers, collapsed. It is genuinely useful and
+   * genuinely secondary, and open-by-default it pushed the actions above out of
+   * the first screen. */
+  const more = el("details", "pp-more");
+  more.appendChild(el("summary", null, "All resources for this lesson"));
+  if (res.whole.length) more.appendChild(linkList(res.whole, "pp-links-primary"));
+  if (res.smallGroup.length) {
+    more.appendChild(el("h4", "pp-sub", "Small group"));
+    more.appendChild(linkList(res.smallGroup));
+  }
+  if (res.student.length) {
+    more.appendChild(el("h4", "pp-sub", "Student materials"));
+    more.appendChild(linkList(res.student));
+  }
+  more.appendChild(el("h4", "pp-sub", "Planning"));
+  more.appendChild(linkList(res.teacher));
+  card.appendChild(more);
+
   frag.appendChild(card);
   frag.appendChild(renderPacingSummary(days, ui));
   return frag;
+}
+
+/* ── Class-aware status helpers ────────────────────────────────────────────────
+ * These answer questions the engine already has the data for but no view was
+ * asking. Each is deliberately conservative: where the data cannot support a
+ * statement, they return null and the view renders nothing rather than a
+ * confident-looking guess. */
+
+const ABSORBERS = new Set(["Flex", "Catch-Up", "Review"]);
+
+/**
+ * Core-lesson progress for a unit.
+ *
+ * "Core lesson" means a Core Lesson day, NOT every instructional day: counting
+ * the review, the assessment and the catch-up as lessons inflates every unit and
+ * makes "8 of 12" meaningless. Continued Lesson days are excluded from the
+ * denominator too — a lesson split across two days is one lesson, and counting
+ * the continuation would make finishing a unit look like falling behind.
+ */
+export function coreProgress(days, unitKey) {
+  const core = days.filter(
+    (d) =>
+      d.plan.unitKey === unitKey &&
+      d.plan.dayType === "Core Lesson" &&
+      d.schoolStatus === "school",
+  );
+  if (!core.length) return null;
+  const taught = core.filter((d) => d.actual && d.actual.status !== "not-yet-taught").length;
+  return { taught, total: core.length };
+}
+
+/**
+ * How far a unit has drifted from the district plan, in instructional days.
+ *
+ * Measured at the unit's START, not its end: the start is where the drift was
+ * inherited from everything before it, and the end also moves for reasons
+ * internal to the unit. Returns null when either date is missing, which happens
+ * for units the current plan no longer schedules.
+ */
+export function unitVariance(days, summary) {
+  if (!summary.plannedStart || !summary.currentStart) return null;
+  if (summary.plannedStart === summary.currentStart) return 0;
+  const [a, b] =
+    summary.currentStart > summary.plannedStart
+      ? [summary.plannedStart, summary.currentStart]
+      : [summary.currentStart, summary.plannedStart];
+  const between = days.filter(
+    (d) => d.date >= a && d.date < b && d.schoolStatus === "school",
+  ).length;
+  return summary.currentStart > summary.plannedStart ? between : -between;
+}
+
+/** The next day that can absorb a ripple, on or after `fromDate`. Null when the
+ *  rest of the year has none — which is the answer a teacher most needs. */
+export function nextAbsorber(days, fromDate) {
+  const hit = days.find(
+    (d) => d.date >= fromDate && d.schoolStatus === "school" && ABSORBERS.has(d.plan.dayType),
+  );
+  return hit ? { date: hit.date, dayType: hit.plan.dayType } : null;
+}
+
+/**
+ * How many supports this CLASS has configured for this lesson.
+ *
+ * Reads the support store directly rather than duplicating its resolution: the
+ * store already flattens all-class configuration under a per-class override, so
+ * asking it is the only way to get the number the Supports page would show.
+ * Returns null when the support layer is not loaded, so the planner degrades to
+ * saying nothing instead of claiming zero.
+ */
+export function supportStatus(lessonId, section) {
+  if (!lessonId) return null;
+  const LS = typeof window !== "undefined" ? window.EWLLessonSupports : null;
+  if (!LS || typeof LS.loadProfile !== "function") return null;
+  try {
+    const profile = LS.loadProfile(lessonId, section);
+    if (!profile) return { count: 0 };
+    const keys = Object.keys(profile).filter((k) => k !== "lessonId" && profile[k] === true);
+    return { count: keys.length };
+  } catch {
+    return null;
+  }
 }
 
 function unitLabel(baseline, day, unitNumber) {
@@ -377,24 +533,88 @@ export function renderMonth(days, index, ui) {
 
 export function renderUnits(days, index, ui) {
   const frag = document.createDocumentFragment();
+
+  /* The Units view answers one question the other four cannot: "are we on pace,
+   * and where is the give?" So it leads with progress and drift, and the raw
+   * day-type counts move below them — they are the evidence, not the answer.
+   *
+   * Order is the DISTRICT sequence, because ui.baseline.units is generated from
+   * the pacing plan. Never re-sorted here; validate:pacing-unit-order fails if
+   * it ever is. */
   const list = el("div", "pp-units");
   for (const unit of ui.baseline.units) {
     const s = unitSummary(days, unit.key);
     if (!s.days) continue;
+
     const card = el("section", "pp-unit");
     card.appendChild(el("h3", "pp-unit-title", unit.districtLabel));
+
+    /* PROGRESS, in core lessons. */
+    const progress = coreProgress(days, unit.key);
+    if (progress) {
+      const line = el("p", "pp-unit-progress");
+      line.append(
+        el("strong", null, `${progress.taught} of ${progress.total}`),
+        ` core lesson${progress.total === 1 ? "" : "s"} recorded`,
+      );
+      card.appendChild(line);
+      /* A meter, not a bare bar: it carries its own value and range to a screen
+       * reader, and the sentence above says the same thing in words. */
+      const meter = el("div", "pp-meter");
+      meter.setAttribute("role", "meter");
+      meter.setAttribute("aria-valuenow", String(progress.taught));
+      meter.setAttribute("aria-valuemin", "0");
+      meter.setAttribute("aria-valuemax", String(progress.total));
+      meter.setAttribute(
+        "aria-label",
+        `${unit.districtLabel}: ${progress.taught} of ${progress.total} core lessons recorded`,
+      );
+      const fill = el("span", "pp-meter-fill");
+      fill.style.width = `${Math.round((progress.taught / progress.total) * 100)}%`;
+      meter.appendChild(fill);
+      card.appendChild(meter);
+    }
+
+    /* VARIANCE against the district plan, in words. A moved unit is normal, so
+     * this is stated flatly and never styled as an error. */
+    const variance = unitVariance(days, s);
+    if (variance !== null) {
+      const word =
+        variance === 0
+          ? "Starts on the district date"
+          : variance > 0
+            ? `Starts ${variance} instructional day${variance === 1 ? "" : "s"} later than the district plan`
+            : `Starts ${-variance} instructional day${variance === -1 ? "" : "s"} earlier than the district plan`;
+      card.appendChild(el("p", "pp-unit-variance", word));
+    }
+
+    /* WHERE THE GIVE IS. The absorber is what decides whether the next
+     * "continue tomorrow" is free or expensive, so it belongs here rather than
+     * only inside a preview the teacher has to open to see. */
+    const absorber = s.currentStart ? nextAbsorber(days, s.currentStart) : null;
+    card.appendChild(
+      el(
+        "p",
+        "pp-unit-slack",
+        absorber
+          ? `Next absorber: ${absorber.dayType} on ${rangeDate(absorber.date)}`
+          : "No flex, catch-up or review day left in this unit's span",
+      ),
+    );
+
     const dl = el("dl", "pp-dl");
     const row = (k, v) => {
       dl.appendChild(el("dt", null, k));
       dl.appendChild(el("dd", null, v));
     };
-    row("Planned", `${shortDate(s.plannedStart)} – ${shortDate(s.plannedEnd)}`);
-    row("Now", `${shortDate(s.currentStart)} – ${shortDate(s.currentEnd)}`);
-    row("Lessons", String(s.lessons));
+    /* rangeDate, not shortDate: a unit span crosses a month boundary in nine of
+     * eleven units, and "Mon 24 – Tue 8" does not say which months. The same
+     * applies to a standalone absorber date. */
+    row("District plan", `${rangeDate(s.plannedStart)} – ${rangeDate(s.plannedEnd)}`);
+    row("Current plan", `${rangeDate(s.currentStart)} – ${rangeDate(s.currentEnd)}`);
     row("Assessment days", String(s.assessments));
     row("Project days", String(s.projectDays));
     row("Flex / catch-up", String(s.flexDays));
-    row("Recorded", `${s.completed} of ${s.days} days`);
     card.appendChild(dl);
 
     const jump = el("button", "pp-btn pp-btn-quiet", "Open this unit's first day");
@@ -407,8 +627,6 @@ export function renderUnits(days, index, ui) {
   frag.appendChild(list);
   return frag;
 }
-
-/* ── Year ──────────────────────────────────────────────────────────────────── */
 
 export function renderYear(days, index, ui) {
   const frag = document.createDocumentFragment();
