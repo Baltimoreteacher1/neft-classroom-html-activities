@@ -35,6 +35,11 @@ import {
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const baseline = JSON.parse(readFileSync(`${ROOT}/data/pacing-baseline-2026-27.json`, "utf8"));
 const launch = JSON.parse(readFileSync(`${ROOT}/data/curriculum-launch-manifest.json`, "utf8"));
+/* The authored sequences for units the district ASSEMBLES rather than inherits
+ * from the curriculum's numbering, plus the lessons that displaces. Read here so
+ * the exceptions below are checked against a reviewed decision rather than
+ * against a list retyped into this file. */
+const authored = JSON.parse(readFileSync(`${ROOT}/data/pacing-unit-lessons.json`, "utf8"));
 
 /* ════════════════════════════════════════════════════════════════════════════
  * 1. Calendar correctness — the official calendar, as shipped
@@ -131,13 +136,100 @@ test("180 instructional dates, of which 5 are shortened", () => {
  * 2. Canonical mapping — the plan points at curriculum that exists
  * ══════════════════════════════════════════════════════════════════════════ */
 
-test("all 84 canonical lessons are scheduled exactly once", () => {
-  const core = baseline.days.filter((d) => d.plan.dayType === "Core Lesson").map((d) => d.plan.lessonId);
-  assert.equal(core.length, 84);
-  assert.equal(new Set(core).size, 84, "no lesson is scheduled twice");
+/* This used to read "all 84 canonical lessons are scheduled exactly once", which
+ * was true of a plan whose Pre-Unit was INFERRED to be the Unit 1 arc. The
+ * confirmed Pre-Unit is assembled: it borrows 2-6, 2-7, 6-1 and 6-2 for August
+ * prerequisite fluency while Units 2 and 6 still teach them in place, and it
+ * displaces 1-2 … 1-6, which the district paces nowhere.
+ *
+ * "Exactly once" cannot state that, so it is replaced rather than relaxed — and
+ * the replacement is tighter, because both exceptions must be DECLARED in
+ * data/pacing-unit-lessons.json rather than merely tolerated. A lesson that
+ * falls out of the plan, or gets scheduled twice, with no authored entry
+ * behind it still fails here. */
+/** Every Core Lesson day, as {lessonId: [pacing keys it is taught under]}. */
+function coreOccurrences() {
+  const out = new Map();
+  for (const d of baseline.days) {
+    if (d.plan.dayType !== "Core Lesson" || !d.plan.lessonId) continue;
+    if (!out.has(d.plan.lessonId)) out.set(d.plan.lessonId, []);
+    out.get(d.plan.lessonId).push(d.plan.unitKey);
+  }
+  return out;
+}
+const DISPOSITIONS = new Map((authored.lessonDispositions ?? []).map((d) => [d.lessonId, d]));
+
+test("every scheduled lesson is canonical", () => {
   const canonical = new Set(launch.lessons.map((l) => l.id));
   assert.equal(canonical.size, 84);
-  for (const id of core) assert.ok(canonical.has(id), `${id} is a canonical lesson`);
+  for (const id of coreOccurrences().keys()) {
+    assert.ok(canonical.has(id), `${id} is a canonical lesson`);
+  }
+});
+
+test("coverage: every canonical lesson is scheduled once, or declared with a reason", () => {
+  const seen = coreOccurrences();
+  const undeclaredMissing = [];
+  const undeclaredRepeat = [];
+  for (const l of launch.lessons) {
+    const n = seen.get(l.id)?.length ?? 0;
+    const status = DISPOSITIONS.get(l.id)?.status;
+    if (n === 0 && status !== "unscheduled") undeclaredMissing.push(l.id);
+    if (n > 1 && status !== "scheduled-twice") undeclaredRepeat.push(l.id);
+  }
+  assert.deepEqual(undeclaredMissing, [], "lessons the plan teaches nowhere, with nothing declaring why");
+  assert.deepEqual(undeclaredRepeat, [], "lessons the plan teaches twice, with nothing declaring why");
+});
+
+test("no declaration outlives the thing it declares", () => {
+  /* The other direction, and the one that lets a file like this rot: an entry
+   * absolving an omission that no longer exists, or a repeat that has since
+   * become a single. Both must fail, or the exceptions outlive their reasons. */
+  const seen = coreOccurrences();
+  const stale = [];
+  for (const d of DISPOSITIONS.values()) {
+    const n = seen.get(d.lessonId)?.length ?? 0;
+    if (d.status === "unscheduled" && n > 0) stale.push(`${d.lessonId} is declared unscheduled but is taught`);
+    if (d.status === "scheduled-twice" && n < 2) stale.push(`${d.lessonId} is declared a repeat but is taught ${n}×`);
+  }
+  assert.deepEqual(stale, []);
+});
+
+test("a declared repeat pins WHERE it repeats, so a new duplicate still fails", () => {
+  /* Without this, "scheduled-twice" would be a blanket pardon: the lesson could
+   * reappear under any unit, any number of times, and the declaration would
+   * still cover it. The declared `occurrences` must equal the pacing keys the
+   * plan actually teaches it under. */
+  const seen = coreOccurrences();
+  for (const d of DISPOSITIONS.values()) {
+    if (d.status !== "scheduled-twice") continue;
+    assert.ok(Array.isArray(d.occurrences), `${d.lessonId} declares a repeat but names no occurrences`);
+    assert.deepEqual(
+      [...(seen.get(d.lessonId) ?? [])].sort(),
+      [...d.occurrences].sort(),
+      `${d.lessonId} is taught under different pacing units than it declares`,
+    );
+  }
+});
+
+test("every disposition carries a reason, evidence and a review status", () => {
+  assert.ok(DISPOSITIONS.size > 0, "the disposition list is empty — it has stopped being maintained");
+  for (const d of DISPOSITIONS.values()) {
+    assert.match(d.status, /^(unscheduled|scheduled-twice)$/, `${d.lessonId}: unknown status ${d.status}`);
+    assert.ok(
+      typeof d.reason === "string" && d.reason.length >= 40,
+      `${d.lessonId} has no substantive reason — a one-word reason is how an audit gets gamed`,
+    );
+    assert.ok(
+      Array.isArray(d.evidence) && d.evidence.length > 0,
+      `${d.lessonId} cites no evidence`,
+    );
+    assert.match(
+      d.reviewStatus,
+      /^(confirmed|teacher-review)$/,
+      `${d.lessonId}: reviewStatus must be confirmed or teacher-review`,
+    );
+  }
 });
 
 test("every scheduled id resolves to a real curriculum surface", () => {
@@ -153,9 +245,16 @@ test("every scheduled id resolves to a real curriculum surface", () => {
 });
 
 test("lesson order is preserved within every unit", () => {
+  /* Scoped to each unit's OWN paced block. An assembled unit teaches lessons out
+   * of their home unit's numbering on purpose — the Pre-Unit runs 2-6 in August
+   * and Unit 2 still opens with 2-1 in April — so walking the whole year in one
+   * pass reports that intent as a violation. The assembled sequences have their
+   * own order check: validate:pacing-unit-order, against the authored file. */
+  const assembled = new Set(Object.keys(authored.units));
   const seen = new Map();
   for (const d of baseline.days) {
     if (d.plan.dayType !== "Core Lesson") continue;
+    if (assembled.has(d.plan.unitKey)) continue;
     const lesson = launch.lessons.find((l) => l.id === d.plan.lessonId);
     const prev = seen.get(lesson.unit);
     if (prev !== undefined) {
@@ -166,6 +265,7 @@ test("lesson order is preserved within every unit", () => {
     }
     seen.set(lesson.unit, lesson.lesson);
   }
+  assert.ok(seen.size >= 9, "the order check walked almost no units — it has stopped looking");
 });
 
 test("no lesson title is stored in the baseline — titles come from the curriculum", () => {
@@ -402,8 +502,10 @@ test("flex capacity counts the real reserve in the shipped plan", () => {
   const resolved = resolveYear(baseline, {});
   const cap = flexCapacity(resolved);
   assert.equal(cap.flex, 3);
-  assert.equal(cap.catchUp, 21);
-  assert.equal(cap.total, 24, "24 absorbing days, matching the source validation");
+  /* 22, not 21: the Pre-Unit's surplus day became a catch-up station when the
+   * confirmed five-lesson sequence freed it. */
+  assert.equal(cap.catchUp, 22);
+  assert.equal(cap.total, 25);
 });
 
 test("pacing position is stated in days and neutral language", () => {

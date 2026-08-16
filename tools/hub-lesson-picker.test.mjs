@@ -27,12 +27,24 @@ const PACING = JSON.parse(readFileSync(join(ROOT, "data", "pacing-unit-ranges.js
 const AUTHORED = JSON.parse(readFileSync(join(ROOT, "data", "pacing-unit-lessons.json"), "utf8"));
 
 /** The district sequence the Unit dropdown must follow, derived from the same
- *  generated file the picker reads — never a list retyped into this test, which
+ *  generated files the picker reads — never a list retyped into this test, which
  *  would only prove the two typists agreed. MSTAR carries no curriculumUnit and
- *  owns no lessons, so it is not an option. */
+ *  owns no lessons, so it is not an option.
+ *
+ *  An ASSEMBLED unit is keyed by its pacing key rather than by the curriculum
+ *  unit whose slot it occupies, which is what keeps that curriculum unit
+ *  separately reachable — the Pre-Unit is "PRE", not "1", so Unit 1 still gets
+ *  an option of its own. */
 const DISTRICT_UNIT_ORDER = PACING.units
   .filter((u) => u.curriculumUnit != null)
-  .map((u) => String(u.curriculumUnit));
+  .map((u) => (AUTHORED.units[u.key] ? u.key : String(u.curriculumUnit)));
+
+/** …then whatever the curriculum has that the district does not pace, appended
+ *  after it in manifest order. Reachable, but never inside the sequence. */
+const UNPACED_UNITS = [...new Set(MANIFEST.lessons.map((l) => String(l.unit)))].filter(
+  (u) => !DISTRICT_UNIT_ORDER.includes(u),
+);
+const EXPECTED_UNIT_ORDER = [...DISTRICT_UNIT_ORDER, ...UNPACED_UNITS];
 
 let pass = 0;
 async function t(name, fn) {
@@ -155,23 +167,76 @@ await t("the visible label says Class Section, not Section", async () => {
  * ======================================================================== */
 await t("every unit is available whichever class is selected", async () => {
   const p = await mount();
-  const allUnits = new Set(MANIFEST.lessons.map((l) => String(l.unit)));
+  const first = new Set(p.values(p.unit));
   for (const cls of ["601", "602", "603"]) {
     p.change(p.section, cls);
     // A SET, deliberately: which units exist is this assertion's subject, and
     // the order they appear in is the district's, not the manifest's. Comparing
     // arrays here would silently re-pin numbering as the sequence.
+    //
+    // Compared against the OTHER classes rather than against the manifest's unit
+    // numbers: the option list is no longer one-per-curriculum-unit. An
+    // assembled unit is keyed by its pacing key ("PRE"), so the set is the paced
+    // units plus whatever the curriculum has that the district does not pace.
+    // Reachability of every canonical unit is the next test's job; this one is
+    // only about class being context rather than curriculum.
     assert.deepEqual(
       new Set(p.values(p.unit)),
-      allUnits,
+      first,
       `class ${cls} changed which units exist — class is context, not curriculum`,
+    );
+  }
+});
+
+await t("no canonical lesson is unreachable from the picker", async () => {
+  /* The Pre-Unit borrows curriculum unit 1's slot. While it was KEYED "1" it
+   * also took that slot over: its authored sequence replaced Unit 1's own
+   * lesson list, and because "1" was already in the order, Unit 1 never got an
+   * option of its own — so 1-2 … 1-6 could not be opened from this control at
+   * all, in a year when a teacher might still want them for intervention or
+   * make-up. Reachability is the property; how the list is keyed is not. */
+  const p = await mount();
+  const reachable = new Set();
+  for (const unit of p.values(p.unit)) {
+    p.change(p.unit, unit);
+    for (const id of p.values(p.lesson)) reachable.add(id);
+  }
+  const missing = MANIFEST.lessons.map((l) => l.id).filter((id) => !reachable.has(id));
+  assert.deepEqual(missing, [], "lessons the curriculum has that the Teach picker cannot open");
+});
+
+await t("a unit the district does not pace is offered last, and says so", async () => {
+  /* Reachable, but never inserted INTO the district sequence: the plan contains
+   * no Unit 1, and an option sitting between Pre-Unit and Unit 3 would assert
+   * that it does. */
+  const p = await mount();
+  const values = p.values(p.unit);
+  const pacedKeys = new Set(
+    PACING.units.filter((u) => u.curriculumUnit != null).map((u) => String(u.curriculumUnit)),
+  );
+  const authoredKeys = new Set(Object.keys(AUTHORED.units));
+  const isPaced = (v) => authoredKeys.has(v) || pacedKeys.has(v);
+  const firstUnpaced = values.findIndex((v) => !isPaced(v));
+  if (firstUnpaced === -1) return; // every curriculum unit is paced — nothing to place
+  assert.ok(
+    values.slice(firstUnpaced).every((v) => !isPaced(v)),
+    "an unpaced unit is interleaved with the district pacing sequence",
+  );
+  const labels = p.labels(p.unit);
+  for (let i = firstUnpaced + 1; i < labels.length; i++) {
+    assert.match(
+      labels[i],
+      /not paced this year/,
+      `${values[i]} is offered without saying the district does not pace it`,
     );
   }
 });
 
 await t("units follow the district pacing sequence, not the numbering", async () => {
   const p = await mount();
-  assert.deepEqual(p.values(p.unit), DISTRICT_UNIT_ORDER);
+  assert.deepEqual(p.values(p.unit), EXPECTED_UNIT_ORDER);
+  // The paced prefix must still be exactly the district plan, in its order.
+  assert.deepEqual(p.values(p.unit).slice(0, DISTRICT_UNIT_ORDER.length), DISTRICT_UNIT_ORDER);
   // Stated as a property, so this fails even if the generated plan changes to
   // some other non-numeric order: the point is that the dropdown is NOT sorted.
   const shown = p.values(p.unit);
@@ -200,9 +265,19 @@ await t("units the pacing plan omits are appended, never dropped", async () => {
   const thin = { ...PACING, units: PACING.units.slice(0, 2) };
   const p = await mount({ pacing: thin });
   const shown = p.values(p.unit);
-  const everyUnit = new Set(MANIFEST.lessons.map((l) => String(l.unit)));
-  assert.equal(shown.length, everyUnit.size, "a real unit disappeared from the picker");
-  assert.deepEqual(shown.slice(0, 2), ["1", "3"], "the paced units did not lead");
+  /* Reachability, not a count: an assembled unit contributes an option that is
+   * not a curriculum unit number, so counting options against curriculum units
+   * would compare two different things. Every canonical unit must still be
+   * openable, and the two paced units must still lead. */
+  const reachable = new Set();
+  for (const unit of shown) {
+    p.change(p.unit, unit);
+    for (const id of p.values(p.lesson)) reachable.add(id.split("-").slice(0, 1)[0]);
+  }
+  for (const u of new Set(MANIFEST.lessons.map((l) => String(l.unit)))) {
+    assert.ok(reachable.has(u), `unit ${u} disappeared from the picker`);
+  }
+  assert.deepEqual(shown.slice(0, 2), ["PRE", "3"], "the paced units did not lead");
 });
 
 await t("unreadable pacing data leaves the lesson list working", async () => {
@@ -239,7 +314,7 @@ const PRE_SEQUENCE = AUTHORED.units.PRE.lessons;
 
 await t("the Pre-Unit lesson list is the authored sequence, in order", async () => {
   const p = await mount();
-  p.change(p.unit, "1"); // the Pre-Unit maps to curriculum unit 1
+  p.change(p.unit, "PRE"); // keyed by its PACING key, so curriculum Unit 1 keeps its own
   assert.deepEqual(
     p.values(p.lesson),
     PRE_SEQUENCE,
@@ -257,7 +332,7 @@ await t("the Pre-Unit list is authored, not derived from unit membership", async
    * real property is where the list COMES FROM — the authored file, not the
    * manifest's `unit` field, which is what produced 1-1 … 1-6. */
   const p = await mount();
-  p.change(p.unit, "1");
+  p.change(p.unit, "PRE");
   const shown = p.values(p.lesson);
   const fromUnitField = MANIFEST.lessons.filter((l) => String(l.unit) === "1").map((l) => l.id);
   assert.deepEqual(shown, PRE_SEQUENCE);
@@ -274,7 +349,7 @@ await t("the Pre-Unit list is authored, not derived from unit membership", async
 
 await t("Pre-Unit lesson titles come from the manifest, never the authored file", async () => {
   const p = await mount();
-  p.change(p.unit, "1");
+  p.change(p.unit, "PRE");
   const labels = [...p.lesson.options].map((o) => o.textContent).filter(Boolean);
   for (const id of PRE_SEQUENCE) {
     const lesson = MANIFEST.lessons.find((l) => l.id === id);
@@ -327,7 +402,7 @@ await t("borrowing a lesson into the Pre-Unit does not move it", async () => {
 
 await t("switching away from the Pre-Unit restores normal membership", async () => {
   const p = await mount();
-  p.change(p.unit, "1");
+  p.change(p.unit, "PRE");
   assert.deepEqual(p.values(p.lesson), PRE_SEQUENCE);
   p.change(p.unit, "5");
   assert.deepEqual(
@@ -335,7 +410,7 @@ await t("switching away from the Pre-Unit restores normal membership", async () 
     MANIFEST.lessons.filter((l) => String(l.unit) === "5").map((l) => l.id),
     "Unit 5 inherited the Pre-Unit's authored sequence",
   );
-  p.change(p.unit, "1");
+  p.change(p.unit, "PRE");
   assert.deepEqual(p.values(p.lesson), PRE_SEQUENCE, "returning to the Pre-Unit lost its sequence");
 });
 

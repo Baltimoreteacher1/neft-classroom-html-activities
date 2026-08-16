@@ -67,6 +67,35 @@ export const isNumericOrder = (order) =>
 export const isAlphabeticalOrder = (order) =>
   order.length > 1 && order.every((v, i) => i === 0 || order[i - 1] <= v);
 
+/**
+ * The lessons a dated plan actually TEACHES under one pacing unit key, in the
+ * order it teaches them.
+ *
+ * This exists because the authored sequence had two rendering surfaces checked
+ * against it — the hub picker and the district crosswalk — and the one surface
+ * nobody compared was the dated plan itself. So the Teach dropdown offered
+ * 1-1, 2-6, 2-7, 6-1, 6-2 while the planner, the pacing guide and every
+ * Today/Week/Month/Year view still scheduled 1-1 … 1-6: two Pre-Units in
+ * production, disagreeing, with neither able to see the other.
+ *
+ * Sorted by date rather than trusting file order, so a re-import that emits the
+ * rows in a different order is compared on what a teacher would teach.
+ * Consecutive repeats collapse: a lesson held over a second day is one lesson.
+ */
+export function scheduledLessonSequence(days, unitKey) {
+  const out = [];
+  const mine = (days || [])
+    .filter((d) => d?.plan?.unitKey === unitKey && d.plan.dayType === "Core Lesson")
+    .slice()
+    .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  for (const d of mine) {
+    const id = d.plan.lessonId;
+    if (!id || out[out.length - 1] === id) continue;
+    out.push(id);
+  }
+  return out;
+}
+
 /** Lesson ids in instructional order: same unit, ascending numeric suffix. */
 export function lexicalLessonBreaks(ids) {
   const breaks = [];
@@ -108,6 +137,79 @@ const MUTATIONS = [
   [
     "a paced unit the curriculum lacks yields no dropdown entry",
     () => pacedUnitOrder({ units: [{ curriculumUnit: 99 }] }, new Set(["1"])).length === 0,
+  ],
+  /* The dated-plan detector. Each case is a way the Pre-Unit disagreement could
+   * come back and be reported as agreement. */
+  [
+    "the scheduled sequence is read in date order, not file order",
+    () =>
+      scheduledLessonSequence(
+        [
+          { date: "2026-08-27", plan: { unitKey: "PRE", dayType: "Core Lesson", lessonId: "2-7" } },
+          { date: "2026-08-26", plan: { unitKey: "PRE", dayType: "Core Lesson", lessonId: "2-6" } },
+        ],
+        "PRE",
+      ).join() === "2-6,2-7",
+  ],
+  [
+    "only Core Lesson days count toward the sequence",
+    () =>
+      scheduledLessonSequence(
+        [
+          { date: "2026-08-26", plan: { unitKey: "PRE", dayType: "Core Lesson", lessonId: "2-6" } },
+          {
+            date: "2026-09-01",
+            plan: { unitKey: "PRE", dayType: "Catch-Up", lessonId: "6-2-catchup" },
+          },
+          { date: "2026-09-02", plan: { unitKey: "PRE", dayType: "Review", lessonId: null } },
+        ],
+        "PRE",
+      ).join() === "2-6",
+  ],
+  [
+    "another unit's days never leak into the sequence",
+    () =>
+      scheduledLessonSequence(
+        [
+          { date: "2026-08-26", plan: { unitKey: "PRE", dayType: "Core Lesson", lessonId: "2-6" } },
+          { date: "2026-11-05", plan: { unitKey: "U6", dayType: "Core Lesson", lessonId: "6-1" } },
+        ],
+        "PRE",
+      ).join() === "2-6",
+  ],
+  [
+    "a lesson held over a second day is still one lesson",
+    () =>
+      scheduledLessonSequence(
+        [
+          { date: "2026-08-24", plan: { unitKey: "PRE", dayType: "Core Lesson", lessonId: "1-1" } },
+          { date: "2026-08-25", plan: { unitKey: "PRE", dayType: "Core Lesson", lessonId: "1-1" } },
+          { date: "2026-08-26", plan: { unitKey: "PRE", dayType: "Core Lesson", lessonId: "2-6" } },
+        ],
+        "PRE",
+      ).join() === "1-1,2-6",
+  ],
+  [
+    "a re-ordered plan does not match the authored sequence",
+    () =>
+      scheduledLessonSequence(
+        [
+          { date: "2026-08-26", plan: { unitKey: "PRE", dayType: "Core Lesson", lessonId: "2-7" } },
+          { date: "2026-08-27", plan: { unitKey: "PRE", dayType: "Core Lesson", lessonId: "2-6" } },
+        ],
+        "PRE",
+      ).join() !== "2-6,2-7",
+  ],
+  [
+    "the exact disagreement this gate was written for is caught",
+    () =>
+      scheduledLessonSequence(
+        ["1-1", "1-2", "1-3", "1-4", "1-5", "1-6"].map((id, i) => ({
+          date: `2026-08-${24 + i}`,
+          plan: { unitKey: "PRE", dayType: "Core Lesson", lessonId: id },
+        })),
+        "PRE",
+      ).join() !== "1-1,2-6,2-7,6-1,6-2",
   ],
 ];
 
@@ -325,7 +427,38 @@ for (const [key, entry] of Object.entries(authored.units || {})) {
   }
 }
 
-// 7. The picker actually consumes the plan.
+/* 7. THE DATED PLAN IS A SURFACE OF THE AUTHORED SEQUENCE TOO.
+ *
+ * Checks 5 and 6 hold the hub picker and the district crosswalk to
+ * data/pacing-unit-lessons.json. Neither of them is what a teacher teaches
+ * from. The plan in data/pacing-baseline-2026-27.json is — it drives the
+ * planner's Today, Week, Month, Units and Year views, and the printed pacing
+ * guide — and until this check existed nothing compared it to the authored
+ * sequence at all. The Pre-Unit was corrected in the picker and left wrong in
+ * the plan for the whole of that window; the two could not see each other. */
+{
+  const baseline = read("data/pacing-baseline-2026-27.json");
+  for (const [key, entry] of Object.entries(authored.units || {})) {
+    const taught = scheduledLessonSequence(baseline.days, key);
+    if (!taught.length) {
+      fail(
+        `the dated plan schedules no lessons under "${key}", but ${key} has an authored sequence — ` +
+          `the plan and data/pacing-unit-lessons.json cannot both be describing this unit`,
+      );
+      continue;
+    }
+    if (taught.join(",") !== entry.lessons.join(",")) {
+      fail(
+        `the dated plan teaches [${taught.join(", ")}] for ${key} but the authored sequence is ` +
+          `[${entry.lessons.join(", ")}]. The Teach dropdown and the pacing guide would show ` +
+          `different Pre-Units. Repair the SOURCE (docs/pacing-sources/plan-baseline.json) and ` +
+          `re-run \`node tools/import-pacing-baseline.mjs\` — never hand-edit the generated plan.`,
+      );
+    }
+  }
+}
+
+// 8. The picker actually consumes the plan.
 const picker = readFileSync(join(ROOT, "assets", "curriculum-teacher-planning.js"), "utf8");
 if (!picker.includes("/data/pacing-unit-lessons.json")) {
   fail("the hub picker no longer reads the authored unit sequences");

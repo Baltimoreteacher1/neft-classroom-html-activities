@@ -151,7 +151,18 @@ const units = src.units.map((u, i) => ({
  * answer the printed calendar gives. Tags follow the notes: SOURCE (read from a
  * district document), INFERRED (a planning decision), CONFIRM (needs a human). */
 const ASSUMPTIONS = [
-  ["Pre-Unit maps to EduWonderLab Unit 1 (Math Is…)", "INFERRED/CONFIRM"],
+  /* Was "Pre-Unit maps to EduWonderLab Unit 1 (Math Is…)", INFERRED/CONFIRM.
+   * Confirmed 2026-08-16 and it was wrong: the Pre-Unit is a prerequisite
+   * fluency sequence assembled from three units, not the Unit 1 arc. */
+  [
+    "Pre-Unit is an assembled sequence — 1-1, then 2-6, 2-7, 6-1, 6-2 borrowed for prerequisite fluency",
+    "CONFIRMED",
+  ],
+  ["Lessons 1-2 … 1-6 are taught nowhere: the district paces no Unit 1", "CONFIRMED consequence"],
+  [
+    "The Pre-Unit's surplus day is a catch-up station closing the fraction-division half",
+    "INFERRED/CONFIRM",
+  ],
   ["Component counts are a day budget, not a lesson count", "INFERRED"],
   [
     "The 2.5-day calendar shortfall is absorbed by Unit 4 (−1.0) and Unit 5 (−1.5) flex",

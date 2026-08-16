@@ -9,7 +9,11 @@ Sources (read-only):
 import json, datetime as dt, os
 
 D = dt.date
-REPO = os.path.expanduser("~/neft-classroom-html-activities")
+# Overridable so the provenance scripts can be RE-RUN from a checkout that is
+# not at ~/. Re-running them is how this plan is verified: the generator
+# reproduces the committed plan-baseline.json byte for byte, which is what makes
+# it evidence rather than a script that once produced something.
+REPO = os.environ.get("REPO") or os.path.expanduser("~/neft-classroom-html-activities")
 BASE = "https://eduwonderlab.com"
 
 FIRST_DAY = D(2026, 8, 24)
@@ -247,6 +251,30 @@ def load_ewl():
 # ---------------------------------------------------------------- allocation
 SOFT = {"Flex", "Catch-Up", "Review", "Reteach", "Project", "MCAP / Testing"}
 
+# Units the district ASSEMBLES rather than inherits from the curriculum's own
+# numbering. Ids only, with a written reason; titles resolve from the manifest.
+AUTHORED_UNITS = json.load(open(f"{REPO}/data/pacing-unit-lessons.json")).get("units", {})
+
+
+def authored_sequence(key, lessons):
+    """The lesson list for a paced unit whose membership is an authored decision.
+
+    Most paced units are one curriculum unit taught in its own order, so
+    `lessons[ewl_unit]` is right and this returns None. The Pre-Unit is not: it
+    is a prerequisite-fluency sequence drawn from three canonical units, and
+    reading its membership off the unit numbering produced the Unit 1 "Math
+    Is..." arc — a coherent-looking list of the wrong lessons, which is why no
+    ordering fix would have caught it.
+    """
+    entry = AUTHORED_UNITS.get(key)
+    if not entry:
+        return None
+    by_id = {l["id"]: l for group in lessons.values() for l in group}
+    missing = [i for i in entry["lessons"] if i not in by_id]
+    if missing:
+        raise SystemExit(f"authored sequence for {key} names unknown lessons: {missing}")
+    return [by_id[i] for i in entry["lessons"]]
+
 
 def build_items(key, label, ewl_unit, budget, assess_marker, lessons, cu, eou, n_slots):
     """Return an ordered list of item dicts sized to n_slots."""
@@ -271,7 +299,7 @@ def build_items(key, label, ewl_unit, budget, assess_marker, lessons, cu, eou, n
         ]
         return items
 
-    ls = lessons[ewl_unit]
+    ls = authored_sequence(key, lessons) or lessons[ewl_unit]
     has_assess = assess_marker is not None
     has_project = ewl_unit in eou
     n_l = len(ls)

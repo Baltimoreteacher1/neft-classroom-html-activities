@@ -689,10 +689,24 @@
       var paced = (pacing && pacing.units) || [];
       paced.forEach(function (entry) {
         if (entry.curriculumUnit == null) return; // MSTAR and friends: not a unit here.
-        var key = String(entry.curriculumUnit);
+        var authoredEntry = authoredUnits[entry.key];
+        /* AN ASSEMBLED UNIT IS KEYED BY ITS PACING KEY, NOT BY THE CURRICULUM
+         * UNIT IT BORROWS ITS SLOT FROM.
+         *
+         * The Pre-Unit maps to curriculum unit 1, so keying it "1" made it OWN
+         * that key: its authored sequence replaced Unit 1's own lesson list and,
+         * because "1" was then already in unitOrder, the fallback below never
+         * added Unit 1 — leaving 1-2 … 1-6 unreachable from this control
+         * entirely. Those five lessons are real, they are on disk, and a teacher
+         * still needs them for intervention, review or make-up even in a year
+         * the district does not pace them.
+         *
+         * Keying the Pre-Unit "PRE" separates the two questions this list used
+         * to answer with one number: WHEN the district teaches a unit, and WHAT
+         * the curriculum contains. */
+        var key = authoredEntry ? entry.key : String(entry.curriculumUnit);
         if (unitOrder.indexOf(key) !== -1) return;
 
-        var authoredEntry = authoredUnits[entry.key];
         if (authoredEntry && Array.isArray(authoredEntry.lessons)) {
           /* Resolve ids against the manifest and drop anything it does not have,
            * so a retired lesson leaves a shorter sequence rather than a dead
@@ -710,8 +724,18 @@
         unitOrder.push(key);
         if (entry.districtLabel) unitLabels[key] = entry.districtLabel;
       });
+      /* Then everything the curriculum has that the district does not pace this
+       * year, appended AFTER the paced sequence and never inside it. This list
+       * is the curriculum library as well as the pacing order, and the two are
+       * not the same question: Unit 1 exists and must be openable, but the
+       * district teaches no Unit 1, so putting it between Pre-Unit and Unit 3
+       * would assert a sequence the plan does not contain. */
+      var unpaced = [];
       manifestOrder.forEach(function (key) {
-        if (unitOrder.indexOf(key) === -1) unitOrder.push(key);
+        if (unitOrder.indexOf(key) === -1) unpaced.push(key);
+      });
+      unpaced.forEach(function (key) {
+        unitOrder.push(key);
       });
 
       var classes = classSections().map(function (id) {
@@ -730,7 +754,13 @@
           // Ratios & Rates", "Pre-Unit: Course 1 Pre Unit") — the teacher is
           // following that document, and the Pre-Unit is not called "Unit 1" on
           // it. Plain "Unit N" otherwise.
-          return { value: u, label: unitLabels[u] || "Unit " + u };
+          var label = unitLabels[u] || "Unit " + u;
+          /* Say WHY it is at the bottom. An unlabelled "Unit 1" sitting after
+           * Unit 10 reads as a bug in the ordering; the truth is that the
+           * district's plan does not contain it, and a teacher opening it for
+           * intervention should know that before planning around it. */
+          if (unpaced.indexOf(u) !== -1) label += " · not paced this year";
+          return { value: u, label: label };
         });
       }
 

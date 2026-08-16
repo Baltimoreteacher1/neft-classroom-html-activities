@@ -95,13 +95,49 @@ Nothing was reordered for convenience.
 
 ### Unit 1 is absent from the workbook — the Pre-Unit stands in its place
 
-**[INFERRED]** The workbook never names "Unit 1"; its first row is _Pre Unit: Course 1 Pre Unit_
-with an 11-day budget and a Unit Quiz. EduWonderLab **Unit 1 — Math Is…** (6 lessons: _Math is Mine_,
-_Math is Exploring and Thinking_, _Math is In My World_, _Math is Explaining and Sharing_,
-_Math is Finding Patterns_, _Math is Ours_) is the course's launch/community unit and is the only
-unit that fits that slot. I mapped the Pre-Unit to EWL Unit 1. **[CONFIRM]** — if your building's
-"Pre Unit" guidance document is a different set of readiness tasks, swap the six lesson rows on the
-Year Pacing sheet; the dates and the 11-day budget stay as they are.
+**[CONFIRMED 2026-08-16 — and the original inference was wrong.]** The workbook never names
+"Unit 1"; its first row is _Pre Unit: Course 1 Pre Unit_ with an 11-day budget and a Unit Quiz.
+The first build inferred that this meant EduWonderLab **Unit 1 — Math Is…** (1-1 … 1-6), the
+course's launch/community unit, and scheduled those six lessons across Aug 24 – Sep 1.
+
+The building's Pre Unit is a different thing: a **prerequisite-fluency sequence** that rebuilds
+what Course 1 assumes before ratio reasoning starts in Unit 3.
+
+| Date          | Day type   | Lesson        |                                        |
+| ------------- | ---------- | ------------- | -------------------------------------- |
+| Mon 24 Aug    | Core       | **1-1**       | Math is Mine — Day 1                    |
+| Tue 25 Aug    | Continued  | **1-1**       | Math is Mine — Day 2                    |
+| Wed 26 Aug    | Core       | **2-6**       | Divide Multi-Digit Numbers Using an Algorithm |
+| Thu 27 Aug    | Core       | **2-7**       | Divide Decimals Using an Algorithm      |
+| Fri 28 Aug    | Catch-Up   | 2-7-catchup   | 2.6 · 2.7 · 2.11 · 2.12 Catch-Up        |
+| Mon 31 Aug    | Core       | **6-1**       | Division Expressions with Fractions and Whole Numbers |
+| Tue 1 Sep     | Core       | **6-2**       | Division Expressions with Fractions and Mixed Numbers |
+
+Read down the lessons and the sequence explains itself: whole-number algorithm → decimal
+algorithm → fraction ÷ whole number → fraction ÷ mixed number. The dates and the 11-day budget
+are unchanged; only the lesson rows moved, which is exactly the swap this section used to ask for.
+
+**These rows were not hand-written.** `build/plan_core.py` now reads the authored sequence from
+`data/pacing-unit-lessons.json` instead of `lessons[ewl_unit]`, and `build/build_plan.py` was
+re-run to produce them, so the whole block follows the same documented rules as every other unit.
+That matters for the catch-up on Fri 28 Aug: assumption 7 spends a surplus day on a catch-up
+**anchor**, taken in lesson order, and the first Pre-Unit lesson that owns a catch-up surface is
+2-7 — whose station is titled _2.6 · 2.7 · 2.11 · 2.12 Catch-Up_ and therefore repairs exactly the
+two division-algorithm lessons taught immediately before it. A hand-authored first pass had put a
+`6-2-catchup` at the end of the block instead; the generator's own rule is better, and it is a
+rule rather than a preference.
+
+**Two consequences, both deliberate, both declared in `data/pacing-unit-lessons.json`:**
+
+- **2-6, 2-7, 6-1 and 6-2 are BORROWED, not moved.** They remain canonically Unit 2 and Unit 6
+  lessons, they still appear in those units' own lesson lists, and the plan still teaches them in
+  place — 6-1 on Nov 5, 6-2 on Nov 9, 2-6 on Apr 30, 2-7 on May 3. August is prerequisite
+  fluency; the later dates are the lessons in their own context.
+- **Lessons 1-2 … 1-6 are now taught nowhere in the year.** The district paces no Unit 1, the
+  Pre-Unit occupies its slot, and the confirmed sequence keeps only 1-1 from that arc as the
+  opening community lesson. Unit 10 (_Math Is…_, 10-1 … 10-6) revisits the arc at the end of the
+  year. **This is the one part of the correction a teacher may want to revisit** — see Remaining
+  Teacher Decisions.
 
 ### "Components" are not the same thing as EduWonderLab lessons
 
@@ -272,7 +308,9 @@ Every non-source decision, in one place.
 
 | #   | Assumption                                                                                     | Tag                              |
 | --- | ---------------------------------------------------------------------------------------------- | -------------------------------- |
-| 1   | Pre-Unit ≙ EduWonderLab Unit 1 (Math Is…)                                                      | INFERRED / CONFIRM               |
+| 1   | Pre-Unit is assembled: 1-1, then 2-6, 2-7, 6-1, 6-2 borrowed for prerequisite fluency           | CONFIRMED 2026-08-16             |
+| 1a  | Lessons 1-2 … 1-6 are taught nowhere — the district paces no Unit 1                            | CONFIRMED consequence            |
+| 1b  | The Pre-Unit's two surplus days are a 1-1 second day and the 2-7 catch-up (assumptions 14 + 7) | GENERATOR-DERIVED                |
 | 2   | Component counts are a _day budget_, not a lesson count                                        | INFERRED                         |
 | 3   | The 2.5-day shortfall is absorbed by Unit 4 (−1.0) and Unit 5 (−1.5) flex                      | INFERRED                         |
 | 4   | One period per unit assessment                                                                 | INFERRED / CONFIRM               |
@@ -289,11 +327,17 @@ Every non-source decision, in one place.
 
 ### First week of school — how it is handled
 
-**[INFERRED]** The brief warns against inventing generic filler when Unit 1 already fills the launch
-role. It does: _Math is Mine_ is an identity-and-community lesson. Rather than adding invented
-"routines days", the Pre-Unit's one surplus day was spent extending **Lesson 1.1 across Aug 24–25**,
-so the opening two days carry classroom routines, math community and the entry math story before
-Lesson 1.2 starts on Aug 26. No filler was created, and no lesson was displaced.
+**[INFERRED]** The brief warns against inventing generic filler for the opening days. None was
+needed: _Math is Mine_ (1-1) is an identity-and-community lesson and is kept at the front of the
+Pre-Unit for exactly that reason. Rather than adding invented "routines days", the first of the
+Pre-Unit's two surplus days extends **Lesson 1.1 across Aug 24–25**, so the opening two days carry
+classroom routines, math community and the entry math story before the division sequence starts
+with 2-6 on Aug 26. No filler was created.
+
+The second surplus day is the Aug 28 catch-up, by the same assumption-7 rule that governs every
+other unit. (This paragraph used to say Lesson 1.2 starts on Aug 26, which was true only of the
+inferred Pre-Unit; 1-2 is not paced this year — see the disposition list in
+`data/pacing-unit-lessons.json`.)
 
 ### Shortened days — what actually sits on each
 
@@ -465,9 +509,19 @@ project rows, and a "1 days" pluralisation error.
 
 Ordered by how soon you need to settle them.
 
-1. **Confirm the Pre-Unit ↔ EduWonderLab Unit 1 mapping.** _(before Aug 24)_ If your "Pre Unit"
-   guidance document is a different set of readiness tasks, replace the six lesson rows for
-   Aug 24 – Sep 1 on the Year Pacing sheet. Dates and budget stay.
+1. **~~Confirm the Pre-Unit ↔ EduWonderLab Unit 1 mapping.~~** Settled 2026-08-16. The Pre-Unit is
+   1-1 → 2-6 → 2-7 → 6-1 → 6-2; the rows were replaced and re-imported. Two follow-ups it leaves:
+   - **Decide what happens to Lessons 1-2 … 1-6.** _(before Aug 26)_ They are now taught nowhere.
+     If you want any of them, the honest place to take the day from is the Pre-Unit's catch-up
+     day (Sep 1) or a Unit 3 flex day — the 11-day Pre-Unit budget is fixed by the workbook.
+   - **Confirm the Sep 1 catch-up.** _(before Sep 1)_ Assumption 7 spends a surplus day on a
+     catch-up station before a lesson second day, so the freed day became `6-2-catchup`. If you
+     would rather give 2-7 or 6-2 a second teaching day, say so and the row changes.
+   - **The Sep 4 / Sep 8 project days still read "Unit 1 Culminating Project".** They were part
+     of the same disconfirmed inference and were left alone deliberately: there is no Pre-Unit
+     project surface to point them at, and inventing one is a curriculum decision, not a pacing
+     repair. Decide whether those two days stay a Unit 1 project, become flex, or get a new
+     culminating task.
 2. **Confirm assessment length.** _(before Sep 3)_ If unit assessments run two periods, the Review
    day before each one absorbs the second.
 3. **Confirm project length.** _(before Sep 4)_ If the culminating projects are 3-day projects, take
