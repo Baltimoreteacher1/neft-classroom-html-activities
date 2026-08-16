@@ -208,6 +208,11 @@ const COVERAGE = [
       "validate:learn-it-scope",
     ],
   ],
+  // the generators and the two libraries that keep them contained
+  [
+    /^(tools\/(generate-small-group-lessons|generate-catchup-lessons|validate-generator-safety)\.mjs|tools\/lib\/(authored-overlay|write-set)\.mjs|scripts\/generate-editable-slides-page\.mjs)$/,
+    ["test", "validate:generator-safety", "check"],
+  ],
   // the two scope audits and the artifacts they read
   [
     /^(tools\/(lib\/)?(interactive-alignment|learn-it-scope)[.a-z-]*\.mjs|data\/(interactive-alignment|learn-it-scope)-review\.json)$/,
