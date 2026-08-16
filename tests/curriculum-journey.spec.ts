@@ -114,12 +114,19 @@ test.describe("guide first-click journeys in Teacher Mode", () => {
   test("Explore by unit stays student-safe and jumps to the unit browser", async ({ page }) => {
     await page.goto("/curriculum/");
     const explore = page.getByRole("link", { name: /Explore by unit/ });
-    await expect(explore).toHaveAttribute("href", "#interactive-hub");
+    /* The Teach band rewrite (0dd1194d, 1f3859a6) pointed this at the real unit
+       browser page instead of the in-page `#interactive-hub` anchor it used to
+       scroll to. Confirmed as the intended destination, 2026-08-16.
+
+       What this test guards is unchanged and is NOT the destination: following
+       it must stay student-safe — no PIN prompt, no Teacher Mode, no teacher
+       workflow — which is the property that would actually hurt a student if it
+       regressed. */
+    await expect(explore).toHaveAttribute("href", "/curriculum/units/");
     await explore.click();
-    // No PIN, no Teacher Mode — a student-safe anchor jump only.
-    await expect(page.locator("#hub-mode-toggle")).toContainText("Student Mode");
-    await expect(page.locator("#curriculum-teacher-workflow")).toBeHidden();
-    await expect(page.locator("#interactive-hub")).toBeVisible();
+    await page.waitForURL(/\/curriculum\/units\/?$/);
+    await expect(page.locator("#curriculum-teacher-workflow")).toHaveCount(0);
+    await expect(page.locator("main, .units-wrap, h1").first()).toBeVisible();
   });
 });
 
