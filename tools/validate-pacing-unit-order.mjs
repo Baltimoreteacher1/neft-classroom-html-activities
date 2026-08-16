@@ -267,16 +267,65 @@ for (const [key, entry] of Object.entries(authored.units || {})) {
           `sequence is [${entry.lessons.join(", ")}] — two definitions of the same unit`,
       );
     }
-    for (const id of entry.lessons) {
-      const lesson = byId.get(id);
-      if (lesson && !block.includes(lesson.title)) {
-        fail(`the crosswalk's title for ${id} does not match the manifest ("${lesson.title}")`);
-      }
-    }
+    /* No title-equality check here any more, and its absence is the point: the
+     * crosswalk no longer STORES titles for canonical lessons, so there is
+     * nothing to compare. Check 6 below enforces that structurally, which is
+     * strictly stronger than asserting two copies agree. */
   }
 }
 
-// 6. The picker actually consumes the plan.
+/* 6. NO DUPLICATED CURRICULUM METADATA IN THE PACING CROSSWALK.
+ *
+ * assets/curriculum-district-pacing.js carried an inline title and standards for
+ * all 59 canonical lessons. They were copies, so they drifted: 2-6 read "Divide
+ * Multi-Digit Whole Numbers (Computation Bridge)" against a manifest saying
+ * "Divide Multi-Digit Numbers Using an Algorithm", with the 2010 code 6.NS.B.2
+ * against a registry re-coded to 6.NOS.2.
+ *
+ * This is STRUCTURAL prevention rather than an equality list: a list of 59
+ * expected titles is itself a duplicate that goes stale. A canonical lesson entry
+ * must be an id and nothing else, so there is nowhere for a stale copy to live.
+ *
+ * Two things stay inline on purpose and are exempt: the unit's `district_title`
+ * (pacing owns the district's own name for a unit) and the MSTAR prep entries,
+ * whose ids are not canonical lessons and have no manifest counterpart. */
+{
+  const src = readFileSync(join(ROOT, "assets/curriculum-district-pacing.js"), "utf8");
+  const blocks = [...src.matchAll(/lessons:\s*\[([\s\S]*?)\]\s*,?\n/g)];
+  if (!blocks.length) fail("could not read any lessons block out of the pacing crosswalk");
+
+  for (const [, block] of blocks) {
+    for (const entry of block.matchAll(/\{\s*id:\s*"([^"]+)"([^}]*)\}/g)) {
+      const [, id, rest] = entry;
+      const canonical = /^[0-9]+-[0-9]+$/.test(id);
+      if (!canonical) continue; // MSTAR: pacing-owned, no manifest counterpart.
+      if (/title\s*:/.test(rest) || /standards\s*:/.test(rest)) {
+        fail(
+          `the pacing crosswalk stores metadata for canonical lesson ${id}. Canonical ` +
+            `entries must be { id } only — title and standards resolve from the manifest ` +
+            `at render time, which is the only way they cannot go stale.`,
+        );
+      }
+      if (!manifestIds.has(id)) {
+        fail(`the pacing crosswalk lists ${id}, which the curriculum manifest does not have`);
+      }
+    }
+  }
+
+  /* And the resolution step must still be wired: id-only entries with no
+   * reconcile would render "Lesson 3-1" with no title at all. */
+  if (!/curriculum-launch-manifest\.json/.test(src)) {
+    fail(
+      "the pacing crosswalk no longer loads the curriculum manifest, so its id-only " +
+        "lesson entries have nothing to resolve their titles from",
+    );
+  }
+  if (!/lesson\.title = canonical\.title/.test(src)) {
+    fail("the pacing crosswalk loads the manifest but no longer assigns canonical titles");
+  }
+}
+
+// 7. The picker actually consumes the plan.
 const picker = readFileSync(join(ROOT, "assets", "curriculum-teacher-planning.js"), "utf8");
 if (!picker.includes("/data/pacing-unit-lessons.json")) {
   fail("the hub picker no longer reads the authored unit sequences");

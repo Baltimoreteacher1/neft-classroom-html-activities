@@ -25,25 +25,7 @@
        * 2010 code 6.NS.B.2 against a registry re-coded to 6.NOS.2. The other ten
        * units below still hold uncorrected inline copies; that is a known,
        * separate debt, not something this change quietly fixed. */
-      lessons: [
-        { id: "1-1", title: "Math is Mine", standards: ["MPP.3"] },
-        {
-          id: "2-6",
-          title: "Divide Multi-Digit Numbers Using an Algorithm",
-          standards: ["6.NOS.2"],
-        },
-        { id: "2-7", title: "Divide Decimals Using an Algorithm", standards: ["6.NOS.3"] },
-        {
-          id: "6-1",
-          title: "Division Expressions with Fractions and Whole Numbers",
-          standards: ["6.NOS.1"],
-        },
-        {
-          id: "6-2",
-          title: "Division Expressions with Fractions and Mixed Numbers",
-          standards: ["6.NOS.1"],
-        },
-      ],
+      lessons: [{ id: "1-1" }, { id: "2-6" }, { id: "2-7" }, { id: "6-1" }, { id: "6-2" }],
     },
     {
       sequence: 2,
@@ -56,21 +38,13 @@
       additional_days: 2.0,
       assessments: ["Unit Assessment (10/9/26)", "iReady Progress Monitor", "MSTAR Math Task"],
       lessons: [
-        { id: "3-1", title: "Understand Ratios", standards: ["6.RP.A.1"] },
-        { id: "3-2", title: "Understand Rates and Unit Rates", standards: ["6.RP.A.2"] },
-        { id: "3-3", title: "Determine Equivalent Ratios Using Tables", standards: ["6.RP.A.3a"] },
-        { id: "3-4", title: "Determine Equivalent Ratios Using Graphs", standards: ["6.RP.A.3a"] },
-        { id: "3-5", title: "Compare Ratio Relationships", standards: ["6.RP.A.3a"] },
-        {
-          id: "3-6",
-          title: "Ratio Reasoning: Convert Measurements (Same System)",
-          standards: ["6.RP.A.3d"],
-        },
-        {
-          id: "3-7",
-          title: "Ratio Reasoning: Convert Measurements (Between Systems)",
-          standards: ["6.RP.A.3d"],
-        },
+        { id: "3-1" },
+        { id: "3-2" },
+        { id: "3-3" },
+        { id: "3-4" },
+        { id: "3-5" },
+        { id: "3-6" },
+        { id: "3-7" },
       ],
     },
     {
@@ -83,21 +57,7 @@
       instructional_days: 15.0,
       additional_days: 2.0,
       assessments: ["Unit Assessment (11/5/26)", "MSTAR Math Task"],
-      lessons: [
-        { id: "4-1", title: "Understand Percent", standards: ["6.RP.A.3"] },
-        {
-          id: "4-2",
-          title: "Relate Fractions, Decimals, and Percentages",
-          standards: ["6.RP.A.3c"],
-        },
-        { id: "4-3", title: "Estimate the Percent of a Number", standards: ["6.RP.A.3c"] },
-        { id: "4-4", title: "Find and Compare with Percentages", standards: ["6.RP.A.3c"] },
-        {
-          id: "4-5",
-          title: "Determine the Whole Given Part and Percent",
-          standards: ["6.RP.A.3c"],
-        },
-      ],
+      lessons: [{ id: "4-1" }, { id: "4-2" }, { id: "4-3" }, { id: "4-4" }, { id: "4-5" }],
     },
     {
       sequence: 4,
@@ -110,34 +70,14 @@
       additional_days: 2.0,
       assessments: ["Unit Assessment (12/8/26)", "MSTAR Math Task"],
       lessons: [
-        {
-          id: "6-1",
-          title: "Division Expressions with Fractions & Whole Numbers",
-          standards: ["6.NS.A.1"],
-        },
-        {
-          id: "6-2",
-          title: "Division Expressions with Fractions & Mixed Numbers",
-          standards: ["6.NS.A.1"],
-        },
-        {
-          id: "6-3",
-          title: "Explore Numerical Expressions with Exponents",
-          standards: ["6.EE.A.1"],
-        },
-        {
-          id: "6-4",
-          title: "Write and Evaluate Numerical Expressions with Exponents",
-          standards: ["6.EE.A.1"],
-        },
-        { id: "6-5", title: "Write and Evaluate Algebraic Expressions", standards: ["6.EE.A.2"] },
-        { id: "6-6", title: "Identify Equivalent Algebraic Expressions", standards: ["6.EE.A.4"] },
-        { id: "6-7", title: "Find Factors and Multiples (GCF / LCM)", standards: ["6.NS.B.4"] },
-        {
-          id: "6-8",
-          title: "Generate Equivalent Expressions (Distributive Property)",
-          standards: ["6.EE.A.3"],
-        },
+        { id: "6-1" },
+        { id: "6-2" },
+        { id: "6-3" },
+        { id: "6-4" },
+        { id: "6-5" },
+        { id: "6-6" },
+        { id: "6-7" },
+        { id: "6-8" },
       ],
     },
     {
@@ -151,17 +91,13 @@
       additional_days: 2.0,
       assessments: ["Unit Assessment (1/21/27)", "iReady Window", "MSTAR Math Task"],
       lessons: [
-        { id: "7-1", title: "Explore Integers and Their Opposites", standards: ["6.NS.C.5"] },
-        { id: "7-2", title: "Represent Rational Numbers on Number Line", standards: ["6.NS.C.6a"] },
-        { id: "7-3", title: "Understand Absolute Value", standards: ["6.NS.C.7c"] },
-        { id: "7-4", title: "Compare and Order Rational Numbers", standards: ["6.NS.C.7a"] },
-        {
-          id: "7-5",
-          title: "Represent Rational Numbers on Coordinate Plane",
-          standards: ["6.NS.C.6b"],
-        },
-        { id: "7-6", title: "Determine Distance on Coordinate Plane", standards: ["6.NS.C.8"] },
-        { id: "7-7", title: "Represent Polygons on Coordinate Plane", standards: ["6.G.A.3"] },
+        { id: "7-1" },
+        { id: "7-2" },
+        { id: "7-3" },
+        { id: "7-4" },
+        { id: "7-5" },
+        { id: "7-6" },
+        { id: "7-7" },
       ],
     },
     {
@@ -174,25 +110,7 @@
       instructional_days: 20.0,
       additional_days: 2.0,
       assessments: ["Unit Assessment (2/22/27)", "iReady Window", "MSTAR Math Task"],
-      lessons: [
-        { id: "8-1", title: "Understand Equations and Their Solutions", standards: ["6.EE.B.5"] },
-        {
-          id: "8-2",
-          title: "Write and Solve Addition/Subtraction Equations",
-          standards: ["6.EE.B.7"],
-        },
-        {
-          id: "8-3",
-          title: "Write and Solve Multiplication/Division Equations",
-          standards: ["6.EE.B.7"],
-        },
-        { id: "8-4", title: "Write and Represent Inequalities", standards: ["6.EE.B.8"] },
-        {
-          id: "8-5",
-          title: "Understand Inequalities and Their Solutions",
-          standards: ["6.EE.B.8"],
-        },
-      ],
+      lessons: [{ id: "8-1" }, { id: "8-2" }, { id: "8-3" }, { id: "8-4" }, { id: "8-5" }],
     },
     {
       sequence: 7,
@@ -204,16 +122,7 @@
       instructional_days: 13.0,
       additional_days: 2.0,
       assessments: ["Unit Assessment (3/17/27)", "MSTAR Math Task"],
-      lessons: [
-        { id: "9-1", title: "Independent and Dependent Variables", standards: ["6.EE.C.9"] },
-        {
-          id: "9-2",
-          title: "Represent Two-Variable Relationships with Tables & Equations",
-          standards: ["6.EE.C.9"],
-        },
-        { id: "9-3", title: "Graph Two-Variable Relationships", standards: ["6.EE.C.9"] },
-        { id: "9-4", title: "Analyze Two-Variable Relationships", standards: ["6.EE.C.9"] },
-      ],
+      lessons: [{ id: "9-1" }, { id: "9-2" }, { id: "9-3" }, { id: "9-4" }],
     },
     {
       sequence: 8,
@@ -226,14 +135,14 @@
       additional_days: 1.0,
       assessments: ["Unit Assessment (4/21/27)", "MSTAR Math Task"],
       lessons: [
-        { id: "5-1", title: "Area of Parallelograms & Rhombuses", standards: ["6.G.A.1"] },
-        { id: "5-2", title: "Area of Triangles", standards: ["6.G.A.1"] },
-        { id: "5-3", title: "Area of Trapezoids", standards: ["6.G.A.1"] },
-        { id: "5-4", title: "Apply Area Concepts to Solve Problems", standards: ["6.G.A.1"] },
-        { id: "5-5", title: "Determine Volume of Rectangular Prisms", standards: ["6.G.A.2"] },
-        { id: "5-6", title: "Represent 3D Figures in 2D Nets", standards: ["6.G.A.4"] },
-        { id: "5-7", title: "Determine Surface Area of Prisms", standards: ["6.G.A.4"] },
-        { id: "5-8", title: "Determine Surface Area of Pyramids", standards: ["6.G.A.4"] },
+        { id: "5-1" },
+        { id: "5-2" },
+        { id: "5-3" },
+        { id: "5-4" },
+        { id: "5-5" },
+        { id: "5-6" },
+        { id: "5-7" },
+        { id: "5-8" },
       ],
     },
     {
@@ -247,26 +156,14 @@
       additional_days: 1.0,
       assessments: ["Unit Assessment (5/17/27)", "MSTAR Review Tasks"],
       lessons: [
-        { id: "2-1", title: "Understand Statistical Questions", standards: ["6.SP.A.1"] },
-        { id: "2-2", title: "Data in a Histogram", standards: ["6.SP.B.4"] },
-        { id: "2-3", title: "Describe Data Using Median", standards: ["6.SP.A.2"] },
-        {
-          id: "2-4",
-          title: "Represent and Describe Data in Box Plot",
-          standards: ["6.SP.A.2", "6.SP.B.4"],
-        },
-        { id: "2-5", title: "Describe Data by Range & IQR", standards: ["6.SP.A.3"] },
-        { id: "2-8", title: "Describe Data Using Mean", standards: ["6.SP.A.3"] },
-        {
-          id: "2-9",
-          title: "Describe Data by Mean Absolute Deviation (MAD)",
-          standards: ["6.SP.B.5c"],
-        },
-        {
-          id: "2-10",
-          title: "Choose Appropriate Measures of Center/Variation",
-          standards: ["6.SP.B.5d"],
-        },
+        { id: "2-1" },
+        { id: "2-2" },
+        { id: "2-3" },
+        { id: "2-4" },
+        { id: "2-5" },
+        { id: "2-8" },
+        { id: "2-9" },
+        { id: "2-10" },
       ],
     },
     {
@@ -307,10 +204,7 @@
       instructional_days: 8.5,
       additional_days: 0.0,
       assessments: ["EOY Student Portfolio & Project Showcase"],
-      lessons: [
-        { id: "10-1", title: "Math is Reflection & Growth", standards: ["MPP.3"] },
-        { id: "10-2", title: "Culminating Math Showcase & Portfolio", standards: ["MPP.3"] },
-      ],
+      lessons: [{ id: "10-1" }, { id: "10-2" }],
     },
   ];
 
@@ -416,7 +310,11 @@
       // Parent Interactive Lesson
       const optMain = document.createElement("option");
       optMain.value = `lesson_${l.id}`;
-      optMain.textContent = `Lesson ${l.id}: ${l.title} [${l.standards.join(", ")}]`;
+      /* Defensive: a lesson the manifest cannot resolve still renders as its
+       * id rather than "undefined [". */
+      const stds =
+        Array.isArray(l.standards) && l.standards.length ? ` [${l.standards.join(", ")}]` : "";
+      optMain.textContent = `Lesson ${l.id}${l.title ? `: ${l.title}` : ""}${stds}`;
       groupLessons.appendChild(optMain);
 
       // Synced Group 1 (Support / Level 1)
@@ -571,8 +469,33 @@
     return `${m}/${d}/${String(y).slice(2)}`;
   };
 
-  function reconcileDates() {
-    return loadJson("/data/pacing-unit-ranges.json").then(function (data) {
+  /**
+   * Overwrite this file's inline copies with canonical data before anything
+   * renders.
+   *
+   * DATES were already reconciled here — this file has always known its inline
+   * copies go stale. LESSON TITLES AND STANDARDS were never given the same
+   * treatment, and they had drifted exactly as you would expect: 2-6 read
+   * "Divide Multi-Digit Whole Numbers (Computation Bridge)" against a manifest
+   * saying "Divide Multi-Digit Numbers Using an Algorithm", and carried the 2010
+   * code 6.NS.B.2 against a registry re-coded to 6.NOS.2.
+   *
+   * They are no longer stored here at all. Canonical lesson entries are now
+   * `{ id }` and the title and standards are resolved from the curriculum
+   * manifest at render time, so the drift has nowhere to live.
+   *
+   * WHAT STAYS INLINE, deliberately: the unit's `district_title` (the district's
+   * own name for the unit — pacing owns that), and the three MSTAR prep entries,
+   * whose ids are not canonical lessons and have no manifest counterpart.
+   */
+  function reconcile() {
+    return Promise.all([
+      loadJson("/data/pacing-unit-ranges.json"),
+      loadJson("/data/curriculum-launch-manifest.json"),
+    ]).then(function (results) {
+      const data = results[0] || {};
+      const manifest = results[1] || {};
+
       const bySeq = new Map((data.units || []).map((u) => [u.sequence, u]));
       crosswalk.forEach(function (item) {
         const live = bySeq.get(item.sequence);
@@ -581,13 +504,23 @@
         item.end_date = usDate(live.endDate);
         item.instructional_days = live.instructionalDays;
       });
+
+      const byId = new Map((manifest.lessons || []).map((l) => [l.id, l]));
+      crosswalk.forEach(function (item) {
+        (item.lessons || []).forEach(function (lesson) {
+          const canonical = byId.get(lesson.id);
+          if (!canonical) return; // MSTAR and anything retired keep what they have.
+          lesson.title = canonical.title;
+          lesson.standards = canonical.standard ? [canonical.standard] : [];
+        });
+      });
     });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
     const select = document.getElementById("district-seq-select");
     if (!select) return;
-    reconcileDates().then(startHub);
+    reconcile().then(startHub);
   });
 
   function startHub() {
