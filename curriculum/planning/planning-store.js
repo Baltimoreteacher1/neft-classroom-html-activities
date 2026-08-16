@@ -14,8 +14,7 @@
 import { effectiveOverlay, normalizeSection, SHARED } from "/shared/pacing/sections.js";
 
 const API = "/api/pacing";
-const AUTH = "/api/teacher-auth";
-const LEGACY_KEY_STORAGE = "neft.teacher.key";
+const KEY_STORAGE = "neft.teacher.key";
 const OUTBOX = "nt-pacing:outbox";
 
 /* CACHE KEYS ARE PER LAYER. One `nt-pacing:overlay` key held the whole planner
@@ -51,45 +50,8 @@ export function setActiveSection(section) {
   return next;
 }
 
-/**
- * The teacher key is no longer stored here, or anywhere the browser can read.
- * Authorization is an HttpOnly cookie minted by /api/teacher-auth/login; the
- * requests below just send credentials and let the server decide.
- *
- * This also erases the key the previous build left in localStorage. That value
- * was a live credential in a store any script on the origin — and anyone with
- * the laptop — could read, and leaving it behind after removing the code that
- * used it would be the worst of both.
- */
-export function forgetLegacyKey() {
-  try {
-    localStorage.removeItem(LEGACY_KEY_STORAGE);
-  } catch {
-    /* private mode; nothing to clear */
-  }
-}
-
-/** Who, if anyone, is signed in. Never returns or receives a key. */
-export async function session() {
-  try {
-    const res = await fetch(`${AUTH}/session`, { credentials: "same-origin" });
-    const data = await res.json();
-    return {
-      authenticated: Boolean(data?.authenticated),
-      teacher: data?.teacher || null,
-      configured: data?.configured !== false,
-    };
-  } catch {
-    return { authenticated: false, teacher: null, configured: true };
-  }
-}
-
-/** Clear the session server-side. The cookie is HttpOnly, so only the server
- *  can revoke it — a "sign out" that just hides buttons is not one. */
-export async function signOut() {
-  await fetch(`${AUTH}/logout`, { method: "POST", credentials: "same-origin" }).catch(() => {});
-  forgetLegacyKey();
-}
+export const getKey = () => localStorage.getItem(KEY_STORAGE) || "";
+export const setKey = (k) => localStorage.setItem(KEY_STORAGE, String(k || "").trim());
 
 function readJson(storageKey, fallback) {
   try {
@@ -110,6 +72,18 @@ function writeJson(storageKey, value) {
 }
 
 async function call(path, { method = "GET", body = null, section = null } = {}) {
+  /* The teacher key still comes from localStorage here. The unified sign-in that
+   * replaces it (functions/_lib/teacher-auth.js) is a separate, still-unshipped
+   * commit waiting on its production secrets, and the planner must not wait for
+   * it — so this keeps the credential mechanism production already has and adds
+   * only the section scoping on top. When auth lands it replaces these six lines
+   * and nothing else in this file. */
+  const key = getKey();
+  if (!key) {
+    const err = new Error("no-key");
+    err.status = 401;
+    throw err;
+  }
   /* The section travels on the QUERY STRING, not in the body, so it is present
    * on GET and DELETE too and there is exactly one place the server reads it. */
   const scope = section == null ? activeSection() : normalizeSection(section);
@@ -117,8 +91,7 @@ async function call(path, { method = "GET", body = null, section = null } = {}) 
   const url = `${API}/${path}${scope ? `${join}section=${encodeURIComponent(scope)}` : ""}`;
   const res = await fetch(url, {
     method,
-    credentials: "same-origin",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "x-teacher-key": key },
     body: body == null ? undefined : JSON.stringify(body),
   });
   const data = await res.json().catch(() => null);

@@ -205,7 +205,11 @@ function clampStr(v, n) {
   return typeof v === "string" ? v.slice(0, n).trim() : "";
 }
 
-import { teacherAuthorized } from "../_lib/teacher-auth.js";
+function teacherAuthorized(env, request, url) {
+  if (!env.TEACHER_KEY) return "not-configured";
+  const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
+  return key === env.TEACHER_KEY ? "ok" : "unauthorized";
+}
 
 // Short, url-safe, unambiguous id (no 0/O/1/l). 10 chars ≈ 51 bits.
 function shortId() {
@@ -510,10 +514,10 @@ function parseForgeBody(body) {
 }
 
 async function handleGet(context, url) {
-  const { request, env, data } = context;
+  const { request, env } = context;
 
   if (url.searchParams.get("list")) {
-    const auth = teacherAuthorized(env, request, url, data);
+    const auth = teacherAuthorized(env, request, url);
     if (auth === "not-configured") {
       return json(
         {
@@ -570,9 +574,9 @@ async function handleGet(context, url) {
 }
 
 async function handlePost(context, url) {
-  const { request, env, data } = context;
+  const { request, env } = context;
 
-  const auth = teacherAuthorized(env, request, url, data);
+  const auth = teacherAuthorized(env, request, url);
   if (auth === "not-configured") {
     return json(
       {

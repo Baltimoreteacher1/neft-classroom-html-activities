@@ -11,7 +11,7 @@
 import { expect, test } from "@playwright/test";
 
 const PROJECT = "/math/unit-1/projects/version-a/";
-const PIN = "BlueHeron2026"; // keep in sync with shared/projects/projects-mode-pill.js
+const PIN = "TeacherNeft"; // keep in sync with shared/projects/projects-mode-pill.js
 
 /**
  * Open a project the way a person does: the support-level gate

@@ -279,7 +279,11 @@ async function storeTelemetry(env, body) {
 // All routes below are gated by env.TEACHER_KEY, mirroring the telemetry GET
 // pattern. Student data is never world-readable: no key → 503, wrong key → 401.
 
-import { teacherAuthorized } from "../../_lib/teacher-auth.js";
+function teacherAuthorized(env, request, url) {
+  if (!env.TEACHER_KEY) return "not-configured";
+  const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
+  return key === env.TEACHER_KEY ? "ok" : "unauthorized";
+}
 
 // Add the teacher-editable columns once. SQLite has no "ADD COLUMN IF NOT
 // EXISTS", so we ALTER and swallow the "duplicate column" error. Idempotent.
@@ -584,7 +588,7 @@ function parseJsonOr(text, fallback) {
 }
 
 export async function onRequest(context) {
-  const { request, env, params, data } = context;
+  const { request, env, params } = context;
   const method = request.method.toUpperCase();
   const url = new URL(request.url);
 
@@ -989,7 +993,7 @@ export async function onRequest(context) {
   //        -> saves one snapshot row per student
   //   GET  ?section=&student=&since=ISO&limit=N  -> snapshot history
   if (seg === "insight") {
-    const auth = teacherAuthorized(env, request, url, data);
+    const auth = teacherAuthorized(env, request, url);
     if (auth === "not-configured")
       return json(
         {
@@ -1107,7 +1111,7 @@ export async function onRequest(context) {
   // --- Teacher admin routes (roster + grades export/import) ----------------
   // Gated by TEACHER_KEY. Closed by default so student data is never exposed.
   if (seg === "roster" || seg === "grades") {
-    const auth = teacherAuthorized(env, request, url, data);
+    const auth = teacherAuthorized(env, request, url);
     if (auth === "not-configured")
       return json(
         {
@@ -1342,7 +1346,7 @@ export async function onRequest(context) {
     seg === "standards-matrix" ||
     seg === "struggles"
   ) {
-    const auth = teacherAuthorized(env, request, url, data);
+    const auth = teacherAuthorized(env, request, url);
     if (auth === "not-configured")
       return json(
         {

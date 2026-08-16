@@ -54,7 +54,11 @@ async function ensureSchema(db) {
 
 // Mirrors functions/api/progress + supports: no key configured -> not-configured
 // (503), wrong/missing key -> unauthorized (401), correct key -> ok.
-import { teacherAuthorized } from "../../_lib/teacher-auth.js";
+function teacherAuthorized(env, request, url) {
+  if (!env.TEACHER_KEY) return "not-configured";
+  const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
+  return key === env.TEACHER_KEY ? "ok" : "unauthorized";
+}
 
 export async function onRequestOptions() {
   return new Response(null, { status: 204, headers: JSON_HEADERS });
@@ -78,9 +82,9 @@ export async function onRequestGet({ env }) {
   }
 }
 
-export async function onRequestPut({ request, env, data }) {
+export async function onRequestPut({ request, env }) {
   const url = new URL(request.url);
-  const auth = teacherAuthorized(env, request, url, data);
+  const auth = teacherAuthorized(env, request, url);
   if (auth === "not-configured")
     return json(
       {

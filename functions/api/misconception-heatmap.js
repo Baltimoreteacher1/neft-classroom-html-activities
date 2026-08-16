@@ -44,7 +44,11 @@ function clamp(s, n) {
   return typeof s === "string" ? s.slice(0, n) : "";
 }
 
-import { teacherAuthorized } from "../_lib/teacher-auth.js";
+function teacherAuthorized(env, request, url) {
+  if (!env.TEACHER_KEY) return "not-configured";
+  const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
+  return key === env.TEACHER_KEY ? "ok" : "unauthorized";
+}
 
 // Same idempotent DDL as functions/api/progress/[[path]].js ensureTelemetrySchema.
 async function ensureTelemetrySchema(db) {
@@ -85,7 +89,7 @@ const MISS_ATTEMPT_SQL = `(event_type = 'item_attempt'
        AND (payload_json LIKE '%"correct":false%' OR payload_json LIKE '%"result":"incorrect"%'))`;
 
 export async function onRequest(context) {
-  const { request, env, data } = context;
+  const { request, env } = context;
   const method = request.method.toUpperCase();
   const url = new URL(request.url);
 
@@ -94,7 +98,7 @@ export async function onRequest(context) {
   }
   if (method !== "GET") return json({ ok: false, error: "method-not-allowed" }, 405);
 
-  const auth = teacherAuthorized(env, request, url, data);
+  const auth = teacherAuthorized(env, request, url);
   if (auth === "not-configured")
     return json(
       {

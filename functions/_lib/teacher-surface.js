@@ -78,12 +78,6 @@ export function isTeacherSurface(path) {
   if (p.startsWith("/assets/") || p.startsWith("/data/")) return false;
   // Endpoints carry their own policy.
   if (p.startsWith("/api/")) return false;
-  // The sign-in page itself. It is named for teachers and matched by the
-  // substring rule below, and gating it would be a closed loop: the page whose
-  // whole job is to obtain teacher authorization cannot require it. It renders
-  // no teacher material — a key field and a heading — and posts to
-  // /api/teacher-auth/login, which is where the credential is actually checked.
-  if (p === "/teacher-login" || p.startsWith("/teacher-login/")) return false;
   return (
     p.includes("teacher") ||
     p.includes("dashboard") ||

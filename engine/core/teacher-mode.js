@@ -42,10 +42,10 @@ const TEACHER_PIN_ROLE_KEY = "nt-teacher-pin-role";
 // tools/validate-projects-award.mjs reads the values below at runtime, so it
 // needs no edit — it follows a rotation on its own.
 const TEACHER_PINS = Object.freeze({
-  master: "BlueHeron2026",
-  coteacher: "RiverStone2026",
-  masterAlt: "CedarLoop2026",
-  coteacherAlt: "SableCreek2026",
+  master: "TeacherNeft",
+  coteacher: "TeacherAlba",
+  masterAlt: "BlueHeron2026",
+  coteacherAlt: "RiverStone2026",
 });
 // Order is load-bearing: matchTeacherPin() derives the role from the index
 // (even = master, odd = co-teacher), so the two roles must keep alternating.
@@ -116,35 +116,6 @@ export function isTeacherMode() {
   if (params.get("teacher") === "0" || params.get("student") === "1") return false;
   // No URL backdoor INTO teacher mode — entry requires the password.
   return readStickyTeacher();
-}
-
-/**
- * Adopt a server teacher session, if there is one.
- *
- * A teacher who has signed in at /teacher-login/ has already proved who they
- * are to the server; making them type a second, different, weaker string into
- * this box is the two-credentials-for-one-workflow problem that broke the
- * planner, one surface further along. So: if the session cookie is valid,
- * Teacher Mode turns itself on and the PIN box is never shown.
- *
- * The PIN stays as the offline path. It is a classroom deterrent, not a
- * credential — it is readable in this file, which is exactly why the real
- * teacher keys are not.
- *
- * Fire-and-forget, and failure is silent: a network hiccup must leave the
- * lesson working as a student page, never blocked on an auth probe.
- */
-export async function adoptTeacherSession() {
-  if (typeof fetch !== "function" || readStickyTeacher()) return false;
-  try {
-    const res = await fetch("/api/teacher-auth/session", { credentials: "same-origin" });
-    const data = await res.json();
-    if (!data?.authenticated) return false;
-    setStickyTeacher(true, data.teacher === "Alba" ? "coteacher" : "master");
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 /** Check the password and, if correct, stick teacher mode on this device.

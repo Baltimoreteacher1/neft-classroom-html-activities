@@ -17,7 +17,6 @@
 // gate to keep students/public out of teacher material, not strong security.
 
 import { EXACT, PREFIX } from "./_lib/redirect-map.js";
-import { acceptedKeys, resolveTeacherSession } from "./_lib/teacher-auth.js";
 import { isTeacherSurface as isTeacherPath } from "./_lib/teacher-surface.js";
 
 // Resolve a path against the generated redirect map. Returns a Response or null.
@@ -102,7 +101,7 @@ async function privateTeacherResponse(next) {
 }
 
 /**
- * The one hostname authenticated teachers use.
+ * The one hostname this site is served from.
  *
  * WHY THIS IS HERE AND NOT IN `_redirects`. Cloudflare honours only the first
  * 100 rules of this project's `_redirects` — verified live, and it had already
@@ -113,21 +112,16 @@ async function privateTeacherResponse(next) {
  * runs before the teacher gate — which is the actual requirement.
  *
  * WHAT IT FIXES. www and the apex were two fully independent, equally
- * functional hosts: both served every page, both minted sessions, and neither
- * redirected to the other. The session cookie is host-only (deliberately — a
- * host-only cookie is the stronger default), so a teacher who signed in on
- * www.eduwonderlab.com and then reached eduwonderlab.com by any route — a
- * bookmark, an omnibox completion, a search result, the canonical <link> every
- * page already advertises — arrived with no cookie and was told to sign in
- * again. Authentication succeeded; it just did not travel.
+ * functional hosts: both served every page, both prompted for their own
+ * credentials, and neither redirected to the other. A browser scopes a stored
+ * Basic Auth credential to the host it was entered on, so a teacher who
+ * authenticated on www.eduwonderlab.com and then reached eduwonderlab.com by
+ * any route — a bookmark, an omnibox completion, a search result, the canonical
+ * <link> every page already advertises — was challenged a second time.
+ * Authentication succeeded; it just did not travel.
  *
- * The fix is to have one canonical host rather than to widen the cookie to
- * `Domain=.eduwonderlab.com`. Broadening it would hand the session to every
- * current and future subdomain, which is a real cost to fix a routing problem.
- *
- * 308, not 301: it preserves method and body, so a POST that arrives on www —
- * including the sign-in POST itself — is replayed to the apex intact instead of
- * being silently downgraded to a GET.
+ * 308, not 301: it preserves method and body, so a POST that arrives on www is
+ * replayed to the apex intact instead of being silently downgraded to a GET.
  *
  * Only www is redirected. *.pages.dev is left alone: preview deployments must
  * keep serving themselves, and ship.sh's own smoke checks run against them.
@@ -147,8 +141,8 @@ export async function onRequest(context) {
 
   const url = new URL(request.url);
 
-  // Canonicalize the host BEFORE anything reads or writes a session, so a sign-in
-  // can never be issued on a hostname the next page will not be served from.
+  // Canonicalize the host BEFORE the gate runs, so a credential can never be
+  // entered on a hostname the next page will not be served from.
   const canonical = canonicalRedirect(url);
   if (canonical) {
     return new Response(null, {
@@ -157,16 +151,6 @@ export async function onRequest(context) {
     });
   }
 
-  // Verify the teacher session ONCE, here, before any branch returns. Every
-  // downstream endpoint then authorizes synchronously off context.data.teacher
-  // instead of repeating the HMAC verify fifteen times. This runs for /api/
-  // routes too — they return early below, but they read context.data, and the
-  // data has to be on it before the early return happens.
-  // Pages always supplies context.data; a hand-built context in a unit test may
-  // not, and the gate must not crash on the way to deciding what to serve.
-  if (!context.data) context.data = {};
-  context.data.teacher = await resolveTeacherSession(env, request);
-  const teacherKeysConfigured = acceptedKeys(env).size > 0;
   const p = url.pathname.toLowerCase();
   const isFamilyPublishedFeed = p === "/api/family-connections/canvas-feed";
   const isPublicFamilySchedulingApi = [
@@ -205,11 +189,7 @@ export async function onRequest(context) {
 
   // Public pages remain open when the gate is unavailable. Publishing edits
   // are the exception and fail closed instead of becoming publicly writable.
-  //
-  // "Unavailable" now means BOTH gates are unconfigured. A deployment that has
-  // teacher keys but no SITE_PASSWORD is fully functional — the session cookie
-  // authorizes the page — and must not 503 the teacher out of their own site.
-  if (!password && !teacherKeysConfigured) {
+  if (!password) {
     if (isTeacherSurface) {
       return new Response("Teacher access is not configured.", { status: 503 });
     }
@@ -239,24 +219,10 @@ export async function onRequest(context) {
   // Everything else is student-facing -> open, no password.
   if (!isTeacherSurface) return nextWithRedirectFallback(next, request, url);
 
-  // Teacher surface. Two ways in, and they authorize the SAME thing:
-  //
-  //   1. The signed session cookie, obtained once at /teacher-login/. This is
-  //      the path a teacher in a browser takes, and it is also what authorizes
-  //      the /api/* writes the page then makes — one sign-in, both gates. That
-  //      unification is the point: the previous split meant a teacher could pass
-  //      the page gate and still be refused by every editing endpoint.
-  //   2. HTTP Basic Auth against SITE_PASSWORD. Retained unchanged for the
-  //      shared class password and for tooling that already sends it.
-  if (context.data.teacher) {
-    context.data.teacherAccessConfigured = true;
-    context.data.teacherAuthorized = true;
-    return privateTeacherResponse(next);
-  }
-
+  // Teacher surface -> require the shared password.
   const header = request.headers.get("Authorization") || "";
   const [scheme, encoded] = header.split(" ");
-  if (password && scheme === "Basic" && encoded) {
+  if (scheme === "Basic" && encoded) {
     const decoded = decodeBase64(encoded);
     const supplied = decoded.slice(decoded.indexOf(":") + 1);
     if (supplied === password) {
@@ -266,39 +232,10 @@ export async function onRequest(context) {
     }
   }
 
-  // Send a person to the sign-in page; send a machine a status code. A browser
-  // navigating to the planner should land on a key field, not a Basic Auth
-  // dialog it has no credential for. Anything that is not a top-level document
-  // request (fetch, XHR, an image, curl) keeps the 401 its caller can act on.
-  //
-  // `Sec-Fetch-Mode` is trusted when present, and it is present in Chrome, Edge
-  // and Firefox. It is NOT universal: Safari and the in-app webviews inside
-  // Gmail, Classroom and Teams may omit the Sec-Fetch metadata entirely, and
-  // when they did, `wantsHtml` was false and the middleware answered a person
-  // with `WWW-Authenticate: Basic`. The teacher then saw the native browser
-  // password box — the SITE-ENTRY gate, which checks SITE_PASSWORD — and typed
-  // their teacher key into it, which is a different credential and is correctly
-  // refused. Reported as "the site password gate appeared and my password does
-  // not work"; both halves were true and neither was a password problem.
-  //
-  // So when the header is absent, fall back to what the request ASKS FOR: a
-  // GET/HEAD that accepts HTML is a document request. curl's default `*/*`,
-  // fetch's `*/*` and an image's `image/*` are unaffected, and any client that
-  // sends Sec-Fetch-Mode keeps exactly its previous behaviour.
-  const fetchMode = request.headers.get("Sec-Fetch-Mode");
-  const accepts = request.headers.get("Accept") || "";
-  const wantsHtml =
-    (request.method === "GET" || request.method === "HEAD") &&
-    (fetchMode === "navigate" || (!fetchMode && accepts.includes("text/html")));
-  if (teacherKeysConfigured && wantsHtml) {
-    const login = new URL("/teacher-login/", url);
-    login.searchParams.set("next", `${url.pathname}${url.search}`);
-    return Response.redirect(login.toString(), 302);
-  }
-
-  const headers = { "Cache-Control": "private, no-store" };
-  if (password) {
-    headers["WWW-Authenticate"] = 'Basic realm="EduWonderLab", charset="UTF-8"';
-  }
-  return new Response("Authentication required.", { status: 401, headers });
+  return new Response("Authentication required.", {
+    status: 401,
+    headers: {
+      "WWW-Authenticate": 'Basic realm="EduWonderLab", charset="UTF-8"',
+    },
+  });
 }

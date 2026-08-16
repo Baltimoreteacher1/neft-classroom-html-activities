@@ -640,18 +640,17 @@ document.addEventListener("click", async (event) => {
   }
 });
 
-/* Sign out. The cookie is HttpOnly, so this has to be a server round trip —
- * clearing something locally would leave the session valid and the planner
- * would still be editable from the same browser. */
-document.addEventListener("click", async (event) => {
-  const button = event.target.closest?.('[data-role="signout"]');
-  if (!button) return;
+/* Storing the key re-runs the connect step rather than reloading: a reload would
+ * throw away anything already queued in the outbox. */
+document.addEventListener("submit", async (event) => {
+  if (event.target.dataset.role !== "keyform") return;
   event.preventDefault();
-  button.disabled = true;
-  await store.signOut();
-  /* Back to sign-in rather than a locked planner: whoever pressed Lock is
-   * either leaving the room or handing the laptop over. */
-  location.href = "/teacher-login/?next=/curriculum/planning/";
+  const field = $("key");
+  if (!field.value.trim()) return;
+  store.setKey(field.value);
+  field.value = "";
+  $("keyform").hidden = true;
+  await connect();
 });
 
 document.addEventListener("input", (event) => {
@@ -725,29 +724,13 @@ async function boot() {
   ui.overlay = store.cachedOverlay(ui.section);
   render();
 
-  /* Any key an older build left in localStorage is a live credential in a place
-   * it should never have been. Remove it whether or not we are signed in. */
-  store.forgetLegacyKey();
-
-  const who = await store.session();
-  showAuth(who);
-  if (!who.authenticated) {
-    setSave("read-only", who.configured ? "" : "Teacher access is not configured on this site.");
+  if (!store.getKey()) {
+    $("keyform").hidden = false;
+    setSave("read-only");
     return;
   }
 
   await connect();
-}
-
-/** Reflect the session in the header: one control, never both. */
-function showAuth(who) {
-  const signin = document.querySelector('[data-role="signin"]');
-  const signout = document.querySelector('[data-role="signout"]');
-  if (signin) signin.hidden = Boolean(who.authenticated);
-  if (signout) {
-    signout.hidden = !who.authenticated;
-    signout.textContent = who.teacher ? `Lock planner · ${who.teacher}` : "Lock planner";
-  }
 }
 
 /* ── Class scope ───────────────────────────────────────────────────────────── */
@@ -827,11 +810,8 @@ async function connect() {
     await refreshUndo();
   } catch (err) {
     if (err.status === 401) {
-      /* The session expired mid-session, or was revoked on another device. Say
-       * so plainly and offer the way back in; silently dropping to read-only is
-       * how an edit gets lost without the teacher noticing. */
-      setSave("read-only", "Your teacher session has ended. Sign in again to save.");
-      showAuth({ authenticated: false, teacher: null, configured: true });
+      setSave("read-only", "That key was not accepted.");
+      $("keyform").hidden = false;
       return;
     }
     setSave("pending", err.message);

@@ -40,22 +40,14 @@
           <button type="button" class="pp-btn pp-btn-quiet" data-action="undo" disabled>
             Undo last adjustment
           </button>
-          <!-- The key field that used to live here is gone. It wrote the key to
-               localStorage and sent it as x-teacher-key on every request, which
-               is how the planner ended up with a credential in browser storage
-               that did not match the one the server checked. Sign-in now happens
-               once at /teacher-login/ and arrives as an HttpOnly cookie the page
-               cannot read; this is only the link to it and the way back out. -->
-          <a
-            class="pp-btn pp-btn-primary pp-signin"
-            data-role="signin"
-            hidden
-            href="/teacher-login/?next=/curriculum/planning/"
-            >Sign in to edit</a
-          >
-          <button type="button" class="pp-btn pp-signout" data-role="signout" hidden>
-            Lock planner
-          </button>
+          <!-- Shown only until a key is stored. An inline field rather than a
+               prompt(): a modal browser prompt blocks the page from painting,
+               so the planner appeared to hang before showing anything. -->
+          <form class="pp-keyform" data-role="keyform" hidden>
+            <label class="pp-sr" for="pp-key">Teacher key</label>
+            <input id="pp-key" type="password" data-role="key" placeholder="Teacher key" autocomplete="current-password" />
+            <button type="submit" class="pp-btn pp-btn-primary">Unlock saving</button>
+          </form>
         </div>
       </header>
 
