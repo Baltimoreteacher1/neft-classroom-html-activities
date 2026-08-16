@@ -1,0 +1,3524 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Launch Day Supply Depot — Pre-Unit Culminating Project</title>
+    <meta
+      name="description"
+      content="Pre-Unit culminating project. Plan the Grade 6 Launch Day supply run using whole-number, decimal, and fraction division — interpreting quotients and remainders in context."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --navy: #0f2b3c;
+        --blue: #1a6fb5;
+        --blue-lt: #e8f2fc;
+        --teal: #0b6f65;
+        --teal-lt: #e4f5f3;
+        --gold: #8a5f0a;
+        --gold-lt: #fdf3e0;
+        --orange: #8a5f0a;
+        --green: #1e7d40;
+        --green-lt: #e6f4eb;
+        --coral: #a8442a;
+        --ink: #1a2633;
+        --muted: #525f6e;
+        --line: #e2e7ec;
+        --bg: #f4f7fa;
+        --card: #ffffff;
+        --radius: 16px;
+        --shadow: 0 2px 16px rgba(15, 43, 60, 0.1);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.6;
+      }
+
+      /* ---- Hero ---- */
+      .hero {
+        background: linear-gradient(135deg, #0f2b3c 0%, #1565a8 60%, #0c6f6b 100%);
+        color: #fff;
+        padding: 36px 24px 28px;
+        text-align: center;
+      }
+      .hero-emoji {
+        font-size: 52px;
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+      .hero h1 {
+        font-size: clamp(24px, 5vw, 38px);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+      }
+      .hero-sub {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 16px;
+        max-width: 580px;
+        margin: 0 auto 16px;
+      }
+      .hero-tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      .tag {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 50px;
+        padding: 4px 13px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      .tag.gold {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #fff;
+      }
+
+      /* ---- Level selector ---- */
+      .level-bar {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50px;
+        padding: 6px 10px;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+      .level-btn {
+        flex: 1;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.75);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50px;
+        padding: 7px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+      }
+      .level-btn.active {
+        background: #fff;
+        color: var(--navy);
+        border-color: #fff;
+        font-weight: 800;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        transform: translateY(-1px) scale(1.03);
+      }
+
+      /* ---- Tab wizard ---- */
+      .wizard {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 16px 60px;
+      }
+
+      .step-trail {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        padding: 22px 0 0;
+        overflow-x: auto;
+      }
+      .step-trail-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        white-space: nowrap;
+        padding: 8px 12px;
+        border-radius: 10px;
+        transition: background 0.15s;
+      }
+      .step-trail-item:hover {
+        background: var(--blue-lt);
+      }
+      .step-trail-item.active .s-num {
+        background: var(--blue);
+        color: #fff;
+      }
+      .step-trail-item.done .s-num {
+        background: var(--green);
+        color: #fff;
+      }
+      .s-num {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--line);
+        color: var(--muted);
+        font-weight: 800;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s;
+      }
+      .s-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .step-trail-item.active .s-label {
+        color: var(--blue);
+      }
+      .step-trail-item.done .s-label {
+        color: var(--green);
+      }
+      .step-arrow {
+        color: var(--line);
+        font-size: 16px;
+        padding: 0 2px;
+      }
+
+      /* ---- Progress bar ---- */
+      .prog-wrap {
+        margin: 14px 0 4px;
+      }
+      .prog-bar {
+        height: 6px;
+        background: var(--line);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .prog-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue), var(--teal));
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .prog-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      /* ---- Step panel ---- */
+      .step-panel {
+        display: none;
+        animation: fadein 0.25s ease;
+      }
+      .step-panel.active {
+        display: block;
+      }
+      @keyframes fadein {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* ---- Card ---- */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 28px 26px;
+        box-shadow: var(--shadow);
+        margin-top: 16px;
+      }
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+      .card-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: var(--blue-lt);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+      }
+      .card-icon.gold {
+        background: var(--gold-lt);
+      }
+      .card-icon.teal {
+        background: var(--teal-lt);
+      }
+      .card-icon.green {
+        background: var(--green-lt);
+      }
+      .card-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 0 0 3px;
+      }
+      .card-sub {
+        font-size: 16px;
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      /* ---- Instruction box ---- */
+      .instruct {
+        background: var(--blue-lt);
+        border-left: 4px solid var(--blue);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .instruct.gold {
+        background: var(--gold-lt);
+        border-color: var(--gold);
+      }
+      .instruct.teal {
+        background: var(--teal-lt);
+        border-color: var(--teal);
+      }
+      .instruct.green {
+        background: var(--green-lt);
+        border-color: var(--green);
+      }
+
+      /* ---- SVG visual ---- */
+      .visual-svg {
+        display: block;
+        width: 100%;
+        max-width: 520px;
+        margin: 0 auto 20px;
+        border-radius: 12px;
+      }
+
+      /* ---- Form inputs ---- */
+      label.lbl {
+        display: block;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 5px;
+        margin-top: 14px;
+      }
+      input[type="number"],
+      input[type="text"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        font-size: 16px;
+        font-family: inherit;
+        background: var(--bg);
+        color: var(--ink);
+        transition: border-color 0.2s;
+      }
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: 2px solid var(--blue);
+        outline-offset: 1px;
+        border-color: var(--blue);
+      }
+      a:focus-visible,
+      button:focus-visible,
+      [role="button"]:focus-visible {
+        outline: 3px solid var(--blue);
+        outline-offset: 2px;
+      }
+      textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ---- Calc button & readout ---- */
+      .calc-btn {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 12px;
+        transition: background 0.2s;
+      }
+      .calc-btn:hover {
+        background: #155fa0;
+      }
+      .calc-btn.gold {
+        background: var(--gold);
+      }
+      .calc-btn.gold:hover {
+        background: #a36a0c;
+      }
+      .calc-btn.teal {
+        background: var(--teal);
+      }
+      .calc-btn.teal:hover {
+        background: #0a6b62;
+      }
+      .calc-btn.green {
+        background: var(--green);
+      }
+      .calc-btn.green:hover {
+        background: #185f31;
+      }
+      .readout {
+        background: var(--navy);
+        color: #e8f4ff;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-top: 12px;
+        font-size: 16px;
+        line-height: 1.6;
+        display: none;
+      }
+      .readout.show {
+        display: block;
+      }
+      .readout strong {
+        color: #7dd3fc;
+      }
+
+      /* ---- Hint ---- */
+      details.hint {
+        margin-top: 14px;
+      }
+      details.hint summary {
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--blue);
+        list-style: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      details.hint summary::before {
+        content: "💡";
+      }
+      details.hint p {
+        font-size: 16px;
+        color: var(--muted);
+        margin-top: 8px;
+        padding: 10px 12px;
+        background: var(--blue-lt);
+        border-radius: 8px;
+      }
+
+      /* ---- Level 2 extension ---- */
+      .lvl2-block {
+        border: 2px dashed var(--blue);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 18px;
+      }
+      .lvl2-label {
+        display: inline-block;
+        background: var(--blue);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        border-radius: 50px;
+        padding: 3px 10px;
+        margin-bottom: 8px;
+      }
+
+      /* ---- Real-world data table ---- */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 14px;
+        font-size: 16px;
+      }
+      .data-table th {
+        background: var(--navy);
+        color: #fff;
+        padding: 8px 12px;
+        text-align: left;
+      }
+      .data-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .data-table tr:last-child td {
+        border-bottom: none;
+      }
+      .data-table tr:nth-child(even) td {
+        background: var(--bg);
+      }
+
+      /* ---- Comparison stats ---- */
+      .stat-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .stat-box {
+        flex: 1;
+        min-width: 120px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        text-align: center;
+      }
+      .stat-num {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--blue);
+      }
+      .stat-lbl {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 3px;
+      }
+
+      /* ---- Checklist ---- */
+      .checklist {
+        list-style: none;
+        margin-top: 12px;
+      }
+      .checklist li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 16px;
+      }
+      .checklist li:last-child {
+        border-bottom: none;
+      }
+      .checklist input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--green);
+        flex-shrink: 0;
+      }
+
+      /* ---- Rubric ---- */
+      .rubric {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 16px;
+        margin-top: 14px;
+      }
+      .rubric th {
+        background: var(--navy);
+        color: #fff;
+        padding: 10px 12px;
+        text-align: left;
+      }
+      .rubric td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      .rubric tr:last-child td {
+        border-bottom: none;
+      }
+      .score-4 {
+        color: var(--green);
+        font-weight: 700;
+      }
+      .score-3 {
+        color: var(--blue);
+        font-weight: 700;
+      }
+      .score-2 {
+        color: var(--gold);
+        font-weight: 700;
+      }
+
+      /* ---- Nav buttons ---- */
+      .nav-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 24px;
+        justify-content: space-between;
+      }
+      .nav-btn {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.2s;
+      }
+      .nav-btn:hover {
+        background: #155fa0;
+      }
+      .nav-btn.ghost {
+        background: transparent;
+        color: var(--blue);
+        border: 2px solid var(--blue);
+      }
+      .nav-btn.ghost:hover {
+        background: var(--blue-lt);
+      }
+      .nav-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      /* ---- Report / pitch textarea ---- */
+      #pitch {
+        min-height: 130px;
+      }
+      .report-box {
+        background: var(--navy);
+        color: #e8f4ff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 14px;
+        font-size: 14px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        display: none;
+      }
+      .report-box.show {
+        display: block;
+      }
+      .export-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+      .export-btn {
+        background: transparent;
+        border: 1.5px solid var(--line);
+        border-radius: 8px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        color: var(--muted);
+        transition: all 0.15s;
+      }
+      .export-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+
+      /* ---- Level-gated content ---- */
+      .lvl0-only {
+        display: none;
+      }
+      body.level-0 .lvl0-only {
+        display: block;
+      }
+      .lvl1-only {
+        display: none;
+      }
+      .lvl2-only {
+        display: none;
+      }
+      body.level-1 .lvl1-only {
+        display: block;
+      }
+      body.level-2 .lvl2-only {
+        display: block;
+      }
+      body.level-2 .lvl2-block {
+        border-color: var(--blue);
+      }
+
+      /* ---- Vocab cards ---- */
+      .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .vocab-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .vocab-icon {
+        font-size: 26px;
+        margin-bottom: 6px;
+      }
+      .vocab-term {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .vocab-def {
+        font-size: 16px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .vocab-ex {
+        font-size: 14px;
+        color: var(--blue);
+        font-weight: 600;
+        margin-top: 5px;
+      }
+
+      /* ---- Print ---- */
+      @media print {
+        .no-print {
+          display: none !important;
+        }
+        .hero {
+          background: var(--navy) !important;
+        }
+        body {
+          background: #fff;
+        }
+        .card {
+          box-shadow: none;
+          border-color: #ccc;
+        }
+      }
+
+      /* ---- Bilingual Support ---- */
+      body.es .en-text {
+        display: none !important;
+      }
+      body.es .es-text {
+        display: inline !important;
+      }
+      span.es-text,
+      tspan.es-text {
+        display: none;
+      }
+      .checklist li:has(input[type="checkbox"]:checked) {
+        color: var(--muted) !important;
+        opacity: 0.65;
+        text-decoration: line-through;
+        transition: all 0.25s ease;
+      }
+      /* ---- Pre-Unit project locals ---- */
+      .sub-head {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--navy);
+        margin: 22px 0 8px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+      .figure {
+        width: 100%;
+        height: auto;
+        margin: 14px 0;
+      }
+      .peer-work {
+        background: #fff7e6;
+        border: 1px solid #e2c489;
+        border-left: 5px solid #b26a00;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin: 14px 0;
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--navy);
+      }
+      .peer-work p {
+        margin: 4px 0;
+      }
+      /* Touch targets. The inline style block this page inherits from the
+         project family sizes inputs at 42px and some injected buttons at
+         41-43px, which is under the 44px target on a phone. Raising the floor
+         here changes nothing about the palette, the type scale or the card
+         language — it is a minimum, not a new visual system — and it is scoped
+         to this page rather than shared/projects/projects-pro.css so that the
+         other 25 project pages keep their pinned visual snapshots. */
+      .wizard input,
+      .wizard select,
+      .wizard textarea,
+      .wizard button {
+        min-height: 44px;
+      }
+      .wizard .step-trail-item,
+      .wizard .pub-chip {
+        min-height: 44px;
+      }
+      .student-calc-section {
+        margin: 15px 0;
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.02);
+        border: 1px dashed #cbd5e1;
+        border-radius: 8px;
+      }
+    </style>
+    <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/shared/projects/projects-pro.css" />
+    <!-- projects-pro-injected:end -->
+      <!-- projects-gold-injected:begin (gold hardening layer — tools/inject-projects-gold.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-gold.css" />
+    <!-- projects-gold-injected:end -->
+    <!-- projects-publisher-injected:begin (publisher pedagogy layer — tools/inject-projects-publisher.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-publisher.css" />
+    <!-- projects-publisher-injected:end -->
+    <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-visuals.css" />
+    <!-- projects-visuals-injected:end -->
+    <!-- projects-zoom-injected:begin (diagram zoom — tools/inject-projects-zoom.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-zoom.css" />
+    <!-- projects-zoom-injected:end -->
+    <!-- projects-solve-injected:begin (guided worked examples — tools/inject-projects-solve.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-solve.css" />
+    <!-- projects-solve-injected:end -->
+    <!-- projects-declutter-injected:begin (tools/inject-projects-declutter.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-declutter.css" />
+    <!-- projects-declutter-injected:end -->
+    <!-- projects-interactive-hero-injected:begin (interactive centerpiece — tools/inject-projects-interactive-hero.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-interactive-hero.css" />
+    <!-- projects-interactive-hero-injected:end -->
+    <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-complete.css" />
+    <!-- projects-complete-injected:end -->
+    <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-check.css" />
+    <!-- projects-check-injected:end -->
+    <!-- projects-discourse-injected:begin (Turn & Talk + structured peer compare — tools/inject-projects-discourse.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-discourse.css" />
+    <!-- projects-discourse-injected:end -->
+    <!-- projects-answerkey-link-injected:begin (teacher-only answer-key link — tools/inject-projects-answerkey-link.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-answerkey-link.css" />
+    <!-- projects-answerkey-link-injected:end -->
+    <!-- projects-partner-injected:begin (Level 0/1 partner guide — tools/inject-projects-partner.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-partner.css" />
+    <!-- projects-partner-injected:end -->
+    <!-- projects-award-head:begin (Community Math Studio — tools/inject-projects-award.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-award.css?v=20260714" />
+    <!-- projects-award-head:end -->
+    <!-- projects-twist-head:begin (Design Twist — tools/inject-projects-twist.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-twist.css?v=20260722" />
+    <!-- projects-twist-head:end -->
+    <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
+    <!-- projects-mode-pill-head:end -->
+    <!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
+    <meta name="nt-project-id" content="pre-unit-a" />
+    <meta name="standard" content="6.NOS.1" data-standard="6.NOS.1" data-standard-legacy="6.NS.1" data-unit="" />
+    <meta name="standard" content="6.NOS.2" data-standard="6.NOS.2" data-standard-legacy="6.NS.2" data-unit="" />
+    <meta name="standard" content="6.NOS.3" data-standard="6.NOS.3" data-standard-legacy="6.NS.3" data-unit="" />
+    <meta name="nt-project-standards" content="6.NOS.1,6.NOS.2,6.NOS.3" />
+    <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
+    <!-- projects-meta-injected:end -->
+    <!-- projects-publication-head:begin (Publication Studio — tools/inject-projects-publication.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/projects-publication.css?v=20260714" />
+    <!-- projects-publication-head:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+  <body class="level-1 pro-projects declutter-projects" id="body">
+    <!-- ====== HERO ====== -->
+    <header class="hero no-print">
+      <div class="hero-emoji">🚚</div>
+      <h1>
+        <span class="en-text">Launch Day Supply Depot</span>
+        <span class="es-text">Almacén de suministros del Día de Lanzamiento</span>
+      </h1>
+      <p class="hero-sub">
+        <span class="en-text"
+          >You are the Supply Chief for Grade 6 Launch Day. Every decision is a division decision —
+          how many equal groups, how many fit, and what the leftover means.</span
+        >
+        <span class="es-text"
+          >Eres el Jefe de Suministros del Día de Lanzamiento de 6.º grado. Cada decisión es una
+          decisión de división: cuántos grupos iguales, cuántos caben y qué significa lo que
+          sobra.</span
+        >
+      </p>
+      <div class="hero-tags">
+        <span class="tag gold">
+          <span class="en-text">Pre-Unit · Division Across Number Types</span>
+          <span class="es-text">Pre-Unidad · División con distintos tipos de números</span>
+        </span>
+        <span class="tag">6.NOS.1</span>
+        <span class="tag">6.NOS.2</span>
+        <span class="tag">6.NOS.3</span>
+        <span class="tag">MPP.3</span>
+        <span class="tag">
+          <span class="en-text">Version A</span>
+          <span class="es-text">Versión A</span>
+        </span>
+      </div>
+      <div class="level-bar">
+        <button class="level-btn" id="btn-lv0" onclick="setLevel(0)">
+          <span class="en-text">🟠 Level 0 · Extra Support</span>
+          <span class="es-text">🟠 Nivel 0 · Apoyo Extra</span>
+        </button>
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">
+          <span class="en-text">🟢 Level 1 — With Support</span>
+          <span class="es-text">🟢 Nivel 1 — Con apoyo</span>
+        </button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">
+          <span class="en-text">🔵 Level 2 — Challenge</span>
+          <span class="es-text">🔵 Nivel 2 — Desafío</span>
+        </button>
+      </div>
+      <div class="level-bar" style="margin-top: 10px">
+        <button class="level-btn" id="btn-lang" onclick="toggleLanguage()">🌐 Language: EN</button>
+        <button class="level-btn" id="btn-read" onclick="readAloud()">
+          <span class="en-text">🔊 Read Aloud</span>
+          <span class="es-text">🔊 Leer en voz alta</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ====== WIZARD ====== -->
+    <div class="wizard">
+      <!-- Step trail -->
+      <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
+
+      <!-- Progress bar -->
+      <div class="prog-wrap no-print">
+        <div class="prog-bar">
+          <div class="prog-fill" id="progFill" style="width: 0%"></div>
+        </div>
+        <div class="prog-label" id="progLabel">Step 1 of 6</div>
+      </div>
+
+      <!-- ======================================
+           STEP 1 — KEY WORDS
+      ====================================== -->
+      <div class="step-panel active" id="step-1">
+<!-- projects-interactive-hero-injected:begin (interactive centerpiece — tools/inject-projects-interactive-hero.mjs) -->
+<section class="pki-hero no-print" aria-label="Interactive warm-up">
+  <div class="pki-hero-head">
+    <span class="pki-hero-emoji" aria-hidden="true">🚚</span>
+    <div>
+      <h2 class="pki-hero-title">How many fit?</h2>
+      <p class="pki-hero-sub">¿Cuántos caben?</p>
+    </div>
+    <span class="pki-hero-badge">Try it first</span>
+  </div>
+  <p class="pki-hero-intro">Cut a whole into equal pieces and count how many fit — the same question you will ask of whole numbers, decimals and fractions all project long.</p>
+  <div class="pki-manip" data-manip="frac-divide"></div>
+</section>
+<!-- projects-interactive-hero-injected:end -->
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">📖</div>
+            <div>
+              <h2 class="card-title">
+                <span class="en-text">Step 1 — Key Words</span>
+                <span class="es-text">Paso 1 — Palabras clave</span>
+              </h2>
+              <div class="card-sub">
+                <span class="en-text"
+                  >The five words you will use in every part of this project</span
+                >
+                <span class="es-text"
+                  >Las cinco palabras que usarás en cada parte de este proyecto</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <div class="vocab-icon">📦</div>
+              <div class="vocab-term">
+                <span class="en-text">Dividend</span>
+                <span class="es-text">Dividendo</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The total amount you are splitting up.</span>
+                <span class="es-text">La cantidad total que estás repartiendo.</span>
+              </div>
+              <div class="vocab-ex">738 ÷ 24 → 738</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">✂️</div>
+              <div class="vocab-term">
+                <span class="en-text">Divisor</span>
+                <span class="es-text">Divisor</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">The size of one group, or the number of groups.</span>
+                <span class="es-text">El tamaño de un grupo, o la cantidad de grupos.</span>
+              </div>
+              <div class="vocab-ex">738 ÷ 24 → 24</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🟰</div>
+              <div class="vocab-term">
+                <span class="en-text">Quotient</span>
+                <span class="es-text">Cociente</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text">How many groups you get, or how many fit.</span>
+                <span class="es-text">Cuántos grupos obtienes, o cuántos caben.</span>
+              </div>
+              <div class="vocab-ex">738 ÷ 24 → 30</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🧩</div>
+              <div class="vocab-term">
+                <span class="en-text">Remainder</span>
+                <span class="es-text">Residuo</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text"
+                  >What is left over. In a real problem, it always means something.</span
+                >
+                <span class="es-text"
+                  >Lo que sobra. En un problema real, siempre significa algo.</span
+                >
+              </div>
+              <div class="vocab-ex">738 ÷ 24 → R 18</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🔁</div>
+              <div class="vocab-term">
+                <span class="en-text">Equivalent division</span>
+                <span class="es-text">División equivalente</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text"
+                  >Multiply the dividend and the divisor by the same power of 10 — the quotient does
+                  not change.</span
+                >
+                <span class="es-text"
+                  >Multiplica el dividendo y el divisor por la misma potencia de 10; el cociente no
+                  cambia.</span
+                >
+              </div>
+              <div class="vocab-ex">58.50 ÷ 2.25 = 5850 ÷ 225</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">↔️</div>
+              <div class="vocab-term">
+                <span class="en-text">Reciprocal</span>
+                <span class="es-text">Recíproco</span>
+              </div>
+              <div class="vocab-def">
+                <span class="en-text"
+                  >Flip the DIVISOR, then multiply. Dividing by ¾ is the same as multiplying by
+                  4/3.</span
+                >
+                <span class="es-text"
+                  >Voltea el DIVISOR y luego multiplica. Dividir entre ¾ es lo mismo que multiplicar
+                  por 4/3.</span
+                >
+              </div>
+              <div class="vocab-ex">12 ÷ ¾ = 12 × 4/3</div>
+            </div>
+          </div>
+
+          <div class="instruct" style="margin-top: 20px">
+            <span class="en-text"
+              ><strong>The job:</strong> Launch Day needs buses, supply packs, banner ribbon, and
+              trail-mix bags. You will make every one of those decisions with division, then design
+              your own supply order and defend it.</span
+            >
+            <span class="es-text"
+              ><strong>El trabajo:</strong> El Día de Lanzamiento necesita autobuses, paquetes de
+              suministros, cinta para pancartas y bolsas de mezcla de frutos secos. Tomarás cada una
+              de esas decisiones con división, y luego diseñarás tu propio pedido y lo
+              defenderás.</span
+            >
+          </div>
+
+          <div class="instruct lvl0-only">
+            <span class="en-text"
+              >🟠 <strong>Level 0 — one step at a time:</strong> Read only the first three cards
+              (dividend, divisor, quotient). Point to each one and say it out loud. You will meet
+              the other words when you need them.</span
+            >
+            <span class="es-text"
+              >🟠 <strong>Nivel 0 — un paso a la vez:</strong> Lee solo las primeras tres tarjetas
+              (dividendo, divisor, cociente). Señala cada una y dila en voz alta. Verás las otras
+              palabras cuando las necesites.</span
+            >
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" disabled>
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(2)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 2 — PART 1: LOAD THE BUSES (2-6)
+      ====================================== -->
+      <div class="step-panel" id="step-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🚌</div>
+            <div>
+              <h2 class="card-title">
+                <span class="en-text">Step 2 — Part 1: Load the Buses</span>
+                <span class="es-text">Paso 2 — Parte 1: Carga los autobuses</span>
+              </h2>
+              <div class="card-sub">
+                <span class="en-text"
+                  >Part 1 · Build the Foundation — divide multi-digit whole numbers, then say what
+                  the remainder means</span
+                >
+                <span class="es-text"
+                  >Parte 1 · Construye la base: divide números enteros de varios dígitos y luego di
+                  qué significa el residuo</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <p class="instruct">
+            <span class="en-text"
+              >Every student rides to the Launch Day field. Buses hold the same number of riders.
+              Find how many buses the depot must order.</span
+            >
+            <span class="es-text"
+              >Todos los estudiantes viajan al campo del Día de Lanzamiento. Cada autobús lleva la
+              misma cantidad de pasajeros. Encuentra cuántos autobuses debe pedir el almacén.</span
+            >
+          </p>
+
+          <svg viewBox="0 0 700 120" class="figure" role="img" aria-labelledby="bus-svg-title">
+            <title id="bus-svg-title">
+              Bus loading diagram: total riders split into equal-size buses
+            </title>
+            <rect x="10" y="20" width="200" height="70" rx="10" fill="#e8f1fa" stroke="#1a6fb5" />
+            <text x="110" y="50" text-anchor="middle" font-size="13" fill="#0f2b3c">
+              <tspan class="en-text">Total riders</tspan>
+              <tspan class="es-text">Pasajeros en total</tspan>
+            </text>
+            <text
+              x="110"
+              y="74"
+              text-anchor="middle"
+              font-size="18"
+              font-weight="bold"
+              fill="#0f2b3c"
+              id="bus-svg-total"
+            >
+              —
+            </text>
+            <text x="240" y="60" font-size="24" fill="#1a6fb5">÷</text>
+            <rect x="280" y="20" width="200" height="70" rx="10" fill="#e9f7f2" stroke="#0c6f6b" />
+            <text x="380" y="50" text-anchor="middle" font-size="13" fill="#0f2b3c">
+              <tspan class="en-text">Seats on one bus</tspan>
+              <tspan class="es-text">Asientos en un autobús</tspan>
+            </text>
+            <text
+              x="380"
+              y="74"
+              text-anchor="middle"
+              font-size="18"
+              font-weight="bold"
+              fill="#0f2b3c"
+              id="bus-svg-seats"
+            >
+              —
+            </text>
+            <text x="510" y="60" font-size="24" fill="#1a6fb5">=</text>
+            <rect x="550" y="20" width="140" height="70" rx="10" fill="#fff7e6" stroke="#b26a00" />
+            <text x="620" y="50" text-anchor="middle" font-size="13" fill="#0f2b3c">
+              <tspan class="en-text">Buses needed</tspan>
+              <tspan class="es-text">Autobuses necesarios</tspan>
+            </text>
+            <text
+              x="620"
+              y="74"
+              text-anchor="middle"
+              font-size="18"
+              font-weight="bold"
+              fill="#0f2b3c"
+              id="bus-svg-result"
+            >
+              ?
+            </text>
+          </svg>
+
+          <div class="instruct lvl0-only">
+            <span class="en-text"
+              >🟠 <strong>Level 0 — one step at a time:</strong><br />
+              Step 1: The riders and the seats are already typed in for you.<br />
+              Step 2: Ask “How many 24s fit inside the total?”<br />
+              Step 3: If even one student is left over, that student still needs a seat.<br />
+              Say it: “I need ___ buses because ___ students were left over.”</span
+            >
+            <span class="es-text"
+              >🟠 <strong>Nivel 0 — un paso a la vez:</strong><br />
+              Paso 1: Los pasajeros y los asientos ya están escritos para ti.<br />
+              Paso 2: Pregunta: “¿Cuántos 24 caben en el total?”<br />
+              Paso 3: Si sobra aunque sea un estudiante, ese estudiante también necesita asiento.<br />
+              Dilo: “Necesito ___ autobuses porque sobraron ___ estudiantes.”</span
+            >
+          </div>
+          <div class="instruct lvl1-only">
+            <span class="en-text"
+              >🟢 <strong>Level 1 tip:</strong> Use partial quotients. How many buses hold 100
+              riders? 200? Chunk your way up, then add the chunks. Check the leftover at the
+              end.</span
+            >
+            <span class="es-text"
+              >🟢 <strong>Consejo del Nivel 1:</strong> Usa cocientes parciales. ¿Cuántos autobuses
+              llevan 100 pasajeros? ¿200? Ve por partes y luego súmalas. Revisa lo que sobra al
+              final.</span
+            >
+          </div>
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE</span>
+              <span class="es-text">RETO DE NIVEL 2</span> </span
+            ><br />
+            <span class="en-text"
+              >Choose your own school size and bus size — pick numbers that do NOT divide evenly, so
+              the remainder actually forces a decision.</span
+            >
+            <span class="es-text"
+              >Elige el tamaño de tu escuela y del autobús: escoge números que NO se dividan
+              exactamente, para que el residuo realmente obligue a decidir.</span
+            >
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="bus-students">
+                <span class="en-text">🎒 Students riding to the field</span>
+                <span class="es-text">🎒 Estudiantes que viajan al campo</span>
+              </label>
+              <input type="number" id="bus-students" min="1" max="100000" oninput="checkBuses()" />
+            </div>
+            <div>
+              <label class="lbl" for="bus-seats">
+                <span class="en-text">💺 Seats on one bus</span>
+                <span class="es-text">💺 Asientos en un autobús</span>
+              </label>
+              <input type="number" id="bus-seats" min="1" max="200" oninput="checkBuses()" />
+            </div>
+          </div>
+
+          <div class="student-calc-section">
+            <label class="lbl" for="student-buses-input">
+              <span class="en-text"
+                ><strong>Your answer:</strong> How many buses must the depot order?</span
+              >
+              <span class="es-text"
+                ><strong>Tu respuesta:</strong> ¿Cuántos autobuses debe pedir el almacén?</span
+              >
+            </label>
+            <input type="number" id="student-buses-input" min="1" max="100000" />
+            <label class="lbl" for="bus-remainder-meaning" style="margin-top: 12px">
+              <span class="en-text">What does the leftover mean here? (Because / But / So)</span>
+              <span class="es-text"
+                >¿Qué significa lo que sobra aquí? (Porque / Pero / Entonces)</span
+              >
+            </label>
+            <textarea
+              id="bus-remainder-meaning"
+              rows="3"
+              placeholder="24 riders fit on each bus, but ___ students were left over, so ___."
+            ></textarea>
+          </div>
+
+          <button class="calc-btn" onclick="checkBuses(true)">
+            <span class="en-text">🧮 Check my bus order</span>
+            <span class="es-text">🧮 Revisar mi pedido de autobuses</span>
+          </button>
+          <div class="readout" id="bus-out" role="status" aria-live="polite"></div>
+
+          <details class="hint">
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text"
+                >Divide the total riders by the seats on one bus. The quotient tells you how many
+                buses fill up completely. Then ask: is anyone still standing on the sidewalk?</span
+              >
+              <span class="es-text"
+                >Divide el total de pasajeros entre los asientos de un autobús. El cociente indica
+                cuántos autobuses se llenan por completo. Luego pregunta: ¿queda alguien todavía en
+                la acera?</span
+              >
+            </p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(1)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(3)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 3 — PART 1: SUPPLY PACKS (2-7)
+      ====================================== -->
+      <div class="step-panel" id="step-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">💵</div>
+            <div>
+              <h2 class="card-title">
+                <span class="en-text">Step 3 — Part 1: Buy the Supply Packs</span>
+                <span class="es-text">Paso 3 — Parte 1: Compra los paquetes de suministros</span>
+              </h2>
+              <div class="card-sub">
+                <span class="en-text"
+                  >Part 1 · Build the Foundation — divide with decimals by making the divisor a
+                  whole number first</span
+                >
+                <span class="es-text"
+                  >Parte 1 · Construye la base: divide con decimales convirtiendo primero el divisor
+                  en número entero</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <p class="instruct">
+            <span class="en-text"
+              >The depot has money set aside for supply packs. Each pack costs the same. How many
+              packs can you buy?</span
+            >
+            <span class="es-text"
+              >El almacén tiene dinero apartado para paquetes de suministros. Cada paquete cuesta lo
+              mismo. ¿Cuántos paquetes puedes comprar?</span
+            >
+          </p>
+
+          <div class="instruct lvl0-only">
+            <span class="en-text"
+              >🟠 <strong>Level 0 — one step at a time:</strong><br />
+              Step 1: The money and the price are typed in for you.<br />
+              Step 2: The divisor has a decimal point, so move it. Multiply BOTH numbers by 100.<br />
+              Step 3: Now divide the two whole numbers.<br />
+              Tiny example: 4.5 ÷ 1.5 is the same as 45 ÷ 15 = 3.</span
+            >
+            <span class="es-text"
+              >🟠 <strong>Nivel 0 — un paso a la vez:</strong><br />
+              Paso 1: El dinero y el precio ya están escritos para ti.<br />
+              Paso 2: El divisor tiene punto decimal, así que muévelo. Multiplica AMBOS números por
+              100.<br />
+              Paso 3: Ahora divide los dos números enteros.<br />
+              Ejemplo pequeño: 4.5 ÷ 1.5 es lo mismo que 45 ÷ 15 = 3.</span
+            >
+          </div>
+          <div class="instruct lvl1-only">
+            <span class="en-text"
+              >🟢 <strong>Level 1 tip:</strong> Write the equivalent division before you divide.
+              Both numbers get multiplied by the same power of 10, so the quotient does not
+              change.</span
+            >
+            <span class="es-text"
+              >🟢 <strong>Consejo del Nivel 1:</strong> Escribe la división equivalente antes de
+              dividir. Ambos números se multiplican por la misma potencia de 10, así que el cociente
+              no cambia.</span
+            >
+          </div>
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 CHALLENGE</span>
+              <span class="es-text">RETO DE NIVEL 2</span> </span
+            ><br />
+            <span class="en-text"
+              >Set your own budget and your own pack price — then explain which power of 10 you had
+              to use and why.</span
+            >
+            <span class="es-text"
+              >Establece tu propio presupuesto y tu propio precio por paquete; luego explica qué
+              potencia de 10 tuviste que usar y por qué.</span
+            >
+          </div>
+
+          <div class="step-research no-print">
+            <div class="sr-head">
+              <span class="en-text">📊 Research you need for this step</span
+              ><span class="es-text">📊 Investigación que necesitas para este paso</span>
+            </div>
+            🛒
+            <a
+              href="https://www.walmart.com/cp/school-supplies/1094926"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="level-btn"
+              ><span class="en-text">Walmart — School Supplies ↗</span
+              ><span class="es-text">Walmart — Útiles escolares ↗</span></a
+            >
+            <small class="sr-hint"
+              ><span class="en-text">Find one real pack and record its price. A price like $2.25 is what makes this a decimal divisor.</span
+              ><span class="es-text">Busca un paquete real y anota su precio. Un precio como $2.25 es lo que hace que el divisor sea decimal.</span></small
+            >
+            <input
+              type="text"
+              id="rfind-1"
+              data-research-find
+              aria-label="Record the real pack you found and its price"
+              placeholder="✍️ e.g. Pencil pack — $2.25 each"
+              style="width: 100%; box-sizing: border-box; margin-top: 6px"
+            />
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="sup-total">
+                <span class="en-text">💰 Money set aside for packs ($)</span>
+                <span class="es-text">💰 Dinero apartado para paquetes ($)</span>
+              </label>
+              <input
+                type="number"
+                id="sup-total"
+                min="0.01"
+                max="100000"
+                step="0.01"
+                oninput="checkPacks()"
+              />
+            </div>
+            <div>
+              <label class="lbl" for="sup-unit">
+                <span class="en-text">🏷️ Price of one pack ($)</span>
+                <span class="es-text">🏷️ Precio de un paquete ($)</span>
+              </label>
+              <input
+                type="number"
+                id="sup-unit"
+                min="0.01"
+                max="10000"
+                step="0.01"
+                oninput="checkPacks()"
+              />
+            </div>
+          </div>
+
+          <div class="student-calc-section">
+            <label class="lbl" for="student-equiv-input">
+              <span class="en-text"
+                ><strong>Step A:</strong> Write the equivalent division with whole numbers (example:
+                5850 ÷ 225)</span
+              >
+              <span class="es-text"
+                ><strong>Paso A:</strong> Escribe la división equivalente con números enteros
+                (ejemplo: 5850 ÷ 225)</span
+              >
+            </label>
+            <input type="text" id="student-equiv-input" placeholder="____ ÷ ____" />
+            <label class="lbl" for="student-packs-input" style="margin-top: 12px">
+              <span class="en-text"><strong>Step B:</strong> How many packs can you buy?</span>
+              <span class="es-text"
+                ><strong>Paso B:</strong> ¿Cuántos paquetes puedes comprar?</span
+              >
+            </label>
+            <input type="number" id="student-packs-input" min="0" max="100000" />
+          </div>
+
+          <button class="calc-btn" onclick="checkPacks(true)">
+            <span class="en-text">🧮 Check my supply order</span>
+            <span class="es-text">🧮 Revisar mi pedido de suministros</span>
+          </button>
+          <div class="readout" id="packs-out" role="status" aria-live="polite"></div>
+
+          <details class="hint">
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text"
+                >A decimal divisor is hard to think about. Multiply the divisor by a power of 10
+                until it is a whole number — then multiply the dividend by the SAME power of 10. The
+                two divisions are equivalent.</span
+              >
+              <span class="es-text"
+                >Un divisor decimal es difícil de pensar. Multiplica el divisor por una potencia de
+                10 hasta que sea un número entero; luego multiplica el dividendo por la MISMA
+                potencia de 10. Las dos divisiones son equivalentes.</span
+              >
+            </p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(2)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(4)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 4 — PART 2: BANNERS & TRAIL MIX (6-1, 6-2)
+      ====================================== -->
+      <div class="step-panel" id="step-4">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🎀</div>
+            <div>
+              <h2 class="card-title">
+                <span class="en-text">Step 4 — Part 2: Ribbon and Trail Mix</span>
+                <span class="es-text">Paso 4 — Parte 2: Cinta y mezcla de frutos secos</span>
+              </h2>
+              <div class="card-sub">
+                <span class="en-text"
+                  >Part 2 · Connect and Apply — the same “how many fit?” question, now with
+                  fractions and mixed numbers</span
+                >
+                <span class="es-text"
+                  >Parte 2 · Conecta y aplica: la misma pregunta “¿cuántos caben?”, ahora con
+                  fracciones y números mixtos</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <p class="instruct">
+            <span class="en-text"
+              ><strong>Choose your own strategy in this part.</strong> You may draw the model or use
+              the reciprocal — but you must say which one you used and why it works.</span
+            >
+            <span class="es-text"
+              ><strong>Elige tu propia estrategia en esta parte.</strong> Puedes dibujar el modelo o
+              usar el recíproco, pero debes decir cuál usaste y por qué funciona.</span
+            >
+          </p>
+
+          <h3 class="sub-head">
+            <span class="en-text">4a · Banner ribbon</span>
+            <span class="es-text">4a · Cinta para pancartas</span>
+          </h3>
+
+          <svg viewBox="0 0 700 90" class="figure" role="img" aria-labelledby="rope-svg-title">
+            <title id="rope-svg-title">
+              A length of ribbon marked off into equal banner-size pieces
+            </title>
+            <rect x="20" y="30" width="640" height="30" rx="6" fill="#fde8ef" stroke="#c2185b" />
+            <g id="rope-svg-ticks"></g>
+            <text
+              x="340"
+              y="80"
+              text-anchor="middle"
+              font-size="13"
+              fill="#0f2b3c"
+              id="rope-svg-label"
+            >
+              <tspan class="en-text">Enter the ribbon length and the piece size →</tspan>
+              <tspan class="es-text">
+                Escribe el largo de la cinta y el tamaño de cada pieza →
+              </tspan>
+            </text>
+          </svg>
+
+          <div class="instruct lvl0-only">
+            <span class="en-text"
+              >🟠 <strong>Level 0 — one step at a time:</strong> Look at the picture. Count how many
+              equal pieces fit inside the whole strip. That count IS the quotient.</span
+            >
+            <span class="es-text"
+              >🟠 <strong>Nivel 0 — un paso a la vez:</strong> Mira el dibujo. Cuenta cuántas piezas
+              iguales caben dentro de toda la tira. Ese conteo ES el cociente.</span
+            >
+          </div>
+          <div class="instruct lvl1-only">
+            <span class="en-text"
+              >🟢 <strong>Level 1 tip:</strong> “How many ¾-metre pieces fit in 12 metres?” is a
+              division question: 12 ÷ ¾. Flip the DIVISOR and multiply.</span
+            >
+            <span class="es-text"
+              >🟢 <strong>Consejo del Nivel 1:</strong> “¿Cuántas piezas de ¾ de metro caben en 12
+              metros?” es una división: 12 ÷ ¾. Voltea el DIVISOR y multiplica.</span
+            >
+          </div>
+
+          <div class="step-research no-print">
+            <div class="sr-head">
+              <span class="en-text">📊 Research you need for this step</span
+              ><span class="es-text">📊 Investigación que necesitas para este paso</span>
+            </div>
+            🎀
+            <a
+              href="https://www.michaels.com/shop/ribbon-bows/ribbon"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="level-btn"
+              ><span class="en-text">Michaels — Ribbon by the roll ↗</span
+              ><span class="es-text">Michaels — Cinta por rollo ↗</span></a
+            >
+            <small class="sr-hint"
+              ><span class="en-text">Find a real roll. Record how long the roll is and how wide the ribbon is — widths are almost always fractions.</span
+              ><span class="es-text">Busca un rollo real. Anota qué tan largo es y qué tan ancha es la cinta; los anchos casi siempre son fracciones.</span></small
+            >
+            <input
+              type="text"
+              id="rfind-2"
+              data-research-find
+              aria-label="Record the real ribbon roll you found, its length and its width"
+              placeholder="✍️ e.g. Satin ribbon — 9 m roll, 7/8 in wide"
+              style="width: 100%; box-sizing: border-box; margin-top: 6px"
+            />
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="rope-total">
+                <span class="en-text">🎗️ Ribbon on the roll (metres)</span>
+                <span class="es-text">🎗️ Cinta en el rollo (metros)</span>
+              </label>
+              <input type="text" id="rope-total" placeholder="12" oninput="checkBanners()" />
+            </div>
+            <div>
+              <label class="lbl" for="rope-each">
+                <span class="en-text">📏 Ribbon for one banner (metres — you may type 3/4)</span>
+                <span class="es-text"
+                  >📏 Cinta para una pancarta (metros; puedes escribir 3/4)</span
+                >
+              </label>
+              <input type="text" id="rope-each" placeholder="3/4" oninput="checkBanners()" />
+            </div>
+          </div>
+
+          <div class="student-calc-section">
+            <label class="lbl" for="student-banners-input">
+              <span class="en-text"
+                ><strong>Your answer:</strong> How many whole banners can you cut?</span
+              >
+              <span class="es-text"
+                ><strong>Tu respuesta:</strong> ¿Cuántas pancartas enteras puedes cortar?</span
+              >
+            </label>
+            <input type="text" id="student-banners-input" />
+          </div>
+          <button class="calc-btn" onclick="checkBanners(true)">
+            <span class="en-text">🧮 Check my banner count</span>
+            <span class="es-text">🧮 Revisar mi conteo de pancartas</span>
+          </button>
+          <div class="readout" id="banners-out" role="status" aria-live="polite"></div>
+
+          <h3 class="sub-head">
+            <span class="en-text">4b · Trail-mix bags</span>
+            <span class="es-text">4b · Bolsas de mezcla de frutos secos</span>
+          </h3>
+
+          <p class="instruct">
+            <span class="en-text"
+              >Now both numbers are fractions. Type mixed numbers with a space, like
+              <strong>7 1/2</strong>.</span
+            >
+            <span class="es-text"
+              >Ahora ambos números son fracciones. Escribe los números mixtos con un espacio, como
+              <strong>7 1/2</strong>.</span
+            >
+          </p>
+
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="mix-total">
+                <span class="en-text">🥜 Trail mix in the bin (pounds)</span>
+                <span class="es-text">🥜 Mezcla en el recipiente (libras)</span>
+              </label>
+              <input type="text" id="mix-total" placeholder="7 1/2" oninput="checkBags()" />
+            </div>
+            <div>
+              <label class="lbl" for="mix-each">
+                <span class="en-text">🛍️ Trail mix in one bag (pounds)</span>
+                <span class="es-text">🛍️ Mezcla en una bolsa (libras)</span>
+              </label>
+              <input type="text" id="mix-each" placeholder="1 1/4" oninput="checkBags()" />
+            </div>
+          </div>
+
+          <div class="student-calc-section">
+            <label class="lbl" for="student-bags-input">
+              <span class="en-text"><strong>Your answer:</strong> How many full bags?</span>
+              <span class="es-text"><strong>Tu respuesta:</strong> ¿Cuántas bolsas llenas?</span>
+            </label>
+            <input type="text" id="student-bags-input" />
+
+            <label class="lbl" for="bag-strategy" style="margin-top: 12px">
+              <span class="en-text">Which strategy did you use?</span>
+              <span class="es-text">¿Qué estrategia usaste?</span>
+            </label>
+            <select id="bag-strategy">
+              <option value="">— choose —</option>
+              <option value="model">Model / picture — I counted how many 1¼-lb portions fit</option>
+              <option value="reciprocal">
+                Reciprocal — I rewrote both as improper fractions and multiplied by the flip
+              </option>
+              <option value="common">
+                Common denominator — I gave both the same denominator and divided the numerators
+              </option>
+            </select>
+            <label class="lbl" for="bag-justify" style="margin-top: 12px">
+              <span class="en-text">Why does your strategy work? (Because / But / So)</span>
+              <span class="es-text"
+                >¿Por qué funciona tu estrategia? (Porque / Pero / Entonces)</span
+              >
+            </label>
+            <textarea
+              id="bag-justify"
+              rows="3"
+              placeholder="I used ___ because ___. It works because dividing asks how many ___ fit inside ___."
+            ></textarea>
+          </div>
+          <button class="calc-btn" onclick="checkBags(true)">
+            <span class="en-text">🧮 Check my bag count</span>
+            <span class="es-text">🧮 Revisar mi conteo de bolsas</span>
+          </button>
+          <div class="readout" id="bags-out" role="status" aria-live="polite"></div>
+
+          <div class="lvl2-block lvl2-only" style="margin-top: 18px">
+            <span class="lvl2-label">
+              <span class="en-text"
+                >LEVEL 2 EXTENSION — Make the quotient bigger than the dividend</span
+              >
+              <span class="es-text"
+                >EXTENSIÓN DE NIVEL 2 — Haz que el cociente sea mayor que el dividendo</span
+              >
+            </span>
+            <p style="font-size: 14px; margin: 6px 0 10px">
+              <span class="en-text"
+                >Change ONE number above so that the answer comes out LARGER than the amount you
+                started with. Then explain what that tells you about the divisor.</span
+              >
+              <span class="es-text"
+                >Cambia UN número de arriba para que la respuesta salga MAYOR que la cantidad
+                inicial. Luego explica qué te dice eso sobre el divisor.</span
+              >
+            </p>
+            <label class="lbl" for="lv2-bigger">
+              <span class="en-text">What did you change, and why did the quotient grow?</span>
+              <span class="es-text">¿Qué cambiaste y por qué creció el cociente?</span>
+            </label>
+            <textarea id="lv2-bigger" rows="3"></textarea>
+          </div>
+
+          <details class="hint">
+            <summary>
+              <span class="en-text">Need a hint?</span>
+              <span class="es-text">¿Necesitas una pista?</span>
+            </summary>
+            <p>
+              <span class="en-text"
+                >Turn each mixed number into an improper fraction first. Then keep the dividend,
+                flip the divisor, and multiply. Simplify at the end.</span
+              >
+              <span class="es-text"
+                >Convierte primero cada número mixto en fracción impropia. Luego conserva el
+                dividendo, voltea el divisor y multiplica. Simplifica al final.</span
+              >
+            </p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(3)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(5)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 5 — PART 2: REPAIR THE ORDER
+      ====================================== -->
+      <div class="step-panel" id="step-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🔍</div>
+            <div>
+              <h2 class="card-title">
+                <span class="en-text">Step 5 — Part 2: Repair the Depot Order</span>
+                <span class="es-text">Paso 5 — Parte 2: Repara el pedido del almacén</span>
+              </h2>
+              <div class="card-sub">
+                <span class="en-text"
+                  >Part 2 · Connect and Apply — find the error, name it, and fix it</span
+                >
+                <span class="es-text"
+                  >Parte 2 · Conecta y aplica: encuentra el error, nómbralo y arréglalo</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <p class="instruct">
+            <span class="en-text"
+              >Last year's Supply Chief left this note in the depot binder. One line is wrong.</span
+            >
+            <span class="es-text"
+              >El Jefe de Suministros del año pasado dejó esta nota en la carpeta del almacén. Una
+              línea está mal.</span
+            >
+          </p>
+
+          <div class="peer-work">
+            <p><strong>Depot note — banner ribbon</strong></p>
+            <p><em>"We have 12 m of ribbon. Each banner takes ¾ m."</em></p>
+            <p>12 ÷ ¾ &nbsp;→&nbsp; 12 × ¾ = 9</p>
+            <p><strong>Order 9 banners.</strong></p>
+          </div>
+
+          <div class="instruct lvl0-only">
+            <span class="en-text"
+              >🟠 <strong>Level 0 — one step at a time:</strong> The pieces are SMALLER than one
+              metre. If each piece is smaller than a metre, should you end up with more than 12
+              pieces or fewer than 12? Answer that first.</span
+            >
+            <span class="es-text"
+              >🟠 <strong>Nivel 0 — un paso a la vez:</strong> Las piezas son MÁS PEQUEÑAS que un
+              metro. Si cada pieza mide menos de un metro, ¿deberías terminar con más de 12 piezas o
+              con menos de 12? Responde eso primero.</span
+            >
+          </div>
+          <div class="instruct lvl1-only">
+            <span class="en-text"
+              >🟢 <strong>Level 1 tip:</strong> Estimate before you calculate. Then check which
+              number actually got flipped.</span
+            >
+            <span class="es-text"
+              >🟢 <strong>Consejo del Nivel 1:</strong> Estima antes de calcular. Luego revisa cuál
+              número se volteó realmente.</span
+            >
+          </div>
+
+          <label class="lbl" for="err-diagnosis">
+            <span class="en-text">What exactly went wrong?</span>
+            <span class="es-text">¿Qué salió mal exactamente?</span>
+          </label>
+          <select id="err-diagnosis">
+            <option value="">— choose —</option>
+            <option value="multiplied">
+              They multiplied by the divisor instead of by its reciprocal.
+            </option>
+            <option value="flipped-dividend">
+              They flipped the dividend instead of the divisor.
+            </option>
+            <option value="rounded">They rounded the quotient down too early.</option>
+            <option value="units">They used the wrong units.</option>
+          </select>
+
+          <div class="student-calc-section">
+            <label class="lbl" for="err-correct">
+              <span class="en-text"><strong>Your corrected order:</strong> how many banners?</span>
+              <span class="es-text"><strong>Tu pedido corregido:</strong> ¿cuántas pancartas?</span>
+            </label>
+            <input type="text" id="err-correct" />
+            <label class="lbl" for="err-explain" style="margin-top: 12px">
+              <span class="en-text"
+                >Explain the repair to next year's Supply Chief. (Because / But / So)</span
+              >
+              <span class="es-text"
+                >Explica la corrección al Jefe de Suministros del próximo año. (Porque / Pero /
+                Entonces)</span
+              >
+            </label>
+            <textarea
+              id="err-explain"
+              rows="3"
+              placeholder="The note multiplied by 3/4, but dividing asks how many 3/4-metre pieces fit in 12 metres, so ___."
+            ></textarea>
+          </div>
+          <button class="calc-btn" onclick="checkRepair()">
+            <span class="en-text">🔧 Check my repair</span>
+            <span class="es-text">🔧 Revisar mi corrección</span>
+          </button>
+          <div class="readout" id="repair-out" role="status" aria-live="polite"></div>
+
+          <div class="lvl2-block lvl2-only" style="margin-top: 18px">
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 EXTENSION — Write the trap</span>
+              <span class="es-text">EXTENSIÓN DE NIVEL 2 — Escribe la trampa</span>
+            </span>
+            <p style="font-size: 14px; margin: 6px 0 10px">
+              <span class="en-text"
+                >Write a depot note of your own that contains one believable division error, and say
+                what a careful reader should notice.</span
+              >
+              <span class="es-text"
+                >Escribe tu propia nota del almacén con un error de división creíble, y di qué
+                debería notar un lector cuidadoso.</span
+              >
+            </p>
+            <label class="lbl" for="lv2-trap">
+              <span class="en-text">Your depot note, and what a careful reader should notice</span>
+              <span class="es-text">Tu nota del almacén y qué debería notar un lector cuidadoso</span>
+            </label>
+            <textarea id="lv2-trap" rows="4"></textarea>
+          </div>
+
+          <h3 class="sub-head">
+            <span class="en-text">Compare with a partner</span>
+            <span class="es-text">Compara con un compañero</span>
+          </h3>
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="p-name">
+                <span class="en-text">Partner's name</span>
+                <span class="es-text">Nombre del compañero</span>
+              </label>
+              <input type="text" id="p-name" />
+            </div>
+            <div>
+              <label class="lbl" for="peer-buses">
+                <span class="en-text">Partner's bus count</span>
+                <span class="es-text">Conteo de autobuses del compañero</span>
+              </label>
+              <input type="number" id="peer-buses" min="0" max="100000" oninput="comparePeer()" />
+            </div>
+          </div>
+          <label class="lbl" for="peer-reflect">
+            <span class="en-text">Where did your reasoning differ, and who convinced whom?</span>
+            <span class="es-text"
+              >¿En qué se diferenció su razonamiento y quién convenció a quién?</span
+            >
+          </label>
+          <textarea
+            id="peer-reflect"
+            rows="3"
+            placeholder="We both divided, but ___. I changed my mind about ___ because ___."
+          ></textarea>
+          <div class="readout" id="peer-out" role="status" aria-live="polite"></div>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(4)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn" onclick="goStep(6)">
+            <span class="en-text">Next Step →</span>
+            <span class="es-text">Siguiente paso →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 6 — PART 3: DESIGN & DEFEND
+      ====================================== -->
+      <div class="step-panel" id="step-6">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">🏆</div>
+            <div>
+              <h2 class="card-title">
+                <span class="en-text">Step 6 — Part 3: Design the Depot Order and Defend It</span>
+                <span class="es-text"
+                  >Paso 6 — Parte 3: Diseña el pedido del almacén y defiéndelo</span
+                >
+              </h2>
+              <div class="card-sub">
+                <span class="en-text"
+                  >Part 3 · Design and Defend — your own Launch Day, your own numbers, your own
+                  argument</span
+                >
+                <span class="es-text"
+                  >Parte 3 · Diseña y defiende: tu propio Día de Lanzamiento, tus números, tu
+                  argumento</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="instruct">
+            <span class="en-text"
+              ><strong>Design rules.</strong> Your order must satisfy all four:<br />
+              1. A whole-number division whose remainder is NOT zero, and whose leftover changes
+              your answer.<br />
+              2. A decimal division where the divisor is not a whole number.<br />
+              3. A division by a fraction less than 1, so the quotient is larger than the
+              dividend.<br />
+              4. A claim about which of your four divisions was hardest to be sure about — and
+              why.</span
+            >
+            <span class="es-text"
+              ><strong>Reglas de diseño.</strong> Tu pedido debe cumplir las cuatro:<br />
+              1. Una división de números enteros cuyo residuo NO sea cero y cuyo sobrante cambie tu
+              respuesta.<br />
+              2. Una división decimal donde el divisor no sea número entero.<br />
+              3. Una división entre una fracción menor que 1, para que el cociente sea mayor que el
+              dividendo.<br />
+              4. Una afirmación sobre cuál de tus cuatro divisiones fue la más difícil de asegurar,
+              y por qué.</span
+            >
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="d-students">
+                <span class="en-text">🎒 Your school's riders</span>
+                <span class="es-text">🎒 Pasajeros de tu escuela</span>
+              </label>
+              <input type="number" id="d-students" min="1" max="100000" oninput="buildReport()" />
+            </div>
+            <div>
+              <label class="lbl" for="d-seats">
+                <span class="en-text">💺 Seats per bus</span>
+                <span class="es-text">💺 Asientos por autobús</span>
+              </label>
+              <input type="number" id="d-seats" min="1" max="200" oninput="buildReport()" />
+            </div>
+            <div>
+              <label class="lbl" for="d-budget">
+                <span class="en-text">💰 Supply budget ($)</span>
+                <span class="es-text">💰 Presupuesto de suministros ($)</span>
+              </label>
+              <input
+                type="number"
+                id="d-budget"
+                min="0.01"
+                max="100000"
+                step="0.01"
+                oninput="buildReport()"
+              />
+            </div>
+            <div>
+              <label class="lbl" for="d-unit-cost">
+                <span class="en-text">🏷️ Price per pack ($, not a whole dollar)</span>
+                <span class="es-text">🏷️ Precio por paquete ($, no un dólar entero)</span>
+              </label>
+              <input
+                type="number"
+                id="d-unit-cost"
+                min="0.01"
+                max="10000"
+                step="0.01"
+                oninput="buildReport()"
+              />
+            </div>
+            <div>
+              <label class="lbl" for="d-rope">
+                <span class="en-text">🎗️ Ribbon on the roll (metres)</span>
+                <span class="es-text">🎗️ Cinta en el rollo (metros)</span>
+              </label>
+              <input type="text" id="d-rope" oninput="buildReport()" />
+            </div>
+            <div>
+              <label class="lbl" for="d-each">
+                <span class="en-text">📏 Ribbon per banner (a fraction less than 1)</span>
+                <span class="es-text">📏 Cinta por pancarta (una fracción menor que 1)</span>
+              </label>
+              <input type="text" id="d-each" oninput="buildReport()" />
+            </div>
+          </div>
+
+          <div class="student-calc-section">
+            <p class="lbl">
+              <span class="en-text"
+                ><strong>Your three quotients.</strong> The depot only accepts an order the Chief
+                worked out personally.</span
+              >
+              <span class="es-text"
+                ><strong>Tus tres cocientes.</strong> El almacén solo acepta un pedido que el Jefe
+                calculó personalmente.</span
+              >
+            </p>
+            <div class="grid2">
+              <div>
+                <label class="lbl" for="d-buses">
+                  <span class="en-text">Buses to order</span>
+                  <span class="es-text">Autobuses a pedir</span>
+                </label>
+                <input type="number" id="d-buses" min="1" max="100000" />
+              </div>
+              <div>
+                <label class="lbl" for="d-packs">
+                  <span class="en-text">Packs to buy</span>
+                  <span class="es-text">Paquetes a comprar</span>
+                </label>
+                <input type="number" id="d-packs" min="0" max="100000" />
+              </div>
+              <div>
+                <label class="lbl" for="d-banners">
+                  <span class="en-text">Banners to cut</span>
+                  <span class="es-text">Pancartas a cortar</span>
+                </label>
+                <input type="text" id="d-banners" />
+              </div>
+            </div>
+          </div>
+
+          <button class="calc-btn" onclick="checkDesign()">
+            <span class="en-text">📋 Submit the depot order</span>
+            <span class="es-text">📋 Enviar el pedido del almacén</span>
+          </button>
+          <div class="readout" id="design-out" role="status" aria-live="polite"></div>
+
+          <h3 class="sub-head">
+            <span class="en-text">Defend your order</span>
+            <span class="es-text">Defiende tu pedido</span>
+          </h3>
+          <label class="lbl" for="pitch">
+            <span class="en-text"
+              >Make a claim, give evidence from your own numbers, and answer the objection.</span
+            >
+            <span class="es-text"
+              >Haz una afirmación, da evidencia de tus propios números y responde a la
+              objeción.</span
+            >
+          </label>
+          <textarea
+            id="pitch"
+            rows="6"
+            placeholder="I claim the hardest division to be sure about was ___, because ___. Someone might object that ___, but ___, so ___."
+          ></textarea>
+
+          <div class="lvl2-block lvl2-only" style="margin-top: 18px">
+            <span class="lvl2-label">
+              <span class="en-text">LEVEL 2 EXTENSION — One depot, two readings</span>
+              <span class="es-text">EXTENSIÓN DE NIVEL 2 — Un almacén, dos lecturas</span>
+            </span>
+            <p style="font-size: 14px; margin: 6px 0 10px">
+              <span class="en-text"
+                >Give one of your quotients a second, reasonable interpretation that leads to a
+                DIFFERENT order — then argue for the one you would actually send.</span
+              >
+              <span class="es-text"
+                >Da a uno de tus cocientes una segunda interpretación razonable que lleve a un
+                pedido DIFERENTE, y luego argumenta a favor del que realmente enviarías.</span
+              >
+            </p>
+            <label class="lbl" for="lv2-two-readings">
+              <span class="en-text">The second reading, and the order you would actually send</span>
+              <span class="es-text">La segunda lectura y el pedido que realmente enviarías</span>
+            </label>
+            <textarea id="lv2-two-readings" rows="4"></textarea>
+          </div>
+
+          <h3 class="sub-head">
+            <span class="en-text">📊 How You Are Scored</span>
+            <span class="es-text">📊 Cómo se te califica</span>
+          </h3>
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th>
+                  <span class="en-text">Skill</span>
+                  <span class="es-text">Habilidad</span>
+                </th>
+                <th class="score-4">
+                  <span class="en-text">4 — Expert</span>
+                  <span class="es-text">4 — Experto</span>
+                </th>
+                <th class="score-3">
+                  <span class="en-text">3 — Proficient</span>
+                  <span class="es-text">3 — Competente</span>
+                </th>
+                <th class="score-2">
+                  <span class="en-text">2 — Developing</span>
+                  <span class="es-text">2 — En desarrollo</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <span class="en-text">Whole-number division &amp; remainder</span>
+                  <span class="es-text">División de enteros y residuo</span>
+                </td>
+                <td>
+                  <span class="en-text"
+                    >Quotient correct and the leftover is interpreted for the situation</span
+                  >
+                  <span class="es-text"
+                    >Cociente correcto y el sobrante se interpreta según la situación</span
+                  >
+                </td>
+                <td>
+                  <span class="en-text">Quotient and remainder correct</span>
+                  <span class="es-text">Cociente y residuo correctos</span>
+                </td>
+                <td>
+                  <span class="en-text">Divides, but drops or ignores the leftover</span>
+                  <span class="es-text">Divide, pero ignora o pierde el sobrante</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="en-text">Decimal division</span>
+                  <span class="es-text">División decimal</span>
+                </td>
+                <td>
+                  <span class="en-text"
+                    >Writes the equivalent division and explains why the quotient is unchanged</span
+                  >
+                  <span class="es-text"
+                    >Escribe la división equivalente y explica por qué el cociente no cambia</span
+                  >
+                </td>
+                <td>
+                  <span class="en-text">Makes the divisor whole and divides accurately</span>
+                  <span class="es-text">Convierte el divisor en entero y divide con exactitud</span>
+                </td>
+                <td>
+                  <span class="en-text">Moves one decimal point but not the other</span>
+                  <span class="es-text">Mueve un punto decimal pero no el otro</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="en-text">Fraction &amp; mixed-number division</span>
+                  <span class="es-text">División de fracciones y números mixtos</span>
+                </td>
+                <td>
+                  <span class="en-text"
+                    >Connects the model and the reciprocal and says why they agree</span
+                  >
+                  <span class="es-text"
+                    >Conecta el modelo y el recíproco y dice por qué coinciden</span
+                  >
+                </td>
+                <td>
+                  <span class="en-text">Divides correctly with one chosen strategy</span>
+                  <span class="es-text">Divide correctamente con una estrategia elegida</span>
+                </td>
+                <td>
+                  <span class="en-text">Flips the wrong number, or multiplies instead</span>
+                  <span class="es-text">Voltea el número equivocado, o multiplica en su lugar</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="en-text">Explaining and defending</span>
+                  <span class="es-text">Explicar y defender</span>
+                </td>
+                <td>
+                  <span class="en-text">Claim, evidence, and an answered objection</span>
+                  <span class="es-text">Afirmación, evidencia y una objeción respondida</span>
+                </td>
+                <td>
+                  <span class="en-text">Claim with evidence from own numbers</span>
+                  <span class="es-text">Afirmación con evidencia de sus propios números</span>
+                </td>
+                <td>
+                  <span class="en-text">States an answer without reasoning</span>
+                  <span class="es-text">Da una respuesta sin razonamiento</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="sub-head">
+            <span class="en-text">Reflection</span>
+            <span class="es-text">Reflexión</span>
+          </h3>
+          <div class="instruct">
+            <span class="en-text"
+              >Answer in a sentence each. This is the part your teacher reads first.</span
+            >
+            <span class="es-text"
+              >Responde con una oración cada una. Esta es la parte que tu maestro lee primero.</span
+            >
+          </div>
+          <label class="lbl" for="r-math">
+            <span class="en-text">Which kind of division was hardest, and what made it hard?</span>
+            <span class="es-text">¿Qué tipo de división fue la más difícil y por qué?</span>
+          </label>
+          <textarea id="r-math" rows="2"></textarea>
+          <label class="lbl" for="r-rep">
+            <span class="en-text"
+              >Which representation helped you most — picture, equivalent division, or
+              reciprocal?</span
+            >
+            <span class="es-text"
+              >¿Qué representación te ayudó más: dibujo, división equivalente o recíproco?</span
+            >
+          </label>
+          <textarea id="r-rep" rows="2"></textarea>
+          <label class="lbl" for="r-ready">
+            <span class="en-text"
+              >Which Pre-Unit idea do you feel most ready to use in Grade 6?</span
+            >
+            <span class="es-text"
+              >¿Qué idea de la Pre-Unidad te sientes más listo para usar en 6.º grado?</span
+            >
+          </label>
+          <textarea id="r-ready" rows="2"></textarea>
+
+          <div class="readout show" id="report-out"></div>
+
+          <div class="nav-row" style="margin-top: 16px">
+            <button class="export-btn" onclick="copyReport()">
+              <span class="en-text">📋 Copy my depot report</span>
+              <span class="es-text">📋 Copiar mi informe del almacén</span>
+            </button>
+            <button class="export-btn" onclick="downloadTxt()">
+              <span class="en-text">⬇️ Download as text</span>
+              <span class="es-text">⬇️ Descargar como texto</span>
+            </button>
+            <button class="nav-btn" onclick="finishProject()">
+              <span class="en-text">🏁 Finish the project</span>
+              <span class="es-text">🏁 Terminar el proyecto</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(5)">
+            <span class="en-text">← Back</span>
+            <span class="es-text">← Atrás</span>
+          </button>
+          <button class="nav-btn ghost" disabled>
+            <span class="en-text">Last step</span>
+            <span class="es-text">Último paso</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/assets/app.js" defer></script>
+    <script>
+      /* =====================================================================
+         Launch Day Supply Depot — Pre-Unit culminating project
+         Mathematics is drawn ONLY from the Pre-Unit sequence:
+           1-1  math story / explaining reasoning        (MPP.3)
+           2-6  multi-digit whole-number division        (6.NOS.2)
+           2-7  decimal division / equivalent division   (6.NOS.3)
+           6-1  whole ÷ fraction, fraction ÷ whole       (6.NOS.1)
+           6-2  fraction ÷ fraction, mixed numbers       (6.NOS.1)
+         No ratio, percent, expression or equation work appears anywhere.
+         ===================================================================== */
+
+      const PRESETS = {
+        "bus-students": 738,
+        "bus-seats": 24,
+        "sup-total": 58.5,
+        "sup-unit": 2.25,
+        "rope-total": "12",
+        "rope-each": "3/4",
+        "mix-total": "7 1/2",
+        "mix-each": "1 1/4",
+      };
+      const PRESETS_LV0 = {
+        "bus-students": 100,
+        "bus-seats": 24,
+        "sup-total": 4.5,
+        "sup-unit": 1.5,
+        "rope-total": "6",
+        "rope-each": "1/2",
+        "mix-total": "3",
+        "mix-each": "1/2",
+      };
+
+      function handleLevelPreset(n) {
+        try {
+          if (n === 0 || n === 1) {
+            const bank = n === 0 ? PRESETS_LV0 : PRESETS;
+            for (const [id, val] of Object.entries(bank)) {
+              const el = document.getElementById(id);
+              if (el && !el.value) {
+                el.value = val;
+                el.dispatchEvent(new Event("input", { bubbles: true }));
+                el.dispatchEvent(new Event("change", { bubbles: true }));
+              }
+            }
+          } else if (n === 2) {
+            /* Level 2 supplies no numbers — the student chooses them. Only clear
+               a field that still holds the preset we put there. */
+            for (const [id, val] of Object.entries(PRESETS).concat(Object.entries(PRESETS_LV0))) {
+              const el = document.getElementById(id);
+              if (el && String(el.value) === String(val)) {
+                el.value = "";
+                el.dispatchEvent(new Event("input", { bubbles: true }));
+                el.dispatchEvent(new Event("change", { bubbles: true }));
+              }
+            }
+          }
+        } catch (e) {}
+      }
+
+      function playConfetti() {
+        try {
+          if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            return;
+          }
+          const container = document.createElement("div");
+          container.style.cssText =
+            "position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999";
+          document.body.appendChild(container);
+          const colors = ["#f43f5e", "#3b82f6", "#10b981", "#eab308", "#a855f7", "#f97316"];
+          for (let i = 0; i < 60; i++) {
+            const el = document.createElement("div");
+            el.style.position = "absolute";
+            el.style.width = Math.random() * 8 + 6 + "px";
+            el.style.height = Math.random() * 8 + 6 + "px";
+            el.style.background = colors[Math.floor(Math.random() * colors.length)];
+            el.style.borderRadius = Math.random() > 0.5 ? "50%" : "0%";
+            el.style.bottom = "-10px";
+            el.style.left = Math.random() * 100 + "vw";
+            container.appendChild(el);
+            el.animate(
+              [
+                { transform: "translate(0,0) rotate(0deg)", opacity: "1" },
+                {
+                  transform: `translate(${(Math.random() - 0.5) * 200}px, -110vh) rotate(${Math.random() * 720}deg)`,
+                  opacity: "0",
+                },
+              ],
+              {
+                duration: (Math.random() * 2 + 1.5) * 1000,
+                easing: "cubic-bezier(0.1,0.8,0.3,1)",
+                fill: "forwards",
+              },
+            );
+          }
+          setTimeout(() => container.remove(), 4000);
+        } catch (e) {}
+      }
+
+      // ---- State ----
+      const STEPS = [
+        { id: 1, label: "Key Words", labelEs: "Palabras clave", icon: "📖" },
+        { id: 2, label: "Buses", labelEs: "Autobuses", icon: "🚌" },
+        { id: 3, label: "Supply Packs", labelEs: "Paquetes", icon: "💵" },
+        { id: 4, label: "Ribbon & Mix", labelEs: "Cinta y mezcla", icon: "🎀" },
+        { id: 5, label: "Repair", labelEs: "Reparar", icon: "🔍" },
+        { id: 6, label: "Design & Defend", labelEs: "Diseña y defiende", icon: "🏆" },
+      ];
+      let currentStep = 1;
+      const visited = new Set([1]);
+
+      // ---- Level toggle ----
+      function setLevel(n) {
+        const body = document.getElementById("body");
+        body.classList.remove("level-0", "level-1", "level-2");
+        body.classList.add("level-" + n);
+        document.getElementById("btn-lv0").classList.toggle("active", n === 0);
+        document.getElementById("btn-lv1").classList.toggle("active", n === 1);
+        document.getElementById("btn-lv2").classList.toggle("active", n === 2);
+        handleLevelPreset(n);
+        saveWizard();
+      }
+
+      // ---- Language toggle ----
+      function toggleLanguage() {
+        const body = document.getElementById("body");
+        body.classList.toggle("es");
+        const isEs = body.classList.contains("es");
+        const btn = document.getElementById("btn-lang");
+        if (btn) btn.innerHTML = isEs ? "🌐 Idioma: ES" : "🌐 Language: EN";
+
+        const placeholders = {
+          "bus-remainder-meaning": {
+            en: "24 riders fit on each bus, but ___ students were left over, so ___.",
+            es: "En cada autobús caben 24 pasajeros, pero sobraron ___ estudiantes, entonces ___.",
+          },
+          "student-equiv-input": { en: "____ ÷ ____", es: "____ ÷ ____" },
+          "bag-justify": {
+            en: "I used ___ because ___. It works because dividing asks how many ___ fit inside ___.",
+            es: "Usé ___ porque ___. Funciona porque dividir pregunta cuántos ___ caben en ___.",
+          },
+          "err-explain": {
+            en: "The note multiplied by 3/4, but dividing asks how many 3/4-metre pieces fit in 12 metres, so ___.",
+            es: "La nota multiplicó por 3/4, pero dividir pregunta cuántas piezas de 3/4 de metro caben en 12 metros, entonces ___.",
+          },
+          "peer-reflect": {
+            en: "We both divided, but ___. I changed my mind about ___ because ___.",
+            es: "Los dos dividimos, pero ___. Cambié de opinión sobre ___ porque ___.",
+          },
+          pitch: {
+            en: "I claim the hardest division to be sure about was ___, because ___. Someone might object that ___, but ___, so ___.",
+            es: "Afirmo que la división más difícil de asegurar fue ___, porque ___. Alguien podría objetar que ___, pero ___, entonces ___.",
+          },
+        };
+        for (const [id, value] of Object.entries(placeholders)) {
+          const el = document.getElementById(id);
+          if (el) el.placeholder = isEs ? value.es : value.en;
+        }
+        buildTrail();
+        updateProgress();
+      }
+
+      // ---- Read Aloud ----
+      function readAloud() {
+        if (!window.speechSynthesis) {
+          alert("Speech synthesis not supported in this browser.");
+          return;
+        }
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const body = document.getElementById("body");
+        const isEs = body.classList.contains("es");
+        const activePanel = document.querySelector(".step-panel.active");
+        if (!activePanel) return;
+        const textToRead = Array.from(activePanel.querySelectorAll(isEs ? ".es-text" : ".en-text"))
+          .map((el) => el.textContent.trim())
+          .filter((t) => t.length > 0)
+          .join(". ");
+        if (!textToRead) return;
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.lang = isEs ? "es-ES" : "en-US";
+        const voice = window.speechSynthesis
+          .getVoices()
+          .find((v) => v.lang.startsWith(isEs ? "es" : "en"));
+        if (voice) utterance.voice = voice;
+        window.speechSynthesis.speak(utterance);
+      }
+
+      // ---- Step trail ----
+      function buildTrail() {
+        const trail = document.getElementById("stepTrail");
+        trail.innerHTML = STEPS.map((s, i) => {
+          const isLast = i === STEPS.length - 1;
+          return `<span class="step-trail-item${s.id === currentStep ? " active" : ""}${visited.has(s.id) && s.id !== currentStep ? " done" : ""}" role="button" tabindex="0"${s.id === currentStep ? ' aria-current="step"' : ""} onclick="goStep(${s.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goStep(${s.id})}">
+            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? "✓" : s.id}</span>
+            <span class="s-label"><span class="en-text">${s.label}</span><span class="es-text">${s.labelEs}</span></span>
+          </span>${!isLast ? '<span class="step-arrow">›</span>' : ""}`;
+        }).join("");
+      }
+
+      function goStep(n) {
+        if (n < 1 || n > STEPS.length) return;
+        document.getElementById("step-" + currentStep).classList.remove("active");
+        currentStep = n;
+        visited.add(n);
+        document.getElementById("step-" + n).classList.add("active");
+        buildTrail();
+        updateProgress();
+        saveWizard();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function updateProgress() {
+        const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
+        document.getElementById("progFill").style.width = pct + "%";
+        document.getElementById("progLabel").innerHTML =
+          `<span class="en-text">Step ${currentStep} of ${STEPS.length}</span><span class="es-text">Paso ${currentStep} de ${STEPS.length}</span>`;
+      }
+
+      /* =====================================================================
+         Number handling.
+         Students may legitimately write 16, 16.0, 16/1 or 2 1/2. A correct
+         answer must not be rejected for its notation, so every student value
+         goes through parseValue() and is compared with a tolerance.
+         ===================================================================== */
+      function parseValue(raw) {
+        if (raw === null || raw === undefined) return NaN;
+        const s = String(raw).trim().replace(/ /g, " ");
+        if (!s) return NaN;
+        let m = s.match(/^(-?\d+)\s+(\d+)\s*\/\s*(\d+)$/); // mixed: 7 1/2
+        if (m) {
+          const den = Number(m[3]);
+          if (!den) return NaN;
+          const whole = Number(m[1]);
+          const frac = Number(m[2]) / den;
+          return whole < 0 ? whole - frac : whole + frac;
+        }
+        m = s.match(/^(-?\d+)\s*\/\s*(\d+)$/); // simple fraction: 3/4
+        if (m) {
+          const den = Number(m[2]);
+          return den ? Number(m[1]) / den : NaN;
+        }
+        m = s.match(/^-?\d*\.?\d+$/); // decimal or integer
+        if (m) return Number(s);
+        return NaN;
+      }
+      function near(a, b) {
+        return Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) < 1e-6;
+      }
+      function fmt(n) {
+        return Number.isInteger(n) ? String(n) : Number(n.toFixed(4)).toString();
+      }
+      function money(n) {
+        return "$" + n.toFixed(2);
+      }
+      function showReadout(id, html) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = html;
+        el.classList.add("show");
+      }
+      function isEs() {
+        return document.getElementById("body").classList.contains("es");
+      }
+      function isLevel(n) {
+        return document.getElementById("body").classList.contains("level-" + n);
+      }
+
+      /* ---- No-giveaway hint ladder ------------------------------------------
+         Rungs advance on a COMMITTED attempt only (the Check button), never on
+         a keystroke — a per-keystroke counter walks a student to the answer in
+         three characters. Rung 3 names the misconception and describes the
+         path; it never states the value the step asks for. */
+      const _tries = {};
+      function trackWrong(id) {
+        _tries[id] = (_tries[id] || 0) + 1;
+        return _tries[id];
+      }
+      function resetTries(id) {
+        _tries[id] = 0;
+      }
+      function bad(msg) {
+        return `<span style="color:var(--coral); font-weight:bold;">❌ ${msg}</span>`;
+      }
+      function good(msg) {
+        return `<span style="color:var(--green); font-weight:bold;">✅ ${msg}</span>`;
+      }
+      function ask(msg) {
+        return `<span style="color:var(--orange); font-weight:600;">✍️ ${msg}</span>`;
+      }
+
+      /* ===================== STEP 2 — whole-number division (2-6) ========== */
+      let BUSES_SOLVED = false;
+      function checkBuses(committed) {
+        const total = parseValue(document.getElementById("bus-students").value);
+        const seats = parseValue(document.getElementById("bus-seats").value);
+        const es = isEs();
+
+        const svgTotal = document.getElementById("bus-svg-total");
+        const svgSeats = document.getElementById("bus-svg-seats");
+        const svgResult = document.getElementById("bus-svg-result");
+        if (svgTotal) svgTotal.textContent = Number.isFinite(total) ? fmt(total) : "—";
+        if (svgSeats) svgSeats.textContent = Number.isFinite(seats) ? fmt(seats) : "—";
+        /* The diagram states the two GIVENS. It must never state the quotient
+           the step asks the student to find. */
+        if (svgResult) svgResult.textContent = BUSES_SOLVED ? String(busAnswer(total, seats)) : "?";
+
+        if (!committed) return;
+        if (!Number.isFinite(total) || !Number.isFinite(seats) || total < 1 || seats < 1) {
+          showReadout(
+            "bus-out",
+            ask(
+              es
+                ? "Escribe la cantidad de pasajeros y los asientos por autobús."
+                : "Enter the number of riders and the seats on one bus.",
+            ),
+          );
+          return;
+        }
+        const studentVal = parseValue(document.getElementById("student-buses-input").value);
+        if (!Number.isFinite(studentVal)) {
+          showReadout(
+            "bus-out",
+            ask(
+              es
+                ? "Escribe tu cantidad de autobuses arriba para revisarla."
+                : "Enter your bus count above so it can be checked.",
+            ),
+          );
+          return;
+        }
+
+        const full = Math.floor(total / seats);
+        const left = total - full * seats;
+        const answer = busAnswer(total, seats);
+
+        if (near(studentVal, answer)) {
+          BUSES_SOLVED = true;
+          resetTries("student-buses-input");
+          const meaning = document.getElementById("bus-remainder-meaning").value.trim();
+          let html = good(es ? "Correcto." : "Correct.");
+          html += es
+            ? `<br>${fmt(total)} ÷ ${fmt(seats)} = ${full}${left ? ` con residuo ${left}` : " exactamente"}. Pedir <strong>${answer}</strong> autobuses.`
+            : `<br>${fmt(total)} ÷ ${fmt(seats)} = ${full}${left ? ` remainder ${left}` : " exactly"}. Order <strong>${answer}</strong> buses.`;
+          if (left) {
+            html += es
+              ? `<br><small>Los ${left} estudiantes que sobran también necesitan asiento, así que el residuo agrega un autobús más.</small>`
+              : `<br><small>The ${left} leftover students still need seats, so the remainder adds one more bus.</small>`;
+          }
+          if (!meaning) {
+            html += `<br>${ask(es ? "Todavía falta explicar qué significa el sobrante." : "Still to do: say what the leftover means.")}`;
+          }
+          showReadout("bus-out", html);
+        } else {
+          const tries = trackWrong("student-buses-input");
+          let html;
+          /* A reliably diagnosable error is named on the FIRST attempt. The
+             generic rungs below are for wrongness we cannot read — telling a
+             student who has clearly dropped the remainder to "ask yourself how
+             many full buses fit" answers a question they already got right. */
+          if (near(studentVal, full) && left > 0) {
+            html =
+              bad(es ? "Casi." : "So close.") +
+              "<br><small>💡 " +
+              (es
+                ? "Ese es el número de autobuses que se llenan por completo. Pero los estudiantes que sobran no pueden quedarse. ¿Qué le hace eso a tu pedido?"
+                : "That is the number of buses that fill up completely. But the leftover students cannot be left behind. What does that do to your order?") +
+              "</small>";
+          } else if (near(studentVal, total * seats)) {
+            html =
+              bad(es ? "Eso es un producto, no un cociente." : "That is a product, not a quotient.") +
+              "<br><small>💡 " +
+              (es
+                ? "Multiplicaste los pasajeros por los asientos. Dividir pregunta cuántos grupos de ese tamaño caben."
+                : "You multiplied the riders by the seats. Dividing asks how many groups of that size fit.") +
+              "</small>";
+          } else if (tries === 1) {
+            html =
+              bad(es ? "Todavía no." : "Not yet.") +
+              "<br><small>💡 " +
+              (es
+                ? "Pregunta: ¿cuántos autobuses llenos caben, y queda alguien en la acera?"
+                : "Ask yourself: how many full buses fit, and is anyone still on the sidewalk?") +
+              "</small>";
+          } else if (tries === 2) {
+            html =
+              bad(es ? "Sigue intentando." : "Keep trying.") +
+              "<br><small>💡 " +
+              (es
+                ? `Usa cocientes parciales: ¿cuántos grupos de ${fmt(seats)} caben en ${fmt(total)}? Súmalos por partes.`
+                : `Use partial quotients: how many groups of ${fmt(seats)} fit inside ${fmt(total)}? Add the chunks.`) +
+              "</small>";
+          } else {
+            html =
+              bad(es ? "Todavía no." : "Not yet.") +
+              "<br><small>💡 " +
+              (es
+                ? `Divide ${fmt(total)} entre ${fmt(seats)}. Después mira el residuo y decide si obliga a pedir un autobús más.`
+                : `Divide ${fmt(total)} by ${fmt(seats)}. Then look at the remainder and decide whether it forces one more bus.`) +
+              "</small>";
+          }
+          showReadout("bus-out", html);
+        }
+        if (svgResult) svgResult.textContent = BUSES_SOLVED ? String(answer) : "?";
+        comparePeer();
+        buildReport();
+      }
+      function busAnswer(total, seats) {
+        return Math.ceil(total / seats);
+      }
+
+      /* ===================== STEP 3 — decimal division (2-7) ============== */
+      function checkPacks(committed) {
+        if (!committed) return;
+        const es = isEs();
+        const total = parseValue(document.getElementById("sup-total").value);
+        const unit = parseValue(document.getElementById("sup-unit").value);
+        if (!Number.isFinite(total) || !Number.isFinite(unit) || total <= 0 || unit <= 0) {
+          showReadout(
+            "packs-out",
+            ask(
+              es
+                ? "Escribe el dinero y el precio por paquete."
+                : "Enter the money and the price of one pack.",
+            ),
+          );
+          return;
+        }
+        const studentVal = parseValue(document.getElementById("student-packs-input").value);
+        if (!Number.isFinite(studentVal)) {
+          showReadout(
+            "packs-out",
+            ask(
+              es ? "Escribe cuántos paquetes puedes comprar." : "Enter how many packs you can buy.",
+            ),
+          );
+          return;
+        }
+        const exact = total / unit;
+        const answer = Math.floor(exact + 1e-9);
+        const scale = Math.pow(10, decimalsOf(unit));
+        const equivRaw = document.getElementById("student-equiv-input").value.trim();
+
+        if (near(studentVal, answer)) {
+          resetTries("student-packs-input");
+          let html = good(es ? "Correcto." : "Correct.");
+          html += es
+            ? `<br>${money(total)} ÷ ${money(unit)} → ${fmt(Math.round(total * scale))} ÷ ${fmt(Math.round(unit * scale))} = ${fmt(exact)}. Puedes comprar <strong>${answer}</strong> paquetes.`
+            : `<br>${money(total)} ÷ ${money(unit)} → ${fmt(Math.round(total * scale))} ÷ ${fmt(Math.round(unit * scale))} = ${fmt(exact)}. You can buy <strong>${answer}</strong> packs.`;
+          if (!equivRaw) {
+            html += `<br>${ask(es ? "Todavía falta escribir la división equivalente (Paso A)." : "Still to do: write the equivalent division (Step A).")}`;
+          } else if (!equivMatches(equivRaw, total, unit)) {
+            html += `<br><small>${es ? "Revisa el Paso A: ambos números deben multiplicarse por la MISMA potencia de 10." : "Check Step A: both numbers must be multiplied by the SAME power of 10."}</small>`;
+          }
+          showReadout("packs-out", html);
+        } else {
+          const tries = trackWrong("student-packs-input");
+          let html;
+          const movedOne = near(studentVal, Math.floor(total / (unit * scale) + 1e-9));
+          if (movedOne) {
+            html =
+              bad(es ? "Casi." : "So close.") +
+              "<br><small>💡 " +
+              (es
+                ? "Moviste el punto decimal en un solo número. Si multiplicas el divisor por una potencia de 10, tienes que multiplicar el dividendo por la misma."
+                : "You moved the decimal point in only one number. If you multiply the divisor by a power of 10, you must multiply the dividend by the same one.") +
+              "</small>";
+          } else if (tries === 1) {
+            html =
+              bad(es ? "Todavía no." : "Not yet.") +
+              "<br><small>💡 " +
+              (es
+                ? "El divisor tiene punto decimal. Conviértelo en número entero antes de dividir."
+                : "The divisor has a decimal point. Make it a whole number before you divide.") +
+              "</small>";
+          } else if (tries === 2) {
+            html =
+              bad(es ? "Sigue intentando." : "Keep trying.") +
+              "<br><small>💡 " +
+              (es
+                ? `Multiplica ambos números por ${scale}. Eso da una división equivalente con números enteros.`
+                : `Multiply both numbers by ${scale}. That gives an equivalent division with whole numbers.`) +
+              "</small>";
+          } else {
+            html =
+              bad(es ? "Todavía no." : "Not yet.") +
+              "<br><small>💡 " +
+              (es
+                ? `Escribe ${fmt(Math.round(total * scale))} ÷ ${fmt(Math.round(unit * scale))} y divide. No puedes comprar parte de un paquete, así que quédate con los paquetes completos.`
+                : `Write ${fmt(Math.round(total * scale))} ÷ ${fmt(Math.round(unit * scale))} and divide. You cannot buy part of a pack, so keep only the whole packs.`) +
+              "</small>";
+          }
+          showReadout("packs-out", html);
+        }
+        buildReport();
+      }
+      function decimalsOf(n) {
+        const s = String(n);
+        const i = s.indexOf(".");
+        return i < 0 ? 0 : Math.min(s.length - i - 1, 6);
+      }
+      function equivMatches(raw, total, unit) {
+        const m = String(raw).match(/(\d+(?:\.\d+)?)\s*(?:÷|\/)\s*(\d+(?:\.\d+)?)/);
+        if (!m) return false;
+        const a = Number(m[1]);
+        const b = Number(m[2]);
+        if (!b || !Number.isInteger(b)) return false;
+        return near(a / b, total / unit);
+      }
+
+      /* ============ STEP 4 — fraction & mixed-number division (6-1, 6-2) === */
+      let BANNERS_SOLVED = false;
+      function checkBanners(committed) {
+        const es = isEs();
+        const total = parseValue(document.getElementById("rope-total").value);
+        const each = parseValue(document.getElementById("rope-each").value);
+        drawRope(total, each);
+
+        if (!committed) return;
+        if (!Number.isFinite(total) || !Number.isFinite(each) || total <= 0 || each <= 0) {
+          showReadout(
+            "banners-out",
+            ask(
+              es
+                ? "Escribe el largo de la cinta y la cinta que usa una pancarta."
+                : "Enter the ribbon length and the ribbon one banner uses.",
+            ),
+          );
+          return;
+        }
+        const studentVal = parseValue(document.getElementById("student-banners-input").value);
+        if (!Number.isFinite(studentVal)) {
+          showReadout(
+            "banners-out",
+            ask(
+              es
+                ? "Escribe cuántas pancartas enteras puedes cortar."
+                : "Enter how many whole banners you can cut.",
+            ),
+          );
+          return;
+        }
+        const exact = total / each;
+        const answer = Math.floor(exact + 1e-9);
+        if (near(studentVal, answer)) {
+          BANNERS_SOLVED = true;
+          resetTries("student-banners-input");
+          showReadout(
+            "banners-out",
+            good(es ? "Correcto." : "Correct.") +
+              (es
+                ? `<br>${fmt(total)} ÷ ${fmt(each)} = ${fmt(exact)}. Puedes cortar <strong>${answer}</strong> pancartas enteras.<br><small>Cada pieza mide menos de un metro, así que caben más piezas que metros.</small>`
+                : `<br>${fmt(total)} ÷ ${fmt(each)} = ${fmt(exact)}. You can cut <strong>${answer}</strong> whole banners.<br><small>Each piece is smaller than a metre, so more pieces fit than there are metres.</small>`),
+          );
+        } else {
+          const tries = trackWrong("student-banners-input");
+          let html;
+          if (near(studentVal, total * each)) {
+            html =
+              bad(
+                es ? "Ese es un producto, no un cociente." : "That is a product, not a quotient.",
+              ) +
+              "<br><small>💡 " +
+              (es
+                ? "Multiplicaste por el divisor. Dividir pregunta cuántas piezas caben; voltea el DIVISOR y luego multiplica."
+                : "You multiplied by the divisor. Dividing asks how many pieces fit — flip the DIVISOR, then multiply.") +
+              "</small>";
+          } else if (tries === 1) {
+            html =
+              bad(es ? "Todavía no." : "Not yet.") +
+              "<br><small>💡 " +
+              (es
+                ? "Estima primero: cada pieza mide menos de un metro, así que ¿la respuesta debe ser mayor o menor que el largo total?"
+                : "Estimate first: each piece is smaller than a metre, so should the answer be bigger or smaller than the total length?") +
+              "</small>";
+          } else if (tries === 2) {
+            html =
+              bad(es ? "Sigue intentando." : "Keep trying.") +
+              "<br><small>💡 " +
+              (es
+                ? "Cuenta las marcas del dibujo: cada marca es una pieza completa."
+                : "Count the marks on the diagram — each mark is one whole piece.") +
+              "</small>";
+          } else {
+            html =
+              bad(es ? "Todavía no." : "Not yet.") +
+              "<br><small>💡 " +
+              (es
+                ? `Conserva ${fmt(total)}, voltea el divisor y multiplica. Luego quédate solo con las piezas completas.`
+                : `Keep ${fmt(total)}, flip the divisor, and multiply. Then keep only the whole pieces.`) +
+              "</small>";
+          }
+          showReadout("banners-out", html);
+        }
+        buildReport();
+      }
+
+      /* The rope diagram shows the GIVENS — the strip and the tick marks the
+         student can count. It never prints the quotient. */
+      function drawRope(total, each) {
+        const g = document.getElementById("rope-svg-ticks");
+        const label = document.getElementById("rope-svg-label");
+        if (!g) return;
+        g.innerHTML = "";
+        if (!Number.isFinite(total) || !Number.isFinite(each) || total <= 0 || each <= 0) {
+          if (label) label.style.display = "";
+          return;
+        }
+        const pieces = Math.floor(total / each + 1e-9);
+        if (pieces > 60) {
+          if (label) label.style.display = "";
+          return;
+        }
+        if (label) label.style.display = "none";
+        const x0 = 20;
+        const w = 640;
+        for (let i = 1; i <= pieces; i++) {
+          const x = x0 + (w * (i * each)) / total;
+          if (x > x0 + w) break;
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          line.setAttribute("x1", x);
+          line.setAttribute("x2", x);
+          line.setAttribute("y1", 30);
+          line.setAttribute("y2", 60);
+          line.setAttribute("stroke", "#c2185b");
+          line.setAttribute("stroke-width", "2");
+          g.appendChild(line);
+        }
+      }
+
+      let BAGS_SOLVED = false;
+      function checkBags(committed) {
+        if (!committed) return;
+        const es = isEs();
+        const total = parseValue(document.getElementById("mix-total").value);
+        const each = parseValue(document.getElementById("mix-each").value);
+        if (!Number.isFinite(total) || !Number.isFinite(each) || total <= 0 || each <= 0) {
+          showReadout(
+            "bags-out",
+            ask(
+              es
+                ? "Escribe la mezcla del recipiente y la de una bolsa (por ejemplo 7 1/2 y 1 1/4)."
+                : "Enter the mix in the bin and the mix in one bag (for example 7 1/2 and 1 1/4).",
+            ),
+          );
+          return;
+        }
+        const studentVal = parseValue(document.getElementById("student-bags-input").value);
+        if (!Number.isFinite(studentVal)) {
+          showReadout(
+            "bags-out",
+            ask(
+              es
+                ? "Escribe cuántas bolsas llenas puedes hacer."
+                : "Enter how many full bags you can make.",
+            ),
+          );
+          return;
+        }
+        const exact = total / each;
+        const answer = Math.floor(exact + 1e-9);
+        if (near(studentVal, answer)) {
+          BAGS_SOLVED = true;
+          resetTries("student-bags-input");
+          const strat = document.getElementById("bag-strategy").value;
+          const why = document.getElementById("bag-justify").value.trim();
+          let html = good(es ? "Correcto." : "Correct.");
+          html += es
+            ? `<br>${fmt(total)} ÷ ${fmt(each)} = ${fmt(exact)}. Puedes llenar <strong>${answer}</strong> bolsas.`
+            : `<br>${fmt(total)} ÷ ${fmt(each)} = ${fmt(exact)}. You can fill <strong>${answer}</strong> bags.`;
+          if (!strat || !why) {
+            html += `<br>${ask(es ? "Todavía falta nombrar tu estrategia y decir por qué funciona." : "Still to do: name your strategy and say why it works.")}`;
+          }
+          showReadout("bags-out", html);
+        } else {
+          const tries = trackWrong("student-bags-input");
+          let html;
+          if (near(studentVal, total * each)) {
+            html =
+              bad(
+                es ? "Ese es un producto, no un cociente." : "That is a product, not a quotient.",
+              ) +
+              "<br><small>💡 " +
+              (es
+                ? "Multiplicaste por el divisor en vez de por su recíproco."
+                : "You multiplied by the divisor instead of by its reciprocal.") +
+              "</small>";
+          } else if (near(studentVal, each / total)) {
+            html =
+              bad(es ? "Los papeles están intercambiados." : "The two roles are swapped.") +
+              "<br><small>💡 " +
+              (es
+                ? "Volteaste el dividendo. Es el DIVISOR el que se voltea."
+                : "You flipped the dividend. It is the DIVISOR that gets flipped.") +
+              "</small>";
+          } else if (tries === 1) {
+            html =
+              bad(es ? "Todavía no." : "Not yet.") +
+              "<br><small>💡 " +
+              (es
+                ? "Convierte cada número mixto en fracción impropia antes de dividir."
+                : "Turn each mixed number into an improper fraction before you divide.") +
+              "</small>";
+          } else if (tries === 2) {
+            html =
+              bad(es ? "Sigue intentando." : "Keep trying.") +
+              "<br><small>💡 " +
+              (es
+                ? "Pregunta cuántas porciones de una bolsa caben dentro del recipiente. Estima primero."
+                : "Ask how many one-bag portions fit inside the bin. Estimate first.") +
+              "</small>";
+          } else {
+            html =
+              bad(es ? "Todavía no." : "Not yet.") +
+              "<br><small>💡 " +
+              (es
+                ? "Escribe las dos fracciones impropias, conserva la primera, voltea la segunda y multiplica. Después simplifica."
+                : "Write both improper fractions, keep the first, flip the second, and multiply. Then simplify.") +
+              "</small>";
+          }
+          showReadout("bags-out", html);
+        }
+        buildReport();
+      }
+
+      /* ===================== STEP 5 — error analysis ======================= */
+      function checkRepair() {
+        const es = isEs();
+        const diagnosis = document.getElementById("err-diagnosis").value;
+        const corrected = parseValue(document.getElementById("err-correct").value);
+        const explain = document.getElementById("err-explain").value.trim();
+        const TRUE_ANSWER = 16; // 12 ÷ 3/4
+        let html = "";
+
+        if (!diagnosis) {
+          showReadout(
+            "repair-out",
+            ask(es ? "Primero elige qué salió mal." : "Choose what went wrong first."),
+          );
+          return;
+        }
+        if (diagnosis === "multiplied") {
+          html += good(es ? "Ese es el error." : "That is the error.");
+          html += es
+            ? "<br>La nota multiplicó por 3/4 en vez de por su recíproco."
+            : "<br>The note multiplied by 3/4 instead of by its reciprocal.";
+        } else {
+          const tries = trackWrong("err-diagnosis");
+          html += bad(es ? "Ese no es el error aquí." : "That is not the error here.");
+          html +=
+            "<br><small>💡 " +
+            (tries === 1
+              ? es
+                ? "Mira solo la segunda línea de la nota. ¿Qué operación hicieron realmente?"
+                : "Look only at the second line of the note. What operation did they actually carry out?"
+              : es
+                ? "La nota cambió ÷ por ×, pero dejó la fracción igual. ¿Cómo se llama ese cambio?"
+                : "The note changed ÷ to ×, but left the fraction as it was. What is that change called?") +
+            "</small>";
+          showReadout("repair-out", html);
+          return;
+        }
+
+        if (!Number.isFinite(corrected)) {
+          html += `<br>${ask(es ? "Ahora escribe el pedido corregido." : "Now enter the corrected order.")}`;
+        } else if (near(corrected, TRUE_ANSWER)) {
+          html += `<br>${good(es ? "Pedido corregido correcto." : "Corrected order is right.")}`;
+          html += es
+            ? "<br><small>12 ÷ 3/4 = 12 × 4/3 = 16 pancartas. Como cada pieza mide menos de un metro, caben más de 12.</small>"
+            : "<br><small>12 ÷ 3/4 = 12 × 4/3 = 16 banners. Because each piece is under a metre, more than 12 fit.</small>";
+          if (!explain) {
+            html += `<br>${ask(es ? "Todavía falta escribir la explicación." : "Still to do: write the explanation.")}`;
+          }
+          playConfettiIfDone();
+        } else {
+          html += `<br>${bad(es ? "El pedido corregido todavía no es correcto." : "The corrected order is not right yet.")}`;
+          html +=
+            "<br><small>💡 " +
+            (es ? "Conserva 12, voltea 3/4 y multiplica." : "Keep 12, flip 3/4, and multiply.") +
+            "</small>";
+        }
+        showReadout("repair-out", html);
+        buildReport();
+      }
+
+      function comparePeer() {
+        const es = isEs();
+        const peer = parseValue(document.getElementById("peer-buses")?.value);
+        if (!Number.isFinite(peer)) return;
+        /* The comparison panel must not become a side door to the answer: it
+           only opens once the student has earned their own bus count. */
+        if (!BUSES_SOLVED) {
+          showReadout(
+            "peer-out",
+            ask(
+              es
+                ? "Termina tu propio pedido de autobuses (Paso 2) antes de comparar."
+                : "Finish your own bus order (Step 2) before you compare.",
+            ),
+          );
+          return;
+        }
+        const mine = parseValue(document.getElementById("student-buses-input").value);
+        showReadout(
+          "peer-out",
+          es
+            ? `Tú: <strong>${fmt(mine)}</strong> autobuses · Tu compañero: <strong>${fmt(peer)}</strong>. ${near(mine, peer) ? "Coinciden — comparen cómo trataron el residuo." : "No coinciden — uno de los dos trató el residuo de otra manera. Averigüen cuál."}`
+            : `You: <strong>${fmt(mine)}</strong> buses · Partner: <strong>${fmt(peer)}</strong>. ${near(mine, peer) ? "They agree — compare how each of you handled the remainder." : "They differ — one of you treated the remainder differently. Find out which."}`,
+        );
+      }
+
+      /* ===================== STEP 6 — design & defend ====================== */
+      /* Every design check validates the student's OWN numbers against the
+         rules, so any legal design passes and no answer is printed. */
+      function checkDesign() {
+        const es = isEs();
+        const students = parseValue(document.getElementById("d-students").value);
+        const seats = parseValue(document.getElementById("d-seats").value);
+        const budget = parseValue(document.getElementById("d-budget").value);
+        const cost = parseValue(document.getElementById("d-unit-cost").value);
+        const rope = parseValue(document.getElementById("d-rope").value);
+        const each = parseValue(document.getElementById("d-each").value);
+
+        const problems = [];
+        if (!Number.isFinite(students) || !Number.isFinite(seats) || students < 1 || seats < 1) {
+          problems.push(
+            es ? "Faltan los pasajeros o los asientos." : "Riders or seats are missing.",
+          );
+        } else if (students % seats === 0) {
+          problems.push(
+            es
+              ? "Regla 1: tus números se dividen exactamente. Elige números que dejen un residuo."
+              : "Rule 1: your numbers divide evenly. Choose numbers that leave a remainder.",
+          );
+        }
+        if (!Number.isFinite(budget) || !Number.isFinite(cost) || budget <= 0 || cost <= 0) {
+          problems.push(es ? "Falta el presupuesto o el precio." : "Budget or price is missing.");
+        } else if (Number.isInteger(cost)) {
+          problems.push(
+            es
+              ? "Regla 2: tu precio por paquete es un dólar entero, así que el divisor no es decimal."
+              : "Rule 2: your pack price is a whole dollar, so the divisor is not a decimal.",
+          );
+        }
+        if (!Number.isFinite(rope) || !Number.isFinite(each) || rope <= 0 || each <= 0) {
+          problems.push(es ? "Falta la cinta." : "Ribbon amounts are missing.");
+        } else if (each >= 1) {
+          problems.push(
+            es
+              ? "Regla 3: la cinta por pancarta debe ser menor que 1 para que el cociente crezca."
+              : "Rule 3: ribbon per banner must be less than 1 so the quotient grows.",
+          );
+        }
+
+        if (problems.length) {
+          showReadout(
+            "design-out",
+            bad(
+              es
+                ? "El pedido todavía no cumple las reglas de diseño:"
+                : "The order does not meet the design rules yet:",
+            ) +
+              "<ul><li>" +
+              problems.join("</li><li>") +
+              "</li></ul>",
+          );
+          return;
+        }
+
+        const wrong = [];
+        const wantBuses = Math.ceil(students / seats);
+        const wantPacks = Math.floor(budget / cost + 1e-9);
+        const wantBanners = Math.floor(rope / each + 1e-9);
+        const gotBuses = parseValue(document.getElementById("d-buses").value);
+        const gotPacks = parseValue(document.getElementById("d-packs").value);
+        const gotBanners = parseValue(document.getElementById("d-banners").value);
+
+        if (!near(gotBuses, wantBuses)) {
+          wrong.push(
+            near(gotBuses, Math.floor(students / seats))
+              ? es
+                ? "Autobuses: contaste solo los autobuses llenos; los estudiantes que sobran también viajan."
+                : "Buses: you counted only the full buses — the leftover students ride too."
+              : es
+                ? "Autobuses: vuelve a dividir tu total entre tus asientos y revisa el residuo."
+                : "Buses: divide your own total by your own seats again, and check the remainder.",
+          );
+        }
+        if (!near(gotPacks, wantPacks)) {
+          wrong.push(
+            es
+              ? "Paquetes: convierte tu precio en número entero multiplicando ambos números por la misma potencia de 10."
+              : "Packs: make your price a whole number by multiplying both numbers by the same power of 10.",
+          );
+        }
+        if (!near(gotBanners, wantBanners)) {
+          wrong.push(
+            near(gotBanners, rope * each)
+              ? es
+                ? "Pancartas: multiplicaste por el divisor en vez de por su recíproco."
+                : "Banners: you multiplied by the divisor instead of by its reciprocal."
+              : es
+                ? "Pancartas: conserva tu largo, voltea tu fracción y multiplica."
+                : "Banners: keep your length, flip your fraction, and multiply.",
+          );
+        }
+
+        if (wrong.length) {
+          showReadout(
+            "design-out",
+            bad(
+              es
+                ? "El diseño es válido, pero revisa estos cocientes:"
+                : "The design is legal, but check these quotients:",
+            ) +
+              "<ul><li>" +
+              wrong.join("</li><li>") +
+              "</li></ul>",
+          );
+          return;
+        }
+
+        DESIGN_SOLVED = true;
+        showReadout(
+          "design-out",
+          good(es ? "Pedido aceptado." : "Order accepted.") +
+            (es
+              ? "<br>Tus tres cocientes concuerdan con tu propio diseño y tu diseño cumple las cuatro reglas. Ahora defiéndelo abajo."
+              : "<br>All three quotients agree with your own design, and your design meets all four rules. Now defend it below."),
+        );
+        playConfettiIfDone();
+        buildReport();
+      }
+      let DESIGN_SOLVED = false;
+      function playConfettiIfDone() {
+        if (DESIGN_SOLVED) playConfetti();
+      }
+
+      /* ===================== Report ======================================= */
+      function reportText() {
+        const v = (id) => (document.getElementById(id)?.value || "").trim();
+        return [
+          "LAUNCH DAY SUPPLY DEPOT — Pre-Unit Culminating Project",
+          "",
+          "PART 1 — BUILD THE FOUNDATION",
+          `Riders: ${v("bus-students")} · Seats per bus: ${v("bus-seats")} · Buses ordered: ${v("student-buses-input")}`,
+          `What the leftover means: ${v("bus-remainder-meaning")}`,
+          `Budget: ${v("sup-total")} · Pack price: ${v("sup-unit")} · Equivalent division: ${v("student-equiv-input")} · Packs: ${v("student-packs-input")}`,
+          "",
+          "PART 2 — CONNECT AND APPLY",
+          `Ribbon: ${v("rope-total")} ÷ ${v("rope-each")} → banners: ${v("student-banners-input")}`,
+          `Trail mix: ${v("mix-total")} ÷ ${v("mix-each")} → bags: ${v("student-bags-input")}`,
+          `Strategy: ${v("bag-strategy")} — ${v("bag-justify")}`,
+          `Depot-note repair: ${v("err-diagnosis")} → ${v("err-correct")}`,
+          `Explanation: ${v("err-explain")}`,
+          `Partner (${v("p-name")}) bus count: ${v("peer-buses")} — ${v("peer-reflect")}`,
+          "",
+          "PART 3 — DESIGN AND DEFEND",
+          `My depot: ${v("d-students")} riders, ${v("d-seats")} seats, ${v("d-budget")} budget, ${v("d-unit-cost")} per pack, ${v("d-rope")} m ribbon at ${v("d-each")} m per banner`,
+          `My quotients: ${v("d-buses")} buses · ${v("d-packs")} packs · ${v("d-banners")} banners`,
+          `My defence: ${v("pitch")}`,
+          "",
+          "REFLECTION",
+          `Hardest division: ${v("r-math")}`,
+          `Most useful representation: ${v("r-rep")}`,
+          `Most ready to use in Grade 6: ${v("r-ready")}`,
+        ].join("\n");
+      }
+      function buildReport() {
+        const el = document.getElementById("report-out");
+        if (!el) return;
+        el.innerHTML = `<strong>${isEs() ? "Informe del almacén" : "Depot report"}</strong><pre style="white-space:pre-wrap;font-size:14px;margin:8px 0 0">${reportText()
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")}</pre>`;
+        el.classList.add("show");
+      }
+      function copyReport() {
+        navigator.clipboard?.writeText(reportText());
+        alert(isEs() ? "Informe copiado." : "Report copied.");
+      }
+      function downloadTxt() {
+        const a = document.createElement("a");
+        a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(reportText());
+        a.download = "launch-day-supply-depot.txt";
+        a.click();
+      }
+      function finishProject() {
+        buildReport();
+        alert(
+          isEs()
+            ? "¡Excelente trabajo! 🎉 Muestra esta página a tu maestro."
+            : "Great work! 🎉 Show this page to your teacher.",
+        );
+      }
+
+      /* ===================== Save & restore ================================
+         Same contract as every other culminating project: the wizard position
+         and level live under nt-wizard:<pathname>, and the shared Save/Resume
+         engine owns the field values. Keyed by pathname, so one student's
+         project state never reaches another page or another project. */
+      const WIZ_KEY = "nt-wizard:" + location.pathname;
+      function saveWizard() {
+        try {
+          const body = document.getElementById("body") || document.body;
+          let lvl = 1;
+          if (body.classList.contains("level-0")) lvl = 0;
+          else if (body.classList.contains("level-2")) lvl = 2;
+          localStorage.setItem(
+            WIZ_KEY,
+            JSON.stringify({ v: 1, level: lvl, step: currentStep, visited: Array.from(visited) }),
+          );
+        } catch (e) {}
+      }
+      function restoreWizard() {
+        try {
+          const raw = localStorage.getItem(WIZ_KEY);
+          if (!raw) return;
+          const saved = JSON.parse(raw);
+          if (!saved || typeof saved !== "object") return;
+          if (saved.level === 0 || saved.level === 1 || saved.level === 2) setLevel(saved.level);
+          if (Array.isArray(saved.visited)) {
+            saved.visited.forEach((n) => {
+              if (Number.isInteger(n) && n >= 1 && n <= STEPS.length) visited.add(n);
+            });
+          }
+          const step = saved.step;
+          if (
+            Number.isInteger(step) &&
+            step >= 1 &&
+            step <= STEPS.length &&
+            document.getElementById("step-" + step)
+          ) {
+            document.getElementById("step-" + currentStep).classList.remove("active");
+            currentStep = step;
+            visited.add(step);
+            document.getElementById("step-" + step).classList.add("active");
+          }
+        } catch (e) {
+          /* A stale or corrupt record must never block the page: fall back to
+             step 1 at Level 1 and clear the bad entry. */
+          try {
+            localStorage.removeItem(WIZ_KEY);
+          } catch (_) {}
+        }
+      }
+
+      restoreWizard();
+      buildTrail();
+      updateProgress();
+      handleLevelPreset(isLevel(0) ? 0 : isLevel(2) ? 2 : 1);
+      checkBuses(false);
+      checkBanners(false);
+      buildReport();
+
+      window.exportStudentBackup = function () {
+        try {
+          const state = window.NeftSaveResume ? window.NeftSaveResume.getState() : null;
+          const inputs = {};
+          document.querySelectorAll("input, textarea, select").forEach((el) => {
+            if (el.id) inputs[el.id] = el.value;
+          });
+          const metadata = {
+            schemaVersion: 1,
+            studentName: document.getElementById("student-name")?.value || "Student",
+            section: document.getElementById("class-period")?.value || "Class",
+            activityId: window.NeftSaveResumeConfig?.activityId || "pre-unit-project",
+            activityTitle: document.title,
+            timestamp: new Date().toISOString(),
+            inputs: inputs,
+            state: state,
+          };
+          const dataStr =
+            "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(metadata, null, 2));
+          const dlAnchor = document.createElement("a");
+          dlAnchor.setAttribute("href", dataStr);
+          dlAnchor.setAttribute(
+            "download",
+            `${metadata.studentName.replace(/\s+/g, "_")}_${metadata.activityId}_backup.json`,
+          );
+          document.body.appendChild(dlAnchor);
+          dlAnchor.click();
+          dlAnchor.remove();
+        } catch (e) {
+          alert("Export failed: " + e.message);
+        }
+      };
+
+      window.triggerImportStudentBackup = function () {
+        document.getElementById("student-backup-file-input").click();
+      };
+
+      window.importStudentBackup = function (event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (data && data.inputs) {
+              for (const [id, val] of Object.entries(data.inputs)) {
+                const el = document.getElementById(id);
+                if (el) {
+                  el.value = val;
+                  el.dispatchEvent(new Event("input", { bubbles: true }));
+                  el.dispatchEvent(new Event("change", { bubbles: true }));
+                }
+              }
+              alert("Successfully imported student backup!");
+            } else {
+              alert("Invalid backup file structure.");
+            }
+          } catch (err) {
+            alert("Error parsing backup file: " + err.message);
+          }
+        };
+        reader.readAsText(file);
+      };
+    </script>
+    <input
+      type="file"
+      id="student-backup-file-input"
+      hidden
+      onchange="importStudentBackup(event)"
+      accept=".json"
+    />
+  <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
+  <script src="/shared/projects/projects-pro.js" defer></script>
+  <!-- projects-pro-injected:end -->
+    <!-- projects-gold-injected:begin (gold hardening layer — tools/inject-projects-gold.mjs) -->
+  <script src="/shared/projects/projects-gold.js" defer></script>
+  <!-- projects-gold-injected:end -->
+  <!-- projects-publisher-injected:begin (publisher pedagogy layer — tools/inject-projects-publisher.mjs) -->
+  <script src="/shared/projects/projects-publisher.js" defer></script>
+  <!-- projects-publisher-injected:end -->
+  <!-- projects-visuals-injected:begin (interactive math tools — tools/inject-projects-visuals.mjs) -->
+  <script src="/shared/projects/projects-visuals.js" defer></script>
+  <!-- projects-visuals-injected:end -->
+  <!-- projects-zoom-injected:begin (diagram zoom — tools/inject-projects-zoom.mjs) -->
+  <script src="/shared/projects/projects-zoom.js" defer></script>
+  <!-- projects-zoom-injected:end -->
+  <!-- projects-solve-injected:begin (guided worked examples — tools/inject-projects-solve.mjs) -->
+  <script src="/shared/projects/projects-solve.js" defer></script>
+  <!-- projects-solve-injected:end -->
+  <!-- projects-declutter-injected:begin (tools/inject-projects-declutter.mjs) -->
+  <script src="/shared/projects/projects-declutter.js" defer></script>
+  <!-- projects-declutter-injected:end -->
+  <!-- projects-interactive-hero-injected:begin (interactive centerpiece — tools/inject-projects-interactive-hero.mjs) -->
+  <script src="/shared/projects/manip-frac-divide.js" defer></script>
+  <!-- projects-interactive-hero-injected:end -->
+  <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
+  <script src="/shared/projects/projects-complete.js" defer></script>
+  <!-- projects-complete-injected:end -->
+  <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
+  <script src="/shared/projects/projects-check.js" defer></script>
+  <!-- projects-check-injected:end -->
+  <!-- projects-discourse-injected:begin (Turn & Talk + structured peer compare — tools/inject-projects-discourse.mjs) -->
+  <script src="/shared/projects/projects-discourse.js" defer></script>
+  <!-- projects-discourse-injected:end -->
+  <!-- projects-answerkey-link-injected:begin (teacher-only answer-key link — tools/inject-projects-answerkey-link.mjs) -->
+  <script src="/shared/projects/projects-answerkey-link.js" defer></script>
+  <!-- projects-answerkey-link-injected:end -->
+  <!-- projects-partner-injected:begin (Level 0/1 partner guide — tools/inject-projects-partner.mjs) -->
+  <script src="/shared/projects/projects-partner.js" defer></script>
+  <!-- projects-partner-injected:end -->
+  <!-- projects-award-body:begin (Community Math Studio — tools/inject-projects-award.mjs) -->
+  <script src="/shared/projects/projects-award.js?v=20260714" defer></script>
+  <!-- projects-award-body:end -->
+  <!-- projects-twist-body:begin (Design Twist — tools/inject-projects-twist.mjs) -->
+  <script src="/shared/projects/projects-twist.js?v=20260722" defer></script>
+  <!-- projects-twist-body:end -->
+  <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
+  <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
+  <!-- projects-mode-pill-body:end -->
+  <!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
+  <script src="/shared/projects/projects-meta.js?v=20260727-v2" defer></script>
+  <!-- projects-meta-injected:end -->
+  <!-- projects-publication-body:begin (Publication Studio — tools/inject-projects-publication.mjs) -->
+  <script src="/shared/projects/projects-publication.js?v=20260714" defer></script>
+  <!-- projects-publication-body:end -->
+    <link rel="stylesheet" href="/shared/projects/projects-future.css" />
+    <script src="/shared/projects/projects-future.js" defer></script>
+    <link rel="stylesheet" href="/shared/projects/projects-coach.css" />
+    <script src="/shared/projects/projects-coach.js" defer></script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>
