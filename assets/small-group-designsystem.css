@@ -324,13 +324,27 @@
   border-radius: var(--sg-radius);
 }
 
+/* The picture box matches the ART, not a video shape.
+ *
+ * 262 of the 270 vocabulary illustrations are 4:3 (a 160x120 viewBox) and 267
+ * of them paint the same cream plate, #f7f4ec. This box forced 16/9 and tinted
+ * itself pale blue, so `object-fit: contain` letterboxed EVERY card — about
+ * 41px of the wrong colour down each side of the art, with the SVG's own
+ * rounded cream plate floating inside a blue-grey box inside a white card.
+ * Three surfaces, none matching, on all 204 variants. The art was never the
+ * problem; the frame around it was.
+ *
+ * Matching the ratio removes the bands and renders the same vector ~33%
+ * larger. `contain` stays — these are labelled diagrams, and `cover` would crop
+ * the labels off. The background is now the same cream the art paints, so the
+ * eight images that are NOT 4:3 letterbox onto their own plate colour and the
+ * seam is invisible rather than merely smaller. */
 .sg-vcard-picture {
   flex: none;
-  aspect-ratio: 16 / 9;
-  min-height: 150px;
+  aspect-ratio: 4 / 3;
   margin: -5px -5px 17px;
   border-radius: var(--sg-radius-sm);
-  background: color-mix(in srgb, var(--sg-soft) 70%, var(--sg-card));
+  background: var(--sg-plate, #f7f4ec);
 }
 
 .sg-vterm {
@@ -726,7 +740,9 @@
   }
 
   .sg-vcard-picture {
-    min-height: 140px;
+    /* The ratio governs the height at every width; a min-height here would
+       reintroduce letterboxing on a narrow column. */
+    aspect-ratio: 4 / 3;
   }
 }
 
