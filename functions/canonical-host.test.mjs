@@ -87,4 +87,20 @@ t("the redirect is method-preserving in the middleware, not a 301", () => {
   assert.match(src, /status:\s*308/, "the canonical redirect is no longer method-preserving");
 });
 
+/* ── The document-request test that decides which gate a person sees ───────── */
+
+t("a browser that omits Sec-Fetch-Mode is still treated as a person", () => {
+  // Safari and the in-app webviews in Gmail/Classroom/Teams may send no
+  // Sec-Fetch metadata. When that made `wantsHtml` false, the middleware
+  // answered a teacher with `WWW-Authenticate: Basic` — the SITE-ENTRY gate,
+  // which checks a different secret from the one they were typing.
+  const src = readFileSync(new URL("./_middleware.js", import.meta.url), "utf8");
+  assert.match(
+    src,
+    /!fetchMode && accepts\.includes\("text\/html"\)/,
+    "the Accept fallback is gone — browsers without Sec-Fetch-Mode will get a Basic dialog again",
+  );
+  assert.match(src, /fetchMode === "navigate"/, "the Sec-Fetch-Mode signal is no longer trusted");
+});
+
 console.log(`canonical host: ${passed} assertions passed.`);

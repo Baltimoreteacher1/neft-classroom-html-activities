@@ -270,9 +270,26 @@ export async function onRequest(context) {
   // navigating to the planner should land on a key field, not a Basic Auth
   // dialog it has no credential for. Anything that is not a top-level document
   // request (fetch, XHR, an image, curl) keeps the 401 its caller can act on.
+  //
+  // `Sec-Fetch-Mode` is trusted when present, and it is present in Chrome, Edge
+  // and Firefox. It is NOT universal: Safari and the in-app webviews inside
+  // Gmail, Classroom and Teams may omit the Sec-Fetch metadata entirely, and
+  // when they did, `wantsHtml` was false and the middleware answered a person
+  // with `WWW-Authenticate: Basic`. The teacher then saw the native browser
+  // password box — the SITE-ENTRY gate, which checks SITE_PASSWORD — and typed
+  // their teacher key into it, which is a different credential and is correctly
+  // refused. Reported as "the site password gate appeared and my password does
+  // not work"; both halves were true and neither was a password problem.
+  //
+  // So when the header is absent, fall back to what the request ASKS FOR: a
+  // GET/HEAD that accepts HTML is a document request. curl's default `*/*`,
+  // fetch's `*/*` and an image's `image/*` are unaffected, and any client that
+  // sends Sec-Fetch-Mode keeps exactly its previous behaviour.
+  const fetchMode = request.headers.get("Sec-Fetch-Mode");
+  const accepts = request.headers.get("Accept") || "";
   const wantsHtml =
     (request.method === "GET" || request.method === "HEAD") &&
-    request.headers.get("Sec-Fetch-Mode") === "navigate";
+    (fetchMode === "navigate" || (!fetchMode && accepts.includes("text/html")));
   if (teacherKeysConfigured && wantsHtml) {
     const login = new URL("/teacher-login/", url);
     login.searchParams.set("next", `${url.pathname}${url.search}`);
