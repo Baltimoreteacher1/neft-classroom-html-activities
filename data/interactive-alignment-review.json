@@ -1,0 +1,136 @@
+{
+  "description": "Reviewed decisions about whether a lesson's interactive tools serve that lesson's mathematics. Hand-maintained; tools/validate-interactive-alignment.mjs reads it. An entry exists for every element the automated detectors flag, and for every element a human deliberately examined. An element with no entry has NOT been individually reviewed — the validator says so rather than implying otherwise.",
+  "schemaVersion": 1,
+  "classifications": {
+    "DIRECT": "Develops or practices the target concept itself.",
+    "SUPPORTING": "Serves prerequisite or access mathematics without replacing the target.",
+    "OPTIONAL": "Useful but not necessary to the lesson's mathematics.",
+    "MISALIGNED": "Does not meaningfully support the lesson objective.",
+    "CONFLICTING": "Actively works against the lesson's intended reasoning."
+  },
+  "reviewed": [
+    {
+      "lessonId": "10-1",
+      "slot": "practice.diagram",
+      "key": "area-morph",
+      "classification": "DIRECT",
+      "reason": "Flagged only because the label word 'footprint' appears nowhere else in the lesson. The planter it describes does: the lesson discusses a 4 ft by 2 ft planter one foot deep, the parallelogram is that base at those exact measurements, and the explore cross-section adds the depth. 'Footprint' is descriptive vocabulary for the base, not a foreign context. 10-1 is MPP.3, a practice standard, which constrains no representation.",
+      "evidence": [
+        "contentObjective",
+        "practice tasks",
+        "explore.diagram coherence"
+      ],
+      "source": "authored",
+      "detectorFlags": [
+        "label-context"
+      ],
+      "status": "reviewed",
+      "appliesToVariants": true
+    },
+    {
+      "lessonId": "6-4",
+      "slot": "practice.diagram",
+      "key": "step-solver",
+      "classification": "DIRECT",
+      "reason": "Flagged because the configured answer 29 appears nowhere else in the lesson. It is not an independent claim — it is the value of the tool's own start expression 4 x 5 + 3^2, checked line by line. 6.AT.6c is order of operations with exponents, which is exactly what a one-operation-per-line evaluator practises, and the tool carries presets so it is not a single fixed example.",
+      "evidence": [
+        "standard 6.AT.6c",
+        "contentObjective",
+        "tool presets"
+      ],
+      "source": "authored",
+      "detectorFlags": [
+        "numbers-absent"
+      ],
+      "status": "reviewed",
+      "appliesToVariants": true
+    },
+    {
+      "lessonId": "9-1",
+      "slot": "explore.diagram",
+      "key": "ratio-table-builder",
+      "classification": "DIRECT",
+      "reason": "Flagged because 41 appears nowhere else in the lesson. The seed 10 minutes to 41 Calories is the lesson's own rate expressed per ten minutes: the task states Claire jogged 30 minutes and burned 123 Calories, and 123/30 = 4.1. The table therefore extends the lesson's relationship rather than inventing one, which is precisely the independent/dependent reasoning 6.AT.11 asks for. A detector comparing literal values cannot see a proportional restatement; that is a known limit of the numbers check, recorded here rather than worked around.",
+      "evidence": [
+        "practice task: Claire jogged 30 minutes, burned 123 Calories",
+        "contentObjective"
+      ],
+      "source": "authored",
+      "detectorFlags": [
+        "numbers-absent"
+      ],
+      "status": "reviewed",
+      "appliesToVariants": true
+    },
+    {
+      "lessonId": "1-4",
+      "slot": "practice.diagram",
+      "key": "area-morph",
+      "classification": "CONFLICTING",
+      "reason": "REMOVED 2026-08-15. A trapezoid AREA explorer labelled 'Garden footprint: the 6 ft bed and the 4 ft bed share a 2 ft width', in a lesson whose entire mathematical content is defending a packaging recommendation with box VOLUME. Not merely irrelevant: the lesson's own practice item offers '240 square inches' as a tagged distractor and corrects it to CUBIC inches, so a tool drilling a square-unit area formula sat directly on the misconception the lesson exists to fix. Replaced by a bar-chart of the two packaging options the argument actually compares.",
+      "evidence": [
+        "contentObjective: use volume to defend a recommendation",
+        "practice: 8 x 3 x 10 = 240 cubic inches",
+        "practice distractor '240 square inches' tagged as the unit error",
+        "label context absent from the lesson"
+      ],
+      "source": "generated-rule",
+      "rootCause": "lesson-tool-coverage quota",
+      "resolution": "removed",
+      "status": "resolved"
+    },
+    {
+      "lessonId": "1-4",
+      "slot": "practice.diagram",
+      "key": "bar-chart",
+      "classification": "DIRECT",
+      "reason": "The replacement. Two bars, 720 cubic inches for three large boxes and 800 for two jumbo, which is the exact comparison the lesson asks students to argue from. Built only from the lesson's own numbers.",
+      "evidence": [
+        "practice: 240 x 3 = 720",
+        "practice: 400 x 2 = 800",
+        "contentObjective"
+      ],
+      "source": "authored",
+      "status": "reviewed",
+      "appliesToVariants": true
+    },
+    {
+      "lessonId": "1-4",
+      "slot": "explore.diagram",
+      "key": "cross-section",
+      "classification": "SUPPORTING",
+      "reason": "RECONFIGURED 2026-08-15. The tool was right and its numbers were not: a 6 x 4 x 2 prism models no box in this lesson. Now 8 x 3 x 10 in, the large cereal box the practice items compute at 240 cubic inches, so slicing it shows where that product comes from.",
+      "evidence": [
+        "practice: a large cereal box is 8 in long, 3 in wide, 10 in tall"
+      ],
+      "source": "authored",
+      "resolution": "reconfigured",
+      "status": "reviewed",
+      "appliesToVariants": true
+    },
+    {
+      "lessonId": "1-4-group1",
+      "slot": "practice.diagram",
+      "key": "bar-chart",
+      "classification": "DIRECT",
+      "reason": "Inherits the corrected parent tool. The variant scaffolds the same volume argument, so it points at the same mathematical target; only the support level differs.",
+      "evidence": [
+        "parent 1-4 review"
+      ],
+      "source": "variant-inherited",
+      "status": "reviewed"
+    },
+    {
+      "lessonId": "1-4-group2",
+      "slot": "practice.diagram",
+      "key": "bar-chart",
+      "classification": "DIRECT",
+      "reason": "Inherits the corrected parent tool, same reasoning as group1.",
+      "evidence": [
+        "parent 1-4 review"
+      ],
+      "source": "variant-inherited",
+      "status": "reviewed"
+    }
+  ]
+}
