@@ -147,44 +147,87 @@ test("180 instructional dates, of which 5 are shortened", () => {
  * data/pacing-unit-lessons.json rather than merely tolerated. A lesson that
  * falls out of the plan, or gets scheduled twice, with no authored entry
  * behind it still fails here. */
-test("every scheduled lesson is canonical, and repeats are only authored borrowings", () => {
-  const core = baseline.days
-    .filter((d) => d.plan.dayType === "Core Lesson")
-    .map((d) => d.plan.lessonId);
+/** Every Core Lesson day, as {lessonId: [pacing keys it is taught under]}. */
+function coreOccurrences() {
+  const out = new Map();
+  for (const d of baseline.days) {
+    if (d.plan.dayType !== "Core Lesson" || !d.plan.lessonId) continue;
+    if (!out.has(d.plan.lessonId)) out.set(d.plan.lessonId, []);
+    out.get(d.plan.lessonId).push(d.plan.unitKey);
+  }
+  return out;
+}
+const DISPOSITIONS = new Map((authored.lessonDispositions ?? []).map((d) => [d.lessonId, d]));
+
+test("every scheduled lesson is canonical", () => {
   const canonical = new Set(launch.lessons.map((l) => l.id));
   assert.equal(canonical.size, 84);
-  for (const id of core) assert.ok(canonical.has(id), `${id} is a canonical lesson`);
+  for (const id of coreOccurrences().keys()) {
+    assert.ok(canonical.has(id), `${id} is a canonical lesson`);
+  }
+});
 
-  const borrowable = new Set(Object.values(authored.units).flatMap((u) => u.lessons));
-  const counts = new Map();
-  for (const id of core) counts.set(id, (counts.get(id) ?? 0) + 1);
-  for (const [id, n] of counts) {
-    if (n === 1) continue;
-    assert.ok(
-      borrowable.has(id),
-      `${id} is scheduled ${n} times but no assembled unit authors it — that is a duplicate, not a borrowing`,
+test("coverage: every canonical lesson is scheduled once, or declared with a reason", () => {
+  const seen = coreOccurrences();
+  const undeclaredMissing = [];
+  const undeclaredRepeat = [];
+  for (const l of launch.lessons) {
+    const n = seen.get(l.id)?.length ?? 0;
+    const status = DISPOSITIONS.get(l.id)?.status;
+    if (n === 0 && status !== "unscheduled") undeclaredMissing.push(l.id);
+    if (n > 1 && status !== "scheduled-twice") undeclaredRepeat.push(l.id);
+  }
+  assert.deepEqual(undeclaredMissing, [], "lessons the plan teaches nowhere, with nothing declaring why");
+  assert.deepEqual(undeclaredRepeat, [], "lessons the plan teaches twice, with nothing declaring why");
+});
+
+test("no declaration outlives the thing it declares", () => {
+  /* The other direction, and the one that lets a file like this rot: an entry
+   * absolving an omission that no longer exists, or a repeat that has since
+   * become a single. Both must fail, or the exceptions outlive their reasons. */
+  const seen = coreOccurrences();
+  const stale = [];
+  for (const d of DISPOSITIONS.values()) {
+    const n = seen.get(d.lessonId)?.length ?? 0;
+    if (d.status === "unscheduled" && n > 0) stale.push(`${d.lessonId} is declared unscheduled but is taught`);
+    if (d.status === "scheduled-twice" && n < 2) stale.push(`${d.lessonId} is declared a repeat but is taught ${n}×`);
+  }
+  assert.deepEqual(stale, []);
+});
+
+test("a declared repeat pins WHERE it repeats, so a new duplicate still fails", () => {
+  /* Without this, "scheduled-twice" would be a blanket pardon: the lesson could
+   * reappear under any unit, any number of times, and the declaration would
+   * still cover it. The declared `occurrences` must equal the pacing keys the
+   * plan actually teaches it under. */
+  const seen = coreOccurrences();
+  for (const d of DISPOSITIONS.values()) {
+    if (d.status !== "scheduled-twice") continue;
+    assert.ok(Array.isArray(d.occurrences), `${d.lessonId} declares a repeat but names no occurrences`);
+    assert.deepEqual(
+      [...(seen.get(d.lessonId) ?? [])].sort(),
+      [...d.occurrences].sort(),
+      `${d.lessonId} is taught under different pacing units than it declares`,
     );
   }
 });
 
-test("the lessons the plan never schedules are exactly the declared displaced set", () => {
-  const scheduled = new Set(
-    baseline.days.filter((d) => d.plan.dayType === "Core Lesson").map((d) => d.plan.lessonId),
-  );
-  const unscheduled = launch.lessons.map((l) => l.id).filter((id) => !scheduled.has(id));
-  const declared = Object.keys(authored.displaced ?? {});
-  /* Both directions. A lesson dropped from the plan with no declaration is a
-   * lesson taught nowhere that nobody decided to stop teaching; a declaration
-   * for a lesson the plan does teach is a stale absolution. */
-  assert.deepEqual(
-    [...unscheduled].sort(),
-    [...declared].sort(),
-    "the plan's unscheduled lessons and data/pacing-unit-lessons.json's `displaced` block disagree",
-  );
-  for (const [id, reason] of Object.entries(authored.displaced ?? {})) {
+test("every disposition carries a reason, evidence and a review status", () => {
+  assert.ok(DISPOSITIONS.size > 0, "the disposition list is empty — it has stopped being maintained");
+  for (const d of DISPOSITIONS.values()) {
+    assert.match(d.status, /^(unscheduled|scheduled-twice)$/, `${d.lessonId}: unknown status ${d.status}`);
     assert.ok(
-      typeof reason === "string" && reason.length >= 20,
-      `displaced lesson ${id} has no substantive reason`,
+      typeof d.reason === "string" && d.reason.length >= 40,
+      `${d.lessonId} has no substantive reason — a one-word reason is how an audit gets gamed`,
+    );
+    assert.ok(
+      Array.isArray(d.evidence) && d.evidence.length > 0,
+      `${d.lessonId} cites no evidence`,
+    );
+    assert.match(
+      d.reviewStatus,
+      /^(confirmed|teacher-review)$/,
+      `${d.lessonId}: reviewStatus must be confirmed or teacher-review`,
     );
   }
 });

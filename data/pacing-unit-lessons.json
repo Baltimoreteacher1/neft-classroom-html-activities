@@ -1,22 +1,156 @@
 {
-  "description": "Authored lesson sequences for district-paced units whose membership is an INSTRUCTIONAL DECISION rather than the curriculum's own unit numbering. Hand-maintained and reviewed. Everything not listed here falls back to the curriculum manifest's unit membership, in manifest order.",
-  "schemaVersion": 1,
+  "description": "Authored lesson sequences for district-paced units whose membership is an INSTRUCTIONAL DECISION rather than the curriculum's own unit numbering, plus the declared disposition of every canonical lesson the resulting plan does not schedule exactly once. Hand-maintained and reviewed. Everything not listed here falls back to the curriculum manifest's unit membership, in manifest order.",
+  "schemaVersion": 2,
   "note": "Lesson ids ONLY. Titles, standards and routes resolve from data/curriculum-launch-manifest.json at render time, so a lesson renamed in the curriculum is renamed everywhere. Listing a lesson here does NOT move it: 2-6 remains canonically a Unit 2 lesson and still appears in Unit 2's own list.",
   "units": {
     "PRE": {
       "districtLabel": "Pre-Unit: Course 1 Pre Unit",
-      "reason": "The Pre-Unit is assembled, not inherited. It is a Grade 5 review sequence drawn from several canonical units to rebuild the prerequisites Course 1 assumes — whole-number and decimal fluency before ratio reasoning starts in Unit 3. Reading its membership off the curriculum's unit-1 numbering produced 1-1 through 1-6, which is a different thing: the Unit 1 'Math Is…' arc, not the review the district actually paces here.",
+      "reason": "The Pre-Unit is assembled, not inherited. It is a prerequisite-fluency sequence drawn from several canonical units to rebuild what Course 1 assumes — whole-number, decimal and fraction division before ratio reasoning starts in Unit 3. Reading its membership off the curriculum's unit-1 numbering produced 1-1 through 1-6, which is a different thing: the Unit 1 'Math Is…' arc, not the review the district actually paces here.",
       "lessons": ["1-1", "2-6", "2-7", "6-1", "6-2"],
       "reviewedOn": "2026-08-16"
     }
   },
-  "displacedNote": "An assembled unit occupies a slot in the district plan, so the lessons it does NOT list are taught nowhere that year. That is a curricular consequence, not a bug, but it must be DECLARED: without this block a lesson could fall out of the dated plan silently. validate:pacing-unit-order asserts this set equals the set the plan actually leaves unscheduled — in BOTH directions, so a stale entry fails as loudly as a missing one.",
-  "displaced": {
-    "1-2": "Unit 1's 'Math Is…' arc is not paced. The district workbook never names a Unit 1; the Pre-Unit stands in its slot, and the confirmed Pre-Unit keeps only 1-1 as the opening community lesson. Unit 10 revisits the arc at the end of the year.",
-    "1-3": "As 1-2 — Unit 1 arc, unpaced.",
-    "1-4": "As 1-2 — Unit 1 arc, unpaced.",
-    "1-5": "As 1-2 — Unit 1 arc, unpaced.",
-    "1-6": "As 1-2 — Unit 1 arc, unpaced."
-  },
-  "displacedReviewedOn": "2026-08-16"
+
+  "dispositionNote": "An assembled unit occupies a slot in the district plan, so the plan no longer schedules every canonical lesson exactly once. Both directions of that are declared here rather than tolerated: a lesson the plan never schedules, and a lesson it schedules more than once. validate:pacing-unit-order asserts this list against the dated plan in BOTH directions — an undeclared omission fails, an undeclared repeat fails, and a declaration whose lesson no longer matches its declared occurrences fails too, so this file cannot decay into stale absolutions. `reviewStatus` is 'confirmed' only where a source document settles it; anything resting on a teaching judgement is 'teacher-review' and is expected to stay that way until a human answers the question in `openQuestion`.",
+  "dispositionsReviewedOn": "2026-08-16",
+  "lessonDispositions": [
+    {
+      "lessonId": "1-2",
+      "status": "unscheduled",
+      "classification": "not-district-paced",
+      "reason": "Unit 1's 'Math Is…' arc is not paced this year. The district workbook contains no Unit 1 row at all: its eleven units are Pre-Unit, 3, 4, 6, 7, 8, 9, 5, 2, MSTAR, 10. The Pre-Unit stands in that slot, and the confirmed Pre-Unit sequence keeps only 1-1 from the arc as the opening community lesson. Unit 10 ('Math Is...', 10-1 … 10-6) revisits the same arc at the end of the year.",
+      "evidence": [
+        "docs/pacing-sources/build/plan_core.py — SEQUENCE, marked SOURCE-DERIVED from the 'Course 1' sheet: eleven entries, none of them Unit 1",
+        "docs/pacing-sources/planning-notes.md — 'Unit 1 is absent from the workbook — the Pre-Unit stands in its place'",
+        "data/pacing-unit-lessons.json — the confirmed Pre-Unit sequence keeps 1-1 only"
+      ],
+      "reviewStatus": "teacher-review",
+      "openQuestion": "The evidence that the DISTRICT does not pace Unit 1 is a source fact. Whether to teach 1-2 … 1-6 anyway is a teaching decision no document answers. The 11-day Pre-Unit budget is fixed by the workbook, so making room means taking a day from the Pre-Unit's catch-up or from Unit 3 flex."
+    },
+    {
+      "lessonId": "1-3",
+      "status": "unscheduled",
+      "classification": "not-district-paced",
+      "reason": "As 1-2 — part of the unpaced Unit 1 'Math Is…' arc.",
+      "evidence": [
+        "docs/pacing-sources/build/plan_core.py — SEQUENCE contains no Unit 1 row",
+        "docs/pacing-sources/planning-notes.md — 'Unit 1 is absent from the workbook'"
+      ],
+      "reviewStatus": "teacher-review",
+      "openQuestion": "See 1-2."
+    },
+    {
+      "lessonId": "1-4",
+      "status": "unscheduled",
+      "classification": "not-district-paced",
+      "reason": "As 1-2 — part of the unpaced Unit 1 'Math Is…' arc.",
+      "evidence": [
+        "docs/pacing-sources/build/plan_core.py — SEQUENCE contains no Unit 1 row",
+        "docs/pacing-sources/planning-notes.md — 'Unit 1 is absent from the workbook'"
+      ],
+      "reviewStatus": "teacher-review",
+      "openQuestion": "See 1-2."
+    },
+    {
+      "lessonId": "1-5",
+      "status": "unscheduled",
+      "classification": "not-district-paced",
+      "reason": "As 1-2 — part of the unpaced Unit 1 'Math Is…' arc.",
+      "evidence": [
+        "docs/pacing-sources/build/plan_core.py — SEQUENCE contains no Unit 1 row",
+        "docs/pacing-sources/planning-notes.md — 'Unit 1 is absent from the workbook'"
+      ],
+      "reviewStatus": "teacher-review",
+      "openQuestion": "See 1-2."
+    },
+    {
+      "lessonId": "1-6",
+      "status": "unscheduled",
+      "classification": "not-district-paced",
+      "reason": "As 1-2 — part of the unpaced Unit 1 'Math Is…' arc.",
+      "evidence": [
+        "docs/pacing-sources/build/plan_core.py — SEQUENCE contains no Unit 1 row",
+        "docs/pacing-sources/planning-notes.md — 'Unit 1 is absent from the workbook'"
+      ],
+      "reviewStatus": "teacher-review",
+      "openQuestion": "See 1-2."
+    },
+    {
+      "lessonId": "2-6",
+      "status": "scheduled-twice",
+      "classification": "intentional-repeat",
+      "occurrences": ["PRE", "U2"],
+      "reason": "Borrowed by the Pre-Unit for August prerequisite fluency, and taught again in place inside Unit 2 in April. The repeat is intentional in both directions: the Pre-Unit exists to rebuild division fluency before ratio reasoning, and Unit 2 keeps its full authored lesson list — the workbook budgets Unit 2 at 17 days for its 16 components and nothing in the source removes a lesson from it.",
+      "evidence": [
+        "docs/pacing-sources/build/plan_core.py — SEQUENCE budgets U2 at 16 components + 1 additional, unchanged by the Pre-Unit",
+        "data/pacing-unit-lessons.json — the Pre-Unit's stated purpose is prerequisite fluency, not first instruction in context",
+        "data/curriculum-launch-manifest.json — 2-6 remains canonically a Unit 2 lesson (unit: 2)"
+      ],
+      "reviewStatus": "teacher-review",
+      "openQuestion": "Whether the April lesson should run at full length after an August preview, or be compressed. That is a teaching judgement; the duplication itself is intentional and is not an error."
+    },
+    {
+      "lessonId": "2-7",
+      "status": "scheduled-twice",
+      "classification": "intentional-repeat",
+      "occurrences": ["PRE", "U2"],
+      "reason": "As 2-6 — borrowed for August decimal-division fluency, taught again in place in Unit 2 in May.",
+      "evidence": [
+        "docs/pacing-sources/build/plan_core.py — SEQUENCE budgets U2 unchanged by the Pre-Unit",
+        "data/curriculum-launch-manifest.json — 2-7 remains canonically a Unit 2 lesson (unit: 2)"
+      ],
+      "reviewStatus": "teacher-review",
+      "openQuestion": "See 2-6."
+    },
+    {
+      "lessonId": "6-1",
+      "status": "scheduled-twice",
+      "classification": "intentional-repeat",
+      "occurrences": ["PRE", "U6"],
+      "reason": "Borrowed by the Pre-Unit for August fraction-division fluency, and taught again in place inside Unit 6 in November. Unit 6 keeps its full lesson list; the workbook budgets it at 17 components + 2 and the source removes nothing.",
+      "evidence": [
+        "docs/pacing-sources/build/plan_core.py — SEQUENCE budgets U6 at 17 components + 2, unchanged by the Pre-Unit",
+        "data/curriculum-launch-manifest.json — 6-1 remains canonically a Unit 6 lesson (unit: 6)"
+      ],
+      "reviewStatus": "teacher-review",
+      "openQuestion": "See 2-6. Unit 6 has zero slack in the plan, so a compressed re-teach there would buy a day the unit currently does not have."
+    },
+    {
+      "lessonId": "6-2",
+      "status": "scheduled-twice",
+      "classification": "intentional-repeat",
+      "occurrences": ["PRE", "U6"],
+      "reason": "As 6-1 — borrowed for August, taught again in place in Unit 6 in November.",
+      "evidence": [
+        "docs/pacing-sources/build/plan_core.py — SEQUENCE budgets U6 unchanged by the Pre-Unit",
+        "data/curriculum-launch-manifest.json — 6-2 remains canonically a Unit 6 lesson (unit: 6)"
+      ],
+      "reviewStatus": "teacher-review",
+      "openQuestion": "See 6-1."
+    }
+  ],
+
+  "openingBlockNotes": {
+    "surplusDay": {
+      "resolvedTo": "2-7-catchup on 2026-08-28",
+      "reason": "Not a judgement call — the generator's own documented rule. The Pre-Unit's 11 slots hold 5 lessons + Review + Assessment + 2 project days = 9, leaving 2 surplus. Assumption #14 spends the first on a second day for the opening lesson (1-1, Aug 24–25). Assumption #7 spends the next on a catch-up ANCHOR, taken in lesson order, and the first Pre-Unit lesson that owns a catch-up surface is 2-7. The station it opens is titled '2.6 · 2.7 · 2.11 · 2.12 Catch-Up', so it repairs exactly the two division-algorithm lessons taught immediately before it.",
+      "evidence": [
+        "docs/pacing-sources/build/plan_core.py — build_items(): `anchors = [l['id'] for l in ls if l['id'] in cu]`, then `use_cu = set(anchors[:surplus])`",
+        "docs/pacing-sources/planning-notes.md — assumption 7 (surplus goes to catch-up stations, then lesson second days, then flex) and assumption 14",
+        "data/curriculum-launch-manifest.json — 2-7-catchup covers lessons 2.6, 2.7, 2.11 and 2.12"
+      ],
+      "reviewStatus": "confirmed"
+    },
+    "culminatingProject": {
+      "resolvedTo": "unit-1-project retained on 2026-09-04 and 2026-09-08",
+      "reason": "Audited rather than renamed, and it is the right project. The page at /math/unit-1/projects/ is titled 'Number Sense in Action' and describes itself as 'greatest common factor, least common multiple, decimal operations, and multi-digit division', citing 6.NOS.2, 6.NOS.3 and 6.NOS.4. That is the Pre-Unit's own mathematics — 2-6 is 6.NOS.2 and 2-7 is 6.NOS.3 — and it is NOT the 'Math Is…' arc, whose lessons carry MPP.3 and grade-5 standards. The project fits the corrected Pre-Unit better than it ever fitted the inferred one. It keeps its canonical name because the manifest generates 'Unit N Culminating Project' uniformly for all ten units; special-casing one would put a second name for the same surface into circulation, which is the class of problem this whole file exists to prevent.",
+      "evidence": [
+        "math/unit-1/projects/index.html — <h1>Number Sense in Action</h1>; 'pull together everything from Unit 1 — greatest common factor, least common multiple, decimal operations, and multi-digit division'",
+        "math/unit-1/projects/index.html — cites 6.NOS.2, 6.NOS.3, 6.NOS.4",
+        "scripts/generate-curriculum-launch-manifest.mjs — `title: \\`Unit ${unit} Culminating Project\\`` is generated for all ten units"
+      ],
+      "reviewStatus": "confirmed",
+      "separateFollowUp": "All ten culminating projects display a generated generic title rather than their authored name. That is one uniform improvement to the manifest generator, not a Pre-Unit question."
+    }
+  }
 }
