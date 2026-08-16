@@ -477,15 +477,30 @@ export function injectSmallGroupStyles(accent) {
        declared here. Three surfaces do the structural work and they must stay
        three distinct steps apart, because that separation IS the layout:
 
-         --sg-paper  warm sand   the page behind everything
-         --sg-card   white       the sheet a student reads and writes on
-         --sg-soft   pale navy   informational fills inside a card
+         --sg-paper  near-neutral the page behind everything
+         --sg-card   white        the sheet a student reads and writes on
+         --sg-soft   pale navy    informational fills inside a card
+         --sg-plate  cream        the ground the vocabulary art paints itself
 
        Before 2026-07-31 soft was #fbf9f4 — a hair off both white and the paper
        — so a callout inside a card inside the page read as one flat surface and
        the studio looked unfinished no matter how good the type was. Keep the
-       steps visible. */
-    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#dde3ea;--sg-paper:#eef1f5;--sg-card:#fff;--sg-text:#1d2a36;--sg-muted:#5a6b7c;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e4f3f0;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fceee9;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fff;--sg-fill:#eaeff5;
+       steps visible.
+
+       PAPER, 2026-08-16. It was #eef1f5 and this comment still called it "warm
+       sand", which it had not been for some time: measured, that value is a
+       26%-saturation BLUE at 95% lightness, so the whole canvas carried a cold
+       cast — and it sat only 1.13:1 from the white sheet, which is under the
+       threshold where an edge reads as an edge. The result was the worst of
+       both: a page tinted enough to notice and not separated enough to give the
+       sheet a shape, so the mathematics floated on a faint blue wash.
+
+       #e6e8eb keeps a trace of the same hue (11% saturation, so it is not a
+       dead grey under classroom lighting) and moves to 1.23:1 against the
+       sheet. The canvas recedes, the sheet reads as a sheet, and no figure
+       competes with a background. Judged by those two numbers rather than by
+       eye — saturation for the cast, contrast for the separation. */
+    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#dde3ea;--sg-paper:#e6e8eb;--sg-card:#fff;--sg-plate:#f7f4ec;--sg-text:#1d2a36;--sg-muted:#5a6b7c;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e4f3f0;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fceee9;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fff;--sg-fill:#eaeff5;
       /* Type pairing. Outfit (the site display face, already loaded by the
          lesson shell) for anything that acts as a heading or a label; Atkinson
          Hyperlegible — chosen for these pathways because it is the most legible
@@ -683,7 +698,7 @@ export function injectSmallGroupStyles(accent) {
     .we-steps,.steplist{margin:10px 0;border:1px solid var(--sg-line);border-radius:13px;padding:7px 16px}.steps{margin:0;padding:0;list-style:none;counter-reset:step}
     .steps li{position:relative;padding:8px 0 8px 35px;border-bottom:1px dashed var(--sg-line)}.steps li:last-child{border:0}.steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:8px;display:grid;width:23px;height:23px;place-items:center;border-radius:8px;background:var(--sg-soft);color:var(--sg-ink);font-weight:900}
     .sg-vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-    .sg-vcard{position:relative;padding:17px;border:1px solid var(--sg-line);border-radius:16px;background:var(--sg-card);box-shadow:0 5px 16px rgba(23,32,51,.05)}.sg-vcard-picture{display:grid;min-height:150px;margin:-5px -5px 14px;place-items:center;overflow:hidden;border-radius:13px;background:var(--sg-soft)}.sg-vcard-picture img{display:block;width:100%;max-height:190px;object-fit:contain;transition:opacity .18s ease}.sg-vcard-picture img[data-image-state="loading"]{opacity:.35}
+    .sg-vcard{position:relative;padding:17px;border:1px solid var(--sg-line);border-radius:16px;background:var(--sg-card);box-shadow:0 5px 16px rgba(23,32,51,.05)}.sg-vcard-picture{display:grid;aspect-ratio:4/3;margin:-5px -5px 14px;place-items:center;overflow:hidden;border-radius:13px;background:var(--sg-plate)}.sg-vcard-picture img{display:block;width:100%;height:100%;object-fit:contain;transition:opacity .18s ease}.sg-vcard-picture img[data-image-state="loading"]{opacity:.35}
     .sg-vterm{padding-right:42px;color:var(--sg-ink);font-family:var(--sg-display);font-size:21px;font-weight:900}.sg-vtranslations{margin:5px 0;color:var(--sg-muted);font-size:14px}.sg-vdef{margin-top:12px;padding-top:12px;border-top:1px dashed var(--sg-line)}.sg-vdef-line{margin:0 0 9px}.sg-vdef-line:last-child{margin-bottom:0}.sg-vdef-language{display:block;color:var(--sg);font-family:var(--sg-display);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
     .sg-speak{position:absolute;right:10px;top:10px;display:grid;width:44px;height:44px;place-items:center;border:1px solid var(--sg-line);border-radius:50%;background:var(--sg-card);cursor:pointer}
     /* Practice panels (word match, cloze). Both are "now you try" surfaces, so
