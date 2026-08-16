@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <title>Pre-Unit Project — Teacher Answer Key | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Teacher answer key for the Pre-Unit culminating project (Launch Day Supply Depot)."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ── Answer-Key specific styles ── */
+      .ak-hero {
+        background: linear-gradient(
+          135deg,
+          #0f2b3c 0%,
+          #7c2d8a 60%,
+          #8a5f0a 100%
+        );
+        color: #fff;
+        padding: 36px 24px 30px;
+        text-align: center;
+      }
+      .ak-hero h1 {
+        margin: 8px 0 6px;
+        font-size: clamp(24px, 4vw, 36px);
+        letter-spacing: -0.02em;
+      }
+      .ak-hero p {
+        max-width: 600px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 16px;
+      }
+      .ak-tags {
+        margin-top: 14px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .ak-tag {
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50px;
+        padding: 4px 13px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .ak-tag.gold {
+        background: #d4952a;
+        border-color: #8a5f0a;
+        color: #2a1c00;
+      }
+
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
+
+      .ak-print-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #0f2b3c;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 22px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        margin: 22px 0 10px;
+        font-family: inherit;
+      }
+      .ak-print-btn:hover {
+        filter: brightness(1.1);
+      }
+
+      /* version divider */
+      .version-banner {
+        background: linear-gradient(90deg, #7c2d8a, #8a5f0a);
+        color: #fff;
+        border-radius: 14px;
+        padding: 14px 20px;
+        margin: 30px 0 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .version-banner.blue {
+        background: linear-gradient(90deg, #0f2b3c, #1a6fb5);
+      }
+      .version-banner .vb-icon {
+        font-size: 30px;
+        line-height: 1;
+        flex: 0 0 auto;
+      }
+      .version-banner h2 {
+        margin: 0;
+        font-size: 22px;
+      }
+      .version-banner p {
+        margin: 2px 0 0;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      /* phase answer blocks */
+      .ak-phase {
+        background: #fff;
+        border: 1px solid #e2e7ec;
+        border-radius: 14px;
+        padding: 22px 24px;
+        margin: 16px 0;
+        box-shadow: 0 3px 14px rgba(15, 43, 60, 0.08);
+      }
+      .ak-phase-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .ak-phase-num {
+        flex: 0 0 auto;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: #1a6fb5;
+        color: #fff;
+        font-weight: 800;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ak-phase-num.purple {
+        background: #7c2d8a;
+      }
+      .ak-phase-num.teal {
+        background: #0c6f6b;
+      }
+      .ak-phase-num.gold {
+        background: #d4952a;
+        color: #2a1c00;
+      }
+      .ak-phase-num.coral {
+        background: #a8442a;
+      }
+      .ak-phase-num.green {
+        background: #22683a;
+      }
+      .ak-phase-num.navy {
+        background: #0f2b3c;
+      }
+
+      .ak-phase h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #1a2633;
+      }
+      .ak-phase .skill-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #5e6e7e;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .ak-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 12px;
+      }
+      @media (max-width: 580px) {
+        .ak-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .ak-input-block {
+        background: #f7f9fb;
+        border: 1px solid #e2e7ec;
+        border-radius: 10px;
+        padding: 12px 14px;
+      }
+      .ak-input-block .label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #5e6e7e;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 4px;
+      }
+      .ak-input-block .val {
+        font-size: 17px;
+        font-weight: 800;
+        color: #1a2633;
+      }
+
+      .ak-answer {
+        background: #e4f5f3;
+        border: 1px solid #bfe6e0;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .ak-answer .big {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0c6f6b;
+        margin-bottom: 6px;
+      }
+      .ak-answer .steps {
+        font-size: 14px;
+        color: #1a2633;
+        line-height: 1.7;
+      }
+
+      .ak-qc {
+        background: #fdf3e0;
+        border: 1px solid #f5d78a;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .ak-qc .qc-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #7c5a00;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ak-qc .qc-q {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1a2633;
+        margin: 4px 0;
+      }
+      .ak-qc .qc-a {
+        font-size: 22px;
+        font-weight: 800;
+        color: #8a5f0a;
+      }
+      .ak-qc .qc-work {
+        font-size: 14px;
+        color: #5e6e7e;
+        margin-top: 4px;
+      }
+
+      .ak-sample {
+        background: #e6f4eb;
+        border: 1px solid #a6d9b7;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .ak-sample .s-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #185c2e;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ak-sample p {
+        margin: 6px 0 0;
+        font-size: 14px;
+        color: #1a2633;
+        line-height: 1.65;
+        font-style: italic;
+      }
+
+      .ak-rubric {
+        background: #eeecfd;
+        border: 1px solid #c5bff7;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .ak-rubric .r-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #2d1a8a;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ak-rubric p {
+        margin: 6px 0 0;
+        font-size: 14px;
+        color: #1a2633;
+        line-height: 1.65;
+      }
+
+      .ratio-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+        font-size: 14px;
+      }
+      .ratio-tbl th,
+      .ratio-tbl td {
+        border: 1px solid #e2e7ec;
+        padding: 8px 12px;
+        text-align: center;
+      }
+      .ratio-tbl th {
+        background: #7c2d8a;
+        color: #fff;
+        font-size: 12px;
+      }
+      .ratio-tbl td:first-child {
+        font-weight: 700;
+        background: #fdf3e0;
+      }
+
+      .stats-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+        font-size: 14px;
+      }
+      .stats-tbl th,
+      .stats-tbl td {
+        border: 1px solid #e2e7ec;
+        padding: 8px 12px;
+        text-align: center;
+      }
+      .stats-tbl th {
+        background: #0f2b3c;
+        color: #fff;
+        font-size: 12px;
+      }
+      .stats-tbl td:first-child {
+        font-weight: 700;
+        background: #e8f2fc;
+        text-align: left;
+      }
+
+      .section-divider {
+        border: none;
+        border-top: 2px dashed #e2e7ec;
+        margin: 32px 0;
+      }
+
+      /* Print styles */
+      @media print {
+        .ak-print-btn {
+          display: none !important;
+        }
+        .ak-hero {
+          background: #0f2b3c !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .ak-phase,
+        .version-banner {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+        .version-banner {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .ak-answer,
+        .ak-qc,
+        .ak-sample,
+        .ak-rubric,
+        .ak-input-block {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+          .checklist li:has(input[type="checkbox"]:checked) {
+        color: var(--muted) !important;
+        opacity: 0.65;
+        text-decoration: line-through;
+        transition: all 0.25s ease;
+      }
+    </style>
+      <!-- answer-key-gate-injected:begin (teacher gate — tools/inject-projects-gold.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/answer-key-gate.css" />
+    <!-- answer-key-gate-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header class="ak-hero">
+      <div style="font-size: 44px; line-height: 1">📋</div>
+      <h1>Pre-Unit Project — Teacher Answer Key</h1>
+      <p>
+        Worked solutions for <strong>Launch Day Supply Depot</strong> (Version A). Level 1 defaults
+        are shown first; Level 0 defaults follow. Level 2 has no fixed answer — score the design
+        against the four constraints.
+      </p>
+      <div class="ak-tags">
+        <span class="ak-tag gold">Pre-Unit · Division</span>
+        <span class="ak-tag">6.NOS.1</span>
+        <span class="ak-tag">6.NOS.2</span>
+        <span class="ak-tag">6.NOS.3</span>
+        <span class="ak-tag">Teacher Use Only</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="note-panel" style="margin: 20px 0">
+        <p>
+          <strong>What this project is testing.</strong> Not whether a student can divide — the five
+          Pre-Unit lessons already did that separately. It is testing whether the student recognises
+          the same question (<em>how many fit?</em>) across whole numbers, decimals and fractions,
+          and whether they can say what a quotient <em>means</em> once it stops being a number on a
+          page.
+        </p>
+        <p>
+          <strong>The one thing to look for.</strong> A student who writes 30 buses has divided
+          correctly and answered the wrong question. The remainder is the assessment.
+        </p>
+      </div>
+
+      <button class="ak-print-btn" onclick="window.print()">🖨️ Print this key</button>
+
+      <div class="version-banner">
+        <div class="vb-icon">🚚</div>
+        <div>
+          <h2>Version A — Launch Day Supply Depot</h2>
+          <p>Six steps · three parts · Levels 0, 1 and 2</p>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num purple">2</div>
+          <div>
+            <div class="skill-label">Part 1 · Whole-number division — Lesson 2-6 · 6.NOS.2</div>
+            <h3>Load the Buses</h3>
+          </div>
+        </div>
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">Students riding (Level 1 default)</div>
+            <div class="val">738</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Seats on one bus</div>
+            <div class="val">24</div>
+          </div>
+        </div>
+        <div class="ak-answer">
+          <div class="big">31 buses</div>
+          <div class="steps">
+            738 ÷ 24 = 30 remainder 18.<br />
+            30 buses fill completely; 18 students are still waiting.<br />
+            Those 18 students need seats, so the order is 30 + 1 = <strong>31 buses</strong>.
+          </div>
+        </div>
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">Level 0 default</div>
+            <div class="val">100 ÷ 24</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Level 0 answer</div>
+            <div class="val">5 buses</div>
+          </div>
+        </div>
+        <div class="ak-sample">
+          <div class="s-label">Sample response — "What does the leftover mean?"</div>
+          <p>
+            24 riders fit on each bus, but 18 students were left over, so we need one more bus even
+            though it will be almost empty.
+          </p>
+        </div>
+        <div class="ak-rubric">
+          <div class="r-label">Common wrong answers and what they tell you</div>
+          <p>
+            <strong>30</strong> — dropped the remainder. The page names this ("that is the number of
+            buses that fill up completely") without stating 31.<br />
+            <strong>30.75</strong> — treated a count of buses as a continuous quantity.<br />
+            <strong>17,712</strong> — multiplied.
+          </p>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num teal">3</div>
+          <div>
+            <div class="skill-label">Part 1 · Decimal division — Lesson 2-7 · 6.NOS.3</div>
+            <h3>Buy the Supply Packs</h3>
+          </div>
+        </div>
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">Money set aside (Level 1 default)</div>
+            <div class="val">$58.50</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Price of one pack</div>
+            <div class="val">$2.25</div>
+          </div>
+        </div>
+        <div class="ak-answer">
+          <div class="big">26 packs</div>
+          <div class="steps">
+            Step A — equivalent division: 58.50 ÷ 2.25 = 5850 ÷ 225.<br />
+            Both numbers were multiplied by 100, so the quotient is unchanged.<br />
+            Step B — 5850 ÷ 225 = <strong>26</strong> exactly, with nothing left over.
+          </div>
+        </div>
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">Level 0 default</div>
+            <div class="val">$4.50 ÷ $1.50</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Level 0 answer</div>
+            <div class="val">3 packs (45 ÷ 15)</div>
+          </div>
+        </div>
+        <div class="ak-rubric">
+          <div class="r-label">Common wrong answers</div>
+          <p>
+            <strong>2600</strong> — moved the decimal point in the dividend only. The hint ladder
+            names exactly this.<br />
+            <strong>131.63</strong> — multiplied instead of dividing.<br />
+            Step A accepted in any equivalent form (5850 ÷ 225, 585 ÷ 22.5 is rejected because the
+            divisor must be whole).
+          </p>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num purple">4</div>
+          <div>
+            <div class="skill-label">
+              Part 2 · Fraction and mixed-number division — Lessons 6-1 and 6-2 · 6.NOS.1
+            </div>
+            <h3>Ribbon and Trail Mix</h3>
+          </div>
+        </div>
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">4a — ribbon on the roll</div>
+            <div class="val">12 m</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">4a — ribbon per banner</div>
+            <div class="val">3/4 m</div>
+          </div>
+        </div>
+        <div class="ak-answer">
+          <div class="big">16 banners</div>
+          <div class="steps">
+            12 ÷ 3/4 = 12 × 4/3 = 48/3 = <strong>16</strong>.<br />
+            Sense-check: each piece is under a metre, so more than 12 pieces must fit. This is the
+            6-1 "how many fit" model with a whole-number dividend.
+          </div>
+        </div>
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">4b — trail mix in the bin</div>
+            <div class="val">7 1/2 lb</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">4b — trail mix per bag</div>
+            <div class="val">1 1/4 lb</div>
+          </div>
+        </div>
+        <div class="ak-answer">
+          <div class="big">6 bags</div>
+          <div class="steps">
+            7 1/2 ÷ 1 1/4 = 15/2 ÷ 5/4 = 15/2 × 4/5 = 60/10 = <strong>6</strong> exactly.<br />
+            Level 0 defaults: 6 ÷ 1/2 = 12 banners and 3 ÷ 1/2 = 6 bags.
+          </div>
+        </div>
+        <div class="ak-sample">
+          <div class="s-label">Sample justification (any of the three strategies earns full marks)</div>
+          <p>
+            I used the reciprocal because both numbers were mixed numbers. It works because dividing
+            asks how many 1 1/4-pound portions fit inside 7 1/2 pounds, and multiplying by 4/5 counts
+            those portions.
+          </p>
+        </div>
+        <div class="ak-rubric">
+          <div class="r-label">Diagnostics the page issues automatically</div>
+          <p>
+            An answer of <strong>9</strong> (12 × 3/4) is caught as "a product, not a quotient".<br />
+            An answer of <strong>1/16</strong> or <strong>5/6</strong> is caught as flipping the
+            dividend instead of the divisor.<br />
+            The Level 2 extension asks the student to make the quotient exceed the dividend — any
+            divisor under 1 does it, and the explanation is what is being scored.
+          </p>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num teal">5</div>
+          <div>
+            <div class="skill-label">Part 2 · Error analysis</div>
+            <h3>Repair the Depot Order</h3>
+          </div>
+        </div>
+        <div class="ak-answer">
+          <div class="big">Multiplied by the divisor instead of by its reciprocal → 16 banners</div>
+          <div class="steps">
+            The note wrote 12 ÷ 3/4 → 12 × 3/4 = 9. It changed the operation but left the fraction
+            as it was.<br />
+            Correct: 12 × 4/3 = 16.<br />
+            The distractor "flipped the dividend" is the near-miss — accept it as a diagnosis only in
+            discussion, not on the page.
+          </div>
+        </div>
+        <div class="ak-sample">
+          <div class="s-label">Sample explanation</div>
+          <p>
+            The note multiplied by 3/4, but dividing asks how many 3/4-metre pieces fit in 12 metres,
+            so the answer has to be bigger than 12, not smaller. Flip the divisor, not the operation
+            alone.
+          </p>
+        </div>
+        <div class="ak-rubric">
+          <div class="r-label">Partner compare</div>
+          <p>
+            The comparison panel stays locked until the student's own bus count is correct, so a
+            student cannot read their answer off a partner's. Two students with different Level 2
+            numbers will disagree legitimately — the conversation you want is about how each treated
+            the remainder.
+          </p>
+        </div>
+      </div>
+
+      <!-- STEP 6 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num purple">6</div>
+          <div>
+            <div class="skill-label">Part 3 · Design and defend — all five Pre-Unit lessons</div>
+            <h3>Design the Depot Order</h3>
+          </div>
+        </div>
+        <div class="ak-rubric">
+          <div class="r-label">There is no single answer. Score the design against four rules.</div>
+          <p>
+            <strong>1.</strong> riders ÷ seats leaves a non-zero remainder — the page rejects an
+            even division.<br />
+            <strong>2.</strong> pack price is not a whole dollar — the page rejects an integer
+            price.<br />
+            <strong>3.</strong> ribbon per banner is less than 1 — the page rejects 1 or more.<br />
+            <strong>4.</strong> the written defence makes a claim, cites the student's own numbers,
+            and answers an objection.
+          </p>
+        </div>
+        <div class="ak-answer">
+          <div class="big">All three quotients are checked against the student's OWN inputs</div>
+          <div class="steps">
+            buses = ceiling(riders ÷ seats) · packs = floor(budget ÷ price) · banners = floor(ribbon
+            ÷ per-banner).<br />
+            Any legal design passes, and no answer is ever printed — a wrong quotient is answered
+            with the misconception ("you counted only the full buses"), not the value.
+          </div>
+        </div>
+        <div class="ak-sample">
+          <div class="s-label">Sample defence at Level 2</div>
+          <p>
+            I claim the hardest division to be sure about was the buses, because the arithmetic was
+            the easiest and the answer was still wrong the first time. Someone might object that 30
+            is what the calculator says, but a calculator does not know that a student cannot ride
+            0.75 of a bus, so I ordered 31.
+          </p>
+        </div>
+      </div>
+
+      <div class="note-panel" style="margin: 24px 0">
+        <p>
+          <strong>Reflection (Step 6).</strong> Three sentences, not an essay. The one worth reading
+          closely is the last — "which Pre-Unit idea do you feel most ready to use in Grade 6?"
+          — because Unit 3 opens on ratio reasoning that assumes exactly this division fluency.
+        </p>
+      </div>
+
+      <footer class="site-footer">
+        <span>Neft Teacher · Pre-Unit Project · Teacher Answer Key</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </div>
+
+    <script src="/assets/app.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- answer-key-gate-injected:begin (teacher gate — tools/inject-projects-gold.mjs) -->
+  <script src="/shared/projects/answer-key-gate.js" defer></script>
+  <!-- answer-key-gate-injected:end -->
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

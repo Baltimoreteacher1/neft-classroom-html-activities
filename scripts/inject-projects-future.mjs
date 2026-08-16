@@ -17,6 +17,7 @@
 import { globSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PROJECT_PAGE_GLOBS } from "../tools/lib/project-units.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CHECK = process.argv.includes("--check");
@@ -46,10 +47,7 @@ const INCLUDES = [
    layer, and it was still here: all three version-c pages were missing the
    coach/reflect layer, so `.ntf-reflect textarea` did not exist on them and the
    Publication Quality Check reported "0 explanation reflections" forever. */
-const patterns = [
-  "math/unit-*/projects/version-*/index.html",
-  "math/statistics/projects/version-*/index.html",
-];
+const patterns = [...PROJECT_PAGE_GLOBS];
 
 const files = [...new Set(patterns.flatMap((p) => globSync(p, { cwd: ROOT })))].sort();
 

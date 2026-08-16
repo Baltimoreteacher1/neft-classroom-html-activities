@@ -232,6 +232,25 @@ const COVERAGE = [
       "validate:injection",
     ],
   ],
+  /* The culminating-project PAGES live under math/, not curriculum/. A page
+     edited there used to run no project validator at all — the projects rule
+     above matches only the hub. */
+  [
+    /^math\/(?:pre-unit|unit-\d+|statistics)\/projects\//,
+    [
+      "validate:projects-publication",
+      "validate:projects-award",
+      "validate:solve-along",
+      "validate:projects-check",
+      "validate:preunit-project",
+      "validate:injection",
+    ],
+  ],
+  [/^tools\/lib\/project-units\.mjs$/, ["validate:preunit-project", "validate:projects-check"]],
+  [
+    /^shared\/projects\//,
+    ["validate:projects-check", "validate:projects-award", "validate:preunit-project"],
+  ],
   [
     /^curriculum\/index\.html$/,
     [

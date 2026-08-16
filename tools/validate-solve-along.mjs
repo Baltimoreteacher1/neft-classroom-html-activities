@@ -15,11 +15,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PROJECT_UNITS } from "./lib/project-units.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 
-const UNITS = [...Array.from({ length: 10 }, (_, i) => `unit-${i + 1}`), "statistics"];
+const UNITS = PROJECT_UNITS;
 
 function versionsOf(unit) {
   const projects = path.join(ROOT, "math", unit, "projects");
@@ -64,7 +65,22 @@ for (const u of UNITS) {
   for (const v of versionsOf(u)) {
     const rel = `math/${u}/projects/${v}/solve-along.json`;
     const file = path.join(ROOT, rel);
-    if (!fs.existsSync(file)) continue;
+    if (!fs.existsSync(file)) {
+      /* projects-solve.js fetches ./solve-along.json unconditionally on any
+         page that loads it, so a missing sidecar is not "this page opted out"
+         — it is a 404 in the student's console and a worked-example layer that
+         silently never appears. Only a page WITHOUT the layer may omit it. */
+      const pageHtml = path.join(ROOT, `math/${u}/projects/${v}/index.html`);
+      if (
+        fs.existsSync(pageHtml) &&
+        fs.readFileSync(pageHtml, "utf8").includes("projects-solve.js")
+      ) {
+        errors.push(
+          `${rel}: missing, but the page loads projects-solve.js — it will 404 on every visit`,
+        );
+      }
+      continue;
+    }
     files++;
     let cfg;
     try {

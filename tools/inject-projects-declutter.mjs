@@ -9,6 +9,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PROJECT_UNITS } from "./lib/project-units.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -16,8 +17,7 @@ const ROOT = path.resolve(__dirname, "..");
 // shadows Node's global `process`. Read argv off globalThis explicitly.
 const DRY = globalThis.process.argv.includes("--dry-run");
 
-const UNITS = Array.from({ length: 10 }, (_, i) => i + 1);
-const DIRS = [...UNITS.map((u) => `math/unit-${u}/projects`), "math/statistics/projects"];
+const DIRS = PROJECT_UNITS.map((u) => `math/${u}/projects`);
 
 const SENT = "projects-declutter";
 const HEAD = [

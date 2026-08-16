@@ -18,6 +18,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PROJECT_UNITS } from "./lib/project-units.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -39,8 +40,6 @@ const BODY_BLOCK = [
 ];
 
 const _MARK = "projects-pro-injected:begin";
-
-const UNITS = Array.from({ length: 10 }, (_, i) => i + 1);
 
 function addHead(html) {
   if (html.includes("projects-pro.css")) return html;
@@ -79,7 +78,7 @@ function process(rel) {
   }
 }
 
-const DIRS = [...UNITS.map((u) => `math/unit-${u}/projects`), "math/statistics/projects"];
+const DIRS = PROJECT_UNITS.map((u) => `math/${u}/projects`);
 
 /* Enumerate version folders from disk (version-a, version-b, version-c, …).
    A hardcoded ["version-a","version-b"] list is why unit-8/version-c was

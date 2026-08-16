@@ -22,6 +22,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PROJECT_UNITS } from "./lib/project-units.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -70,9 +71,7 @@ function inject(rel) {
 }
 
 const ONLY = (process.argv.find((a) => a.startsWith("--only=")) || "").split("=")[1] || "";
-const UNITS = [...Array.from({ length: 10 }, (_, i) => `unit-${i + 1}`), "statistics"].filter(
-  (u) => !ONLY || u === ONLY,
-);
+const UNITS = PROJECT_UNITS.filter((u) => !ONLY || u === ONLY);
 
 try {
   let changed = 0;

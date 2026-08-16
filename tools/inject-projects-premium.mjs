@@ -13,6 +13,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PROJECT_UNITS } from "./lib/project-units.mjs";
 
 // DEPRECATED (2026-07-02): this injector predates the pro/future/coach/gold
 // pipeline. The live version pages use <body class="pro-projects"> (not "pk"),
@@ -36,7 +37,6 @@ const LINK = '<link rel="stylesheet" href="/shared/projects/projects-premium.css
 const TABS_CSS = '<link rel="stylesheet" href="/shared/projects/projects-tabs.css" />';
 const TABS_JS = '<script src="/shared/projects/projects-tabs.js" defer></script>';
 
-const UNITS = Array.from({ length: 10 }, (_, i) => i + 1);
 let changed = 0;
 const touched = [];
 
@@ -167,7 +167,7 @@ function process(rel, { hub, tabs } = {}) {
   }
 }
 
-const DIRS = [...UNITS.map((u) => `math/unit-${u}/projects`), "math/statistics/projects"];
+const DIRS = PROJECT_UNITS.map((u) => `math/${u}/projects`);
 
 for (const dir of DIRS) {
   process(`${dir}/index.html`, { hub: true });
