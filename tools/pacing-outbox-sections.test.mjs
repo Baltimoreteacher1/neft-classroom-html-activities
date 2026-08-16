@@ -62,6 +62,7 @@ const sent = [];
 let failNext = false;
 
 globalThis.localStorage = new FakeStorage();
+globalThis.localStorage.setItem("neft.teacher.key", "test-only-not-a-real-key");
 globalThis.window = { addEventListener() {} };
 globalThis.location = { search: "" };
 globalThis.fetch = async (url, opts = {}) => {
@@ -94,6 +95,12 @@ function t(name, fn) {
 
 const reset = () => {
   globalThis.localStorage = new FakeStorage();
+  /* A teacher key has to be present for the store to attempt a request at all.
+   * Production's planner still reads one from localStorage; the unified
+   * cookie session that replaces it is a separate, unshipped commit. Seeding it
+   * keeps this file honest against BOTH shapes — the cookie-based store ignores
+   * the value, and the key-based one needs it, so neither is special-cased. */
+  globalThis.localStorage.setItem("neft.teacher.key", "test-only-not-a-real-key");
   sent.length = 0;
 };
 
