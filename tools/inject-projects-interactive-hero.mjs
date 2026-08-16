@@ -35,6 +35,18 @@ const ANCHOR_RE = /<div class="step-panel active" id="step-\d+">/;
 // `attrs` are only set where a non-default is helpful; the widgets already ship
 // theme-appropriate defaults (e.g. gcf-bags = party goodie bags).
 const MAP = {
+  /* The Pre-Unit is the district's ASSEMBLED unit (1-1, 2-6, 2-7, 6-1, 6-2) and
+     its whole arc is division across number types, so the hero is the
+     "how many fit?" model that Lessons 6-1/6-2 build on. */
+  "math/pre-unit/projects": {
+    kind: "frac-divide",
+    emoji: "🚚",
+    attrs: {},
+    title: "How many fit?",
+    es: "¿Cuántos caben?",
+    intro:
+      "Cut a whole into equal pieces and count how many fit — the same question you will ask of whole numbers, decimals and fractions all project long.",
+  },
   "math/unit-1/projects": {
     kind: "block-party",
     emoji: "🎉",

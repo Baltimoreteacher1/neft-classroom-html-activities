@@ -3,9 +3,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PROJECT_UNITS } from "./lib/project-units.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const units = [...Array.from({ length: 10 }, (_, index) => `unit-${index + 1}`), "statistics"];
+const units = PROJECT_UNITS;
 const failures = [];
 
 /* Enumerate version folders from disk (version-a, version-b, version-c, …) so

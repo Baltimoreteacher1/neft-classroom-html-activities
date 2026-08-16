@@ -3,9 +3,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PROJECT_UNITS } from "./lib/project-units.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const UNITS = [...Array.from({ length: 10 }, (_, i) => `unit-${i + 1}`), "statistics"];
+const UNITS = PROJECT_UNITS;
 const failures = [];
 const pages = [];
 
@@ -67,8 +68,9 @@ for (const unit of UNITS) {
   }
 }
 
-// 25 shipped pages: version-a + version-b + version-c for units with 3 options
-if (pages.length !== 25) failures.push(`expected 25 project pages, enumerated ${pages.length}`);
+/* 26 shipped pages: the Pre-Unit project + version-a/b (+ version-c where a
+   unit ships three options). Raise this deliberately when a page is added. */
+if (pages.length !== 26) failures.push(`expected 26 project pages, enumerated ${pages.length}`);
 
 if (failures.length) {
   console.error(

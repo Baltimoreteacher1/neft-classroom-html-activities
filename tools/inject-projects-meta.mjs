@@ -23,6 +23,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PROJECT_UNITS } from "./lib/project-units.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -109,9 +110,7 @@ function inject(rel, id, entry) {
    are re-injected automatically on every deploy. Non-fatal by design. */
 try {
   const config = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf8"));
-  const units = [...Array.from({ length: 10 }, (_, i) => `unit-${i + 1}`), "statistics"].filter(
-    (u) => !ONLY || u === ONLY,
-  );
+  const units = PROJECT_UNITS.filter((u) => !ONLY || u === ONLY);
 
   let changed = 0;
   let seen = 0;
