@@ -43,24 +43,117 @@ const DEFAULT_TTL_SECONDS = 12 * 60 * 60; // one school day, plus the evening.
 const TOKEN_VERSION = 1;
 
 /**
- * The keys this deployment accepts, mapped to the teacher identity they mean.
+ * The credential SLOTS this deployment defines, in precedence order.
+ *
+ * Each teacher has a primary and an alternate binding. The alternate exists so
+ * a specific second spelling of a credential can be authorized EXPLICITLY —
+ * two exact values, not a rule. That distinction is the whole point: making
+ * comparison case-insensitive would silently authorize every capitalization of
+ * every current and future key, which is a much larger valid-password space
+ * than anyone chose. Nothing here lowercases, folds or normalizes; a slot holds
+ * one exact string and matches one exact string.
  *
  * Identity is a label ("Neft", "Alba"), never the key. It exists so a future
  * per-teacher preference has something safe to hang on; it is not a user record
  * and there is no profile store behind it.
  */
-export function acceptedKeys(env) {
-  const map = new Map();
-  const add = (value, identity) => {
-    const key = String(value ?? "").trim();
-    if (key) map.set(key, identity);
-  };
-  add(env?.TEACHER_KEY_NEFT, "Neft");
-  add(env?.TEACHER_KEY_ALBA, "Alba");
+const CREDENTIAL_SLOTS = [
+  { binding: "TEACHER_KEY_NEFT", identity: "Neft", slot: "primary" },
+  { binding: "TEACHER_KEY_NEFT_ALT", identity: "Neft", slot: "alternate" },
+  { binding: "TEACHER_KEY_ALBA", identity: "Alba", slot: "primary" },
+  { binding: "TEACHER_KEY_ALBA_ALT", identity: "Alba", slot: "alternate" },
   // Legacy single key. Kept so non-browser callers that already hold it are not
-  // broken by this change; it authenticates as an unnamed teacher.
-  add(env?.TEACHER_KEY, "Teacher");
-  return map;
+  // broken; it authenticates as an unnamed teacher. It is deliberately LAST and
+  // deliberately weaker — see resolveCredentials().
+  { binding: "TEACHER_KEY", identity: "Teacher", slot: "legacy" },
+];
+
+/** Which slots are actually configured, with their values. Server-side only. */
+export function configuredSlots(env) {
+  return CREDENTIAL_SLOTS.map((s) => ({
+    ...s,
+    value: String(env?.[s.binding] ?? "").trim(),
+  })).filter((s) => s.value);
+}
+
+/**
+ * Every configured value, mapped to the identity it means — and the values that
+ * are AMBIGUOUS and therefore mean nothing.
+ *
+ * A value configured for two different named teachers cannot authenticate
+ * anybody: picking one would attribute a teacher's edits to their colleague,
+ * and picking by binding order would make that attribution depend on the order
+ * of a list in this file. Such a value is refused, and the refusal is an OPS
+ * error (503) rather than a credential error (401), because the person typing
+ * it did nothing wrong.
+ *
+ * The legacy key is exempt from that rule ON PURPOSE. It predates the split, so
+ * it plausibly still holds the same string as a named teacher's key, and
+ * failing on that would take the whole site down to punish a historical
+ * artifact. When a legacy value collides with a named one, the NAMED identity
+ * wins — the same human, correctly attributed, rather than "Teacher".
+ */
+export function resolveCredentials(env) {
+  const byValue = new Map();
+  for (const slot of configuredSlots(env)) {
+    const entry = byValue.get(slot.value) || { identities: new Set(), slots: [] };
+    entry.identities.add(slot.identity);
+    entry.slots.push(slot);
+    byValue.set(slot.value, entry);
+  }
+
+  const accepted = new Map();
+  const conflicted = new Set();
+  for (const [value, entry] of byValue) {
+    const named = [...entry.identities].filter((i) => i !== "Teacher");
+    if (named.length > 1) {
+      conflicted.add(value);
+      continue;
+    }
+    accepted.set(value, named[0] || "Teacher");
+  }
+  return { accepted, conflicted };
+}
+
+/**
+ * Backwards-compatible view: value -> identity for everything acceptable.
+ * Conflicted values are absent, so nothing downstream can authenticate one.
+ */
+export function acceptedKeys(env) {
+  return resolveCredentials(env).accepted;
+}
+
+/** True when configuration is self-contradictory and a human must fix it. */
+export function hasCredentialConflict(env) {
+  return resolveCredentials(env).conflicted.size > 0;
+}
+
+/**
+ * Which teacher has which slots configured. Presence only — never a value,
+ * never a length, never a prefix.
+ *
+ * This exists because `configured` (a single boolean) reported identical health
+ * for "all bindings present" and "only the legacy key is set, and a teacher's
+ * is missing" — while the second locks that teacher out. An operator needs to
+ * see WHICH slot is absent without being shown anything secret.
+ */
+export function credentialAvailability(env) {
+  const present = new Set(configuredSlots(env).map((s) => s.binding));
+  const forIdentity = (identity) => {
+    const slots = CREDENTIAL_SLOTS.filter((s) => s.identity === identity);
+    const primary = slots.find((s) => s.slot === "primary");
+    const alternate = slots.find((s) => s.slot === "alternate");
+    return {
+      primary: primary ? present.has(primary.binding) : false,
+      alternate: alternate ? present.has(alternate.binding) : false,
+    };
+  };
+  return {
+    Neft: forIdentity("Neft"),
+    Alba: forIdentity("Alba"),
+    legacy: present.has("TEACHER_KEY"),
+    conflict: hasCredentialConflict(env),
+  };
 }
 
 /** Constant-time-ish string compare. Not a defence against a local attacker,
@@ -74,12 +167,21 @@ function sameString(a, b) {
   return diff === 0;
 }
 
-/** The identity a raw key authenticates as, or null. */
+/**
+ * The identity a raw key authenticates as, or null.
+ *
+ * Still a constant-time-ish compare against every configured value, and still
+ * exact: no case folding, no trimming of the CONFIGURED value beyond the single
+ * trim that removes the trailing newline a piped secret carries.
+ */
 export function identityForKey(env, supplied) {
   const key = String(supplied ?? "").trim();
   if (!key) return null;
-  for (const [accepted, identity] of acceptedKeys(env)) {
-    if (sameString(accepted, key)) return identity;
+  const { accepted, conflicted } = resolveCredentials(env);
+  // A value configured for two teachers authenticates nobody.
+  for (const value of conflicted) if (sameString(value, key)) return null;
+  for (const [value, identity] of accepted) {
+    if (sameString(value, key)) return identity;
   }
   return null;
 }

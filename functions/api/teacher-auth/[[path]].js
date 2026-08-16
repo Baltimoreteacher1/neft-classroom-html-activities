@@ -34,8 +34,10 @@ import {
 import {
   acceptedKeys,
   clearedSessionCookie,
+  credentialAvailability,
   identityForKey,
   mintSession,
+  resolveCredentials,
   resolveTeacherSession,
   sessionCookie,
 } from "../../_lib/teacher-auth.js";
@@ -84,10 +86,23 @@ export const onRequest = handler({
        * count separates them, and it discloses nothing: an attacker learns how
        * many keys exist, which they could already assume.
        */
+      /*
+       * `keys` is a COUNT and `credentials` is PRESENCE. Neither is a name, a
+       * value, a length or a prefix.
+       *
+       * When sign-in broke in production, every signal said the system was
+       * healthy: the endpoint answered, a wrong key returned a correct 401, and
+       * `configured` was true. But `configured` is true when ANY binding is
+       * set, so "the legacy key is set and a teacher's is missing" and "every
+       * slot is set" were the same answer — and the first locks that teacher
+       * out. An operator has to be able to see WHICH slot is absent without
+       * being shown anything secret, which is exactly what this reports.
+       */
       return json({
         ok: true,
         configured: acceptedKeys(env).size > 0,
         keys: acceptedKeys(env).size,
+        credentials: credentialAvailability(env),
         authenticated: Boolean(teacher),
         teacher: teacher || null,
       });
@@ -102,6 +117,26 @@ export const onRequest = handler({
     if (path !== "login") return badRequest("unknown route");
 
     if (loginLimiter(clientIp(request))) return tooManyRequests();
+
+    /*
+     * A value configured for two different teachers authenticates NOBODY, and
+     * the person typing it did nothing wrong — so it is a 503 like any other
+     * misconfiguration, not a 401. Choosing one identity would attribute a
+     * teacher's edits to their colleague; choosing by binding order would make
+     * that attribution depend on the order of a list in a source file.
+     */
+    const supplied = String(body?.key ?? "").trim();
+    const { conflicted } = resolveCredentials(env);
+    if (supplied && conflicted.has(supplied)) {
+      return json(
+        {
+          ok: false,
+          error: "credential-conflict",
+          message: "Teacher access is misconfigured. Ask for it to be corrected.",
+        },
+        503,
+      );
+    }
 
     if (acceptedKeys(env).size === 0) {
       // An ops problem, not a teacher problem. Say so without naming the
