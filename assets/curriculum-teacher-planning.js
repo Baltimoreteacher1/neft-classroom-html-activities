@@ -571,11 +571,18 @@
       loadJson("/data/pacing-unit-ranges.json").catch(function () {
         return null;
       }),
+      /* Authored lesson sequences for units whose membership is an instructional
+       * decision rather than the curriculum's numbering — the Pre-Unit is one.
+       * Advisory like the pacing plan: unreadable means fall back to manifest
+       * membership, never means an empty Lesson dropdown. */
+      loadJson("/data/pacing-unit-lessons.json").catch(function () {
+        return null;
+      }),
     ]);
 
     request.then(
       function (results) {
-        setup(results[0], results[1]);
+        setup(results[0], results[1], results[2]);
       },
       function () {
         fillOptions(sectionSel, [], "Lessons could not be loaded");
@@ -596,7 +603,7 @@
       },
     );
 
-    function setup(manifest, pacing) {
+    function setup(manifest, pacing, authored) {
       var lessons = (manifest && manifest.lessons) || [];
       // Small-group and catch-up variants, keyed by the core lesson they belong
       // to — the manifest already carries the relationship, so nothing here
@@ -658,13 +665,48 @@
         lessonsByUnit[key].push(l);
       });
 
+      /* AUTHORED MEMBERSHIP. Some paced units are ASSEMBLED rather than
+       * inherited from the curriculum's numbering. The Pre-Unit is the case that
+       * forced this: it is a Grade 5 review sequence drawn from several canonical
+       * units (1-1, then the division-algorithm pair 2-6/2-7, then the fraction-
+       * division pair 6-1/6-2), and reading its membership off `unit === 1` gave
+       * the Unit 1 "Math Is…" arc instead — a different thing entirely.
+       *
+       * data/pacing-unit-lessons.json is the one place that decision lives, keyed
+       * by the PACING key ("PRE"), holding lesson IDS ONLY. Titles resolve from
+       * the manifest below, so a renamed lesson is renamed here too, and listing
+       * 2-6 here does not move it: it is still a Unit 2 lesson and still appears
+       * in Unit 2's own list. */
+      var authoredUnits = (authored && authored.units) || {};
+
       var unitLabels = Object.create(null);
       var unitOrder = [];
+      var authoredLessons = Object.create(null);
+      var byId = Object.create(null);
+      lessons.forEach(function (l) {
+        byId[l.id] = l;
+      });
       var paced = (pacing && pacing.units) || [];
       paced.forEach(function (entry) {
         if (entry.curriculumUnit == null) return; // MSTAR and friends: not a unit here.
         var key = String(entry.curriculumUnit);
-        if (!lessonsByUnit[key] || unitOrder.indexOf(key) !== -1) return;
+        if (unitOrder.indexOf(key) !== -1) return;
+
+        var authoredEntry = authoredUnits[entry.key];
+        if (authoredEntry && Array.isArray(authoredEntry.lessons)) {
+          /* Resolve ids against the manifest and drop anything it does not have,
+           * so a retired lesson leaves a shorter sequence rather than a dead
+           * option. validate:pacing-unit-order fails on that mismatch, so the
+           * silent shortening cannot survive a build. */
+          var resolved = authoredEntry.lessons
+            .map(function (id) {
+              return byId[id];
+            })
+            .filter(Boolean);
+          if (resolved.length) authoredLessons[key] = resolved;
+        }
+
+        if (!lessonsByUnit[key] && !authoredLessons[key]) return;
         unitOrder.push(key);
         if (entry.districtLabel) unitLabels[key] = entry.districtLabel;
       });
@@ -693,7 +735,10 @@
       }
 
       function lessonsFor(unit) {
-        return (lessonsByUnit[String(unit)] || []).map(function (l) {
+        /* An authored sequence wins for THIS unit only; every other unit keeps
+         * its ordinary manifest membership and order. */
+        var key = String(unit);
+        return (authoredLessons[key] || lessonsByUnit[key] || []).map(function (l) {
           return { value: l.id, label: l.id + " · " + l.title };
         });
       }

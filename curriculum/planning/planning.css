@@ -842,3 +842,309 @@
   color: var(--ink-soft, #4a5563);
   font-weight: 600;
 }
+
+/* ── Today: planned against actual ─────────────────────────────────────────────
+   These two facts are what the view exists to deliver, so they sit at the top as
+   a pair rather than as two sentences below four lists of links. Neither is
+   labelled "Current" — that word was doing double duty and meant whichever of
+   the two the reader already had in mind. */
+
+.planning-wrap .pp-today-scope {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 0 0 0.75rem;
+}
+
+.planning-wrap .pp-today-class {
+  font-weight: 800;
+  color: var(--navy, #26415e);
+}
+
+.planning-wrap .pp-today-date {
+  color: var(--ink-soft, #4a5563);
+}
+
+.planning-wrap .pp-pa {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+@media (max-width: 30rem) {
+  .planning-wrap .pp-pa {
+    grid-template-columns: 1fr;
+  }
+}
+
+.planning-wrap .pp-pa-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line, #d9dee5);
+  border-radius: 0.6rem;
+  background: var(--surface, #fff);
+}
+
+.planning-wrap .pp-pa-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-soft, #4a5563);
+}
+
+.planning-wrap .pp-pa-value {
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+/* A recorded actual gets a quiet left edge — never a red alarm. A class that
+   finished somewhere other than the plan is ordinary teaching, and the planner
+   should not editorialise about it. */
+.planning-wrap .pp-pa-recorded {
+  border-left: 4px solid var(--navy, #26415e);
+}
+
+/* ── Today: the three places a teacher actually goes ───────────────────────── */
+
+.planning-wrap .pp-go {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+}
+
+.planning-wrap .pp-today-supports {
+  margin: 0 0 1rem;
+  font-weight: 600;
+  color: var(--ink-soft, #4a5563);
+}
+
+.planning-wrap .pp-more {
+  margin-top: 1rem;
+  border-top: 1px solid var(--line, #d9dee5);
+  padding-top: 0.75rem;
+}
+
+.planning-wrap .pp-more > summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+/* ── Units: progress, drift and where the give is ──────────────────────────── */
+
+.planning-wrap .pp-unit-progress {
+  margin: 0.35rem 0 0.4rem;
+}
+
+.planning-wrap .pp-meter {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--line, #d9dee5);
+  overflow: hidden;
+  margin: 0 0 0.6rem;
+}
+
+.planning-wrap .pp-meter-fill {
+  display: block;
+  height: 100%;
+  background: var(--navy, #26415e);
+}
+
+.planning-wrap .pp-unit-variance,
+.planning-wrap .pp-unit-slack {
+  margin: 0 0 0.35rem;
+  font-size: 0.9375rem;
+  color: var(--ink-soft, #4a5563);
+}
+
+/* Reduced motion: nothing here animates, and the meter must not start doing so
+   if a future change adds a transition to shared button styles. */
+@media (prefers-reduced-motion: reduce) {
+  .planning-wrap .pp-meter-fill {
+    transition: none;
+  }
+}
+
+/* ── Week: unit and flags ──────────────────────────────────────────────────── */
+
+.planning-wrap .pp-week-unit {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--ink-soft, #4a5563);
+}
+
+.planning-wrap .pp-week-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+/* ── Month: a planning surface, not a wall of titles ───────────────────────────
+   The cell shows shorthand — lesson id, a day-type marker, the unit — because a
+   full lesson title at a month column's width wrapped to four lines and still
+   could not be read at a glance. The title is in the cell's accessible name and
+   one click away in the day drawer. */
+
+.planning-wrap .pp-cell-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  width: 100%;
+  min-height: 84px;
+  padding: 0.4rem 0.45rem;
+  text-align: left;
+  background: none;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 0.4rem;
+}
+
+.planning-wrap .pp-cell-btn:focus-visible {
+  outline: 3px solid var(--navy, #26415e);
+  outline-offset: -2px;
+}
+
+.planning-wrap .pp-cell-date {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  font-weight: 800;
+}
+
+/* "Today" as a WORD beside the number. The border below is the glance; this is
+   what a screen reader and a colour-blind reader actually get. */
+.planning-wrap .pp-cell-today-tag {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--navy, #26415e);
+}
+
+.planning-wrap .pp-cell-today {
+  outline: 2px solid var(--navy, #26415e);
+  outline-offset: -2px;
+}
+
+.planning-wrap .pp-cell-id {
+  font-weight: 700;
+}
+
+.planning-wrap .pp-cell-marker,
+.planning-wrap .pp-cell-unit,
+.planning-wrap .pp-cell-flag {
+  font-size: 0.75rem;
+  color: var(--ink-soft, #4a5563);
+}
+
+.planning-wrap .pp-cell-flag {
+  font-weight: 700;
+}
+
+/* ONE accent per cell: a single left edge keyed to the unit. Ten hues chosen for
+   distinguishability at low saturation — the calendar identifies units, it does
+   not decorate itself, and unit identity is always ALSO printed as text. */
+.planning-wrap .pp-cell[class*="pp-unit-"] {
+  border-left: 4px solid var(--pp-unit-accent, var(--line, #d9dee5));
+}
+.planning-wrap .pp-unit-1 { --pp-unit-accent: #6b7f99; }
+.planning-wrap .pp-unit-2 { --pp-unit-accent: #7a8f6b; }
+.planning-wrap .pp-unit-3 { --pp-unit-accent: #99786b; }
+.planning-wrap .pp-unit-4 { --pp-unit-accent: #6b8f99; }
+.planning-wrap .pp-unit-5 { --pp-unit-accent: #8f6b99; }
+.planning-wrap .pp-unit-6 { --pp-unit-accent: #997f6b; }
+.planning-wrap .pp-unit-7 { --pp-unit-accent: #6b996b; }
+.planning-wrap .pp-unit-8 { --pp-unit-accent: #996b7f; }
+.planning-wrap .pp-unit-9 { --pp-unit-accent: #6b6b99; }
+.planning-wrap .pp-unit-10 { --pp-unit-accent: #8a8a6b; }
+
+/* ── Month on a phone: grouped by week ─────────────────────────────────────── */
+
+.planning-wrap .pp-month-agenda {
+  display: none;
+}
+
+.planning-wrap .pp-month-week + .pp-month-week {
+  margin-top: 1rem;
+}
+
+.planning-wrap .pp-month-week-title {
+  font-size: 0.9375rem;
+  margin: 0 0 0.4rem;
+}
+
+.planning-wrap .pp-month-days {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.planning-wrap .pp-month-day {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--line, #d9dee5);
+  cursor: pointer;
+}
+
+.planning-wrap .pp-month-day-date {
+  flex: 0 0 5.5rem;
+  font-weight: 700;
+}
+
+.planning-wrap .pp-month-day-what {
+  flex: 1 1 auto;
+}
+
+@media (max-width: 45rem) {
+  .planning-wrap .pp-month {
+    display: none;
+  }
+  .planning-wrap .pp-month-agenda {
+    display: block;
+  }
+}
+
+/* ── Year: where we are, and how far each unit has moved ───────────────────── */
+
+.planning-wrap .pp-year-current {
+  background: var(--tint, #f2f5f8);
+}
+
+.planning-wrap .pp-year-unit {
+  display: block;
+  font-weight: 700;
+}
+
+.planning-wrap .pp-year-now {
+  display: inline-block;
+  margin-top: 0.15rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--navy, #26415e);
+}
+
+.planning-wrap .pp-year-variance {
+  color: var(--ink-soft, #4a5563);
+}
