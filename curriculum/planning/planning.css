@@ -134,6 +134,11 @@
 
 /* ── Buttons and view tabs ─────────────────────────────────────────────────── */
 
+/* 44px is the interaction floor for every standalone planner control, not a
+   suggestion: this is a surface a teacher drives one-handed on a tablet between
+   periods. The buttons rendered at 38px, which an audit at four viewports found
+   on twelve controls at once — they are sized here rather than per-button so
+   there is one place to keep them honest. */
 .planning-wrap .pp-btn {
   font: inherit;
   font-weight: 600;
@@ -142,6 +147,10 @@
   background: #fff;
   color: var(--ink);
   padding: 0.4rem 0.8rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
@@ -175,6 +184,7 @@
   border: 0;
   border-bottom: 3px solid transparent;
   padding: 0.6rem 1rem;
+  min-height: 44px;
   color: var(--muted);
   cursor: pointer;
   margin-bottom: -2px;
@@ -751,4 +761,86 @@
   .planning-wrap thead {
     display: table-header-group;
   }
+}
+
+/* ── Class scope ───────────────────────────────────────────────────────────────
+   Which class the teacher is planning is the planner's primary axis, so it sits
+   above the view tabs and reads as a sentence rather than a control panel. The
+   three classes are radio buttons styled as tabs: one tap each, all visible, and
+   the browser's own radio semantics carry arrow-key navigation and the selected
+   state to a screen reader without any ARIA bookkeeping. */
+
+.planning-wrap .pp-scope {
+  border: 0;
+  margin: 0 0 var(--sp-3, 0.9rem);
+  padding: 0;
+}
+
+.planning-wrap .pp-scope-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.planning-wrap .pp-scope-label {
+  font-weight: 700;
+  color: var(--ink-soft, #4a5563);
+}
+
+.planning-wrap .pp-scope-tabs {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+/* The input is the accessible control; the label is the visible target. Hidden
+   with clip rather than display:none so it stays focusable and announced. */
+.planning-wrap .pp-scope-tabs input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.planning-wrap .pp-scope-tabs label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 60px;
+  padding: 0 0.85rem;
+  border: 1px solid var(--line, #d9dee5);
+  border-radius: 0.55rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--surface, #fff);
+  color: var(--ink, #1a2330);
+}
+
+.planning-wrap .pp-scope-tabs input:checked + label {
+  background: var(--navy, #26415e);
+  border-color: var(--navy, #26415e);
+  color: #fff;
+}
+
+.planning-wrap .pp-scope-tabs input:focus-visible + label {
+  outline: 3px solid var(--navy, #26415e);
+  outline-offset: 2px;
+}
+
+/* Selection is never carried by colour alone: the checked tab also says so in
+   the live region below, which is what a screen reader and a teacher glancing
+   sideways both actually read. */
+.planning-wrap .pp-scope-now {
+  margin: 0.5rem 0 0;
+  font-weight: 700;
+  color: var(--ink, #1a2330);
+}
+
+.planning-wrap .pp-scope-now .pp-scope-shared {
+  color: var(--ink-soft, #4a5563);
+  font-weight: 600;
 }

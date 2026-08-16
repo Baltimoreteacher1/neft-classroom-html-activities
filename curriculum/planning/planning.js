@@ -19,6 +19,7 @@ import {
 } from "/shared/pacing/engine.js";
 import { buildDocx, buildXlsx } from "./planning-export.js";
 import { detailFor, indexCurriculum, titleFor } from "./planning-resources.js";
+import { SECTIONS, SHARED } from "/shared/pacing/sections.js";
 import * as store from "./planning-store.js";
 import {
   addDays,
@@ -46,6 +47,10 @@ const action = (name) => document.querySelector(`[data-action="${name}"]`);
 
 const ui = {
   view: "today",
+  /* The class being planned. "" is the shared plan every class inherits.
+   * Everything downstream — the resolved year, the views, the day editor, the
+   * re-pacing preview, undo — reads this one value. */
+  section: "",
   focusDate: null,
   today: null,
   baseline: null,
@@ -76,7 +81,7 @@ function setSave(state, detail) {
 
 async function refreshUndo() {
   try {
-    const state = await store.fetchState();
+    const state = await store.fetchState(ui.section);
     ui.overlay = state.overlay || {};
     const last = (state.operations || []).find((o) => !o.undoneAt);
     const btn = action("undo");
@@ -198,12 +203,44 @@ function preview(op) {
   const body = $("preview-body");
   body.textContent = "";
 
+  /* SCOPE FIRST, always. A re-pacing preview that does not say which class it
+   * is about is how a teacher moves the whole grade believing they moved one
+   * period. It is the first line of the dialog, before the summary. */
+  const scope = el("p", "pp-preview-scope");
+  scope.textContent = ui.section
+    ? `This change applies to Class ${ui.section} only.`
+    : "This changes the SHARED plan — all three classes inherit it.";
+  body.appendChild(scope);
+
   if (!op.ok) {
     body.appendChild(el("p", "pp-refusal", op.reason));
+    /* Refusal, never silent truncation: the engine declines rather than
+     * dropping instruction off the end of the year, and the dialog says so in
+     * the teacher's terms. */
+    body.appendChild(
+      el(
+        "p",
+        "pp-preview-note",
+        "Nothing was changed. Free up a flex, catch-up or review day first, or move the lesson to a specific date.",
+      ),
+    );
     action("preview-apply").hidden = true;
   } else {
     action("preview-apply").hidden = false;
     body.appendChild(el("p", "pp-preview-summary", op.summary));
+    /* How far the ripple reaches, in days, before the day-by-day list. The list
+     * answers "which days"; this answers "how big is this?", which is the
+     * question a teacher actually asks before pressing Apply. */
+    const moved = op.changes.length;
+    body.appendChild(
+      el(
+        "p",
+        "pp-preview-scale",
+        moved === 1
+          ? "This moves 1 instructional day."
+          : `This moves ${moved} instructional days.`,
+      ),
+    );
     const list = el("ol", "pp-preview-list");
     for (const c of op.changes) {
       const li = el("li");
@@ -217,17 +254,24 @@ function preview(op) {
         el(
           "p",
           "pp-preview-note",
-          `Absorbed by the flex day on ${longDate(op.absorbedAt)} — nothing after it moves.`,
+          `The change is absorbed by the flex day on ${longDate(op.absorbedAt)} — nothing after that date moves.`,
         ),
       );
     }
     for (const d of op.routedAround) {
-      body.appendChild(el("p", "pp-preview-note", `${longDate(d)} is locked and did not move.`));
+      body.appendChild(
+        el("p", "pp-preview-note", `${longDate(d)} is locked, so it stayed where it is.`),
+      );
     }
     if (op.crossesQuarter) {
       body.appendChild(el("p", "pp-preview-note", "This change crosses a quarter boundary."));
     }
     for (const w of op.warnings) body.appendChild(el("p", "pp-preview-warn", w));
+  }
+
+  const applyBtn = action("preview-apply");
+  if (applyBtn && !applyBtn.hidden) {
+    applyBtn.textContent = ui.section ? `Apply to Class ${ui.section}` : "Apply to the shared plan";
   }
 
   ui.pendingOp = op.ok ? op : null;
@@ -270,7 +314,12 @@ function openDayDialog(date) {
   const day = days.find((d) => d.date === date);
   if (!day) return;
   const dialog = $("day-dialog");
-  document.querySelector("#pp-day-title").textContent = longDate(date);
+  /* The dialog title names the CLASS and the day. An editor that says only
+   * "Tuesday, September 15" is one mis-click away from editing the wrong
+   * class's plan, and nothing on screen would have contradicted it. */
+  document.querySelector("#pp-day-title").textContent = ui.section
+    ? `Class ${ui.section} · ${longDate(date)}`
+    : `Shared plan · ${longDate(date)}`;
   const body = $("day-dialog-body");
   body.textContent = "";
 
@@ -391,7 +440,16 @@ function buildDayForm(day) {
   move.dataset.date = day.date;
   actions.appendChild(move);
 
-  const reset = el("button", "pp-btn pp-btn-quiet", "Restore the original plan");
+  /* Never a generic "Reset". Resetting a CLASS day drops that class's override
+   * and returns it to the shared plan; resetting a shared day returns it to the
+   * district baseline. Those are different acts and the button says which. */
+  const reset = el(
+    "button",
+    "pp-btn pp-btn-quiet",
+    ui.section
+      ? `Reset Class ${ui.section} to the shared plan`
+      : "Restore the original district plan",
+  );
   reset.type = "button";
   reset.dataset.action = "reset-day";
   reset.dataset.date = day.date;
@@ -440,8 +498,11 @@ async function saveDayForm(date) {
 
 async function pushRaw(op) {
   setSave("saving");
-  const result = await store.enqueue(op);
-  ui.overlay = store.cachedOverlay();
+  /* Stamped with the class at QUEUE time, not at send time — an edit made in
+   * 601 while offline must replay into 601 even if the teacher has since
+   * switched to 602. */
+  const result = await store.enqueue(op, ui.section);
+  ui.overlay = store.cachedOverlay(ui.section);
   render();
   setSave(result.status === "saved" ? "saved" : "pending", result.error);
   if (result.status === "saved") refreshUndo();
@@ -523,8 +584,8 @@ document.addEventListener("click", async (event) => {
       await saveDayForm(date);
       break;
     case "reset-day":
-      await store.resetDay(date);
-      ui.overlay = store.cachedOverlay();
+      await store.resetDay(date, ui.section);
+      ui.overlay = store.cachedOverlay(ui.section);
       await refreshUndo();
       render();
       $("day-dialog").close();
@@ -553,8 +614,8 @@ document.addEventListener("click", async (event) => {
     case "undo":
       setSave("saving");
       try {
-        await store.undoLast();
-        ui.overlay = store.cachedOverlay();
+        await store.undoLast(ui.section);
+        ui.overlay = store.cachedOverlay(ui.section);
         await refreshUndo();
         render();
         setSave("saved");
@@ -653,7 +714,14 @@ async function boot() {
   ui.today = openingDate(baseline);
   ui.focusDate = ui.today;
   ui.view = readViewParam() || ui.view;
-  ui.overlay = store.cachedOverlay();
+  /* The class comes from the URL first (so a bookmarked or shared planner link
+   * opens on the right class), then from the shared teacher-workflow key the
+   * curriculum hub already writes. Never a planner-only preference — picking 602
+   * here and picking 602 on the hub have to be the same act. */
+  const urlSection = new URLSearchParams(location.search).get("section");
+  ui.section = urlSection ? store.setActiveSection(urlSection) : store.activeSection();
+  buildScopeTabs();
+  ui.overlay = store.cachedOverlay(ui.section);
   render();
 
   if (!store.getKey()) {
@@ -665,11 +733,72 @@ async function boot() {
   await connect();
 }
 
+/* ── Class scope ───────────────────────────────────────────────────────────── */
+
+const scopeLabel = (section) => (section ? `Class ${section}` : "the shared plan");
+
+/** Build the class tabs from the canonical section list — never a second
+ *  hardcoded list of 601/602/603 in the planner. */
+function buildScopeTabs() {
+  const host = document.querySelector(".pp-scope-tabs");
+  if (!host) return;
+  host.textContent = "";
+  for (const value of [SHARED, ...SECTIONS]) {
+    const id = `pp-scope-${value || "shared"}`;
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "pp-scope";
+    input.id = id;
+    input.value = value;
+    input.checked = value === ui.section;
+    input.addEventListener("change", () => switchSection(value));
+    const label = document.createElement("label");
+    label.setAttribute("for", id);
+    label.textContent = value || "Shared";
+    host.append(input, label);
+  }
+  announceScope();
+}
+
+/** Say the scope in words, for the teacher and the screen reader alike — the
+ *  checked tab's colour is never the only signal. */
+function announceScope() {
+  const now = document.querySelector('[data-role="scope-now"]');
+  if (!now) return;
+  now.textContent = "";
+  if (ui.section) {
+    now.append(`Planning for Class ${ui.section}`);
+  } else {
+    const span = el("span", "pp-scope-shared");
+    span.textContent = "Planning the shared plan — changes reach all three classes";
+    now.append(span);
+  }
+}
+
+/**
+ * Switch class WITHOUT losing the teacher's place.
+ *
+ * The view, the focused date, the search text and the filter all survive:
+ * "the same week for my next class" is the main reason this control exists, and
+ * a switch that threw the teacher back to Today would defeat it. Only the plan
+ * underneath changes.
+ */
+async function switchSection(next) {
+  if (next === ui.section) return;
+  ui.section = store.setActiveSection(next);
+  announceScope();
+  // Re-compose from cache first so the switch is instant and works offline…
+  ui.overlay = store.cachedOverlay(ui.section);
+  render();
+  // …then reconcile with the server for the layer we have not fetched yet.
+  await connect();
+}
+
 /** Fetch the live overlay, drain anything queued, and start watching the
  * network. Called on boot with a stored key, and again when one is entered. */
 async function connect() {
   try {
-    const state = await store.fetchState();
+    const state = await store.fetchState(ui.section);
     ui.overlay = state.overlay || {};
     render();
     if (store.pendingCount()) {
@@ -689,7 +818,7 @@ async function connect() {
   }
 
   store.watchConnectivity((result) => {
-    ui.overlay = store.cachedOverlay();
+    ui.overlay = store.cachedOverlay(ui.section);
     render();
     setSave(result.status === "saved" ? "saved" : "pending", result.error);
   });

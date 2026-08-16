@@ -51,6 +51,21 @@
         </div>
       </header>
 
+      <!-- CLASS SCOPE. A radio group, not a <select>: the three classes are the
+           planner's primary axis and a teacher switches between them constantly
+           during a prep period, so they are one tap each and all visible at
+           once. "Shared plan" is a real, selectable layer — it is what all three
+           classes inherit, and hiding it would make grade-wide edits impossible
+           to make deliberately. -->
+      <fieldset class="pp-scope" data-role="scope">
+        <legend class="pp-sr">Which class are you planning?</legend>
+        <div class="pp-scope-row">
+          <span class="pp-scope-label" aria-hidden="true">Planning</span>
+          <div class="pp-scope-tabs" role="radiogroup" aria-label="Class section"></div>
+        </div>
+        <p class="pp-scope-now" data-role="scope-now" role="status" aria-live="polite"></p>
+      </fieldset>
+
       <nav class="pp-views" aria-label="Planner views">
         <button type="button" class="pp-view" data-view="today" aria-current="page">Today</button>
         <button type="button" class="pp-view" data-view="week">Week</button>
