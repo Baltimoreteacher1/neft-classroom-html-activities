@@ -104,6 +104,34 @@ for (const l of lessons) {
   );
 }
 
+// 3b. hub whole-group row labels still name the manifest title and standard
+{
+  const heads = [
+    ...hub.matchAll(
+      /Lesson (\d+-\d+)\s*·\s*([\s\S]*?)<span class="badge badge-std">\s*([^<]+?)\s*<\/span>/g,
+    ),
+  ];
+  check(heads.length >= 80, `expected ~84 whole-group hub labels, found ${heads.length}`);
+  for (const m of heads) {
+    const id = m[1];
+    const title = m[2].replace(/\s+/g, " ").trim();
+    const standard = m[3].trim();
+    const lesson = lessonById.get(id);
+    if (!lesson) {
+      check(false, `hub labels Lesson ${id} but it is not in the manifest`);
+      continue;
+    }
+    check(
+      title === lesson.title,
+      `hub labels Lesson ${id} as "${title}", manifest title is "${lesson.title}"`,
+    );
+    check(
+      standard === lesson.standard,
+      `hub labels Lesson ${id} as ${standard}, manifest standard is ${lesson.standard}`,
+    );
+  }
+}
+
 // 4. search index joins to manifest (ID-join drift guard)
 {
   const idx = readJson("data/curriculum-search-index.json");

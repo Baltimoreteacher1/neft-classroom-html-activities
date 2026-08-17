@@ -189,6 +189,22 @@ function runValidation() {
       process.exit(1);
     }
 
+    const configPath = join(LESSONS_DIR, lessonId, "config.json");
+    if (!existsSync(configPath)) {
+      console.error(`FAIL: ${path} has no lessons/${lessonId}/config.json to compare against`);
+      process.exit(1);
+    }
+    const cfg = JSON.parse(readFileSync(configPath, "utf8"));
+    for (const field of ["title", "standard", "contentObjective", "languageObjective"]) {
+      if (entry[field] !== cfg[field]) {
+        console.error(
+          `FAIL: ${path}.${field} does not match lessons/${lessonId}/config.json — ` +
+            `run npm run generate:supports. manifest=${JSON.stringify(entry[field])} config=${JSON.stringify(cfg[field])}`,
+        );
+        process.exit(1);
+      }
+    }
+
     if (!Array.isArray(entry.vocabulary)) {
       console.error(`FAIL: "vocabulary" must be an array in ${path}`);
       process.exit(1);
