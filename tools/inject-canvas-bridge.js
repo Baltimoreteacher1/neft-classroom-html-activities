@@ -51,6 +51,7 @@ const report = {
   scanned: 0,
   injected: 0,
   already: 0,
+  upgraded: 0,
   reverted: 0,
   missing: [],
 };
@@ -76,8 +77,45 @@ for (const p of paths) {
     }
     continue;
   }
+  // A unit project is multi-day, open-ended, teacher-graded rubric work with no
+  // scoreable terminus — it does not route through the engine at all, so
+  // engine/core/app.js's phase-completion fire can never run for it. With the
+  // bridge's DEFAULTS it got the auto-scorer plus a floating button posting a
+  // hardcoded 100, i.e. a student could one-click a perfect score on a project
+  // a teacher had not read. Derived from the PATH, not a list, so a new project
+  // pathway inherits the right mode by living in the right place. `pre-unit` is
+  // a real unit here, so the pattern must not require a digit.
+  const isProject = /(^|\/)math\/[a-z0-9-]+\/projects\//.test(p.replace(/\\/g, "/"));
+  const cfgTag = isProject
+    ? `  <script>window.NeftCanvasBridgeConfig=Object.assign({},window.NeftCanvasBridgeConfig,{manual:true,finishButton:false,completionOnly:true});</script>\n`
+    : "";
+  const block = `${BEGIN}\n${cfgTag}  ${TAG}\n  ${END}`;
+
   if (html.includes(`${MARK}:begin`)) {
-    report.already++;
+    // UPGRADE IN PLACE. The injector owns this block's CONTENTS, not just its
+    // presence, so a page whose block predates a change to it must be brought
+    // up to date without moving it. Rewriting position (revert-then-reinject)
+    // reorders it against the other sentinel layers and churns ~280 files with
+    // a pure no-op diff, which then trips generated-pages-fresh.
+    const esc = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    // Capture the existing indentation so an upgrade preserves it. Hardcoding
+    // one indent rewrites 19 historically 4-space-indented pages with a pure
+    // whitespace diff — churn that hides the real change and re-trips the
+    // generated-page freshness ratchet.
+    const re = new RegExp(`([ \\t]*)${esc(BEGIN)}[\\s\\S]*?${esc(END)}`);
+    const current = re.exec(html);
+    const norm = (x) => x.replace(/\s+/g, " ").trim();
+    if (current && norm(current[0]) !== norm(block)) {
+      const indent = current[1] || "  ";
+      const reindented = block
+        .split("\n")
+        .map((line, i) => (i === 0 ? indent + line : indent + line.replace(/^\s*/, "")))
+        .join("\n");
+      if (!DRY) writeFileSync(file, html.replace(re, reindented));
+      report.upgraded++;
+    } else {
+      report.already++;
+    }
     continue;
   }
   if (!/<\/body>/i.test(html)) {
@@ -88,8 +126,8 @@ for (const p of paths) {
   // contain an earlier </body> inside a document.write() template literal
   // (e.g. a print-report popup); injecting a <script> there would embed a
   // literal </script> inside an inline script and prematurely terminate it.
-  const lastBody = html.toLowerCase().lastIndexOf("</body>");
-  html = html.slice(0, lastBody) + `  ${BEGIN}\n  ${TAG}\n  ${END}\n` + html.slice(lastBody);
+  const lastBodyIdx = html.toLowerCase().lastIndexOf("</body>");
+  html = html.slice(0, lastBodyIdx) + `  ${block}\n` + html.slice(lastBodyIdx);
   if (!DRY) writeFileSync(file, html);
   report.injected++;
 }
@@ -101,5 +139,6 @@ if (REVERT) console.log("  reverted   :", report.reverted);
 else {
   console.log("  injected   :", report.injected);
   console.log("  already    :", report.already);
+  console.log("  upgraded   :", report.upgraded);
 }
 if (report.missing.length) console.log("  missing    :", report.missing.join(", "));
