@@ -170,6 +170,56 @@ check(
   "curriculum HTML must use a revalidate-always Cache-Control (no-cache or no-store, no positive max-age) so new lesson ordering appears immediately",
 );
 
+// --- published counts must match the curriculum, not a memory of it ---------
+// The hub advertised "74 lessons · 158 pathways (128 small-group / 20 catch-up)"
+// while the manifest held 84 / 214 / 168 / 36 — understating the curriculum by a
+// third, in five places across two files, for long enough that nobody noticed.
+// Nothing broke, so nothing surfaced: it is copy, and copy has no runtime.
+// Derived from data/curriculum-launch-manifest.json so the numbers cannot drift
+// from the thing they describe.
+{
+  const lm = JSON.parse(
+    readFileSync(resolve(ROOT, "data/curriculum-launch-manifest.json"), "utf8"),
+  );
+  const truth = {
+    lessons: (lm.lessons || []).length,
+    smallGroup: (lm.smallGroups || []).length,
+    catchUp: (lm.catchUps || []).length,
+    projects: (lm.endOfUnit || []).length,
+  };
+  truth.pathways = truth.smallGroup + truth.catchUp + truth.projects;
+
+  for (const file of ["curriculum/index.html", "curriculum/units/index.html"]) {
+    const src = readFileSync(resolve(ROOT, file), "utf8");
+    // Anchored to the SITE-WIDE summary only ("10 units · N lessons · N
+    // pathways"). A bare /(\d+) lessons/ also matches the per-unit counts on
+    // the units page ("6 lessons", "12 lessons"), which are legitimate and
+    // different numbers — a gate that fires on those is a gate that gets
+    // disabled, and then it protects nothing.
+    for (const m of src.matchAll(/10 units[·,\s]+(\d+) lessons(?:[·,\s]+(\d+) pathways)?/gi)) {
+      check(
+        Number(m[1]) === truth.lessons,
+        `${file} publishes "10 units · ${m[1]} lessons" but the curriculum has ${truth.lessons}`,
+      );
+      if (m[2])
+        check(
+          Number(m[2]) === truth.pathways,
+          `${file} publishes "${m[2]} pathways" but the curriculum has ${truth.pathways}`,
+        );
+    }
+    for (const m of src.matchAll(/\((\d+) small-group\s*\/\s*(\d+)\s*catch-up/gi)) {
+      check(
+        Number(m[1]) === truth.smallGroup,
+        `${file} publishes "${m[1]} small-group" but the curriculum has ${truth.smallGroup}`,
+      );
+      check(
+        Number(m[2]) === truth.catchUp,
+        `${file} publishes "${m[2]} catch-up" but the curriculum has ${truth.catchUp}`,
+      );
+    }
+  }
+}
+
 if (failures.length) {
   console.error("✗ Curriculum Hub lock FAILED — the hub looks clobbered/stripped:");
   failures.forEach((f) => console.error("   • " + f));
