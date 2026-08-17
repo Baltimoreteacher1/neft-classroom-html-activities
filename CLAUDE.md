@@ -257,6 +257,35 @@ fill-in checklist to run before every handoff.
 
 ---
 
+## Which checks actually block deployment?
+
+Authoritative path (proven by `tools/deploy-path.test.mjs`):
+
+```
+ALLOW_DEPLOY=1 npm run ship -- <sha>
+  → scripts/ship.sh cherry-picks onto origin/main
+  → git push
+  → .githooks/pre-push runs `npm run qa:loop`
+  → scripts/qa-run.mjs GATE = build, check, validate (expanded),
+    validate:homework, validate:practice, validate:lesson-boot,
+    audit, audit:curriculum, audit:homework
+```
+
+`npm run validate:production` is a **readiness report**, not the push gate.
+It is honest about skips (`SKIPPED` / `NOT AVAILABLE` → exit 2). Local
+`validate:lesson-boot` without Chromium still exits 0 inside `qa:loop` so
+everyday pushes are not blocked on a missing browser.
+
+Not deploy gates (diagnostic / optional / manual):
+
+- `diagnose:student-access` — classroom-network Access vs Pages
+- `smoke:live` — post-deploy / Site Health; Access intercept is NOT AVAILABLE
+- `audit:a11y`, `audit:dead-code`, `audit:duplicates`, `audit:deps` — reports
+- `sweep:small-group`, `e2e:auth`, `e2e:supports` — need a server; run before shipping those areas
+- `backup:d1`, `report:usage` — operational, not a source gate
+
+---
+
 ## Automated QA Loop
 
 A repeatable, conservative build → audit → fix → retest loop, defined by

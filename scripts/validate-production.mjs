@@ -71,9 +71,9 @@ export function overallExit(rows) {
 }
 
 const CHECKS = [
-  { name: "validate", required: true },
-  { name: "validate:lesson-boot", required: true },
-  { name: "smoke:live", required: !NO_LIVE, live: true },
+  { name: "validate", required: true, layer: "repository" },
+  { name: "validate:lesson-boot", required: true, layer: "repository" },
+  { name: "smoke:live", required: !NO_LIVE, live: true, layer: "production-smoke" },
 ];
 
 export { CHECKS };
@@ -104,13 +104,19 @@ async function main() {
   console.log("EduWonderLab — production-readiness");
   console.log("PASS / FAIL / SKIPPED / NOT AVAILABLE IN THIS ENVIRONMENT");
   console.log("A skipped required check is not a pass. Production is not modified.");
+  console.log("");
+  console.log("Layers:");
+  console.log("  repository          source correctness (must pass locally/CI)");
+  console.log("  production-smoke    read-only live GETs (Access intercept = NOT AVAILABLE)");
+  console.log("  external-sync       Drive --verify against a real mount (not in this command;");
+  console.log("                      npm run validate:drive-sync uses a throwaway dest)");
   console.log("===============================================================");
 
   if (LIST_ONLY) {
     for (const c of CHECKS) {
       const flag = c.required ? "required" : "optional";
       console.log(
-        `  ${c.name.padEnd(28)} ${flag}${c.live ? "  (hits production, read-only)" : ""}`,
+        `  ${c.name.padEnd(28)} ${flag}  layer=${c.layer || "repository"}${c.live ? "  (hits production, read-only)" : ""}`,
       );
     }
     process.exit(0);
@@ -132,8 +138,17 @@ async function main() {
     const result = await runNpm(c.name);
     const status = classify(result);
     const detail = status === "FAIL" ? tail(result.stdout, result.stderr) : "";
-    rows.push({ name: c.name, required: c.required, status, secs: result.secs, detail });
-    console.log(`${status.padEnd(14)} ${c.name.padEnd(28)} ${result.secs}s`);
+    rows.push({
+      name: c.name,
+      required: c.required,
+      status,
+      secs: result.secs,
+      detail,
+      layer: c.layer,
+    });
+    console.log(
+      `${status.padEnd(14)} ${c.name.padEnd(28)} ${result.secs}s  [${c.layer || "repository"}]`,
+    );
     if (detail) {
       for (const line of detail.split("\n").slice(0, 8)) console.log(`      | ${line}`);
     }

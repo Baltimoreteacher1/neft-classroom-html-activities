@@ -9,7 +9,7 @@
  * ============================================================================= */
 import assert from "node:assert/strict";
 import test from "node:test";
-import { classify, overallExit, STATUSES } from "../scripts/validate-production.mjs";
+import { CHECKS, classify, overallExit, STATUSES } from "../scripts/validate-production.mjs";
 
 test("statuses are the four the command documents", () => {
   assert.deepEqual(STATUSES, ["PASS", "FAIL", "SKIPPED", "NOT AVAILABLE IN THIS ENVIRONMENT"]);
@@ -126,4 +126,10 @@ test("overallExit: optional NOT AVAILABLE does not fail the run", () => {
     ]),
     0,
   );
+});
+
+test("repository checks are a separate layer from live smoke", () => {
+  assert.equal(CHECKS.find((c) => c.name === "validate").layer, "repository");
+  assert.equal(CHECKS.find((c) => c.name === "validate:lesson-boot").layer, "repository");
+  assert.equal(CHECKS.find((c) => c.name === "smoke:live").layer, "production-smoke");
 });
