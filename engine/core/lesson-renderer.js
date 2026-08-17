@@ -86,6 +86,7 @@ import {
 import { createProblemCard, problemTypeLabel } from "./problem-shell.js";
 import { mountReadingProgress } from "./reading-progress.js";
 import { mountRetrievalOpener } from "./retrieval.js";
+import { ensureCanvasBridge } from "./scorm-bridge.js";
 import { mountQuestionLadderReader } from "./socratic.js";
 import { mountStuckSupport } from "./stuck-support.js";
 import { mountSymbolPad, needsSymbolPad } from "./symbol-pad.js";
@@ -111,6 +112,11 @@ import { mountWodbOpener } from "./wodb.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
 
 export function bootLesson(config) {
+  // Canvas/SCORM resume relay. No-op unless ?lms=scorm, so a normal lesson
+  // launch is unchanged and downloads nothing extra. Covers every whole-group
+  // lesson: flagship boots through here too (templates/flagship/flagship.js →
+  // bootLesson), so all 85 inherit it without a per-lesson change.
+  ensureCanvasBridge(config);
   // Hidden, student-invisible BCPS UIFR (TEACH · Level 4) evidence stamp in
   // <head> — never rendered on screen; discoverable via View Source / DevTools
   // and mirrored in the Teacher Mode panel + reports/uifr-teach-l4-coverage.*.

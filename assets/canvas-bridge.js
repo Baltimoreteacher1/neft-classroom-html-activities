@@ -37,6 +37,7 @@
  *     threshold:    100,                    // auto-complete at this percent
  *     auto:         true,                   // watch save/resume progress
  *     manual:       false,                  // true = never auto-fire; call complete()
+ *     finishButton: true,                   // false = host owns completion (engine lessons)
  *   };
  *
  * Public API (window.NeftCanvasBridge):
@@ -467,6 +468,14 @@
    */
   function scormFinishUI() {
     if (!isScormLaunch()) return;
+    // finishButton:false — for hosts that already have their own instructional
+    // completion contract. The engine lessons do: app.js fires exactly once when
+    // EVERY phase reaches "completed", and reports the real percent
+    // (totalCorrect/totalAttempts). This button posts a hardcoded 100, so on
+    // such a host it would both cover the lesson UI and let a student send a
+    // perfect score without doing the work. Defaults to ON, so every standalone
+    // activity and homework page keeps the behaviour it has today.
+    if (cfg.finishButton === false) return;
     if (!document.body || document.getElementById("nt-cb-finish")) return;
     var b = document.createElement("button");
     b.id = "nt-cb-finish";

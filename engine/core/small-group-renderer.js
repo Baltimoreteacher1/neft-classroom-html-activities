@@ -18,6 +18,7 @@ import {
 // all — the stylesheet reaches the page through Vite's shared CSS chunk, which
 // every lesson entry links.
 import { mountPresentWidget } from "./present-mode.js";
+import { ensureCanvasBridge } from "./scorm-bridge.js";
 import { createAutoPilot } from "./small-group-adaptive.js";
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
 import { createBuildVisualizer } from "./small-group-build-visuals.js";
@@ -1348,6 +1349,10 @@ function loadLearningSignals(config) {
 }
 
 export function bootSmallGroup(config) {
+  // Same shared Canvas/SCORM resume relay as the whole-group lessons. No-op
+  // unless ?lms=scorm. Small-group variants are packageable too, so they must
+  // not be the one family that silently loses resume.
+  ensureCanvasBridge(config);
   // Device-local learning signals (assets/nt-signal.js → window.NTSignal).
   //
   // The full-lesson entry (core/app.js) has lazy-loaded this for a while; the
