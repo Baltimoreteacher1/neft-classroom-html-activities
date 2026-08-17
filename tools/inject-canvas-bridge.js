@@ -52,6 +52,7 @@ const report = {
   injected: 0,
   already: 0,
   upgraded: 0,
+  engineBooted: 0,
   reverted: 0,
   missing: [],
 };
@@ -62,6 +63,21 @@ function revert(html) {
 }
 
 for (const p of paths) {
+  // ENGINE-BOOTED PATHWAYS ARE NOT INJECTOR TARGETS. `lessons/<id>/index.html`
+  // is rendered by the engine, which loads the bridge itself via
+  // engine/core/scorm-bridge.js with the right per-type config
+  // (completionOnly for variants). A static <script> tag here would race that:
+  // the bridge self-guards against double-init, so whichever loads FIRST wins
+  // the config — and the static tag carries none, which would silently restore
+  // the auto-scorer and the hardcoded-100 finish button on exactly the pathways
+  // that must never post a score.
+  //
+  // Derived from the shape of the path, not a list. homework.html and every
+  // other lessons/<id>/*.html is a static page and still needs the tag.
+  if (/^lessons\/[^/]+\/index\.html$/.test(p.replace(/\\/g, "/"))) {
+    report.engineBooted++;
+    continue;
+  }
   const file = join(ROOT, p); // paths are already resolved to concrete .html files
   if (!existsSync(file)) {
     report.missing.push(p);
@@ -156,5 +172,6 @@ else {
   console.log("  injected   :", report.injected);
   console.log("  already    :", report.already);
   console.log("  upgraded   :", report.upgraded);
+  console.log("  engine-boot:", report.engineBooted, "(bridge loaded by the engine, not injected)");
 }
 if (report.missing.length) console.log("  missing    :", report.missing.join(", "));
