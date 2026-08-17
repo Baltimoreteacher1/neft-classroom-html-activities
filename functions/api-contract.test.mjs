@@ -29,7 +29,6 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
  * it; never add one.
  */
 const LEGACY = new Set([
-  "functions/api/ai/daily-update.js",
   "functions/api/board/[[path]].js",
   "functions/api/class-boss.js",
   "functions/api/class-pulse.js",
@@ -64,7 +63,6 @@ const LEGACY = new Set([
   "functions/api/sg-room/[[path]].js",
   "functions/api/showcase.js",
   "functions/api/signal/[[path]].js",
-  "functions/api/state.js",
   "functions/api/study-pack/[[path]].js",
   "functions/api/supports/[[path]].js",
   "functions/api/teach-machine.js",

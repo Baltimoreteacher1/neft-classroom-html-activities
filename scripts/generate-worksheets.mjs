@@ -2,8 +2,15 @@
 /**
  * generate-worksheets.mjs — print-ready practice worksheets, one per lesson.
  *
- * Each lesson gets lessons/<id>/worksheet.html with up to FOUR practice pages
- * (gated on each pool being non-empty) plus a matching Answer Key per page:
+ * Each lesson gets two print files:
+ *   • lessons/<id>/worksheet.html              — student practice pages only
+ *   • lessons/<id>/worksheet-answer-key.html   — matching Answer Key per page
+ *
+ * Keys used to live in the student file. That route is public (hub search,
+ * small-group launcher, student download presets) and isTeacherSurface() does
+ * not match "worksheet". The key filename contains "answer-key", which the
+ * frozen teacher-surface predicate already gates — so this split does not
+ * retouch the auth pin. Up to FOUR practice pages per file:
  *   • Level 0    — most-supported (3-4 gentlest items, word bank + worked
  *                  example + sentence frames on every problem). From the easiest
  *                  slice of practice.approaching with an extra-scaffold banner.
@@ -24,7 +31,7 @@
  * Source of truth: each lessons/<id>/config.json (practice tiers + vocabulary).
  * Re-run after editing configs:  npm run generate-worksheets
  */
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
@@ -296,7 +303,7 @@ function versionPage(cfg, problems, { label, sub, supported, key, extraScaffold 
 }
 
 /* ---------- full document ------------------------------------------------- */
-function buildWorksheet(cfg) {
+function buildWorksheet(cfg, { key = false } = {}) {
   const printable = (pool) => (pool || []).filter((p) => p && p.type);
   const approaching = printable(cfg.practice?.approaching);
   const onLevel = printable(cfg.practice?.onLevel);
@@ -306,6 +313,8 @@ function buildWorksheet(cfg) {
   // approaching so it stays the easiest tier (L0 < L1 < L2).
   const levelZero = approaching.slice(0, 4);
   const title = esc(cfg.title || cfg.lessonId);
+  const audience = key ? "teacher" : "student";
+  const titleSuffix = key ? "Practice Answer Key" : "Practice Worksheet";
 
   // One page definition per tier. Each is gated on its own pool being
   // non-empty, so a lesson with only some tiers still produces a valid sheet
@@ -327,14 +336,14 @@ function buildWorksheet(cfg) {
   const keyPages = tiers.map((t) =>
     versionPage(cfg, t.pool, { ...t, sub: "Answer Key", key: true }),
   );
-  const pages = [...practicePages, ...keyPages].join("\n");
+  const pages = (key ? keyPages : practicePages).join("\n");
 
   return `<!DOCTYPE html>
-<html lang="en" data-ewl-supports-lesson="${esc(cfg.lessonId)}" data-support-audience="student">
+<html lang="en" data-ewl-supports-lesson="${esc(cfg.lessonId)}" data-support-audience="${audience}">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${title} — Practice Worksheet</title>
+<title>${title} — ${titleSuffix}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -454,13 +463,17 @@ function main() {
     // deletes every one of them. validate:injection only checks that begin/end
     // sentinels BALANCE, and zero blocks balance perfectly — so the loss is
     // invisible until a student's saved work stops resuming.
-    const file = join(LESSONS, d, "worksheet.html");
-    const html = buildWorksheet(cfg);
+    const studentFile = join(LESSONS, d, "worksheet.html");
+    const keyFile = join(LESSONS, d, "worksheet-answer-key.html");
+    const studentHtml = buildWorksheet(cfg, { key: false });
+    const keyHtml = buildWorksheet(cfg, { key: true });
     if (CHECK) {
-      if (!isGeneratedFresh(file, html)) stale.push(`lessons/${d}/worksheet.html`);
+      if (!isGeneratedFresh(studentFile, studentHtml)) stale.push(`lessons/${d}/worksheet.html`);
+      if (!isGeneratedFresh(keyFile, keyHtml)) stale.push(`lessons/${d}/worksheet-answer-key.html`);
       continue;
     }
-    writeGenerated(file, html);
+    writeGenerated(studentFile, studentHtml);
+    writeGenerated(keyFile, keyHtml);
     written++;
   }
   if (CHECK) {

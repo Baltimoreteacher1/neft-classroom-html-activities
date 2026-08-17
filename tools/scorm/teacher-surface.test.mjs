@@ -55,6 +55,7 @@ check("a student lesson still produces a valid package", () => {
 check("student activities and homework are unaffected", () => {
   for (const t of [
     "/lessons/1-1/homework.html",
+    "/lessons/1-1/worksheet.html",
     "/ratio-color-mixer/",
     "math/games/practice-arcade?unit=3",
     "/curriculum/",
@@ -81,6 +82,7 @@ check("teacher-only categories are refused at generation", () => {
     "/admin/",
     "/teacher-dashboard/",
     "/lessons/2-4/teacher-notes/index.html",
+    "/lessons/2-4/worksheet-answer-key.html",
   ]) {
     assert.ok(refuses(t), `packaged a teacher surface: ${t}`);
   }

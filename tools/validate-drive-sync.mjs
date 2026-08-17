@@ -42,6 +42,15 @@ check(
   !/\b(unlinkSync|rmSync|rmdirSync|rm\s+-rf)\b/.test(src),
   "sync gained a delete call — Drive deletion is out of scope for this task",
 );
+
+const weekly = readFileSync(join(ROOT, "scripts/sync-lesson-html-to-documents.sh"), "utf8")
+  .split("\n")
+  .filter((l) => !l.trim().startsWith("#"))
+  .join("\n");
+check(
+  !/rsync\s+[^\n]*--delete/.test(weekly),
+  "weekly lesson-html sync still uses rsync --delete — that is an active Drive deletion vector",
+);
 check(/--verify/.test(src), "sync lost --verify, so leftovers cannot fail a check");
 check(
   /They were NOT deleted|never-delete/.test(src),

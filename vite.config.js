@@ -182,6 +182,12 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(worksheet, resolve(destDir, "worksheet.html"));
           }
+          const worksheetKey = resolve(lessonsDir, dir.name, "worksheet-answer-key.html");
+          if (existsSync(worksheetKey)) {
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name);
+            mkdirSync(destDir, { recursive: true });
+            cpSync(worksheetKey, resolve(destDir, "worksheet-answer-key.html"));
+          }
           // Per-lesson full-lesson printable packet (paper fallback for
           // students without a device) — npm run generate-printable-lessons.
           // Linked from the lesson cover resource row.

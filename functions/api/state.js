@@ -9,6 +9,8 @@
  * Pages project settings.
  */
 
+import { clientIp, createRateLimiter } from "../_lib/http.js";
+
 // Only the app's own origin should be able to read/write via a browser, so we
 // reflect the Origin only when it matches the request host (same-origin). This
 // blocks other websites from scripting mass reads against guessed codes.
@@ -58,6 +60,14 @@ function keyFor(code) {
   return clean.length >= 10 ? "sync:" + clean : null;
 }
 
+const pairLimiter = createRateLimiter({ max: 20, windowMs: 60_000 });
+
+function randomPairCode() {
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  return String(100000 + (buf[0] % 900000));
+}
+
 export async function onRequestOptions({ request }) {
   return new Response(null, { status: 204, headers: corsFor(request) });
 }
@@ -68,6 +78,7 @@ export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
   const pairResolve = url.searchParams.get("pair_resolve");
   if (pairResolve) {
+    if (pairLimiter(clientIp(request))) return json({ error: "rate limited" }, 429, request);
     const clean = String(pairResolve)
       .trim()
       .replace(/[^0-9]/g, "");
@@ -97,10 +108,10 @@ export async function onRequestPut({ request, env }) {
   const url = new URL(request.url);
   const pairGenerate = url.searchParams.get("pair_generate");
   if (pairGenerate) {
+    if (pairLimiter(clientIp(request))) return json({ error: "rate limited" }, 429, request);
     const code = String(pairGenerate).trim();
     if (code.length < 10) return json({ error: "invalid target code" }, 400, request);
-    // Generate a random 6-digit number
-    const pairCode = String(Math.floor(100000 + Math.random() * 900000));
+    const pairCode = randomPairCode();
     await env.NOAM_SCHOOL_KV.put("pair:" + pairCode, code, { expirationTtl: 300 }); // expires in 5 mins
     return json({ pairCode }, 200, request);
   }

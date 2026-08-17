@@ -143,6 +143,7 @@ const COVERAGE = [
       "validate:student-supports",
       "validate:js-syntax",
       "typecheck",
+      "validate:worksheet-audience",
     ],
   ],
   // The SCORM pipeline: the SCO builder, the ZIP writer, the two endpoints, the
@@ -211,7 +212,7 @@ const COVERAGE = [
     ["test", "validate:plan-notes", "validate:static", "validate:js-syntax"],
   ],
   [
-    /^(scripts\/sync-curriculum-to-drive\.mjs|tools\/validate-drive-sync\.mjs)$/,
+    /^(scripts\/sync-curriculum-to-drive\.mjs|scripts\/sync-lesson-html-to-documents\.sh|tools\/validate-drive-sync\.mjs)$/,
     ["test", "validate:drive-sync", "validate:js-syntax"],
   ],
   [
@@ -251,6 +252,8 @@ const COVERAGE = [
   [/^lessons\/[^/]+\/reveal-assets\//, ["validate:reveal-assets"]],
   // the retention manifest is part of the same contract as the files it records
   [/^data\/reveal-assets-retained\.json$/, ["validate:reveal-assets"]],
+  [/^lessons\/[^/]+\/worksheet(-answer-key)?\.html$/, ["test", "validate:worksheet-audience"]],
+  [/^tools\/validate-worksheet-audience\.mjs$/, ["test", "validate:worksheet-audience"]],
   // the deploy graph maps artifacts, mirrors and hook commands to real files;
   // editing any of those three is how the map starts lying
   [/^tools\/graph\//, ["validate:graph"]],
@@ -309,13 +312,13 @@ const COVERAGE = [
     /^curriculum\//,
     ["validate:hub", "validate:runtime", "validate:static", "audit:links", "audit:curriculum"],
   ],
-  [/^\.github\/workflows\//, ["validate:workflow-yaml"]],
+  [/^\.github\/workflows\//, ["validate:workflow-yaml", "test"]],
   [/^data\/ccss-standards\.json$/, ["validate:ccss", "validate:scope"]],
   [/^data\/routes\.json$/, ["validate:static", "audit:links"]],
   [/^data\//, ["validate:data-contracts", "validate:nervous-system"]],
   [/^tools\/inject-/, ["validate:injection", "validate:supports"]],
   [/^(tools|scripts)\/lib\/small-group/, ["validate:small-groups", "eval:small-groups"]],
-  [/^functions\//, ["validate:data-contracts"]],
+  [/^functions\//, ["test", "validate:data-contracts"]],
   [/^docs\/|\.md$/, []],
 ];
 
