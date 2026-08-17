@@ -273,6 +273,86 @@ diagnostics differ. See [`cloudflare-access.md`](cloudflare-access.md).
 
 ---
 
+## 7a. Engine lessons and the Canvas bridge
+
+Every EduWonderLab lesson family now speaks the same protocol. It did not
+always, and the difference was invisible to every gate.
+
+**What was already working.** An engine lesson has always reported its SCORE.
+`engine/core/app.js` fires once when *every* phase reaches `completed` →
+`grade-emit.js` `completeLesson()` → `canvas-code.js` `showCanvasCode()` →
+`assets/canvas-code-ui.js`, which posts `{type:"score", percent}` to the
+wrapper. `percent` is `totalCorrect / totalAttempts`. That is the lesson's own
+instructional contract and this integration does not touch it.
+
+**What was missing.** Engine lessons never loaded `assets/canvas-bridge.js`.
+The build-time injector (`tools/inject-canvas-bridge.js`) targets the activity
+catalog plus every `lessons/<id>/homework.html`; `lessons/<id>/index.html` was
+never in that set. So an engine lesson sent no `ready` handshake — the wrapper
+fell back to its degraded reveal — and, more seriously, **nothing was ever
+written to `cmi.suspend_data` or `cmi.core.lesson_location`**. A student who
+closed a Canvas assignment half-way through and came back started over, on any
+device, with no warning.
+
+**The fix, in one shared place.** `engine/core/scorm-bridge.js` exports
+`ensureCanvasBridge(config)`, called from the boot every engine lesson already
+passes through:
+
+| Boot | Lessons | Where |
+| --- | --- | --- |
+| `bootLesson` | 55 standard | `engine/core/lesson-renderer.js` |
+| `bootFlagship` | 30 flagship | `engine/templates/flagship/flagship.js` |
+| `bootSmallGroup` | 204 small-group | `engine/core/small-group-renderer.js` |
+
+No per-lesson script tag, no second list of SCORM-capable lesson ids. A new
+lesson inherits the behaviour by existing.
+
+`bootFlagship` calls it **directly** rather than relying on its delegation to
+`bootLesson` — that delegation happens inside `showMissionIntro`'s callback,
+i.e. only after the student presses Start, so a flagship lesson would have sat
+on its story screen past the wrapper's handshake timeout.
+
+**Detection and cost.** The hook is a no-op unless `?lms=scorm`, using the same
+predicate `canvas-bridge.js` itself uses. A normal lesson launch, a hub launch,
+a teacher preview and every print/export path download nothing extra and behave
+byte-identically to before. Verified in a browser: on a direct launch there are
+**zero** requests for `canvas-bridge.js`.
+
+**No duplicate scoring.** The bridge is loaded with two options:
+
+- `manual: true` — disables its save/resume auto-watcher, which would otherwise
+  post a *second* score. Its percent is "how much of the lesson was touched",
+  a different quantity from the lesson's percent correct, and two sources would
+  race. This also removes a 1.5s `setInterval`.
+- `finishButton: false` — suppresses its floating "I'm finished" button, which
+  posts a hardcoded `100`. On a lesson with a real completion contract that
+  would both cover the UI and let a student send a perfect score without doing
+  the work.
+
+Both default to the old behaviour, so the 109 catalog activities and 84
+homework pages are untouched.
+
+**What Canvas receives from an engine lesson now**
+
+| Signal | Source | When |
+| --- | --- | --- |
+| `ready` (protocol 2) | canvas-bridge | on lesson boot |
+| `cmi.suspend_data` | canvas-bridge ← `NeftSaveResume` | on activity, coalesced |
+| `cmi.core.lesson_location` | the save/resume phase name | with state |
+| `cmi.core.score.raw` + `lesson_status` | **the engine**, at full phase completion | once |
+| `height`, `heartbeat` | canvas-bridge | on change / activity |
+
+A lesson a student has started but not finished now reports `incomplete` with
+real resume state, instead of `incomplete` with nothing.
+
+**Gates.** `tools/scorm/engine-lesson-passback.test.mjs` drives the SCO against
+the mock LMS and asserts `suspend_data`/`lesson_location` actually land, that a
+duplicate completion does not write twice, and that the working families are
+untouched. `validate:scorm-runtime` derives every engine lesson from
+`data/curriculum-manifest.json` — never a hardcoded list — and fails if any of
+them stops booting through a shared renderer, or if a renderer stops calling
+the hook.
+
 ## 8. Resume: who owns what
 
 Three stores exist. Without an explicit split they become three competing
