@@ -49,7 +49,9 @@ export function classify({ name, exitCode, stdout = "", stderr = "" }) {
   if (
     name === "smoke:live" &&
     exitCode !== 0 &&
-    /ENOTFOUND|ECONNREFUSED|EAI_AGAIN|fetch failed|network|UND_ERR|aborted/i.test(text)
+    /ENOTFOUND|ECONNREFUSED|EAI_AGAIN|fetch failed|network|UND_ERR|aborted|Cloudflare Access/i.test(
+      text,
+    )
   ) {
     return "NOT AVAILABLE IN THIS ENVIRONMENT";
   }

@@ -22,6 +22,7 @@
  */
 import { execFileSync } from "node:child_process";
 import { Script } from "node:vm";
+import { isCloudflareAccess } from "./lib/cloudflare-access.mjs";
 
 const argv = process.argv.slice(2);
 const arg = (name) => (argv.includes(name) ? argv[argv.indexOf(name) + 1] : null);
@@ -440,6 +441,20 @@ async function checkExternals() {
 }
 
 console.log(`Smoke-testing ${BASE}${EXPECT_SHA ? ` (expecting ${EXPECT_SHA.slice(0, 9)})` : ""}\n`);
+
+{
+  const home = await get("/");
+  if (isCloudflareAccess(home.body)) {
+    console.error("NOT AVAILABLE IN THIS ENVIRONMENT — Cloudflare Access intercepted the origin.");
+    console.error("  This client received the Access sign-in page for `/` (and therefore for");
+    console.error("  every path). None of the checks below would be testing Pages.");
+    console.error(
+      "  Do not treat this as a Basic Auth failure, a missing asset, or a reason to roll back.",
+    );
+    process.exit(2);
+  }
+}
+
 await checkStamp();
 await checkPages();
 await checkAssets();

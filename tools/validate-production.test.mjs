@@ -73,6 +73,18 @@ test("smoke:live network errors are NOT AVAILABLE, not FAIL", () => {
   );
 });
 
+test("smoke:live Cloudflare Access intercept is NOT AVAILABLE, not FAIL", () => {
+  assert.equal(
+    classify({
+      name: "smoke:live",
+      exitCode: 2,
+      stdout: "",
+      stderr: "NOT AVAILABLE IN THIS ENVIRONMENT — Cloudflare Access intercepted the origin.",
+    }),
+    "NOT AVAILABLE IN THIS ENVIRONMENT",
+  );
+});
+
 test("smoke:live 500 is FAIL — production answered, and it was wrong", () => {
   assert.equal(
     classify({
