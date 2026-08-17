@@ -111,12 +111,17 @@ for (const p of paths) {
   // variant — so a new project inherits a correct id by living in the right
   // place. Lessons, homework and standalone activities are untouched: they set
   // no activityId and their path-derived ids are already unique.
+  // Order matters. Stripping /index.html LAST left the projects hub pages as
+  // "unit-7-index.html" and "statistics-index.html": /projects/ had already
+  // collapsed to a dash, so the /index.html$ pattern no longer matched. Strip
+  // the filename first, then the math/ root, then fold /projects/.
   const projectId = isProject
     ? p
         .replace(/\\/g, "/")
+        .replace(/\/index\.html$/, "")
         .replace(/^math\//, "")
         .replace(/\/projects\//, "-")
-        .replace(/\/index\.html$/, "")
+        .replace(/\/projects$/, "")
     : "";
   const cfgTag = isProject
     ? `  <script>window.NeftCanvasBridgeConfig=Object.assign({},window.NeftCanvasBridgeConfig,{activityId:${JSON.stringify(projectId)},manual:true,finishButton:false,completionOnly:true});</script>\n`

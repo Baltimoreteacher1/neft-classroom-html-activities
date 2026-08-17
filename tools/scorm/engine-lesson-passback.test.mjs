@@ -24,7 +24,7 @@
  * validate-scorm-runtime.mjs (static) and the live post-deploy probe.
  */
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
@@ -333,6 +333,86 @@ check("payloads already under the limit keep their existing format", () => {
     fn.indexOf("out.length <= SUSPEND_BUDGET") < fn.indexOf('ref: "local"'),
     "the pointer fallback is reachable by a payload that already fits",
   );
+});
+
+// --- 7. THE CHOKE POINT: nothing may reach the LMS around the guards --------
+// projects-publisher.js:622 called NeftCanvasBridge.reportScore() directly and
+// bypassed the config layer entirely — completionOnly was set, the semantics
+// table said score.raw UNSET, the suite was green, and a student stepping
+// forward through a unit project still posted 17 then 33 into the gradebook.
+// Partial scores on multi-day rubric work are worse than the hardcoded 100:
+// 33% looks plausible and nobody questions it.
+//
+// The lesson is that "only the bridge writes to the bridge" was an assumption,
+// not a fact. These checks make it a fact.
+check("every LMS write goes through a guarded method", () => {
+  const bridge = read("assets/canvas-bridge.js");
+  // reportScore is the single door: complete() calls it, and so does every
+  // external caller. The guard must be the FIRST thing it does.
+  const fn = bridge.slice(bridge.indexOf("function reportScore("));
+  const body = fn.slice(0, fn.indexOf("\n  }"));
+  assert.match(
+    body,
+    /if \(cfg\.completionOnly\) return;/,
+    "reportScore does not honour completionOnly",
+  );
+  assert.ok(
+    body.indexOf("cfg.completionOnly") < body.indexOf("postMessage"),
+    "the completionOnly guard runs AFTER the postMessage — it must gate it",
+  );
+});
+
+check("no module outside the bridge posts the LMS message shape", () => {
+  // The wrapper writes to Canvas on receipt of {source:"neft-lesson"}. Any
+  // module that posts that shape is an LMS writer, guarded or not. Two are
+  // legitimate: canvas-bridge.js (guarded) and canvas-code-ui.js (the engine's
+  // own completion path, reachable only from app.js's phase-completion fire).
+  // A third would be a bypass.
+  const ALLOWED = new Set(["assets/canvas-bridge.js", "assets/canvas-code-ui.js"]);
+  const roots = ["assets", "engine", "shared"];
+  const senders = new Set();
+  const walk = (dir) => {
+    for (const e of readdirSync(join(ROOT, dir), { withFileTypes: true })) {
+      const rel = `${dir}/${e.name}`;
+      if (e.isDirectory()) walk(rel);
+      else if (/\.(js|mjs)$/.test(e.name)) {
+        const src = readFileSync(join(ROOT, rel), "utf8");
+        // Strip comments: every one of these files DISCUSSES the message shape.
+        const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
+        if (/source:\s*"neft-lesson"/.test(code)) senders.add(rel);
+      }
+    }
+  };
+  for (const r of roots) walk(r);
+  const rogue = [...senders].filter((f) => !ALLOWED.has(f));
+  assert.deepEqual(
+    rogue,
+    [],
+    `module(s) post the LMS message shape without going through the bridge: ${rogue.join(", ")}`,
+  );
+});
+
+check("external callers of the bridge use only guarded public methods", () => {
+  // reportScore and complete are both guarded. A caller reaching into an
+  // internal (or re-posting by hand) would be the 622 defect again.
+  const GUARDED = new Set(["complete", "reportScore", "reset", "isScormLaunch"]);
+  const roots = ["shared", "engine", "assets"];
+  const hits = [];
+  const walk = (dir) => {
+    for (const e of readdirSync(join(ROOT, dir), { withFileTypes: true })) {
+      const rel = `${dir}/${e.name}`;
+      if (e.isDirectory()) walk(rel);
+      else if (/\.(js|mjs)$/.test(e.name) && rel !== "assets/canvas-bridge.js") {
+        const src = readFileSync(join(ROOT, rel), "utf8");
+        const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
+        for (const m of code.matchAll(/NeftCanvasBridge\.([A-Za-z_$][\w$]*)/g)) {
+          if (!GUARDED.has(m[1])) hits.push(`${rel} → .${m[1]}()`);
+        }
+      }
+    }
+  };
+  for (const r of roots) walk(r);
+  assert.deepEqual(hits, [], `bridge called via an unguarded member: ${hits.join(", ")}`);
 });
 
 console.log("Engine lesson → Canvas passback");

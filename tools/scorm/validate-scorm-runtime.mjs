@@ -326,6 +326,12 @@ const projectDirs = [];
 for (const unit of readdirSync(join(ROOT, "math"))) {
   const base = join("math", unit, "projects");
   if (!existsSync(join(ROOT, base))) continue;
+  // The hub page itself is a pathway too. Checking only the variant
+  // subdirectories left math/pre-unit/projects/index.html uncatalogued and
+  // bridge-less — a gap in this gate, found only because the id listing had no
+  // bare "pre-unit" row. A gate that inspects children but not the parent is
+  // the same blind spot it exists to close.
+  if (existsSync(join(ROOT, base, "index.html"))) projectDirs.push(base.replace(/\\/g, "/"));
   for (const entry of readdirSync(join(ROOT, base))) {
     const rel = `${base}/${entry}`.replace(/\\/g, "/");
     // answer-key is teacher-only: isTeacherSurface gates it and it must NOT be
