@@ -325,10 +325,13 @@ check("payloads already under the limit keep their existing format", () => {
   // pointer work — measured, and the early return is what guarantees it.
   const bridge = read("assets/canvas-bridge.js");
   const fn = bridge.slice(bridge.indexOf("function compactForScorm"));
-  assert.match(
-    fn,
-    /if \(out\.length <= SUSPEND_BUDGET\) return out;/,
-    "no early return for fitting payloads",
+  assert.match(fn, /if \(out\.length <= SUSPEND_BUDGET\)/, "no early return for fitting payloads");
+  // Behaviour, not spelling: a fitting payload returns before any pointer logic.
+  // (The literal one-liner became a block when the warn threshold landed inside
+  // it — pinning exact text failed on a change that preserved behaviour.)
+  assert.ok(
+    fn.indexOf("out.length <= SUSPEND_BUDGET") < fn.indexOf('ref: "local"'),
+    "the pointer fallback is reachable by a payload that already fits",
   );
 });
 
