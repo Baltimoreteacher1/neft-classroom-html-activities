@@ -304,8 +304,18 @@ function fleet() {
     // The catalog stores the launch query separately, and it is load-bearing:
     // ten Practice Arcade entries share one path and differ only by ?unit=N.
     // Dropping it collapses them onto a single identifier.
+    // Normalize the catalog path EXACTLY as build-activities-scorm.mjs does
+    // before handing it to the builder. The catalog stores bare slugs
+    // ("ratio-color-mixer"), and a bare slug with no "/" is read by
+    // resolveTarget() as a LESSON ID — so this gate was building
+    // /lessons/ratio-color-mixer/ and validating ~100 packages at URLs no
+    // builder has ever produced (the real ones point at /ratio-color-mixer/).
+    // A fleet gate that validates the wrong targets is worse than no gate: it
+    // reports a clean fleet about packages that do not exist.
+    const clean = String(a.path).replace(/^\/+|\/+$/g, "");
+    const normalized = /\.html?$/i.test(clean) ? `/${clean}` : `/${clean}/`;
     targets.push({
-      target: `${a.path}${a.query || ""}`,
+      target: `${normalized}${a.query || ""}`,
       title: a.title || a.id || a.path,
       kind: "activity",
     });
