@@ -201,8 +201,15 @@ const COVERAGE = [
   // cascade rules, the D1 round-trip and the workbook export — so an edit here
   // stays on the fast lane instead of escalating to the full gate.
   [
-    /^(curriculum\/planning\/|shared\/pacing\/|functions\/api\/pacing\/|data\/pacing-(baseline-2026-27|unit-ranges)\.json|docs\/pacing-sources\/|tools\/(validate-planning|import-pacing-baseline)\.mjs)/,
-    ["test", "validate:planning", "validate:static", "validate:js-syntax", "typecheck"],
+    /^(curriculum\/planning\/|shared\/pacing\/|functions\/api\/pacing\/|data\/pacing-(baseline-2026-27|unit-ranges)\.json|docs\/pacing-sources\/|assets\/(curriculum-district-pacing|pacing-unit-dates\.generated)\.js|tools\/(validate-planning|validate-pacing-unit-order|import-pacing-baseline|lib\/pacing-dates|pacing-date-parity\.test|pacing-baseline-fresh\.test)\.mjs)/,
+    [
+      "test",
+      "validate:planning",
+      "validate:pacing-unit-order",
+      "validate:static",
+      "validate:js-syntax",
+      "typecheck",
+    ],
   ],
   // Plan Notes owns a page, an API route, a generated vocabulary and a write
   // gate. All four are covered by the one surface validator plus the test run,

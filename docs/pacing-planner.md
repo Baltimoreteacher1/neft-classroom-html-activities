@@ -53,15 +53,18 @@ because that is the one top-level directory Vite does not publish.
 
 **Import once, then live.** Re-running the importer re-seeds the baseline and
 does not touch D1, so a teacher edit made in March cannot be overwritten by a
-re-import. `tools/pacing-baseline-fresh.test.mjs` fails if either generated file
+re-import. `tools/pacing-baseline-fresh.test.mjs` fails if any generated file
 stops matching its source.
 
 A second, tiny generated file — `data/pacing-unit-ranges.json` — exists for one
 reason: `/curriculum/units/` used to carry its own hardcoded unit date ranges
 inside `assets/curriculum-district-pacing.js`, and they had already drifted (the
 Pre-Unit ran to 9/10/26 there and to 9/8/26 in the plan being taught). The hub
-now reconciles against this file on load. It is 3 KB rather than the 400 KB
-baseline because that page is student-facing and sits against a request budget.
+now stamps those ranges at parse time from
+`assets/pacing-unit-dates.generated.js` (same import run) and confirms them
+against the JSON on fetch. It is 3 KB rather than the 400 KB baseline because
+that page is student-facing and sits against a request budget. The crosswalk
+does not author a second calendar.
 
 ---
 

@@ -23,6 +23,7 @@
 
 interface Window {
   $: any;
+  __NT_PACING_DATES: any;
   AudioSynth: any;
   CURRICULUM_SYNC: any;
   CurriculumCockpit: any;
@@ -57,6 +58,7 @@ interface Window {
   NTComplete: any;
   NTDeclutter: any;
   NTDiscourse: any;
+  NTDistrictPacing: any;
   NTEdgeTwins: any;
   NTFocus: any;
   NTFuture: any;
@@ -389,4 +391,3 @@ interface Window {
  * time; there is no type to import, so declare the shape as a module.
  */
 declare module "*.css";
-

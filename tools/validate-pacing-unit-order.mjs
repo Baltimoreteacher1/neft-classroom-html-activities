@@ -37,6 +37,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { authoredHasIndependentDates, PACING_DATES_SCRIPT } from "./lib/pacing-dates.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
@@ -335,6 +336,33 @@ if (!picker.includes("/data/pacing-unit-ranges.json")) {
 }
 if (/unitOrder\s*\.\s*sort\s*\(/.test(picker)) {
   fail("the hub picker sorts unitOrder, which destroys the district sequence");
+}
+
+/* 8. Hub "today's unit" dates are generated, not a second authored calendar.
+ * The crosswalk used to type start_date/end_date by hand; they drifted ~27 days
+ * on Unit 7. The importer now emits assets/pacing-unit-dates.generated.js from
+ * the same ranges file this gate already trusts. */
+{
+  const src = readFileSync(join(ROOT, "assets/curriculum-district-pacing.js"), "utf8");
+  if (authoredHasIndependentDates(src)) {
+    fail(
+      "assets/curriculum-district-pacing.js still authors start_date/end_date — those " +
+        "must come from the generated fallback, not a second calendar",
+    );
+  }
+  if (!/applyGeneratedDates/.test(src) || !/window\.__NT_PACING_DATES/.test(src)) {
+    fail(
+      "the hub pacing module no longer applies the generated unit dates before NTDistrictPacing",
+    );
+  }
+  const hub = readFileSync(join(ROOT, "curriculum/index.html"), "utf8");
+  const datesAt = hub.indexOf(PACING_DATES_SCRIPT);
+  const moduleAt = hub.indexOf("/assets/curriculum-district-pacing.js");
+  if (datesAt < 0) {
+    fail(`curriculum/index.html no longer loads ${PACING_DATES_SCRIPT}`);
+  } else if (moduleAt >= 0 && datesAt > moduleAt) {
+    fail("generated pacing dates load after the hub pacing module — today() would run stale");
+  }
 }
 
 /* ── Report ────────────────────────────────────────────────────────────────── */
