@@ -59,7 +59,20 @@ const SITE = (process.env.NEFT_SITE || "https://eduwonderlab.com").replace(/\/$/
 
 let pkg;
 try {
-  pkg = buildScormFiles({ target, title: titleArg, codes: CODES_MODE, id: idArg }, SITE);
+  pkg = buildScormFiles(
+    {
+      target,
+      title: titleArg,
+      codes: CODES_MODE,
+      id: idArg,
+      // Day-granular on purpose: enough to date a package found in a Canvas
+      // course later, and it keeps two builds on the same day byte-identical
+      // so a re-download is comparable to the file already uploaded.
+      generatedAt: new Date().toISOString().slice(0, 10),
+      generator: "eduwonderlab/build-scorm.mjs",
+    },
+    SITE,
+  );
 } catch (e) {
   console.error("✗ " + (e?.message || e));
   process.exit(1);
@@ -70,13 +83,21 @@ mkdirSync(outRoot, { recursive: true });
 const outFile = resolve(outRoot, packageFileName(pkg.id, pkg.codes));
 writeFileSync(outFile, zipStore(pkg.files));
 
-console.log("✓ SCORM package built:");
-console.log("  " + outFile);
-console.log("  Lesson: " + pkg.lessonUrl);
+// The pre-upload summary. A teacher should be able to read this and know
+// exactly what is about to go into Canvas without opening the zip.
+console.log("✓ Canvas SCORM package built (pre-flight passed):");
+console.log("  File    : " + outFile);
+console.log("  Title   : " + pkg.title + "   ← what Canvas will show");
+console.log("  Activity: " + pkg.id);
+console.log("  Target  : " + pkg.lessonUrl + "   ← live lesson, not a bundled copy");
+console.log(`  Runtime : EduWonderLab SCORM Runtime v${pkg.runtime} (protocol v${pkg.protocol})`);
 console.log(
-  "  Mode:   " +
+  "  Mode    : " +
     (CODES_MODE ? "save codes → Google Sheets gradebook" : "Canvas auto-grade (SCORM score)"),
 );
-console.log(
-  "\nUpload it in Canvas: Settings → Navigation/Apps → SCORM, or via the SCORM tool, then deploy as a graded assignment.",
-);
+console.log("\nNext (all manual, in Canvas):");
+console.log("  1. Upload the .zip WITHOUT unzipping it, via the course's SCORM area.");
+console.log("  2. Create/complete the assignment Canvas offers for the uploaded package.");
+console.log("  3. Configure points and availability, then publish it.");
+console.log("  4. Open it once in Student View to confirm the lesson launches.");
+console.log("\nSee docs/scorm-runtime.md for the full workflow and troubleshooting codes.");
