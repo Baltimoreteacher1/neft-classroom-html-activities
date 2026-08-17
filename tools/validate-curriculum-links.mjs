@@ -16,6 +16,8 @@
  *     non-hidden lesson count within tolerance (bonus docs may add, never drop).
  *
  * Run: npm run validate:curriculum-links
+ * Wired into `npm run validate`, so a hub unit-block that points at the wrong
+ * lesson fails the pre-push gate rather than waiting for a teacher to notice.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";

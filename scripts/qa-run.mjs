@@ -176,8 +176,15 @@ const COVERAGE = [
   // The units page is the authority on which unit an End-of-Unit resource belongs
   // to, so an edit there must re-run the placement gate.
   [
-    /^(curriculum\/units\/index\.html|tools\/(validate-unit-resource-placement|unit-placement\.test)\.mjs|scripts\/lib\/download-taxonomy\.mjs)$/,
-    ["validate:unit-placement", "test", "validate:downloads", "validate:hub", "validate:static"],
+    /^(curriculum\/units\/index\.html|tools\/(validate-unit-resource-placement|unit-placement\.test|validate-curriculum-links)\.mjs|scripts\/lib\/download-taxonomy\.mjs)$/,
+    [
+      "validate:unit-placement",
+      "validate:curriculum-links",
+      "test",
+      "validate:downloads",
+      "validate:hub",
+      "validate:static",
+    ],
   ],
   // Routing: data/routes.json is the source of truth for BOTH _redirects and
   // functions/_lib/redirect-map.js, and the middleware replays the map on a 404.
@@ -201,8 +208,17 @@ const COVERAGE = [
   // which is what makes an edit here cheap instead of a full-gate escalation.
   [
     /^(curriculum\/plan-notes\/|functions\/_lib\/plan-(notes-validate|vocab)\.js|functions\/api\/plan-notes\/|scripts\/generate-plan-vocab\.mjs|tools\/validate-plan-notes\.mjs)/,
-    ["test", "validate:static", "validate:js-syntax"],
+    ["test", "validate:plan-notes", "validate:static", "validate:js-syntax"],
   ],
+  [
+    /^(scripts\/sync-curriculum-to-drive\.mjs|tools\/validate-drive-sync\.mjs)$/,
+    ["test", "validate:drive-sync", "validate:js-syntax"],
+  ],
+  [
+    /^(tools\/validate-secrets\.mjs|scripts\/validate-production\.mjs|tools\/validate-production\.test\.mjs)$/,
+    ["test", "validate:secrets", "validate:js-syntax"],
+  ],
+  [/^scripts\/generate-warmups\.mjs$/, ["test"]],
   [
     /^lessons\/[^/]+\/config\.json$/,
     [

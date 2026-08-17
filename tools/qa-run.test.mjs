@@ -95,6 +95,14 @@ check(
   scopeFor(["curriculum/showcase/showcase.js"])?.includes("validate:js-syntax"),
   "a .js change must pull in validate:js-syntax",
 );
+check(
+  scopeFor(["curriculum/plan-notes/plan-notes.js"])?.includes("validate:plan-notes"),
+  "a plan-notes change must pull in validate:plan-notes — coverage that names the file but not the gate is how stale vocab shipped",
+);
+check(
+  scopeFor(["curriculum/units/index.html"])?.includes("validate:curriculum-links"),
+  "an edit to the units page must pull in validate:curriculum-links",
+);
 
 /* --- 6. Every check named in the coverage table must actually exist --------- */
 for (const [re, checks] of COVERAGE) {
