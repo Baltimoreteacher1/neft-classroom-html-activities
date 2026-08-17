@@ -71,9 +71,19 @@ The consequences are real and must not be papered over:
 - **Students need an internet connection**, and access to eduwonderlab.com.
 - **A network block or a site outage breaks the assignment**, where a
   self-contained package would still run.
+- **Cloudflare Access in front of eduwonderlab.com breaks Canvas SCORM.** The
+  LMS hosts only the two-file wrapper; the lesson iframe is a normal browser
+  GET of the live site. If that GET is intercepted, the student sees an Access
+  sign-in (or a blank frame), not the lesson. Direct-link Access and Canvas
+  SCORM Access are the same origin.
 - Anything the site serves under authentication is not reachable from inside a
   package (this is also why no teacher-only material can leak into one).
 - Offline/air-gapped LMS installs cannot use these packages at all.
+
+`npm run validate:scorm-self-contained` holds this contract: representative
+packages stay two-file wrappers of the allowlisted host, and a blocked-origin
+browser probe fails the lesson on purpose so a 200 from production cannot be
+misread as self-containment.
 
 If a genuinely self-contained package is ever required (a district policy that
 forbids iframed external content is the realistic trigger), that is a **second
@@ -170,13 +180,14 @@ happened and nothing about how the gate decides.
 
 ## Gates
 
-| Command                                 | What it proves                                                                                                                                                                                                                                                                                                                                                                                 |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run validate:scorm`                | Source-level: the SCO still contains all 20 hardening guards, the CLI still imports the shared builder and does not shell out, the endpoint still probes the target. Instant; catches a deletion.                                                                                                                                                                                              |
-| `npm run validate:scorm:fleet`          | Builds **every** SCORM-capable package, opens each archive through a real ZIP parser, CRC-checks every entry, parses the manifest, and asserts the launch file and every referenced file exist, identifiers and download names are unique fleet-wide, no path can escape extraction, no teacher-only material is packaged, and two builds are byte-identical. Self-tests every detector first. |
-| `npm test` → `scorm-lifecycle.test.mjs` | Behavioural: boots the real generated SCO against a mock SCORM 1.2 LMS in jsdom and asserts the call **order** and resulting `cmi` values across launch, scoring, suspend/resume, relaunch, termination and five failure modes.                                                                                                                                                                |
-| `npm test` → `scorm-bundle.test.mjs`    | The unit pack is an archive of independently valid archives, not a merge.                                                                                                                                                                                                                                                                                                                      |
-| `npm run validate:canvas-coverage`      | Every assignable surface has a grade path and a unique package slug.                                                                                                                                                                                                                                                                                                                           |
+| Command                                      | What it proves                                                                                                                                                                                                                                                                                                                                                                                 |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run validate:scorm`                     | Source-level: the SCO still contains all 20 hardening guards, the CLI still imports the shared builder and does not shell out, the endpoint still probes the target. Instant; catches a deletion.                                                                                                                                                                                              |
+| `npm run validate:scorm:fleet`               | Builds **every** SCORM-capable package, opens each archive through a real ZIP parser, CRC-checks every entry, parses the manifest, and asserts the launch file and every referenced file exist, identifiers and download names are unique fleet-wide, no path can escape extraction, no teacher-only material is packaged, and two builds are byte-identical. Self-tests every detector first. |
+| `npm test` → `scorm-lifecycle.test.mjs`      | Behavioural: boots the real generated SCO against a mock SCORM 1.2 LMS in jsdom and asserts the call **order** and resulting `cmi` values across launch, scoring, suspend/resume, relaunch, termination and five failure modes.                                                                                                                                                                |
+| `npm test` → `scorm-self-contained.test.mjs` | Static: representative ZIPs are two files; a third-party URL in the SCO fails; the live lesson host is allowlisted.                                                                                                                                                                                                                                                                            |
+| `npm run validate:scorm-self-contained`      | Architecture + blocked-origin probe: the SCO iframes eduwonderlab.com, and with that origin aborted the lesson does not render. Prints PRODUCTION-DEPENDENT.                                                                                                                                                                                                                                   |
+| `npm run validate:canvas-coverage`           | Every assignable surface has a grade path and a unique package slug.                                                                                                                                                                                                                                                                                                                           |
 
 `tools/scorm/mock-lms.mjs` is **test-only** and never packaged; the fleet gate
 fails if the string `mock-lms` appears in any archive.

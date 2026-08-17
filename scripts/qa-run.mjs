@@ -157,6 +157,7 @@ const COVERAGE = [
       "test",
       "validate:scorm",
       "validate:scorm:fleet",
+      "validate:scorm-self-contained",
       "validate:canvas-coverage",
       "validate:js-syntax",
     ],
