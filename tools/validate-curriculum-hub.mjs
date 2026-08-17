@@ -255,6 +255,54 @@ check(
   const ghost = [...listed].filter((l) => !projectDirs.includes(l));
   check(ghost.length === 0, `the project portfolio lists page(s) not on disk: ${ghost.join(", ")}`);
 
+  // EVERY project page must have a working completion path. Three pages
+  // (unit-1/version-c, unit-10/version-c, unit-10/world-architect) were built
+  // on a template that omits projects-publisher.js, so buildReport was
+  // undefined, there was no report container, and no trigger the completion
+  // layer recognised — a student finished and the tracker recorded nothing,
+  // while the portfolio counted the page in its denominator. They read as
+  // permanently unfinished.
+  //
+  // PARENTS AS WELL AS CHILDREN: the set below is derived from disk and
+  // includes the projects hub index.html beside each set, which is how the
+  // pre-unit hub was missed by an earlier gate.
+  // Scoped to project VARIANT pages. The set hubs (math/<unit>/projects/) are
+  // navigation — a student does not finish a landing page — so requiring the
+  // completion layer there is a false positive, and a gate that fires wrongly
+  // once gets ignored forever. Hubs are not unwatched: the catalogue rule above
+  // still requires each to exist and be listed, which is the parent-level check
+  // that matters for them.
+  for (const rel of projectDirs.map((d) => `${d.replace(/^\/|\/$/g, "")}/index.html`)) {
+    const abs = resolve(ROOT, rel);
+    if (!existsSync(abs)) continue;
+    const src = readFileSync(abs, "utf8");
+    check(
+      /projects-complete\.js/.test(src),
+      `${rel} has no completion layer, so finishing it records nothing`,
+    );
+  }
+  // And the layer itself must still provide a path that does not depend on
+  // button text: a state trigger plus a guaranteed affordance.
+  {
+    const layer = readFileSync(resolve(ROOT, "shared/projects/projects-complete.js"), "utf8");
+    check(
+      /function observeReportGeneration/.test(layer),
+      "the state-based completion trigger is gone",
+    );
+    check(
+      /recordCompletion\("report-state"\)/.test(layer),
+      "the report-state trigger no longer records",
+    );
+    check(
+      /function ensureFinishAffordance/.test(layer),
+      "the guaranteed finish affordance is gone",
+    );
+    check(
+      /var host = document\.body;/.test(layer),
+      "the finish affordance no longer hosts on body — it rendered inside a display:none screen once",
+    );
+  }
+
   // Published copy on both files must match the same derived truth.
   for (const file of ["math/projects/portfolio/index.html", "curriculum/projects/index.html"]) {
     const src = readFileSync(resolve(ROOT, file), "utf8");

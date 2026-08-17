@@ -66,7 +66,11 @@ function discoverPages() {
     if (!fs.existsSync(projectsDir)) continue;
     const versions = fs
       .readdirSync(projectsDir, { withFileTypes: true })
-      .filter((d) => d.isDirectory() && /^version-[a-z]$/.test(d.name))
+      // Every project page, derived from disk. The old /^version-[a-z]$/ never
+      // matched math/unit-10/projects/world-architect, so that page sat outside
+      // the completion layer entirely and a student finishing it recorded
+      // nothing. answer-key is excluded because it is teacher-only.
+      .filter((d) => d.isDirectory() && d.name !== "answer-key")
       .map((d) => d.name)
       .sort();
     for (const v of versions) {
@@ -83,9 +87,11 @@ function inject(rel) {
   if (before.includes("projects-complete.css")) return false; // already injected
   // Self-scoping: the layer only runs under body.pro-projects, so don't add
   // tags to any project page that isn't one of the pro wizards.
+  // The layer self-gates on body.pro-projects OR the project path, so a page
+  // without the class is still a valid target. It used to be skipped here,
+  // which is the other half of why world-architect had no completion path.
   if (!/<body[^>]*\bpro-projects\b/.test(before)) {
-    console.warn(`  · skip (no .pro-projects body): ${rel}`);
-    return false;
+    console.warn(`  · no .pro-projects body (layer self-gates on path): ${rel}`);
   }
   let after = spliceBefore(before, "</head>", HEAD);
   if (after === null) {
