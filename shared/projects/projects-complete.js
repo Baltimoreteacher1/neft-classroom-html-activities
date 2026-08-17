@@ -677,9 +677,53 @@
     setTimeout(pollForHook, 150 * wrapAttempts);
   }
 
+  /* DETERMINISTIC ARMING. Measured on live unit-1-version-a: __ntWrapped was
+     still false at click time, so completion was being recorded by the text
+     fallback, not the wrapper — the bounded retry above loses the race on a
+     page whose inline script defines buildReport late. Rather than lengthen the
+     retry (which only moves the race), define the property so ANY later
+     assignment routes through the wrapper.
+
+     Best-effort by design: a page that declared `function buildReport(){}` at
+     top level owns a non-configurable binding on some engines, so this can
+     throw. It returns false there and pollForHook + the click fallback still
+     cover it — this narrows the window, it does not replace the backstops. */
+  function armHookDeterministically() {
+    if (ensureWrapped()) return true;
+    var current = window.buildReport;
+    try {
+      Object.defineProperty(window, "buildReport", {
+        configurable: true,
+        enumerable: true,
+        get: function () {
+          return current;
+        },
+        set: function (fn) {
+          current = fn;
+          // Wrap on assignment, so the page defining buildReport later is armed
+          // the instant it does so rather than whenever a poll next fires.
+          if (typeof fn === "function" && !fn.__ntWrapped) {
+            setTimeout(ensureWrapped, 0);
+          }
+        },
+      });
+      return true;
+    } catch (_e) {
+      return false;
+    }
+  }
+
   // "I'm done" affordances — always a real completion.
+  /* Articles and determiners are optional on BOTH sides. The literal forms
+     missed math/pre-unit/projects/version-a, whose button reads
+     "🏁 Finish the project 🏁 Terminar el proyecto": "finish the project" and
+     "terminar el proyecto" both failed, the Spanish one on a single article.
+     A completion path that depends on exact button text is a completion path
+     that fails silently on a bilingual site, for the students least able to
+     report it. Widened, and the deterministic hook below means this is now a
+     backstop rather than the primary mechanism. */
   var FINISH_RE =
-    /(project finished|finish project|i'?m finished|proyecto terminado|terminar proyecto)/i;
+    /(project\s+finished|finish(?:\s+(?:the|my|this))?\s+project|i'?m\s+finished|proyecto\s+terminado|terminar\s+(?:el\s+|mi\s+|este\s+)?proyecto)/i;
   // "Make my summary" affordances — a completion ONLY if the report actually
   // filled in. Some pages (e.g. statistics-b) guard buildReport behind
   // "do Step 1 first" and return false; that must NOT count as finished.
@@ -717,6 +761,45 @@
     );
   }
 
+  /* ---------------------------------------------- cross-device completion */
+  /* The completion record is a plain localStorage key, and the save/resume
+     payload only carries fields/navigation/dragDrop/custom/progressPercent —
+     so a student who finished a project on a classroom Chromebook and restored
+     their save code at home got their WORK back but not their COMPLETION. The
+     portfolio showed 0 finished and the certificate was unavailable. Canvas
+     already reports these as incomplete by design, so on the second device the
+     completion existed in neither system.
+
+     Registered as a state PROVIDER/RESTORER rather than special-casing the
+     export. A special case is the shape that drifts; the provider contract is
+     what the engine already maintains for every other custom payload. */
+  function registerCompletionTravel() {
+    var sr = window.NeftSaveResume;
+    if (!sr || typeof sr.registerStateProvider !== "function") return;
+
+    sr.registerStateProvider(function () {
+      // Carry ONLY this page's record. COMPLETE_KEY is a merged map across
+      // every project; shipping the whole map in every project's save code
+      // would grow without bound and put one project's state in another's
+      // export.
+      var mine = jsonGet(COMPLETE_KEY, {})[PATH];
+      return mine ? { projectComplete: mine } : null;
+    });
+
+    sr.registerStateRestorer(function (payload) {
+      if (!payload || !payload.projectComplete) return;
+      // MERGE, never clobber: this device may already hold completions for
+      // other projects and a restore must not erase them. An existing local
+      // record also wins over an imported one — a completion recorded on this
+      // device is first-hand, while the import may be an older snapshot of the
+      // same work.
+      var all = jsonGet(COMPLETE_KEY, {});
+      if (all[PATH]) return;
+      all[PATH] = payload.projectComplete;
+      jsonSet(COMPLETE_KEY, all);
+    });
+  }
+
   /* -------------------------------------------------------------- bootstrap */
 
   function run() {
@@ -735,6 +818,12 @@
       if (window.console) console.warn("[projects-complete] reflection skipped:", e);
     }
     try {
+      registerCompletionTravel();
+    } catch (e) {
+      if (window.console) console.warn("[projects-complete] travel skipped:", e);
+    }
+    try {
+      armHookDeterministically();
       pollForHook();
       wireClickFallback();
     } catch (e) {

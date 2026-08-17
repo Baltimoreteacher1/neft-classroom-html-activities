@@ -12,7 +12,7 @@
  * If you intentionally change the hub in a way that trips an invariant (e.g.,
  * remove the mailbox card), update the matching threshold/landmark below.
  */
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -215,6 +215,62 @@ check(
       check(
         Number(m[2]) === truth.catchUp,
         `${file} publishes "${m[2]} catch-up" but the curriculum has ${truth.catchUp}`,
+      );
+    }
+  }
+}
+
+// --- project catalogues must match disk, and their copy must match both -----
+// The portfolio kept its OWN list of project pages and silently discarded
+// completions for three of them: a student who finished Deep Space Number Sense
+// Expedition had the record written and the counter never moved. Same root
+// cause as the SCORM orphans, different consumer — which is why this rule lives
+// beside that one rather than inside it.
+{
+  const projectDirs = [];
+  const projectSets = [];
+  for (const unit of readdirSync(resolve(ROOT, "math"))) {
+    const base = `math/${unit}/projects`;
+    if (!existsSync(resolve(ROOT, base))) continue;
+    // PARENT as well as children. The SCORM orphan gate checked only the
+    // variant subdirectories and missed the pre-unit hub for exactly this
+    // reason; a set with an index.html is itself a page.
+    if (existsSync(resolve(ROOT, base, "index.html"))) projectSets.push(base);
+    for (const entry of readdirSync(resolve(ROOT, base))) {
+      if (entry === "answer-key") continue; // teacher-only, never catalogued
+      if (existsSync(resolve(ROOT, base, entry, "index.html")))
+        projectDirs.push(`/${base}/${entry}/`);
+    }
+  }
+
+  const portfolio = readFileSync(resolve(ROOT, "math/projects/portfolio/index.html"), "utf8");
+  const listed = new Set(
+    [...portfolio.matchAll(/\/math\/[a-z0-9-]+\/projects\/[a-z0-9-]+\//g)].map((m) => m[0]),
+  );
+  const missing = projectDirs.filter((d) => !listed.has(d));
+  check(
+    missing.length === 0,
+    `the project portfolio does not list ${missing.length} project page(s) that exist on disk, so a student finishing one gets no credit: ${missing.join(", ")}`,
+  );
+  const ghost = [...listed].filter((l) => !projectDirs.includes(l));
+  check(ghost.length === 0, `the project portfolio lists page(s) not on disk: ${ghost.join(", ")}`);
+
+  // Published copy on both files must match the same derived truth.
+  for (const file of ["math/projects/portfolio/index.html", "curriculum/projects/index.html"]) {
+    const src = readFileSync(resolve(ROOT, file), "utf8");
+    // "Grade 6 project sets" must not read its count from the GRADE. An
+    // earlier version did exactly that and reported "6 project sets" as a
+    // violation — a false positive is how a gate gets disabled.
+    for (const m of src.matchAll(/(\d+)\s+(?:Grade\s+\d+\s+)?(?:math\s+)?project sets/gi)) {
+      check(
+        Number(m[1]) === projectSets.length,
+        `${file} publishes "${m[1]} project sets" but ${projectSets.length} exist on disk`,
+      );
+    }
+    for (const m of src.matchAll(/(\d+)\s+(?:flagship )?project(?:s| pages)/gi)) {
+      check(
+        Number(m[1]) === projectDirs.length,
+        `${file} publishes "${m[1]} projects" but ${projectDirs.length} project pages exist on disk`,
       );
     }
   }
