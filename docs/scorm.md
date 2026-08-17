@@ -75,7 +75,8 @@ The consequences are real and must not be papered over:
   LMS hosts only the two-file wrapper; the lesson iframe is a normal browser
   GET of the live site. If that GET is intercepted, the student sees an Access
   sign-in (or a blank frame), not the lesson. Direct-link Access and Canvas
-  SCORM Access are the same origin.
+  SCORM Access are the same origin. **Do not put Access on the whole hostname.**
+  Intended boundary and diagnostics: [`docs/cloudflare-access.md`](cloudflare-access.md).
 - Anything the site serves under authentication is not reachable from inside a
   package (this is also why no teacher-only material can leak into one).
 - Offline/air-gapped LMS installs cannot use these packages at all.

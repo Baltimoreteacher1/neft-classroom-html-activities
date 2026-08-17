@@ -186,3 +186,17 @@ Verified by: `tools/validate-auth-contract.mjs`, `tools/auth-contract.test.mjs`,
 
 Secrets bind at **deploy**, not at set time — a newly set secret is not live
 until the next build.
+
+## 10. Cloudflare Access is not a fourth gate
+
+The student site is open. Cloudflare Access on `eduwonderlab.com` /
+`www.eduwonderlab.com` with no path restriction intercepts the live lesson
+iframe that every Canvas SCORM package launches. That is a classroom outage,
+not extra security.
+
+Teacher/admin protection stays on `SITE_PASSWORD` and `TEACHER_KEY` (§2–§3).
+Access may wrap teacher path prefixes as defense in depth. It must not wrap
+student lessons, `/assets`, `/data`, or public student APIs.
+
+See [`docs/cloudflare-access.md`](docs/cloudflare-access.md). Check with
+`npm run diagnose:production-access`.
