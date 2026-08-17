@@ -145,6 +145,15 @@
   /** SCORM passback — the SCO relays this to the Canvas gradebook. */
   function reportScore(percent) {
     safe(function () {
+      // completionOnly gates HERE, not only in complete(). This is the single
+      // choke point every score post passes through, and the other caller is
+      // not complete() at all: shared/projects/projects-publisher.js calls
+      // NeftCanvasBridge.reportScore() directly on forward step transitions,
+      // posting a step-progress percent (capped at 65). Guarding complete()
+      // alone left unit projects still posting 17, 33, … to the Canvas
+      // gradebook — a progress figure presented as a grade on work a teacher
+      // marks by rubric. Caught by browser probe; inheritance was not enough.
+      if (cfg.completionOnly) return;
       if (!global.parent || global.parent === global) return;
       var pct = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
       global.parent.postMessage(
@@ -190,6 +199,11 @@
   // refuses an oversize write rather than truncating, so the trimming decision
   // has to be made HERE, where it is possible to know what matters least.
   var SUSPEND_BUDGET = 4000; // headroom under 4096 for the SCO's own accounting
+  // Growth alarm, well below the cliff. Homework 1-1 already serializes 2,542
+  // chars (62% of the SCORM 1.2 cap) and homework is the type most likely to
+  // grow, so the failure mode to avoid is a payload crossing 4,096 unnoticed
+  // and silently degrading to a pointer. Warn only — never fails anything.
+  var SUSPEND_WARN = 3000;
 
   /** Drop the least resume-critical slices until the payload fits, in order. */
   function compactForScorm(state) {
@@ -206,7 +220,22 @@
       delete trimmed[order[i]];
       out = JSON.stringify(trimmed);
     }
-    if (out.length <= SUSPEND_BUDGET) return out;
+    if (out.length <= SUSPEND_BUDGET) {
+      if (out.length > SUSPEND_WARN) {
+        safe(function () {
+          console.warn(
+            "[nt-canvas-bridge] suspend_data " +
+              out.length +
+              " chars is over the " +
+              SUSPEND_WARN +
+              "-char warn threshold (cap " +
+              SUSPEND_BUDGET +
+              "). Still written in full; this pathway is approaching the point where it degrades to a resume pointer.",
+          );
+        });
+      }
+      return out;
+    }
 
     // --- POINTER FALLBACK ---------------------------------------------------
     // Measured on production: a small-group, catch-up or unit-project pathway
