@@ -1,5 +1,16 @@
 # SCORM packaging — architecture, contract and limits
 
+> **Runtime v2 (2026-08-17).** The SCO wrapper described below is now the
+> EduWonderLab SCORM Runtime v2 shell, and it lives in its own module
+> (`functions/_lib/scorm-sco.js`). The pipeline, the live-iframe architecture
+> and the SCORM 1.2 contract on this page are unchanged and still accurate.
+> What is NEW — the loading state, bounded retries, Cloudflare Access
+> classification, the versioned lesson handshake, the LMS event queue,
+> pre-flight validation, and the `EduWonderLab_<id>_<title>_SCORM.zip` naming —
+> is documented in **[`scorm-runtime.md`](scorm-runtime.md)**, which is the
+> authoritative reference for the runtime and the download → Canvas upload →
+> publish workflow. Read that first.
+
 What a teacher downloads from the Curriculum Hub, what is inside it, what the
 LMS actually receives, and what this design deliberately does not do.
 
