@@ -86,8 +86,24 @@ for (const p of paths) {
   // pathway inherits the right mode by living in the right place. `pre-unit` is
   // a real unit here, so the pattern must not require a digit.
   const isProject = /(^|\/)math\/[a-z0-9-]+\/projects\//.test(p.replace(/\\/g, "/"));
+  // Stable, globally-unique activity id for projects. The bridge otherwise
+  // falls back to the LAST path segment, so math/unit-1/projects/version-a and
+  // math/unit-7/projects/version-a both identify as "version-a". Per-assignment
+  // SCORM scoping makes that harmless in practice, but the resume pointer
+  // carries this id and a pointer format is far cheaper to get right before it
+  // is persisted in a live LMS than after. Derived from the path — unit +
+  // variant — so a new project inherits a correct id by living in the right
+  // place. Lessons, homework and standalone activities are untouched: they set
+  // no activityId and their path-derived ids are already unique.
+  const projectId = isProject
+    ? p
+        .replace(/\\/g, "/")
+        .replace(/^math\//, "")
+        .replace(/\/projects\//, "-")
+        .replace(/\/index\.html$/, "")
+    : "";
   const cfgTag = isProject
-    ? `  <script>window.NeftCanvasBridgeConfig=Object.assign({},window.NeftCanvasBridgeConfig,{manual:true,finishButton:false,completionOnly:true});</script>\n`
+    ? `  <script>window.NeftCanvasBridgeConfig=Object.assign({},window.NeftCanvasBridgeConfig,{activityId:${JSON.stringify(projectId)},manual:true,finishButton:false,completionOnly:true});</script>\n`
     : "";
   const block = `${BEGIN}\n${cfgTag}  ${TAG}\n  ${END}`;
 
