@@ -41,6 +41,31 @@ test("a 302 to cloudflareaccess.com is ACCESS", () => {
   );
 });
 
+test("a 302 to a Cloudflare One team login host is ACCESS", () => {
+  assert.equal(
+    classifyResponse({
+      status: 302,
+      headers: {
+        location:
+          "https://flat-haze-aa5c.cloudflareaccess.com/cdn-cgi/access/login/eduwonderlab.com",
+      },
+      body: "",
+    }),
+    ACCESS_CLASS.ACCESS,
+  );
+});
+
+test("www → apex 308 is CANONICAL, never PUBLIC", () => {
+  assert.equal(
+    classifyResponse({
+      status: 308,
+      headers: { location: "https://eduwonderlab.com/lessons/1-1/" },
+      body: "",
+    }),
+    ACCESS_CLASS.CANONICAL,
+  );
+});
+
 test("HTTP Basic 401 is APP AUTH", () => {
   assert.equal(
     classifyResponse({
@@ -84,4 +109,28 @@ test("the diagnostic probes student pages, assets, a public API, and one teacher
   }
   assert.ok(TARGETS.some((t) => t.audience === "teacher"));
   assert.ok(TARGETS.filter((t) => t.audience === "student").length >= 6);
+});
+
+test("production-access probes every SCORM family plus teacher surfaces", async () => {
+  const { STUDENT_TARGETS, TEACHER_TARGETS, WWW_TARGETS } = await import(
+    "../scripts/diagnose-production-access.mjs"
+  );
+  const student = STUDENT_TARGETS.map((t) => t.path);
+  for (const need of [
+    "/lessons/1-1/",
+    "/lessons/5-1/",
+    "/lessons/1-1/homework.html",
+    "/ratio-color-mixer/",
+    "/lessons/1-1/config.json",
+    "/assets/app.js",
+    "/assets/shared.css",
+    "/api/progress/health",
+  ]) {
+    assert.ok(student.includes(need), `missing student runtime probe ${need}`);
+  }
+  const teacher = TEACHER_TARGETS.map((t) => t.path);
+  for (const need of ["/teacher-tools/", "/curriculum/planning/", "/api/pacing/current"]) {
+    assert.ok(teacher.includes(need), `missing teacher probe ${need}`);
+  }
+  assert.ok(WWW_TARGETS.some((t) => t.path === "/lessons/1-1/"));
 });
