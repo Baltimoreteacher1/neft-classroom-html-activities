@@ -219,6 +219,10 @@ const COVERAGE = [
     /^(tools\/validate-secrets\.mjs|scripts\/validate-production\.mjs|tools\/validate-production\.test\.mjs)$/,
     ["test", "validate:secrets", "validate:js-syntax"],
   ],
+  [
+    /^(scripts\/diagnose-student-access\.mjs|scripts\/lib\/cloudflare-access\.mjs|tools\/smoke-live-access\.test\.mjs)$/,
+    ["test"],
+  ],
   [/^scripts\/generate-warmups\.mjs$/, ["test"]],
   [
     /^lessons\/[^/]+\/config\.json$/,
