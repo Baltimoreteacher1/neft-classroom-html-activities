@@ -282,7 +282,10 @@
     // Announce readiness once the page can receive a restore, then mirror state
     // as the student works. The SCO coalesces and rate-limits the writes.
     safe(function () {
-      toParent({ source: "neft-lesson", type: "ready" });
+      // The handshake. `protocol` is additive: a Runtime v1 wrapper reads the
+      // type and ignores the field, a v2 wrapper records which protocol the
+      // lesson speaks so a mismatch is diagnosable rather than mysterious.
+      toParent({ source: "neft-lesson", type: "ready", protocol: 2 });
       global.addEventListener("pagehide", syncScormState);
       global.addEventListener("beforeunload", syncScormState);
       document.addEventListener("visibilitychange", function () {
@@ -299,10 +302,56 @@
         idle = setTimeout(function () {
           idle = null;
           syncScormState();
+          // Proof of life for the Runtime v2 shell, on a timer that already
+          // exists and is already cleared. A v1 wrapper ignores the type.
+          if (typeof beat === "function") beat();
         }, 5000);
       };
       for (var i = 0; i < ACTIVITY_EVENTS.length; i++)
         document.addEventListener(ACTIVITY_EVENTS[i], onActivity, { passive: true });
+
+      // --- SCORM Runtime v2 protocol additions --------------------------
+      // Everything below is LIVE-SIDE, so an ALREADY-UPLOADED Canvas package
+      // receives it without a re-upload: a Runtime v1 wrapper switches on the
+      // message types it knows and ignores the rest. See docs/scorm-runtime.md.
+      // Heartbeat. A v2 wrapper treats this as proof the lesson is alive, which
+      // is what stops a lesson that renders slowly — or one whose ready message
+      // was missed — from being replaced by an error card the student cannot
+      // act on.
+      //
+      // Deliberately NOT a setInterval, for the reason the comment above this
+      // block already gives about state syncing: a standing interval is never
+      // cleared, so it keeps a timer alive for the whole lesson and pins the
+      // event loop open in any headless harness. (Written as an interval first;
+      // it hung `npm test` at this exact file.) Instead: one bounded timeout to
+      // cover the window before the student has done anything, and then a beat
+      // that rides the activity debounce, which is already running.
+      function beat() {
+        toParent({ source: "neft-lesson", type: "heartbeat", protocol: 2 });
+      }
+      setTimeout(beat, 4000);
+
+      // Height. Reported only when it CHANGES by more than a threshold, so an
+      // ordinary scroll or a font swap does not become a message storm. The
+      // wrapper validates and bounds the value; nothing here is trusted there.
+      var lastHeight = 0;
+      function reportHeight() {
+        safe(function () {
+          var el = document.documentElement;
+          var h = Math.max(el.scrollHeight, document.body ? document.body.scrollHeight : 0);
+          if (!h || Math.abs(h - lastHeight) < 40) return;
+          lastHeight = h;
+          toParent({ source: "neft-lesson", type: "height", protocol: 2, px: h });
+        });
+      }
+      reportHeight();
+      if (typeof ResizeObserver === "function") {
+        safe(function () {
+          new ResizeObserver(reportHeight).observe(document.documentElement);
+        });
+      } else {
+        global.addEventListener("resize", reportHeight);
+      }
     });
   }
 
