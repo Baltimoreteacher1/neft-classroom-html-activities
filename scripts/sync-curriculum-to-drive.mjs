@@ -20,6 +20,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { classifyDriveState, summarizeDriveClasses } from "./lib/drive-sync-classify.mjs";
 
 const REPO = path.resolve(import.meta.dirname, "..");
 const SITE = "https://eduwonderlab.com";
@@ -58,6 +59,9 @@ const stats = {
   unmatched: [],
   notes: [],
 };
+const sourceNewer = [];
+const destinationMissing = [];
+let permissionError = false;
 
 const sanitize = (s) =>
   String(s)
@@ -83,6 +87,7 @@ function copyIfChanged(src, dest) {
   }
   const s = fs.statSync(abs);
   record(dest);
+  const rel = path.relative(DEST, dest);
   if (fs.existsSync(dest)) {
     const d = fs.statSync(dest);
     // Drive rewrites mtimes on upload, so mtime alone would re-copy every run. Same size
@@ -91,6 +96,9 @@ function copyIfChanged(src, dest) {
       stats.filesUnchanged++;
       return;
     }
+    sourceNewer.push(rel);
+  } else {
+    destinationMissing.push(rel);
   }
   ensureDir(path.dirname(dest));
   if (!DRY) fs.copyFileSync(abs, dest);
@@ -99,10 +107,13 @@ function copyIfChanged(src, dest) {
 
 function writeIfChanged(dest, content) {
   record(dest);
+  const rel = path.relative(DEST, dest);
   if (fs.existsSync(dest) && fs.readFileSync(dest, "utf8") === content) {
     stats.filesUnchanged++;
     return;
   }
+  if (fs.existsSync(dest)) sourceNewer.push(rel);
+  else destinationMissing.push(rel);
   ensureDir(path.dirname(dest));
   if (!DRY) fs.writeFileSync(dest, content);
   stats.filesCopied++;
@@ -333,6 +344,7 @@ function walkFiles(dir, acc = []) {
     entries = fs.readdirSync(dir, { withFileTypes: true });
   } catch (err) {
     stats.notes.push(`cannot read ${dir}: ${err.message}`);
+    if (err && (err.code === "EACCES" || err.code === "EPERM")) permissionError = true;
     return acc;
   }
   for (const ent of entries) {
@@ -346,8 +358,9 @@ function walkFiles(dir, acc = []) {
 
 const destExists = fs.existsSync(DEST);
 let staleOnDrive = [];
+let present = [];
 if (destExists) {
-  const present = walkFiles(DEST);
+  present = walkFiles(DEST);
   staleOnDrive = present.filter((rel) => !expected.has(rel));
   stats.notes.push(
     staleOnDrive.length
@@ -357,6 +370,15 @@ if (destExists) {
 } else {
   stats.notes.push(`destination does not exist (${DEST}) — extras cannot be verified.`);
 }
+
+const classified = classifyDriveState({
+  destExists,
+  permissionError,
+  expected: [...expected],
+  present,
+  sourceNewer,
+});
+const classCounts = summarizeDriveClasses(classified);
 
 const state = {
   generatedAt: new Date().toISOString(),
@@ -386,10 +408,15 @@ console.log(
       expectedCount: expected.size,
       staleOnDrive: staleOnDrive.slice(0, 20),
       staleTotal: staleOnDrive.length,
+      sourceNewerCount: sourceNewer.length,
+      destinationMissingCount: destinationMissing.length,
+      classifications: classCounts,
+      policy: "never-delete; leftovers are DESTINATION EXTRA, not ignored",
     },
     null,
     2,
   ),
 );
 if (VERIFY && !destExists) process.exit(2);
+if (VERIFY && permissionError) process.exit(2);
 if (VERIFY && staleOnDrive.length) process.exit(2);

@@ -212,7 +212,7 @@ const COVERAGE = [
     ["test", "validate:plan-notes", "validate:static", "validate:js-syntax"],
   ],
   [
-    /^(scripts\/sync-curriculum-to-drive\.mjs|scripts\/sync-lesson-html-to-documents\.sh|tools\/validate-drive-sync\.mjs)$/,
+    /^(scripts\/sync-curriculum-to-drive\.mjs|scripts\/sync-lesson-html-to-documents\.sh|tools\/validate-drive-sync\.mjs|scripts\/lib\/drive-sync-classify\.mjs)$/,
     ["test", "validate:drive-sync", "validate:js-syntax"],
   ],
   [

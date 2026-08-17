@@ -80,7 +80,10 @@ try {
 }
 
 if (report) {
-  check(report.staleTotal >= 1, "report.staleTotal did not count the leftover");
+  check(
+    (report.classifications || {})["DESTINATION EXTRA"] >= 1,
+    "report.classifications missing DESTINATION EXTRA for the leftover",
+  );
   const names = (report.staleOnDrive || []).join("\n");
   check(
     names.includes("STALE leftover from renamed lesson.txt"),
