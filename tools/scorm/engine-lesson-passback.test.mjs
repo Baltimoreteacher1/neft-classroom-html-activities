@@ -242,6 +242,96 @@ check("no standing timer is introduced (the npm test hang class)", () => {
   assert.match(code, /manual: true/);
 });
 
+// --- 5. pathway types WITHOUT a scoreable terminus ---------------------------
+check("small-group and catch-up are marked completion-only, so no score is invented", () => {
+  const hook = read("engine/core/scorm-bridge.js");
+  // `variant` is group1 / group2 / catchup on exactly the pathways rendered by
+  // small-group-renderer.js, which never calls createApp() — so
+  // engine/core/app.js:1222 completeLesson() is unreachable for them and there
+  // is no percent they could honestly report.
+  assert.match(
+    hook,
+    /completionOnly: !!config\?\.variant/,
+    "the hook no longer marks variant pathways completion-only",
+  );
+  const sg = read("engine/core/small-group-renderer.js");
+  // Word-boundary: createApplyLab CONTAINS "createApp", and a bare substring
+  // match reports small-group as reaching the scoring engine when it does not.
+  assert.doesNotMatch(
+    sg,
+    /\bcreateApp\(/,
+    "small-group now reaches createApp — re-check the terminus",
+  );
+});
+
+check("unit projects are completion-only, derived from the path not a list", () => {
+  const inj = read("tools/inject-canvas-bridge.js");
+  assert.match(inj, /math\\\/\[a-z0-9-\]\+\\\/projects/, "project detection is not path-derived");
+  assert.match(inj, /completionOnly:true/, "projects no longer get completion-only mode");
+  assert.match(inj, /finishButton:false/, "the hardcoded-100 button is back on projects");
+});
+
+check("completionOnly suppresses the score post entirely", () => {
+  const bridge = read("assets/canvas-bridge.js");
+  const c = bridge.slice(bridge.indexOf("function complete("));
+  const guard = c.indexOf("cfg.completionOnly");
+  const report = c.indexOf("reportScore(pct)");
+  assert.ok(guard > -1, "completionOnly is not honoured by complete()");
+  assert.ok(guard < report, "completionOnly is checked AFTER the score is posted");
+});
+
+// --- 6. the suspend_data ceiling --------------------------------------------
+check("an oversize payload becomes a pointer, never nothing and never truncated", () => {
+  const bridge = read("assets/canvas-bridge.js");
+  const fn = bridge.slice(
+    bridge.indexOf("function compactForScorm"),
+    bridge.indexOf("function snapshotState"),
+  );
+  assert.match(fn, /ref: "local"/, "no pointer fallback — oversize state persists NOTHING");
+  assert.match(fn, /pointer\.length <= SUSPEND_BUDGET/, "the pointer itself is not size-checked");
+  assert.match(fn, /console\.info/, "the reduction is silent — it must be logged");
+  // Truncation is the one thing that must never happen: half a JSON payload
+  // restores as wrong answers, which is worse than no resume at all.
+  assert.doesNotMatch(fn, /\.slice\(0,\s*SUSPEND_BUDGET\)/, "payload is being truncated");
+  // Measured on production: small-group/catch-up/project serialize 7.7k-12.3k
+  // chars with ZERO fields filled, so this path is the normal case for them,
+  // not an edge case.
+  assert.ok(
+    fn.indexOf("SUSPEND_BUDGET") < fn.indexOf('ref: "local"'),
+    "budget check must gate the pointer",
+  );
+});
+
+check("a restored pointer is never fed back in as lesson state", () => {
+  const bridge = read("assets/canvas-bridge.js");
+  const raw = bridge.slice(bridge.indexOf("function applyRestore"));
+  assert.match(
+    raw,
+    /st && st\.ref === "local"/,
+    "applyRestore would hand a pointer to _restoreState — a shape with no fields",
+  );
+  // Comments stripped before the ORDERING check: the guard's own comment names
+  // _restoreState while explaining why it exists, and a detector that reads
+  // prose finds that mention first and reports the order backwards.
+  const fn = raw.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
+  assert.ok(
+    fn.indexOf('st.ref === "local"') < fn.indexOf("_restoreState"),
+    "the pointer guard runs after the restore",
+  );
+});
+
+check("payloads already under the limit keep their existing format", () => {
+  // Core lessons (713 chars) and homework (2,551) must be untouched by the
+  // pointer work — measured, and the early return is what guarantees it.
+  const bridge = read("assets/canvas-bridge.js");
+  const fn = bridge.slice(bridge.indexOf("function compactForScorm"));
+  assert.match(
+    fn,
+    /if \(out\.length <= SUSPEND_BUDGET\) return out;/,
+    "no early return for fitting payloads",
+  );
+});
+
 console.log("Engine lesson → Canvas passback");
 console.log(`  checks passed: ${passed}`);
 if (failures.length) {

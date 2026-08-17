@@ -24,7 +24,7 @@
  * Run:  npm run validate:scorm-runtime
  * Exit: 0 = the runtime contract holds, 1 = it does not (each problem printed).
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -284,13 +284,70 @@ for (const f of ["engine/core/lesson-renderer.js", "engine/core/small-group-rend
 if (!/bootLesson/.test(read("engine/templates/flagship/flagship.js")))
   fail("flagship no longer delegates to bootLesson — it needs its own ensureCanvasBridge call");
 
-const manifest = JSON.parse(read("data/curriculum-manifest.json"));
-const lessons = (
-  Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)
-).filter((l) => l?.id);
+// DERIVATION SOURCE. `data/curriculum-manifest.json` holds ONLY the 84 core
+// lessons — it has no entry for any of the 168 small-group, 36 catch-up or 10
+// unit-project pathways, so deriving from it leaves 214 pathways outside every
+// guard in this repo (which is exactly how they got there). The launch manifest
+// is the one file that enumerates all four types.
+const launch = JSON.parse(read("data/curriculum-launch-manifest.json"));
+const PATHWAY_SETS = [
+  ["lesson", launch.lessons || []],
+  ["smallGroup", launch.smallGroups || []],
+  ["catchUp", launch.catchUps || []],
+  ["endOfUnit", launch.endOfUnit || []],
+];
+for (const [kind, arr] of PATHWAY_SETS) {
+  if (!arr.length)
+    fail(`launch manifest has no ${kind} pathways — the derivation source is broken`);
+}
+// Declared counts must match their arrays, or the manifest is lying about its
+// own contents and every count derived from it is unreliable.
+for (const [kind, arr, declared] of [
+  ["lesson", launch.lessons || [], launch.lessonCount],
+  ["smallGroup", launch.smallGroups || [], launch.smallGroupCount],
+  ["catchUp", launch.catchUps || [], launch.catchUpCount],
+  ["endOfUnit", launch.endOfUnit || [], launch.endOfUnitCount],
+]) {
+  if (declared != null && declared !== arr.length)
+    fail(`launch manifest ${kind}Count=${declared} but the array holds ${arr.length}`);
+}
+
+// --- 6b. manifest completeness: nothing on disk may be invisible to the gate --
+// The orphan class this closes: math/unit-1/projects/version-c,
+// math/unit-10/projects/version-c and math/unit-10/projects/world-architect
+// were student-reachable from /curriculum/projects/ but absent from the SCORM
+// activity catalog, so the bridge injector skipped them, no package existed,
+// and no validator could see them.
+const catalog = JSON.parse(read("tools/scorm/activity-catalog.json"));
+const catalogPaths = new Set(
+  (catalog.activities || []).map((a) => String(a.path).replace(/^\/+|\/+$/g, "")),
+);
+const projectDirs = [];
+for (const unit of readdirSync(join(ROOT, "math"))) {
+  const base = join("math", unit, "projects");
+  if (!existsSync(join(ROOT, base))) continue;
+  for (const entry of readdirSync(join(ROOT, base))) {
+    const rel = `${base}/${entry}`.replace(/\\/g, "/");
+    // answer-key is teacher-only: isTeacherSurface gates it and it must NOT be
+    // packaged. Excluding it here is the correct behaviour, not an omission.
+    if (entry === "answer-key") continue;
+    if (existsSync(join(ROOT, rel, "index.html"))) projectDirs.push(rel);
+  }
+}
+const uncatalogued = projectDirs.filter((p) => !catalogPaths.has(p));
+if (uncatalogued.length)
+  fail(
+    `${uncatalogued.length} student-facing project pathway(s) exist on disk but are absent from the SCORM activity catalog, so they get no Canvas bridge and no package: ${uncatalogued.join(", ")}`,
+  );
+
 let engineChecked = 0;
 const orphans = [];
-for (const l of lessons) {
+const allEnginePathways = [
+  ...(launch.lessons || []),
+  ...(launch.smallGroups || []),
+  ...(launch.catchUps || []),
+];
+for (const l of allEnginePathways) {
   const entry = `lessons/${l.id}/lesson.js`;
   let src;
   try {
