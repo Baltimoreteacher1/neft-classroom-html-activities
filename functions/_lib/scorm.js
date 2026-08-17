@@ -15,7 +15,43 @@
  * Web-runtime only: TextEncoder / Uint8Array / DataView (Workers + Node 18+).
  */
 
+import { canonicalTitle, routeKnown, shortNameForId } from "./scorm-catalog.js";
+import {
+  ERROR_CODES,
+  LESSON_LOCATION_LIMIT,
+  MASTERY_SCORE,
+  sco,
+  SCORM_PROTOCOL_VERSION,
+  SCORM_RUNTIME_VERSION,
+  SUSPEND_DATA_LIMIT,
+} from "./scorm-sco.js";
 import { isTeacherSurface } from "./teacher-surface.js";
+
+// Re-exported so every existing importer (validators, tests, the CLI builders)
+// keeps one place to read these from, and so the runtime/protocol versions are
+// reachable from the same module that builds the package.
+export {
+  ERROR_CODES,
+  LESSON_LOCATION_LIMIT,
+  MASTERY_SCORE,
+  sco,
+  SCORM_PROTOCOL_VERSION,
+  SCORM_RUNTIME_VERSION,
+  SUSPEND_DATA_LIMIT,
+};
+
+/**
+ * Thrown when pre-flight refuses to hand a teacher a package that would not
+ * work. Distinct from TeacherSurfaceError so the endpoints can answer with the
+ * right status and the right sentence.
+ */
+export class PackagePreflightError extends Error {
+  constructor(message, status = 400) {
+    super(message);
+    this.name = "PackagePreflightError";
+    this.status = status;
+  }
+}
 
 /**
  * Thrown when a caller asks for a package of a teacher-only surface. A distinct
@@ -156,14 +192,19 @@ export function resolveTarget(target, site = SITE_DEFAULT) {
   return { lessonUrl, id, origin: u.origin };
 }
 
-// SCORM 1.2 data-model limits (CMIString4096 / CMIString255). Writing past
-// these is undefined behaviour: some LMS truncate silently, some reject the
-// SetValue outright, so the SCO refuses rather than gambling.
-export const SUSPEND_DATA_LIMIT = 4096;
-export const LESSON_LOCATION_LIMIT = 255;
-export const MASTERY_SCORE = 70;
-
-function manifest(id, title) {
+function manifest(id, title, meta = {}) {
+  // Non-sensitive diagnostic metadata, carried where a teacher (or a future
+  // agent) can read it out of an uploaded package without running anything:
+  // which runtime built it, which live route it targets, and when. Never a
+  // secret, a teacher key, or anything about a student.
+  const desc = [
+    `EduWonderLab SCORM Runtime v${SCORM_RUNTIME_VERSION} (protocol v${SCORM_PROTOCOL_VERSION}).`,
+    `Live target: ${meta.lessonUrl || ""}.`,
+    meta.generatedAt ? `Generated ${meta.generatedAt}.` : "",
+    "Plays the live lesson; lesson edits reach this package without re-uploading.",
+  ]
+    .filter(Boolean)
+    .join(" ");
   return `<?xml version="1.0" encoding="UTF-8"?>
 <manifest identifier="NEFT-${id}" version="1.0"
   xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
@@ -174,6 +215,8 @@ function manifest(id, title) {
     <schema>ADL SCORM</schema>
     <schemaversion>1.2</schemaversion>
   </metadata>
+  <!-- ${xmlEsc(desc)} -->
+  <!-- ewl:runtime=${SCORM_RUNTIME_VERSION} ewl:protocol=${SCORM_PROTOCOL_VERSION} ewl:activity=${xmlEsc(meta.id || id)} ewl:generator=${xmlEsc(meta.generator || "")} -->
   <organizations default="ORG-${id}">
     <organization identifier="ORG-${id}">
       <title>${title}</title>
@@ -192,339 +235,6 @@ function manifest(id, title) {
 `;
 }
 
-function sco(lessonUrl, launchQuery, origin, title) {
-  return `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${title}</title>
-    <style>
-      html, body { margin: 0; height: 100%; background: #fff; }
-      #lesson { border: 0; width: 100%; height: 100vh; display: block; }
-    </style>
-  </head>
-  <body>
-    <!-- SCORM 1.2 SCO wrapper for a Neft activity. Plays the LIVE activity, so
-         edits never require re-uploading. ?lms=scorm relays the score to Canvas
-         and hides the code popup; ?embed=1 alone keeps the save-code prompt. -->
-    <iframe id="lesson" data-src="${lessonUrl}${launchQuery}" allow="fullscreen; clipboard-write" title="${title}"></iframe>
-    <noscript><p style="padding:1rem;font-family:system-ui,-apple-system,sans-serif">This activity needs JavaScript enabled. <a href="${lessonUrl}">Open the activity directly</a>.</p></noscript>
-    <script>
-      (function () {
-        "use strict";
-        var LESSON_ORIGIN = "${origin}";
-        var MASTERY = ${MASTERY_SCORE};
-        var SUSPEND_LIMIT = ${SUSPEND_DATA_LIMIT};
-        var LOCATION_LIMIT = ${LESSON_LOCATION_LIMIT};
-        // Developer-only diagnostics. Never rendered for students: the panel is
-        // opt-in per launch (?scormdebug=1 on the SCO URL) and the object is
-        // read-only state, never a channel for anything the LMS gave us that a
-        // student should not see.
-        var DEBUG = /(?:^|[?&])scormdebug=1(?:&|$)/.test(location.search);
-        var diag = {
-          apiFound: false, initialized: false, status: "", score: null,
-          suspendBytes: 0, location: "", lastCommit: null, lastError: "", writes: 0, failures: 0,
-        };
-        function log(msg) { if (DEBUG) { try { console.info("[neft-scorm] " + msg); } catch (e) {} } }
-        // Locate the SCORM 1.2 API by walking parent frames then the opener.
-        // Every window access is wrapped: in Canvas the SCO is commonly framed
-        // cross-origin, where reading win.API / win.parent throws SecurityError.
-        // An uncaught throw here would abort the wrapper before launchUrl() runs
-        // — leaving a blank frame and no grade — so guard each access.
-        function findAPI(win) {
-          var tries = 0;
-          while (win && tries++ < 12) {
-            try { if (win.API != null) return win.API; } catch (e) { break; }
-            try {
-              if (!win.parent || win.parent === win) break;
-              win = win.parent;
-            } catch (e) { break; }
-          }
-          return null;
-        }
-        var API = null;
-        try { API = findAPI(window); } catch (e) {}
-        if (!API) { try { if (window.opener) API = findAPI(window.opener); } catch (e) {} }
-        diag.apiFound = !!API;
-        if (!API) {
-          // Launched outside an LMS (direct open, preview, plain web hosting).
-          // This is a supported mode, not a failure: the activity still runs and
-          // saves locally, so say so once, calmly, and never again.
-          try { console.info("[neft-scorm] No SCORM API found in any parent frame or opener. Running the activity without LMS reporting — progress saves locally only."); } catch (e) {}
-        }
-        var started = false, finished = false, startedAt = 0;
-
-        // Every LMS call goes through here. SCORM 1.2 signals failure by RETURN
-        // VALUE ("false"), not by throwing, so an unchecked call looks identical
-        // to a successful one — which is how a lesson can appear to save all
-        // period and land nothing in the gradebook.
-        function lastError() {
-          try {
-            var c = String(API.LMSGetLastError() || "0");
-            if (c === "0") return "";
-            var s = "", d = "";
-            try { s = String(API.LMSGetErrorString(c) || ""); } catch (e) {}
-            try { d = String(API.LMSGetDiagnostic(c) || ""); } catch (e) {}
-            return c + (s ? " " + s : "") + (d ? " (" + d + ")" : "");
-          } catch (e) { return ""; }
-        }
-        function call(op, fn) {
-          if (!API) return false;
-          var ok = false;
-          try { ok = String(fn()) === "true"; } catch (e) { diag.lastError = op + ": threw " + (e && e.message ? e.message : e); }
-          if (!ok) {
-            var err = lastError();
-            if (err) diag.lastError = op + ": " + err;
-            diag.failures++;
-            log("FAIL " + op + " — " + (diag.lastError || "no error code reported"));
-            noteFailure();
-          } else {
-            diag.writes++;
-            log("ok " + op);
-          }
-          return ok;
-        }
-        function setValue(key, val) { return call("LMSSetValue " + key, function () { return API.LMSSetValue(key, String(val)); }); }
-        function commit() {
-          var ok = call("LMSCommit", function () { return API.LMSCommit(""); });
-          if (ok) { diag.lastCommit = new Date().toISOString(); failStreak = 0; renderDebug(); }
-          return ok;
-        }
-
-        function start() {
-          if (!API || started) return started;
-          // A refused LMSInitialize is final. SCORM 1.2 has no "already
-          // initialized" code to forgive (101 is the general exception), and
-          // this is the only place Initialize is ever called — the started
-          // flag guarantees it — so a "false" here means the LMS will reject
-          // every subsequent call too. Pressing on would produce a stream of
-          // failed writes and, worse, a lesson that looks like it is reporting.
-          if (!call("LMSInitialize", function () { return API.LMSInitialize(""); })) {
-            log("LMSInitialize refused — no data will be written this session");
-            return false;
-          }
-          started = true;
-          diag.initialized = true;
-          startedAt = Date.now();
-          // Read BEFORE writing. Blindly stamping "incomplete" on every launch
-          // erases a completed/passed attempt the moment a student reopens the
-          // assignment to review it — the gradebook silently loses the grade.
-          var current = lmsGet("cmi.core.lesson_status");
-          diag.status = current;
-          if (!current || current === "not attempted" || current === "" || current === "browsed") {
-            setValue("cmi.core.lesson_status", "incomplete");
-            diag.status = "incomplete";
-            commit();
-          }
-          restoreFromLms();
-          renderDebug();
-          return true;
-        }
-        // SCORM 1.2 CMITimespan (HHHH:MM:SS) so the LMS records time-on-task.
-        function sessionTime() {
-          var s = Math.max(0, Math.round((Date.now() - (startedAt || Date.now())) / 1000));
-          function p(n) { return (n < 10 ? "0" : "") + n; }
-          return p(Math.floor(s / 3600)) + ":" + p(Math.floor((s % 3600) / 60)) + ":" + p(s % 60);
-        }
-        // Canvas identity → live activity: read the LMS-provided student name/id
-        // and hand them to the lesson so the student is auto-identified inside
-        // Canvas (no name-entry screen, resume keyed to the Canvas roster).
-        // SCORM 1.2 returns the name as "Last, First"; normalize to "First Last".
-        function lmsGet(key) { try { return API ? String(API.LMSGetValue(key) || "") : ""; } catch (e) { return ""; } }
-        function normalizeName(raw) {
-          raw = (raw || "").trim();
-          if (!raw) return "";
-          var c = raw.indexOf(",");
-          if (c > -1) return (raw.slice(c + 1).trim() + " " + raw.slice(0, c).trim()).trim();
-          return raw;
-        }
-        function launchUrl() {
-          var iframe = document.getElementById("lesson");
-          var base = iframe.getAttribute("data-src");
-          start();
-          var name = normalizeName(lmsGet("cmi.core.student_name"));
-          var sid = lmsGet("cmi.core.student_id");
-          var sep = base.indexOf("?") > -1 ? "&" : "?";
-          var q = "";
-          if (name) q += sep + "sn=" + encodeURIComponent(name);
-          if (sid) q += (q ? "&" : sep) + "si=" + encodeURIComponent(sid);
-          iframe.src = base + q;
-        }
-        function report(pct) {
-          // Never write after LMSFinish (illegal in SCORM 1.2) or before a
-          // successful LMSInitialize — some LMS runtimes throw on either.
-          if (!API || finished) return;
-          if (!start()) return;
-          var raw = Math.max(0, Math.min(100, Math.round(pct)));
-          // High-water mark. A student who reviews a finished lesson, or who
-          // reopens it and answers one question, otherwise overwrites a 100 with
-          // whatever this session happens to total.
-          var prev = Number(lmsGet("cmi.core.score.raw"));
-          if (isFinite(prev) && lmsGet("cmi.core.score.raw") !== "" && prev > raw) raw = prev;
-          setValue("cmi.core.score.min", "0");
-          setValue("cmi.core.score.max", "100");
-          setValue("cmi.core.score.raw", String(raw));
-          // "passed" is a stronger claim than "completed" and must never be
-          // downgraded — SCORM 1.2 has no ordering rule, so the LMS keeps
-          // whatever was written last.
-          var status = raw >= MASTERY ? "passed" : "completed";
-          if (lmsGet("cmi.core.lesson_status") !== "passed" || status === "passed") {
-            setValue("cmi.core.lesson_status", status);
-            diag.status = status;
-          }
-          diag.score = raw;
-          commit();
-          renderDebug();
-        }
-
-        // --- suspend_data: resume that follows the STUDENT, not the browser ---
-        // Without this the only resume state is the activity's own localStorage,
-        // so a student who moves to a Chromebook, a lab machine, or a second
-        // browser profile starts the assignment over with no warning.
-        var pendingState = null, saveTimer = null;
-        function persistState(state, location) {
-          if (!API || finished) return false;
-          if (!start()) return false;
-          var s = String(state == null ? "" : state);
-          if (s.length > SUSPEND_LIMIT) {
-            // Refuse rather than truncate: half a JSON payload restores as
-            // garbage, and a lesson that resumes wrong is worse than one that
-            // resumes empty.
-            log("suspend_data " + s.length + " chars exceeds the SCORM 1.2 limit of " + SUSPEND_LIMIT + " — not written");
-            diag.lastError = "suspend_data too large (" + s.length + " > " + SUSPEND_LIMIT + ")";
-            diag.failures++;
-            return false;
-          }
-          setValue("cmi.suspend_data", s);
-          diag.suspendBytes = s.length;
-          if (location != null) {
-            var loc = String(location).slice(0, LOCATION_LIMIT);
-            setValue("cmi.core.lesson_location", loc);
-            diag.location = loc;
-          }
-          commit();
-          renderDebug();
-          return true;
-        }
-        // Coalesce: a lesson emits state on every answered item, and hammering
-        // LMSCommit per keystroke is what makes an LMS throttle or stall.
-        function queueState(state, location) {
-          pendingState = { state: state, location: location };
-          if (saveTimer) return;
-          saveTimer = setTimeout(function () {
-            saveTimer = null;
-            var p = pendingState; pendingState = null;
-            if (p) persistState(p.state, p.location);
-          }, 3000);
-        }
-        function flushState() {
-          if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
-          var p = pendingState; pendingState = null;
-          if (p) persistState(p.state, p.location);
-        }
-        // Hand any stored state back to the activity as soon as it says it is
-        // listening, so the student lands where they left off.
-        var lessonReady = false;
-        function restoreFromLms() {
-          if (!lessonReady || !started) return;
-          var s = lmsGet("cmi.suspend_data");
-          var loc = lmsGet("cmi.core.lesson_location");
-          diag.suspendBytes = s.length;
-          diag.location = loc;
-          if (!s && !loc) return;
-          try {
-            document.getElementById("lesson").contentWindow.postMessage(
-              { source: "neft-sco", type: "restore", state: s, location: loc },
-              LESSON_ORIGIN,
-            );
-            log("sent restore (" + s.length + " chars, location " + (loc || "-") + ")");
-          } catch (e) {}
-        }
-
-        function finish() {
-          if (!API || !started || finished) return;
-          flushState();
-          setValue("cmi.core.session_time", sessionTime());
-          commit();
-          call("LMSFinish", function () { return API.LMSFinish(""); });
-          finished = true;
-          renderDebug();
-        }
-
-        // --- student-facing failure notice ---------------------------------
-        // A 7th grader must never read "LMSSetValue error 351". They do need to
-        // know their work may not be reaching the course, so they can tell the
-        // teacher instead of assuming it saved.
-        var failStreak = 0, noticeShown = false;
-        function noteFailure() {
-          if (++failStreak < 3 || noticeShown) return;
-          noticeShown = true;
-          try {
-            var n = document.createElement("div");
-            n.id = "nt-scorm-notice";
-            n.setAttribute("role", "status");
-            n.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:2147483647;" +
-              "background:#fff4e5;border-top:2px solid #d97706;color:#7c2d12;padding:10px 14px;" +
-              "font:600 14px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;text-align:center;";
-            n.textContent = "Your lesson is still open and you can keep working — but your progress may not be saving to the course right now. Let your teacher know.";
-            (document.body || document.documentElement).appendChild(n);
-          } catch (e) {}
-        }
-
-        function renderDebug() {
-          if (!DEBUG) return;
-          try {
-            var el = document.getElementById("nt-scorm-debug");
-            if (!el) {
-              el = document.createElement("pre");
-              el.id = "nt-scorm-debug";
-              el.style.cssText = "position:fixed;right:8px;bottom:8px;z-index:2147483647;margin:0;" +
-                "max-width:22rem;background:rgba(17,24,39,.92);color:#d1fae5;padding:8px 10px;" +
-                "border-radius:8px;font:12px/1.45 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;";
-              (document.body || document.documentElement).appendChild(el);
-            }
-            el.textContent = "SCORM 1.2 diagnostics\\n" +
-              "api found   : " + diag.apiFound + "\\n" +
-              "initialized : " + diag.initialized + "\\n" +
-              "status      : " + (diag.status || "-") + "\\n" +
-              "score.raw   : " + (diag.score == null ? "-" : diag.score) + "\\n" +
-              "suspend     : " + diag.suspendBytes + "/" + SUSPEND_LIMIT + " chars\\n" +
-              "location    : " + (diag.location || "-") + "\\n" +
-              "last commit : " + (diag.lastCommit || "-") + "\\n" +
-              "writes/fail : " + diag.writes + "/" + diag.failures + "\\n" +
-              "last error  : " + (diag.lastError || "-");
-          } catch (e) {}
-        }
-        window.NeftScormDiagnostics = function () { return diag; };
-        // Register the score listener BEFORE loading the activity so no early
-        // completion message is missed, then launch with the Canvas identity.
-        window.addEventListener("message", function (e) {
-          if (LESSON_ORIGIN && e.origin !== LESSON_ORIGIN) return;
-          var d = e.data || {};
-          if (d.source !== "neft-lesson") return;
-          if (d.type === "score" && typeof d.percent === "number") report(d.percent);
-          else if (d.type === "ready") { lessonReady = true; start(); restoreFromLms(); }
-          else if (d.type === "state") queueState(d.state, d.location);
-        });
-        // unload is unreliable (bfcache, mobile task-switching, LMS frame swaps),
-        // so it is the LAST line of defence, not the strategy: pagehide and the
-        // hidden transition both flush first, and state is committed as it
-        // arrives rather than only at the end.
-        document.addEventListener("visibilitychange", function () {
-          if (document.visibilityState === "hidden") { flushState(); if (started && !finished) commit(); }
-        });
-        window.addEventListener("pagehide", finish);
-        window.addEventListener("unload", finish);
-        launchUrl();
-        renderDebug();
-      })();
-    </script>
-  </body>
-</html>
-`;
-}
-
 /**
  * Teacher-readable, filesystem-safe download name.
  *
@@ -534,24 +244,112 @@ function sco(lessonUrl, launchQuery, origin, title) {
  * renaming a download can never re-key an existing Canvas assignment.
  */
 export function packageFileName(id, codes) {
-  const suffix = codes ? "_SaveCodes" : "_Interactive";
   // The mode already lives in the id (…-codes) so the SCORM identifier is
-  // distinct; strip it here so the name still reads Unit-1_Lesson-1-1_SaveCodes
-  // rather than falling through to the opaque fallback form.
-  const base = codes ? String(id).replace(/-codes$/, "") : String(id);
-  const m = /^(\d+)-(\d+)$/.exec(base);
-  const name = m
-    ? `Unit-${m[1]}_Lesson-${m[1]}-${m[2]}${suffix}_SCORM`
-    : `Neft_${base.replace(/[^A-Za-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "")}${suffix}_SCORM`;
-  return `${name.slice(0, 120)}.zip`;
+  // distinct; strip it here so the name still reads …_SaveCodes rather than
+  // falling through with a dangling suffix.
+  const base = (codes ? String(id).replace(/-codes$/, "") : String(id))
+    .replace(/[^A-Za-z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  // Runtime v2 naming: EduWonderLab_<id>_<Short_Title>_SCORM.zip.
+  //   EduWonderLab_1-1_Math_Is_Mine_SCORM.zip
+  //   EduWonderLab_1-1-homework_Homework_SCORM.zip
+  //   EduWonderLab_ratio-color-mixer_Ratio_Color_Mixer_SCORM.zip
+  // Deterministic (same inputs → same name, no hash, no timestamp), ASCII-only,
+  // and free of every character Windows rejects (\ / : * ? " < > |) and of
+  // spaces, which break naive shell and LMS-upload tooling.
+  const short = shortNameForId(id);
+  const parts = ["EduWonderLab", base, short, codes ? "SaveCodes" : "", "SCORM"].filter(Boolean);
+  return `${parts.join("_").slice(0, 140)}.zip`;
 }
 
-/** Build the two package files. Returns { id, lessonUrl, files }. */
+/**
+ * Structural pre-flight, run BEFORE a teacher is handed a zip.
+ *
+ * A broken package is worse than a refused one: the teacher only finds out
+ * after uploading it to Canvas, configuring an assignment and publishing it to
+ * a class. Everything decidable without the network is decided here; the
+ * endpoint adds a live 404 probe on top.
+ *
+ * Throws PackagePreflightError with a sentence a teacher can act on.
+ */
+export function preflight(files, { lessonUrl, id }) {
+  const problems = [];
+  if (!files["imsmanifest.xml"]) problems.push("the package has no imsmanifest.xml");
+  if (!files["index.html"]) problems.push("the package has no SCO entry file");
+  const mf = files["imsmanifest.xml"] || "";
+  // Every <file href> the manifest declares must be a real entry in the zip,
+  // and the launch href must be one of them — the two ways a structurally
+  // "valid" package still fails the moment Canvas opens it.
+  const href = /adlcp:scormtype="sco"[^>]*href="([^"]+)"/.exec(mf)?.[1];
+  if (!href) problems.push("the manifest declares no SCO launch file");
+  else if (!files[href])
+    problems.push(`the manifest launches ${href}, which is not in the package`);
+  for (const m of mf.matchAll(/<file href="([^"]+)"\s*\/>/g)) {
+    if (!files[m[1]]) problems.push(`the manifest lists ${m[1]}, which is not in the package`);
+  }
+  if (!/<schemaversion>1\.2<\/schemaversion>/.test(mf)) {
+    problems.push("the manifest does not declare SCORM 1.2");
+  }
+  if (!new RegExp(`identifier="NEFT-${id}"`).test(mf)) {
+    problems.push("the manifest identifier does not match the package id");
+  }
+
+  const html = files["index.html"] || "";
+  // The runtime is the whole point of the package; a wrapper missing it is a
+  // blank iframe in Canvas.
+  if (!html.includes(`ewl:runtime`) || !html.includes(`RUNTIME = ${SCORM_RUNTIME_VERSION}`)) {
+    problems.push("the SCORM Runtime v2 wrapper code is missing from the package");
+  }
+  if (!html.includes(lessonUrl)) problems.push("the SCO does not point at the resolved lesson URL");
+
+  // Every absolute URL in the wrapper must be an allowed production host. This
+  // is what stops a localhost, a preview deployment, or a stray third-party
+  // origin from being shipped to a class inside a package nobody opens.
+  for (const m of html.matchAll(/https?:\/\/([A-Za-z0-9._-]+)/g)) {
+    if (!ALLOWED_HOSTS.includes(m[1])) {
+      problems.push(`the package points at a non-production host: ${m[1]}`);
+      break;
+    }
+  }
+  if (/\blocalhost\b|127\.0\.0\.1|\.pages\.dev|\.workers\.dev|:\d{4,5}\//.test(html)) {
+    problems.push("the package points at a development or preview URL");
+  }
+  // Nothing in a student package may carry a secret or a teacher key.
+  if (/TEACHER_KEY|SITE_PASSWORD|x-teacher-key/i.test(html + mf)) {
+    problems.push("the package contains an authentication value and was not built");
+  }
+
+  if (problems.length) {
+    throw new PackagePreflightError(
+      `This package failed its pre-flight check and was not downloaded: ${problems.join("; ")}.`,
+      500,
+    );
+  }
+  return true;
+}
+
+/**
+ * Build the package files. Returns { id, title, lessonUrl, codes, files, meta }.
+ *
+ * `generatedAt` is deliberately DAY-granular. It is enough to diagnose a
+ * package found in a Canvas course months later, and it keeps two builds on the
+ * same day byte-identical — which is what `validate:scorm:fleet` asserts, and
+ * what makes a re-download comparable to the file already uploaded.
+ */
 export function buildScormFiles(
-  { target, title, codes, supports, lang, id: idOverride },
+  { target, title, codes, supports, lang, id: idOverride, generatedAt, generator },
   site = SITE_DEFAULT,
 ) {
   const { lessonUrl, id: derivedId, origin } = resolveTarget(target, site);
+  // Pre-flight the ROUTE against the canonical curriculum before building
+  // anything: a lesson id the manifest has never heard of is a typo, and the
+  // only thing worse than refusing it is handing back a zip that iframes a 404.
+  if (routeKnown(lessonUrl) === "missing") {
+    throw new PackagePreflightError(
+      `There is no lesson at ${lessonUrl} in the curriculum. Check the lesson id and try again.`,
+      404,
+    );
+  }
   /*
    * An explicit id wins over the path-derived one. The Canvas packages page
    * (tools/scorm/build-canvas-scorm-page.mjs) names its own packages —
@@ -564,7 +362,17 @@ export function buildScormFiles(
    * through slug() so a caller cannot inject a path or an XML-unsafe identifier.
    */
   const id = idOverride ? slug(idOverride) : derivedId;
-  const t = xmlEsc(title && String(title).trim() ? title.trim() : `Activity ${id}`);
+  // Title precedence: an explicit caller title, then the CANONICAL curriculum
+  // title, then a last-resort slug. The canonical title is read from the
+  // compiled curriculum vocabulary rather than kept here, so a renamed lesson
+  // renames its Canvas activity on the next download instead of carrying the
+  // old name forever.
+  const canonical = canonicalTitle(lessonUrl);
+  const plainTitle =
+    title && String(title).trim()
+      ? String(title).trim()
+      : canonical.title || `EduWonderLab — ${id}`;
+  const t = xmlEsc(plainTitle);
   // Joined with "&" when the target already carries a query (?unit=3 etc.) —
   // mirrors tools/scorm/build-scorm.mjs so both builders stay in lockstep.
   let launchQuery =
@@ -589,14 +397,28 @@ export function buildScormFiles(
     personalId = slug(`${personalId}-supports-${safeSupports}${safeLang ? "-" + safeLang : ""}`);
   }
 
-  return {
+  const meta = {
     id: personalId,
     lessonUrl,
+    generatedAt: generatedAt ? String(generatedAt).slice(0, 10) : "",
+    generator: generator || `eduwonderlab-scorm-runtime/${SCORM_RUNTIME_VERSION}`,
+  };
+
+  const files = {
+    "imsmanifest.xml": manifest(personalId, t, meta),
+    "index.html": sco(lessonUrl, launchQuery, origin, t, meta),
+  };
+  preflight(files, { lessonUrl, id: personalId });
+
+  return {
+    id: personalId,
+    title: plainTitle,
+    lessonUrl,
     codes: !!codes,
-    files: {
-      "imsmanifest.xml": manifest(personalId, t),
-      "index.html": sco(lessonUrl, launchQuery, origin, t),
-    },
+    runtime: SCORM_RUNTIME_VERSION,
+    protocol: SCORM_PROTOCOL_VERSION,
+    meta,
+    files,
   };
 }
 
