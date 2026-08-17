@@ -84,6 +84,13 @@ export function ensureCanvasBridge(config) {
       // It also removes a setInterval: the auto-watcher polls every 1.5s and is
       // the timer that hung `npm test` during Runtime v2 development.
       manual: true,
+      // A pathway with a `variant` (group1 / group2 / catchup) is rendered by
+      // small-group-renderer.js, which never calls createApp() — so
+      // engine/core/app.js:1222's completeLesson() is unreachable and there is
+      // no score it could ever honestly report. Verified from source, not
+      // assumed: createApp has exactly one call site
+      // (engine/core/lesson-renderer.js:145).
+      completionOnly: !!config?.variant,
       // The bridge's floating "I'm finished" button posts a hardcoded 100. The
       // engine has a real completion contract, so that button would let a
       // student send a perfect score without doing the lesson.

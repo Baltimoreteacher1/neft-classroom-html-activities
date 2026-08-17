@@ -206,9 +206,53 @@
       delete trimmed[order[i]];
       out = JSON.stringify(trimmed);
     }
-    // Typed answers are the last thing to go; if even those do not fit, persist
-    // nothing rather than a half-record that restores as wrong answers.
-    return out.length > SUSPEND_BUDGET ? "" : out;
+    if (out.length <= SUSPEND_BUDGET) return out;
+
+    // --- POINTER FALLBACK ---------------------------------------------------
+    // Measured on production: a small-group, catch-up or unit-project pathway
+    // serializes 7,700–12,300 characters with ZERO fields filled — the bulk is
+    // structural (the save/resume engine captures every field key on the page,
+    // not just answered ones), so student input moves it by ~150 chars across
+    // 80 fields. Dropping slices cannot get these under 4,096; returning ""
+    // meant those 214 pathways persisted NOTHING, ever, at any level of
+    // activity. Resume was silently impossible for them.
+    //
+    // So instead of a truncated record (which restores as wrong answers) or no
+    // record at all, write a POINTER: enough for the LMS to identify the
+    // attempt and put the student back in the right place, with the
+    // authoritative answers staying in the NeftSaveResume layer that already
+    // holds them. Reconciled on load by applyRestore(), which only ever fills
+    // an empty session.
+    var pointer = safe(function () {
+      var sum =
+        global.NeftSaveResume && global.NeftSaveResume.getTeacherSummary
+          ? global.NeftSaveResume.getTeacherSummary()
+          : null;
+      return JSON.stringify({
+        v: 2,
+        ref: "local",
+        id: activityId(),
+        phase: (sum && sum.phase) || "",
+        pct: Math.round((state && state.progressPercent) || (sum && sum.percentComplete) || 0),
+      });
+    }, "");
+    if (pointer && pointer.length <= SUSPEND_BUDGET) {
+      // Never silent: a pointer is a REDUCED record and the log says so, with
+      // the size that forced it.
+      safe(function () {
+        console.info(
+          "[nt-canvas-bridge] suspend_data " +
+            out.length +
+            " chars exceeds the SCORM 1.2 budget of " +
+            SUSPEND_BUDGET +
+            " — writing a resume pointer; answers stay in local save/resume.",
+        );
+      });
+      return pointer;
+    }
+    // A pointer that does not fit is not a situation that can arise from
+    // content; refuse rather than truncate.
+    return "";
   }
 
   /** Serialize the activity's own save/resume state, or "" when unavailable. */
@@ -258,6 +302,14 @@
       var sr = global.NeftSaveResume;
       if (!sr || !payload || !payload.state) return;
       var st = JSON.parse(payload.state);
+      // A POINTER is not a state record. compactForScorm() writes one when the
+      // real payload cannot fit SCORM 1.2's 4,096-char ceiling, and it carries
+      // only an id/phase/percent — handing it to _restoreState() would replace
+      // a student's session with a shape that has no `fields` at all. The
+      // authoritative answers are in the local save/resume layer, which has
+      // already loaded them; the pointer's job is done by simply not clobbering
+      // that. Reconcile, do not restore.
+      if (st && st.ref === "local") return;
       // Only ever ADD to an empty session. If this browser already holds local
       // work, that work is newer than whatever the LMS was last told, and
       // overwriting it would destroy answers the student can see on screen.
@@ -430,6 +482,18 @@
   function complete(percent, opts) {
     if (fired && !(opts && opts.force)) return;
     fired = true;
+    // completionOnly — the pathway has NO scoreable terminus, so there is no
+    // percent it could honestly report. Small-group, catch-up and unit-project
+    // pathways never reach engine/core/app.js's phase-completion fire (they do
+    // not route through createApp at all), and a unit project is multi-day
+    // rubric work a teacher grades. Reporting a number here would be inventing
+    // one — and the number this function would otherwise use is a hardcoded
+    // 100. Relay resume state and stop; never post a score.
+    if (cfg.completionOnly) {
+      setFinishedUI();
+      syncScormState();
+      return;
+    }
     var id = identity();
     var studentName = opts && opts.studentName != null ? opts.studentName : id.studentName;
     var classPeriod = opts && opts.classPeriod != null ? opts.classPeriod : id.classPeriod;
