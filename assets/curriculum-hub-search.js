@@ -1927,7 +1927,16 @@
     var a = document.createElement("a");
     a.className = className;
     a.href = scormDownloadHref(target, title);
-    a.title = "Download “" + title + "” as a Canvas-ready SCORM package";
+    // Unmistakable wording. "Export" / "Download package" / "LMS file" all
+    // leave a teacher guessing which of several formats they just got; this
+    // names the destination and the format, and the second line is the
+    // pre-upload confidence check (§ download summary in docs/scorm-runtime.md):
+    // what it is, what it targets, and that it plays the live lesson.
+    a.title =
+      "Download Canvas SCORM — “" +
+      title +
+      "”\nSCORM 1.2 · EduWonderLab Runtime v2 · plays the live lesson" +
+      "\nUpload the .zip to Canvas without unzipping it, then publish the assignment.";
     a.setAttribute("aria-label", a.title);
     a.textContent = label;
     return a;
@@ -2483,7 +2492,7 @@
           makeScormLink(
             "/math/games/practice-arcade/?unit=" + u.unitIndex,
             u.num + " Review Game",
-            "🎓 Canvas (SCORM)",
+            "🎓 Download Canvas SCORM",
             "unit-resource-btn scorm-dl",
           ),
         );
@@ -2495,7 +2504,7 @@
         var zipBtn = makeScormLink(
           "/math/unit-" + u.unitIndex + "/projects/",
           u.num + " Project",
-          "📦 Unit Packet (ZIP)",
+          "📦 Unit Project — Canvas SCORM",
           "unit-resource-btn scorm-dl",
         );
         zipBtn.style.background = "#256b5b";
