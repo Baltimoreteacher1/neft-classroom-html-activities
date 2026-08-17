@@ -23,9 +23,10 @@
 // adding one requires the same standard of proof.
 
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { getBaseLessonId } from "../scripts/generate-warmups.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = JSON.parse(readFileSync(join(ROOT, "data/curriculum-manifest.json"), "utf8"));
@@ -48,7 +49,11 @@ const titleOf = new Map(
 const KNOWN_STALE = new Set([]);
 
 const failures = [];
-for (const id of order) {
+const folders = readdirSync(join(ROOT, "lessons")).filter((d) =>
+  existsSync(join(ROOT, "lessons", d, "config.json")),
+);
+
+for (const id of folders) {
   const config = JSON.parse(readFileSync(join(ROOT, "lessons", id, "config.json"), "utf8"));
   const warmup = config.warmup;
   if (!warmup) continue;
@@ -64,16 +69,36 @@ for (const id of order) {
   if (!prev) continue; // nothing claimed; the unit-opener gate covers openers
   if (KNOWN_STALE.has(id)) continue;
 
+  const baseId = getBaseLessonId(id);
+  const isVariant = id !== baseId;
+  const compareId = isVariant ? baseId : id;
+
   if (!position.has(prev)) {
     failures.push(`${id}: prevLessonId "${prev}" is not a lesson in the manifest`);
     continue;
   }
-  if (position.get(prev) >= position.get(id)) {
+  if (!position.has(compareId)) {
+    failures.push(`${id}: parent "${compareId}" is not a lesson in the manifest`);
+    continue;
+  }
+  // Whole-group: prev may not be this lesson or a later one.
+  // Variants may review the parent itself (4-1-catchup → 4-1); they may not
+  // review a lesson taught AFTER the parent (2-5-catchup used to quiz 2-9 MAD).
+  const later = isVariant
+    ? position.get(prev) > position.get(compareId)
+    : position.get(prev) >= position.get(compareId);
+  if (later) {
     failures.push(
-      `${id}: prevLessonId "${prev}" comes at or after it — the warmup would assess ` +
+      `${id}: prevLessonId "${prev}" comes at or after ${compareId} — the warmup would assess ` +
         "mathematics students have not been taught",
     );
   }
+
+  // Title honesty is gated on whole-group configs. Variants still carry
+  // generator leftover Reveal titles; rewriting them without reading each
+  // question set would invent a claim. The later-than-parent check above is
+  // the variant defect that is decidable.
+  if (isVariant) continue;
 
   // The card PRINTS prevLessonTitle, so a title that no longer belongs to
   // prevLessonId is a student-facing lie even when the sequence is sound. This

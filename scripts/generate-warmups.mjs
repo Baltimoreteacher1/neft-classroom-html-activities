@@ -11,6 +11,9 @@
  * lesson number — Reveal Math order inside the book, not district pacing
  * order. District pacing is the wrong previous-lesson for a warmup: Unit 5
  * still reviews 5-7 before 5-8 even when the district teaches Unit 5 in spring.
+ *
+ * Default is --check (report-only). Pass --write to mutate. On-disk warmups
+ * are authored once written (spirals, softened Unit 1, catch-up retargets).
  */
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -67,8 +70,15 @@ function pickWarmupQuestions(questionsByLesson, questions, prevLessonId, current
   return picked;
 }
 
-function generate() {
-  const bank = JSON.parse(readFileSync(BANK_PATH, "utf8"));
+/**
+ * Plan (and optionally write) warmup blocks.
+ *
+ * Default is report-only. Warmups on disk are authored source of truth
+ * (spirals, softened Unit 1, catch-up retargets). A bare `node scripts/generate-warmups.mjs`
+ * used to rewrite every config. Pass `--write` to mutate.
+ */
+export function generate({ write = false, lessonsDir = LESSONS_DIR, bankPath = BANK_PATH } = {}) {
+  const bank = JSON.parse(readFileSync(bankPath, "utf8"));
   const questions = bank.questions;
   const questionsByLesson = {};
   for (const q of questions) {
@@ -77,11 +87,12 @@ function generate() {
     questionsByLesson[q.lessonId].push(q);
   }
 
-  const ids = wholeGroupLessonIds(LESSONS_DIR);
+  const ids = wholeGroupLessonIds(lessonsDir);
   let countUpdated = 0;
+  let wouldChange = 0;
 
-  for (const dirName of readdirSync(LESSONS_DIR)) {
-    const configPath = join(LESSONS_DIR, dirName, "config.json");
+  for (const dirName of readdirSync(lessonsDir)) {
+    const configPath = join(lessonsDir, dirName, "config.json");
     if (!existsSync(configPath)) continue;
 
     try {
@@ -90,19 +101,23 @@ function generate() {
       const prevId = previousLessonId(ids, baseId);
 
       let prevTitle = `Lesson ${prevId}`;
-      const prevConfigPath = join(LESSONS_DIR, prevId, "config.json");
+      const prevConfigPath = join(lessonsDir, prevId, "config.json");
       if (existsSync(prevConfigPath)) {
         const prevCfg = JSON.parse(readFileSync(prevConfigPath, "utf8"));
         if (prevCfg.title) prevTitle = prevCfg.title;
       }
 
-      cfg.warmup = {
+      const proposed = {
         title: "Warmup: Previous Lesson Check",
         prevLessonId: prevId,
         prevLessonTitle: prevTitle,
         questions: pickWarmupQuestions(questionsByLesson, questions, prevId, baseId),
       };
+      if (JSON.stringify(cfg.warmup || null) !== JSON.stringify(proposed)) wouldChange++;
 
+      if (!write) continue;
+
+      cfg.warmup = proposed;
       writeFileSync(configPath, JSON.stringify(cfg, null, 2) + "\n");
       countUpdated++;
     } catch (err) {
@@ -110,9 +125,21 @@ function generate() {
     }
   }
 
+  if (!write) {
+    console.log(
+      `--check: generator would rewrite warmup on ${wouldChange} config(s). ` +
+        "Pass --write to mutate. On-disk warmups are the source of truth.",
+    );
+    return { wouldChange, countUpdated: 0, wrote: false };
+  }
+
   console.log(
     `Successfully generated and injected 3-4 autograded Warmup questions into ${countUpdated} lesson configs!`,
   );
+  return { wouldChange, countUpdated, wrote: true };
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) generate();
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  const write = process.argv.includes("--write");
+  generate({ write });
+}

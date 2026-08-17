@@ -13,11 +13,21 @@
  * generator would write the wrong previous lesson into every omitted config.
  * ============================================================================= */
 import assert from "node:assert/strict";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import {
+  generate,
   getBaseLessonId,
   previousLessonId,
   wholeGroupLessonIds,
@@ -38,6 +48,11 @@ test("the generator does not keep a hardcoded lesson-id array", () => {
     SRC,
     /ALL_LESSON_IDS\s*=\s*\[/,
     "stale hardcoded ALL_LESSON_IDS is how 23 lessons would review themselves",
+  );
+  assert.match(
+    SRC,
+    /includes\("--write"\)/,
+    "a bare run must not write; --write is the mutate switch",
   );
 });
 
@@ -67,4 +82,48 @@ test("variant folders still map to their whole-group id", () => {
   assert.equal(getBaseLessonId("5-8-group1"), "5-8");
   assert.equal(getBaseLessonId("10-1-catchup"), "10-1");
   assert.equal(getBaseLessonId("2-12"), "2-12");
+});
+
+test("catch-up warmups must not quiz a lesson taught after their parent", () => {
+  for (const id of ["2-5-catchup", "3-8-catchup"]) {
+    const w = JSON.parse(readFileSync(join(LESSONS, id, "config.json"), "utf8")).warmup;
+    assert.equal(w.kind, "spiral", `${id} must spiral, not claim a later prevLessonId`);
+    assert.ok(!w.prevLessonId, `${id} still claims prevLessonId ${w.prevLessonId}`);
+  }
+});
+
+test("without --write the generator reports drift and does not mutate", () => {
+  const dir = mkdtempSync(join(tmpdir(), "neft-warmup-"));
+  mkdirSync(join(dir, "1-1"));
+  mkdirSync(join(dir, "1-2"));
+  writeFileSync(
+    join(dir, "1-1", "config.json"),
+    JSON.stringify({ title: "A", warmup: { kind: "spiral", spiralFrom: "x" } }) + "\n",
+  );
+  writeFileSync(join(dir, "1-2", "config.json"), JSON.stringify({ title: "B" }) + "\n");
+  const bankPath = join(dir, "bank.json");
+  writeFileSync(
+    bankPath,
+    JSON.stringify({
+      questions: [
+        {
+          lessonId: "1-1",
+          tier: "on-level",
+          stem: "1+1?",
+          choices: ["2", "3"],
+          correctIndex: 0,
+          explanation: "2",
+        },
+      ],
+    }),
+  );
+  const before = readFileSync(join(dir, "1-2", "config.json"), "utf8");
+  const result = generate({ write: false, lessonsDir: dir, bankPath });
+  assert.equal(result.wrote, false);
+  assert.ok(result.wouldChange >= 1);
+  assert.equal(readFileSync(join(dir, "1-2", "config.json"), "utf8"), before);
+  generate({ write: true, lessonsDir: dir, bankPath });
+  const after = JSON.parse(readFileSync(join(dir, "1-2", "config.json"), "utf8"));
+  assert.equal(after.warmup.prevLessonId, "1-1");
+  rmSync(dir, { recursive: true, force: true });
 });
