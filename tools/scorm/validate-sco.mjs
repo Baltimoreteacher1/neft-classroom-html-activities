@@ -17,7 +17,12 @@
 import { existsSync, readFileSync } from "fs";
 import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
-import { buildScormFiles, zipStore } from "../../functions/_lib/scorm.js";
+import {
+  buildScormFiles,
+  SCORM_PROTOCOL_VERSION as PROTOCOL_VERSION,
+  SCORM_RUNTIME_VERSION as RUNTIME_VERSION,
+  zipStore,
+} from "../../functions/_lib/scorm.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const norm = (s) => String(s).replace(/\s+/g, " ");
@@ -27,21 +32,45 @@ const problems = [];
 // pretty-printed template and a single-line generated SCO match identically).
 const SCO_INVARIANTS = [
   ["cross-origin-guarded findAPI", "try { if (win.API != null) return win.API; } catch"],
-  ["report() guards finished", "if (!API || finished) return;"],
-  ["report() requires a live session", "if (!start()) return;"],
+  // Runtime v2 routes every LMS write through whenReady(), which holds BOTH
+  // guards that report() used to hold inline: nothing is written after
+  // LMSFinish, and nothing is written without a live LMSInitialize — the
+  // difference is that a write arriving too EARLY is now queued rather than
+  // dropped. The invariant is the same; the spelling moved.
+  ["no LMS write after finish", "function whenReady(kind, fn) { if (finished) return;"],
+  ["no LMS write without a live session", "if (API && start()) { fn(); flushQueue(); return; }"],
+  ["queues events until the LMS is ready", "enqueue(kind, fn);"],
   ["records session_time", 'setValue("cmi.core.session_time", sessionTime());'],
   ["captures startedAt", "startedAt = Date.now();"],
   ["message-origin check", "e.origin !== LESSON_ORIGIN"],
   ["Canvas identity: student name", 'sn=" + encodeURIComponent(name)'],
   ["Canvas identity: student id", 'si=" + encodeURIComponent(sid)'],
   ["noscript fallback", "Open the activity directly"],
-  ["launches at the end (data-src → src)", "launchUrl(); renderDebug();"],
+  ["launches at the end (data-src → src)", "launch(); renderDebug();"],
   // --- added by the 2026-08 hardening pass; each pins a real defect ---
   ["reads status before writing it", 'var current = lmsGet("cmi.core.lesson_status");'],
   ["inspects LMS error codes", "API.LMSGetLastError()"],
   ["checks call return values", 'ok = String(fn()) === "true";'],
-  ["score is a high-water mark", "if (isFinite(prev)"],
-  ["never downgrades passed", 'lmsGet("cmi.core.lesson_status") !== "passed"'],
+  ["score is a high-water mark", 'if (prevStr !== "" && isFinite(prev) && prev > value)'],
+  ["never downgrades passed", 'currentStatus !== "passed" || status === "passed"'],
+  // --- Runtime v2 invariants; each pins a failure the v1 shell could not see ---
+  ["declares its runtime version", `var RUNTIME = ${RUNTIME_VERSION};`],
+  ["declares its protocol version", `var PROTOCOL = ${PROTOCOL_VERSION};`],
+  ["paints a loading state before the lesson", "Loading your math lesson"],
+  ["announces loading to assistive tech", 'role="status" aria-live="polite"'],
+  ["respects reduced motion", "prefers-reduced-motion: reduce"],
+  ["retries are bounded", "var RETRY_DELAYS = [2000 / FAST, 6000 / FAST];"],
+  ["student-facing failure state", "We couldn't load your lesson."],
+  ["failure state offers a retry", 'id="ewl-retry"'],
+  ["classifies Cloudflare Access", "CODES.ACCESS"],
+  ["Access probe is the reachability contract", "/api/scorm-probe"],
+  ["rejects unknown message types", "if (!ALLOWED[type])"],
+  ["validates the score payload", 'typeof d.percent !== "number" || !isFinite(d.percent)'],
+  ["bounds a reported height", "if (n < 200 || n > 20000)"],
+  ["retries LMS discovery", "var API_RETRIES = [0, 250, 750, 1500, 3000, 6000];"],
+  ["ignores a duplicate completion", "duplicate completion ignored"],
+  ["never yanks a working lesson", 'if (settled && diag.state === "ready") return;'],
+  ["degrades rather than failing a rendered lesson", "if (iframeLoaded)"],
   ["refuses oversize suspend_data", "s.length > SUSPEND_LIMIT"],
   ["caps lesson_location", "slice(0, LOCATION_LIMIT)"],
   ["restores state to the activity", 'type: "restore"'],

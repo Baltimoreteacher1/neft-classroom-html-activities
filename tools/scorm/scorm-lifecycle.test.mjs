@@ -202,11 +202,17 @@ check("stored state is handed back to the lesson on relaunch", () => {
     configurable: true,
   });
   sco.ready();
-  assert.equal(seen.length, 1, `expected one restore message, got ${seen.length}`);
-  assert.equal(seen[0].m.type, "restore");
-  assert.equal(seen[0].m.state, '{"fields":{"q1":"7"}}');
-  assert.equal(seen[0].m.location, "warmup");
-  assert.equal(seen[0].o, LESSON_ORIGIN, "restore was not origin-targeted");
+  // Runtime v2 also answers the handshake with a `hello` carrying its protocol
+  // version, so the assertion is on the RESTORE specifically — exactly one, and
+  // never a second that would re-apply stale state over live work.
+  const restores = seen.filter((s) => s.m.type === "restore");
+  assert.equal(restores.length, 1, `expected one restore message, got ${restores.length}`);
+  assert.equal(restores[0].m.state, '{"fields":{"q1":"7"}}');
+  assert.equal(restores[0].m.location, "warmup");
+  assert.equal(restores[0].o, LESSON_ORIGIN, "restore was not origin-targeted");
+  for (const s of seen) {
+    assert.equal(s.o, LESSON_ORIGIN, `message ${s.m.type} was not origin-targeted`);
+  }
 });
 
 // --- 5. termination ----------------------------------------------------------
