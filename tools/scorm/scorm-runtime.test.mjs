@@ -225,7 +225,9 @@ await check("Cloudflare Access is diagnosed as ACCESS, not as a generic outage",
     fetchImpl: (url, opts) =>
       String(url).includes("/api/scorm-probe")
         ? Promise.reject(new Error("Failed to fetch"))
-        : Promise.resolve({ type: opts && opts.redirect === "manual" ? "opaqueredirect" : "opaque" }),
+        : Promise.resolve({
+            type: opts && opts.redirect === "manual" ? "opaqueredirect" : "opaque",
+          }),
   });
   await sleep(1400);
   assert.ok(sco.failureVisible(), "never reached the recovery state");
@@ -235,7 +237,10 @@ await check("Cloudflare Access is diagnosed as ACCESS, not as a generic outage",
 });
 
 await check("an unreachable origin is LOAD, and a healthy one is TIMEOUT", async () => {
-  const dead = launch({ iframeLoads: false, fetchImpl: () => Promise.reject(new Error("offline")) });
+  const dead = launch({
+    iframeLoads: false,
+    fetchImpl: () => Promise.reject(new Error("offline")),
+  });
   await sleep(1400);
   assert.equal(dead.diag().errorCode, ERROR_CODES.LOAD, "an offline origin was misdiagnosed");
   dead.close();
@@ -280,7 +285,11 @@ await check("resume: a partial attempt is restored on reopen, and completion sur
   a.win.document.dispatchEvent(new a.win.Event("visibilitychange"));
   Object.defineProperty(a.win.document, "visibilityState", { value: "hidden", configurable: true });
   a.win.document.dispatchEvent(new a.win.Event("visibilitychange"));
-  assert.equal(first.valueOf("cmi.suspend_data"), '{"fields":{"q1":"12"}}', "state never persisted");
+  assert.equal(
+    first.valueOf("cmi.suspend_data"),
+    '{"fields":{"q1":"12"}}',
+    "state never persisted",
+  );
   assert.equal(first.valueOf("cmi.core.lesson_location"), "guided-practice-3");
   a.close();
 
@@ -449,7 +458,11 @@ await check("Try Again relaunches the lesson", async () => {
   const before = sco.diag().attempts;
   sco.doc.getElementById("ewl-retry").dispatchEvent(new sco.win.Event("click"));
   assert.ok(sco.loadingVisible(), "Try Again did not return to the loading state");
-  assert.equal(sco.diag().attempts, 1, `Try Again did not reset the attempt budget (was ${before})`);
+  assert.equal(
+    sco.diag().attempts,
+    1,
+    `Try Again did not reset the attempt budget (was ${before})`,
+  );
   sco.ready();
   assert.equal(sco.diag().state, "ready", "Try Again could not recover");
   sco.close();

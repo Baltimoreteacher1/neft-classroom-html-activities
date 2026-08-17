@@ -18,7 +18,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildScormFiles, TeacherSurfaceError } from "../../functions/_lib/scorm.js";
+import { buildScormFiles, resolveTarget, TeacherSurfaceError } from "../../functions/_lib/scorm.js";
 import { isTeacherSurface, normalizePath } from "../../functions/_lib/teacher-surface.js";
 import { isTeacherSurface as taxonomyPredicate } from "../../scripts/lib/download-taxonomy.mjs";
 
@@ -170,9 +170,24 @@ check("a fragment cannot fake a verdict either", () => {
 
 // --- 4. unknown / malformed targets still behave as before -------------------
 check("an unknown activity is NOT turned into a teacher refusal", () => {
-  // It must still resolve and be handed to the endpoint's 404 existence probe.
-  const pkg = build("99-99");
-  assert.ok(pkg.lessonUrl.endsWith("/lessons/99-99/"), pkg.lessonUrl);
+  // The point of this check is the CLASSIFICATION, not the outcome: a lesson id
+  // that does not exist must never be reported to a teacher as "that page is
+  // teacher-only", which sends them looking for a permissions problem they do
+  // not have.
+  //
+  // It used to resolve and be handed to the endpoint's 404 existence probe.
+  // Runtime v2 pre-flight now refuses it earlier, at build time, against the
+  // canonical curriculum — the probe is a network round-trip that only the
+  // endpoint can make, so the CLI builders were shipping zips that iframe a
+  // 404. Either way it must not be a TeacherSurfaceError.
+  assert.ok(!refuses("99-99"), "a non-existent lesson was reported as teacher-only");
+  assert.throws(
+    () => build("99-99"),
+    (e) => e.name === "PackagePreflightError" && /no lesson at/.test(e.message),
+    "a non-existent lesson id must be refused with a reason a teacher can act on",
+  );
+  // resolveTarget itself is unchanged and still resolves the route.
+  assert.ok(resolveTarget("99-99").lessonUrl.endsWith("/lessons/99-99/"));
 });
 
 check("off-site targets are still rejected as before", () => {

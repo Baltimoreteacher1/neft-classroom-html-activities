@@ -12,8 +12,8 @@
 
 import {
   buildScormFiles,
-  packageFileName,
   PackagePreflightError,
+  packageFileName,
   SCORM_RUNTIME_VERSION,
   TeacherSurfaceError,
   zipStore,

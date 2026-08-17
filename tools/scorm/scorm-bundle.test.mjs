@@ -95,7 +95,16 @@ check("a package-name collision fails the bundle instead of dropping a lesson", 
 check("bundle names are teacher-readable and filesystem-safe", () => {
   for (const e of readZip(buildBundle(IDS)).filter((x) => x.name.endsWith(".zip"))) {
     const base = e.name.split("/").pop();
-    assert.match(base, /^Unit-\d+_Lesson-\d+-\d+_Interactive_SCORM\.zip$/, `opaque name: ${base}`);
+    // Runtime v2 naming: EduWonderLab_<id>_<Short_Title>_SCORM.zip. The point
+    // of the check is unchanged — a teacher must be able to tell the files
+    // apart in a Downloads folder without opening them — so the title fragment
+    // is REQUIRED, not optional, and the name must stay cross-platform safe.
+    assert.match(
+      base,
+      /^EduWonderLab_\d+-\d+_[A-Za-z0-9]+[A-Za-z0-9_]*_SCORM\.zip$/,
+      `opaque name: ${base}`,
+    );
+    assert.doesNotMatch(base, /[\\/:*?"<>|\s]/, `not filesystem-safe: ${base}`);
   }
 });
 

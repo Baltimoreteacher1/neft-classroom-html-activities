@@ -20,10 +20,10 @@ import {
   ERROR_CODES,
   LESSON_LOCATION_LIMIT,
   MASTERY_SCORE,
-  sco,
   SCORM_PROTOCOL_VERSION,
   SCORM_RUNTIME_VERSION,
   SUSPEND_DATA_LIMIT,
+  sco,
 } from "./scorm-sco.js";
 import { isTeacherSurface } from "./teacher-surface.js";
 
@@ -34,10 +34,10 @@ export {
   ERROR_CODES,
   LESSON_LOCATION_LIMIT,
   MASTERY_SCORE,
-  sco,
   SCORM_PROTOCOL_VERSION,
   SCORM_RUNTIME_VERSION,
   SUSPEND_DATA_LIMIT,
+  sco,
 };
 
 /**

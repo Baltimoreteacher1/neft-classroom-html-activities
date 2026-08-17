@@ -30,8 +30,8 @@ import { fileURLToPath } from "node:url";
 import {
   buildScormFiles,
   ERROR_CODES,
-  packageFileName,
   PackagePreflightError,
+  packageFileName,
   preflight,
   SCORM_PROTOCOL_VERSION,
   SCORM_RUNTIME_VERSION,
@@ -69,13 +69,19 @@ function selfTest() {
     [
       "a manifest launching a file that is not in the package",
       {
-        "imsmanifest.xml": base.files["imsmanifest.xml"].replace('href="index.html"', 'href="go.html"'),
+        "imsmanifest.xml": base.files["imsmanifest.xml"].replace(
+          'href="index.html"',
+          'href="go.html"',
+        ),
         "index.html": base.files["index.html"],
       },
     ],
     [
       "a wrapper with the runtime code stripped",
-      { ...base.files, "index.html": base.files["index.html"].replace(/<script>[\s\S]*<\/script>/, "") },
+      {
+        ...base.files,
+        "index.html": base.files["index.html"].replace(/<script>[\s\S]*<\/script>/, ""),
+      },
     ],
     [
       "a wrapper pointing at localhost",
@@ -214,7 +220,8 @@ for (const b of built) {
   if (names.has(name)) fail(`name collision: ${b.name} and ${names.get(name)} both → "${name}"`);
   names.set(name, b.name);
   // Stable: the same id must always produce the same name, in every builder.
-  if (packageFileName(b.pkg.id, b.pkg.codes) !== name) fail(`${b.name}: the download name is unstable`);
+  if (packageFileName(b.pkg.id, b.pkg.codes) !== name)
+    fail(`${b.name}: the download name is unstable`);
 }
 
 // --- 3. canonical titles, not internal slugs ---------------------------------
