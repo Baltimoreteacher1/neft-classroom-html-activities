@@ -192,7 +192,7 @@ const COVERAGE = [
   // validate:routes catches a half-applied edit (the map generated but the
   // static file not, or vice versa); the test run pins the fallback behaviour.
   [
-    /^(data\/routes\.json|_redirects|functions\/_lib\/redirect-map\.js|functions\/_middleware\.js|tools\/generate-route-files\.mjs)$/,
+    /^(data\/routes\.json|_redirects|functions\/_lib\/redirect-map\.js|functions\/_middleware\.js|tools\/generate-route-files\.mjs|scripts\/lib\/live-lesson-shadows\.mjs)$/,
     ["test", "validate:static", "validate:js-syntax", "audit:links"],
   ],
   // The Pacing Planner spans a page, a shared engine, an API route, the seeded
@@ -318,7 +318,7 @@ const COVERAGE = [
   ],
   [/^\.github\/workflows\//, ["validate:workflow-yaml", "test"]],
   [/^data\/ccss-standards\.json$/, ["validate:ccss", "validate:scope"]],
-  [/^data\/routes\.json$/, ["validate:static", "audit:links"]],
+  [/^data\/routes\.json$/, ["test", "validate:static", "audit:links"]],
   [/^data\//, ["validate:data-contracts", "validate:nervous-system"]],
   [/^tools\/inject-/, ["validate:injection", "validate:supports"]],
   [/^(tools|scripts)\/lib\/small-group/, ["validate:small-groups", "eval:small-groups"]],
