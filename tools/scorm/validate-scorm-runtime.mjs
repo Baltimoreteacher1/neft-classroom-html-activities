@@ -258,8 +258,63 @@ for (const b of built) {
     fail(`${b.name}: two builds of the same package differ — a re-download is not comparable`);
 }
 
+// --- 6. every canonical engine lesson can reach the Canvas bridge ------------
+// The gap this closes: lessons/<id>/index.html was never a target of
+// tools/inject-canvas-bridge.js (which covers the activity catalog plus every
+// homework.html), so no engine lesson loaded the bridge — no `ready` handshake
+// and nothing ever written to cmi.suspend_data. Every existing gate passed,
+// because each asked whether the SCORM PACKAGE was well-formed and none asked
+// whether the LESSON could answer it.
+//
+// Derived from the curriculum manifest, never a hardcoded lesson list: a list
+// is a second thing to maintain, and the failure mode here is precisely a new
+// lesson silently missing from one.
+const BOOTS = {
+  "@engine/core/lesson-renderer.js": "bootLesson",
+  "@engine/templates/flagship/flagship.js": "bootFlagship",
+  "@engine/core/small-group-renderer.js": "bootSmallGroup",
+};
+// Both renderers must call the shared hook; flagship inherits it by delegating
+// to bootLesson, which is asserted rather than assumed.
+for (const f of ["engine/core/lesson-renderer.js", "engine/core/small-group-renderer.js"]) {
+  const src = read(f);
+  if (!/import \{ ensureCanvasBridge \}/.test(src) || !/ensureCanvasBridge\(config\)/.test(src))
+    fail(`${f}: does not reach the shared Canvas bridge hook — engine lessons lose SCORM resume`);
+}
+if (!/bootLesson/.test(read("engine/templates/flagship/flagship.js")))
+  fail("flagship no longer delegates to bootLesson — it needs its own ensureCanvasBridge call");
+
+const manifest = JSON.parse(read("data/curriculum-manifest.json"));
+const lessons = (
+  Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)
+).filter((l) => l?.id);
+let engineChecked = 0;
+const orphans = [];
+for (const l of lessons) {
+  const entry = `lessons/${l.id}/lesson.js`;
+  let src;
+  try {
+    src = read(entry);
+  } catch {
+    continue; // not an engine lesson (static page, redirect, etc.)
+  }
+  engineChecked++;
+  // Structural compatibility = it boots through one of the shared entry points
+  // that reaches the hook. A lesson that hand-rolled its own boot would be the
+  // one that silently loses passback again.
+  if (!Object.entries(BOOTS).some(([mod, fn]) => src.includes(mod) && src.includes(fn))) {
+    orphans.push(l.id);
+  }
+}
+if (!engineChecked) fail("no engine lessons were checked — the manifest scan found nothing");
+if (orphans.length)
+  fail(
+    `${orphans.length} engine lesson(s) do not boot through a shared renderer, so they cannot inherit the Canvas bridge: ${orphans.slice(0, 6).join(", ")}${orphans.length > 6 ? " …" : ""}`,
+  );
+
 // ---------------------------------------------------------------------------
 console.log("SCORM Runtime v2 contract");
+console.log(`  engine lessons wired  : ${engineChecked} (all via shared boots)`);
 console.log("  self-test: all detectors fire ✅");
 console.log(`  runtime / protocol    : v${SCORM_RUNTIME_VERSION} / v${SCORM_PROTOCOL_VERSION}`);
 console.log(`  structural families   : ${built.length} / ${FAMILIES.length}`);
