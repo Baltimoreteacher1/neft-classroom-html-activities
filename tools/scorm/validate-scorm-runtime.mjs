@@ -342,11 +342,41 @@ if (uncatalogued.length)
 
 let engineChecked = 0;
 const orphans = [];
+// DECLARED exclusions. `lessons/_template/` is a scaffold, not a pathway: it
+// boots through bootLesson like any lesson, but it is not in the launch
+// manifest and vite.config.js:11 refuses to copy any underscore-prefixed
+// directory into dist/, so it is 404 in production (verified). It was
+// previously excluded only INCIDENTALLY — by being absent from the manifest —
+// which means a future manifest change could silently pull a scaffold into the
+// gate, or silently drop a real pathway and look identical. Declaring it makes
+// the disk-vs-manifest reconciliation exact and checkable.
+const DECLARED_NON_PATHWAYS = new Set(["_template", "_incoming-decks", "1-1-flagship"]);
+
+// Reconcile disk against the manifest, both directions. 289 lesson.js files on
+// disk = 288 manifest pathways + 1 declared scaffold.
+const onDisk = readdirSync(join(ROOT, "lessons")).filter((d) =>
+  existsSync(join(ROOT, "lessons", d, "lesson.js")),
+);
 const allEnginePathways = [
   ...(launch.lessons || []),
   ...(launch.smallGroups || []),
   ...(launch.catchUps || []),
 ];
+const manifestIds = new Set(allEnginePathways.map((l) => l.id));
+const undeclared = onDisk.filter((d) => !manifestIds.has(d) && !DECLARED_NON_PATHWAYS.has(d));
+if (undeclared.length)
+  fail(
+    `${undeclared.length} lesson pathway(s) exist on disk but are neither in the launch manifest nor declared as non-pathways, so no validator can see them: ${undeclared.join(", ")}`,
+  );
+const missingOnDisk = allEnginePathways.filter((l) => !onDisk.includes(l.id));
+if (missingOnDisk.length)
+  fail(
+    `${missingOnDisk.length} manifest pathway(s) have no lesson.js on disk: ${missingOnDisk
+      .map((l) => l.id)
+      .slice(0, 6)
+      .join(", ")}`,
+  );
+
 for (const l of allEnginePathways) {
   const entry = `lessons/${l.id}/lesson.js`;
   let src;
@@ -369,9 +399,36 @@ if (orphans.length)
     `${orphans.length} engine lesson(s) do not boot through a shared renderer, so they cannot inherit the Canvas bridge: ${orphans.slice(0, 6).join(", ")}${orphans.length > 6 ? " …" : ""}`,
   );
 
+// --- 6c. suspend_data growth alarm (WARN, never a failure) -------------------
+// The cap is 4,096 chars and crossing it degrades a pathway to a resume
+// pointer. Homework 1-1 already serializes 2,542 (62%), and homework is the
+// type most likely to grow, so the threshold exists to make that visible while
+// it is still cheap. Source-level: the gate proves the warn exists and is
+// wired; the measured sizes come from the browser probe.
+const bridgeSrc = read("assets/canvas-bridge.js");
+const warnings = [];
+if (!/var SUSPEND_WARN = 3000;/.test(bridgeSrc))
+  fail("the suspend_data warn threshold is gone — growth would be invisible until it refuses");
+if (!/out\.length > SUSPEND_WARN/.test(bridgeSrc))
+  fail("the warn threshold is declared but never checked on the write path");
+if (/if \(out\.length > SUSPEND_WARN\)[\s\S]{0,400}?\breturn ""/.test(bridgeSrc))
+  fail("the warn threshold refuses a write — it must warn only");
+warnings.push(
+  "suspend_data warn threshold is 3000 chars (cap 4000). Measured: homework 1-1 = 2,542 (62% of cap); small-group/catch-up/project exceed the cap structurally and use a resume pointer by design.",
+);
+
 // ---------------------------------------------------------------------------
 console.log("SCORM Runtime v2 contract");
-console.log(`  engine lessons wired  : ${engineChecked} (all via shared boots)`);
+const declaredOnDisk = onDisk.filter((d) => DECLARED_NON_PATHWAYS.has(d));
+// Exact arithmetic, not a plausible-looking sum: only the declared entries that
+// actually carry a lesson.js are part of the on-disk count.
+if (engineChecked + declaredOnDisk.length !== onDisk.length)
+  fail(
+    `pathway reconciliation does not balance: ${engineChecked} manifest + ${declaredOnDisk.length} declared != ${onDisk.length} on disk`,
+  );
+console.log(
+  `  engine pathways wired : ${engineChecked} manifest + ${declaredOnDisk.length} declared (${declaredOnDisk.join(", ") || "none"}) = ${onDisk.length} on disk`,
+);
 console.log("  self-test: all detectors fire ✅");
 console.log(`  runtime / protocol    : v${SCORM_RUNTIME_VERSION} / v${SCORM_PROTOCOL_VERSION}`);
 console.log(`  structural families   : ${built.length} / ${FAMILIES.length}`);
@@ -383,4 +440,5 @@ if (problems.length) {
   console.log("\nSee docs/scorm-runtime.md for the runtime and protocol contract.");
   process.exit(1);
 }
+for (const w of warnings) console.log(`  WARN: ${w}`);
 console.log("\nRESULT: PASS ✅ (one Runtime v2 shell across every package family)");
