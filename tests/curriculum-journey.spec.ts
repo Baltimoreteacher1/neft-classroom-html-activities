@@ -41,7 +41,26 @@ async function enterTeacherMode(page: Page) {
     localStorage.setItem("nt-teacher-mode", "true");
   });
   await page.reload();
-  await expect(page.locator("#hub-mode-toggle")).toContainText("Teacher Mode");
+  // Anchored to aria-pressed, NOT to the button's words.
+  //
+  // This asserted `toContainText("Teacher Mode")` and went red when the toggle
+  // was relabelled to "👩‍🏫 You're in Teacher view — switch to Student" — a
+  // deliberate improvement, because the old label read equally as "you are in
+  // teacher mode" and "click for teacher mode". The label was right and the
+  // test was wrong.
+  //
+  // Swapping in the new string would have repeated the mistake. Visible prose is
+  // the worst possible key for an assertion on a bilingual site: it changes for
+  // copy reasons, and under ?lang=es it changes entirely. That is the shape of
+  // the article bug, which silently destroyed project completions by matching on
+  // button text.
+  //
+  // `aria-pressed` is set by applyTeacherMode() from the same `teacherMode`
+  // boolean that picks the label, on every mode change AND at boot (the init
+  // sequence calls it), so it cannot drift from the state it reports. It is also
+  // language-independent and has its own reason to be correct — a screen reader
+  // depends on it. Every other state assertion in this file already keys on it.
+  await expect(page.locator("#hub-mode-toggle")).toHaveAttribute("aria-pressed", "true");
 }
 
 test.describe("guide first-click journeys in Teacher Mode", () => {
@@ -103,8 +122,9 @@ test.describe("guide first-click journeys in Teacher Mode", () => {
     const explore = page.getByRole("link", { name: /Explore by unit/ });
     await expect(explore).toHaveAttribute("href", "#interactive-hub");
     await explore.click();
-    // No PIN, no Teacher Mode — a student-safe anchor jump only.
-    await expect(page.locator("#hub-mode-toggle")).toContainText("Student Mode");
+    // No PIN, no Teacher Mode — a student-safe anchor jump only. Same reasoning
+    // as enterTeacherMode: the state is read off aria-pressed, not off the words.
+    await expect(page.locator("#hub-mode-toggle")).toHaveAttribute("aria-pressed", "false");
     await expect(page.locator("#curriculum-teacher-workflow")).toBeHidden();
     await expect(page.locator("#interactive-hub")).toBeVisible();
   });
