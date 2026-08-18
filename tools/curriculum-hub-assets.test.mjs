@@ -12,10 +12,20 @@
  * Here the stamp is not a date, it IS the content hash. This test recomputes it
  * and fails with the exact replacement string, so a stale stamp is caught by
  * `npm test` (and therefore by the pre-push QA loop) instead of in a classroom.
+ *
+ * EVERY page that loads one of these assets is checked, not just the hub. This
+ * used to read only curriculum/index.html — and curriculum/units/index.html,
+ * which loads the same curriculum-hub-search.js and is the page that renders all
+ * 252 lesson rows, sat on `?v=8d0adf7a` for the entire history of this repo.
+ * That stamp matched no version of the file, so a browser that cached it could
+ * never be given a hub-search update. The page list is DISCOVERED by scanning
+ * tracked HTML for the reference, so adding a third consumer cannot quietly
+ * escape the ratchet the way the second one did.
  */
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -38,20 +48,37 @@ const fail = (m) => {
 
 console.log("curriculum hub extracted assets");
 
+/** Every tracked HTML page, so a second consumer cannot escape the ratchet. */
+const pages = execFileSync("git", ["ls-files", "*.html"], {
+  cwd: ROOT,
+  encoding: "utf8",
+  maxBuffer: 1 << 28,
+})
+  .split("\n")
+  .filter(Boolean)
+  .map((p) => [p, readFileSync(resolve(ROOT, p), "utf8")]);
+
+let stampsChecked = 0;
 for (const name of ASSETS) {
   const source = readFileSync(resolve(ROOT, "assets", name), "utf8");
   const want = createHash("sha256").update(source).digest("hex").slice(0, 8);
-  const ref = new RegExp(`/assets/${name.replace(/[.]/g, "\\.")}\\?v=([a-f0-9]+)`).exec(hub);
+  const re = new RegExp(`/assets/${name.replace(/[.]/g, "\\.")}\\?v=([a-f0-9]+)`, "g");
 
-  if (!ref) {
-    fail(`curriculum/index.html does not reference /assets/${name}?v=<hash>`);
-    continue;
+  const refs = [];
+  for (const [path, html] of pages) {
+    for (const m of html.matchAll(re)) refs.push([path, m[1]]);
   }
-  if (ref[1] !== want) {
-    fail(
-      `assets/${name} changed but its cache stamp did not.\n` +
-        `       in curriculum/index.html, replace  ?v=${ref[1]}  with  ?v=${want}`,
-    );
+  if (!refs.some(([path]) => resolve(ROOT, path) === HUB_PATH)) {
+    fail(`${relative(ROOT, HUB_PATH)} does not reference /assets/${name}?v=<hash>`);
+  }
+  for (const [path, got] of refs) {
+    stampsChecked++;
+    if (got !== want) {
+      fail(
+        `assets/${name} changed but its cache stamp did not.\n` +
+          `       in ${path}, replace  ?v=${got}  with  ?v=${want}`,
+      );
+    }
   }
 }
 
@@ -93,5 +120,5 @@ if (failures) {
   process.exit(1);
 }
 console.log(
-  `   ✓ ${ASSETS.length} assets stamped by content hash, defer intact, ${inlineJs} B inline JS`,
+  `   ✓ ${ASSETS.length} assets, ${stampsChecked} stamps across ${pages.length} tracked pages match content hash, defer intact, ${inlineJs} B inline JS`,
 );
