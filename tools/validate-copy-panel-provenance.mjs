@@ -47,6 +47,23 @@ const traces = (needle, haystack) => {
   return n.length > 0 && norm(haystack).includes(n);
 };
 
+/** True when the quoted run stops in the middle of a number the source
+ *  continues (a truncated decimal or a clipped digit string). */
+export function endsMidNumber(quote, source) {
+  const q = norm(quote);
+  const src = norm(source);
+  if (!q || !/\d$/.test(q)) return false;
+  let from = 0;
+  for (;;) {
+    const at = src.indexOf(q, from);
+    if (at < 0) return true;
+    const next = src[at + q.length];
+    if (next === undefined || !/[\d.]/.test(next)) return false;
+    if (next === "." && !/\d/.test(src[at + q.length + 1] || "")) return false;
+    from = at + 1;
+  }
+}
+
 export function checkLesson(id, config) {
   const errors = [];
   const cps = (config.notebook && config.notebook.checkpoints) || [];
@@ -85,10 +102,19 @@ export function checkLesson(id, config) {
       if (p.meaning && !traces(p.meaning, keyIdea)) {
         errors.push(`${id} box 2: meaning is not stated in this lesson's keyIdea`);
       }
-      if (p.example && !traces(p.example, iDo)) {
-        errors.push(
-          `${id} box 2: example "${p.example}" is not printed by this lesson's worked example`,
-        );
+      if (p.example) {
+        if (!traces(p.example, iDo)) {
+          errors.push(
+            `${id} box 2: example "${p.example}" is not printed by this lesson's worked example`,
+          );
+        } else if (endsMidNumber(p.example, iDo)) {
+          // Tracing to the lesson is not enough: "$3 ÷ 5 = $0" is a literal run
+          // of a line that reads "$3 ÷ 5 = $0.60 per game", and it is a WRONG
+          // ANSWER on the board. A quoted number must be the whole number.
+          errors.push(
+            `${id} box 2: example "${p.example}" cuts a number short — the lesson continues it`,
+          );
+        }
       }
     }
   }
@@ -136,6 +162,15 @@ const NEGATIVE_CONTROLS = [
       items: [{ term: "Quartile", meaning: "A marker splitting data into quarters" }],
     }),
     expect: /not a run of this lesson's own definition/,
+  },
+  {
+    name: "an example that cuts a decimal short",
+    config: withPanel(2, {
+      rule: "Range = greatest - least",
+      meaning: "it covers every value",
+      example: "94 - 68 = 2",
+    }),
+    expect: /cuts a number short/,
   },
   {
     name: "a worked example with chosen numbers",

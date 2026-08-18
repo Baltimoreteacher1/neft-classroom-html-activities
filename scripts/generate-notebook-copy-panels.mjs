@@ -129,6 +129,33 @@ const sentences = (s) =>
     .map((x) => x.trim())
     .filter(Boolean);
 
+const MATH_TOKEN = /^[$(]*[\d.,\/]*\d[\d.,\/]*[)%°]*[.,;:]?$|^[=+×÷−–\-*x][.,;:]?$|^ft³?$|^in³?$/i;
+const isMathToken = (t) => MATH_TOKEN.test(t);
+
+/** The maximal run of mathematical tokens around the "=" in a sentence. Token
+ *  boundaries are spaces, so a decimal point can never end the match. */
+export function extractEquation(sentence) {
+  const tokens = String(sentence || "")
+    .trim()
+    .split(/\s+/);
+  const eq = tokens.findIndex((t) => t.includes("="));
+  if (eq < 0) return "";
+  let lo = eq;
+  let hi = eq;
+  while (lo - 1 >= 0 && isMathToken(tokens[lo - 1])) lo--;
+  while (hi + 1 < tokens.length && isMathToken(tokens[hi + 1])) hi++;
+  const span = tokens
+    .slice(lo, hi + 1)
+    .join(" ")
+    .replace(/[.,;:]+$/, "")
+    .trim();
+  const numbers = span.match(/\d+(?:\.\d+)?/g) || [];
+  // An equation needs both sides. "= 3" or "5 =" is a fragment, not an example.
+  if (numbers.length < 2) return "";
+  if (/^=|=$/.test(span)) return "";
+  return span;
+}
+
 /** The lesson's stated rule, quoted from `launch.conceptIntro.keyIdea` — the
  *  one field where every lesson states its own big idea in its own words. */
 export function buildBox2(config) {
@@ -157,22 +184,20 @@ export function buildBox2(config) {
   if (!meaning)
     return { panel: null, reason: "lesson states no second clause to explain the rule" };
 
-  // The example is an equation the lesson's own worked example prints.
+  // The example is an equation the lesson's own worked example prints, lifted
+  // by TOKENS rather than by a character regex. A character class that stops at
+  // "." cuts "$0.60" down to "$0" and "2 × 1.5 = 3" down to "5 = 3" — both of
+  // which shipped, and both of which are a wrong number in front of a student.
   const lines = (ci.iDo && Array.isArray(ci.iDo.lines) ? ci.iDo.lines : []).flatMap((l) =>
     sentences(l),
   );
   let example = "";
   for (const line of lines) {
-    const m = line.match(/[^.!?,]*\d[^.!?]*=[^.!?]*/);
-    if (!m) continue;
-    const candidate = m[0]
-      .replace(/\s+/g, " ")
-      .trim()
-      .replace(/[.,;:]+$/, "");
-    if (!/\d/.test(candidate) || !candidate.includes("=")) continue;
-    if (wordCount(candidate) > 14) continue;
-    example = candidate;
-    break;
+    const found = extractEquation(line);
+    if (found) {
+      example = found;
+      break;
+    }
   }
   if (!example) return { panel: null, reason: "worked example prints no single-line equation" };
 
