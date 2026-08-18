@@ -513,8 +513,7 @@ function barChart(host, cfg, viewOpts) {
       return (
         statCard("Total", total) +
         statCard("Greatest", `${esc(maxB.label)} (${maxB.value})`, true) +
-        statCard("Least", `${esc(minB.label)} (${minB.value})`) +
-        `<div class="dlive-stat" style="grid-column:1/-1"><span>These are categories, so a mean or median has no meaning — that is what makes this a bar chart, not a histogram.</span></div>`
+        statCard("Least", `${esc(minB.label)} (${minB.value})`)
       );
     },
   });
