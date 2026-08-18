@@ -1369,7 +1369,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // The canonical Math Notes model opens OVER the lesson rather than
       // replacing the phase body — a student checking the page layout has not
       // left the lesson and loses nothing on screen.
-      if (kind === "mathnotes") return openMathNotesModel();
+      if (kind === "mathnotes") return openMathNotesModel(config);
       if (kind === "projects") return this.openProjects();
       if (kind === "printables") return this.openPrintables();
       if (kind === "activity") return this.openActivity();

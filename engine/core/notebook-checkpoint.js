@@ -295,14 +295,47 @@ export function closeMathNotesModel() {
   }
 }
 
-export function openMathNotesModel() {
+/**
+ * This lesson's own notes, rendered from the SAME verified panel data the
+ * checkpoints render — never re-derived, never re-worded, never borrowed.
+ *
+ * Why it is here: the dialog used to show only the blank page-layout model, so
+ * a student (or teacher) opening "Math Notes" saw a generic picture of a
+ * notebook and none of today's words. The lesson's actual words lived only
+ * inside the checkpoint blocks, which are two phases apart. Reported by Joel
+ * 2026-08-18: "I'm not seeing the updated math notes."
+ */
+function renderLessonNotesHtml(config) {
+  const cps = readCheckpoints(config);
+  if (cps.length === 0) return "";
+  const sections = [];
+  for (const cp of cps) {
+    const panel = renderCopyPanelHtml(cp);
+    if (!panel) continue;
+    sections.push(`
+      <section class="nt-nb-model-section">
+        <h3 class="nt-nb-model-subhead">${esc(cp.heading.replace(/^Notebook time — /, ""))}</h3>
+        ${panel}
+      </section>`);
+  }
+  if (sections.length === 0) return "";
+  const title = String((config && config.title) || "").trim();
+  return `
+    <div class="nt-nb-model-lesson">
+      <p class="nt-nb-model-lessonlead">Today's notes${title ? ` — ${esc(title)}` : ""}</p>
+      ${sections.join("\n")}
+    </div>`;
+}
+
+export function openMathNotesModel(config) {
+  const lessonConfig = config || activeConfig;
   const existing = /** @type {HTMLDialogElement|null} */ (
     document.getElementById("nt-notebook-model")
   );
-  if (existing) {
-    existing.showModal();
-    return existing;
-  }
+  // Rebuilt on every open: a student who opens this from Warmup and again from
+  // Explore must see the same lesson's notes, not a dialog cached before the
+  // checkpoints were read.
+  if (existing) existing.remove();
   const dlg = document.createElement("dialog");
   dlg.id = "nt-notebook-model";
   dlg.className = "nt-nb-model";
@@ -312,6 +345,7 @@ export function openMathNotesModel() {
       <h2>What should my page look like?</h2>
       <button type="button" class="nt-nb-model-close" aria-label="Close">✕</button>
     </div>
+    ${renderLessonNotesHtml(lessonConfig)}
     <img class="nt-nb-model-img" src="${MATH_NOTES_MODEL_IMAGE}"
          alt="A notebook page with a heading line, then three numbered sections: 1 Math Words, with a word on the left and what it means on the right; 2 Today's Math, with the rule or formula; 3 My Work, with numbered problems and every step shown." />
     <div class="nt-nb-model-foot">
