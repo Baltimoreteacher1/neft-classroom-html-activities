@@ -33,6 +33,11 @@ reports/*
 #   npm run build && npx vite preview --port 4501 &
 #   npm run audit:a11y -- --base http://localhost:4501
 !reports/a11y-audit.md
+# Overnight audit logs are the OUTPUT of an unattended run, not a regenerable
+# artefact: the session that wrote one is gone by morning, and on a cloud runner
+# so is the container. An ignored file reaches nobody. These are written once,
+# read once, and safe to delete by hand afterwards.
+!reports/overnight-*.md
 tmp/
 
 .codex/backups/
