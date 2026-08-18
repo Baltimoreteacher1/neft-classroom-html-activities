@@ -1653,3 +1653,274 @@ it as a RATCHET — a count that may only shrink — rather than a hard zero, so
 does not block every unrelated push for the length of a 1,437-string translation
 effort.
 
+
+---
+
+# Block 9 — Ratchet gap (Section 2) and font-blocking diagnosis (Section 1)
+
+## Section 2 — the ratchet gap: the premise was wrong, a different one was real
+
+**The authorized change would not have worked, and the gap it described does not
+exist.** Both facts were established by running things, not by reading.
+
+### The stamp was already held
+
+`/assets/curriculum-download.js?v=` is held by `validate:downloads`
+(`tools/validate-download-manifest.mjs` §9), on both pages, plus the
+`curriculum-download.css` stamp that lives *inside the JS module* and that no
+HTML-scanning ratchet could ever see. Three mutations, three correct failures,
+each naming the exact replacement:
+
+- stamp corrupted in `curriculum/units/index.html` (the `src=` reference) → FAIL
+- stamp corrupted in `curriculum/index.html` (the dynamic `import()`) → FAIL
+- asset edited, both stamps left alone → FAIL, both pages named
+
+### Adding it to the hub-assets ratchet fails, for a correct reason
+
+Making the one-line edit and running it:
+
+```
+   ✗ no <script> tag loading /assets/curriculum-download.js
+✗ curriculum hub assets: 1 failure(s)
+```
+
+That ratchet requires every `.js` asset to be loaded by a `<script src=… defer>`
+tag. The downloader is deliberately NOT loaded that way — `curriculum/index.html`
+pulls it with a dynamic `import()` so it costs the hub nothing until a teacher
+opens it, which is what keeps that page inside its 60-request budget. The
+ratchet is right to fail; the asset does not belong in its list.
+
+### The corrected sweep: 10 content-hash references, not 8, and all 10 are held
+
+My earlier sweep required `(?:src|href)="` before the path, so it could only see
+stamps in a tag attribute. Two references are not attributes — the dynamic
+`import()` on the hub, and the stylesheet reference inside
+`curriculum-download.js`. Corrected count:
+
+```
+CONTENT-HASH (8-hex) references: 10
+   matching the file:        10
+   STALE:                    0
+```
+
+Coverage: `curriculum-hub-assets.test.mjs` holds 7 (its 5 named assets, on every
+tracked page); `validate:downloads` holds 3 (the module on 2 pages + its CSS).
+7 + 3 = 10. **Nothing was uncovered.** The 345/542 date and opaque build tokens
+are untouched, as instructed.
+
+### The real gap, proven by isolation test
+
+`validate:downloads` used `.exec()` — first match only — against a **hardcoded
+two-page list**. Both shortcuts were blind, and both reported `PASS ✅` where they
+should have failed:
+
+- a SECOND, stale `<script src="…?v=deadbeef">` added to
+  `curriculum/units/index.html` → **PASS** (`.exec()` reads only the first match)
+- a stale reference added to `curriculum/planning/index.html` → **PASS**
+  (a third consumer is simply not in the list)
+
+This is the same hole `curriculum-hub-assets.test.mjs` already closed for the hub
+assets — its own comment says "adding a third consumer cannot quietly escape the
+ratchet the way the second one did." `validate:downloads` still had the pre-fix
+shape.
+
+**Fixed** (`4438c342`): pages discovered from tracked HTML, every reference on a
+page checked, the two known pages still asserted by name so losing the wiring is
+a failure rather than a quietly empty sweep, `dist/` excluded as build output.
+
+Four mutations after the fix:
+
+- second stale ref on a listed page → PASS → **FAIL**, names the page
+- stale ref on a third page → PASS → **FAIL**, names the page
+- asset edited, stamps stale → **FAIL**, both pages, names the replacement
+- wiring removed from a required page → **FAIL**, names the page
+
+`npm test` 213/213. Biome clean. Tree clean after every mutation.
+
+**Judgement call, flagged:** you authorized a one-line edit whose premise turned
+out to be false. I did not make it — it fails — and I made the mechanically
+equivalent fix to the gate that actually owns the stamp instead. That is a
+different file from the one you named. If you would rather I had stopped and
+asked, say so and I will revert `4438c342`.
+
+---
+
+## Section 1 — font blocking: diagnosis only, no fix implemented
+
+### 1.1 Scope, from disk
+
+**1,736 tracked source files carry at least one render-blocking third-party
+request.** My earlier figure of 290 was not wrong so much as narrow: it measured
+`dist/lessons/*/index.html` plus the two hubs — one file per lesson folder, in
+the build output only. The source tree carries the same link on every surface of
+every lesson.
+
+```
+BLOCKING  <link rel="stylesheet" href="https://…">   1240 refs   fonts.googleapis.com
+BLOCKING  @import url(https://…)                      761 refs   fonts.googleapis.com
+BLOCKING  <script src="https://…"> (no defer/async)    49 refs   cdn.jsdelivr.net 33
+                                                                  unpkg.com         9
+                                                                  cdnjs.cloudflare  7
+DISTINCT FILES with ≥1 blocking third-party request: 1736
+```
+
+A first pass at this reported 20 stylesheet links. That detector required
+`rel="stylesheet"` to appear *before* `href=`, and this site writes href first
+(`<link href="…" rel="stylesheet" />`). Re-parsed order-independently → 1,240.
+Ten hits sampled deterministically across the corpus and read by eye: **10/10
+genuine** (2 `@import`, 7 `<link>`, 1 blocking CDN `<script>`).
+
+By area: 1,517 files under `lessons/`, 96 under `math/`, 28 under `curriculum/`,
+the rest scattered across standalone activities. Within a lesson folder the link
+is on `index.html` (289), `worksheet.html` (288), `worksheet-answer-key.html`
+(288), and on `vocab/slides/notes/notes-teacher/learn/homework/handout` (84 each).
+
+**Families and weights actually requested** (top 5 URLs, 1,483 of the references):
+
+- Fraunces, variable `opsz 9..144`, weights 400/500/600/700 — 652 refs
+- Fraunces 600/700 + Hanken Grotesk 400/500/600/700 — 577 refs
+- **Atkinson Hyperlegible 400/700** + Nunito 700/800/900 — 204 refs
+- Outfit 400–900 + Hanken Grotesk incl. italics — 170 refs across two URLs
+
+Atkinson Hyperlegible is the Braille Institute's low-vision face. It is on 233
+files including both curriculum hubs, the ACCESS practice lab and the AI hub.
+That one is not decoration — it is the accessibility choice, and it is the one
+currently delivered by a third party.
+
+**There is already a self-hosting precedent in this repo.**
+`engine/styles/theme-warm.css` declares four `@font-face` blocks against
+`engine/styles/fonts/*.woff2` — Baloo 2, Fredoka, and **Nunito variable
+(roman + italic)** — 105,828 bytes total, referenced from `engine/core/app.js`.
+The pattern, the directory and one of the five families are already here.
+
+**Existing fallback:** every URL carries `&display=swap`, and the CSS declares
+real stacks (`"Nunito", system-ui, sans-serif`, `"Outfit", system-ui, sans-serif`).
+So the *font file* never blocks text. What blocks is the **stylesheet request
+itself** — a `<link rel="stylesheet">` gates first paint until it resolves or
+errors, and `@import` inside a `<style>` block is worse: serial, and inside the
+cascade.
+
+### 1.3 The failure mode, measured
+
+Three network conditions on `/curriculum/units/`, served from the built `dist/`.
+Only the shape of the failure is simulated; the page is real.
+
+```
+condition     first text painted      252 rows at      final state
+failfast      128ms                   324ms            252 rows / 40,035 chars
+blackhole     NEVER within 45s        not reached      0 rows / 0 chars
+```
+
+- **failfast** — the network rejects the connection immediately (a filter that
+  sends RST, or a device that is simply offline). Cost: **~0**. 128ms to text.
+- **blackhole** — the network silently drops the packets, which is how a good
+  many school content filters behave. **The page stays blank.** Not slow: blank.
+  No text, no rows.
+
+This is the finding. The severity of a blocked font host is not a spectrum — it
+is bimodal, and which mode a school lands in depends on how its filter says no.
+
+**What I am NOT claiming.** This sandbox's own passthrough number (13.2s to first
+paint) is an artifact and should be ignored: Chromium here is not configured for
+the agent proxy and gets `ERR_CONNECTION_RESET` after ~13s, while `curl` (which
+uses the proxy) reaches `fonts.googleapis.com` fine. That is a container quirk,
+not a prediction about any school network. I have no measurement of what Baltimore
+County's filter actually does with `fonts.googleapis.com`, and cannot get one
+from here. The honest statement is: *if* it is reachable, cost is ~0; *if* it is
+rejected fast, cost is ~0; *if* it is dropped silently, students get a blank page.
+
+### 1.2 Options
+
+**A — Self-host the fonts.** Measured, not estimated: pulling the actual woff2
+files for the five most-used URLs, latin + latin-ext only (the site is EN/ES, so
+cyrillic/greek/vietnamese subsets are not needed), de-duplicated across URLs:
+**14 files, 379,512 bytes (~370 KB)** one time, cached thereafter. For scale, the
+four faces already self-hosted here are 105,828 bytes.
+
+- Effect: eliminates the class entirely for fonts. No third party in the render
+  path, blank-page mode impossible.
+- Appearance: **unchanged** — same faces, same weights. The one thing to check is
+  that Fraunces' optical-size axis survives, since it is a variable axis rather
+  than a weight.
+- Risk: 1,736 files to edit. It is mechanical (swap a `<link>`/`@import` for one
+  local stylesheet) but it is not small, and the `@import`-inside-`<style>` cases
+  are 761 of them.
+- Cost: ~370 KB added to the repo and to `dist/`.
+
+**B — Make the request non-blocking, keep the CDN.**
+`media="print" onload="this.media='all'"`, or `rel="preload" as="style"`. Text
+paints immediately in the fallback face and swaps when the webfont arrives.
+
+- Effect: kills the blank-page mode. Does not remove the third-party dependency.
+- Appearance: introduces a visible font swap on first load — the exact thing
+  `display=swap` already permits, but now unavoidable rather than rare.
+- Risk: low per-file, but does not work for the 761 `@import` cases without
+  converting them to `<link>` first.
+
+**C — Self-host only the accessibility face, non-block the rest.** Atkinson
+Hyperlegible local (it is the a11y commitment and should not depend on a third
+party at all); B for the decorative faces.
+
+- Effect: the a11y guarantee becomes unconditional; the rest degrades gracefully.
+- Cost: far smaller than A. Touches the 233 Atkinson files plus a mechanical
+  sweep for the rest.
+
+**D — Do nothing, and find out first.** One `curl` from a classroom Chromebook
+answers which of the three modes Baltimore County is actually in. If the host is
+reachable, this is a hygiene item and not a student-impact item at all.
+
+**My recommendation: D first, then C.** D is one command and it decides whether
+this is urgent or cosmetic — and I have no measurement that can substitute for
+it. C is the right shape regardless of the answer, because the accessibility face
+should not be a third-party dependency on any network.
+
+### 1.4 Proposed gate — NOT implemented
+
+`npm run validate:no-blocking-third-party`
+
+**Invariant:** no tracked student-facing page introduces a render-blocking
+request to a host we do not control.
+
+- Blocking = `<link rel="stylesheet" href="https://…">`, `@import url(https://…)`
+  in a stylesheet or a `<style>` block, or `<script src="https://…">` without
+  `defer`/`async`/`type="module"`.
+- Parsed **attribute-order-independently**. The first version of this detector
+  assumed `rel` before `href` and reported 20 hits where there are 1,240; the
+  self-test must pin both orderings, plus the `@import`-inside-`<style>` form.
+- Ratchet, not zero: a count that may only shrink, seeded at today's 1,736, so it
+  cannot block unrelated pushes for the length of the remediation. New pages get
+  the hard rule.
+- Self-tests its detectors against known-bad fixtures before sweeping, and fails
+  on zero findings, per the house pattern.
+- The 49 blocking CDN `<script>` tags fall under the same invariant and are
+  arguably worse — a blocking third-party script is both a render dependency and
+  a supply-chain surface.
+
+Awaiting your choice of approach before writing any of this.
+
+---
+
+## Section 3 — live verification: still blocked
+
+`origin/main` is still `c1883486`. The branch is 17 commits ahead. PR #191 is
+open and not merged, so there is no deployed SHA to verify against — the
+placeholder in the brief is still blank because nothing has shipped.
+
+Egress, tested once (not looped, as instructed):
+
+```
+https://eduwonderlab.com/          403 CONNECT tunnel failed
+https://www.eduwonderlab.com/      403 CONNECT tunnel failed
+https://script.google.com          000
+https://github.com                 400  (reached — the host answered)
+https://fonts.googleapis.com/css2  400  (reached — the host answered)
+```
+
+The three hosts you added are still denied; `fonts.googleapis.com`, which you did
+not add, is reachable. So the container does have a working allowlist — your edit
+to it has not reached this session. My earlier hypothesis stands and is still
+only a hypothesis: the allowlist may resolve at container start, in which case a
+fresh session picks it up. I have not verified that and cannot from inside.
+
+Section 3 and Section 4 remain blocked on this. Nothing scheduled.
+
