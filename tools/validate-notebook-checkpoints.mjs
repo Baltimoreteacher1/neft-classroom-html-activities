@@ -470,11 +470,14 @@ check(
 );
 
 console.log(
-  `notebook checkpoints — ${ids.length} core lessons | copy panels complete: ${withCopyPanel}/${ids.length} | authored prompts: ${withAuthored} | running defaults: ${withDefaults} | authored boxes: ${totalAuthoredBoxes}/${ids.length * 2}`,
+  `notebook checkpoints — ${ids.length} core lessons | box 2 source-backed: ${withCopyPanel}/${ids.length} | box 2 student-generated: ${missingCopyLessons.length}/${ids.length} | authored prompts: ${withAuthored} | running defaults: ${withDefaults} | authored boxes: ${totalAuthoredBoxes}/${ids.length * 2}`,
 );
 if (missingCopyLessons.length > 0) {
   console.log(
-    `  MISSING COPY CONTENT (${missingCopyLessons.length} lessons): ${missingCopyLessons.join(", ")}`,
+    // NOT a gap. These lessons state no rule that can be quoted with
+    // provenance, so box 2 renders the student-generated state instead. Calling
+    // a correct outcome "missing" is how the invented content got written.
+    `  STUDENT-GENERATED BOX 2 — no quotable lesson rule, renders "My Math Rule" (${missingCopyLessons.length} lessons): ${missingCopyLessons.join(", ")}`,
   );
 }
 const reachable = ids.length + variants.length;

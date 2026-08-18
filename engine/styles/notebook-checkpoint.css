@@ -79,8 +79,8 @@
 .nt-nb-copy-list {
   margin: 0;
   padding-left: 1.5em;
-  font-size: 1.15rem;
-  line-height: 1.85;
+  font-size: var(--fs-lg);
+  line-height: 1.8;
   color: #0f172a;
 }
 
@@ -96,7 +96,7 @@
 .nt-nb-copy-term {
   font-weight: 800;
   color: #0f172a;
-  font-size: 1.18rem;
+  font-size: var(--fs-lg);
 }
 
 .nt-nb-copy-meaning {
@@ -106,7 +106,7 @@
 
 /* Box 2 — Today's Math rule & model */
 .nt-nb-copy-rule {
-  font-size: 1.32rem;
+  font-size: var(--fs-xl);
   font-weight: 800;
   line-height: 1.6;
   color: #0f172a;
@@ -116,7 +116,7 @@
 }
 
 .nt-nb-copy-box2 .nt-nb-copy-meaning {
-  font-size: 1.12rem;
+  font-size: var(--fs-lg);
   line-height: 1.7;
   color: #1e293b;
   margin: var(--sp-2, 8px) 0;
@@ -126,7 +126,7 @@
   margin-top: var(--sp-3, 12px);
   padding-top: var(--sp-2, 8px);
   border-top: 1px dashed var(--line-strong, #b8c9db);
-  font-size: 1.1rem;
+  font-size: var(--fs-lg);
   line-height: 1.6;
   color: #1e293b;
   font-style: normal;
@@ -285,6 +285,99 @@
   padding: var(--sp-3, 12px) var(--sp-4, 16px);
   color: var(--teal-ink, #0c6f6b);
   font-weight: 700;
+}
+
+/* ── The student-generated state ────────────────────────────────────────────
+   Box 2 when the lesson states no rule this engine can quote with provenance.
+   It must read as a DIFFERENT KIND OF THING from the copy panel, at a glance
+   and before any word is read: a dashed edge and a warm ground where the copy
+   panel has a solid edge and a cool one, plus ruled lines that say "you write
+   here". The copy panel is something the lesson hands over; this is a space
+   the student fills.
+   ------------------------------------------------------------------------ */
+
+.nt-nb-own-panel {
+  margin: var(--sp-4, 16px) 0;
+  padding: var(--sp-4, 16px) var(--sp-5, 20px);
+  background: var(--amber-light, #fdf6e7);
+  border: 2px dashed var(--amber-ink, #8a5a00);
+  border-radius: var(--radius-md, 12px);
+}
+
+.nt-nb-own-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2, 8px);
+  font-size: var(--fs-xs, 0.78rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--amber-ink, #8a5a00);
+}
+
+.nt-nb-own-mark {
+  font-size: var(--fs-md);
+  line-height: 1;
+}
+
+.nt-nb-own-hint {
+  margin: var(--sp-2, 8px) 0 0;
+  font-size: var(--fs-lg);
+  line-height: 1.6;
+  color: var(--ink, #21313f);
+}
+
+/* Two ruled lines — the notebook page this block is about, not a form field.
+   Decorative and aria-hidden; they collect no input and take no focus. */
+.nt-nb-own-lines {
+  margin-top: var(--sp-3, 12px);
+  height: 62px;
+  border-radius: var(--radius-sm, 8px);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 26px,
+    var(--amber-ink, #8a5a00) 26px,
+    var(--amber-ink, #8a5a00) 27px
+  );
+  opacity: 0.35;
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────────────
+   A phone reads this block top-to-bottom in one column: the confirm row and
+   the capture row both stop sharing a line with their labels, so nothing is
+   squeezed to a few characters wide.
+   ------------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .nt-nb {
+    padding: var(--sp-4, 16px);
+    border-left-width: 5px;
+  }
+
+  .nt-nb-copy-panel,
+  .nt-nb-own-panel {
+    padding: var(--sp-3, 12px) var(--sp-4, 16px);
+  }
+
+  .nt-nb-copy-list {
+    padding-left: 1.2em;
+  }
+
+  .nt-nb-row-input {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--sp-2, 8px);
+  }
+
+  .nt-nb-input {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .nt-nb-modellink {
+    width: 100%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

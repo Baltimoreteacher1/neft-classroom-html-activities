@@ -37,6 +37,11 @@ const EXPECTED_HEADINGS = {
   2: "Notebook time — Section 2: Today's Math",
 };
 
+// Box 2 has two legitimate states. A lesson stating no quotable rule shows the
+// student-generated section, and must SAY so in its heading — a box headed
+// "Today's Math" over an empty space is the state this gate exists to forbid.
+const OWN_WORDS_HEADING = "Notebook time — Section 2: My Math Rule";
+
 const failures = [];
 const passNotes = [];
 
@@ -231,6 +236,16 @@ try {
         // Copy panel assertions
         const copyPanel = thisBlock?.querySelector(".nt-nb-copy-panel");
         const hasCopyPanel = !!copyPanel;
+        const ownPanel = thisBlock?.querySelector(".nt-nb-own-panel");
+        const ownDetails = ownPanel
+          ? {
+              present: true,
+              text: (ownPanel.textContent || "").replace(/\s+/g, " ").trim(),
+              interactiveCount: ownPanel.querySelectorAll("button, input, select, textarea, a")
+                .length,
+              dashed: window.getComputedStyle(ownPanel).borderTopStyle,
+            }
+          : { present: false };
         let copyDetails = {};
 
         if (copyPanel) {
@@ -307,6 +322,8 @@ try {
           heading,
           topOffset,
           copyDetails,
+          ownDetails,
+          promptText: (thisBlock?.querySelector(".nt-nb-prompt")?.textContent || "").trim(),
         };
       }, cp.box);
 
@@ -314,7 +331,9 @@ try {
         fail(`${lessonId} (Phase ${cp.phase}): Box ${cp.box} checkpoint did not render in DOM`);
       } else {
         renderedBoxes.push(cp.box);
-        const expectedHeading = EXPECTED_HEADINGS[cp.box];
+        const isOwnWords = phaseCheck.ownDetails?.present === true;
+        const expectedHeading =
+          cp.box === 2 && isOwnWords ? OWN_WORDS_HEADING : EXPECTED_HEADINGS[cp.box];
         if (phaseCheck.heading !== expectedHeading) {
           fail(
             `${lessonId} (Phase ${cp.phase}): Box ${cp.box} heading "${phaseCheck.heading}" !== expected "${expectedHeading}"`,
@@ -326,14 +345,67 @@ try {
           `${lessonId} (Phase ${cp.phase}): Box ${cp.box} is placed in-flow (offset ${phaseCheck.topOffset}px)`,
         );
 
-        // Assert copy panel details
+        // ── The two legitimate states ──────────────────────────────────────
+        // A box must be in exactly one of them. Neither an empty copy panel nor
+        // a box with nothing at all is acceptable: both read to a student as
+        // content that failed to load.
         const cd = phaseCheck.copyDetails;
+        const od = phaseCheck.ownDetails || { present: false };
+        const declaredRule = !!(cp.copyPanel && String(cp.copyPanel.rule || "").trim());
+
+        if (cd.hasCopyPanel && od.present) {
+          fail(
+            `${lessonId} (Phase ${cp.phase}): Box ${cp.box} renders BOTH a copy panel and the student-generated state`,
+          );
+        }
+        if (cp.box === 2) {
+          if (declaredRule && !cd.hasCopyPanel) {
+            fail(
+              `${lessonId} (Phase ${cp.phase}): Box 2 declares a source-backed rule but rendered no copy panel`,
+            );
+          }
+          if (!declaredRule && !od.present) {
+            fail(
+              `${lessonId} (Phase ${cp.phase}): Box 2 has no source-backed rule and did not render the student-generated state`,
+            );
+          }
+          if (od.present) {
+            if (!od.text) {
+              fail(`${lessonId} (Phase ${cp.phase}): Box 2 student-generated state rendered empty`);
+            } else if (od.text === phaseCheck.promptText) {
+              fail(
+                `${lessonId} (Phase ${cp.phase}): Box 2 student-generated state repeats the prompt verbatim`,
+              );
+            } else if (/nothing on the screen to copy/i.test(od.text) && cp.prompt) {
+              fail(
+                `${lessonId} (Phase ${cp.phase}): Box 2 says there is nothing to copy while its own authored prompt states the rule`,
+              );
+            } else if (/copy (it|this|the rule)|exactly as it appears/i.test(od.text)) {
+              fail(
+                `${lessonId} (Phase ${cp.phase}): Box 2 tells the student to copy something that is not on the screen`,
+              );
+            } else {
+              note(
+                `${lessonId} (Phase ${cp.phase}): Box 2 renders the student-generated state ("${od.text.slice(0, 48)}…")`,
+              );
+            }
+            if (od.dashed !== "dashed") {
+              fail(
+                `${lessonId} (Phase ${cp.phase}): Box 2 student-generated state is not visually distinct from a copy panel (border ${od.dashed})`,
+              );
+            }
+            if (od.interactiveCount > 0) {
+              fail(
+                `${lessonId} (Phase ${cp.phase}): Box 2 student-generated state contains ${od.interactiveCount} interactive element(s)`,
+              );
+            }
+          }
+        }
+
         if (!cd.hasCopyPanel) {
-          // A checkpoint with no copy panel is a legitimate outcome: a lesson
-          // with no usable vocabulary or no stated rule gets no panel. Absence
-          // is reported, never failed — only a RENDERED panel is held to the
-          // presentation rules below.
-          note(`${lessonId} (Phase ${cp.phase}): Box ${cp.box} renders no copy panel (allowed)`);
+          if (!od.present) {
+            note(`${lessonId} (Phase ${cp.phase}): Box ${cp.box} renders no copy panel (allowed)`);
+          }
         } else {
           note(`${lessonId} (Phase ${cp.phase}): Box ${cp.box} copy panel rendered`);
           if (cd.interactiveCount > 0) {

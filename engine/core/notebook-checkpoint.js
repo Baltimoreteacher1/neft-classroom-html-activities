@@ -86,8 +86,48 @@ export const DEFAULT_PROMPTS = {
   },
 };
 
+/**
+ * Box 2 has TWO legitimate states, and they must not read alike.
+ *
+ * When the lesson states a rule this engine can quote with provenance, box 2
+ * prints it and the student copies it. When the lesson states no complete rule
+ * — 74 of 84 lessons, and a correct outcome, not a gap — there is nothing to
+ * copy, and the default copy said "Copy the rule, formula, or model from the
+ * screen ... exactly as it appears" over an empty space. That is what made a
+ * deliberate state look like a failed load.
+ *
+ * These are the same three sections of the same notebook page; only the source
+ * of the words changes.
+ */
+export const OWN_WORDS_PROMPTS = {
+  2: {
+    heading: "Notebook time — Section 2: My Math Rule",
+    body: "Think back over this lesson. Write the most important math rule or idea in your own words — the way you would explain it to someone who missed today.",
+    capture: "Type the rule you wrote.",
+  },
+};
+
 export const CHECKBOX_LABEL = "I wrote this in my notebook.";
 export const BLOCKED_MESSAGE = "Write it in your notebook first, then check the box to keep going.";
+
+/**
+ * Which of the two states is this box in?
+ *
+ * "lesson" — the lesson supplies the words and the student copies them.
+ * "own-words" — the lesson supplies none, and the student writes their own.
+ *
+ * Box 1 has no own-words state: a lesson always declares its own vocabulary,
+ * and inventing terms is the failure this whole layer exists to prevent.
+ */
+export function panelSource(box, panel) {
+  if (box === 1) {
+    return panel && Array.isArray(panel.items) && panel.items.length > 0 ? "lesson" : "own-words";
+  }
+  if (box === 2) {
+    return panel && String(panel.rule || "").trim() ? "lesson" : "own-words";
+  }
+  return "lesson";
+}
 
 /** localStorage key for one lesson's captures. */
 function storageKey(config) {
@@ -120,8 +160,11 @@ export function readCheckpoints(config) {
     // classroom copy, so a lesson gets working checkpoints from `box` + `phase`
     // alone and authoring is an upgrade rather than a prerequisite.
     const authored = String(cp.prompt || "").trim();
-    const defaults = DEFAULT_PROMPTS[box];
     const capture = cp.capture || {};
+    const panel = cp.copyPanel || null;
+    // What the lesson actually supplies decides which copy this box speaks.
+    const source = panelSource(box, panel);
+    const defaults = (source === "own-words" && OWN_WORDS_PROMPTS[box]) || DEFAULT_PROMPTS[box];
     seen.add(box);
     out.push({
       box,
@@ -130,7 +173,8 @@ export function readCheckpoints(config) {
       heading: defaults.heading,
       prompt: authored || defaults.body,
       promptSource: /** @type {"authored"|"default"} */ (authored ? "authored" : "default"),
-      copyPanel: cp.copyPanel || null,
+      contentSource: source,
+      copyPanel: panel,
       label: String(capture.label || defaults.capture).trim(),
       maxLength: Math.min(Number(capture.maxLength) || MAX_LENGTH, MAX_LENGTH),
     });
@@ -277,11 +321,47 @@ export function openMathNotesModel() {
 }
 
 /**
+ * The student-generated state. Shown when the lesson states no rule this
+ * engine can quote with provenance — a correct outcome for 74 of 84 lessons.
+ *
+ * It carries no mathematics, because inventing a rule to fill the space is the
+ * exact failure the provenance layer exists to prevent. What it carries is the
+ * one thing an empty space could not: an explanation of WHY nothing is printed,
+ * so the state reads as deliberate rather than broken. The direction of what to
+ * write lives in the prompt above it and is not repeated here.
+ */
+function renderOwnWordsHtml(cp) {
+  if (cp.box !== 2) return "";
+  // The hint explains an ABSENCE, so it may only be shown when something is
+  // actually absent. Three lessons author a box-2 prompt that states the rule
+  // themselves ("Write the volume formula: V = length × width × height…"); on
+  // those, "there is nothing to copy" would be a lie the student can see, and
+  // the prompt already gives all the direction needed. They get the label and
+  // the writing space, and no second instruction.
+  const authored = cp.promptSource === "authored";
+  const banner = authored ? "Write this in your notebook" : "You write this one";
+  const hint = authored
+    ? ""
+    : `<p class="nt-nb-own-hint">Today's rule is yours to put into words — there is nothing on the screen to copy.</p>`;
+  return `
+    <div class="nt-nb-own-panel" role="note" aria-label="You write this part yourself">
+      <div class="nt-nb-own-banner">
+        <span class="nt-nb-own-mark" aria-hidden="true">✎</span>
+        <span>${esc(banner)}</span>
+      </div>
+      ${hint}
+      <div class="nt-nb-own-lines" aria-hidden="true"></div>
+    </div>`;
+}
+
+/**
  * Render the visually unmistakable copy panel containing exactly what the
  * student writes by hand in their notebook — nothing else.
  */
 function renderCopyPanelHtml(cp) {
-  if (!cp || !cp.copyPanel) return "";
+  if (!cp) return "";
+  if (cp.contentSource === "own-words") return renderOwnWordsHtml(cp);
+  if (!cp.copyPanel) return "";
   if (cp.box === 1 && Array.isArray(cp.copyPanel.items) && cp.copyPanel.items.length > 0) {
     const listItems = cp.copyPanel.items
       .map(
