@@ -1,0 +1,113 @@
+#!/usr/bin/env node
+/**
+ * skip-honesty.test.mjs — a check that did not run may never report PASS.
+ *
+ * `validate:lesson-boot` exited 0 when no Chromium was available and qa-run
+ * printed `PASS validate:lesson-boot 4.6s` — the same line 16 genuinely
+ * rendered pages produce. That is the failure shape this repo keeps writing
+ * gates against (the injector target list that covered nothing, the orphaned
+ * project pages, the stamp that matched no file), and it had reached the gate
+ * runner itself.
+ *
+ * This test pins the fix in three places, because the protocol is only as good
+ * as its weakest participant:
+ *
+ *   1. the CODE — exit 3 means SKIP, and qa-run's classifier says so;
+ *   2. the RUNNERS — qa-run and run-tests both name skipped checks and both
+ *      fail in CI;
+ *   3. the SCRIPTS — a static ratchet: no gate script may exit 0 next to
+ *      skip wording. That is the pattern itself, and it must not come back.
+ */
+import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import test from "node:test";
+import { fileURLToPath } from "node:url";
+import { classifyResult } from "../scripts/qa-run.mjs";
+import { SKIP_EXIT, skipExit } from "./lib/skip-exit.mjs";
+
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const read = (p) => readFileSync(join(ROOT, p), "utf8");
+
+test("SKIP is its own exit code, distinct from pass and fail", () => {
+  assert.equal(SKIP_EXIT, 3);
+  assert.notEqual(SKIP_EXIT, 0);
+  assert.notEqual(SKIP_EXIT, 1);
+});
+
+test("skipExit is fatal in CI and non-blocking locally", () => {
+  const had = process.env.CI;
+  try {
+    process.env.CI = "";
+    delete process.env.CI;
+    assert.equal(skipExit("no browser"), SKIP_EXIT, "a local skip must not block the push");
+    process.env.CI = "1";
+    assert.equal(skipExit("no browser"), 1, "CI must treat a skip as a failure");
+  } finally {
+    if (had === undefined) delete process.env.CI;
+    else process.env.CI = had;
+  }
+});
+
+test("qa-run classifies a skip as SKIP, never PASS", () => {
+  assert.deepEqual(classifyResult(null), { ok: true, skipped: false, status: "PASS" });
+  assert.deepEqual(classifyResult({ code: SKIP_EXIT }), {
+    ok: false,
+    skipped: true,
+    status: "SKIP",
+  });
+  assert.deepEqual(classifyResult({ code: 1 }), { ok: false, skipped: false, status: "FAIL" });
+});
+
+test("qa-run names every skipped check in its exit summary", () => {
+  const src = read("scripts/qa-run.mjs");
+  assert.match(
+    src,
+    /SKIPPED \(verified NOTHING\): \$\{didNotRun\.join/,
+    "the summary must list skipped checks by name, not just count them",
+  );
+  assert.match(src, /didNotRun\.length && process\.env\.CI/, "CI must fail on any skipped check");
+});
+
+test("the test runner reports skipped tests and refuses an empty discovery walk", () => {
+  const src = read("tools/run-tests.mjs");
+  assert.match(src, /e\?\.status === SKIP_EXIT/, "run-tests must recognise the skip code");
+  assert.match(src, /SKIPPED \(verified nothing\)/, "skipped tests must be named");
+  // Finding zero tests is a broken walk, not a clean suite.
+  assert.doesNotMatch(
+    src,
+    /No test scripts found\.[\s\S]{0,80}process\.exit\(0\)/,
+    "an empty test discovery must not exit 0",
+  );
+});
+
+test("no gate script exits 0 on a path that skipped its work", () => {
+  // The ratchet. `git ls-files` rather than a hand list, so a new gate is
+  // covered the day it lands.
+  const files = execFileSync("git", ["ls-files", "tools", "scripts"], {
+    cwd: ROOT,
+    encoding: "utf8",
+  })
+    .split("\n")
+    .filter((f) => /\.(mjs|js)$/.test(f));
+  const skipWords =
+    /\b(SKIP|skipped|skipping|not installed|unavailable|could not (?:reach|launch)|offline|no browser)\b/i;
+  const offenders = [];
+  for (const f of files) {
+    const lines = read(f).split("\n");
+    lines.forEach((line, i) => {
+      if (!/process\.exit\(0\)/.test(line)) return;
+      const ctx = lines.slice(Math.max(0, i - 6), i + 1).join("\n");
+      // A file that routes through skipExit() has already been converted; the
+      // exit(0) sites left in it are genuine passes.
+      if (/skipExit\(/.test(ctx)) return;
+      if (skipWords.test(ctx)) offenders.push(`${f}:${i + 1}`);
+    });
+  }
+  assert.deepEqual(
+    offenders,
+    [],
+    `these exit 0 after skipping their work — use skipExit() from tools/lib/skip-exit.mjs:\n  ${offenders.join("\n  ")}`,
+  );
+});

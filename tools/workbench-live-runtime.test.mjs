@@ -2,12 +2,14 @@
 
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
+import { skipExit } from "./lib/skip-exit.mjs";
 
 if (process.env.MWB_RUNTIME_TEST !== "1") {
   console.log(
     "↷ Live Board runtime test skipped (set MWB_RUNTIME_TEST=1 with local Vite + Worker)",
   );
-  process.exit(0);
+  // SKIP, not PASS: the live runtime was never exercised.
+  process.exit(skipExit("MWB_RUNTIME_TEST is not set"));
 }
 
 const pageUrl = process.env.MWB_PAGE_URL || "http://127.0.0.1:5173/curriculum/math-workbench/";

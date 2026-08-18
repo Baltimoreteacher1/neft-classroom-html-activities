@@ -39,6 +39,7 @@ import { spawn } from "node:child_process";
 import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { skipExit as sharedSkipExit } from "./lib/skip-exit.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, "..");
@@ -56,6 +57,11 @@ const RENDER_TIMEOUT = 12000; // how long to wait for the mount to fill
 /**
  * Exit code for "there is no browser, so nothing was probed" — a SKIP.
  *
+ * Delegates to the shared protocol in tools/lib/skip-exit.mjs (0 pass / 1 fail /
+ * 3 skip) so the runner can TELL a skip from a pass. It used to return 0
+ * locally, which qa-run then printed as `PASS validate:lesson-boot` — the exact
+ * lie the paragraph below describes, one layer further out.
+ *
  * This probe is the only member of `npm run validate` that opens a real browser,
  * so without one it checks nothing at all. It used to exit 0 in that case, which
  * renders in the qa:loop table as `PASS validate:lesson-boot`, indistinguishable
@@ -70,12 +76,11 @@ const RENDER_TIMEOUT = 12000; // how long to wait for the mount to fill
  * PW_CHROMIUM_PATH points at a system Chromium when the Playwright-managed
  * download is missing or version-mismatched.
  */
-const skipExit = (why) => {
-  if (!process.env.CI) return 0;
-  console.error(`✗ ${why} — CI must not report a skipped render smoke as a pass.`);
-  console.error("   Install a browser (npx playwright install chromium) or set PW_CHROMIUM_PATH.");
-  return 1;
-};
+const skipExit = (why) =>
+  sharedSkipExit(
+    why,
+    "Install a browser (npx playwright install chromium) or set PW_CHROMIUM_PATH.",
+  );
 // Shared runtime scripts every hub (curriculum, monster-math, …) loads and needs
 // to render. They are committed static files copied into dist/ by vite.config's
 // copy-standalone-html plugin. If a concurrent build sharing node_modules disrupts
@@ -390,7 +395,8 @@ async function main() {
       );
       console.log("   full render smoke. Skipping to avoid a false failure that blocks deploys.");
       server.child.kill("SIGKILL");
-      process.exit(0);
+      // A SKIP, not a pass: this run probed zero pages either way.
+      process.exit(skipExit("the local build is incomplete, so no page could be probed"));
     }
   }
 
