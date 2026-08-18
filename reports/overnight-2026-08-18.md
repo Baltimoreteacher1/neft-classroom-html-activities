@@ -1808,7 +1808,7 @@ Only the shape of the failure is simulated; the page is real.
 ```
 condition     first text painted      252 rows at      final state
 failfast      128ms                   324ms            252 rows / 40,035 chars
-blackhole     NEVER within 45s        not reached      0 rows / 0 chars
+blackhole     none in 330s            not reached      0 rows / 0 chars
 ```
 
 - **failfast** — the network rejects the connection immediately (a filter that
@@ -1816,6 +1816,13 @@ blackhole     NEVER within 45s        not reached      0 rows / 0 chars
 - **blackhole** — the network silently drops the packets, which is how a good
   many school content filters behave. **The page stays blank.** Not slow: blank.
   No text, no rows.
+
+The blackhole case was re-run with a 330-second budget specifically because the
+first run's "never" was **my** 45s cutoff, not the browser's. It is not 45
+seconds. `/curriculum/units/` was **still blank after 5½ minutes** — no first
+contentful paint, zero characters of text. Chromium does eventually abandon a
+hung connect, but not inside any window a student would wait through. For
+classroom purposes this mode is: the page never loads.
 
 This is the finding. The severity of a blocked font host is not a spectrum — it
 is bimodal, and which mode a school lands in depends on how its filter says no.
