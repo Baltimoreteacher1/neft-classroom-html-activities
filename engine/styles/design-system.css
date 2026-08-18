@@ -5742,3 +5742,18 @@ body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-doc
     min-height: 32px;
   }
 }
+
+/* The compact support nubs dock against the right edge at mid-height on narrow
+   screens (Teacher Mode only). The hero title is the one full-bleed line tall
+   enough to reach them — 8px of its box sat under the nub at 390px — so it
+   keeps a gutter wide enough to clear one. Nothing else on the page runs that
+   close to the edge. */
+@media (max-width: 640px) {
+  /* Matched to the warm-deck skin's own specificity — a bare .lesson-hero-title
+     loses to body.editorial.skin-warm-deck .lesson-hero-title and the gutter
+     never lands. */
+  .lesson-hero-title,
+  body.editorial.skin-warm-deck .lesson-hero-title {
+    padding-right: 52px;
+  }
+}

@@ -2272,3 +2272,34 @@ body.nt-overlays-compact .mode-toggle-pill.is-teacher .mode-toggle-state::after 
   font-size: 0.92rem;
   font-weight: 600;
 }
+
+/* ── Narrow screens: the side tabs become nubs ─────────────────────────────
+   At 390px the two vertical tabs are 72px wide against a 390px viewport, and
+   they sit on top of the lesson — measured covering the lesson title in
+   Teacher Mode on a phone. (In Student Mode they do not render at all, which
+   is why this only bites a teacher working from a handset.)
+
+   This is the SAME treatment the teacher's minimize toggle already applies via
+   body.nt-overlays-compact — labels off, icon only — reached automatically by
+   width instead of by tapping. Both panels still open on tap and both keep a
+   44px touch target, so nothing becomes unreachable.
+   ------------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .ewl-supports-tab-label {
+    display: none;
+  }
+
+  .ewl-supports-btn-teacher,
+  .ewl-supports-math-tab {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 6px;
+    font-size: 18px;
+  }
+
+  /* Re-anchor the math tab under the now-shorter Prepare Supports nub. */
+  .ewl-supports-math-dock {
+    top: calc(50% + 56px);
+  }
+}
