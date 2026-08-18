@@ -243,17 +243,39 @@ check(
     }
   }
 
-  const portfolio = readFileSync(resolve(ROOT, "math/projects/portfolio/index.html"), "utf8");
-  const listed = new Set(
-    [...portfolio.matchAll(/\/math\/[a-z0-9-]+\/projects\/[a-z0-9-]+\//g)].map((m) => m[0]),
-  );
-  const missing = projectDirs.filter((d) => !listed.has(d));
-  check(
-    missing.length === 0,
-    `the project portfolio does not list ${missing.length} project page(s) that exist on disk, so a student finishing one gets no credit: ${missing.join(", ")}`,
-  );
-  const ghost = [...listed].filter((l) => !projectDirs.includes(l));
-  check(ghost.length === 0, `the project portfolio lists page(s) not on disk: ${ghost.join(", ")}`);
+  // THREE surfaces enumerate projects, and they were maintained by hand — one
+  // of them (math/projects/index.html) even carries a comment instructing
+  // humans to keep it in sync with another. That comment is the bug report: the
+  // gallery, the curriculum projects page and the portfolio had drifted apart,
+  // all three missing or mis-stating the same variants. Held against DISK, in
+  // both directions, so a page cannot silently omit a project a student can
+  // reach, and cannot advertise one that does not exist.
+  const CATALOGUES = [
+    [
+      "the project portfolio",
+      "math/projects/portfolio/index.html",
+      "a student finishing one gets no credit",
+    ],
+    ["the projects gallery", "math/projects/index.html", "a student cannot find it"],
+    [
+      "the curriculum projects page",
+      "curriculum/projects/index.html",
+      "a teacher cannot assign it",
+    ],
+  ];
+  for (const [label, file, consequence] of CATALOGUES) {
+    const src = readFileSync(resolve(ROOT, file), "utf8");
+    const listed = new Set(
+      [...src.matchAll(/\/math\/[a-z0-9-]+\/projects\/[a-z0-9-]+\//g)].map((m) => m[0]),
+    );
+    const missing = projectDirs.filter((d) => !listed.has(d));
+    check(
+      missing.length === 0,
+      `${label} does not list ${missing.length} project page(s) that exist on disk, so ${consequence}: ${missing.join(", ")}`,
+    );
+    const ghost = [...listed].filter((l) => !projectDirs.includes(l));
+    check(ghost.length === 0, `${label} lists page(s) not on disk: ${ghost.join(", ")}`);
+  }
 
   // EVERY project page must have a working completion path. Three pages
   // (unit-1/version-c, unit-10/version-c, unit-10/world-architect) were built
