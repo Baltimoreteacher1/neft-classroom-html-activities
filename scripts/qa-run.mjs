@@ -95,6 +95,16 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // NOTEBOOK CHECKPOINTS — the three "write it in your notebook" gates every
+  // core lesson declares. The validator is the only thing that can see a
+  // checkpoint pointing at a phase the lesson does not have (it renders nowhere
+  // and gates nothing while looking authored), and it is the only place the
+  // default classroom copy is counted — a silent 100%-default forever is the
+  // state this reporting exists to expose.
+  [
+    /^(engine\/core\/notebook-checkpoint\.js|engine\/styles\/notebook-checkpoint\.css|assets\/math-notes\/.*|curriculum\/student-supports\/math-notes\/.*|tools\/(validate-notebook-checkpoints|attach-notebook-checkpoints)\.mjs)$/,
+    ["test", "validate:notebook", "validate:js-syntax", "validate:css-integrity", "check"],
+  ],
   // AUTHENTICATION — frozen at 4c2e13dab, documented in AUTH_CONTRACT.md.
   // Nothing here may change as a side effect of unrelated work: on 2026-08-16 a
   // teacher sign-in rewrite left teachers locked out for eleven hours while

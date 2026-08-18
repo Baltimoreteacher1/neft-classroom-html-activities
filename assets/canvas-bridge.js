@@ -205,17 +205,69 @@
   // and silently degrading to a pointer. Warn only — never fails anything.
   var SUSPEND_WARN = 3000;
 
+  // Notebook checkpoint captures NEVER go to the LMS. They are proof a student
+  // wrote in a paper notebook — ungraded, not an assessment item, and of no use
+  // to an LMS resume — while suspend_data is a 4096-CHARACTER budget that this
+  // pathway family already exceeds structurally. The save/resume engine keys
+  // provider payloads by registration index ("p0", "p1", …), which nothing here
+  // controls, so the payload identifies itself with this key instead.
+  // Kept in sync with NOTEBOOK_STATE_KEY in engine/core/notebook-checkpoint.js;
+  // tools/validate-notebook-checkpoints.mjs fails the build if the two drift.
+  var NOTEBOOK_STATE_KEY = "__ntNotebook";
+  // The save/resume engine captures every form field on the page by id, so the
+  // typed capture reaches suspend_data through `fields` as well as through
+  // `custom`. Both doors have to be shut. Kept in sync with
+  // NOTEBOOK_FIELD_PREFIX in engine/core/notebook-checkpoint.js.
+  var NOTEBOOK_FIELD_PREFIX = "nt-nb-";
+
+  /** Strip every notebook input out of a save/resume `fields` bag. */
+  function withoutNotebookFields(fields) {
+    if (!fields || typeof fields !== "object") return fields;
+    var out = {};
+    for (var k in fields) {
+      if (!Object.prototype.hasOwnProperty.call(fields, k)) continue;
+      if (k.indexOf(NOTEBOOK_FIELD_PREFIX) !== -1) continue;
+      out[k] = fields[k];
+    }
+    return out;
+  }
+
+  /** Strip every notebook slice out of a save/resume `custom` bag. */
+  function withoutNotebook(custom) {
+    if (!custom || typeof custom !== "object") return custom;
+    var out = {};
+    for (var k in custom) {
+      if (!Object.prototype.hasOwnProperty.call(custom, k)) continue;
+      var v = custom[k];
+      if (v && typeof v === "object" && v[NOTEBOOK_STATE_KEY]) continue;
+      out[k] = v;
+    }
+    return out;
+  }
+
   /** Drop the least resume-critical slices until the payload fits, in order. */
   function compactForScorm(state) {
     var trimmed = {
-      fields: state.fields,
+      fields: withoutNotebookFields(state.fields),
       navigation: state.navigation,
       dragDrop: state.dragDrop,
-      custom: state.custom,
+      custom: withoutNotebook(state.custom),
       progressPercent: state.progressPercent,
     };
     var order = ["custom", "dragDrop", "navigation"];
     var out = JSON.stringify(trimmed);
+    // Loud, not silent. If a checkpoint key ever reaches the serializer the
+    // payload is refused outright rather than quietly carrying student
+    // notebook captures into the LMS.
+    if (out.indexOf(NOTEBOOK_STATE_KEY) !== -1 || out.indexOf(NOTEBOOK_FIELD_PREFIX) !== -1) {
+      safe(function () {
+        console.error(
+          "[nt-canvas-bridge] REFUSED: a notebook checkpoint capture reached the SCORM serializer. " +
+            "Notebook captures are ungraded and must never enter cmi.suspend_data.",
+        );
+      });
+      return "";
+    }
     for (var i = 0; i < order.length && out.length > SUSPEND_BUDGET; i++) {
       delete trimmed[order[i]];
       out = JSON.stringify(trimmed);

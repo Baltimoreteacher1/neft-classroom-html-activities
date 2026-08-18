@@ -24,6 +24,13 @@ import {
   wireObjectiveTermPopups,
 } from "./lesson-renderer.js";
 import { augmentVocabWithGlossary } from "./math-glossary.js";
+import {
+  announceBlocked,
+  canLeavePhase,
+  initNotebook,
+  mountNotebookCheckpoint,
+  openMathNotesModel,
+} from "./notebook-checkpoint.js";
 import { applyPlainLanguage, isPlainLanguageOn } from "./plain-language.js";
 import { applyPhaseAccent, buildLessonCoverExtras, mountCoverArt } from "./premium.js";
 import { initPresentMode } from "./present-mode.js";
@@ -45,6 +52,7 @@ import "@engine/styles/themes.css";
 import "@engine/styles/editorial.css";
 import "@engine/styles/present-mode.css";
 import "@engine/styles/theme-warm.css";
+import "@engine/styles/notebook-checkpoint.css";
 
 export function createApp(config) {
   const root = document.getElementById("app");
@@ -1288,6 +1296,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // and matching/optional activities mount their own markup after this
       // point — keep underlining that dynamically-added content too.
       this._vocabObserver = observeVocabTerms(el, glossaryVocab);
+      // Notebook checkpoint (if this lesson declares one here). Mounted LAST so
+      // it closes the phase body, after every renderer has finished adding to
+      // it. No-op for a lesson with no `notebook` key.
+      mountNotebookCheckpoint(el, config, index);
       el.addEventListener(
         "animationend",
         () => el.classList.remove("phase-enter", "phase-enter-back"),
@@ -1296,6 +1308,15 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     },
 
     navigateTo(index) {
+      // THE gate. Every way out of a phase — Continue, the sidebar, a minimap
+      // dot, an in-phase control — arrives here, so a notebook checkpoint is
+      // enforced once, in one place, by phase INDEX. Backward moves are never
+      // blocked.
+      const from = state.get().currentPhase ?? 0;
+      if (!canLeavePhase(config, from, index)) {
+        announceBlocked(config, from);
+        return false;
+      }
       this.clearExtraActive();
       state.setPhase(index);
       if (config.phases[index]) {
@@ -1312,8 +1333,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const current = state.get().currentPhase ?? 0;
       const next = current + 1;
       if (next >= config.phases.length) return false;
-      this.navigateTo(next);
-      return true;
+      // navigateTo returns false when a notebook checkpoint blocks the move, and
+      // that answer belongs to the caller: a Continue button must not report a
+      // successful advance that did not happen.
+      return this.navigateTo(next) !== false;
     },
 
     // Mark/unmark which (if any) pre-lesson tab is currently being viewed.
@@ -1340,6 +1363,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // lesson shell. Non-graded: this never touches phase state, XP, or stars —
     // the student's place in the graded flow is preserved underneath.
     openExtra(kind) {
+      // The canonical Math Notes model opens OVER the lesson rather than
+      // replacing the phase body — a student checking the page layout has not
+      // left the lesson and loses nothing on screen.
+      if (kind === "mathnotes") return openMathNotesModel();
       if (kind === "projects") return this.openProjects();
       if (kind === "printables") return this.openPrintables();
       if (kind === "activity") return this.openActivity();
@@ -2133,6 +2160,10 @@ function buildSidebar(config, state, _phaseConfigs) {
 function preLessonNavHtml(config) {
   const tabs = [];
   if (config.readiness) tabs.push({ extra: "readiness", icon: "📚", label: "Get Ready" });
+  // The canonical Math Notes model, in the same place in every lesson, all year.
+  // Rendered from the engine — never hand-added to a lesson's HTML — so there is
+  // one copy of the model and one place it is linked from.
+  tabs.push({ extra: "mathnotes", icon: "📓", label: "Math Notes" });
   if (!tabs.length) return "";
   const items = tabs.map(
     (t) =>
