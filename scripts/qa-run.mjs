@@ -128,6 +128,13 @@ const COVERAGE = [
       "check",
     ],
   ],
+  // SHARED COMPONENT CLAIMS — a string hardcoded in a component is not lesson
+  // data, so every provenance gate is blind to it. Twice now a shared surface
+  // has taught one lesson's mathematics to all of them.
+  [
+    /^(engine\/(components|core)\/.*\.js|shared\/.*\.js|assets\/math-notes\/.*|tools\/validate-shared-component-claims\.mjs|data\/shared-component-claims-review\.json)$/,
+    ["validate:shared-claims", "validate:js-syntax", "check"],
+  ],
   // AUTHENTICATION — frozen at 4c2e13dab, documented in AUTH_CONTRACT.md.
   // Nothing here may change as a side effect of unrelated work: on 2026-08-16 a
   // teacher sign-in rewrite left teachers locked out for eleven hours while
