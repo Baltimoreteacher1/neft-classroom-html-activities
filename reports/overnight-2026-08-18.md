@@ -1458,3 +1458,198 @@ step, if you want most of the benefit for a fraction of the cost, is a
 and fail on any difference outside the declared transform. That is roughly a day
 and it would have caught all four drifted pairs. See Decision 6.
 
+
+---
+
+# SESSION 2 — 2026-08-18, after the overnight report was accepted
+
+## Phase 1 · Deploy — BLOCKED, not deployed
+
+Production is unreachable from this session. Diagnosed rather than assumed:
+
+- **DNS is healthy.** `eduwonderlab.com` → `104.21.52.55` and
+  `2606:4700:3030::6815:3437` (Cloudflare). `www` resolves to the same.
+- **Through the agent proxy** (`127.0.0.1:45435`): `CONNECT eduwonderlab.com:443`
+  → `HTTP/1.1 403 Forbidden`, curl exit 56. The same 403 comes back for
+  `example.com` and `cloudflare.com`, so this is not domain-specific.
+- **Bypassing the proxy** (`--noproxy '*'`): raw TCP to port 443 connects, TLS
+  completes, and the response is `HTTP/2 403` with header
+  `x-deny-reason: host_not_allowed` and body *"Host not in allowlist:
+  eduwonderlab.com. Add this host to your network egress settings to allow
+  access."*
+- **The allowlist is host-specific**: on that same direct path `github.com` and
+  `registry.npmjs.org` both return 200.
+
+**Verdict: this session's egress allowlist. The interceptor names itself.** No
+packet reached Cloudflare, so this is also NOT evidence that production is
+healthy — nothing was learned about the live site in either direction.
+
+The deploy TRIGGER would work (`git ls-remote origin` succeeds, so a push to
+`main` would fire the Cloudflare build). The VERIFICATION cannot: `ship.sh`
+polls `/access-practice-lab/config.json` on `eduwonderlab.com`, and
+`smoke:live --expect <sha>` hits the same host. Deploying now would be deploying
+blind, which R4 exists to prevent. Stopped.
+
+Hosts to allowlist: `eduwonderlab.com`, `www.eduwonderlab.com` (the www→apex
+canonicalization check), `script.google.com` (one probe in `smoke:live`).
+
+## The pre-deploy gates — why they were red, and whether a healthy one would have caught #191
+
+All three red checks on PR #191 are **pre-existing on `main`** and none is caused
+by that branch.
+
+**1. `master-copy-guard`** — greps `curriculum/index.html` for `>Google Slides</a`
+and reports "the slides wiring was lost". There are 0 there and **84 in
+`curriculum/units/index.html`**, where the per-lesson content moved. It fails on
+`origin/main` identically. Its other four assertions (extracted assets loaded, no
+Vercel Forms link, `select-control` present, "Teacher Tools" present, ≥3,000
+lines) are evaluated against the same wrong file, so the guard currently protects
+very little of what it was written to protect.
+
+**2. `smoke`** — `.github/workflows/games-smoke-test.yml:35` pins
+`node-version: "20"`, and the lockfile's `undici@8.9.0` declares
+`"engines": {"node": ">=22.19.0"}`. `jsdom@30.0.1` requires it, and
+`scripts/generate-download-manifest.mjs:32` imports jsdom inside `npm run build`,
+which is the Playwright `webServer`. Fails on any commit in this state. One-line
+fix: `"20"` → `"22"`.
+
+**3. `Required quality gate` → "Browser journeys"** — 5 of 16 e2e tests fail in
+`tests/curriculum-journey.spec.ts`. `enterTeacherMode` asserts
+`#hub-mode-toggle` contains `"Teacher Mode"`; the button now reads
+`"👩‍🏫 You're in Teacher view — switch to Student"`. That label lives in
+`assets/curriculum-enhancements.js`, which PR #191 does not touch (empty diff),
+and it is present at `origin/main`'s tip. The label was rewritten and the test
+was not updated. The gate's other five steps — Biome, unit and contract tests,
+repository validation, Vite build, dependency audit — all PASSED.
+
+### Would a healthy `smoke` have caught the wrong-materials bug?
+
+**No. And this is not speculation — a healthy `smoke` ran while the bug was live
+and did not catch it.** The renumber landed 2026-08-10; the `smoke` workflow has
+green runs on 2026-08-15 and 2026-08-16, before the lockfile change broke it.
+The bug was live through every one of those green runs.
+
+The reason is structural, and the same is true of all three gates:
+
+- **`tests/games-smoke.spec.ts`** iterates a list of **game URLs** — it never
+  loads `/curriculum/units/`. Its assertions are: the page loads, no uncaught
+  page errors, no broken same-origin assets, no console errors, a `<canvas>`
+  rendered. Every one asks *does this page WORK*. The bug produced HTTP 200 on
+  every link, zero 404s, zero console errors.
+- **`tests/curriculum-journey.spec.ts`** visits `/curriculum/` (not
+  `/curriculum/units/`) and asserts on the teacher workflow guide: which view
+  opens on a click, focus order, mobile overflow. It never opens a lesson row's
+  activity list.
+- **`master-copy-guard`** is five presence-and-count greps on one file. Not one
+  of them compares a key to the thing it points at.
+
+So the answer to "healthy or blind" is **blind** — all three, by construction.
+They test whether pages work, never whether a link points at the right lesson. A
+200 was always going to satisfy them.
+
+**What is not blind now:** `validate:lesson-catalogues`, added in `b491192e`,
+holds each catalogue key against the lesson its own entries link to. It runs
+inside `npm run validate`, which is the "Repository validation" step of this same
+pre-deploy gate — and that step **PASSED** on this branch. The check for this
+class is live and green; it just needs the branch to land.
+
+## Phase 2 · Insight Brief routing — HELD at your instruction
+
+Not started. Held until #191 is deployed and verified, so a second mapping change
+is not stacked behind an unverified first one.
+
+## Phase 3 · Spanish work order — Units 1, 9, 10 (audit only)
+
+Full per-lesson, per-surface inventory: **`reports/es-workorder-units-1-9-10.md`**.
+
+**Totals — 16 lessons, 1,437 strings to write** in fields the schema already
+supports:
+
+- unit 1: 6 lessons, 495 strings (34 already have Spanish)
+- unit 9: 4 lessons, 403 strings (22 already have Spanish)
+- unit 10: 6 lessons, 539 strings (31 already have Spanish)
+
+**Ranked by student impact — functional path first (831 of the 1,437):**
+
+- 360 practice prompts — the stem and choices ARE the graded question
+- 242 feedback and explanations — what a student reads after a miss, before the retry
+- 199 hints — the documented route forward when stuck
+- 30 exit tickets — records completion
+
+**Everything else (606):** 162 explore, 144 vocabulary, 130 launch/warm-up, 99
+connect, 55 Learn It worked example, 16 headings and labels.
+
+**Seven fields need a schema change before anything can be stored** — they carry
+no `Es` sibling in ANY lesson fleet-wide, so there is nowhere to put a
+translation today:
+
+- 80 `cloze` → needs `clozeEs`
+- 79 `example` → needs `exampleEs`
+- 64 `question` → needs `questionEs` (Turn-and-Talk / discussion)
+- 16 `contentObjective` → needs `contentObjectiveEs`
+- 16 `languageObjective` → needs `languageObjectiveEs`
+- 16 `heading` → needs `headingEs`
+- 13 `caption` → needs `captionEs`
+
+**Hand-check (R3).** Sampled 10 flagged slots across all three units — 1-1, 1-2,
+1-4, 1-6, 9-1, 9-2, 9-3, 10-1, 10-3, 10-5 — and read the config directly.
+**10/10 genuinely have no Spanish** (`stemEs` / `explanationEs` undefined), and
+`stem` carries `stemEs` in 441 places fleet-wide, so the schema supports them.
+No false positives.
+
+### The one project page with no Spanish, and where it is reachable from
+
+**`math/unit-10/projects/world-architect/`** — 133 KB, zero `.es-text`, zero
+`.i18n-es`, zero `lang="es"`, zero accented characters. The other 26
+student-facing project pages are 100% paired (3,995 of 3,995 `.en-text`
+elements).
+
+It is linked from **four places**, including two students reach directly:
+
+- `math/projects/index.html` — the student projects gallery
+- `curriculum/projects/index.html` — the curriculum projects page
+- `math/unit-10/projects/index.html` — the unit-10 project set page
+- `math/projects/portfolio/index.html` — the portfolio
+
+It was added to the gallery in `c1883486`, the commit immediately before this
+work, so it became student-reachable at that point.
+
+### The mechanism, and the cheapest correct way to add translations
+
+**Where translations live.** Lessons use inline `<field>Es` siblings inside
+`lessons/<id>/config.json` (`stem`/`stemEs`, `hints`/`hintsEs`, …). Project pages
+use a completely different convention — sibling `.en-text` / `.es-text` ELEMENTS
+in the HTML, sharing no code with the lesson engine.
+
+**The rendering contract is already correct and safe.**
+`engine/core/i18n.js`'s `stackContentHtml` returns the English alone when the
+Spanish is blank or identical, rather than emitting an empty `.i18n-es`. So a
+missing translation degrades to English, never to a blank line — adding
+translations one at a time is safe and never leaves a half-state.
+
+**There IS an extract/apply pipeline, and it does not cover this work.**
+`tools/extract-es-gap.mjs` → author into `data/es-translations/*.json` →
+`tools/apply-es-translations.mjs` is exactly the right shape: it prints
+`{"english": ""}` batches ready to fill, deduplicates strings shared across
+variants, and skips anything already translated. But `tools/es-parity-lib.mjs`
+scopes it to **small-group and catch-up variants only** (`SMALL_GROUP_RE`) and to
+**`practice` tiers only**. Units 1/9/10's 16 lessons are whole-group cores, so
+they are outside both the tooling and the gate.
+
+**Cheapest correct route:** extend `es-parity-lib.mjs`'s lesson selector to
+include whole-group cores and its field selector beyond `practice`, then use the
+existing extract → author → apply loop unchanged. That is a small change to two
+selectors in a library that already exists, and it gets you JSON batches to fill
+in rather than 1,437 hand edits across 16 config files. It also deduplicates: a
+stem shared with that lesson's group1/group2 variants gets translated once.
+
+**Can a gate detect an untranslated string at build time? Yes — the pattern is
+already here.** `npm run validate:es-parity` does exactly this for small-group
+practice: it fails on a missing `Es`, on a ragged parallel array
+(`choicesEs` of a different length pairs a Spanish hint with the wrong English
+one), and on a Spanish string byte-identical to its English. Widening its scope
+alongside the pipeline would gate whole-group lessons the same way. I would gate
+it as a RATCHET — a count that may only shrink — rather than a hard zero, so it
+does not block every unrelated push for the length of a 1,437-string translation
+effort.
+
