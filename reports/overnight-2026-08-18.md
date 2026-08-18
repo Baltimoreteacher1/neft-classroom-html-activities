@@ -381,6 +381,32 @@ the network:
   auth-critical files are byte-identical to the frozen baseline.
 
 
+### Addendum — two CI checks are red on `main`, found by opening the PR
+
+Neither is caused by tonight's change; both reproduce on `main`. Full diagnosis
+is in the PR thread. Recorded here because one of them is a real finding:
+
+- **`master-copy-guard` is pointed at the wrong file.** It greps
+  `curriculum/index.html` for `>Google Slides</a` and reports "the slides wiring
+  was lost". There are 0 there and **84 in `curriculum/units/index.html`** — the
+  per-lesson content moved and the guard's target did not follow. `origin/main`
+  has 0 too, so it fails on every PR. Its other four assertions (activity
+  dropdown, Teacher Tools panel, the 3,000-line floor, no Vercel Forms) are being
+  evaluated against the same wrong file, so **the guard currently protects very
+  little of what it was written to protect.** Decision needed: point it at
+  `curriculum/units/index.html`, or check both.
+- **`smoke` pins Node 20 against a lockfile that needs Node ≥ 22.19.**
+  `undici@8.9.0` declares `"engines": {"node": ">=22.19.0"}`, `jsdom@30.0.1`
+  needs it, and `scripts/generate-download-manifest.mjs` imports jsdom inside
+  `npm run build`, which is the Playwright `webServer`. Last green run was
+  2026-08-16, before that lockfile landed. One-line fix:
+  `.github/workflows/games-smoke-test.yml:35`, `"20"` → `"22"`.
+
+I did not push either fix: both are CI-config changes that alter what a gate
+asserts, both predate this branch, and neither is what tonight was for.
+`claude-review` passed; `Required quality gate` was still running at hand-off.
+
+
 ---
 
 ## 8 · Frozen-path diff
