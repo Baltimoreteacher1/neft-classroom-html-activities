@@ -47,6 +47,13 @@ const MIN_LENGTH = 1;
 
 // The one canonical model. Declared once, here — never per lesson.
 export const MATH_NOTES_MODEL_PAGE = "/curriculum/student-supports/math-notes/";
+// The Math Notes support page. The lesson dialog no longer links to it: that
+// link opened the sample page below, which is the fabricated "Lesson 1-1 ·
+// Sept. 3 / Area = base × height" example — the same content removed from the
+// dialog itself, one click further away. The dialog now shows this lesson's
+// own notes and needs no onward link. The page stays on its own route, where
+// it is reached deliberately rather than from inside a lesson.
+//
 // The canonical model page image. It is NOT shown inside the lesson dialog:
 // the sample page prints a made-up lesson header ("Lesson 1-1 · Sept. 3") and
 // worked mathematics of its own ("Area = base × height", vocabulary "variable /
@@ -356,10 +363,7 @@ export function openMathNotesModel(config) {
       <h2>What should my page look like?</h2>
       <button type="button" class="nt-nb-model-close" aria-label="Close">✕</button>
     </div>
-    ${renderLessonNotesHtml(lessonConfig)}
-    <div class="nt-nb-model-foot">
-      <a class="nt-nb-model-link" href="${MATH_NOTES_MODEL_PAGE}" target="_blank" rel="noopener">Open the full page ↗</a>
-    </div>`;
+    ${renderLessonNotesHtml(lessonConfig)}`;
   dlg.querySelector(".nt-nb-model-close").addEventListener("click", () => dlg.close());
   dlg.addEventListener("click", (e) => {
     if (e.target === dlg) dlg.close();
