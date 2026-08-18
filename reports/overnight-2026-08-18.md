@@ -2005,3 +2005,39 @@ could not launch a browser and skipped the render probe. Re-run standalone with
 `PW_CHROMIUM_PATH` pointed at the sandbox's Chromium to get a real answer rather
 than accepting the 1.8s green.
 
+### validate:lesson-boot, run honestly — and the 8-1 scare, resolved
+
+Because the gate reported `PASS` in 1.8s (the documented skip signature), it was
+re-run standalone with `PW_CHROMIUM_PATH` pointed at this sandbox's Chromium.
+
+**First honest run: 16/17, with lesson 8-1 FAILING** —
+`uncaught: Failed to resolve module specifier "web-vitals"`, which the probe
+correctly labels "the blank-page class of bug."
+
+That was NOT reported as a defect, because two facts argued against it:
+`dist/assets/nt-web-vitals.js` was correctly bundled (0 bare imports — Vite
+inlines the package), and `smoke-lesson-boot.mjs`'s own header blames concurrent
+builds sharing `node_modules` for dist churn of exactly this kind. A `git commit`
+had fired the newly-installed pre-commit hook, which runs
+`scripts/codex/codex-verify.sh` → `run_npm_script_if_present build`, rebuilding
+`dist/` underneath the running probe.
+
+**Isolation test:** killed every competing process, rebuilt clean (0 vite
+processes, 0 bare imports), re-ran the probe alone.
+
+```
+PASS  8-1                    #app/mount 882
+17/17 pages rendered; 0 failed.
+```
+
+Same command, same commit, no concurrent build → 8-1 renders. The failure was
+the build-tooling artifact, not a page defect. Recorded here because "I saw a
+student lesson fail to render and then it passed" is worth a written trace
+either way.
+
+**Operational note:** `npm run qa:install-hooks` installs `pre-commit` as well as
+`pre-push`, and that pre-commit hook runs a full Vite build. On this repo's
+commit-often workflow that makes every commit cost minutes and, as above, it can
+corrupt a concurrent measurement. Worth knowing before installing it on a
+machine where you commit in a tight loop.
+
