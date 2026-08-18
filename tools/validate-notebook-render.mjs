@@ -35,7 +35,6 @@ const SAMPLE_LESSONS = ["1-1", "2-4", "5-10", "6-2"];
 const EXPECTED_HEADINGS = {
   1: "Notebook time — Section 1: Math Words",
   2: "Notebook time — Section 2: Today's Math",
-  3: "Notebook time — Section 3: My Work",
 };
 
 const failures = [];
@@ -145,8 +144,14 @@ try {
     const lessonConfig = JSON.parse(readFileSync(configPath, "utf8"));
     const declaredCheckpoints = lessonConfig.notebook?.checkpoints || [];
 
-    if (declaredCheckpoints.length !== 3) {
-      fail(`${lessonId}: declared ${declaredCheckpoints.length} checkpoints in config, expected 3`);
+    if (declaredCheckpoints.length !== 2) {
+      fail(
+        `${lessonId}: declared ${declaredCheckpoints.length} checkpoints in config, expected 2 (boxes 1-2 only)`,
+      );
+    }
+    const hasBox3 = declaredCheckpoints.some((c) => c.box === 3);
+    if (hasBox3) {
+      fail(`${lessonId}: declares Box 3, which is forbidden under 2-checkpoint specification`);
     }
 
     const phaseMap = {
@@ -195,7 +200,7 @@ try {
       note(`${lessonId}: DIALOG.nt-nb-model automatically closed upon phase change`);
     }
 
-    // 3. Test Checkpoint Render & Gate Progression across phases
+    // 3. Test Checkpoint Render & Gate Progression across boxes 1 and 2
     const renderedBoxes = [];
 
     for (const cp of declaredCheckpoints) {
@@ -217,14 +222,10 @@ try {
 
         // Measurement of position in phase
         let topOffset = 0;
-        let isAtEnd = false;
         if (thisBlock && activePhase) {
           const blockRect = thisBlock.getBoundingClientRect();
           const phaseRect = activePhase.getBoundingClientRect();
           topOffset = Math.round(blockRect.top - phaseRect.top);
-          // Check if it was merely appended as the last element after 2500px+
-          const phaseHeight = activePhase.scrollHeight;
-          isAtEnd = phaseHeight > 1500 && blockRect.top - phaseRect.top > phaseHeight * 0.75;
         }
 
         return {
@@ -232,7 +233,6 @@ try {
           found: !!thisBlock,
           heading,
           topOffset,
-          isAtEnd,
         };
       }, cp.box);
 
@@ -248,17 +248,9 @@ try {
         } else {
           note(`${lessonId} (Phase ${cp.phase}): Box ${cp.box} rendered with correct heading`);
         }
-
-        // Defect 3 check: block must not be at the very bottom of a long panel
-        if (phaseCheck.isAtEnd && cp.box === 3) {
-          fail(
-            `${lessonId} (Practice): Box 3 mounted at ${phaseCheck.topOffset}px (~bottom of panel), expected near top before problems`,
-          );
-        } else {
-          note(
-            `${lessonId} (Phase ${cp.phase}): Box ${cp.box} is placed in-flow (offset ${phaseCheck.topOffset}px)`,
-          );
-        }
+        note(
+          `${lessonId} (Phase ${cp.phase}): Box ${cp.box} is placed in-flow (offset ${phaseCheck.topOffset}px)`,
+        );
       }
 
       // Test gate: verify forward navigation is blocked before filling, then unblocked after filling
@@ -315,12 +307,51 @@ try {
       }
     }
 
-    if (renderedBoxes.length !== 3) {
+    if (renderedBoxes.length !== 2) {
       fail(
-        `${lessonId}: Only ${renderedBoxes.length}/3 checkpoint boxes rendered across phases (${renderedBoxes.join(", ") || "none"})`,
+        `${lessonId}: Only ${renderedBoxes.length}/2 checkpoint boxes rendered across phases (${renderedBoxes.join(", ") || "none"})`,
       );
     } else {
-      note(`${lessonId}: All 3 checkpoint boxes rendered across their respective phases`);
+      note(`${lessonId}: Both checkpoint boxes (1 & 2) rendered across their respective phases`);
+    }
+
+    // 4. Verify Practice Phase (Phase 4) is completely ungated with 0 checkpoint blocks
+    await page.evaluate(() => {
+      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: 4 } }));
+    });
+    await page.waitForTimeout(500);
+
+    const practiceState = await page.evaluate(() => {
+      const activePhase = document.querySelector(".phase.active");
+      const nbInPractice = activePhase ? Array.from(activePhase.querySelectorAll(".nt-nb")) : [];
+      return {
+        label: activePhase?.getAttribute("aria-label"),
+        nbCount: nbInPractice.length,
+      };
+    });
+
+    if (practiceState.nbCount > 0) {
+      fail(
+        `${lessonId} (Practice): Found ${practiceState.nbCount} checkpoint block(s) in Practice phase, expected 0`,
+      );
+    } else {
+      note(`${lessonId} (Practice): 0 checkpoint blocks in Practice phase`);
+    }
+
+    // Verify free navigation past Practice (Phase 4 -> Phase 5 Connect) with no gate
+    await page.evaluate(() => {
+      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: 5 } }));
+    });
+    await page.waitForTimeout(500);
+
+    const connectActive = await page.evaluate(() => {
+      return document.querySelector(".phase.active")?.getAttribute("aria-label");
+    });
+
+    if (!connectActive || connectActive === "Practice") {
+      fail(`${lessonId}: Navigation from Practice was blocked (Practice must be ungated)`);
+    } else {
+      note(`${lessonId}: Practice phase is completely ungated (moves freely to Connect)`);
     }
 
     await page.close();

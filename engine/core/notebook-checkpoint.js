@@ -38,7 +38,7 @@ export const PHASE_IDS = [
   "objectives-review",
 ];
 
-export const BOXES = [1, 2, 3];
+export const BOXES = [1, 2];
 const MAX_LENGTH = 40;
 const MIN_LENGTH = 1;
 

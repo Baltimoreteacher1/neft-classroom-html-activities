@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * attach-notebook-checkpoints.mjs — give every core lesson its three notebook
+ * attach-notebook-checkpoints.mjs — give every core lesson its two notebook
  * checkpoints.
  *
  * The checkpoints themselves are just `{ box, phase }`: `prompt` is optional and
@@ -18,17 +18,16 @@
  *   box 1 Math Words   → launch    — vocabulary is an extra panel, not a phase;
  *                                    launch is the first gateable phase.
  *   box 2 Today's Math → explore   — where the rule/model is built.
- *   box 3 My Work      → practice  — where the numbered problems are.
  *
- * A lesson missing any of those three sections is REPORTED AND SKIPPED, never
+ * A lesson missing either of those two sections is REPORTED AND SKIPPED, never
  * guessed at: a checkpoint on the wrong phase is worse than none.
  *
  * CORE LESSONS ONLY, and that is a hard boundary rather than a starting scope.
  * The small-group (group1 / group2) and catch-up variants are rendered by
  * engine/core/small-group-renderer.js, which never calls createApp() — so the
  * block and the gate are both unreachable there. Their configs DO carry
- * launch/explore/practice sections, so widening the `CORE` pattern would write
- * three checkpoints into each of 204 pathways that render nowhere and gate
+ * launch/explore sections, so widening the `CORE` pattern would write
+ * checkpoints into each of 204 pathways that render nowhere and gate
  * nothing. validate:notebook fails if any variant ever carries one.
  *
  * Usage: node tools/attach-notebook-checkpoints.mjs [--dry-run]
@@ -41,7 +40,6 @@ const CORE = /^\d+-\d+$/;
 const MAP = [
   { box: 1, phase: "launch", section: "launch" },
   { box: 2, phase: "explore", section: "explore" },
-  { box: 3, phase: "practice", section: "practice" },
 ];
 
 const EXPECTED = { checkpoints: MAP.map(({ box, phase }) => ({ box, phase })) };

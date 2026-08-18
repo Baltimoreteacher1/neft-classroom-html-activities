@@ -2163,10 +2163,6 @@ function buildSidebar(config, state, _phaseConfigs) {
 function preLessonNavHtml(config) {
   const tabs = [];
   if (config.readiness) tabs.push({ extra: "readiness", icon: "📚", label: "Get Ready" });
-  // The canonical Math Notes model, in the same place in every lesson, all year.
-  // Rendered from the engine — never hand-added to a lesson's HTML — so there is
-  // one copy of the model and one place it is linked from.
-  tabs.push({ extra: "mathnotes", icon: "📓", label: "Math Notes" });
   if (!tabs.length) return "";
   const items = tabs.map(
     (t) =>
@@ -2272,13 +2268,15 @@ function updateSidebar(sidebar, state, phaseConfigs) {
   const nav = sidebar.querySelector('[data-bind="phases"]');
   if (!nav) return;
 
-  // Vocab → Notes → Learn It ride directly under the Launch (phase 1) button as
-  // indented sub-tabs — reference material that lives with the lesson flow, not
-  // in the "Before the lesson" group above. Order is deliberate: get curious
-  // (Launch), pick up the words (Vocab), read along (Notes), then Learn It
-  // teaches the concept step by step and leads into the lesson. Rendered inside
-  // the data-bound phase nav so they sit immediately beneath Launch; click is
-  // delegated via rma:openextra.
+  // The canonical Math Notes model, right under the Warmup (phase 1) button.
+  const mathNotesBtn = `
+    <button class="phase-btn extra-btn" data-extra="mathnotes">
+      <span class="phase-num" style="background:transparent; box-shadow:none; font-size:1.15rem;">📓</span>
+      <span>Math Notes</span>
+    </button>`;
+
+  // Vocab → Learn It ride directly under the Launch (phase 1) button as
+  // indented sub-tabs — reference material that lives with the lesson flow.
   const launchSubTabs = [
     { extra: "vocab", icon: "🔑", label: "Vocab" },
     { extra: "learn", icon: "💡", label: "Learn It" },
@@ -2315,8 +2313,11 @@ function updateSidebar(sidebar, state, phaseConfigs) {
         <span class="phase-stars">${stars}</span>
       </button>
     `;
-      // Launch is phase index 2 (Phase 3) — drop Vocab/Notes right beneath it.
-      return i === 2 ? btn + launchSubTabs : btn;
+      // Warmup is index 0 — drop Math Notes right beneath it.
+      if (i === 0) return btn + mathNotesBtn;
+      // Launch is phase index 2 (Phase 3) — drop Vocab/Learn It right beneath it.
+      if (i === 2) return btn + launchSubTabs;
+      return btn;
     })
     .join("");
 

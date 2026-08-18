@@ -4,10 +4,11 @@
  *
  * What this holds that nothing else can:
  *
- *  1. EVERY core lesson declares exactly three checkpoints, boxes 1-3, no gaps
+ *  1. EVERY core lesson declares exactly two checkpoints, boxes 1-2, no gaps
  *     and no duplicates. Zero checkpoints FAILS — the whole point is that a
  *     student is asked to write in their notebook in every lesson, and a lesson
  *     that quietly opted out looks identical to one that was never reached.
+ *     Declaring a third checkpoint (such as Box 3) FAILS.
  *  2. Every checkpoint names a phase id the ENGINE actually has, and a section
  *     THAT lesson actually ships. A checkpoint on a nonexistent phase renders
  *     nowhere and gates nothing, while looking authored.
@@ -79,9 +80,11 @@ function inspect(config) {
   if (!Array.isArray(list) || list.length === 0) {
     return { errors: ["declares no notebook checkpoints"], authored: 0 };
   }
-  if (list.length !== 3) errors.push(`has ${list.length} checkpoints, expected 3`);
+  if (list.length !== 2) errors.push(`has ${list.length} checkpoints, expected 2`);
   const boxes = list.map((c) => c?.box);
-  for (const want of [1, 2, 3]) {
+  if (boxes.includes(3))
+    errors.push("box 3 is forbidden — lessons must declare exactly 2 checkpoints (boxes 1 and 2)");
+  for (const want of [1, 2]) {
     const n = boxes.filter((b) => b === want).length;
     if (n === 0) errors.push(`missing box ${want}`);
     if (n > 1) errors.push(`box ${want} declared ${n} times`);
@@ -111,30 +114,34 @@ function inspect(config) {
 
 /* ── self-test: every detector must fire on a known-bad input ────────────── */
 
-const base = { launch: {}, explore: {}, practice: {} };
+const base = { launch: {}, explore: {} };
 const cp = (box, phase) => ({ box, phase });
 const cases = [
   [{ ...base }, /no notebook checkpoints/, "a lesson with no notebook block"],
   [
-    { ...base, notebook: { checkpoints: [cp(1, "launch"), cp(2, "explore")] } },
-    /2 checkpoints|missing box 3/,
-    "a lesson missing a section",
+    { ...base, notebook: { checkpoints: [cp(1, "launch")] } },
+    /1 checkpoints|missing box 2/,
+    "a lesson missing box 2",
   ],
   [
-    { ...base, notebook: { checkpoints: [cp(1, "launch"), cp(1, "explore"), cp(3, "practice")] } },
+    { ...base, notebook: { checkpoints: [cp(1, "launch"), cp(2, "explore"), cp(3, "practice")] } },
+    /3 checkpoints|expected 2|box 3 is forbidden/,
+    "a lesson declaring 3 checkpoints (box 3 reintroduced)",
+  ],
+  [
+    { ...base, notebook: { checkpoints: [cp(1, "launch"), cp(1, "explore")] } },
     /box 1 declared 2 times/,
     "a duplicated box",
   ],
   [
-    { ...base, notebook: { checkpoints: [cp(1, "launch"), cp(2, "nope"), cp(3, "practice")] } },
+    { ...base, notebook: { checkpoints: [cp(1, "launch"), cp(2, "nope")] } },
     /not an engine phase id/,
     "a nonexistent phase id",
   ],
   [
     {
       launch: {},
-      practice: {},
-      notebook: { checkpoints: [cp(1, "launch"), cp(2, "explore"), cp(3, "practice")] },
+      notebook: { checkpoints: [cp(1, "launch"), cp(2, "explore")] },
     },
     /has no explore section/,
     "a phase the lesson does not ship",
@@ -149,7 +156,7 @@ for (const [config, pattern, name] of cases) {
 {
   const good = {
     ...base,
-    notebook: { checkpoints: [cp(1, "launch"), cp(2, "explore"), cp(3, "practice")] },
+    notebook: { checkpoints: [cp(1, "launch"), cp(2, "explore")] },
   };
   const { errors } = inspect(good);
   check(errors.length === 0, `a valid lesson was rejected: ${errors.join(", ")}`);
@@ -250,7 +257,7 @@ for (const id of ids) {
   const { errors, authored } = inspect(config);
   for (const e of errors) check(false, `${id}: ${e}`);
   totalAuthoredBoxes += authored;
-  if (authored === 3) withAuthored++;
+  if (authored === 2) withAuthored++;
   else withDefaults++;
 }
 
@@ -261,8 +268,8 @@ for (const id of ids) {
 // group2) and catch-up variants are rendered by engine/core/small-group-
 // renderer.js, which never calls createApp() — so both halves of this feature
 // (the block, mounted in app.js renderPhase, and the gate in navigateTo) are
-// UNREACHABLE there. Their configs do carry launch/explore/practice sections,
-// so attach-notebook-checkpoints.mjs would write three checkpoints into each
+// UNREACHABLE there. Their configs do carry launch/explore sections,
+// so attach-notebook-checkpoints.mjs would write checkpoints into each
 // one that render nowhere and gate nothing: authored, inert, and invisible.
 //
 // Until that renderer grows its own checkpoint surface, a checkpoint on a
@@ -287,7 +294,7 @@ check(
 );
 
 console.log(
-  `notebook checkpoints — ${ids.length} core lessons | authored prompts: ${withAuthored} | running defaults: ${withDefaults} | authored boxes: ${totalAuthoredBoxes}/${ids.length * 3}`,
+  `notebook checkpoints — ${ids.length} core lessons | authored prompts: ${withAuthored} | running defaults: ${withDefaults} | authored boxes: ${totalAuthoredBoxes}/${ids.length * 2}`,
 );
 const reachable = ids.length + variants.length;
 const { LESSON_ROUTES } = pathwayCounts();

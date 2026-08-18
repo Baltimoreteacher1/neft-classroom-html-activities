@@ -28,11 +28,7 @@ import {
 import { attachRegenPractice } from "../components/regen-practice.js";
 import { attachAnnotator } from "../components/scene-annotate.js";
 import { attachVoiceInput } from "../components/voice-explain.js";
-import {
-  noticeWonderCaption,
-  noticeWonderImageAlt,
-  renderAcademicVocabulary as renderAcademicVocabularyCard,
-} from "./academic-vocabulary.js";
+import { noticeWonderCaption, noticeWonderImageAlt } from "./academic-vocabulary.js";
 import { createAdaptiveSequence } from "./adaptive.js";
 import { enableWordProblemAnnotation, observeWordProblemAnnotation } from "./annotate.js";
 import { fullerFormHint, isRight } from "./answer-match.js";
@@ -3284,23 +3280,6 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
   }
 }
 
-// ── Academic Vocabulary ─────────────────────────────────────────────────────
-// A concise, readable list of the lesson's OWN academic vocabulary, rendered in
-// Launch so students meet the words before the instruction that uses them.
-//
-// The card itself lives in academic-vocabulary.js so it can be unit-tested
-// (nothing in THIS file is importable from `npm test` — see that module's
-// header). `wireObjectiveTermPopups` is injected rather than imported there, so
-// a term opens the SAME shared glossary popup the objectives use — picture plus
-// a kid-friendly EN/ES explanation — and never a second popup system.
-//
-// This restores a reading surface, NOT the graded Vocabulary phase removed in
-// 2f5b382fd: no scoring, no XP, no phase index, so save/resume and the 8-phase
-// structure are untouched.
-function renderAcademicVocabulary(host, config) {
-  return renderAcademicVocabularyCard(host, config, { wirePopups: wireObjectiveTermPopups });
-}
-
 function renderLaunchPhase(el, state, ctx, config) {
   const cfg = config.launch;
 
@@ -3405,11 +3384,6 @@ function renderLaunchPhase(el, state, ctx, config) {
   renderNoticeWonderSupport(nwStack, cfg.beCurious, config, nwStack);
   el.append(nwStack);
 
-  // Academic Vocabulary sits AFTER the notice/wonder work and before the
-  // application scenario: students look and wonder first (the words would give
-  // the scene away if they came before it), then meet the language they need for
-  // the instruction that follows. No-op when the lesson authors no vocabulary.
-  renderAcademicVocabulary(el, config);
   mountNotebookCheckpoint(el, config, 2);
 
   // Note: Objectives card sits directly in between Warmup and Launch (rendered at bottom of Warmup phase).
@@ -4260,9 +4234,6 @@ function renderPracticePhase(el, state, ctx, config) {
     "🎯",
     "<strong>Adaptive practice:</strong> Pick <strong>Level 1</strong> for step-by-step hints, <strong>Level 2</strong> for a stretch challenge, or <strong>Adaptive</strong> to let the activity adjust. Wrong answers teach — read the feedback and try again.",
   );
-
-  // Section 3: My Work checkpoint mounted near top before problem sets
-  mountNotebookCheckpoint(el, config, 4);
 
   // Optional interactive "practice lab(s)" (factor-tree-lab, power-builder,
   // equation-balance-lab, step-solver, …) — a put-your-own-numbers-in tool
