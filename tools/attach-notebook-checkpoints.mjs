@@ -23,6 +23,14 @@
  * A lesson missing any of those three sections is REPORTED AND SKIPPED, never
  * guessed at: a checkpoint on the wrong phase is worse than none.
  *
+ * CORE LESSONS ONLY, and that is a hard boundary rather than a starting scope.
+ * The small-group (group1 / group2) and catch-up variants are rendered by
+ * engine/core/small-group-renderer.js, which never calls createApp() — so the
+ * block and the gate are both unreachable there. Their configs DO carry
+ * launch/explore/practice sections, so widening the `CORE` pattern would write
+ * three checkpoints into each of 204 pathways that render nowhere and gate
+ * nothing. validate:notebook fails if any variant ever carries one.
+ *
  * Usage: node tools/attach-notebook-checkpoints.mjs [--dry-run]
  */
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";

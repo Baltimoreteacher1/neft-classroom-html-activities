@@ -249,8 +249,47 @@ for (const id of ids) {
   else withDefaults++;
 }
 
+/* ── 5. the pathway gap, stated out loud ─────────────────────────────────── */
+
+// A number that counts only core reads as full coverage of a curriculum that
+// actually serves 288 student-reachable pathways. The small-group (group1 /
+// group2) and catch-up variants are rendered by engine/core/small-group-
+// renderer.js, which never calls createApp() — so both halves of this feature
+// (the block, mounted in app.js renderPhase, and the gate in navigateTo) are
+// UNREACHABLE there. Their configs do carry launch/explore/practice sections,
+// so attach-notebook-checkpoints.mjs would write three checkpoints into each
+// one that render nowhere and gate nothing: authored, inert, and invisible.
+//
+// Until that renderer grows its own checkpoint surface, a checkpoint on a
+// variant is a defect, not coverage. This gate says so in both directions —
+// it FAILS if one appears, and it PRINTS the gap on every run so it cannot be
+// mistaken for a solved problem.
+const VARIANT = /^(\d+-\d+)-(group1|group2|catchup)$/;
+const variants = readdirSync("lessons")
+  .filter((d) => VARIANT.test(d))
+  .sort();
+const variantWithCheckpoints = [];
+const byType = { group1: 0, group2: 0, catchup: 0 };
+for (const id of variants) {
+  byType[id.match(VARIANT)[2]]++;
+  const file = join("lessons", id, "config.json");
+  if (!existsSync(file)) continue;
+  if (JSON.parse(readFileSync(file, "utf8")).notebook) variantWithCheckpoints.push(id);
+}
+check(
+  variantWithCheckpoints.length === 0,
+  `these variant pathways declare notebook checkpoints, but small-group-renderer.js cannot render or gate them — they would be inert: ${variantWithCheckpoints.join(", ")}`,
+);
+
 console.log(
   `notebook checkpoints — ${ids.length} core lessons | authored prompts: ${withAuthored} | running defaults: ${withDefaults} | authored boxes: ${totalAuthoredBoxes}/${ids.length * 3}`,
+);
+const reachable = ids.length + variants.length;
+console.log(
+  `  PATHWAY COVERAGE: ${ids.length}/${reachable} student-reachable pathways carry checkpoints. ` +
+    `${variants.length} do NOT (group1 ${byType.group1}, group2 ${byType.group2}, catch-up ${byType.catchup}) — ` +
+    "they use a different renderer (small-group-renderer.js, six tabs) with no checkpoint surface yet. " +
+    "This is a known, unclosed gap, not an exemption.",
 );
 if (withDefaults === ids.length) {
   console.log(
