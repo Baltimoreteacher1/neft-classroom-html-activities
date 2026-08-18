@@ -130,6 +130,7 @@ export function readCheckpoints(config) {
       heading: defaults.heading,
       prompt: authored || defaults.body,
       promptSource: /** @type {"authored"|"default"} */ (authored ? "authored" : "default"),
+      copyPanel: cp.copyPanel || null,
       label: String(capture.label || defaults.capture).trim(),
       maxLength: Math.min(Number(capture.maxLength) || MAX_LENGTH, MAX_LENGTH),
     });
@@ -276,6 +277,39 @@ export function openMathNotesModel() {
 }
 
 /**
+ * Render the visually unmistakable copy panel containing exactly what the
+ * student writes by hand in their notebook — nothing else.
+ */
+function renderCopyPanelHtml(cp) {
+  if (!cp || !cp.copyPanel) return "";
+  if (cp.box === 1 && Array.isArray(cp.copyPanel.items) && cp.copyPanel.items.length > 0) {
+    const listItems = cp.copyPanel.items
+      .map(
+        (item) =>
+          `<li><strong class="nt-nb-copy-term">${esc(item.term)}</strong> — <span class="nt-nb-copy-meaning">${esc(item.meaning)}</span></li>`,
+      )
+      .join("\n");
+    return `
+    <div class="nt-nb-copy-panel nt-nb-copy-box1" data-no-vocab="true" aria-label="Copy into your notebook">
+      <div class="nt-nb-copy-banner">Copy into your notebook:</div>
+      <ol class="nt-nb-copy-list">
+        ${listItems}
+      </ol>
+    </div>`;
+  }
+  if (cp.box === 2 && cp.copyPanel.rule) {
+    return `
+    <div class="nt-nb-copy-panel nt-nb-copy-box2" data-no-vocab="true" aria-label="Copy into your notebook">
+      <div class="nt-nb-copy-banner">Copy into your notebook:</div>
+      <div class="nt-nb-copy-rule">${esc(cp.copyPanel.rule)}</div>
+      ${cp.copyPanel.meaning ? `<div class="nt-nb-copy-meaning">${esc(cp.copyPanel.meaning)}</div>` : ""}
+      ${cp.copyPanel.example ? `<div class="nt-nb-copy-example"><span class="nt-nb-copy-example-label">Example:</span> ${esc(cp.copyPanel.example)}</div>` : ""}
+    </div>`;
+  }
+  return "";
+}
+
+/**
  * Render the checkpoint for this phase in the phase body.
  *
  * No-op when the lesson declares no checkpoint here.
@@ -302,6 +336,7 @@ export function mountNotebookCheckpoint(el, config, phaseIndex) {
       <h3 class="nt-nb-title" id="${idBase}-title">${esc(cp.heading)}</h3>
     </div>
     <p class="nt-nb-prompt">${esc(cp.prompt)}</p>
+    ${renderCopyPanelHtml(cp)}
     ${
       cp.box === 1
         ? `<button type="button" class="nt-nb-modellink">📓 What should my page look like?</button>`

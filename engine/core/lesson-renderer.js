@@ -2033,7 +2033,7 @@ export function wireObjectiveTermPopups(block, vocab) {
 // word inside a <button>/<label> would break the control; inside an <svg> or
 // interactive visual it would corrupt the figure.
 const VOCAB_BODY_EXCLUSIONS =
-  "button, a[href], input, textarea, select, option, label, summary, script, style, svg, code, kbd, .obj-term, .obj-popup-backdrop, [contenteditable], [data-no-vocab], .interactive-visual, .section-icon, .katex, .MathJax, mjx-container";
+  "button, a[href], input, textarea, select, option, label, summary, script, style, svg, code, kbd, .obj-term, .obj-popup-backdrop, [contenteditable], [data-no-vocab], .interactive-visual, .section-icon, .katex, .MathJax, mjx-container, .nt-nb-copy-panel, .nt-nb";
 
 // Underline EVERY lesson-vocabulary term wherever it appears in a rendered
 // phase body (not just the objectives) and wire each one to the same tap-to-open

@@ -71,14 +71,17 @@ function check(ok, msg) {
   }
 }
 
+const EMOJI_OR_ICON =
+  /[\p{Extended_Pictographic}\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
+
 /* ── detector, used by both the self-test and the sweep ──────────────────── */
 
-/** @returns {{errors: string[], authored: number}} */
+/** @returns {{errors: string[], authored: number, hasCopyPanel: boolean}} */
 function inspect(config) {
   const errors = [];
   const list = config?.notebook?.checkpoints;
   if (!Array.isArray(list) || list.length === 0) {
-    return { errors: ["declares no notebook checkpoints"], authored: 0 };
+    return { errors: ["declares no notebook checkpoints"], authored: 0, hasCopyPanel: false };
   }
   if (list.length !== 2) errors.push(`has ${list.length} checkpoints, expected 2`);
   const boxes = list.map((c) => c?.box);
@@ -90,9 +93,11 @@ function inspect(config) {
     if (n > 1) errors.push(`box ${want} declared ${n} times`);
   }
   let authored = 0;
+  let hasCopyPanel = true;
   for (const cp of list) {
     if (!cp || typeof cp !== "object") {
       errors.push("a checkpoint is not an object");
+      hasCopyPanel = false;
       continue;
     }
     const phase = String(cp.phase || "");
@@ -108,43 +113,210 @@ function inspect(config) {
     if (cp.capture?.maxLength != null && Number(cp.capture.maxLength) > 40) {
       errors.push(`box ${cp.box}: capture maxLength ${cp.capture.maxLength} exceeds 40`);
     }
+
+    // Copy panel validation
+    if (!cp.copyPanel) {
+      errors.push(`box ${cp.box}: missing copyPanel`);
+      hasCopyPanel = false;
+    } else if (cp.box === 1) {
+      const items = cp.copyPanel.items;
+      if (!Array.isArray(items)) {
+        errors.push("box 1: copyPanel.items must be an array");
+        hasCopyPanel = false;
+      } else {
+        if (items.length < 3 || items.length > 5) {
+          errors.push(`box 1: copyPanel.items length ${items.length} not between 3 and 5`);
+          hasCopyPanel = false;
+        }
+        for (let i = 0; i < items.length; i++) {
+          const it = items[i];
+          if (!it || typeof it !== "object" || !it.term || !it.meaning) {
+            errors.push(`box 1: item ${i + 1} missing term or meaning`);
+            hasCopyPanel = false;
+            continue;
+          }
+          if (it.term.endsWith(".")) {
+            errors.push(`box 1: term "${it.term}" must not end with a period`);
+            hasCopyPanel = false;
+          }
+          if (EMOJI_OR_ICON.test(it.term) || EMOJI_OR_ICON.test(it.meaning)) {
+            errors.push(`box 1: item "${it.term}" contains emoji or icon`);
+            hasCopyPanel = false;
+          }
+          const wordCount = it.meaning.trim().split(/\s+/).length;
+          if (wordCount >= 12) {
+            errors.push(
+              `box 1: meaning for "${it.term}" has ${wordCount} words (must be under 12)`,
+            );
+            hasCopyPanel = false;
+          }
+        }
+      }
+    } else if (cp.box === 2) {
+      const { rule, meaning, example } = cp.copyPanel;
+      if (!rule || !String(rule).trim()) {
+        errors.push("box 2: copyPanel missing rule line");
+        hasCopyPanel = false;
+      } else if (EMOJI_OR_ICON.test(rule)) {
+        errors.push("box 2: rule contains emoji or icon");
+        hasCopyPanel = false;
+      }
+      if (!meaning || !String(meaning).trim()) {
+        errors.push("box 2: copyPanel missing meaning line");
+        hasCopyPanel = false;
+      } else if (EMOJI_OR_ICON.test(meaning)) {
+        errors.push("box 2: meaning contains emoji or icon");
+        hasCopyPanel = false;
+      }
+      if (example) {
+        if (example.includes("\n")) {
+          errors.push("box 2: example must be a single line");
+          hasCopyPanel = false;
+        }
+        if (EMOJI_OR_ICON.test(example)) {
+          errors.push("box 2: example contains emoji or icon");
+          hasCopyPanel = false;
+        }
+      }
+    }
   }
-  return { errors, authored };
+  return { errors, authored, hasCopyPanel };
 }
 
 /* ── self-test: every detector must fire on a known-bad input ────────────── */
 
+const validBox1 = {
+  items: [
+    { term: "rate", meaning: "A ratio comparing quantities with different units" },
+    { term: "unit rate", meaning: "The rate for 1 unit of a quantity" },
+    { term: "per", meaning: "For each single unit" },
+  ],
+};
+const validBox2 = {
+  rule: "Unit Rate = Total Quantity ÷ Number of Units",
+  meaning: "Divide to find the rate for 1 single unit.",
+  example: "$3 ÷ 5 games = $0.60 per game",
+};
+
 const base = { launch: {}, explore: {} };
-const cp = (box, phase) => ({ box, phase });
+const cp = (box, phase, copyPanel) => ({ box, phase, copyPanel });
 const cases = [
   [{ ...base }, /no notebook checkpoints/, "a lesson with no notebook block"],
   [
-    { ...base, notebook: { checkpoints: [cp(1, "launch")] } },
+    { ...base, notebook: { checkpoints: [cp(1, "launch", validBox1)] } },
     /1 checkpoints|missing box 2/,
     "a lesson missing box 2",
   ],
   [
-    { ...base, notebook: { checkpoints: [cp(1, "launch"), cp(2, "explore"), cp(3, "practice")] } },
+    {
+      ...base,
+      notebook: {
+        checkpoints: [
+          cp(1, "launch", validBox1),
+          cp(2, "explore", validBox2),
+          cp(3, "practice", {}),
+        ],
+      },
+    },
     /3 checkpoints|expected 2|box 3 is forbidden/,
     "a lesson declaring 3 checkpoints (box 3 reintroduced)",
   ],
   [
-    { ...base, notebook: { checkpoints: [cp(1, "launch"), cp(1, "explore")] } },
+    {
+      ...base,
+      notebook: { checkpoints: [cp(1, "launch", validBox1), cp(1, "explore", validBox1)] },
+    },
     /box 1 declared 2 times/,
     "a duplicated box",
   ],
   [
-    { ...base, notebook: { checkpoints: [cp(1, "launch"), cp(2, "nope")] } },
+    {
+      ...base,
+      notebook: { checkpoints: [cp(1, "launch", validBox1), cp(2, "nope", validBox2)] },
+    },
     /not an engine phase id/,
     "a nonexistent phase id",
   ],
   [
     {
       launch: {},
-      notebook: { checkpoints: [cp(1, "launch"), cp(2, "explore")] },
+      notebook: { checkpoints: [cp(1, "launch", validBox1), cp(2, "explore", validBox2)] },
     },
     /has no explore section/,
     "a phase the lesson does not ship",
+  ],
+  [
+    {
+      ...base,
+      notebook: { checkpoints: [cp(1, "launch", null), cp(2, "explore", validBox2)] },
+    },
+    /missing copyPanel/,
+    "a checkpoint missing copyPanel",
+  ],
+  [
+    {
+      ...base,
+      notebook: {
+        checkpoints: [
+          cp(1, "launch", { items: [{ term: "one", meaning: "only one term" }] }),
+          cp(2, "explore", validBox2),
+        ],
+      },
+    },
+    /items length 1 not between 3 and 5/,
+    "box 1 with fewer than 3 terms",
+  ],
+  [
+    {
+      ...base,
+      notebook: {
+        checkpoints: [
+          cp(1, "launch", {
+            items: [
+              {
+                term: "word",
+                meaning:
+                  "this meaning is way too long because it has more than eleven words in total here",
+              },
+              { term: "word2", meaning: "short" },
+              { term: "word3", meaning: "short" },
+            ],
+          }),
+          cp(2, "explore", validBox2),
+        ],
+      },
+    },
+    /must be under 12/,
+    "box 1 meaning with 12 or more words",
+  ],
+  [
+    {
+      ...base,
+      notebook: {
+        checkpoints: [
+          cp(1, "launch", {
+            items: [
+              { term: "📓 book", meaning: "meaning" },
+              { term: "word2", meaning: "short" },
+              { term: "word3", meaning: "short" },
+            ],
+          }),
+          cp(2, "explore", validBox2),
+        ],
+      },
+    },
+    /contains emoji or icon/,
+    "box 1 item containing emoji",
+  ],
+  [
+    {
+      ...base,
+      notebook: {
+        checkpoints: [cp(1, "launch", validBox1), cp(2, "explore", { meaning: "no rule" })],
+      },
+    },
+    /missing rule line/,
+    "box 2 missing rule",
   ],
 ];
 console.log("notebook-checkpoints: self-testing detectors");
@@ -156,7 +328,7 @@ for (const [config, pattern, name] of cases) {
 {
   const good = {
     ...base,
-    notebook: { checkpoints: [cp(1, "launch"), cp(2, "explore")] },
+    notebook: { checkpoints: [cp(1, "launch", validBox1), cp(2, "explore", validBox2)] },
   };
   const { errors } = inspect(good);
   check(errors.length === 0, `a valid lesson was rejected: ${errors.join(", ")}`);
@@ -247,6 +419,9 @@ const ids = readdirSync("lessons")
 let withAuthored = 0;
 let withDefaults = 0;
 let totalAuthoredBoxes = 0;
+let withCopyPanel = 0;
+const missingCopyLessons = [];
+
 for (const id of ids) {
   const file = join("lessons", id, "config.json");
   if (!existsSync(file)) {
@@ -254,11 +429,16 @@ for (const id of ids) {
     continue;
   }
   const config = JSON.parse(readFileSync(file, "utf8"));
-  const { errors, authored } = inspect(config);
+  const { errors, authored, hasCopyPanel } = inspect(config);
   for (const e of errors) check(false, `${id}: ${e}`);
   totalAuthoredBoxes += authored;
   if (authored === 2) withAuthored++;
   else withDefaults++;
+  if (hasCopyPanel) {
+    withCopyPanel++;
+  } else {
+    missingCopyLessons.push(id);
+  }
 }
 
 /* ── 5. the pathway gap, stated out loud ─────────────────────────────────── */
@@ -294,8 +474,13 @@ check(
 );
 
 console.log(
-  `notebook checkpoints — ${ids.length} core lessons | authored prompts: ${withAuthored} | running defaults: ${withDefaults} | authored boxes: ${totalAuthoredBoxes}/${ids.length * 2}`,
+  `notebook checkpoints — ${ids.length} core lessons | copy panels complete: ${withCopyPanel}/${ids.length} | authored prompts: ${withAuthored} | running defaults: ${withDefaults} | authored boxes: ${totalAuthoredBoxes}/${ids.length * 2}`,
 );
+if (missingCopyLessons.length > 0) {
+  console.log(
+    `  MISSING COPY CONTENT (${missingCopyLessons.length} lessons): ${missingCopyLessons.join(", ")}`,
+  );
+}
 const reachable = ids.length + variants.length;
 const { LESSON_ROUTES } = pathwayCounts();
 check(

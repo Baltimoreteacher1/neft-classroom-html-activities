@@ -228,11 +228,85 @@ try {
           topOffset = Math.round(blockRect.top - phaseRect.top);
         }
 
+        // Copy panel assertions
+        const copyPanel = thisBlock?.querySelector(".nt-nb-copy-panel");
+        const hasCopyPanel = !!copyPanel;
+        let copyDetails = {};
+
+        if (copyPanel) {
+          // Check for interactive elements (forbidden inside copy panel)
+          const interactiveCount = copyPanel.querySelectorAll(
+            "button, input, select, textarea, a, svg, img",
+          ).length;
+
+          // Check for emoji
+          const panelText = copyPanel.textContent || "";
+          const emojiRegex =
+            /[\p{Extended_Pictographic}\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
+          const hasEmoji = emojiRegex.test(panelText);
+
+          // Contrast check helper
+          function parseRgb(s) {
+            const m = (s || "").match(/\d+/g);
+            return m ? m.slice(0, 3).map(Number) : [0, 0, 0];
+          }
+          function getLuminance([r, g, b]) {
+            const a = [r, g, b].map((v) => {
+              v /= 255;
+              return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+          }
+          function calcContrast(fgEl, bgEl) {
+            const fgStyle = window.getComputedStyle(fgEl);
+            let bg = window.getComputedStyle(bgEl).backgroundColor;
+            let cur = bgEl;
+            while (cur && (bg === "transparent" || bg === "rgba(0, 0, 0, 0)")) {
+              cur = cur.parentElement;
+              if (cur) bg = window.getComputedStyle(cur).backgroundColor;
+            }
+            const l1 = getLuminance(parseRgb(fgStyle.color));
+            const l2 = getLuminance(parseRgb(bg));
+            return Math.round(((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)) * 10) / 10;
+          }
+
+          let contrastRatio = 0;
+          let box1ItemCount = 0;
+          let box2RuleCount = 0;
+          let box2RuleText = "";
+
+          if (boxNum === 1) {
+            const items = Array.from(copyPanel.querySelectorAll(".nt-nb-copy-list li"));
+            box1ItemCount = items.length;
+            if (items[0]) {
+              contrastRatio = calcContrast(items[0], copyPanel);
+            }
+          } else if (boxNum === 2) {
+            const rules = Array.from(copyPanel.querySelectorAll(".nt-nb-copy-rule"));
+            box2RuleCount = rules.length;
+            if (rules[0]) {
+              box2RuleText = rules[0].textContent.trim();
+              contrastRatio = calcContrast(rules[0], copyPanel);
+            }
+          }
+
+          copyDetails = {
+            hasCopyPanel,
+            interactiveCount,
+            hasEmoji,
+            contrastRatio,
+            box1ItemCount,
+            box2RuleCount,
+            box2RuleText,
+          };
+        }
+
         return {
           totalNbInDom: nbBlocks.length,
           found: !!thisBlock,
           heading,
           topOffset,
+          copyDetails,
         };
       }, cp.box);
 
@@ -251,6 +325,59 @@ try {
         note(
           `${lessonId} (Phase ${cp.phase}): Box ${cp.box} is placed in-flow (offset ${phaseCheck.topOffset}px)`,
         );
+
+        // Assert copy panel details
+        const cd = phaseCheck.copyDetails;
+        if (!cd.hasCopyPanel) {
+          fail(
+            `${lessonId} (Phase ${cp.phase}): Box ${cp.box} missing copy panel (.nt-nb-copy-panel)`,
+          );
+        } else {
+          note(`${lessonId} (Phase ${cp.phase}): Box ${cp.box} copy panel rendered`);
+          if (cd.interactiveCount > 0) {
+            fail(
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} copy panel contains ${cd.interactiveCount} interactive/icon element(s)`,
+            );
+          } else {
+            note(
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} copy panel contains zero interactive elements/icons`,
+            );
+          }
+          if (cd.hasEmoji) {
+            fail(`${lessonId} (Phase ${cp.phase}): Box ${cp.box} copy panel contains emoji`);
+          } else {
+            note(`${lessonId} (Phase ${cp.phase}): Box ${cp.box} copy panel contains zero emoji`);
+          }
+          if (cd.contrastRatio < 4.5) {
+            fail(
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} contrast ratio ${cd.contrastRatio} < 4.5:1 (WCAG AA)`,
+            );
+          } else {
+            note(
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} text passes contrast check (${cd.contrastRatio}:1 >= 4.5:1)`,
+            );
+          }
+
+          if (cp.box === 1) {
+            if (cd.box1ItemCount < 3 || cd.box1ItemCount > 5) {
+              fail(
+                `${lessonId}: Box 1 copy panel has ${cd.box1ItemCount} items, expected between 3 and 5`,
+              );
+            } else {
+              note(`${lessonId}: Box 1 copy panel has ${cd.box1ItemCount} numbered terms`);
+            }
+          } else if (cp.box === 2) {
+            if (cd.box2RuleCount !== 1 || !cd.box2RuleText) {
+              fail(
+                `${lessonId}: Box 2 copy panel has ${cd.box2RuleCount} rule lines, expected exactly 1`,
+              );
+            } else {
+              note(
+                `${lessonId}: Box 2 copy panel contains exactly 1 rule line: "${cd.box2RuleText}"`,
+              );
+            }
+          }
+        }
       }
 
       // Test gate: verify forward navigation is blocked before filling, then unblocked after filling
