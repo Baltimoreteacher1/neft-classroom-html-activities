@@ -107,7 +107,10 @@ export function buildBox1(config) {
   for (const v of vocab) {
     if (items.length === 5) break;
     const term = v.term.trim().replace(/\.$/, "");
-    const meaning = shortenVerbatim(v.definition, MEANING_MAX_WORDS);
+    // Only the definition's FIRST sentence: crossing a full stop is how
+    // "A number sentence with an equal sign. The percent one is" happened.
+    const firstSentence = String(v.definition).split(/(?<=[.!?])\s+/)[0];
+    const meaning = shortenVerbatim(firstSentence, MEANING_MAX_WORDS);
     if (!term || !meaning) continue;
     items.push({ term, meaning });
   }
@@ -121,15 +124,23 @@ export function buildBox1(config) {
  *  reciprocal" is a rule; "Everyone uses math daily" is not. Symbols, an
  *  imperative opening, and relational vocabulary are the three decidable
  *  signals; everything else is skipped rather than guessed at. */
+const balanced = (str) =>
+  (String(str).match(/\(/g) || []).length === (String(str).match(/\)/g) || []).length;
+
+/** A quote that ends on a word still waiting for its object — "…into a
+ *  percent", "…when substituting it makes" — is a truncation, not a statement. */
+const HANGING_END =
+  /\b(into|onto|with|from|by|of|for|to|than|as|and|or|makes?|gives?|equals?|is|are|be|the|a|an|when|that|which)$/i;
+
 const RULE_MARKER =
-  /[=÷×−–—+≤≥<>%]|^to\s+\w+|\bper\b|\bequals?\b|\bis the same as\b|\bmeans\b|\balways\b|\bmust\b|\bmultiply\b|\bdivide\b|\bsubtract\b|\badd\b|\bcount\b|\bshade\b|\bcompares?\b/i;
+  /[=÷×−+≤≥<>%]|^to\s+\w+|\bper\b|\bequals?\b|\bis the same as\b|\bmeans\b|\balways\b|\bmust\b|\bmultiply\b|\bdivide\b|\bsubtract\b|\badd\b|\bcount\b|\bshade\b|\bcompares?\b/i;
 const sentences = (s) =>
   String(s || "")
     .split(/(?<=[.!?])\s+/)
     .map((x) => x.trim())
     .filter(Boolean);
 
-const MATH_TOKEN = /^[$(]*[\d.,\/]*\d[\d.,\/]*[)%°]*[.,;:]?$|^[=+×÷−–\-*x][.,;:]?$|^ft³?$|^in³?$/i;
+const MATH_TOKEN = /^[$(]*[\d.,\/]*\d[\d.,\/]*[)%°]*[.,;]?$|^[=+×÷−–\-*x][.,;]?$|^ft³?$|^in³?$/i;
 const isMathToken = (t) => MATH_TOKEN.test(t);
 
 /** The maximal run of mathematical tokens around the "=" in a sentence. Token
@@ -153,6 +164,7 @@ export function extractEquation(sentence) {
   // An equation needs both sides. "= 3" or "5 =" is a fragment, not an example.
   if (numbers.length < 2) return "";
   if (/^=|=$/.test(span)) return "";
+  if (/^[+×÷−–*]/.test(span)) return ""; // "+ 8 = 20" is a clipped equation
   return span;
 }
 
@@ -166,6 +178,16 @@ export function buildBox2(config) {
 
   const rule = shortenVerbatim(ruleSentence, RULE_MAX_WORDS);
   if (!rule) return { panel: null, reason: "rule sentence did not survive shortening" };
+  // A quote that opens a bracket it never closes ("a unit ratio (12 inches") is
+  // a truncation wearing a rule's clothes, and so is one ending on a word that
+  // still needs an object. Neither is shown to a student.
+  if (!balanced(rule)) return { panel: null, reason: "rule quote cuts inside a bracket" };
+  if (HANGING_END.test(rule)) return { panel: null, reason: "rule quote ends mid-clause" };
+  // "To turn a fraction into a percent" is the purpose half of an instruction
+  // whose method the quote cut off. An infinitive opener needs its main clause.
+  if (/^to\s/i.test(rule) && !/,/.test(rule)) {
+    return { panel: null, reason: "rule quote keeps the infinitive opener but not the method" };
+  }
 
   // The meaning is the REST of the lesson's own statement — the remainder of
   // the rule sentence when it was cut, otherwise the next keyIdea sentence.
@@ -176,13 +198,29 @@ export function buildBox2(config) {
     .slice(rule.length)
     .replace(/^[\s,;:—–]+/, "")
     .replace(/[.;]+$/, "");
-  if (wordCount(remainder) >= 3) meaning = remainder;
+  // A remainder that opens with a continuation word ("to bring down; what is
+  // left…") is the back half of a clause, and reads as a broken sentence on a
+  // classroom board. In that case the lesson's NEXT statement is used instead;
+  // if it has none, the lesson gets no box-2 panel rather than a fragment.
+  // The remainder is only usable when it starts a NEW statement: a run that
+  // begins lower-case ("to bring down; what is left…", "rule, and a fractional
+  // edge…") is the back half of a clause and reads as a broken sentence on a
+  // classroom board. Otherwise the lesson's next statement is used, and if it
+  // has none the lesson gets no box-2 panel rather than a fragment.
+  const startsNewStatement = /^[A-Z0-9($]/.test(remainder);
+  if (wordCount(remainder) >= 3 && startsNewStatement) meaning = remainder;
   else {
-    const next = keySentences.find((s) => s !== ruleSentence);
+    const next = keySentences.find((k) => k !== ruleSentence);
     if (next) meaning = shortenVerbatim(next, 14);
   }
   if (!meaning)
     return { panel: null, reason: "lesson states no second clause to explain the rule" };
+  if (/^(when|if|because|while|once|since|unless|although)\b/i.test(meaning)) {
+    return { panel: null, reason: "the explaining clause is dependent, not a whole statement" };
+  }
+  if (!balanced(meaning) || HANGING_END.test(meaning)) {
+    return { panel: null, reason: "the explaining clause is a fragment, not a whole statement" };
+  }
 
   // The example is an equation the lesson's own worked example prints, lifted
   // by TOKENS rather than by a character regex. A character class that stops at
