@@ -276,19 +276,11 @@ export function openMathNotesModel() {
   return dlg;
 }
 
-const COPY_PANELS_ENABLED = false;
-
 /**
  * Render the visually unmistakable copy panel containing exactly what the
  * student writes by hand in their notebook — nothing else.
  */
 function renderCopyPanelHtml(cp) {
-  // KILL SWITCH (2026-08-18). The panels shipped in 82951ef0b carried content
-  // that does not trace to the lesson they appear on. Rendering is suppressed
-  // until every panel is rebuilt from its own lesson's data and the provenance
-  // gate passes. The checkpoints and their prompts are untouched — only the
-  // pre-written copy block is withheld.
-  if (!COPY_PANELS_ENABLED) return "";
   if (!cp || !cp.copyPanel) return "";
   if (cp.box === 1 && Array.isArray(cp.copyPanel.items) && cp.copyPanel.items.length > 0) {
     const listItems = cp.copyPanel.items

@@ -118,8 +118,15 @@ const COVERAGE = [
   // default classroom copy is counted — a silent 100%-default forever is the
   // state this reporting exists to expose.
   [
-    /^(engine\/core\/notebook-checkpoint\.js|engine\/styles\/notebook-checkpoint\.css|assets\/math-notes\/.*|curriculum\/student-supports\/math-notes\/.*|tools\/(validate-notebook-checkpoints|attach-notebook-checkpoints)\.mjs)$/,
-    ["test", "validate:notebook", "validate:js-syntax", "validate:css-integrity", "check"],
+    /^(engine\/core\/notebook-checkpoint\.js|engine\/styles\/notebook-checkpoint\.css|assets\/math-notes\/.*|curriculum\/student-supports\/math-notes\/.*|tools\/(validate-notebook-checkpoints|attach-notebook-checkpoints|validate-copy-panel-provenance)\.mjs|scripts\/generate-notebook-copy-panels\.mjs)$/,
+    [
+      "test",
+      "validate:notebook",
+      "validate:copy-panels",
+      "validate:js-syntax",
+      "validate:css-integrity",
+      "check",
+    ],
   ],
   // AUTHENTICATION — frozen at 4c2e13dab, documented in AUTH_CONTRACT.md.
   // Nothing here may change as a side effect of unrelated work: on 2026-08-16 a

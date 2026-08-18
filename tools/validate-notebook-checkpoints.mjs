@@ -116,7 +116,11 @@ function inspect(config) {
 
     // Copy panel validation
     if (!cp.copyPanel) {
-      errors.push(`box ${cp.box}: missing copyPanel`);
+      // ABSENCE IS ALLOWED, DELIBERATELY. This used to be an error, and that is
+      // how the invented content got written: a lesson stating no quotable rule
+      // still had to produce a panel to pass, so one was composed for it. What
+      // a panel MAY contain is now held by validate:copy-panel-provenance; this
+      // gate holds only the shape of a panel that exists.
       hasCopyPanel = false;
     } else if (cp.box === 1) {
       const items = cp.copyPanel.items;
@@ -244,14 +248,6 @@ const cases = [
     },
     /has no explore section/,
     "a phase the lesson does not ship",
-  ],
-  [
-    {
-      ...base,
-      notebook: { checkpoints: [cp(1, "launch", null), cp(2, "explore", validBox2)] },
-    },
-    /missing copyPanel/,
-    "a checkpoint missing copyPanel",
   ],
   [
     {
