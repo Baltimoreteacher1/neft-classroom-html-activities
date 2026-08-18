@@ -329,9 +329,11 @@ try {
         // Assert copy panel details
         const cd = phaseCheck.copyDetails;
         if (!cd.hasCopyPanel) {
-          fail(
-            `${lessonId} (Phase ${cp.phase}): Box ${cp.box} missing copy panel (.nt-nb-copy-panel)`,
-          );
+          // A checkpoint with no copy panel is a legitimate outcome: a lesson
+          // with no usable vocabulary or no stated rule gets no panel. Absence
+          // is reported, never failed — only a RENDERED panel is held to the
+          // presentation rules below.
+          note(`${lessonId} (Phase ${cp.phase}): Box ${cp.box} renders no copy panel (allowed)`);
         } else {
           note(`${lessonId} (Phase ${cp.phase}): Box ${cp.box} copy panel rendered`);
           if (cd.interactiveCount > 0) {
