@@ -411,3 +411,146 @@ lessons emit, so review-arcade tags and lesson tags pile into one bounded map of
   (`small-group-renderer.js:1338`), so a group variant's evidence lands on the
   parent lesson rather than fragmenting it.
 
+
+---
+
+## BLOCK 3 · EN/ES parity
+
+Audit only. Nothing translated, nothing changed — translation is content.
+
+### 3.1 Method, and what the numbers mean
+
+Two different bilingual conventions exist in this codebase, and they have to be
+measured separately:
+
+- **lessons** use a `<field>` / `<field>Es` pair inside `config.json`, rendered
+  by `engine/core/i18n.js` as a stacked `.i18n-en` / `.i18n-es` block
+- **project pages** use sibling `.en-text` / `.es-text` ELEMENTS in the HTML —
+  a parallel system that shares no code with the engine's
+
+For lessons, every config on disk was walked and each translatable English
+string paired with its `Es` sibling. The fields were then split into two
+populations, because they mean different things:
+
+- fields that carry an `Es` sibling SOMEWHERE in the fleet have a translation
+  convention, and a missing one is a per-lesson gap;
+- fields that carry one in NO lesson are surfaces the bilingual layer has never
+  covered at all.
+
+That split matters: without it the audit reported ~5,000 phantom "gaps" in
+fields that were never bilingual by design.
+
+### 3.2 Classification
+
+288 lesson configs audited (84 whole-group, 168 small-group, 36 catch-up).
+**Every single one is PARTIAL.** None is fully bilingual; none is English only.
+
+43,751 translatable string slots in fields that have an `Es` convention;
+29,683 of them carry Spanish (68%).
+
+### 3.3 Surfaces the bilingual layer has never covered
+
+These field names carry `Es` in **no lesson anywhere**, so the surface is
+English-only by construction, not by omission:
+
+- 2,106 `cloze` — every vocabulary cloze sentence
+- 1,092 `question` — Turn-and-Talk / discussion questions
+- 514 `caption`
+- 317 `example` — vocabulary examples
+- 288 `contentObjective` (one per lesson, all 288)
+- 288 `languageObjective` (one per lesson, all 288) — the language objective
+  itself is English only
+- 288 `heading`
+- 110 `answer`
+- 10 `objective`
+
+The language objective being English-only is the one I would look at first: it
+is the sentence that tells a multilingual learner what language work the lesson
+expects of them.
+
+### 3.4 Untranslated slots by surface, across all 288 lessons
+
+- 3,699 other prose
+- 2,460 vocabulary
+- 2,315 feedback & explanations
+- 2,076 headings & labels
+- 1,056 practice prompts
+- 1,039 hints
+- 548 worked example (Learn It)
+- 384 exit ticket
+- 261 launch / warm-up
+- 227 discussion prompts
+- 3 interactive tool labels
+
+Hints and feedback are the two that matter most for the students this is for: a
+student who is doing the problem in Spanish and then misses it gets the
+explanation of why in English.
+
+### 3.5 By unit — the clustering is unmistakable
+
+Whole-group lessons only, so variants do not triple-count:
+
+- unit 1: 6 lessons, 495 of 529 slots untranslated (94%)
+- unit 2: 12 lessons, 693 of 1,650 (42%)
+- unit 3: 10 lessons, 631 of 1,442 (44%)
+- unit 4: 5 lessons, 419 of 605 (69%)
+- unit 5: 10 lessons, 550 of 1,482 (37%)
+- unit 6: 15 lessons, 774 of 1,768 (44%)
+- unit 7: 9 lessons, 565 of 1,213 (47%)
+- unit 8: 7 lessons, 385 of 925 (42%)
+- unit 9: 4 lessons, 403 of 425 (95%)
+- unit 10: 6 lessons, 539 of 570 (95%)
+
+Units 1, 9 and 10 sit at ~95% untranslated while the rest cluster at 37–47%.
+Unit 4 (69%) is the middle case. Units 1 and 10 are the "Math is…" identity
+lessons that open and close the year — the two moments a newly-arrived student is
+most likely to be in the room and least likely to have any English footing.
+
+Worst individual lessons: 2-5 (134 of 153), 6-7 (116 of 134), 4-5 (115 of 132),
+9-1 (115 of 120), 4-1 (111 of 133), 3-6 (106 of 126).
+
+### 3.6 Project pages — 26 of 27 are fully paired, 1 has no Spanish at all
+
+27 student-facing project pages (answer keys excluded). **3,995 `.en-text`
+elements, 3,995 with a Spanish sibling — 100% pairing on 26 of them.**
+
+The exception is **`math/unit-10/projects/world-architect/`**: 133 KB, zero
+`.es-text`, zero `.i18n-es`, zero `lang="es"`, and zero Spanish words by an
+accent/keyword scan. It is the only English-only student-facing project page in
+the repo — and it is one of the three projects made reachable from the gallery
+only last commit (`c1883486`), so students can now find it.
+
+### 3.7 Functional paths — what I can and cannot stand behind
+
+**Chrome strings are complete.** All 143 fixed UI strings in
+`engine/core/i18n.js` (`STRINGS` 129, `PHASE_NAMES` 8, `BADGE_NAMES` 6) have a
+non-empty `es`. There is no empty-Spanish-button failure mode there.
+
+**The engine's content fallback is correct.** `stackContentHtml` returns the
+English alone when the Spanish is blank or identical, rather than emitting an
+empty `.i18n-es`, so a missing translation degrades to English rather than to a
+blank line. That is the right behaviour and it is deliberate — the reasoning is
+written into the function's own comment.
+
+**Answer checking is not at risk from a label mismatch.** Both language lanes
+are placed in the DOM and CSS chooses between them; grading compares against the
+config value, not against rendered text. The article-bug shape — a label
+mismatch destroying a completion — does not reproduce on this path.
+
+**Observed in a browser, built lesson at `?lang=es`** (`<html lang="es">`
+confirmed stamped): of 9 visible controls on the lesson shell, 7 carry no
+`.i18n-es` lane — including **"💾 Save / Resume"** and **"🧰 Tools"**. Those two
+are the controls a student uses most. I did **not** trace each label back to its
+source, so some may be bilingual by a mechanism this probe cannot see; treat
+this as a lead to check, not a settled count.
+
+**A detector I am NOT reporting a number from.** I also counted "interactive
+controls with no Spanish" on project pages. Hand-checking 4 flagged pages found
+at least 3 false positives: `math/unit-7/projects/version-a` renders the Spanish
+as a SEPARATE button ("Use Example Coordinates" and "Usar Coordenadas de
+Ejemplo" are two elements), and `math/unit-9/projects/version-b` has "Siguiente
+paso" and "Atrás" on the page with the English swapped in by script. The
+sibling-element assumption does not hold for controls, so no control-level count
+from that pass is in this report. The `.en-text`/`.es-text` pairing figure in 3.6
+does not depend on it.
+
