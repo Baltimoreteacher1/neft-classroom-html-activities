@@ -113,7 +113,7 @@ export function histogramSVG(cfg) {
     : "";
   const axis = `<line x1="${padL}" y1="${baseY}" x2="${(W - padR).toFixed(1)}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>`;
   const title = cfg.title
-    ? `<div style="font-weight:700; color:var(--navy,#264653); margin-bottom:var(--sp-2); text-align:center;">${esc(cfg.title)}</div>`
+    ? `<div style="font-weight:600; color:var(--navy,#264653); margin-bottom:var(--sp-2); text-align:center;">${esc(cfg.title)}</div>`
     : "";
   const caption = cfg.caption
     ? `<div style="font-size:0.82rem; color:var(--muted); margin-top:var(--sp-2); text-align:center; font-style:italic;">${esc(cfg.caption)}</div>`
@@ -338,7 +338,7 @@ export function factorTreeSVG(cfg) {
 
   return `
     <div class="factor-tree-figure" style="margin:var(--sp-3) 0; display:flex; flex-direction:column; align-items:center;">
-      ${cfg.title ? `<div style="font-weight:700; color:var(--navy,#12355b); margin-bottom:var(--sp-1); font-size:0.95rem;">${esc(cfg.title)}</div>` : ""}
+      ${cfg.title ? `<div style="font-weight:600; color:var(--navy,#12355b); margin-bottom:var(--sp-1); font-size:0.95rem;">${esc(cfg.title)}</div>` : ""}
       <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:auto; max-width:320px; display:block; background:#fff; border:1px solid #d7e2ed; border-radius:12px; padding:10px;">
         ${linesSvg}
         ${nodesSvg}
@@ -380,7 +380,7 @@ export function numberLineSVG(cfg) {
 // Shared figure wrapper: optional title + responsive SVG + optional caption.
 export function svgFigure(cfg, inner, W, H, padT = 16, figureClass = "data-figure") {
   const title = cfg.title
-    ? `<div style="font-weight:700; color:var(--navy,#264653); margin-bottom:var(--sp-2); text-align:center;">${esc(cfg.title)}</div>`
+    ? `<div style="font-weight:600; color:var(--navy,#264653); margin-bottom:var(--sp-2); text-align:center;">${esc(cfg.title)}</div>`
     : "";
   const caption = cfg.caption
     ? `<div style="font-size:0.82rem; color:var(--muted); margin-top:var(--sp-2); text-align:center; font-style:italic;">${esc(cfg.caption)}</div>`
@@ -442,7 +442,7 @@ export function coordPlaneSVG(cfg) {
   // Number every axis tick (stride out when the plane is large so labels never
   // crowd). 0 is labeled once at the origin.
   const stride = m > 8 ? 2 : 1;
-  const tick = 'style="font-size:10px;fill:#6b7688;font-weight:600"';
+  const tick = 'style="font-size:10px;fill:#6b7688;font-weight:500"';
   let grid = "";
   for (let i = -m; i <= m; i++) {
     grid += `<line x1="${X(i)}" y1="${pad}" x2="${X(i)}" y2="${H - pad}" stroke="rgba(0,0,0,0.06)"/>`;

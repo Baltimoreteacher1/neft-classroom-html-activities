@@ -296,7 +296,7 @@ export function renderThemeIllustration(host, theme, caption, figure, config) {
     const figcap = document.createElement("figcaption");
     figcap.className = "theme-illustration-caption";
     figcap.style.cssText =
-      "margin-top:10px; font-size:0.92rem; font-weight:700; color:#334155; text-align:center; line-height:1.45;";
+      "margin-top:10px; font-size:0.92rem; font-weight:600; color:#334155; text-align:center; line-height:1.45;";
     figcap.textContent = cleanCaption;
     wrap.append(figcap);
   }

@@ -276,8 +276,8 @@ export function printSummary(grade) {
       body { font-family: Calibri, Arial, sans-serif; color:#21313F; margin:40px; line-height:1.5; }
       h1 { color:#12355B; font-size:22pt; margin-bottom:2px; }
       .sub { color:#5F6F80; margin:0 0 16px; }
-      .score { font-size:40pt; font-weight:800; color:#1FA6A2; margin:8px 0 0; }
-      .band { display:inline-block; padding:4px 14px; border-radius:999px; background:#DFF2EE; color:#0F7C4A; font-weight:700; }
+      .score { font-size:40pt; font-weight:700; color:#1FA6A2; margin:8px 0 0; }
+      .band { display:inline-block; padding:4px 14px; border-radius:999px; background:#DFF2EE; color:#0F7C4A; font-weight:600; }
       table { width:100%; border-collapse:collapse; margin-top:20px; font-size:11pt; }
       th { background:#12355B; color:#fff; padding:8px 10px; text-align:left; }
       td { border:1px solid #D7E2ED; padding:8px 10px; }
@@ -345,10 +345,10 @@ export function buildGradeCard(state, config) {
     .map(
       (p) => `
       <tr>
-        <th scope="row" style="text-align:left; font-weight:700; padding:6px 10px;">${esc(p.name)}</th>
+        <th scope="row" style="text-align:left; font-weight:600; padding:6px 10px;">${esc(p.name)}</th>
         <td style="text-align:center; padding:6px 10px;">${p.attempts > 0 ? `${p.correct}/${p.attempts}` : "&mdash;"}</td>
         <td style="text-align:center; padding:6px 10px; color:var(--amber);">${"★".repeat(p.stars)}${"☆".repeat(3 - p.stars)}</td>
-        <td style="text-align:center; padding:6px 10px; font-weight:700;">${p.pct}%</td>
+        <td style="text-align:center; padding:6px 10px; font-weight:600;">${p.pct}%</td>
       </tr>`,
     )
     .join("");
@@ -356,9 +356,9 @@ export function buildGradeCard(state, config) {
   wrap.innerHTML = `
     <h3 id="grade-heading" style="margin:0 0 var(--sp-3);">Your Grade</h3>
     <div style="display:flex; align-items:center; gap:var(--sp-4); flex-wrap:wrap; margin-bottom:var(--sp-4);">
-      <div style="font-size:2.6rem; font-weight:900; color:var(--teal-ink);" aria-label="Score ${grade.pct} percent">${grade.pct}%</div>
+      <div style="font-size:2.6rem; font-weight:800; color:var(--teal-ink);" aria-label="Score ${grade.pct} percent">${grade.pct}%</div>
       <div>
-        <div style="display:inline-block; padding:4px 14px; border-radius:999px; background:${bandColor}; color:#fff; font-weight:800; font-size:0.85rem;">${esc(grade.band)}</div>
+        <div style="display:inline-block; padding:4px 14px; border-radius:999px; background:${bandColor}; color:#fff; font-weight:700; font-size:0.85rem;">${esc(grade.band)}</div>
         <div style="color:var(--muted); font-size:0.85rem; margin-top:4px;">${esc(correctLine)}</div>
       </div>
     </div>

@@ -79,7 +79,7 @@ export function injectToolTokens() {
   .tool-btn{
     display:inline-flex;align-items:center;justify-content:center;gap:6px;
     min-height:var(--tool-control-h);padding:0 16px;
-    font:inherit;font-size:.95rem;font-weight:700;
+    font:inherit;font-size:.95rem;font-weight:600;
     color:var(--tool-control-ink);background:var(--tool-control-bg);
     border:1px solid var(--tool-control-line);border-radius:var(--tool-radius-sm);
     cursor:pointer;
@@ -100,12 +100,12 @@ export function injectToolTokens() {
      greyscale, high contrast and colour-vision differences. */
   .tool-toggle[aria-pressed="true"],.tool-toggle.is-on{
     color:var(--tool-control-active-ink);background:var(--tool-control-active-bg);
-    border-color:var(--tool-control-active-bg);font-weight:800;
+    border-color:var(--tool-control-active-bg);font-weight:700;
     box-shadow:inset 0 -3px 0 color-mix(in srgb,#000 22%,var(--tool-control-active-bg));
   }
   .tool-chip{
     display:inline-flex;align-items:center;gap:5px;min-height:var(--tool-control-h);
-    padding:0 12px;font:inherit;font-size:.88rem;font-weight:700;
+    padding:0 12px;font:inherit;font-size:.88rem;font-weight:600;
     color:var(--tool-control-ink);background:var(--tool-control-bg);
     border:1px solid var(--tool-control-line);border-radius:999px;cursor:pointer;
   }

@@ -101,7 +101,7 @@ export async function mountRetrievalOpener(host, config, state, phaseId) {
   const status = document.createElement("p");
   status.className = "retrieval-status";
   status.setAttribute("role", "status");
-  status.style.cssText = "margin:var(--sp-3) 0 0; font-weight:700;";
+  status.style.cssText = "margin:var(--sp-3) 0 0; font-weight:600;";
 
   picks.forEach((pick, i) => {
     const wrap = document.createElement("div");

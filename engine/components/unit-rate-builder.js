@@ -128,23 +128,23 @@ function injectStyles() {
   s.id = "urlab-styles";
   s.textContent = `
   .urlab{max-width:600px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
-  .urlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.05rem;}
+  .urlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:700;color:${C.navy};font-size:1.05rem;}
   .urlab-hint{margin:4px 0 12px;color:${C.muted};font-size:.9rem;line-height:1.4;}
   .urlab-controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;}
-  .urlab-field{display:flex;flex-direction:column;gap:3px;font-size:.72rem;font-weight:700;color:${C.muted};text-transform:uppercase;}
-  .urlab-field input{width:96px;padding:8px 10px;font-size:1.1rem;font-weight:700;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;}
+  .urlab-field{display:flex;flex-direction:column;gap:3px;font-size:.72rem;font-weight:600;color:${C.muted};text-transform:uppercase;}
+  .urlab-field input{width:96px;padding:8px 10px;font-size:1.1rem;font-weight:600;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;}
   .urlab-field input:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
-  .urlab-per{align-self:center;padding-bottom:9px;font-weight:700;color:${C.muted};font-size:.9rem;}
-  .urlab-go{padding:9px 16px;font-size:.95rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
+  .urlab-per{align-self:center;padding-bottom:9px;font-weight:600;color:${C.muted};font-size:.9rem;}
+  .urlab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
   .urlab-go:hover{filter:brightness(1.08);}
   .urlab-go:focus-visible,.urlab-chip:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .urlab-presets{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;}
-  .urlab-chip{padding:5px 12px;font-size:.85rem;font-weight:700;color:${C.navy};background:#f4f8ff;border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;}
+  .urlab-chip{padding:5px 12px;font-size:.85rem;font-weight:600;color:${C.navy};background:#f4f8ff;border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;}
   .urlab-chip:hover{background:#e2ecff;border-color:${C.accent};}
   .urlab-result{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
   .urlab-card{flex:1 1 240px;min-width:220px;background:#f8fbff;border:1px solid ${C.line};border-radius:14px;padding:12px 14px;text-align:center;}
   .urlab-card-main{border-color:${C.teal};background:#f2fcfa;}
-  .urlab-big{font-family:"Outfit",system-ui,sans-serif;font-weight:900;font-size:1.2rem;color:${C.teal};}
+  .urlab-big{font-family:"Outfit",system-ui,sans-serif;font-weight:800;font-size:1.2rem;color:${C.teal};}
   .urlab-alt{color:${C.accent};}
   .urlab-work{margin-top:4px;color:${C.muted};font-size:.85rem;}
   .urlab-explain{flex-basis:100%;margin:2px auto 0;max-width:520px;color:${C.ink};font-size:.9rem;line-height:1.5;text-align:center;}

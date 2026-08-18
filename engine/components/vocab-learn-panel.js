@@ -32,11 +32,11 @@ function openVisualLightbox(imgSrc, captionText) {
     <div style="max-width: 92vw; margin: auto; flex: 0 0 auto; text-align: center; color: white;" onclick="event.stopPropagation()">
       <div style="background: #0f172a; padding: 20px; border-radius: 24px; border: 2.5px solid #38bdf8; box-shadow: 0 25px 60px rgba(0,0,0,0.75);">
         <img src="${imgSrc}" style="max-width: 100%; max-height: 68vh; border-radius: 14px; background: white; padding: 14px; display: inline-block;" />
-        <div style="margin-top: 18px; font-size: 1.15rem; font-weight: 800; line-height: 1.5; color: #f8fafc; max-width: 680px; margin-left: auto; margin-right: auto;">
+        <div style="margin-top: 18px; font-size: 1.15rem; font-weight: 700; line-height: 1.5; color: #f8fafc; max-width: 680px; margin-left: auto; margin-right: auto;">
           ${escHtml(captionText)}
         </div>
         <div style="margin-top: 20px;">
-          <button type="button" class="vl-modal-close-btn" style="padding: 12px 36px; border-radius: 999px; border: none; background: #ffffff; color: #0f172a; font-weight: 900; font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 18px rgba(0,0,0,0.3);">
+          <button type="button" class="vl-modal-close-btn" style="padding: 12px 36px; border-radius: 999px; border: none; background: #ffffff; color: #0f172a; font-weight: 800; font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 18px rgba(0,0,0,0.3);">
             ✕ Close Visual
           </button>
         </div>
@@ -237,7 +237,7 @@ function injectVocabLearnStyles() {
       background: rgba(255, 255, 255, 0.22);
       backdrop-filter: blur(10px);
       font-size: 0.88rem;
-      font-weight: 900;
+      font-weight: 800;
       letter-spacing: 0.07em;
       text-transform: uppercase;
       margin-bottom: 16px;
@@ -246,7 +246,7 @@ function injectVocabLearnStyles() {
     .vl-hero-title {
       font-family: "Outfit", system-ui, sans-serif;
       font-size: 2.05rem;
-      font-weight: 900;
+      font-weight: 800;
       margin: 0 0 12px;
       line-height: 1.25;
       letter-spacing: -0.015em;
@@ -263,7 +263,7 @@ function injectVocabLearnStyles() {
       border: 1.5px solid rgba(255,255,255,0.35);
       background: rgba(255,255,255,0.18);
       color: #ffffff;
-      font-weight: 800;
+      font-weight: 700;
       font-size: 0.9rem;
       cursor: pointer;
       display: inline-flex;
@@ -292,7 +292,7 @@ function injectVocabLearnStyles() {
       padding: 6px 18px;
       border-radius: 999px;
       font-size: 0.86rem;
-      font-weight: 900;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }
@@ -302,7 +302,7 @@ function injectVocabLearnStyles() {
     .vl-section-title {
       font-family: "Outfit", system-ui, sans-serif;
       font-size: 1.55rem;
-      font-weight: 900;
+      font-weight: 800;
       color: #0f172a;
       margin: 0;
     }
@@ -316,7 +316,7 @@ function injectVocabLearnStyles() {
     }
     .vl-key-idea-label {
       font-size: 0.88rem;
-      font-weight: 900;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.07em;
       color: #92400e;
@@ -325,7 +325,7 @@ function injectVocabLearnStyles() {
     }
     .vl-key-idea-text {
       font-size: 1.2rem;
-      font-weight: 800;
+      font-weight: 700;
       color: #78350f;
       margin: 0;
       line-height: 1.65;
@@ -340,7 +340,7 @@ function injectVocabLearnStyles() {
     }
     .vl-misconception-label {
       font-size: 0.88rem;
-      font-weight: 900;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.07em;
       color: #9f1239;
@@ -351,7 +351,7 @@ function injectVocabLearnStyles() {
     }
     .vl-misconception-text {
       font-size: 1.08rem;
-      font-weight: 750;
+      font-weight: 600;
       color: #881337;
       margin: 0;
       line-height: 1.6;
@@ -383,7 +383,7 @@ function injectVocabLearnStyles() {
       border-top: 2px solid #e2e8f0;
       font-size: 1.05rem;
       color: #0f172a;
-      font-weight: 800;
+      font-weight: 700;
       line-height: 1.55;
       display: flex;
       align-items: center;
@@ -393,7 +393,7 @@ function injectVocabLearnStyles() {
     }
     .vl-zoom-badge {
       font-size: 0.85rem;
-      font-weight: 900;
+      font-weight: 800;
       color: #0284c7;
       background: rgba(2, 132, 199, 0.1);
       padding: 6px 14px;
@@ -450,7 +450,7 @@ function injectVocabLearnStyles() {
     .vl-demo-title {
       font-family: "Outfit", system-ui, sans-serif;
       font-size: 1.25rem;
-      font-weight: 900;
+      font-weight: 800;
       color: #0f2b48;
       margin-bottom: 20px;
       display: flex;
@@ -480,14 +480,14 @@ function injectVocabLearnStyles() {
       background: #0d7a76;
       color: #ffffff;
       font-size: 0.86rem;
-      font-weight: 900;
+      font-weight: 800;
       letter-spacing: 0.03em;
     }
     .vl-step-text {
       font-size: 1.12rem;
       line-height: 1.55;
       color: #0f172a;
-      font-weight: 750;
+      font-weight: 600;
       flex: 1;
     }
     .vl-step-speak-btn {
@@ -497,7 +497,7 @@ function injectVocabLearnStyles() {
       border: 1.5px solid #0d7a76;
       background: #f0fdfa;
       color: #0f766e;
-      font-weight: 800;
+      font-weight: 700;
       font-size: 0.82rem;
       cursor: pointer;
     }
@@ -518,7 +518,7 @@ function injectVocabLearnStyles() {
     .vl-tryit-title {
       font-family: "Outfit", system-ui, sans-serif;
       font-size: 1.3rem;
-      font-weight: 900;
+      font-weight: 800;
       color: #0369a1;
       display: flex;
       align-items: center;
@@ -530,7 +530,7 @@ function injectVocabLearnStyles() {
       background: #ffffff;
       border: 2px solid #bae6fd;
       font-size: 1.05rem;
-      font-weight: 750;
+      font-weight: 600;
       color: #0c4a6e;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -561,7 +561,7 @@ function injectVocabLearnStyles() {
     .vl-turntalk-title {
       font-family: "Outfit", system-ui, sans-serif;
       font-size: 1.3rem;
-      font-weight: 900;
+      font-weight: 800;
       color: #9a3412;
       display: flex;
       align-items: center;
@@ -575,7 +575,7 @@ function injectVocabLearnStyles() {
       padding: 7px 16px;
       border-radius: 12px;
       font-size: 0.88rem;
-      font-weight: 900;
+      font-weight: 800;
       border: 2px solid #fdba74;
       background: #ffffff;
       color: #c2410c;
@@ -589,7 +589,7 @@ function injectVocabLearnStyles() {
     }
     .vl-turntalk-question {
       font-size: 1.18rem;
-      font-weight: 800;
+      font-weight: 700;
       color: #431407;
       line-height: 1.6;
       margin-bottom: 20px;
@@ -600,7 +600,7 @@ function injectVocabLearnStyles() {
     }
     .vl-starters-label {
       font-size: 0.9rem;
-      font-weight: 900;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: #9a3412;
@@ -617,7 +617,7 @@ function injectVocabLearnStyles() {
       background: #ffffff;
       border: 1.5px solid #fed7aa;
       font-size: 1.05rem;
-      font-weight: 750;
+      font-weight: 600;
       color: #292524;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -642,7 +642,7 @@ function injectVocabLearnStyles() {
     .vl-continue-btn {
       padding: 20px 48px;
       font-size: 1.25rem;
-      font-weight: 900;
+      font-weight: 800;
       color: #ffffff;
       background: linear-gradient(135deg, #0d7a76 0%, #0f4c81 100%);
       border: none;
@@ -961,7 +961,7 @@ export function renderLearnItPanel(container, config, options = {}) {
     </div>
 
     <!-- SIMPLE EXPLANATION -->
-    ${intro ? `<p style="font-size:1.15rem; line-height:1.65; color:#0f172a; font-weight:700; margin:0 0 22px;">${renderMathText(intro)}</p>` : ""}
+    ${intro ? `<p style="font-size:1.15rem; line-height:1.65; color:#0f172a; font-weight:600; margin:0 0 22px;">${renderMathText(intro)}</p>` : ""}
     ${
       keyIdea
         ? `
@@ -1000,7 +1000,7 @@ export function renderLearnItPanel(container, config, options = {}) {
       <div class="vl-demo-box">
         <div class="vl-demo-title">
           <span>👀 ${isEs ? "Ejemplo Resuelto Paso a Paso:" : "Step-by-Step Worked Example:"}</span>
-          <span style="font-weight:700; color:#475569;">(${escHtml(iDo.title || (isEs ? "Mira cómo se hace" : "Watch Me"))})</span>
+          <span style="font-weight:600; color:#475569;">(${escHtml(iDo.title || (isEs ? "Mira cómo se hace" : "Watch Me"))})</span>
         </div>
         <div class="vl-demo-steps">
           ${iDo.lines
@@ -1023,9 +1023,9 @@ export function renderLearnItPanel(container, config, options = {}) {
       ivConfig && ivConfig.kind
         ? `
       <div style="margin:26px 0; padding:20px; background:#f8fbff; border:2.5px solid #38bdf8; border-radius:20px; box-shadow:0 8px 24px rgba(56,189,248,0.14);">
-        <div style="font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:900; color:#0369a1; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+        <div style="font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:800; color:#0369a1; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
           <span>🛠️ ${isEs ? "Herramienta Matemática Interactiva (¡Toca para explorar!):" : "Interactive Math Tool (Tap & Explore Live!):"}</span>
-          <span style="font-size:0.82rem; font-weight:800; color:#0284c7; background:#e0f2fe; padding:4px 10px; border-radius:999px;">Live Tool</span>
+          <span style="font-size:0.82rem; font-weight:700; color:#0284c7; background:#e0f2fe; padding:4px 10px; border-radius:999px;">Live Tool</span>
         </div>
         ${interactiveVisualHost(ivConfig, ivConfig.label || visuals.content.caption)}
       </div>`
@@ -1063,7 +1063,7 @@ export function renderLearnItPanel(container, config, options = {}) {
         <span>✏️ ${isEs ? "¡Pruébalo! Verificación Rápida de Práctica" : "Try It! Quick Concept Practice"}</span>
       </div>
     </div>
-    <div style="font-size:1.12rem; font-weight:800; color:#0c4a6e; margin-bottom:16px;">
+    <div style="font-size:1.12rem; font-weight:700; color:#0c4a6e; margin-bottom:16px;">
       "${escHtml(isEs ? tryIt.questionEs : tryIt.question)}"
     </div>
     <div style="display:flex; flex-direction:column; gap:12px;" class="vl-tryit-opts">
@@ -1077,7 +1077,7 @@ export function renderLearnItPanel(container, config, options = {}) {
         )
         .join("")}
     </div>
-    <div class="vl-tryit-feedback" style="margin-top:16px; padding:14px; border-radius:14px; font-weight:800; font-size:1rem; display:none;"></div>
+    <div class="vl-tryit-feedback" style="margin-top:16px; padding:14px; border-radius:14px; font-weight:700; font-size:1rem; display:none;"></div>
   `;
 
     const tryOpts = /** @type {NodeListOf<HTMLButtonElement>} */ (
@@ -1224,25 +1224,25 @@ export function renderLearnItPanel(container, config, options = {}) {
     box-shadow: 0 8px 24px rgba(22,163,74,0.14);
   `;
   confWidget.innerHTML = `
-    <div style="font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:900; color:#14532d; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+    <div style="font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:800; color:#14532d; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
       <span>🎯 ${isEs ? "Verificación de Confianza" : "Self-Check Confidence Checkpoint"}</span>
-      <span style="font-size:0.82rem; font-weight:800; color:#166534; background:rgba(255,255,255,0.85); padding:4px 12px; border-radius:999px; border:1px solid rgba(22,163,74,0.3);">${isEs ? "Toca una opción" : "Tap to select"}</span>
+      <span style="font-size:0.82rem; font-weight:700; color:#166534; background:rgba(255,255,255,0.85); padding:4px 12px; border-radius:999px; border:1px solid rgba(22,163,74,0.3);">${isEs ? "Toca una opción" : "Tap to select"}</span>
     </div>
-    <div style="font-size:1.05rem; font-weight:750; color:#166534; margin-bottom:16px;">
+    <div style="font-size:1.05rem; font-weight:600; color:#166534; margin-bottom:16px;">
       ${isEs ? "¿Qué tan bien entiendes cómo funciona la matemática en este momento?" : "How confident do you feel with this math concept right now?"}
     </div>
     <div class="vl-conf-options" style="display:flex; gap:12px; flex-wrap:wrap;">
-      <button type="button" class="vl-conf-btn" data-level="3" style="flex:1; min-width:140px; padding:14px; border-radius:16px; border:2.5px solid #bbf7d0; background:#ffffff; color:#14532d; font-weight:800; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;">
+      <button type="button" class="vl-conf-btn" data-level="3" style="flex:1; min-width:140px; padding:14px; border-radius:16px; border:2.5px solid #bbf7d0; background:#ffffff; color:#14532d; font-weight:700; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;">
         <span>🤩</span> <span>${isEs ? "¡Lo Tengo!" : "Got It! Ready!"}</span>
       </button>
-      <button type="button" class="vl-conf-btn" data-level="2" style="flex:1; min-width:140px; padding:14px; border-radius:16px; border:2.5px solid #fef08a; background:#ffffff; color:#713f12; font-weight:800; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;">
+      <button type="button" class="vl-conf-btn" data-level="2" style="flex:1; min-width:140px; padding:14px; border-radius:16px; border:2.5px solid #fef08a; background:#ffffff; color:#713f12; font-weight:700; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;">
         <span>🤔</span> <span>${isEs ? "Casi Listo" : "Almost There"}</span>
       </button>
-      <button type="button" class="vl-conf-btn" data-level="1" style="flex:1; min-width:140px; padding:14px; border-radius:16px; border:2.5px solid #fed7aa; background:#ffffff; color:#7c2d12; font-weight:800; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;">
+      <button type="button" class="vl-conf-btn" data-level="1" style="flex:1; min-width:140px; padding:14px; border-radius:16px; border:2.5px solid #fed7aa; background:#ffffff; color:#7c2d12; font-weight:700; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;">
         <span>🙋‍♂️</span> <span>${isEs ? "Necesito Práctica" : "Need Practice"}</span>
       </button>
     </div>
-    <div class="vl-conf-feedback" style="margin-top:16px; font-weight:800; font-size:1.02rem; padding:12px 16px; border-radius:12px; display:none;"></div>
+    <div class="vl-conf-feedback" style="margin-top:16px; font-weight:700; font-size:1.02rem; padding:12px 16px; border-radius:12px; display:none;"></div>
   `;
 
   const confButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (

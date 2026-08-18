@@ -28,8 +28,8 @@ function injectStyles() {
   .sanno-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;touch-action:none;z-index:3}
   .sanno-canvas.on{pointer-events:auto;cursor:crosshair}
   .sanno-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 2px}
-  .sanno-tools .lab{font-size:.72rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--sa-navy)}
-  .sanno-btn{font:inherit;font-size:.82rem;font-weight:700;color:var(--sa-navy);background:#fff;border:1.5px solid rgba(38,70,83,.22);border-radius:999px;padding:6px 12px;min-height:36px;cursor:pointer;transition:.15s;-webkit-tap-highlight-color:transparent}
+  .sanno-tools .lab{font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--sa-navy)}
+  .sanno-btn{font:inherit;font-size:.82rem;font-weight:600;color:var(--sa-navy);background:#fff;border:1.5px solid rgba(38,70,83,.22);border-radius:999px;padding:6px 12px;min-height:36px;cursor:pointer;transition:.15s;-webkit-tap-highlight-color:transparent}
   .sanno-btn:hover{border-color:var(--sa-teal);color:var(--sa-teal)}
   .sanno-btn:focus-visible{outline:3px solid var(--sa-teal);outline-offset:2px}
   .sanno-btn[aria-pressed="true"]{background:var(--sa-teal);border-color:var(--sa-teal);color:#fff}

@@ -23,8 +23,8 @@ function injectStyle() {
      the page a horizontal scrollbar. */
   .mg-board { display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); gap:var(--sp-3, 12px); align-items:start; }
   .mg-col { display:flex; flex-direction:column; gap:var(--sp-2, 8px); min-width:0; }
-  .mg-col-head { font-size:0.95rem; font-weight:800; letter-spacing:0.03em; text-transform:uppercase; color:var(--navy, #1f2a44); margin:0 0 2px 2px; }
-  .mg-item { width:100%; min-width:0; text-align:left; font:inherit; font-weight:700; font-size:1rem; line-height:1.3;
+  .mg-col-head { font-size:0.95rem; font-weight:700; letter-spacing:0.03em; text-transform:uppercase; color:var(--navy, #1f2a44); margin:0 0 2px 2px; }
+  .mg-item { width:100%; min-width:0; text-align:left; font:inherit; font-weight:600; font-size:1rem; line-height:1.3;
     min-height:54px; padding:12px 14px; border:2px solid var(--line, #d8dfdc); border-radius:var(--radius-md, 12px);
     background:var(--surface, #fff); color:var(--ink, #17202a); cursor:pointer; display:flex; align-items:center;
     overflow-wrap:anywhere; hyphens:auto;
@@ -33,7 +33,7 @@ function injectStyle() {
   .mg-item:focus-visible { outline:3px solid rgba(15,118,110,0.35); outline-offset:2px; }
   .mg-item[data-selected] { border-color:var(--teal, #0f766e); background:var(--surface-soft, #eef4f3); transform:translateY(-1px); }
   .mg-item[data-matched] { border-color:var(--success, #16a34a); background:var(--success-bg, #e7f6ef); color:var(--success, #166534); cursor:default; }
-  .mg-item[data-matched]::after { content:"✓"; margin-left:auto; font-weight:900; }
+  .mg-item[data-matched]::after { content:"✓"; margin-left:auto; font-weight:800; }
   .mg-item[data-wrong] { border-color:var(--danger, #dc2626); background:#fdeced; animation:mg-shake .32s ease; }
   @keyframes mg-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
   /* Narrow / zoomed-in: tighten the gutter and padding, keep BOTH columns and a
@@ -56,7 +56,7 @@ export function renderMatchingGame(container, { pairs, columns, label, labelEs, 
 
   if (label) {
     const lbl = document.createElement("p");
-    lbl.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
+    lbl.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-3); line-height:1.5;";
     lbl.innerHTML = stackContent(label, labelEs);
     wrapper.append(lbl);
   }
@@ -68,7 +68,7 @@ export function renderMatchingGame(container, { pairs, columns, label, labelEs, 
 
   const statsBar = document.createElement("div");
   statsBar.style.cssText =
-    "display:flex; justify-content:space-between; margin-bottom:var(--sp-3); font-size:1rem; font-weight:700; color:var(--navy, #1f2a44);";
+    "display:flex; justify-content:space-between; margin-bottom:var(--sp-3); font-size:1rem; font-weight:600; color:var(--navy, #1f2a44);";
   const matchCount = document.createElement("span");
   const setMatchCount = (n) =>
     (matchCount.innerHTML = stackHtml(

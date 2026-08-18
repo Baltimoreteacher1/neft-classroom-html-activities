@@ -308,11 +308,11 @@ function _formsCardHtml(config) {
   const s = gf.student;
   const link = (href, label, emoji) =>
     href
-      ? `<a href="${href}" target="_blank" rel="noopener" style="flex:1; min-width:84px; display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:inherit; background:#fff; border:1px solid var(--gold,#d4952a); border-radius:10px; padding:10px 8px; font-weight:700;"><span style="font-size:1.3rem;" aria-hidden="true">${emoji}</span><span>${label}</span></a>`
+      ? `<a href="${href}" target="_blank" rel="noopener" style="flex:1; min-width:84px; display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:inherit; background:#fff; border:1px solid var(--gold,#d4952a); border-radius:10px; padding:10px 8px; font-weight:600;"><span style="font-size:1.3rem;" aria-hidden="true">${emoji}</span><span>${label}</span></a>`
       : "";
   return `
       <div class="identity-forms" style="background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
-        <div style="font-weight:800; margin-bottom:8px;">📋 ${t("lessonForms")}</div>
+        <div style="font-weight:700; margin-bottom:8px;">📋 ${t("lessonForms")}</div>
         <p style="margin:0 0 8px; font-size:0.84rem; color:var(--muted,#52606d);">These optional links open Google Forms. Responses leave this site and follow your school Google account and form settings.</p>
         <div style="display:flex; gap:8px;">
           ${link(s.notes, t("notes"), "📝")}
@@ -339,11 +339,11 @@ function _objectivesBlockHtml(config) {
     <div class="identity-objectives">
       <div class="identity-objective-row">
         <span class="identity-objective-badge">${t("target")}</span>
-        <span style="font-weight:600;">${content}</span>
+        <span style="font-weight:500;">${content}</span>
       </div>
       <div class="identity-objective-row">
         <span class="identity-objective-badge">${t("discuss")}</span>
-        <span style="font-weight:600;">${language}</span>
+        <span style="font-weight:500;">${language}</span>
       </div>
     </div>`;
 }
@@ -364,7 +364,7 @@ function mountWelcomeGoogleSlidesLink(lessonId, slot) {
   loadGoogleSlidesUrlMap().then((map) => {
     const url = map && map[lessonId];
     if (!url) return;
-    slot.innerHTML = ` · <a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:var(--teal-ink); font-weight:700;">↗ ${stackHtml(t("googleSlides", "en"), t("googleSlides", "es"))}</a>`;
+    slot.innerHTML = ` · <a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:var(--teal-ink); font-weight:600;">↗ ${stackHtml(t("googleSlides", "en"), t("googleSlides", "es"))}</a>`;
   });
 }
 
@@ -416,11 +416,11 @@ function mountJoinCodeEntry(screen, nameInput, periodInput, startBtn) {
   wrap.className = "identity-join";
   wrap.style.cssText = "margin-bottom:12px;text-align:left;";
   wrap.innerHTML =
-    `<button type="button" id="id-join-toggle" style="background:none;border:0;padding:0;font:inherit;font-size:0.82rem;font-weight:700;color:var(--teal-ink,#0f766e);cursor:pointer;text-decoration:underline;">` +
+    `<button type="button" id="id-join-toggle" style="background:none;border:0;padding:0;font:inherit;font-size:0.82rem;font-weight:600;color:var(--teal-ink,#0f766e);cursor:pointer;text-decoration:underline;">` +
     `${stackHtml("Have a class code?", "¿Tienes un código de clase?")}</button>` +
     `<span id="id-join-row" hidden style="display:inline-flex;gap:8px;margin-left:10px;align-items:center;">` +
     `<input id="id-join-code" type="text" autocomplete="off" autocapitalize="characters" placeholder="MK7Q9C" maxlength="8" style="width:110px;padding:8px;border-radius:8px;border:1px solid #cbd5e1;font:inherit;text-transform:uppercase;letter-spacing:2px;" />` +
-    `<button type="button" id="id-join-go" style="padding:8px 12px;border-radius:8px;border:0;background:var(--teal-ink,#0f766e);color:#fff;font:inherit;font-weight:700;cursor:pointer;">Go</button>` +
+    `<button type="button" id="id-join-go" style="padding:8px 12px;border-radius:8px;border:0;background:var(--teal-ink,#0f766e);color:#fff;font:inherit;font-weight:600;cursor:pointer;">Go</button>` +
     `<span id="id-join-msg" style="font-size:0.78rem;color:#64748b;"></span></span>`;
   form.insertBefore(wrap, form.firstChild);
   const row = wrap.querySelector("#id-join-row");
@@ -581,7 +581,7 @@ function showIdentityScreen(root, config) {
           <span class="instruction-callout-icon" aria-hidden="true">👋</span>
           <span>${t("enterNamePrompt")}</span>
           <button type="button" id="id-lang-toggle" aria-pressed="${getPreferredLang() === "es" ? "true" : "false"}"
-            style="margin-left:auto;flex:none;padding:6px 12px;border-radius:999px;border:1px solid #cbd5e1;background:${getPreferredLang() === "es" ? "var(--teal-ink,#0f766e)" : "#fff"};color:${getPreferredLang() === "es" ? "#fff" : "var(--teal-ink,#0f766e)"};font:inherit;font-size:0.8rem;font-weight:700;cursor:pointer;"
+            style="margin-left:auto;flex:none;padding:6px 12px;border-radius:999px;border:1px solid #cbd5e1;background:${getPreferredLang() === "es" ? "var(--teal-ink,#0f766e)" : "#fff"};color:${getPreferredLang() === "es" ? "#fff" : "var(--teal-ink,#0f766e)"};font:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;"
             title="Cambiar el idioma de la lección / Switch lesson language">🌎 Español</button>
         </p>
         <div id="welcome-teacher-slot"></div>
@@ -1096,8 +1096,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       <button class="color-btn" data-color="#3b82f6" style="width:20px; height:20px; border-radius:50%; border:none; background:#3b82f6; cursor:pointer; padding:0;"></button>
       <button class="color-btn" data-color="#10b981" style="width:20px; height:20px; border-radius:50%; border:none; background:#10b981; cursor:pointer; padding:0;"></button>
       <button class="color-btn" data-color="rgba(253,224,71,0.5)" style="width:20px; height:20px; border-radius:50%; border:none; background:#fde047; cursor:pointer; padding:0;"></button>
-      <button id="draw-undo-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer; margin-left:8px;">Undo</button>
-      <button id="draw-clear-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer;">Clear</button>
+      <button id="draw-undo-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:600; cursor:pointer; margin-left:8px;">Undo</button>
+      <button id="draw-clear-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:600; cursor:pointer;">Clear</button>
     `;
     document.body.append(drawHud);
 
@@ -1556,7 +1556,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         b.type = "button";
         b.className = "btn btn-primary btn-lg";
         b.style.cssText =
-          "padding:14px 28px; font-weight:800; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
+          "padding:14px 28px; font-weight:700; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
         b.textContent = label;
         b.addEventListener("click", onClick);
         wrap.append(b);
@@ -1652,22 +1652,22 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
       const objectiveCard = ({ accent, color, icon, label, text, key, prompt, starter }) =>
         `<div class="card ${accent} obj-card" style="margin-bottom:var(--sp-4, 18px); padding:var(--sp-5, 22px);">
-          <div style="font-size:1.15rem; font-weight:800; color:var(${color}); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
-          <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:600; color:var(--navy, #264653);">${linkifyObjectiveTerms(text, objectiveVocab)}</p>
+          <div style="font-size:1.15rem; font-weight:700; color:var(${color}); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
+          <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:500; color:var(--navy, #264653);">${linkifyObjectiveTerms(text, objectiveVocab)}</p>
           <div style="display:flex; flex-direction:column; gap:var(--sp-2, 8px); background:#fff; border:2px solid var(${color}); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 14px) var(--sp-4, 18px); margin-bottom:var(--sp-3, 12px);">
-            <div style="font-weight:800; color:var(--navy, #264653); font-size:1.05rem;">Can I do this?</div>
+            <div style="font-weight:700; color:var(--navy, #264653); font-size:1.05rem;">Can I do this?</div>
             <label style="display:flex; align-items:center; gap:10px; font-size:1.2rem; cursor:pointer;"><input type="checkbox" data-obj-check="${key}-before" style="width:22px; height:22px; flex:0 0 auto;" /> <span>⏱️ <strong>Before</strong> the lesson — I can do this.</span></label>
             <label style="display:flex; align-items:center; gap:10px; font-size:1.2rem; cursor:pointer;"><input type="checkbox" data-obj-check="${key}-after" style="width:22px; height:22px; flex:0 0 auto;" /> <span>✅ <strong>After</strong> the lesson — I can do this now!</span></label>
           </div>
           <div class="objective-talk" style="background:var(--cream, #fdf3e0); border:1px solid var(--gold, #d4952a); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 12px) var(--sp-4, 16px);">
-            <div style="font-weight:800; color:var(--navy, #264653); margin-bottom:var(--sp-1, 4px);">💬 Talk about it</div>
+            <div style="font-weight:700; color:var(--navy, #264653); margin-bottom:var(--sp-1, 4px);">💬 Talk about it</div>
             <p style="margin:0 0 var(--sp-2, 8px); font-size:1.1rem;">${prompt}</p>
             <p style="margin:0; font-style:italic; color:var(--navy, #264653); font-size:1.1rem;">Say: "${starter}"</p>
           </div>
         </div>`;
 
       el.innerHTML = `
-        <style>.obj-key{ text-decoration-thickness:2px; text-underline-offset:2px; font-weight:800; color:var(--navy, #264653); }</style>
+        <style>.obj-key{ text-decoration-thickness:2px; text-underline-offset:2px; font-weight:700; color:var(--navy, #264653); }</style>
         <div class="extra-head" style="margin-bottom:var(--sp-4, 18px);">
           <div>
             <div class="section-title" style="font-size:2rem;">🎯 Today's Goals</div>
@@ -1805,7 +1805,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         return `
           <div class="project-card" style="border:1px solid var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--card, #fff); padding:var(--sp-4, 16px); display:flex; flex-direction:column; gap:var(--sp-2, 8px);">
             <div style="font-size:1.8rem; line-height:1;">${escHtml(p.emoji || "🎮")}</div>
-            <div style="font-weight:800; font-size:1.1rem; color:var(--navy, #264653);">${escHtml(p.title || "Project")}</div>
+            <div style="font-weight:700; font-size:1.1rem; color:var(--navy, #264653);">${escHtml(p.title || "Project")}</div>
             ${p.desc ? `<div class="section-desc" style="font-size:0.9rem;">${escHtml(p.desc)}</div>` : ""}
             <div style="display:flex; flex-wrap:wrap; gap:var(--sp-2, 8px); margin-top:auto; padding-top:var(--sp-2, 8px);">
               ${links
@@ -1822,7 +1822,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         ? `<div class="project-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:var(--sp-3, 12px);">${projects.map(card).join("")}</div>`
         : `<div class="project-empty" style="text-align:center; padding:var(--sp-6, 32px) var(--sp-4, 16px); border:2px dashed var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--cream, #fdf6ec);">
             <div style="font-size:2.4rem;">🚧</div>
-            <div style="font-weight:800; font-size:1.15rem; color:var(--navy, #264653); margin-top:var(--sp-2, 8px);">Projects coming soon</div>
+            <div style="font-weight:700; font-size:1.15rem; color:var(--navy, #264653); margin-top:var(--sp-2, 8px);">Projects coming soon</div>
             <div class="section-desc" style="max-width:46ch; margin:var(--sp-2, 8px) auto 0;">Hands-on projects and challenge games for this lesson will appear here as they are built. Check back soon!</div>
           </div>`;
 
@@ -1861,14 +1861,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         return `
           <div class="printable-card" style="border:1px solid var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--card, #fff); padding:var(--sp-4, 16px); display:flex; flex-direction:column; gap:var(--sp-2, 8px);">
             <div style="font-size:1.8rem; line-height:1;">${escHtml(p.emoji || "📄")}</div>
-            <div style="font-weight:800; font-size:1.05rem; color:var(--navy, #264653);">${escHtml(p.name || "Printable")}</div>
+            <div style="font-weight:700; font-size:1.05rem; color:var(--navy, #264653);">${escHtml(p.name || "Printable")}</div>
             ${p.desc ? `<div class="section-desc" style="font-size:0.9rem;">${escHtml(p.desc)}</div>` : ""}
             ${
               chips.length
                 ? `<div style="display:flex; flex-wrap:wrap; gap:var(--sp-1, 4px);">${chips
                     .map(
                       (c) =>
-                        `<span style="font-size:0.72rem; font-weight:700; background:var(--cream, #fdf6ec); border:1px solid var(--line, #e4ddc9); border-radius:999px; padding:2px 10px; color:var(--navy, #264653);">${escHtml(c)}</span>`,
+                        `<span style="font-size:0.72rem; font-weight:600; background:var(--cream, #fdf6ec); border:1px solid var(--line, #e4ddc9); border-radius:999px; padding:2px 10px; color:var(--navy, #264653);">${escHtml(c)}</span>`,
                     )
                     .join("")}</div>`
                 : ""
@@ -1965,7 +1965,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // overlay — turning Draw on used to cover this button and make it dead.
       "position:fixed; right:16px; bottom:16px; z-index:9999; display:inline-flex; " +
       "align-items:center; gap:8px; min-height:48px; padding:0 22px; border:0; " +
-      "border-radius:99px; background:#12355b; color:#fff; font-weight:800; " +
+      "border-radius:99px; background:#12355b; color:#fff; font-weight:700; " +
       "font-size:1rem; cursor:pointer; box-shadow:0 1px 2px rgba(18,53,91,.06);";
     document.body.appendChild(nextBtn);
 
@@ -2057,7 +2057,7 @@ function chainContinueButton(label, onClick) {
   b.type = "button";
   b.className = "btn btn-primary btn-lg";
   b.style.cssText =
-    "padding:14px 28px; font-weight:800; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
+    "padding:14px 28px; font-weight:700; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
   b.textContent = label;
   b.addEventListener("click", onClick);
   wrap.append(b);
@@ -2190,7 +2190,7 @@ function bonusNavHtml(config) {
   if (!act || !hasItems) return "";
   return `
     <div class="bonus-nav" data-bind="bonus">
-      <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Bonus</div>
+      <div class="prelesson-label" style="font-size:0.68rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Bonus</div>
       <button class="phase-btn extra-btn" data-extra="activity">
         <span class="phase-num">${escHtml(act.emoji || "🎯")}</span>
         <span>${escHtml(act.name || "Bonus Activity")}</span>
@@ -2373,7 +2373,7 @@ function initDeployWatcher() {
     const toast = document.createElement("div");
     toast.setAttribute("role", "status");
     toast.style.cssText =
-      "position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#155fa0,#0f6d78);color:#fff;text-align:center;padding:12px 20px;font-weight:600;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,.2);";
+      "position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#155fa0,#0f6d78);color:#fff;text-align:center;padding:12px 20px;font-weight:500;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,.2);";
     toast.textContent = "🚀 New version deployed — refreshing now…";
     document.body.appendChild(toast);
     setTimeout(() => window.location.reload(), 1500);

@@ -270,7 +270,7 @@ export function renderFillTable(container, config) {
 function renderFillTableFallback(wrapper, config = {}) {
   if (config.instructions || config.label) {
     const p = document.createElement("p");
-    p.style.cssText = "font-weight:600; margin-bottom:var(--sp-3);";
+    p.style.cssText = "font-weight:500; margin-bottom:var(--sp-3);";
     // Mirror the English fallback chain exactly, so a config that authored
     // `label`/`labelEs` cannot end up showing the English label above the
     // Spanish translation of a different field.

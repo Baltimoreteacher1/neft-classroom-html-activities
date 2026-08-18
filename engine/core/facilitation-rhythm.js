@@ -32,15 +32,15 @@ function injectStyles() {
 .ntfr{color-scheme:light;border:2px solid #0e7490;border-radius:14px;background:#ecfeff;color:#164e63;padding:14px 16px;margin:14px 0;display:grid;gap:10px}
 .ntfr-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0}
 .ntfr-head strong{font-size:1rem}
-.ntfr-clock{font-variant-numeric:tabular-nums;font-weight:800;font-size:1.15rem;margin-left:auto}
+.ntfr-clock{font-variant-numeric:tabular-nums;font-weight:700;font-size:1.15rem;margin-left:auto}
 .ntfr-track{display:flex;gap:6px;flex-wrap:wrap}
-.ntfr-seg{flex:1 1 90px;min-width:90px;border:1.5px solid #67e8f9;border-radius:10px;background:#fff;padding:8px;text-align:center;font-weight:700;font-size:.85rem}
+.ntfr-seg{flex:1 1 90px;min-width:90px;border:1.5px solid #67e8f9;border-radius:10px;background:#fff;padding:8px;text-align:center;font-weight:600;font-size:.85rem}
 .ntfr-seg[data-state="active"]{border-color:#0e7490;background:#0e7490;color:#fff}
 .ntfr-seg[data-state="done"]{opacity:.55;text-decoration:line-through}
-.ntfr-seg small{display:block;font-weight:600}
+.ntfr-seg small{display:block;font-weight:500}
 .ntfr-move{margin:0;background:#cffafe;border-radius:10px;padding:10px 12px;font-size:.92rem}
 .ntfr-controls{display:flex;gap:8px;flex-wrap:wrap}
-.ntfr button{border:1.5px solid #0e7490;border-radius:10px;background:#fff;color:#0e7490;font:inherit;font-weight:800;padding:8px 14px;cursor:pointer;min-height:44px}
+.ntfr button{border:1.5px solid #0e7490;border-radius:10px;background:#fff;color:#0e7490;font:inherit;font-weight:700;padding:8px 14px;cursor:pointer;min-height:44px}
 .ntfr button[data-primary]{background:#0e7490;color:#fff}
 .ntfr button:focus-visible{outline:3px solid #164e63;outline-offset:2px}
 @media print{.ntfr{display:none}}

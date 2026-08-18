@@ -67,13 +67,13 @@ function injectStyles() {
     }
     .wodb-badge {
       font-size: 0.75rem;
-      font-weight: 800;
+      font-weight: 700;
       letter-spacing: 0.08em;
       color: var(--muted, #64748b);
     }
-    .wodb-value { font-size: 1.35rem; font-weight: 700; line-height: 1.25; }
+    .wodb-value { font-size: 1.35rem; font-weight: 600; line-height: 1.25; }
     .wodb-because { margin-top: var(--sp-4, 1rem); max-width: 34rem; }
-    .wodb-because label { display: block; font-weight: 700; margin-bottom: var(--sp-2, 0.5rem); }
+    .wodb-because label { display: block; font-weight: 600; margin-bottom: var(--sp-2, 0.5rem); }
     .wodb-because textarea {
       width: 100%;
       min-height: 4.5rem;
@@ -105,7 +105,7 @@ function injectStyles() {
       background: var(--surface-alt, #f1f5f9);
       line-height: 1.4;
     }
-    .wodb-reveal-list li.is-mine { background: var(--teal-pale, #ccfbf1); font-weight: 600; }
+    .wodb-reveal-list li.is-mine { background: var(--teal-pale, #ccfbf1); font-weight: 500; }
     .wodb-reveal-list .wodb-badge { align-self: start; }
     .wodb-mine { margin-top: var(--sp-3, 0.75rem); padding: var(--sp-3, 0.75rem); border-left: 4px solid var(--teal, #0f766e); }
     .wodb-mine strong { display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted, #64748b); }

@@ -169,7 +169,7 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
 
   const progress = document.createElement("div");
   progress.style.cssText =
-    "font-size:1rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-4);";
+    "font-size:1rem; font-weight:600; color:var(--muted); margin-bottom:var(--sp-4);";
   progress.textContent = `0 / ${terms.length} matched`;
   wrapper.append(progress);
 
@@ -203,7 +203,7 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
     el.style.cssText = `
       display:flex; align-items:center; gap:var(--sp-2);
       padding:16px 18px; border:2px solid var(--teal); border-radius:var(--radius-md);
-      background:white; font-weight:700; font-size:1.35rem; text-align:left;
+      background:white; font-weight:600; font-size:1.35rem; text-align:left;
       cursor:pointer; transition:all var(--duration-fast) ease; width:100%;
       color:var(--ink);
     `;
@@ -218,7 +218,7 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
       es.style.cssText =
         // Kept proportional to the English term (~0.8×) so the Spanish support
         // label stays comfortably readable rather than shrinking to a footnote.
-        "display:block; margin-top:2px; font-size:1.05rem; font-weight:600; font-style:italic; color:var(--muted);";
+        "display:block; margin-top:2px; font-size:1.05rem; font-weight:500; font-style:italic; color:var(--muted);";
       es.textContent = term.termEs;
       termLabel.append(en, es);
     } else {

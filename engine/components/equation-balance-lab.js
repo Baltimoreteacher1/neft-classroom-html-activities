@@ -428,32 +428,32 @@ function injectStyles() {
   s.id = "eqlab-styles";
   s.textContent = `
   .eqlab{max-width:780px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
-  .eqlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.05rem;}
+  .eqlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:700;color:${C.navy};font-size:1.05rem;}
   .eqlab-hint{margin:4px 0 12px;color:${C.muted};font-size:.9rem;line-height:1.45;}
   .eqlab-presets{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;}
-  .eqlab-chip{padding:5px 12px;font-size:.9rem;font-weight:700;color:${C.navy};background:${C.chipBg};border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;font-family:inherit;}
+  .eqlab-chip{padding:5px 12px;font-size:.9rem;font-weight:600;color:${C.navy};background:${C.chipBg};border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;font-family:inherit;}
   .eqlab-chip:hover{background:#e2ecff;border-color:${C.accent};}
   .eqlab-eq{display:flex;align-items:center;justify-content:center;gap:14px;padding:8px;font-family:"Outfit",system-ui,sans-serif;}
-  .eqlab-side{font-size:1.5rem;font-weight:800;color:${C.navy};}
-  .eqlab-equals{font-size:1.4rem;font-weight:800;color:${C.muted};}
+  .eqlab-side{font-size:1.5rem;font-weight:700;color:${C.navy};}
+  .eqlab-equals{font-size:1.4rem;font-weight:700;color:${C.muted};}
   .eqlab-scale svg{width:100%;height:auto;display:block;}
   /* Two columns: scale (dominant, keeps its own aspect) + control panel. */
   .eqlab-stage{display:grid;grid-template-columns:minmax(0,1fr) 200px;align-items:start;gap:14px;margin-top:8px;}
   .eqlab-controls{display:flex;flex-direction:column;align-items:stretch;gap:10px;}
-  .eqlab-field{display:flex;flex-direction:column;gap:3px;font-size:.7rem;font-weight:800;color:${C.muted};text-transform:uppercase;letter-spacing:.03em;}
-  .eqlab-field input{width:100%;padding:9px 10px;font-size:1.1rem;font-weight:700;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;text-transform:none;font-family:inherit;}
+  .eqlab-field{display:flex;flex-direction:column;gap:3px;font-size:.7rem;font-weight:700;color:${C.muted};text-transform:uppercase;letter-spacing:.03em;}
+  .eqlab-field input{width:100%;padding:9px 10px;font-size:1.1rem;font-weight:600;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;text-transform:none;font-family:inherit;}
   .eqlab-field input:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
   .eqlab-ops{display:flex;flex-direction:column;gap:6px;}
-  .eqlab-op{padding:9px 12px;text-align:left;font-size:.85rem;font-weight:800;color:${C.navy};background:${C.chipBg};border:1.5px solid ${C.line};border-radius:10px;cursor:pointer;font-family:inherit;}
+  .eqlab-op{padding:9px 12px;text-align:left;font-size:.85rem;font-weight:700;color:${C.navy};background:${C.chipBg};border:1.5px solid ${C.line};border-radius:10px;cursor:pointer;font-family:inherit;}
   .eqlab-op:hover{background:#e2ecff;border-color:${C.accent};}
   .eqlab-op:focus-visible,.eqlab-btn:focus-visible,.eqlab-chip:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .eqlab-actions{display:flex;gap:8px;margin-top:10px;}
-  .eqlab-btn{padding:7px 14px;font-size:.85rem;font-weight:800;color:${C.navy};background:#fff;border:1.5px solid ${C.line};border-radius:9px;cursor:pointer;font-family:inherit;}
+  .eqlab-btn{padding:7px 14px;font-size:.85rem;font-weight:700;color:${C.navy};background:#fff;border:1.5px solid ${C.line};border-radius:9px;cursor:pointer;font-family:inherit;}
   .eqlab-btn:hover:not(:disabled){background:${C.chipBg};}
   .eqlab-btn:disabled{opacity:.4;cursor:default;}
   .eqlab-trail{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px;min-height:1em;}
-  .eqlab-trailstep{padding:2px 9px;font-size:.82rem;font-weight:800;color:${C.teal};background:${C.tealBg};border-radius:999px;}
-  .eqlab-arrow{color:${C.muted};font-weight:700;}
+  .eqlab-trailstep{padding:2px 9px;font-size:.82rem;font-weight:700;color:${C.teal};background:${C.tealBg};border-radius:999px;}
+  .eqlab-arrow{color:${C.muted};font-weight:600;}
   .eqlab-feed{margin-top:10px;}
   .eqlab-msg{padding:10px 14px;border-radius:12px;font-size:.95rem;line-height:1.5;}
   .eqlab-msg-ok{background:${C.tealBg};color:#095350;border:1px solid #9adbd2;}

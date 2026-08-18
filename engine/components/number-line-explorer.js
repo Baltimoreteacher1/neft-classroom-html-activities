@@ -223,7 +223,7 @@ function injectStyles() {
   s.id = "nlex-styles";
   s.textContent = `
   .nlex{max-width:680px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
-  .nlex-title{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.05rem;}
+  .nlex-title{font-family:"Outfit",system-ui,sans-serif;font-weight:700;color:${C.navy};font-size:1.05rem;}
   .nlex-hint{margin:4px 0 12px;color:${C.muted};font-size:.9rem;line-height:1.45;}
   .nlex-plot svg{width:100%;height:auto;display:block;}
   .nlex-pt{cursor:grab;}

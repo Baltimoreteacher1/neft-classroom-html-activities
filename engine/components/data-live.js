@@ -40,26 +40,26 @@ function injectStyles() {
   .dlive{color-scheme:light;--dl-teal:${DATA_1};--dl-coral:${DATA_2};--dl-navy:var(--navy,#264653);--dl-ink:var(--ink,#333);--dl-muted:var(--muted,#6b7280);
     border:1px solid rgba(38,70,83,.14);border-radius:14px;padding:14px 14px 12px;margin:var(--sp-3,12px) 0;background:linear-gradient(180deg,#fff, #fbfdfc);box-shadow:0 1px 3px rgba(38,70,83,.06)}
   .dlive-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-  .dlive-title{font-weight:800;color:var(--dl-navy);font-size:1rem}
-  .dlive-badge{font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--dl-teal);border:1px solid currentColor;border-radius:999px;padding:2px 8px}
+  .dlive-title{font-weight:700;color:var(--dl-navy);font-size:1rem}
+  .dlive-badge{font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--dl-teal);border:1px solid currentColor;border-radius:999px;padding:2px 8px}
   .dlive-plot{position:relative}
   .dlive-plot svg{width:100%;height:auto;max-width:560px;display:block;margin:0 auto;touch-action:manipulation}
   .dlive [data-hit]{cursor:pointer}
   .dlive [data-hit]:hover,.dlive [data-hit][data-on="1"]{filter:brightness(1.06)}
   .dlive-tools{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 2px;align-items:center}
-  .dlive-btn{font:inherit;font-size:.82rem;font-weight:700;color:var(--dl-navy);background:#fff;border:1.5px solid rgba(38,70,83,.22);border-radius:999px;padding:6px 12px;cursor:pointer;transition:.15s}
+  .dlive-btn{font:inherit;font-size:.82rem;font-weight:600;color:var(--dl-navy);background:#fff;border:1.5px solid rgba(38,70,83,.22);border-radius:999px;padding:6px 12px;cursor:pointer;transition:.15s}
   .dlive-btn:hover{border-color:var(--dl-teal);color:var(--dl-teal)}
   .dlive-btn[aria-pressed="true"]{background:var(--dl-teal);border-color:var(--dl-teal);color:#fff}
   .dlive-btn.ghost{border-style:dashed}
   .dlive-nudge{display:inline-flex;gap:4px;align-items:center;margin-left:auto;flex-wrap:wrap}
-  .dlive-nudge button{font:inherit;font-weight:800;width:34px;height:34px;border-radius:9px;border:1.5px solid rgba(38,70,83,.22);background:#fff;color:var(--dl-navy);cursor:pointer}
+  .dlive-nudge button{font:inherit;font-weight:700;width:34px;height:34px;border-radius:9px;border:1.5px solid rgba(38,70,83,.22);background:#fff;color:var(--dl-navy);cursor:pointer}
   .dlive-nudge button:hover{border-color:var(--dl-teal);color:var(--dl-teal)}
-  .dlive-nudge .lab{font-size:.78rem;color:var(--dl-muted);font-weight:700;margin-right:2px}
+  .dlive-nudge .lab{font-size:.78rem;color:var(--dl-muted);font-weight:600;margin-right:2px}
   .dlive-measures{display:none;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:8px;margin-top:10px}
   .dlive.show-m .dlive-measures{display:grid}
   .dlive-stat{background:#fff;border:1px solid rgba(38,70,83,.14);border-radius:10px;padding:7px 9px;text-align:center}
   .dlive-stat b{display:block;font-size:1.12rem;color:var(--dl-navy);line-height:1.1}
-  .dlive-stat span{font-size:.68rem;color:var(--dl-muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  .dlive-stat span{font-size:.68rem;color:var(--dl-muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
   .dlive-stat.hi b{color:var(--dl-coral)}
   .dlive-note{margin-top:9px;font-size:.86rem;color:var(--dl-ink);background:rgba(42,157,143,.08);border-left:3px solid var(--dl-teal);border-radius:0 8px 8px 0;padding:7px 10px;min-height:1.2em}
   .dlive-note:empty{display:none}

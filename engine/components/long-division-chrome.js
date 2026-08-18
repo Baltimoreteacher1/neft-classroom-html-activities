@@ -119,21 +119,21 @@ export function injectStyles() {
   s.textContent = `
   .ldl{max-width:640px;margin:0 auto;background:var(--tool-surface);border:1px solid var(--tool-line);border-radius:var(--tool-radius);padding:16px 16px 18px;font-family:"Hanken Grotesk",system-ui,sans-serif;color:var(--tool-ink);}
   .ldl [hidden]{display:none!important;}
-  .ldl-title{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.05rem;}
+  .ldl-title{font-family:"Outfit",system-ui,sans-serif;font-weight:700;color:${C.navy};font-size:1.05rem;}
   .ldl-sub{margin:4px 0 8px;color:${C.muted};font-size:.9rem;line-height:1.45;}
   .ldl-dmsb-banner{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;padding:8px 12px;background:var(--tool-canvas);border:1px solid var(--tool-line);border-radius:var(--tool-radius-sm);}
-  .ldl-dmsb-chip{display:inline-flex;align-items:center;gap:5px;font-size:.82rem;font-weight:800;color:${C.navy};}
-  .ldl-dmsb-badge{display:inline-grid;place-items:center;width:1.55em;height:1.55em;border-radius:50%;background:#ef4444;color:#fff;font-size:.78rem;font-weight:900;}
-  .ldl-dmsb-op{font-weight:900;color:#dc2626;}
+  .ldl-dmsb-chip{display:inline-flex;align-items:center;gap:5px;font-size:.82rem;font-weight:700;color:${C.navy};}
+  .ldl-dmsb-badge{display:inline-grid;place-items:center;width:1.55em;height:1.55em;border-radius:50%;background:#ef4444;color:#fff;font-size:.78rem;font-weight:800;}
+  .ldl-dmsb-op{font-weight:800;color:#dc2626;}
   .ldl-modes{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;}
-  .ldl-mode{display:inline-flex;align-items:center;min-height:var(--tool-control-h);padding:0 15px;font:inherit;font-size:.92rem;font-weight:700;color:var(--tool-control-ink);background:var(--tool-control-bg);border:1px solid var(--tool-control-line);border-radius:999px;cursor:pointer;}
+  .ldl-mode{display:inline-flex;align-items:center;min-height:var(--tool-control-h);padding:0 15px;font:inherit;font-size:.92rem;font-weight:600;color:var(--tool-control-ink);background:var(--tool-control-bg);border:1px solid var(--tool-control-line);border-radius:999px;cursor:pointer;}
   .ldl-mode:hover{background:var(--tool-control-hover);border-color:var(--tool-accent);}
-  .ldl-mode.is-on{color:var(--tool-control-active-ink);background:var(--tool-control-active-bg);border-color:var(--tool-control-active-bg);font-weight:800;box-shadow:inset 0 -3px 0 color-mix(in srgb,#000 22%,var(--tool-control-active-bg));}
+  .ldl-mode.is-on{color:var(--tool-control-active-ink);background:var(--tool-control-active-bg);border-color:var(--tool-control-active-bg);font-weight:700;box-shadow:inset 0 -3px 0 color-mix(in srgb,#000 22%,var(--tool-control-active-bg));}
   .ldl-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
-  .ldl-field{font-size:.72rem;font-weight:700;color:${C.muted};text-transform:uppercase;}
-  .ldl-num{width:96px;max-width:38vw;min-height:var(--tool-control-h);padding:8px 10px;font:inherit;font-size:1.05rem;font-weight:700;color:var(--tool-ink);border:1px solid var(--tool-line);border-radius:var(--tool-radius-sm);background:var(--tool-surface);}
-  .ldl-op{font-weight:800;color:${C.navy};font-size:1.2rem;}
-  .ldl-go,.ldl-check,.ldl-bring,.ldl-again,.ldl-shiftgo,.ldl-play button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:var(--tool-control-h);padding:0 16px;font:inherit;font-size:.92rem;font-weight:700;color:var(--tool-control-ink);background:var(--tool-control-bg);border:1px solid var(--tool-control-line);border-radius:var(--tool-radius-sm);cursor:pointer;}
+  .ldl-field{font-size:.72rem;font-weight:600;color:${C.muted};text-transform:uppercase;}
+  .ldl-num{width:96px;max-width:38vw;min-height:var(--tool-control-h);padding:8px 10px;font:inherit;font-size:1.05rem;font-weight:600;color:var(--tool-ink);border:1px solid var(--tool-line);border-radius:var(--tool-radius-sm);background:var(--tool-surface);}
+  .ldl-op{font-weight:700;color:${C.navy};font-size:1.2rem;}
+  .ldl-go,.ldl-check,.ldl-bring,.ldl-again,.ldl-shiftgo,.ldl-play button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:var(--tool-control-h);padding:0 16px;font:inherit;font-size:.92rem;font-weight:600;color:var(--tool-control-ink);background:var(--tool-control-bg);border:1px solid var(--tool-control-line);border-radius:var(--tool-radius-sm);cursor:pointer;}
   /* Filled: the one action that moves the algorithm forward. */
   .ldl-go,.ldl-check{color:var(--tool-control-active-ink);background:var(--tool-control-active-bg);border-color:var(--tool-control-active-bg);}
   /* Amber stays — it is the BRING-DOWN colour, and it matches the digit this
@@ -145,31 +145,31 @@ export function injectStyles() {
   .ldl-again:hover:not(:disabled),.ldl-shiftgo:hover:not(:disabled),.ldl-play button:hover:not(:disabled){background:var(--tool-control-hover);border-color:var(--tool-accent);}
   .ldl :is(button,input):focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .ldl-presets{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;}
-  .ldl-chip{display:inline-flex;align-items:center;min-height:var(--tool-control-h);padding:0 12px;font:inherit;font-size:.88rem;font-weight:700;color:var(--tool-control-ink);background:var(--tool-control-bg);border:1px solid var(--tool-control-line);border-radius:999px;cursor:pointer;}
+  .ldl-chip{display:inline-flex;align-items:center;min-height:var(--tool-control-h);padding:0 12px;font:inherit;font-size:.88rem;font-weight:600;color:var(--tool-control-ink);background:var(--tool-control-bg);border:1px solid var(--tool-control-line);border-radius:999px;cursor:pointer;}
   .ldl-chip:hover{background:var(--tool-control-hover);border-color:var(--tool-accent);}
   .ldl-shift{margin:12px 0 0;padding:10px 12px;background:#fff8ec;border:1px solid #f0d3a0;border-radius:var(--tool-radius-sm);font-size:.9rem;line-height:1.5;color:var(--tool-ink);}
-  .ldl-shift-done{color:${C.good};font-weight:800;}
+  .ldl-shift-done{color:${C.good};font-weight:700;}
   .ldl-shift-new{color:${C.teal};}
   .ldl-shiftgo{margin-top:6px;display:inline-block;}
   .ldl-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 10px;}
-  .ldl-cycle{padding:5px 12px;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:${C.navy};border-radius:999px;}
-  .ldl-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;font-size:.85rem;font-weight:800;color:var(--tool-muted);background:var(--tool-canvas);border:1px solid var(--tool-line);border-radius:var(--tool-radius-sm);transition:background .2s ease,border-color .2s ease,color .2s ease;}
-  .ldl-badge{display:inline-grid;place-items:center;width:1.45em;height:1.45em;font-size:.78rem;font-weight:900;border-radius:50%;background:#e2e8f0;color:${C.navy};}
-  .ldl-op-symbol{font-weight:900;font-size:.95rem;color:${C.navy};}
-  .ldl-pill-label{font-weight:700;}
+  .ldl-cycle{padding:5px 12px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:${C.navy};border-radius:999px;}
+  .ldl-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;font-size:.85rem;font-weight:700;color:var(--tool-muted);background:var(--tool-canvas);border:1px solid var(--tool-line);border-radius:var(--tool-radius-sm);transition:background .2s ease,border-color .2s ease,color .2s ease;}
+  .ldl-badge{display:inline-grid;place-items:center;width:1.45em;height:1.45em;font-size:.78rem;font-weight:800;border-radius:50%;background:#e2e8f0;color:${C.navy};}
+  .ldl-op-symbol{font-weight:800;font-size:.95rem;color:${C.navy};}
+  .ldl-pill-label{font-weight:600;}
   .ldl-pill.is-done{color:${C.good};border-color:#a7f3d0;background:#ecfdf5;}
   .ldl-pill.is-done .ldl-badge{background:${C.good};color:#fff;}
   /* The current step of the cycle. Fill + border + weight, no lift: this pill
      marks WHERE the student is in Divide-Multiply-Subtract-Bring-down, and a
      hop makes the strip jitter as the algorithm advances. */
-  .ldl-pill.is-on{color:#0f172a;background:#fef08a;border-color:#eab308;border-width:2px;font-weight:900;}
+  .ldl-pill.is-on{color:#0f172a;background:#fef08a;border-color:#eab308;border-width:2px;font-weight:800;}
   .ldl-pill.is-on .ldl-badge{background:#dc2626;color:#fff;}
   .ldl-pill.is-on .ldl-op-symbol{color:#dc2626;}
-  .ldl-loop{font-size:.82rem;font-weight:800;color:${C.teal};margin-left:auto;}
+  .ldl-loop{font-size:.82rem;font-weight:700;color:${C.teal};margin-left:auto;}
   /* THE BOARD IS THE MATHEMATICS. It keeps its own surface, its own generous
      type and every colour on it — this is the one element the interface is
      meant to be subordinate to. */
-  .ldl-board{display:grid;justify-content:center;align-items:end;margin:10px 0 4px;padding:14px 10px 10px;background:var(--tool-canvas);border:1px solid var(--tool-accent);border-radius:var(--tool-radius);overflow-x:auto;font-family:"Outfit",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:1.5rem;font-weight:800;line-height:1.25;color:${C.navy};}
+  .ldl-board{display:grid;justify-content:center;align-items:end;margin:10px 0 4px;padding:14px 10px 10px;background:var(--tool-canvas);border:1px solid var(--tool-accent);border-radius:var(--tool-radius);overflow-x:auto;font-family:"Outfit",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:1.5rem;font-weight:700;line-height:1.25;color:${C.navy};}
   .ldl-board>span{text-align:center;}
   .ldl-board.is-waiting{opacity:.4;}
   .ldl-divisor{padding-right:.15em;text-align:right;}
@@ -187,7 +187,7 @@ export function injectStyles() {
   .ldl-minus::before{content:"−";position:absolute;left:-.72em;color:${C.warn};}
   .ldl-rule{border-bottom:2.5px solid ${C.warn};align-self:stretch;}
   .ldl-diff{color:${C.navy};}
-  .ldl-brought{color:#b45309;font-weight:900;}
+  .ldl-brought{color:#b45309;font-weight:800;}
   .ldl-drop{animation:ldlDrop .45s ease-out;}
   @keyframes ldlDrop{from{transform:translateY(-2.1em);opacity:0;}to{transform:none;opacity:1;}}
   /* The ghost marks the digit about to be brought down. Its amber and its
@@ -203,30 +203,30 @@ export function injectStyles() {
   .ldl-play button:disabled{opacity:.45;cursor:default;}
   .ldl-playpause{min-width:6.5em;}
   /* .ldl-mine is styled with .ldl-bring above — same action, same amber. */
-  .ldl-count{font-size:.8rem;font-weight:800;color:var(--tool-muted);}
+  .ldl-count{font-size:.8rem;font-weight:700;color:var(--tool-muted);}
   /* Number keypad + fact helper. These carried inline style attributes, which
      is how they escaped the stylesheet entirely: an inline declaration
      outranks any rule, so the tokens could never have reached them. 44px keys
      — this is the control a student on a touchscreen taps most in the whole
      lab, and it was 38px. */
   .ldl-keypad{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:10px;padding:10px;background:var(--tool-canvas);border:1px solid var(--tool-line);border-radius:var(--tool-radius);}
-  .ldl-key{min-width:44px;height:44px;padding:0 10px;font-family:"Outfit",sans-serif;font-size:1.05rem;font-weight:800;color:var(--tool-ink);background:var(--tool-surface);border:1px solid var(--tool-line);border-radius:var(--tool-radius-sm);cursor:pointer;touch-action:manipulation;}
+  .ldl-key{min-width:44px;height:44px;padding:0 10px;font-family:"Outfit",sans-serif;font-size:1.05rem;font-weight:700;color:var(--tool-ink);background:var(--tool-surface);border:1px solid var(--tool-line);border-radius:var(--tool-radius-sm);cursor:pointer;touch-action:manipulation;}
   .ldl-key:hover{background:var(--tool-control-hover);border-color:var(--tool-accent);}
-  .ldl-fact-toggle{display:inline-flex;align-items:center;gap:5px;margin-left:auto;min-height:var(--tool-control-h);padding:0 12px;font-size:.85rem;font-weight:700;color:var(--tool-control-ink);background:var(--tool-control-bg);border:1px solid var(--tool-control-line);border-radius:var(--tool-radius-sm);cursor:pointer;}
+  .ldl-fact-toggle{display:inline-flex;align-items:center;gap:5px;margin-left:auto;min-height:var(--tool-control-h);padding:0 12px;font-size:.85rem;font-weight:600;color:var(--tool-control-ink);background:var(--tool-control-bg);border:1px solid var(--tool-control-line);border-radius:var(--tool-radius-sm);cursor:pointer;}
   .ldl-fact-toggle:hover{background:var(--tool-control-hover);border-color:var(--tool-accent);}
   .ldl-entry{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
-  .ldl-alabel{font-size:.72rem;font-weight:800;color:${C.muted};text-transform:uppercase;}
+  .ldl-alabel{font-size:.72rem;font-weight:700;color:${C.muted};text-transform:uppercase;}
   /* The answer field keeps its 2px accent border: it is the one place on the
      board a student types, and finding it must not require reading. */
-  .ldl-answer{width:120px;max-width:40vw;min-height:var(--tool-control-h);padding:9px 11px;font:inherit;font-size:1.15rem;font-weight:800;color:var(--tool-ink);border:2px solid var(--tool-accent);border-radius:var(--tool-radius-sm);background:var(--tool-surface);}
+  .ldl-answer{width:120px;max-width:40vw;min-height:var(--tool-control-h);padding:9px 11px;font:inherit;font-size:1.15rem;font-weight:700;color:var(--tool-ink);border:2px solid var(--tool-accent);border-radius:var(--tool-radius-sm);background:var(--tool-surface);}
   .ldl-feedback{min-height:1.4em;margin:8px 0 0;font-size:.92rem;line-height:1.5;color:${C.ink};}
-  .ldl-good{color:${C.good};font-weight:700;}
-  .ldl-bad{color:${C.warn};font-weight:700;}
-  .ldl-warn{color:#8a5a00;font-weight:700;}
-  .ldl-info{color:${C.muted};font-weight:600;}
-  .ldl-repeat{color:${C.teal};font-weight:800;}
+  .ldl-good{color:${C.good};font-weight:600;}
+  .ldl-bad{color:${C.warn};font-weight:600;}
+  .ldl-warn{color:#8a5a00;font-weight:600;}
+  .ldl-info{color:${C.muted};font-weight:500;}
+  .ldl-repeat{color:${C.teal};font-weight:700;}
   .ldl-result{margin:12px 0 0;padding:12px;background:#f2fbf7;border:1px solid #bfe3cf;border-radius:var(--tool-radius);text-align:center;}
-  .ldl-final{font-family:"Outfit",system-ui,sans-serif;font-weight:900;font-size:1.3rem;color:${C.teal};}
+  .ldl-final{font-family:"Outfit",system-ui,sans-serif;font-weight:800;font-size:1.3rem;color:${C.teal};}
   .ldl-words,.ldl-verify{margin:6px auto 0;max-width:520px;font-size:.92rem;line-height:1.5;color:${C.ink};}
   .ldl-again{margin-top:10px;}
   @media (max-width:430px){

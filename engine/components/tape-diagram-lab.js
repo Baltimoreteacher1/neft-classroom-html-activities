@@ -29,33 +29,33 @@ function ensureStyles() {
   s.id = "tdl-styles";
   s.textContent = `
   .tdl-wrap{margin:var(--sp-3,12px) 0;display:flex;flex-direction:column;align-items:center;}
-  .tdl-title{font-weight:800;color:var(--navy,#264653);margin-bottom:4px;font-size:.98rem;text-align:center;}
+  .tdl-title{font-weight:700;color:var(--navy,#264653);margin-bottom:4px;font-size:.98rem;text-align:center;}
   .tdl-hint{font-size:.82rem;color:var(--muted,#54677c);margin-bottom:10px;text-align:center;max-width:440px;line-height:1.4;}
   .tdl-stage{width:100%;max-width:540px;background:#fff;border:1px solid var(--line,#cbd5e1);border-radius:12px;padding:12px;}
   .tdl-row{display:flex;align-items:stretch;gap:8px;margin:6px 0;}
-  .tdl-rowlab{flex:0 0 84px;display:flex;align-items:center;font-size:.78rem;font-weight:700;color:var(--navy,#264653);}
+  .tdl-rowlab{flex:0 0 84px;display:flex;align-items:center;font-size:.78rem;font-weight:600;color:var(--navy,#264653);}
   .tdl-track{flex:1;display:flex;gap:3px;min-width:0;}
   .tdl-part{position:relative;min-width:0;height:40px;border:2px solid transparent;border-radius:5px;color:#fff;
-    font-weight:700;font-size:.78rem;display:flex;align-items:center;justify-content:center;
+    font-weight:600;font-size:.78rem;display:flex;align-items:center;justify-content:center;
     padding:0 2px;box-sizing:border-box;overflow:hidden;
     /* The parts are read, not clicked — the question is what the model leaves
        out, so nothing here should invite tapping. */
     cursor:default;}
   .tdl-part-unknown{opacity:.92;}
   .tdl-ask{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin-top:12px;}
-  .tdl-asklab{font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
+  .tdl-asklab{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
     color:var(--muted,#54677c);}
-  .tdl-input{width:110px;padding:8px 10px;font:inherit;font-size:1.1rem;font-weight:800;
+  .tdl-input{width:110px;padding:8px 10px;font:inherit;font-size:1.1rem;font-weight:700;
     color:var(--navy,#264653);border:2px solid var(--line,#cbd5e1);border-radius:10px;background:#fbfcfe;}
   .tdl-input:focus-visible{outline:3px solid var(--accent,#1d4ed8);outline-offset:1px;}
   .tdl-input:disabled{background:#eef7f4;border-color:var(--teal,#2a9d8f);}
-  .tdl-status{min-height:1.2em;margin-top:8px;font-size:1rem;font-weight:700;text-align:center;color:var(--teal,#0d7a76);}
+  .tdl-status{min-height:1.2em;margin-top:8px;font-size:1rem;font-weight:600;text-align:center;color:var(--teal,#0d7a76);}
   .tdl-status.wrong{color:var(--coral,#c2410c);}
   .tdl-reveal{margin-top:10px;width:100%;max-width:540px;box-sizing:border-box;padding:10px 14px;
     border:1px solid var(--line,#cbd5e1);border-left:4px solid var(--teal,#2a9d8f);border-radius:12px;
     background:#f4faf8;font-size:.9rem;color:var(--navy,#264653);line-height:1.4;}
   .tdl-controls{display:flex;gap:8px;justify-content:center;margin-top:10px;}
-  .tdl-btn{font:inherit;font-weight:700;font-size:.82rem;border-radius:999px;padding:6px 14px;cursor:pointer;
+  .tdl-btn{font:inherit;font-weight:600;font-size:.82rem;border-radius:999px;padding:6px 14px;cursor:pointer;
     border:2px solid var(--line,#cbd5e1);background:#fff;color:var(--navy,#264653);}
   .tdl-btn:hover{border-color:var(--accent,#1d4ed8);}
   /* The What-if strip: available only after the question is answered, so the
@@ -65,7 +65,7 @@ function ensureStyles() {
     background:#fffdf5;}
   .tdl-explore-q{margin:0 0 8px;font-size:.88rem;color:var(--navy,#264653);line-height:1.45;}
   .tdl-explore-controls{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;}
-  .tdl-explore-read{font-size:.9rem;font-weight:800;color:var(--navy,#264653);text-align:center;
+  .tdl-explore-read{font-size:.9rem;font-weight:700;color:var(--navy,#264653);text-align:center;
     min-width:min(100%,15rem);}
   `;
   document.head.appendChild(s);

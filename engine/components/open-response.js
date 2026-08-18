@@ -43,7 +43,7 @@ function ensureOpenResponseStyles() {
     }
     .orp-keyword-chip {
       font-size: 0.78rem;
-      font-weight: 600;
+      font-weight: 500;
       color: var(--navy, #12355b);
       background: var(--teal-light, #dff2ee);
       border: 1px solid var(--line, #d7e2ed);
@@ -160,7 +160,7 @@ export function renderOpenResponse(
 
   const promptEl = document.createElement("p");
   promptEl.style.cssText =
-    "font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
+    "font-size:1rem; font-weight:500; margin:0 0 var(--sp-3); line-height:1.5;";
   // Let students mark up the prompt text (highlight / underline / bold).
   promptEl.setAttribute("data-annotate", "word-problem");
   // `promptEs` is authored on 54 items and had no renderer: a written-response

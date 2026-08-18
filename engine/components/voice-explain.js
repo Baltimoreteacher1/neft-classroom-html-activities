@@ -25,18 +25,18 @@ function injectStyles() {
   .vexp{--vx-teal:var(--teal,#2a9d8f);--vx-coral:var(--coral,#d9795d);--vx-navy:var(--navy,#264653);--vx-ink:var(--ink,#333);--vx-muted:var(--muted,#6b7280);
     margin:8px 0 2px}
   .vexp-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-  .vexp-btn{font:inherit;font-size:.86rem;font-weight:800;color:#fff;background:var(--vx-teal);border:1.5px solid var(--vx-teal);border-radius:999px;padding:8px 15px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+  .vexp-btn{font:inherit;font-size:.86rem;font-weight:700;color:#fff;background:var(--vx-teal);border:1.5px solid var(--vx-teal);border-radius:999px;padding:8px 15px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
   .vexp-btn:hover{filter:brightness(1.05)}
   .vexp-btn:focus-visible{outline:3px solid rgba(42,157,143,.4);outline-offset:2px}
   .vexp-btn[data-listening="1"]{background:var(--vx-coral);border-color:var(--vx-coral);animation:vexp-pulse 1.3s ease-in-out infinite}
   @keyframes vexp-pulse{0%,100%{box-shadow:0 0 0 0 rgba(217,121,93,.5)}50%{box-shadow:0 0 0 7px rgba(217,121,93,0)}}
   @media (prefers-reduced-motion:reduce){.vexp-btn[data-listening="1"]{animation:none}}
-  .vexp-status{font-size:.84rem;color:var(--vx-muted);font-weight:600;min-height:1.1em;flex:1 1 160px}
+  .vexp-status{font-size:.84rem;color:var(--vx-muted);font-weight:500;min-height:1.1em;flex:1 1 160px}
   .vexp-status .interim{color:var(--vx-ink);font-style:italic}
-  .vexp-status.err{color:var(--vx-coral);font-weight:700}
+  .vexp-status.err{color:var(--vx-coral);font-weight:600}
   .vexp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
   .vexp-chips:empty{display:none}
-  .vexp-chip{font-size:.74rem;font-weight:700;color:var(--vx-navy);background:#fff;border:1.5px solid rgba(38,70,83,.22);border-radius:999px;padding:3px 9px;transition:.15s}
+  .vexp-chip{font-size:.74rem;font-weight:600;color:var(--vx-navy);background:#fff;border:1.5px solid rgba(38,70,83,.22);border-radius:999px;padding:3px 9px;transition:.15s}
   .vexp-chip[data-used="1"]{color:#fff;background:var(--vx-teal);border-color:var(--vx-teal)}
 `;
   document.head.appendChild(s);

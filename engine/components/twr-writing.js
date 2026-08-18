@@ -33,7 +33,7 @@ function ensureTwrStyles() {
     .twr-counter {
       display: block;
       font-size: 0.72rem;
-      font-weight: 600;
+      font-weight: 500;
       color: var(--muted, #5b6b7b);
       text-align: right;
       margin: -2px 0 var(--sp-3, 12px);
@@ -188,11 +188,11 @@ function writeRow(parent, { key, frameEn, frameEs, rows = 2, getResponse, saveRe
   if (frameEn) {
     const frame = document.createElement("p");
     frame.className = "sentence-frame";
-    frame.style.cssText = "margin:0 0 var(--sp-1); font-weight:600;";
+    frame.style.cssText = "margin:0 0 var(--sp-1); font-weight:500;";
     frame.innerHTML = esc(frameEn).replace(/___/g, '<span class="blank">&nbsp;</span>');
     if (frameEs) {
       const es = document.createElement("span");
-      es.style.cssText = "display:block; color:var(--muted); font-style:italic; font-weight:600;";
+      es.style.cssText = "display:block; color:var(--muted); font-style:italic; font-weight:500;";
       es.textContent = frameEs;
       frame.append(es);
     }
@@ -270,7 +270,7 @@ export function renderTwrWriting(container, config, { getResponse, saveResponse,
   const question = document.createElement("div");
   question.style.cssText =
     "background:var(--teal-light); border-left:4px solid var(--teal); border-radius:var(--radius-sm); padding:var(--sp-2) var(--sp-3); margin-bottom:var(--sp-3);";
-  question.innerHTML = `<p style="margin:0; font-weight:800;">${esc(twr.focus.questionEn)}</p>${
+  question.innerHTML = `<p style="margin:0; font-weight:700;">${esc(twr.focus.questionEn)}</p>${
     twr.focus.questionEs
       ? `<p lang="es" style="margin:2px 0 0; color:var(--muted); font-style:italic;">${esc(twr.focus.questionEs)}</p>`
       : ""
@@ -284,7 +284,7 @@ export function renderTwrWriting(container, config, { getResponse, saveResponse,
     panel.dataset.supportLevel = level.id;
     if (level.frames && level.frames.length) {
       const label = document.createElement("p");
-      label.style.cssText = "margin:0 0 var(--sp-1); font-weight:700; color:var(--navy);";
+      label.style.cssText = "margin:0 0 var(--sp-1); font-weight:600; color:var(--navy);";
       label.textContent = "Sentence starters:";
       panel.append(label);
       const frames = document.createElement("ul");
@@ -324,7 +324,7 @@ export function renderTwrWriting(container, config, { getResponse, saveResponse,
     "margin:var(--sp-2) 0 0; border:1px solid var(--line); border-radius:var(--radius-sm); padding:0 var(--sp-3);";
   const summary = document.createElement("summary");
   summary.style.cssText =
-    "cursor:pointer; font-weight:700; color:var(--navy); padding:var(--sp-2) 0;";
+    "cursor:pointer; font-weight:600; color:var(--navy); padding:var(--sp-2) 0;";
   summary.textContent = "Need help? Math words, more starters & a check";
   help.append(summary);
 
@@ -376,7 +376,7 @@ export function renderTwrWriting(container, config, { getResponse, saveResponse,
     if (i === mainIdx) continue;
     const lv = twrLevels[i];
     const label = document.createElement("p");
-    label.style.cssText = "margin:var(--sp-3) 0 0; font-weight:700; color:var(--navy);";
+    label.style.cssText = "margin:var(--sp-3) 0 0; font-weight:600; color:var(--navy);";
     label.textContent = `${lv.label} — ${lv.support}`;
     helpBody.append(label);
     buildLevel(lv, helpBody, 3);

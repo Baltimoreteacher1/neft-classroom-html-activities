@@ -574,7 +574,7 @@ export function renderShape3D(
     c.dataset.kind = kind;
     c.style.cssText = `
       display:inline-flex; align-items:center; gap:6px; padding:6px 12px;
-      border-radius:var(--radius-full); font-weight:700; font-size:0.85rem;
+      border-radius:var(--radius-full); font-weight:600; font-size:0.85rem;
       background:var(--teal-light); color:var(--navy); border:2px solid transparent;
       transition:border-color 0.15s ease, background 0.15s ease;`;
     c.innerHTML = `<strong>${n}</strong> ${kind}${n === 1 ? "" : kind === "vertex" ? "es" : "s"}`;
@@ -591,7 +591,7 @@ export function renderShape3D(
   labelBar.setAttribute("role", "status");
   labelBar.style.cssText = `
     margin-top:var(--sp-3); text-align:center; min-height:1.5em;
-    font-weight:600; color:var(--muted); font-size:0.95rem;`;
+    font-weight:500; color:var(--muted); font-size:0.95rem;`;
   labelBar.textContent =
     "Tap a face to label it. The whole solid is made of faces, edges, and vertices.";
   root.append(labelBar);
@@ -788,7 +788,7 @@ function buildTaskPanel({
 
   const intro = document.createElement("div");
   intro.style.cssText = `
-    font-family:var(--font-display); font-weight:800; font-size:1rem; color:var(--navy);`;
+    font-family:var(--font-display); font-weight:700; font-size:1rem; color:var(--navy);`;
   intro.textContent = "Your turn — explore the shape:";
   wrap.append(intro);
 
@@ -916,7 +916,7 @@ function taskBox(badge, prompt) {
     padding:var(--sp-3); border:1px solid var(--line); border-radius:var(--radius-md);
     background:#fff; display:flex; flex-direction:column; gap:var(--sp-2);`;
   const p = document.createElement("p");
-  p.style.cssText = "margin:0; font-size:0.92rem; font-weight:600; color:var(--ink);";
+  p.style.cssText = "margin:0; font-size:0.92rem; font-weight:500; color:var(--ink);";
   p.textContent = `${badge}. ${prompt}`;
   box.append(p);
   return box;
@@ -926,7 +926,7 @@ function statusLine() {
   const p = document.createElement("p");
   p.setAttribute("role", "status");
   p.style.cssText =
-    "margin:0; min-height:1.3em; font-size:0.88rem; font-weight:600; line-height:1.4;";
+    "margin:0; min-height:1.3em; font-size:0.88rem; font-weight:500; line-height:1.4;";
   return p;
 }
 

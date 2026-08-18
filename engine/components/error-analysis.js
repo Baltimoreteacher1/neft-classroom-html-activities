@@ -51,10 +51,10 @@ export function renderErrorAnalysis(
       ">
         <span class="ea-step-badge" style="
           width:32px; height:32px; border-radius:8px; display:grid; place-items:center;
-          background:var(--navy); color:white; font-weight:900; font-size:0.82rem;
+          background:var(--navy); color:white; font-weight:800; font-size:0.82rem;
         ">S${i + 1}</span>
         <div>
-          <div style="font-weight:600; font-size:0.95rem;">${stackContent(step.label, step.labelEs)}</div>
+          <div style="font-weight:500; font-size:0.95rem;">${stackContent(step.label, step.labelEs)}</div>
           <div style="font-family:var(--font-mono); font-size:1.05rem; margin-top:2px; color:var(--navy);">
             ${stackContent(step.work, step.workEs)}
           </div>
@@ -69,7 +69,7 @@ export function renderErrorAnalysis(
 
   const instruction = document.createElement("p");
   instruction.style.cssText =
-    "font-weight:700; margin:var(--sp-4) 0 var(--sp-2); color:var(--navy);";
+    "font-weight:600; margin:var(--sp-4) 0 var(--sp-2); color:var(--navy);";
   instruction.innerHTML = stackContent(
     "Click the step that contains the error:",
     "Haz clic en el paso que contiene el error:",
@@ -77,7 +77,7 @@ export function renderErrorAnalysis(
   wrapper.append(instruction);
 
   const explainLabel = document.createElement("p");
-  explainLabel.style.cssText = "font-weight:600; margin:var(--sp-4) 0 var(--sp-2);";
+  explainLabel.style.cssText = "font-weight:500; margin:var(--sp-4) 0 var(--sp-2);";
   explainLabel.textContent = "Explain what went wrong and how to fix it:";
   explainLabel.style.display = "none";
   wrapper.append(explainLabel);
@@ -380,7 +380,7 @@ function injectErrorAnalysisStyles() {
       background: var(--success);
       color: #fff;
       font-size: 0.7rem;
-      font-weight: 900;
+      font-weight: 800;
       line-height: 1;
       transform-origin: center;
       animation: eaCheckPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 1;
@@ -402,7 +402,7 @@ function injectErrorAnalysisStyles() {
       border-radius: var(--radius-md);
       background: color-mix(in srgb, var(--teal) 6%, transparent);
     }
-    .ea-root .ea-repair-label { font-weight: 700; color: var(--navy); margin: 0 0 var(--sp-2); }
+    .ea-root .ea-repair-label { font-weight: 600; color: var(--navy); margin: 0 0 var(--sp-2); }
     .ea-root .ea-repair-row { display: flex; gap: var(--sp-2); flex-wrap: wrap; align-items: center; }
     .ea-root .ea-repair-input { flex: 1 1 12rem; min-width: 0; font-family: var(--font-mono); }
     @media (max-width: 600px) {

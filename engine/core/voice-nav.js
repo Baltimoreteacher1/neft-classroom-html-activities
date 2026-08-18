@@ -30,7 +30,7 @@ export function mountVoiceNav(opts) {
   status.setAttribute("aria-live", "polite");
   status.style.cssText =
     "position:fixed; right:74px; bottom:150px; z-index:9997; max-width:240px; padding:8px 14px; " +
-    "border-radius:12px; background:#12355b; color:#fff; font-size:.9rem; font-weight:600; " +
+    "border-radius:12px; background:#12355b; color:#fff; font-size:.9rem; font-weight:500; " +
     "box-shadow:0 4px 14px rgba(12,27,42,.28); display:none;";
   document.body.appendChild(status);
 

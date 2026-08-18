@@ -24,7 +24,7 @@ export function renderAlgebraTiles(
 
   if (instructions) {
     const p = document.createElement("p");
-    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = instructions;
     wrapper.append(p);
   }
@@ -84,7 +84,7 @@ export function renderAlgebraTiles(
       min-width:${t.type === "x" ? "56px" : "44px"}; height:44px; border-radius:var(--radius-sm);
       border:2px solid var(--navy); background:${tileColor(t)};
       color:${t.type === "x" && t.value > 0 ? "white" : "var(--navy)"};
-      font-weight:800; font-size:0.95rem; cursor:grab; touch-action:none;`;
+      font-weight:700; font-size:0.95rem; cursor:grab; touch-action:none;`;
     el.draggable = true;
 
     el.addEventListener("click", () => {

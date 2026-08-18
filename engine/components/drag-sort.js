@@ -194,10 +194,10 @@ function renderDragOrder(container, { steps, label, onComplete }) {
         "display:flex; align-items:center; gap:var(--sp-3); padding:10px 12px; background:var(--cream,#fdf6ec); border:1px solid rgba(0,0,0,0.08); border-radius:10px;";
       const num = document.createElement("span");
       num.style.cssText =
-        "flex:0 0 auto; width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center; background:var(--teal,#2a9d8f); color:#fff; border-radius:50%; font-weight:800; font-size:0.85rem;";
+        "flex:0 0 auto; width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center; background:var(--teal,#2a9d8f); color:#fff; border-radius:50%; font-weight:700; font-size:0.85rem;";
       num.textContent = String(i + 1);
       const txt = document.createElement("span");
-      txt.style.cssText = "flex:1; font-weight:600;";
+      txt.style.cssText = "flex:1; font-weight:500;";
       txt.textContent = text;
       const controls = document.createElement("div");
       controls.style.cssText = "flex:0 0 auto; display:flex; gap:4px;";
@@ -437,7 +437,7 @@ function createDragItem(item) {
 
   const labelSpan = document.createElement("span");
   labelSpan.innerHTML = stackContent(item.text, item.textEs);
-  labelSpan.style.cssText = "font-weight:700; font-size:1.1rem; line-height:1.2;";
+  labelSpan.style.cssText = "font-weight:600; font-size:1.1rem; line-height:1.2;";
   el.append(labelSpan);
 
   const numVal = parseInt(item.text);
@@ -457,7 +457,7 @@ function createDragItem(item) {
     previewBtn.type = "button";
     previewBtn.className = "ds-preview-btn";
     previewBtn.style.cssText =
-      "margin-top:4px; padding:3px 8px; font-size:11.5px; font-weight:700; border:1px solid var(--teal, #1fa6a2); border-radius:999px; background:var(--teal-light, #eaf0f7); color:var(--teal-dark, #0d7a76); cursor:pointer; display:inline-flex; align-items:center; gap:3px; transition:transform 0.1s ease;";
+      "margin-top:4px; padding:3px 8px; font-size:11.5px; font-weight:600; border:1px solid var(--teal, #1fa6a2); border-radius:999px; background:var(--teal-light, #eaf0f7); color:var(--teal-dark, #0d7a76); cursor:pointer; display:inline-flex; align-items:center; gap:3px; transition:transform 0.1s ease;";
     previewBtn.innerHTML = "🔍 View Model";
     previewBtn.addEventListener("click", (e) => {
       e.stopPropagation(); // don't trigger drag selection
@@ -690,7 +690,7 @@ function openDragItemModal(title, svgContent, text) {
       <h3 style="margin:0 0 10px; font-family:var(--sg-display, sans-serif); font-size:1.35rem; color:#0f172a;">${title}</h3>
       <div style="margin:14px 0; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; display:flex; justify-content:center; align-items:center;">${svgContent}</div>
       <p style="margin:12px 0 0; font-size:0.95rem; color:#475569; line-height:1.5;">${text || ""}</p>
-      <button type="button" class="btn btn-primary" style="margin-top:16px; padding:8px 20px; font-weight:700;" onclick="this.closest('dialog').close()">Close Preview</button>
+      <button type="button" class="btn btn-primary" style="margin-top:16px; padding:8px 20px; font-weight:600;" onclick="this.closest('dialog').close()">Close Preview</button>
     </div>
   `;
   if (typeof dialog.showModal === "function") {

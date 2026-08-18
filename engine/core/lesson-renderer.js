@@ -604,12 +604,12 @@ function renderLaunchVisual(host, visual) {
     const chips = visual.values
       .map(
         (v) =>
-          `<span style="display:inline-flex; align-items:center; justify-content:center; min-width:34px; padding:4px 8px; background:#fff; border:1px solid rgba(42,157,143,0.4); border-radius:8px; font-weight:700; color:var(--navy,#264653); font-size:0.9rem;">${esc(v)}</span>`,
+          `<span style="display:inline-flex; align-items:center; justify-content:center; min-width:34px; padding:4px 8px; background:#fff; border:1px solid rgba(42,157,143,0.4); border-radius:8px; font-weight:600; color:var(--navy,#264653); font-size:0.9rem;">${esc(v)}</span>`,
       )
       .join("");
     card.innerHTML =
       (visual.title
-        ? `<div style="font-weight:700; color:var(--navy,#264653); margin-bottom:var(--sp-3); display:flex; align-items:center; gap:8px;"><span>📊</span><span>${esc(visual.title)}</span></div>`
+        ? `<div style="font-weight:600; color:var(--navy,#264653); margin-bottom:var(--sp-3); display:flex; align-items:center; gap:8px;"><span>📊</span><span>${esc(visual.title)}</span></div>`
         : "") +
       `<div style="display:flex; flex-wrap:wrap; gap:8px;">${chips}</div>` +
       (visual.unit
@@ -768,8 +768,8 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
     .map(
       (s) => `
       <li class="sentence-frame" style="margin-bottom:var(--sp-2); list-style:none;">
-        <span style="font-weight:700;">${esc(s.en)}</span>
-        ${s.es ? `<span style="display:block; color:var(--muted); font-style:italic; font-weight:600;">${esc(s.es)}</span>` : ""}
+        <span style="font-weight:600;">${esc(s.en)}</span>
+        ${s.es ? `<span style="display:block; color:var(--muted); font-style:italic; font-weight:500;">${esc(s.es)}</span>` : ""}
       </li>`,
     )
     .join("");
@@ -777,12 +777,12 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   // Level 1 (support): a "Start here" kernel + a word-bank chip strip. Both are
   // optional — older configs without these fields simply render nothing here.
   const kernelHtml = prompt.kernel
-    ? `<p style="margin:0 0 var(--sp-3); font-weight:600;"><span style="display:inline-block; font-weight:800; color:var(--coral); margin-right:var(--sp-2);">Start here:</span>${esc(prompt.kernel)}</p>`
+    ? `<p style="margin:0 0 var(--sp-3); font-weight:500;"><span style="display:inline-block; font-weight:700; color:var(--coral); margin-right:var(--sp-2);">Start here:</span>${esc(prompt.kernel)}</p>`
     : "";
   const wordBankHtml =
     Array.isArray(prompt.wordBank) && prompt.wordBank.length
       ? `<div style="margin:0 0 var(--sp-3);">
-      <span style="font-weight:700; margin-right:var(--sp-2);">Word bank:</span>
+      <span style="font-weight:600; margin-right:var(--sp-2);">Word bank:</span>
       <span style="display:inline-flex; flex-wrap:wrap; gap:var(--sp-2); vertical-align:middle;">${prompt.wordBank
         .map((w) => `<span class="badge badge-teal">${esc(w)}</span>`)
         .join("")}</span>
@@ -807,8 +807,8 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
           .map(
             (s) => `
       <li class="sentence-frame" style="margin-bottom:var(--sp-2); list-style:none;">
-        <span style="font-weight:700;">${esc(s.en)}</span>
-        ${s.es ? `<span style="display:block; color:var(--muted); font-style:italic; font-weight:600;">${esc(s.es)}</span>` : ""}
+        <span style="font-weight:600;">${esc(s.en)}</span>
+        ${s.es ? `<span style="display:block; color:var(--muted); font-style:italic; font-weight:500;">${esc(s.es)}</span>` : ""}
       </li>`,
           )
           .join("");
@@ -816,7 +816,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   const supportInner = (kernel, stems, bank, showLabel) => `
       ${showLabel ? '<span class="badge badge-teal" style="margin-bottom:var(--sp-2);">Sentence support</span>' : ""}
       ${kernel}
-      ${stems ? `<p style="font-weight:700; margin:var(--sp-2) 0 var(--sp-2);">Use a sentence starter / <span style="font-style:italic;">Usa un inicio de oración</span>:</p><ul style="margin:0 0 var(--sp-3); padding:0;">${stems}</ul>` : ""}
+      ${stems ? `<p style="font-weight:600; margin:var(--sp-2) 0 var(--sp-2);">Use a sentence starter / <span style="font-style:italic;">Usa un inicio de oración</span>:</p><ul style="margin:0 0 var(--sp-3); padding:0;">${stems}</ul>` : ""}
       ${bank}`;
 
   const shownKernel = parts.kernel ? kernelHtml : "";
@@ -846,7 +846,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
     prompt.extend || extendStemsHtml
       ? `<div style="border-left:4px solid var(--amber); padding-left:var(--sp-3); margin:0 0 var(--sp-3);">
       <span class="badge badge-amber" style="margin-bottom:var(--sp-2);">Level 2</span>
-      ${prompt.extend ? `<p style="font-weight:700; margin:0;">${esc(prompt.extend)}</p>` : ""}
+      ${prompt.extend ? `<p style="font-weight:600; margin:0;">${esc(prompt.extend)}</p>` : ""}
       ${extendStemsHtml}
     </div>`
       : "";
@@ -856,7 +856,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
       <span style="font-size:1.6rem;" aria-hidden="true">🗣️</span>
       <h4 id="${uid}-title" style="color:var(--coral); margin:0;">Turn &amp; Talk</h4>
     </div>
-    <p style="font-weight:700; font-size:1.05rem; margin:0 0 var(--sp-3);">${esc(prompt.question)}</p>
+    <p style="font-weight:600; font-size:1.05rem; margin:0 0 var(--sp-3);">${esc(prompt.question)}</p>
     <div style="display:flex; flex-wrap:wrap; gap:var(--sp-2); margin-bottom:var(--sp-3);">
       <span class="badge badge-teal">🅰️ Partner A shares first</span>
       <span class="badge badge-amber">🅱️ Partner B goes next</span>
@@ -897,7 +897,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   const timerLabel = document.createElement("span");
   timerLabel.setAttribute("role", "timer");
   timerLabel.setAttribute("aria-live", "polite");
-  timerLabel.style.cssText = "font-weight:800; color:var(--coral);";
+  timerLabel.style.cssText = "font-weight:700; color:var(--coral);";
   let timerId = null;
   timerBtn.addEventListener("click", () => {
     if (timerId) return;
@@ -1161,7 +1161,7 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
     case "drag-sort":
       if (problemDef.instructions) {
         const p = document.createElement("p");
-        p.style.cssText = "font-weight:600; margin-bottom:var(--sp-3);";
+        p.style.cssText = "font-weight:500; margin-bottom:var(--sp-3);";
         // `instructionsEs` is authored on 170 items and had no renderer at all
         // until now — the sort task told a Spanish-speaking student what to do
         // only in English, directly above a set of cards they then had to sort.
@@ -1313,7 +1313,7 @@ function renderUnknownComponentFallback(container, def = {}) {
   const text = def.instructions || def.label || def.prompt || def.stem;
   if (text) {
     const p = document.createElement("p");
-    p.style.cssText = "font-weight:600; margin-bottom:var(--sp-3);";
+    p.style.cssText = "font-weight:500; margin-bottom:var(--sp-3);";
     p.textContent = text;
     card.append(p);
   }
@@ -1755,8 +1755,8 @@ function renderShowYourWork(host, config, state) {
     talk.style.cssText =
       "margin-top:var(--sp-4); padding:var(--sp-3); border-radius:var(--radius-md,12px); background:rgba(217,121,93,0.08); border:1px solid rgba(217,121,93,0.28);";
     talk.innerHTML =
-      `<div style="font-weight:800; color:var(--coral); margin-bottom:var(--sp-2);">🗣️ Turn &amp; Talk</div>` +
-      `<p style="margin:0 0 var(--sp-2); font-weight:600;">${esc(tt.question)}</p>` +
+      `<div style="font-weight:700; color:var(--coral); margin-bottom:var(--sp-2);">🗣️ Turn &amp; Talk</div>` +
+      `<p style="margin:0 0 var(--sp-2); font-weight:500;">${esc(tt.question)}</p>` +
       (stems.length
         ? `<div style="font-size:0.9rem; color:var(--muted);">Try starting with: ${stems
             .slice(0, 2)
@@ -1812,13 +1812,13 @@ function renderLaunchHeader(el, state, config) {
     }
     <div class="launch-identity" style="display:flex; flex-wrap:wrap; gap:var(--sp-3); align-items:flex-end; margin-bottom:var(--sp-4);">
       <div class="launch-field" style="flex:1 1 220px;">
-        <label for="launch-name" style="display:block; font-weight:600; margin-bottom:var(--sp-1);">Name</label>
+        <label for="launch-name" style="display:block; font-weight:500; margin-bottom:var(--sp-1);">Name</label>
         <input id="launch-name" class="text-input" type="text"
           placeholder="First name Last initial" autocomplete="off"
           value="${esc(s.studentName || "")}" />
       </div>
       <div class="launch-field launch-field-period" style="flex:0 1 120px;">
-        <label for="launch-period" style="display:block; font-weight:600; margin-bottom:var(--sp-1);">Period</label>
+        <label for="launch-period" style="display:block; font-weight:500; margin-bottom:var(--sp-1);">Period</label>
         <input id="launch-period" class="text-input" type="text"
           placeholder="e.g. 3" autocomplete="off"
           value="${esc(s.studentPeriod || "")}" />
@@ -2217,22 +2217,22 @@ function renderObjectives(el, config, state, opts = {}) {
   const card = (o) => `
     <div class="card ${o.cardClass} launch-objective">
       <div class="launch-objective-head" style="display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2); margin-bottom:var(--sp-2);">
-        <h4 style="color:${o.ink}; margin:0; font-size:1.28rem; font-weight:800; letter-spacing:-0.01em;">${o.label}</h4>
-        <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.85rem; font-weight:800; color:${o.ink}; cursor:pointer; white-space:nowrap;">
+        <h4 style="color:${o.ink}; margin:0; font-size:1.28rem; font-weight:700; letter-spacing:-0.01em;">${o.label}</h4>
+        <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.85rem; font-weight:700; color:${o.ink}; cursor:pointer; white-space:nowrap;">
           <input type="checkbox" class="objective-check-box" data-obj-key="${o.key}" aria-label="${o.checkAria}"
                  style="width:18px; height:18px; accent-color:${o.ink}; cursor:pointer;" />
           ${o.checkLabel}
         </label>
       </div>
-      <p style="margin:0; font-size:1.32rem; font-weight:800; color:#0f172a; line-height:1.55; letter-spacing:-0.005em; -webkit-font-smoothing:antialiased;">${o.text}</p>
+      <p style="margin:0; font-size:1.32rem; font-weight:700; color:#0f172a; line-height:1.55; letter-spacing:-0.005em; -webkit-font-smoothing:antialiased;">${o.text}</p>
       
       <!-- PUBLISHER-GRADE VISUAL MODEL CARD DIRECTLY BELOW OBJECTIVE TEXT -->
       <div class="visual-model-wrapper" style="margin-top:16px; margin-bottom:16px; border-radius:14px; overflow:hidden; border:1.5px solid rgba(15,23,42,0.18); box-shadow:0 1px 2px rgba(18,53,91,0.05); background:#0b0f19; cursor:zoom-in;">
         <img src="${o.img}" alt="${esc(o.alt)}" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
-        <div style="padding:12px 16px; background:#ffffff; border-top:1.5px solid #e2e8f0; font-size:0.96rem; color:#0f172a; font-weight:800; line-height:1.5; -webkit-font-smoothing:antialiased;">
+        <div style="padding:12px 16px; background:#ffffff; border-top:1.5px solid #e2e8f0; font-size:0.96rem; color:#0f172a; font-weight:700; line-height:1.5; -webkit-font-smoothing:antialiased;">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:7px;">
             <span>${o.icon} <strong>Visual Representation</strong></span>
-            <span style="display:inline-block; font-size:0.78rem; font-weight:800; color:#0284c7; background:rgba(2,132,199,0.08); padding:3px 8px; border-radius:6px; border:1px solid rgba(2,132,199,0.2);">🔍 Click to enlarge</span>
+            <span style="display:inline-block; font-size:0.78rem; font-weight:700; color:#0284c7; background:rgba(2,132,199,0.08); padding:3px 8px; border-radius:6px; border:1px solid rgba(2,132,199,0.2);">🔍 Click to enlarge</span>
           </div>
           ${visualCaptionHtml(o.captionBullets, o.caption)}
         </div>
@@ -2240,20 +2240,20 @@ function renderObjectives(el, config, state, opts = {}) {
           o.talkPrompts
             ? `
         <div class="language-talk-card" data-lang="en" data-say-en="${talkAttr(o.talkPrompts.say)}" data-say-es="${talkAttr(o.talkPrompts.sayEs || o.talkPrompts.say)}" data-listen-en="${talkAttr(o.talkPrompts.listen)}" data-listen-es="${talkAttr(o.talkPrompts.listenEs || o.talkPrompts.listen)}" style="padding:14px 16px; background:#fff7ed; border-top:2px solid #fdba74; font-size:0.95rem; color:#0f172a; line-height:1.55; -webkit-font-smoothing:antialiased;">
-          <div style="font-weight:900; font-size:0.82rem; color:#c2410c; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
+          <div style="font-weight:800; font-size:0.82rem; color:#c2410c; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
             <span>🗣️ Student Talk Targets (What to Say & Listen For):</span>
             <div style="display:inline-flex; align-items:center; gap:6px;">
-              <button type="button" class="talk-lang-toggle btn btn-xs btn-outline" title="Switch English / Spanish" style="padding:2px 8px; font-size:0.75rem; font-weight:800; border-radius:6px; background:white; color:#0369a1; border:1px solid #7dd3fc; cursor:pointer;">🇲🇽 ES</button>
+              <button type="button" class="talk-lang-toggle btn btn-xs btn-outline" title="Switch English / Spanish" style="padding:2px 8px; font-size:0.75rem; font-weight:700; border-radius:6px; background:white; color:#0369a1; border:1px solid #7dd3fc; cursor:pointer;">🇲🇽 ES</button>
             </div>
           </div>
           <div style="display:flex; flex-direction:column; gap:8px;">
             <div style="background:rgba(234,88,12,0.06); padding:9px 12px; border-radius:8px; border-left:4px solid #ea580c;">
-              <strong style="color:#c2410c; font-weight:900; font-size:0.95rem;">What to Say:</strong>
-              <ul class="talk-say-text talk-bullets" style="margin:6px 0 0; padding-left:20px; font-weight:750; font-size:1rem; color:#0f172a; font-style:italic; line-height:1.6;">${talkBulletsHtml(o.talkPrompts.say)}</ul>
+              <strong style="color:#c2410c; font-weight:800; font-size:0.95rem;">What to Say:</strong>
+              <ul class="talk-say-text talk-bullets" style="margin:6px 0 0; padding-left:20px; font-weight:600; font-size:1rem; color:#0f172a; font-style:italic; line-height:1.6;">${talkBulletsHtml(o.talkPrompts.say)}</ul>
             </div>
             <div style="background:rgba(2,132,199,0.06); padding:9px 12px; border-radius:8px; border-left:4px solid #0284c7;">
-              <strong style="color:#0369a1; font-weight:900; font-size:0.95rem;">What to Listen For:</strong>
-              <ul class="talk-listen-text talk-bullets" style="margin:6px 0 0; padding-left:20px; font-weight:750; font-size:1rem; color:#0f172a; line-height:1.6;">${talkBulletsHtml(o.talkPrompts.listen)}</ul>
+              <strong style="color:#0369a1; font-weight:800; font-size:0.95rem;">What to Listen For:</strong>
+              <ul class="talk-listen-text talk-bullets" style="margin:6px 0 0; padding-left:20px; font-weight:600; font-size:1rem; color:#0f172a; line-height:1.6;">${talkBulletsHtml(o.talkPrompts.listen)}</ul>
             </div>
           </div>
         </div>
@@ -2263,8 +2263,8 @@ function renderObjectives(el, config, state, opts = {}) {
       </div>
 
       <div class="objective-discuss" style="margin-top:var(--sp-3); padding-top:var(--sp-2); border-top:1px dashed rgba(0,0,0,0.12);">
-        <span style="display:block; font-size:1.1rem; font-weight:800; letter-spacing:.02em; color:${o.ink}; margin-bottom:6px;">💬 Talk about it</span>
-        <span style="display:block; font-size:1.25rem; font-weight:700; color:#1e293b; line-height:1.6;">${o.discuss}</span>
+        <span style="display:block; font-size:1.1rem; font-weight:700; letter-spacing:.02em; color:${o.ink}; margin-bottom:6px;">💬 Talk about it</span>
+        <span style="display:block; font-size:1.25rem; font-weight:600; color:#1e293b; line-height:1.6;">${o.discuss}</span>
       </div>
     </div>`;
 
@@ -2452,7 +2452,7 @@ function renderNoticeWonderSupport(host, support, config, fieldRoot = host) {
   const row = (label, items, cls, chipFn) =>
     items.length
       ? `<div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--sp-2) var(--sp-3); margin-bottom:var(--sp-3);">
-          <span style="flex:0 0 auto; font-weight:800; color:var(--navy,#264653);">${esc(label)}</span>
+          <span style="flex:0 0 auto; font-weight:700; color:var(--navy,#264653);">${esc(label)}</span>
           <span style="display:flex; flex-wrap:wrap; gap:var(--sp-2);">${items
             .map((it) => chipFn(it, cls))
             .join("")}</span>
@@ -2655,14 +2655,14 @@ function renderWarmupPhase(el, state, ctx, config) {
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
       <div>
-        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 1 · Warmup</span>
-        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">⚡ ${warmupHeading}</h3>
+        <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 1 · Warmup</span>
+        <h3 style="margin:6px 0 0; font-size:22px; font-weight:700; color:#14223a;">⚡ ${warmupHeading}</h3>
       </div>
-      <div id="warmupScoreBadge" style="font-size:14.5px; font-weight:800; color:#0b5a63; background:#f0fdf4; border:1px solid #bbf7d0; padding:7px 15px; border-radius:10px;">
+      <div id="warmupScoreBadge" style="font-size:14.5px; font-weight:700; color:#0b5a63; background:#f0fdf4; border:1px solid #bbf7d0; padding:7px 15px; border-radius:10px;">
         ${warmup.questions.length} Questions · Autograded
       </div>
     </div>
-    <p style="margin:0 0 16px; font-size:16.5px; font-weight:600; line-height:1.55; color:#3f4a5f;">
+    <p style="margin:0 0 16px; font-size:16.5px; font-weight:500; line-height:1.55; color:#3f4a5f;">
       ${warmupLede}
     </p>
   `;
@@ -2684,8 +2684,8 @@ function renderWarmupPhase(el, state, ctx, config) {
       "display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:16px; margin:4px 0 20px; padding:20px 28px; background:linear-gradient(135deg, #f0f9ff, #e6f4f6); border:2px solid #bae6fd; border-radius:16px;";
     timerBar.innerHTML = `
     <span style="font-size:2.6rem; line-height:1;">⏱️</span>
-    <span id="warmupTimerDisplay" style="font-size:56px; font-weight:900; color:#0f6d78; font-variant-numeric:tabular-nums; line-height:1;">${fmtWarmupClock(getWarmupSeconds())}</span>
-    <span class="warmup-timer-label" style="font-size:20px; font-weight:700; color:#56627a;">press Start</span>
+    <span id="warmupTimerDisplay" style="font-size:56px; font-weight:800; color:#0f6d78; font-variant-numeric:tabular-nums; line-height:1;">${fmtWarmupClock(getWarmupSeconds())}</span>
+    <span class="warmup-timer-label" style="font-size:20px; font-weight:600; color:#56627a;">press Start</span>
   `;
     // Place the timer immediately under the "Phase 1 · Warmup" header (above the
     // intro line) so it's the first thing students and teachers see.
@@ -2793,7 +2793,7 @@ function renderWarmupPhase(el, state, ctx, config) {
       if (!note) {
         note = document.createElement("span");
         note.className = "warmup-timer-note";
-        note.style.cssText = "width:100%; text-align:center; font-size:14px; font-weight:800;";
+        note.style.cssText = "width:100%; text-align:center; font-size:14px; font-weight:700;";
         timerBar.append(note);
       }
       note.style.color = ok ? "#15803d" : "#b45309";
@@ -2811,7 +2811,7 @@ function renderWarmupPhase(el, state, ctx, config) {
       // the warmup clock runs, can hold it (e.g. to finish a point), and can
       // restart it cleanly.
       const controlBtnCss =
-        "padding:10px 18px; font-size:16px; font-weight:800; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
+        "padding:10px 18px; font-size:16px; font-weight:700; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
 
       // The primary control. It carries the whole start/stop contract, so it is
       // styled as the filled button in the bar — at rest it reads "▶ Start",
@@ -2877,7 +2877,7 @@ function renderWarmupPhase(el, state, ctx, config) {
       editBtn.title = "Teacher: set the warmup time allowed (applies to all devices)";
       editBtn.textContent = "✏️ Set time";
       editBtn.style.cssText =
-        "margin-left:8px; padding:10px 18px; font-size:16px; font-weight:800; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
+        "margin-left:8px; padding:10px 18px; font-size:16px; font-weight:700; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
 
       async function pushGlobal(seconds) {
         let result = await saveGlobalWarmupSeconds(seconds);
@@ -2950,8 +2950,8 @@ function renderWarmupPhase(el, state, ctx, config) {
     // print, so the stem is deliberately heavier and larger than body copy.
     const qTitle = document.createElement("div");
     qTitle.style.cssText =
-      "font-weight:800; font-size:19px; line-height:1.5; color:#0f172a; margin-bottom:12px;";
-    qTitle.innerHTML = `<span style="color:#0f6d78; font-weight:900; margin-right:6px;">Q${qIdx + 1}.</span> ${esc(q.stem)}`;
+      "font-weight:700; font-size:19px; line-height:1.5; color:#0f172a; margin-bottom:12px;";
+    qTitle.innerHTML = `<span style="color:#0f6d78; font-weight:800; margin-right:6px;">Q${qIdx + 1}.</span> ${esc(q.stem)}`;
     qBox.append(qTitle);
 
     const choicesGroup = document.createElement("div");
@@ -2960,14 +2960,14 @@ function renderWarmupPhase(el, state, ctx, config) {
     const feedbackBox = document.createElement("div");
     feedbackBox.className = "warmup-fb-box";
     feedbackBox.style.cssText =
-      "display:none; font-size:15.5px; font-weight:700; line-height:1.5; padding:11px 14px; border-radius:8px; margin-top:10px;";
+      "display:none; font-size:15.5px; font-weight:600; line-height:1.5; padding:11px 14px; border-radius:8px; margin-top:10px;";
 
     const selectedIdx = savedAnswers[qIdx];
 
     q.choices.forEach((choiceText, cIdx) => {
       const choiceLabel = document.createElement("label");
       choiceLabel.style.cssText =
-        "display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#ffffff; cursor:pointer; font-size:17px; font-weight:600; line-height:1.45; color:#0f172a; transition:all 0.15s;";
+        "display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#ffffff; cursor:pointer; font-size:17px; font-weight:500; line-height:1.45; color:#0f172a; transition:all 0.15s;";
 
       const radio = document.createElement("input");
       radio.type = "radio";
@@ -3007,7 +3007,7 @@ function renderWarmupPhase(el, state, ctx, config) {
   checkBtn.type = "button";
   checkBtn.className = "btn btn-primary";
   checkBtn.style.cssText =
-    "padding:12px 24px; font-weight:800; font-size:16.5px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+    "padding:12px 24px; font-weight:700; font-size:16.5px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
   checkBtn.textContent = savedAnswers.checked ? "Score Final (Submitted)" : "Submit Warmup Answers";
   if (savedAnswers.checked) {
     checkBtn.disabled = true;
@@ -3067,7 +3067,7 @@ function renderWarmupPhase(el, state, ctx, config) {
   nextBtn.type = "button";
   nextBtn.className = "btn btn-teal";
   nextBtn.style.cssText =
-    "padding:12px 26px; font-weight:800; font-size:16.5px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+    "padding:12px 26px; font-weight:700; font-size:16.5px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
   nextBtn.textContent = "Continue to Phase 2: Objectives 🎯";
   nextBtn.addEventListener("click", () => {
     if (ctx && typeof ctx.nextPhase === "function") {
@@ -3125,7 +3125,7 @@ function renderObjectivesIntroPhase(el, state, ctx, config) {
   nextBtn.type = "button";
   nextBtn.className = "btn btn-teal";
   nextBtn.style.cssText =
-    "margin-top:20px; padding:12px 24px; font-weight:800; font-size:15px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+    "margin-top:20px; padding:12px 24px; font-weight:700; font-size:15px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
   nextBtn.textContent = "Continue to Phase 3: Launch 🚀";
   nextBtn.addEventListener("click", () => {
     state.markCompleted(1);
@@ -3158,12 +3158,12 @@ function renderReteachHelper(container, warmup, _correctCount, _total, config) {
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
       <span style="font-size:22px;">💡</span>
       <div>
-        <h4 style="margin:0; font-size:18px; font-weight:800; color:#713f12;">Quick Reteach: ${prevTitle}</h4>
-        <div style="font-size:14.5px; font-weight:600; color:#7c4a0e;">Let's quickly review this step-by-step before moving to Phase 2 Launch!</div>
+        <h4 style="margin:0; font-size:18px; font-weight:700; color:#713f12;">Quick Reteach: ${prevTitle}</h4>
+        <div style="font-size:14.5px; font-weight:500; color:#7c4a0e;">Let's quickly review this step-by-step before moving to Phase 2 Launch!</div>
       </div>
     </div>
     <div style="background:#ffffff; border:1px solid #fef08a; border-radius:10px; padding:14px; margin-bottom:14px; font-size:16px; font-weight:500; color:#293548; line-height:1.6;">
-      <div style="font-weight:800; font-size:16.5px; color:#0f172a; margin-bottom:6px;">📌 Core Strategy Recap:</div>
+      <div style="font-weight:700; font-size:16.5px; color:#0f172a; margin-bottom:6px;">📌 Core Strategy Recap:</div>
       <div>To tackle ${prevTitle}, break the problem into clear steps:</div>
       <ul style="margin:6px 0 0 20px; padding:0;">
         <li>Identify what key quantity or relationship the problem asks for.</li>
@@ -3172,17 +3172,17 @@ function renderReteachHelper(container, warmup, _correctCount, _total, config) {
       </ul>
     </div>
     <div id="reteachMiniCheck" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; padding:14px;">
-      <div style="font-weight:800; font-size:16px; color:#0f172a; margin-bottom:8px;">
-        <span style="color:#a16207; font-weight:900;">Mini-Check:</span> Try this quick practice item to rebuild your confidence:
+      <div style="font-weight:700; font-size:16px; color:#0f172a; margin-bottom:8px;">
+        <span style="color:#a16207; font-weight:800;">Mini-Check:</span> Try this quick practice item to rebuild your confidence:
       </div>
-      <div style="font-size:16.5px; font-weight:600; line-height:1.5; color:#293548; margin-bottom:10px;">
+      <div style="font-size:16.5px; font-weight:500; line-height:1.5; color:#293548; margin-bottom:10px;">
         Which strategy helps verify your answer when solving math problems?
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <button type="button" class="btn-reteach-opt" data-correct="false" style="text-align:left; padding:11px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:16px; font-weight:600; line-height:1.45; color:#0f172a;">Guessing quickly without writing steps</button>
-        <button type="button" class="btn-reteach-opt" data-correct="true" style="text-align:left; padding:11px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:16px; font-weight:600; line-height:1.45; color:#0f172a;">Modeling the problem and checking key calculations</button>
+        <button type="button" class="btn-reteach-opt" data-correct="false" style="text-align:left; padding:11px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:16px; font-weight:500; line-height:1.45; color:#0f172a;">Guessing quickly without writing steps</button>
+        <button type="button" class="btn-reteach-opt" data-correct="true" style="text-align:left; padding:11px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:16px; font-weight:500; line-height:1.45; color:#0f172a;">Modeling the problem and checking key calculations</button>
       </div>
-      <div id="reteachFb" style="display:none; margin-top:10px; padding:9px 14px; border-radius:8px; font-size:15px; font-weight:800;"></div>
+      <div id="reteachFb" style="display:none; margin-top:10px; padding:9px 14px; border-radius:8px; font-size:15px; font-weight:700;"></div>
     </div>
   `;
 
@@ -3343,7 +3343,7 @@ function renderLaunchPhase(el, state, ctx, config) {
     const noticeCard = document.createElement("div");
     noticeCard.className = "card card-teal";
     noticeCard.innerHTML = `<h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">👀 I Notice...</h4>
-      ${(cfg.noticePrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2);"><span style="font-weight:600;">${esc(p)}</span></div>`).join("")}`;
+      ${(cfg.noticePrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2);"><span style="font-weight:500;">${esc(p)}</span></div>`).join("")}`;
     noticeTA = document.createElement("textarea");
     noticeTA.className = "text-input";
     noticeTA.rows = 3;
@@ -3355,7 +3355,7 @@ function renderLaunchPhase(el, state, ctx, config) {
     const wonderCard = document.createElement("div");
     wonderCard.className = "card card-coral";
     wonderCard.innerHTML = `<h4 style="color:var(--coral); margin-bottom:var(--sp-3);">🤔 I Wonder...</h4>
-      ${(cfg.wonderPrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2); border-color:rgba(217,121,93,0.25); background:rgba(217,121,93,0.06);"><span style="font-weight:600;">${esc(p)}</span></div>`).join("")}`;
+      ${(cfg.wonderPrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2); border-color:rgba(217,121,93,0.25); background:rgba(217,121,93,0.06);"><span style="font-weight:500;">${esc(p)}</span></div>`).join("")}`;
     wonderTA = document.createElement("textarea");
     wonderTA.className = "text-input";
     wonderTA.rows = 3;
@@ -3819,14 +3819,14 @@ function workPairCaption(step, text) {
   // as two headings instead of one instruction.
   p.style.cssText =
     "display:flex; align-items:center; flex-wrap:nowrap; width:100%; gap:10px; " +
-    "margin:0 0 var(--sp-3,12px); font-size:var(--fs-lg,1.15rem); font-weight:800; color:var(--navy,#12355b);";
+    "margin:0 0 var(--sp-3,12px); font-size:var(--fs-lg,1.15rem); font-weight:700; color:var(--navy,#12355b);";
   const badge = document.createElement("span");
   // Darker green and no uppercase/letter-spacing: the old pill printed small
   // wide-tracked caps in white on a light teal, which is the hardest thing on
   // the page to read.
   badge.style.cssText =
     "flex:0 0 auto; padding:6px 16px; border-radius:999px; background:#0f766e; color:#fff; " +
-    "font-size:var(--fs-lg,1.15rem); font-weight:900;";
+    "font-size:var(--fs-lg,1.15rem); font-weight:800;";
   badge.textContent = step;
   const txt = document.createElement("span");
   txt.textContent = text;
@@ -3909,7 +3909,7 @@ function reportTypedMisconception(tag, state) {
 function renderSkillProbe(reveal, move, { answer, why, onSettled }) {
   reveal.innerHTML = "";
   const head = document.createElement("p");
-  head.style.cssText = "margin:0 0 var(--sp-2); font-weight:700;";
+  head.style.cssText = "margin:0 0 var(--sp-2); font-weight:600;";
   head.textContent = "🎯 Before the answer — one smaller question";
   reveal.append(head);
 
@@ -4209,12 +4209,12 @@ function practiceLabHeaderHtml(lab) {
   const purpose = meta.purposeEs ? stackHtml(meta.purpose, meta.purposeEs) : esc(meta.purpose);
   return (
     `<div class="practice-lab-head" style="margin-bottom:var(--sp-3);">` +
-    `<div style="display:flex; align-items:center; gap:8px; font-weight:800; color:var(--navy,#264653);"><span aria-hidden="true">🧰</span><span>${name}</span></div>` +
+    `<div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--navy,#264653);"><span aria-hidden="true">🧰</span><span>${name}</span></div>` +
     (meta.purpose
       ? `<p style="margin:var(--sp-2) 0 0; font-size:0.9rem; color:var(--muted); line-height:1.5;">${purpose}</p>`
       : "") +
     (meta.instance
-      ? `<p style="margin:var(--sp-1) 0 0; font-size:0.85rem; font-weight:600; color:var(--navy,#264653);">${esc(meta.instance)}</p>`
+      ? `<p style="margin:var(--sp-1) 0 0; font-size:0.85rem; font-weight:500; color:var(--navy,#264653);">${esc(meta.instance)}</p>`
       : "") +
     `</div>`
   );
@@ -4306,7 +4306,7 @@ function renderPracticePhase(el, state, ctx, config) {
   const tierVoice = document.createElement("p");
   tierVoice.className = "practice-tier-voice";
   tierVoice.style.cssText =
-    "margin:-6px 0 var(--sp-4); font-size:0.9rem; font-weight:600; color:var(--muted);";
+    "margin:-6px 0 var(--sp-4); font-size:0.9rem; font-weight:500; color:var(--muted);";
   el.append(tierVoice);
 
   const area = document.createElement("div");
@@ -4368,7 +4368,7 @@ function renderPracticePhase(el, state, ctx, config) {
       host.innerHTML = "";
       const label = document.createElement("div");
       label.style.cssText =
-        "font-size:0.82rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-3);";
+        "font-size:0.82rem; font-weight:600; color:var(--muted); margin-bottom:var(--sp-3);";
       const stepWord = config.practice?.optionalActivity?.stepLabel || "Extra Practice";
       label.textContent = `${stepWord} ${i + 1} of ${items.length}`;
       host.append(label);
@@ -4781,7 +4781,7 @@ function renderConnectPhase(el, state, ctx, config) {
   label.setAttribute("for", fieldId);
   label.className = "connect-prompt-label";
   label.style.cssText =
-    "font-weight:800; font-size:1.1rem; color:var(--teal-ink); margin-bottom:10px; display:block;";
+    "font-weight:700; font-size:1.1rem; color:var(--teal-ink); margin-bottom:10px; display:block;";
   label.textContent = promptText;
   respCard.append(label);
 
@@ -5098,7 +5098,7 @@ function renderReflectPhase(el, state, ctx, config) {
       work.style.cssText =
         "border:1px solid var(--line,#cbd5e1); border-left:4px solid var(--amber-ink,#8a5a00); border-radius:10px; padding:10px 12px; margin:0 0 var(--sp-3,12px); background:var(--surface-2,#f8fafc);";
       const head = document.createElement("div");
-      head.style.cssText = "font-weight:800; color:var(--navy,#12355b); margin-bottom:6px;";
+      head.style.cssText = "font-weight:700; color:var(--navy,#12355b); margin-bottom:6px;";
       head.textContent = "Someone solved it like this — find their mistake:";
       work.append(head);
       const ol = document.createElement("ol");
@@ -5106,7 +5106,7 @@ function renderReflectPhase(el, state, ctx, config) {
       errorExample.steps.forEach((s, i) => {
         const li = document.createElement("li");
         const flagged = errorExample.errorStep === i;
-        li.style.cssText = flagged ? "font-weight:700;" : "";
+        li.style.cssText = flagged ? "font-weight:600;" : "";
         li.innerHTML = `${s.label ? `<strong>${esc(s.label)}:</strong> ` : ""}${esc(s.work)}${
           flagged ? ' <span aria-hidden="true">⚠️</span>' : ""
         }`;
@@ -5339,8 +5339,8 @@ function renderObjectiveReview(state, config) {
 
     const text = document.createElement("div");
     text.innerHTML = `
-      <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; color:var(--teal-ink); margin-bottom:2px;">${item.label}</div>
-      <div style="font-weight:600;">${item.html}</div>
+      <div style="font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--teal-ink); margin-bottom:2px;">${item.label}</div>
+      <div style="font-weight:500;">${item.html}</div>
     `;
 
     cb.addEventListener("change", () => {
@@ -5517,10 +5517,10 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
       <div>
-        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 8 · Objectives Review</span>
-        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">${heading}</h3>
+        <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 8 · Objectives Review</span>
+        <h3 style="margin:6px 0 0; font-size:22px; font-weight:700; color:#14223a;">${heading}</h3>
       </div>
-      <div style="font-size:13px; font-weight:800; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 14px; border-radius:10px;">
+      <div style="font-size:13px; font-weight:700; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 14px; border-radius:10px;">
         Self-Check &amp; Growth
       </div>
     </div>
@@ -5543,7 +5543,7 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
   const usedVerb = name ? `${esc(name)} used` : "I used";
 
   checkWrap.innerHTML = `
-    <div style="font-size:14px; font-weight:800; color:#0f172a;">${name ? `Track ${esc(name)}'s Goal Mastery:` : "Track Your Goal Mastery:"}</div>
+    <div style="font-size:14px; font-weight:700; color:#0f172a;">${name ? `Track ${esc(name)}'s Goal Mastery:` : "Track Your Goal Mastery:"}</div>
     <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:14px; color:#334155;">
       <input type="checkbox" id="chkObjContent" ${savedChecks.content ? "checked" : ""}>
       <span><strong>Content Goal:</strong> ${subject} ${verb} demonstrate and apply today's math concept!</span>
@@ -5569,7 +5569,7 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
   finishBtn.type = "button";
   finishBtn.className = "btn btn-teal";
   finishBtn.style.cssText =
-    "margin-top:20px; padding:12px 24px; font-weight:800; font-size:15px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+    "margin-top:20px; padding:12px 24px; font-weight:700; font-size:15px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
   finishBtn.textContent = "Finish Lesson & Celebrate 🎉";
   finishBtn.addEventListener("click", () => {
     state.markCompleted(phaseIndex);

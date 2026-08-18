@@ -61,7 +61,7 @@ export async function mountWodbOpener(host, config, state, phaseId) {
   details.className = "card card-teal wodb-card";
   details.open = true;
   const summary = document.createElement("summary");
-  summary.style.cssText = "font-weight:800; cursor:pointer; list-style:none;";
+  summary.style.cssText = "font-weight:700; cursor:pointer; list-style:none;";
   summary.textContent = "🧩 Which One Doesn't Belong?";
   details.append(summary);
 

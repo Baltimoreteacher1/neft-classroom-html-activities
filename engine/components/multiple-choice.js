@@ -100,7 +100,7 @@ function injectMultipleChoiceStyles() {
       .mc-diagnosis {
         display: block;
         margin-bottom: var(--sp-2, 0.5rem);
-        font-weight: 700;
+        font-weight: 600;
         font-size: 0.9rem;
         line-height: 1.35;
         color: var(--amber-ink, #7c4a03);

@@ -47,7 +47,12 @@ body.editorial {
     radial-gradient(circle at 92% 6%, rgba(242, 193, 91, 0.07), transparent 34%), var(--fl-paper);
   color: var(--ink);
   font-family: var(--fl-body);
-  font-weight: 700; /* Bold body weight for crisp student readability */
+  /* REGULAR. This skin set a bold body weight "for crisp student readability",
+     which is the opposite of what it produced: with every sentence at 700
+     nothing on the page could stand out, and a Grade 6 reader lost the cue
+     that tells them which words matter. Readability now comes from size and
+     line-height (--fs-base / --lh-base), not from weight. */
+  font-weight: var(--fw-regular);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -86,7 +91,7 @@ body.editorial .lesson-hero-top {
 body.editorial .lesson-hero-title {
   font-family: var(--fl-serif);
   font-optical-sizing: auto;
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   font-size: var(--fl-h1);
   line-height: 1.05;
   letter-spacing: -0.015em;
@@ -98,7 +103,7 @@ body.editorial .lesson-hero-meta {
   order: -1;
   display: inline-block;
   font-family: var(--fl-body);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   font-size: var(--fl-caption);
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -151,7 +156,7 @@ body.editorial .phase .card {
    them by descendant across heading levels. */
 body.editorial .phase .card :is(h2, h3, h4, .card-title) {
   font-family: var(--fl-serif);
-  font-weight: 850;
+  font-weight: var(--fw-bold);
   line-height: 1.2;
   letter-spacing: -0.01em;
   color: var(--navy);
@@ -168,17 +173,17 @@ body.editorial .phase .card h4 {
 /* Keep the teal / coral objective accents — bold, clear contrast */
 body.editorial .phase .card-teal :is(h3, h4) {
   color: #0c5a57;
-  font-weight: 850;
+  font-weight: var(--fw-bold);
 }
 body.editorial .phase .card-coral :is(h3, h4) {
   color: #9f3e28;
-  font-weight: 850;
+  font-weight: var(--fw-bold);
 }
 /* Body copy: comfortable reading measure, high contrast & bold weight */
 body.editorial .phase .card p,
 body.editorial .phase .card li {
   font-size: var(--fl-base);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   line-height: 1.65;
   max-width: var(--fl-measure);
   color: var(--ink);
@@ -196,7 +201,7 @@ body.editorial .phase .card [class*="objective"] {
 body.editorial .phase [class*="show-your-work"] label,
 body.editorial .phase [class*="work-step"] {
   font-family: var(--fl-body);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--navy);
 }
 
@@ -204,7 +209,7 @@ body.editorial .phase [class*="work-step"] {
 body.editorial .btn {
   border-radius: 6px;
   font-family: var(--fl-body);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   letter-spacing: 0.01em;
   transition:
     transform 0.12s ease,
@@ -240,7 +245,7 @@ body.editorial .sidebar-title,
 body.editorial .sidebar h1,
 body.editorial .sidebar h2 {
   font-family: var(--fl-serif);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   letter-spacing: -0.01em;
 }
 
@@ -254,7 +259,7 @@ body.editorial .identity-card {
 body.editorial .identity-hero h1,
 body.editorial .identity-card h1 {
   font-family: var(--fl-serif);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   letter-spacing: -0.015em;
 }
 
@@ -262,7 +267,7 @@ body.editorial .identity-card h1 {
 body.editorial .flagship-mission-title,
 body.editorial .flagship-finale-title {
   font-family: var(--fl-serif);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   letter-spacing: -0.015em;
 }
 body.editorial .flagship-mission-eyebrow {
@@ -270,7 +275,7 @@ body.editorial .flagship-mission-eyebrow {
 }
 body.editorial .flagship-scene-name {
   font-family: var(--fl-serif);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
 }
 
 /* ── Scene HUD: quieter, editorial pull-quote feel ────────────────────────── */

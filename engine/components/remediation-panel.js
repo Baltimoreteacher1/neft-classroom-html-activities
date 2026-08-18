@@ -277,7 +277,7 @@ export function renderRemediation(
       const tag = document.createElement("p");
       tag.className = "remediation-diagnosis-label";
       tag.style.cssText =
-        "margin:0 0 var(--sp-2); font-weight:700; color:var(--navy); font-size:var(--fs-sm);";
+        "margin:0 0 var(--sp-2); font-weight:600; color:var(--navy); font-size:var(--fs-sm);";
       tag.textContent = payload.label;
       body.append(tag);
     }
@@ -306,7 +306,7 @@ export function renderRemediation(
     const { card, body } = stepCard("Let's try a smaller one", "🎯");
 
     const probe = document.createElement("p");
-    probe.style.cssText = "margin:0 0 var(--sp-3); line-height:1.55; font-weight:600;";
+    probe.style.cssText = "margin:0 0 var(--sp-3); line-height:1.55; font-weight:500;";
     probe.textContent = payload.probe;
     body.append(probe);
 
@@ -472,7 +472,7 @@ export function renderRemediation(
       row.style.cssText =
         "background:var(--cream); border-radius:var(--radius-sm); padding:var(--sp-3);";
       const q = document.createElement("p");
-      q.style.cssText = "margin:0 0 var(--sp-2); font-weight:600;";
+      q.style.cssText = "margin:0 0 var(--sp-2); font-weight:500;";
       q.textContent = sp.prompt;
       row.append(q);
 
