@@ -882,3 +882,133 @@ plus the ten duplicate pairs in 5.3.
 resolver everywhere ids are displayed → rewrite lesson configs → leave the games
 and the evidence layer alone until the first four are settled.
 
+
+---
+
+## BLOCK 6 · Small-group derivation
+
+Measurement only. No migration begun.
+
+### 6.1 The load-bearing number cannot be answered from history in this clone
+
+The question was: how many parent-lesson changes over the last N commits did NOT
+propagate to their group pathways. **This clone has 55 commits, and only TWO of
+them touch any `lessons/*/config.json` — one of which is a bulk import that
+touches everything.** Every one of the 84 parent-change events in that history
+changed its variants in the same commit, which is an artefact of the import, not
+evidence of healthy propagation.
+
+So the history answer is: **not measurable here**, and I am not going to dress up
+a number from two commits as a trend. What follows measures the same thing from
+the CONTENT, which does not depend on history depth.
+
+### 6.2 Drift measured against the parent, on disk today
+
+168 parent→variant pairs (84 lessons × group1 + group2). Catch-up stations are
+**excluded**: each one covers a BAND of lessons, so `2-5-catchup` is not a
+variant of `2-5` and diffing them measures nothing. The first run included them
+and every "drift" example it printed was a catch-up compared against an
+unrelated lesson.
+
+Of 373 field paths present in most parents:
+
+- **123 are identical in every single pair** — inherited cleanly
+- **24 are transformed in most or all pairs** — the declared transform:
+  `lessonId`, `title`, `contentObjective`, `languageObjective`, `timeEstimate`,
+  `launch.narrative`, `launch.conceptIntro.heading` / `.intro`,
+  `reflect.exitTicket.stem`, the whole `practice.onLevel` hint and explanation
+  set, and the `practice.extending` length — all 168/168
+- **194 are dropped by the variant in most pairs** — phase subsets and chunking
+- **15 are identical in >90% of pairs and differ in a handful** — the only place
+  drift could be hiding
+
+### 6.3 Hand-check of the drift candidates (R3) — the alarming one is benign
+
+The candidate that would matter most is an item whose `correctIndex` differs
+from its parent's. There are **24** such items. If the stem and choices were the
+same, the variant would be marking a different option correct — a defect that
+directly harms a student.
+
+**All 24 have a different stem AND different choices.** They are genuinely
+different items, which is what the generator is supposed to produce. **0
+dangerous cases.** Reporting "24 items where the variant disagrees with the
+parent about the right answer" would have been true and completely misleading.
+
+### 6.4 What real drift there is: 4 pairs, and a renumber fingerprint
+
+**Un-propagated parent changes, measured from content: 4 of 168 pairs**, in two
+lesson families. `6-13-group1`, `6-13-group2`, `6-7-group1` and `6-7-group2`
+carry warm-up question ids (`warmup-1-1-*`, `warmup-1-2-*`) that their parents no
+longer have (`warmup-6-13-*`, `warmup-6-7-*`). The parents were regenerated after
+the 2026-08-10 renumber; those four variants were not.
+
+More broadly, **491 warm-up question ids across the fleet name a lesson other
+than the file they live in** — lesson 2-10's warm-up questions are still
+`warmup-8-4-*` — and **78 warm-up ids are shared by more than one lesson family**
+(`warmup-1-1-1` appears in lessons 1-1, 6-12 and 6-13).
+
+**These are cosmetic, and I checked rather than assumed.** Saved warm-up answers
+are keyed by ARRAY INDEX inside a per-lesson response record
+(`savedAnswers[qIdx]`, `state.saveResponse(0, "warmup_answers", …)`), and I found
+no consumer of `q.id` in the renderer. So the collisions cannot cross-contaminate
+a student's saved work. They are a fingerprint of the renumber, and they are the
+clearest available signal of which files have been regenerated since.
+
+### 6.5 Verdict: hand-authored copies or generated?
+
+**Generated, and mostly faithfully.** 123 field paths inherit byte-identically
+across all 168 pairs, and the 24 transformed paths are transformed in 168/168 —
+that regularity is not what hand-authored copies look like. The drift that
+exists is 4 pairs deep, not fleet-wide.
+
+But the model is *generate-and-commit*, not *derive-at-read-time*, and this repo
+already documents what that costs: `validate:generator-safety` exists because a
+full generator run used to erase the Spanish overlay and the authored
+`interactiveVisual` choice out of the very files it was regenerating, and the
+answer at the time was a documented workaround telling humans to remember a
+flag. The authored-overlay merge fixed the erasure. It did not remove the need
+to re-run the generator for every parent edit, and nothing fails when someone
+does not.
+
+### 6.6 Proposed model — parent lesson + declared transform
+
+**Shape.** `lessons/<id>-group1/transform.json` replaces the full config:
+
+    { "parent": "6-13",
+      "level": "group1",
+      "phases": ["launch", "explore", "practice", "reflect"],
+      "overrides": { "contentObjective": "…", "timeEstimate": 25, … },
+      "practice": { "onLevel": { "hints": [...], "explanation": [...] } },
+      "authored": { … anything a human wrote that the generator does not emit … } }
+
+The variant is then resolved at BUILD time by merging parent + transform, so the
+committed `config.json` is still what ships (no runtime cost, no engine change)
+but it is a derived artefact that a gate can regenerate and compare.
+
+**Why this shape and not runtime inheritance:** the engine, the SCORM builders,
+the print generators and the download manifest all read `lessons/<id>/config.json`
+today. Keeping that file as the build output means none of them change.
+
+**Cost estimate.**
+
+- Write the resolver and the transform extractor: the extractor is the real work
+  — for each of the 168 variants, split the current config into "equals parent"
+  (drop it), "matches the declared transform" (encode it) and "neither" (goes in
+  `authored`). The 123/24/194 split above says this is tractable: most paths fall
+  cleanly into one bucket. Estimate **2–3 days** including the extractor, the
+  resolver, and a gate that regenerates all 168 and fails on any byte difference.
+- Migrate the 36 catch-up stations: **do not**, at least not in the same step.
+  They are not parent-derived, and forcing them into this model would invent a
+  parent relationship that does not exist.
+- Ongoing: one gate run per lesson edit instead of a remembered generator
+  invocation. That is the whole benefit, and it is the reason to do it.
+
+**Recommendation.** The drift measured is 4 pairs, which is small. On that
+evidence alone the migration is not urgent. What makes it worth doing is not
+today's drift but the fact that nothing detects tomorrow's: there is no check
+anywhere that a variant is still consistent with its parent. A cheaper first
+step, if you want most of the benefit for a fraction of the cost, is a
+**consistency gate without the migration** — regenerate each variant in memory
+and fail on any difference outside the declared transform. That is roughly a day
+and it would have caught all four drifted pairs. See Decision 6.
+
