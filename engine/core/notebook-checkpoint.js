@@ -108,6 +108,12 @@ export const OWN_WORDS_PROMPTS = {
 };
 
 export const CHECKBOX_LABEL = "I wrote this in my notebook.";
+
+// The Math Notes trigger's label. One wording, every box, every lesson, both
+// content states. It asks about the PAGE LAYOUT, so it stays true whether or
+// not the lesson supplies a rule to copy — nothing here may say "copy the
+// rule", which on 74 lessons would name something that is not on the screen.
+export const MODEL_LINK_LABEL = "What should my page look like?";
 export const BLOCKED_MESSAGE = "Write it in your notebook first, then check the box to keep going.";
 
 /**
@@ -417,11 +423,8 @@ export function mountNotebookCheckpoint(el, config, phaseIndex) {
     </div>
     <p class="nt-nb-prompt">${esc(cp.prompt)}</p>
     ${renderCopyPanelHtml(cp)}
-    ${
-      cp.box === 1
-        ? `<button type="button" class="nt-nb-modellink">📓 What should my page look like?</button>`
-        : ""
-    }
+    <button type="button" class="nt-nb-modellink"
+            aria-label="${esc(MODEL_LINK_LABEL)}">📓 ${esc(MODEL_LINK_LABEL)}</button>
     <div class="nt-nb-row">
       <input type="checkbox" id="${idBase}-done" class="nt-nb-check" ${saved.confirmed ? "checked" : ""} />
       <label for="${idBase}-done" class="nt-nb-checklabel">${esc(CHECKBOX_LABEL)}</label>

@@ -324,6 +324,19 @@ try {
           copyDetails,
           ownDetails,
           promptText: (thisBlock?.querySelector(".nt-nb-prompt")?.textContent || "").trim(),
+          modelLink: (() => {
+            const b = thisBlock?.querySelector(".nt-nb-modellink");
+            if (!b) return { present: false };
+            const r = b.getBoundingClientRect();
+            return {
+              present: true,
+              text: (b.textContent || "").replace(/\s+/g, " ").trim(),
+              label: b.getAttribute("aria-label") || "",
+              width: Math.round(r.width),
+              height: Math.round(r.height),
+            };
+          })(),
+          sidebarMathNotes: !!document.querySelector('[data-extra="mathnotes"]'),
         };
       }, cp.box);
 
@@ -400,6 +413,47 @@ try {
               );
             }
           }
+        }
+
+        // ── The Math Notes entry point ─────────────────────────────────────
+        // Access to the model must not depend on whether the lesson happened to
+        // supply a rule. What a lesson supplies decides what is shown INSIDE
+        // Math Notes, never whether Math Notes exists.
+        if (!phaseCheck.sidebarMathNotes) {
+          fail(`${lessonId} (Phase ${cp.phase}): the sidebar Math Notes entry point is absent`);
+        }
+        const ml = phaseCheck.modelLink || { present: false };
+        if (!ml.present) {
+          fail(
+            `${lessonId} (Phase ${cp.phase}): Box ${cp.box} renders no Math Notes trigger${od.present ? " in the student-generated state" : ""}`,
+          );
+        } else {
+          if (!/what should my page look like/i.test(ml.text)) {
+            fail(
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} Math Notes trigger reads "${ml.text}"`,
+            );
+          }
+          if (
+            /copy the rule|copy this/i.test(ml.text) ||
+            /copy the rule|copy this/i.test(ml.label)
+          ) {
+            fail(
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} Math Notes trigger says "copy the rule" where no rule may exist`,
+            );
+          }
+          if (!ml.label) {
+            fail(
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} Math Notes trigger has no accessible name`,
+            );
+          }
+          if (ml.height < 44) {
+            fail(
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} Math Notes trigger is ${ml.height}px tall, under the 44px touch target`,
+            );
+          }
+          note(
+            `${lessonId} (Phase ${cp.phase}): Box ${cp.box} Math Notes trigger present (${ml.height}px, labelled)`,
+          );
         }
 
         if (!cd.hasCopyPanel) {

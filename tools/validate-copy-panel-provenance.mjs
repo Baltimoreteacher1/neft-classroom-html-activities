@@ -47,6 +47,39 @@ const traces = (needle, haystack) => {
   return n.length > 0 && norm(haystack).includes(n);
 };
 
+const STOPWORDS = new Set(
+  "a an the to of in on for and or is are be that this it its you your with as at by from into can do does not what when which who how than then so if all any each every one two more most own use uses used using write down first second next then also there their they them we our us new same both only just about over under between after before".split(
+    " ",
+  ),
+);
+
+const contentWords = (s) =>
+  norm(s)
+    .split(" ")
+    .filter((w) => w.length >= 4 && !STOPWORDS.has(w) && !/^[0-9.]+$/.test(w))
+    // A COARSE stem, deliberately: this check exists to catch a rule about
+    // other mathematics, and "dividend" must count as touching "division".
+    // Over-matching only weakens a safety net that sits on top of the exact
+    // keyIdea trace; under-matching would fail correct lessons.
+    .map((w) => (w.length > 4 ? w.slice(0, 4) : w));
+
+/** Is this rule about what the lesson TEACHES, or merely a string that occurs
+ *  somewhere in its config? Tracing to keyIdea proves the lesson said it; this
+ *  proves the lesson said it ABOUT its own objective. */
+export function alignsWithObjective(ruleAndMeaning, config) {
+  const objective = String(config.contentObjective || "").trim();
+  // The objective is the only field that states what the lesson sets out to
+  // teach. With none there is nothing to align against, and a guess would be
+  // worse than no check.
+  if (!objective) return true;
+  const target = new Set([
+    ...contentWords(objective),
+    ...contentWords(config.title || ""),
+    ...(config.vocabulary || []).flatMap((v) => contentWords(v.term || "")),
+  ]);
+  return contentWords(ruleAndMeaning).some((w) => target.has(w));
+}
+
 /** True when the quoted run stops in the middle of a number the source
  *  continues (a truncated decimal or a clipped digit string). */
 export function endsMidNumber(quote, source) {
@@ -98,6 +131,13 @@ export function checkLesson(id, config) {
       const p = cp.copyPanel;
       if (!traces(p.rule, keyIdea)) {
         errors.push(`${id} box 2: rule "${p.rule}" is not stated in this lesson's keyIdea`);
+      } else if (!alignsWithObjective(`${p.rule} ${p.meaning || ""}`, config)) {
+        // A lesson on multi-digit division must never print an IQR rule, and
+        // "it appears in the config" is not the standard — the rule has to be
+        // about the mathematics this lesson sets out to teach.
+        errors.push(
+          `${id} box 2: rule "${p.rule}" shares no vocabulary with this lesson's objective`,
+        );
       }
       if (p.meaning && !traces(p.meaning, keyIdea)) {
         errors.push(`${id} box 2: meaning is not stated in this lesson's keyIdea`);
@@ -162,6 +202,32 @@ const NEGATIVE_CONTROLS = [
       items: [{ term: "Quartile", meaning: "A marker splitting data into quarters" }],
     }),
     expect: /not a run of this lesson's own definition/,
+  },
+  {
+    name: "a rule quoted from the lesson but about other mathematics",
+    config: {
+      ...base,
+      contentObjective: "Divide multi-digit numbers using the standard algorithm.",
+      launch: {
+        conceptIntro: {
+          keyIdea: "Interquartile range = Q3 - Q1 covers the middle half.",
+          iDo: { lines: ["IQR = 88 - 75.5 = 12.5 points."] },
+        },
+      },
+      notebook: {
+        checkpoints: [
+          {
+            box: 2,
+            copyPanel: {
+              rule: "Interquartile range = Q3 - Q1",
+              meaning: "covers the middle half",
+              example: "88 - 75.5 = 12.5",
+            },
+          },
+        ],
+      },
+    },
+    expect: /shares no vocabulary with this lesson's objective/,
   },
   {
     name: "an example that cuts a decimal short",
