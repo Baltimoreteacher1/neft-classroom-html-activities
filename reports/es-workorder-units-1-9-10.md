@@ -255,3 +255,81 @@ These need a schema field added before a translation can be stored.
      16  heading  →  would need `headingEs`
      13  caption  →  would need `captionEs`
 ```
+
+---
+
+## ADDENDUM — the surfaces a lesson config cannot show you
+
+The inventory above is everything in `lessons/*/config.json`. Three student-facing
+surfaces are rendered by the ENGINE, not by the config, so no config audit can
+see them. They are listed here because they sit at the very top of the
+functional-path ranking: **these are the controls a student must press to
+progress, and they are English only while the lesson content around them may be
+Spanish.**
+
+### The completion and navigation gates — English only
+
+Verified by reading each call site, not by pattern-matching (6 of 6
+hand-checked):
+
+- `engine/core/lesson-renderer.js:5604` — `"Finish Lesson & Celebrate 🎉"`.
+  The next line is `state.markCompleted(phaseIndex)`. **This button IS the
+  completion trigger.**
+- `engine/core/lesson-renderer.js:3577` — `"Continue to Practice →"`, wired
+  straight to `completePhase(...)`. A phase gate.
+- `engine/core/lesson-renderer.js:2601` and `:3074` — `"Continue to Phase 2:
+  Objectives 🎯"`, wired to `ctx.nextPhase()`.
+- `engine/core/lesson-renderer.js:3141` — `"Continue to Phase 3: Launch 🚀"`.
+- `engine/core/lesson-renderer.js:5244` — `"Not quite — try a similar one before
+  you finish:"`. The retry gate shown before a student may finish.
+- `engine/core/lesson-renderer.js:4866` — `"Submit Response"`.
+- `engine/core/lesson-renderer.js:3815` — `"🔒 Finish Step 1 first — solve the
+  problem in columns."` A lock message that tells a student why they cannot
+  proceed.
+
+There is a bilingual precedent already in the same file:
+`lesson-renderer.js:5254` reads `"🏁 Finish lesson / Terminar la lección"`. So
+**two different finish buttons exist and only one speaks Spanish.** That is the
+mismatch shape the article bug had.
+
+### Save / Resume — no bilingual layer at all
+
+`shared/save-resume/save-resume-engine.js` contains **zero** references to
+`i18n`, `stackContent` or `stackHtml`. Its student-facing strings are raw
+English, including the error state:
+
+- `"We couldn't find work for that code. Check the letters and numbers and try
+  again."`
+- `"Please type your code first."`
+- `"Your resume code"` (aria-label)
+- `"Saving as "`
+
+A student who saves in Spanish mode and cannot resume is read an English error.
+
+### Counts
+
+Across `lesson-renderer.js`, `utility-menu.js` and `save-resume-engine.js`:
+**56 student-facing chrome strings, 3 bilingual, 53 English only** — 6 of those
+53 in the Save/Resume engine.
+
+**Hand-check (R3):** read the call sites for 6 of the 53 — the finish button,
+the retry gate, the practice gate, the phase-2 gate, `Submit Response`, and the
+resume-code error. **6/6 are genuinely raw `textContent` assignments with no
+i18n wrapping.** The detector's one known limitation: it decides "bilingual" by
+whether the literal appears in `i18n.js` or already carries both languages
+inline, so a string wrapped by a helper at the call site would be a false
+positive. None of the six checked was.
+
+### Why this ranks above the 1,437 config strings
+
+A missing `stemEs` degrades gracefully — `stackContentHtml` falls back to
+English, and the student reads the problem in English. A missing translation on
+`"Finish Lesson & Celebrate 🎉"` does the same visually, but that control is the
+one a student must recognise and press to have their work recorded. Content that
+is hard to read costs comprehension; a gate that is hard to recognise costs the
+completion.
+
+None of this is in the per-lesson lists above, and none of it is fixed by
+translating configs. It needs the same treatment the lesson content already has:
+route these strings through `engine/core/i18n.js`, whose `STRINGS` table is
+already 129/129 bilingual.
