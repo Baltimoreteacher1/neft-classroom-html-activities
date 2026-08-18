@@ -88,9 +88,18 @@ const run = async (id) => {
       if (!declared.includes(norm(t)))
         fails.push(`${id}: term "${t}" is not declared by this lesson`);
     if (r.rule) {
-      const key = norm(cfg.launch?.conceptIntro?.keyIdea).replace(/[^a-z0-9 ]/g, "");
-      if (!key.includes(norm(r.rule).replace(/[^a-z0-9 ]/g, "")))
-        fails.push(`${id}: rule "${r.rule}" is not in this lesson's keyIdea`);
+      // An anchor may be quoted from the lesson's key idea OR from its own
+      // worked example — a formula, an equation, a procedure step and a pattern
+      // all live in `iDo`. Both are this lesson's text; neither is another
+      // lesson's.
+      const ci = cfg.launch?.conceptIntro || {};
+      const source = norm(`${ci.keyIdea || ""} ${(ci.iDo?.lines || []).join(" ")}`).replace(
+        /[^a-z0-9 ]/g,
+        "",
+      );
+      const quoted = norm(r.rule).replace(/[^a-z0-9 ]/g, "");
+      if (!source.includes(quoted))
+        fails.push(`${id}: anchor "${r.rule}" is not in this lesson's key idea or worked example`);
     }
     if (r.copy === 0 && r.own === 0) fails.push(`${id}: dialog shows no lesson notes at all`);
   } catch (e) {

@@ -250,9 +250,16 @@ try {
 
         if (copyPanel) {
           // Check for interactive elements (forbidden inside copy panel)
+          // Vocabulary art is allowed and is NOT interactive: it is an <img>
+          // with alt="" that the definition beside it already carries in text.
+          // Controls and links are still forbidden — a copy panel is something
+          // a student transcribes, not something they operate.
           const interactiveCount = copyPanel.querySelectorAll(
-            "button, input, select, textarea, a, svg, img",
+            "button, input, select, textarea, a",
           ).length;
+          const art = Array.from(copyPanel.querySelectorAll("img.nt-nb-copy-art"));
+          const brokenArt = art.filter((i) => i.complete && i.naturalWidth === 0).length;
+          const unlabelledArt = art.filter((i) => i.getAttribute("alt") === null).length;
 
           // Check for emoji
           const panelText = copyPanel.textContent || "";
@@ -308,6 +315,9 @@ try {
           copyDetails = {
             hasCopyPanel,
             interactiveCount,
+            artCount: art.length,
+            brokenArt,
+            unlabelledArt,
             hasEmoji,
             contrastRatio,
             box1ItemCount,
@@ -462,6 +472,20 @@ try {
           }
         } else {
           note(`${lessonId} (Phase ${cp.phase}): Box ${cp.box} copy panel rendered`);
+          if (cd.brokenArt > 0) {
+            fail(
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} copy panel has ${cd.brokenArt} vocabulary image(s) that did not load`,
+            );
+          } else if (cd.artCount > 0) {
+            note(
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} ${cd.artCount} vocabulary image(s) loaded`,
+            );
+          }
+          if (cd.unlabelledArt > 0) {
+            fail(
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} has ${cd.unlabelledArt} image(s) with no alt attribute`,
+            );
+          }
           if (cd.interactiveCount > 0) {
             fail(
               `${lessonId} (Phase ${cp.phase}): Box ${cp.box} copy panel contains ${cd.interactiveCount} interactive/icon element(s)`,

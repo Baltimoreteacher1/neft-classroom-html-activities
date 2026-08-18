@@ -27,6 +27,8 @@
 // Phase identity in this engine is POSITIONAL: lesson-renderer.js hands
 // createApp a fixed 8-slot array of render functions. These names are the
 // stable ids lesson data refers to, mapped to those slots.
+import { hasRealVocabImage, resolveVocabImage } from "./vocab-images.js";
+
 export const PHASE_IDS = [
   "warmup",
   "objectives",
@@ -44,6 +46,14 @@ const MIN_LENGTH = 1;
 
 // The one canonical model. Declared once, here — never per lesson.
 export const MATH_NOTES_MODEL_PAGE = "/curriculum/student-supports/math-notes/";
+// The canonical model page image. It is NOT shown inside the lesson dialog:
+// the sample page prints a made-up lesson header ("Lesson 1-1 · Sept. 3") and
+// worked mathematics of its own ("Area = base × height", vocabulary "variable /
+// expression / evaluate"), so on every lesson it put another lesson's content
+// under the student's nose — the exact thing the provenance layer exists to
+// prevent. The dialog shows the lesson's real notes instead; the model still
+// lives on /curriculum/student-supports/math-notes/ where it is clearly a
+// sample of the PAGE LAYOUT and not today's work.
 export const MATH_NOTES_MODEL_IMAGE = "/assets/math-notes/math-notes-model.svg";
 
 // Marks a save/resume `custom` slice as notebook capture. The save/resume
@@ -346,8 +356,6 @@ export function openMathNotesModel(config) {
       <button type="button" class="nt-nb-model-close" aria-label="Close">✕</button>
     </div>
     ${renderLessonNotesHtml(lessonConfig)}
-    <img class="nt-nb-model-img" src="${MATH_NOTES_MODEL_IMAGE}"
-         alt="A notebook page with a heading line, then three numbered sections: 1 Math Words, with a word on the left and what it means on the right; 2 Today's Math, with the rule or formula; 3 My Work, with numbered problems and every step shown." />
     <div class="nt-nb-model-foot">
       <a class="nt-nb-model-link" href="${MATH_NOTES_MODEL_PAGE}" target="_blank" rel="noopener">Open the full page ↗</a>
     </div>`;
@@ -403,16 +411,27 @@ function renderCopyPanelHtml(cp) {
   if (cp.contentSource === "own-words") return renderOwnWordsHtml(cp);
   if (!cp.copyPanel) return "";
   if (cp.box === 1 && Array.isArray(cp.copyPanel.items) && cp.copyPanel.items.length > 0) {
+    // Three columns — word, what it means, and the picture the lesson already
+    // uses for that word. The image is decorative here (the definition beside
+    // it carries the meaning), so it is aria-hidden and the row stays readable
+    // with images off. A term whose only match would be a generic category tile
+    // gets no picture at all rather than one that does not depict it.
     const listItems = cp.copyPanel.items
-      .map(
-        (item) =>
-          `<li><strong class="nt-nb-copy-term">${esc(item.term)}</strong> — <span class="nt-nb-copy-meaning">${esc(item.meaning)}</span></li>`,
-      )
+      .map((item) => {
+        const art = hasRealVocabImage(item.term, item.image)
+          ? `<img class="nt-nb-copy-art" src="${esc(resolveVocabImage(item.term, item.image))}" alt="" aria-hidden="true" loading="lazy" width="72" height="72" />`
+          : `<span class="nt-nb-copy-art nt-nb-copy-art-empty" aria-hidden="true"></span>`;
+        return `<li>
+          <span class="nt-nb-copy-term">${esc(item.term)}</span>
+          <span class="nt-nb-copy-meaning">${esc(item.meaning)}</span>
+          ${art}
+        </li>`;
+      })
       .join("\n");
     return `
     <div class="nt-nb-copy-panel nt-nb-copy-box1" data-no-vocab="true" aria-label="Copy into your notebook">
       <div class="nt-nb-copy-banner">Copy into your notebook:</div>
-      <ol class="nt-nb-copy-list">
+      <ol class="nt-nb-copy-list nt-nb-copy-grid">
         ${listItems}
       </ol>
     </div>`;

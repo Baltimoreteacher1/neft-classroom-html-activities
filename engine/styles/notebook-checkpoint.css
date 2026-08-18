@@ -75,6 +75,66 @@
   margin-bottom: var(--sp-2, 8px);
 }
 
+/* Box 1 — Math Words. Three columns: the word, what it means, and the picture
+   this lesson already uses for that word. The image column is fixed-width so
+   every row's art aligns down the page; it collapses on a phone, where a
+   56px column beside wrapping text leaves the definition too narrow to read. */
+.nt-nb-copy-grid {
+  list-style: none;
+  padding-left: 0;
+  counter-reset: nt-nb-word;
+}
+
+.nt-nb-copy-grid li {
+  display: grid;
+  grid-template-columns: minmax(7em, 12em) minmax(0, 1fr) 72px;
+  align-items: center;
+  gap: var(--sp-3, 12px);
+  padding: var(--sp-2, 8px) 0;
+  border-bottom: 1px solid var(--line, #d7e2ed);
+}
+
+.nt-nb-copy-grid li:last-child {
+  border-bottom: none;
+}
+
+.nt-nb-copy-art {
+  width: 72px;
+  height: 72px;
+  justify-self: end;
+  object-fit: contain;
+  border-radius: var(--radius-sm, 8px);
+  background: #fff;
+}
+
+.nt-nb-copy-art-empty {
+  display: block;
+}
+
+@media (max-width: 560px) {
+  .nt-nb-copy-grid li {
+    grid-template-columns: minmax(0, 1fr) 52px;
+    gap: var(--sp-2, 8px);
+    row-gap: 2px;
+  }
+
+  .nt-nb-copy-grid .nt-nb-copy-term {
+    grid-column: 1;
+  }
+
+  .nt-nb-copy-grid .nt-nb-copy-meaning {
+    grid-column: 1;
+  }
+
+  .nt-nb-copy-art,
+  .nt-nb-copy-art-empty {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 52px;
+    height: 52px;
+  }
+}
+
 /* Box 1 — Math Words list */
 .nt-nb-copy-list {
   margin: 0;

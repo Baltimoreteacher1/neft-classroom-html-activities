@@ -72,10 +72,23 @@ export function alignsWithObjective(ruleAndMeaning, config) {
   // teach. With none there is nothing to align against, and a guess would be
   // worse than no check.
   if (!objective) return true;
+  // A SYMBOLIC anchor has no prose to align: "N + 8 = 20" and "|5 − (−4.5)| =
+  // 9.5 units" carry almost no words, and an equation lifted verbatim from this
+  // lesson's own worked example is on-objective by construction — the exact
+  // trace already proved where it came from. Alignment is a check on PROSE
+  // claiming to be this lesson's mathematics.
+  if (contentWords(ruleAndMeaning).length < 3) return true;
   const target = new Set([
     ...contentWords(objective),
     ...contentWords(config.title || ""),
     ...(config.vocabulary || []).flatMap((v) => contentWords(v.term || "")),
+    // Definitions too, not just terms. A lesson may deliberately state its idea
+    // in student language — 6-8's anchor is "changing the ORDER or the
+    // GROUPING…" while its objective names the "commutative" and "associative"
+    // properties. Those are the same mathematics, and the lesson's own
+    // definitions are where the two vocabularies meet. This is not
+    // self-evidence: the anchor comes from keyIdea, never from a definition.
+    ...(config.vocabulary || []).flatMap((v) => contentWords(v.definition || "")),
   ]);
   return contentWords(ruleAndMeaning).some((w) => target.has(w));
 }
@@ -129,8 +142,19 @@ export function checkLesson(id, config) {
 
     if (cp.box === 2) {
       const p = cp.copyPanel;
-      if (!traces(p.rule, keyIdea)) {
-        errors.push(`${id} box 2: rule "${p.rule}" is not stated in this lesson's keyIdea`);
+      // An anchor may be quoted from the lesson's stated big idea OR from its
+      // own worked example — a formula, an equation, a procedure step and a
+      // pattern all live in `iDo`. Both are THIS lesson's text; neither opens
+      // the door to another lesson's.
+      const anchorSource = `${keyIdea}\n${iDo}`;
+      const KINDS = ["rule", "formula", "key idea", "example", "procedure", "pattern"];
+      if (p.anchorKind && !KINDS.includes(p.anchorKind)) {
+        errors.push(`${id} box 2: unknown anchor kind "${p.anchorKind}"`);
+      }
+      if (!traces(p.rule, anchorSource)) {
+        errors.push(
+          `${id} box 2: anchor "${p.rule}" is not stated in this lesson's keyIdea or worked example`,
+        );
       } else if (!alignsWithObjective(`${p.rule} ${p.meaning || ""}`, config)) {
         // A lesson on multi-digit division must never print an IQR rule, and
         // "it appears in the config" is not the standard — the rule has to be
@@ -139,8 +163,8 @@ export function checkLesson(id, config) {
           `${id} box 2: rule "${p.rule}" shares no vocabulary with this lesson's objective`,
         );
       }
-      if (p.meaning && !traces(p.meaning, keyIdea)) {
-        errors.push(`${id} box 2: meaning is not stated in this lesson's keyIdea`);
+      if (p.meaning && !traces(p.meaning, `${keyIdea}\n${iDo}`)) {
+        errors.push(`${id} box 2: meaning is not stated in this lesson's own text`);
       }
       if (p.example) {
         if (!traces(p.example, iDo)) {
@@ -302,6 +326,8 @@ function main() {
     .filter((d) => /^\d+-\d+$/.test(d))
     .sort();
   const allErrors = [];
+  const kinds = {};
+  const missingAnchor = [];
   let both = 0;
   let one = 0;
   let none = 0;
@@ -311,16 +337,44 @@ function main() {
     if (!config.notebook) continue;
     const { errors, panels } = checkLesson(id, config);
     allErrors.push(...errors);
+
+    // Every lesson must leave a student with something concrete to copy. A
+    // vocabulary term with its meaning counts; so does a formula, an equation,
+    // a procedure step or a pattern. Nothing is not an option.
+    const cps = (config.notebook && config.notebook.checkpoints) || [];
+    const box1 = cps.find((c) => c.box === 1);
+    const box2 = cps.find((c) => c.box === 2);
+    const vocabItems = (box1 && box1.copyPanel && box1.copyPanel.items) || [];
+    const anchor = box2 && box2.copyPanel && String(box2.copyPanel.rule || "").trim();
+    if (vocabItems.length === 0) {
+      missingAnchor.push(`${id}: Section 1 would render with no terms at all`);
+    }
+    if (!anchor && vocabItems.length === 0) {
+      missingAnchor.push(`${id}: no mathematical anchor anywhere in Math Notes`);
+    }
+    if (anchor)
+      kinds[box2.copyPanel.anchorKind || "rule"] =
+        (kinds[box2.copyPanel.anchorKind || "rule"] || 0) + 1;
+    else kinds["student-generated"] = (kinds["student-generated"] || 0) + 1;
     if (panels >= 2) both++;
     else if (panels === 1) one++;
     else none++;
   }
 
   console.log(`  Coverage: ${both} lessons with two panels, ${one} with one, ${none} with none.`);
-  if (both === ids.length) {
+  // Full coverage is EXPECTED now and was a red flag before, so the check moved
+  // to what actually distinguishes the two: extraction produces a MIX of anchor
+  // kinds because lessons differ, while invention produces one shape everywhere.
+  const kindList = Object.entries(kinds).sort((a, b) => b[1] - a[1]);
+  console.log(`  Anchor kinds: ${kindList.map(([k, n]) => `${k} ${n}`).join(", ")}`);
+  if (kindList.length === 1 && ids.length > 1) {
     console.error(
-      "  WARNING  every lesson carries both panels. Full coverage is the shape the invented content took; re-read before trusting it.",
+      `  WARNING  all ${ids.length} lessons produced the same anchor kind (${kindList[0][0]}). That is the shape invented content took; re-read before trusting it.`,
     );
+  }
+  if (missingAnchor.length > 0) {
+    for (const m of missingAnchor) console.error(`  FAIL  ${m}`);
+    allErrors.push(...missingAnchor);
   }
 
   if (allErrors.length > 0) {

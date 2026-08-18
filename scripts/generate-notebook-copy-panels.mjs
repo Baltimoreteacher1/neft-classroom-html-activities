@@ -112,7 +112,13 @@ export function buildBox1(config) {
     const firstSentence = String(v.definition).split(/(?<=[.!?])\s+/)[0];
     const meaning = shortenVerbatim(firstSentence, MEANING_MAX_WORDS);
     if (!term || !meaning) continue;
-    items.push({ term, meaning });
+    // Carry the lesson's OWN image override when it pins one. Terms without an
+    // override resolve by slug at render time, and the renderer suppresses any
+    // term whose only match would be a generic category tile — a picture that
+    // does not depict the word is worse than no picture.
+    const item = { term, meaning };
+    if (typeof v.image === "string" && v.image.trim()) item.image = v.image.trim();
+    items.push(item);
   }
   if (items.length < 3)
     return { panel: null, reason: "fewer than 3 vocabulary entries survived shortening" };
@@ -170,7 +176,131 @@ export function extractEquation(sentence) {
 
 /** The lesson's stated rule, quoted from `launch.conceptIntro.keyIdea` — the
  *  one field where every lesson states its own big idea in its own words. */
+/** A FORMULA: an equation whose sides carry named quantities rather than only
+ *  digits — "A = 1/2 (b1 + b2) h", "V = l x w x h". Lifted by tokens from a
+ *  line the lesson itself prints, never assembled from parts. */
+export function extractFormula(sentence) {
+  let clean = String(sentence || "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!clean.includes("=")) return "";
+
+  // Drop a narrating lead-in the lesson uses to introduce its own formula:
+  // "I write the formula: A = base × height", "MULTIPLY: 1 × 12 = 12".
+  const colon = clean.lastIndexOf(":", clean.indexOf("="));
+  if (colon > 0) clean = clean.slice(colon + 1).trim();
+  clean = clean.replace(
+    /^(so|then|now|first|next|finally|i|we)\s+(write|add|multiply|divide|subtract|test|find|get|do|put|start|check|say|know)?\s*(the\s+)?(formula|equation)?\s*/i,
+    "",
+  );
+  clean = clean.replace(/^(so|then|now|first|next)\s+/i, "");
+  // "my equation is n + 8 = 20", "each is 8 × 5 = 40", "That is 45 + 15 = 60",
+  // "Both have y = 2" — the lesson narrating its way into its own equation.
+  clean = clean.replace(
+    /^(my|the|each|both|that|this|it)\s+(equation|conversion factor|answer|total)?\s*(is|are|has|have)\s+/i,
+    "",
+  );
+
+  // Cut the sentence's continuation AFTER the equation — "= 80, so I would say"
+  // is an equation with a conversational tail, and the tail is not the note.
+  clean = clean.replace(/(,|;|\s+(?:so|which|because|and then|then i|so i)\b).*$/i, "").trim();
+  clean = clean.replace(/[.,;:]+$/, "").trim();
+
+  const at = clean.indexOf("=");
+  if (at <= 0 || at === clean.length - 1) return "";
+  const lhs = clean.slice(0, at).trim();
+  const rhs = clean.slice(at + 1).trim();
+  if (!lhs || !rhs) return "";
+
+  // Both sides must read as quantities. A verb on either side means we cut a
+  // sentence, not an equation: "means = 20", "points to an equation (=)".
+  const VERBY = /\b(means?|points?|shows?|tells?|gives?|says?|is called|test|becomes?)\b/i;
+  if (VERBY.test(lhs) || VERBY.test(rhs)) return "";
+  if (wordCount(lhs) > 6 || wordCount(rhs) > 8) return "";
+  if (!/[A-Za-z0-9]/.test(lhs) || !/[A-Za-z0-9]/.test(rhs)) return "";
+  // A formula NAMES quantities somewhere. Digits on both sides is an arithmetic
+  // example — also a useful anchor, but a different kind, handled by tier 4.
+  if (!/[A-Za-z]/.test(clean)) return "";
+  if (!balanced(clean) || HANGING_END.test(clean)) return "";
+  if (wordCount(clean) > 12) return "";
+  // A single letter equal to a bare number ("x = 4") is a step in someone
+  // else's working, not something worth copying as today's mathematics. Let the
+  // next tier offer the lesson's idea instead.
+  if (/^[A-Za-z]$/.test(lhs) && /^[\d.]+$/.test(rhs)) return "";
+  return clean.charAt(0).toUpperCase() + clean.slice(1);
+}
+
+/** A PROCEDURE step: an imperative line from the lesson's own worked example
+ *  that tells the student what to DO. */
+export function extractProcedure(line) {
+  const clean = String(line || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/[.]+$/, "");
+  if (!clean) return "";
+  if (
+    !/^(divide|multiply|subtract|add|count|line up|write|place|start|find|check|rewrite|flip|keep|change|bring|estimate|round|compare|order|plot|label|draw|shade|split|group|simplify|substitute|solve|graph|repeat)\b/i.test(
+      clean,
+    )
+  )
+    return "";
+  if (wordCount(clean) > 14) return "";
+  if (!balanced(clean) || HANGING_END.test(clean)) return "";
+  return clean;
+}
+
+/** A PATTERN: a line of the lesson's own worked example that states a numeric
+ *  relationship without an equals sign — "a one-disc tower takes 1 move, and a
+ *  two-disc tower takes 3 moves". The user's own list of acceptable anchors
+ *  names this; 10-3 teaches a pattern and states its key idea in one 37-word
+ *  sentence no student would copy by hand. */
+export function extractPattern(line) {
+  let clean = String(line || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/[.]+$/, "");
+  // Drop a narrating lead-in ("Then I play the small cases: …").
+  const colon = clean.indexOf(":");
+  if (colon > 0 && colon < clean.length - 12) clean = clean.slice(colon + 1).trim();
+  const numbers = clean.match(/\d+(?:\.\d+)?/g) || [];
+  if (numbers.length < 2) return "";
+  if (wordCount(clean) < 4 || wordCount(clean) > 20) return "";
+  if (!balanced(clean) || HANGING_END.test(clean)) return "";
+  if (/^[a-z]/.test(clean)) clean = clean.charAt(0).toUpperCase() + clean.slice(1);
+  return clean;
+}
+
+/** A complete KEY IDEA: one whole sentence of the lesson's own keyIdea, used as
+ *  written. Never truncated — if it does not fit whole, it is not this anchor. */
+export function extractKeyIdea(keySentences) {
+  for (const raw of keySentences) {
+    const clean = raw.replace(/\s+/g, " ").trim().replace(/[.]+$/, "");
+    // One whole sentence is allowed to be a sentence. The cap exists to keep a
+    // note copyable by hand, not to force a formula out of a lesson that
+    // teaches a pattern or a habit of mind — 1-5, 10-1 and 10-3 state their
+    // mathematics in exactly one such sentence and have no formula at all.
+    if (wordCount(clean) < 4 || wordCount(clean) > 26) continue;
+    if (!balanced(clean) || HANGING_END.test(clean)) continue;
+    if (!/[a-z]/.test(clean)) continue;
+    return clean;
+  }
+  return "";
+}
+
+/**
+ * Box 2's anchor. Tier 1 is a rule the lesson states as a complete sentence,
+ * with a clause that explains it and an equation that shows it — the strongest
+ * anchor and the only one that fills all three lines. When a lesson does not
+ * state one, we do NOT stop: we fall through to the next thing the lesson
+ * genuinely contains. Every tier quotes that lesson and nothing else.
+ */
 export function buildBox2(config) {
+  const strict = buildStrictRule(config);
+  if (strict.panel) return { panel: { ...strict.panel, anchorKind: "rule" }, reason: null };
+  return buildFallbackAnchor(config, strict.reason);
+}
+
+function buildStrictRule(config) {
   const ci = (config.launch || {}).conceptIntro || {};
   const keySentences = sentences(ci.keyIdea);
   const ruleSentence = keySentences.find((s) => RULE_MARKER.test(s));
@@ -243,6 +373,78 @@ export function buildBox2(config) {
     panel: { rule, meaning: meaning.endsWith(".") ? meaning : `${meaning}.`, example },
     reason: null,
   };
+}
+
+/**
+ * Tiers 2-6, in the order a note is most useful to a Grade 6 student copying
+ * one line into a paper notebook. Each tier reads the SAME lesson's own text;
+ * none of them composes a mathematical claim out of pieces from elsewhere.
+ *
+ *   2. a FORMULA the lesson prints          — "A = 1/2 (b1 + b2) h"
+ *   3. a complete KEY IDEA sentence         — the lesson's own big idea, whole
+ *   4. a worked EXAMPLE equation            — "94 - 68 = 26"
+ *   5. a PROCEDURE step from the worked example
+ *
+ * A lesson that yields none of these keeps the student-generated state, and
+ * its vocabulary panel is still a real anchor: a term with its meaning is one
+ * of the things a student can usefully copy.
+ */
+function buildFallbackAnchor(config, strictReason) {
+  const ci = (config.launch || {}).conceptIntro || {};
+  const keySentences = sentences(ci.keyIdea);
+  const iDoLines = (ci.iDo && Array.isArray(ci.iDo.lines) ? ci.iDo.lines : []).flatMap((l) =>
+    sentences(l),
+  );
+  const sources = [...keySentences, ...iDoLines];
+
+  // 2 — a formula, from anywhere the lesson states one.
+  for (const line of sources) {
+    const formula = extractFormula(line);
+    if (formula) {
+      const example = firstEquation(iDoLines, formula);
+      return {
+        panel: { rule: formula, anchorKind: "formula", ...(example ? { example } : {}) },
+        reason: null,
+      };
+    }
+  }
+
+  // 3 — the lesson's own key idea, used whole.
+  const idea = extractKeyIdea(keySentences);
+  if (idea) {
+    const example = firstEquation(iDoLines, idea);
+    return {
+      panel: { rule: idea, anchorKind: "key idea", ...(example ? { example } : {}) },
+      reason: null,
+    };
+  }
+
+  // 4 — an equation the worked example prints.
+  const equation = firstEquation(iDoLines, "");
+  if (equation) return { panel: { rule: equation, anchorKind: "example" }, reason: null };
+
+  // 5 — a step of the lesson's own procedure.
+  for (const line of iDoLines) {
+    const step = extractProcedure(line);
+    if (step) return { panel: { rule: step, anchorKind: "procedure" }, reason: null };
+  }
+
+  // 6 — a pattern the worked example states in numbers.
+  for (const line of iDoLines) {
+    const pattern = extractPattern(line);
+    if (pattern) return { panel: { rule: pattern, anchorKind: "pattern" }, reason: null };
+  }
+
+  return { panel: null, reason: strictReason || "lesson states no anchor that can be quoted" };
+}
+
+/** The first equation the worked example prints, skipping one already shown. */
+function firstEquation(iDoLines, already) {
+  for (const line of iDoLines) {
+    const found = extractEquation(line);
+    if (found && found !== already) return found;
+  }
+  return "";
 }
 
 function main() {

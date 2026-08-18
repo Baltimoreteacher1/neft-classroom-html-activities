@@ -165,10 +165,11 @@ function inspect(config) {
         errors.push("box 2: rule contains emoji or icon");
         hasCopyPanel = false;
       }
-      if (!meaning || !String(meaning).trim()) {
-        errors.push("box 2: copyPanel missing meaning line");
-        hasCopyPanel = false;
-      } else if (EMOJI_OR_ICON.test(meaning)) {
+      // OPTIONAL. A formula, an equation, a procedure step or a pattern is a
+      // complete note on its own — "V = length × width × height" needs no
+      // second line, and requiring one is how a lesson gets given prose it
+      // never wrote. Only the anchor itself is mandatory.
+      if (meaning && EMOJI_OR_ICON.test(meaning)) {
         errors.push("box 2: meaning contains emoji or icon");
         hasCopyPanel = false;
       }
