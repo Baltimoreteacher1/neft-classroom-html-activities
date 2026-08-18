@@ -554,3 +554,134 @@ sibling-element assumption does not hold for controls, so no control-level count
 from that pass is in this report. The `.en-text`/`.es-text` pairing figure in 3.6
 does not depend on it.
 
+
+---
+
+## BLOCK 4 · Readability baseline
+
+Audit only. Nothing rewritten — simplifying a sentence is a content decision.
+
+### 4.1 The measure, and why
+
+**Flesch–Kincaid Grade Level**, `0.39·(words/sentence) + 11.8·(syllables/word) − 15.59`.
+
+Chosen because it reports in grade levels, which is the unit the decision is
+actually made in ("is this above grade 6?"). Its weakness is real: FK is
+syllable-driven, and math prose is full of numerals, symbols and long domain
+terms that raise the score without making the sentence harder for a student who
+has been taught the term. So the text is prepared first:
+
+1. markup, LaTeX fragments and math symbols stripped
+2. numerals deleted — a number contributes nothing to how hard a sentence is to
+   read, so it belongs in neither the numerator nor the denominator
+3. **every term in that lesson's own vocabulary word bank removed**, with its
+   plural, because that vocabulary is the point of the lesson; counting
+   "denominator" against a lesson penalises it for teaching the word it exists to
+   teach
+4. a surface is scored only with ≥ 40 words and ≥ 3 sentences
+
+Scope: all 84 whole-group lesson configs, five student-facing prose surfaces
+each (worked example / practice prompts / hints / explanations / explore /
+connect). 376 scored samples.
+
+### 4.2 The distribution
+
+- mean FK **4.18**
+- p10 2.3 · p25 3.2 · **median 4.0** · p75 4.9 · p90 6.3 · max 11.5 · min 0.1
+
+By band:
+
+- below 4.0 — 184 samples (49%)
+- 4–6 — 147 (39%)
+- 6–8 — 33 (9%)
+- 8–10 — 9 (2%)
+- 10–12 — 3 (1%)
+
+By surface (mean FK, n):
+
+- explanations 5.21 (n=84)
+- connect 4.05 (n=80)
+- practice prompts 3.95 (n=84)
+- explore 3.93 (n=44)
+- hints 3.65 (n=84)
+
+Above thresholds:
+
+- above FK 6 — 45 of 376 samples (12%), across 34 lessons
+- above FK 8 — 12 of 376 (3%), across 11 lessons, all `explanations` or `connect`
+- above FK 10 — 3 of 376 (1%), all `connect`
+
+### 4.3 Hand-check of the extremes (R3)
+
+**10 highest — 10 of 10 are genuine.** Every one has both a high
+syllables-per-word (1.35–1.69 against a corpus mean near 1.25) and long
+sentences (12–23 words). The text really is denser:
+
+- 1-6 connect, FK 11.5 — "Propose a class agreement for working ___, and another
+  for working alone, based on showing ___ for classmates."
+- 9-2 connect, FK 11.4 — "___ is the independent variable, while ___ is the
+  dependent variable."
+- 10-6 connect, FK 10.1 — "Describe how your math story has ___ this year, ask a
+  ___ about their story, and then ___ the two to see how they are alike and
+  different."
+- then 2-1 explanations (9.5), 10-4 connect (9.4), 9-3 connect (9.3), 1-2
+  connect (8.9), 1-4 connect (8.8), 1-1 connect (8.8), 3-7 explanations (8.5)
+
+Seven of the ten are `connect` — the "put it in words" surface. Some density
+there is the point of that surface; the three above FK 10 are still worth a
+read.
+
+**10 lowest — only 2 of 10 are genuine.** Eight are fill-in-the-blank frames or
+coordinate lists where blanks and equations, not words, make up most of the
+surface: "The chest's SA is ___ ft² because SA = 2(___×___) + 2(___×___) +
+2(___×___) = ___ + ___ + ___ = ___" (5-7, FK 1.1) is not simple prose, it is not
+prose. The two that are genuine are `8-2 explore` (FK 0.7) and `4-3 hints`
+(FK 1.4) — short, plain, and appropriately so.
+
+**Conclusion from the hand-check: the top of this distribution can be acted on;
+the bottom cannot.** Any target should be a ceiling, never a floor, because a
+floor would be measuring blanks.
+
+### 4.4 Two detector bugs found and fixed before these numbers were produced
+
+Both were caught by hand-checking the extremes, and both would have produced a
+confidently wrong baseline:
+
+1. **Numerals were replaced with the token `num`**, which the word regex then
+   counted as a word. Lesson 6-2's explanations scored **FK 21.4** on "891
+   words in 15 sentences" — almost all of those words were stripped numerals.
+   Fixed by deleting numerals instead of tokenising them.
+2. **The numeral regex swallowed sentence-final periods.** `/\d[\d.,:\/]*/`
+   consumed the full stop of every sentence ending in a number, so "so it is
+   n + 7." ran into the next explanation. Lesson 6-5's explanations came out as
+   "sentences" of 85 words and scored FK 13.7; the source sentences are ordinary
+   length. Fixed so a period is consumed only when a digit follows it.
+
+Before those fixes the corpus mean was 5.27 with a max of 21.4. After: mean
+4.18, max 11.5. **Only the second set of numbers is in this report.**
+
+### 4.5 Recommended target, with reasoning
+
+**Ceiling of FK 6.0 for student-facing prose, measured with the lesson's own word
+bank excluded; anything above FK 8 reviewed by hand.**
+
+Reasoning:
+
+- The corpus already sits at median 4.0 and 88% of samples are at or below 6.0,
+  so this is a ratchet on a healthy body of writing, not a rewrite programme. It
+  makes 45 samples across 34 lessons the work, and 12 samples across 11 lessons
+  the urgent part.
+- 6.0 is the grade being taught. Above it, the sentence is harder than the
+  mathematics, which inverts what the lesson is for — and this class has many
+  multilingual learners, for whom an English sentence above grade level is a
+  second barrier in front of a first one.
+- It must be a **ceiling, not a band**. A floor would push writers to add
+  syllables, and the hand-check shows the low tail is measurement artefact, not
+  writing.
+- Vocabulary exclusion has to stay part of the definition. Without it the target
+  would penalise exactly the lessons doing the most vocabulary teaching.
+- I would NOT gate this in CI. FK is a rough instrument on math prose even after
+  the two fixes above, and a build that fails on a sentence a teacher wrote
+  deliberately trains people to work around the gate. A report, re-run when
+  lesson prose changes, with 34 named lessons to look at, is the useful form.
+
