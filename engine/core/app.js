@@ -27,6 +27,7 @@ import { augmentVocabWithGlossary } from "./math-glossary.js";
 import {
   announceBlocked,
   canLeavePhase,
+  closeMathNotesModel,
   initNotebook,
   mountNotebookCheckpoint,
   openMathNotesModel,
@@ -1162,7 +1163,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // `left` is deliberately NOT set here — design-system.css offsets it past
     // the phase rail (--nt-rail-w) so the pill cannot cover a phase button's
     // label. An inline left would beat that rule and re-break it.
-    "position:fixed; bottom:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; display:flex; gap:8px; z-index:9999; box-shadow:0 6px 18px -8px rgba(15,23,42,0.22); transition:0.3s;";
+    "position:fixed; bottom:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; gap:8px; z-index:9999; box-shadow:0 6px 18px -8px rgba(15,23,42,0.22); transition:0.3s;";
   document.body.append(minimapHUD);
 
   // The phase dots PERSIST across renders, and that is the whole point.
@@ -1255,6 +1256,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     celebrationOverlay,
 
     renderPhase(index, renderFn) {
+      closeMathNotesModel();
       applyPhaseAccent(main, index);
       // Stop watching the phase we're replacing so its observer doesn't linger.
       if (this._vocabObserver) {
@@ -1296,9 +1298,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // and matching/optional activities mount their own markup after this
       // point — keep underlining that dynamically-added content too.
       this._vocabObserver = observeVocabTerms(el, glossaryVocab);
-      // Notebook checkpoint (if this lesson declares one here). Mounted LAST so
-      // it closes the phase body, after every renderer has finished adding to
-      // it. No-op for a lesson with no `notebook` key.
+      // Notebook checkpoint (if this lesson declares one here). Mounted as
+      // fallback if the phase renderer did not mount it in-flow.
       mountNotebookCheckpoint(el, config, index);
       el.addEventListener(
         "animationend",
@@ -1317,6 +1318,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         announceBlocked(config, from);
         return false;
       }
+      closeMathNotesModel();
       this.clearExtraActive();
       state.setPhase(index);
       if (config.phases[index]) {
@@ -1356,6 +1358,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       );
     },
     clearExtraActive() {
+      closeMathNotesModel();
       this.setExtraActive(null);
     },
 
@@ -2217,7 +2220,7 @@ export const UNIT_CULMINATING_PROJECT = {
   10: "/math/unit-10/projects/",
 };
 
-function buildLessonHero(config, _state, phaseConfigs) {
+function buildLessonHero(config, _state, _phaseConfigs) {
   const hero = document.createElement("header");
   hero.className = "lesson-hero";
   hero.setAttribute("aria-label", "Lesson overview");
@@ -2229,52 +2232,22 @@ function buildLessonHero(config, _state, phaseConfigs) {
       </div>
       <div class="lesson-hero-badges">
         <span class="lesson-hero-badge lesson-hero-standard" data-bind="hero-standard" title="${escHtml(config.standard)}">${escHtml(config.standard)}</span>
-        <span class="lesson-hero-badge" data-bind="hero-phase">Phase 1</span>
         <span class="lesson-hero-badge">🪙 <span data-bind="hero-coins">0</span></span>
         <span class="lesson-hero-badge">⭐ <span data-bind="hero-stars">0</span>/18</span>
       </div>
-    </div>
-    <div class="phase-progress-bar" role="progressbar" aria-label="Lesson progress" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" data-bind="hero-progressbar">
-      <div class="phase-progress-fill" data-bind="hero-progress" style="width:0%"></div>
-    </div>
-    <div class="phase-progress-label">
-      <span data-bind="hero-phase-name">${escHtml(phaseConfigs[0]?.name || "Launch")}</span>
-      <span data-bind="hero-phase-count">0 of 6 complete</span>
     </div>`;
   return hero;
 }
 
-function updateLessonHero(hero, state, phaseConfigs) {
+function updateLessonHero(hero, state, _phaseConfigs) {
   if (!hero) return;
   const s = state.get();
-  const completed = s.phases.filter((p) => p.status === "completed").length;
-  const total = s.phases.length || 6;
-  const pct = total ? Math.round((completed / total) * 100) : 0;
-  const current = phaseConfigs[s.currentPhase] || phaseConfigs[0];
-
-  const phaseBadge = hero.querySelector('[data-bind="hero-phase"]');
-  if (phaseBadge) phaseBadge.textContent = `Phase ${(s.currentPhase ?? 0) + 1} of ${total}`;
 
   const stars = hero.querySelector('[data-bind="hero-stars"]');
   if (stars) stars.textContent = String(s.phases.reduce((sum, p) => sum + (p.stars || 0), 0));
 
   const coins = hero.querySelector('[data-bind="hero-coins"]');
   if (coins) coins.textContent = String(s.coins || 0);
-
-  const fill = hero.querySelector('[data-bind="hero-progress"]');
-  if (fill) fill.style.width = `${pct}%`;
-
-  const bar = hero.querySelector('[data-bind="hero-progressbar"]');
-  if (bar) {
-    bar.setAttribute("aria-valuenow", String(completed));
-    bar.setAttribute("aria-valuemax", String(total));
-  }
-
-  const phaseName = hero.querySelector('[data-bind="hero-phase-name"]');
-  if (phaseName) phaseName.textContent = current?.name || `Phase ${s.currentPhase + 1}`;
-
-  const phaseCount = hero.querySelector('[data-bind="hero-phase-count"]');
-  if (phaseCount) phaseCount.textContent = `${completed} of ${total} complete`;
 }
 
 function updateSidebar(sidebar, state, phaseConfigs) {

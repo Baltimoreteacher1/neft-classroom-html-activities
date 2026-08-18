@@ -5305,11 +5305,19 @@ html.nt-extra-fullpage-open body {
   background: #fef2f2;
 }
 
-/* Minimap HUD — the phase-dot pill. app.js sets everything BUT `left`; the
-   offset lives here so the pill docks beside the phase rail rather than over
-   it (see --nt-rail-w). */
+/* Minimap HUD — the phase-dot pill. Collapsed/hidden on wide desktop where the
+   sidebar has full progress; visible on narrow viewports or when sidebar collapses. */
 .minimap-hud {
+  display: none;
   left: calc(var(--nt-rail-w, 0px) + 16px);
+}
+@media (max-width: 1023px) {
+  .minimap-hud {
+    display: flex !important;
+  }
+}
+.nt-sidebar-collapsed .minimap-hud {
+  display: flex !important;
 }
 
 /* Teacher-only, compact "Clear answers" control. A small round 🧹 icon

@@ -69,6 +69,7 @@ import {
   resolveAuthoredTag,
   studentExplanation,
 } from "./misconceptions.js";
+import { mountNotebookCheckpoint } from "./notebook-checkpoint.js";
 import {
   normalizeAcademicWord,
   resolveNoticeWonderAcademicWord,
@@ -3107,7 +3108,7 @@ function renderObjectivesIntroPhase(el, state, ctx, config) {
     el,
     "2",
     "section-icon-teal",
-    "Phase 2: Learning Objectives",
+    "Learning Objectives",
     "Review today's Content and Language Objectives so you know what you are aiming for!",
   );
 
@@ -3117,15 +3118,6 @@ function renderObjectivesIntroPhase(el, state, ctx, config) {
     "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 1px 2px rgba(18,53,91,0.05);";
 
   card.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
-      <div>
-        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 2 · Objectives</span>
-        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">🎯 Today's Learning Objectives</h3>
-      </div>
-      <div style="font-size:13px; font-weight:800; color:#0f6d78; background:#e0f2fe; border:1px solid #bae6fd; padding:6px 14px; border-radius:10px;">
-        Goal Setting
-      </div>
-    </div>
     <p style="margin:0 0 16px; font-size:15px; color:#56627a;">
       Read through today's Content Goal and Language Goal. These are the skills you will master by the end of today's lesson!
     </p>
@@ -3418,6 +3410,7 @@ function renderLaunchPhase(el, state, ctx, config) {
   // the scene away if they came before it), then meet the language they need for
   // the instruction that follows. No-op when the lesson authors no vocabulary.
   renderAcademicVocabulary(el, config);
+  mountNotebookCheckpoint(el, config, 2);
 
   // Note: Objectives card sits directly in between Warmup and Launch (rendered at bottom of Warmup phase).
 
@@ -3622,6 +3615,8 @@ function renderExplorePhase(el, state, ctx, config) {
   } else {
     el.append(exploreShell);
   }
+
+  mountNotebookCheckpoint(el, config, 3);
 
   // Inline Reveal Math slides for the Explore section.
   renderRevealSlides(el, config, "explore");
@@ -4265,6 +4260,9 @@ function renderPracticePhase(el, state, ctx, config) {
     "🎯",
     "<strong>Adaptive practice:</strong> Pick <strong>Level 1</strong> for step-by-step hints, <strong>Level 2</strong> for a stretch challenge, or <strong>Adaptive</strong> to let the activity adjust. Wrong answers teach — read the feedback and try again.",
   );
+
+  // Section 3: My Work checkpoint mounted near top before problem sets
+  mountNotebookCheckpoint(el, config, 4);
 
   // Optional interactive "practice lab(s)" (factor-tree-lab, power-builder,
   // equation-balance-lab, step-solver, …) — a put-your-own-numbers-in tool

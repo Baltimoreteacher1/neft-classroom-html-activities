@@ -387,11 +387,12 @@ function hero(config, accent, voice) {
   const badge = config.launch?.badge || `Small Group · ${accent.name}`;
   copy.appendChild(el("div", null, `<span class="sg-kicker">${esc(badge)}</span>`));
   copy.appendChild(el("h1", null, esc(studentTitle(config, badge))));
+  let more = copy.querySelector(".sg-obj-more");
   if (config.contentObjective) {
     // One crisp kid-facing line up top; full content + language objectives fold
     // into a collapsible detail so the hero stays readable for Level 1 students.
     copy.appendChild(el("p", "sg-obj", `Today: ${esc(coreObjective(config.contentObjective))}`));
-    const more = el("details", "sg-obj-more");
+    more = el("details", "sg-obj-more");
     more.appendChild(el("summary", null, "Full objectives"));
     more.appendChild(el("p", "sg-obj-full", esc(studentVoice(config.contentObjective))));
     if (config.languageObjective)
@@ -408,7 +409,12 @@ function hero(config, accent, voice) {
   copy.appendChild(chips);
   const sceneName = themeDisplayName(config.theme);
   if (sceneName) {
-    copy.appendChild(el("div", "sg-hero-scene-chip", `Scene · ${esc(sceneName)}`));
+    const sceneChip = el("div", "sg-hero-scene-chip", `Scene · ${esc(sceneName)}`);
+    if (more) {
+      more.appendChild(sceneChip);
+    } else {
+      copy.appendChild(sceneChip);
+    }
   }
   const mathMove = mathMoveOfTheDay(config);
   const mark = el("div", "sg-hero-mark sg-scene-enter");
@@ -1099,17 +1105,20 @@ function renderStudio(config) {
   ];
 
   const heroNode = hero(config, accent, voice);
-  // The table chip sits in the hero on purpose: a group that discovers the room
-  // halfway through has already answered everything alone, and the reveal only
-  // teaches anything if nobody has spoken yet.
-  heroNode.appendChild(
-    createRoomChip(room, {
-      onJoined: () => {
-        // Re-render the talk section's consensus lab against the new membership.
-        window.location.reload();
-      },
-    }),
-  );
+  // The table chip sits behind the Full objectives disclosure so the masthead
+  // stays compact and the first task is immediately visible above the fold.
+  const more = heroNode.querySelector(".sg-obj-more");
+  const roomChip = createRoomChip(room, {
+    onJoined: () => {
+      // Re-render the talk section's consensus lab against the new membership.
+      window.location.reload();
+    },
+  });
+  if (more) {
+    more.appendChild(roomChip);
+  } else {
+    heroNode.appendChild(roomChip);
+  }
   app.appendChild(heroNode);
   // Publisher-grade standards display: resolve the bare code to its full MCCRS
   // wording (best-effort) and fold it into the hero's objectives detail, so
