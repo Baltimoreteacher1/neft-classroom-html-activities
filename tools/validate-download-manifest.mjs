@@ -13,6 +13,7 @@
  *
  *   node tools/validate-download-manifest.mjs
  */
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -265,21 +266,47 @@ for (const { res, unit } of everyResource) {
     );
   }
 
+  // Pages are DISCOVERED, and every reference on a page is checked — not the
+  // first one on a hardcoded pair. Both shortcuts were proven blind: a second,
+  // stale <script> on curriculum/units/index.html and a stale reference added
+  // to curriculum/planning/index.html each left this gate reporting PASS.
+  //
+  // That is the same hole tools/curriculum-hub-assets.test.mjs already closed
+  // for the hub assets, and for the same reason: the ratchet must hold the
+  // reference wherever it is, or a third consumer escapes it silently.
+  //
+  // The two known pages are still asserted by NAME, so losing the wiring is a
+  // failure rather than a quietly empty sweep. dist/ is excluded: it is build
+  // output, regenerated from these sources, and a stale copy there is not a
+  // source defect.
   const jsWant = stamp("assets/curriculum-download.js");
-  const pages = ["curriculum/index.html", "curriculum/units/index.html"];
-  for (const page of pages) {
+  const REQUIRED_PAGES = ["curriculum/index.html", "curriculum/units/index.html"];
+  const htmlPages = execFileSync("git", ["ls-files", "*.html"], {
+    cwd: ROOT,
+    encoding: "utf8",
+    maxBuffer: 1 << 28,
+  })
+    .split("\n")
+    .filter((p) => p && !p.startsWith("dist/"));
+
+  const seen = new Map();
+  for (const page of htmlPages) {
     const html = readFileSync(resolve(ROOT, page), "utf8");
-    const found = /\/assets\/curriculum-download\.js\?v=([a-f0-9]+)/.exec(html);
-    if (!found) {
-      fail(`${page} does not load /assets/curriculum-download.js?v=<hash>`);
-    } else if (found[1] !== jsWant) {
-      fail(
-        `curriculum-download.js changed but ${page} still says ?v=${found[1]} — ` +
-          `replace it with ?v=${jsWant}`,
-      );
+    for (const m of html.matchAll(/\/assets\/curriculum-download\.js\?v=([a-f0-9]+)/g)) {
+      seen.set(page, (seen.get(page) || 0) + 1);
+      if (m[1] !== jsWant) {
+        fail(
+          `curriculum-download.js changed but ${page} still says ?v=${m[1]} — ` +
+            `replace it with ?v=${jsWant}`,
+        );
+      }
     }
   }
-  console.log(`   hub wiring          : ${pages.length} pages ✓`);
+  for (const page of REQUIRED_PAGES) {
+    if (!seen.has(page)) fail(`${page} does not load /assets/curriculum-download.js?v=<hash>`);
+  }
+  const refCount = [...seen.values()].reduce((a, b) => a + b, 0);
+  console.log(`   hub wiring          : ${refCount} refs on ${seen.size} pages ✓`);
 }
 
 if (failures) {
