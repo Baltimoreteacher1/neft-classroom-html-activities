@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { skipExit } from "./lib/skip-exit.mjs";
+
 /* =============================================================================
  * smoke-planning.mjs — the Pacing Planner, checked against a running site
  * -----------------------------------------------------------------------------
@@ -280,7 +282,8 @@ if (skipped.length) {
   console.error(
     `\nsmoke-planning: ${skipped.length} check(s) SKIPPED — this run did NOT verify the authenticated planner.`,
   );
-  if (process.env.CI) process.exit(1);
-  process.exit(0);
+  // Exit 3 = SKIP (tools/lib/skip-exit.mjs): not a pass, not a push-blocker.
+  // Reporting it as 0 is what let a run that verified nothing print green.
+  process.exit(skipExit(`${skipped.length} planner check(s) could not run`));
 }
 console.log("\nsmoke-planning: PASS");

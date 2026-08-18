@@ -37,6 +37,7 @@ import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
 import { cpus } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { SKIP_EXIT } from "../tools/lib/skip-exit.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
@@ -48,6 +49,21 @@ const SCRIPTS = pkg.scripts || {};
  * Generators, formatters and anything that deploys stay out — this must remain
  * read-only apart from `build`.
  * ------------------------------------------------------------------------ */
+/**
+ * Turn a child process error into one of three outcomes.
+ *
+ * PASS / FAIL / SKIP, never two of them wearing the same face. Exit 3 is the
+ * repo-wide SKIP code (tools/lib/skip-exit.mjs): the check could not run and
+ * verified nothing. Exported so tools/skip-honesty.test.mjs can pin the mapping
+ * — the whole point is that this classification cannot quietly regress to
+ * "non-zero means fail, zero means pass".
+ */
+function classifyResult(err) {
+  const skipped = err?.code === SKIP_EXIT;
+  const ok = !err;
+  return { ok, skipped, status: skipped ? "SKIP" : ok ? "PASS" : "FAIL" };
+}
+
 const GATE = [
   "build",
   // `check` (biome check), NOT `lint` (biome lint). Both are read-only, but
@@ -434,7 +450,17 @@ function scopeFor(paths) {
  * checks the old serial loop ran. A scheduler that quietly stops running a
  * gate is worse than a slow one.
  * ------------------------------------------------------------------------ */
-export { CARRIES_SCRIPT, COVERAGE, expand, GATE, needsOf, resolveSet, scopeFor, UNIVERSAL };
+export {
+  CARRIES_SCRIPT,
+  COVERAGE,
+  classifyResult,
+  expand,
+  GATE,
+  needsOf,
+  resolveSet,
+  scopeFor,
+  UNIVERSAL,
+};
 
 async function main() {
   /* --- Decide the check set ------------------------------------------------- */
@@ -506,12 +532,17 @@ async function main() {
         { cwd: ROOT, maxBuffer: 64 * 1024 * 1024 },
         (err, stdout, stderr) => {
           const secs = ((Date.now() - t0) / 1000).toFixed(1);
-          const ok = !err;
-          results.set(name, { ok, secs });
-          logTo(
-            `\n===== ${ok ? "PASS" : "FAIL"} npm run ${name} (${secs}s) =====\n${stdout}\n${stderr}\n`,
-          );
-          console.log(`${ok ? "PASS" : "FAIL"}  ${name.padEnd(32)} ${secs}s`);
+          // Exit 3 is the repo-wide SKIP code (tools/lib/skip-exit.mjs): the
+          // check could not run — no browser, no network, no credential — and
+          // verified NOTHING. It is not a pass. `validate:lesson-boot` used to
+          // exit 0 in exactly that situation and this table printed
+          // `PASS validate:lesson-boot 4.6s`, indistinguishable from 16 pages
+          // actually rendering. A gate that reports PASS without running is an
+          // active false claim, which is worse than no gate at all.
+          const { ok, skipped, status } = classifyResult(err);
+          results.set(name, { ok, secs, didNotRun: skipped });
+          logTo(`\n===== ${status} npm run ${name} (${secs}s) =====\n${stdout}\n${stderr}\n`);
+          console.log(`${status}  ${name.padEnd(32)} ${secs}s${skipped ? "  (did not run)" : ""}`);
           if (!ok) {
             const tail = `${stdout}\n${stderr}`.trim().split("\n").slice(-12);
             for (const l of tail) console.log(`      | ${l}`);
@@ -560,18 +591,36 @@ async function main() {
 
   await pump();
 
-  const failed = checks.filter((c) => !results.get(c)?.ok);
+  const didNotRun = checks.filter((c) => results.get(c)?.didNotRun);
+  const failed = checks.filter((c) => !results.get(c)?.ok && !results.get(c)?.didNotRun);
+  const passed = checks.length - failed.length - didNotRun.length;
   const wall = ((Date.now() - started) / 1000).toFixed(1);
   console.log("---------------------------------------------------------------");
   console.log(
-    `PASS ${checks.length - failed.length}/${checks.length}   wall ${wall}s   log ${LOG}`,
+    `PASS ${passed}/${checks.length}${didNotRun.length ? `   SKIPPED ${didNotRun.length}` : ""}   wall ${wall}s   log ${LOG}`,
   );
+  // Every skipped check is NAMED. "What did this run actually verify?" must
+  // have a visible answer, not one implied by a green summary line.
+  if (didNotRun.length) {
+    console.log(`SKIPPED (verified NOTHING): ${didNotRun.join(", ")}`);
+  }
   if (failed.length) {
     console.log(`FAILED: ${failed.join(", ")}`);
     console.log("Re-run one check with:  npm run qa:fast -- --only <name>");
     process.exit(1);
   }
-  console.log("STATUS: PASS — no deploy, commit, or push performed.");
+  if (didNotRun.length && process.env.CI) {
+    // In CI the missing browser/network/credential IS the defect. Locally a
+    // skip warns and lets the push through, because a gate that blocks every
+    // push over a missing browser is a gate that gets deleted.
+    console.log("STATUS: FAIL — checks were skipped in CI, which must not report as a pass.");
+    process.exit(1);
+  }
+  console.log(
+    didNotRun.length
+      ? `STATUS: PASS WITH ${didNotRun.length} SKIPPED — those checks verified nothing. No deploy, commit, or push performed.`
+      : "STATUS: PASS — no deploy, commit, or push performed.",
+  );
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) await main();
