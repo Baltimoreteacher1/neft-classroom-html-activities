@@ -1,13 +1,433 @@
 # Overnight audit and hardening — 2026-08-18
 
-Running log. Appended after every work block, whether it succeeded, failed or
-was skipped. Written for a morning read: decisions first, then findings ranked
-by student impact.
+**Read section 2 first.** Everything else is evidence for it.
 
-Rules in force: no pedagogical content changed unattended (R1); mechanical /
-structural fixes only, each shipped with a gate (R2); every fleet-wide number
-hand-checked on a sample before it is reported (R3); one deploy per work block
-and only on a fully green chain (R4).
+Blocks 1–7 all reached. One work block shipped code; blocks 2–6 were audits and
+changed nothing, as instructed. **No deploy was made** — see Decision 0.
+
+---
+
+## 1 · What shipped
+
+One commit of code, on branch `claude/overnight-audit-hardening-iyngrn`:
+
+- **`b491192e` — fix: the unit hub was handing every lesson a different lesson's
+  worksheet.** Regenerates `curriculum/lesson-bonus-activities.js`, re-keys
+  `LESSON_PRINTABLES` in `assets/curriculum-hub-search.js`, bumps the
+  `curriculum-hub-search.js` cache stamp on BOTH hub pages, adds
+  `npm run validate:lesson-catalogues`, and widens
+  `tools/curriculum-hub-assets.test.mjs` to every tracked page.
+
+Five report commits (`c1687af9`, `f49af72f`, `742b084e`, `ed6748bf`, `93e0bae6`)
+carry blocks 2–6 of this document and one `.gitignore` line.
+
+**Deploy sha: none.** `smoke:live --expect <sha>` is part of the chain R4
+requires, and production is unreachable from this session — every request to
+`eduwonderlab.com` fails with `CONNECT tunnel failed, response 403` at the agent
+proxy. Deploying without the post-deploy verification would have broken the rule,
+so I stopped. The change is committed and pushed and is one `ship` away.
+
+---
+
+## 2 · What you must decide
+
+### Decision 0 — ship the hub fix
+
+`b491192e` is ready and gated but not deployed, because production is not
+reachable from this session and R4 requires `smoke:live --expect <sha>` to close
+the chain. Until it ships, **every lesson row on `/curriculum/units/` keeps
+offering the wrong lesson's worksheet and bonus activity** — 147 of 174 rows,
+measured in a browser.
+
+- **A (recommended):** `ALLOW_DEPLOY=1 npm run ship -- b491192e` from a machine
+  with network, then read the `smoke:live` output. This is the single
+  highest-impact student-facing fix in the report.
+- **B:** review the diff first. It is 12 files; the two that matter are the
+  regenerated bonus map and the re-keyed printables map, and both re-keys agree
+  independently with `data/toc-migration.json`.
+
+### Decision 1 — `LESSON_PROJECTS` is legacy-keyed and I did not touch it
+
+34 keys in `assets/curriculum-hub-search.js` link to games under `/math/unit-N/`,
+so the key-agreement invariant cannot see them. 16 of the 34 share more words
+with the title the key USED to name than with the title it names today: lesson
+1-1 "Math is Mine" is offered "Lesson 1-1: Prime Factorization Game"; lesson 9-3
+"Write Equations to Represent Relationships Between Two Variables" is offered
+"Lesson 9-3: Compare and Order Integers Game".
+
+Re-keying needs someone to decide which current lesson each game belongs to.
+That is a content call, so I stopped.
+
+- **A (recommended):** you supply the 34-row mapping, I apply it and extend
+  `validate:lesson-catalogues` to hold it against `data/curriculum-manifest.json`.
+- **B:** re-key mechanically through `data/toc-migration.json` — fast, and wrong
+  wherever a game was chosen for the lesson rather than the number.
+- **C:** leave it and accept that the hub offers games labelled for one lesson on
+  another lesson's row.
+
+### Decision 2 — Insight Brief's catch-up routing
+
+`CATCHUP_BANDS` in `teacher-tools/insight-brief/insight-engine.js` is a
+hand-written map of catch-up stations, on the old unit numbering. Replaying its
+own `catchupPath()` over all 84 lessons with `_redirects` applied: 69 land in
+their own unit, **12 land in a different unit** (every unit-7 lesson goes to
+`/lessons/8-7-catchup/`), **3 land nowhere** (10-4, 10-5 and 10-6 all route to
+`/lessons/10-5-catchup/`, which has no page and no redirect), and **18 of the 36
+built catch-up stations are unreachable**.
+
+Which station covers which lessons is a pedagogical decision.
+
+- **A (recommended):** you give the band table per unit from the 36 stations that
+  exist; I replace `CATCHUP_BANDS`, derive it from disk where possible, and gate
+  it both directions.
+- **B:** fix only the dead one — point unit 10 at `10-6-catchup` — and leave the
+  cross-unit routing. Smallest change, removes the 404, leaves 12 lessons
+  pointing at another unit's station.
+- **C:** audit only, no change.
+
+### Decision 3 — `teacher-tools/post-forms/` and the Google Forms
+
+Its catalogue is `forms-index.json`: 64 entries on the OLD lesson numbers,
+pointing at real Google Forms that exist outside this repo. A teacher looking
+for lesson 7-2's exit ticket has to know it is filed as 9-4, and 20 current
+lessons have no form at all.
+
+- **A:** re-key `forms-index.json` to current lesson ids, leaving the Google Form
+  documents named as they are. Mechanical, no external change, fixes the search.
+- **B (recommended):** re-key AND rename the Forms in Drive so the two agree.
+  More work, but the alternative is a permanent translation layer in your head.
+- **C:** leave it.
+
+### Decision 4 — two "My Progress" pages showing disjoint data
+
+The curriculum hub links both, four times, with nothing to say they differ.
+`/curriculum/my-progress/` shows lesson and arcade work (`nt-signal:v1`);
+`/math/my-progress/` shows standalone activities and choice boards
+(`nt_results_v1`, `choiceboard-u*`) and tells the student it holds "Everything
+you've completed on this device". Proven disjoint in a browser by seeding both.
+
+- **A (recommended):** make `/math/my-progress/` read NTSignal too, so the page
+  that claims everything has everything. Additive, no data migration.
+- **B:** make each page say what it covers and link the other. Cheapest, honest,
+  leaves the student with two pages.
+- **C:** merge them into one and redirect. Cleanest end state, biggest change,
+  and both URLs are load-bearing for bookmarks.
+
+### Decision 5 — `place-value` and the 403 discarded misconception tags
+
+`place-value` (363 uses), `sign-error` (36) and `fraction_digits_as_percent` (4)
+are in no taxonomy, and I verified by running the shipped module that the engine
+discards all 403: no label, no student sentence, no recorded count. That is
+17.5% of every misconception tag authored in the curriculum.
+
+`sign-error` → `sign-dropped` and `fraction_digits_as_percent` →
+`percent-scale-off-by-100` look mechanical. **`place-value` is not**: the
+taxonomy's `decimal-place-value` is narrower than what 363 authoring sites
+appear to mean, and its student sentence talks about the decimal point.
+
+- **A (recommended):** add a new `place-value` code to the taxonomy with its own
+  label and student sentence, and alias the other two. You write the two
+  sentences; I wire it and gate that every authored tag resolves.
+- **B:** alias `place-value` → `decimal-place-value` and accept that non-decimal
+  place-value errors get a decimal-flavoured explanation.
+- **C:** leave it; 403 tags keep producing nothing.
+
+### Decision 6 — small-group derivation, or just a consistency gate
+
+Measured drift is 4 of 168 pairs, which does not justify a migration on its own.
+What is missing is any check that a variant still matches its parent.
+
+- **A (recommended):** the consistency gate alone — regenerate each variant in
+  memory, fail on any difference outside the declared transform. ~1 day, would
+  have caught all four drifted pairs, no migration.
+- **B:** the full parent + declared-transform model, ~2–3 days, resolved at build
+  time so no consumer changes.
+- **C:** neither.
+
+### Decision 7 — the one English-only project page
+
+`math/unit-10/projects/world-architect/` has zero Spanish: no `.es-text`, no
+`lang="es"`, no accented characters in 133 KB. The other 26 student-facing
+project pages are 100% paired (3,995 of 3,995 `.en-text` elements). It became
+reachable from the gallery in the previous commit, so students can now find it.
+
+- **A (recommended):** translate it to match the other 26. Content, so yours.
+- **B:** hide it from the gallery until it is translated.
+- **C:** ship it English-only and note it.
+
+### Decision 8 — the language objective is English-only in all 288 lessons
+
+`contentObjective` and `languageObjective` carry no `Es` field in any lesson, so
+the sentence telling a multilingual learner what language work the lesson expects
+is only ever in English. Along with `cloze` (2,106), `question` (1,092),
+`caption` (514) and `example` (317), these are surfaces the bilingual layer has
+never covered — not omissions, absences by construction.
+
+- **A (recommended):** add `languageObjectiveEs` and `contentObjectiveEs` to the
+  schema and translate 288 of each. I can add the fields and the gate tonight's
+  successor run; the strings are yours.
+- **B:** language objective only (288 strings), leave the rest.
+- **C:** record the gap and move on.
+
+---
+
+## 3 · Findings ranked by student impact
+
+**1. The unit hub served every lesson a different lesson's worksheet.** FIXED,
+not yet deployed. 147 of 174 lesson rows offering a bonus activity linked to
+another lesson; 147 of 174 offering printables served another lesson's worksheet,
+word search, colour-by-number and MCAP packet. Lesson 1-1 "Math is Mine" handed
+out lesson 6-13's Prime Factorization worksheet. Every link resolved HTTP 200, so
+nothing could see it. A student doing the assigned practice was practising a
+different unit's mathematics. Proven in a browser before and after; 0 after.
+
+**2. 403 misconception tags a teacher wrote are thrown away.** NOT FIXED
+(Decision 5). 17.5% of every misconception tag in the curriculum names an error
+the engine has no code for, so the student sees a generic "Not quite" instead of
+their thinking named, and the teacher's top-misconceptions list never mentions
+it. Verified by executing the shipped module.
+
+**3. Two "My Progress" pages, disjoint data, both linked as "My Progress".** NOT
+FIXED (Decision 4). A student who spent the week in lessons opens the page the
+hub calls "Open My Progress" and is told they have done nothing.
+
+**4. Insight Brief sends 3 lessons to a dead catch-up link and 12 to another
+unit's station.** NOT FIXED (Decision 2). 18 of 36 built catch-up stations are
+unreachable from it.
+
+**5. Units 1, 9 and 10 are ~95% untranslated** against 37–47% elsewhere. NOT
+FIXED, and not mine. Units 1 and 10 are the "Math is…" lessons that open and
+close the year.
+
+**6. One project page has no Spanish at all** and just became reachable from the
+gallery (Decision 7).
+
+**7. The review arcade records no standard and erases the resume point.** NOT
+FIXED. `standard: ""` fails the store's key check, so every question answered
+there is invisible to My Progress, Close the Loop and spaced review; and
+`lesson: "unit-3"` overwrites `lastLesson`, after which the hub's "Pick up where
+you left off" strip disappears rather than mislinking.
+
+**8. `WARMUP_RETEACH` is shown to students as one of their skills.** NOT FIXED.
+An internal sentinel written as a standard code, rendered raw by
+`/curriculum/my-progress/`. Proven in a browser.
+
+**9. The units hub was serving a cache-stamped-stale script** for this repo's
+entire history. FIXED. Nothing could have reached a browser that had cached
+`?v=8d0adf7a`, including fix 1.
+
+**10. Project completions reach only the portfolio.** NOT FIXED. 27 completable
+projects, and no progress consumer knows a student finished one.
+
+**11. Small-group drift: 4 of 168 pairs.** NOT FIXED (Decision 6). Small, but
+nothing detects the next one.
+
+**12. Readability: 45 samples across 34 lessons above FK 6.** NOT FIXED, and a
+report rather than a gate is the right form.
+
+---
+
+## 4 · Every fleet-wide number, with its hand-check
+
+- **147 of 174** hub rows misrouted (bonus, and again printables) — detector
+  compares each catalogue key against the lesson its own entries link to.
+  Hand-checked 11 bonus keys and 10 printable keys against `lessons/<id>/config.json`:
+  **21/21 correct, 0 false positives.** Cross-corroborated: all 55 re-keys agree
+  with `data/toc-migration.json`, which was not used to compute them. An earlier
+  version of this probe said 165 by counting group rows that correctly inherit
+  from their parent; 147 is the corrected figure.
+- **403 discarded misconception tags** (`place-value` 363, `sign-error` 36,
+  `fraction_digits_as_percent` 4) — not sampled, **verified by executing** the
+  shipped `recordMisconception` / `misconceptionLabel` / `studentExplanation` on
+  each id. All three return nothing; `decimal-place-value` returns a label, which
+  is the control.
+- **107 misconception ids across five vocabularies** — exact set arithmetic over
+  four files. Overlap re-checked case- and separator-insensitively; exactly one
+  id is shared by any two vocabularies.
+- **12 cross-unit and 3 dead catch-up routes; 18 of 36 stations unreachable** —
+  hand-checked all 8 station paths involved against disk, `_redirects`,
+  `data/routes.json` and `functions/_lib/redirect-map.js`: **8/8 correct.** The
+  first version of this said "34 lessons 404" by reading disk without applying
+  `_redirects`; that number is wrong and is not used.
+- **68% of 43,751 translatable lesson slots carry Spanish; 288 lessons all
+  partial** — hand-checked 12 sampled untranslated slots: 10 were fields that
+  carry `Es` elsewhere (genuine gaps), 2 were fields that carry it nowhere. The
+  reported figures separate those two populations for exactly that reason.
+- **3,995 of 3,995 `.en-text` elements paired on 26 project pages; 1 page with
+  none** — the one page verified directly (0 `.es-text`, 0 `lang="es"`, 0
+  accented characters in 133 KB).
+- **FK mean 4.18, median 4.0, 45 samples above 6.0 across 34 lessons** —
+  hand-checked both extremes: **10/10 highest genuine**, **2/10 lowest genuine**
+  (8 are fill-in-the-blank frames where FK does not apply). That check found two
+  detector bugs, which is why the pre-fix figures (mean 5.27, max 21.4) are not
+  reported.
+- **168 pairs: 123 field paths identical, 24 transformed, 194 dropped, 15 drift
+  candidates; real drift 4 pairs** — hand-checked the dangerous candidate class:
+  of 24 items whose `correctIndex` differs from the parent's, **0 have the same
+  stem and choices**, so none marks a different option correct.
+- **491 mismatched and 78 shared warm-up ids** — checked the consumer rather than
+  assuming: saved answers are keyed by array index inside a per-lesson record, and
+  no `q.id` consumer exists in the renderer. Cosmetic.
+
+Three detectors were wrong before they were right tonight, and each was caught by
+the hand-check rather than by review: the lesson-id comparison that produced
+identical results across eight unrelated files, the readability tokeniser that
+counted stripped numerals as words, and the catch-up probe that read disk without
+applying `_redirects`. The numbers those produced are recorded in the block log
+and are not used anywhere in this report.
+
+---
+
+## 5 · What I could not verify
+
+- **Anything about the live site.** `eduwonderlab.com` is unreachable from this
+  session: every request fails with `CONNECT tunnel failed, response 403` at the
+  agent proxy, confirmed against `$HTTPS_PROXY/__agentproxy/status`. So
+  `smoke:live`, `ship:verify`, `diagnose:student-access` and
+  `diagnose:production-access` did not run. **Student access being public,
+  teacher HTML and APIs returning 401, and the absence of Cloudflare Access on
+  the student runtime are all UNVERIFIED tonight** — not failing, not passing,
+  not checked.
+- **Whether the deployed build carries any of this.** No deploy was made and no
+  build stamp was read.
+- **How many parent-lesson changes failed to propagate over the last N commits.**
+  This clone has 55 commits and only two touch a lesson config, one of them a
+  bulk import. The content-based measurement in Block 6 replaces it; the history
+  measurement is simply not available here.
+- **Shell-control Spanish coverage.** In a built lesson at `?lang=es`, 7 of 9
+  visible controls carry no `.i18n-es` lane, including "💾 Save / Resume" and
+  "🧰 Tools". I did not trace each label to its source, so some may be bilingual
+  by a mechanism the probe cannot see. A lead, not a count.
+- **Whether the 34 `LESSON_PROJECTS` entries are genuinely mislabelled.** The
+  text-overlap evidence is strong for 16 of them and undecidable for 17. It is
+  evidence, not a verdict.
+
+**Still yours, still not done: the Canvas Student View test on lesson 1-1.** It
+has not run. Every statement anyone has made about live Canvas behaviour —
+including everything in this repo's docs and everything I could have said
+tonight — remains inference until that test is run against a real Canvas course.
+Nothing in this report changes that, and nothing tonight tested it.
+
+---
+
+## 6 · Blocks reached
+
+All seven. Blocks 2, 3, 4, 5 and 6 were audit-only by instruction and changed no
+code. Block 1 shipped one commit. Block 7 ran the full gate.
+
+---
+
+## 7 · Validator and contract results
+
+### The full pre-push gate — PASS 76/76
+
+    npm run qa:loop        PASS 76/76   wall 334.1s
+    log: .qa-logs/qa-2026-08-18T09-15-40-933Z.log
+    STATUS: PASS — no deploy, commit, or push performed.
+
+Every member green, including the new `validate:lesson-catalogues` and the
+widened `curriculum-hub-assets` ratchet. `npm test` 213/213 within it.
+
+**One honesty note on that run.** `validate:lesson-boot` reported PASS in 5.9s
+inside `qa:loop`. This repo's own documentation says a real run takes ~200s and
+that the time difference is the tell — a 1s pass means it found no browser and
+probed nothing. So I re-ran it standalone with `PW_CHROMIUM_PATH` pointing at the
+system Chromium:
+
+    PW_CHROMIUM_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome \
+      npm run validate:lesson-boot
+    → 17/17 pages rendered; 0 failed.   PASS — all probed pages render.
+    (took over two minutes, which is what a real run looks like)
+
+The 5.9s figure inside `qa:loop` should be read as SKIPPED, not as 17 pages
+rendering. The standalone run is the one that counts, and it is green.
+
+### The contract checks — NOT AVAILABLE IN THIS ENVIRONMENT
+
+None of these ran, because `eduwonderlab.com` is unreachable from this session
+(`CONNECT tunnel failed, response 403` at the agent proxy, confirmed against
+`$HTTPS_PROXY/__agentproxy/status`):
+
+- `npm run smoke:live` — NOT AVAILABLE
+- `npm run diagnose:production-access` — NOT AVAILABLE
+- `npm run diagnose:student-access` — NOT AVAILABLE
+- `npm run ship:verify` — NOT AVAILABLE
+
+So **student access being public, teacher HTML and APIs returning 401, and the
+absence of Cloudflare Access on the student runtime are UNVERIFIED tonight.**
+Not failing — unchecked. Please run `npm run diagnose:production-access` from a
+networked machine before relying on any statement about the live contract.
+
+### What the source-level gates did confirm
+
+These ran and passed, and they cover the parts of the contract that do not need
+the network:
+
+- **Routes resolve without cross-redirect** — `audit:links` PASS,
+  `validate:static` PASS, `validate:curriculum-links` PASS.
+- **SCORM package targets resolve across all families** — `validate:scorm` PASS,
+  `validate:scorm-runtime` PASS, `validate:scorm:fleet` PASS (all 554 packages
+  opened and CRC-checked).
+- **Project completion** — `validate:projects-check` PASS,
+  `validate:projects-publication` PASS, `validate:preunit-project` PASS, and
+  `validate:hub` PASS, which is the check that holds all three project
+  catalogues against disk in both directions at 27 completable variants.
+- **Pacing** — `validate:pacing-unit-order` PASS, `validate:planning` PASS.
+- **Supports on all declared surfaces** — `validate:lesson-supports` PASS and
+  `validate:support-equivalence` PASS (1,588 configurations across screen, print
+  and export). `e2e:supports`, which drives the workflow in a real browser
+  including SCORM and `?lang=es`, needs a preview server and was **not run**.
+- **Auth is still pinned** — `validate:auth-contract` PASS, so the five
+  auth-critical files are byte-identical to the frozen baseline.
+
+
+---
+
+## 8 · Frozen-path diff
+
+Empty, as required.
+
+    git diff c1883486..HEAD -- functions/_lib/ functions/api/ tools/scorm/ \
+        assets/lib/zip-store.js assets/canvas-bridge.js
+    (no output)
+
+The complete list of files changed tonight is 12: `.gitignore`, `CLAUDE.md`,
+`assets/curriculum-hub-search.js`, `curriculum/index.html`,
+`curriculum/lesson-bonus-activities.js`, `curriculum/units/index.html`,
+`package.json`, `reports/overnight-2026-08-18.md`,
+`scripts/generate-lesson-bonus-map.mjs`, `scripts/qa-run.mjs`,
+`tools/curriculum-hub-assets.test.mjs`, `tools/validate-lesson-catalogues.mjs`.
+None is in a frozen path. `og-curriculum.png`, catch-up package filenames and
+small-group packaging were out of scope and were not touched.
+
+### Was any gate weakened?
+
+No, and one error path was deliberately made non-fatal — stated plainly because
+it is the only change of its kind:
+
+- `tools/curriculum-hub-assets.test.mjs` — **strictly stronger.** The removed
+  lines are the single-page versions of two assertions; both are replaced by
+  multi-page equivalents that still require `curriculum/index.html` to reference
+  each asset. It checked 5 stamps on 1 page and now checks 7 across every tracked
+  page.
+- `scripts/qa-run.mjs` — additive: one new `COVERAGE` rule. `tools/qa-run.test.mjs`
+  (the ratchet that fails if the parallel set stops covering the serial one)
+  passes.
+- `package.json` — additive: `validate:lesson-catalogues` added to `validate`.
+- `scripts/generate-lesson-bonus-map.mjs` — **this one relaxed a throw.** The
+  generator refused to run at all unless `curriculum/index.html` contained
+  `BEGIN/END_LESSON_BONUS_MAP` markers, which it has not for this repo's whole
+  history because both hub pages now load the file with a plain `<script src>`.
+  That throw is precisely why the map on disk still carried the pre-renumber
+  lesson numbers. It is a generator, not a gate, and the check it enforced was
+  about where to write a second copy nobody reads. It now injects when the
+  markers are present and reports when they are not.
+
+---
+
+## Block log — the evidence behind everything above
+
+Written as each block finished, before the summary above existed.
 
 ---
 
