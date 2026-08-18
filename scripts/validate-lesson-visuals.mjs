@@ -337,6 +337,21 @@ async function probeLesson(browser, id) {
         return { id, renderer, booted: false, hosts, mountWarnings, pageErrors };
       }
       for (let phase = 0; phase < PHASE_COUNT; phase++) {
+        await page.evaluate(() => {
+          const wrap = document.querySelector(".nt-nb");
+          if (wrap) {
+            const check = wrap.querySelector(".nt-nb-check");
+            const input = wrap.querySelector(".nt-nb-input");
+            if (check && !check.checked) {
+              check.checked = true;
+              check.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+            if (input) {
+              input.value = "QA Checkpoint Note";
+              input.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+          }
+        });
         await page.evaluate(
           (ph) =>
             document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: ph } })),

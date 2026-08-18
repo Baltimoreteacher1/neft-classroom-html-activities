@@ -235,6 +235,15 @@ function esc(s) {
  * <dialog>.showModal() owns the focus trap, Escape, and the inert backdrop, so
  * the keyboard behaviour is the platform's rather than a reimplementation.
  */
+export function closeMathNotesModel() {
+  const existing = /** @type {HTMLDialogElement|null} */ (
+    document.getElementById("nt-notebook-model")
+  );
+  if (existing && existing.open) {
+    existing.close();
+  }
+}
+
 export function openMathNotesModel() {
   const existing = /** @type {HTMLDialogElement|null} */ (
     document.getElementById("nt-notebook-model")
@@ -258,19 +267,24 @@ export function openMathNotesModel() {
       <a class="nt-nb-model-link" href="${MATH_NOTES_MODEL_PAGE}" target="_blank" rel="noopener">Open the full page ↗</a>
     </div>`;
   dlg.querySelector(".nt-nb-model-close").addEventListener("click", () => dlg.close());
+  dlg.addEventListener("click", (e) => {
+    if (e.target === dlg) dlg.close();
+  });
   document.body.append(dlg);
   dlg.showModal();
   return dlg;
 }
 
 /**
- * Render the checkpoint for this phase at the bottom of the phase body.
+ * Render the checkpoint for this phase in the phase body.
  *
  * No-op when the lesson declares no checkpoint here.
  */
 export function mountNotebookCheckpoint(el, config, phaseIndex) {
   const cp = checkpointForPhase(config, phaseIndex);
   if (!cp || !el) return null;
+  const existing = el.querySelector(`.nt-nb[data-notebook-box="${cp.box}"]`);
+  if (existing) return existing;
   initNotebook(config);
 
   const saved = getCapture(cp.box);
