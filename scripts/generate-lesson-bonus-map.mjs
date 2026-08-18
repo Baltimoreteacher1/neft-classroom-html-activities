@@ -50,28 +50,36 @@ window.LESSON_BONUS_ACTIVITIES = ${mapLiteral};
 `;
 writeFileSync(outFile, js, "utf8");
 
-// Inline into curriculum/index.html so the hub dropdown never depends on a
-// second script request (avoids 404s from relative-path or cache issues).
+// Optionally inline into curriculum/index.html. The hub used to carry a second
+// copy of the map so the dropdown never depended on a second script request;
+// both hub pages now load /curriculum/lesson-bonus-activities.js with a plain
+// <script src>, and the markers are gone. Throwing on their absence made this
+// generator UNRUNNABLE — which is why the map on disk still carried the
+// pre-2026-08-10 lesson numbers and the unit hub offered lesson 6-13's activity
+// on lesson 1-1's row. A generator that cannot be run is a generator that is not
+// the source of truth. Inject when the markers are there, say so when they are
+// not, and always write the file that is actually loaded.
 const hubFile = join(root, "curriculum", "index.html");
 const hub = readFileSync(hubFile, "utf8");
 const begin = "        // BEGIN_LESSON_BONUS_MAP";
 const end = "        // END_LESSON_BONUS_MAP";
 const start = hub.indexOf(begin);
 const stop = hub.indexOf(end);
-if (start === -1 || stop === -1 || stop <= start) {
-  throw new Error(
-    "curriculum/index.html is missing BEGIN_LESSON_BONUS_MAP / END_LESSON_BONUS_MAP markers",
-  );
+let inlined = false;
+if (start !== -1 && stop !== -1 && stop > start) {
+  const injected =
+    begin +
+    " (auto — npm run generate-lesson-bonus-map)\n" +
+    `        var LESSON_BONUS_ACTIVITIES = ${mapLiteral};\n` +
+    "        " +
+    end;
+  writeFileSync(hubFile, hub.slice(0, start) + injected + hub.slice(stop + end.length), "utf8");
+  inlined = true;
 }
-const injected =
-  begin +
-  " (auto — npm run generate-lesson-bonus-map)\n" +
-  `        var LESSON_BONUS_ACTIVITIES = ${mapLiteral};\n` +
-  "        " +
-  end;
-const patched = hub.slice(0, start) + injected + hub.slice(stop + end.length);
-writeFileSync(hubFile, patched, "utf8");
 
 console.log(
-  `Wrote ${entries.length} bonus activities to ${outFile} and inlined into curriculum/index.html`,
+  `Wrote ${entries.length} bonus activities to ${outFile}` +
+    (inlined
+      ? " and inlined into curriculum/index.html"
+      : " (curriculum/index.html carries no BEGIN/END_LESSON_BONUS_MAP markers — it loads the file directly, so nothing was inlined)"),
 );

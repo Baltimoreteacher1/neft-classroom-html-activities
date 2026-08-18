@@ -188,6 +188,13 @@ const COVERAGE = [
       "validate:static",
     ],
   ],
+  // The three catalogues that decide what the unit hub offers on each lesson
+  // row. Their keys are lesson ids and the hub looks them up with the CURRENT
+  // id, so a stale key serves a different lesson's worksheet with a 200.
+  [
+    /^(curriculum\/lesson-(bonus-activities|family-homework)\.js|assets\/curriculum-hub-search\.js|tools\/validate-lesson-catalogues\.mjs|scripts\/generate-lesson-(bonus-map|family-homework-map)\.mjs)$/,
+    ["validate:lesson-catalogues", "validate:js-syntax", "validate:hub", "test"],
+  ],
   // Routing: data/routes.json is the source of truth for BOTH _redirects and
   // functions/_lib/redirect-map.js, and the middleware replays the map on a 404.
   // validate:routes catches a half-applied edit (the map generated but the
