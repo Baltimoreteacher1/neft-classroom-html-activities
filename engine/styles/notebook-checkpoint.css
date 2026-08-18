@@ -1,0 +1,207 @@
+/* ── Notebook Checkpoints ──────────────────────────────────────────────────
+   The "write it in your notebook" block that closes a gated phase, plus the
+   canonical Math Notes model dialog.
+
+   Existing tokens only — no new fonts, no new font sizes, no network requests.
+   Every selector is namespaced (.nt-nb / #nt-notebook-model) so nothing here
+   can leak into another surface that happens to load the engine bundle.
+   ------------------------------------------------------------------------ */
+
+.nt-nb {
+  margin: var(--sp-7, 32px) 0 var(--sp-4, 16px);
+  padding: var(--sp-5, 20px);
+  background: var(--card, #fff);
+  border: 2px solid var(--line, #d7e2ed);
+  border-left: 6px solid var(--teal, #1fa6a2);
+  border-radius: var(--radius-md, 14px);
+  box-shadow: var(--shadow-sm);
+}
+
+.nt-nb-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3, 12px);
+}
+
+.nt-nb-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-full, 999px);
+  background: var(--teal-ink, #0c6f6b);
+  color: #fff;
+  font-size: var(--fs-lg);
+  font-weight: 800;
+}
+
+.nt-nb-title {
+  margin: 0;
+  font-size: var(--fs-xl);
+  color: var(--ink, #21313f);
+}
+
+.nt-nb-prompt {
+  margin: var(--sp-3, 12px) 0 0;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-base, 1.65);
+  color: var(--ink, #21313f);
+}
+
+.nt-nb-modellink {
+  margin-top: var(--sp-3, 12px);
+  min-height: 48px;
+  padding: var(--sp-2, 8px) var(--sp-4, 16px);
+  background: var(--teal-light, #dff2ee);
+  color: var(--teal-ink, #0c6f6b);
+  border: 2px solid var(--teal-ink, #0c6f6b);
+  border-radius: var(--radius-full, 999px);
+  font: inherit;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nt-nb-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3, 12px);
+  margin-top: var(--sp-4, 16px);
+  flex-wrap: wrap;
+}
+
+.nt-nb-row-input {
+  align-items: baseline;
+}
+
+/* 48x48 touch target for the confirmation control, without a 48px checkbox
+   glyph: the box paints at 28px inside a 48px hit area. */
+.nt-nb-check {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  margin: 10px;
+  accent-color: var(--teal-ink, #0c6f6b);
+  cursor: pointer;
+}
+
+.nt-nb-checklabel,
+.nt-nb-inputlabel {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--ink, #21313f);
+  cursor: pointer;
+}
+
+.nt-nb-input {
+  flex: 1 1 240px;
+  min-height: 48px;
+  padding: var(--sp-2, 8px) var(--sp-3, 12px);
+  font: inherit;
+  font-size: var(--fs-lg);
+  color: var(--ink, #21313f);
+  background: #fff;
+  border: 2px solid var(--line, #d7e2ed);
+  border-radius: var(--radius-sm, 8px);
+}
+
+.nt-nb-check:focus-visible,
+.nt-nb-input:focus-visible,
+.nt-nb-modellink:focus-visible,
+.nt-nb-model-close:focus-visible {
+  outline: 3px solid var(--teal-ink, #0c6f6b);
+  outline-offset: 2px;
+}
+
+/* Progress, never correctness: "done" means the lesson can move on, and there
+   is no state that means the capture was wrong. */
+.nt-nb.is-done {
+  border-left-color: var(--success, #0f7c4a);
+}
+
+.nt-nb.is-blocked {
+  border-left-color: var(--amber-ink, #8a5a00);
+}
+
+.nt-nb-status {
+  margin: var(--sp-3, 12px) 0 0;
+  min-height: 1.4em;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--muted, #5f6f80);
+}
+
+.nt-nb.is-blocked .nt-nb-status {
+  color: var(--amber-ink, #8a5a00);
+}
+
+.nt-nb.is-done .nt-nb-status {
+  color: var(--success, #0f7c4a);
+}
+
+/* ── The canonical model dialog ──────────────────────────────────────────── */
+
+#nt-notebook-model {
+  width: min(760px, 92vw);
+  max-height: 88vh;
+  overflow: auto;
+  padding: var(--sp-5, 20px);
+  border: none;
+  border-radius: var(--radius-lg, 22px);
+  background: var(--card, #fff);
+  color: var(--ink, #21313f);
+  box-shadow: var(--shadow-lg);
+}
+
+#nt-notebook-model::backdrop {
+  background: rgba(18, 53, 91, 0.55);
+}
+
+.nt-nb-model-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3, 12px);
+}
+
+.nt-nb-model-head h2 {
+  margin: 0;
+  font-size: var(--fs-2xl);
+}
+
+.nt-nb-model-close {
+  min-width: 48px;
+  min-height: 48px;
+  border: 2px solid var(--line, #d7e2ed);
+  border-radius: var(--radius-full, 999px);
+  background: #fff;
+  color: var(--ink, #21313f);
+  font-size: var(--fs-lg);
+  cursor: pointer;
+}
+
+.nt-nb-model-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: var(--sp-4, 16px) 0;
+  border: 2px solid var(--line, #d7e2ed);
+  border-radius: var(--radius-md, 14px);
+  background: #fff;
+}
+
+.nt-nb-model-link {
+  display: inline-block;
+  min-height: 48px;
+  padding: var(--sp-3, 12px) var(--sp-4, 16px);
+  color: var(--teal-ink, #0c6f6b);
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nt-nb {
+    scroll-behavior: auto;
+  }
+}
