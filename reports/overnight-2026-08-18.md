@@ -1819,10 +1819,19 @@ blackhole     none in 330s            not reached      0 rows / 0 chars
 
 The blackhole case was re-run with a 330-second budget specifically because the
 first run's "never" was **my** 45s cutoff, not the browser's. It is not 45
-seconds. `/curriculum/units/` was **still blank after 5½ minutes** — no first
-contentful paint, zero characters of text. Chromium does eventually abandon a
-hung connect, but not inside any window a student would wait through. For
-classroom purposes this mode is: the page never loads.
+seconds:
+
+```
+/curriculum/units/       STILL BLANK after 330s
+/lessons/1-1/            STILL BLANK after 330s
+```
+
+**Still blank after 5½ minutes on both the hub and a student lesson page** — no
+first contentful paint, zero characters of text. Chromium does eventually
+abandon a hung connect, but not inside any window a student would wait through.
+For classroom purposes this mode is: the page never loads. The lesson page
+matters most here — that is the 1,517-file surface, and it is what a student
+opens.
 
 This is the finding. The severity of a blocked font host is not a spectrum — it
 is bimodal, and which mode a school lands in depends on how its filter says no.
@@ -1930,4 +1939,69 @@ only a hypothesis: the allowlist may resolve at container start, in which case a
 fresh session picks it up. I have not verified that and cannot from inside.
 
 Section 3 and Section 4 remain blocked on this. Nothing scheduled.
+
+---
+
+# Block 10 — The pre-push QA gate was not installed in this clone
+
+Found by checking, not by reading, after a push completed in about two seconds
+and produced no gate output.
+
+```
+core.hooksPath          : ''        (empty — git uses .git/hooks only)
+.git/hooks/pre-push     : ABSENT
+.githooks/pre-push      : present, executable, tracked
+package.json prepare    : none
+```
+
+`.githooks/pre-push` is the canonical copy and it is correct. Nothing installs
+it. There is no `prepare` script, and `scripts/install-git-hooks.sh` exists but
+is only run by hand via `npm run qa:install-hooks`.
+
+**Why this matters more than a missing local convenience.** `scripts/ship.sh` —
+the single documented deploy path — does not run the QA loop itself. It says so
+in its own header: *"Pushes HEAD:main — the pre-push hook runs the full QA loop
+first."* CLAUDE.md's "Which checks actually block deployment?" section describes
+the same chain. In a clone without the hook, `ALLOW_DEPLOY=1 npm run ship` pushes
+straight to `main`, and Cloudflare deploys it, **with no gate at all**.
+
+**`tools/deploy-path.test.mjs` cannot see this.** It does
+`readFileSync(".githooks/pre-push")` and asserts the text contains `qa:loop`. It
+proves the file says the right thing. It cannot prove git will ever run it —
+which is precisely the failure mode CLAUDE.md already documents for
+`pre-bash-guard.sh`: *"a hook that never runs looks identical to a hook that
+allows everything."* The repo learned that lesson once and the deploy hook still
+has the same shape.
+
+**Fixed here (machine-local, untracked):** ran `npm run qa:install-hooks`.
+Installed `pre-commit` and `pre-push` into `.git/hooks/`.
+
+Isolation test, which is what makes this more than an assertion:
+
+- BEFORE: a real `git push` finished in ~2s with no gate output.
+- AFTER: `git push --dry-run` ran past 120 seconds because `qa:loop` was
+  executing under it. Same command, same branch, opposite behaviour.
+
+**Not fixed, because it needs your judgement.** The durable fix is for
+`deploy-path.test.mjs` to assert the hook is *installed* rather than merely
+*correct* — but a fresh CI checkout never installs hooks and never pushes, so a
+naive version turns every CI run red. Options: (a) assert installation only when
+not running under `CI`; (b) add a `prepare` script so `npm ci` installs hooks,
+and have the test assert `prepare` exists; (c) have `ship.sh` run `qa:loop`
+itself rather than delegating to a hook that may not exist. **(c) is the one I
+would pick** — it puts the gate on the deploy path rather than on the developer's
+machine configuration, and it removes the dependency on a manual setup step
+entirely. Not implemented.
+
+## Gate status for this block's own commits
+
+`npm run qa:fast` escalated to `FULL (no changes detected)` and ran the whole
+gate: **213/213 test scripts, build 36.4s, 3m37s wall, all PASS.**
+
+One honest caveat, flagged rather than buried: within that run
+`validate:lesson-boot` reported `PASS` in **1.8s**, which is the documented skip
+signature — Playwright wants Chromium 1234 and this sandbox has 1194, so it
+could not launch a browser and skipped the render probe. Re-run standalone with
+`PW_CHROMIUM_PATH` pointed at the sandbox's Chromium to get a real answer rather
+than accepting the 1.8s green.
 
