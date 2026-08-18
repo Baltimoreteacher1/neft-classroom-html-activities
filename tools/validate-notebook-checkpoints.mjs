@@ -27,6 +27,11 @@
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+// The denominator below is a user-visible number, and "pathway" already meant
+// three different things across three surfaces. It is derived, never typed:
+// tools/validate-pathway-counts.mjs owns the definitions and fails if any
+// surface drifts from the generated manifest.
+import { pathwayCounts } from "./lib/pathway-counts.mjs";
 
 const ENGINE = "engine/core/notebook-checkpoint.js";
 const BRIDGE = "assets/canvas-bridge.js";
@@ -285,6 +290,11 @@ console.log(
   `notebook checkpoints — ${ids.length} core lessons | authored prompts: ${withAuthored} | running defaults: ${withDefaults} | authored boxes: ${totalAuthoredBoxes}/${ids.length * 3}`,
 );
 const reachable = ids.length + variants.length;
+const { LESSON_ROUTES } = pathwayCounts();
+check(
+  reachable === LESSON_ROUTES,
+  `this gate counts ${reachable} lesson routes but the launch manifest says ${LESSON_ROUTES} — one of them is stale`,
+);
 console.log(
   `  PATHWAY COVERAGE: ${ids.length}/${reachable} student-reachable pathways carry checkpoints. ` +
     `${variants.length} do NOT (group1 ${byType.group1}, group2 ${byType.group2}, catch-up ${byType.catchup}) — ` +

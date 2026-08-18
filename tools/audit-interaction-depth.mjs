@@ -24,6 +24,7 @@
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { assertNonEmpty } from "./lib/non-empty.mjs";
 
 const NAMES = ["STATIC", "RESPONSIVE", "MANIPULATIVE", "REASONING", "CONNECTED", "GENERATIVE"];
 
@@ -164,6 +165,11 @@ for (const [k, e] of Object.entries(DEPTH).sort((a, b) => b[1].d - a[1].d)) {
 }
 writeFileSync("reports/interaction-depth.md", md);
 
+assertNonEmpty(
+  "lessons with interactive components",
+  rows,
+  "The lessons/ walk produced no rows — depth cannot be measured over an empty set.",
+);
 console.log("interaction depth (lessons by deepest component):");
 NAMES.forEach((n, i) => {
   const d = after[i] - before[i];

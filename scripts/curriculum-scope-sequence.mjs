@@ -29,6 +29,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
 import { domainName, isKnownStandard, standardLabel } from "./lib/ccss.mjs";
 
 const __dir = dirname(fileURLToPath(import.meta.url));
@@ -80,6 +81,11 @@ for (const name of readdirSync(lessonsDir)) {
   lessons.push({ id: name, unit, lesson, standard, title });
 }
 
+assertNonEmpty(
+  "base lessons on disk",
+  lessons,
+  "The spine is read from lessons/*/config.json; zero means BASE_LESSON_RE or the directory moved.",
+);
 lessons.sort((a, b) => a.unit - b.unit || a.lesson - b.lesson || a.id.localeCompare(b.id));
 
 // ---- Consistency checks ---------------------------------------------------

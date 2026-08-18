@@ -13,6 +13,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { computeTeachL4Evidence } from "../engine/core/uifr.js";
 import { targets } from "./inject-uifr.js";
+import { assertNonEmpty } from "./lib/non-empty.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const lessonsDir = join(root, "lessons");
@@ -50,6 +51,12 @@ if (failures.length) {
 // uifr stamp. This is the guard that would have caught the missed-commit where
 // 82 non-index.html activities were stamped locally but never committed: reuse
 // the injector's OWN target list (single source of truth), so the two can't drift.
+assertNonEmpty(
+  "lessons with a config",
+  { length: total },
+  "readdirSync(lessonsDir) yielded no usable lesson — the walk is broken, not the curriculum empty.",
+);
+
 const stampMisses = [];
 let stampTotal = 0;
 for (const t of targets()) {

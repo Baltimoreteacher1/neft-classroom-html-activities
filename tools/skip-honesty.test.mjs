@@ -82,6 +82,50 @@ test("the test runner reports skipped tests and refuses an empty discovery walk"
   );
 });
 
+test("every sweeping gate asserts a non-empty subject before it sweeps", () => {
+  // The SECOND shape of the same lie. A gate that walks a directory, finds
+  // nothing, finds no problems in that nothing, and prints PASS has verified
+  // exactly as much as one that skipped — and reads greener. This pins the
+  // conversion so a new sweeping gate cannot land without the guard.
+  //
+  // FAIL, not SKIP: these files are in the repo, so discovering none of them is
+  // a broken walk, not a missing environment.
+  const SWEEPING_GATES = [
+    "scripts/audit-curriculum.mjs",
+    "scripts/audit-dead-code.mjs",
+    "scripts/audit-duplicate-assets.mjs",
+    "scripts/audit-homework-alignment.mjs",
+    "scripts/curriculum-scope-sequence.mjs",
+    "scripts/validate-ccss.mjs",
+    "tools/audit-interaction-depth.mjs",
+    "tools/audit-interaction-quality.mjs",
+    "tools/audit-save-resume-integration.js",
+    "tools/canvas/build-command-center.mjs",
+    "tools/validate-css-integrity.mjs",
+    "tools/validate-js-syntax.mjs",
+    "tools/validate-preunit-project.mjs",
+    "tools/validate-secrets.mjs",
+    "tools/validate-static-site.mjs",
+    "tools/validate-uifr.mjs",
+  ];
+  const missing = SWEEPING_GATES.filter((f) => !read(f).includes("assertNonEmpty("));
+  assert.deepEqual(
+    missing,
+    [],
+    `these gates sweep a discovered list without asserting it is non-empty:\n  ${missing.join("\n  ")}`,
+  );
+});
+
+test("assertNonEmpty fails rather than skips on an empty sweep", () => {
+  const src = read("tools/lib/non-empty.mjs");
+  assert.match(src, /process\.exit\(1\)/, "an empty sweep must FAIL, not skip");
+  assert.doesNotMatch(
+    src,
+    /SKIP_EXIT|skipExit/,
+    "an empty sweep is broken discovery, never a skip",
+  );
+});
+
 test("no gate script exits 0 on a path that skipped its work", () => {
   // The ratchet. `git ls-files` rather than a hand list, so a new gate is
   // covered the day it lands.

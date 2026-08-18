@@ -21,6 +21,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { extname, join } from "node:path";
+import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
 
 const EXCLUDE = ["!node_modules", "!dist", "!.git", "!backups", "!canvas-packages", "!.qa-logs"];
 
@@ -95,6 +96,12 @@ const candidates = listCandidates();
 const dead = [];
 const nearlyDead = [];
 
+assertNonEmpty(
+  "candidate files",
+  candidates,
+  "CANDIDATE_DIRS produced nothing — with no candidates the report says nothing is dead, which is not the same as nothing being dead.",
+  20,
+);
 for (const c of candidates) {
   const base = c.path.split("/").pop();
   const referrers = new Set(mentions.get(base) || []);

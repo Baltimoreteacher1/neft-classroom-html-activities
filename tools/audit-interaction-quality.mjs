@@ -24,6 +24,7 @@
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { assertNonEmpty } from "./lib/non-empty.mjs";
 
 const LESSONS = "lessons";
 
@@ -154,6 +155,11 @@ for (const r of by((x) => x.grade === "C")) {
 }
 writeFileSync("reports/interaction-quality.md", md);
 
+assertNonEmpty(
+  "lessons with interactive components",
+  rows,
+  "The lessons/ walk produced no rows — quality cannot be measured over an empty set.",
+);
 console.log(
   `interaction-quality: ${rows.length} lessons — A ${count("A")} · B ${count("B")} · C ${count("C")} · D ${count("D")}`,
 );

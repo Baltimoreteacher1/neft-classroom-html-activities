@@ -36,6 +36,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
 
 const root = process.cwd();
 const argv = new Set(process.argv.slice(2));
@@ -280,6 +281,12 @@ const lessonDirs = existsSync(lessonsDir)
       .filter((d) => d.isDirectory())
       .map((d) => d.name)
   : [];
+
+assertNonEmpty(
+  "lesson directories",
+  lessonDirs,
+  "lessons/ produced no directories — every lesson-level check below would then pass over an empty set.",
+);
 
 // Build a quick lookup of catalog entries by normalized path
 const catalogByPath = new Map();

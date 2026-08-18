@@ -24,6 +24,7 @@ import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const UNREFERENCED_ONLY = process.argv.includes("--unreferenced-only");
@@ -122,6 +123,12 @@ lines.unshift(
 mkdirSync(resolve(ROOT, "reports"), { recursive: true });
 writeFileSync(resolve(ROOT, "reports/duplicate-assets.md"), lines.join("\n"));
 
+assertNonEmpty(
+  "tracked files",
+  tracked,
+  "`git ls-files` returned nothing — with no tracked files there are no duplicates to find, trivially.",
+  100,
+);
 console.log(`✓ reports/duplicate-assets.md`);
 console.log(
   `  ${groups.length} duplicate groups · ${(wasted / 1048576).toFixed(1)} MB redundant · ` +

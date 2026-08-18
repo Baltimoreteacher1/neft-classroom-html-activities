@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join } from "node:path";
+import { assertNonEmpty } from "./lib/non-empty.mjs";
 
 const root = process.cwd();
 const requiredFiles = [
@@ -19,6 +20,13 @@ const requiredFiles = [
   "teacher-tools/neftos-command-center/manifest.json",
   "teacher-tools/neftos-command-center/service-worker.js",
 ];
+
+assertNonEmpty(
+  "required deployment files",
+  requiredFiles,
+  "The required-file list is empty, so this gate would confirm a deployment by checking nothing.",
+  5,
+);
 
 const errors = [];
 const warnings = [];

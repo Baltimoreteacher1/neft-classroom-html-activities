@@ -275,7 +275,7 @@ try {
   const before = await suspend();
   note(`suspend_data before any capture: ${before.length} chars`);
 
-  const gate = await frame.evaluate(async (capture) => {
+  const gate = await frame.evaluate(async () => {
     const d = document;
     const nav = async (i) => {
       d.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: i } }));
@@ -287,7 +287,7 @@ try {
     await nav(3);
     const blocked = at();
     return { rendered, blocked };
-  }, CAPTURE);
+  });
 
   // REAL user input, not synthesised events. canvas-bridge.js drives its state
   // relay off genuine activity events with a 5s debounce, so a dispatched

@@ -16,6 +16,7 @@
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import { assertNonEmpty } from "../lib/non-empty.mjs";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const QUIZ_MAX = Number(process.env.QUIZ_MAX || 8);
@@ -83,6 +84,12 @@ const manifest = JSON.parse(
 let lessons = (
   Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)
 ).filter((l) => l && l.id && !l.flagship);
+
+assertNonEmpty(
+  "lessons in the curriculum manifest",
+  lessons,
+  "The manifest yielded no lessons — the command centre would then build (or verify) an empty deck and call it deterministic.",
+);
 
 const unitMap = {};
 for (const l of lessons) {

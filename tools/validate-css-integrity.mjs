@@ -33,6 +33,7 @@ import { glob } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
+import { assertNonEmpty } from "./lib/non-empty.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
@@ -68,6 +69,12 @@ async function main() {
     "scripts/**/*.mjs",
     "functions/**/*.js",
   ]);
+  assertNonEmpty(
+    "source files to scan for conflict markers",
+    sourceFiles,
+    "The glob returned nothing — a zero-file scan finds zero committed merge conflicts.",
+    50,
+  );
   let scanned = 0;
   for (const rel of sourceFiles) {
     const src = readFileSync(join(ROOT, rel), "utf8");

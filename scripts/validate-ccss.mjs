@@ -9,6 +9,7 @@
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
 import { allStandardCodes, isKnownStandard } from "./lib/ccss.mjs";
 
 const root = process.cwd();
@@ -29,6 +30,11 @@ for (const id of readdirSync(lessonsDir)) {
   used.get(data.standard).push(id);
 }
 
+assertNonEmpty(
+  "lesson standards",
+  used,
+  "Nothing was read from lessons/*/config.json — a zero here means the walk broke, not that no lesson declares a standard.",
+);
 const missing = [...used.keys()].filter((s) => !isKnownStandard(s));
 
 if (missing.length) {
