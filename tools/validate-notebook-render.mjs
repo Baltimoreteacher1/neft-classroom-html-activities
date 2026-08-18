@@ -113,31 +113,52 @@ try {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 
     await page.goto(`${BASE_URL}/lessons/${lessonId}/`, { waitUntil: "domcontentloaded" });
-    await page.waitForTimeout(600);
 
-    // Handle flagship intro if present
+    // WAIT FOR THE CONDITION, NEVER FOR A DURATION. These were fixed 600ms
+    // sleeps, which is long enough on a warm dev machine and not long enough in
+    // the ship worktree: the flagship intro had not painted yet, isVisible()
+    // answered false, the intro was never dismissed and the shell never booted
+    // — reported as "6-2: lesson shell did not boot into main view" on a tree
+    // that was in fact fine. A deploy gate that fails on timing is worse than
+    // no gate, because the next person learns to re-run it until it passes.
+    const BOOT_TIMEOUT = 15000;
+
+    // Either gate may legitimately be absent, so a timeout here is not a
+    // failure — it means this lesson does not show that step.
     const flagshipStart = page.locator(".flagship-mission-start");
-    if (await flagshipStart.isVisible().catch(() => false)) {
+    if (
+      await flagshipStart.waitFor({ state: "visible", timeout: 4000 }).then(
+        () => true,
+        () => false,
+      )
+    ) {
       await flagshipStart.click();
-      await page.waitForTimeout(600);
     }
 
-    // Handle identity gate
     const nameInput = page.locator("#id-name");
-    if (await nameInput.isVisible().catch(() => false)) {
+    if (
+      await nameInput.waitFor({ state: "visible", timeout: 4000 }).then(
+        () => true,
+        () => false,
+      )
+    ) {
       await nameInput.fill("Render Gate");
       await page
         .locator("#id-period")
         .fill("1")
         .catch(() => {});
       await page.locator("#id-start").click();
-      await page.waitForTimeout(1000);
     }
 
     // 1. Positive Control: verify lesson shell is active
-    const booted = await page.evaluate(
-      () => !!document.querySelector(".app .main, .app .phase-container"),
-    );
+    const booted = await page
+      .waitForFunction(() => !!document.querySelector(".app .main, .app .phase-container"), null, {
+        timeout: BOOT_TIMEOUT,
+      })
+      .then(
+        () => true,
+        () => false,
+      );
     if (!booted) {
       fail(`${lessonId}: lesson shell did not boot into main view`);
       await page.close();
