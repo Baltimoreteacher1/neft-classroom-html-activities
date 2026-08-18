@@ -685,3 +685,200 @@ Reasoning:
   deliberately trains people to work around the gate. A report, re-run when
   lesson prose changes, with 34 named lessons to look at, is the useful form.
 
+
+---
+
+## BLOCK 5 · Misconception taxonomy
+
+Inventory and proposal. **Nothing implemented** — the code list is yours to
+approve.
+
+### 5.1 There are five vocabularies, and they share almost nothing
+
+**1. The canonical taxonomy — `engine/core/misconceptions.js`, 37 codes.**
+kebab-case. Five fields each: `label`, `labelEs`, `watchFor` (teacher-facing next
+move), `student`, `studentEs`. This is the one with a real design behind it: it
+never guesses from the wrong answer alone, it predicts what each named
+misconception would produce and reports only when exactly one prediction
+matches. Two generated artefacts publish it: `data/misconception-labels.json`
+(labels + `watchFor`) and `data/misconception-taxonomy.json` (adds `student`).
+
+**2. Lesson `config.json` `misconceptionTags` — 2,303 tag instances across 272
+configs, 37 distinct tags.** Not the same 37.
+
+**3. The Thinking Trails Evidence Layer — `shared/evidence/misconception-tags.json`,
+22 ids.** snake_case. Different field names: `category`, `studentFriendlyName`,
+`teacherDescription`. Its own note says "Keep tag ids stable; they are stored in
+saved sessions and CSV exports."
+
+**4. The 2D games — `assets/games2d-data.js`, 45 codes across 25 game blocks.**
+kebab-case, third naming scheme, fields `tag` / `trigger` / `feedback`.
+
+**5. Class Boss (`BOSS_TAGS`, 37) and Teach the Machine (`personas.js`, 37)** —
+these two are keyed to the canonical taxonomy and are **complete, 37 of 37**, in
+both directions. Only their header comments are stale: both still say "19
+misconception tags in data/misconception-labels.json", which is what that file
+held when they were written.
+
+**Overlap between vocabularies 1, 3 and 4: essentially zero.** Not one id is
+shared between the canonical taxonomy and the evidence layer, or between the
+canonical taxonomy and the games. Normalising case and separators finds exactly
+one shared id in the whole set — `one_side_only` (evidence) and `one-side-only`
+(games), which the canonical taxonomy does not have at all.
+
+**Union: 104 distinct ids across the four coded vocabularies, plus 3 strays in
+lesson configs — 107 names for a body of student thinking that a teacher would
+describe with far fewer.**
+
+### 5.2 403 authored misconception tags are silently discarded — VERIFIED BY EXECUTION
+
+Three tags appear in lesson configs and in no taxonomy:
+
+- **`place-value` — 363 uses.** The single most-used misconception tag in the
+  entire curriculum. The canonical taxonomy has `decimal-place-value`.
+- **`sign-error` — 36 uses.** The taxonomy has `sign-dropped`.
+- **`fraction_digits_as_percent` — 4 uses.** snake_case, in a kebab-case field.
+
+I did not infer the consequence — I ran the shipped module against these ids:
+
+    place-value                    recorded: NO   label: ""   student: ""
+    sign-error                     recorded: NO   label: ""   student: ""
+    fraction_digits_as_percent     recorded: NO   label: ""   student: ""
+    decimal-place-value            recorded: YES  label: "Right digits, wrong magnitude"
+
+`recordMisconception` returns `null` and stores nothing for an unknown id;
+`misconceptionLabel` and `studentExplanation` return empty strings; and
+`topMisconceptions` filters unknown ids out even if one is forced into the
+store. So at all 403 of those authoring sites — **17.5% of every misconception
+tag in the curriculum** — a teacher deliberately named the error a student made,
+and the product throws it away: no diagnosis chip, no student sentence, no count
+in the facilitation console, nothing in the teacher's top-misconceptions list.
+
+Three canonical codes point the other way and are never used by any lesson:
+`fraction-added-denominators`, `fraction-straight-across-division`,
+`exponent-as-multiplication`.
+
+### 5.3 Duplicates expressed differently across surfaces
+
+Same idea, different name, no code path connecting them. These are candidates,
+not verdicts — the pairing is a reading judgement:
+
+- adding instead of scaling a ratio — canonical `ratio-scaled-additively`,
+  evidence `additive_reasoning`, games `added-instead-of-scaled` (**three names**)
+- area vs perimeter — canonical `measure-area-perimeter-swap`, evidence
+  `area_perimeter_confusion`
+- volume vs surface area — canonical `geom-surface-area-as-volume`, evidence
+  `volume_surface_area_confusion`
+- wrong inverse operation — canonical `equation-not-inverse-operation`, evidence
+  `inverse_operation_confusion`
+- unit rate set up wrong — canonical `rate-not-per-one`, evidence
+  `unit_rate_setup_error`
+- sign slip — canonical `sign-dropped`, evidence `operation_sign_error`, lesson
+  configs `sign-error`
+- order of operations — canonical `order-of-operations-left-to-right`, games
+  `order-of-operations` and `added-before-multiplying`
+- reversed division — canonical `op-reversed-division`, games `divided-backward`
+- place value — canonical `decimal-place-value`, lesson configs `place-value`
+- changed only one side of an equation — evidence `one_side_only`, games
+  `one-side-only`, **no canonical code at all**
+
+**No true conflicts were found** — no id means two different things in two
+places. The problem is fragmentation, not collision. That is the better problem
+to have: a merge can be mechanical once the names are decided.
+
+**Two things in the evidence layer are not misconceptions and should not be
+merged into a misconception taxonomy**: `explanation_too_short`,
+`no_math_vocabulary`, `answer_without_reasoning`, `copied_formula_without_context`
+describe the quality of a written explanation, not a mathematical error. They
+belong in a separate discourse/writing vocabulary.
+
+### 5.4 What the canonical taxonomy is missing structurally
+
+- **No standard is attached to any of the 37 codes.** Every consumer that wants
+  to route from a misconception to a lesson has to guess. This is the single
+  biggest gap for a canonical version.
+- **`watchFor` has no Spanish.** `label`/`labelEs` and `student`/`studentEs` are
+  both paired; the teacher's next-move sentence is English only.
+- The evidence layer carries a `category` (Statistics / Equations / Ratios /
+  Geometry / Explanation); the canonical taxonomy has no grouping field, though
+  its id prefixes (`op-`, `stat-`, `geom-`, `fraction-`, `ratio-`, `percent-`,
+  `inequality-`, `equation-`, `algebra-`, `measure-`, `coord-`, `decimal-`,
+  `sign-`, `order-`, `exponent-`, `rate-`) already encode one informally.
+
+### 5.5 PROPOSED canonical taxonomy — for approval, not implementation
+
+**Shape.** One file, `data/misconception-taxonomy.source.json`, hand-authored,
+with the generated artefacts continuing to be derived from it. One entry per
+code:
+
+    id             stable kebab-case, prefix = domain, never renamed once shipped
+    domain         one of: number, fraction, decimal, ratio, percent, expression,
+                   equation, inequality, statistics, geometry, coordinate
+    label          teacher-facing short name, EN
+    labelEs        the same, ES
+    watchFor       teacher's next move, imperative, EN
+    watchForEs     the same, ES                                        (NEW)
+    student        what the learner reads instead of "Not quite", EN
+    studentEs      the same, ES
+    standards      array of MCCRS codes this error attaches to          (NEW)
+    aliases        every historical id that maps here                   (NEW)
+    kind           "misconception" | "discourse"                        (NEW)
+
+`aliases` is what makes the migration safe: it lets every existing id keep
+resolving while the authored sites are converted, and it is the field that turns
+"we renamed a tag" from a data-loss event into a lookup.
+
+**Starting code list: the existing 37, plus the additions the audit found.** I am
+not proposing new codes without your sign-off, but the audit says at minimum
+these need a home: changed-only-one-side (evidence + games, no canonical code),
+gcf-lcm-swap (games), slant-as-height (games), median-not-ordered and the three
+other median/mode codes (evidence, finer-grained than canonical
+`stat-mean-vs-median`), range-adds-instead-of-subtracts (evidence). Plus the
+four discourse codes as `kind: "discourse"`.
+
+**Alias table to seed:** `place-value` → `decimal-place-value` (or a new broader
+code — **this is a real decision, see Decision 5**); `sign-error` →
+`sign-dropped`; `fraction_digits_as_percent` → `percent-scale-off-by-100`;
+plus the ten duplicate pairs in 5.3.
+
+### 5.6 Migration cost and risk, per surface
+
+- **Lesson configs — 2,303 tag instances across 272 files.** Mechanical once the
+  alias table exists: a scripted rewrite plus the existing generator-safety
+  write-set guard. Risk LOW. Cost: hours, not days. The 403 stray instances are
+  the only ones that change meaning, and each of those is currently worth
+  nothing, so the change can only improve them.
+- **`engine/core/misconceptions.js` — 37 entries.** Adding `standards`,
+  `watchForEs`, `aliases`, `kind`, `domain` is additive; no consumer breaks.
+  Risk LOW. The `watchForEs` strings are translation, which is content, so this
+  is your work not mine.
+- **Class Boss (37 templates) and Teach the Machine (37 personas).** Both are
+  already complete against the canonical 37 and both have validators
+  (`validate:class-boss`, `validate:teach-machine`) that will fail loudly on any
+  new code with no template or persona. Risk LOW but cost REAL: every code added
+  to the taxonomy costs one boss template and one persona, authored. Budget that
+  before approving additions.
+- **The evidence layer — 22 ids.** Highest risk on the list, and the reason is
+  in its own header: the ids "are stored in saved sessions and CSV exports". A
+  rename silently orphans work students already saved and reports teachers
+  already filed. Migrate by adding `aliases` and a read-time resolver, never by
+  rewriting the ids. Risk MEDIUM.
+- **The 2D games — 45 codes across 25 blocks.** Codes drive `trigger`/`feedback`
+  prose that is game-specific and often finer-grained than the taxonomy
+  ("overhang", "gap-open-early"). Not all 45 should merge. Risk MEDIUM, and it
+  is a content review, not a rename.
+- **Generated artefacts and their gates** — `generate-misconception-labels.mjs`,
+  `generate-evidence-group-data.mjs`, `generate-plan-vocab.mjs`,
+  `misconception-labels.test.mjs`, `validate-nervous-system`, plus the heatmap
+  and participation views that fetch the labels file. All derive from the source,
+  so they follow for free. Risk LOW.
+- **D1 telemetry already in the table.** `NTtelemetry.track("misconception", …)`
+  has been writing raw tag strings, including the 403 strays. Historical rows
+  carry old ids forever. The alias table has to be applied at READ time in the
+  heatmap and Insight Brief, not by rewriting history. Risk MEDIUM — this is the
+  part most likely to be forgotten.
+
+**Recommended order:** author the source file with aliases → add the read-time
+resolver everywhere ids are displayed → rewrite lesson configs → leave the games
+and the evidence layer alone until the first four are settled.
+
