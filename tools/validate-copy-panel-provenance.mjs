@@ -21,7 +21,7 @@
  * the panel and another field of the SAME config; nothing is inferred from a
  * lesson title, and the notebook block is never its own evidence.
  */
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -110,6 +110,43 @@ export function endsMidNumber(quote, source) {
   }
 }
 
+/**
+ * The picture beside a word must depict THAT word.
+ *
+ * Every vocab SVG states what it draws in its own <title>. The resolver's
+ * synonym table does not: it put one ruler beside "Convert", "Conversion
+ * factor", "Customary system" and "Metric system" in the same lesson, and one
+ * "Pattern" tile beside "repetition", "rhythm" and "predictability". Four
+ * identical pictures, none of them the word. So the artwork's own title is the
+ * evidence, and a row with no fitting picture shows none.
+ */
+const ART_STOP = new Set(
+  "a an the of to in on for and or is are be that this it with as at by from into".split(" "),
+);
+const artStem = (w) => (w.length > 5 ? w.slice(0, 5) : w);
+const artWords = (str) =>
+  String(str || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .filter((w) => w && !ART_STOP.has(w))
+    .map(artStem);
+
+export function artTitleOf(src, root) {
+  const file = join(root, "assets", String(src).replace(/^\/assets/, ""));
+  if (!existsSync(file)) return null;
+  const m = readFileSync(file, "utf8").match(/<title[^>]*>([^<]+)<\/title>/i);
+  return m ? m[1] : "";
+}
+
+export function artFitsTerm(term, title) {
+  if (!title) return false;
+  const inTitle = artWords(title);
+  return artWords(term).some((w) => inTitle.includes(w));
+}
+
 export function checkLesson(id, config) {
   const errors = [];
   const cps = (config.notebook && config.notebook.checkpoints) || [];
@@ -124,6 +161,7 @@ export function checkLesson(id, config) {
     panels++;
 
     if (cp.box === 1) {
+      const seenArt = new Set();
       for (const item of cp.copyPanel.items || []) {
         const source = vocab.find((v) => norm(v.term) === norm(item.term));
         if (!source) {
@@ -131,6 +169,20 @@ export function checkLesson(id, config) {
             `${id} box 1: term "${item.term}" is not declared in this lesson's vocabulary`,
           );
           continue;
+        }
+        if (item.art) {
+          const title = artTitleOf(item.art, ROOT);
+          if (title === null) {
+            errors.push(`${id} box 1: picture for "${item.term}" is missing on disk (${item.art})`);
+          } else if (!artFitsTerm(item.term, title)) {
+            errors.push(
+              `${id} box 1: picture for "${item.term}" depicts something else — its own title says "${title}"`,
+            );
+          }
+          if (seenArt.has(item.art)) {
+            errors.push(`${id} box 1: the same picture appears on two rows (${item.art})`);
+          }
+          seenArt.add(item.art);
         }
         if (!traces(item.meaning, source.definition)) {
           errors.push(

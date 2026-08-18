@@ -17,9 +17,10 @@
  *
  * Usage: node scripts/generate-notebook-copy-panels.mjs [--check] [--only 2-5]
  */
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveVocabImage } from "../engine/core/vocab-images.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS = join(ROOT, "lessons");
@@ -99,11 +100,53 @@ export function panelVocabulary(config) {
   return [...concept, ...rest];
 }
 
+/**
+ * The picture for a word — chosen from the art the curriculum already has, and
+ * only when the artwork itself says it depicts that word.
+ *
+ * Every vocab SVG carries its own <title> ("Reflection: a mirror image across
+ * an axis"). That title is the evidence: if it does not name the term, the
+ * image is not about the term, and the resolver's synonym table had quietly
+ * placed a ruler beside "Customary system", "Metric system", "Convert" and
+ * "Conversion factor" alike — four rows of one lesson showing the same picture,
+ * none of them depicting the word. A picture that does not depict the word is
+ * worse than no picture, and four identical pictures read as a broken page.
+ */
+function artTitle(src) {
+  const file = join(ROOT, "assets", src.replace(/^\/assets/, ""));
+  if (!existsSync(file)) return "";
+  const m = readFileSync(file, "utf8").match(/<title[^>]*>([^<]+)<\/title>/i);
+  return m ? m[1] : "";
+}
+
+const ART_STOP = new Set(
+  "a an the of to in on for and or is are be that this it with as at by from into".split(" "),
+);
+const artStem = (w) => (w.length > 5 ? w.slice(0, 5) : w);
+const artWords = (s) =>
+  String(s || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .filter((w) => w && !ART_STOP.has(w))
+    .map(artStem);
+
+/** True when the artwork's own title names this term. */
+export function artFitsTerm(term, src) {
+  const title = artTitle(src);
+  if (!title) return false;
+  const inTitle = artWords(title);
+  return artWords(term).some((w) => inTitle.includes(w));
+}
+
 export function buildBox1(config) {
   const vocab = panelVocabulary(config);
   if (vocab.length < 3)
     return { panel: null, reason: "fewer than 3 declared vocabulary entries with definitions" };
   const items = [];
+  const usedArt = new Set();
   for (const v of vocab) {
     if (items.length === 5) break;
     const term = v.term.trim().replace(/\.$/, "");
@@ -118,6 +161,14 @@ export function buildBox1(config) {
     // does not depict the word is worse than no picture.
     const item = { term, meaning };
     if (typeof v.image === "string" && v.image.trim()) item.image = v.image.trim();
+    // The picture is decided HERE, once, with the artwork's own title in hand —
+    // the renderer has no filesystem. `art` is written only when the image
+    // depicts this word and no earlier row in this panel already used it.
+    const src = resolveVocabImage(term, item.image);
+    if (src && !usedArt.has(src) && artFitsTerm(term, src)) {
+      usedArt.add(src);
+      item.art = src;
+    }
     items.push(item);
   }
   if (items.length < 3)

@@ -259,7 +259,11 @@ try {
           ).length;
           const art = Array.from(copyPanel.querySelectorAll("img.nt-nb-copy-art"));
           const brokenArt = art.filter((i) => i.complete && i.naturalWidth === 0).length;
-          const unlabelledArt = art.filter((i) => i.getAttribute("alt") === null).length;
+          // A zoomable picture is a control a student can reach: it needs a real
+          // accessible name and it must take focus from the keyboard.
+          const unlabelledArt = art.filter((i) => !(i.getAttribute("alt") || "").trim()).length;
+          const unfocusableArt = art.filter((i) => i.getAttribute("tabindex") !== "0").length;
+          const duplicateArt = art.length - new Set(art.map((i) => i.getAttribute("src"))).size;
 
           // Check for emoji
           const panelText = copyPanel.textContent || "";
@@ -318,6 +322,8 @@ try {
             artCount: art.length,
             brokenArt,
             unlabelledArt,
+            unfocusableArt,
+            duplicateArt,
             hasEmoji,
             contrastRatio,
             box1ItemCount,
@@ -483,7 +489,17 @@ try {
           }
           if (cd.unlabelledArt > 0) {
             fail(
-              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} has ${cd.unlabelledArt} image(s) with no alt attribute`,
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} has ${cd.unlabelledArt} image(s) with no accessible name`,
+            );
+          }
+          if (cd.unfocusableArt > 0) {
+            fail(
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} has ${cd.unfocusableArt} image(s) that cannot be reached or enlarged from the keyboard`,
+            );
+          }
+          if (cd.duplicateArt > 0) {
+            fail(
+              `${lessonId} (Phase ${cp.phase}): Box ${cp.box} shows the same picture on ${cd.duplicateArt + 1} rows`,
             );
           }
           if (cd.interactiveCount > 0) {

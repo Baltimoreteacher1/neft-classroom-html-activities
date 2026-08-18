@@ -27,7 +27,8 @@
 // Phase identity in this engine is POSITIONAL: lesson-renderer.js hands
 // createApp a fixed 8-slot array of render functions. These names are the
 // stable ids lesson data refers to, mapped to those slots.
-import { hasRealVocabImage, resolveVocabImage } from "./vocab-images.js";
+import { attachImageZoomAll } from "./image-zoom.js";
+import { vocabImageAlt } from "./vocab-images.js";
 
 export const PHASE_IDS = [
   "warmup",
@@ -364,6 +365,7 @@ export function openMathNotesModel(config) {
     if (e.target === dlg) dlg.close();
   });
   document.body.append(dlg);
+  attachImageZoomAll(dlg, "img.nt-nb-copy-art");
   dlg.showModal();
   return dlg;
 }
@@ -418,8 +420,12 @@ function renderCopyPanelHtml(cp) {
     // gets no picture at all rather than one that does not depict it.
     const listItems = cp.copyPanel.items
       .map((item) => {
-        const art = hasRealVocabImage(item.term, item.image)
-          ? `<img class="nt-nb-copy-art" src="${esc(resolveVocabImage(item.term, item.image))}" alt="" aria-hidden="true" loading="lazy" width="72" height="72" />`
+        // `art` is written by scripts/generate-notebook-copy-panels.mjs only
+        // when the artwork's own <title> names this word and no earlier row in
+        // this panel already used it. The renderer has no filesystem, so it
+        // trusts that decision and never guesses a picture.
+        const art = item.art
+          ? `<img class="nt-nb-copy-art" src="${esc(item.art)}" alt="${esc(vocabImageAlt(item.term, item.meaning))}" loading="lazy" width="72" height="72" />`
           : `<span class="nt-nb-copy-art nt-nb-copy-art-empty" aria-hidden="true"></span>`;
         return `<li>
           <span class="nt-nb-copy-term">${esc(item.term)}</span>
@@ -492,6 +498,10 @@ export function mountNotebookCheckpoint(el, config, phaseIndex) {
   const check = /** @type {HTMLInputElement} */ (wrap.querySelector(".nt-nb-check"));
   const input = /** @type {HTMLInputElement} */ (wrap.querySelector(".nt-nb-input"));
   const status = wrap.querySelector(".nt-nb-status");
+  // Tap or press Enter on a word's picture to see it large. Same lightbox the
+  // vocabulary cards use, so the gesture a student learns on one surface works
+  // on the other.
+  attachImageZoomAll(wrap, "img.nt-nb-copy-art");
   const modelBtn = wrap.querySelector(".nt-nb-modellink");
   if (modelBtn) modelBtn.addEventListener("click", () => openMathNotesModel());
 

@@ -107,8 +107,14 @@
   background: #fff;
 }
 
+/* A row with no fitting picture keeps the COLUMN (so every row's art stays on
+   one vertical line) but paints nothing. Given the white card and rounded
+   corners of a real thumbnail, an empty cell otherwise reads as a picture that
+   failed to load — which is what a suppressed mismatch must never look like. */
 .nt-nb-copy-art-empty {
   display: block;
+  background: none;
+  border: 0;
 }
 
 @media (max-width: 560px) {
