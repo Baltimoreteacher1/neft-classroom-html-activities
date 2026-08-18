@@ -132,35 +132,27 @@ test.describe("guide first-click journeys in Teacher Mode", () => {
     await expect(explore).toHaveAttribute("href", "/curriculum/units/");
     await explore.click();
     await expect(page).toHaveURL(/\/curriculum\/units\/$/);
-    // Student-safe on the DESTINATION is asserted from the persisted state and
-    // the absence of teacher UI, NOT from the toggle. The toggle is injected by
-    // curriculum-enhancements.js after the units page has built its 252 lesson
-    // rows, and measured cold in Chromium it does not exist for ~13s on a direct
-    // load and ~27s via this click — far past any sane expect timeout. Asserting
-    // on it here would be a slow flake pretending to be a check.
+    // Student-safe on the DESTINATION is read from the persisted state and the
+    // absence of teacher UI, not from the toggle. localStorage is what the
+    // toggle reflects, so this reads the same single source of truth one step
+    // earlier and does not depend on when the injected control appears.
     //
-    // localStorage is what the toggle reflects, so reading it is reading the
-    // same single source of truth one step earlier, with no injection race.
+    // (An earlier version of this comment claimed the toggle takes ~13s to
+    // appear. That was wrong: the 13s was this sandbox stalling on a blocked
+    // fonts.googleapis.com stylesheet, not the page. With that host reachable
+    // the units page settles in ~840ms. The assertion below is still the better
+    // one — state over rendering — but not for the reason first given.)
     await expect
       .poll(async () => page.evaluate(() => localStorage.getItem("nt-teacher-mode")))
       .not.toBe("true");
     await expect(page.locator("#curriculum-teacher-workflow")).toBeHidden();
-    // NOTHING is asserted about the units page's RENDERED CONTENT here, and that
-    // is deliberate rather than an omission.
-    //
-    // curriculum-hub-search.js clears its container (`hub.innerHTML = ""`) and
-    // rebuilds every lesson row — 35 static rows in the HTML become 252 rendered
-    // ones. Measured cold in Chromium, that work is not finished for ~13s on a
-    // direct load and ~27s arriving via this click. `#interactive-hub` is a
-    // static but EMPTY div until the rebuild fills it, so it has no box and is
-    // not "visible" either. Every content assertion available here races a 5s
-    // expect timeout, and one written with a 20s timeout inside a 30s test
-    // budget is a flake waiting for a loaded CI runner.
-    //
-    // The test's own claim — jumps to the unit browser, stays student-safe — is
-    // fully covered by the URL and the two student-safety assertions above. The
-    // render time is a real finding about that page and is reported separately;
-    // burying it in a test timeout would hide it.
+    // Nothing is asserted about the units page's RENDERED content. The claim in
+    // this test's name — jumps to the unit browser, stays student-safe — is
+    // fully covered by the URL and the two student-safety assertions above, and
+    // curriculum-hub-search.js rebuilds the row list (84 static core rows become
+    // 252, each core lesson plus its two group variants), so any count assertion
+    // here would restate what validate:lesson-catalogues already holds against
+    // disk, and would need re-pinning on every curriculum change.
   });
 });
 
