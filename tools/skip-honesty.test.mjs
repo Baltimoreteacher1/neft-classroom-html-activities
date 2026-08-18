@@ -125,7 +125,6 @@ test("assertNonEmpty fails rather than skips on an empty sweep", () => {
     "an empty sweep is broken discovery, never a skip",
   );
 });
-
 test("no gate script exits 0 on a path that skipped its work", () => {
   // The ratchet. `git ls-files` rather than a hand list, so a new gate is
   // covered the day it lands.
