@@ -503,7 +503,7 @@ export function injectSmallGroupStyles(accent) {
        sheet. The canvas recedes, the sheet reads as a sheet, and no figure
        competes with a background. Judged by those two numbers rather than by
        eye — saturation for the cast, contrast for the separation. */
-    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#dde3ea;--sg-paper:#e6e8eb;--sg-card:#fff;--sg-plate:#f7f4ec;--sg-text:#1d2a36;--sg-muted:#5a6b7c;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e4f3f0;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fceee9;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fff;--sg-fill:#eaeff5;
+    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#dde3ea;--sg-paper:#e6e8eb;--sg-card:#fff;--sg-plate:#f7f4ec;--sg-text:#1d2a36;--sg-muted:#516175;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e4f3f0;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fceee9;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fff;--sg-fill:#eaeff5;
       /* Type pairing. Outfit (the site display face, already loaded by the
          lesson shell) for anything that acts as a heading or a label; Atkinson
          Hyperlegible — chosen for these pathways because it is the most legible

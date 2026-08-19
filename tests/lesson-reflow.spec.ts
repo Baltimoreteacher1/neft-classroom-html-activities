@@ -33,12 +33,15 @@ test.describe("shared lesson shell reflow", () => {
       await page.goto(`${lessonPath}?sn=Navigation%20Tester`, { waitUntil: "networkidle" });
       await enterLesson(page);
 
-      await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Warmup");
+      // The hero stopped binding a phase name (it shows title/standard now);
+      // the shell's statement of "which phase am I on" is the active sidebar
+      // phase button, so that is what this spec reads.
+      await expect(page.locator(".phase-btn.active")).toContainText("Warmup");
       await page.getByRole("button", { name: "Continue to Phase 2: Objectives 🎯" }).click();
-      await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Objectives");
+      await expect(page.locator(".phase-btn.active")).toContainText("Objectives");
 
       await page.getByRole("button", { name: "Continue to Phase 3: Launch 🚀" }).click();
-      await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Launch");
+      await expect(page.locator(".phase-btn.active")).toContainText("Launch");
 
       // Address these boxes by what they ARE, not by where they sit. This used
       // to take `.phase textarea` nth(0)/nth(1), which silently assumed the
@@ -67,7 +70,7 @@ test.describe("shared lesson shell reflow", () => {
       await page.getByRole("button", { name: "Continue to Learn It" }).click();
       await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Learn It");
       await page.getByRole("button", { name: "Continue to Explore" }).click();
-      await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Explore");
+      await expect(page.locator(".phase-btn.active")).toContainText("Explore");
 
       // Explore is the first GRADED phase in the chain, so it is the first hop
       // with no labelled "Continue to …" of its own on these lessons: that
@@ -76,7 +79,7 @@ test.describe("shared lesson shell reflow", () => {
       // student who has read the phase without finishing the activity uses, and
       // the no-dead-ends property this spec is really about is that it works.
       await page.getByRole("button", { name: "Go to the next part of the lesson" }).click();
-      await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Practice");
+      await expect(page.locator(".phase-btn.active")).toContainText("Practice");
     });
   }
 
