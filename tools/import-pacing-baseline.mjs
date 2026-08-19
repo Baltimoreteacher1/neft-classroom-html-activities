@@ -30,6 +30,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildInstructionalSequence } from "../shared/curriculum/instructional-sequence.js";
 import { datesFromRanges } from "./lib/pacing-dates.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -37,6 +38,7 @@ const read = (rel) => JSON.parse(readFileSync(`${ROOT}/${rel}`, "utf8"));
 
 const src = read("docs/pacing-sources/plan-baseline.json");
 const launch = read("data/curriculum-launch-manifest.json");
+const authoredUnits = read("data/pacing-unit-lessons.json").units || {};
 
 /* Every id the planner may schedule, across all four canonical families. A
  * Catch-Up day names `3-3-catchup` and a Project day names `unit-3-project`;
@@ -133,6 +135,135 @@ const days = src.rows.map((row) => {
   };
 });
 
+/* ── THE CALENDAR IS THE INSTRUCTIONAL SEQUENCE, LAID OUT ON DATES ────────────
+ *
+ * The scope-and-sequence this file imports assigns lessons to days by the
+ * curriculum's own unit numbering. That is wrong in two places, and both showed
+ * up as a warmup reviewing mathematics nobody had been taught:
+ *
+ *   1. The Pre-Unit is ASSEMBLED, not inherited. The source schedules 1-1 … 1-6
+ *      — the Unit 1 "Math Is…" arc — where the district actually paces a Grade 5
+ *      review drawn from several units: 1-1, 2-6, 2-7, 6-1, 6-2. That decision
+ *      lives in data/pacing-unit-lessons.json and has since 2026-08-16, but only
+ *      the Teach picker read it. The planner kept printing 1-1 … 1-6, so the two
+ *      surfaces named different lessons for the same eleven days.
+ *
+ *   2. A lesson taught early is not taught again. Because the Pre-Unit borrows
+ *      2-6, 2-7, 6-1 and 6-2 from Units 2 and 6, those units used to schedule
+ *      them a second time in November and April. A lesson scheduled twice has no
+ *      single "lesson before it", which is the one thing a warmup needs.
+ *
+ * So membership comes from shared/curriculum/instructional-sequence.js — first
+ * teaching wins, every canonical lesson placed exactly once — and this step lays
+ * that sequence onto the dates the district plan already fixed.
+ *
+ * WHAT IS PRESERVED EXACTLY: every date, every unit boundary, every Review,
+ * Assessment, Catch-Up, Flex and Project day, and the number of teaching slots
+ * each unit owns. Only WHICH lesson sits on a teaching slot changes.
+ *
+ * SURPLUS SLOTS become Flex days at the END of the unit's teaching block, with
+ * the same shape the plan already uses for its own buffer days. A lesson keeps a
+ * second day only where the imported plan already gave it one, so running this
+ * over the seven units whose membership did not change reproduces the imported
+ * calendar exactly — all 24 of its "— Day 2" rows included. Inventing new second
+ * days instead would have shifted every lesson in Unit 2 and stranded the
+ * 2-3 Catch-Up day on 4/27 ahead of the lesson it catches up on.
+ *
+ * More lessons than slots is a real scheduling conflict, and it throws rather
+ * than truncating.
+ */
+const TEACHING_DAY_TYPES = new Set(["Core Lesson", "Continued Lesson"]);
+const sequence = buildInstructionalSequence({
+  ranges: {
+    units: src.units.map((u, i) => ({ ...u, sequence: i + 1, curriculumUnit: u.ewl ?? null })),
+  },
+  authored: { units: authoredUnits },
+  manifest: launch,
+});
+
+/** School days, in order, so "the next school day" is a lookup rather than a
+ *  date calculation that has to know about weekends and holidays. */
+const schoolIndex = new Map();
+days.filter((d) => d.schoolStatus === "school").forEach((d, i) => schoolIndex.set(d.date, i));
+const isNextSchoolDay = (a, b) => schoolIndex.get(b.date) === schoolIndex.get(a.date) + 1;
+
+for (const unit of src.units) {
+  const unitKey = String(unit.key);
+  const wanted = sequence.order.filter((id) => sequence.entries.get(id).unitKey === unitKey);
+  const slots = days.filter(
+    (d) => d.plan.unitKey === unitKey && TEACHING_DAY_TYPES.has(d.plan.dayType),
+  );
+  if (!slots.length) {
+    if (wanted.length) {
+      throw new Error(
+        `${unitKey} owns ${wanted.length} lesson(s) but the calendar gives it no teaching day`,
+      );
+    }
+    continue; // MSTAR and friends: real days, no lessons.
+  }
+
+  /* How many days the IMPORTED plan gave each lesson. A lesson the plan already
+   * ran across two days keeps them; nothing else gains a second day here. */
+  const plannedDays = new Map();
+  for (const slot of slots) {
+    const id = slot.plan.lessonId;
+    if (id) plannedDays.set(id, (plannedDays.get(id) || 0) + 1);
+  }
+
+  const perLesson = wanted.map((id) => Math.min(2, plannedDays.get(id) || 1));
+  const needed = perLesson.reduce((a, b) => a + b, 0);
+  if (needed > slots.length) {
+    throw new Error(
+      `${unitKey} needs ${needed} teaching days for ${wanted.length} lessons but the calendar ` +
+        `holds ${slots.length} — the plan cannot fit the sequence`,
+    );
+  }
+
+  let at = 0;
+  wanted.forEach((lessonId, index) => {
+    /* A second day must land on the NEXT school day. Unit 2 has a Catch-Up day
+     * sitting inside its teaching block, so two consecutive teaching slots there
+     * are not two consecutive school days; a continuation across that gap would
+     * read as continuing the catch-up. Drop such a lesson to one day and let the
+     * spare slot become Flex. */
+    let dayCount = perLesson[index];
+    if (dayCount === 2 && !(slots[at + 1] && isNextSchoolDay(slots[at], slots[at + 1]))) {
+      dayCount = 1;
+    }
+    const title = CANONICAL.get(lessonId)?.title || lessonId;
+    for (let day = 1; day <= dayCount; day++) {
+      const slot = slots[at++];
+      slot.plan.lessonId = lessonId;
+      slot.plan.dayType = day === 1 ? "Core Lesson" : "Continued Lesson";
+      /* A multi-day lesson names its day, because that IS a planning decision.
+       * A single-day lesson carries no planTitle at all — storing the
+       * curriculum's own title here is exactly what lets a plan go stale behind
+       * a rename. */
+      slot.plan.planTitle = dayCount > 1 ? `${title} — Day ${day}` : null;
+    }
+  });
+
+  for (; at < slots.length; at++) {
+    const slot = slots[at];
+    slot.plan.lessonId = null;
+    slot.plan.dayType = "Flex";
+    slot.plan.planTitle = "Flex / Catch-Up";
+    slot.plan.note = "Unassigned buffer — absorb slippage or extend a lesson";
+  }
+}
+
+/* Nothing may reference a lesson the sequence does not schedule. A Catch-Up day
+ * for a lesson that moved out of this unit is an orphan, and the surface it
+ * links to would open on mathematics the class has not reached. */
+for (const day of days) {
+  const id = day.plan.lessonId;
+  if (!id) continue;
+  const base = id.replace(/-(catchup|group\d+)$/, "");
+  if (base !== id && !sequence.entries.has(base)) {
+    throw new Error(`${day.date} schedules ${id}, whose lesson ${base} is not in the sequence`);
+  }
+}
+
 /* ── Units ─────────────────────────────────────────────────────────────────── */
 
 const units = src.units.map((u, i) => ({
@@ -153,7 +284,10 @@ const units = src.units.map((u, i) => ({
  * answer the printed calendar gives. Tags follow the notes: SOURCE (read from a
  * district document), INFERRED (a planning decision), CONFIRM (needs a human). */
 const ASSUMPTIONS = [
-  ["Pre-Unit maps to EduWonderLab Unit 1 (Math Is…)", "INFERRED/CONFIRM"],
+  [
+    "The Pre-Unit is ASSEMBLED (1-1, 2-6, 2-7, 6-1, 6-2), not EduWonderLab Unit 1 — its membership is authored in data/pacing-unit-lessons.json and projected onto these dates",
+    "SOURCE authored / reviewed 2026-08-16",
+  ],
   ["Component counts are a day budget, not a lesson count", "INFERRED"],
   [
     "The 2.5-day calendar shortfall is absorbed by Unit 4 (−1.0) and Unit 5 (−1.5) flex",
@@ -173,6 +307,14 @@ const ASSUMPTIONS = [
   ],
   ["Jun 11 (half day, last day) is a course showcase, not project work", "INFERRED"],
   ["The first week extends Lesson 1.1 across two days for routines and math community", "INFERRED"],
+  [
+    "A lesson taught early in the Pre-Unit is not taught again in its home unit, so Unit 6 opens on 6-3 and Unit 2 runs 2-5 → 2-8",
+    "INFERRED",
+  ],
+  [
+    "Teaching days the sequence does not fill become Flex days at the end of the unit's lesson block",
+    "INFERRED",
+  ],
 ];
 
 /* ── Quarters ──────────────────────────────────────────────────────────────── */
