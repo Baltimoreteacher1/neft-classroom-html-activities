@@ -5207,6 +5207,15 @@ textarea.syw-input {
   .extra-panel.extra-panel--fullpage {
     inset: 0;
   }
+  /* On phones the takeover is edge-to-edge (inset: 0), but the sidebar carries
+   * an inline z-index of 9999 (app.js lifts it above the drawing canvas at
+   * 9998), which beats the takeover's 8000 and paints the phase rail over the
+   * panel's whole first screen — hero, step rail and step title were unreachable
+   * at 390px, on production too. While the takeover is open the sidebar has no
+   * job on a phone, so drop it back under (inline style needs !important). */
+  html.nt-extra-fullpage-open .app .sidebar {
+    z-index: 0 !important;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .extra-panel.extra-panel--fullpage {

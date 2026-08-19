@@ -3307,6 +3307,47 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
   }
 }
 
+// The application scenario + guided Show Your Work solve that MOVED out of the
+// Launch phase to live under Learn It. Exported (and called directly by
+// app.js's openExtra("learn")) rather than reached only through the
+// ctx.renderLearnItExtras hook: the hook used to be assigned inside
+// renderLaunchPhase, so a student who opened Learn It before Launch had
+// rendered got NOTHING — the moved content was unreachable on that path.
+export function renderLearnItExtrasInto(learnHost, config, state) {
+  if (!learnHost) return;
+  const cfg = config.launch;
+
+  // 1) The application scenario card (the word problem + optional theme art).
+  const scenario = document.createElement("div");
+  scenario.className = "card launch-scenario-card";
+  scenario.innerHTML = `
+      <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
+      <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
+  if (cfg.contextImage || config.theme || config.heroFigure) {
+    renderThemeIllustration(scenario, config.theme, cfg.contextImage || null, config.heroFigure);
+  }
+  learnHost.append(scenario);
+
+  // Tap-to-reveal story beats: the same narrative chunked into labeled
+  // parts ("Set the Scene" → "Your Role") for readers who lose the thread
+  // in the full paragraph. Authored-but-unwired until the 2026-07-20
+  // dormant-feature sweep; renders nothing for 1-2 sentence narratives.
+  renderLaunchStoryBeats(learnHost, config);
+
+  // 2) Inline Reveal Math slides for the launch + instruction sections — the
+  //    "how it's taught" visuals belong with Learn It, not with Be Curious.
+  renderRevealSlides(learnHost, config, ["launch", "instruction"]);
+
+  // 3) Show Your Work — the application problem + a guided, typeable solve-it
+  //    scaffold. Persists on phase index 0 (Launch) so saved work survives.
+  renderShowYourWork(learnHost, config, state);
+
+  // 4) Let students mark up the word problems (highlight / underline / bold).
+  //    (Turn & Talk is now integrated into the Show Your Work problem above,
+  //    via renderShowYourWork — not a separate card.)
+  enableWordProblemAnnotation(learnHost);
+}
+
 function renderLaunchPhase(el, state, ctx, config) {
   const cfg = config.launch;
 
@@ -3423,39 +3464,7 @@ function renderLaunchPhase(el, state, ctx, config) {
   // The hook closes over this lesson's cfg / config / state. Show Your Work still
   // reads and writes on phase index 0 (Launch) — see renderShowYourWork — so any
   // work a student saved persists exactly as before, wherever it is rendered.
-  ctx.renderLearnItExtras = (learnHost) => {
-    if (!learnHost) return;
-
-    // 1) The application scenario card (the word problem + optional theme art).
-    const scenario = document.createElement("div");
-    scenario.className = "card launch-scenario-card";
-    scenario.innerHTML = `
-      <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
-      <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
-    if (cfg.contextImage || config.theme || config.heroFigure) {
-      renderThemeIllustration(scenario, config.theme, cfg.contextImage || null, config.heroFigure);
-    }
-    learnHost.append(scenario);
-
-    // Tap-to-reveal story beats: the same narrative chunked into labeled
-    // parts ("Set the Scene" → "Your Role") for readers who lose the thread
-    // in the full paragraph. Authored-but-unwired until the 2026-07-20
-    // dormant-feature sweep; renders nothing for 1-2 sentence narratives.
-    renderLaunchStoryBeats(learnHost, config);
-
-    // 2) Inline Reveal Math slides for the launch + instruction sections — the
-    //    "how it's taught" visuals belong with Learn It, not with Be Curious.
-    renderRevealSlides(learnHost, config, ["launch", "instruction"]);
-
-    // 3) Show Your Work — the application problem + a guided, typeable solve-it
-    //    scaffold. Persists on phase index 0 (Launch) so saved work survives.
-    renderShowYourWork(learnHost, config, state);
-
-    // 4) Let students mark up the word problems (highlight / underline / bold).
-    //    (Turn & Talk is now integrated into the Show Your Work problem above,
-    //    via renderShowYourWork — not a separate card.)
-    enableWordProblemAnnotation(learnHost);
-  };
+  ctx.renderLearnItExtras = (learnHost) => renderLearnItExtrasInto(learnHost, config, state);
 
   const isEs = getPreferredLang() === "es";
   const btn = document.createElement("button");

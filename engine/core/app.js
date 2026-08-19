@@ -18,6 +18,7 @@ import {
   linkifyObjectiveTerms,
   observeVocabTerms,
   renderComponent,
+  renderLearnItExtrasInto,
   resolveContentObjective,
   resolveLanguageObjective,
   underlineVocabTerms,
@@ -1424,6 +1425,13 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           // Practice skipped the Explore phase entirely.
           state,
           onComplete: () => this.navigateTo(PHASE_EXPLORE),
+          // The application scenario + Show Your Work moved out of Launch to
+          // live under Learn It. This branch predates the
+          // ctx.renderLearnItExtras hook and never called it, so the moved
+          // content rendered NOWHERE — the panel now hosts it as its final
+          // "Apply It" step. Called directly (not via the hook) because the
+          // hook is only assigned once the Launch phase has rendered.
+          renderExtras: (host) => renderLearnItExtrasInto(host, config, state),
         });
         el.append(
           chainContinueButton("Continue to Explore 🔍 →", () => this.navigateTo(PHASE_EXPLORE)),

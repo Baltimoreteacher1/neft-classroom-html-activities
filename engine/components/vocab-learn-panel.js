@@ -1,5 +1,6 @@
 import { getPreferredLang } from "../core/i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "../core/interactive-visual.js";
+import { extractEquation, parseKeyIdea, splitGuidedLine } from "../core/learn-step-model.js";
 import { underlineVocabTerms } from "../core/lesson-renderer.js";
 import {
   resolveInteractiveToolForLesson,
@@ -659,12 +660,355 @@ function injectVocabLearnStyles() {
     .vl-continue-btn:active {
       transform: translateY(-1px);
     }
+    /* ── Sequential Learn It stepper ─────────────────────────────────────── */
+    .vl-hero-compact { padding: 22px 28px; margin-bottom: 18px; }
+    .vl-hero-compact .vl-hero-title { font-size: 1.7rem; margin: 8px 0 10px; }
+    .vl-rail {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 18px;
+    }
+    .vl-rail-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 2px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .vl-rail-btn:hover { border-color: #0f4c81; }
+    .vl-rail-btn:focus-visible { outline: 3px solid #0f4c81; outline-offset: 2px; }
+    .vl-rail-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+    .vl-rail-btn.vl-rail-active {
+      background: #14223a;
+      border-color: #14223a;
+      color: #ffffff;
+    }
+    .vl-rail-btn.vl-rail-active .vl-rail-num { background: #ffffff; color: #14223a; }
+    .vl-rail-btn.vl-rail-done { border-color: #0d7a76; }
+    .vl-rail-btn.vl-rail-done .vl-rail-num { background: #ccfbf1; color: #0f766e; }
+    .vl-step { display: none; }
+    .vl-step.vl-step-active { display: block; }
+    .vl-step-head { margin: 0 0 14px; }
+    .vl-step-kicker {
+      margin: 0;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #64748b;
+    }
+    .vl-step-title {
+      margin: 4px 0 2px;
+      font-family: "Outfit", "Hanken Grotesk", sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .vl-step-title:focus { outline: none; }
+    .vl-step-sub { margin: 0; font-size: 1.05rem; color: #475569; font-weight: 600; }
+    .vl-step-body {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 24px 26px;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+    }
+    .vl-step-question {
+      margin: 0 0 12px;
+      font-family: "Outfit", "Hanken Grotesk", sans-serif;
+      font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+      font-weight: 800;
+      color: #0f4c81;
+    }
+    .vl-bigidea-text {
+      margin: 0 0 18px;
+      font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+      line-height: 1.6;
+      color: #0f172a;
+      font-weight: 600;
+    }
+    .vl-mathline {
+      margin: 10px 0 2px;
+      font-size: clamp(1.45rem, 2.6vw, 2rem);
+      font-weight: 800;
+      color: #0f172a;
+      font-variant-numeric: tabular-nums;
+      overflow-x: auto;
+      max-width: 100%;
+    }
+    .vl-mathline-hero { font-size: clamp(1.7rem, 3.2vw, 2.4rem); color: #0d3b66; }
+    .vl-formula-card, .vl-example-card {
+      background: #fffbeb;
+      border: 2px solid #f5d78e;
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin: 6px 0 4px;
+    }
+    .vl-formula-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #92400e;
+      margin-bottom: 4px;
+    }
+    .vl-topic-line { margin: 4px 0 0; font-size: 1.2rem; font-weight: 700; color: #0f172a; }
+    .vl-rulepoints {
+      margin: 0 0 16px;
+      padding: 0 0 0 0;
+      list-style: none;
+      counter-reset: vl-rule;
+      display: grid;
+      gap: 10px;
+    }
+    .vl-rulepoints li {
+      counter-increment: vl-rule;
+      position: relative;
+      padding: 12px 16px 12px 52px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      font-size: 1.08rem;
+      line-height: 1.55;
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .vl-rulepoints li::before {
+      content: counter(vl-rule);
+      position: absolute;
+      left: 14px;
+      top: 12px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #0f4c81;
+      color: #ffffff;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .vl-lead { margin: 0 0 12px; font-size: 1.05rem; color: #334155; }
+    .vl-solve-steps {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 12px;
+    }
+    .vl-solve-step {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 14px 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+    }
+    .vl-solve-step.vl-hidden { display: none; }
+    .vl-hidden { display: none; }
+    .vl-solve-body { min-width: 0; }
+    .vl-solve-body .vl-step-text {
+      display: block;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #0f172a;
+    }
+    .vl-pace {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0 4px;
+    }
+    .vl-pace-next, .vl-pace-all, .vl-back-btn, .vl-next-btn {
+      min-height: 48px;
+      padding: 10px 20px;
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 1.02rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .vl-pace-next {
+      background: #0f4c81;
+      border: 2px solid #0f4c81;
+      color: #ffffff;
+    }
+    .vl-pace-all, .vl-back-btn {
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      color: #334155;
+    }
+    .vl-pace-count { font-weight: 700; opacity: 0.85; margin-left: 6px; }
+    /* Must out-rank .vl-pace { display:flex } — a bare .vl-hidden ties on
+       specificity and loses when it appears earlier in this sheet. */
+    .vl-pace.vl-hidden { display: none; }
+    .vl-check-reveal {
+      margin-top: 8px;
+      border: 2px solid #bae6fd;
+      border-radius: 12px;
+      background: #f0f9ff;
+    }
+    .vl-check-reveal summary {
+      cursor: pointer;
+      padding: 10px 14px;
+      font-weight: 800;
+      color: #0369a1;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+    .vl-check-reveal .vl-check-body {
+      padding: 4px 14px 12px;
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: #0c4a6e;
+    }
+    .vl-tool-block {
+      margin: 20px 0 4px;
+      padding: 18px;
+      background: #f8fbff;
+      border: 2px solid #38bdf8;
+      border-radius: 18px;
+    }
+    .vl-tool-block.vl-hidden { display: none; }
+    .vl-tool-head {
+      font-family: "Outfit", sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #0369a1;
+      margin-bottom: 12px;
+    }
+    .vl-tryit-question {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0c4a6e;
+      margin-bottom: 16px;
+    }
+    .vl-tryit-opts { display: flex; flex-direction: column; gap: 12px; }
+    .vl-tryit-opt.vl-opt-right { background: #dcfce7; border-color: #16a34a; }
+    .vl-tryit-opt.vl-opt-wrong { background: #fef2f2; border-color: #ef4444; }
+    .vl-tryit-feedback {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .vl-tryit-feedback.vl-fb-right { background: #f0fdf4; color: #14532d; border: 2px solid #22c55e; }
+    .vl-tryit-feedback.vl-fb-wrong { background: #fff1f2; color: #9f1239; border: 2px solid #f43f5e; }
+    .vl-confidence-widget {
+      margin-top: 24px;
+      padding: 20px 24px;
+      background: #f0fdf4;
+      border: 2px solid #16a34a;
+      border-radius: 20px;
+    }
+    .vl-conf-title {
+      font-family: "Outfit", sans-serif;
+      font-size: 1.12rem;
+      font-weight: 800;
+      color: #14532d;
+      margin-bottom: 14px;
+    }
+    .vl-conf-options { display: flex; gap: 12px; flex-wrap: wrap; }
+    .vl-conf-btn {
+      flex: 1;
+      min-width: 140px;
+      min-height: 48px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 2px solid #cbd5e1;
+      background: #ffffff;
+      color: #14532d;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .vl-conf-btn.vl-conf-active { background: #14532d; border-color: #14532d; color: #ffffff; }
+    .vl-conf-feedback {
+      margin-top: 14px;
+      font-weight: 700;
+      font-size: 1.02rem;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: #dcfce7;
+      color: #14532d;
+    }
+    .vl-stepnav {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .vl-stepnav .vl-next-btn {
+      margin-left: auto;
+      background: #14223a;
+      border: 2px solid #14223a;
+      color: #ffffff;
+    }
+    .vl-stepnav button:focus-visible, .vl-pace button:focus-visible {
+      outline: 3px solid #0f4c81;
+      outline-offset: 2px;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .vl-container * { transition: none !important; animation: none !important; }
+    }
+    @media print {
+      .vl-step { display: block !important; }
+      .vl-solve-step.vl-hidden { display: grid !important; }
+      .vl-tool-block.vl-hidden, .vl-rail, .vl-stepnav, .vl-pace { display: none !important; }
+    }
     @media (max-width: 600px) {
       .vl-container { padding: 12px 14px 32px; }
       .vl-hero { padding: 22px; }
       .vl-hero-title { font-size: 1.55rem; }
       .vl-section-card { padding: 20px; }
       .vl-continue-btn { width: 100%; padding: 18px 24px; font-size: 1.15rem; }
+      .vl-step-body { padding: 16px 14px; }
+      .vl-rail-label { font-size: 0.85rem; }
+      .vl-solve-step { grid-template-columns: auto 1fr; }
+      .vl-solve-step .vl-step-speak-btn { grid-column: 1 / -1; justify-self: end; }
+      .vl-stepnav { flex-direction: column-reverse; }
+      .vl-stepnav .vl-next-btn, .vl-stepnav .vl-back-btn { width: 100%; }
     }
   `;
   document.head.appendChild(s);
@@ -904,11 +1248,15 @@ function seedVisualFromWorkedExample(iv, lines) {
 }
 
 export function renderLearnItPanel(container, config, options = {}) {
-  const { onComplete = () => {}, state = null } = options;
+  const { onComplete = () => {}, state = null, renderExtras = null } = options;
   injectVocabLearnStyles();
   container.innerHTML = "";
 
   const isEs = getPreferredLang() === "es";
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const wrap = document.createElement("div");
   wrap.className = "vl-container";
@@ -916,414 +1264,562 @@ export function renderLearnItPanel(container, config, options = {}) {
   const concept = config.conceptIntro || config.launch?.conceptIntro || {};
   const heading = concept.heading || config.contentObjective || `Understanding ${config.title}`;
   const intro = concept.intro || config.contentObjective || "";
-  const keyIdea = concept.keyIdea || config.contentObjective || "";
+  const keyIdea = parseKeyIdea(concept.keyIdea || config.contentObjective || "");
   const iDo = concept.iDo || {};
+  const weDo = concept.weDo || {};
+  const isLine = (l) => typeof l === "string" && l.trim();
+  const iLines = Array.isArray(iDo.lines) ? iDo.lines.filter(isLine) : [];
+  const weLines = Array.isArray(weDo.lines) ? weDo.lines.filter(isLine) : [];
+  const vocabList = Array.isArray(config.vocabulary) ? config.vocabulary : [];
 
   const misconception = resolveLessonMisconception(config);
   const tryIt = resolveTryItChallenge(config);
-
-  // Top Header Banner with Full Audio Read-Aloud
-  const hero = document.createElement("div");
-  hero.className = "vl-hero";
-  hero.innerHTML = `
-    <div class="vl-hero-badge">${isEs ? "💡 Cómo Funciona la Matemática" : "💡 How the Math Works (Learn It)"}</div>
-    <h2 class="vl-hero-title">${escHtml(config.title)}</h2>
-    <p class="vl-hero-sub">
-      ${
-        isEs
-          ? "Lee la explicación sencilla, explora el modelo visual interactivo y repasa los pasos. Luego habla con tu compañero."
-          : "Read the simple math explanation, explore the interactive visual model, and review the steps. Then turn & talk with your partner."
-      }
-    </p>
-    <button type="button" class="vl-hero-speak-btn" id="vlHeroSpeakBtn">
-      🔊 ${isEs ? "Escuchar Concepto Completo" : "Listen to Concept Summary"}
-    </button>
-  `;
-
-  hero.querySelector("#vlHeroSpeakBtn").addEventListener("click", () => {
-    const fullText = `${config.title}. ${intro || keyIdea}`;
-    speakText(fullText, isEs ? "es-US" : "en-US");
-  });
-
-  wrap.append(hero);
-
   const visuals = resolveObjectiveVisuals(config);
   const ivConfig = seedVisualFromWorkedExample(resolveInteractiveToolForLesson(config), iDo.lines);
 
-  const mainCard = document.createElement("div");
-  mainCard.className = "vl-section-card";
-  mainCard.innerHTML = `
-    <div class="vl-section-header">
-      <span class="vl-section-tag vl-tag-teal">${isEs ? "Concepto" : "Concept"}</span>
-      <div>
-        <h3 class="vl-section-title">${escHtml(heading)}</h3>
-      </div>
-    </div>
+  // One display-math line, printed LARGE. Only ever fed authored text or an
+  // equation extractEquation() vouched for — never invented mathematics.
+  const mathLine = (eq, extraClass = "") =>
+    `<p class="vl-mathline ${extraClass}" role="math" aria-label="${escHtml(eq)}">${renderMathText(eq)}</p>`;
+  const lineEquation = (line) => {
+    const eq = extractEquation(line);
+    return eq ? mathLine(eq) : "";
+  };
 
-    <!-- SIMPLE EXPLANATION -->
-    ${intro ? `<p style="font-size:1.15rem; line-height:1.65; color:#0f172a; font-weight:600; margin:0 0 22px;">${renderMathText(intro)}</p>` : ""}
-    ${
-      keyIdea
-        ? `
-      <div class="vl-key-idea-card">
-        <span class="vl-key-idea-label">${isEs ? "💡 Explicación Sencilla" : "💡 Simple Explanation"}</span>
-        <p class="vl-key-idea-text">${renderMathText(keyIdea)}</p>
-      </div>`
-        : ""
-    }
-
-    <!-- COMMON MATHEMATICAL MISCONCEPTION WARNING -->
-    <div class="vl-misconception-card">
-      <span class="vl-misconception-label">
-        <span>⚠️</span> <span>${isEs ? "Atención: Error Común a Evitar" : "Watch Out: Common Math Pitfall"}</span>
-      </span>
-      <p class="vl-misconception-text">${renderMathText(isEs ? misconception.es : misconception.en)}</p>
-    </div>
-
-    <!-- INTERACTIVE MATH VISUAL MODEL CARD -->
-    <div class="vl-visual-card">
-      <div class="vl-visual-img-wrap" id="vlVisualZoomTarget" title="Click to enlarge visual model">
-        <img src="${visuals.content.src}" alt="${escHtml(visuals.content.alt)}" />
-      </div>
-      <div class="vl-visual-caption">
-        <span>📊 <strong>${isEs ? "Modelo Visual:" : "Interactive Math Visual:"}</strong> ${escHtml(visuals.content.caption)}</span>
-        <span class="vl-zoom-badge">🔍 ${isEs ? "Toca para ampliar" : "Click to enlarge"}</span>
-      </div>
-    </div>
-
-    <!-- WORKED EXAMPLE + THE TOOL THAT PRACTISES IT, SIDE BY SIDE -->
-    <div class="vl-learn-pair">
-      <!-- Watch me -->
-    ${
-      Array.isArray(iDo.lines) && iDo.lines.length > 0
-        ? `
-      <div class="vl-demo-box">
-        <div class="vl-demo-title">
-          <span>👀 ${isEs ? "Ejemplo Resuelto Paso a Paso:" : "Step-by-Step Worked Example:"}</span>
-          <span style="font-weight:600; color:#475569;">(${escHtml(iDo.title || (isEs ? "Mira cómo se hace" : "Watch Me"))})</span>
-        </div>
-        <div class="vl-demo-steps">
-          ${iDo.lines
-            .map(
-              (line, idx) => `
-            <div class="vl-demo-step">
-              <span class="vl-step-num">${isEs ? "Paso" : "Step"} ${idx + 1}</span>
-              <span class="vl-step-text">${renderMathText(line)}</span>
-              <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(line)}">🔊 Hear Step</button>
-            </div>
-          `,
-            )
-            .join("")}
-        </div>
-      </div>`
-        : ""
-    }
-      <!-- Now try that step here -->
-    ${
-      ivConfig && ivConfig.kind
-        ? `
-      <div style="margin:26px 0; padding:20px; background:#f8fbff; border:2.5px solid #38bdf8; border-radius:20px; box-shadow:0 8px 24px rgba(56,189,248,0.14);">
-        <div style="font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:800; color:#0369a1; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
-          <span>🛠️ ${isEs ? "Herramienta Matemática Interactiva (¡Toca para explorar!):" : "Interactive Math Tool (Tap & Explore Live!):"}</span>
-          <span style="font-size:0.82rem; font-weight:700; color:#0284c7; background:#e0f2fe; padding:4px 10px; border-radius:999px;">Live Tool</span>
-        </div>
-        ${interactiveVisualHost(ivConfig, ivConfig.label || visuals.content.caption)}
-      </div>`
-        : ""
-    }
-
-    </div>
+  // ── Header: what this is + read-aloud ─────────────────────────────────────
+  const hero = document.createElement("div");
+  hero.className = "vl-hero vl-hero-compact";
+  hero.innerHTML = `
+    <div class="vl-hero-badge">${isEs ? "📖 Aprende — un paso a la vez" : "📖 Learn It — one step at a time"}</div>
+    <h2 class="vl-hero-title">${escHtml(config.title)}</h2>
+    <button type="button" class="vl-hero-speak-btn" id="vlHeroSpeakBtn">
+      🔊 ${isEs ? "Escuchar la idea principal" : "Listen to the big idea"}
+    </button>
   `;
+  hero.querySelector("#vlHeroSpeakBtn").addEventListener("click", () => {
+    speakText(`${heading}. ${intro}`, isEs ? "es-US" : "en-US");
+  });
+  wrap.append(hero);
 
-  // Attach Step Audio Listeners
-  mainCard.querySelectorAll(".vl-step-speak-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const text = btn.getAttribute("data-step-text");
-      if (text) speakText(text, isEs ? "es-US" : "en-US");
-    });
+  // ── The instructional moments, one mathematical idea at a time ────────────
+  // Teach → Show → Work Through → Try → Notice/Check (+ Apply). A moment with
+  // nothing to show for THIS lesson is dropped and the rest renumber cleanly.
+  /** @type {Array<{icon:string,label:string,sub:string,build:(host:HTMLElement)=>void,onFirstShow?:(host:HTMLElement)=>void}>} */
+  const steps = [];
+
+  // ① The Big Idea — what are we learning? Short, math first.
+  steps.push({
+    icon: "💡",
+    label: isEs ? "La gran idea" : "The Big Idea",
+    sub: isEs ? "¿Qué vamos a aprender?" : "What are we learning?",
+    build(host) {
+      host.innerHTML = `
+        <h4 class="vl-step-question">${renderMathText(heading)}</h4>
+        ${intro ? `<p class="vl-bigidea-text">${renderMathText(intro)}</p>` : ""}
+        ${
+          keyIdea.formula
+            ? `<div class="vl-formula-card">
+                 <span class="vl-formula-label">${isEs ? "💡 La regla — recuérdala" : "💡 The rule — remember this"}</span>
+                 ${mathLine(keyIdea.formula, "vl-mathline-hero")}
+               </div>`
+            : keyIdea.topic
+              ? `<div class="vl-formula-card">
+                   <span class="vl-formula-label">${isEs ? "💡 La idea clave" : "💡 The key idea"}</span>
+                   <p class="vl-topic-line">${renderMathText(keyIdea.topic)}</p>
+                 </div>`
+              : ""
+        }`;
+    },
   });
 
-  // Attach Lightbox Zoom for Visual Model
-  const zoomTarget = mainCard.querySelector("#vlVisualZoomTarget");
-  if (zoomTarget) {
-    zoomTarget.addEventListener("click", () => {
-      openVisualLightbox(visuals.content.src, visuals.content.caption);
-    });
-  }
-
-  // ─── MINI PRACTICE CHECKPOINT (TRY IT!) ─────────────────────────────────────
-  // Only rendered when a lesson-specific (or concept-matched) question exists;
-  // resolveTryItChallenge returns null rather than serving generic filler.
-  if (tryIt) {
-    const tryItCard = document.createElement("div");
-    tryItCard.className = "vl-tryit-card";
-    tryItCard.innerHTML = `
-    <div class="vl-tryit-head">
-      <div class="vl-tryit-title">
-        <span>✏️ ${isEs ? "¡Pruébalo! Verificación Rápida de Práctica" : "Try It! Quick Concept Practice"}</span>
-      </div>
-    </div>
-    <div style="font-size:1.12rem; font-weight:700; color:#0c4a6e; margin-bottom:16px;">
-      "${escHtml(isEs ? tryIt.questionEs : tryIt.question)}"
-    </div>
-    <div style="display:flex; flex-direction:column; gap:12px;" class="vl-tryit-opts">
-      ${tryIt.options
-        .map(
-          (opt, idx) => `
-        <button type="button" class="vl-tryit-opt" data-correct="${opt.correct}" data-explain="${escHtml(opt.explain)}">
-          <span>${idx === 0 ? "A" : idx === 1 ? "B" : "C"}. ${escHtml(opt.text)}</span>
-        </button>
-      `,
-        )
-        .join("")}
-    </div>
-    <div class="vl-tryit-feedback" style="margin-top:16px; padding:14px; border-radius:14px; font-weight:700; font-size:1rem; display:none;"></div>
-  `;
-
-    const tryOpts = /** @type {NodeListOf<HTMLButtonElement>} */ (
-      tryItCard.querySelectorAll(".vl-tryit-opt")
-    );
-    const tryFb = /** @type {HTMLElement} */ (tryItCard.querySelector(".vl-tryit-feedback"));
-
-    tryOpts.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const isCorrect = btn.dataset.correct === "true";
-        const explain = btn.dataset.explain;
-
-        tryOpts.forEach((b) => {
-          b.style.background = "#ffffff";
-          b.style.borderColor = "#bae6fd";
-        });
-
-        if (isCorrect) {
-          btn.style.background = "#dcfce7";
-          btn.style.borderColor = "#16a34a";
-          tryFb.style.background = "#f0fdf4";
-          tryFb.style.color = "#14532d";
-          tryFb.style.border = "2px solid #22c55e";
-          tryFb.textContent = `🎉 ${explain}`;
-        } else {
-          btn.style.background = "#fef2f2";
-          btn.style.borderColor = "#ef4444";
-          tryFb.style.background = "#fff1f2";
-          tryFb.style.color = "#9f1239";
-          tryFb.style.border = "2px solid #f43f5e";
-          tryFb.textContent = `💡 ${explain}`;
+  // ② See How It Works — the rule as short numbered moves + the visual model.
+  if (keyIdea.points.length || keyIdea.example || visuals?.content?.src) {
+    steps.push({
+      icon: "👁️",
+      label: isEs ? "Cómo funciona" : "See How It Works",
+      sub: isEs ? "La regla y el modelo visual" : "The rule, and what it looks like",
+      build(host) {
+        host.innerHTML = `
+          ${
+            keyIdea.points.length
+              ? `<ol class="vl-rulepoints">${keyIdea.points
+                  .map((p) => `<li>${renderMathText(p)}</li>`)
+                  .join("")}</ol>`
+              : ""
+          }
+          ${
+            keyIdea.example
+              ? `<div class="vl-example-card">
+                   <span class="vl-formula-label">${isEs ? "Por ejemplo:" : "Like this:"}</span>
+                   ${mathLine(keyIdea.example)}
+                 </div>`
+              : ""
+          }
+          ${
+            visuals?.content?.src
+              ? `<div class="vl-visual-card">
+                   <div class="vl-visual-img-wrap" id="vlVisualZoomTarget" title="Click to enlarge visual model">
+                     <img src="${visuals.content.src}" alt="${escHtml(visuals.content.alt)}" loading="lazy" />
+                   </div>
+                   <div class="vl-visual-caption">
+                     <span>📊 <strong>${isEs ? "Modelo visual:" : "The math as a picture:"}</strong> ${escHtml(visuals.content.caption)}</span>
+                     <span class="vl-zoom-badge">🔍 ${isEs ? "Toca para ampliar" : "Click to enlarge"}</span>
+                   </div>
+                 </div>`
+              : ""
+          }`;
+        const zoomTarget = host.querySelector("#vlVisualZoomTarget");
+        if (zoomTarget) {
+          zoomTarget.addEventListener("click", () => {
+            openVisualLightbox(visuals.content.src, visuals.content.caption);
+          });
         }
-        tryFb.style.display = "block";
-        speakText(explain, isEs ? "es-US" : "en-US");
-      });
+      },
     });
-
-    mainCard.append(tryItCard);
   }
 
-  // ─── BUILT-IN TURN AND TALK SECTION ─────────────────────────────────────────
-  const turnAndTalkData = (Array.isArray(config.turnAndTalk) && config.turnAndTalk[0]) || {};
-  let currentLangEs = isEs;
+  // Reveal-one-step-at-a-time wiring shared by "Watch me" and "Try with me".
+  // All items exist in the DOM (print shows everything); pacing is display
+  // only. With 0–1 items the pace row never appears.
+  const wirePaced = (host, onAllShown) => {
+    const items = Array.from(host.querySelectorAll(".vl-solve-step"));
+    const pace = /** @type {HTMLElement|null} */ (host.querySelector(".vl-pace"));
+    let shown = 1;
+    const finish = () => {
+      if (pace) pace.classList.add("vl-hidden");
+      onAllShown?.();
+    };
+    if (items.length <= 1 || !pace) {
+      items.forEach((it) => it.classList.remove("vl-hidden"));
+      finish();
+      return;
+    }
+    const nextBtn = /** @type {HTMLButtonElement} */ (pace.querySelector(".vl-pace-next"));
+    const allBtn = /** @type {HTMLButtonElement} */ (pace.querySelector(".vl-pace-all"));
+    const count = pace.querySelector(".vl-pace-count");
+    const update = () => {
+      if (count) count.textContent = `${shown} / ${items.length}`;
+    };
+    update();
+    nextBtn.addEventListener("click", () => {
+      const item = items[shown];
+      if (!item) return;
+      item.classList.remove("vl-hidden");
+      shown++;
+      update();
+      if (!prefersReducedMotion) item.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      if (shown >= items.length) finish();
+    });
+    allBtn.addEventListener("click", () => {
+      items.forEach((it) => it.classList.remove("vl-hidden"));
+      shown = items.length;
+      finish();
+    });
+  };
 
-  const defaultQuestionEn =
-    turnAndTalkData.question ||
-    `Turn and talk with your partner: How does this math visual and example work? What step did you notice first?`;
-  const defaultQuestionEs =
-    turnAndTalkData.questionEs ||
-    `Habla con tu compañero: ¿Cómo funciona este modelo visual y ejemplo? ¿Qué paso notaste primero?`;
+  const speakButtonsIn = (host) => {
+    host.querySelectorAll(".vl-step-speak-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const text = btn.getAttribute("data-step-text");
+        if (text) speakText(text, isEs ? "es-US" : "en-US");
+      });
+    });
+  };
 
-  // 202 of 222 lesson configs author `turnAndTalk[].stems` — bilingual starters
-  // written against THAT lesson's problem and visual. Reading them is the point:
-  // the generic trio below talks about "the visual" and "Step 1" in the abstract,
-  // so when it renders next to a specific figure the two disagree.
-  const authoredStems = Array.isArray(turnAndTalkData.stems) ? turnAndTalkData.stems : [];
-  const stemText = (stem, lang) => (typeof stem === "string" ? stem : stem?.[lang]);
-  const authoredEn = authoredStems.map((st) => stemText(st, "en")).filter(Boolean);
-  const authoredEs = authoredStems.map((st) => stemText(st, "es")).filter(Boolean);
-
-  const startersEn = authoredEn.length
-    ? authoredEn
-    : [
-        `Looking at the visual, I notice that ______ in Step 1.`,
-        `This math model shows ______ because ______.`,
-        `My partner and I agree that the key step is ______.`,
-      ];
-  const startersEs = authoredEs.length
-    ? authoredEs
-    : [
-        `Mirando el modelo visual, noté que ______ en el Paso 1.`,
-        `Este modelo matemático muestra ______ porque ______.`,
-        `Mi compañero y yo estamos de acuerdo en que el paso clave es ______.`,
-      ];
-
-  const ttContainer = document.createElement("div");
-  ttContainer.className = "vl-turntalk-card";
-
-  function renderTurnAndTalk() {
-    const qText = currentLangEs ? defaultQuestionEs : defaultQuestionEn;
-    const starters = currentLangEs ? startersEs : startersEn;
-
-    ttContainer.innerHTML = `
-      <div class="vl-turntalk-head">
-        <div class="vl-turntalk-title">
-          <span>🗣️ ${currentLangEs ? "Habla con tu Compañero (Turn & Talk)" : "Turn and Talk with Your Partner"}</span>
-        </div>
-        <div class="vl-turntalk-controls">
-          <button type="button" class="vl-tt-btn" id="ttListenBtn">🔊 ${currentLangEs ? "Escuchar" : "Listen"}</button>
-          <button type="button" class="vl-tt-btn" id="ttLangBtn">${currentLangEs ? "🇺🇸 English" : "🇲🇽 Español"}</button>
-        </div>
-      </div>
-      <div class="vl-turntalk-question">"${escHtml(qText)}"</div>
-      <div class="vl-starters-label">${currentLangEs ? "💬 Frases de Inicio (Toca para seleccionar):" : "💬 Sentence Starters (Tap to speak & practice):"}</div>
-      <div class="vl-starters-grid">
-        ${starters
-          .map(
-            (st, idx) => `
-          <div class="vl-starter-chip" data-idx="${idx}" tabindex="0" role="button">
-            <span>💬</span>
-            <span>"${escHtml(st)}"</span>
+  // ③ Watch Me Solve It — the worked example, one move at a time, with each
+  // move's mathematics printed large under the sentence.
+  if (iLines.length) {
+    steps.push({
+      icon: "👀",
+      label: isEs ? "Mírame resolverlo" : "Watch Me Solve It",
+      sub: isEs ? "Lee un paso, luego muestra el siguiente" : "Read one step, then show the next",
+      build(host) {
+        host.innerHTML = `
+          ${iDo.title ? `<p class="vl-lead"><strong>${escHtml(iDo.title)}</strong></p>` : ""}
+          <ol class="vl-solve-steps">
+            ${iLines
+              .map(
+                (line, idx) => `
+              <li class="vl-solve-step${idx === 0 ? "" : " vl-hidden"}">
+                <span class="vl-step-num">${isEs ? "Paso" : "Step"} ${idx + 1}</span>
+                <div class="vl-solve-body">
+                  <span class="vl-step-text">${renderMathText(line)}</span>
+                  ${lineEquation(line)}
+                </div>
+                <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(line)}">🔊 <span class="sr-only">${isEs ? "Escuchar paso" : "Hear step"} ${idx + 1}</span></button>
+              </li>`,
+              )
+              .join("")}
+          </ol>
+          <div class="vl-pace no-print">
+            <button type="button" class="vl-pace-next">${isEs ? "Muestra el siguiente paso" : "Show the next step"} ▸ <span class="vl-pace-count"></span></button>
+            <button type="button" class="vl-pace-all">${isEs ? "Mostrar todos" : "Show all steps"}</button>
           </div>
-        `,
-          )
-          .join("")}
-      </div>
-    `;
-
-    ttContainer.querySelector("#ttLangBtn").addEventListener("click", () => {
-      currentLangEs = !currentLangEs;
-      renderTurnAndTalk();
-    });
-
-    ttContainer.querySelector("#ttListenBtn").addEventListener("click", () => {
-      speakText(qText, currentLangEs ? "es-US" : "en-US");
-    });
-
-    const starterChips = /** @type {NodeListOf<HTMLElement>} */ (
-      ttContainer.querySelectorAll(".vl-starter-chip")
-    );
-    starterChips.forEach((chip) => {
-      chip.addEventListener("click", () => {
-        ttContainer
-          .querySelectorAll(".vl-starter-chip")
-          .forEach((c) => c.classList.remove("active"));
-        chip.classList.add("active");
-        const idx = Number(chip.dataset.idx);
-        const text = starters[idx];
-        speakText(text, currentLangEs ? "es-US" : "en-US");
-      });
+          ${
+            ivConfig && ivConfig.kind
+              ? `<div class="vl-tool-block vl-hidden">
+                   <div class="vl-tool-head">🛠️ ${isEs ? "Ahora prueba ese mismo movimiento aquí:" : "Now try that same move here:"}</div>
+                   ${interactiveVisualHost(ivConfig, ivConfig.label || visuals?.content?.caption || "")}
+                 </div>`
+              : ""
+          }`;
+        speakButtonsIn(host);
+        const toolBlock = /** @type {HTMLElement|null} */ (host.querySelector(".vl-tool-block"));
+        let toolMounted = false;
+        wirePaced(host, () => {
+          if (!toolBlock || toolMounted) return;
+          toolMounted = true;
+          toolBlock.classList.remove("vl-hidden");
+          mountInteractiveVisuals(toolBlock, { state });
+        });
+      },
     });
   }
 
-  renderTurnAndTalk();
-  mainCard.append(ttContainer);
+  // ④ Try It With Me — the guided example ASKS before it tells: the answer to
+  // each question sits behind a "Check" reveal instead of in the next line.
+  // Ends with the one thing to Notice (the lesson's own misconception).
+  if (weLines.length || misconception) {
+    steps.push({
+      icon: "🤝",
+      label: isEs ? "Inténtalo conmigo" : "Try It With Me",
+      sub: isEs ? "Responde primero, luego comprueba" : "Answer first in your head, then check",
+      build(host) {
+        const guided = weLines
+          .map((line, idx) => {
+            const g = splitGuidedLine(line);
+            const reveal = g.tell
+              ? `<details class="vl-check-reveal"><summary>✓ ${isEs ? "Comprueba" : "Check"}</summary><div class="vl-check-body">${renderMathText(g.tell)}</div></details>`
+              : lineEquation(g.ask);
+            return `
+              <li class="vl-solve-step${idx === 0 ? "" : " vl-hidden"}">
+                <span class="vl-step-num">${idx + 1}</span>
+                <div class="vl-solve-body">
+                  <span class="vl-step-text">${renderMathText(g.ask)}</span>
+                  ${reveal}
+                </div>
+                <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(g.ask)}">🔊 <span class="sr-only">${isEs ? "Escuchar" : "Hear step"} ${idx + 1}</span></button>
+              </li>`;
+          })
+          .join("");
+        host.innerHTML = `
+          ${
+            weLines.length
+              ? `${weDo.title ? `<p class="vl-lead"><strong>${escHtml(weDo.title)}</strong></p>` : ""}
+          <ol class="vl-solve-steps">${guided}</ol>
+          <div class="vl-pace no-print">
+            <button type="button" class="vl-pace-next">${isEs ? "Muestra el siguiente paso" : "Show the next step"} ▸ <span class="vl-pace-count"></span></button>
+            <button type="button" class="vl-pace-all">${isEs ? "Mostrar todos" : "Show all steps"}</button>
+          </div>`
+              : ""
+          }
+          ${
+            misconception
+              ? `<div class="vl-misconception-card">
+                   <span class="vl-misconception-label"><span>⚠️</span> <span>${isEs ? "Fíjate — error común" : "Notice — the common mistake"}</span></span>
+                   <p class="vl-misconception-text">${renderMathText(isEs ? misconception.es : misconception.en)}</p>
+                 </div>`
+              : ""
+          }`;
+        speakButtonsIn(host);
+        wirePaced(host, null);
+      },
+    });
+  }
 
-  // ─── INTERACTIVE CONCEPT CONFIDENCE CHECKPOINT WIDGET ───────────────────────
-  const confWidget = document.createElement("div");
-  confWidget.className = "vl-confidence-widget";
-  confWidget.style.cssText = `
-    margin-top: 28px; padding: 22px 26px;
-    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-    border: 2.5px solid #16a34a; border-radius: 22px;
-    box-shadow: 0 8px 24px rgba(22,163,74,0.14);
-  `;
-  confWidget.innerHTML = `
-    <div style="font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:800; color:#14532d; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
-      <span>🎯 ${isEs ? "Verificación de Confianza" : "Self-Check Confidence Checkpoint"}</span>
-      <span style="font-size:0.82rem; font-weight:700; color:#166534; background:rgba(255,255,255,0.85); padding:4px 12px; border-radius:999px; border:1px solid rgba(22,163,74,0.3);">${isEs ? "Toca una opción" : "Tap to select"}</span>
-    </div>
-    <div style="font-size:1.05rem; font-weight:600; color:#166534; margin-bottom:16px;">
-      ${isEs ? "¿Qué tan bien entiendes cómo funciona la matemática en este momento?" : "How confident do you feel with this math concept right now?"}
-    </div>
-    <div class="vl-conf-options" style="display:flex; gap:12px; flex-wrap:wrap;">
-      <button type="button" class="vl-conf-btn" data-level="3" style="flex:1; min-width:140px; padding:14px; border-radius:16px; border:2.5px solid #bbf7d0; background:#ffffff; color:#14532d; font-weight:700; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;">
-        <span>🤩</span> <span>${isEs ? "¡Lo Tengo!" : "Got It! Ready!"}</span>
-      </button>
-      <button type="button" class="vl-conf-btn" data-level="2" style="flex:1; min-width:140px; padding:14px; border-radius:16px; border:2.5px solid #fef08a; background:#ffffff; color:#713f12; font-weight:700; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;">
-        <span>🤔</span> <span>${isEs ? "Casi Listo" : "Almost There"}</span>
-      </button>
-      <button type="button" class="vl-conf-btn" data-level="1" style="flex:1; min-width:140px; padding:14px; border-radius:16px; border:2.5px solid #fed7aa; background:#ffffff; color:#7c2d12; font-weight:700; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s ease;">
-        <span>🙋‍♂️</span> <span>${isEs ? "Necesito Práctica" : "Need Practice"}</span>
-      </button>
-    </div>
-    <div class="vl-conf-feedback" style="margin-top:16px; font-weight:700; font-size:1.02rem; padding:12px 16px; border-radius:12px; display:none;"></div>
-  `;
+  // ⑤ Quick Check — did the teaching land? One small question with immediate
+  // feedback, then talk it through and rate your confidence.
+  steps.push({
+    icon: "✅",
+    label: isEs ? "Comprobación rápida" : "Quick Check",
+    sub: isEs ? "¿Lo entendiste? Demuéstralo" : "Did you get it? Prove it to yourself",
+    build(host) {
+      if (tryIt) {
+        const tryItCard = document.createElement("div");
+        tryItCard.className = "vl-tryit-card";
+        tryItCard.innerHTML = `
+          <div class="vl-tryit-head">
+            <div class="vl-tryit-title"><span>✏️ ${isEs ? "¡Pruébalo!" : "Try it!"}</span></div>
+          </div>
+          <div class="vl-tryit-question">${renderMathText(isEs ? tryIt.questionEs : tryIt.question)}</div>
+          <div class="vl-tryit-opts">
+            ${tryIt.options
+              .map(
+                (opt, idx) => `
+              <button type="button" class="vl-tryit-opt" data-correct="${opt.correct}" data-explain="${escHtml(opt.explain)}">
+                <span>${["A", "B", "C"][idx] || "•"}. ${renderMathText(opt.text)}</span>
+              </button>`,
+              )
+              .join("")}
+          </div>
+          <div class="vl-tryit-feedback" role="status" style="display:none;"></div>`;
 
-  const confButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (
-    confWidget.querySelectorAll(".vl-conf-btn")
-  );
-  const confFb = /** @type {HTMLElement} */ (confWidget.querySelector(".vl-conf-feedback"));
-
-  confButtons.forEach((b) => {
-    b.addEventListener("click", () => {
-      confButtons.forEach((x) => {
-        x.style.background = "#ffffff";
-        x.style.borderColor = "#cbd5e1";
-      });
-      b.style.background = "#14532d";
-      b.style.color = "#ffffff";
-      b.style.borderColor = "#14532d";
-
-      const lvl = b.dataset.level;
-      let msg = "";
-      if (lvl === "3") {
-        msg = isEs
-          ? "🌟 ¡Excelente! Estás listo para resolver los problemas de práctica."
-          : "🌟 Awesome! You are ready to tackle the practice problems.";
-        confFb.style.background = "#dcfce7";
-        confFb.style.color = "#14532d";
-      } else if (lvl === "2") {
-        msg = isEs
-          ? "💡 ¡Buen esfuerzo! Explora la herramienta interactiva arriba para reforzar tu comprensión."
-          : "💡 Great effort! Use the interactive math tool above to reinforce your steps.";
-        confFb.style.background = "#fef9c3";
-        confFb.style.color = "#713f12";
-      } else {
-        msg = isEs
-          ? "🤝 ¡Está bien! Repasa los pasos del ejemplo y practica con un compañero."
-          : "🤝 That's okay! Review the worked example steps above and talk with your partner.";
-        confFb.style.background = "#ffedd5";
-        confFb.style.color = "#7c2d12";
+        const tryOpts = /** @type {NodeListOf<HTMLButtonElement>} */ (
+          tryItCard.querySelectorAll(".vl-tryit-opt")
+        );
+        const tryFb = /** @type {HTMLElement} */ (tryItCard.querySelector(".vl-tryit-feedback"));
+        tryOpts.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const isCorrect = btn.dataset.correct === "true";
+            const explain = btn.dataset.explain || "";
+            tryOpts.forEach((b) => b.classList.remove("vl-opt-right", "vl-opt-wrong"));
+            btn.classList.add(isCorrect ? "vl-opt-right" : "vl-opt-wrong");
+            tryFb.classList.toggle("vl-fb-right", isCorrect);
+            tryFb.classList.toggle("vl-fb-wrong", !isCorrect);
+            tryFb.textContent = `${isCorrect ? "🎉" : "💡"} ${explain}`;
+            tryFb.style.display = "block";
+            speakText(explain, isEs ? "es-US" : "en-US");
+          });
+        });
+        host.append(tryItCard);
       }
-      confFb.textContent = msg;
-      confFb.style.display = "block";
-      speakText(msg, isEs ? "es-US" : "en-US");
-    });
+
+      // Turn & Talk — authored bilingual prompt + sentence starters.
+      const turnAndTalkData = (Array.isArray(config.turnAndTalk) && config.turnAndTalk[0]) || {};
+      let currentLangEs = isEs;
+      const defaultQuestionEn =
+        turnAndTalkData.question ||
+        "Turn and talk with your partner: which step could you teach to someone else, and which step is still fuzzy?";
+      const defaultQuestionEs =
+        turnAndTalkData.questionEs ||
+        "Habla con tu compañero: ¿qué paso podrías enseñar a otra persona y cuál todavía es confuso?";
+      const authoredStems = Array.isArray(turnAndTalkData.stems) ? turnAndTalkData.stems : [];
+      const stemText = (stem, lang) => (typeof stem === "string" ? stem : stem?.[lang]);
+      const authoredEn = authoredStems.map((st) => stemText(st, "en")).filter(Boolean);
+      const authoredEs = authoredStems.map((st) => stemText(st, "es")).filter(Boolean);
+      const startersEn = authoredEn.length
+        ? authoredEn
+        : ["I noticed that ______.", "The most important step is ______ because ______."];
+      const startersEs = authoredEs.length
+        ? authoredEs
+        : ["Noté que ______.", "El paso más importante es ______ porque ______."];
+
+      const ttContainer = document.createElement("div");
+      ttContainer.className = "vl-turntalk-card";
+      const renderTurnAndTalk = () => {
+        const qText = currentLangEs ? defaultQuestionEs : defaultQuestionEn;
+        const starters = currentLangEs ? startersEs : startersEn;
+        ttContainer.innerHTML = `
+          <div class="vl-turntalk-head">
+            <div class="vl-turntalk-title"><span>🗣️ ${currentLangEs ? "Habla con tu Compañero" : "Turn and Talk with Your Partner"}</span></div>
+            <div class="vl-turntalk-controls">
+              <button type="button" class="vl-tt-btn" id="ttListenBtn">🔊 ${currentLangEs ? "Escuchar" : "Listen"}</button>
+              <button type="button" class="vl-tt-btn" id="ttLangBtn">${currentLangEs ? "🇺🇸 English" : "🇲🇽 Español"}</button>
+            </div>
+          </div>
+          <div class="vl-turntalk-question">"${escHtml(qText)}"</div>
+          <div class="vl-starters-label">${currentLangEs ? "💬 Frases de Inicio (Toca para escuchar):" : "💬 Sentence Starters (Tap to speak & practice):"}</div>
+          <div class="vl-starters-grid">
+            ${starters
+              .map(
+                (st, idx) => `
+              <div class="vl-starter-chip" data-idx="${idx}" tabindex="0" role="button">
+                <span>💬</span>
+                <span>"${escHtml(st)}"</span>
+              </div>`,
+              )
+              .join("")}
+          </div>`;
+        ttContainer.querySelector("#ttLangBtn").addEventListener("click", () => {
+          currentLangEs = !currentLangEs;
+          renderTurnAndTalk();
+        });
+        ttContainer.querySelector("#ttListenBtn").addEventListener("click", () => {
+          speakText(qText, currentLangEs ? "es-US" : "en-US");
+        });
+        const starterChips = /** @type {NodeListOf<HTMLElement>} */ (
+          ttContainer.querySelectorAll(".vl-starter-chip")
+        );
+        starterChips.forEach((chip) => {
+          const speakChip = () => {
+            ttContainer
+              .querySelectorAll(".vl-starter-chip")
+              .forEach((c) => c.classList.remove("active"));
+            chip.classList.add("active");
+            speakText(starters[Number(chip.dataset.idx)], currentLangEs ? "es-US" : "en-US");
+          };
+          chip.addEventListener("click", speakChip);
+          chip.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              speakChip();
+            }
+          });
+        });
+      };
+      renderTurnAndTalk();
+      host.append(ttContainer);
+
+      // Confidence self-check — routes low confidence back to the steps.
+      const confWidget = document.createElement("div");
+      confWidget.className = "vl-confidence-widget";
+      confWidget.innerHTML = `
+        <div class="vl-conf-title">🎯 ${isEs ? "¿Qué tan seguro te sientes?" : "How confident do you feel right now?"}</div>
+        <div class="vl-conf-options">
+          <button type="button" class="vl-conf-btn" data-level="3"><span>🤩</span> <span>${isEs ? "¡Lo Tengo!" : "Got It! Ready!"}</span></button>
+          <button type="button" class="vl-conf-btn" data-level="2"><span>🤔</span> <span>${isEs ? "Casi Listo" : "Almost There"}</span></button>
+          <button type="button" class="vl-conf-btn" data-level="1"><span>🙋</span> <span>${isEs ? "Necesito Práctica" : "Need Practice"}</span></button>
+        </div>
+        <div class="vl-conf-feedback" role="status" style="display:none;"></div>`;
+      const confButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (
+        confWidget.querySelectorAll(".vl-conf-btn")
+      );
+      const confFb = /** @type {HTMLElement} */ (confWidget.querySelector(".vl-conf-feedback"));
+      confButtons.forEach((b) => {
+        b.addEventListener("click", () => {
+          confButtons.forEach((x) => x.classList.remove("vl-conf-active"));
+          b.classList.add("vl-conf-active");
+          const lvl = b.dataset.level;
+          let msg;
+          if (lvl === "3") {
+            msg = isEs
+              ? "🌟 ¡Excelente! Estás listo para los problemas de práctica."
+              : "🌟 Awesome! You are ready to tackle the practice problems.";
+          } else if (lvl === "2") {
+            msg = isEs
+              ? "💡 ¡Buen esfuerzo! Vuelve a 'Mírame resolverlo' y repasa los pasos."
+              : "💡 Great effort! Step back to Watch Me Solve It and re-read the moves.";
+          } else {
+            msg = isEs
+              ? "🤝 ¡Está bien! Repasa los pasos y habla con un compañero."
+              : "🤝 That's okay! Walk back through the steps and talk with your partner.";
+          }
+          confFb.textContent = msg;
+          confFb.style.display = "block";
+          speakText(msg, isEs ? "es-US" : "en-US");
+        });
+      });
+      host.append(confWidget);
+
+      // The step's own way forward: finish Learn It and head into the lesson.
+      const actions = document.createElement("div");
+      actions.className = "vl-actions";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn btn-primary btn-lg vl-continue-btn";
+      btn.innerHTML = `<span>${
+        isEs
+          ? "¡He aprendido el concepto — a practicar! ✏️ →"
+          : "I've learned the concept — let's practice! ✏️ →"
+      }</span>`;
+      btn.addEventListener("click", () => {
+        try {
+          if (state) state.set({ notesVisited: true });
+        } catch (_) {}
+        onComplete?.();
+      });
+      actions.append(btn);
+      host.append(actions);
+    },
   });
 
-  mainCard.append(confWidget);
-  wrap.append(mainCard);
-
-  // Underline vocabulary terms throughout Learn It for definition & image popups
-  const vocabList = Array.isArray(config.vocabulary) ? config.vocabulary : [];
-  if (vocabList.length > 0) {
-    try {
-      underlineVocabTerms(mainCard, vocabList);
-    } catch (_) {}
+  // ⑥ Apply It — today's actual problem (scenario + Show Your Work), restored
+  // from the Launch move-out. Built lazily on first visit so its heavier
+  // pieces (Reveal slides, saved-work scaffold) only render when reached.
+  if (typeof renderExtras === "function") {
+    steps.push({
+      icon: "🌍",
+      label: isEs ? "Aplícalo" : "Apply It",
+      sub: isEs ? "Usa la matemática en el problema de hoy" : "Use the math on today's problem",
+      build() {},
+      onFirstShow(host) {
+        renderExtras(host);
+      },
+    });
   }
 
-  // Bottom Continue Action Button
-  const actions = document.createElement("div");
-  actions.className = "vl-actions";
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "btn btn-primary btn-lg vl-continue-btn";
-  btn.innerHTML = `<span>${
-    // Learn It hands off to Practice. The label used to say "let's explore",
-    // which named a phase this button has never opened.
-    isEs
-      ? "¡He aprendido el concepto — a practicar! ✏️ →"
-      : "I've learned the concept — let's practice! ✏️ →"
-  }</span>`;
-  btn.addEventListener("click", () => {
-    try {
-      if (state) state.set({ notesVisited: true });
-    } catch (_) {}
-    onComplete?.();
+  // ── Stepper shell: rail + one visible step + back/next ────────────────────
+  const stepper = document.createElement("div");
+  stepper.className = "vl-stepper";
+
+  const rail = document.createElement("nav");
+  rail.className = "vl-rail no-print";
+  rail.setAttribute("aria-label", isEs ? "Pasos de Aprende" : "Learn It steps");
+  rail.innerHTML = steps
+    .map(
+      (s, i) => `
+    <button type="button" class="vl-rail-btn" data-step="${i}">
+      <span class="vl-rail-num" aria-hidden="true">${i + 1}</span>
+      <span class="vl-rail-label">${s.icon} ${escHtml(s.label)}</span>
+    </button>`,
+    )
+    .join("");
+  stepper.append(rail);
+
+  const sections = steps.map((s, i) => {
+    const section = document.createElement("section");
+    section.className = "vl-step";
+    section.setAttribute("aria-labelledby", `vl-step-h-${i}`);
+    section.innerHTML = `
+      <header class="vl-step-head">
+        <p class="vl-step-kicker">${isEs ? "Paso" : "Step"} ${i + 1} ${isEs ? "de" : "of"} ${steps.length}</p>
+        <h3 class="vl-step-title" id="vl-step-h-${i}" tabindex="-1">${s.icon} ${escHtml(s.label)}</h3>
+        <p class="vl-step-sub">${escHtml(s.sub)}</p>
+      </header>
+      <div class="vl-step-body"></div>
+      <div class="vl-stepnav no-print">
+        <button type="button" class="vl-back-btn"${i === 0 ? " hidden" : ""}>‹ ${isEs ? "Atrás" : "Back"}</button>
+        ${
+          i < steps.length - 1
+            ? `<button type="button" class="vl-next-btn">${isEs ? "Siguiente" : "Next"}: ${steps[i + 1].icon} ${escHtml(steps[i + 1].label)} ›</button>`
+            : ""
+        }
+      </div>`;
+    const body = /** @type {HTMLElement} */ (section.querySelector(".vl-step-body"));
+    s.build(body);
+    if (vocabList.length) {
+      try {
+        underlineVocabTerms(body, vocabList);
+      } catch (_) {}
+    }
+    stepper.append(section);
+    return section;
   });
-  actions.append(btn);
-  wrap.append(actions);
 
+  const railBtns = /** @type {NodeListOf<HTMLButtonElement>} */ (
+    rail.querySelectorAll(".vl-rail-btn")
+  );
+  const firstShown = new Set();
+  let activeIndex = -1;
+  const activate = (index, { focus = true } = {}) => {
+    const next = Math.max(0, Math.min(steps.length - 1, index));
+    if (next === activeIndex) return;
+    activeIndex = next;
+    sections.forEach((sec, i) => sec.classList.toggle("vl-step-active", i === next));
+    railBtns.forEach((b, i) => {
+      if (i === next) b.setAttribute("aria-current", "step");
+      else b.removeAttribute("aria-current");
+      b.classList.toggle("vl-rail-active", i === next);
+      b.classList.toggle("vl-rail-done", i < next);
+    });
+    if (!firstShown.has(next)) {
+      firstShown.add(next);
+      const body = /** @type {HTMLElement} */ (sections[next].querySelector(".vl-step-body"));
+      steps[next].onFirstShow?.(body);
+    }
+    if (focus) {
+      wrap.scrollIntoView({
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+        block: "start",
+      });
+      const title = /** @type {HTMLElement|null} */ (
+        sections[next].querySelector(".vl-step-title")
+      );
+      title?.focus?.({ preventScroll: true });
+    }
+  };
+
+  railBtns.forEach((b) => {
+    b.addEventListener("click", () => activate(Number(b.dataset.step)));
+  });
+  sections.forEach((sec, i) => {
+    sec.querySelector(".vl-back-btn")?.addEventListener("click", () => activate(i - 1));
+    sec.querySelector(".vl-next-btn")?.addEventListener("click", () => activate(i + 1));
+  });
+
+  wrap.append(stepper);
   container.append(wrap);
-
-  // Hydrate any mounted interactive manipulative hosts live!
-  mountInteractiveVisuals(mainCard, { state });
+  activate(0, { focus: false });
 }
 
 // ─── 3. COMBINED PANEL FOR BACKWARD COMPATIBILITY ───────────────────────────
