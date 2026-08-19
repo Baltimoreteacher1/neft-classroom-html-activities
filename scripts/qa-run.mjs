@@ -111,6 +111,15 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // SLIDE ↔ LEARN IT ALIGNMENT — the projected deck and the Learn It stepper
+  // both derive from launch.conceptIntro, and this gate is what proves the
+  // committed deck, the runtime config, and the panel's math transformations
+  // still present ONE problem. Its first sweep caught two live false
+  // equations (0.7v → 7v, 2.5h → 5h) that every other gate was green on.
+  [
+    /^(tools\/validate-learn-slide-alignment\.mjs|engine\/core\/learn-step-model(\.test)?\.(js|mjs)|scripts\/generate-slides\.mjs|engine\/components\/vocab-learn-panel\.js)$/,
+    ["test", "validate:learn-slide-alignment", "validate:js-syntax", "check"],
+  ],
   // NOTEBOOK CHECKPOINTS — the three "write it in your notebook" gates every
   // core lesson declares. The validator is the only thing that can see a
   // checkpoint pointing at a phase the lesson does not have (it renders nowhere

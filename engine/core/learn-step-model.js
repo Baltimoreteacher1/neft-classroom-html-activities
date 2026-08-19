@@ -63,10 +63,11 @@ export function parseKeyIdea(keyIdea) {
 // turned "2 1/2 = 5/2" into the false "1/2 = 5/2".
 const VALUE = String.raw`\(?-?\$?(?:[½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]|\d+\s+\d+\/\d+|\d[\d,]*(?:\.\d+)?(?:\/\d+)?)[⁰¹²³⁴⁵⁶⁷⁸⁹]*%?\)?`;
 // A variable token: a single letter with an optional coefficient (A, b, (h),
-// x, 3x, 2n). The lookahead keeps it off the front of English words, and the
-// coefficient keeps "3x ÷ 3 = 21 ÷ 3" from shedding its 3x and printing the
-// false "3 = 21 ÷ 3".
-const VARIABLE = String.raw`\(?\d*[A-Za-z](?![A-Za-z])\)?`;
+// x, 3x, 2n, 0.7v, 2.5h). The lookahead keeps it off the front of English
+// words; the coefficient keeps "3x ÷ 3 = 21 ÷ 3" from shedding its 3x and
+// printing the false "3 = 21 ÷ 3"; the DECIMAL coefficient keeps
+// "0.7v = 26,600" from being torn into the wrong equation "7v = 26,600".
+const VARIABLE = String.raw`\(?(?:\d[\d,]*(?:\.\d+)?)?[A-Za-z](?![A-Za-z])\)?`;
 // A coefficient-attached numeric group: 3(15 + 5), 2(8 + 3), 5(4). Dropping
 // the coefficient turned "3(15 + 5) = 3 × 15 + 3 × 5" into the false
 // "(15 + 5) = 3 × 15 + 3 × 5", so the whole group is one operand.
@@ -106,9 +107,12 @@ export function extractEquation(line) {
   let match;
   while ((match = EQUATION_RUN.exec(text)) !== null) {
     // A run may not begin mid-word: "IQR = Q3 − Q1 = 88 − 75.5" otherwise
-    // yields "1 = 88 − 75.5" (the tail of "Q1"). Step one character forward so
-    // valid inner runs ("88 − 75.5 = 12.5") are still found.
-    if (match.index > 0 && /[A-Za-z0-9]/.test(text[match.index - 1])) {
+    // yields "1 = 88 − 75.5" (the tail of "Q1"), and "0.7v = 26,600" yields
+    // "7v = 26,600" (the tail of the decimal coefficient). Step one character
+    // forward so valid inner runs ("88 − 75.5 = 12.5") are still found.
+    const prev = match.index > 0 ? text[match.index - 1] : "";
+    const prev2 = match.index > 1 ? text[match.index - 2] : "";
+    if (/[A-Za-z0-9]/.test(prev) || (prev === "." && /\d/.test(prev2))) {
       EQUATION_RUN.lastIndex = match.index + 1;
       continue;
     }

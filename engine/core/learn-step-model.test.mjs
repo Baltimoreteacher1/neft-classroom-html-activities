@@ -75,6 +75,16 @@ test("extractEquation reads space-padded lowercase x as multiplication", () => {
   assert.equal(extractEquation("I divide both sides by 3: 3x ÷ 3 = 21 ÷ 3."), "3x ÷ 3 = 21 ÷ 3");
 });
 
+test("extractEquation keeps decimal coefficients whole", () => {
+  // Both shipped: the run started after the decimal point, so students saw a
+  // DIFFERENT (and false) equation than the projected slide problem.
+  assert.equal(
+    extractEquation("Write the percentage statement as an equation, using the decimal form: 0.7v = 26,600."),
+    "0.7v = 26,600",
+  );
+  assert.equal(extractEquation("The order needs 1,000 cars, so substitute: 2.5h = 1,000."), "2.5h = 1,000");
+});
+
 test("splitGuidedLine puts the telling behind the question", () => {
   assert.deepEqual(splitGuidedLine("What do we multiply the denominator 5 by to get 100? (20)"), {
     ask: "What do we multiply the denominator 5 by to get 100?",
