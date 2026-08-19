@@ -571,7 +571,12 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
       status,
       onSolved,
       events,
-      () => revealGuide?.(),
+      () => {
+        revealGuide?.();
+        // Notebook-first cards fold the workspace away by default; two misses
+        // mean the notebook attempt needs the model, so it opens itself.
+        card.__openGuidance?.();
+      },
       () => openHint?.(),
     );
     card.appendChild(control);

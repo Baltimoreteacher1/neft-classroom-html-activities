@@ -1551,6 +1551,8 @@ function verticalDecimal(values, operation) {
   return box;
 }
 
+let guidanceUid = 0;
+
 export function appendVisualPractice(card, item, { mode = "guided", events = {} } = {}) {
   const kind = String(item.visual?.kind || "");
   const read = el("button", "btn ghost sg-read-problem", "🔊 Read this problem");
@@ -1559,6 +1561,69 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
   const stepsApi = guidedSteps(item, mode, events);
   const stepsNodes = stepsApi ? [stepsApi.node] : [];
   const question = card.querySelector(".q");
+  // Notebook-first on the independent tabs (Practice & Check, More Practice):
+  // the DEFAULT flow is read → solve in your NOTEBOOK → type the answer to
+  // check. The on-screen workspace, model and guided steps still exist in
+  // full — parked one tap away behind "Show the guidance", auto-opened by the
+  // struggle path (2 misses) and the adaptive coach's stabilize move, and
+  // fully unhidden in print. The Guided tab keeps its workspace pre-opened:
+  // solving IN the model together is that tab's whole point.
+  const insertSupport = (...nodes) => {
+    if (mode === "guided" || !nodes.length) {
+      question?.after(...nodes);
+      return;
+    }
+    const guidance = el("div", "sg-guidance");
+    guidance.id = `sg-guidance-${++guidanceUid}`;
+    guidance.hidden = true;
+    guidance.append(...nodes);
+    const row = el("div", "sg-notebook-row");
+    const cue = el("p", "sg-notebook-cue");
+    cue.innerHTML = esLane()
+      ? "📓 <b>Resuélvelo primero en tu cuaderno</b> — muestra tus pasos. Luego escribe tu respuesta aquí para comprobarla."
+      : "📓 <b>Solve it in your notebook first</b> — show your steps. Then type your answer here to check it.";
+    // The problem read-aloud must not disappear into the folded guidance —
+    // appending it here relocates it out of the support head.
+    row.append(cue, read);
+    const hasContent =
+      guidance.querySelector(
+        "svg, input, button, details, .sg-fill-step, .sg-problem-visual, .colmath",
+      ) || guidance.textContent.trim().length > 0;
+    if (!hasContent) {
+      question?.after(row);
+      return;
+    }
+    const toggle = el("button", "btn ghost sg-guidance-btn", "");
+    toggle.type = "button";
+    toggle.setAttribute("aria-controls", guidance.id);
+    const setLabel = () => {
+      toggle.textContent = guidance.hidden
+        ? esLane()
+          ? "🧭 Ver el apoyo"
+          : "🧭 Show the guidance"
+        : esLane()
+          ? "Ocultar el apoyo"
+          : "Hide the guidance";
+      toggle.setAttribute("aria-expanded", String(!guidance.hidden));
+    };
+    toggle.onclick = () => {
+      guidance.hidden = !guidance.hidden;
+      setLabel();
+    };
+    setLabel();
+    row.append(toggle);
+    question?.after(row, guidance);
+    card.__openGuidance = () => {
+      if (!guidance.hidden) return;
+      guidance.hidden = false;
+      setLabel();
+    };
+    const prevSupport = card.sgApplySupport;
+    card.sgApplySupport = () => {
+      prevSupport?.();
+      card.__openGuidance?.();
+    };
+  };
   // Place-value problems: the answer control's stacked column IS the giant
   // workspace — students work the problem in it, so no display-only figure.
   if (kind.includes("place-value")) {
@@ -1570,7 +1635,7 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
     // stacks as whole numbers, divide shows the whole-divisor rewrite) with a
     // blank answer line, above the guided steps.
     const vd = verticalDecimal(item.visual?.values, item.visual?.operation);
-    question?.after(top, ...(vd ? [vd] : []), ...stepsNodes);
+    insertSupport(top, ...(vd ? [vd] : []), ...stepsNodes);
     return card;
   }
   // Typed model first: students put the numbers into the model themselves,
@@ -1579,7 +1644,7 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
   if (typed) {
     const top = el("div", "sg-problem-support-head");
     top.append(el("div", "sg-visual-title", "Work in the model"), read);
-    question?.after(top, typed, ...stepsNodes);
+    insertSupport(top, typed, ...stepsNodes);
     return card;
   }
   const markup = visualMarkup(item);
@@ -1588,7 +1653,7 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
     // the figure and value tool — a chart of scraped numbers misleads.
     const top = el("div", "sg-problem-support-head");
     top.append(el("span"), read);
-    question?.after(top, ...stepsNodes);
+    insertSupport(top, ...stepsNodes);
     return card;
   }
   const visual = el("div", "sg-problem-visual", markup);
@@ -1638,7 +1703,7 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
     card.addEventListener("input", flashMorph);
     card.addEventListener("change", flashMorph);
   }
-  question?.after(top, visual, symbolic, ...(morph ? [morph] : []), tool, ...stepsNodes);
+  insertSupport(top, visual, symbolic, ...(morph ? [morph] : []), tool, ...stepsNodes);
   return card;
 }
 

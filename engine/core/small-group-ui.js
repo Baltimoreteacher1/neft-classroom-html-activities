@@ -69,16 +69,16 @@ export const LEVEL_VOICE = {
     buildCta: "Build it together →",
     buildDone: "Built it together ✓",
     guidedDir:
-      "Work one problem at a time. Strong mathematicians use the step guide and hints — that is working smart, not giving up.",
+      "We solve these together — write each step in your notebook as we go. The step guide and hints are here whenever you want them.",
     guidedDirEs:
-      "Trabaja un problema a la vez. Los buenos matemáticos usan la guía de pasos y las pistas: eso es trabajar con inteligencia.",
-    soloDir: "Your turn to shine. Solve it, check it, and revise like a pro when you need to.",
+      "Los resolvemos juntos: escribe cada paso en tu cuaderno. La guía de pasos y las pistas están aquí cuando las quieras.",
+    soloDir: "Solve each one in your notebook first, then enter your answer here to check it.",
     soloDirEs:
-      "Te toca brillar. Resuelve, comprueba y corrige como un profesional cuando haga falta.",
+      "Resuelve cada uno primero en tu cuaderno y luego escribe tu respuesta aquí para comprobarla.",
     moreDir:
-      "Keep going until the steps feel easy — then explain one answer out loud like the expert you are becoming.",
+      "Keep solving in your notebook until the steps feel easy — then explain one answer out loud.",
     moreDirEs:
-      "Sigue hasta que los pasos se sientan fáciles y explica una respuesta en voz alta como el experto que estás llegando a ser.",
+      "Sigue resolviendo en tu cuaderno hasta que los pasos se sientan fáciles y explica una respuesta en voz alta.",
     completeBody:
       "You built it step by step and named your growth. That is exactly what mathematicians do.",
     welcome: "👋 Welcome back — your work is saved right where you left it. Jump back in.",
@@ -91,14 +91,16 @@ export const LEVEL_VOICE = {
       "Piensa como matemático: resuelve, comprueba con la estrategia de hoy y explica qué significa.",
     buildCta: "I can use this idea →",
     buildDone: "Idea connected ✓",
-    guidedDir: "Move efficiently, then check each answer with today's mathematical strategy.",
+    guidedDir:
+      "Work each step in your notebook, then check the answer with today's mathematical strategy.",
     guidedDirEs:
-      "Avanza con eficiencia y comprueba cada respuesta con la estrategia matemática de hoy.",
-    soloDir: "Solve it independently, then use the lesson's math check before you move on.",
+      "Trabaja cada paso en tu cuaderno y comprueba la respuesta con la estrategia matemática de hoy.",
+    soloDir: "Solve it in your notebook, enter your answer, then run the lesson's math check.",
     soloDirEs:
-      "Resuelve de forma independiente y usa la comprobación matemática de la lección antes de continuar.",
-    moreDir: "Push for elegance — can you solve one a second way, faster or cleaner?",
-    moreDirEs: "Busca la elegancia: ¿puedes resolver uno de otra manera, más rápida o más clara?",
+      "Resuélvelo en tu cuaderno, escribe tu respuesta y haz la comprobación matemática de la lección.",
+    moreDir: "Push for elegance — solve one a second way in your notebook, faster or cleaner.",
+    moreDirEs:
+      "Busca la elegancia: resuelve uno de otra manera en tu cuaderno, más rápida o más clara.",
     completeBody:
       "You solved it, checked it, and explained what the result means. That is strong mathematical thinking.",
     welcome: "👋 Welcome back, mathematician — your work is saved. Continue with your math check.",
@@ -112,12 +114,13 @@ export const LEVEL_VOICE = {
     buildCta: "I’ve got this idea again →",
     buildDone: "Got it again ✓",
     guidedDir:
-      "No rush — one small win at a time. Use every hint you want; that is exactly what they are for.",
+      "No rush — one small win at a time, worked out in your notebook. Use every hint you want; that is what they are for.",
     guidedDirEs:
-      "Sin prisa: una pequeña victoria a la vez. Usa todas las pistas que quieras; para eso están.",
-    soloDir: "You are warmed up. Try these on your own — you can always peek back at the guide.",
+      "Sin prisa: una pequeña victoria a la vez, resuelta en tu cuaderno. Usa todas las pistas que quieras; para eso están.",
+    soloDir:
+      "You are warmed up. Solve these in your notebook, then check each answer here — the guide is one tap away.",
     soloDirEs:
-      "Ya estás en marcha. Intenta estos por tu cuenta; siempre puedes volver a mirar la guía.",
+      "Ya estás en marcha. Resuelve estos en tu cuaderno y comprueba cada respuesta aquí; la guía está a un toque.",
     moreDir: "Look how far you have come. A few more and this skill is yours again.",
     moreDirEs: "Mira cuánto has avanzado. Unos pocos más y esta destreza vuelve a ser tuya.",
     completeBody: "You caught up AND leveled up. Be proud — this skill is back in your hands.",
@@ -769,6 +772,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-big-work .eqcap{font-size:22px}
     .sg-math-tool,.sg-guided-steps{margin:12px 0;border:2px solid var(--sg);border-radius:16px;background:var(--sg-card)}.sg-math-tool summary,.sg-guided-steps>summary{cursor:pointer;padding:12px 15px;color:var(--sg-ink);font-family:var(--sg-display);font-weight:700}.sg-tool-body,.sg-step-sequence{padding:0 15px 15px}.sg-tool-directions,.sg-step-intro{color:var(--sg-muted);font-weight:400}.sg-model-slider{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;margin:12px 0;padding:12px;border-radius:12px;background:var(--sg-soft);font-weight:700}.sg-model-slider input{width:100%;accent-color:var(--sg)}.sg-value-tray,.sg-operator-tray,.sg-value-work,.sg-model-expression{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}.sg-operator-tray{padding-top:10px;border-top:1px dashed var(--sg-line)}.sg-value-chip{min-width:52px;min-height:46px;padding:7px 12px;border:2px solid var(--sg);border-radius:11px;color:var(--sg-ink);background:var(--sg-card);font-size:20px;font-weight:700;cursor:pointer}.sg-operator-chip{min-width:46px;color:#fff;background:var(--sg-deep)}.sg-value-work{min-height:76px;padding:10px;border:2px dashed var(--sg-line);border-radius:12px}.sg-model-label{font-weight:700}.sg-model-expression{min-width:150px;flex:1;margin:0}.sg-work-chip{min-width:44px;min-height:44px;padding:6px 11px;border:2px solid color-mix(in srgb,var(--sg-pop) 45%,black);border-radius:9px;color:color-mix(in srgb,var(--sg-pop) 20%,black);background:var(--sg-pop);font-weight:700;cursor:pointer}.sg-clear-model{margin-left:auto}
     .sg-guided-steps{padding:15px;background:var(--sg-card)}.sg-guided-steps>summary{margin:-15px}.sg-guided-steps[open]>summary{margin:-15px -15px 12px}.sg-fill-step{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;margin:10px 0;padding:14px;border:1px solid var(--sg-line);border-radius:var(--sg-radius);background:var(--sg-card)}.sg-fill-step[hidden]{display:none}.sg-fill-step.complete{border-color:var(--sg-good);background:var(--sg-good-bg)}.sg-fill-step.needs-revision{border-color:var(--sg-warn-line);background:var(--sg-warn-bg)}.sg-fill-number{display:grid;width:36px;height:36px;place-items:center;border-radius:var(--sg-radius-sm);color:#fff;background:var(--sg);font-family:var(--sg-display);font-weight:700}.sg-fill-prompt{font-size:19px;font-weight:700}.sg-step-input{width:min(180px,100%);margin:0 5px;padding:5px 8px;border:0;border-bottom:3px solid var(--sg);color:var(--sg-ink);background:var(--sg-card);font-size:20px;font-weight:700;text-align:center}.sg-step-check{min-height:44px;padding:8px 12px}.sg-step-status{grid-column:2/-1;color:var(--sg-muted);font-weight:700}
+    .sg-notebook-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:12px 0;padding:12px 14px;border:1px dashed var(--sg-line);border-radius:var(--sg-radius);background:var(--sg-soft)}.sg-notebook-cue{margin:0;flex:1 1 260px;font-size:16px;line-height:1.5;color:var(--sg-ink)}.sg-guidance-btn{min-height:44px}.sg-guidance{margin:4px 0 8px}.sg-guidance[hidden]{display:none}
     .choices{display:grid;gap:9px}.choice{display:flex;width:100%;align-items:center;gap:10px;padding:11px 14px;border:2px solid var(--sg-line);color:var(--sg-text);background:var(--sg-card);text-align:left}.choice:hover:not(:disabled){border-color:var(--sg);background:var(--sg-soft)}.choice .k{display:grid;width:27px;height:27px;flex:none;place-items:center;border-radius:8px;background:var(--sg-fill);font-weight:700}.choice.correct{border-color:var(--sg-good);background:var(--sg-good-bg);animation:sg-okpulse .5s ease}.choice.wrong{border-color:var(--sg-bad);background:var(--sg-bad-bg);animation:sg-nudge .3s ease}.choice:disabled{cursor:default;opacity:.75}
     @keyframes sg-okpulse{0%{box-shadow:0 0 0 0 rgba(22,115,75,.45)}100%{box-shadow:0 0 0 14px rgba(22,115,75,0)}}
     @keyframes sg-nudge{0%,100%{transform:none}30%{transform:translateX(-4px)}60%{transform:translateX(4px)}}
@@ -978,7 +982,7 @@ export function injectSmallGroupStyles(accent) {
     /* Kill the page ground: the graph rule and colour washes cost toner and
        print as grey haze behind the work a student is handing in. */
     body{background:#fff;background-image:none}
-    .sg-hero::before,.sg-hero::after{display:none}.sg-h{border-bottom-color:#111}.sg-mode,.sg-tabs,.sg-rail,.sg-meter,.sg-reveal,.sg-toolrow,.sg-pulse,.sg-timer,.sg-foot,.sg-teacher,.sg-another,.btn,.sg-speak,#mwb-launcher,.sg-problem-nav,.sg-annotation-tools{display:none!important}.sg-tabpanel[hidden]{display:block!important}.prob[hidden]{display:block!important}.sg-fill-step[hidden]{display:grid!important}.sg-fill-step.locked,.gs-row.locked,.sg-stage.locked,.sg-apply-step.locked{opacity:1!important;pointer-events:auto}.sg-reveal-answer[hidden]{display:inline-block!important}.sg-visual-gate .sg-step-visual[hidden]{display:block!important}#app{max-width:none;padding:0}.sg-hero{margin:0 0 16px;padding:0 0 12px;color:#111;background:var(--sg-card);border-bottom:3px solid #111}.sg-hero h1,.sg-obj,.sg-langobj{color:#111}.sg-kicker,.sg-chip{color:#111;background:#eee;border-color:#bbb}.card,.sg-mission,.sg-talk,.prob,.sg-vcard{box-shadow:none;break-inside:avoid}.sg-mission{display:block}.sg-mission-visual{display:none}.sg-sec{margin-bottom:18px}}
+    .sg-hero::before,.sg-hero::after{display:none}.sg-h{border-bottom-color:#111}.sg-mode,.sg-tabs,.sg-rail,.sg-meter,.sg-reveal,.sg-toolrow,.sg-pulse,.sg-timer,.sg-foot,.sg-teacher,.sg-another,.btn,.sg-speak,#mwb-launcher,.sg-problem-nav,.sg-annotation-tools{display:none!important}.sg-tabpanel[hidden]{display:block!important}.prob[hidden]{display:block!important}.sg-guidance[hidden]{display:block!important}.sg-fill-step[hidden]{display:grid!important}.sg-fill-step.locked,.gs-row.locked,.sg-stage.locked,.sg-apply-step.locked{opacity:1!important;pointer-events:auto}.sg-reveal-answer[hidden]{display:inline-block!important}.sg-visual-gate .sg-step-visual[hidden]{display:block!important}#app{max-width:none;padding:0}.sg-hero{margin:0 0 16px;padding:0 0 12px;color:#111;background:var(--sg-card);border-bottom:3px solid #111}.sg-hero h1,.sg-obj,.sg-langobj{color:#111}.sg-kicker,.sg-chip{color:#111;background:#eee;border-color:#bbb}.card,.sg-mission,.sg-talk,.prob,.sg-vcard{box-shadow:none;break-inside:avoid}.sg-mission{display:block}.sg-mission-visual{display:none}.sg-sec{margin-bottom:18px}}
     /* prefers-contrast: darker lines + text and a heavier focus ring. */
     @media (prefers-contrast:more){:root{--sg-line:#5a6b82;--sg-muted:#26313f;--sg-rule:var(--sg-deep)}
       button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline-width:4px}
