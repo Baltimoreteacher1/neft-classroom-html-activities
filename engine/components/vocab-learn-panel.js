@@ -1,3 +1,4 @@
+import { divisionStepFigures } from "../core/division-walk-figure.js";
 import { getPreferredLang } from "../core/i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "../core/interactive-visual.js";
 import { extractEquation, parseKeyIdea, splitGuidedLine } from "../core/learn-step-model.js";
@@ -1000,6 +1001,32 @@ function injectVocabLearnStyles() {
       outline: 3px solid #0f4c81;
       outline-offset: 2px;
     }
+    .vl-stepfig {
+      margin: 12px 0 2px;
+      padding: 12px 14px 8px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      overflow-x: auto;
+      max-width: 100%;
+    }
+    .vl-stepfig-cap {
+      font-size: 0.85rem;
+      color: #64748b;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .dwf { display: block; }
+    .dwf text {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 22px;
+      fill: #0f172a;
+    }
+    .dwf .dwf-bracket { stroke: #0f172a; stroke-width: 2.5; }
+    .dwf .dwf-rule { stroke: #0f172a; stroke-width: 2; }
+    .dwf .dwf-q { font-weight: 700; }
+    .dwf .dwf-bring { fill: #b45309; }
+    .dwf .dwf-new { fill: #0d7a76; font-weight: 700; }
     .sr-only {
       position: absolute;
       width: 1px;
@@ -1463,7 +1490,13 @@ export function renderLearnItPanel(container, config, options = {}) {
   };
 
   // ③ Watch Me Solve It — the worked example, one move at a time, with each
-  // move's mathematics printed large under the sentence.
+  // move's mathematics printed large under the sentence. Where the walk IS
+  // the standard long-division algorithm, each step also carries a snapshot
+  // of the vertical tableau as it stands after that move — quotient above
+  // the bar, products and differences in their columns — derived by
+  // simulating the algorithm and drawn only when every snapshot's numbers
+  // are the ones the authored line states (division-walk-figure.js).
+  const divFigs = divisionStepFigures(iLines) || [];
   if (iLines.length) {
     steps.push({
       icon: "👀",
@@ -1481,6 +1514,11 @@ export function renderLearnItPanel(container, config, options = {}) {
                 <div class="vl-solve-body">
                   <span class="vl-step-text">${renderMathText(line)}</span>
                   ${lineEquation(line)}
+                  ${
+                    divFigs[idx]
+                      ? `<figure class="vl-stepfig">${divFigs[idx]}<figcaption class="vl-stepfig-cap">${isEs ? "La división hasta ahora" : "The division so far"}</figcaption></figure>`
+                      : ""
+                  }
                 </div>
                 <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(line)}">🔊 <span class="sr-only">${isEs ? "Escuchar paso" : "Hear step"} ${idx + 1}</span></button>
               </li>`,
