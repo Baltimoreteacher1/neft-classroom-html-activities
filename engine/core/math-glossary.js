@@ -69,6 +69,16 @@ export const MATH_GLOSSARY = [
     definitionEs: "Cualquiera de los símbolos 0–9 que se usan para escribir números.",
   },
   {
+    // One word, one popup. Without this entry the matcher only knows "digit",
+    // so "Multi-Digit" rendered as plain "Multi-" plus an underlined "Digit" —
+    // two words where the lesson means one. Longest-surface-first matching
+    // makes this entry win over "digit" wherever the compound appears.
+    term: "multi-digit",
+    termEs: "de varios dígitos",
+    definition: "Having more than one digit — 26, 348, and 1,344 are all multi-digit numbers.",
+    definitionEs: "Que tiene más de un dígito: 26, 348 y 1,344 son números de varios dígitos.",
+  },
+  {
     term: "whole number",
     termEs: "número entero",
     definition: "A counting number with no fraction or decimal (0, 1, 2, 3…).",

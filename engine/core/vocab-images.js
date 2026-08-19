@@ -474,6 +474,7 @@ export function resolveVocabFallback(term) {
 
 // Slugs that have dedicated SVGs but are referenced only via the synonym map.
 const EXTRA_DEDICATED = new Set([
+  "multi-digit",
   "regular-polygon",
   "area-of-regular-polygons",
   "decompose",
