@@ -1,3 +1,4 @@
+import { workedFigure, workedStepFigures } from "../../scripts/lib/learn-figures.mjs";
 import { divisionStepFigures } from "../core/division-walk-figure.js";
 import { getPreferredLang } from "../core/i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "../core/interactive-visual.js";
@@ -752,7 +753,10 @@ function injectVocabLearnStyles() {
     }
     .vl-today-text {
       margin: 0;
-      font-size: 1.05rem;
+      /* Same scale and weight as .vl-bigidea-text — the scenario IS lesson
+         content, and at 1.05rem it read as fine print under the question. */
+      font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+      font-weight: 600;
       line-height: 1.6;
       color: #0f172a;
     }
@@ -1015,6 +1019,12 @@ function injectVocabLearnStyles() {
       color: #64748b;
       font-weight: 700;
       margin-top: 4px;
+    }
+    .vl-stepfig .li-fig-svg {
+      display: block;
+      width: 100%;
+      max-width: 420px;
+      height: auto;
     }
     .dwf { display: block; }
     .dwf text {
@@ -1497,6 +1507,35 @@ export function renderLearnItPanel(container, config, options = {}) {
   // simulating the algorithm and drawn only when every snapshot's numbers
   // are the ones the authored line states (division-walk-figure.js).
   const divFigs = divisionStepFigures(iLines) || [];
+  // Factor-tree walks (6-13) reuse the exact reader/drawer the generated
+  // learn.html pages already trust (scripts/lib/learn-figures.mjs — gated by
+  // validate:learn-figures): the tree gains a branch per authored line. Fed
+  // the panel's own filtered lines so figure i always belongs to step i.
+  const treeFigs =
+    workedStepFigures({ launch: { conceptIntro: { iDo: { lines: iLines } } } }) || [];
+  // The problem's own labelled picture — parallelogram with ITS base and
+  // height, the prism, the number line, the coordinate plane, the tape model —
+  // drawn by the same strictly-validated reader learn.html trusts
+  // (validate:learn-figures: every measurement the figure claims must appear
+  // in the lesson text; it draws nothing when unsure). Pinned at the top of
+  // Watch Me Solve It so the steps unfold against a picture of the problem
+  // they are solving. 21 lessons across 9 figure kinds qualify today.
+  let workedFig = null;
+  try {
+    workedFig = workedFigure(config);
+  } catch (_) {}
+  const stepFigureFor = (idx) => {
+    if (divFigs[idx]) {
+      return { svg: divFigs[idx], cap: isEs ? "La división hasta ahora" : "The division so far" };
+    }
+    if (treeFigs[idx]?.svg) {
+      return {
+        svg: treeFigs[idx].svg,
+        cap: isEs ? "El árbol de factores hasta ahora" : "The factor tree so far",
+      };
+    }
+    return null;
+  };
   if (iLines.length) {
     steps.push({
       icon: "👀",
@@ -1505,6 +1544,11 @@ export function renderLearnItPanel(container, config, options = {}) {
       build(host) {
         host.innerHTML = `
           ${iDo.title ? `<p class="vl-lead"><strong>${escHtml(iDo.title)}</strong></p>` : ""}
+          ${
+            workedFig
+              ? `<figure class="vl-stepfig vl-workedfig">${workedFig.svg}<figcaption class="vl-stepfig-cap">${isEs ? "El problema se ve así" : "The problem looks like this"}</figcaption></figure>`
+              : ""
+          }
           <ol class="vl-solve-steps">
             ${iLines
               .map(
@@ -1514,11 +1558,12 @@ export function renderLearnItPanel(container, config, options = {}) {
                 <div class="vl-solve-body">
                   <span class="vl-step-text">${renderMathText(line)}</span>
                   ${lineEquation(line)}
-                  ${
-                    divFigs[idx]
-                      ? `<figure class="vl-stepfig">${divFigs[idx]}<figcaption class="vl-stepfig-cap">${isEs ? "La división hasta ahora" : "The division so far"}</figcaption></figure>`
-                      : ""
-                  }
+                  ${(() => {
+                    const fig = stepFigureFor(idx);
+                    return fig
+                      ? `<figure class="vl-stepfig">${fig.svg}<figcaption class="vl-stepfig-cap">${fig.cap}</figcaption></figure>`
+                      : "";
+                  })()}
                 </div>
                 <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(line)}">🔊 <span class="sr-only">${isEs ? "Escuchar paso" : "Hear step"} ${idx + 1}</span></button>
               </li>`,
