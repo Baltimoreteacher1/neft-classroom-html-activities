@@ -155,7 +155,7 @@ export function normalizeText(text) {
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
+    .replace(/&#0?39;/g, "'")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -258,6 +258,25 @@ export function auditLesson(id, cfg, deckHtml) {
         `${id} — Slides / Learn It ${label} wording diverged (same numbers, different task?)\n` +
           `    Slides:   …${deckText.slice(Math.max(0, at - 30), at + 50)}…\n` +
           `    Learn It: …${cfgText.slice(Math.max(0, at - 30), at + 50)}…`,
+      );
+    }
+  }
+
+  // The scenario ("Today's problem"). Learn It's Step 1 opens with
+  // launch.narrative verbatim and Step 6 solves it; the deck prints the same
+  // field on its Scenario Launch slide, HTML-escaped. The committed deck must
+  // therefore CONTAIN the normalized narrative — a deck telling a different
+  // story than the strip that says "today's problem" is the scenario version
+  // of the 936 ÷ 4 substitution.
+  const narrative = normalizeText((cfg.launch && cfg.launch.narrative) || "");
+  if (narrative) {
+    const deckAll = normalizeText(deckHtml);
+    if (!deckAll.includes(narrative)) {
+      const narrFp = numberFingerprint(narrative);
+      failures.push(
+        `${id} — the deck's scenario is not the "Today's problem" Learn It opens with\n` +
+          `    Learn It scenario: ${narrative.slice(0, 90)}…\n` +
+          `    Scenario numbers:  ${[...narrFp.keys()].join(", ") || "(none)"} — not found verbatim in the committed deck`,
       );
     }
   }
@@ -366,6 +385,26 @@ function selfTest() {
   {
     const excess = firstExcessNumber(numberFingerprint("12 × 3 = 36"), numberFingerprint("12 × 3"));
     cases.push(["containment detector sees the invented 36", excess === "36"]);
+  }
+
+  // 6. The scenario ("Today's problem"): a deck telling a different story
+  //    than the one Learn It opens with must fail; the same story, HTML-
+  //    escaped the way the deck prints it, must pass.
+  {
+    const cfgWithScenario = mkCfg(["Line."], []);
+    cfgWithScenario.launch.narrative = "The client's patio has a base of 14 feet.";
+    const deckWrongStory = mkDeck(["Line."], []) + `<p>A bakery sells 24 muffins.</p>`;
+    const r1 = auditLesson("SELF-6a", cfgWithScenario, deckWrongStory);
+    cases.push([
+      "substituted scenario fails naming the Learn It story",
+      r1.failures.length === 1 &&
+        /Today's problem/.test(r1.failures[0]) &&
+        /patio/.test(r1.failures[0]),
+    ]);
+    const deckSameStory =
+      mkDeck(["Line."], []) + `<p>The client&#039;s patio has a base of  14 feet.</p>`;
+    const r2 = auditLesson("SELF-6b", cfgWithScenario, deckSameStory);
+    cases.push(["escaped same-story scenario passes", r2.failures.length === 0]);
   }
 
   // 5. Positive control: identical surfaces pass, including value-equal
