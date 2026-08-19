@@ -249,7 +249,7 @@ function getCapture(box) {
   return entry && typeof entry === "object" ? entry : { text: "", confirmed: false };
 }
 
-function setCapture(box, patch) {
+function _setCapture(box, patch) {
   store.boxes[box] = { ...getCapture(box), ...patch };
   saveStore();
 }
@@ -325,18 +325,38 @@ export function closeMathNotesModel() {
  */
 function renderLessonNotesHtml(config) {
   const cps = readCheckpoints(config);
-  if (cps.length === 0) return "";
+  if (cps.length === 0) {
+    throw new Error(
+      `Math Notes: lesson ${(config && config.lessonId) || "unknown"} declares no usable notebook data`,
+    );
+  }
   const sections = [];
   for (const cp of cps) {
+    if (cp.box === 2 && (!cp.copyPanel || !String(cp.copyPanel.rule || "").trim())) {
+      throw new Error(
+        `Math Notes: lesson ${(config && config.lessonId) || "unknown"} is missing box 2 copyPanel rule`,
+      );
+    }
     const panel = renderCopyPanelHtml(cp);
-    if (!panel) continue;
+    if (!panel) {
+      if (cp.box === 2) {
+        throw new Error(
+          `Math Notes: lesson ${(config && config.lessonId) || "unknown"} is missing box 2 copyPanel rule`,
+        );
+      }
+      continue;
+    }
     sections.push(`
       <section class="nt-nb-model-section">
         <h3 class="nt-nb-model-subhead">${esc(cp.heading.replace(/^Notebook time — /, ""))}</h3>
         ${panel}
       </section>`);
   }
-  if (sections.length === 0) return "";
+  if (sections.length === 0) {
+    throw new Error(
+      `Math Notes: lesson ${(config && config.lessonId) || "unknown"} produced 0 notes sections`,
+    );
+  }
   const title = String((config && config.title) || "").trim();
   return `
     <div class="nt-nb-model-lesson">
@@ -447,10 +467,19 @@ function renderCopyPanelHtml(cp) {
     </div>`;
   }
   if (cp.box === 2 && cp.copyPanel.rule) {
+    const stepsHtml =
+      Array.isArray(cp.copyPanel.steps) && cp.copyPanel.steps.length > 0
+        ? `<ol class="nt-nb-copy-steps">${cp.copyPanel.steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>`
+        : "";
+    const formulaHtml = cp.copyPanel.formula
+      ? `<div class="nt-nb-copy-formula"><span class="nt-nb-copy-formula-label">Formula:</span> ${esc(cp.copyPanel.formula)}</div>`
+      : "";
     return `
     <div class="nt-nb-copy-panel nt-nb-copy-box2" data-no-vocab="true" aria-label="Copy into your notebook">
       <div class="nt-nb-copy-banner">Copy into your notebook:</div>
       <div class="nt-nb-copy-rule">${esc(cp.copyPanel.rule)}</div>
+      ${formulaHtml}
+      ${stepsHtml}
       ${cp.copyPanel.meaning ? `<div class="nt-nb-copy-meaning">${esc(cp.copyPanel.meaning)}</div>` : ""}
       ${cp.copyPanel.example ? `<div class="nt-nb-copy-example"><span class="nt-nb-copy-example-label">Example:</span> ${esc(cp.copyPanel.example)}</div>` : ""}
     </div>`;
@@ -461,104 +490,26 @@ function renderCopyPanelHtml(cp) {
 /**
  * Render the checkpoint for this phase in the phase body.
  *
- * No-op when the lesson declares no checkpoint here.
+ * NOTEBOOK TIME IN-PHASE CHECKPOINTS ARE ELIMINATED: Math notes are now accessed
+ * cleanly via the Math Notes modal and Warmup entry card rather than gating
+ * phase transitions with typing inputs.
  */
-export function mountNotebookCheckpoint(el, config, phaseIndex) {
-  const cp = checkpointForPhase(config, phaseIndex);
-  if (!cp || !el) return null;
-  const existing = el.querySelector(`.nt-nb[data-notebook-box="${cp.box}"]`);
-  if (existing) return existing;
-  initNotebook(config);
-
-  const saved = getCapture(cp.box);
-  const idBase = `${NOTEBOOK_FIELD_PREFIX}${cp.box}`;
-  const wrap = document.createElement("section");
-  wrap.className = "nt-nb";
-  wrap.dataset.notebookBox = String(cp.box);
-  // Machine-readable coverage signal for the build gate and reporting. Never
-  // shown to a student.
-  wrap.dataset.promptSource = cp.promptSource;
-  wrap.setAttribute("aria-labelledby", `${idBase}-title`);
-  wrap.innerHTML = `
-    <div class="nt-nb-head">
-      <span class="nt-nb-badge" aria-hidden="true">${cp.box}</span>
-      <h3 class="nt-nb-title" id="${idBase}-title">${esc(cp.heading)}</h3>
-    </div>
-    <p class="nt-nb-prompt">${esc(cp.prompt)}</p>
-    ${renderCopyPanelHtml(cp)}
-    <button type="button" class="nt-nb-modellink"
-            aria-label="${esc(MODEL_LINK_LABEL)}">📓 ${esc(MODEL_LINK_LABEL)}</button>
-    <div class="nt-nb-row">
-      <input type="checkbox" id="${idBase}-done" class="nt-nb-check" ${saved.confirmed ? "checked" : ""} />
-      <label for="${idBase}-done" class="nt-nb-checklabel">${esc(CHECKBOX_LABEL)}</label>
-    </div>
-    <div class="nt-nb-row nt-nb-row-input">
-      <label for="${idBase}-text" class="nt-nb-inputlabel">${esc(cp.label)}</label>
-      <input type="text" id="${idBase}-text" class="nt-nb-input" maxlength="${cp.maxLength}"
-             autocomplete="off" spellcheck="false" value="${esc(saved.text || "")}" />
-    </div>
-    <p class="nt-nb-status" id="${idBase}-status" role="status" aria-live="polite"></p>`;
-
-  const check = /** @type {HTMLInputElement} */ (wrap.querySelector(".nt-nb-check"));
-  const input = /** @type {HTMLInputElement} */ (wrap.querySelector(".nt-nb-input"));
-  const status = wrap.querySelector(".nt-nb-status");
-  // Tap or press Enter on a word's picture to see it large. Same lightbox the
-  // vocabulary cards use, so the gesture a student learns on one surface works
-  // on the other.
-  attachImageZoomAll(wrap, "img.nt-nb-copy-art");
-  const modelBtn = wrap.querySelector(".nt-nb-modellink");
-  if (modelBtn) modelBtn.addEventListener("click", () => openMathNotesModel());
-
-  const sync = () => {
-    wrap.classList.toggle("is-done", isSatisfied(cp.box));
-    // Never a correctness message. This says only whether the lesson can move
-    // on — there is no right or wrong capture.
-    if (isSatisfied(cp.box)) status.textContent = "Saved. You can keep going.";
-  };
-  check.addEventListener("change", () => {
-    setCapture(cp.box, { confirmed: check.checked });
-    sync();
-  });
-  input.addEventListener("input", () => {
-    setCapture(cp.box, { text: input.value });
-    sync();
-  });
-  sync();
-  el.append(wrap);
-  return wrap;
+export function mountNotebookCheckpoint(_el, _config, _phaseIndex) {
+  return null;
 }
 
 /**
  * Gate: may the student leave `fromPhase` for a LATER phase?
  *
- * Backward moves are always allowed — a student re-reading Explore is not
- * skipping anything.
+ * Always returns true — inline phase gating has been eliminated.
  */
-export function canLeavePhase(config, fromPhase, toPhase) {
-  if (!(toPhase > fromPhase)) return true;
-  const cp = checkpointForPhase(config, fromPhase);
-  if (!cp) return true;
-  return isSatisfied(cp.box);
+export function canLeavePhase(_config, _fromPhase, _toPhase) {
+  return true;
 }
 
 /** Say what is still missing, in the block itself, and put the cursor there. */
-export function announceBlocked(config, fromPhase) {
-  const cp = checkpointForPhase(config, fromPhase);
-  if (!cp) return;
-  const wrap = document.querySelector(`.nt-nb[data-notebook-box="${cp.box}"]`);
-  if (!wrap) return;
-  const c = getCapture(cp.box);
-  const status = wrap.querySelector(".nt-nb-status");
-  // One constant sentence, identical in every lesson — not a composed list of
-  // what is missing. This is classroom copy, not a form validator.
-  if (status) status.textContent = BLOCKED_MESSAGE;
-  wrap.classList.add("is-blocked");
-  wrap.scrollIntoView({ block: "center", behavior: "smooth" });
-  const target = /** @type {HTMLElement|null} */ (
-    wrap.querySelector(c.confirmed ? ".nt-nb-input" : ".nt-nb-check")
-  );
-  target?.focus();
-  window.setTimeout(() => wrap.classList.remove("is-blocked"), 1200);
+export function announceBlocked(_config, _fromPhase) {
+  // No-op: phase navigation is not gated.
 }
 
 /** Test seam: drop all in-memory capture state. */

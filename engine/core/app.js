@@ -1298,9 +1298,6 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // and matching/optional activities mount their own markup after this
       // point — keep underlining that dynamically-added content too.
       this._vocabObserver = observeVocabTerms(el, glossaryVocab);
-      // Notebook checkpoint (if this lesson declares one here). Mounted as
-      // fallback if the phase renderer did not mount it in-flow.
-      mountNotebookCheckpoint(el, config, index);
       el.addEventListener(
         "animationend",
         () => el.classList.remove("phase-enter", "phase-enter-back"),

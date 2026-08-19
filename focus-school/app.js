@@ -14002,11 +14002,11 @@ function ensureStudyTask(item) {
 // Adding a test/quiz automatically produces its study plan. Noam never picks
 // which days to study — that is exactly the executive-function load this
 // product exists to remove.
-function regenerateStudyPlan(assessment, { force = false } = {}) {
+function regenerateStudyPlan(assessment, { force = false, todayIso = todayKey() } = {}) {
   if (!assessment || assessment.kind !== "assessment" || !assessment.due)
     return;
   const existing = state.studyPlans[assessment.id] || [];
-  const fresh = PC.buildStudyPlan(assessment, todayKey());
+  const fresh = PC.buildStudyPlan(assessment, todayIso);
   if (!force && existing.some((s) => s.done)) {
     // Preserve completed study history; only re-plan the sessions still ahead.
     const doneDates = new Set(
@@ -14614,10 +14614,10 @@ function saveQuickEntry() {
 }
 
 // Break a project into steps and spread them across the days before it's due.
-function autoBreakdown(a) {
+function autoBreakdown(a, { todayIso = todayKey() } = {}) {
   if (!a || !a.due) return;
   const steps = a.steps.length ? a.steps : PC.defaultProjectSteps(a.title);
-  a.steps = PC.scheduleProjectSteps(steps, todayKey(), a.due).map((s) => ({
+  a.steps = PC.scheduleProjectSteps(steps, todayIso, a.due).map((s) => ({
     id: s.id && String(s.id).startsWith("st_") ? uid("s") : s.id || uid("s"),
     text: s.text,
     done: !!s.done,

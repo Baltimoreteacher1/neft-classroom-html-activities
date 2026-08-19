@@ -199,7 +199,7 @@ export function checkLesson(id, config) {
       // pattern all live in `iDo`. Both are THIS lesson's text; neither opens
       // the door to another lesson's.
       const anchorSource = `${keyIdea}\n${iDo}`;
-      const KINDS = ["rule", "formula", "key idea", "example", "procedure", "pattern"];
+      const KINDS = ["rule", "formula", "key idea", "example", "procedure", "pattern", "algorithm"];
       if (p.anchorKind && !KINDS.includes(p.anchorKind)) {
         errors.push(`${id} box 2: unknown anchor kind "${p.anchorKind}"`);
       }
@@ -214,6 +214,16 @@ export function checkLesson(id, config) {
         errors.push(
           `${id} box 2: rule "${p.rule}" shares no vocabulary with this lesson's objective`,
         );
+      }
+      if (p.formula && !traces(p.formula, anchorSource)) {
+        errors.push(`${id} box 2: formula "${p.formula}" is not stated in this lesson's text`);
+      }
+      if (Array.isArray(p.steps)) {
+        for (const step of p.steps) {
+          if (!traces(step, `${anchorSource}\n${keyIdea}`)) {
+            errors.push(`${id} box 2: step "${step}" is not stated in this lesson's text`);
+          }
+        }
       }
       if (p.meaning && !traces(p.meaning, `${keyIdea}\n${iDo}`)) {
         errors.push(`${id} box 2: meaning is not stated in this lesson's own text`);

@@ -65,7 +65,7 @@ import {
   resolveAuthoredTag,
   studentExplanation,
 } from "./misconceptions.js";
-import { mountNotebookCheckpoint } from "./notebook-checkpoint.js";
+import { mountNotebookCheckpoint, openMathNotesModel } from "./notebook-checkpoint.js";
 import {
   normalizeAcademicWord,
   resolveNoticeWonderAcademicWord,
@@ -3079,6 +3079,33 @@ function renderWarmupPhase(el, state, ctx, config) {
   card.append(questionsContainer);
   card.append(btnRow);
 
+  // Dedicated Math Notes entry card at bottom of warmup
+  const notesEntryCard = document.createElement("div");
+  notesEntryCard.className = "card card-warmup-math-notes";
+  notesEntryCard.style.cssText =
+    "margin-top:20px; border:2px solid #0f766e; border-radius:14px; padding:18px; background:#f0fdfa; box-shadow:0 1px 3px rgba(15,118,110,0.08);";
+  notesEntryCard.innerHTML = `
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:26px;" aria-hidden="true">📓</span>
+        <div>
+          <h4 style="margin:0; font-size:17px; font-weight:700; color:#0f766e;">Today's Math Notes</h4>
+          <p style="margin:4px 0 0; font-size:14px; color:#134e4a; font-weight:500;">
+            Review today's key math words and core rule before starting Launch.
+          </p>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary warmup-open-notes-btn" style="padding:10px 20px; font-size:15px; font-weight:700; background:#0f766e; color:#fff; border:none; border-radius:8px; cursor:pointer;">
+        📓 Open Math Notes →
+      </button>
+    </div>
+  `;
+  const openNotesBtn = notesEntryCard.querySelector(".warmup-open-notes-btn");
+  if (openNotesBtn) {
+    openNotesBtn.addEventListener("click", () => openMathNotesModel(config));
+  }
+  card.append(notesEntryCard);
+
   if (savedAnswers.checked) {
     let correctCount = 0;
     warmup.questions.forEach((q, qIdx) => {
@@ -3384,8 +3411,6 @@ function renderLaunchPhase(el, state, ctx, config) {
   renderNoticeWonderSupport(nwStack, cfg.beCurious, config, nwStack);
   el.append(nwStack);
 
-  mountNotebookCheckpoint(el, config, 2);
-
   // Note: Objectives card sits directly in between Warmup and Launch (rendered at bottom of Warmup phase).
 
   // ── Launch is now "Be Curious" only ─────────────────────────────────────────
@@ -3589,8 +3614,6 @@ function renderExplorePhase(el, state, ctx, config) {
   } else {
     el.append(exploreShell);
   }
-
-  mountNotebookCheckpoint(el, config, 3);
 
   // Inline Reveal Math slides for the Explore section.
   renderRevealSlides(el, config, "explore");

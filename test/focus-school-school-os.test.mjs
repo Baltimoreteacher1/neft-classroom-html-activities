@@ -15,6 +15,7 @@ const appJs = readFileSync("focus-school/app.js", "utf8");
 const sandbox = {
   console,
   URL,
+  Date: globalThis.Date,
   setInterval() {
     return 0;
   },
@@ -445,8 +446,8 @@ check("a full school week behaves sensibly day by day", () => {
 
   // The quiz plans itself, and the project breaks itself down.
   const quiz = state.assignments.find((a) => a.id === "qz");
-  api.regenerateStudyPlan(quiz, { force: true });
-  api.autoBreakdown(state.assignments.find((a) => a.id === "pj"));
+  api.regenerateStudyPlan(quiz, { force: true, todayIso: MON });
+  api.autoBreakdown(state.assignments.find((a) => a.id === "pj"), { todayIso: MON });
 
   const plan = state.studyPlans.qz;
   assert.ok(plan.length >= 2, "the Thursday quiz has study sessions");
