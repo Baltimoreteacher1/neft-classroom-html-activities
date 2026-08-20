@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * notebook-prompt.test.mjs — the notebook prompt must never invent a claim.
+ * notebook-prompt.test.mjs — the notebook setup must never invent a claim.
  *
- * Two of these tests exist because the repo has already shipped the failure
- * they pin. The copy-panel system REQUIRED a panel on every checkpoint, so
- * lessons with nothing quotable were given invented content and 39 of 84 rules
- * ended up stating another lesson's mathematics. The rule that came out of it —
- * derive or stay silent, absence is a pass — is what "stays silent" and "never
- * manufactures a step count" below are holding.
+ * Two of these exist because the repo has already shipped the failure they pin.
+ * The copy-panel system REQUIRED a panel on every checkpoint, so lessons with
+ * nothing quotable were given invented content and 39 of 84 rules ended up
+ * stating another lesson's mathematics. "Stays silent" and "never manufactures
+ * a model" are holding the rule that came out of it: derive or stay quiet,
+ * absence is a pass.
  */
 import assert from "node:assert/strict";
 import test from "node:test";
@@ -15,109 +15,118 @@ import {
   NOTEBOOK_PROMPT_TYPES,
   SCREEN_IS_THE_WORK_SURFACE,
   derivedStepCount,
+  lessonModelFrom,
   notebookPromptFor,
 } from "./notebook-prompt.js";
 
-test("a multiple-choice item gets a numbered prompt in both languages", () => {
-  const p = notebookPromptFor({ type: "multiple-choice", stem: "Which is prime?" }, 3);
-  assert.ok(p, "multiple-choice is the primary target and must get a prompt");
-  assert.match(p.en, /#3/, "the prompt must name the problem number the card shows");
-  assert.match(p.es, /#3/);
-  assert.notEqual(p.es, p.en, "Spanish must not be the English string");
-  assert.equal(p.steps, null, "a multiple-choice item carries no step array");
+const cfg = (keyIdea) => ({ launch: { conceptIntro: { keyIdea } } });
+
+test("the model is QUOTED from an explicit Formula: label", () => {
+  assert.equal(
+    lessonModelFrom(cfg("Finding the Whole. Formula: Whole = Part ÷ Percent. 1. Identify the part.")),
+    "Whole = Part ÷ Percent",
+  );
 });
 
-test("an error-analysis item reports the step count it actually has", () => {
+test("the model reads the WHOLE formula, not a tail of it", () => {
+  // The regression that killed the infer-from-prose approach: matching `X = Y`
+  // across the sentence clipped 6-11 down to "Group Size = Number of Groups",
+  // which is a different and false claim.
+  const model = lessonModelFrom(
+    cfg("Fraction Division. Formula: Total Amount ÷ Group Size = Number of Groups. 1. Identify."),
+  );
+  assert.equal(model, "Total Amount ÷ Group Size = Number of Groups");
+  assert.match(model, /^Total Amount/, "the left-hand side must not be clipped");
+});
+
+test("a lesson with no formula yields no model, and that is correct", () => {
+  // 47 of 84 lessons state none. They still get the setup structure.
+  assert.equal(lessonModelFrom(cfg("Prime factors. 1. Split into factor pairs.")), null);
+  assert.equal(lessonModelFrom(cfg("")), null);
+  assert.equal(lessonModelFrom(null), null);
+  assert.equal(lessonModelFrom({}), null);
+});
+
+test("a Formula: label with no relational operator is a phrase, not a model", () => {
+  assert.equal(lessonModelFrom(cfg("Formula: think carefully about the units")), null);
+});
+
+test("a multiple-choice item gets a setup with a head and two steps", () => {
+  const p = notebookPromptFor({ type: "multiple-choice" }, 3);
+  assert.ok(p);
+  assert.match(p.head, /#3/, "the head must name the number the card shows");
+  assert.match(p.headEs, /#3/);
+  assert.equal(p.steps.length, 2, "two steps — a third pushes the answers toward the fold");
+  assert.equal(p.model, null);
+  for (const s of p.steps) assert.notEqual(s.es, s.en, "each step needs a real Spanish lane");
+});
+
+test("when the lesson has a model, step one says to copy it", () => {
+  const p = notebookPromptFor({ type: "multiple-choice" }, 2, "Whole = Part ÷ Percent");
+  assert.equal(p.model, "Whole = Part ÷ Percent");
+  assert.match(p.steps[0].en, /Copy the model/);
+});
+
+test("a real step array becomes a counted expectation", () => {
   const p = notebookPromptFor(
-    {
-      type: "error-analysis",
-      workedExample: [{ work: "a" }, { work: "b" }, { work: "c" }, { work: "d" }],
-    },
+    { type: "error-analysis", workedExample: [{}, {}, {}, {}] },
     7,
   );
-  assert.equal(p.steps, 4);
-  assert.match(p.en, /About 4 steps/);
-  assert.match(p.es, /Unos 4 pasos/);
+  assert.equal(p.stepCount, 4);
+  assert.match(p.steps[1].en, /about 4/);
+  assert.match(p.steps[1].es, /unos 4/);
 });
 
 test("NEVER manufactures a step count from prose", () => {
-  // `explanation` is prose. Counting its sentences to produce "about 3 steps"
-  // would be inventing a claim about the mathematics — the copy-panel failure
-  // in a new costume.
   const p = notebookPromptFor(
-    {
-      type: "multiple-choice",
-      explanation: "First find the factors. Then check each one. Then compare. Finally choose.",
-    },
+    { type: "multiple-choice", explanation: "First find factors. Then check. Then compare." },
     2,
   );
-  assert.equal(p.steps, null);
-  assert.doesNotMatch(p.en, /steps/i, "no step count may be asserted without a real step array");
+  assert.equal(p.stepCount, null);
+  for (const s of p.steps) assert.doesNotMatch(s.en, /about \d/i);
 });
 
 test("stays silent for every type where the screen is the work surface", () => {
   for (const type of SCREEN_IS_THE_WORK_SURFACE) {
-    assert.equal(
-      notebookPromptFor({ type }, 1),
-      null,
-      `${type} is a manipulative — telling a student to do it on paper is wrong`,
-    );
+    assert.equal(notebookPromptFor({ type }, 1), null, `${type} is a manipulative`);
   }
 });
 
-test("stays silent for types this phase does not target", () => {
-  // Absence is a PASS. These are not defects to be filled in later by giving
-  // every item a prompt.
-  for (const type of ["open-response", "drag-sort", "fill-table", "matching", "matching-game"]) {
-    assert.equal(notebookPromptFor({ type }, 1), null, `${type} must not get a prompt in phase 1`);
+test("stays silent for untargeted, unknown and missing types", () => {
+  for (const type of ["open-response", "drag-sort", "fill-table", "matching", "future-kind"]) {
+    assert.equal(notebookPromptFor({ type }, 1), null);
   }
-});
-
-test("an unknown or missing type stays silent, so a new type defaults to off", () => {
-  assert.equal(notebookPromptFor({ type: "some-future-kind" }, 1), null);
   assert.equal(notebookPromptFor({}, 1), null);
   assert.equal(notebookPromptFor(null, 1), null);
-  assert.equal(notebookPromptFor(undefined, 1), null);
 });
 
-test("no number means no prompt", () => {
-  // An unlabelled "do this in your notebook" is the generic nag this design
-  // exists to avoid — the student cannot find the page again.
+test("no number means no setup", () => {
   assert.equal(notebookPromptFor({ type: "multiple-choice" }, null), null);
   assert.equal(notebookPromptFor({ type: "multiple-choice" }, ""), null);
-  assert.equal(notebookPromptFor({ type: "multiple-choice" }, undefined), null);
-  assert.ok(notebookPromptFor({ type: "multiple-choice" }, 0), "problem 0 is a number, not absence");
+  assert.ok(notebookPromptFor({ type: "multiple-choice" }, 0), "problem 0 is a number");
 });
 
-test("derivedStepCount ignores a single-element array", () => {
-  // One "step" is not a sequence worth announcing, and "About 1 steps" is the
-  // kind of line that tells a student nobody read this.
-  assert.equal(derivedStepCount({ workedExample: [{ work: "a" }] }), null);
-  assert.equal(derivedStepCount({ workedExample: [] }), null);
+test("derivedStepCount ignores a single-element or non-array", () => {
+  assert.equal(derivedStepCount({ workedExample: [{}] }), null, "\"about 1 steps\" helps nobody");
   assert.equal(derivedStepCount({ correctWork: "not an array" }), null);
   assert.equal(derivedStepCount({}), null);
 });
 
 test("the targeted and excluded sets never overlap", () => {
-  const both = [...NOTEBOOK_PROMPT_TYPES].filter((t) => SCREEN_IS_THE_WORK_SURFACE.has(t));
-  assert.deepEqual(both, [], "a type cannot both be targeted and be a manipulative");
+  assert.deepEqual(
+    [...NOTEBOOK_PROMPT_TYPES].filter((t) => SCREEN_IS_THE_WORK_SURFACE.has(t)),
+    [],
+  );
 });
 
-test("the prompt asserts no mathematics of its own", () => {
+test("the setup asserts no mathematics of its own", () => {
   // Shared code printing a mathematical claim reaches every lesson that renders
-  // it — `data-live.js` once printed one lesson's histogram-vs-bar-chart
-  // reasoning under every bar chart on the site. This copy must stay
-  // procedural: it may name the problem NUMBER and a counted step total,
-  // nothing else numeric.
+  // it. The only numbers allowed are the problem number and a counted step
+  // total; anything else would be this module teaching content.
   for (const type of NOTEBOOK_PROMPT_TYPES) {
     const p = notebookPromptFor({ type, workedExample: [{}, {}, {}] }, 5);
-    for (const lane of [p.en, p.es]) {
-      const numbers = lane.match(/\d+/g) || [];
-      assert.deepEqual(
-        numbers.sort(),
-        ["3", "5"].sort(),
-        `${type}: the only numbers may be the problem number and the counted steps — got "${lane}"`,
-      );
-    }
+    const text = [p.head, p.headEs, ...p.steps.flatMap((s) => [s.en, s.es])].join(" ");
+    const numbers = [...new Set(text.match(/\d+/g) || [])].sort();
+    assert.deepEqual(numbers, ["3", "5"], `${type}: unexpected number in "${text}"`);
   }
 });

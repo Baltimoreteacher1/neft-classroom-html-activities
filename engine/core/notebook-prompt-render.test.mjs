@@ -26,21 +26,36 @@ globalThis.HTMLElement = dom.window.HTMLElement;
 const { createProblemCard } = await import("./problem-shell.js");
 
 /** Build a card and hand back its notebook prompt element, if any. */
-function cardFor(problemDef, number = 3) {
+function cardFor(problemDef, number = 3, lessonModel = null) {
   const { card } = createProblemCard({
     number,
     total: 6,
     stem: problemDef.stem || "Which of the following is a prime number?",
     problemDef,
+    lessonModel,
   });
-  return { card, prompt: card.querySelector(".problem-notebook-prompt") };
+  return { card, prompt: card.querySelector(".nb-setup") };
 }
 
-test("a multiple-choice card renders the notebook prompt", () => {
+test("a multiple-choice card renders the notebook setup", () => {
   const { prompt } = cardFor({ type: "multiple-choice" });
   assert.ok(prompt, "the derivation is wired but nothing reached the card");
-  assert.match(prompt.textContent, /#3/, "the rendered prompt must name the problem number");
+  assert.match(prompt.textContent, /#3/, "the rendered setup must name the problem number");
   assert.match(prompt.textContent, /notebook/i);
+  assert.equal(prompt.querySelectorAll(".nb-setup-steps li").length, 2, "two steps render");
+});
+
+test("the lesson model renders as something to COPY, in its own element", () => {
+  const { prompt } = cardFor({ type: "multiple-choice" }, 2, "Whole = Part \u00F7 Percent");
+  const code = prompt.querySelector(".nb-setup-model code");
+  assert.ok(code, "the model must render in its own element, set apart to transcribe");
+  assert.equal(code.textContent, "Whole = Part \u00F7 Percent");
+});
+
+test("a lesson with no model renders the setup without a model line", () => {
+  const { prompt } = cardFor({ type: "multiple-choice" }, 2, null);
+  assert.ok(prompt, "47 of 84 lessons have no formula and must still get the setup");
+  assert.equal(prompt.querySelector(".nb-setup-model"), null);
 });
 
 test("the prompt sits between the stem and the answer body", () => {
@@ -50,7 +65,7 @@ test("the prompt sits between the stem and the answer body", () => {
   const { card } = cardFor({ type: "multiple-choice" });
   const kids = [...card.children];
   const stem = kids.findIndex((el) => el.classList.contains("problem-stem"));
-  const note = kids.findIndex((el) => el.classList.contains("problem-notebook-prompt"));
+  const note = kids.findIndex((el) => el.classList.contains("nb-setup"));
   const body = kids.findIndex((el) => el.classList.contains("problem-body"));
   assert.ok(stem !== -1 && note !== -1 && body !== -1, "card is missing one of the three parts");
   assert.ok(stem < note && note < body, `expected stem < prompt < body, got ${stem}/${note}/${body}`);
@@ -67,7 +82,7 @@ test("the prompt is NOT hidden from assistive technology", () => {
   // one; only the pencil is decorative.
   const { prompt } = cardFor({ type: "multiple-choice" });
   assert.notEqual(prompt.getAttribute("aria-hidden"), "true");
-  const icon = prompt.querySelector(".problem-notebook-icon");
+  const icon = prompt.querySelector(".nb-setup-icon");
   assert.equal(icon?.getAttribute("aria-hidden"), "true", "the pencil is decoration");
 });
 
@@ -83,7 +98,7 @@ test("a card built without problemDef renders no prompt and does not throw", () 
   // problemDef. Silence is the correct default; a throw here would take out
   // every problem card on the site.
   const { card } = createProblemCard({ number: 1, total: 1, stem: "x" });
-  assert.equal(card.querySelector(".problem-notebook-prompt"), null);
+  assert.equal(card.querySelector(".nb-setup"), null);
 });
 
 test("the card still renders its stem and body unchanged", () => {

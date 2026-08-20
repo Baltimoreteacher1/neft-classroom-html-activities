@@ -2435,42 +2435,94 @@ body:has(.identity-screen) .export-toolbar {
   line-height: 1.5;
 }
 
-/* Notebook prompt — the instruction to do this problem on paper.
-   Quiet on purpose. It sits between the stem and the answer UI at the moment
-   the student decides whether to work it out or just pick, and it must read as
-   part of the problem rather than as an alert: a banner students learn to skip
-   is worse than no prompt, because it trains dismissal. No animation, no
-   colour that competes with the correct/incorrect states. */
-.problem-notebook-prompt {
+/* Notebook setup — the model and page structure for doing this problem on paper.
+   It is a SETUP, not an alert. The first version was a single line telling the
+   student to use their notebook; it helped nobody, because the barrier is a
+   blank page rather than willingness. Quiet styling on purpose: a banner
+   students learn to skip is worse than no prompt, since it trains dismissal.
+   No animation, and no colour that competes with the correct/incorrect states.
+
+   HEIGHT IS A FEATURE CONSTRAINT, not a detail. This block sits between the
+   stem and the answer choices, so every pixel here pushes the answers toward
+   the fold — the failure that put a small-group masthead at 581-615px and the
+   first task at or below the fold on a classroom laptop. Hence two steps, not
+   three, and a tighter box on narrow viewports. */
+.nb-setup {
+  margin: 0 0 var(--sp-4);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--paper, #fbfaf6);
+  border-left: 3px solid var(--teal-light);
+  border-radius: 0 8px 8px 0;
+}
+
+.nb-setup-head {
   display: flex;
   align-items: baseline;
   gap: var(--sp-2);
-  margin: 0 0 var(--sp-4);
-  padding: var(--sp-2) var(--sp-3);
   font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
-  line-height: 1.45;
+  font-weight: var(--fw-bold);
   color: var(--navy);
-  background: var(--paper, #fbfaf6);
-  border-left: 3px solid var(--teal-light);
-  border-radius: 0 6px 6px 0;
+  line-height: 1.4;
 }
 
-.problem-notebook-icon {
+.nb-setup-icon {
   flex: none;
-  font-size: 1em;
 }
 
-/* The card's result state recolours its own chrome; the notebook instruction is
-   not a result and must not appear to be one. */
-.problem-correct .problem-notebook-prompt,
-.problem-incorrect .problem-notebook-prompt {
-  opacity: 0.65;
+.nb-setup-model {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-sm);
+  color: var(--navy);
+}
+
+/* The model is the thing to copy, so it is set apart as something transcribed
+   rather than read. The dashed edge reads as "write this down". */
+.nb-setup-model code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--navy);
+  background: #fff;
+  border: 1px dashed var(--teal);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.nb-setup-steps {
+  margin: var(--sp-2) 0 0;
+  padding-left: 1.25em;
+}
+
+.nb-setup-steps li {
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--navy);
+}
+
+/* The card recolours its own chrome on a result; the setup is not a result and
+   must not look like one. */
+.problem-correct .nb-setup,
+.problem-incorrect .nb-setup {
+  opacity: 0.6;
+}
+
+@media (max-width: 640px) {
+  /* Every pixel here costs answer visibility on a phone. */
+  .nb-setup {
+    padding: var(--sp-2);
+  }
+  .nb-setup-steps {
+    margin-top: var(--sp-1, 4px);
+  }
 }
 
 @media print {
   /* On paper the instruction is noise — the student is already writing. */
-  .problem-notebook-prompt {
+  .nb-setup {
     display: none;
   }
 }

@@ -42,10 +42,14 @@ export function createProblemCard({
   stem,
   stemEs,
   hasConversionChart,
-  // The item itself, so the notebook prompt can be DERIVED from it. Optional:
-  // a caller that does not pass it simply gets no prompt, which is the correct
+  // The item itself, so the notebook setup can be DERIVED from it. Optional:
+  // a caller that does not pass it simply gets no setup, which is the correct
   // silent default — no lesson is ever asked to author anything to earn one.
   problemDef,
+  // The lesson's own formula, already extracted once per lesson by
+  // lessonModelFrom(). Optional: 47 of 84 lessons state none, and those items
+  // correctly get the setup structure without a model line.
+  lessonModel,
 } = {}) {
   const card = document.createElement("article");
   card.className = "problem-card";
@@ -112,21 +116,51 @@ export function createProblemCard({
     card.append(stemEl);
   }
 
-  // Notebook prompt: sits between the stem and the answer UI, because that is
+  // Notebook setup: sits between the stem and the answer UI, because that is
   // the moment the student decides whether to work it out or just pick. It is
   // deliberately NOT a modal and does NOT gate the input — the software cannot
   // see the notebook, so a gate would enforce a claim, and the tap that
   // dismisses it becomes muscle memory within days.
-  const notebook = notebookPromptFor(problemDef, number);
+  //
+  // It is a SETUP, not a sentence. The first version was one line telling the
+  // student to use their notebook, which helps nobody: the barrier is a blank
+  // page, not willingness.
+  const notebook = notebookPromptFor(problemDef, number, lessonModel);
   if (notebook) {
-    const note = document.createElement("p");
-    note.className = "problem-notebook-prompt";
-    // Not aria-hidden: a student using a screen reader needs this instruction
-    // as much as a sighted one. The pencil is decorative and marked as such.
-    note.innerHTML =
-      '<span class="problem-notebook-icon" aria-hidden="true">\u270F\uFE0F</span>' +
-      stackContentHtml(esc(notebook.en), esc(notebook.es));
-    card.append(note);
+    const nb = document.createElement("aside");
+    nb.className = "nb-setup";
+    // Not aria-hidden: a student using a screen reader needs this as much as a
+    // sighted one. Only the pencil is decoration.
+    nb.setAttribute("aria-label", `Notebook setup for problem ${number}`);
+
+    const head = document.createElement("div");
+    head.className = "nb-setup-head";
+    head.innerHTML =
+      '<span class="nb-setup-icon" aria-hidden="true">\u270F\uFE0F</span>' +
+      stackContentHtml(esc(notebook.head), esc(notebook.headEs));
+    nb.append(head);
+
+    if (notebook.model) {
+      const model = document.createElement("div");
+      model.className = "nb-setup-model";
+      // The model is QUOTED from the lesson's own key idea and shown identically
+      // in both lanes: no lesson authors keyIdeaEs, and translating a formula
+      // here would invent vocabulary the curriculum has not chosen.
+      model.innerHTML = `${stackContentHtml("Start with:", "Empieza con:")}<code>${esc(
+        notebook.model,
+      )}</code>`;
+      nb.append(model);
+    }
+
+    const list = document.createElement("ol");
+    list.className = "nb-setup-steps";
+    for (const step of notebook.steps) {
+      const li = document.createElement("li");
+      li.innerHTML = stackContentHtml(esc(step.en), esc(step.es));
+      list.append(li);
+    }
+    nb.append(list);
+    card.append(nb);
   }
 
   const body = document.createElement("div");

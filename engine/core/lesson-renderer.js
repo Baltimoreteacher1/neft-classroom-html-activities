@@ -66,6 +66,7 @@ import {
   studentExplanation,
 } from "./misconceptions.js";
 import { mountNotebookCheckpoint, openMathNotesModel } from "./notebook-checkpoint.js";
+import { lessonModelFrom } from "./notebook-prompt.js";
 import {
   normalizeAcademicWord,
   resolveNoticeWonderAcademicWord,
@@ -1112,10 +1113,14 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
         : problemDef.prompt
           ? problemDef.promptEs
           : problemDef.labelEs,
-      // Passed whole so the notebook prompt derives from the item's own fields
+      // Passed whole so the notebook setup derives from the item's own fields
       // (its type, and a real step array when it has one) rather than from
       // anything an author would have to add.
       problemDef,
+      // Extracted once per lesson by the caller, not per item — it is a
+      // property of the lesson, and re-parsing the key idea 1,022 times would
+      // be work done 1,021 times too often.
+      lessonModel: shellOpts.lessonModel,
     });
     container.append(shell.card);
     body = shell.body;
@@ -3660,7 +3665,10 @@ function renderExplorePhase(el, state, ctx, config) {
         showTurnTalkThenComplete();
       }
     },
-    { number: 1, total: 1, skipHints: true },
+    // Explore renders a carded item too, so it gets the same notebook setup as
+    // Practice when its type is one this targets. The model is a property of
+    // the lesson, so it is read here rather than threaded from Practice.
+    { number: 1, total: 1, skipHints: true, lessonModel: lessonModelFrom(config) },
   );
 }
 
@@ -4257,6 +4265,11 @@ function practiceLabHeaderHtml(lab) {
 }
 
 function renderPracticePhase(el, state, ctx, config) {
+  // The lesson's own formula, read ONCE. It is a property of the lesson, not of
+  // an item, and 1,022 items re-parsing the same key idea is work done 1,021
+  // times too often. Null for the 47 lessons that state no formula — those
+  // items still get the notebook setup, just without a model line.
+  const lessonModel = lessonModelFrom(config);
   phaseHeader(
     el,
     "✏️",
@@ -4558,7 +4571,7 @@ function renderPracticePhase(el, state, ctx, config) {
           });
         }
       },
-      { number: shown, total: seq.total, tier: prob.tier, state },
+      { number: shown, total: seq.total, tier: prob.tier, state, lessonModel },
     );
   }
   next();

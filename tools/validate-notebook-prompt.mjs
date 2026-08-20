@@ -39,6 +39,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   derivedStepCount,
+  lessonModelFrom,
   NOTEBOOK_PROMPT_TYPES,
   notebookPromptFor,
   SCREEN_IS_THE_WORK_SURFACE,
@@ -57,7 +58,22 @@ const selfTests = [
   [
     "prose never becomes a step count",
     () =>
-      notebookPromptFor({ type: "multiple-choice", explanation: "One. Two. Three." }, 1).steps ===
+      notebookPromptFor({ type: "multiple-choice", explanation: "One. Two. Three." }, 1)
+        .stepCount === null,
+  ],
+  [
+    "the model is quoted whole, never clipped",
+    () =>
+      lessonModelFrom({
+        launch: {
+          conceptIntro: { keyIdea: "X. Formula: Total ÷ Group Size = Number of Groups. 1. a" },
+        },
+      }) === "Total ÷ Group Size = Number of Groups",
+  ],
+  [
+    "a Formula: label with no operator is not a model",
+    () =>
+      lessonModelFrom({ launch: { conceptIntro: { keyIdea: "Formula: think about units" } } }) ===
       null,
   ],
   [
@@ -101,6 +117,7 @@ const TIERS = ["approaching", "onLevel", "extending", "optional"];
 let items = 0;
 let prompted = 0;
 let withSteps = 0;
+let modelled = 0;
 const byType = {};
 
 for (const d of dirs) {
@@ -111,13 +128,14 @@ for (const d of dirs) {
     fail(`${d}/config.json did not parse (${String(e).slice(0, 80)})`);
     continue;
   }
+  const model = lessonModelFrom(cfg);
   for (const tier of TIERS) {
     const list = cfg.practice?.[tier];
     if (!Array.isArray(list)) continue;
     list.forEach((item, i) => {
       items++;
       const number = i + 1;
-      const p = notebookPromptFor(item, number);
+      const p = notebookPromptFor(item, number, model);
       if (!p) return;
       prompted++;
       byType[item.type] = (byType[item.type] || 0) + 1;
@@ -136,27 +154,47 @@ for (const d of dirs) {
 
       // 2. Every number printed must be the problem number or a counted length.
       const counted = derivedStepCount(item);
-      if (p.steps != null) {
+      if (p.stepCount != null) {
         withSteps++;
-        if (p.steps !== counted) {
-          fail(`${where}: prompt claims ${p.steps} steps but the item counts ${counted}`);
+        if (p.stepCount !== counted) {
+          fail(`${where}: setup claims ${p.stepCount} steps but the item counts ${counted}`);
         }
       }
+      // The MODEL is exempt from the number rule: it is a verbatim quote of the
+      // lesson's own formula, which legitimately contains its own numerals
+      // ("IQR = Q3 - Q1"). It is checked separately, below, for being a quote.
       const allowed = new Set([String(number)]);
-      if (p.steps != null) allowed.add(String(p.steps));
-      for (const lane of [p.en, p.es]) {
+      if (p.stepCount != null) allowed.add(String(p.stepCount));
+      const lanes = [p.head, p.headEs, ...p.steps.flatMap((st) => [st.en, st.es])];
+      for (const lane of lanes) {
         for (const n of lane.match(/\d+/g) || []) {
           if (!allowed.has(n)) {
             fail(
-              `${where}: prompt prints "${n}", which is neither the problem number nor a counted step total — "${lane}"`,
+              `${where}: setup prints "${n}", which is neither the problem number nor a counted step total — "${lane}"`,
             );
           }
         }
       }
 
-      // 3. Spanish parity: an instruction that exists in English exists in Spanish.
-      if (!p.es || !p.es.trim()) fail(`${where}: prompt has no Spanish lane`);
-      if (p.es === p.en) fail(`${where}: the Spanish lane is the English string`);
+      // 3. The model must be a VERBATIM substring of the lesson's own key idea.
+      //    This is the check that keeps rule 2 honest: a composed or reworded
+      //    formula would not appear in the source it claims to quote.
+      if (p.model) {
+        modelled++;
+        const keyIdea = cfg.launch?.conceptIntro?.keyIdea || "";
+        if (!keyIdea.includes(p.model)) {
+          fail(`${where}: model "${p.model}" is not a verbatim quote of this lesson's keyIdea`);
+        }
+      }
+
+      // 4. Spanish parity: an instruction that exists in English exists in
+      //    Spanish. The model is deliberately excluded — no lesson authors
+      //    keyIdeaEs, and translating a formula here would invent vocabulary.
+      if (!p.headEs?.trim()) fail(`${where}: head has no Spanish lane`);
+      for (const st of p.steps) {
+        if (!st.es?.trim()) fail(`${where}: a step has no Spanish lane`);
+        if (st.es === st.en) fail(`${where}: a step's Spanish lane is the English string`);
+      }
     });
   }
 }
@@ -173,7 +211,8 @@ if (failures.length) {
 const pct = items ? (100 * prompted) / items : 0;
 console.log(
   `✓ notebook prompts hold — ${prompted} of ${items} core practice item(s) prompted ` +
-    `(${pct.toFixed(1)}%), ${withSteps} with a counted step total, 0 on a manipulative.`,
+    `(${pct.toFixed(1)}%), ${modelled} carrying the lesson's own quoted formula, ` +
+    `${withSteps} with a counted step total, 0 on a manipulative.`,
 );
 console.log(`   by type: ${JSON.stringify(byType)}`);
 console.log(
