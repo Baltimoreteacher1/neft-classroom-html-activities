@@ -22,6 +22,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { extname, join } from "node:path";
 import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
+import { assertSweptEnough } from "../tools/lib/sweep-guard.mjs";
 
 const EXCLUDE = ["!node_modules", "!dist", "!.git", "!backups", "!canvas-packages", "!.qa-logs"];
 
@@ -101,6 +102,11 @@ assertNonEmpty(
   candidates,
   "CANDIDATE_DIRS produced nothing — with no candidates the report says nothing is dead, which is not the same as nothing being dead.",
   20,
+);
+assertSweptEnough(
+  "audit:dead-code",
+  candidates,
+  "Discovery for audit:dead-code returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
 );
 for (const c of candidates) {
   const base = c.path.split("/").pop();

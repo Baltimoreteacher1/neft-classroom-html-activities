@@ -16,6 +16,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { assertNonEmpty } from "./lib/non-empty.mjs";
+import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -75,6 +76,11 @@ assertNonEmpty(
   files,
   "`git ls-files` returned nothing — in a detached or partial worktree this gate would scan zero files and still report zero secrets.",
   100,
+);
+assertSweptEnough(
+  "validate:secrets",
+  files,
+  "Discovery for validate:secrets returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
 );
 
 const findings = [];

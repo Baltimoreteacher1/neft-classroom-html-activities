@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { computeTeachL4Evidence } from "../engine/core/uifr.js";
 import { targets } from "./inject-uifr.js";
 import { assertNonEmpty } from "./lib/non-empty.mjs";
+import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const lessonsDir = join(root, "lessons");
@@ -55,6 +56,11 @@ assertNonEmpty(
   "lessons with a config",
   { length: total },
   "readdirSync(lessonsDir) yielded no usable lesson — the walk is broken, not the curriculum empty.",
+);
+assertSweptEnough(
+  "validate:uifr",
+  { length: total },
+  "Discovery for validate:uifr returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
 );
 
 const stampMisses = [];

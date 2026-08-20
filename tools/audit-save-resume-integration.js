@@ -24,6 +24,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // Skip rules + ref/marker strings are shared with the injector via one module,
 // so the audit can never drift out of sync with what inject-save-resume.js does.
 import { assertNonEmpty } from "./lib/non-empty.mjs";
+import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 import {
   CSS_REF,
   JS_REF,
@@ -138,6 +139,11 @@ assertNonEmpty(
   { length: stats.scanned },
   "The walk found no activity pages — a zero scan reports 0 missing integrations, which reads exactly like a healthy site.",
   100,
+);
+assertSweptEnough(
+  "validate:save-resume",
+  { length: stats.scanned },
+  "Discovery for validate:save-resume returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
 );
 
 console.log("Shared files       :", issues.length ? "PROBLEM" : "present");

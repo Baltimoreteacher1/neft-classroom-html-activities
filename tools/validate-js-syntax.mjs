@@ -21,6 +21,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 import { assertNonEmpty } from "./lib/non-empty.mjs";
+import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, "..");
@@ -95,6 +96,11 @@ assertNonEmpty(
   files,
   "walk(ROOT) found no .js/.mjs — the walker or its ignore list broke; a zero sweep parses nothing and still says every script parses.",
   100,
+);
+assertSweptEnough(
+  "validate:js-syntax",
+  files,
+  "Discovery for validate:js-syntax returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
 );
 
 const failures = [];

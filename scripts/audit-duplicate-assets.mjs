@@ -25,6 +25,7 @@ import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
+import { assertSweptEnough } from "../tools/lib/sweep-guard.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const UNREFERENCED_ONLY = process.argv.includes("--unreferenced-only");
@@ -128,6 +129,11 @@ assertNonEmpty(
   tracked,
   "`git ls-files` returned nothing — with no tracked files there are no duplicates to find, trivially.",
   100,
+);
+assertSweptEnough(
+  "audit:duplicates",
+  tracked,
+  "Discovery for audit:duplicates returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
 );
 console.log(`✓ reports/duplicate-assets.md`);
 console.log(

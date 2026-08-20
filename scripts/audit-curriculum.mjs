@@ -37,6 +37,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSy
 import { dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
+import { assertSweptEnough } from "../tools/lib/sweep-guard.mjs";
 
 const root = process.cwd();
 const argv = new Set(process.argv.slice(2));
@@ -286,6 +287,11 @@ assertNonEmpty(
   "lesson directories",
   lessonDirs,
   "lessons/ produced no directories — every lesson-level check below would then pass over an empty set.",
+);
+assertSweptEnough(
+  "audit",
+  lessonDirs,
+  "Discovery for audit returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
 );
 
 // Build a quick lookup of catalog entries by normalized path

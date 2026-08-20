@@ -10,6 +10,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
+import { assertSweptEnough } from "../tools/lib/sweep-guard.mjs";
 import { allStandardCodes, isKnownStandard } from "./lib/ccss.mjs";
 
 const root = process.cwd();
@@ -34,6 +35,11 @@ assertNonEmpty(
   "lesson standards",
   used,
   "Nothing was read from lessons/*/config.json — a zero here means the walk broke, not that no lesson declares a standard.",
+);
+assertSweptEnough(
+  "validate:ccss",
+  used,
+  "Discovery for validate:ccss returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
 );
 const missing = [...used.keys()].filter((s) => !isKnownStandard(s));
 

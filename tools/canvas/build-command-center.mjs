@@ -17,6 +17,7 @@ import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import { assertNonEmpty } from "../lib/non-empty.mjs";
+import { assertSweptEnough } from "../lib/sweep-guard.mjs";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const QUIZ_MAX = Number(process.env.QUIZ_MAX || 8);
@@ -89,6 +90,11 @@ assertNonEmpty(
   "lessons in the curriculum manifest",
   lessons,
   "The manifest yielded no lessons — the command centre would then build (or verify) an empty deck and call it deterministic.",
+);
+assertSweptEnough(
+  "validate:determinism",
+  lessons,
+  "Discovery for validate:determinism returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
 );
 
 const unitMap = {};

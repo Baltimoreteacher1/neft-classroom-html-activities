@@ -34,6 +34,7 @@ import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
 import { assertNonEmpty } from "./lib/non-empty.mjs";
+import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
@@ -74,6 +75,11 @@ async function main() {
     sourceFiles,
     "The glob returned nothing — a zero-file scan finds zero committed merge conflicts.",
     50,
+  );
+  assertSweptEnough(
+    "validate:css-integrity",
+    sourceFiles,
+    "Discovery for validate:css-integrity returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
   );
   let scanned = 0;
   for (const rel of sourceFiles) {
