@@ -475,10 +475,18 @@ function renderCopyPanelHtml(cp) {
   if (cp.box === 2 && cp.copyPanel.rule) {
     const stepsHtml =
       Array.isArray(cp.copyPanel.steps) && cp.copyPanel.steps.length > 0
-        ? `<ol class="nt-nb-copy-steps">${cp.copyPanel.steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>`
+        ? `<ol class="nt-nb-copy-steps">${cp.copyPanel.steps.map(renderStepHtml).join("")}</ol>`
         : "";
+    // A lesson may state several formulas on one line, separated by a spaced
+    // "|" ("Range = Maximum − Minimum | IQR = Q3 − Q1"). Each gets its own
+    // display line — one long pipe-joined string is exactly the wall of
+    // symbols a student cannot copy at a glance. The split requires spaces on
+    // both sides so absolute-value bars ("|x1 − x2|") never match.
     const formulaHtml = cp.copyPanel.formula
-      ? `<div class="nt-nb-copy-formula"><span class="nt-nb-copy-formula-label">Formula:</span> ${esc(cp.copyPanel.formula)}</div>`
+      ? `<div class="nt-nb-copy-formulas" role="group" aria-label="Formulas to copy">${cp.copyPanel.formula
+          .split(/\s\|\s/)
+          .map((f) => `<div class="nt-nb-copy-formula">${esc(f.trim())}</div>`)
+          .join("")}</div>`
       : "";
     return `
     <div class="nt-nb-copy-panel nt-nb-copy-box2" data-no-vocab="true" aria-label="Copy into your notebook">
@@ -487,10 +495,78 @@ function renderCopyPanelHtml(cp) {
       ${formulaHtml}
       ${stepsHtml}
       ${cp.copyPanel.meaning ? `<div class="nt-nb-copy-meaning">${esc(cp.copyPanel.meaning)}</div>` : ""}
-      ${cp.copyPanel.example ? `<div class="nt-nb-copy-example"><span class="nt-nb-copy-example-label">Example:</span> ${esc(cp.copyPanel.example)}</div>` : ""}
+      ${cp.copyPanel.example ? `<div class="nt-nb-copy-example"><span class="nt-nb-copy-example-label">Example:</span> <span class="nt-nb-eq">${esc(cp.copyPanel.example)}</span></div>` : ""}
     </div>`;
   }
   return "";
+}
+
+/**
+ * One numbered step, rendered visually instead of as a line of prose.
+ *
+ * The step STRINGS are verbatim quotes of the lesson's own keyIdea and are
+ * never altered here — everything below is presentation of the same words:
+ * the "N." prefix becomes a number badge, a short "Action: detail" split
+ * becomes a bold action over a lighter detail line, and any equation the step
+ * states is set off in math styling so the symbols read at a glance.
+ */
+function renderStepHtml(step) {
+  const m = String(step).match(/^(\d+)\.\s*(.*)$/s);
+  const n = m ? m[1] : "";
+  const body = m ? m[2] : String(step);
+  let lead = "";
+  let detail = body;
+  const colon = body.indexOf(": ");
+  // A lead only when it reads as a short label — a colon deep in a sentence,
+  // or one inside mathematics ("Ratio = a:b"), is not a label.
+  if (colon > 2 && colon <= 48 && !body.slice(0, colon).includes("=")) {
+    lead = body.slice(0, colon);
+    detail = body.slice(colon + 2);
+  }
+  return `<li class="nt-nb-step">
+    <span class="nt-nb-step-num" aria-hidden="true">${esc(n)}</span>
+    <span class="nt-nb-step-text">${lead ? `<strong class="nt-nb-step-lead">${esc(lead)}</strong>` : ""}<span class="nt-nb-step-detail">${highlightEquations(detail)}</span></span>
+  </li>`;
+}
+
+/**
+ * Wrap the equations a sentence states in math styling, leaving every word
+ * exactly where it was. Escaped output; presentation only.
+ *
+ * A token belongs to an equation run when it carries mathematical characters
+ * and no real word ("(%", "0.01", "1/100", "|-7|", "=", "×") — runs grow
+ * outward from each "=" so "Distance is always positive or zero: |-7| = 7"
+ * highlights "|-7| = 7" and nothing else.
+ */
+function highlightEquations(text) {
+  const tokens = String(text).split(/\s+/).filter(Boolean);
+  const mathy = (t) => /[0-9=+×÷−<>≤≥%|/]/.test(t) && !/[a-z]{3,}/i.test(t);
+  const marked = new Array(tokens.length).fill(false);
+  tokens.forEach((t, i) => {
+    if (!t.includes("=")) return;
+    let lo = i;
+    let hi = i;
+    while (lo - 1 >= 0 && mathy(tokens[lo - 1])) lo--;
+    while (hi + 1 < tokens.length && mathy(tokens[hi + 1])) hi++;
+    for (let k = lo; k <= hi; k++) marked[k] = true;
+  });
+  const out = [];
+  let run = [];
+  const flush = () => {
+    if (run.length > 0) {
+      out.push(`<span class="nt-nb-eq">${esc(run.join(" "))}</span>`);
+      run = [];
+    }
+  };
+  tokens.forEach((t, i) => {
+    if (marked[i]) run.push(t);
+    else {
+      flush();
+      out.push(esc(t));
+    }
+  });
+  flush();
+  return out.join(" ");
 }
 
 /**

@@ -4956,20 +4956,88 @@ textarea.syw-input {
   }
 }
 
-/* ── Word-problem annotation ────────────────────────────────────────────────
-   Toolbar + marks that let students highlight, underline, and bold the text of
-   a word problem (see engine/core/annotate.js). */
-.annot-bar {
+/* ── Mark-up dock ───────────────────────────────────────────────────────────
+   One small control, fixed to the right edge, present in every phase for both
+   students and teachers (see engine/core/annotate.js). Collapsed it is a single
+   round button; opened it is the four tools. It deliberately mirrors the
+   small-group rail's position so the two lesson surfaces behave alike. */
+.annot-dock {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 60;
+  /* row-reverse, so the panel opens INWARD from the right edge. In DOM order
+     the toggle comes first (it is the thing you tab to); laid out left-to-right
+     that would push the panel off the side of the screen. */
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: row-reverse;
   align-items: center;
-  gap: var(--sp-2);
-  margin: 0 0 var(--sp-2);
+  gap: 0;
+  max-width: min(280px, calc(100vw - 12px));
 }
-.annot-tip {
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
+.annot-dock-toggle {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--navy, #264653);
+  background: var(--card, #fff);
+  border: 2px solid var(--line, #e4ddc9);
+  border-right: 0;
+  border-radius: 12px 0 0 12px;
+  box-shadow: 0 2px 10px rgba(18, 53, 91, 0.14);
+}
+.annot-dock-toggle:hover {
+  background: var(--cream, #fdf3e0);
+  border-color: var(--gold, #d4952a);
+}
+.annot-dock-panel {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: var(--card, #fff);
+  border: 2px solid var(--line, #e4ddc9);
+  border-radius: 12px 0 0 12px;
+  box-shadow: 0 2px 14px rgba(18, 53, 91, 0.16);
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+}
+.annot-dock[data-open="true"] .annot-dock-panel {
+  display: flex;
+}
+.annot-dock-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  text-align: left;
+}
+.annot-dock-icon {
+  width: 1.25em;
+  text-align: center;
+}
+.annot-dock-label {
+  white-space: nowrap;
+}
+.annot-dock-status {
+  font-size: var(--fs-xs, 0.75rem);
+  line-height: 1.35;
   color: var(--muted, #5e6e7e);
+  max-width: 170px;
+}
+/* The dock is a screen tool; a printed page has nothing to tap. */
+@media print {
+  .annot-dock {
+    display: none !important;
+  }
 }
 .annot-btn {
   font: inherit;
@@ -5051,13 +5119,6 @@ textarea.syw-input {
   font-weight: var(--fw-medium);
   color: var(--navy, #264653);
   margin: 0 0 var(--sp-3);
-}
-/* The annotation toolbar (annotate.js) is injected as a child of this flex
-   row. Force it onto its own full-width line ABOVE the number + question so it
-   never wedges between them and pushes the problem text off to the side. */
-.sp-stem .annot-bar {
-  flex: 0 0 100%;
-  order: -1;
 }
 .sp-num {
   flex: 0 0 auto;

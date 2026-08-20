@@ -46,8 +46,13 @@
 
 /* Collapsed ("reduced") state: shrink the dock to a compact icon tab so the
    lesson — not the toolbar — owns the right edge until a student opens it. */
+/* Compact, but still a real touch target: the collapsed tab used to drop to
+   40x36, which is under the 44px minimum a finger needs on a classroom
+   Chromebook. Narrow is fine; short is not. */
 .sg-annotation-shell:not([open]) > summary {
-  min-height: 0;
+  min-height: 44px;
+  min-width: 44px;
+  justify-content: center;
   padding: 8px 9px;
 }
 

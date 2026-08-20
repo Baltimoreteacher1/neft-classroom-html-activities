@@ -339,13 +339,89 @@ export function extractKeyIdea(keySentences) {
 }
 
 /**
- * Box 2's anchor. Tier 1 is a rule the lesson states as a complete sentence,
- * with a clause that explains it and an equation that shows it — the strongest
- * anchor and the only one that fills all three lines. When a lesson does not
- * state one, we do NOT stop: we fall through to the next thing the lesson
+ * Tier 0 — a STRUCTURED key idea. The 2026-08-19 Section-2 upgrade rewrote
+ * every core lesson's `keyIdea` into a fixed shape the lesson states about
+ * itself:
+ *
+ *     Title. [Formula: F.] 1. step. 2. step. 3. step. [Example: E]
+ *
+ * When a keyIdea carries that shape, the panel is a pure PARSE of it — title,
+ * formula, numbered steps and example are each a verbatim segment of the
+ * lesson's own sentence, so provenance holds by construction. Step markers are
+ * matched INCREMENTALLY (`1.` then `2.` then `3.` …), each at a sentence
+ * boundary, because a bare /\d+\./ split reads "a fraction over 1. 2. Multiply"
+ * and "1% = 0.01 = 1/100. 3. Fraction" as extra steps — both are real keyIdeas
+ * in this curriculum.
+ */
+export function parseStructuredKeyIdea(keyIdea) {
+  const clean = String(keyIdea || "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const startMatch = clean.match(/(?:^|[.!?])\s*1\.\s/);
+  if (!startMatch || startMatch.index === undefined) return null;
+  const headEnd = startMatch.index + (clean[startMatch.index] === "1" ? 0 : 1);
+  let head = clean.slice(0, headEnd).trim();
+  let rest = clean.slice(headEnd).trim();
+
+  // The head is "Title." optionally followed by "Formula: F."
+  let formula = "";
+  const formulaAt = head.search(/\bFormula:\s*/);
+  if (formulaAt >= 0) {
+    formula = head
+      .slice(formulaAt)
+      .replace(/^Formula:\s*/, "")
+      .trim()
+      .replace(/\.$/, "");
+    head = head.slice(0, formulaAt).trim();
+  }
+  const rule = head.replace(/[.]+$/, "").trim();
+  if (!rule || !/[A-Za-z]/.test(rule)) return null;
+
+  // Steps, split at incrementing markers only.
+  const steps = [];
+  let n = 2;
+  for (;;) {
+    const marker = rest.match(new RegExp(`[.!?]\\s+(?=${n}\\.\\s)`));
+    if (!marker || marker.index === undefined) break;
+    steps.push(rest.slice(0, marker.index + 1).trim());
+    rest = rest.slice(marker.index + marker[0].length).trim();
+    n++;
+  }
+  // The final chunk may carry a trailing "Example: …" the lesson states.
+  let example = "";
+  const exampleAt = rest.search(/(?:^|[.!?])\s*Example:\s*/);
+  if (exampleAt >= 0) {
+    example = rest
+      .slice(exampleAt)
+      .replace(/^[.!?]?\s*Example:\s*/, "")
+      .trim()
+      .replace(/[.]+$/, "");
+    rest = rest.slice(0, exampleAt + 1).trim();
+  }
+  if (rest) steps.push(rest);
+  const cleanSteps = steps.map((s) => s.replace(/[.]+$/, "").trim()).filter(Boolean);
+  if (cleanSteps.length < 2) return null;
+  if (!cleanSteps.every((s, i) => new RegExp(`^${i + 1}\\.\\s`).test(s))) return null;
+
+  const panel = { rule };
+  panel.anchorKind = /\balgorithm\b/i.test(rule) ? "algorithm" : formula ? "formula" : "key idea";
+  if (formula) panel.formula = formula;
+  panel.steps = cleanSteps;
+  if (example) panel.example = example;
+  return panel;
+}
+
+/**
+ * Box 2's anchor. Tier 0 parses a structured keyIdea whole (see above). Tier 1
+ * is a rule the lesson states as a complete sentence, with a clause that
+ * explains it and an equation that shows it. When a lesson does not state
+ * either, we do NOT stop: we fall through to the next thing the lesson
  * genuinely contains. Every tier quotes that lesson and nothing else.
  */
 export function buildBox2(config) {
+  const ci = (config.launch || {}).conceptIntro || {};
+  const structured = parseStructuredKeyIdea(ci.keyIdea);
+  if (structured) return { panel: structured, reason: null };
   const strict = buildStrictRule(config);
   if (strict.panel) return { panel: { ...strict.panel, anchorKind: "rule" }, reason: null };
   return buildFallbackAnchor(config, strict.reason);

@@ -475,6 +475,11 @@ export function resolveVocabFallback(term) {
 // Slugs that have dedicated SVGs but are referenced only via the synonym map.
 const EXTRA_DEDICATED = new Set([
   "multi-digit",
+  // Drawn art of its own: the point moving one place in BOTH numbers, then the
+  // whole-number division. Registering it here is also what tells the context
+  // -image generator this term already has a picture, so it does not write a
+  // second, text-only card for the same word.
+  "decimal-division-algorithm",
   "regular-polygon",
   "area-of-regular-polygons",
   "decompose",
