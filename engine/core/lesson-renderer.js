@@ -1112,6 +1112,10 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
         : problemDef.prompt
           ? problemDef.promptEs
           : problemDef.labelEs,
+      // Passed whole so the notebook prompt derives from the item's own fields
+      // (its type, and a real step array when it has one) rather than from
+      // anything an author would have to add.
+      problemDef,
     });
     container.append(shell.card);
     body = shell.body;

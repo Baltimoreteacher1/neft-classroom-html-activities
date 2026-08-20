@@ -6,6 +6,7 @@ import { detectConceptTool } from "./concept-tool.js";
 import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
 import { stackContentHtml } from "./i18n.js";
 import { renderMathText } from "./math-typography.js";
+import { notebookPromptFor } from "./notebook-prompt.js";
 import { renderToolChip } from "./tool-drawer.js";
 
 const TYPE_LABELS = {
@@ -41,6 +42,10 @@ export function createProblemCard({
   stem,
   stemEs,
   hasConversionChart,
+  // The item itself, so the notebook prompt can be DERIVED from it. Optional:
+  // a caller that does not pass it simply gets no prompt, which is the correct
+  // silent default — no lesson is ever asked to author anything to earn one.
+  problemDef,
 } = {}) {
   const card = document.createElement("article");
   card.className = "problem-card";
@@ -107,6 +112,23 @@ export function createProblemCard({
     card.append(stemEl);
   }
 
+  // Notebook prompt: sits between the stem and the answer UI, because that is
+  // the moment the student decides whether to work it out or just pick. It is
+  // deliberately NOT a modal and does NOT gate the input — the software cannot
+  // see the notebook, so a gate would enforce a claim, and the tap that
+  // dismisses it becomes muscle memory within days.
+  const notebook = notebookPromptFor(problemDef, number);
+  if (notebook) {
+    const note = document.createElement("p");
+    note.className = "problem-notebook-prompt";
+    // Not aria-hidden: a student using a screen reader needs this instruction
+    // as much as a sighted one. The pencil is decorative and marked as such.
+    note.innerHTML =
+      '<span class="problem-notebook-icon" aria-hidden="true">\u270F\uFE0F</span>' +
+      stackContentHtml(esc(notebook.en), esc(notebook.es));
+    card.append(note);
+  }
+
   const body = document.createElement("div");
   body.className = "problem-body";
   card.append(body);
@@ -122,6 +144,13 @@ export function createProblemCard({
   }
 
   return { card, body, coinSlot, setResult };
+}
+
+function esc(s) {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 function awardCoin(slot) {

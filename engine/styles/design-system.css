@@ -2435,6 +2435,46 @@ body:has(.identity-screen) .export-toolbar {
   line-height: 1.5;
 }
 
+/* Notebook prompt — the instruction to do this problem on paper.
+   Quiet on purpose. It sits between the stem and the answer UI at the moment
+   the student decides whether to work it out or just pick, and it must read as
+   part of the problem rather than as an alert: a banner students learn to skip
+   is worse than no prompt, because it trains dismissal. No animation, no
+   colour that competes with the correct/incorrect states. */
+.problem-notebook-prompt {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-4);
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  line-height: 1.45;
+  color: var(--navy);
+  background: var(--paper, #fbfaf6);
+  border-left: 3px solid var(--teal-light);
+  border-radius: 0 6px 6px 0;
+}
+
+.problem-notebook-icon {
+  flex: none;
+  font-size: 1em;
+}
+
+/* The card's result state recolours its own chrome; the notebook instruction is
+   not a result and must not appear to be one. */
+.problem-correct .problem-notebook-prompt,
+.problem-incorrect .problem-notebook-prompt {
+  opacity: 0.65;
+}
+
+@media print {
+  /* On paper the instruction is noise — the student is already writing. */
+  .problem-notebook-prompt {
+    display: none;
+  }
+}
+
 .problem-check-row {
   display: flex;
   flex-wrap: wrap;
