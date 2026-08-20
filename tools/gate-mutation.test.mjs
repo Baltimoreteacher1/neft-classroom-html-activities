@@ -46,7 +46,7 @@
 
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { copyFileSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
@@ -58,12 +58,33 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // A real git dir is the whole mechanism here; without one every mutation would
 // be invisible to the validators and every case would "pass" having proved
 // nothing. That is a SKIP, not a pass.
+/**
+ * Absolute path to THIS checkout's git index.
+ *
+ * Never `.git/index`. In a linked worktree `.git` is a FILE holding a gitdir
+ * pointer, and the index lives under `.git/worktrees/<name>/index` in the main
+ * repo — so the hardcoded path throws ENOTDIR. That is not hypothetical here:
+ * `scripts/ship.sh` builds `main` in exactly such a worktree, so the hardcoded
+ * form failed every one of these cases on the first ship attempt and aborted
+ * the push. `git rev-parse --git-path` is the only form that is correct in a
+ * plain clone, a linked worktree, and a submodule alike.
+ */
+let INDEX_PATH;
 try {
-  execFileSync("git", ["rev-parse", "--git-dir"], { cwd: ROOT, stdio: "ignore" });
+  INDEX_PATH = execFileSync("git", ["rev-parse", "--path-format=absolute", "--git-path", "index"], {
+    cwd: ROOT,
+    encoding: "utf8",
+  }).trim();
 } catch {
   exitSkipped(
     "no git repository — these validators enumerate with `git ls-files`, so a mutation would be invisible",
     "Run from a git checkout.",
+  );
+}
+if (!INDEX_PATH || !existsSync(INDEX_PATH)) {
+  exitSkipped(
+    `git reported no readable index at ${INDEX_PATH || "(empty)"} — mutations could not be staged`,
+    "Run from a git checkout with an index.",
   );
 }
 
@@ -147,7 +168,7 @@ function runMutation(c) {
     writeFileSync(abs, c.content);
     const env = { ...process.env };
     if (c.needsIndex !== false) {
-      copyFileSync(join(ROOT, ".git", "index"), index);
+      copyFileSync(INDEX_PATH, index);
       env.GIT_INDEX_FILE = index;
       execFileSync("git", ["add", "-N", c.file], { cwd: ROOT, env, stdio: "ignore" });
     }
