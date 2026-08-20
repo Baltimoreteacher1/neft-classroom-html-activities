@@ -271,6 +271,59 @@ for (const [path, reason] of Object.entries(exempt)) {
   }
 }
 
+/* ── Exemption reasons that cite CI must be telling the truth ──────────────── */
+
+/* An exemption saying "already run by predeploy-verify.yml" is the reason a
+ * reader accepts that a dark validator is fine. If that claim rots, the
+ * registry stops being evidence and becomes reassurance.
+ *
+ * This is not hypothetical: two reasons in this file were WRONG when written.
+ * `validate:lesson-visuals` was described as belonging in nightly CI "if it is
+ * wanted automatically" while site-health.yml had run it weekly all along, and
+ * `audit:a11y` was described as hand-run while production-observability.yml was
+ * running it against production. Both errors came from grepping the workflows
+ * for the FILE name (validate-lesson-visuals) instead of the SCRIPT name
+ * (validate:lesson-visuals) — a mistake a human will make again and a check
+ * will not. */
+const WORKFLOWS = join(ROOT, ".github", "workflows");
+const scriptNameFor = (file) =>
+  Object.entries(scripts).find(([, cmd]) => nodeTargets(cmd).includes(file))?.[0] || null;
+
+for (const [path, reason] of Object.entries(exempt)) {
+  const cited = [...String(reason).matchAll(/([\w.-]+\.yml)/g)].map((m) => m[1]);
+  if (!cited.length) continue;
+  const script = scriptNameFor(path);
+  for (const wf of cited) {
+    const abs = join(WORKFLOWS, wf);
+    if (!existsSync(abs)) {
+      fail(`qa-exempt.json: ${path} cites ${wf}, which does not exist in .github/workflows/`);
+      continue;
+    }
+    // Judge only the SENTENCE that cites the workflow. Reading the whole reason
+    // produced a false positive on the first run: validate-production's reason
+    // says "this proves what already shipped" in one sentence and "Belongs in
+    // verify-deploy.yml" in the next, and the stray "already" made a
+    // recommendation look like a claim.
+    //
+    // "Belongs in X" is aspirational and must never fail; "already run by X",
+    // "X runs it" and "automated" are claims about today and must hold.
+    const sentence =
+      String(reason)
+        .split(/(?<=[.;])\s+/)
+        .find((part) => part.includes(wf)) || "";
+    const isRecommendation = /\b(belongs?|should|would|could)\b/i.test(sentence);
+    const claimsItRuns =
+      !isRecommendation && /\b(already|runs? it|runs `|run by|automated)\b/i.test(sentence);
+    if (!claimsItRuns || !script) continue;
+    if (!readFileSync(abs, "utf8").includes(script)) {
+      fail(
+        `qa-exempt.json: ${path} claims ${wf} runs it, but that workflow never mentions ` +
+          `\`${script}\`. Check the SCRIPT name, not the file name.`,
+      );
+    }
+  }
+}
+
 /* ── The rule ──────────────────────────────────────────────────────────────── */
 
 const dark = onDisk.filter((f) => !executed.has(f) && !(f in exempt));
