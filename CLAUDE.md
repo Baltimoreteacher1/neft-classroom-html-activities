@@ -123,6 +123,7 @@ the strongest one(s) relevant to what you changed:
 | `npm run backup:d1`                           | Exports `neft-student-progress` (the only unrebuildable data here) and **replays the dump into SQLite to prove it restores** before accepting it. Writes to `~/neft-backups/d1/` — deliberately outside the repo, since backups hold student data and this repo auto-commits. Nightly in CI via `.github/workflows/backup-d1.yml`. | Before any D1 migration or destructive `wrangler d1 execute`; verify the nightly job is green. |
 | `npm run report:usage`                        | Joins live D1 telemetry against the on-disk inventory: most-used lessons, games with recorded play, and lessons with no activity at all. Answers "what is actually used?" → `reports/usage-report.md`. | Before planning new content, and before retiring anything. |
 | `npm run audit:dead-code`                     | One-pass reference graph over `assets/`, `scripts/`, `tools/`, `engine/components/`; reports unreferenced and single-referrer files with evidence. **Reports only — never deletes.** → `reports/dead-code.md`. | Debt burn-down; before adding another script that may duplicate one. |
+| `npm run audit:small-group-ux`                | Walks every phase of a support and a challenge lesson at Chromebook and phone width and reports what a student would hit. **Reports only** — like `audit:a11y`, the findings need judgement, so it does not gate. It CRASHED with an uncaught Playwright `TimeoutError` until 2026-08-20: it located the name field as `input[type="text"]` and guarded with `.count()`, but `.count()` proves a node EXISTS, not that it can be typed into — the first text input on a small-group page is the hidden `.sg-room-code`, so `.fill()` blocked for its full 30s default and killed a report-only tool before it printed a finding. Now asks for `:visible`, bounds the wait, and exits 3 (SKIP) when no preview server is up instead of dying on the first locator. Needs `npm run preview -- --port 4499`; ~2.5 min. | Small-group shell, layout or phase changes. |
 | `npm run audit:a11y`                          | axe-core (WCAG 2.1 A/AA) + keyboard-reachability pass over the highest-traffic student pages → `reports/a11y-audit.md`. Not a CI gate — a11y findings need judgement. | Accessibility work; after changing shared chrome, focus styles, or contrast tokens. |
 | `npm run fix:save-resume`                     | Idempotent, reversible injector that adds the shared Save/Resume CSS+JS to any activity missing them (`--dry-run` / `--revert` supported).                                                                           | Remediation when `validate:save-resume` reports missing refs (e.g. after regenerating lessons). |
 | `npm run validate:canvas`                     | Structurally validates built Canvas Common Cartridges in `canvas-packages/` (hrefs/module refs/tokens/links resolve). `build-library-cartridge` also self-validates before shipping.                                 | Canvas export / cartridge tooling changes (see `docs/canvas-bridge.md`).                        |
@@ -303,6 +304,18 @@ TIMEOUT is a failure, never a skip.
 validator-shaped file under `tools/` and `scripts/` must be either reachable
 from the gate or listed in [`qa-exempt.json`](qa-exempt.json) with a written
 reason; `validate:gate-coverage` fails on any third case. See its row below.
+
+**And the gates are proven able to fail.** `tools/gate-mutation.test.mjs` (in
+`npm test`, so on every push) plants a defect each gate SHOULD catch and asserts
+it exits non-zero — a gate that has quietly stopped firing and a gate watching a
+clean tree otherwise print the same line. Mutations are **additive only** (a new
+file, deleted after; no tracked file is ever modified, which is why the
+content-pinned `validate:auth-contract` is deliberately not a subject), and each
+runs against a **throwaway copy of the git index** via `GIT_INDEX_FILE` — these
+validators enumerate with `git ls-files`, so an untracked mutation would be
+invisible and prove nothing, and staging it for real would mutate the index
+during a push. `QA_MUTATE_SLOW=1 npm test` adds the ~30s `validate:js-syntax`
+case.
 
 `npm run validate:production` is a **readiness report**, not the push gate.
 It is honest about skips (`SKIPPED` / `NOT AVAILABLE` → exit 2). Local
