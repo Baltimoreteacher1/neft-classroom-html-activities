@@ -9,7 +9,12 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import test from "node:test";
 import { Rat, evaluateExpression } from "../../scripts/lib/rational.mjs";
-import { extractEquation, parseKeyIdea, splitGuidedLine } from "./learn-step-model.js";
+import {
+  extractEquation,
+  extractStepMove,
+  parseKeyIdea,
+  splitGuidedLine,
+} from "./learn-step-model.js";
 
 test("parseKeyIdea splits topic / formula / points / example", () => {
   const parsed = parseKeyIdea(
@@ -159,4 +164,128 @@ test("every decidable equation extracted from the 84 core lessons is true", () =
   assert.ok(extracted > 50, `extractor went quiet — only ${extracted} equations found fleet-wide`);
   assert.ok(decidable > 20, `arithmetic audit went quiet — only ${decidable} decidable equations`);
   assert.deepEqual(falsehoods, [], `FALSE equations would print large on a teaching page:\n${falsehoods.join("\n")}`);
+});
+
+/* ── extractStepMove ────────────────────────────────────────────────────────
+   A move becomes a WORKSPACE a student manipulates, and the workspace tells
+   them whether they are right. So a wrongly-read move is worse than a wrongly
+   printed equation: it marks a correct answer wrong, or a wrong one right.
+   The guard is arithmetic truth, and these tests pin it. */
+
+test("extractStepMove reads a decimal shift the lesson states", () => {
+  const move = extractStepMove(
+    "STEP 0 — MOVE THE POINT: I move the decimal point 1 place right in the divisor, so 6.3 becomes 63.",
+  );
+  assert.equal(move.kind, "decimal-shift");
+  assert.equal(move.from, "6.3");
+  assert.equal(move.to, "63");
+  assert.equal(move.places, 1);
+  assert.equal(move.direction, "right");
+});
+
+test("extractStepMove does not carry sentence punctuation into a number", () => {
+  const move = extractStepMove(
+    "I must move the dividend the same 1 place right: 18.9 becomes 189, and the point in the quotient goes straight above its new spot.",
+  );
+  assert.equal(move.to, "189", 'the trailing comma must not reach the workspace as "189,"');
+});
+
+test("extractStepMove REFUSES a shift whose numbers do not agree", () => {
+  // "5.5 becomes 12" is not 5.5 moved one place. A workspace built on it would
+  // tell a student that 55 is wrong and 12 is right.
+  assert.equal(extractStepMove("It moves 1 place right so 5.5 becomes 12."), null);
+});
+
+test("extractStepMove reads a chained arithmetic move", () => {
+  const move = extractStepMove(
+    "Its volume is 8 × 3 × 10 = 240 cubic inches, so three large boxes hold 720.",
+  );
+  assert.equal(move.kind, "arithmetic");
+  assert.deepEqual(move.operands, ["8", "3", "10"]);
+  assert.deepEqual(move.ops, ["×", "×"]);
+  assert.equal(move.result, "240");
+});
+
+test("extractStepMove reads an equation a prose lead-in would hide", () => {
+  // extractEquation rejects this one (the word "is" before the run); the move
+  // scanner accepts it because 12 × 10 really is 120.
+  const move = extractStepMove("12 clusters of about 10 is 12 × 10 = 120, so my estimate is 120.");
+  assert.equal(move.equation, "12 × 10 = 120");
+});
+
+test("extractStepMove REFUSES a false equation", () => {
+  assert.equal(extractStepMove("I worked it out and got 7 × 6 = 41."), null);
+});
+
+test("extractStepMove REFUSES the bare-equality trap", () => {
+  // The "120 divided by 8 = 15" shape must never yield the move "8 = 15":
+  // one operator on the left is required, and 8 = 15 is not true anyway.
+  const move = extractStepMove("120 divided by 8 = 15 for each group.");
+  assert.ok(!move || move.operands.length > 1, `bare equality became a move: ${JSON.stringify(move)}`);
+});
+
+test("extractStepMove returns null for prose with no computation", () => {
+  assert.equal(extractStepMove("Everyone uses math every day."), null);
+  assert.equal(extractStepMove(""), null);
+});
+
+test("every move extracted fleet-wide is arithmetically TRUE and traces to its line", () => {
+  const LESSONS = new URL("../../lessons/", import.meta.url).pathname;
+  const ids = readdirSync(LESSONS).filter((d) => /^\d+-\d+$/.test(d));
+  const bad = [];
+  let moves = 0;
+  let lessonsCovered = 0;
+
+  for (const id of ids) {
+    const config = JSON.parse(readFileSync(`${LESSONS}${id}/config.json`, "utf8"));
+    const lines = config.launch?.conceptIntro?.iDo?.lines || [];
+    let covered = false;
+    for (const line of lines) {
+      const move = extractStepMove(line);
+      if (!move) continue;
+      moves++;
+      covered = true;
+      const flat = String(line).replace(/\s+/g, " ");
+      if (move.kind === "decimal-shift") {
+        // Both numbers must appear in the line the workspace sits under.
+        for (const token of [move.from, move.to]) {
+          if (!flat.includes(token)) bad.push(`${id}: "${token}" is not in its own line: ${flat}`);
+        }
+        const factor = move.direction === "right" ? 10 ** move.places : 10 ** -move.places;
+        const from = Number(move.from.replace(/,/g, ""));
+        const to = Number(move.to.replace(/,/g, ""));
+        if (Math.abs(from * factor - to) > 1e-9) {
+          bad.push(`${id}: shift ${move.from}→${move.to} is not ${move.places} place(s)`);
+        }
+      } else {
+        for (const token of [...move.operands, move.result]) {
+          if (!flat.includes(token)) bad.push(`${id}: "${token}" is not in its own line: ${flat}`);
+        }
+        const values = move.operands.map((o) => Number(String(o).replace(/[$,]/g, "")));
+        const ops = move.ops.slice();
+        const v = values.slice();
+        for (let i = 0; i < ops.length; ) {
+          if (ops[i] === "×" || ops[i] === "÷") {
+            v.splice(i, 2, ops[i] === "×" ? v[i] * v[i + 1] : v[i] / v[i + 1]);
+            ops.splice(i, 1);
+          } else i++;
+        }
+        let acc = v[0];
+        for (let i = 0; i < ops.length; i++) acc = ops[i] === "+" ? acc + v[i + 1] : acc - v[i + 1];
+        const want = Number(String(move.result).replace(/[$,]/g, ""));
+        if (Math.abs(acc - want) > Math.abs(want) * 1e-9 + 1e-9) {
+          bad.push(`${id}: FALSE move ${move.equation}`);
+        }
+      }
+    }
+    if (covered) lessonsCovered++;
+  }
+
+  // A detector that has quietly stopped firing reports a perfectly clean fleet.
+  assert.ok(moves > 40, `move detector went quiet — only ${moves} moves fleet-wide`);
+  assert.ok(
+    lessonsCovered > 30,
+    `move coverage collapsed — only ${lessonsCovered} of ${ids.length} lessons`,
+  );
+  assert.deepEqual(bad, [], `moves that do not belong to their lesson:\n${bad.join("\n")}`);
 });

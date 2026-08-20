@@ -2,7 +2,12 @@ import { workedFigure, workedStepFigures } from "../../scripts/lib/learn-figures
 import { divisionStepFigures } from "../core/division-walk-figure.js";
 import { getPreferredLang } from "../core/i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "../core/interactive-visual.js";
-import { extractEquation, parseKeyIdea, splitGuidedLine } from "../core/learn-step-model.js";
+import {
+  extractEquation,
+  extractStepMove,
+  parseKeyIdea,
+  splitGuidedLine,
+} from "../core/learn-step-model.js";
 import { underlineVocabTerms } from "../core/lesson-renderer.js";
 import {
   resolveInteractiveToolForLesson,
@@ -863,6 +868,112 @@ function injectVocabLearnStyles() {
       line-height: 1.6;
       color: #0f172a;
     }
+    /* The step's manipulable workspace (components/step-workspace.js). */
+    .vl-stepwork { margin-top: 12px; }
+    .sw-shell {
+      border: 2px dashed #93c5fd;
+      border-radius: 14px;
+      background: #f8fbff;
+      padding: 12px 14px;
+    }
+    .sw-head {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #1d4ed8;
+      margin-bottom: 8px;
+    }
+    .sw-lead { margin: 0 0 10px; font-size: 1rem; color: #334155; }
+    .sw-board {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .sw-strip {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 4px;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+    }
+    .sw-digit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 30px;
+      padding: 6px 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .sw-point {
+      display: inline-flex;
+      align-items: flex-end;
+      justify-content: center;
+      min-width: 22px;
+      min-height: 44px;
+      padding: 0 2px 8px;
+      font-size: 1.9rem;
+      line-height: 1;
+      font-weight: 900;
+      color: #dc2626;
+      background: #fee2e2;
+      border: 2px solid #dc2626;
+      border-radius: 8px;
+      cursor: grab;
+      touch-action: none;
+    }
+    .sw-point:active { cursor: grabbing; }
+    .sw-point:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 2px; }
+    .sw-readout, .sw-eq-sign {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .sw-op {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #1d4ed8;
+    }
+    .sw-num {
+      min-width: 3ch;
+      min-height: 44px;
+      padding: 4px 8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 1.3rem;
+      font-weight: 800;
+      text-align: center;
+      color: #0f172a;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+    }
+    .sw-num:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 1px; }
+    .sw-answer { border-color: #1d4ed8; background: #eff6ff; }
+    .sw-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sw-btn {
+      min-height: 44px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.98rem;
+      font-weight: 800;
+      cursor: pointer;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      color: #334155;
+    }
+    .sw-btn-primary { background: #1d4ed8; border-color: #1d4ed8; color: #ffffff; }
+    .sw-btn-quiet { font-weight: 700; }
+    .sw-status { margin: 8px 0 0; font-size: 1rem; font-weight: 700; min-height: 1.2em; }
+    .sw-status.sw-ok { color: #047857; }
+    .sw-status.sw-try { color: #b45309; }
+    @media print { .sw-controls { display: none; } }
     .vl-pace {
       display: flex;
       flex-wrap: wrap;
@@ -1524,6 +1635,16 @@ export function renderLearnItPanel(container, config, options = {}) {
   try {
     workedFig = workedFigure(config);
   } catch (_) {}
+  // The manipulable half of each step: the move its own sentence describes,
+  // when that move can be read AND verified from the lesson's own numbers.
+  // A step with no readable move gets no workspace and reads as it always has.
+  const stepMoves = iLines.map((line) => {
+    try {
+      return extractStepMove(line);
+    } catch (_) {
+      return null;
+    }
+  });
   const stepFigureFor = (idx) => {
     if (divFigs[idx]) {
       return { svg: divFigs[idx], cap: isEs ? "La división hasta ahora" : "The division so far" };
@@ -1564,6 +1685,7 @@ export function renderLearnItPanel(container, config, options = {}) {
                       ? `<figure class="vl-stepfig">${fig.svg}<figcaption class="vl-stepfig-cap">${fig.cap}</figcaption></figure>`
                       : "";
                   })()}
+                  ${stepMoves[idx] ? `<div class="vl-stepwork" data-step-work="${idx}"></div>` : ""}
                 </div>
                 <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(line)}">🔊 <span class="sr-only">${isEs ? "Escuchar paso" : "Hear step"} ${idx + 1}</span></button>
               </li>`,
@@ -1583,6 +1705,22 @@ export function renderLearnItPanel(container, config, options = {}) {
               : ""
           }`;
         speakButtonsIn(host);
+        // Each step's workspace, mounted where its own sentence sits. Loaded on
+        // demand so a lesson whose steps yield no move pays nothing for it.
+        const workHosts = host.querySelectorAll("[data-step-work]");
+        if (workHosts.length) {
+          import("./step-workspace.js")
+            .then(({ mountStepWorkspace }) => {
+              workHosts.forEach((slot) => {
+                const move = stepMoves[Number(slot.getAttribute("data-step-work"))];
+                if (move)
+                  mountStepWorkspace(/** @type {HTMLElement} */ (slot), move, {
+                    lang: isEs ? "es" : "en",
+                  });
+              });
+            })
+            .catch((err) => console.warn("step-workspace: mount skipped", err));
+        }
         const toolBlock = /** @type {HTMLElement|null} */ (host.querySelector(".vl-tool-block"));
         let toolMounted = false;
         wirePaced(host, () => {
