@@ -358,9 +358,15 @@ function renderLessonNotesHtml(config) {
     );
   }
   const title = String((config && config.title) || "").trim();
+  // The page header a student recreates by hand: "Date" with a blank to fill
+  // in (never a printed date — a fabricated "Sept. 3" is the exact defect the
+  // provenance layer removed), then a title naming what these notes are about.
+  // The title is the lesson's own declared title, so it always describes the
+  // notes below it and never borrows another lesson's words.
   return `
     <div class="nt-nb-model-lesson">
-      <p class="nt-nb-model-lessonlead">Today's notes${title ? ` — ${esc(title)}` : ""}</p>
+      <p class="nt-nb-model-date">Date: <span class="nt-nb-model-date-blank" aria-hidden="true"></span><span class="nt-nb-visually-hidden">write today's date</span></p>
+      <p class="nt-nb-model-lessonlead">${title ? esc(title) : "Today's Math Notes"}</p>
       ${sections.join("\n")}
     </div>`;
 }
