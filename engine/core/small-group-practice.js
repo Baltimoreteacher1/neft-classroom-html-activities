@@ -3,7 +3,7 @@ import { isRight, numberOf } from "./answer-match.js";
 import { detectConceptTool } from "./concept-tool.js";
 import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
 import { extractDivisionDiagram } from "./division-helper.js";
-import { compareYourWorkFor, notebookPromptFor } from "./notebook-prompt.js";
+import { compareYourWorkFor } from "./notebook-prompt.js";
 import { pickWorkedModel } from "./small-group-adaptive.js";
 import { figureBlock } from "./small-group-labs.js";
 import { mountReasoningReader } from "./small-group-reasoning.js";
@@ -193,7 +193,15 @@ function compareLine(within, item, correct) {
   // only has the status element), and passing whichever is at hand is safer
   // than threading a new parameter through a shared helper.
   const card = within?.closest?.(".prob") || (within?.querySelector ? within : null);
-  if (!card?.querySelector?.(".nb-setup")) return "";
+  // The gate is `.sg-notebook-cue`, the instruction small group has ALWAYS
+  // shown ("Solve it in your notebook first"). A notebook SETUP block was added
+  // here on 2026-08-20 and removed the same day: every independent-tier item
+  // already carried this cue, and the section already carries `soloDir` saying
+  // the same thing, so the block made three notebook instructions per problem.
+  // The compare line is the part small group genuinely lacked, so it stays —
+  // keyed to the cue that was already there rather than to a block that should
+  // never have been added.
+  if (!card?.querySelector?.(".sg-notebook-cue")) return "";
   const c = compareYourWorkFor(item, { asked: true, correct });
   if (!c) return "";
   return `<span class="nb-compare"><span class="nb-compare-icon" aria-hidden="true">\u270F\uFE0F</span>${bi(
@@ -1135,36 +1143,6 @@ export function createPracticeSection(
     card.dataset.practiceIndex = String(storeIndex);
     card.dataset.tier = item._tier || "";
 
-    // Notebook setup, on the INDEPENDENT tiers only. `mode` is "guided" while
-    // the teacher walks the group through an item; "practice" and "more" are
-    // where the scaffold is withdrawn and the student works alone. Small group
-    // is the one place the notebook can actually be seen, so this is where it
-    // matters most. No model line: small-group key ideas are rewritten prose
-    // and carry no `Formula:` label to quote (0 of 168).
-    const nbMode = options.mode || "guided";
-    const nb =
-      nbMode === "guided"
-        ? null
-        : notebookPromptFor(item, storeIndex + 1, null, { independent: true });
-    if (nb) {
-      const aside = el("aside", "nb-setup");
-      aside.setAttribute("aria-label", `Notebook setup for problem ${storeIndex + 1}`);
-      aside.appendChild(
-        el(
-          "div",
-          "nb-setup-head",
-          `<span class="nb-setup-icon" aria-hidden="true">\u270F\uFE0F</span>${bi(nb.head, nb.headEs)}`,
-        ),
-      );
-      const ol = el("ol", "nb-setup-steps");
-      for (const st of nb.steps) ol.appendChild(el("li", "", bi(st.en, st.es)));
-      aside.appendChild(ol);
-      // After the question text, before the answer controls — the moment the
-      // student decides whether to work it out or guess.
-      const q = card.querySelector("p.q");
-      if (q && q.nextSibling) card.insertBefore(aside, q.nextSibling);
-      else card.appendChild(aside);
-    }
     cardsByIndex.set(storeIndex, card);
     appendVisualPractice(card, item, { mode: options.mode || "guided", events });
     // "Try another like this": infinite same-type reps — only appears when the

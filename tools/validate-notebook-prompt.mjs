@@ -39,7 +39,6 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   derivedStepCount,
-  INDEPENDENT_ONLY_TYPES,
   lessonModelFrom,
   NOTEBOOK_PROMPT_TYPES,
   notebookPromptFor,
@@ -209,21 +208,23 @@ if (failures.length) {
   process.exit(1);
 }
 
-/* ── Small group: the guided tier must stay silent ─────────────────────────── */
+/* ── Small group must NOT receive a setup block ────────────────────────────── */
 
-/* The tier split is the whole safety property here. Every one of the ~1,944
- * small-group practice items is `guided-fill`, and during the guided tier the
- * on-screen scaffold IS the help — sending a student to paper competes with it.
- * Independence is decided by the renderer's `mode` ("guided" vs
- * "practice"/"more"), so this asserts the DERIVATION honours the distinction
- * rather than that any particular page renders it. */
+/* Small group already tells students to use their notebook TWICE — every item
+ * carries `.sg-notebook-cue` and the section carries `soloDir`. A setup block
+ * was added here on 2026-08-20 and removed the same day, because it made a
+ * third instruction per problem (measured live: 7 of 7 independent items and
+ * 4 of 4 "more practice" items already had the cue).
+ *
+ * This asserts the absence, so re-adding it is a deliberate act rather than an
+ * accident: `guided-fill` is every one of the small-group practice items, and
+ * none of them may derive a setup. */
 const sgDirs = readdirSync(LESSONS).filter(
   (d) => /-group\d$/.test(d) && existsSync(join(LESSONS, d, "config.json")),
 );
 assertNonEmpty("small-group configs", sgDirs, "Expected lessons/<id>-groupN/config.json.");
 
-let sgGuidedSilent = 0;
-let sgIndependent = 0;
+let sgSilent = 0;
 for (const d of sgDirs) {
   let cfg;
   try {
@@ -232,16 +233,13 @@ for (const d of sgDirs) {
     continue;
   }
   for (const item of cfg.parallelPractice || []) {
-    if (!INDEPENDENT_ONLY_TYPES.has(item.type)) continue;
-    if (notebookPromptFor(item, 1) !== null) {
-      fail(`${d}: a ${item.type} item earned a setup with the scaffold still up`);
+    if (notebookPromptFor(item, 1, lessonModelFrom(cfg)) !== null) {
+      fail(
+        `${d}: a ${item.type} item derived a notebook setup — small group already shows ` +
+          "`.sg-notebook-cue` and `soloDir`, so this would be a third instruction per problem",
+      );
     } else {
-      sgGuidedSilent++;
-    }
-    if (notebookPromptFor(item, 1, null, { independent: true }) === null) {
-      fail(`${d}: a ${item.type} item stayed silent even once independent`);
-    } else {
-      sgIndependent++;
+      sgSilent++;
     }
   }
 }
@@ -254,8 +252,8 @@ console.log(
 );
 console.log(`   by type: ${JSON.stringify(byType)}`);
 console.log(
-  `   small group: ${sgGuidedSilent} guided-tier item(s) stay silent, ${sgIndependent} earn a ` +
-    "setup once the scaffold is withdrawn (Try it on your own / More practice).",
+  `   small group: ${sgSilent} item(s) correctly derive NO setup — that surface already shows ` +
+    "its own notebook cue, and the compare line rides on that cue instead.",
 );
 console.log(
   "   Coverage is REPORTED, not required. Absence is a pass: an item that derives no prompt " +

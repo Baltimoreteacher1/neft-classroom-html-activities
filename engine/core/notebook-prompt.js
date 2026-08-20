@@ -78,22 +78,23 @@
 
 export const NOTEBOOK_PROMPT_TYPES = new Set(["multiple-choice", "error-analysis"]);
 
-/**
- * Types that earn a setup ONLY once the scaffold is withdrawn.
+/*
+ * WHY SMALL GROUP GETS NO SETUP BLOCK — kept as a note because it looks like an
+ * omission and is not.
  *
- * `guided-fill` is every one of the 2,376 small-group practice items, and it is
- * scaffolded fill-in-the-blank meant to be worked ON SCREEN — during the guided
- * tier, sending a student to paper fights the thing that is helping them. But
- * the small-group renderer splits practice into three tiers, and only the first
- * is guided: `independentItems` ("Try it on your own") and `moreItems` ("More
- * practice") withdraw the scaffold entirely. Those are independent work, done
- * with the teacher sitting right there — the one place a notebook can actually
- * be seen.
+ * All 2,376 small-group practice items are `guided-fill`, and a setup block was
+ * added for the independent tiers on 2026-08-20 and removed the same day. Small
+ * group ALREADY tells students to use their notebook, twice: every item carries
+ * `.sg-notebook-cue` ("Solve it in your notebook first — show your steps"), and
+ * the section carries `soloDir` ("Solve each one in your notebook first"). The
+ * block made a third instruction per problem — measured live: 7 of 7 items in
+ * "Try it on your own" and 4 of 4 in "More practice" already had the cue.
  *
- * Keying this off item `type` alone was the original mistake: the type says what
- * the item IS, not whether the student is currently being walked through it.
+ * What small group genuinely lacked was the AFTER-answer comparison, and that
+ * is what it now has, keyed to the cue it already had. If a richer setup is ever
+ * wanted there, the right move is to enrich `.sg-notebook-cue` in
+ * small-group-visual-practice.js — not to stack a second block beside it.
  */
-export const INDEPENDENT_ONLY_TYPES = new Set(["guided-fill"]);
 
 /**
  * Types where the screen is the work surface. Listed explicitly rather than
@@ -158,22 +159,16 @@ export function derivedStepCount(def = {}) {
  * @param {PracticeItem|null|undefined} def
  * @param {number|string|null|undefined} number  the problem number the card shows
  * @param {string|null} [model]  from lessonModelFrom(), when the lesson has one
- * @param {{independent?: boolean}} [opts]  independent: the scaffold has been
- *   withdrawn, so a normally-scaffolded type earns a setup
  * @returns {NotebookPrompt|null}
  */
-export function notebookPromptFor(def, number, model = null, opts = {}) {
+export function notebookPromptFor(def, number, model = null) {
   if (!def || typeof def !== "object") return null;
   // The number is the label the student writes at the top of the page. Without
   // it this is the generic nag the design exists to avoid.
   if (number == null || number === "") return null;
 
   const type = def.type;
-  const eligible =
-    NOTEBOOK_PROMPT_TYPES.has(type) || (opts.independent && INDEPENDENT_ONLY_TYPES.has(type));
-  if (!eligible) return null;
-  // A manipulative is a manipulative in every tier: withdrawing the scaffold
-  // does not turn a net-folder into paper work.
+  if (!NOTEBOOK_PROMPT_TYPES.has(type)) return null;
   if (SCREEN_IS_THE_WORK_SURFACE.has(type)) return null;
 
   const stepCount = derivedStepCount(def);
@@ -183,11 +178,6 @@ export function notebookPromptFor(def, number, model = null, opts = {}) {
     steps.push({
       en: "Copy the model, then fill in what you know.",
       es: "Copia el modelo y completa lo que sabes.",
-    });
-  } else if (type === "guided-fill") {
-    steps.push({
-      en: `Write #${number} and work it out on paper first.`,
-      es: `Escribe el #${number} y resuélvelo en papel primero.`,
     });
   } else if (type === "error-analysis") {
     steps.push({
