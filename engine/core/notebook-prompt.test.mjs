@@ -14,6 +14,7 @@ import test from "node:test";
 import {
   comparableSteps,
   compareYourWorkFor,
+  modelParts,
   NOTEBOOK_PROMPT_TYPES,
   SCREEN_IS_THE_WORK_SURFACE,
   derivedStepCount,
@@ -171,4 +172,28 @@ test("guided-fill never gets a setup — small group already has its own cue", (
   // Measured live at the time: 7/7 and 4/4 items already had the cue.
   assert.equal(notebookPromptFor({ type: "guided-fill" }, 5), null);
   assert.equal(notebookPromptFor({ type: "guided-fill", steps: [{}, {}, {}] }, 5, "A = b x h"), null);
+});
+
+test("a multi-formula model splits into separate parts, pipe never shown", () => {
+  // 13 lessons state two or three formulas in one Formula: line. Rendered whole,
+  // the separator lands inside a box captioned "Start with:" and a student
+  // copying faithfully writes the pipe. Seen live on 9-3.
+  const parts = modelParts("y = kx | Dependent = (Unit Rate) \u00D7 Independent");
+  assert.deepEqual(parts, ["y = kx", "Dependent = (Unit Rate) \u00D7 Independent"]);
+  for (const p of parts) assert.doesNotMatch(p, /\|/, "no part may contain the separator");
+});
+
+test("every part stays a VERBATIM substring of the model it came from", () => {
+  // Splitting narrows the quote; it must never compose a new one, or the gate's
+  // "quoted from this lesson's keyIdea" guarantee would be hollow.
+  const model = "Range = Maximum \u2212 Minimum | IQR = Q3 \u2212 Q1";
+  for (const part of modelParts(model)) assert.ok(model.includes(part), part);
+});
+
+test("a single-formula model is unchanged", () => {
+  assert.deepEqual(modelParts("Whole = Part \u00F7 Percent"), ["Whole = Part \u00F7 Percent"]);
+});
+
+test("no model yields no parts", () => {
+  for (const v of [null, undefined, "", "   "]) assert.deepEqual(modelParts(v), []);
 });

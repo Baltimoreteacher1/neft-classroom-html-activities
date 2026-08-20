@@ -137,6 +137,30 @@ export function lessonModelFrom(config) {
 }
 
 /**
+ * Split a quoted model into the separate formulas it states.
+ *
+ * WHY. 13 lessons author two or three formulas in one `Formula:` line,
+ * separated by a pipe — "Range = Maximum - Minimum | IQR = Q3 - Q1". Rendered
+ * as one string in a box captioned "Start with:", the pipe reads as part of the
+ * mathematics, and a student copying it faithfully writes the pipe down. Seen
+ * live on 9-3, which states "y = kx | Dependent = (Unit Rate) x Independent".
+ *
+ * Each returned part is still a VERBATIM substring of the lesson's own keyIdea,
+ * so the gate's quote check holds on every part: splitting narrows the quote,
+ * it never composes a new one.
+ *
+ * @param {string|null|undefined} model
+ * @returns {string[]} one entry per formula; [] when there is no model
+ */
+export function modelParts(model) {
+  if (typeof model !== "string" || !model.trim()) return [];
+  return model
+    .split("|")
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+/**
  * How many steps of written work this item genuinely takes, or null.
  *
  * Only counts an actual array the item already carries. Counting sentences in

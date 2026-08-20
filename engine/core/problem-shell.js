@@ -6,7 +6,7 @@ import { detectConceptTool } from "./concept-tool.js";
 import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
 import { stackContentHtml } from "./i18n.js";
 import { renderMathText } from "./math-typography.js";
-import { notebookPromptFor } from "./notebook-prompt.js";
+import { modelParts, notebookPromptFor } from "./notebook-prompt.js";
 import { renderToolChip } from "./tool-drawer.js";
 
 const TYPE_LABELS = {
@@ -146,9 +146,13 @@ export function createProblemCard({
       // The model is QUOTED from the lesson's own key idea and shown identically
       // in both lanes: no lesson authors keyIdeaEs, and translating a formula
       // here would invent vocabulary the curriculum has not chosen.
-      model.innerHTML = `${stackContentHtml("Start with:", "Empieza con:")}<code>${esc(
-        notebook.model,
-      )}</code>`;
+      // One box per formula. A lesson that states two ("Range = Maximum -
+      // Minimum | IQR = Q3 - Q1") must not render its separator inside a box a
+      // student is told to copy — they will write the pipe down.
+      const parts = modelParts(notebook.model);
+      model.innerHTML =
+        stackContentHtml("Start with:", "Empieza con:") +
+        parts.map((part) => `<code>${esc(part)}</code>`).join("");
       nb.append(model);
     }
 

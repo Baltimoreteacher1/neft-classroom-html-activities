@@ -40,6 +40,7 @@ import { fileURLToPath } from "node:url";
 import {
   derivedStepCount,
   lessonModelFrom,
+  modelParts,
   NOTEBOOK_PROMPT_TYPES,
   notebookPromptFor,
   SCREEN_IS_THE_WORK_SURFACE,
@@ -184,6 +185,19 @@ for (const d of dirs) {
         const keyIdea = cfg.launch?.conceptIntro?.keyIdea || "";
         if (!keyIdea.includes(p.model)) {
           fail(`${where}: model "${p.model}" is not a verbatim quote of this lesson's keyIdea`);
+        }
+        // Each RENDERED part must be a quote too. The card shows one box per
+        // formula, so the whole string being quotable is not enough — a split
+        // that composed a new string would render mathematics no lesson wrote.
+        const parts = modelParts(p.model);
+        if (!parts.length) fail(`${where}: model "${p.model}" split to nothing`);
+        for (const part of parts) {
+          if (!keyIdea.includes(part)) {
+            fail(`${where}: rendered model part "${part}" is not a verbatim quote of the keyIdea`);
+          }
+          if (part.includes("|")) {
+            fail(`${where}: rendered model part still contains the separator — "${part}"`);
+          }
         }
       }
 
