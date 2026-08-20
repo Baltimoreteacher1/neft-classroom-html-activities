@@ -1,6 +1,6 @@
 /**
- * EduWonderLab Enterprise Small-Group Google Sheets Live Telemetry Bridge
- * Architecture: Web client connector dispatching student check scores and cluster placements to Google Apps Script.
+ * EduWonderLab Enterprise Multi-Tab Google Sheets Live Telemetry Bridge
+ * Architecture: Web client connector dispatching student scores across Sections 601, 602, and 603 to Google Apps Script.
  * Compliant with Global Development Rules.
  */
 
@@ -10,18 +10,22 @@
   class GoogleSheetsSyncBridge {
     constructor(options = {}) {
       this.sheetId = options.sheetId || "10Ae13ZcZgySdSE8mN-aD31zqc4bHjJUPyIR0iTHBH04";
-      this.sectionName = options.sectionName || "Section 603";
+      this.sections = [
+        { name: "Section 601", tabName: "Small Groups 601" },
+        { name: "Section 602", tabName: "Small Groups 602" },
+        { name: "Section 603", tabName: "Small Groups 603" },
+      ];
       this.webhookUrl = options.webhookUrl || null;
       this.lastSync = null;
     }
 
     /**
-     * Dispatches student cluster update payload to Google Sheets webhook
+     * Dispatches student cluster update payload to a specific tab or all tabs
      */
-    async syncClusters(studentScores, skillFocus = "Unit Practice Standard") {
+    async syncClusters(studentScores, targetTab = "ALL", skillFocus = "Unit Practice Standard") {
       const payload = {
         sheetId: this.sheetId,
-        section: this.sectionName,
+        tabName: targetTab,
         timestamp: new Date().toISOString(),
         skillFocus: skillFocus,
         scores: studentScores || {},
@@ -29,7 +33,7 @@
 
       if (!this.webhookUrl) {
         console.info(
-          "[GOOGLE SHEETS BRIDGE] Webhook URL not configured. Staging local telemetry payload:",
+          `[GOOGLE SHEETS BRIDGE] Webhook not set. Staged payload for [${targetTab}]:`,
           payload,
         );
         this.lastSync = payload;
