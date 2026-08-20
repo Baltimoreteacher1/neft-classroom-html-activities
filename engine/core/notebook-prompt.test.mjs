@@ -12,6 +12,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  INDEPENDENT_ONLY_TYPES,
   NOTEBOOK_PROMPT_TYPES,
   SCREEN_IS_THE_WORK_SURFACE,
   derivedStepCount,
@@ -129,4 +130,38 @@ test("the setup asserts no mathematics of its own", () => {
     const numbers = [...new Set(text.match(/\d+/g) || [])].sort();
     assert.deepEqual(numbers, ["3", "5"], `${type}: unexpected number in "${text}"`);
   }
+});
+
+test("guided-fill stays silent while the scaffold is up", () => {
+  // Every one of the 2,376 small-group practice items is guided-fill. During
+  // the guided tier the on-screen scaffold IS the help, and sending a student
+  // to paper competes with it.
+  assert.equal(notebookPromptFor({ type: "guided-fill" }, 5), null);
+  assert.equal(notebookPromptFor({ type: "guided-fill" }, 5, null, {}), null);
+  assert.equal(notebookPromptFor({ type: "guided-fill" }, 5, null, { independent: false }), null);
+});
+
+test("guided-fill EARNS a setup once the scaffold is withdrawn", () => {
+  // "Try it on your own" and "More practice" are independent work, done with
+  // the teacher sitting right there — the one place a notebook can be seen.
+  const p = notebookPromptFor({ type: "guided-fill" }, 5, null, { independent: true });
+  assert.ok(p, "independent small-group work is exactly where the notebook belongs");
+  assert.match(p.head, /#5/);
+  assert.match(p.steps[0].en, /on paper/i);
+  assert.notEqual(p.steps[0].es, p.steps[0].en);
+});
+
+test("independence never overrides a manipulative", () => {
+  // Withdrawing the scaffold does not turn a net-folder into paper work.
+  for (const type of SCREEN_IS_THE_WORK_SURFACE) {
+    assert.equal(notebookPromptFor({ type }, 1, null, { independent: true }), null, type);
+  }
+});
+
+test("the independent-only and always-on sets are disjoint", () => {
+  assert.deepEqual(
+    [...INDEPENDENT_ONLY_TYPES].filter((t) => NOTEBOOK_PROMPT_TYPES.has(t)),
+    [],
+    "a type is either always eligible or eligible only when independent",
+  );
 });

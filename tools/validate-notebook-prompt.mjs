@@ -39,6 +39,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   derivedStepCount,
+  INDEPENDENT_ONLY_TYPES,
   lessonModelFrom,
   NOTEBOOK_PROMPT_TYPES,
   notebookPromptFor,
@@ -208,6 +209,43 @@ if (failures.length) {
   process.exit(1);
 }
 
+/* ── Small group: the guided tier must stay silent ─────────────────────────── */
+
+/* The tier split is the whole safety property here. Every one of the ~1,944
+ * small-group practice items is `guided-fill`, and during the guided tier the
+ * on-screen scaffold IS the help — sending a student to paper competes with it.
+ * Independence is decided by the renderer's `mode` ("guided" vs
+ * "practice"/"more"), so this asserts the DERIVATION honours the distinction
+ * rather than that any particular page renders it. */
+const sgDirs = readdirSync(LESSONS).filter(
+  (d) => /-group\d$/.test(d) && existsSync(join(LESSONS, d, "config.json")),
+);
+assertNonEmpty("small-group configs", sgDirs, "Expected lessons/<id>-groupN/config.json.");
+
+let sgGuidedSilent = 0;
+let sgIndependent = 0;
+for (const d of sgDirs) {
+  let cfg;
+  try {
+    cfg = JSON.parse(readFileSync(join(LESSONS, d, "config.json"), "utf8"));
+  } catch {
+    continue;
+  }
+  for (const item of cfg.parallelPractice || []) {
+    if (!INDEPENDENT_ONLY_TYPES.has(item.type)) continue;
+    if (notebookPromptFor(item, 1) !== null) {
+      fail(`${d}: a ${item.type} item earned a setup with the scaffold still up`);
+    } else {
+      sgGuidedSilent++;
+    }
+    if (notebookPromptFor(item, 1, null, { independent: true }) === null) {
+      fail(`${d}: a ${item.type} item stayed silent even once independent`);
+    } else {
+      sgIndependent++;
+    }
+  }
+}
+
 const pct = items ? (100 * prompted) / items : 0;
 console.log(
   `✓ notebook prompts hold — ${prompted} of ${items} core practice item(s) prompted ` +
@@ -215,6 +253,10 @@ console.log(
     `${withSteps} with a counted step total, 0 on a manipulative.`,
 );
 console.log(`   by type: ${JSON.stringify(byType)}`);
+console.log(
+  `   small group: ${sgGuidedSilent} guided-tier item(s) stay silent, ${sgIndependent} earn a ` +
+    "setup once the scaffold is withdrawn (Try it on your own / More practice).",
+);
 console.log(
   "   Coverage is REPORTED, not required. Absence is a pass: an item that derives no prompt " +
     "is correct, not a gap to fill. Requiring a field everywhere is what produced 39 lessons of " +

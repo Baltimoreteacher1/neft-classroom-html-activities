@@ -663,6 +663,22 @@ export function injectSmallGroupStyles(accent) {
        The rule is what gives a long single-scroll page structure — without it
        every section is just another card and the page reads as one list. */
     section.sg-sec{margin:0 0 38px;scroll-margin-top:88px}
+    /* Notebook setup. Small-group pages do NOT load design-system.css, so the
+       whole-group rule set does not reach here and these are declared again in
+       small-group tokens. It renders only on the independent tiers (Try it on
+       your own / More practice), never while the teacher is walking the group
+       through a guided item -- during guided work the on-screen scaffold IS the
+       help, and paper competes with it.
+
+       Height matters: this sits between the question and the answer controls,
+       so it stays two lines and uses the section spacing rather than adding a
+       card of its own. */
+    .nb-setup{margin:10px 0 14px;padding:9px 12px;background:color-mix(in srgb,var(--sg-soft) 55%,#fff);border-left:3px solid var(--sg);border-radius:0 8px 8px 0}
+    .nb-setup-head{display:flex;align-items:baseline;gap:8px;font-weight:700;font-size:.92rem;color:var(--sg-deep,#123)}
+    .nb-setup-icon{flex:none}
+    .nb-setup-steps{margin:6px 0 0;padding-left:1.2em}
+    .nb-setup-steps li{font-size:.9rem;line-height:1.5}
+    @media print{.nb-setup{display:none}}
     .sg-h{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:14px;margin-bottom:18px;padding-bottom:14px;border-bottom:2px solid color-mix(in srgb,var(--sg) 16%,transparent)}
     /* min-width, not width: section numbers renumber at composition time and
        run to "2.1"/"3.2", which a fixed 40px square clips. */
