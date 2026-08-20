@@ -79,7 +79,14 @@ const CASES = [
     name: "validate:secrets catches a credential shape",
     script: "tools/validate-secrets.mjs",
     file: "assets/zz-gate-mutation.js",
-    content: 'const k = "AKIAIOSFODNN7EXAMPLE";\n',
+    // Assembled from fragments ON PURPOSE. Writing the literal here would put a
+    // credential-shaped string into a TRACKED file, and `validate:secrets`
+    // sweeps tracked files — so the harness would trip the very gate it is
+    // testing, from its own source, on every run. It did exactly that once this
+    // file was first committed: 86/87, FAILED validate:secrets, pointing at
+    // tools/gate-mutation.test.mjs. The planted file on disk still matches
+    // /\bAKIA[0-9A-Z]{16}\b/; this source does not.
+    content: `const k = "${["AKIA", "IOSFODNN", "7EXAMPLE"].join("")}";\n`,
     why: "an AWS access-key shape in a tracked file must fail the secret scan",
   },
   {
