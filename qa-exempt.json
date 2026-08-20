@@ -1,0 +1,39 @@
+{
+  "$comment": [
+    "Validator-shaped files that the QA gate deliberately does NOT run.",
+    "",
+    "Enforced by tools/validate-gate-coverage.mjs. Every file under tools/ and",
+    "scripts/ named validate-*, audit-*, smoke-* or verify-* must be either",
+    "executed by `npm run qa:loop` or listed here with a reason. There is no",
+    "third state: a validator that is neither is dark, and a dark validator",
+    "protects nothing while looking like it does.",
+    "",
+    "An entry here is a claim that a human considered this file and decided it",
+    "should not gate a push. Stale entries fail the check — if the file is",
+    "deleted, or the gate starts running it, the exemption must go.",
+    "",
+    "Triaged 2026-08-20 by running all 26 dark files and recording exit codes.",
+    "Reasons below state what was observed, not what was assumed."
+  ],
+  "exempt": {
+    "scripts/audit-a11y.mjs": "Advisory ratchet, not a gate: 47s and it could not load 2 pages in the observed run, so wiring it would add the slowest check in the set plus a flake. Its report drives deliberate a11y passes; run it by hand.",
+    "scripts/audit-dead-code.mjs": "Reports candidates for human review and deletes nothing ('Nothing deleted — review the report and remove by hand'). Dead code is not a push-blocking defect and its heuristics have been wrong before — see the shape-3d.js near-miss.",
+    "scripts/audit-duplicate-assets.mjs": "Lists byte-identical assets for a human to merge; duplication is a tidiness question, not a correctness one, and 17s of gate time buys no regression protection.",
+    "scripts/audit-misconception-coverage.mjs": "Writes reports/misconception-coverage.md and judges nothing — coverage is a content-authoring backlog metric, deliberately not a pass/fail condition.",
+    "scripts/audit-score-writers.mjs": "Requires a reachable, authenticated D1 binding; it correctly exits 3 (SKIP) offline. A gate that skips on most developer machines teaches people to ignore skips.",
+    "scripts/audit-small-group-ux.mjs": "Currently CRASHES with a Playwright TimeoutError filling an element that never becomes visible. Broken harness, not a product finding. Fix the harness before wiring it.",
+    "scripts/audit-toc-alignment.mjs": "Writes reports/toc-alignment.md for human reading. The TOC realignment it was built for is complete; it is kept as a re-audit tool, not a gate.",
+    "scripts/smoke-live.mjs": "Already run by scripts/ship.sh and by the site-health and verify-deploy workflows. It hits the live origin, so it cannot judge an unpushed commit.",
+    "scripts/validate-lesson-quality.mjs": "Prints WARN lines and exits 0 regardless, so as a gate it would be a permanent pass. It is a quality report; making it blocking is a separate decision about thresholds.",
+    "scripts/validate-lesson-visuals.mjs": "TIMED OUT past 150s in the observed run — a browser sweep over every lesson. Far too slow for a push gate; belongs in nightly-browser-qa.yml if it is wanted automatically.",
+    "scripts/validate-production.mjs": "Checks the DEPLOYED site (137.8s, passing). Wrong side of the gate: the push gate proves what is about to ship, this proves what already shipped. Belongs in verify-deploy.yml.",
+    "tools/audit-allowlist.mjs": "Already run by .github/workflows/predeploy-verify.yml. Its CVE acceptances are time-boxed ('accepted until 2026-11-09'), so it is a scheduled-expiry check, not a per-push one.",
+    "tools/audit-copy-panel-provenance.mjs": "Writes docs/copy-panel-provenance.md. The blocking half of this subject is validate:copy-panels, which IS in the gate; this is its human-readable companion.",
+    "tools/audit-interaction-depth.mjs": "Writes reports/interaction-depth.{json,md}. Depth is a judgement about instructional quality that a threshold cannot make — the maturity pass established the numbers are already healthy.",
+    "tools/audit-interaction-quality.mjs": "Writes reports/interaction-quality.{json,md} and judges nothing. Same reason as the depth audit: a reporting instrument for planning passes.",
+    "tools/audit-lesson-alignment.mjs": "States its own limit: 'Reported, not judged: an unflagged lesson has not been individually read.' A tool that explicitly declines to judge cannot be a pass/fail gate.",
+    "tools/audit-small-group-quality.mjs": "Writes reports/small-group-quality-audit.md for review during small-group content passes. No pass/fail semantics.",
+    "tools/scorm/validate-scorm-self-contained.mjs": "Deliberately not part of `validate` per CLAUDE.md: the live-iframe design is intentional and this gate holds that contract rather than policing it per push. Its runtime probe also FAILS in CI without a browser. Passes and is stable (3/3 runs) if that decision is ever revisited.",
+    "tools/smoke-planning.mjs": "Exits 3 (SKIP) — one planner check cannot run without a live planner backend. Honest about verifying nothing, but a gate that skips by default is decoration. Wire it once it can run offline."
+  }
+}

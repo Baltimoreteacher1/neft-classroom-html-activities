@@ -4,7 +4,20 @@ import http from "http";
 import { extname, join, relative } from "path";
 import { chromium } from "playwright";
 
-const ROOT = process.cwd();
+/**
+ * Serve the BUILT site, not the source tree.
+ *
+ * This harness used to serve `process.cwd()` — the repo source — and so every
+ * run failed six of six pages on `Failed to resolve module specifier
+ * "web-vitals"` and `"@engine/templates/flagship/flagship.js"`. Those are a
+ * bare npm specifier and a Vite alias: they are RESOLVED AT BUILD TIME and
+ * cannot exist in source. The harness was reporting the build system working
+ * as designed as a product defect, which is why it was never wired into the
+ * gate and quietly protected nothing for as long as it has existed.
+ *
+ * `dist/` is what Cloudflare actually serves, so `dist/` is what gets smoked.
+ */
+const ROOT = existsSync(join(process.cwd(), "dist")) ? join(process.cwd(), "dist") : process.cwd();
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
 const MIME = {
   ".html": "text/html",
@@ -66,13 +79,33 @@ for (const path of pages) {
   const errors = [];
   page.on("pageerror", (e) => errors.push("pageerror: " + e.message.split("\n")[0]));
   page.on("console", (m) => {
-    if (m.type() === "error") errors.push("console.error: " + m.text().slice(0, 160));
+    const text = m.text();
+    // The browser logs a generic "Failed to load resource" line alongside every
+    // failed request, including the /api/* ones filtered above. Admitting it
+    // here would re-introduce exactly what the request hooks just excluded.
+    if (m.type() === "error" && !/Failed to load resource/.test(text)) {
+      errors.push("console.error: " + text.slice(0, 160));
+    }
   });
-  page.on("requestfailed", (r) =>
-    errors.push("reqfail: " + r.url() + " :: " + (r.failure()?.errorText || "")),
-  );
+  // Two classes of noise belong to the harness, not to the page.
+  //
+  // 1. `/api/*` is served by the Cloudflare Worker in production. A static file
+  //    server has no Worker, so every API call 404s here no matter how healthy
+  //    the page is. The API contract is gated separately by
+  //    `validate:auth-contract` and `validate:data-contracts`.
+  // 2. `ERR_ABORTED` for a file that EXISTS on disk is the browser cancelling a
+  //    request during teardown, not a missing asset. An abort for a file that is
+  //    genuinely absent is still reported.
+  const isApi = (url) => new URL(url).pathname.startsWith("/api/");
+  const onDisk = (url) => existsSync(join(ROOT, decodeURIComponent(new URL(url).pathname)));
+  page.on("requestfailed", (r) => {
+    const why = r.failure()?.errorText || "";
+    if (isApi(r.url())) return;
+    if (why.includes("ERR_ABORTED") && onDisk(r.url())) return;
+    errors.push("reqfail: " + r.url() + " :: " + why);
+  });
   page.on("response", (r) => {
-    if (r.status() >= 400) errors.push("http" + r.status() + ": " + r.url());
+    if (r.status() >= 400 && !isApi(r.url())) errors.push("http" + r.status() + ": " + r.url());
   });
   let status = "n/a";
   try {

@@ -51,13 +51,57 @@ test("skipExit is fatal in CI and non-blocking locally", () => {
 });
 
 test("qa-run classifies a skip as SKIP, never PASS", () => {
-  assert.deepEqual(classifyResult(null), { ok: true, skipped: false, status: "PASS" });
+  assert.deepEqual(classifyResult(null), {
+    ok: true,
+    skipped: false,
+    timedOut: false,
+    status: "PASS",
+  });
   assert.deepEqual(classifyResult({ code: SKIP_EXIT }), {
     ok: false,
     skipped: true,
+    timedOut: false,
     status: "SKIP",
   });
-  assert.deepEqual(classifyResult({ code: 1 }), { ok: false, skipped: false, status: "FAIL" });
+  assert.deepEqual(classifyResult({ code: 1 }), {
+    ok: false,
+    skipped: false,
+    timedOut: false,
+    status: "FAIL",
+  });
+});
+
+test("a killed check is a TIMEOUT and a FAILURE, never a skip", () => {
+  // The fourth outcome, added with the per-check timeout. It is pinned here
+  // rather than beside the timeout because the danger is the same one this file
+  // exists for: a check that verified nothing reporting as though it had.
+  //
+  // The ordering matters and is the reason this assertion is specific about a
+  // killed child that ALSO carries the skip code. `execFile` reports the signal
+  // it killed with, not the check's own exit status, so a hung check tested
+  // against SKIP_EXIT first could land on "did not run" — which does not block
+  // a push locally — instead of stopping it.
+  assert.deepEqual(classifyResult({ killed: true, code: null }), {
+    ok: false,
+    skipped: false,
+    timedOut: true,
+    status: "TIMEOUT",
+  });
+  assert.deepEqual(
+    classifyResult({ killed: true, code: SKIP_EXIT }),
+    { ok: false, skipped: false, timedOut: true, status: "TIMEOUT" },
+    "a killed check must not be rescued into SKIP by the exit code it happens to carry",
+  );
+});
+
+test("qa-run names every timed-out check and treats it as a failure", () => {
+  const src = read("scripts/qa-run.mjs");
+  assert.match(src, /timeout: TIMEOUT_MS/, "the child process must actually be given a timeout");
+  assert.match(
+    src,
+    /TIMED OUT \(killed, verified nothing\): \$\{timedOut\.join/,
+    "the summary must list timed-out checks by name",
+  );
 });
 
 test("qa-run names every skipped check in its exit summary", () => {
@@ -102,6 +146,7 @@ test("every sweeping gate asserts a non-empty subject before it sweeps", () => {
     "tools/audit-save-resume-integration.js",
     "tools/canvas/build-command-center.mjs",
     "tools/validate-css-integrity.mjs",
+    "tools/validate-gate-coverage.mjs",
     "tools/validate-js-syntax.mjs",
     "tools/validate-preunit-project.mjs",
     "tools/validate-secrets.mjs",

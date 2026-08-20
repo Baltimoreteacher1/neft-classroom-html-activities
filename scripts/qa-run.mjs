@@ -59,10 +59,31 @@ const SCRIPTS = pkg.scripts || {};
  * "non-zero means fail, zero means pass".
  */
 function classifyResult(err) {
+  // A killed child is a TIMEOUT, and a timeout is a FAILURE — never a skip.
+  // `execFile` reports the kill as `err.killed`, and the exit code it carries
+  // is the signal's, not the check's, so this must be tested BEFORE the
+  // SKIP_EXIT comparison or a check killed mid-run could land on exit 3 and be
+  // waved through as "did not run" instead of stopping the push.
+  if (err?.killed) return { ok: false, skipped: false, timedOut: true, status: "TIMEOUT" };
   const skipped = err?.code === SKIP_EXIT;
   const ok = !err;
-  return { ok, skipped, status: skipped ? "SKIP" : ok ? "PASS" : "FAIL" };
+  return { ok, skipped, timedOut: false, status: skipped ? "SKIP" : ok ? "PASS" : "FAIL" };
 }
+
+/* How long any one check may run before it is killed and failed.
+ *
+ * There was no timeout at all until 2026-08-20: `execFile` was called without
+ * one, so a check that hung hung `git push` with it, forever, with no output
+ * saying which check was stuck. The realistic outcome of that is not a patient
+ * wait — it is `--no-verify` becoming muscle memory, which disables the entire
+ * gate. A bounded, named, loud failure is strictly better than an unbounded
+ * wait.
+ *
+ * The ceiling is deliberately far above the slowest real check (`test`, ~76s;
+ * `validate:production`, ~138s when run): this exists to catch a HANG, not to
+ * police slowness, and a timeout tight enough to trip on a loaded laptop is a
+ * flake that trains people to bypass it. Override with QA_TIMEOUT_MS. */
+const TIMEOUT_MS = Number(process.env.QA_TIMEOUT_MS || 15 * 60 * 1000);
 
 const GATE = [
   "build",
@@ -80,6 +101,11 @@ const GATE = [
   "audit",
   "audit:curriculum",
   "audit:homework",
+  // Boots six representative built pages in a real browser and fails on any
+  // page error, non-/api 4xx, or raw JS leaked into body text. It served the
+  // SOURCE tree until 2026-08-20, so it failed 6/6 on Vite-resolved specifiers
+  // and was never wired; it now serves dist/, which is what Cloudflare serves.
+  "smoke:injection",
 ];
 
 /* `build` is a BARRIER, not just a peer. It is the only member of the gate that
@@ -95,8 +121,11 @@ const GATE = [
  * checks outside the set are dropped — the inner loop reads source directly. */
 const needsOf = (c) => (c === "build" ? [] : ["build"]);
 
-/* Never run more than one of these at a time — they bind the same port. */
-const EXCLUSIVE = new Set(["validate:lesson-boot"]);
+/* Never run more than one of these at a time. `validate:lesson-boot` binds a
+ * fixed port; `smoke:injection` launches a second Chromium, and two browser
+ * harnesses racing on a loaded machine is how a gate becomes flaky enough to
+ * get bypassed. */
+const EXCLUSIVE = new Set(["validate:lesson-boot", "smoke:injection"]);
 
 /* --------------------------------------------------------------------------
  * Change coverage. Each rule is [RegExp, checks[]]. A changed path uses the
@@ -111,6 +140,15 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // GATE COVERAGE — the check that decides which validators are allowed not to
+  // gate. Its own inputs are the gate definition and the exemption registry, so
+  // a change to either must re-run it; `check` comes along because both files
+  // are Biome-formatted.
+  [
+    /^(tools\/validate-gate-coverage\.mjs|qa-exempt\.json|tools\/lib\/non-empty\.mjs)$/,
+    ["validate:gate-coverage", "test", "check"],
+  ],
+
   // SLIDE ↔ LEARN IT ALIGNMENT — the projected deck and the Learn It stepper
   // both derive from launch.conceptIntro, and this gate is what proves the
   // committed deck, the runtime config, and the panel's math transformations
@@ -552,7 +590,7 @@ async function main() {
       execFile(
         "npm",
         ["run", name],
-        { cwd: ROOT, maxBuffer: 64 * 1024 * 1024 },
+        { cwd: ROOT, maxBuffer: 64 * 1024 * 1024, timeout: TIMEOUT_MS, killSignal: "SIGKILL" },
         (err, stdout, stderr) => {
           const secs = ((Date.now() - t0) / 1000).toFixed(1);
           // Exit 3 is the repo-wide SKIP code (tools/lib/skip-exit.mjs): the
@@ -562,10 +600,15 @@ async function main() {
           // `PASS validate:lesson-boot 4.6s`, indistinguishable from 16 pages
           // actually rendering. A gate that reports PASS without running is an
           // active false claim, which is worse than no gate at all.
-          const { ok, skipped, status } = classifyResult(err);
-          results.set(name, { ok, secs, didNotRun: skipped });
+          const { ok, skipped, timedOut, status } = classifyResult(err);
+          results.set(name, { ok, secs, didNotRun: skipped, timedOut });
           logTo(`\n===== ${status} npm run ${name} (${secs}s) =====\n${stdout}\n${stderr}\n`);
-          console.log(`${status}  ${name.padEnd(32)} ${secs}s${skipped ? "  (did not run)" : ""}`);
+          const note = timedOut
+            ? `  (KILLED after ${(TIMEOUT_MS / 1000).toFixed(0)}s — hung, not slow)`
+            : skipped
+              ? "  (did not run)"
+              : "";
+          console.log(`${status}  ${name.padEnd(32)} ${secs}s${note}`);
           if (!ok) {
             const tail = `${stdout}\n${stderr}`.trim().split("\n").slice(-12);
             for (const l of tail) console.log(`      | ${l}`);
@@ -626,6 +669,14 @@ async function main() {
   // have a visible answer, not one implied by a green summary line.
   if (didNotRun.length) {
     console.log(`SKIPPED (verified NOTHING): ${didNotRun.join(", ")}`);
+  }
+  const timedOut = checks.filter((c) => results.get(c)?.timedOut);
+  if (timedOut.length) {
+    console.log(
+      `TIMED OUT (killed, verified nothing): ${timedOut.join(", ")} — a hung check is a failure, ` +
+        "not a pass. Re-run it alone to see where it stops, or raise QA_TIMEOUT_MS if it is " +
+        "genuinely this slow.",
+    );
   }
   if (failed.length) {
     console.log(`FAILED: ${failed.join(", ")}`);
