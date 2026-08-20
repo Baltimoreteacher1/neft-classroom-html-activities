@@ -3,6 +3,7 @@ import { readFile, stat } from "fs/promises";
 import http from "http";
 import { extname, join, relative } from "path";
 import { chromium } from "playwright";
+import { exitSkipped } from "./lib/skip-exit.mjs";
 
 /**
  * Serve the BUILT site, not the source tree.
@@ -17,7 +18,19 @@ import { chromium } from "playwright";
  *
  * `dist/` is what Cloudflare actually serves, so `dist/` is what gets smoked.
  */
-const ROOT = existsSync(join(process.cwd(), "dist")) ? join(process.cwd(), "dist") : process.cwd();
+const DIST = join(process.cwd(), "dist");
+if (!existsSync(DIST)) {
+  // Falling back to the source tree here would resurrect the exact failure this
+  // harness was rewritten to end: source cannot resolve `web-vitals` or the
+  // `@engine/*` Vite aliases, so every page would fail on the build system
+  // working as designed, and the run would look like six product defects.
+  // Better to say plainly that there is nothing built to smoke.
+  exitSkipped(
+    "no dist/ to serve — this harness smokes the BUILT site, which is what Cloudflare serves",
+    "Run `npm run build` first. In the gate, `build` is a barrier ahead of this check.",
+  );
+}
+const ROOT = DIST;
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
 const MIME = {
   ".html": "text/html",
