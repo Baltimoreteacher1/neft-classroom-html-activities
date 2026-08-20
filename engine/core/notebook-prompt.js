@@ -56,11 +56,14 @@
  */
 
 /**
+ * @typedef {{work?: string, text?: string, label?: string}} StepLike */
+/**
  * @typedef {{
  *   type?: string,
- *   steps?: unknown[],
- *   correctWork?: unknown[],
- *   workedExample?: unknown[],
+ *   steps?: Array<string|StepLike>,
+ *   correctWork?: Array<string|StepLike>,
+ *   workedExample?: Array<string|StepLike>,
+ *   notebookAsked?: boolean,
  * }} PracticeItem
  */
 
@@ -217,4 +220,66 @@ export function notebookPromptFor(def, number, model = null, opts = {}) {
     steps,
     stepCount,
   };
+}
+
+/**
+ * The line that turns after-answer feedback from a verdict into a comparison.
+ *
+ * WHY THIS IS A REFRAME AND NOT A NEW FEATURE. The engine already shows the
+ * item's `explanation` once a student answers — whole-group in
+ * `multiple-choice.js`, small-group in `small-group-practice.js`. The data was
+ * never missing and neither was the moment. What was missing is what the moment
+ * is FOR: "Correct! Great work." closes the item, and a student who wrote
+ * nothing gets exactly the same screen as one who worked it out on paper.
+ *
+ * Pointing the same words back at the notebook costs nothing and does the one
+ * thing enforcement cannot: a student with an empty page sees the gap
+ * themselves. That is the whole mechanism — no gate, no claim to make, nothing
+ * to tap through.
+ *
+ * ONLY WHERE THE NOTEBOOK WAS ASKED FOR. "Check your written work" is incoherent
+ * on an item that never asked for any, so this returns null unless a setup was
+ * actually rendered for this item. The caller passes that fact rather than
+ * recomputing it, so the two can never disagree.
+ *
+ * @param {PracticeItem|null|undefined} def
+ * @param {{asked?: boolean, correct?: boolean}} [opts]
+ * @returns {{en: string, es: string}|null}
+ */
+export function compareYourWorkFor(def, opts = {}) {
+  if (!opts.asked) return null;
+  if (!def || typeof def !== "object") return null;
+  return opts.correct === false
+    ? {
+        en: "Compare this with what you wrote — where did your work turn?",
+        es: "Compara esto con lo que escribiste: ¿dónde cambió tu trabajo?",
+      }
+    : {
+        en: "Check your written work against this.",
+        es: "Compara tu trabajo escrito con esto.",
+      };
+}
+
+/**
+ * The item's own worked steps, for comparing line by line.
+ *
+ * Returns the array only when the item genuinely carries one — 100% of the
+ * 2,376 small-group items (`steps`) and the 262 error-analysis items
+ * (`workedExample`). Prose is never split into pseudo-steps: that would invent
+ * a structure the author did not write, which is rule 1.
+ *
+ * @param {PracticeItem|null|undefined} def
+ * @returns {string[]|null}
+ */
+export function comparableSteps(def) {
+  if (!def || typeof def !== "object") return null;
+  for (const c of [def.steps, def.workedExample, def.correctWork]) {
+    if (!Array.isArray(c) || c.length < 2) continue;
+    const lines = c
+      .map((st) => (typeof st === "string" ? st : st?.work || st?.text || st?.label || ""))
+      .map((t) => String(t).trim())
+      .filter(Boolean);
+    if (lines.length >= 2) return lines;
+  }
+  return null;
 }

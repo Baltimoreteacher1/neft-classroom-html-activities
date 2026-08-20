@@ -673,6 +673,12 @@ export function injectSmallGroupStyles(accent) {
        Height matters: this sits between the question and the answer controls,
        so it stays two lines and uses the section spacing rather than adding a
        card of its own. */
+    /* After-answer compare line. Rides alongside the existing explanation
+       rather than replacing it -- the explanation was always shown; what was
+       missing is what the moment is for. */
+    .nb-compare{display:block;margin:6px 0 0;font-size:.88rem;font-weight:600;opacity:.9}
+    .nb-compare-icon{margin-right:6px}
+    @media print{.nb-compare{display:none}}
     .nb-setup{margin:10px 0 14px;padding:9px 12px;background:color-mix(in srgb,var(--sg-soft) 55%,#fff);border-left:3px solid var(--sg);border-radius:0 8px 8px 0}
     .nb-setup-head{display:flex;align-items:baseline;gap:8px;font-weight:700;font-size:.92rem;color:var(--sg-deep,#123)}
     .nb-setup-icon{flex:none}

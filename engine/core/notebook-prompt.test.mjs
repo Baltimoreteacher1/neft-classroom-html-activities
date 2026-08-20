@@ -12,6 +12,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  comparableSteps,
+  compareYourWorkFor,
   INDEPENDENT_ONLY_TYPES,
   NOTEBOOK_PROMPT_TYPES,
   SCREEN_IS_THE_WORK_SURFACE,
@@ -164,4 +166,33 @@ test("the independent-only and always-on sets are disjoint", () => {
     [],
     "a type is either always eligible or eligible only when independent",
   );
+});
+
+test("compare-your-work stays silent unless a notebook was actually asked for", () => {
+  // "Check your written work" is incoherent on an item that never asked for
+  // any. The caller passes the fact rather than recomputing it, so the setup
+  // and the compare line can never disagree.
+  assert.equal(compareYourWorkFor({ type: "multiple-choice" }, { asked: false }), null);
+  assert.equal(compareYourWorkFor({ type: "multiple-choice" }, {}), null);
+  assert.equal(compareYourWorkFor(null, { asked: true }), null);
+});
+
+test("compare-your-work says something different after a miss", () => {
+  const ok = compareYourWorkFor({}, { asked: true, correct: true });
+  const miss = compareYourWorkFor({}, { asked: true, correct: false });
+  assert.match(ok.en, /Check your written work/);
+  assert.match(miss.en, /where did your work turn/);
+  assert.notEqual(ok.en, miss.en, "a miss should point at where the work diverged");
+  for (const c of [ok, miss]) assert.notEqual(c.es, c.en, "both need a real Spanish lane");
+});
+
+test("comparableSteps returns real steps and never invents them from prose", () => {
+  assert.deepEqual(comparableSteps({ steps: ["a", "b", "c"] }), ["a", "b", "c"]);
+  assert.deepEqual(comparableSteps({ workedExample: [{ work: "x" }, { work: "y" }] }), ["x", "y"]);
+  // Prose is not a step list. Splitting it would invent a structure the author
+  // never wrote — the same failure as manufacturing a step count.
+  assert.equal(comparableSteps({ explanation: "First this. Then that. Then this." }), null);
+  assert.equal(comparableSteps({ steps: ["only one"] }), null, "one step is not a sequence");
+  assert.equal(comparableSteps({ steps: [{}, {}] }), null, "empty step objects yield nothing");
+  assert.equal(comparableSteps(null), null);
 });

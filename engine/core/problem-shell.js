@@ -177,7 +177,11 @@ export function createProblemCard({
     }
   }
 
-  return { card, body, coinSlot, setResult };
+  // Whether a notebook setup was actually rendered. The after-answer
+  // "check your written work" line is only coherent on an item that asked for
+  // written work, so the caller is told the fact rather than recomputing it —
+  // recomputation is how two call sites come to disagree.
+  return { card, body, coinSlot, setResult, notebookAsked: !!notebook };
 }
 
 function esc(s) {

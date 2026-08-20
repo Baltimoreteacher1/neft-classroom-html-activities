@@ -1125,6 +1125,9 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
     container.append(shell.card);
     body = shell.body;
     setResult = shell.setResult;
+    // Travels with the item so the component's own feedback can point back at
+    // the notebook it asked the student to use.
+    if (shell.notebookAsked) problemDef = { ...problemDef, notebookAsked: true };
 
     if (shellOpts.state && !shellOpts.skipHints) {
       mountHintLadder(shell.card, {

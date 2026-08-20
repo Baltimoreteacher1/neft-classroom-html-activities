@@ -3,7 +3,7 @@ import { isRight, numberOf } from "./answer-match.js";
 import { detectConceptTool } from "./concept-tool.js";
 import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
 import { extractDivisionDiagram } from "./division-helper.js";
-import { notebookPromptFor } from "./notebook-prompt.js";
+import { compareYourWorkFor, notebookPromptFor } from "./notebook-prompt.js";
 import { pickWorkedModel } from "./small-group-adaptive.js";
 import { figureBlock } from "./small-group-labs.js";
 import { mountReasoningReader } from "./small-group-reasoning.js";
@@ -179,6 +179,29 @@ function seededOrder(length, seed) {
   return order;
 }
 
+/**
+ * The "compare your written work" line, for a card that asked for a notebook.
+ *
+ * The card's own DOM is the source of truth: the setup is appended to the card
+ * by the section loop, so asking whether it is there cannot disagree with
+ * whether it was rendered. Recomputing eligibility here would be a second
+ * opinion that can drift from the first.
+ */
+function compareLine(within, item, correct) {
+  // `within` may be the card itself or anything inside it — the two call sites
+  // sit in different scopes (`multipleChoiceCard` has the card, `answerControl`
+  // only has the status element), and passing whichever is at hand is safer
+  // than threading a new parameter through a shared helper.
+  const card = within?.closest?.(".prob") || (within?.querySelector ? within : null);
+  if (!card?.querySelector?.(".nb-setup")) return "";
+  const c = compareYourWorkFor(item, { asked: true, correct });
+  if (!c) return "";
+  return `<span class="nb-compare"><span class="nb-compare-icon" aria-hidden="true">\u270F\uFE0F</span>${bi(
+    c.en,
+    c.es,
+  )}</span>`;
+}
+
 function multipleChoiceCard(item, index, onSolved, events = {}) {
   const card = questionCard(index, itemStem(item), item.stemEs, item);
   const status = feedback();
@@ -230,7 +253,7 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
       showFeedback(
         status,
         "ok",
-        `${streakNote(events)}${correctLead()} ${bi(item.explanation || "Say out loud why this choice works.", item.explanationEs)}`,
+        `${streakNote(events)}${correctLead()} ${bi(item.explanation || "Say out loud why this choice works.", item.explanationEs)}${compareLine(card, item, true)}`,
       );
       celebrate((events.streak?.() || 0) >= 3 ? "🔥" : "✓");
       onSolved();
@@ -488,7 +511,7 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
     showFeedback(
       status,
       "ok",
-      `${streakNote(events)}${correctLead()} ${bi(item.explanation || "Explain the step that convinced you.", item.explanationEs)}`,
+      `${streakNote(events)}${correctLead()} ${bi(item.explanation || "Explain the step that convinced you.", item.explanationEs)}${compareLine(status, item, true)}`,
     );
     celebrate((events.streak?.() || 0) >= 3 ? "🔥" : "✓");
     onSolved();
