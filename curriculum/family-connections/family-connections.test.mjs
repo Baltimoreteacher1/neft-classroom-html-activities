@@ -22,6 +22,10 @@ for (const expected of [
   'id="homework-grid"',
   'id="clear-homework-filters"',
   'id="all-homework-panel"',
+  'id="week-practice"',
+  'id="week-practice-grid"',
+  'data-i18n="weekPracticeTitle"',
+  'data-i18n="weekPracticeHint"',
   'id="read-week"',
   'id="language-toggle"',
   'id="contrast-toggle"',
@@ -115,6 +119,14 @@ assert.match(renderer, /Learning focus/);
 assert.match(renderer, /Start optional practice/);
 assert.match(renderer, /Open family help/);
 assert.match(renderer, /Play lesson arcade/);
+assert.match(renderer, /weekHomework/);
+assert.match(renderer, /renderWeekPractice/);
+assert.match(app, /renderWeekPractice/);
+assert.match(app, /posted this week/);
+assert.ok(
+  html.indexOf('id="week-practice"') < html.indexOf('id="all-homework-panel"'),
+  "This week's practice should sit above the browse-all library",
+);
 assert.match(renderer, /arcadePath/);
 assert.match(app, /isConfiguredDestination/);
 assert.match(app, /querySelectorAll\(["']\[data-classdojo-link\]["']\)/);

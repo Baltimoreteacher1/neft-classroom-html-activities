@@ -3,6 +3,7 @@ import {
   normalizeLessons,
   resolveSection,
   weekHasMeaningfulContent,
+  weekHomework,
 } from "./model.js";
 
 function element(tag, className, text) {
@@ -35,6 +36,12 @@ const LABELS = {
     openHelp: "Open family help",
     vocabTitle: "Words this week",
     vocabHint: "Ask your student to explain each word in their own words.",
+    learningFocus: "Learning focus: ",
+    playArcade: "Play lesson arcade",
+    directions: "Directions & ways to help",
+    materials: "Materials: ",
+    noMatches: "No lessons match that search. Try a lesson number or clear a filter.",
+    thisWeekBadge: "Posted this week",
     prompts: [
       "Ask them to teach you one step.",
       "Ask what part was tricky.",
@@ -51,6 +58,13 @@ const LABELS = {
     openHelp: "Abrir ayuda familiar",
     vocabTitle: "Palabras de esta semana",
     vocabHint: "Pídale a su estudiante que explique cada palabra con sus propias palabras.",
+    learningFocus: "Enfoque del aprendizaje: ",
+    playArcade: "Abrir el arcade de la lección",
+    directions: "Indicaciones y maneras de ayudar",
+    materials: "Materiales: ",
+    noMatches:
+      "Ninguna lección coincide con esa búsqueda. Pruebe con un número de lección o quite un filtro.",
+    thisWeekBadge: "Publicada esta semana",
     prompts: [
       "Pídale que le enseñe un paso.",
       "Pregunte qué parte fue difícil.",
@@ -62,6 +76,16 @@ const LABELS = {
 };
 
 const labelsFor = (lang) => LABELS[lang === "es" ? "es" : "en"];
+
+const DAY_ES = {
+  Monday: "lunes",
+  Tuesday: "martes",
+  Wednesday: "miércoles",
+  Thursday: "jueves",
+  Friday: "viernes",
+};
+
+const dayLabel = (day, lang) => (lang === "es" ? (DAY_ES[day] ?? day) : day);
 
 function weekLessonDays(snapshot, inputLessons, sectionId) {
   const byId = new Map(normalizeLessons(inputLessons).map((lesson) => [lesson.id, lesson]));
@@ -242,53 +266,74 @@ export function filterHomework(homework, query, unit) {
   });
 }
 
+// One optional-practice card. Shared by the week-synced list and the browse-all
+// library so the two never drift apart in wording or affordances.
+function practiceCard(item, t, badge = "") {
+  const card = element("article", `homework-card${badge ? " is-this-week" : ""}`);
+  const meta = element("div", "homework-meta");
+  meta.append(element("span", "", `Lesson ${item.id}`), element("span", "", item.estimatedTime));
+  card.append(meta);
+  if (badge) card.append(element("p", "homework-day-chip", badge));
+  card.append(element("h3", "", item.title));
+  if (item.objective) {
+    const focus = element("p", "homework-focus");
+    focus.append(element("strong", "", t.learningFocus), item.objective);
+    card.append(focus);
+  }
+  const actions = element("div", "homework-actions");
+  actions.append(link(t.startPractice, item.homeworkPath));
+  if (item.familyPath) actions.append(link(t.openHelp, item.familyPath));
+  if (item.arcadePath) {
+    const arcade = link(t.playArcade, item.arcadePath, "arcade-link");
+    arcade.setAttribute("aria-label", `${t.playArcade}: ${item.arcadeTitle || item.title}`);
+    actions.append(arcade);
+  }
+  for (const extra of item.supplementalLinks ?? []) actions.append(link(extra.label, extra.url));
+  card.append(actions);
+  const disclosure = element("details", "homework-details-disclosure");
+  disclosure.append(element("summary", "", t.directions));
+  const support = element("div", "homework-support-content");
+  support.append(element("p", "homework-directions", item.directions));
+  const details = element("ul", "homework-details");
+  details.append(element("li", "", `${t.materials}${item.materials}`));
+  details.append(element("li", "", item.languageSupport));
+  details.append(element("li", "", item.schoolAlternative));
+  support.append(details);
+  disclosure.append(support);
+  card.append(disclosure);
+  return card;
+}
+
+// Practice that matches the lessons the teacher posted on this week's calendar.
+// Returns the count so the caller can label the section without recomputing it.
+export function renderWeekPractice(
+  root,
+  grid,
+  snapshot,
+  inputLessons,
+  overrides,
+  sectionId,
+  lang = "en",
+) {
+  const t = labelsFor(lang);
+  const items = weekHomework(snapshot, inputLessons, overrides, sectionId);
+  grid.replaceChildren();
+  root.hidden = items.length === 0;
+  for (const item of items) {
+    const days = (item.days ?? []).map((day) => dayLabel(day, lang)).join(" · ");
+    grid.append(practiceCard(item, t, days || t.thisWeekBadge));
+  }
+  return items.length;
+}
+
 export function renderHomework(root, inputLessons, overrides, options = {}) {
+  const t = labelsFor(options.lang);
   const all = mergeHomework(inputLessons, overrides);
   const filtered = filterHomework(all, options.query, options.unit);
   const limit = Number(options.limit) || filtered.length;
   root.replaceChildren();
-  for (const item of filtered.slice(0, limit)) {
-    const card = element("article", "homework-card");
-    const meta = element("div", "homework-meta");
-    meta.append(element("span", "", `Lesson ${item.id}`), element("span", "", item.estimatedTime));
-    card.append(meta, element("h3", "", item.title));
-    if (item.objective) {
-      const focus = element("p", "homework-focus");
-      focus.append(element("strong", "", "Learning focus: "), item.objective);
-      card.append(focus);
-    }
-    const actions = element("div", "homework-actions");
-    actions.append(link("Start optional practice", item.homeworkPath));
-    if (item.familyPath) actions.append(link("Open family help", item.familyPath));
-    if (item.arcadePath) {
-      const arcade = link("Play lesson arcade", item.arcadePath, "arcade-link");
-      arcade.setAttribute("aria-label", `Play ${item.arcadeTitle || "lesson arcade"}`);
-      actions.append(arcade);
-    }
-    for (const extra of item.supplementalLinks) actions.append(link(extra.label, extra.url));
-    card.append(actions);
-    const disclosure = element("details", "homework-details-disclosure");
-    disclosure.append(element("summary", "", "Directions & ways to help"));
-    const support = element("div", "homework-support-content");
-    support.append(element("p", "homework-directions", item.directions));
-    const details = element("ul", "homework-details");
-    details.append(element("li", "", `Materials: ${item.materials}`));
-    details.append(element("li", "", item.languageSupport));
-    details.append(element("li", "", item.schoolAlternative));
-    support.append(details);
-    disclosure.append(support);
-    card.append(disclosure);
-    root.append(card);
-  }
-  if (!filtered.length) {
-    root.append(
-      element(
-        "p",
-        "empty-state",
-        "No lessons match that search. Try a lesson number or clear a filter.",
-      ),
-    );
-  }
+  for (const item of filtered.slice(0, limit)) root.append(practiceCard(item, t));
+  if (!filtered.length) root.append(element("p", "empty-state", t.noMatches));
   return { all, filtered, visible: Math.min(limit, filtered.length) };
 }
 

@@ -10,6 +10,7 @@ import {
   renderSectionOptions,
   renderSpotlight,
   renderWeek,
+  renderWeekPractice,
   renderWeekVocab,
 } from "./shared/render.js";
 
@@ -91,8 +92,25 @@ function isConfiguredDestination(value) {
   return url.pathname !== "/" || Boolean(url.search || url.hash);
 }
 
+// Practice tied to the posted week. The teacher publishes the calendar; this is
+// the same set families see on the day cards, surfaced as full practice cards.
+function renderPostedPractice(lang) {
+  return renderWeekPractice(
+    byId("week-practice"),
+    byId("week-practice-grid"),
+    state.snapshot,
+    state.lessons,
+    state.snapshot.homeworkOverrides,
+    state.sectionId,
+    lang,
+  );
+}
+
 function renderHomeworkLibrary(resetLimit = false) {
   if (resetLimit) state.visibleHomework = 12;
+  const lang = state.preferences.language;
+  const es = lang === "es";
+  const postedCount = renderPostedPractice(lang);
   const result = renderHomework(
     byId("homework-grid"),
     state.lessons,
@@ -101,12 +119,25 @@ function renderHomeworkLibrary(resetLimit = false) {
       query: byId("homework-search").value,
       unit: byId("unit-filter").value,
       limit: state.visibleHomework,
+      lang,
     },
   );
   const hasFilters = Boolean(byId("homework-search").value.trim() || byId("unit-filter").value);
-  byId("homework-count").textContent = hasFilters
-    ? `${result.filtered.length} matching lessons`
-    : `${result.all.length} lessons available`;
+  const chip = byId("homework-count");
+  if (hasFilters) {
+    chip.textContent = es
+      ? `${result.filtered.length} lecciones coinciden`
+      : `${result.filtered.length} matching lessons`;
+  } else if (postedCount) {
+    const plural = postedCount === 1 ? "" : "s";
+    chip.textContent = es
+      ? `${postedCount} ${postedCount === 1 ? "lección publicada" : "lecciones publicadas"} esta semana`
+      : `${postedCount} lesson${plural} posted this week`;
+  } else {
+    chip.textContent = es
+      ? `${result.all.length} lecciones disponibles`
+      : `${result.all.length} lessons available`;
+  }
   byId("clear-homework-filters").hidden = !hasFilters;
   byId("load-more").hidden = result.visible >= result.filtered.length;
 }

@@ -145,6 +145,31 @@ export function mergeHomework(inputLessons, overrides = {}) {
     });
 }
 
+// The optional practice families should see FIRST: only the lessons the teacher
+// actually posted on this week's calendar, in day order, deduped when one lesson
+// spans two days. Falls back to an empty list so the full library stays the
+// browse-anything path.
+export function weekHomework(snapshot, inputLessons, overrides = {}, sectionId) {
+  const section = resolveSection(snapshot, sectionId);
+  const byId = new Map(mergeHomework(inputLessons, overrides).map((item) => [item.id, item]));
+  const ordered = [];
+  const seen = new Map();
+  for (const entry of section.week?.days ?? []) {
+    if (entry?.status !== "lesson") continue;
+    const item = byId.get(entry.lessonId);
+    if (!item) continue;
+    const already = seen.get(item.id);
+    if (already) {
+      if (!already.days.includes(entry.day)) already.days.push(entry.day);
+      continue;
+    }
+    const next = { ...item, days: [entry.day], dayNote: cleanText(entry.note, 500) };
+    seen.set(item.id, next);
+    ordered.push(next);
+  }
+  return ordered;
+}
+
 export function safeExternalUrl(value) {
   try {
     const url = new URL(value);
