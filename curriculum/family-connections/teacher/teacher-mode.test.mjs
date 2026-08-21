@@ -18,6 +18,27 @@ for (const expected of [
   'src="./canvas-direct.js"',
 ]) assert.ok(html.includes(expected), `Missing teacher scheduler contract: ${expected}`);
 
+// Fill-from-the-plan: the publisher must not become a second pacing schedule.
+for (const expected of [
+  'id="pacing-fill"',
+  'id="pacing-week"',
+  'id="pacing-fill-apply"',
+  'id="pacing-fill-status"',
+]) assert.ok(html.includes(expected), `Missing pacing fill contract: ${expected}`);
+const teacherApp = await readFile(new URL("teacher-app.js", root), "utf8");
+assert.match(teacherApp, /buildWeekFromPacing/);
+assert.match(teacherApp, /pacing-baseline-2026-27\.json/);
+assert.match(teacherApp, /api\/pacing\/state/);
+assert.match(teacherApp, /window\.confirm/, "filling must not silently discard a planned week");
+const pacingWeek = (await readFile(new URL("../shared/pacing-week.js", root), "utf8"))
+  .replace(/\/\*[\s\S]*?\*\//g, "")
+  .replace(/^\s*\/\/.*$/gm, "");
+assert.doesNotMatch(
+  pacingWeek,
+  /plan\.note|overlay\.note|source\.note/,
+  "the planner's private working notes must never reach a family draft",
+);
+
 for (const expected of [
   'id="section-manager"',
   'id="new-section-name"',

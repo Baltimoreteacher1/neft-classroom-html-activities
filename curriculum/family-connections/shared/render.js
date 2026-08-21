@@ -1,4 +1,5 @@
 import {
+  absolutePublicUrl,
   mergeHomework,
   normalizeLessons,
   resolveSection,
@@ -360,12 +361,20 @@ export function familyWeekShare(snapshot, inputLessons, sectionId, lang = "en") 
     assessment: es ? "Evaluación" : "Learning check",
     "no-class": es ? "Sin lección" : "No lesson posted",
   };
-  const lines = (section.week?.days ?? []).map((entry) => {
+  /* The practice link is the one thing a family needs after they leave the page,
+   * so it travels with the week. One link per lesson, even when the lesson runs
+   * two days — a repeated URL reads like a mistake in a text message. */
+  const practiceLabel = es ? "Práctica juntos" : "Practice together";
+  const linked = new Set();
+  const lines = (section.week?.days ?? []).flatMap((entry) => {
     const lesson = byId.get(entry.lessonId);
     if (entry.status === "lesson" && lesson) {
-      return `${entry.day}: ${lesson.title}${entry.note ? ` — ${entry.note}` : ""}`;
+      const line = `${entry.day}: ${lesson.title}${entry.note ? ` — ${entry.note}` : ""}`;
+      if (linked.has(lesson.id)) return [line];
+      linked.add(lesson.id);
+      return [line, `  ${practiceLabel}: ${absolutePublicUrl(lesson.homeworkPath)}`];
     }
-    return `${entry.day}: ${entry.note || statusLabel[entry.status] || ""}`.trim();
+    return [`${entry.day}: ${entry.note || statusLabel[entry.status] || ""}`.trim()];
   });
   const subject = `${es ? "Matemáticas esta semana" : "Math this week"} · ${weekLabel}`;
   const intro = es

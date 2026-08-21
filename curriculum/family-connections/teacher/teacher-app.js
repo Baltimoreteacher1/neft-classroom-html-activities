@@ -10,6 +10,8 @@ import {
   safeExternalUrl,
 } from "../shared/model.js";
 import { loadDraft, loadHistory, publishDraft, saveDraft } from "../shared/api-client.js";
+import { resolveYear } from "../../../shared/pacing/engine.js";
+import { buildWeekFromPacing, pacingWeekStarts, weekStartFor } from "../shared/pacing-week.js";
 import {
   renderCollection,
   renderCopyEditor,
@@ -35,6 +37,8 @@ const state = {
   copyLang: "en",
   dirty: false,
   previewed: false,
+  pacingBaseline: null,
+  pacingStarts: [],
 };
 
 const byId = (id) => document.getElementById(id);
@@ -128,6 +132,117 @@ function renderWeekEditor() {
     markDirty();
   });
   updateCanvasConnection();
+}
+
+/* ── Fill from the pacing plan ─────────────────────────────────────────────────
+ * The teacher's dated plan already says which lesson lands on which day. Re-
+ * picking it here is duplicated work and a second source of truth, so this pulls
+ * the week across and leaves it as a draft to edit. */
+
+/* Family sections are named by the teacher ("Period 601", "All Families"); the
+ * planner keys its class overlay by course code. Match on the code when the
+ * label carries one, otherwise use the shared plan. */
+const PACING_SECTIONS = ["601", "602", "603"];
+
+function pacingSectionFor(current) {
+  const haystack = `${current?.id ?? ""} ${current?.label ?? ""}`;
+  return PACING_SECTIONS.find((code) => haystack.includes(code)) ?? "";
+}
+
+async function pacingBaseline() {
+  if (state.pacingBaseline) return state.pacingBaseline;
+  const response = await fetch("/data/pacing-baseline-2026-27.json", { cache: "no-store" });
+  if (!response.ok) throw new Error("The pacing plan is unavailable right now.");
+  state.pacingBaseline = await response.json();
+  return state.pacingBaseline;
+}
+
+/* The planner's live edits live in D1. If that call fails the published baseline
+ * is still a correct plan, so fill from it rather than refusing outright. */
+async function resolvedPacingDays(sectionCode) {
+  const baseline = await pacingBaseline();
+  let overlay = {};
+  /* `live` means the planner ANSWERED, not that it had edits. An empty overlay is
+   * a correct answer — reporting it as "unavailable" would train the teacher to
+   * distrust a fill that is perfectly current. */
+  let live = true;
+  try {
+    const response = await fetch(
+      `/api/pacing/state?section=${encodeURIComponent(sectionCode)}`,
+      { credentials: "same-origin", headers: { accept: "application/json" } },
+    );
+    if (response.ok) overlay = (await response.json())?.overlay ?? {};
+    else live = false;
+  } catch {
+    live = false;
+  }
+  return { days: resolveYear(baseline, overlay), live };
+}
+
+async function renderPacingWeeks() {
+  const select = byId("pacing-week");
+  const status = byId("pacing-fill-status");
+  try {
+    const baseline = await pacingBaseline();
+    state.pacingStarts = pacingWeekStarts(resolveYear(baseline, {}));
+    const today = new Date().toISOString().slice(0, 10);
+    const preferred = section().week.startDate || weekStartFor(today);
+    select.replaceChildren();
+    for (const week of state.pacingStarts) {
+      const item = document.createElement("option");
+      item.value = week.startDate;
+      item.textContent = `${week.label} (${week.startDate})`;
+      select.append(item);
+    }
+    const match = state.pacingStarts.find((week) => week.startDate === preferred);
+    select.value = (match ?? state.pacingStarts[0])?.startDate ?? "";
+  } catch (error) {
+    byId("pacing-fill").hidden = true;
+    status.textContent = error.message;
+  }
+}
+
+async function applyPacingFill() {
+  const button = byId("pacing-fill-apply");
+  const status = byId("pacing-fill-status");
+  const current = section();
+  const startDate = byId("pacing-week").value;
+  if (!startDate) return;
+  const hasContent = current.week.days.some(
+    (day) => day.status !== "no-class" || day.lessonId || String(day.note ?? "").trim(),
+  );
+  if (
+    hasContent &&
+    !window.confirm(`Replace the five days already planned for “${current.label}”?`)
+  )
+    return;
+  button.disabled = true;
+  status.textContent = "Reading your pacing plan…";
+  try {
+    const sectionCode = pacingSectionFor(current);
+    const { days, live } = await resolvedPacingDays(sectionCode);
+    const week = buildWeekFromPacing(days, startDate, state.lessons.map((item) => item.id));
+    current.week.label = week.label;
+    current.week.startDate = week.startDate;
+    current.week.days = week.days;
+    markDirty(`Week filled from the pacing plan (${week.label})`);
+    renderWeekEditor();
+    renderPreview(false);
+    const source = sectionCode ? `class ${sectionCode}` : "the shared plan";
+    const count = week.needsReview.length;
+    const flags = count
+      ? ` ${count === 1 ? "1 day needs" : `${count} days need`} a look: ${week.needsReview
+          .map((item) => `${item.day} — ${item.reason}`)
+          .join(" ")}`
+      : " Nothing needs a second look.";
+    status.textContent = `Filled ${week.label} from ${source}${live ? "" : " (baseline only — live planner edits were unavailable)"}: ${week.lessonCount} lesson${week.lessonCount === 1 ? "" : "s"} with family practice.${flags}`;
+    notify(`Week filled from the pacing plan. Review it, then publish.`);
+  } catch (error) {
+    status.textContent = error.message;
+    notify(error.message);
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function renderHomeworkPicker() {
@@ -454,6 +569,7 @@ function bindEvents() {
     );
   });
   byId("download-canvas-json").addEventListener("click", downloadCanvasExport);
+  byId("pacing-fill-apply").addEventListener("click", applyPacingFill);
   window.addEventListener("beforeunload", (event) => {
     if (state.dirty) event.preventDefault();
   });
@@ -474,6 +590,7 @@ async function initialize() {
     byId("classdojo-url").value = state.draft.integrations.classDojoUrl;
     byId("canvas-url").value = state.draft.integrations.canvasUrl;
     renderWeekEditor();
+    renderPacingWeeks();
     renderHomeworkPicker();
     if (state.lessonId) selectLesson(state.lessonId);
     renderCollections();

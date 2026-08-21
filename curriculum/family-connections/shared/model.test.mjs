@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import * as familyModel from "./model.js";
 import { COPY_KEYS, translationsEs } from "./copy-defaults.js";
+import { familyWeekShare } from "./render.js";
 import {
   buildCanvasAnnouncement,
   buildCanvasExport,
@@ -142,6 +143,22 @@ assert.deepEqual(
   [],
   "an unposted week shows no week-synced practice",
 );
+
+// The week a family takes with them must carry the practice link, once per lesson.
+const share = familyWeekShare(snapshot, lessons, snapshot.sections[0].id);
+const urls = share.body.match(/https:\/\/eduwonderlab\.com\/lessons\/[^\s]+/g) ?? [];
+assert.deepEqual(
+  urls,
+  [
+    "https://eduwonderlab.com/lessons/6-13/homework.html",
+    "https://eduwonderlab.com/lessons/1-1/homework.html",
+  ],
+  "one practice link per lesson, in day order, even when a lesson runs two days",
+);
+assert.match(share.body, /Practice together: https:/);
+const shareEs = familyWeekShare(snapshot, lessons, snapshot.sections[0].id, "es");
+assert.match(shareEs.body, /Práctica juntos: https:/);
+assert.doesNotMatch(shareEs.body, /Practice together/);
 
 const canvasExport = buildCanvasExport(snapshot, lessons, snapshot.sections[0].id);
 assert.equal(canvasExport.schemaVersion, 1);

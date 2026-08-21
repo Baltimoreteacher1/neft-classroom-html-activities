@@ -104,6 +104,14 @@ assert.match(css, /min-width:\s*0/);
 assert.match(css, /overflow-wrap:\s*anywhere/);
 assert.match(css, /@media\s*\(max-width:\s*40rem\)/);
 assert.match(css, /prefers-reduced-motion/);
+// A printed week has to say where the practice lives.
+assert.doesNotMatch(
+  css,
+  /@media print\s*\{[^}]*\.homework-section,/,
+  "printing must keep this week's practice, not hide the whole section",
+);
+assert.match(css, /\.homework-actions a\[href\^="\/"\]::after/);
+assert.match(css, /\.homework-library-panel,/);
 assert.match(css, /:focus-visible/);
 
 const app = await readFile(new URL("family-app.js", root), "utf8");
@@ -121,6 +129,9 @@ assert.match(renderer, /Open family help/);
 assert.match(renderer, /Play lesson arcade/);
 assert.match(renderer, /weekHomework/);
 assert.match(renderer, /renderWeekPractice/);
+assert.match(renderer, /Practice together/);
+assert.match(renderer, /Práctica juntos/);
+assert.match(renderer, /absolutePublicUrl/);
 assert.match(app, /renderWeekPractice/);
 assert.match(app, /posted this week/);
 assert.ok(
