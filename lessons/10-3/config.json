@@ -492,6 +492,53 @@
           "Being playful with math means ___ .",
           "With the Tower of Hanoi, I ___ ."
         ]
+      },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each move: is it allowed by the Tower of Hanoi rules, or against them?",
+        "instructionsEs": "Clasifica cada movimiento: ¿lo permiten las reglas de la Torre de Hanói o va en contra de ellas?",
+        "label": "Sort each move: legal or against the rules?",
+        "labelEs": "Clasifica cada movimiento: ¿legal o contra las reglas?",
+        "categories": [
+          {
+            "label": "Legal move",
+            "labelEs": "Movimiento legal",
+            "items": [
+              "Move the top disc of any stack",
+              "Place a small disc on a bigger disc",
+              "Move exactly one disc at a time"
+            ],
+            "itemsEs": [
+              "Mover el disco de arriba de cualquier pila",
+              "Colocar un disco pequeño sobre uno más grande",
+              "Mover exactamente un disco a la vez"
+            ]
+          },
+          {
+            "label": "Against the rules",
+            "labelEs": "Contra las reglas",
+            "items": [
+              "Move two discs at once",
+              "Place a big disc on a smaller disc",
+              "Pull a disc out from the middle of a stack"
+            ],
+            "itemsEs": [
+              "Mover dos discos a la vez",
+              "Colocar un disco grande sobre uno más pequeño",
+              "Sacar un disco de en medio de una pila"
+            ]
+          }
+        ],
+        "hints": [
+          "Only the TOP disc of a stack can move, and only one at a time.",
+          "The size rule: smaller may rest on bigger, never the reverse."
+        ],
+        "hintsEs": [
+          "Solo el disco de ARRIBA de una pila puede moverse, y solo uno a la vez.",
+          "La regla del tamaño: el pequeño puede descansar sobre el grande, nunca al revés."
+        ],
+        "explanation": "The three legal moves are the whole rule set: take only a top disc, move one at a time, and rest smaller on bigger. The illegal moves each break exactly one rule — two at once, big on small, or grabbing from mid-stack. Every 2ⁿ − 1 solution is built from nothing but the legal three.",
+        "explanationEs": "Los tres movimientos legales son todo el reglamento: tomar solo el disco de arriba, mover uno a la vez y apoyar el pequeño sobre el grande. Los ilegales rompen exactamente una regla cada uno: dos a la vez, grande sobre pequeño o sacar de en medio. Cada solución de 2ⁿ − 1 se construye solo con los tres legales."
       }
     ],
     "onLevel": [
@@ -627,6 +674,43 @@
           "What kind of number is 'double anything'?",
           "What happens when you add 1 to an even number?"
         ]
+      },
+      {
+        "type": "fill-table",
+        "label": "Use the doubling pattern to complete the table of fewest moves.",
+        "labelEs": "Usa el patrón de duplicación para completar la tabla de movimientos mínimos.",
+        "columns": [
+          "Discs",
+          "Pattern: double the previous, add 1",
+          "Fewest moves"
+        ],
+        "rows": [
+          {
+            "discs": "3",
+            "pattern": "2 × 3 + 1",
+            "answer": "7"
+          },
+          {
+            "discs": "4",
+            "pattern": "2 × 7 + 1",
+            "answer": "15"
+          },
+          {
+            "discs": "6",
+            "pattern": "2 × 31 + 1",
+            "answer": "63"
+          }
+        ],
+        "hints": [
+          "Each new disc means: solve the smaller tower, move the big disc, solve the smaller tower again.",
+          "That is why the rule is double-plus-one: two copies of the previous answer, plus one move for the biggest disc."
+        ],
+        "hintsEs": [
+          "Cada disco nuevo significa: resolver la torre más pequeña, mover el disco grande y resolver la torre pequeña otra vez.",
+          "Por eso la regla es duplicar y sumar uno: dos copias de la respuesta anterior más un movimiento para el disco más grande."
+        ],
+        "explanation": "The recursion is the reason for the rule: to move n discs you solve n − 1 discs (7 moves), carry the biggest disc (1 move), and solve n − 1 again (7 moves) — so 4 discs need 15, 5 need 31, and 6 need 2 × 31 + 1 = 63. The pattern 1, 3, 7, 15, 31, 63 is one less than the doubling numbers 2, 4, 8, 16, 32, 64.",
+        "explanationEs": "La recursión explica la regla: para mover n discos resuelves n − 1 discos (7 movimientos), llevas el disco más grande (1 movimiento) y resuelves n − 1 otra vez (7 movimientos); por eso 4 discos necesitan 15, 5 necesitan 31 y 6 necesitan 2 × 31 + 1 = 63. El patrón 1, 3, 7, 15, 31, 63 es uno menos que los números que se duplican: 2, 4, 8, 16, 32, 64."
       }
     ],
     "extending": [
@@ -693,6 +777,48 @@
           "I imagined ___ .",
           "I found the pattern ___ , which predicted ___ ."
         ]
+      },
+      {
+        "type": "matching-game",
+        "label": "Match each tower to the calculation that gives its fewest moves.",
+        "labelEs": "Empareja cada torre con el cálculo que da sus movimientos mínimos.",
+        "columns": 2,
+        "pairs": [
+          {
+            "term": "4-disc tower",
+            "match": "2 × 7 + 1 = 15",
+            "termEs": "Torre de 4 discos",
+            "matchEs": "2 × 7 + 1 = 15"
+          },
+          {
+            "term": "5-disc tower",
+            "match": "2 × 15 + 1 = 31",
+            "termEs": "Torre de 5 discos",
+            "matchEs": "2 × 15 + 1 = 31"
+          },
+          {
+            "term": "6-disc tower",
+            "match": "2 × 31 + 1 = 63",
+            "termEs": "Torre de 6 discos",
+            "matchEs": "2 × 31 + 1 = 63"
+          },
+          {
+            "term": "Any n-disc tower",
+            "match": "Double the (n − 1)-disc answer, add 1",
+            "termEs": "Cualquier torre de n discos",
+            "matchEs": "Duplicar la respuesta de (n − 1) discos y sumar 1"
+          }
+        ],
+        "hints": [
+          "Each calculation reuses the answer for one disc fewer — find the chain.",
+          "The last card states the general rule; the other three are that rule applied."
+        ],
+        "hintsEs": [
+          "Cada cálculo reutiliza la respuesta de un disco menos: encuentra la cadena.",
+          "La última tarjeta enuncia la regla general; las otras tres son esa regla aplicada."
+        ],
+        "explanation": "The chain 7 → 15 → 31 → 63 applies double-plus-one three times, and the fourth card names the general rule that generates the whole sequence. Recognizing a specific pattern AND its general statement as the same idea is the heart of algorithmic thinking in this lesson.",
+        "explanationEs": "La cadena 7 → 15 → 31 → 63 aplica duplicar-más-uno tres veces, y la cuarta tarjeta nombra la regla general que genera toda la secuencia. Reconocer que un patrón específico Y su enunciado general son la misma idea es el corazón del pensamiento algorítmico de esta lección."
       }
     ],
     "optional": [],
