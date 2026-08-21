@@ -182,12 +182,6 @@ function numeric(token) {
   return Number.isFinite(n) ? n : null;
 }
 
-/** Where the decimal point sits, counted from the right-hand end. "6.3" → 1. */
-function decimalPlaces(token) {
-  const m = String(token).match(/\.(\d+)$/);
-  return m ? m[1].length : 0;
-}
-
 /** The significant digits of a numeric token, ignoring the point, the
  *  thousands separators, and the leading/trailing zeros a shift creates:
  *  "0.12" and "12" are the same digits one move apart. */

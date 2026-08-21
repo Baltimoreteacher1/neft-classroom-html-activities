@@ -64,8 +64,12 @@ const DATA_4 = "#3b6ea5"; // blue - fourth series
 
 function figureWrap(svgHtml, title = "", caption = "") {
   if (!svgHtml) return "";
-  const titleHtml = title ? `<div class="ws-fig-title" style="font-weight:700;font-size:12px;color:var(--navy);margin-bottom:4px;text-align:center;">${esc(title)}</div>` : "";
-  const capHtml = caption ? `<div class="ws-fig-cap" style="font-size:11px;color:var(--muted);font-style:italic;margin-top:4px;text-align:center;">${esc(caption)}</div>` : "";
+  const titleHtml = title
+    ? `<div class="ws-fig-title" style="font-weight:700;font-size:12px;color:var(--navy);margin-bottom:4px;text-align:center;">${esc(title)}</div>`
+    : "";
+  const capHtml = caption
+    ? `<div class="ws-fig-cap" style="font-size:11px;color:var(--muted);font-style:italic;margin-top:4px;text-align:center;">${esc(caption)}</div>`
+    : "";
   return `<div class="ws-figure-wrap" style="margin:8px 0;display:flex;flex-direction:column;align-items:center;">${titleHtml}${svgHtml}${capHtml}</div>`;
 }
 
@@ -73,15 +77,22 @@ function renderNumberLineSvg(cfg) {
   const min = Number(cfg.min ?? 0);
   const max = Number(cfg.max ?? 10);
   const step = Number(cfg.step ?? 1);
-  const W = 480, H = 80, padL = 28, padR = 28, y = 38;
+  const W = 480,
+    H = 80,
+    padL = 28,
+    padR = 28,
+    y = 38;
   const span = Math.max(1, max - min);
   const plotW = W - padL - padR;
   const xOf = (v) => padL + ((v - min) / span) * plotW;
 
   let ticks = "";
-  const stride = (max - min) / step > 15 ? Math.ceil(((max - min) / step) / 10) * step : step;
+  const stride = (max - min) / step > 15 ? Math.ceil((max - min) / step / 10) * step : step;
   for (let v = min; v <= max + 1e-9; v += step) {
-    const showLabel = Math.abs(Math.round((v - min) / stride) * stride - (v - min)) < 1e-6 || v === min || v === max;
+    const showLabel =
+      Math.abs(Math.round((v - min) / stride) * stride - (v - min)) < 1e-6 ||
+      v === min ||
+      v === max;
     ticks += `<line x1="${xOf(v).toFixed(1)}" y1="${y - 5}" x2="${xOf(v).toFixed(1)}" y2="${y + 5}" stroke="#263238" stroke-width="1.5"/>`;
     if (showLabel) {
       ticks += `<text x="${xOf(v).toFixed(1)}" y="${y + 19}" text-anchor="middle" font-size="11" fill="#263238" font-family="Hanken Grotesk,sans-serif">${+v.toFixed(2)}</text>`;
@@ -99,9 +110,10 @@ function renderNumberLineSvg(cfg) {
     }
   });
 
-  const axis = `<line x1="${padL - 8}" y1="${y}" x2="${W - padR + 8}" y2="${y}" stroke="#263238" stroke-width="2"/>` +
-               `<polygon points="${W - padR + 12},${y} ${W - padR + 4},${y - 4} ${W - padR + 4},${y + 4}" fill="#263238"/>` +
-               `<polygon points="${padL - 12},${y} ${padL - 4},${y - 4} ${padL - 4},${y + 4}" fill="#263238"/>`;
+  const axis =
+    `<line x1="${padL - 8}" y1="${y}" x2="${W - padR + 8}" y2="${y}" stroke="#263238" stroke-width="2"/>` +
+    `<polygon points="${W - padR + 12},${y} ${W - padR + 4},${y - 4} ${W - padR + 4},${y + 4}" fill="#263238"/>` +
+    `<polygon points="${padL - 12},${y} ${padL - 4},${y - 4} ${padL - 4},${y + 4}" fill="#263238"/>`;
 
   const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Number line from ${min} to ${max}" style="background:white;max-width:100%;height:auto;border:1px solid #d7e2ed;border-radius:8px;padding:4px;">${axis}${ticks}${pts}</svg>`;
   return figureWrap(svg, cfg.title, cfg.caption);
@@ -109,11 +121,14 @@ function renderNumberLineSvg(cfg) {
 
 function renderCoordPlaneSvg(cfg) {
   const m = Number(cfg.max ?? 6);
-  const W = 280, H = 280, pad = 20;
+  const W = 280,
+    H = 280,
+    pad = 20;
   const span = 2 * m;
   const plot = W - 2 * pad;
   const unit = plot / span;
-  const cx = pad + m * unit, cy = pad + m * unit;
+  const cx = pad + m * unit,
+    cy = pad + m * unit;
   const X = (x) => pad + (x + m) * unit;
   const Y = (y) => pad + (m - y) * unit;
   const stride = m > 6 ? 2 : 1;
@@ -128,10 +143,11 @@ function renderCoordPlaneSvg(cfg) {
     }
   }
 
-  const axes = `<line x1="${pad}" y1="${cy}" x2="${W - pad}" y2="${cy}" stroke="#1e293b" stroke-width="1.75"/>` +
-               `<line x1="${cx}" y1="${pad}" x2="${cx}" y2="${H - pad}" stroke="#1e293b" stroke-width="1.75"/>` +
-               `<text x="${W - pad + 6}" y="${cy + 3}" font-size="10" font-weight="700" fill="#1e293b">x</text>` +
-               `<text x="${cx + 4}" y="${pad - 4}" font-size="10" font-weight="700" fill="#1e293b">y</text>`;
+  const axes =
+    `<line x1="${pad}" y1="${cy}" x2="${W - pad}" y2="${cy}" stroke="#1e293b" stroke-width="1.75"/>` +
+    `<line x1="${cx}" y1="${pad}" x2="${cx}" y2="${H - pad}" stroke="#1e293b" stroke-width="1.75"/>` +
+    `<text x="${W - pad + 6}" y="${cy + 3}" font-size="10" font-weight="700" fill="#1e293b">x</text>` +
+    `<text x="${cx + 4}" y="${pad - 4}" font-size="10" font-weight="700" fill="#1e293b">y</text>`;
 
   const rawPts = (cfg.points || []).map((p) => ({
     x: Number(p.x),
@@ -143,7 +159,9 @@ function renderCoordPlaneSvg(cfg) {
   if (rawPts.length >= 3) {
     const gx = rawPts.reduce((s, p) => s + p.x, 0) / rawPts.length;
     const gy = rawPts.reduce((s, p) => s + p.y, 0) / rawPts.length;
-    const ring = rawPts.slice().sort((a, b) => Math.atan2(a.y - gy, a.x - gx) - Math.atan2(b.y - gy, b.x - gx));
+    const ring = rawPts
+      .slice()
+      .sort((a, b) => Math.atan2(a.y - gy, a.x - gx) - Math.atan2(b.y - gy, b.x - gx));
     const poly = ring.map((p) => `${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ");
     outline = `<polygon points="${poly}" fill="rgba(31,166,162,0.12)" stroke="#0d9488" stroke-width="2"/>`;
   }
@@ -151,10 +169,12 @@ function renderCoordPlaneSvg(cfg) {
   let pts = "";
   rawPts.forEach((p) => {
     if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) return;
-    const px = X(p.x), py = Y(p.y);
+    const px = X(p.x),
+      py = Y(p.y);
     const lbl = p.label || `(${p.x}, ${p.y})`;
-    pts += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="5" fill="${DATA_2}" stroke="#fff" stroke-width="1.5"/>` +
-           `<text x="${(px + 6).toFixed(1)}" y="${(py - 6).toFixed(1)}" font-size="10" font-weight="700" fill="#0f172a">${esc(lbl)}</text>`;
+    pts +=
+      `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="5" fill="${DATA_2}" stroke="#fff" stroke-width="1.5"/>` +
+      `<text x="${(px + 6).toFixed(1)}" y="${(py - 6).toFixed(1)}" font-size="10" font-weight="700" fill="#0f172a">${esc(lbl)}</text>`;
   });
 
   const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Coordinate plane from -${m} to ${m}" style="background:white;max-width:100%;height:auto;border:1px solid #d7e2ed;border-radius:8px;padding:4px;">${grid}${axes}${outline}${pts}</svg>`;
@@ -164,7 +184,12 @@ function renderCoordPlaneSvg(cfg) {
 function renderTapeDiagramSvg(cfg) {
   const rows = Array.isArray(cfg.rows) ? cfg.rows : [];
   if (!rows.length) return "";
-  const W = 460, padL = 8, padR = 8, rowH = 34, gap = 10, labelW = 80;
+  const W = 460,
+    padL = 8,
+    padR = 8,
+    rowH = 34,
+    gap = 10,
+    labelW = 80;
   const H = 16 + rows.length * (rowH + gap);
   const palette = [DATA_1, DATA_2, DATA_3, DATA_4];
   const totals = rows.map((r) => (r.parts || []).reduce((s, p) => s + (Number(p.value) || 0), 0));
@@ -180,8 +205,9 @@ function renderTapeDiagramSvg(cfg) {
       const w = ((Number(p.value) || 0) / maxTotal) * trackW;
       const fill = p.fill || palette[i % palette.length];
       const lbl = p.label != null ? p.label : p.value;
-      segs += `<rect x="${x.toFixed(1)}" y="${y}" width="${Math.max(0, w - 2).toFixed(1)}" height="${rowH}" rx="3" fill="${fill}"/>` +
-              `<text x="${(x + w / 2).toFixed(1)}" y="${y + rowH / 2 + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="Hanken Grotesk,sans-serif">${esc(lbl)}</text>`;
+      segs +=
+        `<rect x="${x.toFixed(1)}" y="${y}" width="${Math.max(0, w - 2).toFixed(1)}" height="${rowH}" rx="3" fill="${fill}"/>` +
+        `<text x="${(x + w / 2).toFixed(1)}" y="${y + rowH / 2 + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="Hanken Grotesk,sans-serif">${esc(lbl)}</text>`;
       x += w;
     });
     const rowLabel = `<text x="${padL}" y="${y + rowH / 2 + 4}" font-size="11" font-weight="700" fill="#1e293b" font-family="Hanken Grotesk,sans-serif">${esc(r.label || "")}</text>`;
@@ -194,7 +220,8 @@ function renderTapeDiagramSvg(cfg) {
 }
 
 function renderFactorTreeSvg(cfg) {
-  const W = 320, H = 160;
+  const W = 320,
+    H = 160;
   let elements = [];
   function traverse(node, x, y, dx) {
     if (!node) return;
@@ -204,12 +231,14 @@ function renderFactorTreeSvg(cfg) {
     const textColor = isPrime ? "#095350" : "#8a5800";
     elements.push({ type: "node", x, y, value: node.value, fill, stroke, textColor });
     if (node.left) {
-      const lx = x - dx, ly = y + 42;
+      const lx = x - dx,
+        ly = y + 42;
       elements.push({ type: "line", x1: x, y1: y + 14, x2: lx, y2: ly - 14 });
       traverse(node.left, lx, ly, dx * 0.5);
     }
     if (node.right) {
-      const rx = x + dx, ry = y + 42;
+      const rx = x + dx,
+        ry = y + 42;
       elements.push({ type: "line", x1: x, y1: y + 14, x2: rx, y2: ry - 14 });
       traverse(node.right, rx, ry, dx * 0.5);
     }
@@ -221,8 +250,9 @@ function renderFactorTreeSvg(cfg) {
     if (el.type === "line") {
       inner += `<line x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#cbd5e1" stroke-width="2"/>`;
     } else if (el.type === "node") {
-      inner += `<circle cx="${el.x}" cy="${el.y}" r="14" fill="${el.fill}" stroke="${el.stroke}" stroke-width="1.75"/>` +
-               `<text x="${el.x}" y="${el.y + 4}" font-size="11" font-weight="700" fill="${el.textColor}" text-anchor="middle" font-family="Hanken Grotesk,sans-serif">${esc(el.value)}</text>`;
+      inner +=
+        `<circle cx="${el.x}" cy="${el.y}" r="14" fill="${el.fill}" stroke="${el.stroke}" stroke-width="1.75"/>` +
+        `<text x="${el.x}" y="${el.y + 4}" font-size="11" font-weight="700" fill="${el.textColor}" text-anchor="middle" font-family="Hanken Grotesk,sans-serif">${esc(el.value)}</text>`;
     }
   });
 
@@ -233,8 +263,14 @@ function renderFactorTreeSvg(cfg) {
 function renderBarChartSvg(cfg) {
   const bars = Array.isArray(cfg.bars) ? cfg.bars : [];
   if (!bars.length) return "";
-  const W = 420, H = 180, padL = 36, padR = 16, padT = 20, padB = 36;
-  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const W = 420,
+    H = 180,
+    padL = 36,
+    padR = 16,
+    padT = 20,
+    padB = 36;
+  const plotW = W - padL - padR,
+    plotH = H - padT - padB;
   const maxV = Math.max(...bars.map((b) => Number(b.value) || 0), 1);
   const bw = plotW / bars.length;
   const baseY = padT + plotH;
@@ -246,9 +282,10 @@ function renderBarChartSvg(cfg) {
     const x = padL + i * bw + bw * 0.15;
     const y = baseY - h;
     const w = bw * 0.7;
-    rects += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${DATA_1}"/>` +
-             `<text x="${(x + w / 2).toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="#1e293b">${v}</text>` +
-             `<text x="${(x + w / 2).toFixed(1)}" y="${(baseY + 14).toFixed(1)}" text-anchor="middle" font-size="10" fill="#475569">${esc(b.label ?? "")}</text>`;
+    rects +=
+      `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${DATA_1}"/>` +
+      `<text x="${(x + w / 2).toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="#1e293b">${v}</text>` +
+      `<text x="${(x + w / 2).toFixed(1)}" y="${(baseY + 14).toFixed(1)}" text-anchor="middle" font-size="10" fill="#475569">${esc(b.label ?? "")}</text>`;
   });
 
   const axis = `<line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="#334155" stroke-width="1.5"/>`;
@@ -259,8 +296,14 @@ function renderBarChartSvg(cfg) {
 function renderHistogramSvg(cfg) {
   const bars = Array.isArray(cfg.bars) ? cfg.bars : [];
   if (!bars.length) return "";
-  const W = 420, H = 180, padL = 36, padR = 16, padT = 20, padB = 36;
-  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const W = 420,
+    H = 180,
+    padL = 36,
+    padR = 16,
+    padT = 20,
+    padB = 36;
+  const plotW = W - padL - padR,
+    plotH = H - padT - padB;
   const maxV = Math.max(...bars.map((b) => Number(b.value) || 0), 1);
   const bw = plotW / bars.length;
   const baseY = padT + plotH;
@@ -271,9 +314,10 @@ function renderHistogramSvg(cfg) {
     const h = (v / maxV) * plotH;
     const x = padL + i * bw;
     const y = baseY - h;
-    rects += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" fill="${DATA_1}" stroke="#ffffff" stroke-width="1"/>` +
-             `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="#1e293b">${v}</text>` +
-             `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 14).toFixed(1)}" text-anchor="middle" font-size="9" fill="#475569">${esc(b.label ?? "")}</text>`;
+    rects +=
+      `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" fill="${DATA_1}" stroke="#ffffff" stroke-width="1"/>` +
+      `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="#1e293b">${v}</text>` +
+      `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 14).toFixed(1)}" text-anchor="middle" font-size="9" fill="#475569">${esc(b.label ?? "")}</text>`;
   });
 
   const axis = `<line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="#334155" stroke-width="1.5"/>`;
@@ -286,13 +330,19 @@ function renderDotPlotSvg(cfg) {
   if (!vals.length) return "";
   const min = Number(cfg.min ?? Math.min(...vals));
   const max = Number(cfg.max ?? Math.max(...vals));
-  const W = 420, H = 140, padL = 28, padR = 28, baseY = 100;
+  const W = 420,
+    H = 140,
+    padL = 28,
+    padR = 28,
+    baseY = 100;
   const span = Math.max(1, max - min);
   const plotW = W - padL - padR;
   const xOf = (v) => padL + ((v - min) / span) * plotW;
 
   const counts = {};
-  vals.forEach((v) => { counts[v] = (counts[v] || 0) + 1; });
+  vals.forEach((v) => {
+    counts[v] = (counts[v] || 0) + 1;
+  });
 
   let dots = "";
   Object.entries(counts).forEach(([vStr, cnt]) => {
@@ -307,8 +357,9 @@ function renderDotPlotSvg(cfg) {
   let ticks = "";
   for (let v = min; v <= max; v++) {
     const x = xOf(v);
-    ticks += `<line x1="${x.toFixed(1)}" y1="${baseY - 4}" x2="${x.toFixed(1)}" y2="${baseY + 4}" stroke="#334155" stroke-width="1.5"/>` +
-             `<text x="${x.toFixed(1)}" y="${baseY + 16}" text-anchor="middle" font-size="10" fill="#334155">${v}</text>`;
+    ticks +=
+      `<line x1="${x.toFixed(1)}" y1="${baseY - 4}" x2="${x.toFixed(1)}" y2="${baseY + 4}" stroke="#334155" stroke-width="1.5"/>` +
+      `<text x="${x.toFixed(1)}" y="${baseY + 16}" text-anchor="middle" font-size="10" fill="#334155">${v}</text>`;
   }
 
   const axis = `<line x1="${padL - 6}" y1="${baseY}" x2="${W - padR + 6}" y2="${baseY}" stroke="#334155" stroke-width="2"/>`;
@@ -322,24 +373,32 @@ function renderBoxPlotSvg(cfg) {
   const q1 = Number(cfg.q1 ?? min + (max - min) * 0.25);
   const med = Number(cfg.median ?? min + (max - min) * 0.5);
   const q3 = Number(cfg.q3 ?? min + (max - min) * 0.75);
-  const W = 420, H = 110, padL = 28, padR = 28, boxY = 28, boxH = 36, axisY = 82;
+  const W = 420,
+    H = 110,
+    padL = 28,
+    padR = 28,
+    boxY = 28,
+    boxH = 36,
+    axisY = 82;
   const span = Math.max(1, max - min);
   const plotW = W - padL - padR;
   const xOf = (v) => padL + ((v - min) / span) * plotW;
 
-  const box = `<rect x="${xOf(q1).toFixed(1)}" y="${boxY}" width="${(xOf(q3) - xOf(q1)).toFixed(1)}" height="${boxH}" fill="rgba(15,138,132,0.18)" stroke="${DATA_1}" stroke-width="2"/>` +
-              `<line x1="${xOf(med).toFixed(1)}" y1="${boxY}" x2="${xOf(med).toFixed(1)}" y2="${boxY + boxH}" stroke="${DATA_2}" stroke-width="2.5"/>` +
-              `<line x1="${xOf(min).toFixed(1)}" y1="${boxY + boxH / 2}" x2="${xOf(q1).toFixed(1)}" y2="${boxY + boxH / 2}" stroke="#334155" stroke-width="1.5"/>` +
-              `<line x1="${xOf(q3).toFixed(1)}" y1="${boxY + boxH / 2}" x2="${xOf(max).toFixed(1)}" y2="${boxY + boxH / 2}" stroke="#334155" stroke-width="1.5"/>` +
-              `<line x1="${xOf(min).toFixed(1)}" y1="${boxY + 6}" x2="${xOf(min).toFixed(1)}" y2="${boxY + boxH - 6}" stroke="#334155" stroke-width="2"/>` +
-              `<line x1="${xOf(max).toFixed(1)}" y1="${boxY + 6}" x2="${xOf(max).toFixed(1)}" y2="${boxY + boxH - 6}" stroke="#334155" stroke-width="2"/>`;
+  const box =
+    `<rect x="${xOf(q1).toFixed(1)}" y="${boxY}" width="${(xOf(q3) - xOf(q1)).toFixed(1)}" height="${boxH}" fill="rgba(15,138,132,0.18)" stroke="${DATA_1}" stroke-width="2"/>` +
+    `<line x1="${xOf(med).toFixed(1)}" y1="${boxY}" x2="${xOf(med).toFixed(1)}" y2="${boxY + boxH}" stroke="${DATA_2}" stroke-width="2.5"/>` +
+    `<line x1="${xOf(min).toFixed(1)}" y1="${boxY + boxH / 2}" x2="${xOf(q1).toFixed(1)}" y2="${boxY + boxH / 2}" stroke="#334155" stroke-width="1.5"/>` +
+    `<line x1="${xOf(q3).toFixed(1)}" y1="${boxY + boxH / 2}" x2="${xOf(max).toFixed(1)}" y2="${boxY + boxH / 2}" stroke="#334155" stroke-width="1.5"/>` +
+    `<line x1="${xOf(min).toFixed(1)}" y1="${boxY + 6}" x2="${xOf(min).toFixed(1)}" y2="${boxY + boxH - 6}" stroke="#334155" stroke-width="2"/>` +
+    `<line x1="${xOf(max).toFixed(1)}" y1="${boxY + 6}" x2="${xOf(max).toFixed(1)}" y2="${boxY + boxH - 6}" stroke="#334155" stroke-width="2"/>`;
 
   let ticks = "";
   const step = Math.max(1, Math.round((max - min) / 8));
   for (let v = min; v <= max; v += step) {
     const x = xOf(v);
-    ticks += `<line x1="${x.toFixed(1)}" y1="${axisY - 3}" x2="${x.toFixed(1)}" y2="${axisY + 3}" stroke="#64748b" stroke-width="1"/>` +
-             `<text x="${x.toFixed(1)}" y="${axisY + 14}" text-anchor="middle" font-size="9" fill="#64748b">${v}</text>`;
+    ticks +=
+      `<line x1="${x.toFixed(1)}" y1="${axisY - 3}" x2="${x.toFixed(1)}" y2="${axisY + 3}" stroke="#64748b" stroke-width="1"/>` +
+      `<text x="${x.toFixed(1)}" y="${axisY + 14}" text-anchor="middle" font-size="9" fill="#64748b">${v}</text>`;
   }
   const axis = `<line x1="${padL}" y1="${axisY}" x2="${W - padR}" y2="${axisY}" stroke="#64748b" stroke-width="1.5"/>`;
 
@@ -349,14 +408,18 @@ function renderBoxPlotSvg(cfg) {
 
 function renderPercentGridSvg(cfg) {
   const pct = Math.max(0, Math.min(100, Number(cfg.percent ?? cfg.value ?? 25)));
-  const size = 160, pad = 10, gridW = size - 2 * pad, cell = gridW / 10;
+  const size = 160,
+    pad = 10,
+    gridW = size - 2 * pad,
+    cell = gridW / 10;
   let cells = "";
   for (let r = 0; r < 10; r++) {
     for (let c = 0; c < 10; c++) {
       const idx = r * 10 + c;
       const shaded = idx < pct;
-      const x = pad + c * cell, y = pad + r * cell;
-      cells += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(cell - 1).toFixed(1)}" height="${(cell - 1).toFixed(1)}" fill="${shaded ? DATA_1 : '#f8fafc'}" stroke="#cbd5e1" stroke-width="0.5"/>`;
+      const x = pad + c * cell,
+        y = pad + r * cell;
+      cells += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(cell - 1).toFixed(1)}" height="${(cell - 1).toFixed(1)}" fill="${shaded ? DATA_1 : "#f8fafc"}" stroke="#cbd5e1" stroke-width="0.5"/>`;
     }
   }
   const svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="100-square grid with ${pct} squares shaded" style="background:white;border:1px solid #d7e2ed;border-radius:6px;padding:2px;">${cells}</svg>`;
@@ -366,12 +429,15 @@ function renderPercentGridSvg(cfg) {
 function renderFractionModelSvg(cfg) {
   const num = Number(cfg.numerator ?? 1);
   const den = Math.max(1, Number(cfg.denominator ?? 4));
-  const W = 320, H = 50, pad = 8, w = (W - 2 * pad) / den;
+  const W = 320,
+    H = 50,
+    pad = 8,
+    w = (W - 2 * pad) / den;
   let parts = "";
   for (let i = 0; i < den; i++) {
     const x = pad + i * w;
     const shaded = i < num;
-    parts += `<rect x="${x.toFixed(1)}" y="${pad}" width="${(w - 2).toFixed(1)}" height="${H - 2 * pad}" rx="3" fill="${shaded ? DATA_1 : '#f8fafc'}" stroke="#94a3b8" stroke-width="1.2"/>`;
+    parts += `<rect x="${x.toFixed(1)}" y="${pad}" width="${(w - 2).toFixed(1)}" height="${H - 2 * pad}" rx="3" fill="${shaded ? DATA_1 : "#f8fafc"}" stroke="#94a3b8" stroke-width="1.2"/>`;
   }
   const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Fraction bar showing ${num} out of ${den} parts" style="background:white;max-width:100%;height:auto;border:1px solid #d7e2ed;border-radius:6px;">${parts}</svg>`;
   return figureWrap(svg, cfg.title, cfg.caption);
@@ -379,15 +445,21 @@ function renderFractionModelSvg(cfg) {
 
 function renderPolygonSvg(spec) {
   const sides = Number(spec.sides || 6);
-  const size = 100, c = size / 2, r = c - 8;
+  const size = 100,
+    c = size / 2,
+    r = c - 8;
   const pt = (i) => {
     const a = (2 * Math.PI * i) / sides - Math.PI / 2;
-    return [Math.round((c + Math.cos(a) * r) * 10) / 10, Math.round((c + Math.sin(a) * r) * 10) / 10];
+    return [
+      Math.round((c + Math.cos(a) * r) * 10) / 10,
+      Math.round((c + Math.sin(a) * r) * 10) / 10,
+    ];
   };
   let wedges = "";
   for (let i = 0; i < sides; i++) {
-    const [x1, y1] = pt(i), [x2, y2] = pt(i + 1);
-    wedges += `<polygon points="${c},${c} ${x1},${y1} ${x2},${y2}" fill="${i % 2 === 0 ? 'rgba(31,166,162,0.12)' : 'rgba(31,166,162,0.06)'}" stroke="#0d9488" stroke-width="1.5"/>`;
+    const [x1, y1] = pt(i),
+      [x2, y2] = pt(i + 1);
+    wedges += `<polygon points="${c},${c} ${x1},${y1} ${x2},${y2}" fill="${i % 2 === 0 ? "rgba(31,166,162,0.12)" : "rgba(31,166,162,0.06)"}" stroke="#0d9488" stroke-width="1.5"/>`;
   }
   const svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="Regular polygon with ${sides} sides" style="background:white;display:block;margin:4px auto;">${wedges}</svg>`;
   return figureWrap(svg, spec.title, spec.caption);
@@ -396,7 +468,12 @@ function renderPolygonSvg(spec) {
 function renderDataChipsHtml(cfg) {
   const values = Array.isArray(cfg.values) ? cfg.values : [];
   if (!values.length) return "";
-  const chips = values.map((v) => `<span style="background:#eef6ff;border:1px solid #b9d5f7;border-radius:6px;padding:3px 8px;font-weight:700;font-size:12px;color:var(--navy);">${esc(v)}</span>`).join(" ");
+  const chips = values
+    .map(
+      (v) =>
+        `<span style="background:#eef6ff;border:1px solid #b9d5f7;border-radius:6px;padding:3px 8px;font-weight:700;font-size:12px;color:var(--navy);">${esc(v)}</span>`,
+    )
+    .join(" ");
   return `<div style="margin:6px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">${cfg.title ? `<span style="font-weight:600;font-size:11px;color:var(--muted);">${esc(cfg.title)}:</span> ` : ""}${chips}</div>`;
 }
 
@@ -405,8 +482,10 @@ function renderProblemDiagram(it) {
   if (d && typeof d === "object") {
     const kind = d.kind || d.type || "";
     if (kind === "number-line" || kind === "numberLine") return renderNumberLineSvg(d);
-    if (kind === "coordinate-plane" || kind === "coord-plane" || kind === "coordPlane") return renderCoordPlaneSvg(d);
-    if (kind === "tape-diagram" || kind === "tapeDiagram" || kind === "bar-model") return renderTapeDiagramSvg(d);
+    if (kind === "coordinate-plane" || kind === "coord-plane" || kind === "coordPlane")
+      return renderCoordPlaneSvg(d);
+    if (kind === "tape-diagram" || kind === "tapeDiagram" || kind === "bar-model")
+      return renderTapeDiagramSvg(d);
     if (kind === "factor-tree" || kind === "factorTree") return renderFactorTreeSvg(d);
     if (kind === "histogram") return renderHistogramSvg(d);
     if (kind === "bar-chart" || kind === "barChart") return renderBarChartSvg(d);
@@ -418,7 +497,13 @@ function renderProblemDiagram(it) {
     if (kind === "data-chips") return renderDataChipsHtml(d);
   }
   if (Array.isArray(it.points) && it.points.length && (it.min != null || it.max != null)) {
-    return renderNumberLineSvg({ min: it.min, max: it.max, step: it.step, points: it.points, title: it.figureTitle });
+    return renderNumberLineSvg({
+      min: it.min,
+      max: it.max,
+      step: it.step,
+      points: it.points,
+      title: it.figureTitle,
+    });
   }
   if (it.shape === "regular-polygon") {
     return renderPolygonSvg(it);
@@ -615,7 +700,9 @@ function wordBank(vocab = []) {
     .map((v) => {
       const en = esc(v.term || v.en || "");
       const es = v.spanish || v.es || v.termEs || "";
-      const esBadge = es ? ` <span class="ws-es-term" style="font-weight:500;color:var(--muted);font-style:italic">(${esc(es)})</span>` : "";
+      const esBadge = es
+        ? ` <span class="ws-es-term" style="font-weight:500;color:var(--muted);font-style:italic">(${esc(es)})</span>`
+        : "";
       return `<span class="ws-bankword">${en}${esBadge}</span>`;
     })
     .join("");
