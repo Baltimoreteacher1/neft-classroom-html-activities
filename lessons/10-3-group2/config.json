@@ -415,16 +415,16 @@
         ],
         "stemEs": "La tabla muestra 1 disco → 1 paso, 2 discos → 3 pasos, 3 discos → 7 pasos. ¿Cuál es la regla del patrón para el número de pasos cuando agregas un disco más?",
         "explanationEs": "1 × 2 + 1 = 3 y 3 × 2 + 1 = 7, así que cada disco nuevo duplica los pasos y suma 1.",
+        "hintsEs": [
+          "Prueba cada regla en LOS DOS saltos: 1 → 3 y 3 → 7.",
+          "Varias reglas pasan el primer salto; solo una pasa los dos.",
+          "¿Qué le haces al 3 para caer exactamente en 7?"
+        ],
         "choicesEs": [
           "Duplicar el número de pasos y sumar 1",
           "Suma 2 al número de pasos",
           "Suma el número de discos a los pasos",
           "Multiplicar el número de pasos por 3"
-        ],
-        "hintsEs": [
-          "Prueba cada regla en LOS DOS saltos: 1 → 3 y 3 → 7.",
-          "Varias reglas pasan el primer salto; solo una pasa los dos.",
-          "¿Qué le haces al 3 para caer exactamente en 7?"
         ]
       },
       {
@@ -451,16 +451,16 @@
         ],
         "stemEs": "Usa la regla del patrón para completar la tabla: ¿cuántos pasos para una torre de cuatro discos?",
         "explanationEs": "Una torre de tres discos toma 7 pasos, así que una torre de cuatro discos toma 7 × 2 + 1 = 15 pasos.",
+        "hintsEs": [
+          "Empieza con la respuesta de tres discos: 7 pasos.",
+          "Aplica la regla: duplica y luego suma 1.",
+          "7 × 2 + 1 = ?"
+        ],
         "choicesEs": [
           "15 pasos",
           "14 pasos",
           "9 pasos",
           "28 pasos"
-        ],
-        "hintsEs": [
-          "Empieza con la respuesta de tres discos: 7 pasos.",
-          "Aplica la regla: duplica y luego suma 1.",
-          "7 × 2 + 1 = ?"
         ]
       },
       {
@@ -487,16 +487,16 @@
         ],
         "stemEs": "¿Cuál es el número mínimo de pasos para resolver la Torre de Hanói de CINCO discos?",
         "explanationEs": "Una torre de cuatro discos toma 15 pasos, así que una torre de cinco discos toma 15 × 2 + 1 = 31 pasos.",
+        "hintsEs": [
+          "Necesitas primero la respuesta de cuatro discos: 15.",
+          "Aplica la regla una vez más.",
+          "15 × 2 + 1 = ?"
+        ],
         "choicesEs": [
           "31 pasos",
           "15 pasos",
           "30 pasos",
           "35 pasos"
-        ],
-        "hintsEs": [
-          "Necesitas primero la respuesta de cuatro discos: 15.",
-          "Aplica la regla una vez más.",
-          "15 × 2 + 1 = ?"
         ]
       },
       {
@@ -515,6 +515,85 @@
       }
     ],
     "extending": [
+      {
+        "type": "fill-table",
+        "label": "Use the doubling pattern to complete the table of fewest moves.",
+        "labelEs": "Usa el patrón de duplicación para completar la tabla de movimientos mínimos.",
+        "columns": [
+          "Discs",
+          "Pattern: double the previous, add 1",
+          "Fewest moves"
+        ],
+        "rows": [
+          {
+            "discs": "3",
+            "pattern": "2 × 3 + 1",
+            "answer": "7"
+          },
+          {
+            "discs": "4",
+            "pattern": "2 × 7 + 1",
+            "answer": "15"
+          },
+          {
+            "discs": "6",
+            "pattern": "2 × 31 + 1",
+            "answer": "63"
+          }
+        ],
+        "hints": [
+          "Each new disc means: solve the smaller tower, move the big disc, solve the smaller tower again.",
+          "That is why the rule is double-plus-one: two copies of the previous answer, plus one move for the biggest disc."
+        ],
+        "hintsEs": [
+          "Cada disco nuevo significa: resolver la torre más pequeña, mover el disco grande y resolver la torre pequeña otra vez.",
+          "Por eso la regla es duplicar y sumar uno: dos copias de la respuesta anterior más un movimiento para el disco más grande."
+        ],
+        "explanation": "The recursion is the reason for the rule: to move n discs you solve n − 1 discs (7 moves), carry the biggest disc (1 move), and solve n − 1 again (7 moves) — so 4 discs need 15, 5 need 31, and 6 need 2 × 31 + 1 = 63. The pattern 1, 3, 7, 15, 31, 63 is one less than the doubling numbers 2, 4, 8, 16, 32, 64.",
+        "explanationEs": "La recursión explica la regla: para mover n discos resuelves n − 1 discos (7 movimientos), llevas el disco más grande (1 movimiento) y resuelves n − 1 otra vez (7 movimientos); por eso 4 discos necesitan 15, 5 necesitan 31 y 6 necesitan 2 × 31 + 1 = 63. El patrón 1, 3, 7, 15, 31, 63 es uno menos que los números que se duplican: 2, 4, 8, 16, 32, 64."
+      },
+      {
+        "type": "matching-game",
+        "label": "Match each tower to the calculation that gives its fewest moves.",
+        "labelEs": "Empareja cada torre con el cálculo que da sus movimientos mínimos.",
+        "columns": 2,
+        "pairs": [
+          {
+            "term": "4-disc tower",
+            "match": "2 × 7 + 1 = 15",
+            "termEs": "Torre de 4 discos",
+            "matchEs": "2 × 7 + 1 = 15"
+          },
+          {
+            "term": "5-disc tower",
+            "match": "2 × 15 + 1 = 31",
+            "termEs": "Torre de 5 discos",
+            "matchEs": "2 × 15 + 1 = 31"
+          },
+          {
+            "term": "6-disc tower",
+            "match": "2 × 31 + 1 = 63",
+            "termEs": "Torre de 6 discos",
+            "matchEs": "2 × 31 + 1 = 63"
+          },
+          {
+            "term": "Any n-disc tower",
+            "match": "Double the (n − 1)-disc answer, add 1",
+            "termEs": "Cualquier torre de n discos",
+            "matchEs": "Duplicar la respuesta de (n − 1) discos y sumar 1"
+          }
+        ],
+        "hints": [
+          "Each calculation reuses the answer for one disc fewer — find the chain.",
+          "The last card states the general rule; the other three are that rule applied."
+        ],
+        "hintsEs": [
+          "Cada cálculo reutiliza la respuesta de un disco menos: encuentra la cadena.",
+          "La última tarjeta enuncia la regla general; las otras tres son esa regla aplicada."
+        ],
+        "explanation": "The chain 7 → 15 → 31 → 63 applies double-plus-one three times, and the fourth card names the general rule that generates the whole sequence. Recognizing a specific pattern AND its general statement as the same idea is the heart of algorithmic thinking in this lesson.",
+        "explanationEs": "La cadena 7 → 15 → 31 → 63 aplica duplicar-más-uno tres veces, y la cuarta tarjeta nombra la regla general que genera toda la secuencia. Reconocer que un patrón específico Y su enunciado general son la misma idea es el corazón del pensamiento algorítmico de esta lección."
+      },
       {
         "type": "multiple-choice",
         "stem": "Why is finding a pattern MORE powerful than just solving the three-disc puzzle by hand?",
@@ -539,16 +618,16 @@
         ],
         "stemEs": "¿Por qué encontrar un patrón es MÁS poderoso que solo resolver a mano el rompecabezas de tres discos?",
         "explanationEs": "El patrón nos dijo que una torre de cinco discos necesita un mínimo de 31 pasos — sin mover ni un solo disco.",
+        "hintsEs": [
+          "¿Qué nos dijo la tabla sobre la torre de cinco discos?",
+          "¿Alguna vez jugamos a mano la torre de cinco discos?",
+          "Predecir es lo poderoso."
+        ],
         "choicesEs": [
           "El patrón predice la respuesta para torres que nunca has jugado, como de cinco o seis discos",
           "El patrón te deja saltarte las reglas del rompecabezas",
           "Los patrones hacen que los discos se muevan solos",
           "Un patrón demuestra que el rompecabezas es imposible"
-        ],
-        "hintsEs": [
-          "¿Qué nos dijo la tabla sobre la torre de cinco discos?",
-          "¿Alguna vez jugamos a mano la torre de cinco discos?",
-          "Predecir es lo poderoso."
         ]
       },
       {
@@ -589,16 +668,16 @@
         ],
         "stemEs": "¿El menor número de pasos de la Torre de Hanói siempre será un número IMPAR?",
         "explanationEs": "Cada respuesta viene de duplicar la anterior (siempre par) y sumar 1 (siempre impar): 1, 3, 7, 15, 31 son todos impares, y la regla garantiza que el siguiente también lo será.",
+        "hintsEs": [
+          "Mira toda la lista: 1, 3, 7, 15, 31.",
+          "¿Qué tipo de número es 'el doble de cualquier cosa'?",
+          "¿Qué pasa cuando le sumas 1 a un número par?"
+        ],
         "choicesEs": [
           "Sí — duplicar cualquier número entero da un número par, y sumarle 1 lo hace impar",
           "No — todos los demás tamaños de torre dan un número par de pasos",
           "Sí — pero solo porque 7 resulta ser impar",
           "No — los pasos alternan entre impares y pares"
-        ],
-        "hintsEs": [
-          "Mira toda la lista: 1, 3, 7, 15, 31.",
-          "¿Qué tipo de número es 'el doble de cualquier cosa'?",
-          "¿Qué pasa cuando le sumas 1 a un número par?"
         ]
       },
       {
@@ -625,16 +704,16 @@
         ],
         "stemEs": "Una torre de cinco discos toma 31 pasos. Usando la regla del patrón, ¿cuántos pasos tomaría una torre de SEIS discos?",
         "explanationEs": "Aplica la regla a 31: duplícalo y suma 1, así que 31 × 2 + 1 = 63 pasos.",
+        "hintsEs": [
+          "La regla funciona desde cualquier fila de la tabla.",
+          "Duplica y luego suma 1.",
+          "31 × 2 + 1 = ?"
+        ],
         "choicesEs": [
           "63 pasos",
           "62 pasos",
           "36 pasos",
           "32 pasos"
-        ],
-        "hintsEs": [
-          "La regla funciona desde cualquier fila de la tabla.",
-          "Duplica y luego suma 1.",
-          "31 × 2 + 1 = ?"
         ]
       },
       {
@@ -661,16 +740,16 @@
         ],
         "stemEs": "Mira la tabla de otra manera: 1 disco → 1, 2 discos → 3, 3 discos → 7, 4 discos → 15, 5 discos → 31. ¿Cuál describe la relación entre el número de discos y el número de pasos?",
         "explanationEs": "2 − 1 = 1, 4 − 1 = 3, 8 − 1 = 7, 16 − 1 = 15, 32 − 1 = 31 — cada valor es uno menos que el patrón que duplica 2, 4, 8, 16, 32.",
+        "hintsEs": [
+          "Escribe el patrón que duplica 2, 4, 8, 16, 32 arriba de los pasos 1, 3, 7, 15, 31.",
+          "Compáralos fila por fila.",
+          "¿Qué tan separado está cada par?"
+        ],
         "choicesEs": [
           "Los pasos son 1 menos que un patrón que duplica: 2, 4, 8, 16, 32 menos 1 cada uno",
           "Los pasos son el número de discos multiplicado por sí mismo",
           "Los pasos son 6 veces el número de discos, más o menos 1",
           "Los pasos son la suma de los dos conteos de pasos anteriores"
-        ],
-        "hintsEs": [
-          "Escribe el patrón que duplica 2, 4, 8, 16, 32 arriba de los pasos 1, 3, 7, 15, 31.",
-          "Compáralos fila por fila.",
-          "¿Qué tan separado está cada par?"
         ]
       },
       {
@@ -685,56 +764,6 @@
         "sentenceStemsEs": [
           "Yo empezaría por ___ .",
           "Mi argumento usaría el patrón ___ ."
-        ]
-      },
-      {
-        "type": "open-response",
-        "stem": "The summary says playing with math lets us think differently by looking for patterns AND by imagining ways to visualize a problem. Describe how you used BOTH of those with the Tower of Hanoi.",
-        "modelAnswer": "I used imagination first: before moving anything, I pictured the solved puzzle — the same stack, smallest on top, standing on a different rod. Then I used patterns: I organized the small cases in a table (1 disc → 1 step, 2 → 3, 3 → 7) and found the double-and-add-1 rule, which predicted 15 steps for four discs and 31 for five. Imagining gave me the target, and the pattern gave me the count — together they solved towers I never touched.",
-        "sentenceStems": [
-          "I imagined ___ .",
-          "I found the pattern ___ , which predicted ___ ."
-        ],
-        "stemEs": "El resumen dice que jugar con las matemáticas nos permite pensar de otra manera al buscar patrones Y al imaginar formas de visualizar un problema. Describe cómo usaste AMBAS con la Torre de Hanói.",
-        "sentenceStemsEs": [
-          "Imaginé ___ .",
-          "Encontré el patrón ___ , que predijo ___ ."
-        ]
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "What is the fewest number of moves needed to solve a three-disc Tower of Hanoi puzzle?",
-        "choices": [
-          "7 moves",
-          "3 moves",
-          "6 moves",
-          "9 moves"
-        ],
-        "correctIndex": 0,
-        "explanation": "It takes at least 7 moves to solve a three-disc Tower of Hanoi puzzle.",
-        "choiceFeedback": [
-          "",
-          "3 is the number of DISCS — moving each disc only once is impossible because of the size rule.",
-          "6 doubles the 3 discs but forgets the extra move — the pattern is double and add 1, so 3 discs need 7.",
-          "9 is 3 × 3, but the fewest-moves count follows the doubling pattern, not disc × disc."
-        ],
-        "hints": [
-          "It is more than one move per disc.",
-          "A two-disc tower already takes 3 moves.",
-          "Double 3 and add 1."
-        ],
-        "stemEs": "¿Cuál es el menor número de movimientos necesarios para resolver la Torre de Hanói de tres discos?",
-        "explanationEs": "Se necesitan al menos 7 movimientos para resolver la Torre de Hanói de tres discos.",
-        "choicesEs": [
-          "7 movimientos",
-          "3 movimientos",
-          "6 movimientos",
-          "9 movimientos"
-        ],
-        "hintsEs": [
-          "Es más de un movimiento por disco.",
-          "Una torre de dos discos ya toma 3 movimientos.",
-          "Duplica 3 y suma 1."
         ]
       }
     ],

@@ -642,6 +642,103 @@
     ],
     "extending": [
       {
+        "type": "bar-model",
+        "label": "A shipping container is 8 ft long, 4 ft wide, and 3 ft tall. It is half full of boxes.",
+        "bars": [
+          {
+            "value": 48,
+            "label": "Boxes",
+            "annotation": "Half full"
+          },
+          {
+            "value": 48,
+            "label": "Empty",
+            "annotation": "Space left",
+            "editable": true
+          }
+        ],
+        "totalLabel": "Total volume: 96 ft³",
+        "questionText": "The container is half full. How many cubic feet of space are left?",
+        "answer": "48",
+        "hint": "Find the total volume first, then divide by the number of equal sections.",
+        "hints": [
+          "The container is 8 × 4 × 3 ft and HALF of it is already full of boxes. You want the empty half.",
+          "Find the container's total volume first, then split it in half to get the empty space.",
+          "Multiply 8 × 4 = 32, then × 3 for the total volume. Then divide that total by 2."
+        ],
+        "explanation": "The container's total volume is 8 × 4 × 3 = 96 ft³, and the bar model splits that total into two equal parts. Boxes fill one part, so the space left is the other part: 96 ÷ 2 = 48 ft³.",
+        "explanationEs": "El volumen total del contenedor es 8 × 4 × 3 = 96 ft³, y el modelo de barras divide ese total en dos partes iguales. Las cajas llenan una parte, así que el espacio que queda es la otra parte: 96 ÷ 2 = 48 ft³.",
+        "hintsEs": [
+          "El contenedor mide 8 × 4 × 3 pies y la MITAD ya está llena de cajas. Tú quieres la mitad vacía.",
+          "Encuentra primero el volumen total del contenedor y luego pártelo a la mitad para obtener el espacio vacío.",
+          "Multiplica 8 × 4 = 32, luego × 3 para el volumen total. Después divide ese total entre 2."
+        ]
+      },
+      {
+        "type": "fill-table",
+        "instructions": "Find the missing dimension or volume for each container.",
+        "headers": [
+          "Container",
+          "Length",
+          "Width",
+          "Height",
+          "Volume"
+        ],
+        "rows": [
+          [
+            "Box A",
+            "12 in",
+            "5 in",
+            "3 in",
+            ""
+          ],
+          [
+            "Box B",
+            "7 cm",
+            "",
+            "4 cm",
+            "168 cm³"
+          ],
+          [
+            "Box C",
+            "",
+            "8 ft",
+            "5 ft",
+            "240 ft³"
+          ]
+        ],
+        "editableCells": [
+          {
+            "row": 0,
+            "col": 4,
+            "answer": "180 in³"
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "answer": "6 cm"
+          },
+          {
+            "row": 2,
+            "col": 1,
+            "answer": "6 ft"
+          }
+        ],
+        "hint": "Use the formula V = length × width × height for each row.",
+        "hints": [
+          "Check each row: Box A is missing its volume, but Boxes B and C are each missing one dimension.",
+          "Missing volume? Multiply all three edges. Missing edge? Divide the volume by the product of the two known edges.",
+          "Box B: multiply the known edges 7 × 4 = 28, then ask what number times 28 makes 168."
+        ],
+        "explanation": "Box A is missing its volume, so multiply all three edges: 12 × 5 × 3 = 180 in³. Boxes B and C are missing an edge, so you divide instead: 168 ÷ (7 × 4) = 168 ÷ 28 = 6 cm for Box B, and 240 ÷ (8 × 5) = 240 ÷ 40 = 6 ft for Box C.",
+        "explanationEs": "A la Caja A le falta el volumen, así que multiplicas los tres lados: 12 × 5 × 3 = 180 in³. A las Cajas B y C les falta un lado, así que en su lugar divides: 168 ÷ (7 × 4) = 168 ÷ 28 = 6 cm para la Caja B, y 240 ÷ (8 × 5) = 240 ÷ 40 = 6 ft para la Caja C.",
+        "hintsEs": [
+          "Revisa cada fila: a la Caja A le falta su volumen, pero a las Cajas B y C les falta una dimensión a cada una.",
+          "¿Falta el volumen? Multiplica las tres aristas. ¿Falta una arista? Divide el volumen entre el producto de las dos aristas conocidas.",
+          "Caja B: multiplica las aristas conocidas 7 × 4 = 28 y luego pregunta qué número por 28 da 168."
+        ]
+      },
+      {
         "type": "error-analysis",
         "title": "Find the Volume Error",
         "workedExample": [
@@ -739,16 +836,16 @@
         ],
         "stemEs": "Una pecera mide 2 1/2 ft por 2 ft por 3 ft. ¿Cuál es su volumen?",
         "explanationEs": "V = 2.5 × 2 × 3 = 15 ft³.",
+        "hintsEs": [
+          "Una dimensión es un número mixto: 2 1/2 pies. Reescríbela como 2.5 antes de multiplicar.",
+          "Usa V = largo × ancho × alto con los tres números: 2.5 × 2 × 3. Conserva la mitad — no la redondees.",
+          "Multiplica primero el par fácil: 2 × 3 = 6. Luego multiplica ese resultado por 2.5."
+        ],
         "choicesEs": [
           "7.5 pies³",
           "15 pies³",
           "12 pies³",
           "30 pies³"
-        ],
-        "hintsEs": [
-          "Una dimensión es un número mixto: 2 1/2 pies. Reescríbela como 2.5 antes de multiplicar.",
-          "Usa V = largo × ancho × alto con los tres números: 2.5 × 2 × 3. Conserva la mitad — no la redondees.",
-          "Multiplica primero el par fácil: 2 × 3 = 6. Luego multiplica ese resultado por 2.5."
         ]
       },
       {
@@ -863,92 +960,6 @@
           "La caja B, porque 48 pulgadas cúbicas es más que 50 pulgadas cúbicas",
           "Guardan la misma cantidad",
           "La caja B, porque es más alta"
-        ]
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "A keepsake box is 4 in long, 3 in wide, and 1½ in tall. What is its volume?",
-        "choices": [
-          "18 cubic in",
-          "8.5 cubic in",
-          "12 cubic in",
-          "36 cubic in"
-        ],
-        "correctIndex": 0,
-        "explanation": "V = 4 × 3 × 1.5 = 12 × 1.5 = 18 cubic in. A fractional edge does not change the steps.",
-        "choiceFeedback": [
-          "",
-          "Are you adding the dimensions? Volume multiplies all edges: length × width × height.",
-          "You found the base area but forgot to multiply by the height for volume.",
-          "Double check the height value — using the wrong height changes your answer too much."
-        ],
-        "stemEs": "Una caja de recuerdos mide 4 in de largo, 3 in de ancho y 1½ in de alto. ¿Cuál es su volumen?",
-        "explanationEs": "V = 4 × 3 × 1.5 = 12 × 1.5 = 18 pulgadas cúbicas. Una arista fraccionaria no cambia los pasos.",
-        "hints": [
-          "A fractional edge length works exactly like a whole-number one — the formula V = l × w × h does not change.",
-          "Multiply the two whole-number edges first, then multiply that product by the fractional height.",
-          "4 × 3 = 12. Now multiply 12 by 1½, which you can split into 12 × 1 plus 12 × ½."
-        ],
-        "hintsEs": [
-          "Una arista fraccionaria funciona igual que una entera: la fórmula V = l × w × h no cambia.",
-          "Multiplica primero las dos aristas enteras y después multiplica ese producto por la altura fraccionaria.",
-          "4 × 3 = 12. Ahora multiplica 12 por 1½, que puedes separar en 12 × 1 más 12 × ½."
-        ],
-        "choicesEs": [
-          "18 pulgadas cúbicas",
-          "8.5 pulgadas cúbicas",
-          "12 pulgadas cúbicas",
-          "36 pulgadas cúbicas"
-        ],
-        "misconceptionTags": [
-          null,
-          "geom-volume-added-dimensions",
-          null,
-          null
-        ]
-      },
-      {
-        "type": "error-analysis",
-        "title": "Level 2 Extension — Catch the Packing Mistake",
-        "workedExample": [
-          {
-            "label": "Dimensions",
-            "work": "A box is 7 in long, 3 in wide, and 2 in tall.",
-            "labelEs": "Dimensiones",
-            "workEs": "Una caja mide 7 pulg de largo, 3 pulg de ancho y 2 pulg de alto."
-          },
-          {
-            "label": "Formula",
-            "work": "V = length × width × height",
-            "labelEs": "Fórmula",
-            "workEs": "V = largo × ancho × alto"
-          },
-          {
-            "label": "Calculate",
-            "work": "V = 7 × 3 = 21 cubic in",
-            "labelEs": "Calcula",
-            "workEs": "V = 7 × 3 = 21 pulg cúbicas"
-          },
-          {
-            "label": "Answer",
-            "work": "Volume = 21 cubic in",
-            "labelEs": "Respuesta",
-            "workEs": "Volumen = 21 pulg cúbicas"
-          }
-        ],
-        "errorStep": 2,
-        "correctWork": "The student only multiplied length × width and forgot the height. V = 7 × 3 × 2 = 21 × 2 = 42 cubic in.",
-        "hints": [
-          "Check Step 3: did the student use all three dimensions?",
-          "Volume needs length × width × height. Multiply 21 by the height of 2 to get 42 cubic in."
-        ],
-        "titleEs": "Extensión de Nivel 2: Descubre el error de empaque",
-        "explanation": "The Calculate step used only the length and width and never brought in the 2 in height — that is area thinking, not volume. All three edges must multiply: V = 7 × 3 × 2 = 21 × 2 = 42 cubic in.",
-        "explanationEs": "En el paso de calcular solo se usaron el largo y el ancho, y nunca se incluyó la altura de 2 in; eso es pensar en área, no en volumen. Los tres lados deben multiplicarse: V = 7 × 3 × 2 = 21 × 2 = 42 pulgadas cúbicas.",
-        "correctWorkEs": "El estudiante solo multiplicó largo × ancho y olvidó el alto. V = 7 × 3 × 2 = 21 × 2 = 42 pulg cúbicas.",
-        "hintsEs": [
-          "Revisa el Paso 3: ¿el estudiante usó las tres dimensiones?",
-          "El volumen necesita largo × ancho × alto. Multiplica 21 por la altura de 2 para obtener 42 pulgadas cúbicas."
         ]
       }
     ],

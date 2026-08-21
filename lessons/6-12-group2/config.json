@@ -644,6 +644,99 @@
     ],
     "extending": [
       {
+        "type": "matching-game",
+        "pairs": [
+          {
+            "term": "LCM(2, 5)",
+            "match": "10",
+            "termEs": "MCM(2, 5)"
+          },
+          {
+            "term": "LCM(4, 10)",
+            "match": "20",
+            "termEs": "MCM(4, 10)"
+          },
+          {
+            "term": "LCM(3, 8)",
+            "match": "24",
+            "termEs": "MCM(3, 8)"
+          },
+          {
+            "term": "LCM(6, 9)",
+            "match": "18",
+            "termEs": "MCM(6, 9)"
+          },
+          {
+            "term": "LCM(5, 7)",
+            "match": "35",
+            "termEs": "MCM(5, 7)"
+          },
+          {
+            "term": "LCM(4, 6)",
+            "match": "12",
+            "termEs": "MCM(4, 6)"
+          }
+        ],
+        "columns": 4,
+        "label": "Match each pair of numbers to their LCM.",
+        "hints": [
+          "Each match must be a multiple of BOTH numbers in its pair. Check divisibility both ways before you connect.",
+          "For each pair, skip count by the LARGER number and test each value against the smaller one; match the first shared multiple.",
+          "Try LCM(2, 5): count by 5s — 5, 10, 15, … The first EVEN value in that list is the match. Use the same move on the other pairs."
+        ],
+        "explanation": "Each answer is the smallest number that both numbers in the pair divide evenly. LCM(5, 7) = 35 and LCM(3, 8) = 24 equal the products because those pairs share no factor bigger than 1, while LCM(4, 6) = 12 and LCM(6, 9) = 18 are smaller than the products because those pairs share a factor.",
+        "explanationEs": "Cada respuesta es el número más pequeño que ambos números del par dividen exactamente. m.c.m.(5, 7) = 35 y m.c.m.(3, 8) = 24 son iguales a los productos porque esos pares no comparten ningún factor mayor que 1, mientras que m.c.m.(4, 6) = 12 y m.c.m.(6, 9) = 18 son menores que los productos porque esos pares sí comparten un factor.",
+        "labelEs": "Une cada pareja de números con su mcm.",
+        "hintsEs": [
+          "Cada pareja debe ser múltiplo de AMBOS números. Revisa la divisibilidad en los dos sentidos antes de unirlas.",
+          "Para cada pareja, cuenta de MAYOR en mayor y prueba cada valor con el número menor; une el primer múltiplo compartido.",
+          "Prueba mcm(2, 5): cuenta de 5 en 5 — 5, 10, 15, … El primer valor PAR de esa lista es la respuesta. Haz lo mismo con las demás parejas."
+        ]
+      },
+      {
+        "type": "fill-table",
+        "label": "List multiples of each number until you find the LCM.",
+        "columns": [
+          "Numbers",
+          "Multiples of First",
+          "Multiples of Second",
+          "LCM"
+        ],
+        "rows": [
+          {
+            "given": "6 and 10",
+            "first": "6, 12, 18, 24, 30",
+            "second": "10, 20, 30",
+            "answer": "30"
+          },
+          {
+            "given": "8 and 12",
+            "first": "8, 16, 24",
+            "second": "12, 24",
+            "answer": "24"
+          },
+          {
+            "given": "9 and 12",
+            "first": "9, 18, 27, 36",
+            "second": "12, 24, 36",
+            "answer": "36"
+          }
+        ],
+        "hints": [
+          "The columns walk you through the method: list each number's multiples in order until one value shows up in BOTH columns.",
+          "Skip count carefully and keep the lists parallel — write a few multiples of each number before hunting for the overlap.",
+          "Row 1: start the 6s list (6, 12, 18, …) and the 10s list (10, 20, …). Circle the first number that lands in BOTH lists."
+        ],
+        "explanation": "In each row the LCM is the first value that shows up in both multiple columns: 6 and 10 first meet at 30, 8 and 12 first meet at 24, and 9 and 12 first meet at 36. Listing the multiples in order guarantees the first match you reach is the least one.",
+        "explanationEs": "En cada fila el m.c.m. es el primer valor que aparece en las dos columnas de múltiplos: 6 y 10 coinciden por primera vez en 30, 8 y 12 en 24, y 9 y 12 en 36. Escribir los múltiplos en orden garantiza que la primera coincidencia que encuentres sea la menor.",
+        "labelEs": "Escribe los múltiplos de cada número hasta encontrar el mcm.",
+        "hintsEs": [
+          "Las columnas te guían por el método: escribe los múltiplos de cada número en orden hasta que un valor aparezca en AMBAS columnas.",
+          "Cuenta con cuidado y mantén las listas parejas: escribe varios múltiplos de cada número antes de buscar la coincidencia.",
+          "Fila 1: empieza la lista del 6 (6, 12, 18, …) y la del 10 (10, 20, …). Encierra el primer número que caiga en AMBAS listas."
+        ]
+      },
+      {
         "type": "multiple-choice",
         "stem": "One machine runs every 4 min, another every 6 min. They just ran together. In how many minutes do they run together again?",
         "choices": [
@@ -871,92 +964,6 @@
           "40",
           "10",
           "2"
-        ]
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "What is the LCM of 2 and 7?",
-        "choices": [
-          "14",
-          "7",
-          "2",
-          "9"
-        ],
-        "correctIndex": 0,
-        "explanation": "Since 2 and 7 share no common factors (they are relatively prime), LCM = 2 × 7 = 14.",
-        "choiceFeedback": [
-          "",
-          "That is what you get if you halved the correct amount. Instead: Since 2 and 7 share no common factors (they are relatively prime), LCM = 2 × 7 = ___.",
-          "2 is a multiple of 2, but not of 7. The LCM can never be smaller than the larger of the two numbers.",
-          "It looks like you added 2 + 7. You find the LCM by counting multiples, not by adding the numbers."
-        ],
-        "hints": [
-          "Notice that 2 and 7 are both prime — they share no common factor. That makes this a special, faster case.",
-          "List the multiples of 7 and find the first one that 2 also divides — in other words, the first EVEN multiple of 7.",
-          "Test 7: is it even? No. Move to the next multiple of 7 and check evenness again — stop at the first even one."
-        ],
-        "stemEs": "¿Cuál es el MCM de 2 y 7?",
-        "explanationEs": "Como 2 y 7 no comparten factores comunes (son primos entre sí), el MCM = 2 × 7 = 14.",
-        "hintsEs": [
-          "Fíjate que 2 y 7 son ambos primos: no comparten ningún factor. Eso hace que este sea un caso especial y más rápido.",
-          "Escribe los múltiplos de 7 y busca el primero que 2 también divida, es decir, el primer múltiplo PAR de 7.",
-          "Prueba 7: ¿es par? No. Pasa al siguiente múltiplo de 7 y revisa si es par otra vez; detente en el primero que lo sea."
-        ],
-        "misconceptionTags": [
-          null,
-          null,
-          null,
-          "op-added-instead-of-multiplied"
-        ],
-        "choicesEs": [
-          "14",
-          "7",
-          "2",
-          "9"
-        ]
-      },
-      {
-        "type": "error-analysis",
-        "title": "Spot Riley's Mistake — LCM of 4 and 6",
-        "workedExample": [
-          {
-            "label": "Problem",
-            "work": "Find the LCM of 4 and 6.",
-            "labelEs": "Problema",
-            "workEs": "Encuentra el MCM de 4 y 6."
-          },
-          {
-            "label": "Multiples of 4",
-            "work": "4, 8, 12, 16",
-            "labelEs": "Múltiplos de 4",
-            "workEs": "4, 8, 12, 16"
-          },
-          {
-            "label": "Multiples of 6",
-            "work": "6, 12, 18",
-            "labelEs": "Múltiplos de 6",
-            "workEs": "6, 12, 18"
-          },
-          {
-            "label": "Choose the answer",
-            "work": "Riley added the two numbers: 4 + 6 = 10, so LCM = 10.",
-            "labelEs": "Elige la respuesta",
-            "workEs": "Riley sumó los dos números: 4 + 6 = 10, así que MCM = 10."
-          }
-        ],
-        "errorStep": 3,
-        "correctWork": "You do NOT add the numbers. The LCM is the first number that appears in BOTH multiple lists. 12 is in the multiples of 4 (4, 8, 12) and in the multiples of 6 (6, 12), so the LCM of 4 and 6 is 12.",
-        "hints": [
-          "Riley added 4 + 6 to get 10. Check: is 10 in both lists of multiples?",
-          "The LCM is the FIRST number that shows up in both numbers' multiple lists — look for the smallest number in both: 12."
-        ],
-        "titleEs": "Encuentra el error de Riley — el m.c.m. de 4 y 6",
-        "explanation": "In the last step Riley added 4 + 6 = 10, but adding does not produce a common multiple — 10 is not even in either list. The LCM is the first number that appears in BOTH lists, and 12 shows up in 4, 8, 12 and in 6, 12, so the LCM of 4 and 6 is 12.",
-        "explanationEs": "En el último paso Riley sumó 4 + 6 = 10, pero sumar no produce un múltiplo común; de hecho, 10 no aparece en ninguna de las dos listas. El m.c.m. es el primer número que aparece en LAS DOS listas, y 12 aparece en 4, 8, 12 y en 6, 12, así que el mínimo común múltiplo de 4 y 6 es 12.",
-        "correctWorkEs": "NO se suman los números. El MCM es el primer número que aparece en AMBAS listas de múltiplos. 12 está en los múltiplos de 4 (4, 8, 12) y en los múltiplos de 6 (6, 12), así que el MCM de 4 y 6 es 12.",
-        "hintsEs": [
-          "Riley sumó 4 + 6 para obtener 10. Revisa: ¿está el 10 en las dos listas de múltiplos?",
-          "El mcm es el PRIMER número que aparece en las listas de múltiplos de ambos — busca el menor número que esté en las dos: 12."
         ]
       }
     ],

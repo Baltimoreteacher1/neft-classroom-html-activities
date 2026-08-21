@@ -671,6 +671,110 @@
         ]
       },
       {
+        "type": "fill-table",
+        "label": "Find the distance between each pair of points.",
+        "instructions": "Both points in each row share a coordinate. Find the distance.",
+        "headers": [
+          "Point 1",
+          "Point 2",
+          "Shared Coordinate",
+          "Distance"
+        ],
+        "rows": [
+          [
+            "(-5, 1)",
+            "(3, 1)",
+            "y = 1",
+            ""
+          ],
+          [
+            "(2, -4)",
+            "(2, 6)",
+            "x = 2",
+            ""
+          ],
+          [
+            "(-3, -2)",
+            "(-3, 4)",
+            "x = -3",
+            ""
+          ],
+          [
+            "(-1, 5)",
+            "(4, 5)",
+            "y = 5",
+            ""
+          ]
+        ],
+        "editableCells": [
+          {
+            "row": 0,
+            "col": 3,
+            "answer": "8"
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "answer": "10"
+          },
+          {
+            "row": 2,
+            "col": 3,
+            "answer": "6"
+          },
+          {
+            "row": 3,
+            "col": 3,
+            "answer": "5"
+          }
+        ],
+        "hint": "Find the distance between the two points in each row that share a coordinate.",
+        "hints": [
+          "Each row shares a coordinate, so every distance is a straight horizontal or vertical count.",
+          "Subtract the coordinates that DIFFER and take the absolute value. If the signs differ, add the two absolute values.",
+          "Row 1: the y's match, so count from x = -5 to x = 3. Go -5 to 0, then 0 to 3, and add the two counts."
+        ],
+        "explanation": "Every row shares one coordinate, so each segment is straight and only the coordinate that changes matters. All four pairs land on opposite sides of zero, so add the absolute values: |-5| + |3| = 8, |-4| + |6| = 10, |-2| + |4| = 6, and |-1| + |4| = 5.",
+        "explanationEs": "Cada fila comparte una coordenada, así que cada segmento es recto y solo importa la coordenada que cambia. Los cuatro pares caen en lados opuestos del cero, así que suma los valores absolutos: |-5| + |3| = 8, |-4| + |6| = 10, |-2| + |4| = 6 y |-1| + |4| = 5.",
+        "labelEs": "Encuentra la distancia entre cada pareja de puntos.",
+        "hintsEs": [
+          "Cada fila comparte una coordenada, así que toda distancia es un conteo horizontal o vertical en línea recta.",
+          "Resta las coordenadas que SÍ cambian y toma el valor absoluto. Si los signos son distintos, suma los dos valores absolutos.",
+          "Fila 1: las y coinciden, así que cuenta de x = −5 a x = 3. Ve de −5 a 0, luego de 0 a 3, y suma los dos conteos."
+        ]
+      },
+      {
+        "type": "number-line",
+        "label": "Plot -4 and 2 on the number line. Count the distance between them.",
+        "min": -6,
+        "max": 6,
+        "step": 1,
+        "targets": [
+          {
+            "value": -4,
+            "label": "Point A"
+          },
+          {
+            "value": 2,
+            "label": "Point B"
+          }
+        ],
+        "hints": [
+          "Distance is the number of unit hops between the two points — direction doesn't matter.",
+          "Since -4 is left of zero and 2 is right of zero, the distance splits into two pieces at 0.",
+          "Plot both points. Count the hops from -4 to 0, then from 0 to 2, and combine the counts."
+        ],
+        "explanation": "Distance counts hops on the number line, so direction does not matter. Point A at -4 sits 4 hops left of zero and Point B at 2 sits 2 hops right of zero, so the distance is |-4| + |2| = 4 + 2 = 6 units.",
+        "explanationEs": "La distancia cuenta saltos en la recta numérica, así que la dirección no importa. El punto A en -4 está a 4 saltos a la izquierda del cero y el punto B en 2 está a 2 saltos a la derecha, así que la distancia es |-4| + |2| = 4 + 2 = 6 unidades.",
+        "hintsEs": [
+          "La distancia es el número de brincos de unidad entre los dos puntos: la dirección no importa.",
+          "Como -4 está a la izquierda del cero y 2 a la derecha, la distancia se parte en dos piezas en el 0.",
+          "Ubica ambos puntos. Cuenta los brincos de -4 a 0, luego de 0 a 2, y combina los conteos."
+        ]
+      }
+    ],
+    "onLevel": [
+      {
         "type": "multiple-choice",
         "stem": "Two points are at (-3, -7) and (-3, 5). What is the distance between them?",
         "choices": [
@@ -741,9 +845,7 @@
           "Aquí ambos valores de y están del mismo lado del cero: resta la y menor de la y mayor.",
           "Plantea 8 − 3 y resuélvelo. Ese conteo de unidades es tu distancia."
         ]
-      }
-    ],
-    "onLevel": [
+      },
       {
         "type": "multiple-choice",
         "stem": "What is the distance between (-4, 1) and (3, 1)?",
@@ -898,82 +1000,6 @@
           "5 cuadras",
           "6 cuadras",
           "2 cuadras"
-        ]
-      },
-      {
-        "type": "error-analysis",
-        "title": "Level 2 Extension — City Block Distance Mistake",
-        "workedExample": [
-          {
-            "label": "Problem",
-            "work": "Find the blocks between the Park (-4, 5) and City Hall (3, 5).",
-            "labelEs": "Problema",
-            "workEs": "Encuentra las cuadras entre el Parque (-4, 5) y el Ayuntamiento (3, 5)."
-          },
-          {
-            "label": "Student thinking",
-            "work": "Both have y = 5, so subtract the x-values: 4 - 3 = 1.",
-            "labelEs": "Razonamiento del estudiante",
-            "workEs": "Ambos tienen y = 5, así que resta los valores de x: 4 - 3 = 1."
-          },
-          {
-            "label": "Student answer",
-            "work": "The distance is 1 block.",
-            "labelEs": "Respuesta del estudiante",
-            "workEs": "La distancia es 1 cuadra."
-          }
-        ],
-        "errorStep": 1,
-        "correctWork": "The student dropped the negative sign and used 4 instead of -4. Because the Park is at x = -4 and City Hall is at x = 3, the points sit on opposite sides of zero. Add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks. (You can also write it as |3 - (-4)| = |3 + 4| = 7.) The correct distance is 7 blocks, not 1.",
-        "hints": [
-          "The Park's x-coordinate is -4, not 4. Did the student use the negative sign?",
-          "Count along the grid from -4 to 3. How many blocks is that across zero?"
-        ],
-        "titleEs": "Extensión de Nivel 2: error al contar cuadras de la ciudad",
-        "explanation": "The subtraction step used 4 instead of -4, so the Park's negative sign was lost. The Park sits left of the y-axis and City Hall sits right of it, so the absolute values add: |-4| + |3| = 7 blocks, which matches |3 - (-4)| = |3 + 4| = 7.",
-        "explanationEs": "En el paso de la resta se usó 4 en lugar de -4, así que se perdió el signo negativo del Parque. El Parque queda a la izquierda del eje y y el Ayuntamiento a la derecha, así que los valores absolutos se suman: |-4| + |3| = 7 cuadras, lo que coincide con |3 - (-4)| = |3 + 4| = 7.",
-        "correctWorkEs": "El estudiante perdió el signo negativo y usó 4 en lugar de -4. Como el Parque está en x = -4 y el Ayuntamiento en x = 3, los puntos quedan en lados opuestos del cero. Suma los valores absolutos: |-4| + |3| = 4 + 3 = 7 cuadras. (También puedes escribirlo como |3 - (-4)| = |3 + 4| = 7.) La distancia correcta es 7 cuadras, no 1.",
-        "hintsEs": [
-          "La coordenada x del parque es -4, no 4. ¿El estudiante usó el signo negativo?",
-          "Cuenta sobre la cuadrícula de -4 a 3. ¿Cuántos bloques son al cruzar el cero?"
-        ]
-      },
-      {
-        "type": "error-analysis",
-        "title": "Find the Distance Error",
-        "workedExample": [
-          {
-            "label": "Problem",
-            "work": "Find the distance between (-3, 4) and (5, 4)",
-            "labelEs": "Problema",
-            "workEs": "Encuentra la distancia entre (-3, 4) y (5, 4)"
-          },
-          {
-            "label": "Student thinking",
-            "work": "Subtract: 5 - 3 = 2",
-            "labelEs": "Razonamiento del estudiante",
-            "workEs": "Resta: 5 - 3 = 2"
-          },
-          {
-            "label": "Student answer",
-            "work": "The distance is 2 units",
-            "labelEs": "Respuesta del estudiante",
-            "workEs": "La distancia es 2 unidades"
-          }
-        ],
-        "errorStep": 1,
-        "correctWork": "The student subtracted 5 - 3, but the first x-coordinate is -3, not 3. The correct calculation is |5 - (-3)| = |5 + 3| = 8 units. When points span opposite sides of an axis, you must add the absolute values: |-3| + |5| = 3 + 5 = 8.",
-        "hints": [
-          "The student dropped the negative sign on -3. What is the actual difference between -3 and 5?",
-          "Try counting on the number line from -3 to 5. How many units is that?"
-        ],
-        "titleEs": "Encuentra el error de distancia",
-        "explanation": "The subtraction step used 3 in place of -3, so the negative sign disappeared. Keeping it gives |5 - (-3)| = |5 + 3| = 8 units, which is the same as adding the absolute values |-3| + |5| = 3 + 5 = 8 because the points straddle the y-axis.",
-        "explanationEs": "En el paso de la resta se usó 3 en lugar de -3, así que el signo negativo desapareció. Al conservarlo se obtiene |5 - (-3)| = |5 + 3| = 8 unidades, lo mismo que sumar los valores absolutos |-3| + |5| = 3 + 5 = 8, porque los puntos quedan a ambos lados del eje y.",
-        "correctWorkEs": "El estudiante restó 5 - 3, pero la primera coordenada x es -3, no 3. El cálculo correcto es |5 - (-3)| = |5 + 3| = 8 unidades. Cuando los puntos cruzan lados opuestos de un eje, debes sumar los valores absolutos: |-3| + |5| = 3 + 5 = 8.",
-        "hintsEs": [
-          "El estudiante perdió el signo negativo del -3. ¿Cuál es la verdadera diferencia entre -3 y 5?",
-          "Prueba contar en la recta numérica de -3 a 5. ¿Cuántas unidades son?"
         ]
       }
     ],

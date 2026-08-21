@@ -431,16 +431,16 @@
         ],
         "stemEs": "¿Cuál es el menor número de movimientos necesarios para resolver la Torre de Hanói de tres discos?",
         "explanationEs": "Se necesitan al menos 7 movimientos para resolver la Torre de Hanói de tres discos.",
+        "hintsEs": [
+          "Es más de un movimiento por disco.",
+          "Una torre de dos discos ya toma 3 movimientos.",
+          "Duplica 3 y suma 1."
+        ],
         "choicesEs": [
           "7 movimientos",
           "3 movimientos",
           "6 movimientos",
           "9 movimientos"
-        ],
-        "hintsEs": [
-          "Es más de un movimiento por disco.",
-          "Una torre de dos discos ya toma 3 movimientos.",
-          "Duplica 3 y suma 1."
         ]
       },
       {
@@ -467,16 +467,16 @@
         ],
         "stemEs": "¿Cuál movimiento va contra las reglas de la Torre de Hanói?",
         "explanationEs": "Un disco más grande nunca puede estar sobre uno más pequeño — esa es la regla que hace que el rompecabezas sea un rompecabezas.",
+        "hintsEs": [
+          "Dos de estas son las reglas mismas.",
+          "Piensa en los TAMAÑOS de los discos.",
+          "¿Cuál orden de apilado aplastaría un disco más pequeño?"
+        ],
         "choicesEs": [
           "Poner un disco más grande sobre uno más pequeño",
           "Mover un disco a la vez",
           "Mover el disco de arriba de una pila",
           "Poner un disco más pequeño sobre uno más grande"
-        ],
-        "hintsEs": [
-          "Dos de estas son las reglas mismas.",
-          "Piensa en los TAMAÑOS de los discos.",
-          "¿Cuál orden de apilado aplastaría un disco más pequeño?"
         ]
       },
       {
@@ -503,16 +503,16 @@
         ],
         "stemEs": "¿Cómo se verá el rompecabezas resuelto?",
         "explanationEs": "La meta es reconstruir toda la pila, del más pequeño al más grande, en otra varilla.",
+        "hintsEs": [
+          "Imagina el final antes de empezar.",
+          "La pila se ve igual que al inicio.",
+          "Solo cambió su varilla."
+        ],
         "choicesEs": [
           "Los discos en el mismo orden — el más pequeño arriba y el más grande abajo — pero en otra varilla",
           "Los discos en orden inverso, el más grande arriba",
           "Los discos repartidos con un disco en cada varilla",
           "Los discos de vuelta en la varilla inicial en cualquier orden"
-        ],
-        "hintsEs": [
-          "Imagina el final antes de empezar.",
-          "La pila se ve igual que al inicio.",
-          "Solo cambió su varilla."
         ]
       },
       {
@@ -539,18 +539,104 @@
         ],
         "stemEs": "¿Cuántos movimientos toma una torre de un disco? ¿Y una de dos discos?",
         "explanationEs": "Puedes resolver una torre de un disco en 1 paso y una de dos discos en 3 pasos.",
+        "hintsEs": [
+          "Juega primero en tu mente el juego de un disco.",
+          "Para dos discos: el pequeño tiene que quitarse del camino y después volver arriba.",
+          "Cuenta esos tres movimientos por separado."
+        ],
         "choicesEs": [
           "1 movimiento y 3 movimientos",
           "1 movimiento y 2 movimientos",
           "2 movimientos y 4 movimientos",
           "1 movimiento y 4 movimientos"
-        ],
-        "hintsEs": [
-          "Juega primero en tu mente el juego de un disco.",
-          "Para dos discos: el pequeño tiene que quitarse del camino y después volver arriba.",
-          "Cuenta esos tres movimientos por separado."
         ]
       },
+      {
+        "type": "drag-sort",
+        "instructions": "Sort each move: is it allowed by the Tower of Hanoi rules, or against them?",
+        "instructionsEs": "Clasifica cada movimiento: ¿lo permiten las reglas de la Torre de Hanói o va en contra de ellas?",
+        "label": "Sort each move: legal or against the rules?",
+        "labelEs": "Clasifica cada movimiento: ¿legal o contra las reglas?",
+        "categories": [
+          {
+            "label": "Legal move",
+            "labelEs": "Movimiento legal",
+            "items": [
+              "Move the top disc of any stack",
+              "Place a small disc on a bigger disc",
+              "Move exactly one disc at a time"
+            ],
+            "itemsEs": [
+              "Mover el disco de arriba de cualquier pila",
+              "Colocar un disco pequeño sobre uno más grande",
+              "Mover exactamente un disco a la vez"
+            ]
+          },
+          {
+            "label": "Against the rules",
+            "labelEs": "Contra las reglas",
+            "items": [
+              "Move two discs at once",
+              "Place a big disc on a smaller disc",
+              "Pull a disc out from the middle of a stack"
+            ],
+            "itemsEs": [
+              "Mover dos discos a la vez",
+              "Colocar un disco grande sobre uno más pequeño",
+              "Sacar un disco de en medio de una pila"
+            ]
+          }
+        ],
+        "hints": [
+          "Only the TOP disc of a stack can move, and only one at a time.",
+          "The size rule: smaller may rest on bigger, never the reverse."
+        ],
+        "hintsEs": [
+          "Solo el disco de ARRIBA de una pila puede moverse, y solo uno a la vez.",
+          "La regla del tamaño: el pequeño puede descansar sobre el grande, nunca al revés."
+        ],
+        "explanation": "The three legal moves are the whole rule set: take only a top disc, move one at a time, and rest smaller on bigger. The illegal moves each break exactly one rule — two at once, big on small, or grabbing from mid-stack. Every 2ⁿ − 1 solution is built from nothing but the legal three.",
+        "explanationEs": "Los tres movimientos legales son todo el reglamento: tomar solo el disco de arriba, mover uno a la vez y apoyar el pequeño sobre el grande. Los ilegales rompen exactamente una regla cada uno: dos a la vez, grande sobre pequeño o sacar de en medio. Cada solución de 2ⁿ − 1 se construye solo con los tres legales."
+      },
+      {
+        "type": "fill-table",
+        "label": "Use the doubling pattern to complete the table of fewest moves.",
+        "labelEs": "Usa el patrón de duplicación para completar la tabla de movimientos mínimos.",
+        "columns": [
+          "Discs",
+          "Pattern: double the previous, add 1",
+          "Fewest moves"
+        ],
+        "rows": [
+          {
+            "discs": "3",
+            "pattern": "2 × 3 + 1",
+            "answer": "7"
+          },
+          {
+            "discs": "4",
+            "pattern": "2 × 7 + 1",
+            "answer": "15"
+          },
+          {
+            "discs": "6",
+            "pattern": "2 × 31 + 1",
+            "answer": "63"
+          }
+        ],
+        "hints": [
+          "Each new disc means: solve the smaller tower, move the big disc, solve the smaller tower again.",
+          "That is why the rule is double-plus-one: two copies of the previous answer, plus one move for the biggest disc."
+        ],
+        "hintsEs": [
+          "Cada disco nuevo significa: resolver la torre más pequeña, mover el disco grande y resolver la torre pequeña otra vez.",
+          "Por eso la regla es duplicar y sumar uno: dos copias de la respuesta anterior más un movimiento para el disco más grande."
+        ],
+        "explanation": "The recursion is the reason for the rule: to move n discs you solve n − 1 discs (7 moves), carry the biggest disc (1 move), and solve n − 1 again (7 moves) — so 4 discs need 15, 5 need 31, and 6 need 2 × 31 + 1 = 63. The pattern 1, 3, 7, 15, 31, 63 is one less than the doubling numbers 2, 4, 8, 16, 32, 64.",
+        "explanationEs": "La recursión explica la regla: para mover n discos resuelves n − 1 discos (7 movimientos), llevas el disco más grande (1 movimiento) y resuelves n − 1 otra vez (7 movimientos); por eso 4 discos necesitan 15, 5 necesitan 31 y 6 necesitan 2 × 31 + 1 = 63. El patrón 1, 3, 7, 15, 31, 63 es uno menos que los números que se duplican: 2, 4, 8, 16, 32, 64."
+      }
+    ],
+    "onLevel": [
       {
         "type": "open-response",
         "stem": "The number of discs in a Tower of Hanoi puzzle can vary. What NEVER varies?",
@@ -578,9 +664,7 @@
           "Jugar con las matemáticas significa ___ .",
           "Con la Torre de Hanói, yo ___ ."
         ]
-      }
-    ],
-    "onLevel": [
+      },
       {
         "type": "multiple-choice",
         "stem": "The table shows 1 disc → 1 step, 2 discs → 3 steps, 3 discs → 7 steps. What is the pattern rule for the number of steps when you add one more disc?",
@@ -605,16 +689,16 @@
         ],
         "stemEs": "La tabla muestra 1 disco → 1 paso, 2 discos → 3 pasos, 3 discos → 7 pasos. ¿Cuál es la regla del patrón para el número de pasos cuando agregas un disco más?",
         "explanationEs": "1 × 2 + 1 = 3 y 3 × 2 + 1 = 7, así que cada disco nuevo duplica los pasos y suma 1.",
+        "hintsEs": [
+          "Prueba cada regla en LOS DOS saltos: 1 → 3 y 3 → 7.",
+          "Varias reglas pasan el primer salto; solo una pasa los dos.",
+          "¿Qué le haces al 3 para caer exactamente en 7?"
+        ],
         "choicesEs": [
           "Duplicar el número de pasos y sumar 1",
           "Suma 2 al número de pasos",
           "Suma el número de discos a los pasos",
           "Multiplicar el número de pasos por 3"
-        ],
-        "hintsEs": [
-          "Prueba cada regla en LOS DOS saltos: 1 → 3 y 3 → 7.",
-          "Varias reglas pasan el primer salto; solo una pasa los dos.",
-          "¿Qué le haces al 3 para caer exactamente en 7?"
         ]
       },
       {
@@ -641,16 +725,16 @@
         ],
         "stemEs": "Usa la regla del patrón para completar la tabla: ¿cuántos pasos para una torre de cuatro discos?",
         "explanationEs": "Una torre de tres discos toma 7 pasos, así que una torre de cuatro discos toma 7 × 2 + 1 = 15 pasos.",
+        "hintsEs": [
+          "Empieza con la respuesta de tres discos: 7 pasos.",
+          "Aplica la regla: duplica y luego suma 1.",
+          "7 × 2 + 1 = ?"
+        ],
         "choicesEs": [
           "15 pasos",
           "14 pasos",
           "9 pasos",
           "28 pasos"
-        ],
-        "hintsEs": [
-          "Empieza con la respuesta de tres discos: 7 pasos.",
-          "Aplica la regla: duplica y luego suma 1.",
-          "7 × 2 + 1 = ?"
         ]
       },
       {
@@ -677,16 +761,16 @@
         ],
         "stemEs": "¿Cuál es el número mínimo de pasos para resolver la Torre de Hanói de CINCO discos?",
         "explanationEs": "Una torre de cuatro discos toma 15 pasos, así que una torre de cinco discos toma 15 × 2 + 1 = 31 pasos.",
+        "hintsEs": [
+          "Necesitas primero la respuesta de cuatro discos: 15.",
+          "Aplica la regla una vez más.",
+          "15 × 2 + 1 = ?"
+        ],
         "choicesEs": [
           "31 pasos",
           "15 pasos",
           "30 pasos",
           "35 pasos"
-        ],
-        "hintsEs": [
-          "Necesitas primero la respuesta de cuatro discos: 15.",
-          "Aplica la regla una vez más.",
-          "15 × 2 + 1 = ?"
         ]
       },
       {
@@ -701,56 +785,6 @@
         "sentenceStemsEs": [
           "Puedo organizar la información en ___ .",
           "Eso ayuda porque ___ ."
-        ]
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "Why is finding a pattern MORE powerful than just solving the three-disc puzzle by hand?",
-        "choices": [
-          "The pattern predicts the answer for towers you have never played, like five or six discs",
-          "The pattern lets you skip the rules of the puzzle",
-          "Patterns make the discs move by themselves",
-          "A pattern proves the puzzle is impossible"
-        ],
-        "correctIndex": 0,
-        "explanation": "The pattern told us a five-disc tower needs a minimum of 31 steps — without moving a single disc.",
-        "choiceFeedback": [
-          "",
-          "The rules always apply — the pattern predicts the move COUNT, it does not change what moves are legal.",
-          "You still make every move yourself; the pattern only tells you how many to expect.",
-          "The pattern shows the puzzle IS solvable at every size, and says how many steps it takes."
-        ],
-        "hints": [
-          "What did the table tell us about the five-disc tower?",
-          "Did we ever play the five-disc tower by hand?",
-          "Prediction is the power."
-        ],
-        "stemEs": "¿Por qué encontrar un patrón es MÁS poderoso que solo resolver a mano el rompecabezas de tres discos?",
-        "explanationEs": "El patrón nos dijo que una torre de cinco discos necesita un mínimo de 31 pasos — sin mover ni un solo disco.",
-        "choicesEs": [
-          "El patrón predice la respuesta para torres que nunca has jugado, como de cinco o seis discos",
-          "El patrón te deja saltarte las reglas del rompecabezas",
-          "Los patrones hacen que los discos se muevan solos",
-          "Un patrón demuestra que el rompecabezas es imposible"
-        ],
-        "hintsEs": [
-          "¿Qué nos dijo la tabla sobre la torre de cinco discos?",
-          "¿Alguna vez jugamos a mano la torre de cinco discos?",
-          "Predecir es lo poderoso."
-        ]
-      },
-      {
-        "type": "open-response",
-        "stem": "Before solving, the lesson asked you to DESCRIBE what the solution will look like. Why is imagining the ending a useful way to start a puzzle?",
-        "modelAnswer": "Imagining the ending gives me a target. Once I know the discs must end up smallest-on-top on a different rod, I can judge every move by whether it gets me closer to that picture. Math can help us imagine what might happen before it happens.",
-        "sentenceStems": [
-          "Imagining the ending helps because ___ .",
-          "Then each move can be judged by ___ ."
-        ],
-        "stemEs": "Antes de resolver, la lección te pidió DESCRIBIR cómo se verá la solución. ¿Por qué imaginar el final es una manera útil de empezar un rompecabezas?",
-        "sentenceStemsEs": [
-          "Imaginar el final ayuda porque ___ .",
-          "Entonces cada movimiento se puede juzgar según ___ ."
         ]
       }
     ],

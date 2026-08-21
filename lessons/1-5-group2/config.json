@@ -318,16 +318,16 @@
         ],
         "stemEs": "El jugador A tenía 18 puntos antes de anotar 10 dobles seguidos. ¿Cuántos puntos tiene el jugador A después de la racha?",
         "explanationEs": "Diez dobles suman 10 × 2 = 20 puntos, y 18 + 20 = 38 puntos.",
+        "hintsEs": [
+          "La regla del patrón del jugador A es sumar 2, diez veces.",
+          "10 × 2 = 20.",
+          "Empieza en 18 y suma."
+        ],
         "choicesEs": [
           "38",
           "28",
           "20",
           "48"
-        ],
-        "hintsEs": [
-          "La regla del patrón del jugador A es sumar 2, diez veces.",
-          "10 × 2 = 20.",
-          "Empieza en 18 y suma."
         ]
       },
       {
@@ -354,16 +354,16 @@
         ],
         "stemEs": "El frasco de Akela suma $53.50. ¿Por qué el número de monedas de 1¢ solo puede ser un múltiplo de 5?",
         "explanationEs": "Las monedas de 5¢, 10¢ y 25¢ valen cada una un múltiplo de 5 centavos. Para que el total termine en 0, las monedas de 1¢ también deben sumar un múltiplo de 5 centavos — así que su cantidad es un múltiplo de 5.",
+        "hintsEs": [
+          "¿Cuánto valen en centavos las monedas de 5¢, 10¢ y 25¢?",
+          "5, 10 y 25 — todos múltiplos de 5.",
+          "Entonces, ¿cuánto debe sumar el total de las monedas de 1¢ para que todo termine en 0?"
+        ],
         "choicesEs": [
           "Porque los centavos del total terminan en 0, y solo las monedas de 1¢ forman cantidades que no son múltiplos de 5 centavos",
           "Porque las monedas de 1¢ siempre vienen en rollos de 5",
           "Porque hay exactamente 5 tipos de monedas en el frasco",
           "Porque $53.50 es divisible entre 5"
-        ],
-        "hintsEs": [
-          "¿Cuánto valen en centavos las monedas de 5¢, 10¢ y 25¢?",
-          "5, 10 y 25 — todos múltiplos de 5.",
-          "Entonces, ¿cuánto debe sumar el total de las monedas de 1¢ para que todo termine en 0?"
         ]
       },
       {
@@ -390,16 +390,16 @@
         ],
         "stemEs": "¿Cuál combinación de monedas suma exactamente $53.50?",
         "explanationEs": "$50.00 + $2.50 + $0.75 + $0.25 = $53.50 exactamente.",
+        "hintsEs": [
+          "Multiplica cada cantidad por el valor de su moneda.",
+          "200 × 0.25 = 50 y 25 × 0.10 = 2.50.",
+          "Suma los cuatro valores y compara con 53.50."
+        ],
         "choicesEs": [
           "200 monedas de 25¢, 25 de 10¢, 15 de 5¢, 25 de 1¢",
           "200 monedas de 25¢, 25 de 10¢, 15 de 5¢, 20 de 1¢",
           "200 monedas de 25¢, 30 de 10¢, 15 de 5¢, 25 de 1¢",
           "100 monedas de 25¢, 25 de 10¢, 15 de 5¢, 25 de 1¢"
-        ],
-        "hintsEs": [
-          "Multiplica cada cantidad por el valor de su moneda.",
-          "200 × 0.25 = 50 y 25 × 0.10 = 2.50.",
-          "Suma los cuatro valores y compara con 53.50."
         ]
       },
       {
@@ -426,20 +426,99 @@
         ],
         "stemEs": "¿Cómo comprueba una tabla de valores que el jugador A realmente anotó 38 puntos?",
         "explanationEs": "La tabla del libro muestra cada paso — 20, 22, 24, … — y verifica que los cálculos fueron correctos: el jugador A anotó 38.",
+        "hintsEs": [
+          "¿Qué va en cada fila de la tabla?",
+          "El puntaje después del tiro 1, el tiro 2, el tiro 3, …",
+          "¿Dónde cae la fila 10?"
+        ],
         "choicesEs": [
           "Muestra el puntaje después de cada tiro, así que puedes ver el patrón caer exactamente en 38",
           "Redondea la respuesta a la decena más cercana",
           "Reemplaza la regla del patrón para que no necesites una",
           "Demuestra la respuesta sin hacer ningún cálculo"
-        ],
-        "hintsEs": [
-          "¿Qué va en cada fila de la tabla?",
-          "El puntaje después del tiro 1, el tiro 2, el tiro 3, …",
-          "¿Dónde cae la fila 10?"
         ]
       }
     ],
     "extending": [
+      {
+        "type": "fill-table",
+        "label": "Player A starts with 18 points and makes two-pointers. Complete the table.",
+        "labelEs": "El Jugador A empieza con 18 puntos y anota canastas de dos puntos. Completa la tabla.",
+        "columns": [
+          "Two-pointers made",
+          "Rule: 18 + 2 × shots",
+          "Total points"
+        ],
+        "rows": [
+          {
+            "shots": "1",
+            "rule": "18 + 2 × 1",
+            "answer": "20"
+          },
+          {
+            "shots": "5",
+            "rule": "18 + 2 × 5",
+            "answer": "28"
+          },
+          {
+            "shots": "10",
+            "rule": "18 + 2 × 10",
+            "answer": "38"
+          }
+        ],
+        "hints": [
+          "Multiply first, then add the starting 18 points.",
+          "Each new shot adds exactly 2 — the pattern grows by a constant difference."
+        ],
+        "hintsEs": [
+          "Multiplica primero y luego suma los 18 puntos iniciales.",
+          "Cada canasta nueva suma exactamente 2: el patrón crece con una diferencia constante."
+        ],
+        "explanation": "The rule 18 + 2 × shots turns the pattern into a formula: one shot gives 20, five shots give 18 + 10 = 28, and ten shots give 18 + 20 = 38. A table plus a rule lets you jump straight to any term without listing every step between.",
+        "explanationEs": "La regla 18 + 2 × canastas convierte el patrón en una fórmula: una canasta da 20, cinco dan 18 + 10 = 28 y diez dan 18 + 20 = 38. Una tabla más una regla te permite saltar directo a cualquier término sin listar todos los pasos intermedios."
+      },
+      {
+        "type": "matching-game",
+        "label": "Match each input-output table to its pattern rule.",
+        "labelEs": "Empareja cada tabla de entrada y salida con su regla de patrón.",
+        "columns": 2,
+        "pairs": [
+          {
+            "term": "In: 1, 2, 3 → Out: 5, 10, 15",
+            "match": "Multiply by 5",
+            "termEs": "Entra: 1, 2, 3 → Sale: 5, 10, 15",
+            "matchEs": "Multiplicar por 5"
+          },
+          {
+            "term": "In: 1, 2, 3 → Out: 3, 5, 7",
+            "match": "Double, then add 1",
+            "termEs": "Entra: 1, 2, 3 → Sale: 3, 5, 7",
+            "matchEs": "Duplicar y luego sumar 1"
+          },
+          {
+            "term": "In: 2, 4, 6 → Out: 1, 2, 3",
+            "match": "Divide by 2",
+            "termEs": "Entra: 2, 4, 6 → Sale: 1, 2, 3",
+            "matchEs": "Dividir entre 2"
+          },
+          {
+            "term": "In: 1, 2, 3 → Out: 2.5, 5, 7.5",
+            "match": "Multiply by 2.5",
+            "termEs": "Entra: 1, 2, 3 → Sale: 2.5, 5, 7.5",
+            "matchEs": "Multiplicar por 2.5"
+          }
+        ],
+        "hints": [
+          "Test a rule on EVERY pair in the table — one pair is not enough to confirm it.",
+          "In: 1 → Out: 3 fits both 'add 2' and 'double plus 1'. The pair 2 → 5 decides between them."
+        ],
+        "hintsEs": [
+          "Prueba la regla con TODOS los pares de la tabla: un solo par no basta para confirmarla.",
+          "Entra 1 → Sale 3 cumple tanto 'sumar 2' como 'duplicar más 1'. El par 2 → 5 decide entre las dos."
+        ],
+        "explanation": "A rule must hold for every row: 5, 10, 15 is ×5; 3, 5, 7 is 2n + 1 (the pair 2 → 5 rules out 'add 2'); 1, 2, 3 from 2, 4, 6 is ÷2; and 2.5, 5, 7.5 is ×2.5 — the same kind of decimal rate as the whale's 2.5 cm per day. Checking every pair is how a generalization earns trust.",
+        "explanationEs": "La regla debe cumplirse en cada fila: 5, 10, 15 es ×5; 3, 5, 7 es 2n + 1 (el par 2 → 5 descarta 'sumar 2'); 1, 2, 3 desde 2, 4, 6 es ÷2; y 2.5, 5, 7.5 es ×2.5, la misma tasa decimal que los 2.5 cm diarios de la ballena. Comprobar cada par es lo que hace confiable una generalización."
+      },
       {
         "type": "open-response",
         "stem": "Use the multiple-of-5 pattern to find a DIFFERENT combination of coins that totals $53.50. Show that it works.",
@@ -492,16 +571,16 @@
         ],
         "stemEs": "Si los dos jugadores mantuvieran sus rachas, ¿después de cuántos tiros MÁS empataría el jugador B con el jugador A?",
         "explanationEs": "La diferencia es 38 − 36 = 2 y se reduce en 1 con cada tiro (3 − 2 = 1). Después de 2 tiros más: el jugador A tiene 38 + 4 = 42 y el jugador B tiene 36 + 6 = 42.",
+        "hintsEs": [
+          "¿Qué tan grande es la diferencia ahora, y cuánto cambia por tiro?",
+          "Diferencia de 2, que se reduce en 3 − 2 = 1 con cada tiro.",
+          "¿Cuántos tiros para cerrar una diferencia de 2?"
+        ],
         "choicesEs": [
           "2 tiros más",
           "1 tiro más",
           "Nunca pueden empatar",
           "10 tiros más"
-        ],
-        "hintsEs": [
-          "¿Qué tan grande es la diferencia ahora, y cuánto cambia por tiro?",
-          "Diferencia de 2, que se reduce en 3 − 2 = 1 con cada tiro.",
-          "¿Cuántos tiros para cerrar una diferencia de 2?"
         ]
       },
       {
@@ -528,16 +607,16 @@
         ],
         "stemEs": "Una ballena sei mide 4.5 metros al nacer y crece unos 2.5 centímetros cada día. ¿Aproximadamente cuántos días pasan hasta que llega a 15 metros?",
         "explanationEs": "Debe crecer 15 − 4.5 = 10.5 metros = 1,050 centímetros. A 2.5 cm por día: 1,050 ÷ 2.5 = 420 días.",
+        "hintsEs": [
+          "Halla primero cuánto MÁS debe crecer la ballena.",
+          "15 − 4.5 = 10.5 metros. Convierte a centímetros.",
+          "1,050 ÷ 2.5 = ?"
+        ],
         "choicesEs": [
           "Aproximadamente 420 días",
           "Aproximadamente 600 días",
           "Aproximadamente 42 días",
           "Aproximadamente 4.2 días"
-        ],
-        "hintsEs": [
-          "Halla primero cuánto MÁS debe crecer la ballena.",
-          "15 − 4.5 = 10.5 metros. Convierte a centímetros.",
-          "1,050 ÷ 2.5 = ?"
         ]
       },
       {
@@ -566,90 +645,6 @@
         "sentenceStemsEs": [
           "Me detendría cuando ___ .",
           "Mi ajuste sería ___ ."
-        ]
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "Each penny has a value of $0.01. What is the value of 100 pennies?",
-        "choices": [
-          "$1.00",
-          "$0.10",
-          "$10.00",
-          "$100.00"
-        ],
-        "correctIndex": 0,
-        "explanation": "100 × $0.01 = $1.00 — one hundred hundredths make one whole dollar.",
-        "choiceFeedback": [
-          "",
-          "$0.10 is the value of only 10 pennies, not 100.",
-          "$10.00 is the value of 100 DIMES — that uses the wrong coin's value.",
-          "$100.00 treats each penny as a dollar instead of a hundredth of a dollar."
-        ],
-        "hints": [
-          "A penny is one hundredth of a dollar.",
-          "How many hundredths make a whole?",
-          "100 × 0.01 = ?"
-        ],
-        "misconceptionTags": [
-          null,
-          "place-value",
-          "place-value",
-          "place-value"
-        ],
-        "stemEs": "Cada moneda de 1¢ vale $0.01. ¿Cuál es el valor de 100 monedas de 1¢?",
-        "explanationEs": "100 × $0.01 = $1.00 — cien centésimas forman un dólar entero.",
-        "choicesEs": [
-          "$1.00",
-          "$0.10",
-          "$10.00",
-          "$100.00"
-        ],
-        "hintsEs": [
-          "Una moneda de 1¢ es una centésima de dólar.",
-          "¿Cuántas centésimas forman un entero?",
-          "100 × 0.01 = ?"
-        ]
-      },
-      {
-        "type": "multiple-choice",
-        "stem": "Each quarter has a value of $0.25. Following the pattern, what is the value of 100 quarters?",
-        "choices": [
-          "$25.00",
-          "$2.50",
-          "$250.00",
-          "$100.25"
-        ],
-        "correctIndex": 0,
-        "explanation": "100 × $0.25 = $25.00 — the same pattern as 100 pennies making $1.00 and 100 nickels making $5.00.",
-        "choiceFeedback": [
-          "",
-          "$2.50 is the value of only 10 quarters — that multiplies by 10 instead of 100.",
-          "$250.00 multiplies by 1,000 instead of 100.",
-          "$100.25 adds 100 + 0.25 instead of multiplying."
-        ],
-        "hints": [
-          "Multiplying by 100 moves the decimal point.",
-          "100 pennies → $1.00, 100 dimes → $10. Same move.",
-          "100 × 0.25 = ?"
-        ],
-        "misconceptionTags": [
-          null,
-          "place-value",
-          "place-value",
-          "op-added-instead-of-multiplied"
-        ],
-        "stemEs": "Cada moneda de 25¢ vale $0.25. Siguiendo el patrón, ¿cuál es el valor de 100 monedas de 25¢?",
-        "explanationEs": "100 × $0.25 = $25.00 — el mismo patrón que 100 monedas de 1¢ formando $1.00 y 100 monedas de 5¢ formando $5.00.",
-        "choicesEs": [
-          "$25.00",
-          "$2.50",
-          "$250.00",
-          "$100.25"
-        ],
-        "hintsEs": [
-          "Multiplicar por 100 mueve el punto decimal.",
-          "100 monedas de 1¢ → $1.00, 100 monedas de 10¢ → $10. El mismo procedimiento.",
-          "100 × 0.25 = ?"
         ]
       }
     ],

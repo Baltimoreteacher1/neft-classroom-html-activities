@@ -658,6 +658,134 @@
         ]
       },
       {
+        "type": "drag-sort",
+        "instructions": "Sort each data feature into whether it suggests using the mean or the median.",
+        "categories": [
+          {
+            "label": "Use Mean",
+            "items": [
+              "No outliers in the data",
+              "Data is symmetric",
+              "All values are close together"
+            ],
+            "labelEs": "Usa la media",
+            "itemsEs": [
+              "Los datos no tienen valores atípicos",
+              "Los datos son simétricos",
+              "Todos los valores están cercanos entre sí"
+            ]
+          },
+          {
+            "label": "Use Median",
+            "items": [
+              "Data has one or more outliers",
+              "Data is skewed to one side",
+              "One extreme value pulls the average"
+            ],
+            "labelEs": "Usa la mediana",
+            "itemsEs": [
+              "Los datos tienen uno o más valores atípicos",
+              "Los datos están sesgados hacia un lado",
+              "Un valor extremo jala el promedio"
+            ]
+          }
+        ],
+        "hints": [
+          "The mean is sensitive to extreme values — outliers pull it up or down.",
+          "The median stays in the middle regardless of how extreme the highest or lowest values are."
+        ],
+        "label": "Sort each feature by which measure of center it supports.",
+        "explanation": "The mean uses every value, so a single extreme number drags it toward itself, while the median is just the middle of the ordered list and barely moves. That is why \"no outliers,\" \"symmetric,\" and \"all values close together\" point to the mean, and \"has outliers,\" \"skewed to one side,\" and \"one extreme value pulls the average\" point to the median.",
+        "explanationEs": "La media usa todos los valores, así que un solo número extremo la jala hacia él, mientras que la mediana es simplemente el centro de la lista ordenada y casi no se mueve. Por eso \"sin valores atípicos\", \"datos simétricos\" y \"todos los valores cercanos entre sí\" apuntan a la media, y \"tiene valores atípicos\", \"datos sesgados hacia un lado\" y \"un valor extremo jala el promedio\" apuntan a la mediana.",
+        "labelEs": "Clasifica cada característica según la medida de tendencia central que apoya.",
+        "hintsEs": [
+          "La media es sensible a los valores extremos: los atípicos la jalan hacia arriba o hacia abajo.",
+          "La mediana se queda en el medio sin importar qué tan extremos sean el valor mayor o el menor."
+        ]
+      },
+      {
+        "type": "fill-table",
+        "headers": [
+          "Data Set",
+          "Mean",
+          "Median",
+          "Outlier?",
+          "Best Measure"
+        ],
+        "rows": [
+          [
+            "15, 18, 16, 17, 15",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "15, 18, 16, 17, 72",
+            "",
+            "",
+            "",
+            ""
+          ]
+        ],
+        "editableCells": [
+          {
+            "row": 0,
+            "col": 1,
+            "answer": "16.2"
+          },
+          {
+            "row": 0,
+            "col": 2,
+            "answer": "16"
+          },
+          {
+            "row": 0,
+            "col": 3,
+            "answer": "No"
+          },
+          {
+            "row": 0,
+            "col": 4,
+            "answer": "Mean (no outlier, data is clustered)"
+          },
+          {
+            "row": 1,
+            "col": 1,
+            "answer": "27.6"
+          },
+          {
+            "row": 1,
+            "col": 2,
+            "answer": "17"
+          },
+          {
+            "row": 1,
+            "col": 3,
+            "answer": "Yes (72)"
+          },
+          {
+            "row": 1,
+            "col": 4,
+            "answer": "Median (72 pulls the mean to 27.6, higher than 4 of 5 values)"
+          }
+        ],
+        "hints": [
+          "Row 2 swaps the last value for 72 — everything else matches Row 1. The table is built to show what one outlier does.",
+          "For each row: mean = sum ÷ 5, median = middle of the ordered list. Then ask if any value sits far from the pack before picking the best measure.",
+          "Row 1: add 15 + 18 + 16 + 17 + 15 and divide by 5; order the list to find the middle. Then rebuild both measures for Row 2 with the 72."
+        ],
+        "explanation": "The two rows differ only in the last value, which is what makes the effect of an outlier visible. Row 1 (15, 18, 16, 17, 15) has mean 81 ÷ 5 = 16.2 and median 16, so with no outlier the mean works fine. Row 2 swaps in 72: the mean jumps to 138 ÷ 5 = 27.6 while the median stays at 17, so the median is the better measure there.",
+        "explanationEs": "Las dos filas solo se diferencian en el último valor, y eso es lo que hace visible el efecto de un valor atípico. La fila 1 (15, 18, 16, 17, 15) tiene media 81 ÷ 5 = 16.2 y mediana 16, así que sin valor atípico la media funciona bien. La fila 2 cambia ese valor por 72: la media salta a 138 ÷ 5 = 27.6 mientras la mediana se queda en 17, así que ahí la mediana es la mejor medida.",
+        "hintsEs": [
+          "La fila 2 cambia el último valor por 72; todo lo demás es igual que la fila 1. La tabla está hecha para mostrar qué hace un solo atípico.",
+          "Para cada fila: media = suma ÷ 5, mediana = el medio de la lista ordenada. Luego pregunta si algún valor queda lejos del grupo antes de elegir la mejor medida.",
+          "Fila 1: suma 15 + 18 + 16 + 17 + 15 y divide entre 5; ordena la lista para hallar el medio. Luego recalcula ambas medidas en la fila 2 con el 72."
+        ]
+      }
+    ],
+    "onLevel": [
+      {
         "type": "multiple-choice",
         "stem": "A baseball player's batting averages over 6 seasons are: .280, .295, .290, .285, .300, .110. The .110 was an injury-shortened season. Which measure better represents the player's typical batting average?",
         "choices": [
@@ -742,9 +870,7 @@
           "Compara la media (≈ 20.8) con los juegos reales. ¿Está cerca de un valor típico, o más alta que casi todos?",
           "Cuando un valor (60) queda lejos de los demás, jala la media. La mediana (13.5) se queda cerca del grupo, así que es la mejor opción."
         ]
-      }
-    ],
-    "onLevel": [
+      },
       {
         "type": "multiple-choice",
         "stem": "A scout records points per game: 14, 16, 15, 17, 16, 58. To report a TYPICAL game, which measure of center is best?",
@@ -901,80 +1027,6 @@
         "hintsEs": [
           "Mira el valor 2. ¿Encaja con el resto de los puntajes del jugador, o es un valor atípico?",
           "La media (17.8) es menor que 5 de los 6 juegos. Un buen valor 'típico' debe quedar entre la mayoría de los datos, como lo hace la mediana (20.5)."
-        ]
-      },
-      {
-        "type": "error-analysis",
-        "title": "Find the Reasoning Error",
-        "workedExample": [
-          {
-            "label": "Data",
-            "work": "Player minutes per game: 32, 34, 30, 35, 33, 5",
-            "labelEs": "Datos",
-            "workEs": "Minutos por partido del jugador: 32, 34, 30, 35, 33, 5"
-          },
-          {
-            "label": "Find mean",
-            "work": "Sum = 169, Count = 6, Mean = 28.2",
-            "labelEs": "Encuentra la media",
-            "workEs": "Suma = 169, cantidad = 6, media = 28.2"
-          },
-          {
-            "label": "Find median",
-            "work": "Ordered: 5, 30, 32, 33, 34, 35 → Median = (32+33) ÷ 2 = 32.5",
-            "labelEs": "Encuentra la mediana",
-            "workEs": "Ordenados: 5, 30, 32, 33, 34, 35 → mediana = (32+33) ÷ 2 = 32.5"
-          },
-          {
-            "label": "Conclusion",
-            "work": "The mean (28.2) is the best measure because it uses all the data.",
-            "labelEs": "Conclusión",
-            "workEs": "La media (28.2) es la mejor medida porque usa todos los datos."
-          }
-        ],
-        "errorStep": 3,
-        "correctWork": "The median (32.5) is the better measure. The value 5 is an outlier (the player was injured that game) that pulls the mean down to 28.2, which is lower than any of the player's healthy games. The median (32.5) better represents typical minutes played.",
-        "hints": [
-          "Look at the value 5. Does it fit with the rest of the data?",
-          "The mean (28.2) is lower than 5 of the 6 values. Does that seem like a 'typical' game?"
-        ],
-        "titleEs": "Encuentra el error de razonamiento",
-        "explanation": "The value 5 is an outlier from an injury game, and it drags the mean down to 28.2 — lower than every healthy game in the set. The median 32.5 sits among the 30-to-35 minute games, so it describes typical minutes far better. Using all the data is not an advantage when one value is that extreme.",
-        "explanationEs": "El valor 5 es un valor atípico de un partido con lesión, y jala la media hasta 28.2, más bajo que cualquier partido sano del conjunto. La mediana 32.5 queda entre los partidos de 30 a 35 minutos, así que describe mucho mejor los minutos típicos. Usar todos los datos no es una ventaja cuando un valor es así de extremo.",
-        "correctWorkEs": "La mediana (32.5) es la mejor medida. El valor 5 es un valor atípico (el jugador se lesionó ese partido) que jala la media hasta 28.2, más baja que cualquiera de sus partidos sanos. La mediana (32.5) representa mejor los minutos típicos.",
-        "hintsEs": [
-          "Mira el valor 5. ¿Encaja con el resto de los datos?",
-          "La media (28.2) es menor que 5 de los 6 valores. ¿Eso parece un juego 'típico'?"
-        ]
-      },
-      {
-        "type": "open-response",
-        "prompt": "A local newspaper reports that the average home price in a neighborhood is $450,000. The actual prices are: $180K, $200K, $190K, $210K, $195K, $1,725K. Is the reporter's claim misleading? Calculate the mean and median and explain which better represents a 'typical' home price.",
-        "sentenceFrame": "Mean = ___. Median = ___. The reporter's claim is ___ because the outlier ($1,725K) pulls the mean ___. The ___ (about $___) better represents a typical home price because ___.",
-        "keywords": [
-          "mean",
-          "median",
-          "outlier",
-          "misleading",
-          "pulls",
-          "higher",
-          "typical",
-          "skewed"
-        ],
-        "minLength": 50,
-        "hint": "Start by calculating both the mean and median—compare them to see if an outlier pulled mean.",
-        "hints": [
-          "Five homes cost about $180K–$210K; one costs $1,725K. Check the reporter's $450,000 'average' against those five real prices.",
-          "Plan: (1) mean = sum of all six prices ÷ 6, (2) median = average of the 3rd and 4th ordered prices, (3) compare each to what most homes cost.",
-          "Step 1: add 180 + 200 + 190 + 210 + 195 + 1725 (in thousands) and divide by 6. Then order the six prices and average the middle two."
-        ],
-        "explanation": "The six prices add to $2,700K, so the mean is 2,700 ÷ 6 = $450K, matching the reporter — but the median is the average of the middle two prices, $195K and $200K, which is $197.5K. Five of the six homes cost between $180K and $210K, so the $1,725K home is an outlier pulling the mean far above what most homes cost. The claim is misleading, and the median better represents a typical price.",
-        "explanationEs": "Los seis precios suman $2,700K, así que la media es 2,700 ÷ 6 = $450K, igual que dice el reportero; pero la mediana es el promedio de los dos precios del medio, $195K y $200K, o sea $197.5K. Cinco de las seis casas cuestan entre $180K y $210K, así que la casa de $1,725K es un valor atípico que jala la media muy por encima de lo que cuestan casi todas. La afirmación es engañosa, y la mediana representa mejor un precio típico.",
-        "promptEs": "Un periódico local informa que el precio promedio de una casa en un vecindario es de $450,000. Los precios reales son: $180K, $200K, $190K, $210K, $195K, $1,725K. ¿Es engañosa la afirmación del reportero? Calcula la media y la mediana y explica cuál representa mejor el precio de una casa 'típica'.",
-        "hintsEs": [
-          "Cinco casas cuestan entre $180K y $210K; una cuesta $1,725K. Revisa el 'promedio' de $450,000 del reportero contra esas cinco casas reales.",
-          "Plan: (1) media = suma de los seis precios ÷ 6, (2) mediana = promedio del 3.º y 4.º precio ordenados, (3) compara cada uno con lo que cuesta la mayoría.",
-          "Paso 1: suma 180 + 200 + 190 + 210 + 195 + 1725 (en miles) y divide entre 6. Luego ordena los seis precios y promedia los dos del medio."
         ]
       }
     ],
