@@ -26,6 +26,24 @@ for (const expected of [
   'lang="es"',
 ]) assert.ok(html.includes(expected), `Missing bilingual note contract: ${expected}`);
 
+// The calendar picker and the family activity report.
+for (const expected of [
+  'id="pacing-calendar"',
+  'id="family-response-key"',
+  'id="family-response-days"',
+  'id="family-response-load"',
+  'id="family-response-report"',
+  'type="password"',
+]) assert.ok(html.includes(expected), `Missing family reporting contract: ${expected}`);
+const calendar = await readFile(new URL("pacing-calendar.js", root), "utf8");
+assert.match(calendar, /pacingMonthGrid/);
+assert.match(calendar, /aria-current/);
+const familyResponse = await readFile(new URL("family-response.js", root), "utf8");
+assert.match(familyResponse, /neft\.teacher\.key/);
+assert.match(familyResponse, /x-teacher-key/);
+assert.match(familyResponse, /api\/signal\/practice/);
+assert.match(familyResponse, /api\/progress\/family-signoff/);
+
 // Fill-from-the-plan: the publisher must not become a second pacing schedule.
 for (const expected of [
   'id="pacing-fill"',
@@ -39,6 +57,8 @@ assert.match(teacherApp, /pacing-baseline-2026-27\.json/);
 assert.match(teacherApp, /api\/pacing\/state/);
 assert.match(teacherApp, /window\.confirm/, "filling must not silently discard a planned week");
 assert.match(teacherApp, /buildFamilyWeekNote/);
+assert.match(teacherApp, /renderPacingCalendar/);
+assert.match(teacherApp, /loadFamilyResponse/);
 assert.match(teacherApp, /family-week-notes\.json/);
 const weekNoteModule = (await readFile(new URL("../shared/family-week-note.js", root), "utf8"))
   .replace(/\/\*[\s\S]*?\*\//g, "")

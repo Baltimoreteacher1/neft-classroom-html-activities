@@ -338,6 +338,7 @@ function bindEvents() {
   });
   bindWeekActions();
   bindPulse();
+  bindPracticeSignal();
   bindScrollSpy();
 }
 
@@ -354,6 +355,25 @@ function bindWeekActions() {
       // Parent dismissed the share sheet — nothing to do.
     }
   });
+}
+
+/* Which entry point families actually use. The beacon is aggregate-only and
+ * inherits nt-usage's do-not-track and teacher-mode guards; without it there is
+ * no way to tell whether posting the week moved practice opens at all. */
+function bindPracticeSignal() {
+  document.addEventListener(
+    "click",
+    (event) => {
+      const trigger = event.target.closest?.("[data-practice-open]");
+      if (!trigger) return;
+      try {
+        window.NTUsage?.reportPractice?.(trigger.dataset.lessonId, trigger.dataset.practiceOpen);
+      } catch {
+        // Measurement must never stand between a family and the practice.
+      }
+    },
+    { capture: true },
+  );
 }
 
 function bindPulse() {

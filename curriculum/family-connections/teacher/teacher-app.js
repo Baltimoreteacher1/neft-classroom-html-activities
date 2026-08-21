@@ -13,6 +13,14 @@ import { loadDraft, loadHistory, publishDraft, saveDraft } from "../shared/api-c
 import { resolveYear } from "../../../shared/pacing/engine.js";
 import { buildWeekFromPacing, pacingWeekStarts, weekStartFor } from "../shared/pacing-week.js";
 import { buildFamilyWeekNote } from "../shared/family-week-note.js";
+import { renderPacingCalendar } from "./pacing-calendar.js";
+import {
+  loadFamilyResponse,
+  renderFamilyResponse,
+  saveTeacherKey,
+  teacherKey,
+} from "./family-response.js";
+import { weekLessonIds } from "../shared/family-week-note.js";
 import {
   renderCollection,
   renderCopyEditor,
@@ -39,7 +47,9 @@ const state = {
   dirty: false,
   previewed: false,
   pacingBaseline: null,
+  pacingDays: null,
   pacingStarts: [],
+  pacingMonth: "",
   noteBank: null,
 };
 
@@ -179,6 +189,30 @@ async function writeWeekNotes({ silent = false } = {}) {
   }
 }
 
+/* ── How families used the week ────────────────────────────────────────────────
+ * Teacher-gated reporting, and deliberately opt-in: nothing loads until the
+ * teacher asks for it, so the publisher never blocks on a reporting call. */
+async function showFamilyResponse() {
+  const report = byId("family-response-report");
+  const button = byId("family-response-load");
+  const typed = byId("family-response-key").value.trim();
+  if (typed) {
+    saveTeacherKey(typed);
+    byId("family-response-key").value = "";
+  }
+  const lessonIds = weekLessonIds(section().week.days);
+  button.disabled = true;
+  renderFamilyResponse(report, null, { message: "Reading family activity…" });
+  try {
+    const data = await loadFamilyResponse(byId("family-response-days").value);
+    renderFamilyResponse(report, data, { lessonIds });
+  } catch (error) {
+    renderFamilyResponse(report, null, { message: error.message });
+  } finally {
+    button.disabled = false;
+  }
+}
+
 /* ── Fill from the pacing plan ─────────────────────────────────────────────────
  * The teacher's dated plan already says which lesson lands on which day. Re-
  * picking it here is duplicated work and a second source of truth, so this pulls
@@ -224,12 +258,34 @@ async function resolvedPacingDays(sectionCode) {
   return { days: resolveYear(baseline, overlay), live };
 }
 
+/* The <select> owns the chosen week; the calendar is a second way to set it.
+ * Re-rendering from the select after every change is what keeps them honest. */
+function paintPacingCalendar() {
+  const selected = byId("pacing-week").value;
+  if (!state.pacingDays) return;
+  if (!state.pacingMonth) state.pacingMonth = (selected || "").slice(0, 7);
+  renderPacingCalendar(byId("pacing-calendar"), state.pacingDays, {
+    monthKey: state.pacingMonth,
+    selectedWeek: selected,
+    onPick(weekStart) {
+      byId("pacing-week").value = weekStart;
+      state.pacingMonth = weekStart.slice(0, 7);
+      paintPacingCalendar();
+    },
+    onMonth(monthKey) {
+      state.pacingMonth = monthKey;
+      paintPacingCalendar();
+    },
+  });
+}
+
 async function renderPacingWeeks() {
   const select = byId("pacing-week");
   const status = byId("pacing-fill-status");
   try {
     const baseline = await pacingBaseline();
-    state.pacingStarts = pacingWeekStarts(resolveYear(baseline, {}));
+    state.pacingDays = resolveYear(baseline, {});
+    state.pacingStarts = pacingWeekStarts(state.pacingDays);
     const today = new Date().toISOString().slice(0, 10);
     const preferred = section().week.startDate || weekStartFor(today);
     select.replaceChildren();
@@ -241,8 +297,11 @@ async function renderPacingWeeks() {
     }
     const match = state.pacingStarts.find((week) => week.startDate === preferred);
     select.value = (match ?? state.pacingStarts[0])?.startDate ?? "";
+    state.pacingMonth = select.value.slice(0, 7);
+    paintPacingCalendar();
   } catch (error) {
     byId("pacing-fill").hidden = true;
+    byId("pacing-calendar").hidden = true;
     status.textContent = error.message;
   }
 }
@@ -617,7 +676,12 @@ function bindEvents() {
   });
   byId("download-canvas-json").addEventListener("click", downloadCanvasExport);
   byId("pacing-fill-apply").addEventListener("click", applyPacingFill);
+  byId("family-response-load").addEventListener("click", showFamilyResponse);
   byId("week-note-build").addEventListener("click", () => writeWeekNotes());
+  byId("pacing-week").addEventListener("change", () => {
+    state.pacingMonth = byId("pacing-week").value.slice(0, 7);
+    paintPacingCalendar();
+  });
   window.addEventListener("beforeunload", (event) => {
     if (state.dirty) event.preventDefault();
   });
@@ -639,6 +703,11 @@ async function initialize() {
     byId("canvas-url").value = state.draft.integrations.canvasUrl;
     renderWeekEditor();
     renderPacingWeeks();
+    renderFamilyResponse(byId("family-response-report"), null, {
+      message: teacherKey()
+        ? "Choose a window and show family activity."
+        : "Add your teacher key to see how families used this week.",
+    });
     renderHomeworkPicker();
     if (state.lessonId) selectLesson(state.lessonId);
     renderCollections();

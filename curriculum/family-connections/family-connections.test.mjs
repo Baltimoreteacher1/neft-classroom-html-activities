@@ -132,6 +132,14 @@ assert.match(renderer, /renderWeekPractice/);
 assert.match(renderer, /Practice together/);
 assert.match(renderer, /Práctica juntos/);
 assert.match(renderer, /absolutePublicUrl/);
+// Today's lesson leads the practice list, and every practice link is attributed.
+assert.match(renderer, /todayBadge: "Hoy"/);
+assert.match(renderer, /homework-today-badge/);
+assert.match(renderer, /dataset\.practiceOpen = source/);
+assert.match(renderer, /practiceOpen = "week"/);
+assert.match(renderer, /practiceOpen = "spotlight"/);
+assert.match(app, /reportPractice/);
+assert.match(app, /data-practice-open/);
 // Every family-visible string has to answer to the language toggle.
 assert.match(renderer, /dayNote\(entry, lang\)/);
 assert.match(renderer, /weekNote\(section\.week, lang\)/);

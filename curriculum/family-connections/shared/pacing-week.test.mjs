@@ -2,7 +2,13 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { resolveYear } from "../../../shared/pacing/engine.js";
 import { normalizeLessons, weekHomework, createDefaultSnapshot } from "./model.js";
-import { buildWeekFromPacing, pacingWeekStarts, weekStartFor } from "./pacing-week.js";
+import {
+  buildWeekFromPacing,
+  pacingMonthGrid,
+  pacingMonths,
+  pacingWeekStarts,
+  weekStartFor,
+} from "./pacing-week.js";
 
 const baseline = JSON.parse(
   await readFile(new URL("../../../data/pacing-baseline-2026-27.json", import.meta.url), "utf8"),
@@ -105,6 +111,43 @@ assert.deepEqual(
   ["3-5", "3-6", "3-7"],
   "filling from the plan is enough to post this week's family practice",
 );
+
+// The calendar picker: a real month, so a week is recognised rather than recalled.
+const months = pacingMonths(resolved);
+assert.ok(months.length >= 10, `expected a school year of months, got ${months.length}`);
+assert.equal(months[0].key, "2026-08");
+assert.match(months[0].label, /August 2026/);
+assert.deepEqual(
+  months.map((month) => month.key),
+  [...months.map((month) => month.key)].sort(),
+  "months are offered in date order",
+);
+
+const grid = pacingMonthGrid(resolved, "2026-09");
+assert.ok(grid.length >= 4 && grid.length <= 6, `unexpected week count: ${grid.length}`);
+for (const week of grid) {
+  assert.equal(week.cells.length, 5, "the publisher plans Monday to Friday");
+  assert.equal(week.weekStart, weekStartFor(week.cells[0].date));
+  assert.deepEqual(
+    week.cells.map((cell) => cell.dayName),
+    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+  );
+}
+const september21 = grid.find((week) => week.weekStart === "2026-09-21");
+assert.ok(september21, "the grid must contain the week the fill test uses");
+assert.deepEqual(
+  september21.cells.map((cell) => cell.lessonId),
+  ["", "3-5", "3-6", "3-7", ""],
+  "a calendar cell shows the family lesson id, and nothing for a catch-up day",
+);
+assert.equal(september21.cells[0].school, false, "Monday is closed that week");
+assert.equal(september21.cells[4].rawLessonId, "3-7-catchup");
+assert.ok(
+  grid.some((week) => week.cells.some((cell) => !cell.inMonth)),
+  "a straddling week still renders its out-of-month days so it stays pickable",
+);
+assert.deepEqual(pacingMonthGrid(resolved, "nope"), []);
+assert.deepEqual(pacingMonthGrid(resolved, "2099-01"), [], "a month with no plan is empty");
 
 assert.throws(() => buildWeekFromPacing(resolved, "nope", known), /YYYY-MM-DD/);
 

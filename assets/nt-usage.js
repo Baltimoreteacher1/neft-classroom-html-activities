@@ -46,6 +46,7 @@
   var VIEW_URL = "/api/signal/view";
   var ERROR_URL = "/api/signal/error";
   var VITAL_URL = "/api/signal/vital";
+  var PRACTICE_URL = "/api/signal/practice";
   var MAX_ERRORS_PER_PAGE = 3; // a broken render loop must not become a flood
   var MAX_VITALS_PER_PAGE = 3; // exactly CLS, INP, and LCP
   var MAX_MESSAGE = 300;
@@ -220,6 +221,18 @@
     });
   }
 
+  /* A family opening the optional practice, tagged with WHERE they started from
+   * (the posted week vs browsing the library). Same counter posture as a view:
+   * no person key, closed source vocabulary, and it inherits this module's
+   * do-not-track / teacher-mode / dev-host guards rather than re-deciding them. */
+  function sendPractice(lessonId, source) {
+    var id = String(lessonId || "");
+    var from = String(source || "");
+    if (!/^\d{1,2}-\d{1,2}(-flagship)?$/.test(id)) return false;
+    if (!/^(week|library|spotlight|other)$/.test(from)) return false;
+    return post(PRACTICE_URL, { lessonId: id, source: from });
+  }
+
   function loadWebVitals() {
     if (doc.querySelector('script[data-nt-web-vitals="1"]')) return;
     var script = doc.createElement("script");
@@ -272,6 +285,7 @@
       flush: sendView,
       reportError: sendError,
       reportVital: sendVital,
+      reportPractice: sendPractice,
     };
     loadWebVitals();
   } catch (_) {

@@ -45,6 +45,8 @@ const LABELS = {
     materials: "Materials: ",
     noMatches: "No lessons match that search. Try a lesson number or clear a filter.",
     thisWeekBadge: "Posted this week",
+    todayBadge: "Today",
+    todayFirst: "Today first",
     statusReview: "Review & practice",
     statusAssessment: "Learning check",
     statusNoClass: "No lesson posted",
@@ -75,6 +77,8 @@ const LABELS = {
     noMatches:
       "Ninguna lección coincide con esa búsqueda. Pruebe con un número de lección o quite un filtro.",
     thisWeekBadge: "Publicada esta semana",
+    todayBadge: "Hoy",
+    todayFirst: "Hoy primero",
     statusReview: "Repaso y práctica",
     statusAssessment: "Evaluación de aprendizaje",
     statusNoClass: "No hay lección publicada",
@@ -179,7 +183,10 @@ export function renderWeek(root, snapshot, inputLessons, sectionId, lang = "en")
       lessonIndex += 1;
       const actions = element("div", "day-links");
       actions.append(link("Open lesson", lesson.lessonPath));
-      actions.append(link("Optional family practice", lesson.homeworkPath));
+      const practice = link("Optional family practice", lesson.homeworkPath);
+      practice.dataset.practiceOpen = "week";
+      practice.dataset.lessonId = lesson.id;
+      actions.append(practice);
       card.append(actions);
     } else {
       const labels = {
@@ -216,7 +223,10 @@ export function renderSpotlight(root, snapshot, inputLessons, sectionId, lang = 
   card.append(focus);
   if (lesson.objective) card.append(element("p", "spotlight-objective", lesson.objective));
   const actions = element("div", "spotlight-actions");
-  actions.append(link(t.startPractice, lesson.homeworkPath, "button button-secondary"));
+  const spotlightStart = link(t.startPractice, lesson.homeworkPath, "button button-secondary");
+  spotlightStart.dataset.practiceOpen = "spotlight";
+  spotlightStart.dataset.lessonId = lesson.id;
+  actions.append(spotlightStart);
   if (lesson.familyPath) actions.append(link(t.openHelp, lesson.familyPath, "text-link"));
   card.append(actions);
   root.append(card);
@@ -286,15 +296,25 @@ export function filterHomework(homework, query, unit) {
 
 // One optional-practice card. Shared by the week-synced list and the browse-all
 // library so the two never drift apart in wording or affordances.
-function practiceCard(item, t, badge = "") {
-  const card = element("article", `homework-card${badge ? " is-this-week" : ""}`);
+function practiceCard(item, t, { badge = "", isToday = false, source = "library" } = {}) {
+  const card = element(
+    "article",
+    `homework-card${badge ? " is-this-week" : ""}${isToday ? " is-today" : ""}`,
+  );
   const meta = element("div", "homework-meta");
   meta.append(
     element("span", "", `${t.lessonWord} ${item.id.replace("-flagship", t.spotlightSuffix)}`),
     element("span", "", item.estimatedTime),
   );
   card.append(meta);
-  if (badge) card.append(element("p", "homework-day-chip", badge));
+  if (badge) {
+    const chip = element("p", "homework-day-chip", badge);
+    if (isToday) {
+      chip.append(element("span", "homework-today-badge", t.todayBadge));
+      card.setAttribute("aria-label", `${t.todayBadge}: ${item.title}`);
+    }
+    card.append(chip);
+  }
   card.append(element("h3", "", item.title));
   if (item.objective) {
     const focus = element("p", "homework-focus");
@@ -302,7 +322,10 @@ function practiceCard(item, t, badge = "") {
     card.append(focus);
   }
   const actions = element("div", "homework-actions");
-  actions.append(link(t.startPractice, item.homeworkPath));
+  const start = link(t.startPractice, item.homeworkPath);
+  start.dataset.practiceOpen = source;
+  start.dataset.lessonId = item.id;
+  actions.append(start);
   if (item.familyPath) actions.append(link(t.openHelp, item.familyPath));
   if (item.arcadePath) {
     const arcade = link(t.playArcade, item.arcadePath, "arcade-link");
@@ -338,13 +361,22 @@ export function renderWeekPractice(
 ) {
   const t = labelsFor(lang);
   const items = weekHomework(snapshot, inputLessons, overrides, sectionId);
+  const today = todayName();
+  /* A parent opens this page to answer "what did they do today?". Calendar order
+   * is the right order for the week; today's lesson is the right FIRST card.
+   * Stable otherwise — the rest keep their day order. */
+  const ordered = [
+    ...items.filter((item) => (item.days ?? []).includes(today)),
+    ...items.filter((item) => !(item.days ?? []).includes(today)),
+  ];
   grid.replaceChildren();
-  root.hidden = items.length === 0;
-  for (const item of items) {
+  root.hidden = ordered.length === 0;
+  for (const item of ordered) {
+    const isToday = (item.days ?? []).includes(today);
     const days = (item.days ?? []).map((day) => dayLabel(day, lang)).join(" · ");
-    grid.append(practiceCard(item, t, days || t.thisWeekBadge));
+    grid.append(practiceCard(item, t, { badge: days || t.thisWeekBadge, isToday, source: "week" }));
   }
-  return items.length;
+  return ordered.length;
 }
 
 export function renderHomework(root, inputLessons, overrides, options = {}) {
@@ -353,7 +385,8 @@ export function renderHomework(root, inputLessons, overrides, options = {}) {
   const filtered = filterHomework(all, options.query, options.unit);
   const limit = Number(options.limit) || filtered.length;
   root.replaceChildren();
-  for (const item of filtered.slice(0, limit)) root.append(practiceCard(item, t));
+  for (const item of filtered.slice(0, limit))
+    root.append(practiceCard(item, t, { source: "library" }));
   if (!filtered.length) root.append(element("p", "empty-state", t.noMatches));
   return { all, filtered, visible: Math.min(limit, filtered.length) };
 }

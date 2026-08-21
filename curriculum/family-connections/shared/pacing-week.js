@@ -125,7 +125,69 @@ export function pacingWeekStarts(resolvedDays) {
   return [...starts.values()].sort((a, b) => a.startDate.localeCompare(b.startDate));
 }
 
+/** Every month the plan touches, in date order, for the calendar picker. */
+export function pacingMonths(resolvedDays) {
+  const months = new Map();
+  for (const day of resolvedDays ?? []) {
+    if (!isIsoDate(day?.date)) continue;
+    const key = day.date.slice(0, 7);
+    if (months.has(key)) continue;
+    months.set(key, {
+      key,
+      label: new Intl.DateTimeFormat("en-US", {
+        month: "long",
+        year: "numeric",
+        timeZone: "UTC",
+      }).format(new Date(`${key}-01T00:00:00Z`)),
+    });
+  }
+  return [...months.values()].sort((a, b) => a.key.localeCompare(b.key));
+}
+
 /**
+ * A Monday–Friday month grid for `monthKey` ("2026-09"). School weeks only —
+ * the publisher plans five days, so a Saturday column is dead space.
+ *
+ * Cells outside the month are still rendered (`inMonth: false`) so the grid
+ * keeps its shape and a week that straddles two months can still be picked.
+ */
+export function pacingMonthGrid(resolvedDays, monthKey) {
+  if (!/^\d{4}-\d{2}$/.test(String(monthKey ?? ""))) return [];
+  const byDate = new Map((resolvedDays ?? []).map((day) => [day.date, day]));
+  /* A month the plan never reaches has no grid. Without this the function
+   * happily invents six weeks of empty cells for any date string it is given. */
+  if (![...byDate.keys()].some((date) => date.startsWith(monthKey))) return [];
+  const first = `${monthKey}-01`;
+  const start = weekStartFor(first) > first ? addDays(weekStartFor(first), -7) : weekStartFor(first);
+  const weeks = [];
+  for (let offset = 0; offset < 6; offset += 1) {
+    const weekStart = addDays(start, offset * 7);
+    if (offset > 0 && weekStart.slice(0, 7) > monthKey) break;
+    const cells = DAYS.map((dayName, index) => {
+      const date = addDays(weekStart, index);
+      const source = byDate.get(date);
+      const plan = source?.plan ?? {};
+      const lessonId = clean(plan.lessonId, 40);
+      return {
+        date,
+        dayName,
+        dayNumber: Number(date.slice(8, 10)),
+        inMonth: date.slice(0, 7) === monthKey,
+        planned: Boolean(source),
+        school: source?.schoolStatus === "school",
+        statusLabel: clean(source?.statusLabel, 60),
+        dayType: clean(plan.dayType, 40),
+        lessonId: FAMILY_LESSON_ID.test(lessonId) ? lessonId : "",
+        rawLessonId: lessonId,
+      };
+    });
+    weeks.push({ weekStart, label: formatWeekLabel(weekStart), cells });
+  }
+  return weeks;
+}
+
+/**
+ * Build one Family Connections week from the resolved pacing plan./**
  * Build one Family Connections week from the resolved pacing plan.
  *
  * @returns {{

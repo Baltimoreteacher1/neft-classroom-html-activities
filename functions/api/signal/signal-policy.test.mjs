@@ -38,3 +38,34 @@ assert.equal(sparse.ok, true);
 assert.equal(sparse.vitals[0].status, "insufficient-data");
 
 console.log("signal policy: Core Web Vitals thresholds and health alerts passed");
+
+// The family-practice counter's write surface. A closed vocabulary is the whole
+// privacy argument: an open referrer field would make this a tracking surface.
+import { normalizePracticeOpen } from "./[[path]].js";
+
+assert.deepEqual(normalizePracticeOpen({ lessonId: "3-1", source: "week" }), {
+  lessonId: "3-1",
+  source: "week",
+});
+assert.deepEqual(normalizePracticeOpen({ lessonId: "10-6", source: "LIBRARY" }), {
+  lessonId: "10-6",
+  source: "library",
+});
+assert.deepEqual(normalizePracticeOpen({ lessonId: "3-1-flagship", source: "spotlight" }), {
+  lessonId: "3-1-flagship",
+  source: "spotlight",
+});
+for (const bad of [
+  null,
+  {},
+  { lessonId: "3-1" },
+  { lessonId: "", source: "week" },
+  { lessonId: "3-1", source: "https://evil.example/referrer" },
+  { lessonId: "3-1", source: "period-602" },
+  { lessonId: "../../etc/passwd", source: "week" },
+  { lessonId: "3-1-catchup", source: "week" },
+  { lessonId: "3-1", source: "" },
+]) {
+  assert.equal(normalizePracticeOpen(bad), null, `accepted a bad practice beacon: ${JSON.stringify(bad)}`);
+}
+console.log("signal policy: family practice counter vocabulary passed");
