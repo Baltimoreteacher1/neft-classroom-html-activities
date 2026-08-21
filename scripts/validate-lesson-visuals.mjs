@@ -42,6 +42,9 @@ const ONLY = arg("--lesson");
 const SAMPLE = Number(arg("--sample", "0")) || 0;
 const CONCURRENCY = Number(arg("--concurrency", "4")) || 4;
 const PHASE_COUNT = 8; // Warmup, Objectives, Launch, Explore, Practice, Connect, Reflect, Objectives
+// A paced Learn It panel shows one line per click; no authored example runs
+// anywhere near this many, so the cap only stops a runaway, never a real walk.
+const PACE_CLICK_LIMIT = 40;
 
 /**
  * A host is HEALTHY only if it rendered something a student can actually see or
@@ -372,6 +375,36 @@ async function probeLesson(browser, id) {
           kind,
         );
         await page.waitForTimeout(1400);
+        // Opening the tab is not reaching the tool. The Learn It panel paces its
+        // worked example one line at a time, and vocab-learn-panel.js only calls
+        // mountInteractiveVisuals() from the wirePaced() completion callback —
+        // until every line is shown, the host sits in .vl-hidden with no mount
+        // flag, which reads exactly like a REGISTRY miss. Snapshotting here
+        // condemned 60 lessons whose tools mount perfectly once paced. Walk the
+        // panel to its end the way a student does, THEN collect.
+        for (let guard = 0; guard < PACE_CLICK_LIMIT; guard++) {
+          const advanced = await page.evaluate(() => {
+            const live = (el) =>
+              el instanceof HTMLElement &&
+              !!el.getClientRects().length &&
+              !el.hasAttribute("disabled");
+            const all = [...document.querySelectorAll(".vl-pace-all")].find(live);
+            if (all) return all.click(), true;
+            const next = [...document.querySelectorAll(".vl-pace-next")].find(live);
+            if (next) return next.click(), true;
+            // The paced lines live inside ONE step of the panel; the tool step
+            // is only built once the panel is advanced to it. Own controls only
+            // (.vl-*), never a generic "Next" that would drive the lesson.
+            const step = [...document.querySelectorAll(".vl-next-btn, .vl-continue-btn")].find(
+              live,
+            );
+            if (step) return step.click(), true;
+            return false;
+          });
+          if (!advanced) break;
+          await page.waitForTimeout(350);
+        }
+        await page.waitForTimeout(600);
         push(await collectHosts(page), `tab:${kind}`);
       }
     } else {
