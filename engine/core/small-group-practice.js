@@ -112,7 +112,92 @@ function questionCard(index, stem, stemEs, item = {}) {
     if (fig) card.appendChild(fig);
   }
 
+  const lens = teacherLens(item);
+  if (lens) card.appendChild(lens);
+
   return card;
+}
+
+/**
+ * Per-item teacher lens — the in-the-moment moves for THIS problem, visible
+ * only in Teacher Mode (`body.sg-is-teacher`, set by the authenticated
+ * ?teacher=1 flow in small-group-teacher-access.js).
+ *
+ * The lesson-level studio guide (teacherPanel) answers "how do I run this
+ * session"; this strip answers "what do I ask about problem 4 while six
+ * students wait". It is built ONLY from fields already authored on the item —
+ * the per-distractor probing questions in `choiceFeedback` (which already ship
+ * in the student DOM as answer feedback, so nothing new leaks) and the first
+ * hint as the nudge. No field is required: an item with neither renders no
+ * lens at all.
+ *
+ * CSS-gated rather than JS-gated on purpose: teacher access resolves ASYNC
+ * (an authenticated fetch), and practice may mount first. A hidden element
+ * that the `sg-is-teacher` class reveals is immune to that race.
+ */
+export function teacherLens(item) {
+  const probes = [];
+  if (Array.isArray(item.choices) && Array.isArray(item.choiceFeedback)) {
+    item.choices.forEach((choice, choiceIndex) => {
+      if (choiceIndex === item.correctIndex) return;
+      const feedbackLine = String(item.choiceFeedback[choiceIndex] || "").trim();
+      if (feedbackLine) probes.push({ choice, feedbackLine });
+    });
+    // Two probes cover the discussion without turning the strip into a study
+    // guide; the longest feedback lines carry the richest questions.
+    probes.sort((x, y) => y.feedbackLine.length - x.feedbackLine.length);
+    probes.length = Math.min(probes.length, 2);
+  }
+  const nudge = Array.isArray(item.hints) && item.hints.length ? String(item.hints[0]) : "";
+  const errorStep =
+    item.type === "error-analysis" && Number.isFinite(item.errorStep) ? item.errorStep : null;
+  if (!probes.length && !nudge && errorStep == null) return null;
+
+  const rows = [];
+  for (const probe of probes) {
+    rows.push(
+      `<div class="sg-lens-row"><b>If they pick “${esc(probe.choice)}”</b><span>${esc(
+        probe.feedbackLine,
+      )}</span></div>`,
+    );
+  }
+  if (errorStep != null) {
+    rows.push(
+      `<div class="sg-lens-row"><b>The error lives at step ${errorStep}</b><span>Let a student find it before you point — ask “which step would you defend?”</span></div>`,
+    );
+  }
+  if (nudge) {
+    rows.push(`<div class="sg-lens-row"><b>Nudge, not answer</b><span>${esc(nudge)}</span></div>`);
+  }
+  const lens = el("div", "sg-lens");
+  lens.innerHTML = `<div class="sg-lens-tag">👩‍🏫 Teacher lens · ask before telling</div>${rows.join("")}`;
+  return lens;
+}
+
+/**
+ * Table check — the show-me rhythm for a teacher-led table. Every third solve
+ * in a section, the just-finished card grows a group prompt: notebooks up,
+ * first steps visible. It rides INSIDE the solved card (never between cards)
+ * so pagination and Save/Resume indexes are untouched, and it is dismissible
+ * honor-system — the software cannot see a notebook, and pretending otherwise
+ * trains dismissal (the same reasoning as the no-lock notebook decision).
+ */
+export function tableCheck(problemNumber) {
+  const block = el("div", "sg-tablecheck");
+  block.setAttribute("role", "status");
+  block.innerHTML = `<span class="sg-tablecheck-icon" aria-hidden="true">📓</span><div>${biHtml(
+    `<b>Table check.</b> Everyone hold up your notebook — show your first step for #${problemNumber}.`,
+    `<b>Chequeo de mesa.</b> Todos levanten su cuaderno y muestren su primer paso del n.º ${problemNumber}.`,
+  )}</div>`;
+  const done = el("button", "sg-tablecheck-done", "We showed our work ✓");
+  done.type = "button";
+  done.onclick = () => {
+    block.classList.add("sg-tablecheck-ok");
+    done.disabled = true;
+    done.textContent = "Nice — keep going";
+  };
+  block.appendChild(done);
+  return block;
 }
 
 function feedback() {
@@ -1078,6 +1163,9 @@ export function createPracticeSection(
     );
   }
   let solved = 0;
+  // Live solves only — feeds the every-third-solve table check. Restored
+  // cards call solveItem directly and never touch this.
+  let solvedLive = 0;
   // Count each item at most once so a restored-then-resolved card can't
   // double-credit the tally.
   const counted = new Set();
@@ -1112,6 +1200,12 @@ export function createPracticeSection(
     const solve = () => {
       card?.classList.add("sg-done-all");
       solveItem(storeIndex);
+      // Show-me rhythm: every third LIVE solve in this section (restored
+      // solves bypass this closure on purpose — no ritual for last session's
+      // work). One per card, appended inside it.
+      solvedLive += 1;
+      if (solvedLive % 3 === 0 && card && !card.querySelector(".sg-tablecheck"))
+        card.appendChild(tableCheck(index + 1));
       // Hot streak in a Foundations or Catch-Up lesson: offer the Challenge
       // bridge once, as an invitation — never a requirement. Catch-up maps to
       // its base lesson's group2 sibling (every base lesson has one).

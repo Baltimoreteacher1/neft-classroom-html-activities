@@ -807,6 +807,20 @@ export function injectSmallGroupStyles(accent) {
     .sg-tool-name{color:var(--sg-ink);font-family:var(--sg-display);font-size:17px;font-weight:700}
     .sg-tool-purpose{color:var(--sg-muted);font-size:14px;font-weight:400;line-height:1.45}
     .sg-tool-instance{color:var(--sg-ink);font-size:13px;font-weight:700}
+    /* Per-item teacher lens: hidden for students, revealed by the
+       authenticated teacher flow adding body.sg-is-teacher. */
+    .sg-lens{display:none;margin-top:12px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb, var(--sg-accent, #6b5b95) 8%, var(--sg-card, #fff));border:1px dashed color-mix(in srgb, var(--sg-accent, #6b5b95) 45%, transparent)}
+    body.sg-is-teacher .sg-lens{display:block}
+    .sg-lens-tag{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--sg-accent-ink, #4a3f6b);margin-bottom:6px}
+    .sg-lens-row{display:flex;flex-direction:column;gap:2px;padding:5px 0;border-top:1px solid color-mix(in srgb, var(--sg-line, #d9dde5) 60%, transparent);font-size:14px}
+    .sg-lens-row b{color:var(--sg-ink, #232831)}
+    .sg-lens-row span{color:var(--sg-muted, #5a6170)}
+    /* Table check: the notebooks-up group rhythm inside a just-solved card. */
+    .sg-tablecheck{display:flex;align-items:flex-start;gap:10px;margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--sg-warn-bg, #fff7e8);border:1px solid var(--sg-warn, #e8b64c);font-size:15px}
+    .sg-tablecheck-icon{font-size:22px;line-height:1}
+    .sg-tablecheck-done{margin-left:auto;flex-shrink:0;padding:7px 12px;border-radius:999px;border:1px solid var(--sg-warn, #e8b64c);background:var(--sg-card, #fff);font-weight:700;font-size:13px;cursor:pointer}
+    .sg-tablecheck-ok{background:var(--sg-good-bg, #eef8ef);border-color:var(--sg-good, #58a869)}
+    .sg-tablecheck-ok .sg-tablecheck-done{border-color:var(--sg-good, #58a869);cursor:default}
     .sg-donechip{display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;padding:7px 12px;border-radius:999px;background:var(--sg-good-bg);border:1px solid var(--sg-good);color:var(--sg-good-ink);font-weight:700;font-size:14px}
     .sg-discourse{margin-top:14px;padding:16px;border:2px solid var(--sg);border-radius:14px;background:var(--sg-soft)}
     .sg-datachips{padding:14px;text-align:center}

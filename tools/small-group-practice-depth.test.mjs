@@ -62,9 +62,15 @@ for (const id of ["6-12-catchup", "5-8-catchup"]) {
 }
 
 // Level 2 must be untouched by the variety append (it has its own extending path).
+// The expected count is DERIVED (parallel bank + authored extending), not a
+// frozen number — a frozen 20 broke the moment a new extending item was
+// authored, which is exactly the kind of churn a pin should not create.
 for (const id of ["6-13-group2", "5-2-group2"]) {
   const { items, types } = summarize(id);
-  check(`${id} keeps its extending append`, items.length === 20, `${items.length} items`);
+  const config = load(id);
+  const expected =
+    (config.parallelPractice?.length || 0) + (config.practice?.extending?.length || 0);
+  check(`${id} keeps its extending append`, items.length === expected, `${items.length} items`);
   check(`${id} untouched by variety slice`, Object.keys(types).length >= 2, JSON.stringify(types));
 }
 
