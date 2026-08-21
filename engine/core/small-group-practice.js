@@ -861,6 +861,19 @@ export function collectPracticeItems(config) {
         seen.add(itemKey(item));
         items.push(tagPracticeItem(item, tier, items.length, standard));
       }
+      // The table debugging task ("Fix our table's thinking") is a deliberate
+      // group ritual, not variety filler — when the round-robin fills its six
+      // seats before reaching it (an existing error-analysis item wins the
+      // lane), the ritual silently vanishes for that lesson. Measured before
+      // this guarantee: 30/84 group1 and 18/36 catch-up lessons reached it.
+      // Presence in the config is not reachability; give it its own seat.
+      for (const tier of ["approaching", "onLevel"]) {
+        for (const item of config.practice?.[tier] || []) {
+          if (!item?.tableDebug || seen.has(itemKey(item))) continue;
+          seen.add(itemKey(item));
+          items.push(tagPracticeItem(item, tier, items.length, standard));
+        }
+      }
     }
     return items;
   }

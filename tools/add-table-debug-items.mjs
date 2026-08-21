@@ -68,6 +68,9 @@ function buildDebugItem({ item, wrongIndex }) {
   const out = {
     type: "error-analysis",
     title: TITLE,
+    // Machine marker so the practice collector can guarantee this item a seat
+    // without matching on a human-facing English title.
+    tableDebug: true,
     workedExample: [
       {
         label: "The problem",
