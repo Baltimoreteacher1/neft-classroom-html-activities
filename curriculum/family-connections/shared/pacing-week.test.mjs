@@ -48,7 +48,19 @@ assert.ok(
   week.needsReview.some((item) => item.day === "Friday" && /Catch-Up/i.test(item.reason)),
   "a catch-up day must be flagged, not silently posted as a lesson",
 );
-assert.equal(week.days[0].note, "Wellness Day", "a closed day explains itself to families");
+assert.equal(week.days[0].note, "Wellness day — no school");
+assert.equal(week.days[0].noteEs, "Día de bienestar — no hay clases");
+assert.equal(week.days[4].note, "Catch-up and practice", "the day type names itself to families");
+assert.equal(week.days[4].noteEs, "Repaso y práctica adicional");
+for (const start of ["2026-08-24", "2026-09-21", "2026-11-23", "2027-01-04", "2027-04-05"]) {
+  for (const day of buildWeekFromPacing(resolved, start, known).days) {
+    assert.equal(
+      Boolean(day.note),
+      Boolean(day.noteEs),
+      `${start} ${day.day}: a day note must exist in both languages or neither`,
+    );
+  }
+}
 
 // The planner's private working language must never reach a family draft.
 const privateNotes = baseline.days
@@ -72,7 +84,8 @@ const edited = resolveYear(baseline, {
 const editedWeek = buildWeekFromPacing(edited, "2026-09-21", known);
 assert.equal(editedWeek.days[1].status, "assessment");
 assert.equal(editedWeek.days[1].lessonId, "");
-assert.equal(editedWeek.days[1].note, "Unit 3 Quiz");
+assert.equal(editedWeek.days[1].note, "Learning check");
+assert.equal(editedWeek.days[1].noteEs, "Evaluación de aprendizaje");
 assert.equal(editedWeek.lessonCount, 2);
 
 // A lesson the family page cannot open becomes an honest review day.

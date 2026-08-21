@@ -30,7 +30,8 @@ export function createDefaultSnapshot() {
           label: "This Week",
           startDate: "",
           note: "Check back for this week's lesson plan and optional family practice.",
-          days: DAYS.map((day) => ({ day, status: "no-class", lessonId: "", note: "" })),
+          noteEs: "Vuelva pronto para ver el plan de lecciones de esta semana y la práctica familiar opcional.",
+          days: DAYS.map((day) => ({ day, status: "no-class", lessonId: "", note: "", noteEs: "" })),
         },
       },
     ],
@@ -102,6 +103,17 @@ export function normalizeLessons(input) {
   }
   return [...byId.values()].sort((a, b) => a.unit - b.unit || a.lesson - b.lesson);
 }
+
+/* Spanish falls back to English rather than to nothing: a family that switched
+ * to Español still needs to know what is happening, and a blank note reads as a
+ * teacher who posted nothing. The publisher's job is to make the fallback rare. */
+export function pickLang(en, es, lang) {
+  const spanish = String(es ?? "").trim();
+  return lang === "es" && spanish ? spanish : String(en ?? "");
+}
+
+export const weekNote = (week, lang) => pickLang(week?.note, week?.noteEs, lang);
+export const dayNote = (entry, lang) => pickLang(entry?.note, entry?.noteEs, lang);
 
 export function weekHasMeaningfulContent(section) {
   return (section?.week?.days ?? []).some(

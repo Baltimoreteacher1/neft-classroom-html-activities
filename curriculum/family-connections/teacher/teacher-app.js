@@ -12,6 +12,7 @@ import {
 import { loadDraft, loadHistory, publishDraft, saveDraft } from "../shared/api-client.js";
 import { resolveYear } from "../../../shared/pacing/engine.js";
 import { buildWeekFromPacing, pacingWeekStarts, weekStartFor } from "../shared/pacing-week.js";
+import { buildFamilyWeekNote } from "../shared/family-week-note.js";
 import {
   renderCollection,
   renderCopyEditor,
@@ -39,6 +40,7 @@ const state = {
   previewed: false,
   pacingBaseline: null,
   pacingStarts: [],
+  noteBank: null,
 };
 
 const byId = (id) => document.getElementById(id);
@@ -126,12 +128,55 @@ function renderWeekEditor() {
   byId("week-label").value = current.week.label;
   byId("week-start").value = current.week.startDate;
   byId("week-note").value = current.week.note;
+  byId("week-note-es").value = current.week.noteEs ?? "";
   renderWeekdayEditors(byId("weekday-editors"), current, state.lessons, (dayName, entry) => {
     const index = current.week.days.findIndex((day) => day.day === dayName);
     current.week.days[index] = entry;
     markDirty();
   });
   updateCanvasConnection();
+}
+
+/* ── The weekly note, in both languages ────────────────────────────────────────
+ * Written from the lessons that are posted, using the same curated bilingual
+ * material families already read in the homework. Never machine-translated: if
+ * a sentence has no curated Spanish it is dropped from BOTH lanes rather than
+ * leaving English in the Spanish column. */
+async function familyNoteBank() {
+  if (state.noteBank) return state.noteBank;
+  const response = await fetch("/data/family-week-notes.json", { cache: "no-store" });
+  if (!response.ok) throw new Error("The curated family notes are unavailable right now.");
+  state.noteBank = await response.json();
+  return state.noteBank;
+}
+
+async function writeWeekNotes({ silent = false } = {}) {
+  const status = byId("week-note-status");
+  const current = section();
+  try {
+    const bank = await familyNoteBank();
+    const note = buildFamilyWeekNote(current.week.days, bank);
+    if (!note.en) {
+      status.textContent =
+        "Post at least one lesson this week and the note will write itself in both languages.";
+      return null;
+    }
+    current.week.note = note.en;
+    current.week.noteEs = note.es;
+    byId("week-note").value = note.en;
+    byId("week-note-es").value = note.es;
+    markDirty("Weekly note rewritten from this week's lessons");
+    renderPreview(false);
+    const gaps = note.missing.length
+      ? ` No curated family notes yet for ${note.missing.join(", ")} — check the Spanish before publishing.`
+      : "";
+    status.textContent = `Written from ${note.lessonIds.join(", ")} in English and Spanish.${gaps}`;
+    if (!silent) notify("Weekly note written in English and Spanish. Edit it before publishing.");
+    return note;
+  } catch (error) {
+    status.textContent = error.message;
+    return null;
+  }
 }
 
 /* ── Fill from the pacing plan ─────────────────────────────────────────────────
@@ -227,6 +272,7 @@ async function applyPacingFill() {
     current.week.days = week.days;
     markDirty(`Week filled from the pacing plan (${week.label})`);
     renderWeekEditor();
+    await writeWeekNotes({ silent: true });
     renderPreview(false);
     const source = sectionCode ? `class ${sectionCode}` : "the shared plan";
     const count = week.needsReview.length;
@@ -518,6 +564,7 @@ function bindEvents() {
     ["week-label", "weekLabel"],
     ["week-start", "startDate"],
     ["week-note", "note"],
+    ["week-note-es", "noteEs"],
   ]) {
     byId(id).addEventListener("input", (event) => setSectionValue(key, event.target.value));
   }
@@ -570,6 +617,7 @@ function bindEvents() {
   });
   byId("download-canvas-json").addEventListener("click", downloadCanvasExport);
   byId("pacing-fill-apply").addEventListener("click", applyPacingFill);
+  byId("week-note-build").addEventListener("click", () => writeWeekNotes());
   window.addEventListener("beforeunload", (event) => {
     if (state.dirty) event.preventDefault();
   });

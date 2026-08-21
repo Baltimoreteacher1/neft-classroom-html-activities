@@ -132,6 +132,16 @@ assert.match(renderer, /renderWeekPractice/);
 assert.match(renderer, /Practice together/);
 assert.match(renderer, /Práctica juntos/);
 assert.match(renderer, /absolutePublicUrl/);
+// Every family-visible string has to answer to the language toggle.
+assert.match(renderer, /dayNote\(entry, lang\)/);
+assert.match(renderer, /weekNote\(section\.week, lang\)/);
+assert.match(app, /weekNote\(section\.week, lang\)/);
+assert.match(app, /familyWeekSpeech\(state\.snapshot, state\.lessons, state\.sectionId, es \? "es" : "en"\)/);
+// Day statuses must read from the bilingual label table, not inline English.
+assert.match(renderer, /review: t\.statusReview/);
+assert.match(renderer, /assessment: t\.statusAssessment/);
+assert.match(renderer, /"no-class": t\.statusNoClass/);
+assert.match(renderer, /statusReview: "Repaso y práctica"/);
 assert.match(app, /renderWeekPractice/);
 assert.match(app, /posted this week/);
 assert.ok(

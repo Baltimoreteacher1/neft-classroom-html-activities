@@ -1,6 +1,11 @@
 import { downloadWeekCalendar } from "./calendar-event.js";
 import { translationsEs } from "./shared/copy-defaults.js";
-import { createDefaultSnapshot, resolveSection, safeExternalUrl } from "./shared/model.js";
+import {
+  createDefaultSnapshot,
+  resolveSection,
+  safeExternalUrl,
+  weekNote,
+} from "./shared/model.js";
 import {
   familyWeekShare,
   familyWeekSpeech,
@@ -153,7 +158,7 @@ function renderExperience() {
   renderSpotlight(byId("week-spotlight"), state.snapshot, state.lessons, state.sectionId, lang);
   renderWeekVocab(byId("week-vocab"), state.snapshot, state.lessons, state.sectionId, lang);
   byId("published-week-label").textContent = section.week.label;
-  byId("published-week-note").textContent = section.week.note;
+  byId("published-week-note").textContent = weekNote(section.week, lang);
   renderFreshness();
   updateWeekActions(section, lang);
   renderAnnouncements(byId("family-announcements"), byId("announcement-grid"), state.snapshot);
@@ -307,7 +312,7 @@ function bindEvents() {
     window.speechSynthesis.cancel();
     const es = state.preferences.language === "es";
     const utterance = new SpeechSynthesisUtterance(
-      familyWeekSpeech(state.snapshot, state.lessons, state.sectionId),
+      familyWeekSpeech(state.snapshot, state.lessons, state.sectionId, es ? "es" : "en"),
     );
     utterance.lang = es ? "es-US" : "en-US";
     const voice = pickVoice(es ? "es" : "en");

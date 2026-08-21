@@ -40,6 +40,38 @@ const STATUS_BY_DAY_TYPE = Object.freeze({
   "Lost Day": "no-class",
 });
 
+/* Every family-facing day note comes from one of these two closed vocabularies,
+ * both authored in English and Spanish. `planTitle` is deliberately NOT used:
+ * it is free text ("Flex / Catch-Up"), so it can neither be translated honestly
+ * nor guaranteed to read like something written for a parent. */
+const CLOSED_DAY_STATUS = Object.freeze({
+  Break: { en: "Break — no school", es: "Vacaciones — no hay clases" },
+  "Holiday / School Closed": {
+    en: "Holiday — school closed",
+    es: "Día feriado — escuela cerrada",
+  },
+  "PD — No Students": {
+    en: "Teacher training day — no students",
+    es: "Día de formación docente — sin estudiantes",
+  },
+  "Half Day / Early Release": {
+    en: "Half day — early release",
+    es: "Medio día — salida temprana",
+  },
+  "Wellness Day": { en: "Wellness day — no school", es: "Día de bienestar — no hay clases" },
+});
+
+const CLOSED_DAY_TYPE = Object.freeze({
+  Review: { en: "Review and practice", es: "Repaso y práctica" },
+  "Catch-Up": { en: "Catch-up and practice", es: "Repaso y práctica adicional" },
+  Flex: { en: "Practice and questions", es: "Práctica y preguntas" },
+  Project: { en: "Project work", es: "Trabajo en el proyecto" },
+  Assessment: { en: "Learning check", es: "Evaluación de aprendizaje" },
+  "MCAP / Testing": { en: "State testing", es: "Exámenes estatales" },
+});
+
+const NO_SCHOOL = Object.freeze({ en: "No school", es: "No hay clases" });
+
 const isIsoDate = (value) => typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
 
 const clean = (value, maximum = 180) =>
@@ -113,13 +145,15 @@ export function buildWeekFromPacing(resolvedDays, startDate, knownLessonIds) {
   const needsReview = [];
   const days = DAYS.map((dayName, index) => {
     const source = byDate.get(addDays(startDate, index));
-    const entry = { day: dayName, status: "no-class", lessonId: "", note: "" };
+    const entry = { day: dayName, status: "no-class", lessonId: "", note: "", noteEs: "" };
     if (!source) {
       needsReview.push({ day: dayName, reason: "This date is outside the pacing plan." });
       return entry;
     }
     if (source.schoolStatus !== "school") {
-      entry.note = clean(source.statusLabel) || "No school";
+      const label = CLOSED_DAY_STATUS[clean(source.statusLabel, 60)] ?? NO_SCHOOL;
+      entry.note = label.en;
+      entry.noteEs = label.es;
       return entry;
     }
     const plan = source.plan ?? {};
@@ -134,7 +168,9 @@ export function buildWeekFromPacing(resolvedDays, startDate, knownLessonIds) {
         /* A lesson day the family page cannot link is worse than an honest
          * review day — say so instead of publishing an empty lesson card. */
         entry.status = "review";
-        entry.note = clean(plan.planTitle);
+        const label = CLOSED_DAY_TYPE.Review;
+        entry.note = label.en;
+        entry.noteEs = label.es;
         needsReview.push({
           day: dayName,
           reason: lessonId
@@ -143,7 +179,11 @@ export function buildWeekFromPacing(resolvedDays, startDate, knownLessonIds) {
         });
       }
     } else if (entry.status !== "no-class") {
-      entry.note = clean(plan.planTitle);
+      const label = CLOSED_DAY_TYPE[dayType];
+      if (label) {
+        entry.note = label.en;
+        entry.noteEs = label.es;
+      }
     }
     if (dayType === "Catch-Up" || dayType === "Flex" || dayType === "Project") {
       needsReview.push({

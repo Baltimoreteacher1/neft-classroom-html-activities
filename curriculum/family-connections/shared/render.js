@@ -1,10 +1,12 @@
 import {
   absolutePublicUrl,
+  dayNote,
   mergeHomework,
   normalizeLessons,
   resolveSection,
   weekHasMeaningfulContent,
   weekHomework,
+  weekNote,
 } from "./model.js";
 
 function element(tag, className, text) {
@@ -43,6 +45,13 @@ const LABELS = {
     materials: "Materials: ",
     noMatches: "No lessons match that search. Try a lesson number or clear a filter.",
     thisWeekBadge: "Posted this week",
+    statusReview: "Review & practice",
+    statusAssessment: "Learning check",
+    statusNoClass: "No lesson posted",
+    statusUpdateSoon: "Update coming soon",
+    checkBack: "Check back for an update.",
+    lessonWord: "Lesson",
+    spotlightSuffix: " · Spotlight",
     prompts: [
       "Ask them to teach you one step.",
       "Ask what part was tricky.",
@@ -66,6 +75,13 @@ const LABELS = {
     noMatches:
       "Ninguna lección coincide con esa búsqueda. Pruebe con un número de lección o quite un filtro.",
     thisWeekBadge: "Publicada esta semana",
+    statusReview: "Repaso y práctica",
+    statusAssessment: "Evaluación de aprendizaje",
+    statusNoClass: "No hay lección publicada",
+    statusUpdateSoon: "Pronto habrá novedades",
+    checkBack: "Vuelva pronto para ver una actualización.",
+    lessonWord: "Lección",
+    spotlightSuffix: " · Destacada",
     prompts: [
       "Pídale que le enseñe un paso.",
       "Pregunte qué parte fue difícil.",
@@ -148,11 +164,12 @@ export function renderWeek(root, snapshot, inputLessons, sectionId, lang = "en")
         element(
           "strong",
           "lesson-number",
-          `Lesson ${lesson.id.replace("-flagship", " · Spotlight")}`,
+          `${t.lessonWord} ${lesson.id.replace("-flagship", t.spotlightSuffix)}`,
         ),
       );
       card.append(element("p", "lesson-title", lesson.title));
-      if (entry.note) card.append(element("p", "day-note", entry.note));
+      const note = dayNote(entry, lang);
+      if (note) card.append(element("p", "day-note", note));
       const talk = element("p", "day-talk");
       talk.append(
         element("span", "day-talk-label", `${t.talk}: `),
@@ -166,12 +183,12 @@ export function renderWeek(root, snapshot, inputLessons, sectionId, lang = "en")
       card.append(actions);
     } else {
       const labels = {
-        review: "Review & practice",
-        assessment: "Learning check",
-        "no-class": "No lesson posted",
+        review: t.statusReview,
+        assessment: t.statusAssessment,
+        "no-class": t.statusNoClass,
       };
-      card.append(element("strong", "lesson-number", labels[entry.status] ?? "Update coming soon"));
-      card.append(element("p", "day-note", entry.note || "Check back for an update."));
+      card.append(element("strong", "lesson-number", labels[entry.status] ?? t.statusUpdateSoon));
+      card.append(element("p", "day-note", dayNote(entry, lang) || t.checkBack));
     }
     root.append(card);
   }
@@ -272,7 +289,10 @@ export function filterHomework(homework, query, unit) {
 function practiceCard(item, t, badge = "") {
   const card = element("article", `homework-card${badge ? " is-this-week" : ""}`);
   const meta = element("div", "homework-meta");
-  meta.append(element("span", "", `Lesson ${item.id}`), element("span", "", item.estimatedTime));
+  meta.append(
+    element("span", "", `${t.lessonWord} ${item.id.replace("-flagship", t.spotlightSuffix)}`),
+    element("span", "", item.estimatedTime),
+  );
   card.append(meta);
   if (badge) card.append(element("p", "homework-day-chip", badge));
   card.append(element("h3", "", item.title));
@@ -338,16 +358,17 @@ export function renderHomework(root, inputLessons, overrides, options = {}) {
   return { all, filtered, visible: Math.min(limit, filtered.length) };
 }
 
-export function familyWeekSpeech(snapshot, inputLessons, sectionId) {
+export function familyWeekSpeech(snapshot, inputLessons, sectionId, lang = "en") {
   const byId = new Map(normalizeLessons(inputLessons).map((lesson) => [lesson.id, lesson]));
   const section = resolveSection(snapshot, sectionId);
   const days = (section.week?.days ?? []).map((entry) => {
     const lesson = byId.get(entry.lessonId);
+    const note = dayNote(entry, lang);
     if (entry.status === "lesson" && lesson)
-      return `${entry.day}: Lesson ${lesson.id}, ${lesson.title}. ${entry.note}`;
-    return `${entry.day}: ${entry.note || entry.status.replace("-", " ")}.`;
+      return `${dayLabel(entry.day, lang)}: ${lesson.title}. ${note}`;
+    return `${dayLabel(entry.day, lang)}: ${note || entry.status.replace("-", " ")}.`;
   });
-  return `${section.week?.label}. ${section.label}. ${section.week?.note} ${days.join(" ")}`;
+  return `${section.week?.label}. ${section.label}. ${weekNote(section.week, lang)} ${days.join(" ")}`;
 }
 
 // Plain-text week summary for the Email / Text / calendar description actions.
@@ -368,13 +389,15 @@ export function familyWeekShare(snapshot, inputLessons, sectionId, lang = "en") 
   const linked = new Set();
   const lines = (section.week?.days ?? []).flatMap((entry) => {
     const lesson = byId.get(entry.lessonId);
+    const note = dayNote(entry, lang);
+    const day = dayLabel(entry.day, lang);
     if (entry.status === "lesson" && lesson) {
-      const line = `${entry.day}: ${lesson.title}${entry.note ? ` — ${entry.note}` : ""}`;
+      const line = `${day}: ${lesson.title}${note ? ` — ${note}` : ""}`;
       if (linked.has(lesson.id)) return [line];
       linked.add(lesson.id);
       return [line, `  ${practiceLabel}: ${absolutePublicUrl(lesson.homeworkPath)}`];
     }
-    return [`${entry.day}: ${entry.note || statusLabel[entry.status] || ""}`.trim()];
+    return [`${day}: ${note || statusLabel[entry.status] || ""}`.trim()];
   });
   const subject = `${es ? "Matemáticas esta semana" : "Math this week"} · ${weekLabel}`;
   const intro = es
@@ -383,6 +406,9 @@ export function familyWeekShare(snapshot, inputLessons, sectionId, lang = "en") 
   const closer = es
     ? "La práctica familiar es opcional y nunca se califica."
     : "Family practice is optional and never graded.";
-  const body = [subject, "", intro, "", ...lines, "", closer].join("\n");
+  const message = weekNote(section.week, lang);
+  const body = [subject, "", intro, ...(message ? ["", message] : []), "", ...lines, "", closer].join(
+    "\n",
+  );
   return { subject, body };
 }

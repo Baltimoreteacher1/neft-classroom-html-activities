@@ -255,3 +255,39 @@ textarea { resize: vertical; }
     flex: 1 1 100%;
   }
 }
+
+/* Both language lanes side by side — a Spanish field parked below the fold is a
+   Spanish field that stays empty. */
+.note-lanes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.note-build {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.note-build-hint,
+.note-build-status {
+  color: var(--muted, #5a6b73);
+  font-size: 0.84rem;
+}
+
+.note-build-hint {
+  flex: 1 1 16rem;
+}
+
+.note-build-status {
+  margin: 0.5rem 0 0;
+}
+
+@media (max-width: 52rem) {
+  .note-lanes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

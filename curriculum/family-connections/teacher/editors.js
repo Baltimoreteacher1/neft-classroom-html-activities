@@ -53,11 +53,17 @@ export function renderWeekdayEditors(root, section, lessons, onChange) {
     }
     lesson.disabled = entry.status !== "lesson";
     lessonLabel.append(lesson);
-    const noteLabel = node("label", "", "Family note");
+    const noteLabel = node("label", "", "Family note (English)");
     const note = node("input");
     note.maxLength = 180;
     note.value = entry.note ?? "";
     noteLabel.append(note);
+    const noteEsLabel = node("label", "", "Nota (Español)");
+    const noteEs = node("input");
+    noteEs.maxLength = 180;
+    noteEs.value = entry.noteEs ?? "";
+    noteEs.lang = "es";
+    noteEsLabel.append(noteEs);
     const update = () => {
       lesson.disabled = status.value !== "lesson";
       onChange(dayName, {
@@ -65,12 +71,14 @@ export function renderWeekdayEditors(root, section, lessons, onChange) {
         status: status.value,
         lessonId: lesson.value,
         note: note.value,
+        noteEs: noteEs.value,
       });
     };
     status.addEventListener("change", update);
     lesson.addEventListener("change", update);
     note.addEventListener("input", update);
-    card.append(statusLabel, lessonLabel, noteLabel);
+    noteEs.addEventListener("input", update);
+    card.append(statusLabel, lessonLabel, noteLabel, noteEsLabel);
     root.append(card);
   }
 }

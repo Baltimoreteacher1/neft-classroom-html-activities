@@ -18,6 +18,14 @@ for (const expected of [
   'src="./canvas-direct.js"',
 ]) assert.ok(html.includes(expected), `Missing teacher scheduler contract: ${expected}`);
 
+// The weekly note ships in both languages or it is not honest bilingual copy.
+for (const expected of [
+  'id="week-note-es"',
+  'id="week-note-build"',
+  'id="week-note-status"',
+  'lang="es"',
+]) assert.ok(html.includes(expected), `Missing bilingual note contract: ${expected}`);
+
 // Fill-from-the-plan: the publisher must not become a second pacing schedule.
 for (const expected of [
   'id="pacing-fill"',
@@ -30,6 +38,16 @@ assert.match(teacherApp, /buildWeekFromPacing/);
 assert.match(teacherApp, /pacing-baseline-2026-27\.json/);
 assert.match(teacherApp, /api\/pacing\/state/);
 assert.match(teacherApp, /window\.confirm/, "filling must not silently discard a planned week");
+assert.match(teacherApp, /buildFamilyWeekNote/);
+assert.match(teacherApp, /family-week-notes\.json/);
+const weekNoteModule = (await readFile(new URL("../shared/family-week-note.js", root), "utf8"))
+  .replace(/\/\*[\s\S]*?\*\//g, "")
+  .replace(/^\s*\/\/.*$/gm, "");
+assert.doesNotMatch(
+  weekNoteModule,
+  /translate|es:\s*\w+\.en\b/i,
+  "Spanish must be curated, never derived from the English lane",
+);
 const pacingWeek = (await readFile(new URL("../shared/pacing-week.js", root), "utf8"))
   .replace(/\/\*[\s\S]*?\*\//g, "")
   .replace(/^\s*\/\/.*$/gm, "");
