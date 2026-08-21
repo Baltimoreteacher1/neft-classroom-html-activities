@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCAP Diagnostic Testing Suite · Grade 6 Math</title>
+  <meta name="description" content="Official MCAP & State Assessment Computer-Based Testing (CBT) Diagnostic Suite with interactive items, instant scoring, domain mastery radar, and real-time misconception remediation." />
+  <link rel="icon" href="/assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/shared.css" />
+  <script src="/assets/mcap-interactive-items.js"></script>
+  <script src="/assets/mcap-misconception-remediator.js"></script>
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-dark: #0f766e;
+      --primary-light: #14b8a6;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --correct: #16a34a;
+      --incorrect: #dc2626;
+      --radius: 12px;
+      --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 60px;
+    }
+    .cbt-topbar {
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+    .cbt-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.01em;
+    }
+    .cbt-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cbt-tool-btn {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .cbt-tool-btn:hover { background: #334155; color: #fff; }
+    .cbt-timer {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      background: #1e293b;
+      padding: 6px 12px;
+      border-radius: 8px;
+      color: #38bdf8;
+      border: 1px solid #334155;
+    }
+    .container {
+      max-width: 960px;
+      margin: 24px auto;
+      padding: 0 20px;
+    }
+    .domain-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .domain-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .domain-card:hover { border-color: var(--primary-light); transform: translateY(-2px); }
+    .domain-card.active {
+      border-color: var(--primary);
+      background: #f0fdfa;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.12);
+    }
+    .domain-code { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 700; color: var(--primary-dark); }
+    .domain-title { font-weight: 700; font-size: 0.95rem; margin-top: 4px; color: var(--text); }
+    .test-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .q-badge {
+      background: #f0fdfa;
+      color: var(--primary-dark);
+      border: 1px solid #99f6e4;
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .q-stem {
+      font-size: 1.12rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .option-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 18px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 1rem;
+      font-weight: 500;
+      background: #fff;
+    }
+    .option-item:hover { border-color: var(--primary-light); background: #f8fafc; }
+    .option-item.selected { border-color: var(--primary); background: #f0fdfa; }
+    .option-item.correct { border-color: var(--correct); background: #f0fdf4; color: #166534; font-weight: 700; }
+    .option-item.incorrect { border-color: var(--incorrect); background: #fef2f2; color: #991b1b; }
+    .option-letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      margin-right: 14px;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+    }
+    .btn-submit {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-submit:hover { background: var(--primary-dark); }
+    .btn-next {
+      background: #0f172a;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .feedback-banner {
+      margin-top: 20px;
+      padding: 16px 20px;
+      border-radius: 10px;
+      display: none;
+    }
+    .feedback-banner.show { display: block; }
+    .feedback-banner.is-correct { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .feedback-banner.is-incorrect { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .remedy-callout {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #fca5a5;
+    }
+    .remedy-btn {
+      background: #dc2626;
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .cbt-formula-drawer {
+      display: none;
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      width: 340px;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      z-index: 1000;
+      padding: 18px;
+    }
+    .cbt-formula-drawer.open { display: block; }
+  </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+  <header class="cbt-topbar">
+    <div class="cbt-brand">
+      <span style="background:#0d9488; padding:4px 8px; border-radius:6px; font-size:0.8rem;">MCAP CBT</span>
+      <span>Grade 6 Math Diagnostic Suite</span>
+    </div>
+    <div class="cbt-tools">
+      <div class="cbt-timer" id="cbt-timer-display">⏱ 45:00</div>
+      <button type="button" class="cbt-tool-btn" id="cbt-formula-btn">📐 Formula Sheet</button>
+      <button type="button" class="cbt-tool-btn" id="cbt-tts-btn">🔊 Read Aloud</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="domain-selector" id="domain-selector">
+      <div class="domain-card active" data-domain="all">
+        <div class="domain-code">ALL DOMAINS</div>
+        <div class="domain-title">Diagnostic Fleet</div>
+      </div>
+      <div class="domain-card" data-domain="NS">
+        <div class="domain-code">6.NS</div>
+        <div class="domain-title">The Number System</div>
+      </div>
+      <div class="domain-card" data-domain="RP">
+        <div class="domain-code">6.RP</div>
+        <div class="domain-title">Ratios & Rates</div>
+      </div>
+      <div class="domain-card" data-domain="EE">
+        <div class="domain-code">6.EE</div>
+        <div class="domain-title">Expressions & Eqns</div>
+      </div>
+      <div class="domain-card" data-domain="G">
+        <div class="domain-code">6.G</div>
+        <div class="domain-title">Geometry & Nets</div>
+      </div>
+      <div class="domain-card" data-domain="SP">
+        <div class="domain-code">6.SP</div>
+        <div class="domain-title">Statistics & Plots</div>
+      </div>
+    </div>
+
+    <div class="test-card" id="test-card">
+      <div class="q-header">
+        <span class="q-badge" id="q-standard-badge">Standard: 6.NS.C.8 · Item 1 of 5</span>
+        <span style="font-size:0.85rem; color:var(--text-muted); font-weight:600;" id="q-score-display">Score: 0 / 0</span>
+      </div>
+
+      <div class="q-stem" id="q-stem-text">
+        Plot point A at (3, -4) and point B at (-2, -4) on the coordinate plane below. What is the horizontal distance between Point A and Point B?
+      </div>
+
+      <div id="q-interactive-mount" style="margin: 20px 0;"></div>
+      <div class="options-grid" id="options-container"></div>
+
+      <div class="feedback-banner" id="feedback-banner">
+        <div id="feedback-message"></div>
+        <div class="remedy-callout" id="remedy-callout" style="display:none;">
+          <span style="font-size:0.9rem; font-weight:600;">Conceptual Misconception Detected</span>
+          <button type="button" class="remedy-btn" id="launch-remedy-btn">View Targeted Micro-Lesson &rarr;</button>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button type="button" class="btn-submit" id="btn-submit">Check & Verify</button>
+        <button type="button" class="btn-next" id="btn-next" style="display:none;">Next Question &rarr;</button>
+      </div>
+    </div>
+  </main>
+
+  <aside class="cbt-formula-drawer" id="formula-drawer">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:8px; margin-bottom:12px;">
+      <h4 style="margin:0; font-size:15px; color:#0f172a;">Grade 6 Mathematics Reference Sheet</h4>
+      <button type="button" id="close-formula-drawer" style="background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+    </div>
+    <div style="font-size:13px; color:#334155; line-height:1.6;">
+      <p style="margin-bottom:8px;"><strong>Triangle:</strong> Area = ½ × b × h</p>
+      <p style="margin-bottom:8px;"><strong>Parallelogram:</strong> Area = b × h</p>
+      <p style="margin-bottom:8px;"><strong>Trapezoid:</strong> Area = ½ × (b₁ + b₂) × h</p>
+      <p style="margin-bottom:8px;"><strong>Right Rectangular Prism:</strong><br>Volume = l × w × h</p>
+      <p style="margin-bottom:8px;"><strong>Surface Area:</strong> Sum of the areas of all faces.</p>
+    </div>
+  </aside>
+
+  <script>
+    const MCAP_ITEMS = [
+      {
+        id: 'cbt-1',
+        domain: 'NS',
+        standard: '6.NS.C.8',
+        stem: 'Point A is at (3, -4) and Point B is at (-2, -4). What is the horizontal distance between Point A and Point B?',
+        interactiveType: 'coordinate-plane',
+        interactiveConfig: { minX: -6, maxX: 6, minY: -6, maxY: 6, initialPoints: [{x:3, y:-4}, {x:-2, y:-4}] },
+        choices: [
+          '5 units',
+          '1 unit',
+          '-5 units',
+          '7 units'
+        ],
+        correctIndex: 0,
+        misconceptionTags: [null, 'coordinate-quadrant-swap', 'sign-reflection-error', 'coordinate-quadrant-swap'],
+        explanation: 'Distance = |3 - (-2)| = |3 + 2| = 5 units.'
+      },
+      {
+        id: 'cbt-2',
+        domain: 'NS',
+        standard: '6.NS.A.1',
+        stem: 'A baker has 3/4 pound of flour. Each mini-cake requires 1/8 pound of flour. How many full mini-cakes can the baker make?',
+        interactiveType: 'fraction-division',
+        interactiveConfig: { dividend: { num: 3, den: 4 }, divisor: { num: 1, den: 8 } },
+        choices: [
+          '6 mini-cakes',
+          '3/32 of a cake',
+          '4 mini-cakes',
+          '8 mini-cakes'
+        ],
+        correctIndex: 0,
+        misconceptionTags: [null, 'fraction-division-inversion', 'fraction-division-inversion', 'fraction-division-inversion'],
+        explanation: '3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6 cakes.'
+      },
+      {
+        id: 'cbt-3',
+        domain: 'EE',
+        standard: '6.EE.B.8',
+        stem: 'A student needs to score at least 85 on their exam to earn an A (score ≥ 85). Which inequality graph correctly models this condition?',
+        interactiveType: 'inequality-graph',
+        interactiveConfig: { min: 80, max: 90, initialPoint: 85, initialCircleType: 'closed', initialDirection: 'right' },
+        choices: [
+          'Closed circle at 85 with ray pointing right (≥ 85)',
+          'Open circle at 85 with ray pointing right (> 85)',
+          'Closed circle at 85 with ray pointing left (≤ 85)',
+          'Open circle at 85 with ray pointing left (< 85)'
+        ],
+        correctIndex: 0,
+        misconceptionTags: [null, 'inequality-circle-type', 'inequality-circle-type', 'inequality-circle-type'],
+        explanation: '"At least 85" means s ≥ 85. The closed circle includes 85, and the ray extends right to larger numbers.'
+      },
+      {
+        id: 'cbt-4',
+        domain: 'G',
+        standard: '6.G.A.4',
+        stem: 'A gift box is a rectangular prism with length 4 cm, width 3 cm, and height 2 cm. What is the total surface area of the box?',
+        interactiveType: null,
+        choices: [
+          '52 sq cm',
+          '24 sq cm',
+          '26 sq cm',
+          '48 sq cm'
+        ],
+        correctIndex: 0,
+        misconceptionTags: [null, 'surface-area-missed-face', 'surface-area-missed-face', 'surface-area-missed-face'],
+        explanation: 'Surface area = 2(4×3 + 4×2 + 3×2) = 2(12 + 8 + 6) = 2(26) = 52 sq cm.'
+      },
+      {
+        id: 'cbt-5',
+        domain: 'SP',
+        standard: '6.SP.B.5',
+        stem: 'The test scores of five students are 72, 76, 85, 94, and 98. What is the median test score shown in the box plot?',
+        interactiveType: 'box-plot',
+        interactiveConfig: { min: 70, max: 100, q1: 76, median: 85, q3: 94 },
+        choices: [
+          '85',
+          '85.0 (Mean)',
+          '76 (Q1)',
+          '28 (Range)'
+        ],
+        correctIndex: 0,
+        misconceptionTags: [null, 'box-plot-median-confusion', 'box-plot-median-confusion', 'box-plot-median-confusion'],
+        explanation: 'The ordered scores are 72, 76, 85, 94, 98. The middle number (median) is 85.'
+      }
+    ];
+
+    let currentItemIndex = 0;
+    let selectedOption = null;
+    let score = 0;
+    let answeredCount = 0;
+
+    const stemEl = document.getElementById('q-stem-text');
+    const standardBadge = document.getElementById('q-standard-badge');
+    const mountEl = document.getElementById('q-interactive-mount');
+    const optionsContainer = document.getElementById('options-container');
+    const feedbackBanner = document.getElementById('feedback-banner');
+    const feedbackMsg = document.getElementById('feedback-message');
+    const remedyCallout = document.getElementById('remedy-callout');
+    const launchRemedyBtn = document.getElementById('launch-remedy-btn');
+    const btnSubmit = document.getElementById('btn-submit');
+    const btnNext = document.getElementById('btn-next');
+    const scoreDisplay = document.getElementById('q-score-display');
+
+    function renderItem(idx) {
+      const item = MCAP_ITEMS[idx];
+      selectedOption = null;
+      feedbackBanner.className = 'feedback-banner';
+      remedyCallout.style.display = 'none';
+      btnSubmit.style.display = 'inline-block';
+      btnNext.style.display = 'none';
+
+      standardBadge.textContent = 'Standard: ' + item.standard + ' · Item ' + (idx + 1) + ' of ' + MCAP_ITEMS.length;
+      stemEl.textContent = item.stem;
+      scoreDisplay.textContent = 'Score: ' + score + ' / ' + answeredCount;
+
+      mountEl.innerHTML = '';
+      if (item.interactiveType === 'coordinate-plane' && window.MCAPInteractive) {
+        MCAPInteractive.renderCoordinatePlane(mountEl, item.interactiveConfig);
+      } else if (item.interactiveType === 'fraction-division' && window.MCAPInteractive) {
+        MCAPInteractive.renderFractionModeler(mountEl, item.interactiveConfig);
+      } else if (item.interactiveType === 'inequality-graph' && window.MCAPInteractive) {
+        MCAPInteractive.renderInequalityGrapher(mountEl, item.interactiveConfig);
+      } else if (item.interactiveType === 'box-plot' && window.MCAPInteractive) {
+        MCAPInteractive.renderBoxPlot(mountEl, item.interactiveConfig);
+      }
+
+      optionsContainer.innerHTML = '';
+      item.choices.forEach((choice, cIdx) => {
+        const div = document.createElement('div');
+        div.className = 'option-item';
+        div.innerHTML = '<span class="option-letter">' + String.fromCharCode(65 + cIdx) + '</span><span>' + choice + '</span>';
+        div.onclick = () => {
+          optionsContainer.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
+          div.classList.add('selected');
+          selectedOption = cIdx;
+        };
+        optionsContainer.appendChild(div);
+      });
+    }
+
+    btnSubmit.onclick = () => {
+      if (selectedOption === null) {
+        alert('Please select an option before checking.');
+        return;
+      }
+
+      const item = MCAP_ITEMS[currentItemIndex];
+      const isCorrect = selectedOption === item.correctIndex;
+      answeredCount++;
+      if (isCorrect) score++;
+
+      scoreDisplay.textContent = 'Score: ' + score + ' / ' + answeredCount;
+
+      const options = optionsContainer.querySelectorAll('.option-item');
+      options[item.correctIndex].classList.add('correct');
+      if (!isCorrect) {
+        options[selectedOption].classList.add('incorrect');
+      }
+
+      feedbackBanner.className = 'feedback-banner show ' + (isCorrect ? 'is-correct' : 'is-incorrect');
+      feedbackMsg.innerHTML = isCorrect
+        ? '<strong>✓ Correct!</strong> ' + item.explanation
+        : '<strong>✗ Needs Review:</strong> ' + item.explanation;
+
+      if (!isCorrect && window.MCAPRemediator) {
+        const detected = MCAPRemediator.detectMisconception(item, selectedOption);
+        if (detected) {
+          remedyCallout.style.display = 'flex';
+          launchRemedyBtn.onclick = () => {
+            MCAPRemediator.showMicroLessonModal(detected, () => {
+              renderItem(currentItemIndex);
+            });
+          };
+        }
+      }
+
+      btnSubmit.style.display = 'none';
+      btnNext.style.display = 'inline-block';
+    };
+
+    btnNext.onclick = () => {
+      currentItemIndex = (currentItemIndex + 1) % MCAP_ITEMS.length;
+      renderItem(currentItemIndex);
+    };
+
+    const formulaBtn = document.getElementById('cbt-formula-btn');
+    const formulaDrawer = document.getElementById('formula-drawer');
+    const closeFormula = document.getElementById('close-formula-drawer');
+    if (formulaBtn) formulaBtn.onclick = () => formulaDrawer.classList.toggle('open');
+    if (closeFormula) closeFormula.onclick = () => formulaDrawer.classList.remove('open');
+
+    const ttsBtn = document.getElementById('cbt-tts-btn');
+    if (ttsBtn) {
+      ttsBtn.onclick = () => {
+        if ('speechSynthesis' in window) {
+          const item = MCAP_ITEMS[currentItemIndex];
+          const text = item.stem + '. Options: ' + item.choices.map((c, i) => String.fromCharCode(65 + i) + ': ' + c).join('. ');
+          const utt = new SpeechSynthesisUtterance(text);
+          window.speechSynthesis.speak(utt);
+        }
+      };
+    }
+
+    renderItem(0);
+  </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>
