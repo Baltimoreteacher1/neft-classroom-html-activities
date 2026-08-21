@@ -112,8 +112,20 @@ async function phaseA() {
   /* The API must refuse an unauthenticated caller. `not-configured` is a valid
    * answer on a deployment with no key set; 200 with data is never valid. */
   const api = await get("/api/pacing/state");
+  const servedHtml = /text\/html/i.test(api.res?.headers.get("content-type") || "");
   if (api.status === 401 || api.status === 503)
     pass("pacing API refuses anonymous", `HTTP ${api.status}`);
+  else if (api.status === 200 && servedHtml && !IS_PRODUCTION)
+    // `npm run preview` is a static server with no Functions runtime, so its
+    // SPA fallback answers /api/* with index.html and a 200. Reading that as a
+    // successful anonymous API read failed this check on every local run and
+    // taught everyone to ignore it. Only `wrangler pages dev` (or production)
+    // can actually answer for the gate.
+    skip(
+      "pacing API refuses anonymous",
+      "no Functions runtime here — the static preview answered /api/pacing/state with the SPA " +
+        "fallback page. Point --base at `wrangler pages dev` to verify the gate for real",
+    );
   else
     fail("pacing API refuses anonymous", `HTTP ${api.status} — an unauthenticated read succeeded`);
 }
