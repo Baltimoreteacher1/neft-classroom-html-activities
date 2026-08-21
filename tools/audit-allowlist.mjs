@@ -43,6 +43,16 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const allowlist = JSON.parse(readFileSync(resolve(HERE, "audit-allowlist.json"), "utf8"));
 const accepted = new Map(allowlist.accepted.map((a) => [a.id, a]));
 
+/* `npm run` exports every npm config as an npm_config_* variable, and the
+   nested `npm audit` re-reads them as its OWN flags. One unsupported key in a
+   developer's ~/.npmrc — allow-scripts — therefore reached this child as
+   --allow-scripts and killed it with EALLOWSCRIPTS, so the gate's verdict
+   depended on who ran it and how. Strip them: this audit answers to the
+   lockfile, not to the shell that happened to spawn it. */
+const CHILD_ENV = Object.fromEntries(
+  Object.entries(process.env).filter(([k]) => !k.startsWith("npm_config")),
+);
+
 let report;
 try {
   // npm audit exits non-zero when it finds anything, so the throw is expected
@@ -52,6 +62,7 @@ try {
     encoding: "utf8",
     maxBuffer: 64 * 1024 * 1024,
     stdio: ["ignore", "pipe", "ignore"],
+    env: CHILD_ENV,
   });
 } catch (error) {
   report = error.stdout;
@@ -62,12 +73,35 @@ if (!report) {
   process.exit(1);
 }
 
+/* A FAILED audit is not a clean audit. npm answers a broken invocation with
+   `{"error":{...}}` and exit 1 — and `.vulnerabilities ?? {}` read that as
+   zero findings, so the gate announced "0 blocking" and, seeing none of its
+   own accepted advisories in the empty report, demanded that every live
+   exception be deleted. Deleting them would have made the next working run
+   fail on advisories that were already understood and accepted. Refuse the
+   report instead. */
+let parsed;
+try {
+  parsed = JSON.parse(report);
+} catch {
+  console.error("✗ npm audit did not return JSON — refusing to report a pass on nothing.");
+  process.exit(1);
+}
+if (parsed.error || (!parsed.vulnerabilities && !parsed.metadata)) {
+  const e = parsed.error ?? {};
+  console.error(
+    `✗ npm audit failed${e.code ? ` (${e.code})` : ""} — refusing to report a pass on nothing.`,
+  );
+  if (e.summary) console.error(`  ${e.summary}`);
+  process.exit(1);
+}
+
 if (process.argv.includes("--json")) {
   console.log(report);
   process.exit(0);
 }
 
-const vulns = JSON.parse(report).vulnerabilities ?? {};
+const vulns = parsed.vulnerabilities ?? {};
 
 const blocking = [];
 const honoured = [];
