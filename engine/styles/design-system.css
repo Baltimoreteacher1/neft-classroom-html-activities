@@ -338,6 +338,19 @@ h4 {
   background: rgba(31, 166, 162, 0.12);
 }
 
+/* The phase you are ON and have already finished. `.completed` and `.active`
+   have equal specificity, so `.completed` (declared later) took the background
+   while `.active`'s dark `color` stayed — leaving navy text on the navy rail at
+   a 1.14:1 contrast ratio, i.e. an invisible label. This fires the moment a
+   student finishes the warmup, on every lesson. "You are here" is the stronger
+   signal, so it keeps the white fill; completion still reads from the green
+   number badge, the filled stars, and the teal border. */
+.phase-btn.active.completed {
+  background: white;
+  color: var(--navy);
+  border-color: rgba(31, 166, 162, 0.55);
+}
+
 .phase-btn.locked {
   opacity: 0.4;
   cursor: not-allowed;
