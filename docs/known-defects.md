@@ -8,7 +8,15 @@ it rather than rediscovering it.
 
 ## `cmi.core.lesson_location` writes empty on engine lessons
 
-**Status:** open. Found 2026-08-18 by `npm run probe:canvas-notebook`, which
+**Status:** FIXED. `engine/core/state.js:setPhase()` now publishes the phase name
+to `window.NeftLessonLocation`, and `currentLocation()` in `assets/canvas-bridge.js`
+reads that before falling back to the save/resume summary — so both kinds of
+lesson report a bookmark. setPhase is the single choke point every navigation
+route passes through, so no path can skip it. Kept as a human-readable name, not
+an index, per `docs/scorm-runtime.md`. The record below is left intact because it
+names the cause.
+
+**Was:** open. Found 2026-08-18 by `npm run probe:canvas-notebook`, which
 reports `lesson_location: ""` on lesson 1-1 in a real SCORM launch.
 **Not caused by the notebook checkpoint work** — it predates it and is
 independent of it. Deliberately not fixed on that branch.

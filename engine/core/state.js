@@ -247,6 +247,14 @@ export function createState(lessonId, studentId) {
       if (!phase) return;
       state.currentPhase = index;
       if (phase.status !== "completed") phase.status = "active";
+      // Publish the phase NAME for the SCORM bookmark. canvas-bridge.js derives
+      // cmi.core.lesson_location from NeftSaveResume.getTeacherSummary().phase,
+      // and engine lessons never populate that summary — their phase lives here
+      // — so the bridge relayed "" and every Canvas column that would tell a
+      // teacher where a student stopped was blank. Deliberately the name and not
+      // the index: docs/scorm-runtime.md requires a bookmark that survives a
+      // content edit, and an index does not.
+      if (typeof window !== "undefined") window.NeftLessonLocation = String(phase.name || "");
       save();
       notify();
     },

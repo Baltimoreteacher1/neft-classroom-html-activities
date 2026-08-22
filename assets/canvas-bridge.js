@@ -356,10 +356,18 @@
 
   function currentLocation() {
     return safe(function () {
-      var sr = global.NeftSaveResume;
-      var sum = sr && sr.getTeacherSummary ? sr.getTeacherSummary() : null;
       // A bookmark the LMS can show and a human can read. Deliberately NOT an
       // internal index — lesson_location survives content edits, indices do not.
+      //
+      // Two sources, because there are two kinds of lesson. Standalone
+      // activities and homework pages populate the save/resume summary; engine
+      // lessons never do — their phase lives in engine/core/state.js, which
+      // publishes the name here on every setPhase. Reading only the summary is
+      // why this returned "" for every engine lesson in Canvas.
+      var live = global.NeftLessonLocation;
+      if (live) return String(live);
+      var sr = global.NeftSaveResume;
+      var sum = sr && sr.getTeacherSummary ? sr.getTeacherSummary() : null;
       return sum && sum.phase ? String(sum.phase) : "";
     }, "");
   }
