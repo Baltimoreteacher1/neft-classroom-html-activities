@@ -71,13 +71,27 @@ function itemText(it) {
 }
 
 function demand(it) {
-  // The authored item TYPE is the strongest signal there is — it is a decision
-  // someone made about the task, not an inference from its wording.
+  // An explicit `demand` on the item is the strongest signal there is — a
+  // decision someone made about the task, not an inference from its wording.
+  // It exists because the TYPE could not carry that decision: of the four type
+  // families this used to read, three name types the engine cannot render.
+  // engine/core renders exactly twelve — multiple-choice, open-response,
+  // error-analysis, drag-sort, fill-table, matching-game, number-line,
+  // bar-model, balance-scale, coordinate-grid, net-folder, fraction-bars — and
+  // no config anywhere uses strategy-compare, always-sometimes-never,
+  // conjecture, transfer or apply-new, because authoring one would render
+  // nothing. So `error-analysis` was the only type branch that could ever fire,
+  // and every other deep item had to be caught by phrase matching or missed.
+  // That is why thirty challenge lessons read as 77–92% procedural while
+  // carrying items that ask a student to compare two classmates' estimates or
+  // justify whether an answer lands high or low. Depth the author intended is
+  // now sayable: set `demand` and this stops guessing.
+  const declared = String(it.demand || "").toLowerCase();
+  if (/^(reasoning|generalization|strategic|transfer|conceptual|procedural)$/.test(declared))
+    return declared;
+
   const t = String(it.type || "").toLowerCase();
   if (/error-analysis|critique/.test(t)) return "reasoning";
-  if (/always-sometimes-never|conjecture|generaliz/.test(t)) return "generalization";
-  if (/strategy-compare|compare-strategies|multiple-solution/.test(t)) return "strategic";
-  if (/transfer|apply-new/.test(t)) return "transfer";
 
   const s = itemText(it);
   if (
