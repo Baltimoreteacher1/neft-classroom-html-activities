@@ -196,7 +196,7 @@
   function studioMarkup() {
     return (
       '<p class="cms-kicker">' +
-      bi("Award-level project evidence", "Evidencia de proyecto de alto nivel") +
+      bi("Project evidence", "Evidencia del proyecto") +
       "</p>" +
       '<h2 id="cms-studio-title">' +
       bi("Model, critique, revise, and defend", "Modela, critica, revisa y defiende") +
