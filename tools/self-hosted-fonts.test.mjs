@@ -66,7 +66,11 @@ test("a converted page that goes back to the CDN is caught", async () => {
     );
     const { regressions } = await import(`file://${SCRIPT}`);
     const bad = regressions([page], dir);
-    assert.deepEqual(bad, [page], "a page loading both a local bundle and the CDN was not reported");
+    assert.deepEqual(
+      bad,
+      [page],
+      "a page loading both a local bundle and the CDN was not reported",
+    );
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

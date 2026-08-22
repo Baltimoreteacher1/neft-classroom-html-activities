@@ -2,60 +2,55 @@
   "$comment": "Pinned sweep floors, one per gate. A gate that discovers fewer files than its floor exits non-zero: a sweep that collapses from 9,774 files to 101 verified almost nothing and must not report a pass. Floors are ~90% of the measured baseline in reports/sweep-baseline.md, so ordinary content churn does not break a build but a broken glob does. Raise a floor when the real count grows; lower one only with a written reason in the commit.",
   "$policy": "floor = round(baseline * 0.9), floor >= 1. Baselines are the size of the subject each gate ACTUALLY guards, measured with SWEEP_GUARD_REPORT=1 — not the size its name implies. Where those differ the gap is recorded in reports/sweep-baseline.md as a finding.",
   "floors": {
-    "validate:ccss": {
-      "baseline": 37,
-      "floor": 33,
-      "subject": "distinct standards collected from lesson configs"
-    },
-    "validate:secrets": {
-      "baseline": 8205,
-      "floor": 7384,
-      "subject": "tracked text files scanned"
-    },
-    "validate:js-syntax": {
-      "baseline": 11263,
-      "floor": 10137,
-      "subject": "script files and inline blocks parsed"
-    },
-    "validate:static": {
-      "baseline": 14,
-      "floor": 13,
-      "subject": "required deployment files (NOT the 3,197 HTML it walks)"
-    },
-    "validate:uifr": {
-      "baseline": 288,
-      "floor": 259,
-      "subject": "lessons audited"
-    },
     "audit": {
       "baseline": 291,
       "floor": 262,
       "subject": "lesson directories (NOT the 3,206 HTML it scans)"
+    },
+    "audit:dead-code": {
+      "baseline": 782,
+      "floor": 704,
+      "subject": "source files in the reference graph"
+    },
+    "audit:depth": {
+      "baseline": 288,
+      "floor": 259,
+      "subject": "lessons measured"
+    },
+    "audit:duplicates": {
+      "baseline": 5252,
+      "floor": 4727,
+      "subject": "tracked files hashed"
     },
     "audit:homework": {
       "baseline": 84,
       "floor": 76,
       "subject": "core lessons audited"
     },
-    "validate:scope": {
-      "baseline": 84,
-      "floor": 76,
-      "subject": "core lessons on the spine"
+    "audit:interaction": {
+      "baseline": 288,
+      "floor": 259,
+      "subject": "lessons graded"
+    },
+    "validate:ccss": {
+      "baseline": 37,
+      "floor": 33,
+      "subject": "distinct standards collected from lesson configs"
     },
     "validate:css-integrity": {
       "baseline": 826,
       "floor": 743,
       "subject": "source files scanned"
     },
-    "validate:save-resume": {
-      "baseline": 2526,
-      "floor": 2273,
-      "subject": "active activity pages scanned"
-    },
     "validate:determinism": {
       "baseline": 84,
       "floor": 76,
       "subject": "lessons in the Command Center rebuild"
+    },
+    "validate:js-syntax": {
+      "baseline": 11263,
+      "floor": 10137,
+      "subject": "script files and inline blocks parsed"
     },
     "validate:preunit-project": {
       "baseline": 5,
@@ -67,25 +62,35 @@
       "floor": 23,
       "subject": "project pages enumerated"
     },
-    "audit:depth": {
+    "validate:save-resume": {
+      "baseline": 2526,
+      "floor": 2273,
+      "subject": "active activity pages scanned"
+    },
+    "validate:scope": {
+      "baseline": 84,
+      "floor": 76,
+      "subject": "core lessons on the spine"
+    },
+    "validate:secrets": {
+      "baseline": 8205,
+      "floor": 7384,
+      "subject": "tracked text files scanned"
+    },
+    "validate:self-hosted-fonts": {
+      "baseline": 917,
+      "floor": 825,
+      "subject": "HTML pages referencing a self-hosted /assets/fonts/ bundle"
+    },
+    "validate:static": {
+      "baseline": 14,
+      "floor": 13,
+      "subject": "required deployment files (NOT the 3,197 HTML it walks)"
+    },
+    "validate:uifr": {
       "baseline": 288,
       "floor": 259,
-      "subject": "lessons measured"
-    },
-    "audit:interaction": {
-      "baseline": 288,
-      "floor": 259,
-      "subject": "lessons graded"
-    },
-    "audit:dead-code": {
-      "baseline": 782,
-      "floor": 704,
-      "subject": "source files in the reference graph"
-    },
-    "audit:duplicates": {
-      "baseline": 5252,
-      "floor": 4727,
-      "subject": "tracked files hashed"
+      "subject": "lessons audited"
     }
   }
 }
