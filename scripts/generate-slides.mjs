@@ -962,9 +962,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${esc(title)} — Google Slides</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="/assets/fonts/outfit-hanken-grotesk-62c0a7.css" rel="stylesheet" />
   <style>
     ${EDITORIAL_FONT_IMPORT}
     :root {${tokensToCssVars(unitPalette, getThemeColor(data.theme))}

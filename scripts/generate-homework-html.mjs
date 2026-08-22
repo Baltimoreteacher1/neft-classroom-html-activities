@@ -1118,9 +1118,7 @@ function generateHtml(lessonId, config) {
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Help Your Student — Lesson ${esc(displayLessonId(lessonId))}: ${esc(title)}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <style>
 ${EDITORIAL_FONT_IMPORT}
 :root {
