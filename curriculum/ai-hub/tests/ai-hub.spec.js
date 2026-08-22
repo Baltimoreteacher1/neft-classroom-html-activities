@@ -435,11 +435,11 @@ test.describe("AI Learning Hub - Browser QA Suite", () => {
   });
 
   // ─── 25. Teacher Evidence Room ──────────────────────────────────
-  test("Teacher role shows Award Evidence Room", async ({ page }) => {
+  test("Teacher role shows Evidence Room", async ({ page }) => {
     await page.locator(".role-card").nth(1).click();
     await page.waitForTimeout(600);
     await expect(page.locator(".evidence-room")).toBeVisible();
-    await expect(page.locator(".evidence-room")).toContainText("Award Evidence Room");
+    await expect(page.locator(".evidence-room")).toContainText("Evidence Room");
   });
 
   // ─── 26. Inactive AI101 tab is inert for a11y ───────────────────
