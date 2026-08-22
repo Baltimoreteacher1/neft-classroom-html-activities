@@ -1,6 +1,6 @@
 {
   "$comment": "Pinned sweep floors, one per gate. A gate that discovers fewer files than its floor exits non-zero: a sweep that collapses from 9,774 files to 101 verified almost nothing and must not report a pass. Floors are ~90% of the measured baseline in reports/sweep-baseline.md, so ordinary content churn does not break a build but a broken glob does. Raise a floor when the real count grows; lower one only with a written reason in the commit.",
-  "$policy": "floor = round(baseline * 0.9), floor >= 1. Baselines are the size of the subject each gate ACTUALLY guards, measured with SWEEP_GUARD_REPORT=1 — not the size its name implies. Where those differ the gap is recorded in reports/sweep-baseline.md as a finding.",
+  "$policy": "floor = round(baseline * 0.9), floor >= 1. Baselines are the size of the subject each gate ACTUALLY guards, measured with SWEEP_GUARD_REPORT=1 \u2014 not the size its name implies. Where those differ the gap is recorded in reports/sweep-baseline.md as a finding.",
   "floors": {
     "audit": {
       "baseline": 291,
@@ -78,8 +78,8 @@
       "subject": "tracked text files scanned"
     },
     "validate:self-hosted-fonts": {
-      "baseline": 917,
-      "floor": 825,
+      "baseline": 1717,
+      "floor": 1545,
       "subject": "HTML pages referencing a self-hosted /assets/fonts/ bundle"
     },
     "validate:static": {

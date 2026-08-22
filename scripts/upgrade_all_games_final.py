@@ -31,9 +31,7 @@ all_game_paths = [
     'math/unit-10/games/unit10-volume-vault.html'
 ]
 
-font_tags = '''    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@500;600;700;800&display=swap" />
+font_tags = '''    <link rel="stylesheet" href="/assets/fonts/inter-outfit-0cbcac.css" />
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />'''
 
 script_block = '''<script>
@@ -86,8 +84,11 @@ for rel_path in all_game_paths:
     with open(full_path, 'r', encoding='utf-8') as f:
         html = f.read()
 
-    # 1. Inject Fonts if missing
-    if 'fonts.googleapis.com' not in html:
+    # 1. Inject the font bundle if missing. The test is the LINK THIS
+    #    SCRIPT WRITES, not the CDN host it used to write: once a page is
+    #    self-hosted, 'fonts.googleapis.com' is absent and a host test
+    #    re-injects a second stylesheet on every run.
+    if '/assets/fonts/' not in html:
         html = html.replace('</head>', f'{font_tags}\n</head>')
 
     # 2. Inject Stylesheet if missing
