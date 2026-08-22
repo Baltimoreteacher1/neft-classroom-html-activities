@@ -194,11 +194,25 @@ function auditOne(id, cfg, fac, coreCfg) {
     // How many lessons this one reviews. Catch-up objectives name a range
     // ("Lessons 6.4–6.15"); everything else reviews itself.
     lessonsCovered: (() => {
-      const m = /Lessons?\s*([\d.]+)\s*[–-]\s*([\d.]+)/.exec(cfg.contentObjective || "");
-      if (!m) return 1;
-      const a = Number(String(m[1]).split(".")[1]);
-      const b = Number(String(m[2]).split(".")[1]);
-      return Number.isFinite(a) && Number.isFinite(b) ? Math.max(1, b - a + 1) : 1;
+      const objective = cfg.contentObjective || "";
+      const m = /Lessons?\s*([\d.]+)\s*[–-]\s*([\d.]+)/.exec(objective);
+      if (m) {
+        const a = Number(String(m[1]).split(".")[1]);
+        const b = Number(String(m[2]).split(".")[1]);
+        if (Number.isFinite(a) && Number.isFinite(b)) return Math.max(1, b - a + 1);
+      }
+      // Catch-up objectives come in TWO shapes, and reading only the first one
+      // is what made this number lie. A contiguous block writes a range
+      // ("Lessons 2.4–2.12"); a block with holes in it writes the list
+      // ("Lessons 2.2 · 2.4 · 2.5 · 2.10"). The range-only regex returned 1 for
+      // every list, so sixteen catch-ups were divided by one instead of by the
+      // three or four lessons they actually review, and every one of them was
+      // reported as carrying twenty-odd items for a single lesson. They sit at
+      // 6.3–7.0 items per reviewed lesson — inside the fleet's uniform band.
+      // A finding that lands on 16 of 36 lessons is a detector bug; this was.
+      const list = /Lessons\s+((?:\d+\.\d+\s*(?:·|,|&|and)\s*)+\d+\.\d+)/.exec(objective);
+      const named = list ? list[1].match(/\d+\.\d+/g) : null;
+      return named && named.length > 1 ? named.length : 1;
     })(),
     demand: {
       procedural: tally("procedural"),
