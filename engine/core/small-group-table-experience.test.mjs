@@ -112,3 +112,33 @@ const { teacherLens, tableCheck } = await import("./small-group-practice.js");
 }
 
 console.log("table experience: lens, check, styles, and 204 debugging items verified.");
+
+// ── the step guide shows every authored step ──────────────────────────────
+//
+// The cap was four. The worked explanation for "What is 14.6 + 3.85?" is six
+// steps — line up, hundredths, tenths, ones, tens, answer — so a student who
+// pressed "Break it into steps" got four and never saw 18.45. Nineteen of the
+// twenty-seven truncated explanations were hiding the result that way.
+{
+  const { explanationSteps } = await import("./small-group-practice.js");
+
+  const sixStep = {
+    explanation:
+      "Line up decimals: 14.60 + 3.85. Hundredths: 0 + 5 = 5. " +
+      "Tenths: 6 + 8 = 14, write 4 carry 1. Ones: 4 + 3 + 1 = 8. " +
+      "Tens: 1. Answer: 18.45.",
+  };
+  const steps = explanationSteps(sixStep);
+  assert.equal(steps.length, 6, `a six-sentence explanation yields six steps, got ${steps.length}`);
+  assert.ok(
+    steps[steps.length - 1].includes("18.45"),
+    "the final step still carries the answer — truncating it was the bug",
+  );
+
+  // Still bounded: the cap exists so a runaway explanation cannot become a wall.
+  const many = { explanation: Array.from({ length: 12 }, (_, i) => `Step ${i + 1} here.`).join(" ") };
+  assert.equal(explanationSteps(many).length, 6, "the guide is still capped");
+
+  assert.deepEqual(explanationSteps({ explanation: "" }), [], "no explanation, no steps");
+  assert.deepEqual(explanationSteps({}), [], "a missing explanation is not an error");
+}

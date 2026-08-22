@@ -620,12 +620,24 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
   return box;
 }
 
-function explanationSteps(item) {
+// Six, not four. The cap silently truncated authored step sequences: the
+// worked explanation for "What is 14.6 + 3.85?" is six clean steps — line up,
+// hundredths, tenths, ones, tens, answer — and a student who pressed "Break it
+// into steps" got the first four and never saw 18.45. Across the studios 27
+// explanations ran past four sentences and 19 of them hid the result.
+//
+// Six is not arbitrary: no explanation in the fleet is longer than six
+// sentences, so this shows every authored step and still cannot become a wall
+// of text. If that ever changes, raise this to match rather than truncating —
+// hiding the answer is worse than a long list.
+const MAX_STEPS = 6;
+
+export function explanationSteps(item) {
   return String(item.explanation || "")
     .split(/(?<=[.!?])\s+/)
     .map((sentence) => sentence.trim())
     .filter((sentence) => sentence.length > 2)
-    .slice(0, 4);
+    .slice(0, MAX_STEPS);
 }
 
 function appendStepGuide(card, item, scaffold) {
