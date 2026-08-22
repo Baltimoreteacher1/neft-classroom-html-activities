@@ -464,8 +464,7 @@ export function injectSmallGroupStyles(accent) {
     const fonts = document.createElement("link");
     fonts.id = "sg-fonts";
     fonts.rel = "stylesheet";
-    fonts.href =
-      "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap";
+    fonts.href = "/assets/fonts/small-group.css";
     document.head.appendChild(fonts);
   }
 
