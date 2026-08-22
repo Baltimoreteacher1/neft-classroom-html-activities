@@ -13905,12 +13905,16 @@ function owningAssignmentId(item) {
   return item.id;
 }
 
-function plannerCtx(todayIso = todayKey()) {
+// `nowMinutes` is injectable for the same reason todayIso is: how much of
+// tonight is left is a function of the wall clock, so a test that cannot pin
+// it is a test that changes its answer at bedtime. Production always passes
+// the real clock.
+function plannerCtx(todayIso = todayKey(), nowMinutes = nowMin()) {
   const items = plannerItems(todayIso);
   return {
     items,
     todayIso,
-    availableMin: PC.availableMinutes(state.schedule, todayIso, nowMin(), {
+    availableMin: PC.availableMinutes(state.schedule, todayIso, nowMinutes, {
       bedtime: state.settings.bedtime,
       maxWorkMin: state.settings.maxWorkMin,
     }),
@@ -14738,14 +14742,14 @@ function repairMissedWork() {
   // ===========================================================================
   // OVERLOAD — say it plainly, then fix it
   // ===========================================================================
-  function overloadReport(todayIso = todayKey()) {
-    const ctx = plannerCtx(todayIso);
+  function overloadReport(todayIso = todayKey(), nowMinutes = nowMin()) {
+    const ctx = plannerCtx(todayIso, nowMinutes);
     const need = remainingMinutesToday(todayIso);
     const have = ctx.availableMin;
     if (!need || have <= 0 || need <= have) {
       return { overloaded: false, need, have };
     }
-    const plan = PC.buildPlan({ ...ctx, startMin: nowMin() });
+    const plan = PC.buildPlan({ ...ctx, startMin: nowMinutes });
     return {
       overloaded: true,
       need,

@@ -246,6 +246,12 @@ check("REGRESSION: homework due TOMORROW appears in tonight's work", () => {
   assert.ok(!ids.includes("later"), "but next week's work is not");
 });
 
+// 16:00. These two cases ask how tonight's work compares to tonight's free
+// time — a question whose answer legitimately becomes "no time left" once
+// the evening is over, so a run after bedtime used to fail them. Pin the
+// clock rather than weaken the assertion.
+const AFTER_SCHOOL_MIN = 16 * 60;
+
 check("REGRESSION: overload compares tonight's real work to real free time", () => {
   withState({
     assignments: Array.from({ length: 6 }, (_, i) => ({
@@ -255,7 +261,7 @@ check("REGRESSION: overload compares tonight's real work to real free time", () 
       estimateMin: 45,
     })),
   });
-  const r = api.overloadReport();
+  const r = api.overloadReport(undefined, AFTER_SCHOOL_MIN);
   assert.equal(r.overloaded, true, `need ${r.need} vs have ${r.have}`);
   assert.ok(r.keep.length >= 1, "it still names what to do");
   assert.ok(r.move.length >= 1, "and what moves");
@@ -564,9 +570,9 @@ check("ACCEPTANCE B — a busy day: a real plan that says what moved", () => {
       { id: "c", title: "C", due: iso(3), estimateMin: 30 },
     ],
   });
-  const report = api.overloadReport();
+  const report = api.overloadReport(undefined, AFTER_SCHOOL_MIN);
   assert.equal(report.overloaded === true || report.need <= report.have, true);
-  const plan = PC.buildPlan({ ...api.plannerCtx(), availableMin: 40 });
+  const plan = PC.buildPlan({ ...api.plannerCtx(undefined, AFTER_SCHOOL_MIN), availableMin: 40 });
   assert.ok(plan.workMin <= 40);
   assert.ok(plan.leftOver.length >= 1);
 });
