@@ -337,7 +337,10 @@ assert.ok(
   // still renders and the check is decorative.
   const guardAt = src.indexOf("if (isScormLaunch()) return false;");
   const barAt = src.indexOf('mountBar(app, modeBar("student"');
-  assert.ok(guardAt > 0 && barAt > guardAt, "the SCORM guard must precede mounting the student bar");
+  assert.ok(
+    guardAt > 0 && barAt > guardAt,
+    "the SCORM guard must precede mounting the student bar",
+  );
 }
 
 console.log("small-group mode, structure, and practice contracts passed");
