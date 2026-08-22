@@ -14,12 +14,7 @@ import { writeGenerated } from "./lib/preserve-injected.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS_DIR = join(ROOT, "lessons");
 
-const FONT_LINK = `    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,700;1,400&display=swap"
-      rel="stylesheet"
-    />`;
+const FONT_LINK = `    <link rel="stylesheet" href="/assets/fonts/engine-body.css" />`;
 
 const SAVE_RESUME_HEAD = `    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
