@@ -1258,8 +1258,17 @@ function renderStudio(config) {
       const worksheet = el("a", "btn ghost", "📄 Worksheet + keys (A/B)");
       worksheet.href = "worksheet.html";
       worksheet.rel = "nofollow";
+      // The facilitation plan shipped for every studio but nothing ever linked
+      // it, so in practice it did not exist. It opens in its own tab on purpose:
+      // this is the sheet the teacher prints and holds, and presenting blacks
+      // out every teacher-only panel on the shared screen — the coaching has to
+      // live somewhere the group cannot read.
+      const plan = el("a", "btn ghost", "🧭 Small-group plan (print)");
+      plan.href = `/teacher-small-group/${encodeURIComponent(config.lessonId)}/plan`;
+      plan.target = "_blank";
+      plan.rel = "noopener nofollow";
       foot.prepend(back);
-      foot.append(worksheet, scorm);
+      foot.append(plan, worksheet, scorm);
     },
   });
 
