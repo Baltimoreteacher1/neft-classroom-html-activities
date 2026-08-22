@@ -626,11 +626,19 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
 // into steps" got the first four and never saw 18.45. Across the studios 27
 // explanations ran past four sentences and 19 of them hid the result.
 //
-// Six is not arbitrary: no explanation in the fleet is longer than six
-// sentences, so this shows every authored step and still cannot become a wall
-// of text. If that ever changes, raise this to match rather than truncating —
-// hiding the answer is worse than a long list.
-const MAX_STEPS = 6;
+// Eight, with headroom. The fleet's longest authored explanation is seven
+// sentences (a fill-table item in 7-2-group2, whose last line is the
+// generalisation the rest builds to), and the distribution falls off a cliff
+// after four: 384 items at four, 20 at five, 21 at six, exactly one at seven.
+// Eight therefore shows every authored step today and leaves room for one more
+// without becoming a wall of text.
+//
+// A first pass set this to 6 on the belief that nothing exceeded six. That was
+// measured over items carrying `choices`, which silently excluded fill-table
+// items — the one seven-sentence explanation in the fleet is exactly such an
+// item. Count over everything with an `explanation`, not over what looks like a
+// multiple-choice question.
+const MAX_STEPS = 8;
 
 export function explanationSteps(item) {
   return String(item.explanation || "")

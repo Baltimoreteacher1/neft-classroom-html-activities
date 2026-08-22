@@ -135,9 +135,15 @@ console.log("table experience: lens, check, styles, and 204 debugging items veri
     "the final step still carries the answer — truncating it was the bug",
   );
 
+  // The fleet's longest authored explanation is seven sentences — a fill-table
+  // item, which an earlier count missed by filtering on `choices`. The cap must
+  // clear it.
+  const sevenStep = { explanation: Array.from({ length: 7 }, (_, i) => `Step ${i + 1} here.`).join(" ") };
+  assert.equal(explanationSteps(sevenStep).length, 7, "a seven-sentence explanation is not truncated");
+
   // Still bounded: the cap exists so a runaway explanation cannot become a wall.
-  const many = { explanation: Array.from({ length: 12 }, (_, i) => `Step ${i + 1} here.`).join(" ") };
-  assert.equal(explanationSteps(many).length, 6, "the guide is still capped");
+  const many = { explanation: Array.from({ length: 20 }, (_, i) => `Step ${i + 1} here.`).join(" ") };
+  assert.equal(explanationSteps(many).length, 8, "the guide is still capped");
 
   assert.deepEqual(explanationSteps({ explanation: "" }), [], "no explanation, no steps");
   assert.deepEqual(explanationSteps({}), [], "a missing explanation is not an error");
