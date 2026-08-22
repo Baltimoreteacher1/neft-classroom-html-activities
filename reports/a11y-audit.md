@@ -1,6 +1,6 @@
 # Accessibility audit — 2026-08-22
 
-Target: `http://localhost:4178` · 22 pages · axe-core WCAG 2.1 A/AA
+Target: `http://localhost:4179` · 22 pages · axe-core WCAG 2.1 A/AA
 
 **0** violations — critical 0, serious 0, moderate 0, minor 0.
 

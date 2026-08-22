@@ -100,4 +100,78 @@ test.describe("phase rail readability", () => {
         `= ${result.ratio}:1, below the ${AA_NORMAL}:1 AA floor.`,
     ).toBeGreaterThanOrEqual(AA_NORMAL);
   });
+
+  test("the phase number badge is readable in every state it reaches", async ({ page }) => {
+    await page.goto("/lessons/1-1/?sn=Badge%20Tester", { waitUntil: "networkidle" });
+    await enterLesson(page);
+
+    // Measured per STATE, not once. The first version of this suite checked
+    // only active+completed — which a student reaches by finishing a phase —
+    // and so missed that plain `active`, the state they look at the whole time
+    // before finishing, was the worst in the rail at 2.54:1.
+    const badges = async (when: string) => {
+      const rows = await page.evaluate(() => {
+        const parse = (c: string) => (c.match(/[\d.]+/g) || []).map(Number);
+        const lum = (p: number[]) => {
+          const f = (v: number) => {
+            v /= 255;
+            return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+          };
+          return 0.2126 * f(p[0]) + 0.7152 * f(p[1]) + 0.0722 * f(p[2]);
+        };
+        const seen = new Map<string, any>();
+        for (const btn of Array.from(document.querySelectorAll(".phase-btn"))) {
+          const num = btn.querySelector(".phase-num");
+          if (!num) continue;
+          const cs = getComputedStyle(num);
+          const bg = cs.backgroundColor;
+          // A transparent badge inherits the rail behind it and is measured by
+          // the label assertion above, not here.
+          const alpha = parse(bg);
+          if (alpha.length === 4 && alpha[3] === 0) continue;
+          const state =
+            ["active", "completed", "locked"].filter((c) => btn.classList.contains(c)).join("+") ||
+            "idle";
+          if (seen.has(state)) continue;
+          const L1 = lum(parse(cs.color));
+          const L2 = lum(parse(bg));
+          const hi = Math.max(L1, L2);
+          const lo = Math.min(L1, L2);
+          const large =
+            parseFloat(cs.fontSize) >= 24 ||
+            (parseFloat(cs.fontSize) >= 18.66 && Number(cs.fontWeight) >= 700);
+          seen.set(state, {
+            state,
+            fg: cs.color,
+            bg,
+            // 4.5 inlined, not AA_NORMAL: this function is serialised into the
+            // page, where Node-scope constants do not exist.
+            floor: large ? 3 : 4.5,
+            ratio: +((hi + 0.05) / (lo + 0.05)).toFixed(2),
+          });
+        }
+        return [...seen.values()];
+      });
+      for (const r of rows) {
+        expect(
+          r.ratio,
+          `${when}: the "${r.state}" phase badge renders ${r.fg} on ${r.bg} = ${r.ratio}:1, ` +
+            `below its ${r.floor}:1 floor.`,
+        ).toBeGreaterThanOrEqual(r.floor);
+      }
+      return rows.length;
+    };
+
+    expect(await badges("on arrival"), "at least one badge measured").toBeGreaterThan(0);
+
+    const groups = page.locator("input[type=radio][name^=warmup_q]");
+    const names = new Set(await groups.evaluateAll((els) => els.map((e) => e.name)));
+    for (const name of names) {
+      await page.locator(`input[type=radio][name="${name}"]`).first().check();
+    }
+    await page.getByRole("button", { name: /Submit Warmup Answers/i }).click();
+    await expect(page.locator(".phase-btn.active.completed")).toHaveCount(1);
+
+    await badges("after completing a phase");
+  });
 });

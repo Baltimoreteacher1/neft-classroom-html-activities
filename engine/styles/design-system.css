@@ -376,7 +376,11 @@ h4 {
 }
 
 .phase-btn.active .phase-num {
-  background: #10b981;
+  /* White on #10b981 was 2.54:1 — the worst contrast in the rail, and on the
+     state a student sees most (the phase they are currently on, before they
+     finish it). Emerald-700 carries white at 5.43:1 and stays lighter than the
+     completed badge below, so "here" still reads brighter than "done". */
+  background: #047857;
   color: #ffffff;
   /* Shell audit 2026-08-16: a coloured glow on a number badge inside an already
      elevated button — elevation inside elevation, communicating nothing. */
@@ -384,7 +388,9 @@ h4 {
 }
 
 .phase-btn.completed .phase-num {
-  background: #059669;
+  /* 3.77:1 before — also under the 4.5:1 floor for 16px/800 text, which does
+     not qualify as large. Emerald-800: 7.68:1. */
+  background: #065f46;
   color: #ffffff;
 }
 
