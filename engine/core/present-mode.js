@@ -19,6 +19,13 @@
 // mirror pointed at itself, and it never transmitted anything to student
 // devices. The projector already shows the screen; fullscreen is the fix.
 
+import {
+  clearVeils,
+  injectStyles as injectSmallGroupPresentStyles,
+  isSmallGroupStudio,
+  smallGroupBeats,
+} from "./small-group-present.js";
+
 function esc(s) {
   const d = document.createElement("div");
   d.textContent = s == null ? "" : String(s);
@@ -173,8 +180,16 @@ export function initPresentMode({ app, phaseConfigs, state } = {}) {
     //    `[role=tab]` only — the old `[id^='sg-tab-']` selector also caught the
     //    six `.sg-tabpanel` elements (ids `sg-tab-vocab`, `sg-tab-learn`, …),
     //    which doubled the rail and pasted whole panels in as slide titles.
+    //
+    //    One stop per tab is not a lesson a teacher can lead: "Learn It" holds
+    //    the diagnostic, the pulse card, the scene and two labs, so that stop
+    //    was a whole scrolling page. small-group-present.js splits each tab into
+    //    the beats a teacher actually paces — one word, one step, one problem —
+    //    and falls back to the per-tab list if a studio renders no beats.
     const sgTabs = [...document.querySelectorAll('.sg-tabs [role="tab"]')];
     if (sgTabs.length > 0) {
+      const beats = smallGroupBeats(document);
+      if (beats.length) return beats;
       return sgTabs.map((btn, i) => {
         const label = (btn.querySelector(".lbl") || btn).textContent.trim().replace(/\s+/g, " ");
         return {
@@ -241,7 +256,11 @@ export function initPresentMode({ app, phaseConfigs, state } = {}) {
       nav.querySelector("[data-pm-next]").disabled = current === parts.length - 1;
     }
 
-    window.scrollTo({ top: 0, behavior: "auto" });
+    // A full lesson's phase IS the page, so the top is the right place to land.
+    // A studio's beat is one card inside a long panel: scrolling to the top
+    // would show the hero card instead of the thing the teacher just selected,
+    // so the beat scrolls itself into view (small-group-present.js focus()).
+    if (!isSmallGroupStudio()) window.scrollTo({ top: 0, behavior: "auto" });
   }
 
   function renderRailContent() {
@@ -289,12 +308,21 @@ export function initPresentMode({ app, phaseConfigs, state } = {}) {
     active = on;
     document.body.classList.toggle("nt-present", on);
     if (on) {
+      // A studio carries its own presenting styles (present-mode.css is not in
+      // the small-group bundle). Injected on entry rather than at mount so a
+      // studio nobody presents never pays for them.
+      if (isSmallGroupStudio()) injectSmallGroupPresentStyles();
       if (!rail) buildChrome();
       renderRailContent();
-      const phaseIdx = state?.get?.()?.currentPhase ?? 0;
+      // A studio has no phase state; its beats always start at the beginning.
+      const phaseIdx = isSmallGroupStudio() ? 0 : (state?.get?.()?.currentPhase ?? 0);
       show(phaseIdx);
       enterFullscreen();
     } else {
+      // Hand the studio back exactly as it was found. The veil class is inert
+      // outside `body.nt-present`, so this is belt-and-braces — but leaving
+      // stray state on a page a student may later open is not worth the risk.
+      clearVeils();
       exitFullscreen();
       if (rail) {
         rail.remove();
