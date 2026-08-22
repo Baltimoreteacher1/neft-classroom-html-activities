@@ -404,6 +404,27 @@ export default defineConfig({
       },
     },
     assetsInlineLimit: 100000,
+    // MERGED ON PURPOSE — do not "optimise" this to true without reading this.
+    //
+    // The cost is real and measured: the single stylesheet is 285 KB (133 KB
+    // over the wire) and every page loads it render-blocking. A core lesson
+    // page uses 7 KB of it — 3%, still 3% after walking all eight phases plus
+    // vocab and Learn It. First paint on a 4x-CPU / 4 Mbps profile is ~1.5s
+    // local, ~1.7s in production, and that stylesheet is the long pole.
+    //
+    // Splitting it does NOT fix that, and it breaks something. Measured with
+    // cssCodeSplit: true:
+    //   core lesson      285 KB -> 285 KB   (it genuinely imports both
+    //                                        lesson-renderer and design-system)
+    //   hubs / projects   unchanged         (static-copied, not Vite entries)
+    //   small group      342 KB ->  64 KB   but 1,401 of 2,000 sampled elements
+    //                                        changed position, size, font-size,
+    //                                        colour or background, and page
+    //                                        height moved ~18px on 8 of 8 pages
+    // Small-group pages inherit styles that only reach them through the merged
+    // bundle. Fixing this properly means splitting the ENGINE's CSS by feature
+    // so a page loads the manipulatives it actually mounts — not flipping this
+    // flag.
     cssCodeSplit: false,
   },
   resolve: {
