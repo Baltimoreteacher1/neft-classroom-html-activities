@@ -130,6 +130,14 @@ function isFunctionBackedRoute(link) {
 
 /** Does this absolute path exist as a file, or as a dir with index.html? */
 function targetExists(abs) {
+  // Vite serves everything under `public/` AT the site root, so a link to
+  // /assets/fonts/x.css resolves to public/assets/fonts/x.css even though no
+  // assets/fonts/ exists in the source tree. Checking the repo root alone
+  // called every public-only file a broken link.
+  if (abs.startsWith(root) && !existsSync(abs)) {
+    const inPublic = join(root, "public", abs.slice(root.length));
+    if (existsSync(inPublic)) return targetExists(inPublic);
+  }
   if (existsSync(abs)) {
     try {
       if (statSync(abs).isDirectory()) return existsSync(join(abs, "index.html"));
