@@ -168,7 +168,6 @@ check("readZip reads a DEFLATE entry, not just a stored one", () => {
   assert.equal(entries[0].text(), body.toString("utf8"));
 });
 
-
 console.log(`  checks passed: ${passed}`);
 if (failures.length) {
   console.log(`\nFAIL — ${failures.length} problem(s):`);
