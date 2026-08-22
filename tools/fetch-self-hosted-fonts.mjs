@@ -22,6 +22,12 @@ const SOURCES = {
   // prefer it, and Fraunces 900 is wider — the line rewraps and the page moves.
   "worksheet-pages":
     "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap",
+  // The apex portal at eduwonderlab.com/, served by the eduwonderlab-home-redirect
+  // Worker (repo ~/eduwonderlab-home). It is the site's front door, it sets
+  // no-store so every visit re-fetches it, and it was the last page still
+  // blocking first paint on the font CDN. Frank Ruhl Libre carries the Hebrew.
+  "home-portal":
+    "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600&family=Frank+Ruhl+Libre:wght@500&display=swap",
   // Project pages. Added for part 2: the 26 project pages request two families
   // the original 290 never did, so reusing an existing bundle would have
   // dropped them to a system font on every page.
