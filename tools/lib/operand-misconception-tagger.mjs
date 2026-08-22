@@ -174,10 +174,24 @@ function structuralTags(numbers, correct, wrong, stem) {
  * @param {object} item  a lesson practice item ({ stem, choices, correctIndex })
  * @returns {(string|null)[]|null} one entry per choice, taxonomy ids verbatim
  */
+/* A stem that names a TRANSFORMATION OF ONE QUANTITY has no (a, b, op) model to
+   recover: its "operands" are the parts of a single number — a numerator and a
+   denominator, a magnitude and a sign — not two quantities the problem combines.
+   The pair sweep does not know that, and it finds models anyway, because b/a and
+   a/b are exactly the reciprocal relationship these tasks are ABOUT. Observed:
+   "What is the reciprocal of 3/5?" tagged its 3/5 distractor `op-reversed-division`,
+   and "Convert 3 2/5 to an improper fraction" tagged 6/5 the same way — telling a
+   student they reversed a division they were never asked to perform. The error is
+   real (they flipped, or they mis-converted); the NAME is wrong, and a wrong name
+   is what this module exists to refuse. No quotient asked for, no operand tag. */
+const SINGLE_VALUE_TRANSFORM =
+  /\breciprocal\b|\babsolute value\b|\bopposite of\b|\bimproper fraction\b|\bmixed number\b|\|\s*[−-]?\s*\d/i;
+
 export function deriveOperandTags(item) {
   if (!item || typeof item !== "object") return null;
   if (item.misconceptionTags) return null;
   if (!Array.isArray(item.choices) || item.choices.length < 2) return null;
+  if (SINGLE_VALUE_TRANSFORM.test(String(item.stem || ""))) return null;
   const correctIndex = item.correctIndex;
   if (!Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= item.choices.length)
     return null;
