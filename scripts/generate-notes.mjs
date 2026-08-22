@@ -2739,7 +2739,7 @@ function twrSection(cfg, teacher = false) {
     .join("");
 
   return `<section class="section twr">
-  <h2>Write About the Math <span class="twr-method">Guided ESOL writing</span></h2>
+  <h2>Write About the Math <span class="twr-method">Guided writing support</span></h2>
   <p class="level-note">Use the support level you need. Every level answers the same math question.</p>
   <div class="twr-guide-step">
     <h3>1. Understand the Question</h3>
