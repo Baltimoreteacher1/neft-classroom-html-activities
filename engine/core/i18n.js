@@ -356,6 +356,9 @@ const STRINGS = {
   showYourWorkLabel: { en: "Show your work", es: "Muestra tu trabajo" },
   lessonToolsMenu: { en: "Lesson tools menu", es: "Menú de herramientas de la lección" },
   submitWarmup: { en: "Submit Warmup Answers", es: "Enviar respuestas del calentamiento" },
+  warmupCorrect: { en: "Correct! ✓", es: "¡Correcto! ✓" },
+  warmupIncorrect: { en: "Incorrect. ✘", es: "Incorrecto. ✘" },
+  warmupUnanswered: { en: "Unanswered.", es: "Sin responder." },
 };
 
 const PHASE_NAMES = {

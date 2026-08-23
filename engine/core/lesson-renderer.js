@@ -2991,7 +2991,7 @@ function renderWarmupPhase(el, state, ctx, config) {
     const qTitle = document.createElement("div");
     qTitle.style.cssText =
       "font-weight:700; font-size:19px; line-height:1.5; color:#0f172a; margin-bottom:12px;";
-    qTitle.innerHTML = `<span style="color:#0f6d78; font-weight:800; margin-right:6px;">Q${qIdx + 1}.</span> ${esc(q.stem)}`;
+    qTitle.innerHTML = `<span style="color:#0f6d78; font-weight:800; margin-right:6px;">Q${qIdx + 1}.</span> ${stackContent(q.stem, q.stemEs)}`;
     qBox.append(qTitle);
 
     const choicesGroup = document.createElement("div");
@@ -3024,7 +3024,7 @@ function renderWarmupPhase(el, state, ctx, config) {
 
       choiceLabel.append(radio);
       const span = document.createElement("span");
-      span.innerHTML = esc(choiceText);
+      span.innerHTML = stackContent(choiceText, q.choicesEs?.[cIdx]);
       choiceLabel.append(span);
       choicesGroup.append(choiceLabel);
     });
@@ -3325,7 +3325,7 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
     // Deliberately terse. A student who got it right does not need the method
     // re-explained, and saying so anyway is the over-scaffolding that trains
     // students to skim feedback.
-    feedbackBox.innerHTML = `<strong>Correct! ✓</strong>`;
+    feedbackBox.innerHTML = `<strong>${stack("warmupCorrect", { html: true })}</strong>`;
   } else if (selectedIdx !== undefined) {
     feedbackBox.style.background = "#fef2f2";
     feedbackBox.style.color = "#b91c1c";
@@ -3334,15 +3334,15 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
     // the warmup surface discarded every one of them — a student who missed a
     // question was told only that they missed it. Show the reasoning on a miss;
     // this is the one moment it is worth reading.
-    feedbackBox.innerHTML = `<strong>Incorrect. ✘</strong>${
-      q.explanation ? ` ${esc(q.explanation)}` : ""
+    feedbackBox.innerHTML = `<strong>${stack("warmupIncorrect", { html: true })}</strong>${
+      q.explanation ? ` ${stackContent(q.explanation, q.explanationEs)}` : ""
     }`;
   } else {
     feedbackBox.style.background = "#fffbe0";
     feedbackBox.style.color = "#92400e";
     feedbackBox.style.border = "1px solid #fef08a";
-    feedbackBox.innerHTML = `<strong>Unanswered.</strong>${
-      q.explanation ? ` ${esc(q.explanation)}` : ""
+    feedbackBox.innerHTML = `<strong>${stack("warmupUnanswered", { html: true })}</strong>${
+      q.explanation ? ` ${stackContent(q.explanation, q.explanationEs)}` : ""
     }`;
   }
 }
