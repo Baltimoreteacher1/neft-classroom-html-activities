@@ -319,7 +319,11 @@ function mountToolDock(tools, drawer) {
   const button = document.createElement("button");
   button.type = "button";
   button.className = "nt-tooldock-btn";
-  button.textContent = "🧰";
+  // NOT the toolbox glyph. Whole-group lessons already dock a "🧰 Tools" rail on
+  // the same edge — that is the LEARNING SUPPORTS dock (multiplication chart,
+  // number line, calculator), a different thing that never offers the model
+  // this lesson is about. Two 🧰 buttons an inch apart read as one control.
+  button.textContent = "🧩";
   const name =
     tools.length === 1
       ? `Open the ${toolMeta(tools[0].v).name}`

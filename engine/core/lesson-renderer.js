@@ -91,6 +91,7 @@ import { mountSymbolPad, needsSymbolPad } from "./symbol-pad.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
 import { toolMeta } from "./tool-catalog.js";
+import { mountToolDrawer } from "./tool-drawer.js";
 import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 import { stampTeachL4Meta } from "./uifr.js";
 import {
@@ -170,6 +171,25 @@ export function bootLesson(config) {
   mountChalkAnnotations(document);
   // Tools menu → "Interactive Tools" (?mode=tools) when the lesson has any.
   mountToolsMenuItem(config);
+  // …and the same models WITHOUT leaving the lesson. `?mode=tools` is a
+  // full-page takeover: reaching a manipulative mid-lesson meant navigating
+  // away from the phase you were on and the problem you were part-way through,
+  // which is why in practice it was a before/after resource and never a
+  // during-the-lesson one. That is the gap engine/core/tool-drawer.js was
+  // written for, and it was wired into the small-group studio only — so the
+  // whole-group lessons, which is where most students spend most of their time,
+  // still had the takeover as their only route (Joel, 2026-08-23: "when there
+  // are interactive tools, these should be available throughout").
+  //
+  // The docked rail is all that applies here. The per-panel chip rows are
+  // anchored to the small-group tab panels; whole-group phases render lazily
+  // into one container, so there is nothing stable to anchor them to. Passing
+  // no panels and no hero mounts the dock alone.
+  //
+  // The generic "🧰 Tools" dock already on these pages is the LEARNING SUPPORTS
+  // dock — multiplication chart, number line, calculator. Useful, and not the
+  // same thing: it never offers the model this lesson is actually about.
+  mountToolDrawer(config);
 }
 
 // ── Helpers ──
