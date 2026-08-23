@@ -32,6 +32,12 @@ const STAGES = ["iDo", "weDo", "youDo"];
 const TEXT_FIELDS = ["heading", "intro", "keyIdea"];
 
 const DRY = process.argv.includes("--dry-run");
+// data/es-translations is the SOURCE OF TRUTH; a config is a projection of it.
+// Normally the projection is additive, so a hand-authored translation in a
+// config outranks the memory. --refresh reverses that for a correction pass:
+// re-derive every value from the memory, so a fix made once in the memory
+// reaches all four places the string appears (core + three variants).
+const REFRESH = process.argv.includes("--refresh");
 const unitIx = process.argv.indexOf("--unit");
 const ONLY_UNIT = unitIx !== -1 ? process.argv[unitIx + 1] : null;
 
@@ -106,9 +112,10 @@ function main() {
     let changed = false;
 
     for (const key of TEXT_FIELDS) {
-      if (blank(ci[key]) || !blank(ci[`${key}Es`])) continue;
+      if (blank(ci[key])) continue;
+      if (!REFRESH && !blank(ci[`${key}Es`])) continue;
       const es = memory.get(ci[key]);
-      if (es) {
+      if (es && ci[`${key}Es`] !== es) {
         ci[`${key}Es`] = es;
         changed = true;
       }
@@ -117,13 +124,15 @@ function main() {
     for (const name of STAGES) {
       const stage = ci[name];
       if (!stage || !Array.isArray(stage.lines) || !stage.lines.length) continue;
-      if (Array.isArray(stage.linesEs) && stage.linesEs.length === stage.lines.length) continue;
+      const full = Array.isArray(stage.linesEs) && stage.linesEs.length === stage.lines.length;
+      if (full && !REFRESH) continue;
       const translated = stageTranslation(stage, memory);
       if (!translated) {
         const have = stage.lines.filter((l) => memory.has(l)).length;
         if (have) partial.push(`${lesson}.${name} (${have}/${stage.lines.length})`);
         continue;
       }
+      if (JSON.stringify(stage.linesEs) === JSON.stringify(translated.linesEs)) continue;
       stage.linesEs = translated.linesEs;
       if (!blank(stage.title) && blank(stage.titleEs)) {
         const es = memory.get(stage.title);
