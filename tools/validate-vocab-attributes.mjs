@@ -42,19 +42,26 @@
  * `=` belongs to the sentence and a quote does not follow it. Requiring the
  * quote keeps that line untouched.
  *
- * A SECOND, LOSSY SHAPE. 50 spans in 20 files are damaged differently: their
- * own opening tag is broken, e.g.
+ * TWO FURTHER SHAPES, both from the same cleanup regex, both now repaired.
  *
- *     aria-label="base"vocab-word" data-vocab="height" ...>height</span> of 6 feet."
+ *   2. The span's own opening tag destroyed:
+ *        aria-label="base"vocab-word" data-vocab="height" ...>height</span> of 6 feet."
+ *   3. The attribute consumed entirely, leaving only the glossary term:
+ *        <div class="card" style="height">      <button onclick="factor">
  *
- * Here `fix_vocab_attributes.py` has already eaten `<span class="` AND the
- * connector text that ran between `base` and `height`. The surviving characters do not
- * determine the original sentence — reconstructing it means inventing words,
- * and for a `style` attribute (`style="width"vocab-word" ...>height</span>:auto"`)
- * any mechanical join produces invalid CSS. These are therefore NOT repaired
- * here. They are counted against a pinned ceiling in data/vocab-attribute-debt.json
- * so the number can only ever go down: the gate stays honest about known damage
- * instead of being blind to it, and a new one fails the build immediately.
+ * Shape 3 is the dangerous one: it carries no marker, so no search for "vocab"
+ * finds it. 114 of them were live — invalid CSS on layout containers, and
+ * read-aloud buttons that threw ReferenceError the moment a student pressed
+ * them.
+ *
+ * ALL OF IT WAS RECOVERABLE, and none of it was guessed. Every pre-damage file
+ * is still in git history: the injector landed in a single commit, so the
+ * revision before it holds the original text verbatim. 50 of 50 shape-2 cases
+ * and 93 of 114 shape-3 cases were restored from those revisions, each one
+ * gated on the surviving fragments still corroborating the recovered value.
+ * The 14 that remain sit in files whose attribute counts have drifted since,
+ * so positional recovery is unproven; they are pinned in
+ * data/vocab-attribute-debt.json rather than guessed at.
  *
  *   node tools/validate-vocab-attributes.mjs         # gate: report and fail
  *   node tools/validate-vocab-attributes.mjs --fix   # repair the repairable shape
@@ -67,11 +74,13 @@ import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { VOCAB_TERMS } from "../scripts/lib/vocab-linkify.mjs";
 import { assertNonEmpty } from "./lib/non-empty.mjs";
 import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const FIX = process.argv.includes("--fix");
+const TERMS = new Set(VOCAB_TERMS.map((t) => t.toLowerCase()));
 
 /* A vocab span in ATTRIBUTE POSITION: immediately followed by `="` or `='`.
  * The quote is what makes this unambiguous — see THE RULE above. */
@@ -82,6 +91,20 @@ const CORRUPT = /<span class="vocab-word"[^<>]*>([^<]*)<\/span>(?=="|=')/g;
 const MALFORMED = /(?<!<span class=")(?<!class=")vocab-word"/g;
 
 const DEBT = JSON.parse(readFileSync(join(ROOT, "data", "vocab-attribute-debt.json"), "utf8"));
+
+/* THE THIRD SHAPE, and the one with no marker at all. Where the cleanup regex
+ * consumed the whole attribute value it left only the glossary term behind:
+ *
+ *     <div class="card" style="height">        (was a full CSS declaration)
+ *     <button class="btn-tts" onclick="factor"> (was speakText('...'))
+ *
+ * Nothing here says "vocab" — the damage is invisible to any marker search, so
+ * it hid behind the other two shapes. A JS-bearing or URL-bearing attribute
+ * whose entire value is a bare glossary noun is always broken: invalid CSS, or
+ * a handler that throws ReferenceError the moment a student clicks it. */
+const JS_ATTRS =
+  /^(onclick|onchange|oninput|onsubmit|onkeydown|onkeyup|onfocus|onblur|onmouseover|onmouseout|href|src|style)$/;
+const ATTR = /([a-zA-Z-]+)="([^"]{1,20})"/g;
 
 function trackedHtml() {
   const out = execFileSync("git", ["ls-files", "-z", "*.html"], {
@@ -99,16 +122,25 @@ function main() {
 
   const hits = [];
   const malformed = [];
+  const bareTerm = [];
   let repaired = 0;
 
   for (const rel of files) {
     const abs = join(ROOT, rel);
     const src = readFileSync(abs, "utf8");
-    if (!src.includes("vocab-word")) continue;
+    // NB: the bare-term shape leaves no "vocab-word" text, so this file cannot
+    // be skipped on that marker — every page has to be scanned.
 
     MALFORMED.lastIndex = 0;
     const broken = (src.match(MALFORMED) || []).length;
     if (broken) malformed.push({ rel, broken });
+
+    ATTR.lastIndex = 0;
+    let bare = 0;
+    for (const a of src.matchAll(ATTR)) {
+      if (JS_ATTRS.test(a[1]) && TERMS.has(a[2].toLowerCase().trim())) bare++;
+    }
+    if (bare) bareTerm.push({ rel, bare });
 
     CORRUPT.lastIndex = 0;
     let m;
@@ -131,6 +163,18 @@ function main() {
     return;
   }
 
+  const bareTotal = bareTerm.reduce((n, h) => n + h.bare, 0);
+  const bareCeiling = DEBT.bareTermAttributes.ceiling;
+  if (bareTotal > bareCeiling) {
+    console.error(
+      `FAIL  validate:vocab-attributes: ${bareTotal} JS/URL attribute(s) hold nothing but a ` +
+        `glossary term, above the pinned ceiling of ${bareCeiling}.`,
+    );
+    console.error('      e.g. style="width" (invalid CSS) or onclick="factor" (throws on click).');
+    for (const h of bareTerm) console.error(`      ${h.rel}  (${h.bare})`);
+    process.exit(1);
+  }
+
   const brokenTotal = malformed.reduce((n, h) => n + h.broken, 0);
   const ceiling = DEBT.malformedSpans.ceiling;
   if (brokenTotal > ceiling) {
@@ -144,10 +188,9 @@ function main() {
   }
 
   if (!hits.length) {
-    const note =
-      brokenTotal < ceiling
-        ? `  (malformed spans ${brokenTotal} — below the pinned ${ceiling}; lower the ceiling)`
-        : `  (${brokenTotal} malformed spans, at the pinned ceiling)`;
+    const part = (n, c, label) =>
+      n < c ? `${label} ${n} — below the pinned ${c}, lower it` : `${n} ${label}, at ceiling`;
+    const note = `  (${part(brokenTotal, ceiling, "malformed spans")}; ${part(bareTotal, bareCeiling, "bare-term attrs")})`;
     console.log(
       `PASS  validate:vocab-attributes — ${files.length} pages, no swallowed attributes.${note}`,
     );
