@@ -15,16 +15,16 @@
     if (!document.querySelector('link[href*="katex"]')) {
       var link = document.createElement("link");
       link.rel = "stylesheet";
-      link.href = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css";
+      link.href = "/assets/vendor/katex-0.16.8/katex.min.css";
       link.crossOrigin = "anonymous";
       document.head.appendChild(link);
     }
     var script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js";
+    script.src = "/assets/vendor/katex-0.16.8/katex.min.js";
     script.crossOrigin = "anonymous";
     script.onload = function () {
       var ext = document.createElement("script");
-      ext.src = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js";
+      ext.src = "/assets/vendor/katex-0.16.8/contrib/auto-render.min.js";
       ext.crossOrigin = "anonymous";
       ext.onload = callback;
       document.head.appendChild(ext);

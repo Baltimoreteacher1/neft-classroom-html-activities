@@ -353,7 +353,7 @@
   // Lazy-load KaTeX (same CDN Noam already uses) once, then resolve. If the
   // host already provides renderMathInElement, reuse it. Never blocks render —
   // on failure the raw LaTeX simply stays as text.
-  var KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/";
+  var KATEX = "/assets/vendor/katex-0.16.8/";
   var _katexLoading = null;
   function ensureKatex() {
     if (global.renderMathInElement) return Promise.resolve(true);
