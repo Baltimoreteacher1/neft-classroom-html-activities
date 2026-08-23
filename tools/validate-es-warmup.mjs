@@ -30,6 +30,24 @@ const blank = (value) => !String(value ?? "").trim();
 
 /* ── detector ────────────────────────────────────────────────────────────── */
 
+/**
+ * Spanish opens a question with `¿`, and leaving it off is not a typo a reader
+ * skims past — the opening mark is what tells them the sentence is a question
+ * before they reach the end of it, which is the whole reason the language has
+ * one. Four shipped this way ("12 es el 25% de qué número?"), all from
+ * translating an English sentence left to right and punctuating at the end.
+ *
+ * Exempt: a line that ENDS in a bare arithmetic prompt ("7 × (60 + 2) = ?",
+ * "625 ÷ 60 ≈ ?"), which is notation rather than a sentence and takes no
+ * opening mark in either language.
+ */
+export function missingOpeningMark(value) {
+  const text = String(value ?? "").trim();
+  if (!text.endsWith("?")) return false;
+  if (/[=≈≤≥<>+\-−×÷]\s*\?$/.test(text)) return false;
+  return !text.includes("¿");
+}
+
 /** Everything that can be wrong with one question's Spanish. */
 export function questionProblems(id, index, question) {
   const out = [];
@@ -70,6 +88,14 @@ export function questionProblems(id, index, question) {
   if (hasStem && question.stemEs === question.stem) {
     out.push(`${where}: stemEs is identical to the English`);
   }
+  if (hasStem && missingOpeningMark(question.stemEs)) {
+    out.push(`${where}: stemEs is a question with no opening "¿"`);
+  }
+  (hasChoices ? question.choicesEs : []).forEach((choice, i) => {
+    if (missingOpeningMark(choice)) {
+      out.push(`${where}: choicesEs[${i}] is a question with no opening "¿"`);
+    }
+  });
   return out;
 }
 
@@ -124,6 +150,20 @@ const selftests = [
         choicesEs: ["24", "20", "10 camionetas", "18"],
       }).length === 1,
   ],
+  [
+    "a Spanish question with no opening mark is caught",
+    () =>
+      questionProblems("x", 0, {
+        ...base,
+        stemEs: "Cuanto es 6 x 4?",
+        choicesEs: ["24", "20", "10 camionetas", "18"],
+      }).length === 1,
+  ],
+  [
+    "a bare arithmetic prompt needs no opening mark",
+    () => missingOpeningMark("7 × (60 + 2) = ?") === false,
+  ],
+  ["a properly opened question passes", () => missingOpeningMark("¿Cuánto es 6 × 4?") === false],
   [
     "an untranslated question is not an error",
     () => questionProblems("x", 0, { ...base, explanation: "Six groups of four." }).length === 0,
