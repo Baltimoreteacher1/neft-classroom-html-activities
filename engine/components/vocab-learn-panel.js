@@ -1,5 +1,5 @@
 import { workedFigure, workedStepFigures } from "../../scripts/lib/learn-figures.mjs";
-import { divisionStepFigures } from "../core/division-walk-figure.js";
+import { carriedDivisionFigures } from "../core/division-walk-figure.js";
 import { getPreferredLang } from "../core/i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "../core/interactive-visual.js";
 import {
@@ -1652,7 +1652,7 @@ export function renderLearnItPanel(container, config, options = {}) {
   // the bar, products and differences in their columns — derived by
   // simulating the algorithm and drawn only when every snapshot's numbers
   // are the ones the authored line states (division-walk-figure.js).
-  const divFigs = divisionStepFigures(iLines) || [];
+  const divFigs = carriedDivisionFigures(iLines);
   // Factor-tree walks (6-13) reuse the exact reader/drawer the generated
   // learn.html pages already trust (scripts/lib/learn-figures.mjs — gated by
   // validate:learn-figures): the tree gains a branch per authored line. Fed
@@ -1680,34 +1680,8 @@ export function renderLearnItPanel(container, config, options = {}) {
       return null;
     }
   });
-  // The tableau stays on screen once the walk starts. divisionStepFigures emits
-  // a snapshot only for a line that MAKES a move, so the setup line and the
-  // cycle's closing line ("BRING DOWN: there are no digits left, so the cycle is
-  // finished and the remainder is 0") were left with no model — the second of
-  // those is the line that states the answer. A step that states no new move
-  // re-shows the most recent snapshot instead of blinking the model out and
-  // back, and the carry stops at the first line after the last move that no
-  // longer names a step of the cycle: the "I check by multiplying" coda is a
-  // different computation and must not sit under a picture of this one.
-  // Mirrors engine/core/small-group-renderer.js, which had the same gap.
-  const lastDivFig = divFigs.reduce((last, svg, i) => (svg ? i : last), -1);
-  const CYCLE_STEP = /\b(?:divide|multiply|subtract|bring down|cycle|remainder)\b/i;
-  let lastTableauLine = lastDivFig;
-  while (
-    lastTableauLine >= 0 &&
-    lastTableauLine + 1 < iLines.length &&
-    CYCLE_STEP.test(String(iLines[lastTableauLine + 1]))
-  ) {
-    lastTableauLine += 1;
-  }
-  const carriedDivFig = (idx) => {
-    if (lastDivFig < 0 || idx > lastTableauLine) return null;
-    let svg = divFigs[idx];
-    for (let i = idx; !svg && i >= 0; i--) svg = divFigs[i];
-    return svg || null;
-  };
   const stepFigureFor = (idx) => {
-    const carried = carriedDivFig(idx);
+    const carried = divFigs[idx];
     if (carried) {
       return { svg: carried, cap: isEs ? "La división hasta ahora" : "The division so far" };
     }

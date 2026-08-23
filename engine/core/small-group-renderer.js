@@ -2,7 +2,7 @@
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 
-import { divisionStepFigures } from "./division-walk-figure.js";
+import { carriedDivisionFigures } from "./division-walk-figure.js";
 import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { createGoDeeper } from "./go-deeper.js";
 import { observeContentImageZoom } from "./image-zoom.js";
@@ -116,39 +116,12 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
   // divisionStepFigures draws nothing unless every snapshot's numbers are the
   // ones the authored line itself states, so a lesson it cannot verify keeps
   // exactly the rendering it has today.
-  const divFigs = (() => {
-    try {
-      return divisionStepFigures(lines) || [];
-    } catch (_) {
-      return [];
-    }
-  })();
-  // The tableau stays on screen once the walk starts: a step that states no new
-  // move ("set it up the tall way", "now I repeat the cycle") re-shows the most
-  // recent snapshot rather than blinking the model out and back.
-  const lastDivFig = divFigs.reduce((last, svg, i) => (svg ? i : last), -1);
-  // The walk's snapshots stop at the last move the algorithm MAKES — but the
-  // cycle's own closing line ("BRING DOWN: there are no digits left to bring
-  // down, so the cycle is finished and the remainder is 0") is still part of
-  // the algorithm, and it is the line that states the answer. Leaving it with
-  // no tableau dropped the finished division exactly where a student reads the
-  // result. So the final snapshot carries across the lines that FOLLOW the last
-  // move and still name a step of the cycle, and stops at the first line that
-  // does not — the "I check by multiplying" coda, which is a different
-  // computation and must not sit under a picture of this one.
-  const CYCLE_STEP = /\b(?:divide|multiply|subtract|bring down|cycle|remainder)\b/i;
-  let lastTableauLine = lastDivFig;
-  while (
-    lastTableauLine >= 0 &&
-    lastTableauLine + 1 < lines.length &&
-    CYCLE_STEP.test(String(lines[lastTableauLine + 1]))
-  ) {
-    lastTableauLine += 1;
-  }
+  // One shared rule, in division-walk-figure.js: the tableau stays on screen
+  // once the walk starts, and carries one step past the last move so the line
+  // that STATES THE ANSWER still has a picture. See carriedDivisionFigures.
+  const divFigs = carriedDivisionFigures(lines);
   const divisionFigureAt = (index) => {
-    if (index > lastTableauLine) return null;
-    let svg = divFigs[index];
-    for (let i = index; !svg && i >= 0; i--) svg = divFigs[i];
+    const svg = divFigs[index];
     if (!svg) return null;
     const figure = el("figure", "sg-step-visual sg-divfig");
     figure.innerHTML = svg;

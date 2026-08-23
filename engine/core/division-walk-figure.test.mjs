@@ -8,7 +8,7 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import test from "node:test";
-import { divisionStepFigures } from "./division-walk-figure.js";
+import { carriedDivisionFigures, divisionStepFigures } from "./division-walk-figure.js";
 
 const lessonLines = (id) => {
   const cfg = JSON.parse(readFileSync(new URL(`../../lessons/${id}/config.json`, import.meta.url), "utf8"));
@@ -76,4 +76,55 @@ test("non-division worked examples are refused, fleet-wide", () => {
   for (const id of withFigures) {
     assert.match(id, /^2-[67]$/, `unexpected lesson ${id} produced division figures — verify it by eye before shipping`);
   }
+});
+
+/* ── the carry: what a student actually sees, line by line ─────────────────
+ *
+ * `divisionStepFigures` is the DRAWER; `carriedDivisionFigures` is what the two
+ * renderers render. The gap between them is a real reported defect — "the
+ * tableau stops after the SUBTRACT step" — and until now nothing pinned it,
+ * so the rule could silently revert in either renderer and every existing test
+ * would still pass. These read the SHIPPED configs, not fixtures, because the
+ * defect was in the relationship between the rule and real authored lines.
+ */
+
+test("2-7: the tableau covers every line of the cycle, including the one that states the answer", () => {
+  const lines = lessonLines("2-7");
+  const raw = divisionStepFigures(lines) || [];
+  const carried = carriedDivisionFigures(lines);
+
+  // The drawer itself skips the setup line and the closing BRING DOWN.
+  assert.equal(raw[3], null, "precondition: line 3 (set it up the tall way) makes no move");
+  assert.equal(raw[7], null, "precondition: line 7 (no digits left) makes no move");
+
+  // Every line from the first move through the end of the cycle shows a tableau.
+  for (let i = 2; i <= 7; i++) {
+    assert.ok(carried[i], `line ${i} must show a tableau: ${lines[i].slice(0, 60)}`);
+  }
+  // A line with no move re-shows the previous snapshot rather than blinking out.
+  assert.equal(carried[3], carried[2], "the setup line re-shows the snapshot before it");
+  assert.equal(carried[7], carried[6], "the closing line re-shows the finished division");
+});
+
+test("the check-by-multiplying coda gets NO tableau — it is a different computation", () => {
+  for (const id of ["2-6", "2-7"]) {
+    const lines = lessonLines(id);
+    const carried = carriedDivisionFigures(lines);
+    const last = lines.length - 1;
+    assert.match(lines[last], /check/i, `${id}: precondition — last line is the check`);
+    assert.equal(carried[last], null, `${id}: the coda must not sit under a picture of the division`);
+  }
+});
+
+test("lines before the first snapshot stay bare — nothing is carried backwards", () => {
+  const lines = lessonLines("2-7");
+  const carried = carriedDivisionFigures(lines);
+  assert.equal(carried[0], null, "the problem statement gets no tableau");
+  assert.equal(carried[1], null, "the move-the-point line gets no tableau");
+});
+
+test("a worked example the algorithm cannot verify carries nothing", () => {
+  assert.deepEqual(carriedDivisionFigures(["Add 2 and 3 to get 5.", "Now double it."]), []);
+  assert.deepEqual(carriedDivisionFigures([]), []);
+  assert.deepEqual(carriedDivisionFigures(null), []);
 });

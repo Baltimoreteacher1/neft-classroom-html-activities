@@ -283,3 +283,61 @@ export function divisionStepFigures(rawLines) {
     return drawTableau(problem, events, upTo, counts[i]);
   });
 }
+
+/**
+ * A line still belongs to the long-division cycle when it names one of the
+ * cycle's own moves. Word-bounded on purpose: the "I check by multiplying"
+ * coda must NOT match, because it is a different computation and must not sit
+ * under a picture of this one.
+ */
+const CYCLE_STEP = /\b(?:divide|multiply|subtract|bring down|cycle|remainder)\b/i;
+
+/**
+ * The tableau AS A STUDENT SEES IT, one entry per authored line.
+ *
+ * `divisionStepFigures` emits a snapshot only for a line that MAKES a move, and
+ * a worked example does not read that way. Lesson 2-7 states nine lines and
+ * makes moves on four of them, so rendering the raw array blinks the model out
+ * on the setup line ("Now I write it the tall way — 63⟌189") and again on the
+ * line that states the answer ("BRING DOWN: there are no digits left to bring
+ * down, so the cycle is finished and the remainder is 0"). Joel reported this
+ * as "the tableau stops after the SUBTRACT step" — the picture vanished exactly
+ * where a student reads the result.
+ *
+ * So each line without a snapshot of its own re-shows the most recent one, and
+ * the carry runs one step PAST the last move, across the lines that still name
+ * part of the cycle, stopping at the first that does not.
+ *
+ * This lives here, once, because BOTH renderers that own the worked example
+ * need it — `engine/components/vocab-learn-panel.js` (the whole-group Learn It)
+ * and `engine/core/small-group-renderer.js` (the studio Build card). It was
+ * written twice, verbatim, and two copies of a rule is how this repo's defects
+ * start: a fix to one is not a fix to the other.
+ *
+ * @param {string[]} lines the worked example's authored lines
+ * @returns {(string|null)[]} SVG per line; null where no tableau should show
+ */
+export function carriedDivisionFigures(lines) {
+  const list = Array.isArray(lines) ? lines : [];
+  let figures = [];
+  try {
+    figures = divisionStepFigures(list) || [];
+  } catch {
+    return [];
+  }
+  const lastMove = figures.reduce((last, svg, i) => (svg ? i : last), -1);
+  if (lastMove < 0) return [];
+
+  let lastLine = lastMove;
+  while (lastLine + 1 < list.length && CYCLE_STEP.test(String(list[lastLine + 1]))) {
+    lastLine += 1;
+  }
+
+  const out = [];
+  let carried = null;
+  for (let i = 0; i < list.length; i++) {
+    if (figures[i]) carried = figures[i];
+    out[i] = i <= lastLine ? carried : null;
+  }
+  return out;
+}
