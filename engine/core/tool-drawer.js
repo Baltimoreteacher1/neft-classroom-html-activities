@@ -92,7 +92,16 @@ const POINTS = [
   {
     tabId: "sg-tab-learn",
     sections: ["explore", "connect"],
-    hint: "Open the model we just used and try it yourself.",
+    // Anchored INSIDE the worked example rather than at the foot of the tab.
+    // Learn It is the longest panel in the studio (diagnostic, worked example,
+    // lab, model), so a chip at its end was several screens below the steps it
+    // refers to. It matters most here: 90 of the 204 small-group worked
+    // examples draw no model beside any step, because the build visualiser only
+    // draws what it can verify from the lesson's own numbers — correctly. The
+    // lesson's real manipulative is the model those steps are missing, and it
+    // already exists in the config (Joel, 2026-08-23).
+    within: "#sg-build",
+    hint: "Now try that same move yourself on the model.",
   },
   {
     tabId: "sg-tab-guided",
@@ -261,7 +270,10 @@ export function mountToolDrawer(config, { panels = [], hero = null } = {}) {
     if (!panel) continue;
     const preferred = tools.filter((t) => point.sections.includes(t.section));
     const forPoint = preferred.length ? preferred : tools;
-    panel.appendChild(buildPoint(forPoint, point.hint, drawer));
+    // `within` puts the row beside the work it refers to; the panel itself is
+    // the fallback when that section is not on this lesson.
+    const host = (point.within && panel.querySelector(point.within)) || panel;
+    host.appendChild(buildPoint(forPoint, point.hint, drawer));
     points += 1;
   }
 

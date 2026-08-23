@@ -1,106 +1,25 @@
-import { isRight } from "../core/answer-match.js";
+import { isRight, norm } from "../core/answer-match.js";
 import { stackContent } from "../core/i18n.js";
 
 // ── How generously a table cell is judged ────────────────────────────────────
 //
-// A table cell now holds a student's WORKING, not just a final number: the
-// rewrite step of a decimal division, an inverse operation, a keep-change-flip,
-// a check. There is no single right way to write any of those. "Divide both
-// sides by 3", "divide by 3" and "÷ 3" are the same answer; so are
-// "3x ÷ 3 = 21 ÷ 3" and "21 ÷ 3"; so are "x = 7" and "7".
+// A table cell holds a student's WORKING, not just a final number: the rewrite
+// step of a decimal division, an inverse operation, a keep-change-flip, a
+// check. There is no single right way to write any of those.
 //
-// The shared answer matcher compares literally, which is right for a
-// multiple-choice stem and wrong for a column of working — a student who did
-// the mathematics correctly was told they were wrong for leaving out a space,
-// naming the sides, or writing only the half of the equation that does the
-// work. Joel asked for this on 2026-08-23: "I don't want the tables to be so
-// strict throughout (lessons or small-group lessons)."
+// MOST of that generosity is not table-specific and now lives in the shared
+// matcher (engine/core/answer-match.js — notation, phrasing, either half of a
+// stated equation), so every typed answer in the product gets it. What is left
+// here is the one layer that is only true of a WORK column: a cell that asks to
+// SEE the division is answered by the division or by the value it comes to, so
+// "56 ÷ 8" and "7" are the same cell. That is right for a column of working and
+// wrong for a question asking what the quotient is, which is why it stays here
+// rather than being promoted.
 //
-// Five layers, cheapest first. Each one relaxes NOTATION or PHRASING; none of
-// them relaxes the mathematics. A wrong number never passes any of them.
-//
-// Applies to every fill-table in the product: lessons and small groups both
-// render through this component.
-
-const FILLER = new Set([
-  "a",
-  "an",
-  "the",
-  "and",
-  "then",
-  "so",
-  "is",
-  "are",
-  "be",
-  "to",
-  "of",
-  "it",
-  "by",
-  "on",
-  "in",
-  "with",
-  "for",
-  "each",
-  "every",
-  "both",
-  "side",
-  "sides",
-  "step",
-  "steps",
-  "get",
-  "gets",
-  "give",
-  "gives",
-  "do",
-  "does",
-  "we",
-  "i",
-  "you",
-  "my",
-  "your",
-  "answer",
-  "value",
-  "number",
-  "numbers",
-  "equation",
-  "problem",
-  "result",
-  "over",
-  "using",
-  "use",
-  "make",
-  "makes",
-  "same",
-]);
-
-const NUMBER_WORDS = {
-  zero: "0",
-  one: "1",
-  two: "2",
-  three: "3",
-  four: "4",
-  five: "5",
-  six: "6",
-  seven: "7",
-  eight: "8",
-  nine: "9",
-  ten: "10",
-  eleven: "11",
-  twelve: "12",
-  half: "1/2",
-  quarter: "1/4",
-};
-
-// Word ⇄ symbol, in both directions, so "divide" and "÷" are one idea.
-const OPERATION_WORDS = [
-  [/[÷]|\bdivided by\b|\bdivide\b|\bdividing\b|\bdivision\b/g, " divide "],
-  [
-    /[×]|\btimes\b|\bmultiplied by\b|\bmultiply\b|\bmultiplying\b|\bmultiplication\b/g,
-    " multiply ",
-  ],
-  [/\bplus\b|\badd\b|\badding\b|\baddition\b/g, " add "],
-  [/[−–—]|\bminus\b|\bsubtract\b|\bsubtracting\b|\bsubtraction\b/g, " subtract "],
-];
+// The rule for both halves: forgive NOTATION and PHRASING, never the
+// mathematics. Pinned by fill-table-match.test.mjs, whose rejections matter as
+// much as its acceptances — a matcher that accepts everything tells a student
+// their wrong answer was right.
 
 /** Strip the decoration a student would never think to type. */
 function tidy(value) {
@@ -111,58 +30,16 @@ function tidy(value) {
     .replace(/[.;]+$/, "");
 }
 
-/** Layer 2 — same characters, different notation: "84÷21" vs "84 ÷ 21". */
-function normalizeExpression(value) {
-  return (
-    tidy(value)
-      .toLowerCase()
-      .replace(/\bdivided by\b/g, "/")
-      .replace(/\btimes\b/g, "*")
-      .replace(/\bplus\b/g, "+")
-      .replace(/\bminus\b/g, "-")
-      .replace(/[÷]/g, "/")
-      .replace(/[×]/g, "*")
-      .replace(/[−–—]/g, "-")
-      // A LETTER x between two numbers is the times sign a student typed because
-      // it is on the keyboard and × is not. Between anything else it is the
-      // variable, and must stay one ("3x = 21").
-      .replace(/(\d)\s*x\s*(?=\d)/g, "$1*")
-      .replace(/[,\s]/g, "")
-  );
-}
-
 /**
- * Layer 3 — same idea, different words. Reduces a phrase to the multiset of
- * things it actually names: the operation and the numbers. Filler words and
- * word order are dropped, so "Divide both sides by 3", "divide by 3" and "÷ 3"
- * all reduce to `3|divide`.
- *
- * Deliberately NOT applied when either side names no operation and no digit —
- * a free-text column ("Why?", "Reasonable?") must not be reduced to a bag of
- * words, or two different explanations would compare equal.
- */
-function wordKey(value) {
-  let text = ` ${tidy(value).toLowerCase()} `;
-  for (const [pattern, word] of OPERATION_WORDS) text = text.replace(pattern, word);
-  const tokens = text
-    .split(/[^a-z0-9./]+/)
-    .map((t) => NUMBER_WORDS[t] || t)
-    .filter((t) => t && !FILLER.has(t));
-  return tokens.sort().join("|");
-}
-
-function isReducible(value) {
-  const key = wordKey(value);
-  return /\d/.test(key) || /divide|multiply|add|subtract/.test(key);
-}
-
-/**
- * Layer 4 — arithmetic. A pure numeric expression is compared by its VALUE, so
- * "56 ÷ 8", "56/8" and "7" are one answer. Hand-rolled (no eval, no Function):
- * the only thing this parser can read is digits and + − × ÷ ( ).
+ * Arithmetic by VALUE. Hand-rolled (no eval, no Function): the only thing this
+ * parser can read is digits and + − × ÷ ( ). Returns null for anything that is
+ * not a complete numeric expression — a stem with a variable in it, a word, a
+ * half-typed cell — so a non-expression never compares equal to anything.
  */
 function evaluateArithmetic(text) {
-  const src = normalizeExpression(text);
+  const src = norm(tidy(text))
+    .replace(/x(?=\d)|(?<=\d)x/g, "*")
+    .replace(/\s/g, "");
   if (!src || !/^[-+*/().\d]+$/.test(src) || !/\d/.test(src)) return null;
   let i = 0;
   const peek = () => src[i];
@@ -211,24 +88,17 @@ function evaluateArithmetic(text) {
   return value === null || i !== src.length || !Number.isFinite(value) ? null : value;
 }
 
-/**
- * Layer 5 — the halves of a stated equation. A "Work" cell authored as
- * "3x ÷ 3 = 21 ÷ 3" is showing the SAME move on both sides; a student who
- * writes only the half that does the arithmetic ("21 ÷ 3") has shown the work.
- * A "Solution" cell authored as "x = 7" is answered by "7".
- */
+/** The halves of a stated equation, each judged as a cell in its own right. */
 function equationParts(value) {
   const text = tidy(value);
   if (!text.includes("=")) return [];
   return text
     .split("=")
     .map((part) => part.trim())
-    .filter(Boolean);
+    .filter((part) => part && /\d/.test(part));
 }
 
-/**
- * Judge one table cell. `expected` may be a string or a list of accepted forms.
- */
+/** Judge one table cell. `expected` may be a string or a list of accepted forms. */
 export function cellMatches(input, expected) {
   if (!String(input ?? "").trim()) return false;
   const accepted = Array.isArray(expected) ? expected : [expected];
@@ -238,43 +108,18 @@ export function cellMatches(input, expected) {
 function matchesOneCell(input, expected) {
   if (expected == null) return false;
 
-  // 1 · the shared matcher: exact, numeric, and unit-aware.
-  if (isRight(input, expected)) return true;
+  // Everything the rest of the product already forgives.
+  if (isRight(tidy(input), tidy(expected))) return true;
 
-  // 2 · notation.
-  const typedExpr = normalizeExpression(input);
-  if (typedExpr && typedExpr === normalizeExpression(expected)) return true;
-
-  // 3 · phrasing.
-  if (isReducible(expected) && isReducible(input) && wordKey(input) === wordKey(expected)) {
-    return true;
-  }
-
-  // 4 · arithmetic value.
+  // …and, for a work column only, the value the working comes to.
   const typedValue = evaluateArithmetic(input);
-  if (typedValue !== null) {
-    const expectedValue = evaluateArithmetic(expected);
-    if (expectedValue !== null && Math.abs(typedValue - expectedValue) < 1e-9) return true;
-  }
-
-  // 5 · either half of a stated equation, judged by every layer above.
+  if (typedValue === null) return false;
+  const expectedValue = evaluateArithmetic(expected);
+  if (expectedValue !== null && Math.abs(typedValue - expectedValue) < 1e-9) return true;
   for (const part of equationParts(expected)) {
-    if (isRight(input, part)) return true;
-    if (typedExpr && typedExpr === normalizeExpression(part)) return true;
-    if (isReducible(part) && isReducible(input) && wordKey(input) === wordKey(part)) return true;
     const partValue = evaluateArithmetic(part);
-    if (typedValue !== null && partValue !== null && Math.abs(typedValue - partValue) < 1e-9) {
-      return true;
-    }
+    if (partValue !== null && Math.abs(typedValue - partValue) < 1e-9) return true;
   }
-
-  // …and the same courtesy in reverse: a student who writes the whole equation
-  // for a cell authored as one side of it has also answered it.
-  for (const part of equationParts(input)) {
-    if (isRight(part, expected)) return true;
-    if (normalizeExpression(part) === normalizeExpression(expected)) return true;
-  }
-
   return false;
 }
 
