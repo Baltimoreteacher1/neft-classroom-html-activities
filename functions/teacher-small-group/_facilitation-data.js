@@ -1014,7 +1014,7 @@ export const FACILITATION_BY_LESSON = {
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, divide decimals means ___ .",
+      "In this problem, dividend means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [

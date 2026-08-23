@@ -455,6 +455,10 @@ function buildGroup2(base, u, m) {
 
   const ci = clone(base.launch?.conceptIntro || {});
   const p = base.practice || {};
+  // Group 1's frames rehearse the STEPS ("My first step is ___"). This group's
+  // languageObjective is to justify to a skeptic and name the method's limits,
+  // so its frame asks for the reason and the boundary instead.
+  const proveFrame = "My method works because ___ . It would stop working if ___ .";
 
   out.launch = out.launch || {};
   out.launch.badge = "Small Group · Challenge";
@@ -470,10 +474,42 @@ function buildGroup2(base, u, m) {
     keyIdea: ci.keyIdea
       ? `${String(ci.keyIdea).replace(/[.\s]+$/, "")} — and you can say why it is true, and where it would stop being true.`
       : "You can say why today's idea is true, and where it would stop being true.",
-    // The Build step is a quick warm-up; the real challenge — generalizing,
-    // justifying, and defending — lives in the guided "Prove It" tab (see
-    // engine/core/small-group-innovation.js).
     iDo: ci.iDo || { title: "Start from the answer", lines: [] },
+    // Group 2 used to STOP after "Watch me". The reasoning was that the real
+    // challenge — generalizing, justifying, defending — lives in the guided
+    // Prove-It tab, which is true; but it left the Build card with no gradual
+    // release at all, so a challenge student went straight from watching
+    // someone else work to working alone. Group 1 gets watch → try together →
+    // try with support; group 2 got watch → nothing (Joel, 2026-08-23).
+    //
+    // Nothing here is newly authored mathematics. The try-together turn IS the
+    // lesson's own guided example — the same verified lines group 1 gets, and
+    // the same lines the deck projects — and the two turns after it introduce
+    // no numbers at all, because a challenge group's extension is
+    // justification, not bigger arithmetic. Deliberately no reference to "the
+    // picture" or to anything positioned on the card: validate:concept-intro
+    // fails a Build line that names an artifact the card does not render.
+    weDo: {
+      title: "Try it together — then prove it",
+      lines: [
+        ...(ci.weDo?.lines || []),
+        "Now prove it: say why that move had to work at all — not just that it did.",
+        `Sentence frame — convince a skeptic: "${proveFrame}"`,
+      ],
+    },
+    youDo: {
+      title: "Now you try — and defend it",
+      lines: [
+        "Try the problems below on your own. Getting the answer is half the work — be ready to say why your method works, and where it would stop working.",
+        // Quotes nothing. Group 1's hand-off restates the key idea, which is
+        // right when the risk is forgetting the method; this group's stated
+        // language objective is to connect the method to a SECOND strategy or
+        // representation, so its hand-off asks for that instead. Quoting
+        // keyIdea here would also drift: the group-2 keyIdea is built above
+        // with a suffix, so a graft and a full regeneration would disagree.
+        "Then pick one problem and show it a second way. If two different methods agree, that agreement is your proof.",
+      ],
+    },
   };
 
   // Inherited core items first, then the authored challenge layer. A challenge
