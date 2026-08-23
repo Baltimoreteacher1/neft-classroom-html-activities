@@ -3,7 +3,7 @@
  * Unit tests for teacher-tools/insight-brief/insight-engine.js.
  * Pure-node (no DOM): feeds fixture payloads shaped exactly like the live
  * /api/progress responses and asserts tiers, priorities, groups, and links.
- * Run: node tools/test-insight-brief.mjs
+ * Run: node tools/insight-brief.test.mjs (also picked up by `npm test`)
  */
 await import("../teacher-tools/insight-brief/insight-engine.js");
 const engine = globalThis.NTInsightEngine;
