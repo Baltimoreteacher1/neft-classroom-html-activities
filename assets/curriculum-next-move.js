@@ -63,6 +63,11 @@
     "geom-surface-area-as-volume": "Found the volume instead of the surface area",
     "geom-volume-added-dimensions": "Added the dimensions instead of multiplying",
     "algebra-distributive-partial": "Distributed to the first term only",
+    "factors-multiples-confused": "Confused factors with multiples",
+    "property-order-vs-grouping": "Confused the commutative and associative properties",
+    "factorization-stopped-early": "Stopped factoring before every factor was prime",
+    "stat-question-no-variability": "Chose a question with only one fixed answer",
+    "ratio-compared-without-common-basis": "Compared two ratios without a common basis",
   };
 
   var MOVES = {
@@ -123,6 +128,15 @@
       "Unfold the net and count the faces before anyone computes anything.",
     "geom-volume-added-dimensions": "Build one layer of unit cubes first, then count the layers.",
     "algebra-distributive-partial": "Draw the area model — the outside factor touches BOTH terms.",
+    "factors-multiples-confused":
+      "Ask which number divides which — factors go INTO it, multiples come OUT of it.",
+    "property-order-vs-grouping":
+      "Ask what actually MOVED: the order of the numbers, or the parentheses?",
+    "factorization-stopped-early":
+      "Point at each factor and ask: can this one still be broken apart?",
+    "stat-question-no-variability": "Ask: would two different people give two different answers?",
+    "ratio-compared-without-common-basis":
+      "Ask what ONE of each is worth before either ratio is compared.",
   };
 
   var LANES = {

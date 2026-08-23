@@ -156,6 +156,13 @@ export const STANDARDS = Object.freeze({
     family: "describing a whole range of allowed values, not just one",
     familyEs: "describir todo un rango de valores permitidos, no solo uno",
   },
+  "6.DS.1": {
+    label: "Statistical questions",
+    labelEs: "Preguntas estadísticas",
+    family: "telling a question whose answers vary from one with a single fixed answer",
+    familyEs:
+      "distinguir una pregunta cuyas respuestas varían de una con una sola respuesta fija",
+  },
   "6.DS.3": {
     label: "Spread of data",
     labelEs: "Dispersión de los datos",
@@ -560,6 +567,42 @@ export const TAGS = Object.freeze({
     watchForEs: "Replantee la división como “¿cuántos de estos caben en aquello?”",
     standards: ["6.NOS.1"],
   },
+  "factors-multiples-confused": {
+    label: "Confused factors with multiples",
+    labelEs: "Confundió factores con múltiplos",
+    watchFor: "Ask which number divides which — factors go INTO it, multiples come OUT of it.",
+    watchForEs:
+      "Pregunte qué número divide a cuál: los factores DIVIDEN al número, los múltiplos SALEN de él.",
+    standards: ["6.NOS.4"],
+  },
+  "property-order-vs-grouping": {
+    label: "Confused the commutative and associative properties",
+    labelEs: "Confundió la propiedad conmutativa con la asociativa",
+    watchFor: "Ask what actually MOVED: the order of the numbers, or the parentheses?",
+    watchForEs: "Pregunte qué se MOVIÓ en realidad: el orden de los números o los paréntesis.",
+    standards: ["6.AT.7"],
+  },
+  "factorization-stopped-early": {
+    label: "Stopped factoring before every factor was prime",
+    labelEs: "Dejó de factorizar antes de que todos los factores fueran primos",
+    watchFor: "Point at each factor and ask: can this one still be broken apart?",
+    watchForEs: "Señale cada factor y pregunte: ¿este todavía se puede separar?",
+    standards: ["6.NOS.4"],
+  },
+  "stat-question-no-variability": {
+    label: "Chose a question with only one fixed answer",
+    labelEs: "Escogió una pregunta con una sola respuesta fija",
+    watchFor: "Ask: would two different people give two different answers?",
+    watchForEs: "Pregunte: ¿dos personas distintas darían dos respuestas distintas?",
+    standards: ["6.DS.1"],
+  },
+  "ratio-compared-without-common-basis": {
+    label: "Compared two ratios without a common basis",
+    labelEs: "Comparó dos razones sin una base común",
+    watchFor: "Ask what ONE of each is worth before either ratio is compared.",
+    watchForEs: "Pregunte cuánto vale UNA de cada una antes de comparar las razones.",
+    standards: ["6.AT.3"],
+  },
   "geom-triangle-area-no-half": {
     label: "Found base × height but forgot the half",
     labelEs: "Calculó base × altura pero olvidó la mitad",
@@ -912,6 +955,116 @@ export const KITCHEN_TABLE = Object.freeze({
     why: "Division asks how many of these fit into that. The pieces on the table settle the argument in seconds.",
     whyEs:
       "La división pregunta cuántos de estos caben en aquello. Las piezas sobre la mesa resuelven la discusión en segundos.",
+  },
+  "factors-multiples-confused": {
+    minutes: 5,
+    title: "Share the snack, then count past it",
+    titleEs: "Reparte la botana y luego cuenta más allá",
+    materials: "12 crackers, grapes or coins.",
+    materialsEs: "12 galletas, uvas o monedas.",
+    steps: [
+      "Put 12 pieces on the table. Split them into equal groups every way that works with none left over.",
+      "Write the group sizes you found: 1, 2, 3, 4, 6, 12. Those are the FACTORS of 12.",
+      "Now start at 12 and count on by 12: 12, 24, 36. Those are the MULTIPLES.",
+      "Ask: which list has numbers bigger than 12, and which has numbers 12 or smaller?",
+    ],
+    stepsEs: [
+      "Pongan 12 piezas en la mesa. Sepárenlas en grupos iguales de todas las maneras que funcionen sin que sobre nada.",
+      "Escriban los tamaños de grupo que encontraron: 1, 2, 3, 4, 6, 12. Esos son los FACTORES del 12.",
+      "Ahora empiecen en 12 y cuenten de 12 en 12: 12, 24, 36. Esos son los MÚLTIPLOS.",
+      "Pregunte: ¿qué lista tiene números mayores que 12 y cuál tiene números de 12 o menos?",
+    ],
+    why: "Handling the pieces makes the direction obvious — factors fit INSIDE the number, multiples run past it.",
+    whyEs:
+      "Tocar las piezas hace obvia la dirección: los factores caben DENTRO del número, los múltiplos se pasan de él.",
+  },
+  "property-order-vs-grouping": {
+    minutes: 5,
+    title: "Move the numbers, then move the bag",
+    titleEs: "Mueve los números y luego mueve la bolsa",
+    materials: "Three small objects and a paper bag or a loop of string.",
+    materialsEs: "Tres objetos pequeños y una bolsa de papel o un cordón en círculo.",
+    steps: [
+      "Line up 2, 5 and 9 written on scraps of paper. Add them out loud.",
+      "Swap the 2 and the 9 and add again. Same total? That swap is COMMUTATIVE — the order moved.",
+      "Put the papers back in order and drop the first two into the bag, then add. Now bag the last two instead.",
+      "Ask: did any number change places that time? Only the bag moved — that is ASSOCIATIVE.",
+    ],
+    stepsEs: [
+      "Acomoden el 2, el 5 y el 9 escritos en papelitos. Súmenlos en voz alta.",
+      "Intercambien el 2 y el 9 y sumen otra vez. ¿Mismo total? Ese intercambio es CONMUTATIVO: se movió el orden.",
+      "Regresen los papeles a su orden y metan los dos primeros a la bolsa, luego sumen. Ahora metan los dos últimos.",
+      "Pregunte: ¿algún número cambió de lugar esa vez? Solo se movió la bolsa: eso es ASOCIATIVO.",
+    ],
+    why: "The bag makes the parentheses physical, so 'grouping' stops being a word and becomes something you can see move.",
+    whyEs:
+      "La bolsa hace físicos los paréntesis, así que «agrupación» deja de ser una palabra y se vuelve algo que se ve moverse.",
+  },
+  "factorization-stopped-early": {
+    minutes: 5,
+    title: "Keep splitting until you cannot",
+    titleEs: "Sigue separando hasta que ya no puedas",
+    materials: "Paper and a pencil.",
+    materialsEs: "Papel y lápiz.",
+    steps: [
+      "Write 12 at the top and split it into any two numbers that multiply to 12 — say 2 and 6.",
+      "Point at each one and ask: can THIS number be split again?",
+      "The 6 can: 2 × 3. Split it and circle every number that cannot be split.",
+      "Read the circled numbers left to right: 2, 2, 3. Multiply them back and check you land on 12.",
+    ],
+    stepsEs: [
+      "Escriban 12 arriba y sepárenlo en dos números cualesquiera que multiplicados den 12, por ejemplo 2 y 6.",
+      "Señalen cada uno y pregunten: ¿ESTE número se puede separar otra vez?",
+      "El 6 sí: 2 × 3. Sepárenlo y encierren cada número que ya no se pueda separar.",
+      "Lean los números encerrados de izquierda a derecha: 2, 2, 3. Multiplíquenlos de regreso y comprueben que dan 12.",
+    ],
+    why: "Asking 'can this one split again?' at every branch is the whole method — the tree ends when the answer is no.",
+    whyEs:
+      "Preguntar «¿este se puede separar otra vez?» en cada rama es todo el método: el árbol termina cuando la respuesta es no.",
+  },
+  "stat-question-no-variability": {
+    minutes: 5,
+    title: "Two questions at the dinner table",
+    titleEs: "Dos preguntas en la mesa",
+    materials: "Nothing — just the people at the table.",
+    materialsEs: "Nada, solo las personas en la mesa.",
+    steps: [
+      "Ask everyone: 'How many people are at this table?' Notice that everyone says the same number.",
+      "Now ask: 'How many hours did you sleep last night?' Write down each answer.",
+      "Compare the two lists. One has a single number; the other has one number per person.",
+      "Ask: which question could you make a graph from, and why?",
+    ],
+    stepsEs: [
+      "Pregúntenle a todos: «¿Cuántas personas hay en esta mesa?» Fíjense en que todos dicen el mismo número.",
+      "Ahora pregunten: «¿Cuántas horas dormiste anoche?» Anoten cada respuesta.",
+      "Comparen las dos listas. Una tiene un solo número; la otra tiene un número por persona.",
+      "Pregunte: ¿de cuál pregunta podrían hacer una gráfica, y por qué?",
+    ],
+    why: "The difference is not the topic — it is whether the answers differ. That is what makes a question statistical.",
+    whyEs:
+      "La diferencia no es el tema, sino si las respuestas difieren. Eso es lo que hace estadística a una pregunta.",
+  },
+  "ratio-compared-without-common-basis": {
+    minutes: 5,
+    title: "Which package is really cheaper?",
+    titleEs: "¿Qué paquete es de verdad más barato?",
+    materials: "Two packages from the kitchen with the price and the count on them.",
+    materialsEs: "Dos paquetes de la cocina con el precio y la cantidad.",
+    steps: [
+      "Put the two packages side by side and ask which looks cheaper from the price alone.",
+      "Read the count on each one. Are they even the same size?",
+      "Divide each price by its count to get the cost of ONE. Say both numbers out loud.",
+      "Ask: did the cheaper-looking package stay the cheaper one?",
+    ],
+    stepsEs: [
+      "Pongan los dos paquetes lado a lado y pregunten cuál se ve más barato solo por el precio.",
+      "Lean la cantidad de cada uno. ¿Son siquiera del mismo tamaño?",
+      "Dividan cada precio entre su cantidad para obtener el costo de UNO. Digan los dos números en voz alta.",
+      "Pregunte: ¿el paquete que se veía más barato siguió siendo el más barato?",
+    ],
+    why: "It often flips, and that surprise is the lesson: totals cannot be compared until both are written per one.",
+    whyEs:
+      "Muchas veces se invierte, y esa sorpresa es la lección: los totales no se pueden comparar hasta que los dos estén escritos por uno.",
   },
   "geom-triangle-area-no-half": {
     minutes: 5,

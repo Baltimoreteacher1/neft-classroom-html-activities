@@ -40,6 +40,11 @@ export const BOSS_TAGS = [
   "fraction-added-denominators",
   "fraction-no-reciprocal",
   "fraction-straight-across-division",
+  "factors-multiples-confused",
+  "factorization-stopped-early",
+  "property-order-vs-grouping",
+  "ratio-compared-without-common-basis",
+  "stat-question-no-variability",
   "geom-triangle-area-no-half",
   "geom-surface-area-as-volume",
   "geom-volume-added-dimensions",
@@ -2370,6 +2375,293 @@ export const QUESTION_BANK = {
         prompt: {
           en: `Daily high temperatures (°F): ${list(vals)}. What is the MEAN daily high?`,
           es: `Temperaturas máximas diarias (°F): ${list(vals)}. ¿Cuál es la MEDIA de la máxima diaria?`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Confused factors with multiples ----------------------------------- */
+  "factors-multiples-confused": [
+    T("fm-factor-of", (r) => {
+      const d = r.int(2, 9);
+      const n = d * r.int(2, 5);
+      return {
+        values: { n, d },
+        correct: d,
+        distractor: n * 2,
+        decoys: [n + 1, d + 1],
+        prompt: {
+          en: `Which number is a FACTOR of ${n} — a number that divides into it exactly?`,
+          es: `¿Qué número es un FACTOR de ${n}, es decir, un número que lo divide exactamente?`,
+        },
+      };
+    }),
+    T("fm-multiple-of", (r) => {
+      const n = r.int(3, 9);
+      const k = r.int(3, 6);
+      return {
+        values: { n, k },
+        correct: n * k,
+        distractor: 1,
+        decoys: [n * k + 1, n + k],
+        prompt: {
+          en: `Which number is a MULTIPLE of ${n} — a number you land on counting by ${n}?`,
+          es: `¿Qué número es un MÚLTIPLO de ${n}, es decir, un número donde caes al contar de ${n} en ${n}?`,
+        },
+      };
+    }),
+    T("fm-largest-factor", (r) => {
+      const half = r.int(3, 12);
+      const n = half * 2;
+      return {
+        values: { n, half },
+        correct: half,
+        distractor: n * 2,
+        decoys: [n - 1, half + 1],
+        prompt: {
+          en: `What is the LARGEST factor of ${n} that is smaller than ${n} itself?`,
+          es: `¿Cuál es el FACTOR más grande de ${n} que es menor que ${n} mismo?`,
+        },
+      };
+    }),
+    T("fm-smallest-multiple", (r) => {
+      const n = r.int(4, 12);
+      return {
+        values: { n },
+        correct: n * 2,
+        distractor: Math.max(2, Math.floor(n / 2)),
+        decoys: [n + 1, n * 3],
+        prompt: {
+          en: `What is the SMALLEST multiple of ${n} that is greater than ${n} itself?`,
+          es: `¿Cuál es el MÚLTIPLO más pequeño de ${n} que es mayor que ${n} mismo?`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Confused the commutative and associative properties ---------------- */
+  "property-order-vs-grouping": [
+    T("prop-add-order", (r) => {
+      const a = r.int(2, 9);
+      const b = r.int(2, 9);
+      return {
+        values: { a, b },
+        correct: "Commutative Property",
+        distractor: "Associative Property",
+        decoys: ["Identity Property", "Distributive Property"],
+        prompt: {
+          en: `Which property is shown? ${a} + ${b} = ${b} + ${a}`,
+          es: `¿Qué propiedad se muestra? ${a} + ${b} = ${b} + ${a}`,
+        },
+      };
+    }),
+    T("prop-mult-grouping", (r) => {
+      const a = r.int(2, 6);
+      const b = r.int(2, 6);
+      const c = r.int(2, 6);
+      return {
+        values: { a, b, c },
+        correct: "Associative Property",
+        distractor: "Commutative Property",
+        decoys: ["Identity Property", "Distributive Property"],
+        prompt: {
+          en: `Which property is shown? (${a} × ${b}) × ${c} = ${a} × (${b} × ${c})`,
+          es: `¿Qué propiedad se muestra? (${a} × ${b}) × ${c} = ${a} × (${b} × ${c})`,
+        },
+      };
+    }),
+    T("prop-add-grouping", (r) => {
+      const a = r.int(2, 9);
+      const b = r.int(2, 9);
+      const c = r.int(2, 9);
+      return {
+        values: { a, b, c },
+        correct: "Associative Property",
+        distractor: "Commutative Property",
+        decoys: ["Identity Property", "Distributive Property"],
+        prompt: {
+          en: `Which property is shown? (${a} + ${b}) + ${c} = ${a} + (${b} + ${c})`,
+          es: `¿Qué propiedad se muestra? (${a} + ${b}) + ${c} = ${a} + (${b} + ${c})`,
+        },
+      };
+    }),
+    T("prop-mult-order", (r) => {
+      const a = r.int(2, 9);
+      const b = r.int(2, 9);
+      return {
+        values: { a, b },
+        correct: "Commutative Property",
+        distractor: "Associative Property",
+        decoys: ["Identity Property", "Distributive Property"],
+        prompt: {
+          en: `Which property is shown? ${a} × ${b} = ${b} × ${a}`,
+          es: `¿Qué propiedad se muestra? ${a} × ${b} = ${b} × ${a}`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Stopped factoring before every factor was prime -------------------- */
+  "factorization-stopped-early": [
+    T("pf-count-12", () => ({
+      values: { n: 12 },
+      // 12 = 2 × 2 × 3 — three prime factors counting repeats.
+      correct: 3,
+      distractor: 2,
+      decoys: [4, 6],
+      prompt: {
+        en: "12 can be written as 2 × 6. Counting repeats, how many PRIME factors does 12 have in total?",
+        es: "12 se puede escribir como 2 × 6. Contando repeticiones, ¿cuántos factores PRIMOS tiene 12 en total?",
+      },
+    })),
+    T("pf-count-18", () => ({
+      values: { n: 18 },
+      // 18 = 2 × 3 × 3
+      correct: 3,
+      distractor: 2,
+      decoys: [4, 5],
+      prompt: {
+        en: "18 can be written as 2 × 9. Counting repeats, how many PRIME factors does 18 have in total?",
+        es: "18 se puede escribir como 2 × 9. Contando repeticiones, ¿cuántos factores PRIMOS tiene 18 en total?",
+      },
+    })),
+    T("pf-count-20", () => ({
+      values: { n: 20 },
+      // 20 = 2 × 2 × 5
+      correct: 3,
+      distractor: 2,
+      decoys: [4, 6],
+      prompt: {
+        en: "20 can be written as 4 × 5. Counting repeats, how many PRIME factors does 20 have in total?",
+        es: "20 se puede escribir como 4 × 5. Contando repeticiones, ¿cuántos factores PRIMOS tiene 20 en total?",
+      },
+    })),
+    T("pf-count-36", () => ({
+      values: { n: 36 },
+      // 36 = 2 × 2 × 3 × 3
+      correct: 4,
+      distractor: 2,
+      decoys: [3, 6],
+      prompt: {
+        en: "36 can be written as 6 × 6. Counting repeats, how many PRIME factors does 36 have in total?",
+        es: "36 se puede escribir como 6 × 6. Contando repeticiones, ¿cuántos factores PRIMOS tiene 36 en total?",
+      },
+    })),
+  ],
+
+  /* --- Chose a question with only one fixed answer ------------------------ */
+  "stat-question-no-variability": [
+    T("sq-heights", () => ({
+      // `options` lets the validator pick the statistical question BY RULE
+      // (the one asking about EACH person) instead of trusting this template.
+      values: { options: ["How tall is each student in our class?", "How many students are in our class?"] },
+      correct: "How tall is each student in our class?",
+      distractor: "How many students are in our class?",
+      decoys: ["How many minutes are in an hour?", "What day of the week is it?"],
+      prompt: {
+        en: "Which of these is a STATISTICAL question — one whose answers vary?",
+        es: "¿Cuál de estas es una pregunta ESTADÍSTICA, es decir, una cuyas respuestas varían?",
+      },
+    })),
+    T("sq-minutes", () => ({
+      // `options` lets the validator pick the statistical question BY RULE
+      // (the one asking about EACH person) instead of trusting this template.
+      values: { options: ["How many minutes did each student read last night?", "How many minutes are in one hour?"] },
+      correct: "How many minutes did each student read last night?",
+      distractor: "How many minutes are in one hour?",
+      decoys: ["How many days are in a week?", "What time does the bell ring?"],
+      prompt: {
+        en: "Which of these is a STATISTICAL question — one whose answers vary?",
+        es: "¿Cuál de estas es una pregunta ESTADÍSTICA, es decir, una cuyas respuestas varían?",
+      },
+    })),
+    T("sq-shoes", () => ({
+      // `options` lets the validator pick the statistical question BY RULE
+      // (the one asking about EACH person) instead of trusting this template.
+      values: { options: ["What shoe size does each player on the team wear?", "How many players are on the team?"] },
+      correct: "What shoe size does each player on the team wear?",
+      distractor: "How many players are on the team?",
+      decoys: ["What colour is the team jersey?", "How many quarters are in the game?"],
+      prompt: {
+        en: "Which of these is a STATISTICAL question — one whose answers vary?",
+        es: "¿Cuál de estas es una pregunta ESTADÍSTICA, es decir, una cuyas respuestas varían?",
+      },
+    })),
+    T("sq-pets", () => ({
+      // `options` lets the validator pick the statistical question BY RULE
+      // (the one asking about EACH person) instead of trusting this template.
+      values: { options: ["How many pets does each family in our class have?", "How many families are in our class?"] },
+      correct: "How many pets does each family in our class have?",
+      distractor: "How many families are in our class?",
+      decoys: ["How many legs does one dog have?", "What month is it?"],
+      prompt: {
+        en: "Which of these is a STATISTICAL question — one whose answers vary?",
+        es: "¿Cuál de estas es una pregunta ESTADÍSTICA, es decir, una cuyas respuestas varían?",
+      },
+    })),
+  ],
+
+  /* --- Compared two ratios without a common basis ------------------------- */
+  "ratio-compared-without-common-basis": [
+    T("cb-apples", (r) => {
+      const perA = r.int(2, 6) / 10 + 0.1; // A cheaper per one
+      const nA = r.int(4, 8);
+      const nB = nA + r.int(2, 5);
+      const costA = Number((perA * nA).toFixed(2));
+      const costB = Number(((perA + 0.1) * nB).toFixed(2));
+      return {
+        values: { nA, costA, nB, costB },
+        correct: Number(perA.toFixed(2)),
+        distractor: costA,
+        decoys: [Number((perA + 0.1).toFixed(2)), Number((costA + costB).toFixed(2))],
+        prompt: {
+          en: `Stand A sells ${nA} apples for $${costA.toFixed(2)}. What does ONE apple cost at Stand A, in dollars?`,
+          es: `El puesto A vende ${nA} manzanas por $${costA.toFixed(2)}. ¿Cuánto cuesta UNA manzana en el puesto A, en dólares?`,
+        },
+      };
+    }),
+    T("cb-pencils", (r) => {
+      const per = r.int(2, 5) / 10;
+      const n = r.int(5, 10);
+      const cost = Number((per * n).toFixed(2));
+      return {
+        values: { n, cost },
+        correct: Number(per.toFixed(2)),
+        distractor: cost,
+        decoys: [Number((per + 0.1).toFixed(2)), n],
+        prompt: {
+          en: `A pack of ${n} pencils costs $${cost.toFixed(2)}. What is the price of ONE pencil, in dollars?`,
+          es: `Un paquete de ${n} lápices cuesta $${cost.toFixed(2)}. ¿Cuál es el precio de UN lápiz, en dólares?`,
+        },
+      };
+    }),
+    T("cb-miles", (r) => {
+      const per = r.int(20, 35);
+      const gal = r.int(3, 8);
+      const miles = per * gal;
+      return {
+        values: { miles, gal },
+        correct: per,
+        distractor: miles,
+        decoys: [per + 1, gal],
+        prompt: {
+          en: `A car goes ${miles} miles on ${gal} gallons. How many miles does it go on ONE gallon?`,
+          es: `Un carro recorre ${miles} millas con ${gal} galones. ¿Cuántas millas recorre con UN galón?`,
+        },
+      };
+    }),
+    T("cb-pages", (r) => {
+      const per = r.int(8, 20);
+      const mins = r.int(3, 7);
+      const pages = per * mins;
+      return {
+        values: { pages, mins },
+        correct: per,
+        distractor: pages,
+        decoys: [per + 2, mins],
+        prompt: {
+          en: `A reader finishes ${pages} pages in ${mins} minutes. How many pages is that in ONE minute?`,
+          es: `Un lector termina ${pages} páginas en ${mins} minutos. ¿Cuántas páginas son en UN minuto?`,
         },
       };
     }),
