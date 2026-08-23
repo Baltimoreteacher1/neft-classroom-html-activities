@@ -28,7 +28,11 @@ import {
 import { attachRegenPractice } from "../components/regen-practice.js";
 import { attachAnnotator } from "../components/scene-annotate.js";
 import { attachVoiceInput } from "../components/voice-explain.js";
-import { noticeWonderCaption, noticeWonderImageAlt } from "./academic-vocabulary.js";
+import {
+  noticeWonderCaption,
+  noticeWonderCaptionEs,
+  noticeWonderImageAlt,
+} from "./academic-vocabulary.js";
 import { createAdaptiveSequence } from "./adaptive.js";
 import { enableWordProblemAnnotation, observeWordProblemAnnotation } from "./annotate.js";
 import { fullerFormHint, isRight } from "./answer-match.js";
@@ -1484,12 +1488,21 @@ function renderNoticeAndWonder(host, config, state) {
   const nw = config && config.noticeAndWonder;
   if (!nw || typeof nw !== "object") return;
 
-  const noticeStarters = Array.isArray(nw.noticeStarters)
-    ? nw.noticeStarters.filter((s) => typeof s === "string" && s.trim())
-    : [];
-  const wonderStarters = Array.isArray(nw.wonderStarters)
-    ? nw.wonderStarters.filter((s) => typeof s === "string" && s.trim())
-    : [];
+  // A starter chip does two jobs — it READS as a label and it WRITES into the
+  // textarea — so its Spanish cannot be a stacked string. The label stacks; the
+  // text inserted is whichever language the student is working in, because
+  // pasting "I notice that… Yo noto que…" into their own sentence is worse than
+  // pasting English. `*Es` is ALL-OR-NOTHING against the UNFILTERED array so
+  // index i keeps meaning starter i after the blank filter runs.
+  const pairStarters = (list, listEs) => {
+    if (!Array.isArray(list)) return [];
+    const parallel = Array.isArray(listEs) && listEs.length === list.length ? listEs : null;
+    return list
+      .map((text, i) => ({ text, es: parallel ? String(parallel[i] ?? "") : "" }))
+      .filter((s) => typeof s.text === "string" && s.text.trim());
+  };
+  const noticeStarters = pairStarters(nw.noticeStarters, nw.noticeStartersEs);
+  const wonderStarters = pairStarters(nw.wonderStarters, nw.wonderStartersEs);
 
   const card = document.createElement("section");
   card.className = "card nw-card";
@@ -1509,7 +1522,7 @@ function renderNoticeAndWonder(host, config, state) {
   if (visibleCaption) {
     const ctxP = document.createElement("p");
     ctxP.className = "nw-context";
-    ctxP.textContent = visibleCaption;
+    ctxP.innerHTML = stackContent(visibleCaption, noticeWonderCaptionEs(nw));
     card.append(ctxP);
   }
 
@@ -1546,7 +1559,9 @@ function renderNoticeAndWonder(host, config, state) {
     // it. Resolution order is unit-tested in academic-vocabulary.js.
     img.alt = noticeWonderImageAlt(nw, {
       caption: objVisuals?.content?.caption,
+      captionEs: objVisuals?.content?.captionEs,
       title: config.title,
+      lang: getPreferredLang(),
     });
     fig.append(img);
     attachImageZoom(img);
@@ -1569,7 +1584,7 @@ function renderNoticeAndWonder(host, config, state) {
 
     const h4 = document.createElement("h4");
     h4.className = "nw-col-title";
-    h4.innerHTML = `${opts.icon} ${esc(opts.heading)}`;
+    h4.innerHTML = `${opts.icon} ${stack(opts.heading, { html: true })}`;
     col.append(h4);
 
     const ta = document.createElement("textarea");
@@ -1588,11 +1603,12 @@ function renderNoticeAndWonder(host, config, state) {
         const chip = document.createElement("button");
         chip.type = "button";
         chip.className = "nw-chip";
-        chip.textContent = starter;
+        chip.innerHTML = stackContent(starter.text, starter.es);
         chip.title = t("sentenceStarterTip");
         chip.addEventListener("click", () => {
+          const insert = getPreferredLang() === "es" && starter.es ? starter.es : starter.text;
           const needsSpace = ta.value && !/\s$/.test(ta.value);
-          ta.value = `${ta.value}${needsSpace ? " " : ""}${starter} `;
+          ta.value = `${ta.value}${needsSpace ? " " : ""}${insert} `;
           ta.focus();
           // Route persistence through the single input handler below.
           ta.dispatchEvent(new Event("input", { bubbles: true }));
@@ -1616,8 +1632,8 @@ function renderNoticeAndWonder(host, config, state) {
     buildColumn({
       colClass: "nw-col-notice",
       icon: "👁",
-      heading: "What do you notice?",
-      placeholder: "I notice that…",
+      heading: "nwNoticeHeading",
+      placeholder: t("noticePlaceholder"),
       key: "notice",
       responseKey: "nw_notice",
       starters: noticeStarters,
@@ -1625,8 +1641,8 @@ function renderNoticeAndWonder(host, config, state) {
     buildColumn({
       colClass: "nw-col-wonder",
       icon: "💭",
-      heading: "What do you wonder?",
-      placeholder: "I wonder…",
+      heading: "nwWonderHeading",
+      placeholder: t("wonderPlaceholder"),
       key: "wonder",
       responseKey: "nw_wonder",
       starters: wonderStarters,

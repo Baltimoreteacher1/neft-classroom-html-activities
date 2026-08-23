@@ -353,6 +353,8 @@ const STRINGS = {
   wonderPlaceholder: { en: "I wonder if...", es: "Yo me pregunto si..." },
   revealSlidesLabel: { en: "Reveal Math slides", es: "Diapositivas de Reveal Math" },
   noticeWonderLabel: { en: "Notice and Wonder", es: "Observa y pregúntate" },
+  nwNoticeHeading: { en: "What do you notice?", es: "¿Qué observas?" },
+  nwWonderHeading: { en: "What do you wonder?", es: "¿Qué te preguntas?" },
   showYourWorkLabel: { en: "Show your work", es: "Muestra tu trabajo" },
   lessonToolsMenu: { en: "Lesson tools menu", es: "Menú de herramientas de la lección" },
   submitWarmup: { en: "Submit Warmup Answers", es: "Enviar respuestas del calentamiento" },
