@@ -50,7 +50,15 @@ import { createGoDeeper } from "./go-deeper.js";
 import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
 import { mountHintLadder } from "./hint-ladder.js";
-import { badgeName, getPreferredLang, phaseName, stackContent, stackHtml, t } from "./i18n.js";
+import {
+  badgeName,
+  getPreferredLang,
+  phaseName,
+  stack,
+  stackContent,
+  stackHtml,
+  t,
+} from "./i18n.js";
 import { attachImageZoom, isLightboxOpen, observeContentImageZoom } from "./image-zoom.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { mountLevel3Launch } from "./level3-launch.js";
@@ -894,7 +902,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
     moreBtn.type = "button";
     moreBtn.className = "btn btn-secondary btn-sm tt-show-frames";
     moreBtn.style.cssText = "margin:0 0 var(--sp-3);";
-    moreBtn.textContent = "Show sentence starters";
+    moreBtn.innerHTML = stack("showSentenceStarters", { html: true });
     moreBtn.addEventListener("click", () => {
       const full = document.createElement("div");
       full.className = "tt-support tt-support-full";
@@ -914,7 +922,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   const timerBtn = document.createElement("button");
   timerBtn.type = "button";
   timerBtn.className = "btn btn-secondary";
-  timerBtn.textContent = "⏱️ Start 60s timer";
+  timerBtn.innerHTML = stack("startTimer60", { html: true });
   const timerLabel = document.createElement("span");
   timerLabel.setAttribute("role", "timer");
   timerLabel.setAttribute("aria-live", "polite");
@@ -932,10 +940,10 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
       if (remaining <= 0) {
         clearInterval(timerId);
         timerId = null;
-        timerLabel.textContent = "⏰ Time! Wrap up your ideas.";
+        timerLabel.innerHTML = stack("timeWrapUp", { html: true });
         timerBtn.disabled = false;
         timerBtn.style.opacity = "1";
-        timerBtn.textContent = "⏱️ Restart 60s timer";
+        timerBtn.innerHTML = stack("restartTimer60", { html: true });
       }
     }, 1000);
   });
@@ -946,7 +954,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   confirmBtn.type = "button";
   confirmBtn.className = "btn btn-primary";
   const markDone = ({ fresh = false } = {}) => {
-    confirmBtn.textContent = "We talked! ✓";
+    confirmBtn.innerHTML = stack("weTalked", { html: true });
     confirmBtn.classList.add("btn-success");
     confirmBtn.setAttribute("aria-pressed", "true");
     confirmBtn.disabled = true;
@@ -958,7 +966,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   if (alreadyDone) {
     markDone();
   } else {
-    confirmBtn.textContent = "We talked! ✓";
+    confirmBtn.innerHTML = stack("weTalked", { html: true });
     confirmBtn.setAttribute("aria-pressed", "false");
     confirmBtn.addEventListener("click", () => {
       markDone({ fresh: true });
@@ -1329,8 +1337,8 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
     const skip = document.createElement("button");
     skip.type = "button";
     skip.className = "btn btn-secondary btn-sm teacher-skip no-print";
-    skip.textContent = "⏭ Next (teacher)";
-    skip.title = "Teacher Mode — advance without answering";
+    skip.innerHTML = stack("nextTeacher", { html: true });
+    skip.title = t("nextTeacherTip");
     skip.addEventListener("click", () => wrappedOnAnswer(true));
     body.append(skip);
   }
@@ -1420,7 +1428,7 @@ function renderRevealSlides(host, config, placements) {
 
   const section = document.createElement("section");
   section.className = "reveal-slides";
-  section.setAttribute("aria-label", "Reveal Math slides");
+  section.setAttribute("aria-label", t("revealSlidesLabel"));
 
   const heading = document.createElement("div");
   heading.className = "reveal-slides-heading";
@@ -1485,7 +1493,7 @@ function renderNoticeAndWonder(host, config, state) {
 
   const card = document.createElement("section");
   card.className = "card nw-card";
-  card.setAttribute("aria-label", "Notice and Wonder");
+  card.setAttribute("aria-label", t("noticeWonderLabel"));
 
   const head = document.createElement("div");
   head.className = "nw-head";
@@ -1575,13 +1583,13 @@ function renderNoticeAndWonder(host, config, state) {
       const chips = document.createElement("div");
       chips.className = "nw-chips";
       chips.setAttribute("role", "group");
-      chips.setAttribute("aria-label", "Sentence starters — tap one to add it to your answer");
+      chips.setAttribute("aria-label", t("sentenceStartersLabel"));
       opts.starters.forEach((starter) => {
         const chip = document.createElement("button");
         chip.type = "button";
         chip.className = "nw-chip";
         chip.textContent = starter;
-        chip.title = "Tap to add this sentence starter";
+        chip.title = t("sentenceStarterTip");
         chip.addEventListener("click", () => {
           const needsSpace = ta.value && !/\s$/.test(ta.value);
           ta.value = `${ta.value}${needsSpace ? " " : ""}${starter} `;
@@ -1656,7 +1664,7 @@ function renderShowYourWork(host, config, state) {
 
   const card = document.createElement("section");
   card.className = "card wp-card syw-card";
-  card.setAttribute("aria-label", "Show your work");
+  card.setAttribute("aria-label", t("showYourWorkLabel"));
 
   const head = document.createElement("div");
   head.className = "wp-head";
@@ -1675,7 +1683,7 @@ function renderShowYourWork(host, config, state) {
   } else {
     const p = document.createElement("p");
     p.className = "wp-text";
-    p.textContent = "Use the scenario above. Work it out step by step below.";
+    p.innerHTML = stack("scenarioWorkBelow", { html: true });
     card.append(p);
   }
   if (hasAuthored && wp.image) {
@@ -1758,7 +1766,7 @@ function renderShowYourWork(host, config, state) {
   const checkBtn = document.createElement("button");
   checkBtn.type = "button";
   checkBtn.className = "btn btn-secondary syw-check-btn";
-  checkBtn.textContent = "✅ Check my thinking";
+  checkBtn.innerHTML = stack("checkMyThinking", { html: true });
   const checklist = document.createElement("div");
   checklist.className = "syw-checklist";
   checklist.hidden = true;
@@ -2627,7 +2635,7 @@ function renderWarmupPhase(el, state, ctx, config) {
     const go = document.createElement("button");
     go.type = "button";
     go.className = "btn btn-primary btn-lg";
-    go.textContent = "Continue to Phase 2: Objectives 🎯";
+    go.innerHTML = stack("continueToObjectives", { html: true });
     go.addEventListener("click", () => {
       if (ctx && typeof ctx.nextPhase === "function") ctx.nextPhase();
     });
@@ -2764,7 +2772,7 @@ function renderWarmupPhase(el, state, ctx, config) {
         clearInterval(warmupTimerId);
         warmupTimerId = null;
         timerDisplay.textContent = "0:00";
-        timerLabel.textContent = "time's up!";
+        timerLabel.innerHTML = stack("timesUp", { html: true });
         syncWarmupControls();
         if (!savedAnswers.checked) checkBtn.click();
       }
@@ -2856,8 +2864,8 @@ function renderWarmupPhase(el, state, ctx, config) {
       const resetBtn = document.createElement("button");
       resetBtn.type = "button";
       resetBtn.className = "warmup-timer-reset";
-      resetBtn.textContent = "↻ Reset";
-      resetBtn.title = "Set the warmup timer back to the full time (stopped)";
+      resetBtn.innerHTML = stack("resetTimer", { html: true });
+      resetBtn.title = t("resetTimerTip");
       resetBtn.style.cssText = controlBtnCss;
 
       // Keep the Start/Stop button label in sync with the timer state.
@@ -2906,8 +2914,8 @@ function renderWarmupPhase(el, state, ctx, config) {
       const editBtn = document.createElement("button");
       editBtn.type = "button";
       editBtn.className = "warmup-timer-edit";
-      editBtn.title = "Teacher: set the warmup time allowed (applies to all devices)";
-      editBtn.textContent = "✏️ Set time";
+      editBtn.title = t("setTimeTip");
+      editBtn.innerHTML = stack("setTime", { html: true });
       editBtn.style.cssText =
         "margin-left:8px; padding:10px 18px; font-size:16px; font-weight:700; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
 
@@ -3040,7 +3048,7 @@ function renderWarmupPhase(el, state, ctx, config) {
   checkBtn.className = "btn btn-primary";
   checkBtn.style.cssText =
     "padding:12px 24px; font-weight:700; font-size:16.5px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
-  checkBtn.textContent = savedAnswers.checked ? "Score Final (Submitted)" : "Submit Warmup Answers";
+  checkBtn.innerHTML = stack(savedAnswers.checked ? "scoreFinal" : "submitWarmup", { html: true });
   if (savedAnswers.checked) {
     checkBtn.disabled = true;
     checkBtn.style.background = "#64748b";
@@ -3079,7 +3087,7 @@ function renderWarmupPhase(el, state, ctx, config) {
     state.markCompleted(0);
 
     checkBtn.disabled = true;
-    checkBtn.textContent = "Score Final (Submitted)";
+    checkBtn.innerHTML = stack("scoreFinal", { html: true });
     checkBtn.style.background = "#64748b";
     checkBtn.style.cursor = "default";
 
@@ -3100,7 +3108,7 @@ function renderWarmupPhase(el, state, ctx, config) {
   nextBtn.className = "btn btn-teal";
   nextBtn.style.cssText =
     "padding:12px 26px; font-weight:700; font-size:16.5px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
-  nextBtn.textContent = "Continue to Phase 2: Objectives 🎯";
+  nextBtn.innerHTML = stack("continueToObjectives", { html: true });
   nextBtn.addEventListener("click", () => {
     if (ctx && typeof ctx.nextPhase === "function") {
       ctx.nextPhase();
@@ -3185,7 +3193,7 @@ function renderObjectivesIntroPhase(el, state, ctx, config) {
   nextBtn.className = "btn btn-teal";
   nextBtn.style.cssText =
     "margin-top:20px; padding:12px 24px; font-weight:700; font-size:15px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
-  nextBtn.textContent = "Continue to Phase 3: Launch 🚀";
+  nextBtn.innerHTML = stack("continueToLaunch", { html: true });
   nextBtn.addEventListener("click", () => {
     state.markCompleted(1);
     if (ctx && typeof ctx.nextPhase === "function") {
@@ -3258,13 +3266,13 @@ function renderReteachHelper(container, warmup, _correctCount, _total, config) {
         btn.style.borderColor = "#22c55e";
         fb.style.background = "#f0fdf4";
         fb.style.color = "#15803d";
-        fb.innerHTML = "Great job! You're ready for Phase 2: Launch 🚀";
+        fb.innerHTML = stack("readyForLaunch", { html: true });
       } else {
         btn.style.background = "#fef2f2";
         btn.style.borderColor = "#ef4444";
         fb.style.background = "#fef2f2";
         fb.style.color = "#b91c1c";
-        fb.innerHTML = "Remember to break the problem into steps! You've got this.";
+        fb.innerHTML = stack("breakIntoSteps", { html: true });
       }
       try {
         if (window.NTSignal && typeof window.NTSignal.record === "function") {
@@ -3447,7 +3455,7 @@ function renderLaunchPhase(el, state, ctx, config) {
     noticeTA = document.createElement("textarea");
     noticeTA.className = "text-input";
     noticeTA.rows = 3;
-    noticeTA.placeholder = "I notice that...";
+    noticeTA.placeholder = t("noticePlaceholder");
     noticeTA.value = state.getResponse(0, "notice") || "";
     noticeTA.addEventListener("input", () => state.saveResponse(0, "notice", noticeTA.value));
     noticeCard.append(noticeTA);
@@ -3459,7 +3467,7 @@ function renderLaunchPhase(el, state, ctx, config) {
     wonderTA = document.createElement("textarea");
     wonderTA.className = "text-input";
     wonderTA.rows = 3;
-    wonderTA.placeholder = "I wonder if...";
+    wonderTA.placeholder = t("wonderPlaceholder");
     wonderTA.value = state.getResponse(0, "wonder") || "";
     wonderTA.addEventListener("input", () => state.saveResponse(0, "wonder", wonderTA.value));
     wonderCard.append(wonderTA);
@@ -3607,7 +3615,7 @@ function renderExplorePhase(el, state, ctx, config) {
     const cont = document.createElement("button");
     cont.type = "button";
     cont.className = "btn btn-primary btn-lg mt-4";
-    cont.textContent = "Continue to Practice →";
+    cont.innerHTML = stack("continueToPractice", { html: true });
     cont.addEventListener("click", () => completePhase(el, ctx, state, 1, "Explore", 1, 1));
     el.append(cont);
   };
@@ -3848,12 +3856,12 @@ function lockUntilSolved(scope, gated) {
 
   const line = document.createElement("p");
   line.className = "nt-solve-gate-line";
-  line.textContent = "🔒 Finish Step 1 first — solve the problem in columns.";
+  line.innerHTML = stack("solveColumnsFirst", { html: true });
 
   const skip = document.createElement("button");
   skip.type = "button";
   skip.className = "btn btn-secondary nt-solve-gate-skip";
-  skip.textContent = "I already solved it — open the number line";
+  skip.innerHTML = stack("alreadySolvedNumberLine", { html: true });
 
   cover.append(line, skip);
   gated.setAttribute("aria-hidden", "true");
@@ -3977,7 +3985,7 @@ function renderSkillProbe(reveal, move, { answer, why, onSettled }) {
   reveal.innerHTML = "";
   const head = document.createElement("p");
   head.style.cssText = "margin:0 0 var(--sp-2); font-weight:600;";
-  head.textContent = "🎯 Before the answer — one smaller question";
+  head.innerHTML = stack("beforeTheAnswer", { html: true });
   reveal.append(head);
 
   const probe = document.createElement("p");
@@ -4002,7 +4010,7 @@ function renderSkillProbe(reveal, move, { answer, why, onSettled }) {
   skip.type = "button";
   skip.className = "btn btn-ghost";
   skip.style.cssText = "font-size:0.9rem;";
-  skip.textContent = "Just show me the answer";
+  skip.innerHTML = stack("justShowAnswer", { html: true });
   row.append(input, check, skip);
   reveal.append(row);
 
@@ -4029,7 +4037,7 @@ function renderSkillProbe(reveal, move, { answer, why, onSettled }) {
   check.addEventListener("click", () => {
     const typed = input.value.trim();
     if (!typed) {
-      status.textContent = "Have a go — even a guess beats skipping it.";
+      status.innerHTML = stack("haveAGo", { html: true });
       input.focus();
       return;
     }
@@ -4039,7 +4047,7 @@ function renderSkillProbe(reveal, move, { answer, why, onSettled }) {
     }
     probeMisses++;
     if (probeMisses === 1) {
-      status.textContent = "Not quite — picture it with objects, then try once more.";
+      status.innerHTML = stack("notQuitePicture", { html: true });
       input.select?.();
       input.focus();
       return;
@@ -4254,8 +4262,8 @@ function renderSkillPractice(host, config, state) {
       }
       checkers.forEach((c) => c.run());
       submit.disabled = true;
-      submit.textContent = "Answers checked";
-      note.textContent = "Scroll up — every problem is marked.";
+      submit.innerHTML = stack("answersChecked", { html: true });
+      note.innerHTML = stack("answersCheckedNote", { html: true });
     });
     submitRow.append(submit, note);
     card.append(submitRow);
@@ -4873,7 +4881,7 @@ function renderConnectPhase(el, state, ctx, config) {
   textarea.id = fieldId;
   textarea.className = "text-input";
   textarea.rows = 4;
-  textarea.placeholder = "Type your response here...";
+  textarea.placeholder = t("responsePlaceholder");
   textarea.setAttribute("aria-label", promptText);
   textarea.value = state.getResponse(3, "connect") || "";
   respCard.append(textarea);
@@ -4904,7 +4912,7 @@ function renderConnectPhase(el, state, ctx, config) {
 
   const submitBtn = document.createElement("button");
   submitBtn.className = "btn btn-primary mt-4";
-  submitBtn.textContent = "Submit Response";
+  submitBtn.innerHTML = stack("submitResponse", { html: true });
 
   let submitted = false;
 
@@ -5029,7 +5037,7 @@ function renderConnectPhase(el, state, ctx, config) {
     const continueBtn = document.createElement("button");
     continueBtn.type = "button";
     continueBtn.className = "btn btn-primary mt-4";
-    continueBtn.textContent = "Got it — continue →";
+    continueBtn.innerHTML = stack("gotItContinue", { html: true });
     continueBtn.addEventListener("click", finish, { once: true });
     reveal.append(continueBtn);
     respCard.append(reveal);
@@ -5171,7 +5179,7 @@ function renderReflectPhase(el, state, ctx, config) {
         "border:1px solid var(--line,#cbd5e1); border-left:4px solid var(--amber-ink,#8a5a00); border-radius:10px; padding:10px 12px; margin:0 0 var(--sp-3,12px); background:var(--surface-2,#f8fafc);";
       const head = document.createElement("div");
       head.style.cssText = "font-weight:700; color:var(--navy,#12355b); margin-bottom:6px;";
-      head.textContent = "Someone solved it like this — find their mistake:";
+      head.innerHTML = stack("findTheirMistake", { html: true });
       work.append(head);
       const ol = document.createElement("ol");
       ol.style.cssText = "margin:0; padding-left:1.2rem;";
@@ -5208,13 +5216,13 @@ function renderReflectPhase(el, state, ctx, config) {
     const chips = document.createElement("div");
     chips.className = "nw-chips";
     chips.setAttribute("role", "group");
-    chips.setAttribute("aria-label", "Sentence starters — tap one to add it to your answer");
+    chips.setAttribute("aria-label", t("sentenceStartersLabel"));
     frames.forEach((frame) => {
       const chip = document.createElement("button");
       chip.type = "button";
       chip.className = "nw-chip";
       chip.textContent = frame;
-      chip.title = "Tap to add this sentence starter";
+      chip.title = t("sentenceStarterTip");
       chip.addEventListener("click", () => {
         const needsSpace = ta.value && !/\s$/.test(ta.value);
         ta.value = `${ta.value}${needsSpace ? " " : ""}${frame} `;
@@ -5642,7 +5650,7 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
   finishBtn.className = "btn btn-teal";
   finishBtn.style.cssText =
     "margin-top:20px; padding:12px 24px; font-weight:700; font-size:15px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
-  finishBtn.textContent = "Finish Lesson & Celebrate 🎉";
+  finishBtn.innerHTML = stack("finishCelebrate", { html: true });
   finishBtn.addEventListener("click", () => {
     state.markCompleted(phaseIndex);
     showFinalSummary(el, state, config);

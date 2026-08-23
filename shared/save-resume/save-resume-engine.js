@@ -39,6 +39,51 @@
 (function () {
   "use strict";
 
+  /* ── Spanish for the strings a student is READ when something goes wrong ──
+     This file is loaded as a classic <script>, not a module, so it cannot
+     import engine/core/i18n.js the way the renderer does. It reads the same
+     source of truth instead: <html lang>, which i18n.js stamps from the saved
+     preference on every page load. A tiny local table is the honest trade —
+     six strings duplicated beats a student who saved in Spanish being answered
+     in English when their resume code does not work, which is the one moment
+     in this flow where they have already lost their place.
+     Audited in reports/es-workorder-units-1-9-10.md. */
+  var NSR_STRINGS = {
+    codeEmpty: {
+      en: "Please type your code first.",
+      es: "Primero escribe tu código.",
+    },
+    codeNotFound: {
+      en: "We couldn't find work for that code. Check the letters and numbers and try again.",
+      es: "No encontramos trabajo con ese código. Revisa las letras y los números e inténtalo de nuevo.",
+    },
+    savingAs: { en: "Saving as ", es: "Guardando como " },
+    notYou: {
+      en: ". Not you? Just type over it.",
+      es: ". ¿No eres tú? Solo escribe encima.",
+    },
+    teamStars: {
+      en: "\u{1F465} Team Stars: \u2B50 ",
+      es: "\u{1F465} Estrellas del equipo: \u2B50 ",
+    },
+  };
+
+  function nsrLang() {
+    try {
+      return (document.documentElement.getAttribute("lang") || "en").slice(0, 2) === "es"
+        ? "es"
+        : "en";
+    } catch (_e) {
+      return "en";
+    }
+  }
+
+  function nsrT(key) {
+    var entry = NSR_STRINGS[key];
+    if (!entry) return key;
+    return entry[nsrLang()] || entry.en;
+  }
+
   // Guard against double-injection (idempotent across accidental double <script>).
   if (window.NeftSaveResume && window.NeftSaveResume.__loaded) return;
 
@@ -854,7 +899,7 @@
         channel.onmessage = function (msg) {
           if (msg.data && msg.data.type === "TEAM_STARS") {
             var teamEl = document.getElementById("ewl-peer-team-stars");
-            if (teamEl) teamEl.textContent = "👥 Team Stars: ⭐ " + msg.data.stars;
+            if (teamEl) teamEl.textContent = nsrT("teamStars") + msg.data.stars;
           }
         };
         window.EWLPeerRelay = {
@@ -1622,10 +1667,9 @@
           updatePanelFields(self);
           showActive(self);
         } else if (res.reason === "empty") {
-          $("#nsr-err").textContent = "Please type your code first.";
+          $("#nsr-err").textContent = nsrT("codeEmpty");
         } else {
-          $("#nsr-err").textContent =
-            "We couldn't find work for that code. Check the letters and numbers and try again.";
+          $("#nsr-err").textContent = nsrT("codeNotFound");
         }
       });
     });
@@ -1703,10 +1747,10 @@
     if (hint) {
       if (id && (id.name || id.section)) {
         hint.textContent =
-          "Saving as " +
+          nsrT("savingAs") +
           (id.name || "—") +
           (id.section ? " · " + id.section : "") +
-          ". Not you? Just type over it.";
+          nsrT("notYou");
         hint.hidden = false;
       } else {
         hint.hidden = true;

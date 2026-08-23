@@ -9,6 +9,7 @@
 // Save/Resume also lives here (per Joel 2026-07-14): the menu item drives the
 // hidden #nsr-launcher, whose panel still opens in its usual spot.
 
+import { t } from "./i18n.js";
 import { isTeacherMode } from "./teacher-mode.js";
 
 export function mountUtilityMenu() {
@@ -23,7 +24,7 @@ export function mountUtilityMenu() {
   btn.className = "nt-utility-btn";
   btn.setAttribute("aria-haspopup", "true");
   btn.setAttribute("aria-expanded", "false");
-  btn.setAttribute("aria-label", "Lesson tools menu");
+  btn.setAttribute("aria-label", t("lessonToolsMenu"));
   btn.innerHTML =
     '<span aria-hidden="true">🧰</span><span>Tools</span>' +
     '<span class="nt-utility-caret" aria-hidden="true">▾</span>';

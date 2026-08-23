@@ -242,6 +242,120 @@ const STRINGS = {
     en: "{n} of {t} correct. Drag the highlighted items to the right category.",
     es: "{n} de {t} correctas. Arrastra las tarjetas marcadas a la categoría correcta.",
   },
+
+  /* ── Lesson chrome that was English-only ───────────────────────────────────
+     Audited in reports/es-workorder-units-1-9-10.md and ranked ABOVE the 1,437
+     lesson-content strings, for a reason worth restating: a missing translation
+     on a problem still lets a student read the problem in English, but a
+     missing translation on the control that RECORDS their work costs them the
+     completion. Two "finish lesson" buttons existed and only one spoke
+     Spanish; a student who saved in Spanish and mistyped their resume code was
+     answered in English. */
+  finishCelebrate: {
+    en: "Finish Lesson & Celebrate 🎉",
+    es: "Terminar la lección y celebrar 🎉",
+  },
+  submitResponse: { en: "Submit Response", es: "Enviar respuesta" },
+  responsePlaceholder: {
+    en: "Type your response here...",
+    es: "Escribe tu respuesta aquí...",
+  },
+  gotItContinue: { en: "Got it — continue →", es: "Entendido — continuar →" },
+  continueToPractice: { en: "Continue to Practice →", es: "Continuar a la práctica →" },
+  continueToObjectives: {
+    en: "Continue to Phase 2: Objectives 🎯",
+    es: "Continuar a la fase 2: Objetivos 🎯",
+  },
+  continueToLaunch: {
+    en: "Continue to Phase 3: Launch 🚀",
+    es: "Continuar a la fase 3: Inicio 🚀",
+  },
+  readyForLaunch: {
+    en: "Great job! You're ready for Phase 2: Launch 🚀",
+    es: "¡Buen trabajo! Estás listo para la fase 2: Inicio 🚀",
+  },
+  breakIntoSteps: {
+    en: "Remember to break the problem into steps! You've got this.",
+    es: "¡Recuerda dividir el problema en pasos! Tú puedes.",
+  },
+  scoreFinal: { en: "Score Final (Submitted)", es: "Puntaje final (enviado)" },
+  answersChecked: { en: "Answers checked", es: "Respuestas revisadas" },
+  answersCheckedNote: {
+    en: "Scroll up — every problem is marked.",
+    es: "Desplázate hacia arriba — cada problema está marcado.",
+  },
+  checkMyThinking: { en: "✅ Check my thinking", es: "✅ Revisar mi razonamiento" },
+  haveAGo: {
+    en: "Have a go — even a guess beats skipping it.",
+    es: "Inténtalo — incluso adivinar es mejor que saltarlo.",
+  },
+  notQuitePicture: {
+    en: "Not quite — picture it with objects, then try once more.",
+    es: "Todavía no — imagínalo con objetos y vuelve a intentarlo.",
+  },
+  findTheirMistake: {
+    en: "Someone solved it like this — find their mistake:",
+    es: "Alguien lo resolvió así — encuentra su error:",
+  },
+  beforeTheAnswer: {
+    en: "🎯 Before the answer — one smaller question",
+    es: "🎯 Antes de la respuesta — una pregunta más pequeña",
+  },
+  justShowAnswer: { en: "Just show me the answer", es: "Solo muéstrame la respuesta" },
+  solveColumnsFirst: {
+    en: "🔒 Finish Step 1 first — solve the problem in columns.",
+    es: "🔒 Termina primero el paso 1 — resuelve el problema en columnas.",
+  },
+  alreadySolvedNumberLine: {
+    en: "I already solved it — open the number line",
+    es: "Ya lo resolví — abre la recta numérica",
+  },
+  scenarioWorkBelow: {
+    en: "Use the scenario above. Work it out step by step below.",
+    es: "Usa la situación de arriba. Resuélvelo paso a paso abajo.",
+  },
+  showSentenceStarters: {
+    en: "Show sentence starters",
+    es: "Mostrar inicios de oración",
+  },
+  sentenceStartersLabel: {
+    en: "Sentence starters — tap one to add it to your answer",
+    es: "Inicios de oración — toca uno para agregarlo a tu respuesta",
+  },
+  sentenceStarterTip: {
+    en: "Tap to add this sentence starter",
+    es: "Toca para agregar este inicio de oración",
+  },
+  startTimer60: { en: "⏱️ Start 60s timer", es: "⏱️ Iniciar temporizador de 60 s" },
+  restartTimer60: { en: "⏱️ Restart 60s timer", es: "⏱️ Reiniciar temporizador de 60 s" },
+  timeWrapUp: {
+    en: "⏰ Time! Wrap up your ideas.",
+    es: "⏰ ¡Se acabó el tiempo! Cierra tus ideas.",
+  },
+  weTalked: { en: "We talked! ✓", es: "¡Ya hablamos! ✓" },
+  timesUp: { en: "time's up!", es: "¡se acabó el tiempo!" },
+  resetTimer: { en: "↻ Reset", es: "↻ Reiniciar" },
+  resetTimerTip: {
+    en: "Set the warmup timer back to the full time (stopped)",
+    es: "Devuelve el temporizador al tiempo completo (detenido)",
+  },
+  setTime: { en: "✏️ Set time", es: "✏️ Ajustar tiempo" },
+  setTimeTip: {
+    en: "Teacher: set the warmup time allowed (applies to all devices)",
+    es: "Maestro: ajusta el tiempo permitido (se aplica a todos los dispositivos)",
+  },
+  nextTeacher: { en: "⏭ Next (teacher)", es: "⏭ Siguiente (maestro)" },
+  nextTeacherTip: {
+    en: "Teacher Mode — advance without answering",
+    es: "Modo maestro — avanzar sin responder",
+  },
+  noticePlaceholder: { en: "I notice that...", es: "Yo noto que..." },
+  wonderPlaceholder: { en: "I wonder if...", es: "Yo me pregunto si..." },
+  revealSlidesLabel: { en: "Reveal Math slides", es: "Diapositivas de Reveal Math" },
+  noticeWonderLabel: { en: "Notice and Wonder", es: "Observa y pregúntate" },
+  showYourWorkLabel: { en: "Show your work", es: "Muestra tu trabajo" },
+  lessonToolsMenu: { en: "Lesson tools menu", es: "Menú de herramientas de la lección" },
+  submitWarmup: { en: "Submit Warmup Answers", es: "Enviar respuestas del calentamiento" },
 };
 
 const PHASE_NAMES = {
