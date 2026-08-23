@@ -1,3 +1,5 @@
+import { pickLang } from "../core/i18n.js";
+
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
@@ -290,7 +292,7 @@ function dotPlot(host, cfg, viewOpts) {
           `<text x="${xOf(mn).toFixed(1)}" y="${baseY + 34}" text-anchor="middle" font-size="10.5" font-weight="800" fill="var(--navy,#264653)">mean ${num(mn)}</text>`;
       }
       const xLabel = cfg.xLabel
-        ? `<text x="${(W / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(cfg.xLabel)}</text>`
+        ? `<text x="${(W / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(pickLang(cfg.xLabel, cfg.xLabelEs))}</text>`
         : "";
       return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Interactive dot plot"><line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>${axisTicks}${dots}${overlay}${xLabel}</svg>`;
     },
@@ -419,10 +421,10 @@ function barFigure(host, cfg, opts) {
         ? `<text x="${padL - 6}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" font-size="11" font-weight="700" fill="var(--ink,#333)">0</text>`
         : "";
       const yl = cfg.yLabel
-        ? `<text x="13" y="${(padT + plotH / 2).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)" transform="rotate(-90 13 ${(padT + plotH / 2).toFixed(1)})">${esc(cfg.yLabel)}</text>`
+        ? `<text x="13" y="${(padT + plotH / 2).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)" transform="rotate(-90 13 ${(padT + plotH / 2).toFixed(1)})">${esc(pickLang(cfg.yLabel, cfg.yLabelEs))}</text>`
         : "";
       const xl = cfg.xLabel
-        ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(cfg.xLabel)}</text>`
+        ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(pickLang(cfg.xLabel, cfg.xLabelEs))}</text>`
         : "";
       return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Interactive ${opts.title.toLowerCase()}"><line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${W - padR}" y2="${zeroY.toFixed(1)}" stroke="var(--ink,#333)" stroke-width="1.5"/>${zeroTick}${rects}${xl}${yl}</svg>`;
     },

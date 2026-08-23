@@ -1,6 +1,8 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
+import { stackContent } from "../core/i18n.js";
+
 let BM_STYLE_INJECTED = false;
 
 function injectBarModelStyle() {
@@ -70,7 +72,18 @@ function injectBarModelStyle() {
 }
 
 export function renderBarModel(container, config) {
-  const { bars, totalLabel, questionText, answer, tolerance, label, onComplete } = config;
+  const {
+    bars,
+    totalLabel,
+    totalLabelEs,
+    questionText,
+    questionTextEs,
+    answer,
+    tolerance,
+    label,
+    labelEs,
+    onComplete,
+  } = config;
   injectBarModelStyle();
 
   // Adapter: some lessons author a ratio/part-whole bar model as
@@ -90,7 +103,7 @@ export function renderBarModel(container, config) {
   if (label) {
     const lbl = document.createElement("p");
     lbl.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
-    lbl.textContent = label;
+    lbl.innerHTML = stackContent(label, labelEs);
     wrapper.append(lbl);
   }
 
@@ -115,7 +128,7 @@ export function renderBarModel(container, config) {
       display:grid; place-items:center; color:white; font-weight:700; font-size:0.95rem;
       margin-bottom:${GAP}px;
     `;
-    totalBar.textContent = `${totalLabel}: ${totalValue}`;
+    totalBar.innerHTML = `${stackContent(totalLabel, totalLabelEs)}: ${totalValue}`;
     vizWrap.append(totalBar);
   }
 
@@ -192,7 +205,7 @@ export function renderBarModel(container, config) {
 
     const qText = document.createElement("p");
     qText.style.cssText = "font-weight:600; margin:0 0 var(--sp-3);";
-    qText.textContent = questionText;
+    qText.innerHTML = stackContent(questionText, questionTextEs);
     qCard.append(qText);
 
     const inputRow = document.createElement("div");

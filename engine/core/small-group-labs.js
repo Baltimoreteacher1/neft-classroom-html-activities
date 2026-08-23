@@ -277,7 +277,10 @@ export function createExploreLab(config, variant, { number, store, events, onDon
         el(
           "p",
           "sg-lab-step",
-          esc(explore.solveFirstToolCaption || "Step 1 — solve the problem here first."),
+          bi(
+            explore.solveFirstToolCaption || "Step 1 — solve the problem here first.",
+            explore.solveFirstToolCaptionEs || "",
+          ),
         ),
       );
       section.appendChild(step1);
@@ -285,7 +288,10 @@ export function createExploreLab(config, variant, { number, store, events, onDon
         el(
           "p",
           "sg-lab-step",
-          esc(explore.solveFirstTaskCaption || "Step 2 — then show that same jump below."),
+          bi(
+            explore.solveFirstTaskCaption || "Step 2 — then show that same jump below.",
+            explore.solveFirstTaskCaptionEs || "",
+          ),
         ),
       );
     }

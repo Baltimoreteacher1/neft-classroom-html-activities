@@ -245,14 +245,14 @@ function deriveScaffold(prob) {
   }
 }
 
-function phaseHeader(el, icon, iconClass, title, desc) {
+function phaseHeader(el, icon, iconClass, title, desc, descEs = "") {
   const h = document.createElement("div");
   h.className = "section-header";
   h.innerHTML = `
     <div class="section-icon ${iconClass}">${icon}</div>
     <div>
       <div class="section-title">${esc(title)}</div>
-      <div class="section-desc">${esc(desc)}</div>
+      <div class="section-desc">${stackContent(desc, descEs)}</div>
     </div>`;
   el.append(h);
 }
@@ -3587,6 +3587,7 @@ function renderExplorePhase(el, state, ctx, config) {
     "Explore",
     cfg.goal ||
       "Build it yourself first. You do not need the formula yet — you are looking for it.",
+    cfg.goal ? cfg.goalEs || "" : t("exploreGoalDefault"),
   );
 
   // Opt-in data diagram shown up front so students can SEE and read the visual
@@ -3655,20 +3656,31 @@ function renderExplorePhase(el, state, ctx, config) {
     if (solveFirst) {
       pair.main.parentElement?.classList.add("nt-work-pair--tool-first");
       pair.tool.prepend(
-        workPairCaption("Step 1", cfg.solveFirstToolCaption || "Solve the problem here first."),
+        workPairCaption(
+          "Step 1",
+          stackContent(
+            cfg.solveFirstToolCaption || "Solve the problem here first.",
+            cfg.solveFirstToolCaptionEs || "",
+          ),
+        ),
       );
       pair.main.prepend(
         workPairCaption(
           "Step 2",
-          cfg.solveFirstTaskCaption || "Then show that move on the number line.",
+          stackContent(
+            cfg.solveFirstTaskCaption || "Then show that move on the number line.",
+            cfg.solveFirstTaskCaptionEs || "",
+          ),
         ),
       );
     } else {
       // "Do this" / "Use this to see why" read as one instruction split across two
       // columns, so students tried to follow Step 1's caption while looking at
       // Step 2's widget. Each caption now names what its OWN column is for.
-      pair.main.prepend(workPairCaption("Step 1", "Work the task below."));
-      pair.tool.prepend(workPairCaption("Step 2", "Then use this model to check your thinking."));
+      pair.main.prepend(workPairCaption("Step 1", esc("Work the task below.")));
+      pair.tool.prepend(
+        workPairCaption("Step 2", esc("Then use this model to check your thinking.")),
+      );
     }
     pair.main.append(exploreShell);
     pair.tool.append(exploreFig);
@@ -3920,7 +3932,9 @@ function workPairCaption(step, text) {
     "font-size:var(--fs-lg,1.15rem); font-weight:800;";
   badge.textContent = step;
   const txt = document.createElement("span");
-  txt.textContent = text;
+  // innerHTML because callers pass a bilingual stack from stackContent, which
+  // escapes both lanes itself. Plain-string callers are literals in this file.
+  txt.innerHTML = text;
   p.append(badge, txt);
   return p;
 }

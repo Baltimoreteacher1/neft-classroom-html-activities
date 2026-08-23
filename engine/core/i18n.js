@@ -355,6 +355,10 @@ const STRINGS = {
   noticeWonderLabel: { en: "Notice and Wonder", es: "Observa y pregúntate" },
   nwNoticeHeading: { en: "What do you notice?", es: "¿Qué observas?" },
   nwWonderHeading: { en: "What do you wonder?", es: "¿Qué te preguntas?" },
+  exploreGoalDefault: {
+    en: "Build it yourself first. You do not need the formula yet — you are looking for it.",
+    es: "Constrúyelo tú primero. Todavía no necesitas la fórmula — la estás buscando.",
+  },
   showYourWorkLabel: { en: "Show your work", es: "Muestra tu trabajo" },
   lessonToolsMenu: { en: "Lesson tools menu", es: "Menú de herramientas de la lección" },
   submitWarmup: { en: "Submit Warmup Answers", es: "Enviar respuestas del calentamiento" },
@@ -577,6 +581,19 @@ export function stackContent(en, es) {
  * which emits real tags, so escaping here would print them as literal text.
  * Callers passing raw config text want `stackContent` instead.
  */
+/**
+ * One language, chosen by the reader's preference — for places a STACK cannot
+ * go. An SVG `<text>` axis label, an `alt`, a `title`: markup there is printed
+ * verbatim or dropped, and two lines of text on an axis overlap the plot. Falls
+ * back to English whenever the Spanish is absent, so a partly-translated chart
+ * is readable rather than blank.
+ */
+export function pickLang(en, es) {
+  const spanish = String(es ?? "").trim();
+  if (spanish && getPreferredLang() === "es") return spanish;
+  return String(en ?? "");
+}
+
 export function stackContentHtml(enHtml, esHtml) {
   const en = String(enHtml ?? "");
   const es = String(esHtml ?? "");

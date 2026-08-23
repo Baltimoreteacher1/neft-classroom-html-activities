@@ -1,3 +1,5 @@
+import { pickLang } from "./i18n.js";
+
 // visual-figures.js — shared, accessible SVG data-figure builders (histogram,
 // dot plot, box plot, bar chart, factor tree, number line, tape diagram,
 // coordinate plane). Extracted verbatim from lesson-renderer.js so the full
@@ -106,10 +108,10 @@ export function histogramSVG(cfg) {
     })
     .join("");
   const xLabel = cfg.xLabel
-    ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(cfg.xLabel)}</text>`
+    ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(pickLang(cfg.xLabel, cfg.xLabelEs))}</text>`
     : "";
   const yLabel = cfg.yLabel
-    ? `<text x="14" y="${(padT + plotH / 2).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)" transform="rotate(-90 14 ${(padT + plotH / 2).toFixed(1)})">${esc(cfg.yLabel)}</text>`
+    ? `<text x="14" y="${(padT + plotH / 2).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)" transform="rotate(-90 14 ${(padT + plotH / 2).toFixed(1)})">${esc(pickLang(cfg.yLabel, cfg.yLabelEs))}</text>`
     : "";
   const axis = `<line x1="${padL}" y1="${baseY}" x2="${(W - padR).toFixed(1)}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>`;
   const title = cfg.title
@@ -160,7 +162,7 @@ export function dotPlotSVG(cfg) {
   }
   const axis = `<line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>`;
   const xLabel = cfg.xLabel
-    ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(cfg.xLabel)}</text>`
+    ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(pickLang(cfg.xLabel, cfg.xLabelEs))}</text>`
     : "";
   return svgFigure(cfg, `${axis}${ticks.join("")}${dots}${xLabel}`, W, H, padT, "dot-plot-figure");
 }

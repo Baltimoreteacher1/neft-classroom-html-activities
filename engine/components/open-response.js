@@ -1,4 +1,4 @@
-import { stackContent } from "../core/i18n.js";
+import { stackContent, stackContentHtml } from "../core/i18n.js";
 
 const ORP_STYLE_ID = "orp-polish-styles";
 
@@ -150,7 +150,7 @@ function fireConfetti(anchorEl) {
 
 export function renderOpenResponse(
   container,
-  { prompt, promptEs, sentenceFrame, keywords, minLength, onSubmit },
+  { prompt, promptEs, sentenceFrame, sentenceFrameEs, keywords, minLength, onSubmit },
 ) {
   ensureOpenResponseStyles();
 
@@ -174,7 +174,14 @@ export function renderOpenResponse(
   if (sentenceFrame) {
     const frame = document.createElement("div");
     frame.className = "sentence-frame";
-    frame.innerHTML = sentenceFrame.replace(/___/g, '<span class="blank">&nbsp;</span>');
+    // The blanks are markup, so each lane is rendered THEN stacked — running
+    // stackContent first would escape the <span class="blank"> into visible
+    // angle brackets, and a student would read the tag instead of a blank.
+    const blanks = (text) => String(text).replace(/___/g, '<span class="blank">&nbsp;</span>');
+    frame.innerHTML = stackContentHtml(
+      blanks(sentenceFrame),
+      sentenceFrameEs ? blanks(sentenceFrameEs) : "",
+    );
     wrapper.append(frame);
   }
 

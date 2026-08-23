@@ -1,3 +1,4 @@
+import { stackContent } from "../core/i18n.js";
 import { mountSymbolPad } from "../core/symbol-pad.js";
 export function renderNumberLine(container, config) {
   // Shape adapter, applied BEFORE anything reads the config: several lessons
@@ -997,6 +998,7 @@ function renderJumpNumberLine(container, config) {
     instructions,
     label,
     questionText,
+    questionTextEs,
     answer,
     totalJumps,
     min,
@@ -1065,7 +1067,7 @@ function renderJumpNumberLine(container, config) {
   if (questionText) {
     const qt = document.createElement("p");
     qt.style.cssText = "font-weight:600; margin:0 0 var(--sp-3);";
-    qt.textContent = questionText;
+    qt.innerHTML = stackContent(questionText, questionTextEs);
     q.append(qt);
   }
   const controls = document.createElement("div");

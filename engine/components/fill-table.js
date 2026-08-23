@@ -233,7 +233,8 @@ export function renderFillTable(container, config) {
   // { columns:[...], items|rows:[{key:value,...}] } where each row is an
   // object whose values map positionally to `columns`. Without this adapter
   // those tables render blank (missing headers/rows/editableCells).
-  const { headers, rows, editableCells, rowFigures, onComplete } = normalizeFillTable(config);
+  const { headers, headersEs, rows, rowsEs, editableCells, rowFigures, onComplete } =
+    normalizeFillTable(config);
 
   const wrapper = document.createElement("div");
   wrapper.className = "card ft-root";
@@ -254,9 +255,12 @@ export function renderFillTable(container, config) {
 
   const thead = document.createElement("thead");
   const headerRow = document.createElement("tr");
-  headers.forEach((h) => {
+  headers.forEach((h, i) => {
     const th = document.createElement("th");
-    th.textContent = h;
+    // A column header names what the student must produce in that column, so
+    // an English header above Spanish rows tells them nothing about the cell
+    // they are typing into.
+    th.innerHTML = stackContent(h, headersEs[i]);
     headerRow.append(th);
   });
   thead.append(headerRow);
@@ -325,7 +329,7 @@ export function renderFillTable(container, config) {
           if (fig) td.append(fig);
         }
         const text = document.createElement("span");
-        text.textContent = cell;
+        text.innerHTML = stackContent(cell, rowsEs?.[ri]?.[ci]);
         td.append(text);
         td.style.fontWeight = "600";
       }
@@ -585,9 +589,15 @@ export function normalizeFillTable(config = {}) {
   ) {
     return {
       headers: config.headers,
+      // Parallel and all-or-nothing — see the variant shape below.
+      headersEs:
+        Array.isArray(config.headersEs) && config.headersEs.length === config.headers.length
+          ? config.headersEs
+          : [],
       rows: config.rows,
       editableCells: Array.isArray(config.editableCells) ? config.editableCells : [],
       rowFigures: Array.isArray(config.rowFigures) ? config.rowFigures : [],
+      rowsEs: [],
       onComplete,
     };
   }
@@ -597,6 +607,13 @@ export function normalizeFillTable(config = {}) {
     ? config.columns.slice()
     : Array.isArray(config.headers)
       ? config.headers.slice()
+      : [];
+  // Parallel and ALL-OR-NOTHING: the header row is indexed positionally, so a
+  // short array would label one column with another column's Spanish.
+  const headersEsRaw = Array.isArray(config.columns) ? config.columnsEs : config.headersEs;
+  const headersEs =
+    Array.isArray(headersEsRaw) && headersEsRaw.length === headers.length
+      ? headersEsRaw.slice()
       : [];
 
   const source = Array.isArray(config.items)
@@ -609,7 +626,15 @@ export function normalizeFillTable(config = {}) {
 
   if (!headers.length || !objectRows.length) {
     // Could not interpret — return what we have so the caller can fall back.
-    return { headers, rows: [], editableCells: [], rowFigures: [], onComplete };
+    return {
+      headers,
+      headersEs,
+      rows: [],
+      rowsEs: [],
+      editableCells: [],
+      rowFigures: [],
+      onComplete,
+    };
   }
 
   const colCount = headers.length;
@@ -621,19 +646,38 @@ export function normalizeFillTable(config = {}) {
     // `figure` is metadata, not a column: it draws a small shape in the first
     // cell. Strip it before the positional value mapping below, or every
     // column after it would shift by one.
+    //
+    // A `*Es` sibling is metadata for exactly the same reason, and it is the
+    // more dangerous of the two because it arrives LATER: a row authored as
+    // {problem, solution} maps cleanly, and adding `problemEs` inserts a third
+    // key between them, pushing `solution` into the wrong column. The table
+    // would still render — with every cell after the translated one shifted by
+    // one — which is worse than not translating at all.
+    //
+    // The Spanish for a cell is resolved GENERICALLY as `<column key> + "Es"`,
+    // so any column a lesson translates is rendered without this file naming
+    // it. Today that covers `problemEs`, `wordProblemEs`, `textEs` and
+    // `labelEs`; those names are written out here on purpose, because a reader
+    // — human or grep — cannot otherwise tell that this file consumes them,
+    // and `tools/esol-lane-coverage.test.mjs` exists precisely to catch a
+    // translated field with no visible consumer.
     rowFigures.push(obj.figure || null);
-    const keys = Object.keys(obj).filter((k) => k !== "figure");
+    const keys = Object.keys(obj).filter((k) => k !== "figure" && !/Es$/.test(k));
     const values = keys.map((k) => obj[k]);
     const cells = [];
+    const cellsEs = [];
     for (let ci = 0; ci < colCount; ci++) {
       cells.push(values[ci] != null ? String(values[ci]) : "");
+      const es = keys[ci] ? obj[`${keys[ci]}Es`] : undefined;
+      cellsEs.push(es != null ? String(es) : "");
     }
-    return { keys, values, cells };
+    return { keys, values, cells, cellsEs };
   });
 
   const workCols = workColumns(headers, grid, config);
 
-  grid.forEach(({ keys, values, cells }, ri) => {
+  const rowsEs = [];
+  grid.forEach(({ keys, values, cells, cellsEs }, ri) => {
     // Every WORK column is the student's to fill. Which one is "the answer"
     // still matters for ordering and for callers that only care about the
     // final cell, so it is resolved the same way it always was.
@@ -663,9 +707,19 @@ export function normalizeFillTable(config = {}) {
         cells[ci] = "";
       });
     rows.push(cells);
+    rowsEs.push(cellsEs);
   });
 
-  return { headers, rows, editableCells, rowFigures, onComplete, workColumns: workCols };
+  return {
+    headers,
+    headersEs,
+    rows,
+    rowsEs,
+    editableCells,
+    rowFigures,
+    onComplete,
+    workColumns: workCols,
+  };
 }
 
 // Headers that name GIVEN information rather than a step the student performs.
