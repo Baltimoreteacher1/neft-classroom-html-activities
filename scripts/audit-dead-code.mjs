@@ -33,8 +33,25 @@ const CANDIDATE_EXT = new Set([".js", ".mjs", ".cjs", ".css", ".sh"]);
 /**
  * Entry points are referenced by tooling, not by other source files, so their
  * absence from the reference graph proves nothing.
+ *
+ * THE TEST PATTERN IS THE IMPORTANT ONE. `tools/run-tests.mjs` DISCOVERS test
+ * files by walking the tree — nothing imports them and no npm script names them
+ * individually — so every single one looked unreferenced here. On 2026-08-23
+ * this report listed 145 deletion candidates and 80 of them were live tests,
+ * including the guards for misconception detection, inequality diagnosis and
+ * the operand tagger. Acting on that list would have deleted 80 working tests
+ * and the suite would have gone quietly green with less coverage, which is the
+ * exact failure this audit exists to prevent in the other direction.
+ *
+ * A file discovered by a directory walk is REACHED, even though no reference
+ * points at it. Any future runner with the same shape belongs here too.
  */
-const ENTRYPOINT_HINTS = [/^scripts\/ship\.sh$/, /^scripts\/guard-deploy\.js$/];
+const ENTRYPOINT_HINTS = [
+  /^scripts\/ship\.sh$/,
+  /^scripts\/guard-deploy\.js$/,
+  // Auto-discovered by tools/run-tests.mjs, which walks for *.test.{mjs,cjs,js}.
+  /\.test\.(mjs|cjs|js)$/,
+];
 
 function rg(args) {
   try {
