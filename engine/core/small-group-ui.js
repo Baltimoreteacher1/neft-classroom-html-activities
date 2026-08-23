@@ -772,6 +772,20 @@ export function injectSmallGroupStyles(accent) {
     .sg-tile-tray{min-height:56px;padding:9px;border:2px dashed var(--sg-line);border-radius:12px}
     .sg-tile{min-width:44px;min-height:52px;border-radius:10px;font-family:var(--sg-display);font-size:20px;font-weight:700;cursor:pointer;border:2px solid var(--sg-rule)}
     .sg-es{display:none;margin-top:3px;color:var(--sg-muted);font-weight:400;font-size:.93em}
+    /* THE SWITCH IS THE lang ATTRIBUTE ON <html>, and it was missing here.
+       setPreferredLang() (engine/core/i18n.js) stamps lang, and i18n.js
+       re-stamps it from the saved preference on every page load; NOTHING in
+       the product has ever set data-lang on <html>. So every .sg-es span the
+       studio emitted was display:none - measured on 2-7-group1 in Spanish
+       mode: 125 spans, 125 hidden. That is the whole small-group Spanish lane,
+       including the 3,045 practice items validate:es-parity reports as
+       "complete in both languages" - the DATA was complete and none of it ever
+       reached a student, which is exactly what a data gate cannot see.
+       The prefix match takes es / es-US / es-MX, matching .i18n-es in
+       design-system.css so the two lanes cannot disagree. The legacy selectors
+       stay: they cost nothing and something outside this repo may set them.
+       No backticks in this comment - it is inside a template literal. */
+    :root[lang="es"] .sg-es, html[lang^="es"] .sg-es,
     html[data-lang="es"] .sg-es, body.es .sg-es, body.lang-es .sg-es, [data-es="true"] .sg-es {display:block;}
     /* Place-value giant workspace: the stacked column math IS the visual */
     .sg-big-work .colmath{min-width:320px;padding:24px 38px;border:3px solid var(--sg);border-radius:var(--sg-radius-lg);background:var(--sg-figure);box-shadow:var(--sg-shadow-sm);font-size:44px}

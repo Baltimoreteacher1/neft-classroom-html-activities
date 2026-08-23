@@ -92,6 +92,15 @@ import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.j
 function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
   const lines = stage?.lines || [];
   if (!lines.length) return null;
+  // The worked example's Spanish, as a parallel array — the same shape as
+  // stemEs / hintsEs / choicesEs, filled from data/es-translations by
+  // tools/apply-es-concept-intro.mjs. ALL-OR-NOTHING on purpose: a partly
+  // translated walkthrough would put a Spanish step between two English ones,
+  // which reads as a broken page rather than as support. The lane switch and
+  // the stacking are bi()'s, so a student in English mode sees no change.
+  const esLines =
+    Array.isArray(stage?.linesEs) && stage.linesEs.length === lines.length ? stage.linesEs : null;
+  const lineHtml = (index, text) => bi(text, esLines ? esLines[index] : "");
   // One visualizer per stage so factor-tree steps accumulate into a single
   // growing tree (each step redraws the whole tree, newest branch highlighted).
   const visualFor = visualMode ? createBuildVisualizer() : null;
@@ -177,11 +186,13 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
 
   if (kind === "youdo") {
     let checked = 0;
-    lines.forEach((line) => {
+    lines.forEach((line, index) => {
       const item = el(
         "button",
         "sg-checkstep",
-        `<span class="tick">•</span><span>${esc(line)}</span>`,
+        // The loop's own index, never lines.indexOf(line): two identical
+        // check-off lines would both resolve to the first one's translation.
+        `<span class="tick">•</span><span>${lineHtml(index, line)}</span>`,
       );
       item.type = "button";
       item.setAttribute("aria-pressed", "false");
@@ -207,15 +218,21 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
   }
 
   const renderLine = (line, number) => {
+    const esLine = esLines ? esLines[number - 1] : "";
     const step = el("div", "sg-buildstep");
     step.appendChild(el("span", "sn", String(number)));
     const body = el("div", "sg-buildstep-body");
     const reveal = kind === "wedo" ? String(line).match(/^(.*?)\s*\(([^()]{2,})\)\s*$/) : null;
     if (reveal) {
-      body.appendChild(el("span", null, esc(reveal[1])));
+      // A "think first, then reveal" line splits into prompt + answer. The
+      // Spanish sibling is split on the SAME parenthetical so the two lanes
+      // hide and reveal together; a Spanish line without one keeps its prompt
+      // whole rather than guessing where the answer starts.
+      const esReveal = esLine ? String(esLine).match(/^(.*?)\s*\(([^()]{2,})\)\s*$/) : null;
+      body.appendChild(el("span", null, bi(reveal[1], esReveal ? esReveal[1] : "")));
       const chip = el("button", "sg-reveal", "💭 Think first, then reveal");
       chip.type = "button";
-      const answer = el("span", "sg-reveal-answer", esc(reveal[2]));
+      const answer = el("span", "sg-reveal-answer", bi(reveal[2], esReveal ? esReveal[2] : ""));
       answer.hidden = true;
       chip.onclick = () => {
         answer.hidden = false;
@@ -223,7 +240,7 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
       };
       body.append(chip, answer);
     } else {
-      body.appendChild(el("span", null, esc(line)));
+      body.appendChild(el("span", null, bi(line, esLine)));
     }
     // The vertical tableau is the canonical model for a long-division step, so
     // it wins over the generic relation visual for that line.
@@ -309,7 +326,8 @@ function conceptSection(config, onDone, voice, variant) {
   });
 
   // After the work: brief framing, then name the idea.
-  if (concept.intro) section.appendChild(el("p", "sg-build-intro", esc(concept.intro)));
+  if (concept.intro)
+    section.appendChild(el("p", "sg-build-intro", bi(concept.intro, concept.introEs)));
   if (concept.keyIdea)
     section.appendChild(
       el("div", "keyidea", `<span class="lab">💡 The big idea</span>${esc(concept.keyIdea)}`),

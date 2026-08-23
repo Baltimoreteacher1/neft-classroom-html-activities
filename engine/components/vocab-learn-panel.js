@@ -1432,14 +1432,49 @@ export function renderLearnItPanel(container, config, options = {}) {
   wrap.className = "vl-container";
 
   const concept = config.conceptIntro || config.launch?.conceptIntro || {};
-  const heading = concept.heading || config.contentObjective || `Understanding ${config.title}`;
-  const intro = concept.intro || config.contentObjective || "";
+  // The panel SWITCHES language rather than stacking (matching misconception.es
+  // and its own chrome), so the Spanish is chosen here and the English is the
+  // fallback whenever a lesson has no translation yet.
+  const pickEs = (en, es) => (isEs && String(es ?? "").trim() ? es : en);
+  const heading =
+    pickEs(concept.heading, concept.headingEs) ||
+    config.contentObjective ||
+    `Understanding ${config.title}`;
+  const intro = pickEs(concept.intro, concept.introEs) || config.contentObjective || "";
   const keyIdea = parseKeyIdea(concept.keyIdea || config.contentObjective || "");
   const iDo = concept.iDo || {};
   const weDo = concept.weDo || {};
   const isLine = (l) => typeof l === "string" && l.trim();
   const iLines = Array.isArray(iDo.lines) ? iDo.lines.filter(isLine) : [];
   const weLines = Array.isArray(weDo.lines) ? weDo.lines.filter(isLine) : [];
+  /* The worked example's Spanish — a parallel array in the same shape as
+     stemEs / hintsEs / choicesEs, filled from data/es-translations by
+     tools/apply-es-concept-intro.mjs.
+
+     ALL-OR-NOTHING, and the length is compared against the UNFILTERED authored
+     array: `lines` above drops blanks, so a translation written against the
+     authored file would be one short of the filtered list and every step after
+     the blank would show the previous step's Spanish. Mismatched lengths fall
+     back to English entirely, which is the same rule choicesEs already follows —
+     a walkthrough with one Spanish step between two English ones reads as a
+     broken page, not as support.
+
+     DISPLAY ONLY. Everything derived from a line — the tableau, the equation
+     strip, the manipulable move — keeps parsing the ENGLISH, because those
+     readers match on English wording ("becomes", "DIVIDE:") and are what
+     validate:learn-figures and validate:surface-numbers hold to the lesson's
+     own numbers. */
+  const parallelEs = (authored, filtered, key) => {
+    const list = Array.isArray(authored?.[key]) ? authored[key] : null;
+    if (!list || !Array.isArray(authored?.lines)) return null;
+    if (list.length !== authored.lines.length) return null;
+    const kept = authored.lines.map((l, i) => [l, list[i]]).filter(([l]) => isLine(l));
+    return kept.length === filtered.length ? kept.map(([, es]) => es) : null;
+  };
+  const iLinesEs = parallelEs(iDo, iLines, "linesEs");
+  const weLinesEs = parallelEs(weDo, weLines, "linesEs");
+  /** The line to SHOW for step `idx` — Spanish when the lane is on and it exists. */
+  const shown = (esList, idx, line) => (isEs && esList?.[idx]?.trim() ? esList[idx] : line);
   const vocabList = Array.isArray(config.vocabulary) ? config.vocabulary : [];
 
   const misconception = resolveLessonMisconception(config);
@@ -1691,7 +1726,7 @@ export function renderLearnItPanel(container, config, options = {}) {
       sub: isEs ? "Lee un paso, luego muestra el siguiente" : "Read one step, then show the next",
       build(host) {
         host.innerHTML = `
-          ${iDo.title ? `<p class="vl-lead"><strong>${escHtml(iDo.title)}</strong></p>` : ""}
+          ${iDo.title ? `<p class="vl-lead"><strong>${escHtml(isEs && iDo.titleEs ? iDo.titleEs : iDo.title)}</strong></p>` : ""}
           ${
             workedFig
               ? `<figure class="vl-stepfig vl-workedfig">${workedFig.svg}<figcaption class="vl-stepfig-cap">${isEs ? "El problema se ve así" : "The problem looks like this"}</figcaption></figure>`
@@ -1704,7 +1739,7 @@ export function renderLearnItPanel(container, config, options = {}) {
               <li class="vl-solve-step${idx === 0 ? "" : " vl-hidden"}">
                 <span class="vl-step-num">${isEs ? "Paso" : "Step"} ${idx + 1}</span>
                 <div class="vl-solve-body">
-                  <span class="vl-step-text">${renderMathText(line)}</span>
+                  <span class="vl-step-text">${renderMathText(shown(iLinesEs, idx, line))}</span>
                   ${lineEquation(line)}
                   ${(() => {
                     const fig = stepFigureFor(idx);
@@ -1714,7 +1749,7 @@ export function renderLearnItPanel(container, config, options = {}) {
                   })()}
                   ${stepMoves[idx] ? `<div class="vl-stepwork" data-step-work="${idx}"></div>` : ""}
                 </div>
-                <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(line)}">🔊 <span class="sr-only">${isEs ? "Escuchar paso" : "Hear step"} ${idx + 1}</span></button>
+                <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(shown(iLinesEs, idx, line))}">🔊 <span class="sr-only">${isEs ? "Escuchar paso" : "Hear step"} ${idx + 1}</span></button>
               </li>`,
               )
               .join("")}
@@ -1771,25 +1806,32 @@ export function renderLearnItPanel(container, config, options = {}) {
       build(host) {
         const guided = weLines
           .map((line, idx) => {
+            // Split BOTH lanes on their own parenthetical, so the ask and the
+            // "Check" reveal stay together in whichever language is showing.
+            // The equation strip still comes from the English (lineEquation
+            // reads the numbers out of the sentence).
             const g = splitGuidedLine(line);
-            const reveal = g.tell
-              ? `<details class="vl-check-reveal"><summary>✓ ${isEs ? "Comprueba" : "Check"}</summary><div class="vl-check-body">${renderMathText(g.tell)}</div></details>`
+            const gEs = isEs && weLinesEs?.[idx]?.trim() ? splitGuidedLine(weLinesEs[idx]) : null;
+            const ask = gEs ? gEs.ask : g.ask;
+            const tell = gEs ? gEs.tell || g.tell : g.tell;
+            const reveal = tell
+              ? `<details class="vl-check-reveal"><summary>✓ ${isEs ? "Comprueba" : "Check"}</summary><div class="vl-check-body">${renderMathText(tell)}</div></details>`
               : lineEquation(g.ask);
             return `
               <li class="vl-solve-step${idx === 0 ? "" : " vl-hidden"}">
                 <span class="vl-step-num">${idx + 1}</span>
                 <div class="vl-solve-body">
-                  <span class="vl-step-text">${renderMathText(g.ask)}</span>
+                  <span class="vl-step-text">${renderMathText(ask)}</span>
                   ${reveal}
                 </div>
-                <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(g.ask)}">🔊 <span class="sr-only">${isEs ? "Escuchar" : "Hear step"} ${idx + 1}</span></button>
+                <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(ask)}">🔊 <span class="sr-only">${isEs ? "Escuchar" : "Hear step"} ${idx + 1}</span></button>
               </li>`;
           })
           .join("");
         host.innerHTML = `
           ${
             weLines.length
-              ? `${weDo.title ? `<p class="vl-lead"><strong>${escHtml(weDo.title)}</strong></p>` : ""}
+              ? `${weDo.title ? `<p class="vl-lead"><strong>${escHtml(isEs && weDo.titleEs ? weDo.titleEs : weDo.title)}</strong></p>` : ""}
           <ol class="vl-solve-steps">${guided}</ol>
           <div class="vl-pace no-print">
             <button type="button" class="vl-pace-next">${isEs ? "Muestra el siguiente paso" : "Show the next step"} ▸ <span class="vl-pace-count"></span></button>
