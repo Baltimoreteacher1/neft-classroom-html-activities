@@ -2,15 +2,22 @@
  * Vocabulary linkification for generated slide decks.
  *
  * Historically the `.vocab-word` glossary links in `lessons/<id>/slides.html`
- * were added by a separate one-shot pass (`scripts/decorate_objectives_vocab.py`),
- * NOT by the deck generator. That meant regenerating a deck silently STRIPPED
+ * were added by a separate one-shot regex pass, NOT by the deck generator. That meant regenerating a deck silently STRIPPED
  * working functionality, so the decks could never be refreshed from their
  * `config.json`. This module moves that behaviour into the generator.
  *
- * It also fixes the defect that `scripts/fix_vocab_attributes.py` exists to
- * clean up after: the old regex pass wrapped terms that appeared INSIDE HTML
- * attributes (`width="400"` became `<span ...>width</span>="400"`). This
- * linkifier is a real tokenizer — it only ever rewrites text nodes.
+ * It also fixes the defect that pass introduced: it wrapped terms appearing
+ * INSIDE HTML attributes, so `width="400"` became `<span ...>width</span>="400"`
+ * — 1,808 of them across 84 pages. This linkifier is a real tokenizer; it only
+ * ever rewrites text nodes.
+ *
+ * Both Python scripts were DELETED on 2026-08-23 (recoverable from git history).
+ * The injector caused the damage, and its companion `fix_vocab_attributes.py`
+ * was not a fix: its cleanup regex stopped at the first quote inside the span
+ * it was matching, so it truncated the attribute and left the rest of the span
+ * behind — turning 50 repairable cases into unrecoverable ones. That shape is
+ * now pinned in data/vocab-attribute-debt.json. `validate:vocab-attributes`
+ * guards both.
  *
  * Emitted markup is byte-identical to what the decks already ship:
  *   <span class="vocab-word" data-vocab="KEY" style="border-bottom:2px dotted

@@ -3,9 +3,9 @@
  * validate-vocab-attributes.mjs — a glossary link must never eat an attribute.
  *
  * WHAT WENT WRONG. The glossary decoration on these pages was originally
- * applied by a one-shot regex pass (`scripts/decorate_objectives_vocab.py`)
- * that matched vocabulary terms anywhere in the file, INCLUDING inside an HTML
- * open tag. Two of the glossary terms — `width` and `height` — are also the
+ * applied by a one-shot regex pass (`scripts/decorate_objectives_vocab.py`,
+ * deleted 2026-08-23) that matched vocabulary terms anywhere in the file,
+ * INCLUDING inside an HTML open tag. Two of the glossary terms — `width` and `height` — are also the
  * two commonest SVG attribute names, so the pass rewrote the ATTRIBUTE:
  *
  *     <svg width="28" height="28" viewBox="0 0 24 24">
@@ -23,11 +23,17 @@
  *
  * WHY A GATE AND NOT JUST A FIX. The generator in use today
  * (`scripts/lib/vocab-linkify.mjs`) is a real tokenizer and cannot produce
- * this — but the two legacy Python passes are still in `scripts/`, and the one
- * named `fix_vocab_attributes.py` only cleans spans that landed INSIDE an
- * attribute VALUE (`alt="<span…>"`). It is blind to the shape that actually
- * shipped, where the span replaced the attribute NAME. Re-running it would
- * reintroduce the defect and report success.
+ * this. Both legacy Python passes have been deleted (recoverable from git
+ * history), because the companion named `fix_vocab_attributes.py` was not a
+ * fix — it was the second cause. Its cleanup regex
+ *
+ *     ="[^"]*<span[^>]*vocab-word[^>]*>(.*?)</span>[^"]*"
+ *
+ * stops `[^"]*` at the first quote INSIDE the span it is matching, so on an
+ * attribute holding two linked terms it truncated the value and left the rest
+ * of the second span stranded in the tag. Replaying it on the injector's own
+ * output reproduces the surviving damage byte-for-byte. It also re-ran the
+ * injector afterwards, so every run both damaged pages and printed success.
  *
  * THE RULE. A `.vocab-word` span is a glossary link around a word in prose. It
  * is therefore never immediately followed by `=`. That single condition
@@ -41,8 +47,8 @@
  *
  *     aria-label="base"vocab-word" data-vocab="height" ...>height</span> of 6 feet."
  *
- * Here a cleanup pass has already eaten `<span class="` AND the connector text
- * that ran between `base` and `height`. The surviving characters do not
+ * Here `fix_vocab_attributes.py` has already eaten `<span class="` AND the
+ * connector text that ran between `base` and `height`. The surviving characters do not
  * determine the original sentence — reconstructing it means inventing words,
  * and for a `style` attribute (`style="width"vocab-word" ...>height</span>:auto"`)
  * any mechanical join produces invalid CSS. These are therefore NOT repaired
