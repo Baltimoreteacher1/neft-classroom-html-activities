@@ -1024,29 +1024,37 @@
       "bars": [
         {
           "label": "Start (4)",
-          "value": 4
+          "value": 4,
+          "labelEs": "Inicio (4)"
         },
         {
           "label": "1 layer",
-          "value": 8
+          "value": 8,
+          "labelEs": "1 capa"
         },
         {
           "label": "2 layers",
-          "value": 16
+          "value": 16,
+          "labelEs": "2 capas"
         },
         {
           "label": "3 layers",
-          "value": 32
+          "value": 32,
+          "labelEs": "3 capas"
         },
         {
           "label": "4 layers",
-          "value": 64
+          "value": 64,
+          "labelEs": "4 capas"
         },
         {
           "label": "5 layers",
-          "value": 128
+          "value": 128,
+          "labelEs": "5 capas"
         }
-      ]
+      ],
+      "titleEs": "El tamaño del archivo se duplica en cada capa",
+      "captionEs": "Cada barra es 4 × 2ⁿ MB; cada capa duplica la altura, así que el archivo se dispara a 128 MB después de 5 capas."
     },
     "scenario": "A music studio is recording tracks. Each track layer doubles the file size. A single track is 4 MB. The file size after n layers is given by 4 × 2ⁿ.",
     "promptQuestion": "How large is the file after 5 layers? Why does the file size grow so quickly?",
@@ -1070,7 +1078,9 @@
           "16"
         ],
         "answer": 0,
-        "explanation": "2⁵ means 2 × 2 × 2 × 2 × 2 = 32. It does NOT mean 2 × 5."
+        "explanation": "2⁵ means 2 × 2 × 2 × 2 × 2 = 32. It does NOT mean 2 × 5.",
+        "stemEs": "¿Cuánto es 2⁵?",
+        "explanationEs": "2⁵ significa 2 × 2 × 2 × 2 × 2 = 32. No significa 2 × 5."
       },
       {
         "stem": "How big is the file after 5 layers?",
@@ -1081,7 +1091,8 @@
           "64 MB"
         ],
         "answer": 0,
-        "explanation": "4 × 2⁵ = 4 × 32 = 128 MB."
+        "explanation": "4 × 2⁵ = 4 × 32 = 128 MB.",
+        "stemEs": "¿De qué tamaño es el archivo después de 5 capas?"
       },
       {
         "stem": "Why does the file grow so quickly?",
@@ -1092,7 +1103,15 @@
           "Because the studio records faster each time"
         ],
         "answer": 0,
-        "explanation": "Repeated doubling is exponential growth: 4, 8, 16, 32, 64, 128. Each step multiplies rather than adds, so the jumps get bigger and bigger."
+        "explanation": "Repeated doubling is exponential growth: 4, 8, 16, 32, 64, 128. Each step multiplies rather than adds, so the jumps get bigger and bigger.",
+        "stemEs": "¿Por qué crece tan rápido el archivo?",
+        "explanationEs": "Duplicar repetidamente es crecimiento exponencial: 4, 8, 16, 32, 64, 128. Cada paso multiplica en vez de sumar, así que los saltos se hacen cada vez más grandes.",
+        "choicesEs": [
+          "Porque cada capa duplica el tamaño en vez de sumar una cantidad fija",
+          "Porque 4 MB ya es grande",
+          "Porque 5 es un exponente grande",
+          "Porque el estudio graba más rápido cada vez"
+        ]
       }
     ],
     "answers": [
@@ -1106,7 +1125,20 @@
         "doubles it"
       ]
     ],
-    "modelAnswer": "2⁵ = 2 × 2 × 2 × 2 × 2 = 32, so 4 × 2⁵ = 4 × 32 = 128 MB after 5 layers. The size grows so fast because every layer doubles it — that is exponential growth, not repeated addition."
+    "modelAnswer": "2⁵ = 2 × 2 × 2 × 2 × 2 = 32, so 4 × 2⁵ = 4 × 32 = 128 MB after 5 layers. The size grows so fast because every layer doubles it — that is exponential growth, not repeated addition.",
+    "promptEs": "Después de 5 capas el archivo es de ___ MB porque 4 × 2⁵ = 4 × ___ = ___. El archivo crece rápido porque cada capa ___ el tamaño.",
+    "scenarioEs": "Un estudio de música está grabando pistas. Cada capa de pista duplica el tamaño del archivo. Una sola pista son 4 MB. El tamaño del archivo después de n capas está dado por 4 × 2ⁿ.",
+    "promptQuestionEs": "¿De qué tamaño es el archivo después de 5 capas? ¿Por qué crece tan rápido el tamaño del archivo?",
+    "modelAnswerEs": "2⁵ = 2 × 2 × 2 × 2 × 2 = 32, así que 4 × 2⁵ = 4 × 32 = 128 MB después de 5 capas. El tamaño crece tan rápido porque cada capa lo duplica — eso es crecimiento exponencial, no suma repetida.",
+    "keywordsEs": [
+      "128",
+      "32",
+      "duplica",
+      "exponencial",
+      "potencia",
+      "base",
+      "exponente"
+    ]
   },
   "reflect": {
     "exitTicket": {

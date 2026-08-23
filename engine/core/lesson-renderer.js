@@ -60,6 +60,7 @@ import {
   phaseName,
   stack,
   stackContent,
+  stackContentHtml,
   stackHtml,
   t,
 } from "./i18n.js";
@@ -4767,7 +4768,19 @@ function renderConnectFrame(cfg, state) {
   const blankCount = segments.length - 1;
   if (blankCount < 1) return null;
 
-  const answers = Array.isArray(cfg.answers) ? cfg.answers : [];
+  // The Spanish answers WIDEN what is accepted rather than replacing it. A
+  // bilingual student may type either language into the same blank — often both
+  // across one sentence — and marking a correct Spanish answer wrong is the
+  // exact failure this translation exists to prevent. `isRight` already accepts
+  // an array of equivalents, so the two lists simply merge.
+  const answersEn = Array.isArray(cfg.answers) ? cfg.answers : [];
+  const answersEs = Array.isArray(cfg.answersEs) ? cfg.answersEs : [];
+  const answers = answersEn.map((accepted, i) => {
+    const es = answersEs[i];
+    if (es == null || es === "") return accepted;
+    const merge = (v) => (Array.isArray(v) ? v : [v]);
+    return [...merge(accepted), ...merge(es)];
+  });
 
   const frame = document.createElement("div");
   frame.className = "sentence-frame sentence-frame-live";
@@ -4842,7 +4855,10 @@ function renderConnectPhase(el, state, ctx, config) {
         <div class="connect-scenario-theme">${esc(config.theme?.replace(/-/g, " ") || "Real World")}</div>
       </div>
     </div>
-    <p class="connect-scenario-text" data-annotate="word-problem">${renderMathText(cfg.scenario)}</p>`;
+    <p class="connect-scenario-text" data-annotate="word-problem">${stackContentHtml(
+      renderMathText(cfg.scenario),
+      cfg.scenarioEs ? renderMathText(cfg.scenarioEs) : "",
+    )}</p>`;
   if (cfg.diagram) card.innerHTML += buildVisual(cfg.diagram);
   else if (cfg.histogram) card.innerHTML += histogramSVG(cfg.histogram);
   // Optional scenario simulator: a slider that recomputes a proportional /

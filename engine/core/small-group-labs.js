@@ -394,7 +394,9 @@ export function createModelLab(config, variant, { number, store, events, onDone 
     ),
   );
   if (store.get("modelDone")) section.appendChild(doneChip("Model explained last session."));
-  if (connect.scenario) section.appendChild(el("p", "sg-lab-note", esc(connect.scenario)));
+  if (connect.scenario) {
+    section.appendChild(el("p", "sg-lab-note", bi(connect.scenario, connect.scenarioEs)));
+  }
 
   const figure = figureBlock(connect.diagram, { store, slot: "model-lab" });
   if (figure) section.appendChild(figure);

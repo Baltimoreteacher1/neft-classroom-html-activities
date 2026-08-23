@@ -64,6 +64,11 @@ const NEUTRAL_TOKENS = new Set([
   "kL",
   "mg",
   "kg",
+  // Digital storage: international symbols, unchanged in Spanish.
+  "kB",
+  "MB",
+  "GB",
+  "TB",
   // Bare algebraic products ("12ab") are notation, not words.
   "ab",
   "bh",
