@@ -933,6 +933,12 @@ export function injectSmallGroupStyles(accent) {
     /* ── Per-step visual models (Level 1 Build the idea) ── */
     .sg-step-visual{margin:9px 0 2px;padding:8px 10px;border:1px solid var(--sg-line);border-radius:12px;background:var(--sg-card);box-shadow:0 4px 14px rgba(23,32,51,.05);animation:sg-stepin .3s ease}
     .sg-step-visual svg{display:block;width:100%;max-width:360px;height:auto}
+    /* The vertical long-division tableau reads as a worked page, not a chart:
+       it needs more width than a relation diagram and a monospace-ish column
+       alignment, and its caption names what the student is looking at. */
+    .sg-divfig{max-width:420px}
+    .sg-divfig svg{max-width:100%;margin:0 auto}
+    .sg-divfig-cap{margin-top:6px;color:var(--sg-muted);font-size:13px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.04em}
     .sg-checkstep-wrap{margin:0 0 9px}
     .sg-checkstep-wrap .sg-checkstep{margin:0}
     .sg-checkstep-wrap .sg-step-visual{margin:6px 0 0}

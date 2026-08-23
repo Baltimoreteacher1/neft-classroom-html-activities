@@ -108,6 +108,99 @@ export const MATH_GLOSSARY = [
     definition: "A small number that tells how many times to multiply the base by itself.",
     definitionEs: "Un número pequeño que indica cuántas veces multiplicar la base por sí misma.",
   },
+  // The operation NAMES and the standard algorithm. A student meets "division",
+  // "the algorithm", "bring down" on nearly every page of Units 1–2, and until
+  // these entries existed those words had a definition only on the lessons that
+  // happened to list them as vocabulary — so on lesson 2.7 "division" was plain,
+  // undefined prose sitting inside the definition of "dividend". Every math word
+  // gets a picture and a simple meaning wherever it appears (Joel, 2026-08-23).
+  {
+    term: "division",
+    termEs: "división",
+    definition: "Splitting a total into equal groups.",
+    definitionEs: "Repartir un total en grupos iguales.",
+    visual: "12 ÷ 3 = 4 — twelve split into 3 equal groups of 4.",
+  },
+  {
+    term: "divide",
+    termEs: "dividir",
+    definition: "Split a total into equal groups.",
+    definitionEs: "Repartir un total en grupos iguales.",
+    visual: "Divide 12 by 3 to get 4 in each group.",
+  },
+  {
+    term: "multiplication",
+    termEs: "multiplicación",
+    definition: "Adding equal groups over and over.",
+    definitionEs: "Sumar grupos iguales una y otra vez.",
+    visual: "4 × 3 = 12 — four groups of 3.",
+  },
+  {
+    term: "multiply",
+    termEs: "multiplicar",
+    definition: "Put equal groups together to find a total.",
+    definitionEs: "Juntar grupos iguales para hallar un total.",
+    visual: "4 × 3 = 12.",
+  },
+  {
+    term: "addition",
+    termEs: "suma",
+    definition: "Putting amounts together to find a total.",
+    definitionEs: "Juntar cantidades para hallar un total.",
+    visual: "8 + 5 = 13.",
+  },
+  {
+    term: "subtraction",
+    termEs: "resta",
+    definition: "Taking an amount away, or finding how far apart two amounts are.",
+    definitionEs: "Quitar una cantidad, o hallar la diferencia entre dos cantidades.",
+    visual: "13 − 5 = 8.",
+  },
+  {
+    term: "algorithm",
+    termEs: "algoritmo",
+    definition: "A set of steps you repeat the same way every time to get an answer.",
+    definitionEs: "Un conjunto de pasos que repites igual cada vez para obtener una respuesta.",
+    visual: "Long division repeats: divide, multiply, subtract, bring down.",
+  },
+  {
+    term: "long division",
+    termEs: "división larga",
+    definition:
+      "A way to divide big numbers by repeating four steps: divide, multiply, subtract, bring down.",
+    definitionEs:
+      "Una forma de dividir números grandes repitiendo cuatro pasos: divide, multiplica, resta y baja el siguiente dígito.",
+    visual: "Divide → Multiply → Subtract → Bring down, then repeat.",
+  },
+  {
+    term: "bring down",
+    termEs: "bajar el dígito",
+    definition: "The fourth step of long division: move the next digit down next to what is left.",
+    definitionEs:
+      "El cuarto paso de la división larga: baja el siguiente dígito junto a lo que quedó.",
+    visual: "After subtracting, bring the next digit down and start the cycle again.",
+  },
+  {
+    term: "regroup",
+    termEs: "reagrupar",
+    definition: "Trade 10 of one place for 1 of the next place (or the other way around).",
+    definitionEs: "Cambiar 10 de un lugar por 1 del siguiente lugar (o al revés).",
+    visual: "10 ones regroup into 1 ten.",
+  },
+  {
+    term: "place value",
+    termEs: "valor posicional",
+    definition: "What a digit is worth because of the column it sits in.",
+    definitionEs: "Lo que vale un dígito según la columna en la que está.",
+    visual: "In 3.47, the 4 is 4 tenths and the 7 is 7 hundredths.",
+  },
+  {
+    term: "estimate",
+    termEs: "estimar",
+    definition: "A close-enough answer you find quickly, without doing the exact math.",
+    definitionEs: "Una respuesta cercana que hallas rápido, sin hacer la cuenta exacta.",
+    visual: "18.9 ÷ 6.3 is about 18 ÷ 6 = 3.",
+  },
   // — decimals & fractions —
   {
     term: "decimal point",
@@ -145,6 +238,48 @@ export const MATH_GLOSSARY = [
     termEs: "número mixto",
     definition: "A whole number and a fraction together, like 2 1/3.",
     definitionEs: "Un número entero y una fracción juntos, como 2 1/3.",
+  },
+  {
+    term: "decimal",
+    termEs: "decimal",
+    definition: "A number with a point in it that shows part of a whole, like 0.5 or 18.9.",
+    definitionEs: "Un número con punto que muestra parte de un entero, como 0.5 o 18.9.",
+    visual: "0.5 is half of one whole.",
+  },
+  {
+    term: "tenths",
+    termEs: "décimas",
+    definition: "The first place after the decimal point — one whole split into 10 equal parts.",
+    definitionEs: "El primer lugar después del punto decimal — un entero dividido en 10 partes.",
+    visual: "In 0.4 the 4 is 4 tenths.",
+  },
+  {
+    term: "hundredths",
+    termEs: "centésimas",
+    definition: "The second place after the decimal point — one whole split into 100 equal parts.",
+    definitionEs: "El segundo lugar después del punto decimal — un entero dividido en 100 partes.",
+    visual: "In 0.07 the 7 is 7 hundredths.",
+  },
+  {
+    term: "fraction",
+    termEs: "fracción",
+    definition: "A number that names equal parts of a whole, written as one number over another.",
+    definitionEs: "Un número que nombra partes iguales de un entero, escrito uno sobre otro.",
+    visual: "3/4 means 3 of 4 equal parts.",
+  },
+  {
+    term: "improper fraction",
+    termEs: "fracción impropia",
+    definition: "A fraction whose top number is bigger than its bottom number, so it is 1 or more.",
+    definitionEs: "Una fracción cuyo numerador es mayor que su denominador, así que vale 1 o más.",
+    visual: "7/4 is more than one whole.",
+  },
+  {
+    term: "simplify",
+    termEs: "simplificar",
+    definition: "Rewrite something in its smallest, cleanest equal form.",
+    definitionEs: "Reescribir algo en su forma equivalente más simple.",
+    visual: "6/8 simplifies to 3/4.",
   },
   // — ratios & percent —
   {
@@ -203,6 +338,27 @@ export const MATH_GLOSSARY = [
     definition: "Replace a variable with a number, then simplify.",
     definitionEs: "Reemplazar una variable por un número y luego simplificar.",
   },
+  {
+    term: "inequality",
+    termEs: "desigualdad",
+    definition: "A math sentence that uses <, >, ≤ or ≥ instead of an equal sign.",
+    definitionEs: "Una oración matemática que usa <, >, ≤ o ≥ en lugar del signo igual.",
+    visual: "x > 5 means x is any number bigger than 5.",
+  },
+  {
+    term: "evaluate",
+    termEs: "evaluar",
+    definition: "Work out the value of an expression.",
+    definitionEs: "Hallar el valor de una expresión.",
+    visual: "Evaluate 3n when n = 4 to get 12.",
+  },
+  {
+    term: "like terms",
+    termEs: "términos semejantes",
+    definition: "Terms with exactly the same variable part, so they can be combined.",
+    definitionEs: "Términos con la misma parte variable, así que se pueden combinar.",
+    visual: "5x and 2x are like terms; 5x and 2y are not.",
+  },
   // — integers & coordinate plane —
   {
     term: "integer",
@@ -259,6 +415,80 @@ export const MATH_GLOSSARY = [
     definition: "The total area of all the flat sides of a solid.",
     definitionEs: "El área total de todos los lados planos de un sólido.",
   },
+  {
+    term: "area",
+    termEs: "área",
+    definition: "How much flat space a shape covers, counted in square units.",
+    definitionEs: "Cuánto espacio plano cubre una figura, contado en unidades cuadradas.",
+    visual: "A 3 × 4 rectangle covers 12 square units.",
+  },
+  {
+    term: "triangle",
+    termEs: "triángulo",
+    definition: "A closed shape with 3 straight sides.",
+    definitionEs: "Una figura cerrada con 3 lados rectos.",
+  },
+  {
+    term: "rectangle",
+    termEs: "rectángulo",
+    definition: "A 4-sided shape with 4 square corners.",
+    definitionEs: "Una figura de 4 lados con 4 esquinas rectas.",
+  },
+  {
+    term: "parallelogram",
+    termEs: "paralelogramo",
+    definition: "A 4-sided shape whose opposite sides are parallel and the same length.",
+    definitionEs: "Una figura de 4 lados cuyos lados opuestos son paralelos e iguales.",
+  },
+  {
+    term: "trapezoid",
+    termEs: "trapecio",
+    definition: "A 4-sided shape with exactly one pair of parallel sides.",
+    definitionEs: "Una figura de 4 lados con exactamente un par de lados paralelos.",
+  },
+  {
+    term: "rhombus",
+    termEs: "rombo",
+    definition: "A 4-sided shape whose four sides are all the same length.",
+    definitionEs: "Una figura de 4 lados con los cuatro lados iguales.",
+  },
+  {
+    term: "polygon",
+    termEs: "polígono",
+    definition: "A closed shape made only of straight sides.",
+    definitionEs: "Una figura cerrada formada solo por lados rectos.",
+  },
+  {
+    term: "prism",
+    termEs: "prisma",
+    definition: "A 3-D solid with two identical ends joined by flat sides.",
+    definitionEs: "Un sólido en 3-D con dos extremos idénticos unidos por lados planos.",
+  },
+  {
+    term: "pyramid",
+    termEs: "pirámide",
+    definition: "A 3-D solid with one base whose sides are triangles meeting at a point.",
+    definitionEs:
+      "Un sólido en 3-D con una base cuyos lados son triángulos que se unen en un punto.",
+  },
+  {
+    term: "net",
+    termEs: "plantilla",
+    definition: "A flat pattern that folds up into a 3-D solid.",
+    definitionEs: "Un patrón plano que se dobla para formar un sólido en 3-D.",
+  },
+  {
+    term: "vertex",
+    termEs: "vértice",
+    definition: "A corner point where sides or edges meet.",
+    definitionEs: "Un punto de esquina donde se juntan lados o aristas.",
+  },
+  {
+    term: "edge",
+    termEs: "arista",
+    definition: "The line where two flat sides of a solid meet.",
+    definitionEs: "La línea donde se juntan dos caras planas de un sólido.",
+  },
   // — statistics —
   {
     term: "median",
@@ -296,6 +526,55 @@ export const MATH_GLOSSARY = [
     definitionEs:
       "Una forma de recordar cómo dividir entre una fracción: mantén la primera fracción, cambia ÷ por ×, e invierte la segunda fracción.",
     visual: "3/4 ÷ 2/5 becomes 3/4 × 5/2.",
+  },
+  {
+    term: "data",
+    termEs: "datos",
+    definition: "The numbers or answers you collect to study a question.",
+    definitionEs: "Los números o respuestas que reúnes para estudiar una pregunta.",
+  },
+  {
+    term: "histogram",
+    termEs: "histograma",
+    definition: "A bar graph that shows how many values fall in each equal-size interval.",
+    definitionEs: "Una gráfica de barras que muestra cuántos valores caen en cada intervalo igual.",
+  },
+  {
+    term: "box plot",
+    termEs: "diagrama de caja",
+    definition: "A graph that shows a data set split into four equal parts by its quartiles.",
+    definitionEs: "Una gráfica que muestra un conjunto de datos dividido en cuatro partes iguales.",
+  },
+  {
+    term: "dot plot",
+    termEs: "diagrama de puntos",
+    definition: "A graph that stacks one dot above the number line for each value.",
+    definitionEs: "Una gráfica que apila un punto sobre la recta numérica por cada valor.",
+  },
+  {
+    term: "quartile",
+    termEs: "cuartil",
+    definition: "One of the three values that cut ordered data into four equal groups.",
+    definitionEs:
+      "Uno de los tres valores que dividen los datos ordenados en cuatro grupos iguales.",
+  },
+  {
+    term: "frequency",
+    termEs: "frecuencia",
+    definition: "How many times a value shows up in the data.",
+    definitionEs: "Cuántas veces aparece un valor en los datos.",
+  },
+  {
+    term: "distribution",
+    termEs: "distribución",
+    definition: "The overall shape of the data — where it clumps up and where it spreads out.",
+    definitionEs: "La forma general de los datos — dónde se agrupan y dónde se dispersan.",
+  },
+  {
+    term: "cluster",
+    termEs: "agrupación",
+    definition: "A group of data values bunched close together.",
+    definitionEs: "Un grupo de valores de datos muy juntos.",
   },
   // — two-word math terms —
   // Registered so the WHOLE phrase underlines as one definition+image popup.

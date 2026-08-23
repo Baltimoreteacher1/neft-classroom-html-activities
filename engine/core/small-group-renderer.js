@@ -2,6 +2,7 @@
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 
+import { divisionStepFigures } from "./division-walk-figure.js";
 import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { createGoDeeper } from "./go-deeper.js";
 import { observeContentImageZoom } from "./image-zoom.js";
@@ -94,6 +95,40 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
   // One visualizer per stage so factor-tree steps accumulate into a single
   // growing tree (each step redraws the whole tree, newest branch highlighted).
   const visualFor = visualMode ? createBuildVisualizer() : null;
+  // When the stage narrates the standard long-division algorithm, each line
+  // also gets a snapshot of the VERTICAL tableau as it stands after that move —
+  // quotient above the bar, product and difference in their columns. Reading
+  // "63 × 3 = 189" without seeing where the 189 lands under the bracket is the
+  // whole difficulty of the algorithm, and the vertical layout is how these
+  // students were taught it (Joel, 2026-08-23). The full lesson's Learn It
+  // panel has drawn this since it shipped; the small groups — the students who
+  // need the model MOST — were the only surface that never got it.
+  //
+  // divisionStepFigures draws nothing unless every snapshot's numbers are the
+  // ones the authored line itself states, so a lesson it cannot verify keeps
+  // exactly the rendering it has today.
+  const divFigs = (() => {
+    try {
+      return divisionStepFigures(lines) || [];
+    } catch (_) {
+      return [];
+    }
+  })();
+  // The tableau stays on screen once the walk starts: a step that states no new
+  // move ("set it up the tall way", "now I repeat the cycle") re-shows the most
+  // recent snapshot rather than blinking the model out and back. It stops after
+  // the last move, so the closing "I check by multiplying" lines are unchanged.
+  const lastDivFig = divFigs.reduce((last, svg, i) => (svg ? i : last), -1);
+  const divisionFigureAt = (index) => {
+    if (index > lastDivFig) return null;
+    let svg = divFigs[index];
+    for (let i = index; !svg && i >= 0; i--) svg = divFigs[i];
+    if (!svg) return null;
+    const figure = el("figure", "sg-step-visual sg-divfig");
+    figure.innerHTML = svg;
+    figure.appendChild(el("figcaption", "sg-divfig-cap", "The division so far"));
+    return figure;
+  };
   // Level 2 gets the same verified models, but only AFTER committing to its own
   // thinking — a picture handed over up front is a giveaway, a picture used to
   // check your own reasoning is not. Support tiers see it open.
@@ -140,7 +175,9 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
         item.querySelector(".tick").textContent = "✓";
         if (++checked >= lines.length) finish();
       };
-      const visual = presentVisual(visualFor ? visualFor(line) : null);
+      const visual = presentVisual(
+        divisionFigureAt(list.children.length) || (visualFor ? visualFor(line) : null),
+      );
       if (visual) {
         const wrap = el("div", "sg-checkstep-wrap");
         wrap.append(item, visual);
@@ -171,7 +208,13 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
     } else {
       body.appendChild(el("span", null, esc(line)));
     }
-    if (visualFor) {
+    // The vertical tableau is the canonical model for a long-division step, so
+    // it wins over the generic relation visual for that line.
+    const tableau = divisionFigureAt(number - 1);
+    if (tableau) {
+      const shown = presentVisual(tableau);
+      if (shown) body.appendChild(shown);
+    } else if (visualFor) {
       // For "think first, then reveal" wedo lines, the parenthetical answer
       // holds the math — model the full authored line so the picture matches.
       const visual = presentVisual(visualFor(reveal ? `${reveal[1]} ${reveal[2]}` : line));

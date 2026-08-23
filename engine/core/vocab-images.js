@@ -274,6 +274,10 @@ const SYNONYMS = {
   // diagram that never shows a place. It now has its own chart (place-value.svg);
   // the plural is mapped because lessons author both spellings.
   "place-values": "place-value",
+  // Two shared-glossary words that resolved only to a generic category tile.
+  digit: "place-value",
+  digits: "place-value",
+  "least-common-denominator": "least-common-multiple",
   "rational-number": "number-line",
 
   "negative-integer": "negative",
@@ -306,6 +310,7 @@ const SYNONYMS = {
   apex: "pyramid",
   pyramid: "pyramid",
   "triangular-prism": "rectangular-prism",
+  prism: "rectangular-prism",
   "regular-polygon": "regular-polygon",
   "two-dimensional": "square-unit",
   composite: "composite-figure",
@@ -341,6 +346,7 @@ const SYNONYMS = {
   gap: "histogram",
   symmetry: "symmetric",
   "statistical-question": "data",
+  "dot-plot": "data",
   survey: "data",
   graph: "histogram",
 
@@ -385,6 +391,23 @@ const SYNONYMS = {
 
   product: "product",
   multiply: "multiply",
+  // The OPERATION NAMES a student reads in prose ("division", "multiplication",
+  // "addition", "subtraction") had no slug of their own, so every one of them
+  // fell through to the generic cat-number "#" tile. Each now points at the
+  // picture of the operation it names.
+  multiplication: "multiply",
+  addition: "add",
+  subtraction: "subtract",
+  division: "divide",
+  // The standard algorithm and its fourth step have drawn art of their own.
+  algorithm: "concept-long-division",
+  "standard-algorithm": "concept-long-division",
+  "long-division": "concept-long-division",
+  "division-algorithm": "concept-long-division",
+  "bring-down": "concept-bring-down",
+  // Regrouping is a place-value move, so it shows the place-value chart.
+  regroup: "place-value",
+  regrouping: "place-value",
   divide: "divide",
   dividend: "dividend",
   divisor: "divisor",
@@ -475,6 +498,11 @@ export function resolveVocabFallback(term) {
 // Slugs that have dedicated SVGs but are referenced only via the synonym map.
 const EXTRA_DEDICATED = new Set([
   "multi-digit",
+  // Concept tiles that the shared math glossary points at, so words a student
+  // meets in prose ("long division", "algorithm", "bring down") open a picture
+  // of the actual procedure instead of the generic "#" number tile.
+  "concept-long-division",
+  "concept-bring-down",
   // Drawn art of its own: the point moving one place in BOTH numbers, then the
   // whole-number division. Registering it here is also what tells the context
   // -image generator this term already has a picture, so it does not write a
