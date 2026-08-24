@@ -14,9 +14,14 @@
  * the existing `answer-key` substring in `isTeacherSurface()`, so Basic Auth
  * gates it without editing the five pinned auth files.
  *
- * This gate asserts:
- *   1. student `worksheet.html` does not contain key markup;
- *   2. a matching `worksheet-answer-key.html` exists and does contain keys;
+ * The small-group Practice Set (`practice.html` / `practice-answer-key.html`,
+ * scripts/generate-sg-practice.mjs) is split on exactly the same seam and for
+ * exactly the same reason, so it is swept by the same rules rather than by a
+ * second gate that could disagree with this one.
+ *
+ * This gate asserts, for BOTH page families:
+ *   1. the student page does not contain key markup;
+ *   2. a matching `*-answer-key.html` exists and does contain keys;
  *   3. the key file is marked `data-support-audience="teacher"`.
  *
  * CSS class *definitions* (`.ws-correct{`) on the student sheet are not a leak.
@@ -78,33 +83,46 @@ const dirs = readdirSync(LESSONS, { withFileTypes: true })
   .map((d) => d.name)
   .sort();
 
+/** The page families split into a student sheet and a teacher key. */
+const FAMILIES = [
+  { student: "worksheet.html", key: "worksheet-answer-key.html" },
+  { student: "practice.html", key: "practice-answer-key.html" },
+];
+
 const findings = [];
-let studentPages = 0;
+const studentPages = new Map(FAMILIES.map((f) => [f.student, 0]));
 let keyPages = 0;
 for (const id of dirs) {
-  const student = join(LESSONS, id, "worksheet.html");
-  if (!existsSync(student)) continue;
-  studentPages++;
-  const html = readFileSync(student, "utf8");
-  const leaks = studentKeyLeaks(html);
-  if (leaks.length) {
-    findings.push(`lessons/${id}/worksheet.html inlines answer keys (${leaks.join(", ")})`);
-  }
-  const keyFile = join(LESSONS, id, "worksheet-answer-key.html");
-  if (!existsSync(keyFile)) {
-    findings.push(`lessons/${id}/worksheet.html has no sibling worksheet-answer-key.html`);
-    continue;
-  }
-  keyPages++;
-  const keyHtml = readFileSync(keyFile, "utf8");
-  if (!isTeacherKeyPage(keyHtml)) {
-    findings.push(`lessons/${id}/worksheet-answer-key.html is missing teacher-audience key markup`);
+  for (const family of FAMILIES) {
+    const student = join(LESSONS, id, family.student);
+    if (!existsSync(student)) continue;
+    studentPages.set(family.student, studentPages.get(family.student) + 1);
+    const html = readFileSync(student, "utf8");
+    const leaks = studentKeyLeaks(html);
+    if (leaks.length) {
+      findings.push(`lessons/${id}/${family.student} inlines answer keys (${leaks.join(", ")})`);
+    }
+    const keyFile = join(LESSONS, id, family.key);
+    if (!existsSync(keyFile)) {
+      findings.push(`lessons/${id}/${family.student} has no sibling ${family.key}`);
+      continue;
+    }
+    keyPages++;
+    const keyHtml = readFileSync(keyFile, "utf8");
+    if (!isTeacherKeyPage(keyHtml)) {
+      findings.push(`lessons/${id}/${family.key} is missing teacher-audience key markup`);
+    }
   }
 }
 
-if (studentPages === 0) {
-  console.error("validate-worksheet-audience FAILED: found zero worksheet.html files");
-  process.exit(1);
+// A sweep that finds nothing has verified nothing — and it finds nothing the
+// moment a generator's output moves or is renamed, which is precisely when the
+// leak this gate exists for becomes possible again.
+for (const [page, count] of studentPages) {
+  if (count === 0) {
+    console.error(`validate-worksheet-audience FAILED: found zero ${page} files`);
+    process.exit(1);
+  }
 }
 
 if (findings.length) {
@@ -114,6 +132,9 @@ if (findings.length) {
   process.exit(1);
 }
 
+const swept = [...studentPages.values()].reduce((a, b) => a + b, 0);
 console.log(
-  `✓ worksheet-audience: ${studentPages} student sheets have no inlined keys; ${keyPages} teacher key pages gated by filename.`,
+  `✓ worksheet-audience: ${swept} student sheets have no inlined keys ` +
+    `(${[...studentPages].map(([p, n]) => `${n} ${p}`).join(", ")}); ` +
+    `${keyPages} teacher key pages gated by filename.`,
 );

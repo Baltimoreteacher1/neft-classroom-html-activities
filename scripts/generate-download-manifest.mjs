@@ -147,6 +147,7 @@ const LINK_RULES = [
   [/homework\.html$/i, /homework/i, "homework"],
   [/handout\.html$/i, /handout/i, "handout"],
   [/worksheet\.html$/i, /worksheet/i, "small-group-worksheet"],
+  [/\/practice\.html$/i, /practice set/i, "small-group-practice"],
   // These three are decided by href alone. Matching their labels as well used
   // to file the unit-level "Small-Group Studio" tile as a small-group LESSON.
   [/\/lessons\/\d+-\d+-catchup\/?$/i, null, "catchup-lesson"],
@@ -578,6 +579,7 @@ function main() {
       if (isSmallGroup || isCatchUp) {
         for (const [rel, type] of [
           [`/lessons/${pl.id}/worksheet.html`, "small-group-worksheet"],
+          [`/lessons/${pl.id}/practice.html`, "small-group-practice"],
           [`/lessons/${pl.id}/homework.docx`, "small-group-homework"],
         ]) {
           if (fileFor(rel)) {

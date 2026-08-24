@@ -55,6 +55,8 @@ const PAGE_FILES = new Set([
   "homework.html",
   "worksheet.html",
   "worksheet-answer-key.html",
+  "practice.html",
+  "practice-answer-key.html",
   "handout.html",
 ]);
 

@@ -50,6 +50,12 @@ export const TYPES = [
     folder: "Small-Group",
   },
   {
+    id: "small-group-practice",
+    label: "Small-Group Practice Set",
+    group: "worksheets",
+    folder: "Small-Group",
+  },
+  {
     id: "small-group-homework",
     label: "Small-Group Homework",
     group: "worksheets",
@@ -142,6 +148,7 @@ export const PRESETS = [
       "activity-pack",
       "sub-plan",
       "small-group-worksheet",
+      "small-group-practice",
       "small-group-homework",
     ],
   },
@@ -152,6 +159,7 @@ export const PRESETS = [
     types: [
       "small-group-lesson",
       "small-group-worksheet",
+      "small-group-practice",
       "small-group-homework",
       "catchup-lesson",
     ],
@@ -181,6 +189,7 @@ export const SCORMABLE_TYPES = new Set([
   "handout",
   "guided-notes",
   "small-group-worksheet",
+  "small-group-practice",
   "unit-game",
   "arcade-game",
   "project",

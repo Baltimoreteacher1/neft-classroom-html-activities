@@ -74,7 +74,8 @@ assert.ok(
 
 // A gate that has quietly stopped firing and a gate watching a clean tree print
 // the same line, so the detector is run against the exact string that shipped.
-const SHIPPED = 'shell.appendChild(el("div", "sg-div-bracket", `${esc(divisor)} ⟌ ${esc(dividend)}`));';
+const SHIPPED =
+  'shell.appendChild(el("div", "sg-div-bracket", `${esc(divisor)} ⟌ ${esc(dividend)}`));';
 for (const entry of BANNED) {
   assert.ok(
     entry.char.length === 1,

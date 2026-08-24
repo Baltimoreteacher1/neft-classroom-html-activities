@@ -67,6 +67,7 @@ import { fileURLToPath } from "node:url";
 
 const GENERATORS = [
   ["worksheet.html, worksheet-answer-key.html", "../scripts/generate-worksheets.mjs", []],
+  ["practice.html, practice-answer-key.html", "../scripts/generate-sg-practice.mjs", []],
   ["handout.html", "../scripts/generate-handout-html.mjs", []],
   [
     "notes.html, notes-teacher.html, learn.html, vocab.html",
