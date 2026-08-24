@@ -832,6 +832,20 @@ function typedLanes(item, steps, events) {
 // digit of the dividend they enter how many times the divisor goes in, the
 // product to subtract, and what is left, then bring down the next digit — instead
 // of only typing a final quotient + remainder. Each blank is a checkable cell.
+// The long-division bracket, drawn with borders: the divisor sits outside and
+// the dividend sits under a rule that starts at the curve. The two numbers are
+// separate spans so the rule can cover the dividend alone.
+function divisionHouse(divisor, dividend) {
+  const wrap = el("div", "sg-div-bracket");
+  wrap.appendChild(el("span", "sg-div-divisor", esc(divisor)));
+  wrap.appendChild(el("span", "sg-div-house", esc(dividend)));
+  // Read as one expression: the split spans would otherwise be announced as two
+  // loose numbers with no operation between them.
+  wrap.setAttribute("role", "img");
+  wrap.setAttribute("aria-label", `${dividend} divided by ${divisor}`);
+  return wrap;
+}
+
 function typedDivision(item, steps, events) {
   const [dividend, divisor] = (item.visual?.values || []).map(Number);
   if (!dividend || !divisor) return null;
@@ -839,9 +853,20 @@ function typedDivision(item, steps, events) {
   const digits = String(dividend).split("");
   const stepData = [];
   let carry = 0;
+  // Skip the leading zero quotient digits. 468 ÷ 6 taught on paper opens at
+  // "6 into 46", not "6 into 4, zero times" — and every worksheet problem in
+  // this unit starts that way, so a step that only records a zero made the
+  // model disagree with the page in the student's hand. The skipped digits are
+  // still consumed: they roll into the first working number.
+  let started = false;
   for (let i = 0; i < digits.length; i++) {
     const work = carry * 10 + Number(digits[i]);
     const q = Math.floor(work / divisor);
+    if (!started && q === 0 && i < digits.length - 1) {
+      carry = work;
+      continue;
+    }
+    started = true;
     const prod = q * divisor;
     const diff = work - prod;
     stepData.push({ work, q, prod, diff, bringNext: digits[i + 1] ?? null });
@@ -855,7 +880,12 @@ function typedDivision(item, steps, events) {
     "For each step: how many times does the divisor go in, multiply, subtract, then bring down the next digit.",
   );
   const status = modelStatus();
-  shell.appendChild(el("div", "sg-div-bracket", `${esc(divisor)} ⟌ ${esc(dividend)}`));
+  // The long-division house is DRAWN, not typed. U+27CC (⟌) is absent from
+  // Outfit and from the mono fallbacks, so on most student devices the symbol
+  // came out as a hairline hook or a tofu box — and the old rule ran across the
+  // whole line, barring the divisor as well as the dividend. Borders give every
+  // device the same bracket, with the bar over the dividend only.
+  shell.appendChild(divisionHouse(divisor, dividend));
 
   const ledger = el("div", "sg-div-ledger");
   ledger.style.cssText = "display:flex; flex-direction:column; gap:10px; margin:8px 0;";

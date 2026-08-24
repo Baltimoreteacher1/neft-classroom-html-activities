@@ -207,8 +207,8 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
         : ` <button type="button" class="ldl-shiftgo">Move the point ${esc(places)} →</button>`;
     shiftBar.innerHTML = shiftDone
       ? `<span class="ldl-shift-done">✓ Point moved ${esc(places)}:</span> ` +
-        `<b>${esc(plan.divisorText)} ⟌ ${esc(plan.dividendText)}</b> → ` +
-        `<b class="ldl-shift-new">${esc(plan.workingDivisorText)} ⟌ ${esc(plan.workingDividendText)}</b>` +
+        `<b>${esc(plan.dividendText)} ÷ ${esc(plan.divisorText)}</b> → ` +
+        `<b class="ldl-shift-new">${esc(plan.workingDividendText)} ÷ ${esc(plan.workingDivisorText)}</b>` +
         ` — now it is a whole-number divisor, so the cycle works exactly the same.`
       : `<b>Step 0 — MOVE THE POINT.</b> The divisor <b>${esc(plan.divisorText)}</b> is not a whole number. ` +
         `Slide the point ${esc(places)} to the right in <em>both</em> numbers, then divide as usual.${button}`;

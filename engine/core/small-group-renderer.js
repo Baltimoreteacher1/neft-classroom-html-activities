@@ -540,7 +540,9 @@ const MATH_MOVE_COPY = {
 };
 
 function mathMoveOfTheDay(config) {
-  const exploreType = config.explore?.type;
+  // A lesson that opted its hands-on lab out (`explore.lab: false`) must not
+  // advertise that lab's move — the chip would name a table nobody can reach.
+  const exploreType = config.explore?.lab === false ? null : config.explore?.type;
   const diagramKind = config.connect?.diagram?.kind || config.explore?.diagram?.kind || "";
   const key =
     (exploreType && MATH_MOVE_COPY[exploreType] && exploreType) ||

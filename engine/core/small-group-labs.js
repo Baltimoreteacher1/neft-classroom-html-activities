@@ -243,6 +243,12 @@ function gateUntilSolved(scope, gated) {
 
 export function createExploreLab(config, variant, { number, store, events, onDone }) {
   const explore = config.explore;
+  // `explore.lab: false` is the authored opt-out. `explore` itself is a
+  // required config key (validate:small-groups), so a lesson whose hands-on lab
+  // belongs to a different standard cannot simply drop the block — it says so
+  // here, and the rest of the explore data (diagram, Spanish, discourse) stays
+  // available to the surfaces that read it.
+  if (explore?.lab === false) return null;
   const loader = explore && EXPLORE_LOADERS[explore.type];
   if (!loader) return null;
 

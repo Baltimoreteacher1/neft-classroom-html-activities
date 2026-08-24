@@ -758,7 +758,9 @@ export function injectSmallGroupStyles(accent) {
     .sg-tree-final{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:9px;margin-top:14px;padding-top:12px;border-top:2px dashed var(--sg-line)}
     .sg-tree-final .sg-model-cell{width:auto;min-width:150px;border-radius:12px;text-align:center}
     .sg-div-top{display:flex;justify-content:center;margin-left:56px}
-    .sg-div-bracket{text-align:center;color:var(--sg-ink);font-family:var(--sg-mono);font-size:38px;font-weight:700;border-top:4px solid var(--sg-rule);width:max-content;margin:2px auto 8px;padding:2px 14px}
+    .sg-div-bracket{display:flex;align-items:stretch;justify-content:center;color:var(--sg-ink);font-family:var(--sg-mono);font-size:38px;font-weight:700;width:max-content;margin:6px auto 10px;letter-spacing:.02em}
+    .sg-div-divisor{padding:6px 6px 6px 0;line-height:1.1}
+    .sg-div-house{padding:6px 16px 6px 14px;line-height:1.1;border-top:4px solid var(--sg-rule);border-left:4px solid var(--sg-rule);border-top-left-radius:70% 22px}
     .sg-model-table{display:grid;grid-template-columns:repeat(2,minmax(120px,220px));gap:8px;justify-content:center;margin:8px 0}
     .sg-model-tcell{display:grid;place-items:center;min-height:54px;padding:8px;border:2px solid var(--sg);border-radius:11px;background:var(--sg-card);color:var(--sg-ink);font-size:19px;font-weight:700}
     .sg-model-tcell.head{background:var(--sg);color:#fff;font-family:var(--sg-display)}
