@@ -37,7 +37,7 @@ t("every linkable term exists in VOCAB_DB", () => {
 });
 
 // ---------------------------------------------------------------------------
-// The corruption class `scripts/fix_vocab_attributes.py` was written to clean
+// The corruption class the deleted `fix_vocab_attributes.py` was written to clean
 // up: the old regex pass rewrote text INSIDE attributes.
 // ---------------------------------------------------------------------------
 t("never rewrites inside an attribute value", () => {

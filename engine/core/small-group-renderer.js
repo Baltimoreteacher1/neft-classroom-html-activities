@@ -2,6 +2,7 @@
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 
+import { carriedDivisionFigures } from "./division-walk-figure.js";
 import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { createGoDeeper } from "./go-deeper.js";
 import { observeContentImageZoom } from "./image-zoom.js";
@@ -91,9 +92,42 @@ import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.j
 function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
   const lines = stage?.lines || [];
   if (!lines.length) return null;
+  // The worked example's Spanish, as a parallel array — the same shape as
+  // stemEs / hintsEs / choicesEs, filled from data/es-translations by
+  // tools/apply-es-concept-intro.mjs. ALL-OR-NOTHING on purpose: a partly
+  // translated walkthrough would put a Spanish step between two English ones,
+  // which reads as a broken page rather than as support. The lane switch and
+  // the stacking are bi()'s, so a student in English mode sees no change.
+  const esLines =
+    Array.isArray(stage?.linesEs) && stage.linesEs.length === lines.length ? stage.linesEs : null;
+  const lineHtml = (index, text) => bi(text, esLines ? esLines[index] : "");
   // One visualizer per stage so factor-tree steps accumulate into a single
   // growing tree (each step redraws the whole tree, newest branch highlighted).
   const visualFor = visualMode ? createBuildVisualizer() : null;
+  // When the stage narrates the standard long-division algorithm, each line
+  // also gets a snapshot of the VERTICAL tableau as it stands after that move —
+  // quotient above the bar, product and difference in their columns. Reading
+  // "63 × 3 = 189" without seeing where the 189 lands under the bracket is the
+  // whole difficulty of the algorithm, and the vertical layout is how these
+  // students were taught it (Joel, 2026-08-23). The full lesson's Learn It
+  // panel has drawn this since it shipped; the small groups — the students who
+  // need the model MOST — were the only surface that never got it.
+  //
+  // divisionStepFigures draws nothing unless every snapshot's numbers are the
+  // ones the authored line itself states, so a lesson it cannot verify keeps
+  // exactly the rendering it has today.
+  // One shared rule, in division-walk-figure.js: the tableau stays on screen
+  // once the walk starts, and carries one step past the last move so the line
+  // that STATES THE ANSWER still has a picture. See carriedDivisionFigures.
+  const divFigs = carriedDivisionFigures(lines);
+  const divisionFigureAt = (index) => {
+    const svg = divFigs[index];
+    if (!svg) return null;
+    const figure = el("figure", "sg-step-visual sg-divfig");
+    figure.innerHTML = svg;
+    figure.appendChild(el("figcaption", "sg-divfig-cap", "The division so far"));
+    return figure;
+  };
   // Level 2 gets the same verified models, but only AFTER committing to its own
   // thinking — a picture handed over up front is a giveaway, a picture used to
   // check your own reasoning is not. Support tiers see it open.
@@ -125,11 +159,13 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
 
   if (kind === "youdo") {
     let checked = 0;
-    lines.forEach((line) => {
+    lines.forEach((line, index) => {
       const item = el(
         "button",
         "sg-checkstep",
-        `<span class="tick">•</span><span>${esc(line)}</span>`,
+        // The loop's own index, never lines.indexOf(line): two identical
+        // check-off lines would both resolve to the first one's translation.
+        `<span class="tick">•</span><span>${lineHtml(index, line)}</span>`,
       );
       item.type = "button";
       item.setAttribute("aria-pressed", "false");
@@ -140,7 +176,9 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
         item.querySelector(".tick").textContent = "✓";
         if (++checked >= lines.length) finish();
       };
-      const visual = presentVisual(visualFor ? visualFor(line) : null);
+      const visual = presentVisual(
+        divisionFigureAt(list.children.length) || (visualFor ? visualFor(line) : null),
+      );
       if (visual) {
         const wrap = el("div", "sg-checkstep-wrap");
         wrap.append(item, visual);
@@ -153,15 +191,21 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
   }
 
   const renderLine = (line, number) => {
+    const esLine = esLines ? esLines[number - 1] : "";
     const step = el("div", "sg-buildstep");
     step.appendChild(el("span", "sn", String(number)));
     const body = el("div", "sg-buildstep-body");
     const reveal = kind === "wedo" ? String(line).match(/^(.*?)\s*\(([^()]{2,})\)\s*$/) : null;
     if (reveal) {
-      body.appendChild(el("span", null, esc(reveal[1])));
+      // A "think first, then reveal" line splits into prompt + answer. The
+      // Spanish sibling is split on the SAME parenthetical so the two lanes
+      // hide and reveal together; a Spanish line without one keeps its prompt
+      // whole rather than guessing where the answer starts.
+      const esReveal = esLine ? String(esLine).match(/^(.*?)\s*\(([^()]{2,})\)\s*$/) : null;
+      body.appendChild(el("span", null, bi(reveal[1], esReveal ? esReveal[1] : "")));
       const chip = el("button", "sg-reveal", "💭 Think first, then reveal");
       chip.type = "button";
-      const answer = el("span", "sg-reveal-answer", esc(reveal[2]));
+      const answer = el("span", "sg-reveal-answer", bi(reveal[2], esReveal ? esReveal[2] : ""));
       answer.hidden = true;
       chip.onclick = () => {
         answer.hidden = false;
@@ -169,9 +213,15 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
       };
       body.append(chip, answer);
     } else {
-      body.appendChild(el("span", null, esc(line)));
+      body.appendChild(el("span", null, bi(line, esLine)));
     }
-    if (visualFor) {
+    // The vertical tableau is the canonical model for a long-division step, so
+    // it wins over the generic relation visual for that line.
+    const tableau = divisionFigureAt(number - 1);
+    if (tableau) {
+      const shown = presentVisual(tableau);
+      if (shown) body.appendChild(shown);
+    } else if (visualFor) {
       // For "think first, then reveal" wedo lines, the parenthetical answer
       // holds the math — model the full authored line so the picture matches.
       const visual = presentVisual(visualFor(reveal ? `${reveal[1]} ${reveal[2]}` : line));
@@ -249,7 +299,8 @@ function conceptSection(config, onDone, voice, variant) {
   });
 
   // After the work: brief framing, then name the idea.
-  if (concept.intro) section.appendChild(el("p", "sg-build-intro", esc(concept.intro)));
+  if (concept.intro)
+    section.appendChild(el("p", "sg-build-intro", bi(concept.intro, concept.introEs)));
   if (concept.keyIdea)
     section.appendChild(
       el("div", "keyidea", `<span class="lab">💡 The big idea</span>${esc(concept.keyIdea)}`),
@@ -387,11 +438,12 @@ function hero(config, accent, voice) {
   const badge = config.launch?.badge || `Small Group · ${accent.name}`;
   copy.appendChild(el("div", null, `<span class="sg-kicker">${esc(badge)}</span>`));
   copy.appendChild(el("h1", null, esc(studentTitle(config, badge))));
+  let more = copy.querySelector(".sg-obj-more");
   if (config.contentObjective) {
     // One crisp kid-facing line up top; full content + language objectives fold
     // into a collapsible detail so the hero stays readable for Level 1 students.
     copy.appendChild(el("p", "sg-obj", `Today: ${esc(coreObjective(config.contentObjective))}`));
-    const more = el("details", "sg-obj-more");
+    more = el("details", "sg-obj-more");
     more.appendChild(el("summary", null, "Full objectives"));
     more.appendChild(el("p", "sg-obj-full", esc(studentVoice(config.contentObjective))));
     if (config.languageObjective)
@@ -408,7 +460,12 @@ function hero(config, accent, voice) {
   copy.appendChild(chips);
   const sceneName = themeDisplayName(config.theme);
   if (sceneName) {
-    copy.appendChild(el("div", "sg-hero-scene-chip", `Scene · ${esc(sceneName)}`));
+    const sceneChip = el("div", "sg-hero-scene-chip", `Scene · ${esc(sceneName)}`);
+    if (more) {
+      more.appendChild(sceneChip);
+    } else {
+      copy.appendChild(sceneChip);
+    }
   }
   const mathMove = mathMoveOfTheDay(config);
   const mark = el("div", "sg-hero-mark sg-scene-enter");
@@ -1099,17 +1156,20 @@ function renderStudio(config) {
   ];
 
   const heroNode = hero(config, accent, voice);
-  // The table chip sits in the hero on purpose: a group that discovers the room
-  // halfway through has already answered everything alone, and the reveal only
-  // teaches anything if nobody has spoken yet.
-  heroNode.appendChild(
-    createRoomChip(room, {
-      onJoined: () => {
-        // Re-render the talk section's consensus lab against the new membership.
-        window.location.reload();
-      },
-    }),
-  );
+  // The table chip sits behind the Full objectives disclosure so the masthead
+  // stays compact and the first task is immediately visible above the fold.
+  const more = heroNode.querySelector(".sg-obj-more");
+  const roomChip = createRoomChip(room, {
+    onJoined: () => {
+      // Re-render the talk section's consensus lab against the new membership.
+      window.location.reload();
+    },
+  });
+  if (more) {
+    more.appendChild(roomChip);
+  } else {
+    heroNode.appendChild(roomChip);
+  }
   app.appendChild(heroNode);
   // Publisher-grade standards display: resolve the bare code to its full MCCRS
   // wording (best-effort) and fold it into the hero's objectives detail, so
@@ -1249,8 +1309,17 @@ function renderStudio(config) {
       const worksheet = el("a", "btn ghost", "📄 Worksheet + keys (A/B)");
       worksheet.href = "worksheet.html";
       worksheet.rel = "nofollow";
+      // The facilitation plan shipped for every studio but nothing ever linked
+      // it, so in practice it did not exist. It opens in its own tab on purpose:
+      // this is the sheet the teacher prints and holds, and presenting blacks
+      // out every teacher-only panel on the shared screen — the coaching has to
+      // live somewhere the group cannot read.
+      const plan = el("a", "btn ghost", "🧭 Small-group plan (print)");
+      plan.href = `/teacher-small-group/${encodeURIComponent(config.lessonId)}/plan`;
+      plan.target = "_blank";
+      plan.rel = "noopener nofollow";
       foot.prepend(back);
-      foot.append(worksheet, scorm);
+      foot.append(plan, worksheet, scorm);
     },
   });
 

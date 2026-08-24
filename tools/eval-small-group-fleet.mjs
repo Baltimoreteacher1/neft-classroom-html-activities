@@ -166,6 +166,18 @@ function selftest() {
       { stem: "Pick one.", choices: ["a", "b", "c"], choiceFeedback: ["x"], correctIndex: 0 },
     ],
     [
+      "division-workspace-off-task",
+      {
+        // The 1-1 shape, moved into a field the extractor still reads: the
+        // workspace mounts, but nothing in the task asks for division. (An
+        // estimation wording would be suppressed by the extractor itself —
+        // that guard has its own coverage in the engine test.)
+        stem: "Explain your reasoning to a partner.",
+        work: "936 ÷ 4",
+        answer: "234",
+      },
+    ],
+    [
       "negative-feedback-on-correct-choice",
       {
         stem: "Pick one.",

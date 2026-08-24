@@ -22,7 +22,7 @@ export function renderFractionBars(
   // activity. Fail gracefully on malformed authoring.
   if (!target || target.denominator == null || target.numerator == null) {
     const warn = document.createElement("p");
-    warn.style.cssText = "font-weight:600;";
+    warn.style.cssText = "font-weight:500;";
     warn.textContent = instructions || "This fraction task is unavailable.";
     container.append(warn);
     return;
@@ -33,7 +33,7 @@ export function renderFractionBars(
 
   if (instructions) {
     const p = document.createElement("p");
-    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = instructions;
     wrapper.append(p);
   }
@@ -56,13 +56,13 @@ export function renderFractionBars(
       "display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-2);";
 
     const title = document.createElement("span");
-    title.style.cssText = "font-weight:800; color:var(--navy);";
+    title.style.cssText = "font-weight:700; color:var(--navy);";
     title.textContent = name;
     head.append(title);
 
     const readout = document.createElement("span");
     readout.className = "fb-readout";
-    readout.style.cssText = "font-weight:700; color:var(--teal-ink);";
+    readout.style.cssText = "font-weight:600; color:var(--teal-ink);";
     const readoutNum = document.createElement("span");
     readoutNum.className = "fb-readout-num";
     const readoutSep = document.createElement("span");
@@ -274,7 +274,7 @@ function ctrlBtn(label, aria) {
   b.textContent = label;
   b.setAttribute("aria-label", aria);
   b.style.cssText =
-    "width:32px; height:32px; border-radius:var(--radius-sm); border:2px solid var(--navy); background:var(--card); font-weight:900; cursor:pointer; color:var(--navy);";
+    "width:32px; height:32px; border-radius:var(--radius-sm); border:2px solid var(--navy); background:var(--card); font-weight:800; cursor:pointer; color:var(--navy);";
   return b;
 }
 

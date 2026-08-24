@@ -72,15 +72,15 @@ function buildDialog() {
   const rows = ROWS.map(
     (r) => `
       <tr>
-        <td style="font-size:2rem; font-weight:900; color:#0f766e; text-align:center; padding:10px 12px;">${r.sym}</td>
+        <td style="font-size:2rem; font-weight:800; color:#0f766e; text-align:center; padding:10px 12px;">${r.sym}</td>
         <td style="padding:10px 12px;">
-          <div style="font-weight:800; color:#14223a;">${r.name}</div>
+          <div style="font-weight:700; color:#14223a;">${r.name}</div>
           <div style="color:#475569; font-size:0.95rem;">${r.words.join(" · ")}</div>
           <div style="color:#14223a; font-size:0.95rem; margin-top:4px;"><em>${r.example}</em></div>
         </td>
         <td style="padding:10px 12px; text-align:center;">
           ${miniLine(r.circle, r.sym === ">" || r.sym === "≥" ? "right" : "left")}
-          <div style="font-size:0.85rem; font-weight:800; color:${r.circle === "closed" ? "#0f766e" : "#b45309"};">
+          <div style="font-size:0.85rem; font-weight:700; color:${r.circle === "closed" ? "#0f766e" : "#b45309"};">
             ${r.circle === "closed" ? "closed — the number counts" : "open — the number does not count"}
           </div>
         </td>
@@ -148,7 +148,7 @@ export function mountInequalityKeyButton(host) {
   btn.textContent = "ⓘ Key";
   btn.title = "Open the inequality key — symbols, words and circles";
   btn.style.cssText =
-    "min-height:44px; padding:0 12px; font-weight:800; color:#0f766e; background:#f0fdfa; " +
+    "min-height:44px; padding:0 12px; font-weight:700; color:#0f766e; background:#f0fdfa; " +
     "border:2px solid #99f6e4; border-radius:10px; cursor:pointer;";
   btn.addEventListener("click", openInequalityReference);
   host.append(btn);

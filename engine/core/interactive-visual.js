@@ -446,7 +446,7 @@ export function mountInteractiveVisuals(root, opts) {
           note.className = "interactive-visual-error";
           note.setAttribute("role", "status");
           note.style.cssText =
-            "margin:0; padding:12px 14px; border:1px dashed rgba(0,0,0,.25); border-radius:12px; font-size:0.9rem; font-weight:600; line-height:1.5;";
+            "margin:0; padding:12px 14px; border:1px dashed rgba(0,0,0,.25); border-radius:12px; font-size:0.9rem; font-weight:500; line-height:1.5;";
           note.textContent =
             "This model could not load right now. Reload the page to try again — the rest of the lesson still works.";
           host.appendChild(note);

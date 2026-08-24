@@ -187,31 +187,31 @@ function injectStyles() {
   s.id = "rtlab-styles";
   s.textContent = `
   .rtlab{max-width:600px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
-  .rtlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.05rem;}
+  .rtlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:700;color:${C.navy};font-size:1.05rem;}
   .rtlab-hint{margin:4px 0 12px;color:${C.muted};font-size:.9rem;line-height:1.4;}
   .rtlab-controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;}
-  .rtlab-field{display:flex;flex-direction:column;gap:3px;font-size:.72rem;font-weight:700;color:${C.muted};text-transform:uppercase;}
-  .rtlab-field input{width:76px;padding:8px 10px;font-size:1.1rem;font-weight:700;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;}
+  .rtlab-field{display:flex;flex-direction:column;gap:3px;font-size:.72rem;font-weight:600;color:${C.muted};text-transform:uppercase;}
+  .rtlab-field input{width:76px;padding:8px 10px;font-size:1.1rem;font-weight:600;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;}
   .rtlab-field input:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
-  .rtlab-colon{align-self:center;padding-bottom:9px;font-weight:800;color:${C.navy};font-size:1.2rem;}
-  .rtlab-go{padding:9px 16px;font-size:.95rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
+  .rtlab-colon{align-self:center;padding-bottom:9px;font-weight:700;color:${C.navy};font-size:1.2rem;}
+  .rtlab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
   .rtlab-go:hover{filter:brightness(1.08);}
   .rtlab-go:focus-visible,.rtlab-chip:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .rtlab-presets{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;}
-  .rtlab-chip{padding:5px 12px;font-size:.9rem;font-weight:700;color:${C.navy};background:#f4f8ff;border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;}
+  .rtlab-chip{padding:5px 12px;font-size:.9rem;font-weight:600;color:${C.navy};background:#f4f8ff;border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;}
   .rtlab-chip:hover{background:#e2ecff;border-color:${C.accent};}
   .rtlab-stage{margin:14px 0 8px;padding:8px;background:#f8fbff;border:1px solid ${C.line};border-radius:14px;overflow-x:auto;}
   /* The double number line sits directly under the table it mirrors, so the
      eye can travel from column ×3 to the third pair of ticks. */
   .rtlab-dnl{display:block;width:100%;height:auto;margin-top:10px;}
   .rtlab-table{width:100%;border-collapse:collapse;font-size:.95rem;text-align:center;min-width:340px;}
-  .rtlab-table th{padding:6px 8px;font-size:.8rem;color:${C.muted};font-weight:700;}
+  .rtlab-table th{padding:6px 8px;font-size:.8rem;color:${C.muted};font-weight:600;}
   .rtlab-corner{color:${C.navy};}
-  .rtlab-rowlab{color:${C.navy};font-weight:800;}
-  .rtlab-table td{padding:7px 8px;border:1px solid ${C.line};font-weight:700;color:${C.navy};}
+  .rtlab-rowlab{color:${C.navy};font-weight:700;}
+  .rtlab-table td{padding:7px 8px;border:1px solid ${C.line};font-weight:600;color:${C.navy};}
   .rtlab-base{background:#eef4ff;color:${C.accent};}
   .rtlab-result{text-align:center;}
-  .rtlab-answer{font-family:"Outfit",system-ui,sans-serif;font-weight:900;font-size:1.2rem;color:${C.teal};}
+  .rtlab-answer{font-family:"Outfit",system-ui,sans-serif;font-weight:800;font-size:1.2rem;color:${C.teal};}
   .rtlab-explain{margin:6px auto 0;max-width:520px;color:${C.ink};font-size:.9rem;line-height:1.5;}
   `;
   document.head.appendChild(s);

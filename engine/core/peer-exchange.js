@@ -84,7 +84,7 @@ export function mountPeerExchange(host, { config, state, phaseId = 3, itemKey, p
   // ── Table membership ─────────────────────────────────────────────────────
   function paintRoom() {
     if (room.active()) {
-      roomSlot.innerHTML = `<p style="margin:0 0 var(--sp-3); font-weight:700;">
+      roomSlot.innerHTML = `<p style="margin:0 0 var(--sp-3); font-weight:600;">
         Table <code>${esc(room.code())}</code> · you are seat ${room.seat()}
       </p>`;
       writeSlot.hidden = false;
@@ -123,14 +123,14 @@ export function mountPeerExchange(host, { config, state, phaseId = 3, itemKey, p
     const saved = state?.getResponse?.(phaseId, `pe_mine_${key}`) || "";
     if (saved) {
       writeSlot.innerHTML = `
-        <p style="font-weight:700; margin:0 0 var(--sp-2);">Your explanation</p>
+        <p style="font-weight:600; margin:0 0 var(--sp-2);">Your explanation</p>
         <blockquote style="margin:0 0 var(--sp-3); padding-left:var(--sp-3); border-left:3px solid var(--teal);">${esc(saved)}</blockquote>`;
       readSlot.hidden = false;
       paintRead();
       return;
     }
     writeSlot.innerHTML = `
-      <label for="pe-mine" style="font-weight:700; display:block; margin-bottom:var(--sp-2);">
+      <label for="pe-mine" style="font-weight:600; display:block; margin-bottom:var(--sp-2);">
         ${esc(prompt || "Why does your answer work?")}
       </label>
       <textarea id="pe-mine" class="text-input pe-mine" rows="3"
@@ -181,7 +181,7 @@ export function mountPeerExchange(host, { config, state, phaseId = 3, itemKey, p
 
     const savedCritique = state?.getResponse?.(phaseId, `pe_critique_${key}`) || {};
     readSlot.innerHTML = `
-      <p style="font-weight:700; margin:var(--sp-4) 0 var(--sp-2);">Someone else at your table wrote:</p>
+      <p style="font-weight:600; margin:var(--sp-4) 0 var(--sp-2);">Someone else at your table wrote:</p>
       <blockquote style="margin:0 0 var(--sp-3); padding:var(--sp-3); background:var(--surface-alt,#f1f5f9); border-radius:8px;">${esc(res.peer)}</blockquote>
       <p style="font-size:0.85rem; color:var(--muted); margin:0 0 var(--sp-3);">
         You are not marking this right or wrong — you are saying what you make of it.
@@ -189,7 +189,7 @@ export function mountPeerExchange(host, { config, state, phaseId = 3, itemKey, p
       </p>
       ${CRITIQUE_FRAMES.map(
         (f) => `
-        <label for="pe-${f.key}" style="font-weight:700; display:block; margin-bottom:var(--sp-1);">${esc(f.label)}</label>
+        <label for="pe-${f.key}" style="font-weight:600; display:block; margin-bottom:var(--sp-1);">${esc(f.label)}</label>
         <textarea id="pe-${f.key}" data-critique="${f.key}" class="text-input" rows="2"
                   style="margin-bottom:var(--sp-3);" placeholder="${esc(f.frame)}">${esc(savedCritique[f.key] || "")}</textarea>`,
       ).join("")}`;

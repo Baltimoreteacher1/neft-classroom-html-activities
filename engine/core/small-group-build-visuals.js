@@ -106,14 +106,37 @@ function parseRelation(line) {
       return { kind: "rate", total, groups, each, money: /\$/.test(text) };
   }
 
-  // 6) Sum or difference — "150 + 12 = 162" (verified a ± b = c).
-  const addsub = text.match(/(\d+)\s*([+\-−])\s*(\d+)\s*=\s*(\d+)/);
+  // 6) Sum or difference, in EITHER direction and with decimals.
+  //
+  //   "150 + 12 = 162"    the computation, written forward
+  //   "78.5 = 70 + 8.5"   the same relationship written as a DECOMPOSITION
+  //
+  // Both were invisible before: the reader required whole numbers and the
+  // forward form only. The decomposition form is the one the small-group
+  // walkthroughs actually use when they break a number apart to make it
+  // friendlier, so the step that most wanted a part-whole bar was the step that
+  // never got one. Both are still VERIFIED — a line whose arithmetic is wrong
+  // gets no picture, because a model that disagrees with its own sentence is
+  // worse than no model.
+  const NUM = "(\\d+(?:\\.\\d+)?)";
+  const forward = text.match(new RegExp(`${NUM}\\s*([+\\-−])\\s*${NUM}\\s*=\\s*${NUM}`));
+  const reversed = text.match(new RegExp(`${NUM}\\s*=\\s*${NUM}\\s*([+\\-−])\\s*${NUM}`));
+  const addsub = forward
+    ? { a: forward[1], op: forward[2], b: forward[3], c: forward[4] }
+    : reversed
+      ? { a: reversed[2], op: reversed[3], b: reversed[4], c: reversed[1] }
+      : null;
   if (addsub) {
-    const a = Number(addsub[1]);
-    const b = Number(addsub[3]);
-    const c = Number(addsub[4]);
-    const minus = addsub[2] !== "+";
-    if ((minus ? a - b : a + b) === c) return { kind: "line", a, b, c, minus };
+    const a = Number(addsub.a);
+    const b = Number(addsub.b);
+    const c = Number(addsub.c);
+    const minus = addsub.op !== "+";
+    // Tolerance, not equality: 0.1 + 0.2 !== 0.3 in binary floating point, and
+    // a decomposition that a student would call exact must still draw.
+    const got = minus ? a - b : a + b;
+    if (Number.isFinite(got) && Math.abs(got - c) < 1e-9) {
+      return { kind: "line", a, b, c, minus };
+    }
   }
 
   // 7) Bare product with no result — "You might say 3 × 4". Only on lines with

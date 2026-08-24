@@ -133,7 +133,7 @@ export function renderVocabBuilder(container, { terms, onComplete }) {
 
   const progressText = document.createElement("div");
   progressText.style.cssText =
-    "font-size:1.05rem; font-weight:700; color:var(--navy, #1f2a44); margin-bottom:var(--sp-2);";
+    "font-size:1.05rem; font-weight:600; color:var(--navy, #1f2a44); margin-bottom:var(--sp-2);";
   wrapper.append(progressText);
 
   const progressTrack = document.createElement("div");
@@ -178,20 +178,20 @@ export function renderVocabBuilder(container, { terms, onComplete }) {
     termDisplay.style.cssText = `
       text-align:center; padding:var(--sp-5); margin-bottom:var(--sp-4);
       background:var(--navy); color:white; border-radius:var(--radius-md);
-      font-family:var(--font-display); font-size:1.4rem; font-weight:800;
+      font-family:var(--font-display); font-size:1.4rem; font-weight:700;
     `;
     termDisplay.textContent = term.term;
     if (term.termEs) {
       const es = document.createElement("div");
       es.lang = "es";
-      es.style.cssText = "font-size:1.05rem; font-weight:600; font-style:italic; margin-top:4px;";
+      es.style.cssText = "font-size:1.05rem; font-weight:500; font-style:italic; margin-top:4px;";
       es.textContent = term.termEs;
       termDisplay.append(es);
     }
     card.append(termDisplay);
 
     const prompt = document.createElement("p");
-    prompt.style.cssText = "font-weight:700; text-align:center; margin:var(--sp-3) 0;";
+    prompt.style.cssText = "font-weight:600; text-align:center; margin:var(--sp-3) 0;";
     prompt.textContent = "Choose the correct definition:";
     card.append(prompt);
 
@@ -213,7 +213,7 @@ export function renderVocabBuilder(container, { terms, onComplete }) {
         text-align:left; padding:14px 18px; border:2px solid var(--line);
         border-radius:var(--radius-md); background:white; font-size:1.05rem;
         transition:all var(--duration-fast) ease; min-height:48px; width:100%;
-        font-weight:600; cursor:pointer;
+        font-weight:500; cursor:pointer;
       `;
 
       btn.addEventListener("mouseenter", () => {
@@ -291,7 +291,7 @@ export function renderVocabBuilder(container, { terms, onComplete }) {
     table.innerHTML = `
       <thead><tr><th>Term</th><th>Definition</th></tr></thead>
       <tbody>
-        ${terms.map((t) => `<tr><td style="font-weight:700;">${escHtml(t.term)}</td><td>${escHtml(t.definition)}</td></tr>`).join("")}
+        ${terms.map((t) => `<tr><td style="font-weight:600;">${escHtml(t.term)}</td><td>${escHtml(t.definition)}</td></tr>`).join("")}
       </tbody>
     `;
     summary.append(table);

@@ -1014,11 +1014,11 @@ export const FACILITATION_BY_LESSON = {
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, divide decimals means ___ .",
+      "In this problem, dividend means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
-      "Students explain you move the decimal in the divisor to make it whole (6.3 to 63) and move the dividend the same way, naming 18.9 as the dividend and 6.3 as the divisor.",
+      "Students explain you slide the decimal point right in the divisor to make it whole (6.3 to 63) and slide the dividend's point right the same number of places, naming 18.9 as the dividend and 6.3 as the divisor.",
       "Students rewrite 18.9 ÷ 6.3 as 189 ÷ 63 = 3, explaining moving both points one place keeps the division equivalent, so 3 pods are filled.",
       "Students rewrite 22.5 ÷ 1.5 as 225 ÷ 15 = 15, so 15 hoses can be made with none left over.",
       "Students explain that a whole-number divisor lets them divide normally, and equivalent division keeps the quotient the same while removing the decimal from the divisor.",
@@ -1043,7 +1043,7 @@ export const FACILITATION_BY_LESSON = {
       "I can check my answer by ___ .",
     ],
     listenFor: [
-      "Students explain you move the decimal in the divisor to make it whole (6.3 to 63) and move the dividend the same way, naming 18.9 as the dividend and 6.3 as the divisor.",
+      "Students explain you slide the decimal point right in the divisor to make it whole (6.3 to 63) and slide the dividend's point right the same number of places, naming 18.9 as the dividend and 6.3 as the divisor.",
       "Students rewrite 18.9 ÷ 6.3 as 189 ÷ 63 = 3, explaining moving both points one place keeps the division equivalent, so 3 pods are filled.",
       "Students rewrite 22.5 ÷ 1.5 as 225 ÷ 15 = 15, so 15 hoses can be made with none left over.",
       "Students explain that a whole-number divisor lets them divide normally, and equivalent division keeps the quotient the same while removing the decimal from the divisor.",

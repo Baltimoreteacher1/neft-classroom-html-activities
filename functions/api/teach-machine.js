@@ -67,6 +67,11 @@ const WORKERS_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
 // curriculum/teach-the-machine/personas.js TAGS.
 const ALLOWED_TAGS = [
   "algebra-distributive-partial",
+  "factors-multiples-confused",
+  "factorization-stopped-early",
+  "property-order-vs-grouping",
+  "ratio-compared-without-common-basis",
+  "stat-question-no-variability",
   "coord-xy-swapped",
   "equation-answered-with-given-number",
   "equation-not-inverse-operation",

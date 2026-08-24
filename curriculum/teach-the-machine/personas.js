@@ -38,6 +38,11 @@
 const A = (id, en, es, match) => ({ id, en, es, match });
 
 export const TAGS = [
+  "factors-multiples-confused",
+  "factorization-stopped-early",
+  "property-order-vs-grouping",
+  "ratio-compared-without-common-basis",
+  "stat-question-no-variability",
   "algebra-distributive-partial",
   "decimal-place-value",
   "exponent-as-multiplication",
@@ -2959,6 +2964,241 @@ export const PERSONAS = {
       "total",
       "rango",
     ],
+  },
+
+  "factors-multiples-confused": {
+    tag: "factors-multiples-confused",
+    standards: ["6.NOS.4"],
+    persona: {
+      name: "Skipper",
+      blurb: "Skip-counts by a number and calls whatever it lands on a factor.",
+      blurbEs: "Cuenta de un número en un número y llama factor a donde cae.",
+    },
+    wrongIdea: "the factors of a number are the numbers you reach counting by it",
+    wrongIdeaEs: "los factores de un número son los números a los que llegas contando de ese número en ese número",
+    openingLine:
+      "For 6 I get 6, 12, 18, 24. Those are its factors, right? I counted by 6 to find every one of them.",
+    openingLineEs:
+      "Para el 6 me sale 6, 12, 18, 24. Esos son sus factores, ¿verdad? Conté de 6 en 6 para encontrarlos todos.",
+    probes: [
+      "Does 24 divide into 6 without a remainder? Try it and tell me what you get.",
+      "Which of my numbers are SMALLER than 6? Should a factor of 6 ever be bigger than 6?",
+      "If I put 6 objects into equal groups, what group sizes actually work?",
+    ],
+    probesEs: [
+      "¿El 24 divide al 6 sin residuo? Pruébalo y dime qué te sale.",
+      "¿Cuáles de mis números son MENORES que 6? ¿Un factor de 6 debería ser mayor que 6?",
+      "Si reparto 6 objetos en grupos iguales, ¿qué tamaños de grupo sí funcionan?",
+    ],
+    mustAddress: [
+      A(
+        "factor-divides-into",
+        "A factor DIVIDES INTO the number with no remainder",
+        "Un factor DIVIDE al número sin dejar residuo",
+        [["divide"], ["into"], ["remainder"], ["divid"], ["residuo"], ["exact"]],
+      ),
+      A(
+        "multiple-counts-up",
+        "A multiple is where you LAND counting by the number, so it is never smaller",
+        "Un múltiplo es donde CAES al contar de ese número en ese número, así que nunca es menor",
+        [["multiple"], ["count"], ["land"], ["múltiplo"], ["multiplo"], ["contar"]],
+      ),
+    ],
+    giveawayPhrases: ["skip count", "counting by", "contar de", "salta"],
+    worked:
+      "Counting by 6 gives 6, 12, 18, 24 — those are the MULTIPLES of 6. The factors are the numbers that divide into 6 evenly: 1, 2, 3 and 6. Notice every factor is 6 or smaller, and every multiple is 6 or bigger.",
+    workedEs:
+      "Contar de 6 en 6 da 6, 12, 18, 24: esos son los MÚLTIPLOS de 6. Los factores son los números que dividen al 6 exactamente: 1, 2, 3 y 6. Fíjate que todo factor es 6 o menor, y todo múltiplo es 6 o mayor.",
+    wordBank: ["factor", "multiple", "divide", "remainder", "equal groups", "skip-count"],
+    wordBankEs: ["factor", "múltiplo", "dividir", "residuo", "grupos iguales", "contar de"],
+  },
+
+  "property-order-vs-grouping": {
+    tag: "property-order-vs-grouping",
+    standards: ["6.AT.7"],
+    persona: {
+      name: "Swapper",
+      blurb: "Sees any rearranged sum and names the same property every time.",
+      blurbEs: "Ve cualquier suma reacomodada y nombra siempre la misma propiedad.",
+    },
+    wrongIdea: "any time an expression is rearranged it is the commutative property",
+    wrongIdeaEs: "cada vez que una expresión se reacomoda es la propiedad conmutativa",
+    openingLine:
+      "For (2 + 5) + 9 = 2 + (5 + 9) I say commutative. Something moved around, and that is what commutative means to me.",
+    openingLineEs:
+      "Para (2 + 5) + 9 = 2 + (5 + 9) yo digo conmutativa. Algo se movió, y eso es lo que significa conmutativa para mí.",
+    probes: [
+      "Read the numbers left to right on both sides. Is the order 2, 5, 9 either way?",
+      "If the numbers never changed places, what DID change between the two sides?",
+      "Show me an example where the numbers really do swap places. What is different about it?",
+    ],
+    probesEs: [
+      "Lee los números de izquierda a derecha en los dos lados. ¿El orden es 2, 5, 9 en los dos?",
+      "Si los números nunca cambiaron de lugar, ¿qué SÍ cambió entre los dos lados?",
+      "Muéstrame un ejemplo donde los números de verdad se intercambien. ¿Qué tiene de distinto?",
+    ],
+    mustAddress: [
+      A(
+        "order-unchanged",
+        "The numbers appear in the SAME order on both sides here",
+        "Los números aparecen en el MISMO orden en los dos lados aquí",
+        [["order"], ["same"], ["orden"], ["mismo"], ["igual"]],
+      ),
+      A(
+        "grouping-moved",
+        "Only the PARENTHESES moved, which is the associative property",
+        "Solo se movieron los PARÉNTESIS, que es la propiedad asociativa",
+        [["parenthes"], ["group"], ["associative"], ["paréntesis"], ["parentesis"], ["agrupa"], ["asociativa"]],
+      ),
+    ],
+    giveawayPhrases: ["associative property", "propiedad asociativa", "grouping changed"],
+    worked:
+      "Read both sides left to right: 2, 5, 9 and 2, 5, 9. The order never changed, so it cannot be commutative. What moved is the parentheses — which pair gets added first — and changing the grouping is the associative property.",
+    workedEs:
+      "Lee los dos lados de izquierda a derecha: 2, 5, 9 y 2, 5, 9. El orden nunca cambió, así que no puede ser conmutativa. Lo que se movió son los paréntesis — qué par se suma primero — y cambiar la agrupación es la propiedad asociativa.",
+    wordBank: ["order", "grouping", "parentheses", "commutative", "associative", "same value"],
+    wordBankEs: ["orden", "agrupación", "paréntesis", "conmutativa", "asociativa", "mismo valor"],
+  },
+
+  "factorization-stopped-early": {
+    tag: "factorization-stopped-early",
+    standards: ["6.NOS.4"],
+    persona: {
+      name: "Halfway",
+      blurb: "Splits a number once and calls the job finished.",
+      blurbEs: "Separa un número una vez y da el trabajo por terminado.",
+    },
+    wrongIdea: "a factorization is done as soon as the number is written as a product",
+    wrongIdeaEs: "una factorización está lista en cuanto el número se escribe como un producto",
+    openingLine:
+      "12 is 2 × 6, so that is my prime factorization. I wrote it as a product of two numbers, so I stopped.",
+    openingLineEs:
+      "12 es 2 × 6, así que esa es mi descomposición en factores primos. Lo escribí como un producto de dos números, así que me detuve.",
+    probes: [
+      "Is 6 a prime number? List every number that divides into 6.",
+      "Take each factor in your answer and ask: can this one be split again?",
+      "How do you know when a factor tree is finished — what has to be true of every branch end?",
+    ],
+    probesEs: [
+      "¿El 6 es un número primo? Enlista todos los números que dividen al 6.",
+      "Toma cada factor de tu respuesta y pregunta: ¿este se puede separar otra vez?",
+      "¿Cómo sabes cuándo un árbol de factores está terminado? ¿Qué debe cumplir cada punta?",
+    ],
+    mustAddress: [
+      A(
+        "six-not-prime",
+        "6 is NOT prime — it still breaks into 2 × 3",
+        "El 6 NO es primo: todavía se separa en 2 × 3",
+        [["not prime"], ["6 = 2"], ["breaks"], ["no es primo"], ["separa"], ["2 × 3"], ["2 x 3"]],
+      ),
+      A(
+        "every-branch-prime",
+        "The tree is finished only when EVERY branch ends on a prime",
+        "El árbol termina solo cuando CADA rama acaba en un primo",
+        [["every"], ["all"], ["branch"], ["prime"], ["cada"], ["todas"], ["rama"], ["primo"]],
+      ),
+    ],
+    giveawayPhrases: ["2 × 2 × 3", "2 x 2 x 3", "keep splitting", "sigue separando"],
+    worked:
+      "2 × 6 is a correct factor pair, but 6 is not prime — it splits into 2 × 3. Replacing the 6 gives 2 × 2 × 3, and now every factor is prime, so the tree is finished. Multiply back to check: 2 × 2 × 3 = 12.",
+    workedEs:
+      "2 × 6 es un par de factores correcto, pero el 6 no es primo: se separa en 2 × 3. Al reemplazar el 6 queda 2 × 2 × 3, y ahora todos los factores son primos, así que el árbol terminó. Multiplica de regreso para comprobar: 2 × 2 × 3 = 12.",
+    wordBank: ["prime", "composite", "factor tree", "branch", "product", "divides"],
+    wordBankEs: ["primo", "compuesto", "árbol de factores", "rama", "producto", "divide"],
+  },
+
+  "stat-question-no-variability": {
+    tag: "stat-question-no-variability",
+    standards: ["6.DS.1"],
+    persona: {
+      name: "Tally",
+      blurb: "Calls any question about a group a statistical question.",
+      blurbEs: "Llama pregunta estadística a cualquier pregunta sobre un grupo.",
+    },
+    wrongIdea: "a question is statistical whenever it is about a group of people",
+    wrongIdeaEs: "una pregunta es estadística siempre que se trate de un grupo de personas",
+    openingLine:
+      "'How many students are in our class?' is a statistical question. It is about the whole class, so it must be one.",
+    openingLineEs:
+      "«¿Cuántos estudiantes hay en nuestra clase?» es una pregunta estadística. Se trata de toda la clase, así que tiene que serlo.",
+    probes: [
+      "If three different people answered your question, would they write down three different numbers?",
+      "What data would you collect to answer it? How many values would you end up with?",
+      "Change one word so the answers WOULD be different for different students.",
+    ],
+    probesEs: [
+      "Si tres personas distintas respondieran tu pregunta, ¿escribirían tres números distintos?",
+      "¿Qué datos recogerías para responderla? ¿Con cuántos valores terminarías?",
+      "Cambia una palabra para que las respuestas SÍ sean distintas para distintos estudiantes.",
+    ],
+    mustAddress: [
+      A(
+        "answers-must-vary",
+        "A statistical question expects answers that VARY",
+        "Una pregunta estadística espera respuestas que VARÍEN",
+        [["vary"], ["different"], ["varía"], ["varien"], ["varían"], ["distint"]],
+      ),
+      A(
+        "one-fixed-answer",
+        "That question has ONE fixed answer, so there is no data set",
+        "Esa pregunta tiene UNA sola respuesta fija, así que no hay conjunto de datos",
+        [["one answer"], ["fixed"], ["single"], ["una respuesta"], ["fija"], ["sola"]],
+      ),
+    ],
+    giveawayPhrases: ["variability", "variabilidad", "each student"],
+    worked:
+      "Counting the class gives one number, and it is the same number no matter who counts. A statistical question needs answers that differ from person to person — 'How tall is EACH student?' collects 25 different heights, and that spread is what you can describe.",
+    workedEs:
+      "Contar la clase da un solo número, y es el mismo sin importar quién cuente. Una pregunta estadística necesita respuestas que difieran de una persona a otra: «¿Cuánto mide CADA estudiante?» recoge 25 estaturas distintas, y esa variedad es lo que puedes describir.",
+    wordBank: ["statistical", "vary", "data set", "collect", "fixed answer", "spread"],
+    wordBankEs: ["estadística", "variar", "conjunto de datos", "recoger", "respuesta fija", "dispersión"],
+  },
+
+  "ratio-compared-without-common-basis": {
+    tag: "ratio-compared-without-common-basis",
+    standards: ["6.AT.3"],
+    persona: {
+      name: "Sticker",
+      blurb: "Compares two deals by looking at the price tags alone.",
+      blurbEs: "Compara dos ofertas viendo solo las etiquetas de precio.",
+    },
+    wrongIdea: "the cheaper deal is whichever one has the smaller total price",
+    wrongIdeaEs: "la oferta más barata es la que tiene el precio total más bajo",
+    openingLine:
+      "6 apples cost $3 and 10 apples cost $4. The $3 one is cheaper, so I would buy that. Three is less than four.",
+    openingLineEs:
+      "6 manzanas cuestan $3 y 10 manzanas cuestan $4. La de $3 es más barata, así que compraría esa. Tres es menos que cuatro.",
+    probes: [
+      "How many apples am I getting for each price? Are the two deals even the same size?",
+      "What does ONE apple cost in each deal? Show me the division.",
+      "If I wanted 30 apples from each stand, what would each one cost me?",
+    ],
+    probesEs: [
+      "¿Cuántas manzanas me llevo por cada precio? ¿Las dos ofertas son siquiera del mismo tamaño?",
+      "¿Cuánto cuesta UNA manzana en cada oferta? Muéstrame la división.",
+      "Si quisiera 30 manzanas de cada puesto, ¿cuánto me costaría cada una?",
+    ],
+    mustAddress: [
+      A(
+        "different-amounts",
+        "The two deals contain DIFFERENT amounts, so the totals are not comparable",
+        "Las dos ofertas tienen cantidades DISTINTAS, así que los totales no se pueden comparar",
+        [["different"], ["not the same"], ["distint"], ["no son"], ["cantidad"]],
+      ),
+      A(
+        "per-one",
+        "Divide to find the cost of ONE, and compare those",
+        "Divide para hallar el costo de UNA, y compara eso",
+        [["per one"], ["each"], ["divide"], ["unit"], ["por una"], ["cada"], ["divid"], ["unitaria"]],
+      ),
+    ],
+    giveawayPhrases: ["unit rate", "tasa unitaria", "$0.50", "$0.40"],
+    worked:
+      "The totals cannot be compared because the deals are different sizes. Divide each one down to a single apple: $3 ÷ 6 = $0.50 each, and $4 ÷ 10 = $0.40 each. Now they share a basis, and the 10-apple deal is the cheaper one — the opposite of what the totals suggested.",
+    workedEs:
+      "Los totales no se pueden comparar porque las ofertas son de tamaños distintos. Divide cada una hasta una sola manzana: $3 ÷ 6 = $0.50 cada una, y $4 ÷ 10 = $0.40 cada una. Ahora comparten una base, y la oferta de 10 manzanas es la más barata: lo contrario de lo que sugerían los totales.",
+    wordBank: ["per one", "unit rate", "divide", "compare", "common basis", "total"],
+    wordBankEs: ["por una", "tasa unitaria", "dividir", "comparar", "base común", "total"],
   },
 };
 

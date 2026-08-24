@@ -15,7 +15,7 @@
 // font-family because the base stylesheets target headings via classes.
 
 // Goes FIRST inside <style> (an @import must precede all other rules).
-export const EDITORIAL_FONT_IMPORT = `@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");`;
+export const EDITORIAL_FONT_IMPORT = `@import url("/assets/fonts/fraunces-87aa83.css");`;
 
 // Goes LAST inside <style> (appended after the generator's own rules).
 export const EDITORIAL_OVERRIDES = `

@@ -47,6 +47,22 @@ export function noticeWonderCaption(nw) {
   return text || null;
 }
 
+/**
+ * The Spanish sibling of the visible caption, or "" when there is none.
+ * Returned separately rather than pre-stacked so the caller decides between
+ * `stackContent` (visible prose, both lanes) and a single-language attribute.
+ */
+export function noticeWonderCaptionEs(nw) {
+  if (!nw || typeof nw !== "object") return "";
+  if (nw.showCaption !== true) return "";
+  // Mirror the English fallback chain exactly: whichever field supplied the
+  // caption must be the field that supplies its translation, or a lesson with
+  // `caption` + `contextEs` would show one field's English above another
+  // field's Spanish.
+  const source = String(nw.caption || "").trim() ? "caption" : "context";
+  return String((source === "caption" ? nw.captionEs : nw.contextEs) || "").trim();
+}
+
 // ── Notice & Wonder: the image's accessible name ─────────────────────────────
 //
 // `imageAlt` is authored to describe what is DRAWN; `context` is the framing
@@ -62,6 +78,16 @@ export function noticeWonderImageAlt(nw, fallbacks = {}) {
     const s = v == null ? "" : String(v).trim();
     return s || null;
   };
+  // `alt` is a PLAIN-TEXT attribute, so it resolves to ONE language — stacked
+  // markup in an attribute is read out verbatim by a screen reader, which is
+  // the opposite of help. In Spanish the whole chain is tried in Spanish
+  // first, so a lesson with `imageAltEs` never falls back to English `context`.
+  const es = fallbacks.lang === "es";
+  const chain = es ? [nw && nw.imageAltEs, nw && nw.contextEs, fallbacks.captionEs] : [];
+  for (const value of chain) {
+    const hit = pick(value);
+    if (hit) return hit;
+  }
   return (
     pick(nw && nw.imageAlt) ||
     pick(nw && nw.context) ||

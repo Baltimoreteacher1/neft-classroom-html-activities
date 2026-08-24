@@ -118,6 +118,7 @@ for (const band of bands) {
   out.themeEmoji = "\u{1F9ED}";
   out.timeEstimate = "~20 min";
   out.readiness = false;
+  delete out.notebook; // no checkpoint surface in the compact renderer — see small-group generator
   delete out.googleForms;
   delete out.printables;
   delete out.graphicNovel;
@@ -220,6 +221,35 @@ for (const band of bands) {
   out.practice.onLevel = sample("onLevel", 2);
   out.practice.extending = sample("extending", 1);
   out.practice.optional = sample("optional", 1);
+  // Hands-on floor: preferRich slices rich items first per tier, so a band of
+  // lessons whose tiers are mostly multiple-choice can produce a catch-up set
+  // with NOTHING to build — the same starvation the small-group generator had.
+  // If the sampled mix has no build-not-select item but a band lesson offers
+  // one, add the first such item so every catch-up set has hands-on work.
+  {
+    const CONSTRUCTIVE = new Set([
+      "drag-sort",
+      "fill-table",
+      "matching-game",
+      "number-line",
+      "coordinate-grid",
+      "balance-scale",
+      "bar-model",
+    ]);
+    const tiers = ["approaching", "onLevel", "extending", "optional"];
+    const sampled = tiers.flatMap((tier) => out.practice[tier] || []);
+    if (!sampled.some((it) => CONSTRUCTIVE.has(it.type))) {
+      for (const s of srcs) {
+        const found = tiers
+          .flatMap((tier) => s.c.practice?.[tier] || [])
+          .find((it) => CONSTRUCTIVE.has(it.type));
+        if (found) {
+          out.practice.optional.push(tagItem(found, s.dot));
+          break;
+        }
+      }
+    }
+  }
   out.practice.optionalActivity = {
     name: "Catch-Up Challenge",
     emoji: "\u{1F9ED}",

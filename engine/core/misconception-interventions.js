@@ -285,6 +285,41 @@ export const INTERVENTIONS = {
     then: "Around the edge is 14 units; the space inside is 12 square units. Check which one your question asked for, and what unit it should end in.",
     verify: { expr: "2*(3+4)", equals: 14 },
   },
+
+  // Conceptual tags: the probe asks for the DISTINCTION, not a recomputation,
+  // because there is no arithmetic slip here to redo.
+  "factors-multiples-confused": {
+    probe: "Quick one: is 24 a factor of 6, or a multiple of 6? Answer with one word.",
+    accept: ["multiple", "múltiplo", "multiplo"],
+    rejects: ["factor"],
+    then: "24 is a multiple of 6 — you land on it counting by 6. A factor of 6 would have to divide INTO 6, and only 1, 2, 3 and 6 do that.",
+  },
+  "property-order-vs-grouping": {
+    probe:
+      "Quick one: in (2 + 5) + 9 = 2 + (5 + 9), did the ORDER of the numbers change or the GROUPING? Answer with one word.",
+    accept: ["grouping", "agrupación", "agrupacion"],
+    rejects: ["order", "orden"],
+    then: "The grouping moved — 2, 5, 9 appear in that same order on both sides. Only the parentheses shifted, and that is the associative property.",
+  },
+  "factorization-stopped-early": {
+    probe: "Quick one: in 2 × 6, which factor still breaks down into smaller factors?",
+    accept: ["6", "six", "seis"],
+    rejects: ["2", "neither", "ninguno"],
+    then: "6 is not prime — it splits into 2 × 3. A prime factorization is finished only when every branch ends on a prime, so 12 = 2 × 2 × 3.",
+  },
+  "stat-question-no-variability": {
+    probe:
+      "Quick one: 'How many minutes are in an hour?' — would different people give different answers? Yes or no.",
+    accept: ["no"],
+    rejects: ["yes", "sí", "si"],
+    then: "Everyone answers 60, so there is nothing to collect. A statistical question is one where the answers VARY from person to person.",
+  },
+  "ratio-compared-without-common-basis": {
+    probe: "Quick one: 6 apples for $3. What does ONE apple cost, in dollars?",
+    accept: ["0.5", ".5", "0.50", "$0.50", "1/2"],
+    then: "One apple is $0.50. That per-ONE amount is the common basis — once both offers are written per one, they can be compared directly.",
+    verify: { expr: "3/6", equals: 0.5 },
+  },
 };
 
 /** Loose normalisation for a typed micro-task answer. */

@@ -111,7 +111,7 @@ export function renderPrismVolume(
   if (label) {
     const cap = document.createElement("p");
     cap.textContent = label;
-    cap.style.cssText = "margin:0 0 10px;font-weight:700;";
+    cap.style.cssText = "margin:0 0 10px;font-weight:600;";
     side.appendChild(cap);
   }
 
@@ -130,7 +130,7 @@ export function renderPrismVolume(
     const wrap = document.createElement("div");
     wrap.style.cssText = "flex:1 1 108px;";
     wrap.innerHTML =
-      `<span style="display:block;font-size:.72rem;font-weight:800;letter-spacing:.03em;` +
+      `<span style="display:block;font-size:.72rem;font-weight:700;letter-spacing:.03em;` +
       `text-transform:uppercase;color:var(--tool-muted,#54677c);margin-bottom:4px;">` +
       `${esc(name)} (${esc(unit)})</span>`;
     const row = document.createElement("div");
@@ -142,7 +142,7 @@ export function renderPrismVolume(
     dec.textContent = "−";
     dec.setAttribute("aria-label", `decrease ${name} by ${num(fromHalves(STEP))} ${unit}`);
     const out = document.createElement("output");
-    out.style.cssText = "min-width:46px;text-align:center;font-size:1.15rem;font-weight:800;";
+    out.style.cssText = "min-width:46px;text-align:center;font-size:1.15rem;font-weight:700;";
     const inc = dec.cloneNode(false);
     inc.textContent = "+";
     inc.setAttribute("aria-label", `increase ${name} by ${num(fromHalves(STEP))} ${unit}`);
@@ -173,7 +173,7 @@ export function renderPrismVolume(
     const d = document.createElement("div");
     d.style.cssText =
       `border-radius:var(--tool-radius-sm,8px);padding:10px 12px;font-size:1rem;` +
-      `font-weight:700;background:${bg};color:${ink};`;
+      `font-weight:600;background:${bg};color:${ink};`;
     return d;
   }
   const lineB = line("rgba(31,166,162,.14)", "#0d6360");

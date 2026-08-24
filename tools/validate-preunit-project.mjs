@@ -28,7 +28,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { assertNonEmpty } from "./lib/non-empty.mjs";
 import { PROJECT_UNITS } from "./lib/project-units.mjs";
+import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ROUTE = "/math/pre-unit/projects/version-a/";
@@ -51,6 +53,18 @@ if (!PROJECT_UNITS.includes("pre-unit")) {
     "tools/lib/project-units.mjs no longer lists pre-unit — every projects-* layer would skip it",
   );
 }
+assertNonEmpty(
+  "source lessons the pre-unit project draws on",
+  PRE_LESSONS,
+  "PRE_LESSONS is empty — every cross-lesson check below would pass over nothing.",
+  3,
+);
+assertSweptEnough(
+  "validate:preunit-project",
+  PRE_LESSONS,
+  "Discovery for validate:preunit-project returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
+);
+
 if (failures.length) finish();
 
 const html = read(PAGE);

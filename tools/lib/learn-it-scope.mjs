@@ -59,7 +59,7 @@ const lower = (s) => String(s).toLowerCase();
  * definition, cloze sentence and examples — and every term passes.
  */
 export function withoutVocabulary(config) {
-  const { vocabulary: _drop, ...rest } = config || {};
+  const { vocabulary: _drop, notebook: _nb, ...rest } = config || {};
   return rest;
 }
 

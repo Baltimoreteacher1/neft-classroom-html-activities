@@ -1,3 +1,4 @@
+import { isScormLaunch } from "./scorm-bridge.js";
 import { el } from "./small-group-ui.js";
 
 /**
@@ -28,6 +29,18 @@ function modeBar(mode, lessonId) {
 }
 
 export async function mountSmallGroupTeacherAccess({ app, lessonId, renderTeacher }) {
+  // A SCORM launch is a student sitting in an LMS assignment. There is no
+  // teacher at that keyboard, and the mode bar's link points OUT of the lesson
+  // at /teacher-small-group/<id>/ — inside the SCO's tracked iframe. A student
+  // who taps it navigates the frame the LMS is grading away from the lesson.
+  // Core lessons already show no teacher affordance in a package; small-group
+  // showed one, and only became a real exposure when the 168 group1/group2
+  // variants were added to the SCORM catalog. The teacher route stays reachable
+  // outside the LMS, where it belongs, and is auth-gated either way.
+  // isScormLaunch() is the ONE reader of that question — see scorm-bridge.js on
+  // why a second opinion is how a lesson ends up half-connected.
+  if (isScormLaunch()) return false;
+
   const requested = new URLSearchParams(window.location.search).get("teacher") === "1";
   if (!requested) {
     mountBar(app, modeBar("student", lessonId));

@@ -273,7 +273,7 @@ export function renderActivityChooser(container, { config, renderComponent, only
       `;
       tile.innerHTML = `
         <div class="ac-tile-icon" style="font-size:1.8rem;">${t.icon}</div>
-        <div style="font-family:var(--font-display); font-weight:800; font-size:1.05rem;">${esc(t.title)}</div>
+        <div style="font-family:var(--font-display); font-weight:700; font-size:1.05rem;">${esc(t.title)}</div>
         <div style="color:var(--muted); font-size:0.88rem; line-height:1.5;">${esc(t.desc)}</div>`;
       tile.addEventListener("click", () => launch(t));
       grid.append(tile);
@@ -323,7 +323,7 @@ export function runComponentList(host, items, renderComponent, done) {
     const counter = document.createElement("div");
     counter.className = "ac-counter";
     counter.style.cssText =
-      "font-size:0.82rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-3);";
+      "font-size:0.82rem; font-weight:600; color:var(--muted); margin-bottom:var(--sp-3);";
     counter.textContent = `Extra Practice ${idx + 1} of ${items.length}`;
     host.append(counter);
 

@@ -34,6 +34,26 @@
 // engine/core/misconceptions.js). Inlined because Pages Functions cannot read
 // repo data files at runtime; tools/validate-nervous-system.mjs asserts parity.
 const TAG_LABELS = {
+  "factors-multiples-confused": [
+    "Confused factors with multiples",
+    "Confundió factores con múltiplos",
+  ],
+  "property-order-vs-grouping": [
+    "Confused the commutative and associative properties",
+    "Confundió la propiedad conmutativa con la asociativa",
+  ],
+  "factorization-stopped-early": [
+    "Stopped factoring before every factor was prime",
+    "Dejó de factorizar antes de que todos los factores fueran primos",
+  ],
+  "stat-question-no-variability": [
+    "Chose a question with only one fixed answer",
+    "Escogió una pregunta con una sola respuesta fija",
+  ],
+  "ratio-compared-without-common-basis": [
+    "Compared two ratios without a common basis",
+    "Comparó dos razones sin una base común",
+  ],
   "decimal-place-value": [
     "Right digits, wrong magnitude",
     "Dígitos correctos, magnitud equivocada",
@@ -166,6 +186,11 @@ const TAG_LABELS = {
 // Which standard each tag is diagnostic of — mirrors the tagStandards block of
 // data/standards-prerequisites.json so the Boss and the map agree on targets.
 const TAG_STANDARDS = {
+  "factors-multiples-confused": ["6.NOS.4"],
+  "property-order-vs-grouping": ["6.AT.7"],
+  "factorization-stopped-early": ["6.NOS.4"],
+  "stat-question-no-variability": ["6.DS.1"],
+  "ratio-compared-without-common-basis": ["6.AT.3"],
   "decimal-place-value": ["6.NOS.3"],
   "exponent-as-multiplication": ["6.AT.5"],
   "fraction-added-denominators": ["6.NOS.1", "6.NOS.4"],

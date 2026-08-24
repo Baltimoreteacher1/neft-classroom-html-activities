@@ -240,7 +240,7 @@ export function mountQuestionLadderReader(host, state) {
   const details = document.createElement("details");
   details.className = "socratic-ladder-reader no-print";
   details.innerHTML = `
-    <summary style="font-weight:800; cursor:pointer;">
+    <summary style="font-weight:700; cursor:pointer;">
       ❓ Question ladders (${ladders.length})
     </summary>
     <p style="font-size:0.85rem; color:var(--muted); margin:var(--sp-2) 0;">
@@ -251,7 +251,7 @@ export function mountQuestionLadderReader(host, state) {
       .map(
         (l) => `
       <div style="margin:var(--sp-3) 0; padding-left:var(--sp-3); border-left:3px solid var(--teal);">
-        <p style="font-weight:700; margin:0 0 var(--sp-2);">${esc(l.stem)}</p>
+        <p style="font-weight:600; margin:0 0 var(--sp-2);">${esc(l.stem)}</p>
         <ol style="margin:0; padding-left:1.2rem;">
           ${l.turns
             .map(

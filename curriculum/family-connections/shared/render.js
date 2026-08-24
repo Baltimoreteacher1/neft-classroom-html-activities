@@ -1,8 +1,12 @@
 import {
+  absolutePublicUrl,
+  dayNote,
   mergeHomework,
   normalizeLessons,
   resolveSection,
   weekHasMeaningfulContent,
+  weekHomework,
+  weekNote,
 } from "./model.js";
 
 function element(tag, className, text) {
@@ -35,6 +39,21 @@ const LABELS = {
     openHelp: "Open family help",
     vocabTitle: "Words this week",
     vocabHint: "Ask your student to explain each word in their own words.",
+    learningFocus: "Learning focus: ",
+    playArcade: "Play lesson arcade",
+    directions: "Directions & ways to help",
+    materials: "Materials: ",
+    noMatches: "No lessons match that search. Try a lesson number or clear a filter.",
+    thisWeekBadge: "Posted this week",
+    todayBadge: "Today",
+    todayFirst: "Today first",
+    statusReview: "Review & practice",
+    statusAssessment: "Learning check",
+    statusNoClass: "No lesson posted",
+    statusUpdateSoon: "Update coming soon",
+    checkBack: "Check back for an update.",
+    lessonWord: "Lesson",
+    spotlightSuffix: " · Spotlight",
     prompts: [
       "Ask them to teach you one step.",
       "Ask what part was tricky.",
@@ -51,6 +70,22 @@ const LABELS = {
     openHelp: "Abrir ayuda familiar",
     vocabTitle: "Palabras de esta semana",
     vocabHint: "Pídale a su estudiante que explique cada palabra con sus propias palabras.",
+    learningFocus: "Enfoque del aprendizaje: ",
+    playArcade: "Abrir el arcade de la lección",
+    directions: "Indicaciones y maneras de ayudar",
+    materials: "Materiales: ",
+    noMatches:
+      "Ninguna lección coincide con esa búsqueda. Pruebe con un número de lección o quite un filtro.",
+    thisWeekBadge: "Publicada esta semana",
+    todayBadge: "Hoy",
+    todayFirst: "Hoy primero",
+    statusReview: "Repaso y práctica",
+    statusAssessment: "Evaluación de aprendizaje",
+    statusNoClass: "No hay lección publicada",
+    statusUpdateSoon: "Pronto habrá novedades",
+    checkBack: "Vuelva pronto para ver una actualización.",
+    lessonWord: "Lección",
+    spotlightSuffix: " · Destacada",
     prompts: [
       "Pídale que le enseñe un paso.",
       "Pregunte qué parte fue difícil.",
@@ -62,6 +97,16 @@ const LABELS = {
 };
 
 const labelsFor = (lang) => LABELS[lang === "es" ? "es" : "en"];
+
+const DAY_ES = {
+  Monday: "lunes",
+  Tuesday: "martes",
+  Wednesday: "miércoles",
+  Thursday: "jueves",
+  Friday: "viernes",
+};
+
+const dayLabel = (day, lang) => (lang === "es" ? (DAY_ES[day] ?? day) : day);
 
 function weekLessonDays(snapshot, inputLessons, sectionId) {
   const byId = new Map(normalizeLessons(inputLessons).map((lesson) => [lesson.id, lesson]));
@@ -123,11 +168,12 @@ export function renderWeek(root, snapshot, inputLessons, sectionId, lang = "en")
         element(
           "strong",
           "lesson-number",
-          `Lesson ${lesson.id.replace("-flagship", " · Spotlight")}`,
+          `${t.lessonWord} ${lesson.id.replace("-flagship", t.spotlightSuffix)}`,
         ),
       );
       card.append(element("p", "lesson-title", lesson.title));
-      if (entry.note) card.append(element("p", "day-note", entry.note));
+      const note = dayNote(entry, lang);
+      if (note) card.append(element("p", "day-note", note));
       const talk = element("p", "day-talk");
       talk.append(
         element("span", "day-talk-label", `${t.talk}: `),
@@ -137,16 +183,19 @@ export function renderWeek(root, snapshot, inputLessons, sectionId, lang = "en")
       lessonIndex += 1;
       const actions = element("div", "day-links");
       actions.append(link("Open lesson", lesson.lessonPath));
-      actions.append(link("Optional family practice", lesson.homeworkPath));
+      const practice = link("Optional family practice", lesson.homeworkPath);
+      practice.dataset.practiceOpen = "week";
+      practice.dataset.lessonId = lesson.id;
+      actions.append(practice);
       card.append(actions);
     } else {
       const labels = {
-        review: "Review & practice",
-        assessment: "Learning check",
-        "no-class": "No lesson posted",
+        review: t.statusReview,
+        assessment: t.statusAssessment,
+        "no-class": t.statusNoClass,
       };
-      card.append(element("strong", "lesson-number", labels[entry.status] ?? "Update coming soon"));
-      card.append(element("p", "day-note", entry.note || "Check back for an update."));
+      card.append(element("strong", "lesson-number", labels[entry.status] ?? t.statusUpdateSoon));
+      card.append(element("p", "day-note", dayNote(entry, lang) || t.checkBack));
     }
     root.append(card);
   }
@@ -174,7 +223,10 @@ export function renderSpotlight(root, snapshot, inputLessons, sectionId, lang = 
   card.append(focus);
   if (lesson.objective) card.append(element("p", "spotlight-objective", lesson.objective));
   const actions = element("div", "spotlight-actions");
-  actions.append(link(t.startPractice, lesson.homeworkPath, "button button-secondary"));
+  const spotlightStart = link(t.startPractice, lesson.homeworkPath, "button button-secondary");
+  spotlightStart.dataset.practiceOpen = "spotlight";
+  spotlightStart.dataset.lessonId = lesson.id;
+  actions.append(spotlightStart);
   if (lesson.familyPath) actions.append(link(t.openHelp, lesson.familyPath, "text-link"));
   card.append(actions);
   root.append(card);
@@ -242,66 +294,114 @@ export function filterHomework(homework, query, unit) {
   });
 }
 
+// One optional-practice card. Shared by the week-synced list and the browse-all
+// library so the two never drift apart in wording or affordances.
+function practiceCard(item, t, { badge = "", isToday = false, source = "library" } = {}) {
+  const card = element(
+    "article",
+    `homework-card${badge ? " is-this-week" : ""}${isToday ? " is-today" : ""}`,
+  );
+  const meta = element("div", "homework-meta");
+  meta.append(
+    element("span", "", `${t.lessonWord} ${item.id.replace("-flagship", t.spotlightSuffix)}`),
+    element("span", "", item.estimatedTime),
+  );
+  card.append(meta);
+  if (badge) {
+    const chip = element("p", "homework-day-chip", badge);
+    if (isToday) {
+      chip.append(element("span", "homework-today-badge", t.todayBadge));
+      card.setAttribute("aria-label", `${t.todayBadge}: ${item.title}`);
+    }
+    card.append(chip);
+  }
+  card.append(element("h3", "", item.title));
+  if (item.objective) {
+    const focus = element("p", "homework-focus");
+    focus.append(element("strong", "", t.learningFocus), item.objective);
+    card.append(focus);
+  }
+  const actions = element("div", "homework-actions");
+  const start = link(t.startPractice, item.homeworkPath);
+  start.dataset.practiceOpen = source;
+  start.dataset.lessonId = item.id;
+  actions.append(start);
+  if (item.familyPath) actions.append(link(t.openHelp, item.familyPath));
+  if (item.arcadePath) {
+    const arcade = link(t.playArcade, item.arcadePath, "arcade-link");
+    arcade.setAttribute("aria-label", `${t.playArcade}: ${item.arcadeTitle || item.title}`);
+    actions.append(arcade);
+  }
+  for (const extra of item.supplementalLinks ?? []) actions.append(link(extra.label, extra.url));
+  card.append(actions);
+  const disclosure = element("details", "homework-details-disclosure");
+  disclosure.append(element("summary", "", t.directions));
+  const support = element("div", "homework-support-content");
+  support.append(element("p", "homework-directions", item.directions));
+  const details = element("ul", "homework-details");
+  details.append(element("li", "", `${t.materials}${item.materials}`));
+  details.append(element("li", "", item.languageSupport));
+  details.append(element("li", "", item.schoolAlternative));
+  support.append(details);
+  disclosure.append(support);
+  card.append(disclosure);
+  return card;
+}
+
+// Practice that matches the lessons the teacher posted on this week's calendar.
+// Returns the count so the caller can label the section without recomputing it.
+export function renderWeekPractice(
+  root,
+  grid,
+  snapshot,
+  inputLessons,
+  overrides,
+  sectionId,
+  lang = "en",
+) {
+  const t = labelsFor(lang);
+  const items = weekHomework(snapshot, inputLessons, overrides, sectionId);
+  const today = todayName();
+  /* A parent opens this page to answer "what did they do today?". Calendar order
+   * is the right order for the week; today's lesson is the right FIRST card.
+   * Stable otherwise — the rest keep their day order. */
+  const ordered = [
+    ...items.filter((item) => (item.days ?? []).includes(today)),
+    ...items.filter((item) => !(item.days ?? []).includes(today)),
+  ];
+  grid.replaceChildren();
+  root.hidden = ordered.length === 0;
+  for (const item of ordered) {
+    const isToday = (item.days ?? []).includes(today);
+    const days = (item.days ?? []).map((day) => dayLabel(day, lang)).join(" · ");
+    grid.append(practiceCard(item, t, { badge: days || t.thisWeekBadge, isToday, source: "week" }));
+  }
+  return ordered.length;
+}
+
 export function renderHomework(root, inputLessons, overrides, options = {}) {
+  const t = labelsFor(options.lang);
   const all = mergeHomework(inputLessons, overrides);
   const filtered = filterHomework(all, options.query, options.unit);
   const limit = Number(options.limit) || filtered.length;
   root.replaceChildren();
-  for (const item of filtered.slice(0, limit)) {
-    const card = element("article", "homework-card");
-    const meta = element("div", "homework-meta");
-    meta.append(element("span", "", `Lesson ${item.id}`), element("span", "", item.estimatedTime));
-    card.append(meta, element("h3", "", item.title));
-    if (item.objective) {
-      const focus = element("p", "homework-focus");
-      focus.append(element("strong", "", "Learning focus: "), item.objective);
-      card.append(focus);
-    }
-    const actions = element("div", "homework-actions");
-    actions.append(link("Start optional practice", item.homeworkPath));
-    if (item.familyPath) actions.append(link("Open family help", item.familyPath));
-    if (item.arcadePath) {
-      const arcade = link("Play lesson arcade", item.arcadePath, "arcade-link");
-      arcade.setAttribute("aria-label", `Play ${item.arcadeTitle || "lesson arcade"}`);
-      actions.append(arcade);
-    }
-    for (const extra of item.supplementalLinks) actions.append(link(extra.label, extra.url));
-    card.append(actions);
-    const disclosure = element("details", "homework-details-disclosure");
-    disclosure.append(element("summary", "", "Directions & ways to help"));
-    const support = element("div", "homework-support-content");
-    support.append(element("p", "homework-directions", item.directions));
-    const details = element("ul", "homework-details");
-    details.append(element("li", "", `Materials: ${item.materials}`));
-    details.append(element("li", "", item.languageSupport));
-    details.append(element("li", "", item.schoolAlternative));
-    support.append(details);
-    disclosure.append(support);
-    card.append(disclosure);
-    root.append(card);
-  }
-  if (!filtered.length) {
-    root.append(
-      element(
-        "p",
-        "empty-state",
-        "No lessons match that search. Try a lesson number or clear a filter.",
-      ),
-    );
-  }
+  for (const item of filtered.slice(0, limit))
+    root.append(practiceCard(item, t, { source: "library" }));
+  if (!filtered.length) root.append(element("p", "empty-state", t.noMatches));
   return { all, filtered, visible: Math.min(limit, filtered.length) };
 }
 
-export function familyWeekSpeech(snapshot, inputLessons, sectionId) {
+export function familyWeekSpeech(snapshot, inputLessons, sectionId, lang = "en") {
   const byId = new Map(normalizeLessons(inputLessons).map((lesson) => [lesson.id, lesson]));
   const section = resolveSection(snapshot, sectionId);
   const days = (section.week?.days ?? []).map((entry) => {
     const lesson = byId.get(entry.lessonId);
+    const note = dayNote(entry, lang);
     if (entry.status === "lesson" && lesson)
-      return `${entry.day}: Lesson ${lesson.id}, ${lesson.title}. ${entry.note}`;
-    return `${entry.day}: ${entry.note || entry.status.replace("-", " ")}.`;
+      return `${dayLabel(entry.day, lang)}: ${lesson.title}. ${note}`;
+    return `${dayLabel(entry.day, lang)}: ${note || entry.status.replace("-", " ")}.`;
   });
-  return `${section.week?.label}. ${section.label}. ${section.week?.note} ${days.join(" ")}`;
+  return `${section.week?.label}. ${section.label}. ${weekNote(section.week, lang)} ${days.join(" ")}`;
 }
 
 // Plain-text week summary for the Email / Text / calendar description actions.
@@ -315,12 +415,22 @@ export function familyWeekShare(snapshot, inputLessons, sectionId, lang = "en") 
     assessment: es ? "Evaluación" : "Learning check",
     "no-class": es ? "Sin lección" : "No lesson posted",
   };
-  const lines = (section.week?.days ?? []).map((entry) => {
+  /* The practice link is the one thing a family needs after they leave the page,
+   * so it travels with the week. One link per lesson, even when the lesson runs
+   * two days — a repeated URL reads like a mistake in a text message. */
+  const practiceLabel = es ? "Práctica juntos" : "Practice together";
+  const linked = new Set();
+  const lines = (section.week?.days ?? []).flatMap((entry) => {
     const lesson = byId.get(entry.lessonId);
+    const note = dayNote(entry, lang);
+    const day = dayLabel(entry.day, lang);
     if (entry.status === "lesson" && lesson) {
-      return `${entry.day}: ${lesson.title}${entry.note ? ` — ${entry.note}` : ""}`;
+      const line = `${day}: ${lesson.title}${note ? ` — ${note}` : ""}`;
+      if (linked.has(lesson.id)) return [line];
+      linked.add(lesson.id);
+      return [line, `  ${practiceLabel}: ${absolutePublicUrl(lesson.homeworkPath)}`];
     }
-    return `${entry.day}: ${entry.note || statusLabel[entry.status] || ""}`.trim();
+    return [`${day}: ${note || statusLabel[entry.status] || ""}`.trim()];
   });
   const subject = `${es ? "Matemáticas esta semana" : "Math this week"} · ${weekLabel}`;
   const intro = es
@@ -329,6 +439,9 @@ export function familyWeekShare(snapshot, inputLessons, sectionId, lang = "en") 
   const closer = es
     ? "La práctica familiar es opcional y nunca se califica."
     : "Family practice is optional and never graded.";
-  const body = [subject, "", intro, "", ...lines, "", closer].join("\n");
+  const message = weekNote(section.week, lang);
+  const body = [subject, "", intro, ...(message ? ["", message] : []), "", ...lines, "", closer].join(
+    "\n",
+  );
   return { subject, body };
 }

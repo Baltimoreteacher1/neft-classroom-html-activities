@@ -23,16 +23,16 @@ function ensureStyles() {
   s.id = "cpl-styles";
   s.textContent = `
   .cpl-wrap{margin:var(--sp-3,12px) 0;display:flex;flex-direction:column;align-items:center;}
-  .cpl-title{font-weight:800;color:${C.navy};margin-bottom:4px;font-size:.98rem;text-align:center;}
+  .cpl-title{font-weight:700;color:${C.navy};margin-bottom:4px;font-size:.98rem;text-align:center;}
   .cpl-hint{font-size:.82rem;color:${C.muted};margin-bottom:8px;text-align:center;max-width:420px;line-height:1.4;}
   .cpl-stage{width:100%;max-width:560px;background:#fff;border:1px solid ${C.line};border-radius:12px;padding:8px;}
   .cpl-stage svg{width:100%;height:auto;display:block;cursor:crosshair;touch-action:manipulation;}
   .cpl-todo{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px;max-width:560px;}
-  .cpl-chip{font-size:.8rem;font-weight:700;color:${C.navy};background:#eef4fb;border:2px solid ${C.line};
+  .cpl-chip{font-size:.8rem;font-weight:600;color:${C.navy};background:#eef4fb;border:2px solid ${C.line};
     border-radius:999px;padding:4px 10px;}
   .cpl-chip.done{color:${C.ok};background:${C.okFill};border-color:${C.ok};}
   .cpl-chip.done::before{content:"✓ ";}
-  .cpl-status{min-height:1.2em;margin-top:8px;font-size:.9rem;font-weight:700;text-align:center;}
+  .cpl-status{min-height:1.2em;margin-top:8px;font-size:.9rem;font-weight:600;text-align:center;}
   .cpl-status.ok{color:${C.ok};}
   .cpl-status.no{color:${C.wrong};}
   .cpl-reveal{margin-top:8px;width:100%;max-width:560px;box-sizing:border-box;padding:10px 14px;
@@ -62,7 +62,7 @@ export function renderCoordinatePlot(host, cfg) {
   const X = (x) => pad + (x - lo) * unit;
   const Y = (y) => pad + (hi - y) * unit;
   const stride = span > 12 ? 2 : 1;
-  const tick = 'style="font-size:13px;fill:#4a5668;font-weight:600"';
+  const tick = 'style="font-size:13px;fill:#4a5668;font-weight:500"';
 
   let grid = "";
   for (let i = lo; i <= hi; i++) {
@@ -120,7 +120,7 @@ export function renderCoordinatePlot(host, cfg) {
       "beforeend",
       `<circle cx="${cx}" cy="${cy}" r="11" fill="#fff" fill-opacity="0.85"/>` +
         `<circle cx="${cx}" cy="${cy}" r="8" fill="${C.pop}" stroke="${C.ok}" stroke-width="2.5"/>` +
-        `<text x="${(X(p.x) + (flip ? -12 : 12)).toFixed(1)}" y="${(Y(p.y) - 10).toFixed(1)}" text-anchor="${flip ? "end" : "start"}" style="font-size:13px;fill:${C.navy};font-weight:700">(${p.x}, ${p.y})</text>`,
+        `<text x="${(X(p.x) + (flip ? -12 : 12)).toFixed(1)}" y="${(Y(p.y) - 10).toFixed(1)}" text-anchor="${flip ? "end" : "start"}" style="font-size:13px;fill:${C.navy};font-weight:600">(${p.x}, ${p.y})</text>`,
     );
   }
 

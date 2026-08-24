@@ -37,6 +37,7 @@ import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
 import { cpus } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { SKIP_EXIT } from "../tools/lib/skip-exit.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
@@ -48,6 +49,42 @@ const SCRIPTS = pkg.scripts || {};
  * Generators, formatters and anything that deploys stay out — this must remain
  * read-only apart from `build`.
  * ------------------------------------------------------------------------ */
+/**
+ * Turn a child process error into one of three outcomes.
+ *
+ * PASS / FAIL / SKIP, never two of them wearing the same face. Exit 3 is the
+ * repo-wide SKIP code (tools/lib/skip-exit.mjs): the check could not run and
+ * verified nothing. Exported so tools/skip-honesty.test.mjs can pin the mapping
+ * — the whole point is that this classification cannot quietly regress to
+ * "non-zero means fail, zero means pass".
+ */
+function classifyResult(err) {
+  // A killed child is a TIMEOUT, and a timeout is a FAILURE — never a skip.
+  // `execFile` reports the kill as `err.killed`, and the exit code it carries
+  // is the signal's, not the check's, so this must be tested BEFORE the
+  // SKIP_EXIT comparison or a check killed mid-run could land on exit 3 and be
+  // waved through as "did not run" instead of stopping the push.
+  if (err?.killed) return { ok: false, skipped: false, timedOut: true, status: "TIMEOUT" };
+  const skipped = err?.code === SKIP_EXIT;
+  const ok = !err;
+  return { ok, skipped, timedOut: false, status: skipped ? "SKIP" : ok ? "PASS" : "FAIL" };
+}
+
+/* How long any one check may run before it is killed and failed.
+ *
+ * There was no timeout at all until 2026-08-20: `execFile` was called without
+ * one, so a check that hung hung `git push` with it, forever, with no output
+ * saying which check was stuck. The realistic outcome of that is not a patient
+ * wait — it is `--no-verify` becoming muscle memory, which disables the entire
+ * gate. A bounded, named, loud failure is strictly better than an unbounded
+ * wait.
+ *
+ * The ceiling is deliberately far above the slowest real check (`test`, ~76s;
+ * `validate:production`, ~138s when run): this exists to catch a HANG, not to
+ * police slowness, and a timeout tight enough to trip on a loaded laptop is a
+ * flake that trains people to bypass it. Override with QA_TIMEOUT_MS. */
+const TIMEOUT_MS = Number(process.env.QA_TIMEOUT_MS || 15 * 60 * 1000);
+
 const GATE = [
   "build",
   // `check` (biome check), NOT `lint` (biome lint). Both are read-only, but
@@ -64,6 +101,11 @@ const GATE = [
   "audit",
   "audit:curriculum",
   "audit:homework",
+  // Boots six representative built pages in a real browser and fails on any
+  // page error, non-/api 4xx, or raw JS leaked into body text. It served the
+  // SOURCE tree until 2026-08-20, so it failed 6/6 on Vite-resolved specifiers
+  // and was never wired; it now serves dist/, which is what Cloudflare serves.
+  "smoke:injection",
 ];
 
 /* `build` is a BARRIER, not just a peer. It is the only member of the gate that
@@ -79,8 +121,11 @@ const GATE = [
  * checks outside the set are dropped — the inner loop reads source directly. */
 const needsOf = (c) => (c === "build" ? [] : ["build"]);
 
-/* Never run more than one of these at a time — they bind the same port. */
-const EXCLUSIVE = new Set(["validate:lesson-boot"]);
+/* Never run more than one of these at a time. `validate:lesson-boot` binds a
+ * fixed port; `smoke:injection` launches a second Chromium, and two browser
+ * harnesses racing on a loaded machine is how a gate becomes flaky enough to
+ * get bypassed. */
+const EXCLUSIVE = new Set(["validate:lesson-boot", "smoke:injection"]);
 
 /* --------------------------------------------------------------------------
  * Change coverage. Each rule is [RegExp, checks[]]. A changed path uses the
@@ -95,6 +140,48 @@ const EXCLUSIVE = new Set(["validate:lesson-boot"]);
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // GATE COVERAGE — the check that decides which validators are allowed not to
+  // gate. Its own inputs are the gate definition and the exemption registry, so
+  // a change to either must re-run it; `check` comes along because both files
+  // are Biome-formatted.
+  [
+    /^(tools\/validate-gate-coverage\.mjs|qa-exempt\.json|tools\/lib\/non-empty\.mjs)$/,
+    ["validate:gate-coverage", "test", "check"],
+  ],
+
+  // SLIDE ↔ LEARN IT ALIGNMENT — the projected deck and the Learn It stepper
+  // both derive from launch.conceptIntro, and this gate is what proves the
+  // committed deck, the runtime config, and the panel's math transformations
+  // still present ONE problem. Its first sweep caught two live false
+  // equations (0.7v → 7v, 2.5h → 5h) that every other gate was green on.
+  [
+    /^(tools\/validate-learn-slide-alignment\.mjs|engine\/core\/learn-step-model(\.test)?\.(js|mjs)|scripts\/generate-slides\.mjs|engine\/components\/vocab-learn-panel\.js)$/,
+    ["test", "validate:learn-slide-alignment", "validate:js-syntax", "check"],
+  ],
+  // NOTEBOOK CHECKPOINTS — the three "write it in your notebook" gates every
+  // core lesson declares. The validator is the only thing that can see a
+  // checkpoint pointing at a phase the lesson does not have (it renders nowhere
+  // and gates nothing while looking authored), and it is the only place the
+  // default classroom copy is counted — a silent 100%-default forever is the
+  // state this reporting exists to expose.
+  [
+    /^(engine\/core\/notebook-checkpoint\.js|engine\/styles\/notebook-checkpoint\.css|assets\/math-notes\/.*|curriculum\/student-supports\/math-notes\/.*|tools\/(validate-notebook-checkpoints|attach-notebook-checkpoints|validate-copy-panel-provenance)\.mjs|scripts\/generate-notebook-copy-panels\.mjs)$/,
+    [
+      "test",
+      "validate:notebook",
+      "validate:copy-panels",
+      "validate:js-syntax",
+      "validate:css-integrity",
+      "check",
+    ],
+  ],
+  // SHARED COMPONENT CLAIMS — a string hardcoded in a component is not lesson
+  // data, so every provenance gate is blind to it. Twice now a shared surface
+  // has taught one lesson's mathematics to all of them.
+  [
+    /^(engine\/(components|core)\/.*\.js|shared\/.*\.js|assets\/math-notes\/.*|tools\/validate-shared-component-claims\.mjs|data\/shared-component-claims-review\.json)$/,
+    ["validate:shared-claims", "validate:js-syntax", "check"],
+  ],
   // AUTHENTICATION — frozen at 4c2e13dab, documented in AUTH_CONTRACT.md.
   // Nothing here may change as a side effect of unrelated work: on 2026-08-16 a
   // teacher sign-in rewrite left teachers locked out for eleven hours while
@@ -424,7 +511,17 @@ function scopeFor(paths) {
  * checks the old serial loop ran. A scheduler that quietly stops running a
  * gate is worse than a slow one.
  * ------------------------------------------------------------------------ */
-export { CARRIES_SCRIPT, COVERAGE, expand, GATE, needsOf, resolveSet, scopeFor, UNIVERSAL };
+export {
+  CARRIES_SCRIPT,
+  COVERAGE,
+  classifyResult,
+  expand,
+  GATE,
+  needsOf,
+  resolveSet,
+  scopeFor,
+  UNIVERSAL,
+};
 
 async function main() {
   /* --- Decide the check set ------------------------------------------------- */
@@ -493,15 +590,25 @@ async function main() {
       execFile(
         "npm",
         ["run", name],
-        { cwd: ROOT, maxBuffer: 64 * 1024 * 1024 },
+        { cwd: ROOT, maxBuffer: 64 * 1024 * 1024, timeout: TIMEOUT_MS, killSignal: "SIGKILL" },
         (err, stdout, stderr) => {
           const secs = ((Date.now() - t0) / 1000).toFixed(1);
-          const ok = !err;
-          results.set(name, { ok, secs });
-          logTo(
-            `\n===== ${ok ? "PASS" : "FAIL"} npm run ${name} (${secs}s) =====\n${stdout}\n${stderr}\n`,
-          );
-          console.log(`${ok ? "PASS" : "FAIL"}  ${name.padEnd(32)} ${secs}s`);
+          // Exit 3 is the repo-wide SKIP code (tools/lib/skip-exit.mjs): the
+          // check could not run — no browser, no network, no credential — and
+          // verified NOTHING. It is not a pass. `validate:lesson-boot` used to
+          // exit 0 in exactly that situation and this table printed
+          // `PASS validate:lesson-boot 4.6s`, indistinguishable from 16 pages
+          // actually rendering. A gate that reports PASS without running is an
+          // active false claim, which is worse than no gate at all.
+          const { ok, skipped, timedOut, status } = classifyResult(err);
+          results.set(name, { ok, secs, didNotRun: skipped, timedOut });
+          logTo(`\n===== ${status} npm run ${name} (${secs}s) =====\n${stdout}\n${stderr}\n`);
+          const note = timedOut
+            ? `  (KILLED after ${(TIMEOUT_MS / 1000).toFixed(0)}s — hung, not slow)`
+            : skipped
+              ? "  (did not run)"
+              : "";
+          console.log(`${status}  ${name.padEnd(32)} ${secs}s${note}`);
           if (!ok) {
             const tail = `${stdout}\n${stderr}`.trim().split("\n").slice(-12);
             for (const l of tail) console.log(`      | ${l}`);
@@ -550,18 +657,44 @@ async function main() {
 
   await pump();
 
-  const failed = checks.filter((c) => !results.get(c)?.ok);
+  const didNotRun = checks.filter((c) => results.get(c)?.didNotRun);
+  const failed = checks.filter((c) => !results.get(c)?.ok && !results.get(c)?.didNotRun);
+  const passed = checks.length - failed.length - didNotRun.length;
   const wall = ((Date.now() - started) / 1000).toFixed(1);
   console.log("---------------------------------------------------------------");
   console.log(
-    `PASS ${checks.length - failed.length}/${checks.length}   wall ${wall}s   log ${LOG}`,
+    `PASS ${passed}/${checks.length}${didNotRun.length ? `   SKIPPED ${didNotRun.length}` : ""}   wall ${wall}s   log ${LOG}`,
   );
+  // Every skipped check is NAMED. "What did this run actually verify?" must
+  // have a visible answer, not one implied by a green summary line.
+  if (didNotRun.length) {
+    console.log(`SKIPPED (verified NOTHING): ${didNotRun.join(", ")}`);
+  }
+  const timedOut = checks.filter((c) => results.get(c)?.timedOut);
+  if (timedOut.length) {
+    console.log(
+      `TIMED OUT (killed, verified nothing): ${timedOut.join(", ")} — a hung check is a failure, ` +
+        "not a pass. Re-run it alone to see where it stops, or raise QA_TIMEOUT_MS if it is " +
+        "genuinely this slow.",
+    );
+  }
   if (failed.length) {
     console.log(`FAILED: ${failed.join(", ")}`);
     console.log("Re-run one check with:  npm run qa:fast -- --only <name>");
     process.exit(1);
   }
-  console.log("STATUS: PASS — no deploy, commit, or push performed.");
+  if (didNotRun.length && process.env.CI) {
+    // In CI the missing browser/network/credential IS the defect. Locally a
+    // skip warns and lets the push through, because a gate that blocks every
+    // push over a missing browser is a gate that gets deleted.
+    console.log("STATUS: FAIL — checks were skipped in CI, which must not report as a pass.");
+    process.exit(1);
+  }
+  console.log(
+    didNotRun.length
+      ? `STATUS: PASS WITH ${didNotRun.length} SKIPPED — those checks verified nothing. No deploy, commit, or push performed.`
+      : "STATUS: PASS — no deploy, commit, or push performed.",
+  );
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) await main();

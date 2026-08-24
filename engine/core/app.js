@@ -18,12 +18,21 @@ import {
   linkifyObjectiveTerms,
   observeVocabTerms,
   renderComponent,
+  renderLearnItExtrasInto,
   resolveContentObjective,
   resolveLanguageObjective,
   underlineVocabTerms,
   wireObjectiveTermPopups,
 } from "./lesson-renderer.js";
 import { augmentVocabWithGlossary } from "./math-glossary.js";
+import {
+  announceBlocked,
+  canLeavePhase,
+  closeMathNotesModel,
+  initNotebook,
+  mountNotebookCheckpoint,
+  openMathNotesModel,
+} from "./notebook-checkpoint.js";
 import { applyPlainLanguage, isPlainLanguageOn } from "./plain-language.js";
 import { applyPhaseAccent, buildLessonCoverExtras, mountCoverArt } from "./premium.js";
 import { initPresentMode } from "./present-mode.js";
@@ -45,6 +54,7 @@ import "@engine/styles/themes.css";
 import "@engine/styles/editorial.css";
 import "@engine/styles/present-mode.css";
 import "@engine/styles/theme-warm.css";
+import "@engine/styles/notebook-checkpoint.css";
 
 export function createApp(config) {
   const root = document.getElementById("app");
@@ -299,11 +309,11 @@ function _formsCardHtml(config) {
   const s = gf.student;
   const link = (href, label, emoji) =>
     href
-      ? `<a href="${href}" target="_blank" rel="noopener" style="flex:1; min-width:84px; display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:inherit; background:#fff; border:1px solid var(--gold,#d4952a); border-radius:10px; padding:10px 8px; font-weight:700;"><span style="font-size:1.3rem;" aria-hidden="true">${emoji}</span><span>${label}</span></a>`
+      ? `<a href="${href}" target="_blank" rel="noopener" style="flex:1; min-width:84px; display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:inherit; background:#fff; border:1px solid var(--gold,#d4952a); border-radius:10px; padding:10px 8px; font-weight:600;"><span style="font-size:1.3rem;" aria-hidden="true">${emoji}</span><span>${label}</span></a>`
       : "";
   return `
       <div class="identity-forms" style="background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
-        <div style="font-weight:800; margin-bottom:8px;">📋 ${t("lessonForms")}</div>
+        <div style="font-weight:700; margin-bottom:8px;">📋 ${t("lessonForms")}</div>
         <p style="margin:0 0 8px; font-size:0.84rem; color:var(--muted,#52606d);">These optional links open Google Forms. Responses leave this site and follow your school Google account and form settings.</p>
         <div style="display:flex; gap:8px;">
           ${link(s.notes, t("notes"), "📝")}
@@ -330,11 +340,11 @@ function _objectivesBlockHtml(config) {
     <div class="identity-objectives">
       <div class="identity-objective-row">
         <span class="identity-objective-badge">${t("target")}</span>
-        <span style="font-weight:600;">${content}</span>
+        <span style="font-weight:500;">${content}</span>
       </div>
       <div class="identity-objective-row">
         <span class="identity-objective-badge">${t("discuss")}</span>
-        <span style="font-weight:600;">${language}</span>
+        <span style="font-weight:500;">${language}</span>
       </div>
     </div>`;
 }
@@ -355,7 +365,7 @@ function mountWelcomeGoogleSlidesLink(lessonId, slot) {
   loadGoogleSlidesUrlMap().then((map) => {
     const url = map && map[lessonId];
     if (!url) return;
-    slot.innerHTML = ` · <a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:var(--teal-ink); font-weight:700;">↗ ${stackHtml(t("googleSlides", "en"), t("googleSlides", "es"))}</a>`;
+    slot.innerHTML = ` · <a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:var(--teal-ink); font-weight:600;">↗ ${stackHtml(t("googleSlides", "en"), t("googleSlides", "es"))}</a>`;
   });
 }
 
@@ -407,11 +417,11 @@ function mountJoinCodeEntry(screen, nameInput, periodInput, startBtn) {
   wrap.className = "identity-join";
   wrap.style.cssText = "margin-bottom:12px;text-align:left;";
   wrap.innerHTML =
-    `<button type="button" id="id-join-toggle" style="background:none;border:0;padding:0;font:inherit;font-size:0.82rem;font-weight:700;color:var(--teal-ink,#0f766e);cursor:pointer;text-decoration:underline;">` +
+    `<button type="button" id="id-join-toggle" style="background:none;border:0;padding:0;font:inherit;font-size:0.82rem;font-weight:600;color:var(--teal-ink,#0f766e);cursor:pointer;text-decoration:underline;">` +
     `${stackHtml("Have a class code?", "¿Tienes un código de clase?")}</button>` +
     `<span id="id-join-row" hidden style="display:inline-flex;gap:8px;margin-left:10px;align-items:center;">` +
     `<input id="id-join-code" type="text" autocomplete="off" autocapitalize="characters" placeholder="MK7Q9C" maxlength="8" style="width:110px;padding:8px;border-radius:8px;border:1px solid #cbd5e1;font:inherit;text-transform:uppercase;letter-spacing:2px;" />` +
-    `<button type="button" id="id-join-go" style="padding:8px 12px;border-radius:8px;border:0;background:var(--teal-ink,#0f766e);color:#fff;font:inherit;font-weight:700;cursor:pointer;">Go</button>` +
+    `<button type="button" id="id-join-go" style="padding:8px 12px;border-radius:8px;border:0;background:var(--teal-ink,#0f766e);color:#fff;font:inherit;font-weight:600;cursor:pointer;">Go</button>` +
     `<span id="id-join-msg" style="font-size:0.78rem;color:#64748b;"></span></span>`;
   form.insertBefore(wrap, form.firstChild);
   const row = wrap.querySelector("#id-join-row");
@@ -572,7 +582,7 @@ function showIdentityScreen(root, config) {
           <span class="instruction-callout-icon" aria-hidden="true">👋</span>
           <span>${t("enterNamePrompt")}</span>
           <button type="button" id="id-lang-toggle" aria-pressed="${getPreferredLang() === "es" ? "true" : "false"}"
-            style="margin-left:auto;flex:none;padding:6px 12px;border-radius:999px;border:1px solid #cbd5e1;background:${getPreferredLang() === "es" ? "var(--teal-ink,#0f766e)" : "#fff"};color:${getPreferredLang() === "es" ? "#fff" : "var(--teal-ink,#0f766e)"};font:inherit;font-size:0.8rem;font-weight:700;cursor:pointer;"
+            style="margin-left:auto;flex:none;padding:6px 12px;border-radius:999px;border:1px solid #cbd5e1;background:${getPreferredLang() === "es" ? "var(--teal-ink,#0f766e)" : "#fff"};color:${getPreferredLang() === "es" ? "#fff" : "var(--teal-ink,#0f766e)"};font:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;"
             title="Cambiar el idioma de la lección / Switch lesson language">🌎 Español</button>
         </p>
         <div id="welcome-teacher-slot"></div>
@@ -1087,8 +1097,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       <button class="color-btn" data-color="#3b82f6" style="width:20px; height:20px; border-radius:50%; border:none; background:#3b82f6; cursor:pointer; padding:0;"></button>
       <button class="color-btn" data-color="#10b981" style="width:20px; height:20px; border-radius:50%; border:none; background:#10b981; cursor:pointer; padding:0;"></button>
       <button class="color-btn" data-color="rgba(253,224,71,0.5)" style="width:20px; height:20px; border-radius:50%; border:none; background:#fde047; cursor:pointer; padding:0;"></button>
-      <button id="draw-undo-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer; margin-left:8px;">Undo</button>
-      <button id="draw-clear-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer;">Clear</button>
+      <button id="draw-undo-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:600; cursor:pointer; margin-left:8px;">Undo</button>
+      <button id="draw-clear-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:600; cursor:pointer;">Clear</button>
     `;
     document.body.append(drawHud);
 
@@ -1154,7 +1164,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // `left` is deliberately NOT set here — design-system.css offsets it past
     // the phase rail (--nt-rail-w) so the pill cannot cover a phase button's
     // label. An inline left would beat that rule and re-break it.
-    "position:fixed; bottom:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; display:flex; gap:8px; z-index:9999; box-shadow:0 6px 18px -8px rgba(15,23,42,0.22); transition:0.3s;";
+    "position:fixed; bottom:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; gap:8px; z-index:9999; box-shadow:0 6px 18px -8px rgba(15,23,42,0.22); transition:0.3s;";
   document.body.append(minimapHUD);
 
   // The phase dots PERSIST across renders, and that is the whole point.
@@ -1247,6 +1257,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     celebrationOverlay,
 
     renderPhase(index, renderFn) {
+      closeMathNotesModel();
       applyPhaseAccent(main, index);
       // Stop watching the phase we're replacing so its observer doesn't linger.
       if (this._vocabObserver) {
@@ -1296,6 +1307,16 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     },
 
     navigateTo(index) {
+      // THE gate. Every way out of a phase — Continue, the sidebar, a minimap
+      // dot, an in-phase control — arrives here, so a notebook checkpoint is
+      // enforced once, in one place, by phase INDEX. Backward moves are never
+      // blocked.
+      const from = state.get().currentPhase ?? 0;
+      if (!canLeavePhase(config, from, index)) {
+        announceBlocked(config, from);
+        return false;
+      }
+      closeMathNotesModel();
       this.clearExtraActive();
       state.setPhase(index);
       if (config.phases[index]) {
@@ -1312,8 +1333,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const current = state.get().currentPhase ?? 0;
       const next = current + 1;
       if (next >= config.phases.length) return false;
-      this.navigateTo(next);
-      return true;
+      // navigateTo returns false when a notebook checkpoint blocks the move, and
+      // that answer belongs to the caller: a Continue button must not report a
+      // successful advance that did not happen.
+      return this.navigateTo(next) !== false;
     },
 
     // Mark/unmark which (if any) pre-lesson tab is currently being viewed.
@@ -1333,6 +1356,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       );
     },
     clearExtraActive() {
+      closeMathNotesModel();
       this.setExtraActive(null);
     },
 
@@ -1340,6 +1364,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // lesson shell. Non-graded: this never touches phase state, XP, or stars —
     // the student's place in the graded flow is preserved underneath.
     openExtra(kind) {
+      // The canonical Math Notes model opens OVER the lesson rather than
+      // replacing the phase body — a student checking the page layout has not
+      // left the lesson and loses nothing on screen.
+      if (kind === "mathnotes") return openMathNotesModel(config);
       if (kind === "projects") return this.openProjects();
       if (kind === "printables") return this.openPrintables();
       if (kind === "activity") return this.openActivity();
@@ -1397,6 +1425,13 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           // Practice skipped the Explore phase entirely.
           state,
           onComplete: () => this.navigateTo(PHASE_EXPLORE),
+          // The application scenario + Show Your Work moved out of Launch to
+          // live under Learn It. This branch predates the
+          // ctx.renderLearnItExtras hook and never called it, so the moved
+          // content rendered NOWHERE — the panel now hosts it as its final
+          // "Apply It" step. Called directly (not via the hook) because the
+          // hook is only assigned once the Launch phase has rendered.
+          renderExtras: (host) => renderLearnItExtrasInto(host, config, state),
         });
         el.append(
           chainContinueButton("Continue to Explore 🔍 →", () => this.navigateTo(PHASE_EXPLORE)),
@@ -1526,7 +1561,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         b.type = "button";
         b.className = "btn btn-primary btn-lg";
         b.style.cssText =
-          "padding:14px 28px; font-weight:800; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
+          "padding:14px 28px; font-weight:700; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
         b.textContent = label;
         b.addEventListener("click", onClick);
         wrap.append(b);
@@ -1622,22 +1657,22 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
       const objectiveCard = ({ accent, color, icon, label, text, key, prompt, starter }) =>
         `<div class="card ${accent} obj-card" style="margin-bottom:var(--sp-4, 18px); padding:var(--sp-5, 22px);">
-          <div style="font-size:1.15rem; font-weight:800; color:var(${color}); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
-          <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:600; color:var(--navy, #264653);">${linkifyObjectiveTerms(text, objectiveVocab)}</p>
+          <div style="font-size:1.15rem; font-weight:700; color:var(${color}); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
+          <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:500; color:var(--navy, #264653);">${linkifyObjectiveTerms(text, objectiveVocab)}</p>
           <div style="display:flex; flex-direction:column; gap:var(--sp-2, 8px); background:#fff; border:2px solid var(${color}); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 14px) var(--sp-4, 18px); margin-bottom:var(--sp-3, 12px);">
-            <div style="font-weight:800; color:var(--navy, #264653); font-size:1.05rem;">Can I do this?</div>
+            <div style="font-weight:700; color:var(--navy, #264653); font-size:1.05rem;">Can I do this?</div>
             <label style="display:flex; align-items:center; gap:10px; font-size:1.2rem; cursor:pointer;"><input type="checkbox" data-obj-check="${key}-before" style="width:22px; height:22px; flex:0 0 auto;" /> <span>⏱️ <strong>Before</strong> the lesson — I can do this.</span></label>
             <label style="display:flex; align-items:center; gap:10px; font-size:1.2rem; cursor:pointer;"><input type="checkbox" data-obj-check="${key}-after" style="width:22px; height:22px; flex:0 0 auto;" /> <span>✅ <strong>After</strong> the lesson — I can do this now!</span></label>
           </div>
           <div class="objective-talk" style="background:var(--cream, #fdf3e0); border:1px solid var(--gold, #d4952a); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 12px) var(--sp-4, 16px);">
-            <div style="font-weight:800; color:var(--navy, #264653); margin-bottom:var(--sp-1, 4px);">💬 Talk about it</div>
+            <div style="font-weight:700; color:var(--navy, #264653); margin-bottom:var(--sp-1, 4px);">💬 Talk about it</div>
             <p style="margin:0 0 var(--sp-2, 8px); font-size:1.1rem;">${prompt}</p>
             <p style="margin:0; font-style:italic; color:var(--navy, #264653); font-size:1.1rem;">Say: "${starter}"</p>
           </div>
         </div>`;
 
       el.innerHTML = `
-        <style>.obj-key{ text-decoration-thickness:2px; text-underline-offset:2px; font-weight:800; color:var(--navy, #264653); }</style>
+        <style>.obj-key{ text-decoration-thickness:2px; text-underline-offset:2px; font-weight:700; color:var(--navy, #264653); }</style>
         <div class="extra-head" style="margin-bottom:var(--sp-4, 18px);">
           <div>
             <div class="section-title" style="font-size:2rem;">🎯 Today's Goals</div>
@@ -1775,7 +1810,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         return `
           <div class="project-card" style="border:1px solid var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--card, #fff); padding:var(--sp-4, 16px); display:flex; flex-direction:column; gap:var(--sp-2, 8px);">
             <div style="font-size:1.8rem; line-height:1;">${escHtml(p.emoji || "🎮")}</div>
-            <div style="font-weight:800; font-size:1.1rem; color:var(--navy, #264653);">${escHtml(p.title || "Project")}</div>
+            <div style="font-weight:700; font-size:1.1rem; color:var(--navy, #264653);">${escHtml(p.title || "Project")}</div>
             ${p.desc ? `<div class="section-desc" style="font-size:0.9rem;">${escHtml(p.desc)}</div>` : ""}
             <div style="display:flex; flex-wrap:wrap; gap:var(--sp-2, 8px); margin-top:auto; padding-top:var(--sp-2, 8px);">
               ${links
@@ -1792,7 +1827,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         ? `<div class="project-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:var(--sp-3, 12px);">${projects.map(card).join("")}</div>`
         : `<div class="project-empty" style="text-align:center; padding:var(--sp-6, 32px) var(--sp-4, 16px); border:2px dashed var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--cream, #fdf6ec);">
             <div style="font-size:2.4rem;">🚧</div>
-            <div style="font-weight:800; font-size:1.15rem; color:var(--navy, #264653); margin-top:var(--sp-2, 8px);">Projects coming soon</div>
+            <div style="font-weight:700; font-size:1.15rem; color:var(--navy, #264653); margin-top:var(--sp-2, 8px);">Projects coming soon</div>
             <div class="section-desc" style="max-width:46ch; margin:var(--sp-2, 8px) auto 0;">Hands-on projects and challenge games for this lesson will appear here as they are built. Check back soon!</div>
           </div>`;
 
@@ -1831,14 +1866,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         return `
           <div class="printable-card" style="border:1px solid var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--card, #fff); padding:var(--sp-4, 16px); display:flex; flex-direction:column; gap:var(--sp-2, 8px);">
             <div style="font-size:1.8rem; line-height:1;">${escHtml(p.emoji || "📄")}</div>
-            <div style="font-weight:800; font-size:1.05rem; color:var(--navy, #264653);">${escHtml(p.name || "Printable")}</div>
+            <div style="font-weight:700; font-size:1.05rem; color:var(--navy, #264653);">${escHtml(p.name || "Printable")}</div>
             ${p.desc ? `<div class="section-desc" style="font-size:0.9rem;">${escHtml(p.desc)}</div>` : ""}
             ${
               chips.length
                 ? `<div style="display:flex; flex-wrap:wrap; gap:var(--sp-1, 4px);">${chips
                     .map(
                       (c) =>
-                        `<span style="font-size:0.72rem; font-weight:700; background:var(--cream, #fdf6ec); border:1px solid var(--line, #e4ddc9); border-radius:999px; padding:2px 10px; color:var(--navy, #264653);">${escHtml(c)}</span>`,
+                        `<span style="font-size:0.72rem; font-weight:600; background:var(--cream, #fdf6ec); border:1px solid var(--line, #e4ddc9); border-radius:999px; padding:2px 10px; color:var(--navy, #264653);">${escHtml(c)}</span>`,
                     )
                     .join("")}</div>`
                 : ""
@@ -1935,7 +1970,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // overlay — turning Draw on used to cover this button and make it dead.
       "position:fixed; right:16px; bottom:16px; z-index:9999; display:inline-flex; " +
       "align-items:center; gap:8px; min-height:48px; padding:0 22px; border:0; " +
-      "border-radius:99px; background:#12355b; color:#fff; font-weight:800; " +
+      "border-radius:99px; background:#12355b; color:#fff; font-weight:700; " +
       "font-size:1rem; cursor:pointer; box-shadow:0 1px 2px rgba(18,53,91,.06);";
     document.body.appendChild(nextBtn);
 
@@ -2027,7 +2062,7 @@ function chainContinueButton(label, onClick) {
   b.type = "button";
   b.className = "btn btn-primary btn-lg";
   b.style.cssText =
-    "padding:14px 28px; font-weight:800; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
+    "padding:14px 28px; font-weight:700; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
   b.textContent = label;
   b.addEventListener("click", onClick);
   wrap.append(b);
@@ -2160,7 +2195,7 @@ function bonusNavHtml(config) {
   if (!act || !hasItems) return "";
   return `
     <div class="bonus-nav" data-bind="bonus">
-      <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Bonus</div>
+      <div class="prelesson-label" style="font-size:0.68rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Bonus</div>
       <button class="phase-btn extra-btn" data-extra="activity">
         <span class="phase-num">${escHtml(act.emoji || "🎯")}</span>
         <span>${escHtml(act.name || "Bonus Activity")}</span>
@@ -2186,7 +2221,7 @@ export const UNIT_CULMINATING_PROJECT = {
   10: "/math/unit-10/projects/",
 };
 
-function buildLessonHero(config, _state, phaseConfigs) {
+function buildLessonHero(config, _state, _phaseConfigs) {
   const hero = document.createElement("header");
   hero.className = "lesson-hero";
   hero.setAttribute("aria-label", "Lesson overview");
@@ -2198,52 +2233,22 @@ function buildLessonHero(config, _state, phaseConfigs) {
       </div>
       <div class="lesson-hero-badges">
         <span class="lesson-hero-badge lesson-hero-standard" data-bind="hero-standard" title="${escHtml(config.standard)}">${escHtml(config.standard)}</span>
-        <span class="lesson-hero-badge" data-bind="hero-phase">Phase 1</span>
         <span class="lesson-hero-badge">🪙 <span data-bind="hero-coins">0</span></span>
         <span class="lesson-hero-badge">⭐ <span data-bind="hero-stars">0</span>/18</span>
       </div>
-    </div>
-    <div class="phase-progress-bar" role="progressbar" aria-label="Lesson progress" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" data-bind="hero-progressbar">
-      <div class="phase-progress-fill" data-bind="hero-progress" style="width:0%"></div>
-    </div>
-    <div class="phase-progress-label">
-      <span data-bind="hero-phase-name">${escHtml(phaseConfigs[0]?.name || "Launch")}</span>
-      <span data-bind="hero-phase-count">0 of 6 complete</span>
     </div>`;
   return hero;
 }
 
-function updateLessonHero(hero, state, phaseConfigs) {
+function updateLessonHero(hero, state, _phaseConfigs) {
   if (!hero) return;
   const s = state.get();
-  const completed = s.phases.filter((p) => p.status === "completed").length;
-  const total = s.phases.length || 6;
-  const pct = total ? Math.round((completed / total) * 100) : 0;
-  const current = phaseConfigs[s.currentPhase] || phaseConfigs[0];
-
-  const phaseBadge = hero.querySelector('[data-bind="hero-phase"]');
-  if (phaseBadge) phaseBadge.textContent = `Phase ${(s.currentPhase ?? 0) + 1} of ${total}`;
 
   const stars = hero.querySelector('[data-bind="hero-stars"]');
   if (stars) stars.textContent = String(s.phases.reduce((sum, p) => sum + (p.stars || 0), 0));
 
   const coins = hero.querySelector('[data-bind="hero-coins"]');
   if (coins) coins.textContent = String(s.coins || 0);
-
-  const fill = hero.querySelector('[data-bind="hero-progress"]');
-  if (fill) fill.style.width = `${pct}%`;
-
-  const bar = hero.querySelector('[data-bind="hero-progressbar"]');
-  if (bar) {
-    bar.setAttribute("aria-valuenow", String(completed));
-    bar.setAttribute("aria-valuemax", String(total));
-  }
-
-  const phaseName = hero.querySelector('[data-bind="hero-phase-name"]');
-  if (phaseName) phaseName.textContent = current?.name || `Phase ${s.currentPhase + 1}`;
-
-  const phaseCount = hero.querySelector('[data-bind="hero-phase-count"]');
-  if (phaseCount) phaseCount.textContent = `${completed} of ${total} complete`;
 }
 
 function updateSidebar(sidebar, state, phaseConfigs) {
@@ -2268,13 +2273,15 @@ function updateSidebar(sidebar, state, phaseConfigs) {
   const nav = sidebar.querySelector('[data-bind="phases"]');
   if (!nav) return;
 
-  // Vocab → Notes → Learn It ride directly under the Launch (phase 1) button as
-  // indented sub-tabs — reference material that lives with the lesson flow, not
-  // in the "Before the lesson" group above. Order is deliberate: get curious
-  // (Launch), pick up the words (Vocab), read along (Notes), then Learn It
-  // teaches the concept step by step and leads into the lesson. Rendered inside
-  // the data-bound phase nav so they sit immediately beneath Launch; click is
-  // delegated via rma:openextra.
+  // The canonical Math Notes model, right under the Warmup (phase 1) button.
+  const mathNotesBtn = `
+    <button class="phase-btn extra-btn" data-extra="mathnotes">
+      <span class="phase-num" style="background:transparent; box-shadow:none; font-size:1.15rem;">📓</span>
+      <span>Math Notes</span>
+    </button>`;
+
+  // Vocab → Learn It ride directly under the Launch (phase 1) button as
+  // indented sub-tabs — reference material that lives with the lesson flow.
   const launchSubTabs = [
     { extra: "vocab", icon: "🔑", label: "Vocab" },
     { extra: "learn", icon: "💡", label: "Learn It" },
@@ -2311,8 +2318,11 @@ function updateSidebar(sidebar, state, phaseConfigs) {
         <span class="phase-stars">${stars}</span>
       </button>
     `;
-      // Launch is phase index 2 (Phase 3) — drop Vocab/Notes right beneath it.
-      return i === 2 ? btn + launchSubTabs : btn;
+      // Warmup is index 0 — drop Math Notes right beneath it.
+      if (i === 0) return btn + mathNotesBtn;
+      // Launch is phase index 2 (Phase 3) — drop Vocab/Learn It right beneath it.
+      if (i === 2) return btn + launchSubTabs;
+      return btn;
     })
     .join("");
 
@@ -2368,7 +2378,7 @@ function initDeployWatcher() {
     const toast = document.createElement("div");
     toast.setAttribute("role", "status");
     toast.style.cssText =
-      "position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#155fa0,#0f6d78);color:#fff;text-align:center;padding:12px 20px;font-weight:600;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,.2);";
+      "position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#155fa0,#0f6d78);color:#fff;text-align:center;padding:12px 20px;font-weight:500;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,.2);";
     toast.textContent = "🚀 New version deployed — refreshing now…";
     document.body.appendChild(toast);
     setTimeout(() => window.location.reload(), 1500);

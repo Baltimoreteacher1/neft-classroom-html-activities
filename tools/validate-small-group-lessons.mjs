@@ -5,6 +5,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { MATH_CHECKS } from "../engine/core/small-group-math-check.js";
 import { FACILITATION_BY_LESSON } from "../functions/teacher-small-group/_facilitation-data.js";
 import { authoredBank } from "./lib/small-group-authored-banks.mjs";
+import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE_RE = /^\d+-\d+$/;
@@ -238,6 +239,15 @@ function main() {
   const html = readFileSync(join(ROOT, "curriculum", "units", "index.html"), "utf8");
   const rows = JSON.parse(readFileSync(join(ROOT, "tools", "small-group-rows.json"), "utf8"));
   const result = validateSmallGroups({ html, rows });
+  // The checks below judge the rows that were found. Nothing judged whether any
+  // were: small-group-rows.json is GENERATED, so a regeneration that produced an
+  // empty array would have printed "✓ Small-group lessons: 0 parents, 0 variants,
+  // hierarchy and content valid" and exited 0.
+  assertSweptEnough(
+    "validate:small-groups",
+    result.variants,
+    "Discovery for validate:small-groups returned far fewer variants than this gate's pinned floor — tools/small-group-rows.json is generated; check it was rebuilt, not emptied.",
+  );
   console.log(
     `✓ Small-group lessons: ${result.parents} parents, ${result.variants} variants, hierarchy and content valid`,
   );

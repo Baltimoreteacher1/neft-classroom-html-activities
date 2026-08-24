@@ -54,6 +54,7 @@ function normalizeDay(input, expectedDay) {
     status,
     lessonId: status === "lesson" ? id : "",
     note: text(input?.note, 180),
+    noteEs: text(input?.noteEs, 180),
   };
 }
 
@@ -74,6 +75,7 @@ function normalizeSection(input, index) {
         ? input.week.startDate
         : "",
       note: text(input?.week?.note, 500),
+      noteEs: text(input?.week?.noteEs, 500),
       days: DAYS.map((day) => normalizeDay(daysByName.get(day), day)),
     },
   };

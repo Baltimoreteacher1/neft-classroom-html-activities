@@ -4,11 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Help Your Student — Lesson 7-4: Compare and Order Integers and Rational Numbers</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
+@import url("/assets/fonts/fraunces-87aa83.css");
 :root {
   --navy: #12355b;
   --navy-light: #18466f;
@@ -2922,7 +2920,7 @@ header.packet h1::after{
     <div class="visual-representation-grid" aria-label="Three ways to understand the lesson model">
       <article class="visual-representation-card visual-representation-model"><span class="representation-number">1</span><h3><span class="lang-en">Touch and change</span><span class="lang-es" lang="es">Toca y cambia</span></h3><p><span class="lang-en">Move, type, tap, or drag in the model. Watch what changes.</span><span class="lang-es" lang="es">Mueve, escribe, toca o arrastra en el modelo. Observa qué cambia.</span></p></article>
       <article class="visual-representation-card visual-representation-math"><span class="representation-number">2</span><h3><span class="lang-en">Write the math</span><span class="lang-es" lang="es">Escribe las matemáticas</span></h3><p><span class="lang-en">Record one equation, value, or relationship you can see.</span><span class="lang-es" lang="es">Escribe una ecuación, un valor o una relación que puedas ver.</span></p></article>
-      <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3><p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p><details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">The number farther to the left is always less; the number farther to the right is always greater.</p></details></article>
+      <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3><p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p><details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">Comparing &amp; Ordering Rational Numbers. Formula: Left is Less (&lt;) | Right is Greater (&gt;). 1. Plot or visualize numbers on a horizontal number line. 2. Numbers further to the left are always less than numbers to the right. 3. For negatives: A negative number with a larger absolute value is smaller (-10 &lt; -2)</p></details></article>
     </div>
   </section>
       <p class="tab-help-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"On a number line, numbers get bigger as you go right and smaller as you go left. The number farther to the left is always less. The number farther to the right is always greater.","es":"En la recta numérica, los números son más grandes a la derecha y más pequeños a la izquierda. El número que está más a la izquierda siempre es menor. El que está más a la derecha siempre es mayor."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
@@ -5778,6 +5776,16 @@ var NTAnswerMatch = (function () {
       .normalize("NFD")
       .replace(/[̀-ͯ]/g, "")
       .replace(/[×·*]/g, "x")
+      // Division was the one operation whose two spellings did NOT unify: "84/21"
+      // normalised to "84/21" and "84 ÷ 21" stayed "84 ÷ 21", so a student who
+      // typed the symbol on their keyboard instead of the one in the lesson was
+      // marked wrong. Words are folded for the same reason (Joel, 2026-08-23:
+      // "I don't want the tables to be so strict throughout").
+      .replace(/÷/g, "/")
+      .replace(/\bdivided by\b/g, "/")
+      .replace(/\btimes\b/g, "x")
+      .replace(/\bplus\b/g, "+")
+      .replace(/\bminus\b/g, "-")
       .replace(/[−–—]/g, "-")
       .replace(/\s+/g, " ")
       .replace(/[.,;:]+$/, "")
@@ -5844,12 +5852,151 @@ var NTAnswerMatch = (function () {
 
   const numericValue = (value) => numberOf(stripUnit(value));
 
+  /* ── Phrasing ────────────────────────────────────────────────────────────────
+     An answer that DESCRIBES a move has no single spelling: "Divide both sides
+     by 3", "divide by 3" and "÷ 3" are one answer. phraseKey reduces such an
+     answer to what it actually names — the operation and the number — with
+     filler words and word order dropped.
+
+     Word order has to be dropped for this to work at all, and dropping it is
+     only safe while there is nothing for the order to mean. So the layer is
+     refused the moment either side names TWO numbers: "56 ÷ 8" and "8 ÷ 56" are
+     different answers, and no amount of flexibility may say otherwise. */
+
+  const PHRASE_FILLER = new Set([
+    "a",
+    "an",
+    "the",
+    "and",
+    "then",
+    "so",
+    "is",
+    "are",
+    "be",
+    "to",
+    "of",
+    "it",
+    "by",
+    "on",
+    "in",
+    "with",
+    "for",
+    "each",
+    "every",
+    "both",
+    "side",
+    "sides",
+    "step",
+    "steps",
+    "we",
+    "i",
+    "you",
+    "my",
+    "your",
+    "answer",
+    "value",
+    "number",
+    "equation",
+    "problem",
+    "result",
+    "over",
+    "use",
+    "using",
+    "same",
+    "get",
+  ]);
+
+  const PHRASE_OPERATIONS = [
+    [/\/|\bdividing\b|\bdivide\b|\bdivision\b/g, " divide "],
+    // norm() has already folded × · * into "x" AND closed the spaces around it,
+    // so "× 4" arrives as "x4" and "3 × 4" as "3x4". Read that x as multiply only
+    // where a digit follows it; a trailing x ("3x = 12") is the variable and must
+    // survive, or a coefficient would be torn off its term.
+    [
+      /(?<=\d)x(?=\d)|(?<=\s)x(?=\d)|(?<=\s)x(?=\s)|\bmultiplying\b|\bmultiply\b|\bmultiplication\b/g,
+      " multiply ",
+    ],
+    [/\+|\badding\b|\badd\b|\baddition\b/g, " add "],
+    [/\bsubtracting\b|\bsubtract\b|\bsubtraction\b/g, " subtract "],
+  ];
+
+  const NUMBER_WORDS = {
+    zero: "0",
+    one: "1",
+    two: "2",
+    three: "3",
+    four: "4",
+    five: "5",
+    six: "6",
+    seven: "7",
+    eight: "8",
+    nine: "9",
+    ten: "10",
+    eleven: "11",
+    twelve: "12",
+  };
+
+  function phraseKey(value) {
+    // NOTE: no template literals anywhere in this file — it is inlined verbatim
+    // into homework HTML inside one (scripts/homework-answer-match.mjs).
+    let text = " " + norm(value) + " ";
+    for (const [pattern, word] of PHRASE_OPERATIONS) text = text.replace(pattern, word);
+    const tokens = text
+      .split(/[^a-z0-9.]+/)
+      .map((token) => NUMBER_WORDS[token] || token)
+      .filter((token) => token && !PHRASE_FILLER.has(token));
+    return tokens.sort().join("|");
+  }
+
+  /** How many distinct numbers a phrase names — the guard on word order above. */
+  function numberCount(key) {
+    return new Set(key.split("|").filter((token) => /^\d/.test(token))).size;
+  }
+
+  function phraseMatches(typed, answer) {
+    // This layer exists for an answer that DESCRIBES a move in words. An answer
+    // with no letters in it is notation, not description, and notation is already
+    // handled by norm() — running it through a token bag can only lose
+    // information. It did: phraseKey drops characters it has no token for, so
+    // a power written with a superscript glyph reduced to its base, and 2^3 was
+    // answered by 2. (Powers are written 2^3 here: audit:homework reads a literal
+    // superscript in this file as "this page shows an exponents visual".)
+    if (!/[a-z]/i.test(String(answer ?? ""))) return false;
+    const answerKey = phraseKey(answer);
+    const typedKey = phraseKey(typed);
+    if (!answerKey || answerKey !== typedKey) return false;
+    // Must name an operation — otherwise this is free prose, and two different
+    // explanations built from the same words would compare equal.
+    if (!/divide|multiply|add|subtract/.test(answerKey)) return false;
+    return numberCount(answerKey) <= 1;
+  }
+
+  /* ── Either half of a stated equation ────────────────────────────────────────
+     Work authored as "3x ÷ 3 = 21 ÷ 3" states the SAME move on both sides; a
+     student who writes only the half that does the arithmetic has answered it.
+     A half with no digit in it is refused, so "x = 7" is never answered by "x". */
+  function equationHalves(value) {
+    const text = String(value ?? "").trim();
+    if (!text.includes("=")) return [];
+    return text
+      .split("=")
+      .map((part) => part.trim())
+      .filter((part) => part && /\d/.test(part));
+  }
+
   function matchesOne(typed, answer) {
     if (answer == null) return false;
     if (norm(typed) === norm(answer)) return true;
     const typedCore = stripLabel(typed);
     const answerCore = stripLabel(answer);
     if (norm(typedCore) === norm(answerCore)) return true;
+    if (phraseMatches(typed, answer)) return true;
+    // Only the halves of the ANSWER are opened up. Splitting what the STUDENT
+    // typed would credit "7 = 8" against 7.
+    for (const half of equationHalves(answer)) {
+      if (norm(typed) === norm(half)) return true;
+      if (norm(typedCore) === norm(stripLabel(half))) return true;
+    }
     const target = numericValue(answerCore);
     if (target == null) return false;
     const value = numericValue(typedCore);

@@ -15,6 +15,8 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { assertNonEmpty } from "./lib/non-empty.mjs";
+import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -68,6 +70,18 @@ const files = execFileSync("git", ["ls-files", "-z"], { cwd: ROOT, encoding: "bu
   .filter(Boolean)
   .filter((f) => !SKIP_PATH.test(f))
   .filter((f) => !/\.(png|jpe?g|gif|webp|ico|woff2?|ttf|eot|mp3|mp4|zip|pdf|wasm)$/i.test(f));
+
+assertNonEmpty(
+  "tracked text files",
+  files,
+  "`git ls-files` returned nothing — in a detached or partial worktree this gate would scan zero files and still report zero secrets.",
+  100,
+);
+assertSweptEnough(
+  "validate:secrets",
+  files,
+  "Discovery for validate:secrets returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
+);
 
 const findings = [];
 for (const rel of files) {

@@ -1,5 +1,6 @@
 import { stackContent } from "../core/i18n.js";
 import { diagnoseChoice, misconceptionLabel, studentExplanation } from "../core/misconceptions.js";
+import { compareYourWorkFor } from "../core/notebook-prompt.js";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
@@ -100,7 +101,7 @@ function injectMultipleChoiceStyles() {
       .mc-diagnosis {
         display: block;
         margin-bottom: var(--sp-2, 0.5rem);
-        font-weight: 700;
+        font-weight: 600;
         font-size: 0.9rem;
         line-height: 1.35;
         color: var(--amber-ink, #7c4a03);
@@ -212,6 +213,9 @@ export function renderMultipleChoice(container, opts) {
     explanationEs,
     onAnswer,
     hideStem,
+    // Set by the problem shell when it rendered a notebook setup for this item.
+    // Only then is "check your written work" a coherent thing to say.
+    notebookAsked,
     choiceFeedback,
     choiceFeedbackEs,
     hint,
@@ -426,7 +430,26 @@ export function renderMultipleChoice(container, opts) {
             : `Parece que: ${misconceptionLabel(diagnosis.id, "es")}`,
         )}</span>`
       : "";
-    feedbackSlot.innerHTML = `${chip}<span class="mc-feedback-line"><span class="feedback-icon">${isCorrect ? "✓" : "💡"}</span><span>${stackContent(fbMsg, fbMsgEs)}</span></span>`;
+    // Turn the verdict into a comparison. The explanation was already shown
+    // here; what was missing is what the moment is FOR. A student who wrote
+    // nothing otherwise sees exactly the same screen as one who worked it out,
+    // and this is the cheapest way to make that difference visible to them —
+    // no gate, no claim to make, nothing to tap through.
+    //
+    // Only on a settled result: nudging a student toward their notebook while
+    // they still have a retry pending would read as "you got it wrong", which
+    // is a different message and not this one.
+    const settled = isCorrect || revealAnswer;
+    const compare = settled
+      ? compareYourWorkFor({ notebookAsked }, { asked: !!notebookAsked, correct: isCorrect })
+      : null;
+    const compareHtml = compare
+      ? `<p class="nb-compare"><span class="nb-compare-icon" aria-hidden="true">\u270F\uFE0F</span><span>${stackContent(
+          compare.en,
+          compare.es,
+        )}</span></p>`
+      : "";
+    feedbackSlot.innerHTML = `${chip}<span class="mc-feedback-line"><span class="feedback-icon">${isCorrect ? "✓" : "💡"}</span><span>${stackContent(fbMsg, fbMsgEs)}</span></span>${compareHtml}`;
 
     // Second arg is additive: existing single-arg callers are unaffected, and
     // misconception-aware callers can see WHICH distractor was chosen.

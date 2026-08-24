@@ -19,14 +19,23 @@ export async function run(ctx) {
   const cfg = ctx.config.lessonRender || {};
   const base = cfg.base || ctx.config.routeMonitor?.base || "https://eduwonderlab.com";
   const script = path.join(ctx.root, "tools", "smoke-lesson-boot.mjs");
+  // Full-fleet nightly: `all` probes every lesson instead of one per unit, and
+  // `variants` adds the 168 small-group + 36 catch-up configs — each is a
+  // separately generated boot path, so a rendering core lesson proves nothing
+  // about its variants. ~288 pages at a few seconds each needs the bigger
+  // timeout; night-shift has the hours, the pre-push gate keeps the sample.
+  const argsList = [script, "--base", base];
+  if (cfg.all) argsList.push("--all");
+  if (cfg.variants) argsList.push("--variants");
+  const timeout = Number(cfg.timeoutMs) || (cfg.all ? 45 * 60 * 1000 : 180000);
 
   let stdout = "";
   let code = 0;
   try {
-    const res = await execFileAsync("node", [script, "--base", base], {
+    const res = await execFileAsync("node", argsList, {
       cwd: ctx.root,
-      timeout: 180000,
-      maxBuffer: 4 * 1024 * 1024,
+      timeout,
+      maxBuffer: 16 * 1024 * 1024,
     });
     stdout = res.stdout || "";
   } catch (err) {

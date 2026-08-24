@@ -1,4 +1,4 @@
-import { stackContent } from "../core/i18n.js";
+import { getPreferredLang, stackContent, stackContentHtml } from "../core/i18n.js";
 
 const ORP_STYLE_ID = "orp-polish-styles";
 
@@ -43,7 +43,7 @@ function ensureOpenResponseStyles() {
     }
     .orp-keyword-chip {
       font-size: 0.78rem;
-      font-weight: 600;
+      font-weight: 500;
       color: var(--navy, #12355b);
       background: var(--teal-light, #dff2ee);
       border: 1px solid var(--line, #d7e2ed);
@@ -150,9 +150,25 @@ function fireConfetti(anchorEl) {
 
 export function renderOpenResponse(
   container,
-  { prompt, promptEs, sentenceFrame, keywords, minLength, onSubmit },
+  { prompt, promptEs, sentenceFrame, sentenceFrameEs, keywords, keywordsEs, minLength, onSubmit },
 ) {
   ensureOpenResponseStyles();
+
+  // Keyword chips are the one bilingual element that must REPLACE rather than
+  // stack, because they are not only read — they are matched against what the
+  // student TYPES. A student writing in Spanish never contains the English word
+  // "quotient", so the chips never light up and the response is scored as
+  // missing every key idea it actually made. In Spanish the Spanish list is
+  // both shown and matched; the arrays are parallel and all-or-nothing, so a
+  // short one falls back to English rather than half-matching.
+  const keywordList =
+    getPreferredLang() === "es" &&
+    Array.isArray(keywordsEs) &&
+    Array.isArray(keywords) &&
+    keywordsEs.length === keywords.length &&
+    keywordsEs.every((k) => String(k ?? "").trim())
+      ? keywordsEs
+      : keywords;
 
   const wrapper = document.createElement("div");
   wrapper.className = "card card-teal";
@@ -160,7 +176,7 @@ export function renderOpenResponse(
 
   const promptEl = document.createElement("p");
   promptEl.style.cssText =
-    "font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
+    "font-size:1rem; font-weight:500; margin:0 0 var(--sp-3); line-height:1.5;";
   // Let students mark up the prompt text (highlight / underline / bold).
   promptEl.setAttribute("data-annotate", "word-problem");
   // `promptEs` is authored on 54 items and had no renderer: a written-response
@@ -174,7 +190,14 @@ export function renderOpenResponse(
   if (sentenceFrame) {
     const frame = document.createElement("div");
     frame.className = "sentence-frame";
-    frame.innerHTML = sentenceFrame.replace(/___/g, '<span class="blank">&nbsp;</span>');
+    // The blanks are markup, so each lane is rendered THEN stacked — running
+    // stackContent first would escape the <span class="blank"> into visible
+    // angle brackets, and a student would read the tag instead of a blank.
+    const blanks = (text) => String(text).replace(/___/g, '<span class="blank">&nbsp;</span>');
+    frame.innerHTML = stackContentHtml(
+      blanks(sentenceFrame),
+      sentenceFrameEs ? blanks(sentenceFrameEs) : "",
+    );
     wrapper.append(frame);
   }
 
@@ -203,11 +226,11 @@ export function renderOpenResponse(
 
   // Keyword hint chips (slide in; highlight as they are used).
   let keywordChips = null;
-  if (keywords && keywords.length > 0) {
+  if (keywordList && keywordList.length > 0) {
     keywordChips = new Map();
     const hints = document.createElement("div");
     hints.className = "orp-keyword-hints";
-    keywords.forEach((kw, i) => {
+    keywordList.forEach((kw, i) => {
       const chip = document.createElement("span");
       chip.className = "orp-keyword-chip";
       chip.textContent = kw;
@@ -260,25 +283,25 @@ export function renderOpenResponse(
       return;
     }
 
-    if (keywords && keywords.length > 0) {
+    if (keywordList && keywordList.length > 0) {
       const lower = text.toLowerCase();
-      const found = keywords.filter((kw) => lower.includes(kw.toLowerCase()));
-      const missing = keywords.length - found.length;
+      const found = keywordList.filter((kw) => lower.includes(kw.toLowerCase()));
+      const missing = keywordList.length - found.length;
 
       if (found.length === 0) {
         showFeedback(
           feedbackSlot,
           "hint",
-          `Try using math vocabulary in your response. Think about: ${keywords.slice(0, 3).join(", ")}.`,
+          `Try using math vocabulary in your response. Think about: ${keywordList.slice(0, 3).join(", ")}.`,
         );
         return;
       }
 
-      if (missing > Math.ceil(keywords.length / 2)) {
+      if (missing > Math.ceil(keywordList.length / 2)) {
         showFeedback(
           feedbackSlot,
           "hint",
-          `Good start! Can you also include: ${keywords
+          `Good start! Can you also include: ${keywordList
             .filter((kw) => !lower.includes(kw.toLowerCase()))
             .slice(0, 2)
             .join(", ")}?`,

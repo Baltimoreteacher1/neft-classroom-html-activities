@@ -30,8 +30,8 @@ import { attachAnnotator } from "../components/scene-annotate.js";
 import { attachVoiceInput } from "../components/voice-explain.js";
 import {
   noticeWonderCaption,
+  noticeWonderCaptionEs,
   noticeWonderImageAlt,
-  renderAcademicVocabulary as renderAcademicVocabularyCard,
 } from "./academic-vocabulary.js";
 import { createAdaptiveSequence } from "./adaptive.js";
 import { enableWordProblemAnnotation, observeWordProblemAnnotation } from "./annotate.js";
@@ -54,7 +54,16 @@ import { createGoDeeper } from "./go-deeper.js";
 import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
 import { mountHintLadder } from "./hint-ladder.js";
-import { badgeName, getPreferredLang, phaseName, stackContent, stackHtml, t } from "./i18n.js";
+import {
+  badgeName,
+  getPreferredLang,
+  phaseName,
+  stack,
+  stackContent,
+  stackContentHtml,
+  stackHtml,
+  t,
+} from "./i18n.js";
 import { attachImageZoom, isLightboxOpen, observeContentImageZoom } from "./image-zoom.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { mountLevel3Launch } from "./level3-launch.js";
@@ -69,6 +78,8 @@ import {
   resolveAuthoredTag,
   studentExplanation,
 } from "./misconceptions.js";
+import { mountNotebookCheckpoint, openMathNotesModel } from "./notebook-checkpoint.js";
+import { lessonModelFrom } from "./notebook-prompt.js";
 import {
   normalizeAcademicWord,
   resolveNoticeWonderAcademicWord,
@@ -93,6 +104,7 @@ import { mountSymbolPad, needsSymbolPad } from "./symbol-pad.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
 import { toolMeta } from "./tool-catalog.js";
+import { mountToolDrawer } from "./tool-drawer.js";
 import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 import { stampTeachL4Meta } from "./uifr.js";
 import {
@@ -172,6 +184,25 @@ export function bootLesson(config) {
   mountChalkAnnotations(document);
   // Tools menu → "Interactive Tools" (?mode=tools) when the lesson has any.
   mountToolsMenuItem(config);
+  // …and the same models WITHOUT leaving the lesson. `?mode=tools` is a
+  // full-page takeover: reaching a manipulative mid-lesson meant navigating
+  // away from the phase you were on and the problem you were part-way through,
+  // which is why in practice it was a before/after resource and never a
+  // during-the-lesson one. That is the gap engine/core/tool-drawer.js was
+  // written for, and it was wired into the small-group studio only — so the
+  // whole-group lessons, which is where most students spend most of their time,
+  // still had the takeover as their only route (Joel, 2026-08-23: "when there
+  // are interactive tools, these should be available throughout").
+  //
+  // The docked rail is all that applies here. The per-panel chip rows are
+  // anchored to the small-group tab panels; whole-group phases render lazily
+  // into one container, so there is nothing stable to anchor them to. Passing
+  // no panels and no hero mounts the dock alone.
+  //
+  // The generic "🧰 Tools" dock already on these pages is the LEARNING SUPPORTS
+  // dock — multiplication chart, number line, calculator. Useful, and not the
+  // same thing: it never offers the model this lesson is actually about.
+  mountToolDrawer(config);
 }
 
 // ── Helpers ──
@@ -215,14 +246,14 @@ function deriveScaffold(prob) {
   }
 }
 
-function phaseHeader(el, icon, iconClass, title, desc) {
+function phaseHeader(el, icon, iconClass, title, desc, descEs = "") {
   const h = document.createElement("div");
   h.className = "section-header";
   h.innerHTML = `
     <div class="section-icon ${iconClass}">${icon}</div>
     <div>
       <div class="section-title">${esc(title)}</div>
-      <div class="section-desc">${esc(desc)}</div>
+      <div class="section-desc">${stackContent(desc, descEs)}</div>
     </div>`;
   el.append(h);
 }
@@ -607,12 +638,12 @@ function renderLaunchVisual(host, visual) {
     const chips = visual.values
       .map(
         (v) =>
-          `<span style="display:inline-flex; align-items:center; justify-content:center; min-width:34px; padding:4px 8px; background:#fff; border:1px solid rgba(42,157,143,0.4); border-radius:8px; font-weight:700; color:var(--navy,#264653); font-size:0.9rem;">${esc(v)}</span>`,
+          `<span style="display:inline-flex; align-items:center; justify-content:center; min-width:34px; padding:4px 8px; background:#fff; border:1px solid rgba(42,157,143,0.4); border-radius:8px; font-weight:600; color:var(--navy,#264653); font-size:0.9rem;">${esc(v)}</span>`,
       )
       .join("");
     card.innerHTML =
       (visual.title
-        ? `<div style="font-weight:700; color:var(--navy,#264653); margin-bottom:var(--sp-3); display:flex; align-items:center; gap:8px;"><span>📊</span><span>${esc(visual.title)}</span></div>`
+        ? `<div style="font-weight:600; color:var(--navy,#264653); margin-bottom:var(--sp-3); display:flex; align-items:center; gap:8px;"><span>📊</span><span>${esc(visual.title)}</span></div>`
         : "") +
       `<div style="display:flex; flex-wrap:wrap; gap:8px;">${chips}</div>` +
       (visual.unit
@@ -771,8 +802,8 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
     .map(
       (s) => `
       <li class="sentence-frame" style="margin-bottom:var(--sp-2); list-style:none;">
-        <span style="font-weight:700;">${esc(s.en)}</span>
-        ${s.es ? `<span style="display:block; color:var(--muted); font-style:italic; font-weight:600;">${esc(s.es)}</span>` : ""}
+        <span style="font-weight:600;">${esc(s.en)}</span>
+        ${s.es ? `<span style="display:block; color:var(--muted); font-style:italic; font-weight:500;">${esc(s.es)}</span>` : ""}
       </li>`,
     )
     .join("");
@@ -780,12 +811,12 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   // Level 1 (support): a "Start here" kernel + a word-bank chip strip. Both are
   // optional — older configs without these fields simply render nothing here.
   const kernelHtml = prompt.kernel
-    ? `<p style="margin:0 0 var(--sp-3); font-weight:600;"><span style="display:inline-block; font-weight:800; color:var(--coral); margin-right:var(--sp-2);">Start here:</span>${esc(prompt.kernel)}</p>`
+    ? `<p style="margin:0 0 var(--sp-3); font-weight:500;"><span style="display:inline-block; font-weight:700; color:var(--coral); margin-right:var(--sp-2);">Start here:</span>${esc(prompt.kernel)}</p>`
     : "";
   const wordBankHtml =
     Array.isArray(prompt.wordBank) && prompt.wordBank.length
       ? `<div style="margin:0 0 var(--sp-3);">
-      <span style="font-weight:700; margin-right:var(--sp-2);">Word bank:</span>
+      <span style="font-weight:600; margin-right:var(--sp-2);">Word bank:</span>
       <span style="display:inline-flex; flex-wrap:wrap; gap:var(--sp-2); vertical-align:middle;">${prompt.wordBank
         .map((w) => `<span class="badge badge-teal">${esc(w)}</span>`)
         .join("")}</span>
@@ -810,8 +841,8 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
           .map(
             (s) => `
       <li class="sentence-frame" style="margin-bottom:var(--sp-2); list-style:none;">
-        <span style="font-weight:700;">${esc(s.en)}</span>
-        ${s.es ? `<span style="display:block; color:var(--muted); font-style:italic; font-weight:600;">${esc(s.es)}</span>` : ""}
+        <span style="font-weight:600;">${esc(s.en)}</span>
+        ${s.es ? `<span style="display:block; color:var(--muted); font-style:italic; font-weight:500;">${esc(s.es)}</span>` : ""}
       </li>`,
           )
           .join("");
@@ -819,7 +850,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   const supportInner = (kernel, stems, bank, showLabel) => `
       ${showLabel ? '<span class="badge badge-teal" style="margin-bottom:var(--sp-2);">Sentence support</span>' : ""}
       ${kernel}
-      ${stems ? `<p style="font-weight:700; margin:var(--sp-2) 0 var(--sp-2);">Use a sentence starter / <span style="font-style:italic;">Usa un inicio de oración</span>:</p><ul style="margin:0 0 var(--sp-3); padding:0;">${stems}</ul>` : ""}
+      ${stems ? `<p style="font-weight:600; margin:var(--sp-2) 0 var(--sp-2);">Use a sentence starter / <span style="font-style:italic;">Usa un inicio de oración</span>:</p><ul style="margin:0 0 var(--sp-3); padding:0;">${stems}</ul>` : ""}
       ${bank}`;
 
   const shownKernel = parts.kernel ? kernelHtml : "";
@@ -849,7 +880,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
     prompt.extend || extendStemsHtml
       ? `<div style="border-left:4px solid var(--amber); padding-left:var(--sp-3); margin:0 0 var(--sp-3);">
       <span class="badge badge-amber" style="margin-bottom:var(--sp-2);">Level 2</span>
-      ${prompt.extend ? `<p style="font-weight:700; margin:0;">${esc(prompt.extend)}</p>` : ""}
+      ${prompt.extend ? `<p style="font-weight:600; margin:0;">${esc(prompt.extend)}</p>` : ""}
       ${extendStemsHtml}
     </div>`
       : "";
@@ -859,7 +890,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
       <span style="font-size:1.6rem;" aria-hidden="true">🗣️</span>
       <h4 id="${uid}-title" style="color:var(--coral); margin:0;">Turn &amp; Talk</h4>
     </div>
-    <p style="font-weight:700; font-size:1.05rem; margin:0 0 var(--sp-3);">${esc(prompt.question)}</p>
+    <p style="font-weight:600; font-size:1.05rem; margin:0 0 var(--sp-3);">${esc(prompt.question)}</p>
     <div style="display:flex; flex-wrap:wrap; gap:var(--sp-2); margin-bottom:var(--sp-3);">
       <span class="badge badge-teal">🅰️ Partner A shares first</span>
       <span class="badge badge-amber">🅱️ Partner B goes next</span>
@@ -876,7 +907,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
     moreBtn.type = "button";
     moreBtn.className = "btn btn-secondary btn-sm tt-show-frames";
     moreBtn.style.cssText = "margin:0 0 var(--sp-3);";
-    moreBtn.textContent = "Show sentence starters";
+    moreBtn.innerHTML = stack("showSentenceStarters", { html: true });
     moreBtn.addEventListener("click", () => {
       const full = document.createElement("div");
       full.className = "tt-support tt-support-full";
@@ -896,11 +927,11 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   const timerBtn = document.createElement("button");
   timerBtn.type = "button";
   timerBtn.className = "btn btn-secondary";
-  timerBtn.textContent = "⏱️ Start 60s timer";
+  timerBtn.innerHTML = stack("startTimer60", { html: true });
   const timerLabel = document.createElement("span");
   timerLabel.setAttribute("role", "timer");
   timerLabel.setAttribute("aria-live", "polite");
-  timerLabel.style.cssText = "font-weight:800; color:var(--coral);";
+  timerLabel.style.cssText = "font-weight:700; color:var(--coral);";
   let timerId = null;
   timerBtn.addEventListener("click", () => {
     if (timerId) return;
@@ -914,10 +945,10 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
       if (remaining <= 0) {
         clearInterval(timerId);
         timerId = null;
-        timerLabel.textContent = "⏰ Time! Wrap up your ideas.";
+        timerLabel.innerHTML = stack("timeWrapUp", { html: true });
         timerBtn.disabled = false;
         timerBtn.style.opacity = "1";
-        timerBtn.textContent = "⏱️ Restart 60s timer";
+        timerBtn.innerHTML = stack("restartTimer60", { html: true });
       }
     }, 1000);
   });
@@ -928,7 +959,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   confirmBtn.type = "button";
   confirmBtn.className = "btn btn-primary";
   const markDone = ({ fresh = false } = {}) => {
-    confirmBtn.textContent = "We talked! ✓";
+    confirmBtn.innerHTML = stack("weTalked", { html: true });
     confirmBtn.classList.add("btn-success");
     confirmBtn.setAttribute("aria-pressed", "true");
     confirmBtn.disabled = true;
@@ -940,7 +971,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   if (alreadyDone) {
     markDone();
   } else {
-    confirmBtn.textContent = "We talked! ✓";
+    confirmBtn.innerHTML = stack("weTalked", { html: true });
     confirmBtn.setAttribute("aria-pressed", "false");
     confirmBtn.addEventListener("click", () => {
       markDone({ fresh: true });
@@ -1115,10 +1146,21 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
         : problemDef.prompt
           ? problemDef.promptEs
           : problemDef.labelEs,
+      // Passed whole so the notebook setup derives from the item's own fields
+      // (its type, and a real step array when it has one) rather than from
+      // anything an author would have to add.
+      problemDef,
+      // Extracted once per lesson by the caller, not per item — it is a
+      // property of the lesson, and re-parsing the key idea 1,022 times would
+      // be work done 1,021 times too often.
+      lessonModel: shellOpts.lessonModel,
     });
     container.append(shell.card);
     body = shell.body;
     setResult = shell.setResult;
+    // Travels with the item so the component's own feedback can point back at
+    // the notebook it asked the student to use.
+    if (shell.notebookAsked) problemDef = { ...problemDef, notebookAsked: true };
 
     if (shellOpts.state && !shellOpts.skipHints) {
       mountHintLadder(shell.card, {
@@ -1164,7 +1206,7 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
     case "drag-sort":
       if (problemDef.instructions) {
         const p = document.createElement("p");
-        p.style.cssText = "font-weight:600; margin-bottom:var(--sp-3);";
+        p.style.cssText = "font-weight:500; margin-bottom:var(--sp-3);";
         // `instructionsEs` is authored on 170 items and had no renderer at all
         // until now — the sort task told a Spanish-speaking student what to do
         // only in English, directly above a set of cards they then had to sort.
@@ -1300,8 +1342,8 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
     const skip = document.createElement("button");
     skip.type = "button";
     skip.className = "btn btn-secondary btn-sm teacher-skip no-print";
-    skip.textContent = "⏭ Next (teacher)";
-    skip.title = "Teacher Mode — advance without answering";
+    skip.innerHTML = stack("nextTeacher", { html: true });
+    skip.title = t("nextTeacherTip");
     skip.addEventListener("click", () => wrappedOnAnswer(true));
     body.append(skip);
   }
@@ -1316,7 +1358,7 @@ function renderUnknownComponentFallback(container, def = {}) {
   const text = def.instructions || def.label || def.prompt || def.stem;
   if (text) {
     const p = document.createElement("p");
-    p.style.cssText = "font-weight:600; margin-bottom:var(--sp-3);";
+    p.style.cssText = "font-weight:500; margin-bottom:var(--sp-3);";
     p.textContent = text;
     card.append(p);
   }
@@ -1391,7 +1433,7 @@ function renderRevealSlides(host, config, placements) {
 
   const section = document.createElement("section");
   section.className = "reveal-slides";
-  section.setAttribute("aria-label", "Reveal Math slides");
+  section.setAttribute("aria-label", t("revealSlidesLabel"));
 
   const heading = document.createElement("div");
   heading.className = "reveal-slides-heading";
@@ -1447,16 +1489,25 @@ function renderNoticeAndWonder(host, config, state) {
   const nw = config && config.noticeAndWonder;
   if (!nw || typeof nw !== "object") return;
 
-  const noticeStarters = Array.isArray(nw.noticeStarters)
-    ? nw.noticeStarters.filter((s) => typeof s === "string" && s.trim())
-    : [];
-  const wonderStarters = Array.isArray(nw.wonderStarters)
-    ? nw.wonderStarters.filter((s) => typeof s === "string" && s.trim())
-    : [];
+  // A starter chip does two jobs — it READS as a label and it WRITES into the
+  // textarea — so its Spanish cannot be a stacked string. The label stacks; the
+  // text inserted is whichever language the student is working in, because
+  // pasting "I notice that… Yo noto que…" into their own sentence is worse than
+  // pasting English. `*Es` is ALL-OR-NOTHING against the UNFILTERED array so
+  // index i keeps meaning starter i after the blank filter runs.
+  const pairStarters = (list, listEs) => {
+    if (!Array.isArray(list)) return [];
+    const parallel = Array.isArray(listEs) && listEs.length === list.length ? listEs : null;
+    return list
+      .map((text, i) => ({ text, es: parallel ? String(parallel[i] ?? "") : "" }))
+      .filter((s) => typeof s.text === "string" && s.text.trim());
+  };
+  const noticeStarters = pairStarters(nw.noticeStarters, nw.noticeStartersEs);
+  const wonderStarters = pairStarters(nw.wonderStarters, nw.wonderStartersEs);
 
   const card = document.createElement("section");
   card.className = "card nw-card";
-  card.setAttribute("aria-label", "Notice and Wonder");
+  card.setAttribute("aria-label", t("noticeWonderLabel"));
 
   const head = document.createElement("div");
   head.className = "nw-head";
@@ -1472,7 +1523,7 @@ function renderNoticeAndWonder(host, config, state) {
   if (visibleCaption) {
     const ctxP = document.createElement("p");
     ctxP.className = "nw-context";
-    ctxP.textContent = visibleCaption;
+    ctxP.innerHTML = stackContent(visibleCaption, noticeWonderCaptionEs(nw));
     card.append(ctxP);
   }
 
@@ -1509,7 +1560,9 @@ function renderNoticeAndWonder(host, config, state) {
     // it. Resolution order is unit-tested in academic-vocabulary.js.
     img.alt = noticeWonderImageAlt(nw, {
       caption: objVisuals?.content?.caption,
+      captionEs: objVisuals?.content?.captionEs,
       title: config.title,
+      lang: getPreferredLang(),
     });
     fig.append(img);
     attachImageZoom(img);
@@ -1532,7 +1585,7 @@ function renderNoticeAndWonder(host, config, state) {
 
     const h4 = document.createElement("h4");
     h4.className = "nw-col-title";
-    h4.innerHTML = `${opts.icon} ${esc(opts.heading)}`;
+    h4.innerHTML = `${opts.icon} ${stack(opts.heading, { html: true })}`;
     col.append(h4);
 
     const ta = document.createElement("textarea");
@@ -1546,16 +1599,17 @@ function renderNoticeAndWonder(host, config, state) {
       const chips = document.createElement("div");
       chips.className = "nw-chips";
       chips.setAttribute("role", "group");
-      chips.setAttribute("aria-label", "Sentence starters — tap one to add it to your answer");
+      chips.setAttribute("aria-label", t("sentenceStartersLabel"));
       opts.starters.forEach((starter) => {
         const chip = document.createElement("button");
         chip.type = "button";
         chip.className = "nw-chip";
-        chip.textContent = starter;
-        chip.title = "Tap to add this sentence starter";
+        chip.innerHTML = stackContent(starter.text, starter.es);
+        chip.title = t("sentenceStarterTip");
         chip.addEventListener("click", () => {
+          const insert = getPreferredLang() === "es" && starter.es ? starter.es : starter.text;
           const needsSpace = ta.value && !/\s$/.test(ta.value);
-          ta.value = `${ta.value}${needsSpace ? " " : ""}${starter} `;
+          ta.value = `${ta.value}${needsSpace ? " " : ""}${insert} `;
           ta.focus();
           // Route persistence through the single input handler below.
           ta.dispatchEvent(new Event("input", { bubbles: true }));
@@ -1579,8 +1633,8 @@ function renderNoticeAndWonder(host, config, state) {
     buildColumn({
       colClass: "nw-col-notice",
       icon: "👁",
-      heading: "What do you notice?",
-      placeholder: "I notice that…",
+      heading: "nwNoticeHeading",
+      placeholder: t("noticePlaceholder"),
       key: "notice",
       responseKey: "nw_notice",
       starters: noticeStarters,
@@ -1588,8 +1642,8 @@ function renderNoticeAndWonder(host, config, state) {
     buildColumn({
       colClass: "nw-col-wonder",
       icon: "💭",
-      heading: "What do you wonder?",
-      placeholder: "I wonder…",
+      heading: "nwWonderHeading",
+      placeholder: t("wonderPlaceholder"),
       key: "wonder",
       responseKey: "nw_wonder",
       starters: wonderStarters,
@@ -1627,7 +1681,7 @@ function renderShowYourWork(host, config, state) {
 
   const card = document.createElement("section");
   card.className = "card wp-card syw-card";
-  card.setAttribute("aria-label", "Show your work");
+  card.setAttribute("aria-label", t("showYourWorkLabel"));
 
   const head = document.createElement("div");
   head.className = "wp-head";
@@ -1646,7 +1700,7 @@ function renderShowYourWork(host, config, state) {
   } else {
     const p = document.createElement("p");
     p.className = "wp-text";
-    p.textContent = "Use the scenario above. Work it out step by step below.";
+    p.innerHTML = stack("scenarioWorkBelow", { html: true });
     card.append(p);
   }
   if (hasAuthored && wp.image) {
@@ -1729,7 +1783,7 @@ function renderShowYourWork(host, config, state) {
   const checkBtn = document.createElement("button");
   checkBtn.type = "button";
   checkBtn.className = "btn btn-secondary syw-check-btn";
-  checkBtn.textContent = "✅ Check my thinking";
+  checkBtn.innerHTML = stack("checkMyThinking", { html: true });
   const checklist = document.createElement("div");
   checklist.className = "syw-checklist";
   checklist.hidden = true;
@@ -1758,8 +1812,8 @@ function renderShowYourWork(host, config, state) {
     talk.style.cssText =
       "margin-top:var(--sp-4); padding:var(--sp-3); border-radius:var(--radius-md,12px); background:rgba(217,121,93,0.08); border:1px solid rgba(217,121,93,0.28);";
     talk.innerHTML =
-      `<div style="font-weight:800; color:var(--coral); margin-bottom:var(--sp-2);">🗣️ Turn &amp; Talk</div>` +
-      `<p style="margin:0 0 var(--sp-2); font-weight:600;">${esc(tt.question)}</p>` +
+      `<div style="font-weight:700; color:var(--coral); margin-bottom:var(--sp-2);">🗣️ Turn &amp; Talk</div>` +
+      `<p style="margin:0 0 var(--sp-2); font-weight:500;">${esc(tt.question)}</p>` +
       (stems.length
         ? `<div style="font-size:0.9rem; color:var(--muted);">Try starting with: ${stems
             .slice(0, 2)
@@ -1815,13 +1869,13 @@ function renderLaunchHeader(el, state, config) {
     }
     <div class="launch-identity" style="display:flex; flex-wrap:wrap; gap:var(--sp-3); align-items:flex-end; margin-bottom:var(--sp-4);">
       <div class="launch-field" style="flex:1 1 220px;">
-        <label for="launch-name" style="display:block; font-weight:600; margin-bottom:var(--sp-1);">Name</label>
+        <label for="launch-name" style="display:block; font-weight:500; margin-bottom:var(--sp-1);">Name</label>
         <input id="launch-name" class="text-input" type="text"
           placeholder="First name Last initial" autocomplete="off"
           value="${esc(s.studentName || "")}" />
       </div>
       <div class="launch-field launch-field-period" style="flex:0 1 120px;">
-        <label for="launch-period" style="display:block; font-weight:600; margin-bottom:var(--sp-1);">Period</label>
+        <label for="launch-period" style="display:block; font-weight:500; margin-bottom:var(--sp-1);">Period</label>
         <input id="launch-period" class="text-input" type="text"
           placeholder="e.g. 3" autocomplete="off"
           value="${esc(s.studentPeriod || "")}" />
@@ -2036,7 +2090,7 @@ export function wireObjectiveTermPopups(block, vocab) {
 // word inside a <button>/<label> would break the control; inside an <svg> or
 // interactive visual it would corrupt the figure.
 const VOCAB_BODY_EXCLUSIONS =
-  "button, a[href], input, textarea, select, option, label, summary, script, style, svg, code, kbd, .obj-term, .obj-popup-backdrop, [contenteditable], [data-no-vocab], .interactive-visual, .section-icon, .katex, .MathJax, mjx-container";
+  "button, a[href], input, textarea, select, option, label, summary, script, style, svg, code, kbd, .obj-term, .obj-popup-backdrop, [contenteditable], [data-no-vocab], .interactive-visual, .section-icon, .katex, .MathJax, mjx-container, .nt-nb-copy-panel, .nt-nb";
 
 // Underline EVERY lesson-vocabulary term wherever it appears in a rendered
 // phase body (not just the objectives) and wire each one to the same tap-to-open
@@ -2220,22 +2274,22 @@ function renderObjectives(el, config, state, opts = {}) {
   const card = (o) => `
     <div class="card ${o.cardClass} launch-objective">
       <div class="launch-objective-head" style="display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2); margin-bottom:var(--sp-2);">
-        <h4 style="color:${o.ink}; margin:0; font-size:1.28rem; font-weight:800; letter-spacing:-0.01em;">${o.label}</h4>
-        <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.85rem; font-weight:800; color:${o.ink}; cursor:pointer; white-space:nowrap;">
+        <h4 style="color:${o.ink}; margin:0; font-size:1.28rem; font-weight:700; letter-spacing:-0.01em;">${o.label}</h4>
+        <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.85rem; font-weight:700; color:${o.ink}; cursor:pointer; white-space:nowrap;">
           <input type="checkbox" class="objective-check-box" data-obj-key="${o.key}" aria-label="${o.checkAria}"
                  style="width:18px; height:18px; accent-color:${o.ink}; cursor:pointer;" />
           ${o.checkLabel}
         </label>
       </div>
-      <p style="margin:0; font-size:1.32rem; font-weight:800; color:#0f172a; line-height:1.55; letter-spacing:-0.005em; -webkit-font-smoothing:antialiased;">${o.text}</p>
+      <p style="margin:0; font-size:1.32rem; font-weight:700; color:#0f172a; line-height:1.55; letter-spacing:-0.005em; -webkit-font-smoothing:antialiased;">${o.text}</p>
       
       <!-- PUBLISHER-GRADE VISUAL MODEL CARD DIRECTLY BELOW OBJECTIVE TEXT -->
       <div class="visual-model-wrapper" style="margin-top:16px; margin-bottom:16px; border-radius:14px; overflow:hidden; border:1.5px solid rgba(15,23,42,0.18); box-shadow:0 1px 2px rgba(18,53,91,0.05); background:#0b0f19; cursor:zoom-in;">
         <img src="${o.img}" alt="${esc(o.alt)}" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
-        <div style="padding:12px 16px; background:#ffffff; border-top:1.5px solid #e2e8f0; font-size:0.96rem; color:#0f172a; font-weight:800; line-height:1.5; -webkit-font-smoothing:antialiased;">
+        <div style="padding:12px 16px; background:#ffffff; border-top:1.5px solid #e2e8f0; font-size:0.96rem; color:#0f172a; font-weight:700; line-height:1.5; -webkit-font-smoothing:antialiased;">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:7px;">
             <span>${o.icon} <strong>Visual Representation</strong></span>
-            <span style="display:inline-block; font-size:0.78rem; font-weight:800; color:#0284c7; background:rgba(2,132,199,0.08); padding:3px 8px; border-radius:6px; border:1px solid rgba(2,132,199,0.2);">🔍 Click to enlarge</span>
+            <span style="display:inline-block; font-size:0.78rem; font-weight:700; color:#0284c7; background:rgba(2,132,199,0.08); padding:3px 8px; border-radius:6px; border:1px solid rgba(2,132,199,0.2);">🔍 Click to enlarge</span>
           </div>
           ${visualCaptionHtml(o.captionBullets, o.caption)}
         </div>
@@ -2243,20 +2297,20 @@ function renderObjectives(el, config, state, opts = {}) {
           o.talkPrompts
             ? `
         <div class="language-talk-card" data-lang="en" data-say-en="${talkAttr(o.talkPrompts.say)}" data-say-es="${talkAttr(o.talkPrompts.sayEs || o.talkPrompts.say)}" data-listen-en="${talkAttr(o.talkPrompts.listen)}" data-listen-es="${talkAttr(o.talkPrompts.listenEs || o.talkPrompts.listen)}" style="padding:14px 16px; background:#fff7ed; border-top:2px solid #fdba74; font-size:0.95rem; color:#0f172a; line-height:1.55; -webkit-font-smoothing:antialiased;">
-          <div style="font-weight:900; font-size:0.82rem; color:#c2410c; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
+          <div style="font-weight:800; font-size:0.82rem; color:#c2410c; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
             <span>🗣️ Student Talk Targets (What to Say & Listen For):</span>
             <div style="display:inline-flex; align-items:center; gap:6px;">
-              <button type="button" class="talk-lang-toggle btn btn-xs btn-outline" title="Switch English / Spanish" style="padding:2px 8px; font-size:0.75rem; font-weight:800; border-radius:6px; background:white; color:#0369a1; border:1px solid #7dd3fc; cursor:pointer;">🇲🇽 ES</button>
+              <button type="button" class="talk-lang-toggle btn btn-xs btn-outline" title="Switch English / Spanish" style="padding:2px 8px; font-size:0.75rem; font-weight:700; border-radius:6px; background:white; color:#0369a1; border:1px solid #7dd3fc; cursor:pointer;">🇲🇽 ES</button>
             </div>
           </div>
           <div style="display:flex; flex-direction:column; gap:8px;">
             <div style="background:rgba(234,88,12,0.06); padding:9px 12px; border-radius:8px; border-left:4px solid #ea580c;">
-              <strong style="color:#c2410c; font-weight:900; font-size:0.95rem;">What to Say:</strong>
-              <ul class="talk-say-text talk-bullets" style="margin:6px 0 0; padding-left:20px; font-weight:750; font-size:1rem; color:#0f172a; font-style:italic; line-height:1.6;">${talkBulletsHtml(o.talkPrompts.say)}</ul>
+              <strong style="color:#c2410c; font-weight:800; font-size:0.95rem;">What to Say:</strong>
+              <ul class="talk-say-text talk-bullets" style="margin:6px 0 0; padding-left:20px; font-weight:600; font-size:1rem; color:#0f172a; font-style:italic; line-height:1.6;">${talkBulletsHtml(o.talkPrompts.say)}</ul>
             </div>
             <div style="background:rgba(2,132,199,0.06); padding:9px 12px; border-radius:8px; border-left:4px solid #0284c7;">
-              <strong style="color:#0369a1; font-weight:900; font-size:0.95rem;">What to Listen For:</strong>
-              <ul class="talk-listen-text talk-bullets" style="margin:6px 0 0; padding-left:20px; font-weight:750; font-size:1rem; color:#0f172a; line-height:1.6;">${talkBulletsHtml(o.talkPrompts.listen)}</ul>
+              <strong style="color:#0369a1; font-weight:800; font-size:0.95rem;">What to Listen For:</strong>
+              <ul class="talk-listen-text talk-bullets" style="margin:6px 0 0; padding-left:20px; font-weight:600; font-size:1rem; color:#0f172a; line-height:1.6;">${talkBulletsHtml(o.talkPrompts.listen)}</ul>
             </div>
           </div>
         </div>
@@ -2266,8 +2320,8 @@ function renderObjectives(el, config, state, opts = {}) {
       </div>
 
       <div class="objective-discuss" style="margin-top:var(--sp-3); padding-top:var(--sp-2); border-top:1px dashed rgba(0,0,0,0.12);">
-        <span style="display:block; font-size:1.1rem; font-weight:800; letter-spacing:.02em; color:${o.ink}; margin-bottom:6px;">💬 Talk about it</span>
-        <span style="display:block; font-size:1.25rem; font-weight:700; color:#1e293b; line-height:1.6;">${o.discuss}</span>
+        <span style="display:block; font-size:1.1rem; font-weight:700; letter-spacing:.02em; color:${o.ink}; margin-bottom:6px;">💬 Talk about it</span>
+        <span style="display:block; font-size:1.25rem; font-weight:600; color:#1e293b; line-height:1.6;">${o.discuss}</span>
       </div>
     </div>`;
 
@@ -2455,7 +2509,7 @@ function renderNoticeWonderSupport(host, support, config, fieldRoot = host) {
   const row = (label, items, cls, chipFn) =>
     items.length
       ? `<div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--sp-2) var(--sp-3); margin-bottom:var(--sp-3);">
-          <span style="flex:0 0 auto; font-weight:800; color:var(--navy,#264653);">${esc(label)}</span>
+          <span style="flex:0 0 auto; font-weight:700; color:var(--navy,#264653);">${esc(label)}</span>
           <span style="display:flex; flex-wrap:wrap; gap:var(--sp-2);">${items
             .map((it) => chipFn(it, cls))
             .join("")}</span>
@@ -2598,7 +2652,7 @@ function renderWarmupPhase(el, state, ctx, config) {
     const go = document.createElement("button");
     go.type = "button";
     go.className = "btn btn-primary btn-lg";
-    go.textContent = "Continue to Phase 2: Objectives 🎯";
+    go.innerHTML = stack("continueToObjectives", { html: true });
     go.addEventListener("click", () => {
       if (ctx && typeof ctx.nextPhase === "function") ctx.nextPhase();
     });
@@ -2658,14 +2712,14 @@ function renderWarmupPhase(el, state, ctx, config) {
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
       <div>
-        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 1 · Warmup</span>
-        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">⚡ ${warmupHeading}</h3>
+        <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 1 · Warmup</span>
+        <h3 style="margin:6px 0 0; font-size:22px; font-weight:700; color:#14223a;">⚡ ${warmupHeading}</h3>
       </div>
-      <div id="warmupScoreBadge" style="font-size:14.5px; font-weight:800; color:#0b5a63; background:#f0fdf4; border:1px solid #bbf7d0; padding:7px 15px; border-radius:10px;">
+      <div id="warmupScoreBadge" style="font-size:14.5px; font-weight:700; color:#0b5a63; background:#f0fdf4; border:1px solid #bbf7d0; padding:7px 15px; border-radius:10px;">
         ${warmup.questions.length} Questions · Autograded
       </div>
     </div>
-    <p style="margin:0 0 16px; font-size:16.5px; font-weight:600; line-height:1.55; color:#3f4a5f;">
+    <p style="margin:0 0 16px; font-size:16.5px; font-weight:500; line-height:1.55; color:#3f4a5f;">
       ${warmupLede}
     </p>
   `;
@@ -2687,8 +2741,8 @@ function renderWarmupPhase(el, state, ctx, config) {
       "display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:16px; margin:4px 0 20px; padding:20px 28px; background:linear-gradient(135deg, #f0f9ff, #e6f4f6); border:2px solid #bae6fd; border-radius:16px;";
     timerBar.innerHTML = `
     <span style="font-size:2.6rem; line-height:1;">⏱️</span>
-    <span id="warmupTimerDisplay" style="font-size:56px; font-weight:900; color:#0f6d78; font-variant-numeric:tabular-nums; line-height:1;">${fmtWarmupClock(getWarmupSeconds())}</span>
-    <span class="warmup-timer-label" style="font-size:20px; font-weight:700; color:#56627a;">press Start</span>
+    <span id="warmupTimerDisplay" style="font-size:56px; font-weight:800; color:#0f6d78; font-variant-numeric:tabular-nums; line-height:1;">${fmtWarmupClock(getWarmupSeconds())}</span>
+    <span class="warmup-timer-label" style="font-size:20px; font-weight:600; color:#56627a;">press Start</span>
   `;
     // Place the timer immediately under the "Phase 1 · Warmup" header (above the
     // intro line) so it's the first thing students and teachers see.
@@ -2735,7 +2789,7 @@ function renderWarmupPhase(el, state, ctx, config) {
         clearInterval(warmupTimerId);
         warmupTimerId = null;
         timerDisplay.textContent = "0:00";
-        timerLabel.textContent = "time's up!";
+        timerLabel.innerHTML = stack("timesUp", { html: true });
         syncWarmupControls();
         if (!savedAnswers.checked) checkBtn.click();
       }
@@ -2796,7 +2850,7 @@ function renderWarmupPhase(el, state, ctx, config) {
       if (!note) {
         note = document.createElement("span");
         note.className = "warmup-timer-note";
-        note.style.cssText = "width:100%; text-align:center; font-size:14px; font-weight:800;";
+        note.style.cssText = "width:100%; text-align:center; font-size:14px; font-weight:700;";
         timerBar.append(note);
       }
       note.style.color = ok ? "#15803d" : "#b45309";
@@ -2814,7 +2868,7 @@ function renderWarmupPhase(el, state, ctx, config) {
       // the warmup clock runs, can hold it (e.g. to finish a point), and can
       // restart it cleanly.
       const controlBtnCss =
-        "padding:10px 18px; font-size:16px; font-weight:800; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
+        "padding:10px 18px; font-size:16px; font-weight:700; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
 
       // The primary control. It carries the whole start/stop contract, so it is
       // styled as the filled button in the bar — at rest it reads "▶ Start",
@@ -2827,8 +2881,8 @@ function renderWarmupPhase(el, state, ctx, config) {
       const resetBtn = document.createElement("button");
       resetBtn.type = "button";
       resetBtn.className = "warmup-timer-reset";
-      resetBtn.textContent = "↻ Reset";
-      resetBtn.title = "Set the warmup timer back to the full time (stopped)";
+      resetBtn.innerHTML = stack("resetTimer", { html: true });
+      resetBtn.title = t("resetTimerTip");
       resetBtn.style.cssText = controlBtnCss;
 
       // Keep the Start/Stop button label in sync with the timer state.
@@ -2877,10 +2931,10 @@ function renderWarmupPhase(el, state, ctx, config) {
       const editBtn = document.createElement("button");
       editBtn.type = "button";
       editBtn.className = "warmup-timer-edit";
-      editBtn.title = "Teacher: set the warmup time allowed (applies to all devices)";
-      editBtn.textContent = "✏️ Set time";
+      editBtn.title = t("setTimeTip");
+      editBtn.innerHTML = stack("setTime", { html: true });
       editBtn.style.cssText =
-        "margin-left:8px; padding:10px 18px; font-size:16px; font-weight:800; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
+        "margin-left:8px; padding:10px 18px; font-size:16px; font-weight:700; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
 
       async function pushGlobal(seconds) {
         let result = await saveGlobalWarmupSeconds(seconds);
@@ -2953,8 +3007,8 @@ function renderWarmupPhase(el, state, ctx, config) {
     // print, so the stem is deliberately heavier and larger than body copy.
     const qTitle = document.createElement("div");
     qTitle.style.cssText =
-      "font-weight:800; font-size:19px; line-height:1.5; color:#0f172a; margin-bottom:12px;";
-    qTitle.innerHTML = `<span style="color:#0f6d78; font-weight:900; margin-right:6px;">Q${qIdx + 1}.</span> ${esc(q.stem)}`;
+      "font-weight:700; font-size:19px; line-height:1.5; color:#0f172a; margin-bottom:12px;";
+    qTitle.innerHTML = `<span style="color:#0f6d78; font-weight:800; margin-right:6px;">Q${qIdx + 1}.</span> ${stackContent(q.stem, q.stemEs)}`;
     qBox.append(qTitle);
 
     const choicesGroup = document.createElement("div");
@@ -2963,14 +3017,14 @@ function renderWarmupPhase(el, state, ctx, config) {
     const feedbackBox = document.createElement("div");
     feedbackBox.className = "warmup-fb-box";
     feedbackBox.style.cssText =
-      "display:none; font-size:15.5px; font-weight:700; line-height:1.5; padding:11px 14px; border-radius:8px; margin-top:10px;";
+      "display:none; font-size:15.5px; font-weight:600; line-height:1.5; padding:11px 14px; border-radius:8px; margin-top:10px;";
 
     const selectedIdx = savedAnswers[qIdx];
 
     q.choices.forEach((choiceText, cIdx) => {
       const choiceLabel = document.createElement("label");
       choiceLabel.style.cssText =
-        "display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#ffffff; cursor:pointer; font-size:17px; font-weight:600; line-height:1.45; color:#0f172a; transition:all 0.15s;";
+        "display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#ffffff; cursor:pointer; font-size:17px; font-weight:500; line-height:1.45; color:#0f172a; transition:all 0.15s;";
 
       const radio = document.createElement("input");
       radio.type = "radio";
@@ -2987,7 +3041,7 @@ function renderWarmupPhase(el, state, ctx, config) {
 
       choiceLabel.append(radio);
       const span = document.createElement("span");
-      span.innerHTML = esc(choiceText);
+      span.innerHTML = stackContent(choiceText, q.choicesEs?.[cIdx]);
       choiceLabel.append(span);
       choicesGroup.append(choiceLabel);
     });
@@ -3010,8 +3064,8 @@ function renderWarmupPhase(el, state, ctx, config) {
   checkBtn.type = "button";
   checkBtn.className = "btn btn-primary";
   checkBtn.style.cssText =
-    "padding:12px 24px; font-weight:800; font-size:16.5px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
-  checkBtn.textContent = savedAnswers.checked ? "Score Final (Submitted)" : "Submit Warmup Answers";
+    "padding:12px 24px; font-weight:700; font-size:16.5px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+  checkBtn.innerHTML = stack(savedAnswers.checked ? "scoreFinal" : "submitWarmup", { html: true });
   if (savedAnswers.checked) {
     checkBtn.disabled = true;
     checkBtn.style.background = "#64748b";
@@ -3050,7 +3104,7 @@ function renderWarmupPhase(el, state, ctx, config) {
     state.markCompleted(0);
 
     checkBtn.disabled = true;
-    checkBtn.textContent = "Score Final (Submitted)";
+    checkBtn.innerHTML = stack("scoreFinal", { html: true });
     checkBtn.style.background = "#64748b";
     checkBtn.style.cursor = "default";
 
@@ -3070,8 +3124,8 @@ function renderWarmupPhase(el, state, ctx, config) {
   nextBtn.type = "button";
   nextBtn.className = "btn btn-teal";
   nextBtn.style.cssText =
-    "padding:12px 26px; font-weight:800; font-size:16.5px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
-  nextBtn.textContent = "Continue to Phase 2: Objectives 🎯";
+    "padding:12px 26px; font-weight:700; font-size:16.5px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+  nextBtn.innerHTML = stack("continueToObjectives", { html: true });
   nextBtn.addEventListener("click", () => {
     if (ctx && typeof ctx.nextPhase === "function") {
       ctx.nextPhase();
@@ -3081,6 +3135,33 @@ function renderWarmupPhase(el, state, ctx, config) {
   btnRow.append(checkBtn, nextBtn);
   card.append(questionsContainer);
   card.append(btnRow);
+
+  // Dedicated Math Notes entry card at bottom of warmup
+  const notesEntryCard = document.createElement("div");
+  notesEntryCard.className = "card card-warmup-math-notes";
+  notesEntryCard.style.cssText =
+    "margin-top:20px; border:2px solid #0f766e; border-radius:14px; padding:18px; background:#f0fdfa; box-shadow:0 1px 3px rgba(15,118,110,0.08);";
+  notesEntryCard.innerHTML = `
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:26px;" aria-hidden="true">📓</span>
+        <div>
+          <h4 style="margin:0; font-size:17px; font-weight:700; color:#0f766e;">Today's Math Notes</h4>
+          <p style="margin:4px 0 0; font-size:14px; color:#134e4a; font-weight:500;">
+            Review today's key math words and core rule before starting Launch.
+          </p>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary warmup-open-notes-btn" style="padding:10px 20px; font-size:15px; font-weight:700; background:#0f766e; color:#fff; border:none; border-radius:8px; cursor:pointer;">
+        📓 Open Math Notes →
+      </button>
+    </div>
+  `;
+  const openNotesBtn = notesEntryCard.querySelector(".warmup-open-notes-btn");
+  if (openNotesBtn) {
+    openNotesBtn.addEventListener("click", () => openMathNotesModel(config));
+  }
+  card.append(notesEntryCard);
 
   if (savedAnswers.checked) {
     let correctCount = 0;
@@ -3107,7 +3188,7 @@ function renderObjectivesIntroPhase(el, state, ctx, config) {
     el,
     "2",
     "section-icon-teal",
-    "Phase 2: Learning Objectives",
+    "Learning Objectives",
     "Review today's Content and Language Objectives so you know what you are aiming for!",
   );
 
@@ -3117,15 +3198,6 @@ function renderObjectivesIntroPhase(el, state, ctx, config) {
     "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 1px 2px rgba(18,53,91,0.05);";
 
   card.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
-      <div>
-        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 2 · Objectives</span>
-        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">🎯 Today's Learning Objectives</h3>
-      </div>
-      <div style="font-size:13px; font-weight:800; color:#0f6d78; background:#e0f2fe; border:1px solid #bae6fd; padding:6px 14px; border-radius:10px;">
-        Goal Setting
-      </div>
-    </div>
     <p style="margin:0 0 16px; font-size:15px; color:#56627a;">
       Read through today's Content Goal and Language Goal. These are the skills you will master by the end of today's lesson!
     </p>
@@ -3137,8 +3209,8 @@ function renderObjectivesIntroPhase(el, state, ctx, config) {
   nextBtn.type = "button";
   nextBtn.className = "btn btn-teal";
   nextBtn.style.cssText =
-    "margin-top:20px; padding:12px 24px; font-weight:800; font-size:15px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
-  nextBtn.textContent = "Continue to Phase 3: Launch 🚀";
+    "margin-top:20px; padding:12px 24px; font-weight:700; font-size:15px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+  nextBtn.innerHTML = stack("continueToLaunch", { html: true });
   nextBtn.addEventListener("click", () => {
     state.markCompleted(1);
     if (ctx && typeof ctx.nextPhase === "function") {
@@ -3170,12 +3242,12 @@ function renderReteachHelper(container, warmup, _correctCount, _total, config) {
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
       <span style="font-size:22px;">💡</span>
       <div>
-        <h4 style="margin:0; font-size:18px; font-weight:800; color:#713f12;">Quick Reteach: ${prevTitle}</h4>
-        <div style="font-size:14.5px; font-weight:600; color:#7c4a0e;">Let's quickly review this step-by-step before moving to Phase 2 Launch!</div>
+        <h4 style="margin:0; font-size:18px; font-weight:700; color:#713f12;">Quick Reteach: ${prevTitle}</h4>
+        <div style="font-size:14.5px; font-weight:500; color:#7c4a0e;">Let's quickly review this step-by-step before moving to Phase 2 Launch!</div>
       </div>
     </div>
     <div style="background:#ffffff; border:1px solid #fef08a; border-radius:10px; padding:14px; margin-bottom:14px; font-size:16px; font-weight:500; color:#293548; line-height:1.6;">
-      <div style="font-weight:800; font-size:16.5px; color:#0f172a; margin-bottom:6px;">📌 Core Strategy Recap:</div>
+      <div style="font-weight:700; font-size:16.5px; color:#0f172a; margin-bottom:6px;">📌 Core Strategy Recap:</div>
       <div>To tackle ${prevTitle}, break the problem into clear steps:</div>
       <ul style="margin:6px 0 0 20px; padding:0;">
         <li>Identify what key quantity or relationship the problem asks for.</li>
@@ -3184,17 +3256,17 @@ function renderReteachHelper(container, warmup, _correctCount, _total, config) {
       </ul>
     </div>
     <div id="reteachMiniCheck" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; padding:14px;">
-      <div style="font-weight:800; font-size:16px; color:#0f172a; margin-bottom:8px;">
-        <span style="color:#a16207; font-weight:900;">Mini-Check:</span> Try this quick practice item to rebuild your confidence:
+      <div style="font-weight:700; font-size:16px; color:#0f172a; margin-bottom:8px;">
+        <span style="color:#a16207; font-weight:800;">Mini-Check:</span> Try this quick practice item to rebuild your confidence:
       </div>
-      <div style="font-size:16.5px; font-weight:600; line-height:1.5; color:#293548; margin-bottom:10px;">
+      <div style="font-size:16.5px; font-weight:500; line-height:1.5; color:#293548; margin-bottom:10px;">
         Which strategy helps verify your answer when solving math problems?
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <button type="button" class="btn-reteach-opt" data-correct="false" style="text-align:left; padding:11px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:16px; font-weight:600; line-height:1.45; color:#0f172a;">Guessing quickly without writing steps</button>
-        <button type="button" class="btn-reteach-opt" data-correct="true" style="text-align:left; padding:11px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:16px; font-weight:600; line-height:1.45; color:#0f172a;">Modeling the problem and checking key calculations</button>
+        <button type="button" class="btn-reteach-opt" data-correct="false" style="text-align:left; padding:11px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:16px; font-weight:500; line-height:1.45; color:#0f172a;">Guessing quickly without writing steps</button>
+        <button type="button" class="btn-reteach-opt" data-correct="true" style="text-align:left; padding:11px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:16px; font-weight:500; line-height:1.45; color:#0f172a;">Modeling the problem and checking key calculations</button>
       </div>
-      <div id="reteachFb" style="display:none; margin-top:10px; padding:9px 14px; border-radius:8px; font-size:15px; font-weight:800;"></div>
+      <div id="reteachFb" style="display:none; margin-top:10px; padding:9px 14px; border-radius:8px; font-size:15px; font-weight:700;"></div>
     </div>
   `;
 
@@ -3211,13 +3283,13 @@ function renderReteachHelper(container, warmup, _correctCount, _total, config) {
         btn.style.borderColor = "#22c55e";
         fb.style.background = "#f0fdf4";
         fb.style.color = "#15803d";
-        fb.innerHTML = "Great job! You're ready for Phase 2: Launch 🚀";
+        fb.innerHTML = stack("readyForLaunch", { html: true });
       } else {
         btn.style.background = "#fef2f2";
         btn.style.borderColor = "#ef4444";
         fb.style.background = "#fef2f2";
         fb.style.color = "#b91c1c";
-        fb.innerHTML = "Remember to break the problem into steps! You've got this.";
+        fb.innerHTML = stack("breakIntoSteps", { html: true });
       }
       try {
         if (window.NTSignal && typeof window.NTSignal.record === "function") {
@@ -3270,7 +3342,7 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
     // Deliberately terse. A student who got it right does not need the method
     // re-explained, and saying so anyway is the over-scaffolding that trains
     // students to skim feedback.
-    feedbackBox.innerHTML = `<strong>Correct! ✓</strong>`;
+    feedbackBox.innerHTML = `<strong>${stack("warmupCorrect", { html: true })}</strong>`;
   } else if (selectedIdx !== undefined) {
     feedbackBox.style.background = "#fef2f2";
     feedbackBox.style.color = "#b91c1c";
@@ -3279,34 +3351,58 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
     // the warmup surface discarded every one of them — a student who missed a
     // question was told only that they missed it. Show the reasoning on a miss;
     // this is the one moment it is worth reading.
-    feedbackBox.innerHTML = `<strong>Incorrect. ✘</strong>${
-      q.explanation ? ` ${esc(q.explanation)}` : ""
+    feedbackBox.innerHTML = `<strong>${stack("warmupIncorrect", { html: true })}</strong>${
+      q.explanation ? ` ${stackContent(q.explanation, q.explanationEs)}` : ""
     }`;
   } else {
     feedbackBox.style.background = "#fffbe0";
     feedbackBox.style.color = "#92400e";
     feedbackBox.style.border = "1px solid #fef08a";
-    feedbackBox.innerHTML = `<strong>Unanswered.</strong>${
-      q.explanation ? ` ${esc(q.explanation)}` : ""
+    feedbackBox.innerHTML = `<strong>${stack("warmupUnanswered", { html: true })}</strong>${
+      q.explanation ? ` ${stackContent(q.explanation, q.explanationEs)}` : ""
     }`;
   }
 }
 
-// ── Academic Vocabulary ─────────────────────────────────────────────────────
-// A concise, readable list of the lesson's OWN academic vocabulary, rendered in
-// Launch so students meet the words before the instruction that uses them.
-//
-// The card itself lives in academic-vocabulary.js so it can be unit-tested
-// (nothing in THIS file is importable from `npm test` — see that module's
-// header). `wireObjectiveTermPopups` is injected rather than imported there, so
-// a term opens the SAME shared glossary popup the objectives use — picture plus
-// a kid-friendly EN/ES explanation — and never a second popup system.
-//
-// This restores a reading surface, NOT the graded Vocabulary phase removed in
-// 2f5b382fd: no scoring, no XP, no phase index, so save/resume and the 8-phase
-// structure are untouched.
-function renderAcademicVocabulary(host, config) {
-  return renderAcademicVocabularyCard(host, config, { wirePopups: wireObjectiveTermPopups });
+// The application scenario + guided Show Your Work solve that MOVED out of the
+// Launch phase to live under Learn It. Exported (and called directly by
+// app.js's openExtra("learn")) rather than reached only through the
+// ctx.renderLearnItExtras hook: the hook used to be assigned inside
+// renderLaunchPhase, so a student who opened Learn It before Launch had
+// rendered got NOTHING — the moved content was unreachable on that path.
+export function renderLearnItExtrasInto(learnHost, config, state) {
+  if (!learnHost) return;
+  const cfg = config.launch;
+
+  // 1) The application scenario card (the word problem + optional theme art).
+  const scenario = document.createElement("div");
+  scenario.className = "card launch-scenario-card";
+  scenario.innerHTML = `
+      <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
+      <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
+  if (cfg.contextImage || config.theme || config.heroFigure) {
+    renderThemeIllustration(scenario, config.theme, cfg.contextImage || null, config.heroFigure);
+  }
+  learnHost.append(scenario);
+
+  // Tap-to-reveal story beats: the same narrative chunked into labeled
+  // parts ("Set the Scene" → "Your Role") for readers who lose the thread
+  // in the full paragraph. Authored-but-unwired until the 2026-07-20
+  // dormant-feature sweep; renders nothing for 1-2 sentence narratives.
+  renderLaunchStoryBeats(learnHost, config);
+
+  // 2) Inline Reveal Math slides for the launch + instruction sections — the
+  //    "how it's taught" visuals belong with Learn It, not with Be Curious.
+  renderRevealSlides(learnHost, config, ["launch", "instruction"]);
+
+  // 3) Show Your Work — the application problem + a guided, typeable solve-it
+  //    scaffold. Persists on phase index 0 (Launch) so saved work survives.
+  renderShowYourWork(learnHost, config, state);
+
+  // 4) Let students mark up the word problems (highlight / underline / bold).
+  //    (Turn & Talk is now integrated into the Show Your Work problem above,
+  //    via renderShowYourWork — not a separate card.)
+  enableWordProblemAnnotation(learnHost);
 }
 
 function renderLaunchPhase(el, state, ctx, config) {
@@ -3372,11 +3468,11 @@ function renderLaunchPhase(el, state, ctx, config) {
     const noticeCard = document.createElement("div");
     noticeCard.className = "card card-teal";
     noticeCard.innerHTML = `<h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">👀 I Notice...</h4>
-      ${(cfg.noticePrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2);"><span style="font-weight:600;">${esc(p)}</span></div>`).join("")}`;
+      ${(cfg.noticePrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2);"><span style="font-weight:500;">${esc(p)}</span></div>`).join("")}`;
     noticeTA = document.createElement("textarea");
     noticeTA.className = "text-input";
     noticeTA.rows = 3;
-    noticeTA.placeholder = "I notice that...";
+    noticeTA.placeholder = t("noticePlaceholder");
     noticeTA.value = state.getResponse(0, "notice") || "";
     noticeTA.addEventListener("input", () => state.saveResponse(0, "notice", noticeTA.value));
     noticeCard.append(noticeTA);
@@ -3384,11 +3480,11 @@ function renderLaunchPhase(el, state, ctx, config) {
     const wonderCard = document.createElement("div");
     wonderCard.className = "card card-coral";
     wonderCard.innerHTML = `<h4 style="color:var(--coral); margin-bottom:var(--sp-3);">🤔 I Wonder...</h4>
-      ${(cfg.wonderPrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2); border-color:rgba(217,121,93,0.25); background:rgba(217,121,93,0.06);"><span style="font-weight:600;">${esc(p)}</span></div>`).join("")}`;
+      ${(cfg.wonderPrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2); border-color:rgba(217,121,93,0.25); background:rgba(217,121,93,0.06);"><span style="font-weight:500;">${esc(p)}</span></div>`).join("")}`;
     wonderTA = document.createElement("textarea");
     wonderTA.className = "text-input";
     wonderTA.rows = 3;
-    wonderTA.placeholder = "I wonder if...";
+    wonderTA.placeholder = t("wonderPlaceholder");
     wonderTA.value = state.getResponse(0, "wonder") || "";
     wonderTA.addEventListener("input", () => state.saveResponse(0, "wonder", wonderTA.value));
     wonderCard.append(wonderTA);
@@ -3413,12 +3509,6 @@ function renderLaunchPhase(el, state, ctx, config) {
   renderNoticeWonderSupport(nwStack, cfg.beCurious, config, nwStack);
   el.append(nwStack);
 
-  // Academic Vocabulary sits AFTER the notice/wonder work and before the
-  // application scenario: students look and wonder first (the words would give
-  // the scene away if they came before it), then meet the language they need for
-  // the instruction that follows. No-op when the lesson authors no vocabulary.
-  renderAcademicVocabulary(el, config);
-
   // Note: Objectives card sits directly in between Warmup and Launch (rendered at bottom of Warmup phase).
 
   // ── Launch is now "Be Curious" only ─────────────────────────────────────────
@@ -3431,39 +3521,7 @@ function renderLaunchPhase(el, state, ctx, config) {
   // The hook closes over this lesson's cfg / config / state. Show Your Work still
   // reads and writes on phase index 0 (Launch) — see renderShowYourWork — so any
   // work a student saved persists exactly as before, wherever it is rendered.
-  ctx.renderLearnItExtras = (learnHost) => {
-    if (!learnHost) return;
-
-    // 1) The application scenario card (the word problem + optional theme art).
-    const scenario = document.createElement("div");
-    scenario.className = "card launch-scenario-card";
-    scenario.innerHTML = `
-      <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
-      <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
-    if (cfg.contextImage || config.theme || config.heroFigure) {
-      renderThemeIllustration(scenario, config.theme, cfg.contextImage || null, config.heroFigure);
-    }
-    learnHost.append(scenario);
-
-    // Tap-to-reveal story beats: the same narrative chunked into labeled
-    // parts ("Set the Scene" → "Your Role") for readers who lose the thread
-    // in the full paragraph. Authored-but-unwired until the 2026-07-20
-    // dormant-feature sweep; renders nothing for 1-2 sentence narratives.
-    renderLaunchStoryBeats(learnHost, config);
-
-    // 2) Inline Reveal Math slides for the launch + instruction sections — the
-    //    "how it's taught" visuals belong with Learn It, not with Be Curious.
-    renderRevealSlides(learnHost, config, ["launch", "instruction"]);
-
-    // 3) Show Your Work — the application problem + a guided, typeable solve-it
-    //    scaffold. Persists on phase index 0 (Launch) so saved work survives.
-    renderShowYourWork(learnHost, config, state);
-
-    // 4) Let students mark up the word problems (highlight / underline / bold).
-    //    (Turn & Talk is now integrated into the Show Your Work problem above,
-    //    via renderShowYourWork — not a separate card.)
-    enableWordProblemAnnotation(learnHost);
-  };
+  ctx.renderLearnItExtras = (learnHost) => renderLearnItExtrasInto(learnHost, config, state);
 
   const isEs = getPreferredLang() === "es";
   const btn = document.createElement("button");
@@ -3530,6 +3588,7 @@ function renderExplorePhase(el, state, ctx, config) {
     "Explore",
     cfg.goal ||
       "Build it yourself first. You do not need the formula yet — you are looking for it.",
+    cfg.goal ? cfg.goalEs || "" : t("exploreGoalDefault"),
   );
 
   // Opt-in data diagram shown up front so students can SEE and read the visual
@@ -3574,7 +3633,7 @@ function renderExplorePhase(el, state, ctx, config) {
     const cont = document.createElement("button");
     cont.type = "button";
     cont.className = "btn btn-primary btn-lg mt-4";
-    cont.textContent = "Continue to Practice →";
+    cont.innerHTML = stack("continueToPractice", { html: true });
     cont.addEventListener("click", () => completePhase(el, ctx, state, 1, "Explore", 1, 1));
     el.append(cont);
   };
@@ -3598,20 +3657,31 @@ function renderExplorePhase(el, state, ctx, config) {
     if (solveFirst) {
       pair.main.parentElement?.classList.add("nt-work-pair--tool-first");
       pair.tool.prepend(
-        workPairCaption("Step 1", cfg.solveFirstToolCaption || "Solve the problem here first."),
+        workPairCaption(
+          "Step 1",
+          stackContent(
+            cfg.solveFirstToolCaption || "Solve the problem here first.",
+            cfg.solveFirstToolCaptionEs || "",
+          ),
+        ),
       );
       pair.main.prepend(
         workPairCaption(
           "Step 2",
-          cfg.solveFirstTaskCaption || "Then show that move on the number line.",
+          stackContent(
+            cfg.solveFirstTaskCaption || "Then show that move on the number line.",
+            cfg.solveFirstTaskCaptionEs || "",
+          ),
         ),
       );
     } else {
       // "Do this" / "Use this to see why" read as one instruction split across two
       // columns, so students tried to follow Step 1's caption while looking at
       // Step 2's widget. Each caption now names what its OWN column is for.
-      pair.main.prepend(workPairCaption("Step 1", "Work the task below."));
-      pair.tool.prepend(workPairCaption("Step 2", "Then use this model to check your thinking."));
+      pair.main.prepend(workPairCaption("Step 1", esc("Work the task below.")));
+      pair.tool.prepend(
+        workPairCaption("Step 2", esc("Then use this model to check your thinking.")),
+      );
     }
     pair.main.append(exploreShell);
     pair.tool.append(exploreFig);
@@ -3655,7 +3725,10 @@ function renderExplorePhase(el, state, ctx, config) {
         showTurnTalkThenComplete();
       }
     },
-    { number: 1, total: 1, skipHints: true },
+    // Explore renders a carded item too, so it gets the same notebook setup as
+    // Practice when its type is one this targets. The model is a property of
+    // the lesson, so it is read here rather than threaded from Practice.
+    { number: 1, total: 1, skipHints: true, lessonModel: lessonModelFrom(config) },
   );
 }
 
@@ -3812,12 +3885,12 @@ function lockUntilSolved(scope, gated) {
 
   const line = document.createElement("p");
   line.className = "nt-solve-gate-line";
-  line.textContent = "🔒 Finish Step 1 first — solve the problem in columns.";
+  line.innerHTML = stack("solveColumnsFirst", { html: true });
 
   const skip = document.createElement("button");
   skip.type = "button";
   skip.className = "btn btn-secondary nt-solve-gate-skip";
-  skip.textContent = "I already solved it — open the number line";
+  skip.innerHTML = stack("alreadySolvedNumberLine", { html: true });
 
   cover.append(line, skip);
   gated.setAttribute("aria-hidden", "true");
@@ -3850,17 +3923,19 @@ function workPairCaption(step, text) {
   // as two headings instead of one instruction.
   p.style.cssText =
     "display:flex; align-items:center; flex-wrap:nowrap; width:100%; gap:10px; " +
-    "margin:0 0 var(--sp-3,12px); font-size:var(--fs-lg,1.15rem); font-weight:800; color:var(--navy,#12355b);";
+    "margin:0 0 var(--sp-3,12px); font-size:var(--fs-lg,1.15rem); font-weight:700; color:var(--navy,#12355b);";
   const badge = document.createElement("span");
   // Darker green and no uppercase/letter-spacing: the old pill printed small
   // wide-tracked caps in white on a light teal, which is the hardest thing on
   // the page to read.
   badge.style.cssText =
     "flex:0 0 auto; padding:6px 16px; border-radius:999px; background:#0f766e; color:#fff; " +
-    "font-size:var(--fs-lg,1.15rem); font-weight:900;";
+    "font-size:var(--fs-lg,1.15rem); font-weight:800;";
   badge.textContent = step;
   const txt = document.createElement("span");
-  txt.textContent = text;
+  // innerHTML because callers pass a bilingual stack from stackContent, which
+  // escapes both lanes itself. Plain-string callers are literals in this file.
+  txt.innerHTML = text;
   p.append(badge, txt);
   return p;
 }
@@ -3940,8 +4015,8 @@ function reportTypedMisconception(tag, state) {
 function renderSkillProbe(reveal, move, { answer, why, onSettled }) {
   reveal.innerHTML = "";
   const head = document.createElement("p");
-  head.style.cssText = "margin:0 0 var(--sp-2); font-weight:700;";
-  head.textContent = "🎯 Before the answer — one smaller question";
+  head.style.cssText = "margin:0 0 var(--sp-2); font-weight:600;";
+  head.innerHTML = stack("beforeTheAnswer", { html: true });
   reveal.append(head);
 
   const probe = document.createElement("p");
@@ -3966,7 +4041,7 @@ function renderSkillProbe(reveal, move, { answer, why, onSettled }) {
   skip.type = "button";
   skip.className = "btn btn-ghost";
   skip.style.cssText = "font-size:0.9rem;";
-  skip.textContent = "Just show me the answer";
+  skip.innerHTML = stack("justShowAnswer", { html: true });
   row.append(input, check, skip);
   reveal.append(row);
 
@@ -3993,7 +4068,7 @@ function renderSkillProbe(reveal, move, { answer, why, onSettled }) {
   check.addEventListener("click", () => {
     const typed = input.value.trim();
     if (!typed) {
-      status.textContent = "Have a go — even a guess beats skipping it.";
+      status.innerHTML = stack("haveAGo", { html: true });
       input.focus();
       return;
     }
@@ -4003,7 +4078,7 @@ function renderSkillProbe(reveal, move, { answer, why, onSettled }) {
     }
     probeMisses++;
     if (probeMisses === 1) {
-      status.textContent = "Not quite — picture it with objects, then try once more.";
+      status.innerHTML = stack("notQuitePicture", { html: true });
       input.select?.();
       input.focus();
       return;
@@ -4218,8 +4293,8 @@ function renderSkillPractice(host, config, state) {
       }
       checkers.forEach((c) => c.run());
       submit.disabled = true;
-      submit.textContent = "Answers checked";
-      note.textContent = "Scroll up — every problem is marked.";
+      submit.innerHTML = stack("answersChecked", { html: true });
+      note.innerHTML = stack("answersCheckedNote", { html: true });
     });
     submitRow.append(submit, note);
     card.append(submitRow);
@@ -4240,18 +4315,23 @@ function practiceLabHeaderHtml(lab) {
   const purpose = meta.purposeEs ? stackHtml(meta.purpose, meta.purposeEs) : esc(meta.purpose);
   return (
     `<div class="practice-lab-head" style="margin-bottom:var(--sp-3);">` +
-    `<div style="display:flex; align-items:center; gap:8px; font-weight:800; color:var(--navy,#264653);"><span aria-hidden="true">🧰</span><span>${name}</span></div>` +
+    `<div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--navy,#264653);"><span aria-hidden="true">🧰</span><span>${name}</span></div>` +
     (meta.purpose
       ? `<p style="margin:var(--sp-2) 0 0; font-size:0.9rem; color:var(--muted); line-height:1.5;">${purpose}</p>`
       : "") +
     (meta.instance
-      ? `<p style="margin:var(--sp-1) 0 0; font-size:0.85rem; font-weight:600; color:var(--navy,#264653);">${esc(meta.instance)}</p>`
+      ? `<p style="margin:var(--sp-1) 0 0; font-size:0.85rem; font-weight:500; color:var(--navy,#264653);">${esc(meta.instance)}</p>`
       : "") +
     `</div>`
   );
 }
 
 function renderPracticePhase(el, state, ctx, config) {
+  // The lesson's own formula, read ONCE. It is a property of the lesson, not of
+  // an item, and 1,022 items re-parsing the same key idea is work done 1,021
+  // times too often. Null for the 47 lessons that state no formula — those
+  // items still get the notebook setup, just without a model line.
+  const lessonModel = lessonModelFrom(config);
   phaseHeader(
     el,
     "✏️",
@@ -4337,7 +4417,7 @@ function renderPracticePhase(el, state, ctx, config) {
   const tierVoice = document.createElement("p");
   tierVoice.className = "practice-tier-voice";
   tierVoice.style.cssText =
-    "margin:-6px 0 var(--sp-4); font-size:0.9rem; font-weight:600; color:var(--muted);";
+    "margin:-6px 0 var(--sp-4); font-size:0.9rem; font-weight:500; color:var(--muted);";
   el.append(tierVoice);
 
   const area = document.createElement("div");
@@ -4399,7 +4479,7 @@ function renderPracticePhase(el, state, ctx, config) {
       host.innerHTML = "";
       const label = document.createElement("div");
       label.style.cssText =
-        "font-size:0.82rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-3);";
+        "font-size:0.82rem; font-weight:600; color:var(--muted); margin-bottom:var(--sp-3);";
       const stepWord = config.practice?.optionalActivity?.stepLabel || "Extra Practice";
       label.textContent = `${stepWord} ${i + 1} of ${items.length}`;
       host.append(label);
@@ -4553,7 +4633,7 @@ function renderPracticePhase(el, state, ctx, config) {
           });
         }
       },
-      { number: shown, total: seq.total, tier: prob.tier, state },
+      { number: shown, total: seq.total, tier: prob.tier, state, lessonModel },
     );
   }
   next();
@@ -4688,7 +4768,19 @@ function renderConnectFrame(cfg, state) {
   const blankCount = segments.length - 1;
   if (blankCount < 1) return null;
 
-  const answers = Array.isArray(cfg.answers) ? cfg.answers : [];
+  // The Spanish answers WIDEN what is accepted rather than replacing it. A
+  // bilingual student may type either language into the same blank — often both
+  // across one sentence — and marking a correct Spanish answer wrong is the
+  // exact failure this translation exists to prevent. `isRight` already accepts
+  // an array of equivalents, so the two lists simply merge.
+  const answersEn = Array.isArray(cfg.answers) ? cfg.answers : [];
+  const answersEs = Array.isArray(cfg.answersEs) ? cfg.answersEs : [];
+  const answers = answersEn.map((accepted, i) => {
+    const es = answersEs[i];
+    if (es == null || es === "") return accepted;
+    const merge = (v) => (Array.isArray(v) ? v : [v]);
+    return [...merge(accepted), ...merge(es)];
+  });
 
   const frame = document.createElement("div");
   frame.className = "sentence-frame sentence-frame-live";
@@ -4763,7 +4855,10 @@ function renderConnectPhase(el, state, ctx, config) {
         <div class="connect-scenario-theme">${esc(config.theme?.replace(/-/g, " ") || "Real World")}</div>
       </div>
     </div>
-    <p class="connect-scenario-text" data-annotate="word-problem">${renderMathText(cfg.scenario)}</p>`;
+    <p class="connect-scenario-text" data-annotate="word-problem">${stackContentHtml(
+      renderMathText(cfg.scenario),
+      cfg.scenarioEs ? renderMathText(cfg.scenarioEs) : "",
+    )}</p>`;
   if (cfg.diagram) card.innerHTML += buildVisual(cfg.diagram);
   else if (cfg.histogram) card.innerHTML += histogramSVG(cfg.histogram);
   // Optional scenario simulator: a slider that recomputes a proportional /
@@ -4812,7 +4907,7 @@ function renderConnectPhase(el, state, ctx, config) {
   label.setAttribute("for", fieldId);
   label.className = "connect-prompt-label";
   label.style.cssText =
-    "font-weight:800; font-size:1.1rem; color:var(--teal-ink); margin-bottom:10px; display:block;";
+    "font-weight:700; font-size:1.1rem; color:var(--teal-ink); margin-bottom:10px; display:block;";
   label.textContent = promptText;
   respCard.append(label);
 
@@ -4832,7 +4927,7 @@ function renderConnectPhase(el, state, ctx, config) {
   textarea.id = fieldId;
   textarea.className = "text-input";
   textarea.rows = 4;
-  textarea.placeholder = "Type your response here...";
+  textarea.placeholder = t("responsePlaceholder");
   textarea.setAttribute("aria-label", promptText);
   textarea.value = state.getResponse(3, "connect") || "";
   respCard.append(textarea);
@@ -4863,7 +4958,7 @@ function renderConnectPhase(el, state, ctx, config) {
 
   const submitBtn = document.createElement("button");
   submitBtn.className = "btn btn-primary mt-4";
-  submitBtn.textContent = "Submit Response";
+  submitBtn.innerHTML = stack("submitResponse", { html: true });
 
   let submitted = false;
 
@@ -4988,7 +5083,7 @@ function renderConnectPhase(el, state, ctx, config) {
     const continueBtn = document.createElement("button");
     continueBtn.type = "button";
     continueBtn.className = "btn btn-primary mt-4";
-    continueBtn.textContent = "Got it — continue →";
+    continueBtn.innerHTML = stack("gotItContinue", { html: true });
     continueBtn.addEventListener("click", finish, { once: true });
     reveal.append(continueBtn);
     respCard.append(reveal);
@@ -5129,15 +5224,15 @@ function renderReflectPhase(el, state, ctx, config) {
       work.style.cssText =
         "border:1px solid var(--line,#cbd5e1); border-left:4px solid var(--amber-ink,#8a5a00); border-radius:10px; padding:10px 12px; margin:0 0 var(--sp-3,12px); background:var(--surface-2,#f8fafc);";
       const head = document.createElement("div");
-      head.style.cssText = "font-weight:800; color:var(--navy,#12355b); margin-bottom:6px;";
-      head.textContent = "Someone solved it like this — find their mistake:";
+      head.style.cssText = "font-weight:700; color:var(--navy,#12355b); margin-bottom:6px;";
+      head.innerHTML = stack("findTheirMistake", { html: true });
       work.append(head);
       const ol = document.createElement("ol");
       ol.style.cssText = "margin:0; padding-left:1.2rem;";
       errorExample.steps.forEach((s, i) => {
         const li = document.createElement("li");
         const flagged = errorExample.errorStep === i;
-        li.style.cssText = flagged ? "font-weight:700;" : "";
+        li.style.cssText = flagged ? "font-weight:600;" : "";
         li.innerHTML = `${s.label ? `<strong>${esc(s.label)}:</strong> ` : ""}${esc(s.work)}${
           flagged ? ' <span aria-hidden="true">⚠️</span>' : ""
         }`;
@@ -5167,13 +5262,13 @@ function renderReflectPhase(el, state, ctx, config) {
     const chips = document.createElement("div");
     chips.className = "nw-chips";
     chips.setAttribute("role", "group");
-    chips.setAttribute("aria-label", "Sentence starters — tap one to add it to your answer");
+    chips.setAttribute("aria-label", t("sentenceStartersLabel"));
     frames.forEach((frame) => {
       const chip = document.createElement("button");
       chip.type = "button";
       chip.className = "nw-chip";
       chip.textContent = frame;
-      chip.title = "Tap to add this sentence starter";
+      chip.title = t("sentenceStarterTip");
       chip.addEventListener("click", () => {
         const needsSpace = ta.value && !/\s$/.test(ta.value);
         ta.value = `${ta.value}${needsSpace ? " " : ""}${frame} `;
@@ -5370,8 +5465,8 @@ function renderObjectiveReview(state, config) {
 
     const text = document.createElement("div");
     text.innerHTML = `
-      <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.04em; color:var(--teal-ink); margin-bottom:2px;">${item.label}</div>
-      <div style="font-weight:600;">${item.html}</div>
+      <div style="font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--teal-ink); margin-bottom:2px;">${item.label}</div>
+      <div style="font-weight:500;">${item.html}</div>
     `;
 
     cb.addEventListener("change", () => {
@@ -5548,10 +5643,10 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
       <div>
-        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 8 · Objectives Review</span>
-        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">${heading}</h3>
+        <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 8 · Objectives Review</span>
+        <h3 style="margin:6px 0 0; font-size:22px; font-weight:700; color:#14223a;">${heading}</h3>
       </div>
-      <div style="font-size:13px; font-weight:800; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 14px; border-radius:10px;">
+      <div style="font-size:13px; font-weight:700; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 14px; border-radius:10px;">
         Self-Check &amp; Growth
       </div>
     </div>
@@ -5574,7 +5669,7 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
   const usedVerb = name ? `${esc(name)} used` : "I used";
 
   checkWrap.innerHTML = `
-    <div style="font-size:14px; font-weight:800; color:#0f172a;">${name ? `Track ${esc(name)}'s Goal Mastery:` : "Track Your Goal Mastery:"}</div>
+    <div style="font-size:14px; font-weight:700; color:#0f172a;">${name ? `Track ${esc(name)}'s Goal Mastery:` : "Track Your Goal Mastery:"}</div>
     <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:14px; color:#334155;">
       <input type="checkbox" id="chkObjContent" ${savedChecks.content ? "checked" : ""}>
       <span><strong>Content Goal:</strong> ${subject} ${verb} demonstrate and apply today's math concept!</span>
@@ -5600,8 +5695,8 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
   finishBtn.type = "button";
   finishBtn.className = "btn btn-teal";
   finishBtn.style.cssText =
-    "margin-top:20px; padding:12px 24px; font-weight:800; font-size:15px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
-  finishBtn.textContent = "Finish Lesson & Celebrate 🎉";
+    "margin-top:20px; padding:12px 24px; font-weight:700; font-size:15px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+  finishBtn.innerHTML = stack("finishCelebrate", { html: true });
   finishBtn.addEventListener("click", () => {
     state.markCompleted(phaseIndex);
     showFinalSummary(el, state, config);

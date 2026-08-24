@@ -30,6 +30,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { skipExit } from "./lib/skip-exit.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -92,7 +93,8 @@ if (before.length) {
     `   ⚠ skipped: ${before.length} tracked file(s) already modified. ` +
       `Commit or stash, then re-run to check idempotency.`,
   );
-  process.exit(0);
+  // SKIP, not PASS: nothing about idempotency was verified on this run.
+  process.exit(skipExit("the tree already has modified tracked files"));
 }
 
 let failures = 0;

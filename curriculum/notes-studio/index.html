@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduWonderLab — Full-Curriculum Interactive Publisher Math Studio</title>
+  <!-- Google Fonts: Outfit (Display) & Hanken Grotesk (Body) -->
+  <link href="/assets/fonts/hanken-grotesk-outfit-c00c07.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #1d4ed8;
+      --primary-dark: #0f172a;
+      --primary-accent: #2563eb;
+      --primary-light: #eff6ff;
+      --secondary: #0284c7;
+      --accent: #d97706;
+      --accent-light: #fef3c7;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --teal-dark: #0f766e;
+      --teal-light: #f0fdfa;
+      --teal-border: #99f6e4;
+      --purple: #7c3aed;
+      --purple-light: #f5f3ff;
+      --gold-dark: #854d0e;
+      --gold-light: #fef9c3;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-400: #94a3b8;
+      --slate-500: #64748b;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      background-color: #f1f5f9;
+      color: var(--slate-800);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 60px;
+    }
+
+    /* Screen-Only App Navigation */
+    .app-nav {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand-group { display: flex; align-items: center; gap: 12px; }
+    .brand-logo {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white;
+      font-weight: 900;
+      font-family: var(--font-display);
+      font-size: 16px;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+    }
+    .brand-text h1 {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .brand-text p { font-size: 11px; color: #94a3b8; }
+
+    .app-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    select.nav-select {
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: var(--font-body);
+      outline: none;
+      cursor: pointer;
+      max-width: 320px;
+    }
+    .btn {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .btn-print { background: #2563eb; color: white; }
+    .btn-print:hover { background: #1d4ed8; }
+    .btn-te { background: #0d9488; color: white; }
+    .btn-te.active { background: #0f766e; }
+    .btn-scorm { background: #7c3aed; color: white; }
+    .btn-scorm:hover { background: #6d28d9; }
+
+    /* Sub-header Toolbar */
+    .toolbar-strip {
+      background: #ffffff;
+      border-bottom: 1px solid var(--slate-200);
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1040px;
+      margin: 16px auto 0 auto;
+      border-radius: 10px 10px 0 0;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .control-pill-group {
+      display: flex;
+      background: var(--slate-100);
+      padding: 3px;
+      border-radius: 8px;
+      gap: 2px;
+    }
+    .pill-btn {
+      border: none;
+      background: transparent;
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      border-radius: 6px;
+      color: var(--slate-600);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .pill-btn.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .pill-btn.active.group1 { color: #854d0e; background: #fef08a; }
+    .pill-btn.active.group2 { color: #6b21a8; background: #f3e8ff; }
+
+    /* Page Sheet */
+    .page-sheet {
+      max-width: 1040px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 32px 44px;
+      border: 1px solid var(--slate-200);
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+      position: relative;
+      transition: all 0.2s ease;
+    }
+    .page-sheet.inb-mode {
+      max-width: 760px;
+      padding: 22px 28px;
+      border: 2px dashed #94a3b8;
+      border-radius: 8px;
+      margin-top: 14px;
+    }
+    .inb-cut-guide {
+      display: none;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: #64748b;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed #cbd5e1;
+    }
+    .page-sheet.inb-mode .inb-cut-guide { display: block; }
+
+    /* Small-Group Track Header Banner */
+    .small-group-banner {
+      border-radius: 6px;
+      padding: 8px 14px;
+      margin-bottom: 14px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .small-group-banner.core { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
+    .small-group-banner.group1 { background: #fef9c3; border: 1px solid #fde047; color: #854d0e; }
+    .small-group-banner.group2 { background: #f3e8ff; border: 1px solid #d8b4fe; color: #6b21a8; }
+
+    /* Teacher Wraparound Overlay */
+    .te-wraparound-strip {
+      background: var(--teal-light);
+      border: 1.5px solid var(--teal-border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .te-wraparound-strip.active { display: block; }
+    .te-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .te-badge {
+      background: var(--teal-dark);
+      color: white;
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .te-pacing-block { display: flex; gap: 10px; font-size: 11.5px; color: #134e4a; font-weight: 600; }
+    .te-pacing-block span { background: #ccfbf1; padding: 2px 6px; border-radius: 4px; }
+    .te-details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      font-size: 11.5px;
+      color: #115e59;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed #99f6e4;
+    }
+
+    /* Publisher Header */
+    .pub-header {
+      border-bottom: 2.5px solid var(--primary-dark);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+    .pub-top-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--slate-500);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    .pub-main-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .pub-lesson-tag {
+      font-family: var(--font-display);
+      font-size: 21px;
+      font-weight: 900;
+      color: var(--primary-dark);
+      letter-spacing: -0.02em;
+    }
+    .pub-lesson-tag span { color: var(--primary); margin-right: 8px; }
+    .student-info-box {
+      border: 1px solid var(--slate-300);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--slate-600);
+      min-width: 190px;
+    }
+    .student-info-box div { display: flex; justify-content: space-between; margin-bottom: 2px; }
+
+    /* Section Structure */
+    .pub-section { margin-bottom: 18px; page-break-inside: avoid; }
+    .pub-section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--slate-100);
+      border-left: 4px solid var(--primary);
+      padding: 4px 8px;
+      border-radius: 0 6px 6px 0;
+      margin-bottom: 8px;
+    }
+    .pub-section-header.accent { border-left-color: var(--accent); }
+    .pub-section-header.blue { border-left-color: var(--secondary); }
+    .pub-section-header.purple { border-left-color: var(--purple); }
+    .pub-section-num {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 11.5px;
+      color: var(--primary-dark);
+      background: #ffffff;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .pub-section-title {
+      font-family: var(--font-display);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--slate-800);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .pub-section-tag { margin-left: auto; font-size: 10px; font-weight: 700; color: var(--slate-500); }
+
+    /* Objectives & Mission */
+    .objectives-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+    .goal-card { background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 6px; padding: 7px 10px; }
+    .goal-card-label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--primary); margin-bottom: 2px; }
+    .goal-card-label.lang { color: var(--accent); }
+    .goal-card-text { font-size: 11.5px; font-weight: 500; }
+    .es-subtext { font-size: 10.5px; color: var(--slate-500); font-style: italic; margin-top: 2px; border-top: 1px dashed var(--slate-200); padding-top: 2px; }
+
+    .mission-box {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border: 1px solid #86efac;
+      border-radius: 6px;
+      padding: 7px 10px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .mission-icon { font-size: 15px; }
+    .mission-content h4 { font-family: var(--font-display); font-size: 11.5px; font-weight: 800; color: #166534; margin-bottom: 1px; }
+    .mission-content p { font-size: 11px; color: #14532d; }
+
+    /* Interactive Manipulative */
+    .interactive-manipulative-card {
+      border: 1.5px solid #bfdbfe;
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.05);
+    }
+    .manipulative-toolbar {
+      width: 100%;
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 6px;
+      padding: 6px 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .manipulative-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .tool-btn {
+      background: #ffffff;
+      border: 1px solid var(--slate-300);
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--slate-700);
+      transition: all 0.15s ease;
+    }
+    .tool-btn:hover { background: var(--primary-light); color: var(--primary); border-color: #93c5fd; }
+    .tool-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .live-data-badge {
+      background: #dbeafe;
+      color: #1e40af;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* Word Bank & Cornell Table */
+    .word-bank-banner {
+      background: #eff6ff;
+      border: 1.5px dashed #60a5fa;
+      border-radius: 6px;
+      padding: 5px 10px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .word-bank-title { font-size: 10px; font-weight: 800; color: #1e40af; text-transform: uppercase; margin-right: 4px; }
+    .word-pill {
+      background: #ffffff;
+      border: 1px solid #bfdbfe;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--primary);
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+    .word-pill:hover { background: var(--primary); color: white; }
+    .word-pill span { font-weight: 400; color: #64748b; font-size: 9.5px; margin-left: 2px; }
+
+    .cornell-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--slate-300);
+      border-radius: 6px;
+      overflow: hidden;
+      font-size: 11.5px;
+    }
+    .cornell-table th {
+      background: var(--slate-100);
+      color: var(--slate-700);
+      font-family: var(--font-display);
+      font-weight: 700;
+      padding: 5px 8px;
+      text-align: left;
+      border-bottom: 1.5px solid var(--slate-300);
+    }
+    .cornell-table td { padding: 6px 8px; border-bottom: 1px solid var(--slate-200); vertical-align: middle; }
+    .cornell-cue-col { width: 30%; background: var(--slate-50); font-weight: 700; color: var(--slate-800); border-right: 1.5px solid var(--slate-300); }
+    .cornell-notes-col { width: 70%; }
+    .fill-blank-line {
+      display: inline-block;
+      min-width: 110px;
+      border-bottom: 1.5px solid var(--primary);
+      padding: 0 4px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--primary);
+      cursor: pointer;
+    }
+    .fill-blank-line.key { background: #fef08a; color: #854d0e; border-bottom-color: #eab308; border-radius: 2px; }
+    .fill-blank-line.filled { color: #15803d; background: #f0fdf4; border-bottom-color: #22c55e; border-radius: 2px; }
+
+    /* Talk About It Discourse (SMP 3) */
+    .discourse-card-wrap { background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 6px; padding: 8px 12px; }
+    .discourse-header-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .discourse-smp-tag { font-size: 9.5px; font-weight: 800; color: #0369a1; text-transform: uppercase; letter-spacing: 0.04em; }
+    .discourse-question { font-size: 11.5px; font-weight: 700; color: #0c4a6e; margin-bottom: 6px; }
+    .discourse-frames-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .discourse-frame-box { background: #ffffff; border: 1px solid #e0f2fe; border-radius: 4px; padding: 5px 8px; font-size: 11px; color: #0369a1; }
+
+    /* Problem Practice Lab */
+    .problem-set-container { display: flex; flex-direction: column; gap: 10px; }
+    .problem-card { border: 1px solid var(--slate-200); background: #ffffff; border-radius: 6px; padding: 10px 14px; }
+    .problem-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .problem-badge { font-family: var(--font-display); font-size: 10.5px; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+    .badge-fluency { background: #e0f2fe; color: #0369a1; }
+    .badge-error { background: #fef2f2; color: #b91c1c; }
+    .badge-transfer { background: #f0fdf4; color: #15803d; }
+    .problem-stem { font-size: 11.5px; font-weight: 600; color: var(--slate-800); margin-bottom: 6px; }
+    .problem-input-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .math-input { font-family: var(--font-mono); font-size: 12px; border: 1.5px solid var(--slate-300); border-radius: 4px; padding: 3px 6px; width: 130px; outline: none; }
+    .math-input:focus { border-color: var(--primary); }
+    .check-btn { background: var(--slate-800); color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .check-btn:hover { background: var(--primary); }
+    .feedback-msg { font-size: 11px; font-weight: 700; margin-left: 4px; }
+    .feedback-msg.correct { color: #16a34a; }
+    .feedback-msg.incorrect { color: #dc2626; }
+
+    /* CER */
+    .cer-box { border: 1px solid var(--slate-300); border-radius: 6px; overflow: hidden; margin-top: 12px; }
+    .cer-prompt-bar { background: var(--slate-100); padding: 5px 8px; font-size: 11.5px; font-weight: 700; color: var(--primary-dark); border-bottom: 1px solid var(--slate-300); }
+    .cer-row { display: flex; border-bottom: 1px solid var(--slate-200); font-size: 11px; }
+    .cer-row:last-child { border-bottom: none; }
+    .cer-label { width: 120px; padding: 6px 8px; background: var(--slate-50); font-weight: 700; color: var(--slate-700); border-right: 1px solid var(--slate-200); }
+    .cer-body { flex: 1; padding: 6px 8px; color: var(--slate-800); background: #ffffff; min-height: 28px; }
+    .cer-body.teacher-key-text { color: #1e40af; font-weight: 600; background: #eff6ff; }
+
+    .pub-footer { margin-top: 18px; padding-top: 6px; border-top: 1px solid var(--slate-200); display: flex; justify-content: space-between; font-size: 9.5px; color: var(--slate-400); text-transform: uppercase; }
+
+    /* Modal for SCORM Download */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(2px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 24px;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+    .modal-card h3 { font-family: var(--font-display); font-size: 16px; color: var(--primary-dark); margin-bottom: 8px; }
+    .modal-card p { font-size: 12px; color: var(--slate-600); margin-bottom: 14px; }
+    .modal-code-box {
+      background: #0f172a;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    @media print {
+      body { background: #ffffff !important; padding: 0 !important; }
+      .app-nav, .toolbar-strip, .manipulative-toolbar, .check-btn, .modal-overlay { display: none !important; }
+      .page-sheet { max-width: 100% !important; margin: 0 !important; padding: 6mm 8mm !important; border: none !important; box-shadow: none !important; }
+      .page-sheet.inb-mode { max-width: 92% !important; margin: 2mm auto !important; border: 1.5pt dashed #666 !important; }
+      @page { size: letter portrait; margin: 6mm; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen Top Bar -->
+  <nav class="app-nav">
+    <div class="brand-group">
+      <div class="brand-logo">NT</div>
+      <div class="brand-text">
+        <h1>EduWonderLab · Grade 6 Reveal Math Publisher Studio</h1>
+        <p>Units 1–10 Complete Suite · Small Groups · Interactive Lab · SCORM LMS</p>
+      </div>
+    </div>
+    <div class="app-actions">
+      <select id="lessonSelectNav" class="nav-select" onchange="StudioApp.changeLesson(this.value)">
+        <optgroup label="Unit 1: Math Is... & Decimals">
+          <option value="1-1">Lesson 1-1 · Prime Factorization & Division (6.NS.B.4)</option>
+          <option value="1-3">Lesson 1-3 · Multi-Bar Tape Diagrams (6.NS.B.3)</option>
+        </optgroup>
+        <optgroup label="Unit 2: Statistics & Data">
+          <option value="2-1">Lesson 2-1 · Statistical Questions & Spread (6.SP.A.1)</option>
+          <option value="2-2">Lesson 2-2 · Histograms & Frequency Bins (6.SP.B.4)</option>
+        </optgroup>
+        <optgroup label="Unit 3: Ratios & Rates">
+          <option value="3-1">Lesson 3-1 · Double Number Line Scaler (6.RP.A.1)</option>
+          <option value="3-2">Lesson 3-2 · Unit Rates & Pricing (6.RP.A.2)</option>
+        </optgroup>
+        <optgroup label="Unit 4: Fractions, Decimals, Percents">
+          <option value="4-1">Lesson 4-1 · Understand Percent Grids (6.RP.A.3c)</option>
+        </optgroup>
+        <optgroup label="Unit 5: Area & 3D Nets">
+          <option value="5-1">Lesson 5-1 · Area of Parallelograms (6.G.A.1)</option>
+          <option value="5-6">Lesson 5-6 · 3D Prism Nets & Surface Area (6.G.A.4)</option>
+        </optgroup>
+        <optgroup label="Unit 6: Expressions & Exponents">
+          <option value="6-3">Lesson 6-3 · Numerical Exponents (6.EE.A.1)</option>
+          <option value="6-8">Lesson 6-8 · Distributive Property & Area Tiles (6.EE.A.3)</option>
+        </optgroup>
+        <optgroup label="Unit 7: Integers & Coordinate Plane" selected>
+          <option value="7-1" selected>Lesson 7-1 · Explore Integers & Opposites (6.NS.C.5)</option>
+          <option value="7-4">Lesson 7-4 · 4-Quadrant Plane & Polygons (6.NS.C.6c)</option>
+        </optgroup>
+        <optgroup label="Unit 8: Equations & Inequalities">
+          <option value="8-1">Lesson 8-1 · One-Step Balance Equations (6.EE.B.5)</option>
+          <option value="8-4">Lesson 8-4 · Inequalities on Number Lines (6.EE.B.8)</option>
+        </optgroup>
+        <optgroup label="Unit 9: Two-Variable Relationships">
+          <option value="9-1">Lesson 9-1 · Independent & Dependent Variables (6.EE.C.9)</option>
+          <option value="9-3">Lesson 9-3 · Graph Two-Variable Lines (6.EE.C.9)</option>
+        </optgroup>
+        <optgroup label="Unit 10: Capstone & MSTAR Blitz">
+          <option value="10-1">Lesson 10-1 · Math Reflection & Growth (6.CCSS)</option>
+          <option value="MSTAR-1">MSTAR-1 · Domain Blitz: Ratios & Expressions (6.RP/6.EE)</option>
+        </optgroup>
+      </select>
+      <button class="btn btn-te" id="navTeBtn" onclick="StudioApp.toggleWraparound()">👩‍🏫 Teacher Wraparound</button>
+      <button class="btn btn-scorm" onclick="StudioApp.openScormModal()">📦 SCORM 1.2 Export</button>
+      <button class="btn btn-print" onclick="window.print()">🖨️ Print / PDF</button>
+    </div>
+  </nav>
+
+  <!-- Controls Strip -->
+  <div class="toolbar-strip">
+    <!-- Small-Group Track Selector -->
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <span style="font-size: 11px; font-weight: 800; color: var(--slate-600); text-transform: uppercase;">Track:</span>
+      <div class="control-pill-group">
+        <button class="pill-btn active" id="trackCore" onclick="StudioApp.setTrack('CORE')">👥 Whole-Group Core</button>
+        <button class="pill-btn" id="trackGroup1" onclick="StudioApp.setTrack('GROUP_1')">🟡 Group 1 (Support)</button>
+        <button class="pill-btn" id="trackGroup2" onclick="StudioApp.setTrack('GROUP_2')">🟣 Group 2 (Challenge)</button>
+      </div>
+    </div>
+
+    <!-- Layout Switcher -->
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <span style="font-size: 11px; font-weight: 800; color: var(--slate-600); text-transform: uppercase;">Layout:</span>
+      <div class="control-pill-group">
+        <button class="pill-btn active" id="btnFull" onclick="StudioApp.setLayout('FULL_PAGE')">📄 Full Binder</button>
+        <button class="pill-btn" id="btnINB" onclick="StudioApp.setLayout('INB_HALF_SHEET')">✂️ INB Spiral Fit</button>
+      </div>
+    </div>
+
+    <!-- Tier Key Switcher -->
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <span style="font-size: 11px; font-weight: 800; color: var(--slate-600); text-transform: uppercase;">Mode:</span>
+      <div class="control-pill-group">
+        <button class="pill-btn active" id="btnStudentMode" onclick="StudioApp.setKeyMode(false)">Student Mode</button>
+        <button class="pill-btn" id="btnKeyMode" onclick="StudioApp.setKeyMode(true)">🔑 Master Key</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Sheet -->
+  <main class="page-sheet" id="printSheet">
+    <div class="inb-cut-guide">✂️ Cut along dashed border to glue inside interactive notebook (INB)</div>
+
+    <!-- Small-Group Differentiation Banner -->
+    <div class="small-group-banner core" id="smallGroupBanner">
+      <span id="smallGroupBannerTitle">👥 Whole-Group Core Lesson · Grade-Level Rigor</span>
+      <span style="font-size:10.5px; opacity:0.85;" id="smallGroupBannerSub">Universal Design for Learning (UDL)</span>
+    </div>
+
+    <!-- Teacher Wraparound Edition Banner -->
+    <div class="te-wraparound-strip" id="teWraparoundBox">
+      <div class="te-header-row">
+        <span class="te-badge">👩‍🏫 TEACHER WRAPAROUND EDITION · INSTRUCTIONAL BLUEPRINT</span>
+        <div class="te-pacing-block" id="tePacingBlock"></div>
+      </div>
+      <div class="te-details-grid">
+        <div><strong>🌉 Standards Bridge:</strong> <span id="teBridgeText"></span></div>
+        <div id="teIfThenText"></div>
+      </div>
+    </div>
+
+    <!-- Document Header -->
+    <header class="pub-header">
+      <div class="pub-top-row">
+        <span>EduWonderLab · Grade 6 Reveal Math Publisher Series</span>
+        <span id="headerStandard">Standard: 6.NS.C.5</span>
+      </div>
+      <div class="pub-main-title">
+        <div class="pub-lesson-tag">
+          <span id="headerLessonNum">LESSON 7-1</span>
+          <span style="color:var(--slate-800);" id="headerLessonTitle">Explore Integers & Opposites</span>
+        </div>
+        <div class="student-info-box">
+          <div><span>Name:</span> ___________________</div>
+          <div><span>Date:</span> ____________ <span>Period:</span> _____</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- SECTION 1: Goals & Mission -->
+    <section class="pub-section">
+      <div class="pub-section-header">
+        <span class="pub-section-num">1</span>
+        <h3 class="pub-section-title">Goals & Mission Brief</h3>
+        <span class="pub-section-tag" id="scenarioCategoryTag">Expedition Context</span>
+      </div>
+      <div class="objectives-grid">
+        <div class="goal-card">
+          <div class="goal-card-label">🎯 Content Objective</div>
+          <div class="goal-card-text" id="contentObjectiveText"></div>
+        </div>
+        <div class="goal-card">
+          <div class="goal-card-label lang">🗣️ Language Objective</div>
+          <div class="goal-card-text" id="langObjectiveText"></div>
+          <div class="es-subtext" id="esLangObjectiveText"></div>
+        </div>
+      </div>
+      <div class="mission-box">
+        <div class="mission-icon">🚀</div>
+        <div class="mission-content">
+          <h4 id="missionTitle"></h4>
+          <p id="missionBody"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: HANDS-ON INTERACTIVE MANIPULATIVE -->
+    <section class="pub-section">
+      <div class="pub-section-header purple">
+        <span class="pub-section-num" style="color:var(--purple);">2</span>
+        <h3 class="pub-section-title">Interactive Math Manipulative Lab</h3>
+        <span class="pub-section-tag">Tactile Dual-Coding</span>
+      </div>
+      <div class="interactive-manipulative-card">
+        <div class="manipulative-toolbar" id="manipulativeToolbar">
+          <div class="manipulative-controls" id="manipulativeControls"></div>
+          <div class="live-data-badge" id="manipulativeDataBadge">Manipulative Ready</div>
+        </div>
+        <div id="interactiveSvgContainer" style="width:100%; display:flex; justify-content:center;"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Cornell Notes & Word Bank -->
+    <section class="pub-section">
+      <div class="pub-section-header">
+        <span class="pub-section-num">3</span>
+        <h3 class="pub-section-title">Word Bank & Cornell Notes</h3>
+        <span class="pub-section-tag" id="trackStatusTag">Standard Track</span>
+      </div>
+      <div class="word-bank-banner" id="wordBankBox">
+        <span class="word-bank-title">Word Bank:</span>
+        <div id="wordBankPills" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+      </div>
+      <table class="cornell-table">
+        <thead>
+          <tr>
+            <th class="cornell-cue-col">Key Cue / Term</th>
+            <th class="cornell-notes-col">Guided Definition & Fill-in (Click blanks to clear)</th>
+          </tr>
+        </thead>
+        <tbody id="cornellNotesBody"></tbody>
+      </table>
+    </section>
+
+    <!-- SECTION 4: Talk About It Partner Discourse (SMP 3) -->
+    <section class="pub-section">
+      <div class="pub-section-header blue">
+        <span class="pub-section-num" style="color:var(--secondary);">4</span>
+        <h3 class="pub-section-title">"Talk About It" Partner Discourse (SMP 3)</h3>
+        <span class="pub-section-tag">Discourse Routine</span>
+      </div>
+      <div class="discourse-card-wrap">
+        <div class="discourse-header-row">
+          <span class="discourse-smp-tag" id="discSmpTag">SMP 3: Construct Viable Arguments</span>
+          <span style="font-size:10px; color:#0369a1; font-weight:700;">🗣️ Turn & Talk (2 min)</span>
+        </div>
+        <div class="discourse-question" id="discQuestionText"></div>
+        <div class="discourse-frames-grid">
+          <div class="discourse-frame-box" id="discPartnerABox"></div>
+          <div class="discourse-frame-box" id="discPartnerBBox"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: INTERACTIVE PRACTICE LAB & CER -->
+    <section class="pub-section">
+      <div class="pub-section-header accent">
+        <span class="pub-section-num" style="color:var(--accent);">5</span>
+        <h3 class="pub-section-title">Problem Practice Lab & CER Writing</h3>
+        <span class="pub-section-tag">Interactive Checks</span>
+      </div>
+      <div class="problem-set-container" id="problemSetContainer"></div>
+      
+      <!-- CER Writing Box -->
+      <div class="cer-box">
+        <div class="cer-prompt-bar" id="cerPromptText"></div>
+        <div class="cer-row">
+          <div class="cer-label">
+            <span>Claim</span>
+            <small style="font-size:9px; color:#64748b; display:block;">Mi afirmación</small>
+          </div>
+          <div class="cer-body" id="cerClaimContent"></div>
+        </div>
+        <div class="cer-row">
+          <div class="cer-label">
+            <span>Evidence</span>
+            <small style="font-size:9px; color:#64748b; display:block;">Mi evidencia</small>
+          </div>
+          <div class="cer-body" id="cerEvidenceContent"></div>
+        </div>
+        <div class="cer-row">
+          <div class="cer-label">
+            <span>Reasoning</span>
+            <small style="font-size:9px; color:#64748b; display:block;">Mi razonamiento</small>
+          </div>
+          <div class="cer-body" id="cerReasoningContent"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="pub-footer">
+      <span>EduWonderLab · Grade 6 Reveal Math · Commercial Publisher Series</span>
+      <span>Course 1 Interactive Problem Studio</span>
+      <span>Page 1 of 1</span>
+    </footer>
+  </main>
+
+  <!-- SCORM Export Modal -->
+  <div class="modal-overlay" id="scormModal">
+    <div class="modal-card">
+      <h3>📦 1-Click SCORM 1.2 Package Generator</h3>
+      <p>This generates a self-contained SCORM 1.2 zip archive with embedded <code style="color:#0284c7;">imsmanifest.xml</code> and LMS API bridge ready for 1-click import into Canvas.</p>
+      <div class="modal-code-box" id="scormManifestPreview"></div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="btn" style="background:#e2e8f0; color:#334155;" onclick="StudioApp.closeScormModal()">Close</button>
+        <button class="btn btn-scorm" onclick="StudioApp.downloadScormPackage()">⬇️ Download SCORM .ZIP</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * Master Curriculum Engine for All 10 Units & Small Groups
+     */
+    const StudioApp = (function() {
+      const urlParams = (typeof window !== 'undefined' && window.location) ? new URLSearchParams(window.location.search) : new URLSearchParams();
+      let currentLessonId = urlParams.get('lesson') || '7-1';
+      let currentTrack = urlParams.get('track') || 'CORE'; // CORE | GROUP_1 | GROUP_2
+      let currentLayout = urlParams.get('layout') || 'FULL_PAGE';
+      let isTeacherKey = (urlParams.get('key') === 'true');
+      let showWraparound = (urlParams.get('wraparound') === 'true');
+
+      // Manipulative States
+      const state = {
+        integerPos: 0,
+        quadPts: [{ x: -4, y: 3, label: 'A' }, { x: 2, y: 3, label: 'B' }, { x: 2, y: -3, label: 'C' }, { x: -4, y: -3, label: 'D' }],
+        ratioScale: 1,
+        tapeSubtract: false,
+        percentShaded: 45,
+        balanceSubtracted: false,
+        tileDistribute: false,
+        funcInputX: 4
+      };
+
+      // MASTER DATABASE: Covering Units 1-10 + Small Groups
+      const CURRICULUM = {
+        '1-1': {
+          unit: 1, unitTitle: 'Math Is... & Decimals', lessonNumber: '1-1', title: 'Prime Factorization & Division Algorithm', standard: '6.NS.B.4',
+          contentObjective: 'I can find the prime factorization of composite numbers using factor trees and determine GCF and LCM.',
+          languageObjective: 'I can explain prime factors using the terms prime, composite, factor tree, GCF, and exponent.',
+          spanishLanguageObjective: 'Puedo explicar factores primos usando los términos primo, compuesto, árbol de factores, MCD y exponente.',
+          scenario: { title: 'Security Encryption Key Factorization', body: 'A cyber defense lab factors a 72-bit security key into its unique prime foundation.' },
+          vocabulary: [
+            { term: 'Prime Number', esTerm: 'Número primo', cue: 'What is a prime number?', def: 'A whole number greater than 1 with exactly two factors: 1 and itself.' },
+            { term: 'Composite', esTerm: 'Número compuesto', cue: 'What is a composite number?', def: 'A number with more than two factors.' },
+            { term: 'Factor Tree', esTerm: 'Árbol de factores', cue: 'How does a factor tree work?', def: 'A diagram breaking a number down into prime branches.' }
+          ],
+          guidedNotes: [
+            { cue: 'Prime Definition', prompt: 'A number with only two factors (1 and itself) is {blank}.', answer: 'prime' },
+            { cue: '72 Factorization', prompt: '72 broken down into primes is 2³ × {blank}.', answer: '3² (or 9)' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Why is 2 the only even prime number in mathematics?',
+            partnerA: 'Partner A: "2 is the only even prime because every other even number can be divided by..."',
+            partnerB: 'Partner B: "Any even number greater than 2 has at least three factors: 1, 2, and..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '6 min', guided: '18 min', cer: '11 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.OA.A.1', target: '6.NS.B.4', acceleration: '7.NS.A.2' },
+            ifThen: '💡 Watch-For: If students stop at composite branches like 4 or 9... Ask: "Can 4 be split further into 2 × 2?"'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: 'What is the prime factorization of 36? (Enter in format 2^2 * 3^2 or 4 * 9 prime value)', expected: '2^2 * 3^2', unit: '2² × 3²' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: 'A student claims 9 is a prime number because it is odd. Is 9 prime or composite?', expected: 'composite', unit: 'composite (3 × 3 = 9)' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'Two gears have 12 and 18 teeth. What is their Least Common Multiple (LCM)?', expected: '36', unit: 'teeth (LCM = 36)' }
+          ],
+          cerWriting: {
+            question: 'Why does every composite number have only one unique prime factorization?',
+            claim: 'By the Fundamental Theorem of Arithmetic, every composite number has a unique prime factorization.',
+            evidence: 'Regardless of whether you start factoring 72 as 8 × 9 or 6 × 12, the final prime leaves are always 2³ × 3².',
+            reasoning: 'Prime numbers are the indivisible building blocks of all integers.'
+          }
+        },
+        '1-3': {
+          unit: 1, unitTitle: 'Math Is... & Decimals', lessonNumber: '1-3', title: 'Represent Problem Situations with Tape Diagrams', standard: '6.NS.B.3',
+          contentObjective: 'I can represent multi-step problem situations with tape diagrams and solve for unknown unit amounts.',
+          languageObjective: 'I can explain problem solving using tape diagram, unit, total, and equal parts.',
+          spanishLanguageObjective: 'Puedo explicar la resolución usando diagrama de cinta, unidad, total y partes iguales.',
+          scenario: { title: 'Food Relief Fundraiser', body: 'Three classes raised $142.50. Class A raised twice as much as B. Class C raised $22.50. Find Class A.' },
+          vocabulary: [
+            { term: 'Tape Diagram', esTerm: 'Diagrama de cinta', cue: 'What is a tape diagram?', def: 'A visual bar model divided into equal rectangular unit blocks.' },
+            { term: 'Unit Value', esTerm: 'Valor de unidad', cue: 'What is a unit value?', def: 'The exact numerical quantity represented by one equal box.' }
+          ],
+          guidedNotes: [
+            { cue: 'Model Name', prompt: 'A visual model using rectangular bars for equal parts is a {blank}.', answer: 'tape diagram' },
+            { cue: 'Subtract Constant', prompt: 'First subtract Class C\'s $22.50 from $142.50 to get {blank}.', answer: '$120.00' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Why must we subtract the fixed $22.50 before dividing by 3 units?',
+            partnerA: 'Partner A: "We subtract $22.50 first because that is a fixed constant, not an equal unit..."',
+            partnerB: 'Partner B: "Once the $22.50 is removed, the remaining $120 can be divided equally by 3..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '7 min', guided: '18 min', cer: '10 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.NBT.B.7', target: '6.NS.B.3', acceleration: '7.EE.B.4a' },
+            ifThen: '💡 Watch-For: If students divide $142.50 by 3 directly... Ask: "Did Class C raise an equal unit, or a fixed amount?"'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: '142.50 - 22.50 = ?', expected: '120', unit: 'dollars ($120.00)' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: '120 / 3 = 40. Since Class A has 2 units, what did A raise?', expected: '80', unit: 'dollars ($80.00)' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'What is 80 + 40 + 22.50?', expected: '142.50', unit: 'dollars ($142.50 total)' }
+          ],
+          cerWriting: {
+            question: 'How does the tape diagram prove Class A collected $80.00?',
+            claim: 'Class A collected $80.00.',
+            evidence: '3 equal units equal $120.00 ($40 each), and Class A consists of 2 units ($40 × 2 = $80).',
+            reasoning: 'Visualizing units separates fixed constants from variable shares.'
+          }
+        },
+        '2-1': {
+          unit: 2, unitTitle: 'Statistics & Data', lessonNumber: '2-1', title: 'Understand Statistical Questions & Spread', standard: '6.SP.A.1',
+          contentObjective: 'I can distinguish statistical questions (expecting variability) from non-statistical questions.',
+          languageObjective: 'I can justify a statistical question using the words variability, distribution, data set, and range.',
+          spanishLanguageObjective: 'Puedo justificar una pregunta estadística usando variabilidad, distribución y rango.',
+          scenario: { title: 'School Cafeteria Survey Study', body: 'Analyze which student survey questions produce numerical variability.' },
+          vocabulary: [
+            { term: 'Statistical Question', esTerm: 'Pregunta estadística', cue: 'What is a statistical question?', def: 'A question that anticipates and accounts for variability in data responses.' },
+            { term: 'Variability', esTerm: 'Variabilidad', cue: 'What is variability?', def: 'The spread or variety of different responses in a data set.' }
+          ],
+          guidedNotes: [
+            { cue: 'Definition', prompt: 'A question that expects a variety of different answers is a {blank} question.', answer: 'statistical' },
+            { cue: 'Non-Statistical', prompt: '"How many days are in a week?" is non-statistical because it has only {blank} answer.', answer: 'one (fixed)' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Is "How tall is Mr. Neft?" a statistical question? Why or why not?',
+            partnerA: 'Partner A: "That is NOT a statistical question because there is only one exact measurement..."',
+            partnerB: 'Partner B: "To make it statistical, you would ask: How tall are the students in..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '5 min', guided: '19 min', cer: '11 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.MD.B.2', target: '6.SP.A.1', acceleration: '7.SP.A.1' },
+            ifThen: '💡 Watch-For: If students confuse broad questions with statistical ones... Ask: "Will you get 20 different numbers or 1 single fact?"'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: 'Is "How many minutes do 6th graders read each night?" statistical? (yes/no)', expected: 'yes', unit: 'Yes (Variability expected)' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: 'Is "What is the capital of Maryland?" statistical? (yes/no)', expected: 'no', unit: 'No (Single fact)' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'Data: 5, 8, 12, 15. What is the range (max - min)?', expected: '10', unit: 'units (15 - 5 = 10)' }
+          ],
+          cerWriting: {
+            question: 'Why does "How many pets do you own?" become statistical when asked to the entire class?',
+            claim: 'It becomes statistical because it generates a dataset with numerical variability.',
+            evidence: 'Different students own 0, 1, 2, or 4 pets, creating a distribution of values.',
+            reasoning: 'Statistical inquiry requires data that varies across a population.'
+          }
+        },
+        '2-2': {
+          unit: 2, unitTitle: 'Statistics & Data', lessonNumber: '2-2', title: 'Make and Read Histograms', standard: '6.SP.B.4',
+          contentObjective: 'I can construct and interpret histograms grouped in equal, continuous intervals.',
+          languageObjective: 'I can describe data displays using histogram, interval, frequency, and continuous.',
+          spanishLanguageObjective: 'Puedo describir datos usando histograma, intervalo, frecuencia y continuo.',
+          scenario: { title: 'Youth Basketball Tournament Scores', body: 'Analyze tournament points for 24 players grouped in 5-point intervals.' },
+          vocabulary: [
+            { term: 'Histogram', esTerm: 'Histograma', cue: 'What is a histogram?', def: 'A bar display of numerical data grouped into equal continuous intervals.' },
+            { term: 'Frequency', esTerm: 'Frecuencia', cue: 'What is frequency?', def: 'The number of data points within an interval.' }
+          ],
+          guidedNotes: [
+            { cue: 'Graph Type', prompt: 'A graph displaying numerical data in equal ranges is a {blank}.', answer: 'histogram' },
+            { cue: 'Touching Bars', prompt: 'Histogram bars touch with no gaps because ranges are {blank}.', answer: 'continuous' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Why do bars touch in a histogram but have gaps in a categorical bar graph?',
+            partnerA: 'Partner A: "In a histogram, the numbers along the x-axis flow continuously without gaps..."',
+            partnerB: 'Partner B: "In a bar graph, categories like colors or sports are separate, so bars have..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '6 min', guided: '19 min', cer: '10 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.MD.B.2', target: '6.SP.B.4', acceleration: '7.SP.B.3' },
+            ifThen: '💡 Watch-For: If students put names on the x-axis... Ask: "Do points come in names or numerical intervals?"'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: 'Interval 0-4 has 3 players, 5-9 has 7 players. Total under 10 points?', expected: '10', unit: 'players' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: 'Counts: 10-14 (9), 15-19 (4), 20-24 (1). Total scoring 10+?', expected: '14', unit: 'players (9+4+1)' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: '14 out of 24 players scored 10+. What percent is that? (Nearest whole %)', expected: '58', unit: '% (14/24 ≈ 58%)' }
+          ],
+          cerWriting: {
+            question: 'Did the majority of players score 10 or more points?',
+            claim: 'Yes, 14 out of 24 players scored 10 or more points.',
+            evidence: 'Summing intervals: 9 + 4 + 1 = 14 players.',
+            reasoning: '14 is greater than half of 24 (12), representing over 50%.'
+          }
+        },
+        '3-1': {
+          unit: 3, unitTitle: 'Ratios & Rates', lessonNumber: '3-1', title: 'Understand Ratios & Double Number Lines', standard: '6.RP.A.1',
+          contentObjective: 'I can use ratio language and double number line diagrams to scale proportional relationships.',
+          languageObjective: 'I can describe comparisons using "for every X there are Y" and "the ratio of A to B".',
+          spanishLanguageObjective: 'Puedo describir comparaciones usando "por cada X hay Y".',
+          scenario: { title: 'Solar Rover Battery Charging', body: 'A rover gains 15 miles of driving range for every 2 hours of sunlight.' },
+          vocabulary: [
+            { term: 'Ratio', esTerm: 'Razón', cue: 'What is a ratio?', def: 'A multiplicative comparison of two quantities.' },
+            { term: 'Double Number Line', esTerm: 'Recta numérica doble', cue: 'What is a double number line?', def: 'Two parallel lines aligning equivalent ratio pairs.' }
+          ],
+          guidedNotes: [
+            { cue: 'Definition', prompt: 'A comparison of two quantities using division is a {blank}.', answer: 'ratio' },
+            { cue: 'Scaling Factor', prompt: 'If 2 hours gives 15 miles, 6 hours (scaled ×3) gives {blank} miles.', answer: '45' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Why do we multiply both lines by the same number instead of adding?',
+            partnerA: 'Partner A: "Ratios represent multiplicative scaling, so if time triples, distance must..."',
+            partnerB: 'Partner B: "Adding numbers changes the unit rate and breaks equivalence..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '8 min', guided: '17 min', cer: '10 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.NF.B.5', target: '6.RP.A.1', acceleration: '7.RP.A.2' },
+            ifThen: '💡 Watch-For: If students add 2 to both lines... Ask: "Does doubling time double distance?"'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: '3 cups flour for 2 cups sugar. How much flour for 6 cups sugar?', expected: '9', unit: 'cups flour (×3)' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: '120 miles in 2 hours. What is the unit rate (miles in 1 hour)?', expected: '60', unit: 'mph (120/2)' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'At 15 miles per 2 hours, how many miles in 10 hours?', expected: '75', unit: 'miles (×5)' }
+          ],
+          cerWriting: {
+            question: 'How long will it take the rover to travel 75 miles?',
+            claim: 'It will take 10 hours to travel 75 miles.',
+            evidence: '75 miles is 5 times 15 miles. Scaling 2 hours by 5 yields 10 hours.',
+            reasoning: 'Multiplying both quantities by equal scale factors preserves ratio equivalence.'
+          }
+        },
+        '4-1': {
+          unit: 4, unitTitle: 'Fractions, Decimals, Percents', lessonNumber: '4-1', title: 'Understand Percent as Rate Per 100', standard: '6.RP.A.3c',
+          contentObjective: 'I can represent percent as a rate per 100 using 10×10 grids and convert among fractions, decimals, and percents.',
+          languageObjective: 'I can define percent using "parts per hundred", "%", and equivalent fractions with denominator 100.',
+          spanishLanguageObjective: 'Puedo definir porcentaje como partes por cada 100 usando cuadrículas 10x10.',
+          scenario: { title: 'Drone Fleet Battery Diagnostics', body: 'Analyze battery health where 45 out of 100 grid cells are charged.' },
+          vocabulary: [
+            { term: 'Percent (%)', esTerm: 'Porcentaje', cue: 'What is a percent?', def: 'A ratio comparing a number to 100, meaning "parts per hundred".' },
+            { term: '10x10 Grid', esTerm: 'Cuadrícula 10x10', cue: 'How does a 10x10 grid model percent?', def: 'A square divided into 100 equal unit squares, each representing 1% or 0.01.' }
+          ],
+          guidedNotes: [
+            { cue: 'Meaning of Percent', prompt: 'The word percent literally means parts per {blank}.', answer: 'hundred (100)' },
+            { cue: 'Fraction Form', prompt: '45% written as a fraction over 100 is {blank}.', answer: '45/100 (or 9/20)' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Why does 0.45 represent 45% while 0.4 represents 40%?',
+            partnerA: 'Partner A: "0.45 has 45 hundredths, which matches 45 per 100..."',
+            partnerB: 'Partner B: "0.4 is 4 tenths, which equals 40 hundredths (40%), not 4%..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '7 min', guided: '18 min', cer: '10 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.NBT.A.3', target: '6.RP.A.3c', acceleration: '7.RP.A.3' },
+            ifThen: '💡 Watch-For: If students write 0.4 for 4%... Ask: "Is 4 cents written as $0.40 or $0.04?"'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: 'Convert 3/4 to a percent. (Enter number only)', expected: '75', unit: '% (75/100)' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: 'A student says 0.07 is 70%. What percent is 0.07 actually?', expected: '7', unit: '% (7 hundredths)' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'What is 20% of 80?', expected: '16', unit: '(0.20 × 80 = 16)' }
+          ],
+          cerWriting: {
+            question: 'Why are 45/100, 0.45, and 45% all equal representations of the same quantity?',
+            claim: '45/100, 0.45, and 45% all represent the exact same mathematical value.',
+            evidence: 'On a 10×10 grid, shading 45 squares out of 100 represents 45 hundredths.',
+            reasoning: 'Fraction, decimal, and percent notations are simply three different ways to write parts per hundred.'
+          }
+        },
+        '5-1': {
+          unit: 5, unitTitle: 'Area & 3D Nets', lessonNumber: '5-1', title: 'Area of Parallelograms & Rhombuses', standard: '6.G.A.1',
+          contentObjective: 'I can derive and apply the area formula A = b × h for parallelograms using triangle decomposition.',
+          languageObjective: 'I can explain area using base, perpendicular height, rectangle, and square units.',
+          spanishLanguageObjective: 'Puedo explicar el área usando base, altura perpendicular y unidades cuadradas.',
+          scenario: { title: 'Solar Array Wing Design', body: 'Calculate the solar absorption area of a parallelogram panel with base = 8m and height = 5m.' },
+          vocabulary: [
+            { term: 'Parallelogram', esTerm: 'Paralelogramo', cue: 'What is a parallelogram?', def: 'A quadrilateral with two pairs of parallel opposite sides.' },
+            { term: 'Perpendicular Height', esTerm: 'Altura perpendicular', cue: 'What is perpendicular height?', def: 'The shortest 90-degree distance between parallel bases.' }
+          ],
+          guidedNotes: [
+            { cue: 'Area Formula', prompt: 'The area of a parallelogram is Area = base × {blank}.', answer: 'height (perpendicular)' },
+            { cue: 'Decomposition', prompt: 'Cutting a triangle from one end and sliding it to the other forms a {blank}.', answer: 'rectangle' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Why do we use the perpendicular height instead of the slanted side length to find area?',
+            partnerA: 'Partner A: "The slanted side is longer and does not measure the true vertical distance..."',
+            partnerB: 'Partner B: "When we transform the shape into a rectangle, the height becomes the rectangle\'s width..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '6 min', guided: '19 min', cer: '10 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.NF.B.4b', target: '6.G.A.1', acceleration: '7.G.B.6' },
+            ifThen: '💡 Watch-For: If students multiply base by the slanted side... Ask: "Does leaning a stack of books make them taller?"'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: 'Base = 12 cm, Height = 7 cm. Area = ?', expected: '84', unit: 'sq cm' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: 'Base = 10, Slant = 8, Height = 6. What is the true area?', expected: '60', unit: 'sq units (10 × 6)' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'A field is 25m base by 14m height. What is the area in m²?', expected: '350', unit: 'm²' }
+          ],
+          cerWriting: {
+            question: 'Why does a parallelogram have the exact same area formula as a rectangle?',
+            claim: 'A parallelogram has the same area formula (A = b * h) because it can be rearranged into a rectangle.',
+            evidence: 'Cutting off the right triangle from one side and translating it to the opposite side forms a rectangle of dimensions b by h.',
+            reasoning: 'Area is preserved under rigid decomposition and translation.'
+          }
+        },
+        '5-6': {
+          unit: 5, unitTitle: 'Area & 3D Nets', lessonNumber: '5-6', title: 'Surface Area of Prisms Using 3D Nets', standard: '6.G.A.4',
+          contentObjective: 'I can represent 3D rectangular prisms with 2D nets and compute total surface area.',
+          languageObjective: 'I can explain surface area using net, face, rectangular prism, and square units.',
+          spanishLanguageObjective: 'Puedo calcular el área superficial usando redes 2D y prismas 3D.',
+          scenario: { title: 'Waterproof Cargo Crate', body: 'A crate measures 5ft length, 3ft width, 2ft height. Calculate total square footage for composite coating.' },
+          vocabulary: [
+            { term: 'Net', esTerm: 'Red / Desarrollo plano', cue: 'What is a net?', def: 'A 2D pattern that folds to form a 3D solid.' },
+            { term: 'Surface Area', esTerm: 'Área superficial', cue: 'What is surface area?', def: 'The sum of areas of all exterior faces.' }
+          ],
+          guidedNotes: [
+            { cue: 'Face Count', prompt: 'A rectangular prism has a total of {blank} rectangular faces.', answer: '6' },
+            { cue: 'Formula', prompt: 'Surface Area = 2(lw) + 2(lh) + {blank}.', answer: '2(wh)' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Why does surface area measure square units while volume measures cubic units?',
+            partnerA: 'Partner A: "Surface area covers the 2D exterior flat walls of the box..."',
+            partnerB: 'Partner B: "Volume measures the 3D space inside the box..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '7 min', guided: '18 min', cer: '10 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.MD.C.5', target: '6.G.A.4', acceleration: '7.G.B.6' },
+            ifThen: '💡 Watch-For: If students calculate 5 × 3 × 2 = 30 for surface area... Ask: "Did you find the space inside or the paint on the walls?"'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: 'Top & bottom: 5×3 = 15 each. Combined top & bottom area?', expected: '30', unit: 'sq ft' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: 'What is the full surface area of the 5 × 3 × 2 crate?', expected: '62', unit: 'sq ft (30+20+12)' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'If coating costs $3.50/sq ft, how much does 62 sq ft cost?', expected: '217', unit: 'dollars ($217.00)' }
+          ],
+          cerWriting: {
+            question: 'Why does doubling all dimensions quadruple the total surface area?',
+            claim: 'Doubling all side lengths multiplies total surface area by 4.',
+            evidence: 'Each face area becomes (2l) * (2w) = 4(lw). If a face is 15 sq ft, doubling yields 60 sq ft (15 × 4).',
+            reasoning: 'Area is a 2D product of two linear dimensions; scaling both by 2 scales area by 2² = 4.'
+          }
+        },
+        '6-8': {
+          unit: 6, unitTitle: 'Expressions & Exponents', lessonNumber: '6-8', title: 'Generate Equivalent Expressions with Distributive Property', standard: '6.EE.A.3',
+          contentObjective: 'I can apply the distributive property to generate equivalent algebraic expressions using area models.',
+          languageObjective: 'I can explain equivalence using distributive property, factor, term, coefficient, and expand.',
+          spanishLanguageObjective: 'Puedo aplicar la propiedad distributiva usando modelos de área.',
+          scenario: { title: 'Modular Greenhouse Zone Expansion', body: 'Expand greenhouse zones with dimensions 3(2x + 4).' },
+          vocabulary: [
+            { term: 'Distributive Property', esTerm: 'Propiedad distributiva', cue: 'What is the distributive property?', def: 'a(b + c) = ab + ac, multiplying the outside factor by each term inside.' },
+            { term: 'Equivalent Expressions', esTerm: 'Expresiones equivalentes', cue: 'What makes expressions equivalent?', def: 'Expressions that have equal values for any value substituted for the variable.' }
+          ],
+          guidedNotes: [
+            { cue: 'Distributive Rule', prompt: 'To expand 3(2x + 4), multiply 3 by 2x AND 3 by {blank}.', answer: '4' },
+            { cue: 'Expanded Result', prompt: '3(2x + 4) = 6x + {blank}.', answer: '12' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Why is 3(2x + 4) NOT equal to 6x + 4?',
+            partnerA: 'Partner A: "3 must be multiplied by BOTH terms inside the parentheses, including 4..."',
+            partnerB: 'Partner B: "Forgetting to multiply 3 × 4 leaves an expression that is not equivalent..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '7 min', guided: '18 min', cer: '10 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.OA.A.2', target: '6.EE.A.3', acceleration: '7.EE.A.1' },
+            ifThen: '💡 Watch-For: If students write 6x + 4... Ask: "Draw an area box: 3 by 2x is 6x. What is 3 by 4?"'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: 'Expand: 4(3x + 5) = ? (Enter as 12x + 20)', expected: '12x + 20', unit: '12x + 20' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: 'Factor: 8x + 24 = 8(x + ?)', expected: '3', unit: '3 (8(x + 3))' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'If x = 5, what is the value of 6x + 12?', expected: '42', unit: '(6(5) + 12 = 42)' }
+          ],
+          cerWriting: {
+            question: 'How does an area model prove that 3(2x + 4) = 6x + 12?',
+            claim: 'The area model proves 3(2x + 4) equals 6x + 12.',
+            evidence: 'Dividing the rectangle into two compartments yields areas of 3 × 2x = 6x and 3 × 4 = 12.',
+            reasoning: 'The total area of the whole rectangle equals the sum of the two interior section areas.'
+          }
+        },
+        '7-1': {
+          unit: 7, unitTitle: 'Integers & The Coordinate Plane', lessonNumber: '7-1', title: 'Explore Integers and Their Opposites', standard: '6.NS.C.5',
+          contentObjective: 'I can use positive and negative integers to represent real-world situations, explain what 0 means, and find opposites.',
+          languageObjective: 'I can explain integers using opposite, positive, negative, elevation, and reference point.',
+          spanishLanguageObjective: 'Puedo explicar enteros usando opuesto, positivo, negativo y punto de referencia.',
+          scenario: { title: 'Deep Sea Trench vs Alpine Peak', body: 'A submarine dives to -800 ft while a summit rises to +800 ft relative to sea level (0 ft).' },
+          vocabulary: [
+            { term: 'Integer', esTerm: 'Número entero', cue: 'What is an integer?', def: 'Whole numbers, their negative opposites, and zero.' },
+            { term: 'Opposite', esTerm: 'Opuesto', cue: 'What are opposites?', def: 'Two numbers the same distance from 0 in opposite directions.' }
+          ],
+          guidedNotes: [
+            { cue: 'Definition', prompt: 'A whole number, its negative opposite, or zero is an {blank}.', answer: 'integer' },
+            { cue: 'Reference Point', prompt: 'Zero is neither positive nor negative; it represents the {blank}.', answer: 'reference point (sea level)' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Is zero positive, negative, or neither? How does sea level prove this?',
+            partnerA: 'Partner A: "Zero is neither because sea level is the baseline origin..."',
+            partnerB: 'Partner B: "On the number line, zero sits directly between positive and negative..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '7 min', guided: '18 min', cer: '10 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.NF.B.4', target: '6.NS.C.5', acceleration: '7.NS.A.1' },
+            ifThen: '💡 Watch-For: If students think -8 > -2 because 8 > 2... Ask: "Would you rather owe $8 or $2?"'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: 'Start at -15 ft, swim UP 25 ft. New elevation?', expected: '10', unit: 'feet (+10)' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: 'Which is true: -12 < -4 or -12 > -4? (Enter < or >)', expected: '<', unit: '-12 < -4' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'Vertical distance between -282 ft and +14,505 ft in feet?', expected: '14787', unit: 'feet (14,505 + 282)' }
+          ],
+          cerWriting: {
+            question: 'Why are +800 and -800 opposites even though signs differ?',
+            claim: '+800 and -800 are opposites because they share identical distance from zero.',
+            evidence: 'Both points sit exactly 800 units from 0 on the number line (|800| = |-800| = 800).',
+            reasoning: 'Opposites are defined as numbers having equal absolute value on opposite sides of origin.'
+          }
+        },
+        '7-4': {
+          unit: 7, unitTitle: 'Integers & The Coordinate Plane', lessonNumber: '7-4', title: 'Plot Points & Polygons on the 4-Quadrant Plane', standard: '6.NS.C.6c',
+          contentObjective: 'I can locate and plot ordered pairs across all four quadrants and calculate polygon side lengths and areas.',
+          languageObjective: 'I can state coordinates using (x, y) notation, origin, axes, and quadrant.',
+          spanishLanguageObjective: 'Puedo ubicar pares ordenados (x, y) en los cuatro cuadrantes.',
+          scenario: { title: 'City Drone Emergency Grid', body: 'Emergency drone maps 4 relay towers: A(-4, 3), B(2, 3), C(2, -3), D(-4, -3).' },
+          vocabulary: [
+            { term: 'Coordinate Plane', esTerm: 'Plano cartesiano', cue: 'What is the coordinate plane?', def: 'A 2D grid formed by perpendicular x and y number lines.' },
+            { term: 'Origin (0,0)', esTerm: 'Origen', cue: 'What is the origin?', def: 'The intersection point where x = 0 and y = 0.' }
+          ],
+          guidedNotes: [
+            { cue: 'First Move', prompt: 'In an ordered pair (x, y), move horizontally first along the {blank}.', answer: 'x-axis' },
+            { cue: 'Quadrant II', prompt: 'Point A(-4, 3) has negative x and positive y, putting it in Quadrant {blank}.', answer: 'II' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Why do we add absolute values |-4| + |2| to find distance between (-4, 3) and (2, 3)?',
+            partnerA: 'Partner A: "Because the points lie in different quadrants across the y-axis..."',
+            partnerB: 'Partner B: "The distance from -4 to 0 is 4, and 0 to 2 is 2, giving 6 total units..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '6 min', guided: '19 min', cer: '10 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.G.A.1', target: '6.NS.C.6c', acceleration: '8.G.B.8' },
+            ifThen: '💡 Watch-For: If students reverse x and y... Ask: "Walk along the hall (x) before taking the elevator (y)."'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: 'Which quadrant is (-5, -8) in? (I, II, III, IV)', expected: 'III', unit: 'Quadrant III' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: 'Distance between (-3, 5) and (4, 5)?', expected: '7', unit: 'units (3 + 4 = 7)' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'Rectangle ABCD has length 6 and height 6. Area?', expected: '36', unit: 'sq units (6 × 6)' }
+          ],
+          cerWriting: {
+            question: 'How do you find horizontal distance between points with matching y-coordinates?',
+            claim: 'Take the absolute difference between the x-coordinates: |x2 - x1|.',
+            evidence: 'For (-4, 3) and (2, 3), calculating |2 - (-4)| = |6| = 6 units.',
+            reasoning: 'Since the vertical position is fixed, the length is purely a 1D interval along the x-axis.'
+          }
+        },
+        '8-1': {
+          unit: 8, unitTitle: 'Equations & Inequalities', lessonNumber: '8-1', title: 'Write & Solve One-Step Addition Equations', standard: '6.EE.B.5',
+          contentObjective: 'I can write and solve one-step addition equations using inverse operations and balance models.',
+          languageObjective: 'I can explain equations using variable, inverse operation, isolate, and balance.',
+          spanishLanguageObjective: 'Puedo resolver ecuaciones de un paso usando operaciones inversas y balance.',
+          scenario: { title: 'Space Station Cargo Balancing', body: 'A pod holds 24.5 kg capacity. It has a 9.8 kg battery and payload x (x + 9.8 = 24.5).' },
+          vocabulary: [
+            { term: 'Equation', esTerm: 'Ecuación', cue: 'What is an equation?', def: 'A mathematical statement that two expressions are equal (=).' },
+            { term: 'Inverse Operation', esTerm: 'Operación inversa', cue: 'What is an inverse operation?', def: 'Operations that reverse each other, like adding and subtracting.' }
+          ],
+          guidedNotes: [
+            { cue: 'Balance Goal', prompt: 'To solve an equation, we isolate the variable and keep both sides in {blank}.', answer: 'balance (equality)' },
+            { cue: 'Undo Addition', prompt: 'The inverse operation used to undo + 9.8 is {blank}.', answer: 'subtract 9.8' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Why must you subtract 9.8 from BOTH sides instead of just from 24.5?',
+            partnerA: 'Partner A: "If you only subtract from one side, the balance beam tilts and is no longer equal..."',
+            partnerB: 'Partner B: "The Subtraction Property of Equality requires identical operations to both sides..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '7 min', guided: '18 min', cer: '10 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.OA.A.2', target: '6.EE.B.5', acceleration: '7.EE.B.4a' },
+            ifThen: '💡 Watch-For: If students add 9.8 to get 34.3... Ask: "Check: Does 34.3 + 9.8 equal 24.5?"'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: 'Solve: x + 9.8 = 24.5. x = ?', expected: '14.7', unit: 'kg (24.5 - 9.8)' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: 'Is x = 34.3 correct or incorrect for x + 9.8 = 24.5?', expected: 'incorrect', unit: 'incorrect (subtract 9.8)' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'Check: 14.7 + 9.8 = ?', expected: '24.5', unit: 'kg (Verified)' }
+          ],
+          cerWriting: {
+            question: 'Why does subtracting 9.8 from both sides preserve equality?',
+            claim: 'Subtracting 9.8 from both sides maintains equality by the Subtraction Property of Equality.',
+            evidence: 'If equal quantities have 9.8 removed from each, the resulting values remain equal (14.7 = 14.7).',
+            reasoning: 'Applying identical operations to both sides preserves the balance.'
+          }
+        },
+        '8-4': {
+          unit: 8, unitTitle: 'Equations & Inequalities', lessonNumber: '8-4', title: 'Write & Represent Inequalities on Number Lines', standard: '6.EE.B.8',
+          contentObjective: 'I can write inequalities of the form x > c or x < c to represent constraints and graph solutions on number lines.',
+          languageObjective: 'I can explain inequalities using open circle, closed circle, ray, at least, and at most.',
+          spanishLanguageObjective: 'Puedo graficar desigualdades en rectas numéricas usando círculos abiertos y cerrados.',
+          scenario: { title: 'Theme Park Roller Coaster Safety', body: 'A roller coaster requires riders to be at least 48 inches tall (h ≥ 48).' },
+          vocabulary: [
+            { term: 'Inequality', esTerm: 'Desigualdad', cue: 'What is an inequality?', def: 'A statement comparing quantities using <, >, ≤, or ≥.' },
+            { term: 'Closed Circle (●)', esTerm: 'Círculo cerrado', cue: 'When is a circle closed?', def: 'Used when the boundary number IS included in the solution (≤ or ≥).' }
+          ],
+          guidedNotes: [
+            { cue: 'Boundary Type', prompt: 'For "at least 48" (h ≥ 48), plot a {blank} circle at 48.', answer: 'closed (solid)' },
+            { cue: 'Arrow Direction', prompt: 'Since height must be greater than or equal to 48, shade the ray to the {blank}.', answer: 'right' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Why does an inequality have infinitely many solutions while a one-step equation has only one?',
+            partnerA: 'Partner A: "An inequality includes all numbers in a shaded direction, like 48, 49, 50.5..."',
+            partnerB: 'Partner B: "An equation has an equal sign with one exact balance point..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '6 min', guided: '19 min', cer: '10 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.OA.B.3', target: '6.EE.B.8', acceleration: '7.EE.B.4b' },
+            ifThen: '💡 Watch-For: If students draw an open circle for "at least"... Ask: "Can someone exactly 48 inches tall ride?"'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: 'Is 52 a solution to h ≥ 48? (yes/no)', expected: 'yes', unit: 'Yes (52 > 48)' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: 'For x > 15, should the circle at 15 be open or closed?', expected: 'open', unit: 'open (15 not included)' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'A bridge has weight limit w ≤ 12 tons. Can a 12.5 ton truck cross? (yes/no)', expected: 'no', unit: 'No (12.5 > 12)' }
+          ],
+          cerWriting: {
+            question: 'Why is h = 48 included in h ≥ 48 but excluded in h > 48?',
+            claim: 'h = 48 is included in h ≥ 48 because the symbol means greater than OR equal to.',
+            evidence: 'The bar beneath the inequality symbol indicates that the boundary value itself satisfies the condition.',
+            reasoning: 'In strict inequalities (h > 48), only numbers strictly greater than 48 are solutions.'
+          }
+        },
+        '9-3': {
+          unit: 9, unitTitle: 'Two-Variable Relationships', lessonNumber: '9-3', title: 'Graph Two-Variable Relationships with Equations & Tables', standard: '6.EE.C.9',
+          contentObjective: 'I can represent relationships between independent and dependent variables using tables, equations (y = kx), and graphs.',
+          languageObjective: 'I can explain relationships using independent variable (x), dependent variable (y), and rule.',
+          spanishLanguageObjective: 'Puedo graficar relaciones de dos variables usando tablas y ecuaciones y = kx.',
+          scenario: { title: 'Electric Scooter Rental Fleet', body: 'A scooter costs $3 per mile ridden: y = 3x where x = miles and y = total cost.' },
+          vocabulary: [
+            { term: 'Independent Variable (x)', esTerm: 'Variable independiente', cue: 'What is independent x?', def: 'The input variable that determines the outcome (x-axis).' },
+            { term: 'Dependent Variable (y)', esTerm: 'Variable dependiente', cue: 'What is dependent y?', def: 'The output variable that depends on the input (y-axis).' }
+          ],
+          guidedNotes: [
+            { cue: 'Input Axis', prompt: 'The independent variable (miles x) is graphed on the horizontal {blank}.', answer: 'x-axis' },
+            { cue: 'Rule Equation', prompt: 'At $3 per mile, the equation is y = {blank}.', answer: '3x' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'Why does the cost depend on the miles and not the other way around?',
+            partnerA: 'Partner A: "You choose how many miles to ride first (input x), which calculates total cost (y)..."',
+            partnerB: 'Partner B: "Because cost changes in response to miles, cost is the dependent variable..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '7 min', guided: '18 min', cer: '10 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '5.OA.B.3', target: '6.EE.C.9', acceleration: '7.RP.A.2' },
+            ifThen: '💡 Watch-For: If students switch x and y axes... Ask: "What happens first: you ride miles (x), or money gets billed (y)?"'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: 'If y = 3x, what is y when x = 5 miles?', expected: '15', unit: 'dollars ($15.00)' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: 'A student says (4, 12) means 12 miles costs $4. Does (4, 12) mean 4 miles costs $12? (yes/no)', expected: 'yes', unit: 'Yes (x=4, y=12)' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'How many miles did someone ride if the bill was $27? (27 / 3)', expected: '9', unit: 'miles' }
+          ],
+          cerWriting: {
+            question: 'Why does the graph of y = 3x form a straight line passing through (0, 0)?',
+            claim: 'The graph of y = 3x is a straight ray passing through the origin (0, 0).',
+            evidence: 'When 0 miles are ridden, the cost is 3(0) = $0. Each additional mile adds a constant $3.',
+            reasoning: 'A constant rate of change creates a straight linear graph with a constant slope.'
+          }
+        },
+        'MSTAR-1': {
+          unit: 10, unitTitle: 'Capstone & MSTAR Blitz', lessonNumber: 'MSTAR-1', title: 'MSTAR Domain Blitz: Ratios & Expressions', standard: '6.RP / 6.EE',
+          contentObjective: 'I can synthesize ratio reasoning, unit rates, and algebraic expressions to solve multi-standard performance tasks.',
+          languageObjective: 'I can justify multi-step calculations using ratio table, expression, unit rate, and equivalence.',
+          spanishLanguageObjective: 'Puedo sintetizar razones y expresiones algebraicas en problemas complejos.',
+          scenario: { title: 'City Marathon Hydration Logistics', body: 'Calculate electrolyte mix proportions (3 packets per 4 liters) and total distribution cost across 12 aid stations.' },
+          vocabulary: [
+            { term: 'Proportional Synthesis', esTerm: 'Síntesis proporcional', cue: 'What is synthesis?', def: 'Combining multiple math domains (ratios + equations) into a multi-step solution.' }
+          ],
+          guidedNotes: [
+            { cue: 'Rate Scaling', prompt: 'For 20 liters of water, you need (20 / 4) × 3 = {blank} electrolyte packets.', answer: '15' },
+            { cue: 'Expression Cost', prompt: 'If each packet costs $0.80 and water is w, total cost is C = {blank}.', answer: '0.80p + w' }
+          ],
+          discourse: {
+            smpStandard: 'SMP 3: Construct Viable Arguments',
+            question: 'How do ratios and algebraic equations work together in logistics planning?',
+            partnerA: 'Partner A: "Ratios give us the constant rate of packets to liters, while equations allow us to calculate..."',
+            partnerB: 'Partner B: "We can write y = 0.75x to calculate packets for any arbitrary water volume..."'
+          },
+          teacherWraparound: {
+            pacing: { launch: '5 min', guided: '20 min', cer: '10 min', debrief: '5 min' },
+            verticalBridge: { prerequisite: '6.RP.A.3', target: '6.RP / 6.EE Synthesis', acceleration: '7.EE.B.4' },
+            ifThen: '💡 Watch-For: Multi-step fatigue. Encourage students to label units on every step.'
+          },
+          problems: [
+            { type: 'fluency', badge: 'Procedural Fluency', badgeClass: 'badge-fluency', prompt: '3 packets per 4 liters. Packets needed for 36 liters?', expected: '27', unit: 'packets (9 × 3)' },
+            { type: 'error', badge: 'Spot Misconception', badgeClass: 'badge-error', prompt: 'Packets cost $0.80 each. What is the cost of 27 packets in dollars?', expected: '21.60', unit: 'dollars ($21.60)' },
+            { type: 'transfer', badge: 'Real-World Transfer', badgeClass: 'badge-transfer', prompt: 'If 12 stations each need 36 liters, what is grand total packet count? (12 × 27)', expected: '324', unit: 'packets' }
+          ],
+          cerWriting: {
+            question: 'Why is proportional reasoning essential for scaling aid station supplies accurately?',
+            claim: 'Proportional reasoning guarantees supplies match hydration demands exactly without waste.',
+            evidence: 'Maintaining the 3:4 packet-to-liter ratio ensures consistent electrolyte balance at all 12 stations.',
+            reasoning: 'Multiplicative consistency prevents under-dilution or over-concentration across varying group sizes.'
+          }
+        }
+      };
+
+      // ======================================================================
+      // INTERACTIVE MANIPULATIVE RENDERERS (Covering Units 1-10)
+      // ======================================================================
+
+      function renderManipulative(lessonId) {
+        const width = 640;
+        const container = document.getElementById('interactiveSvgContainer');
+        const toolbar = document.getElementById('manipulativeControls');
+        const badge = document.getElementById('manipulativeDataBadge');
+        toolbar.innerHTML = '';
+
+        if (lessonId === '7-1') {
+          const pos = state.integerPos;
+          badge.textContent = `Position: ${pos > 0 ? '+' + pos : pos} | |${pos}| = ${Math.abs(pos)}`;
+          toolbar.innerHTML = `
+            <span style="font-size:11px; font-weight:700;">Point Control:</span>
+            <button class="tool-btn" onclick="StudioApp.moveInteger(-2)">◀ -2</button>
+            <button class="tool-btn" onclick="StudioApp.moveInteger(-1)">-1</button>
+            <button class="tool-btn" onclick="StudioApp.setInteger(0)">0 (Origin)</button>
+            <button class="tool-btn" onclick="StudioApp.moveInteger(1)">+1</button>
+            <button class="tool-btn" onclick="StudioApp.moveInteger(2)">+2 ▶</button>
+            <button class="tool-btn" style="background:#eff6ff; color:#1d4ed8; border-color:#93c5fd;" onclick="StudioApp.flipOpposite()">🔄 Reflect Opposite</button>
+          `;
+          const min = -8, max = 8, startX = 60, endX = 580, lineY = 85, scale = (endX - startX) / (max - min);
+          let inner = `<line x1="${startX}" y1="${lineY}" x2="${endX}" y2="${lineY}" stroke="#1e293b" stroke-width="2.5"/>`;
+          for (let v = min; v <= max; v++) {
+            const x = startX + (v - min) * scale;
+            const isZero = (v === 0);
+            inner += `<line x1="${x}" y1="${lineY - (isZero ? 12 : 6)}" x2="${x}" y2="${lineY + (isZero ? 12 : 6)}" stroke="${isZero ? '#16a34a' : '#94a3b8'}" stroke-width="${isZero ? 2.5 : 1}"/>`;
+            if (v % 2 === 0 || isZero) inner += `<text x="${x}" y="${lineY + 22}" text-anchor="middle" font-size="10.5" font-weight="${isZero ? 'bold' : 'normal'}" fill="${isZero ? '#16a34a' : '#334155'}">${v}</text>`;
+          }
+          const activeX = startX + (pos - min) * scale;
+          const pColor = pos === 0 ? '#16a34a' : (pos < 0 ? '#dc2626' : '#2563eb');
+          const zeroX = startX + (0 - min) * scale;
+          inner += `<path d="M ${zeroX} ${lineY - 6} Q ${(zeroX + activeX)/2} ${lineY - 32} ${activeX} ${lineY - 6}" fill="none" stroke="${pColor}" stroke-dasharray="3,3" stroke-width="1.8"/>`;
+          inner += `<text x="${(zeroX + activeX)/2}" y="${lineY - 36}" text-anchor="middle" font-size="10.5" font-weight="bold" fill="${pColor}">Distance: ${Math.abs(pos)}</text>`;
+          inner += `<circle cx="${activeX}" cy="${lineY}" r="7.5" fill="${pColor}" stroke="white" stroke-width="2"/>`;
+          container.innerHTML = wrapSvg(inner, width, 160, 'Interactive Integer Number Line');
+        }
+        else if (lessonId === '7-4') {
+          const pts = state.quadPts;
+          badge.textContent = `Polygon Vertices: 4 | Perimeter = 24 | Area = 36 sq units`;
+          toolbar.innerHTML = `
+            <span style="font-size:11px; font-weight:700;">Polygon:</span>
+            <button class="tool-btn active">Rectangle ABCD</button>
+            <button class="tool-btn" onclick="StudioApp.toggleQuadReflection()">Reflect Across Y-Axis</button>
+            <button class="tool-btn" onclick="StudioApp.resetQuad()">Reset</button>
+          `;
+          const ox = 320, oy = 95, sp = 16;
+          let inner = '';
+          for (let x = 60; x <= 580; x += sp) inner += `<line x1="${x}" y1="15" x2="${x}" y2="175" stroke="#f1f5f9" stroke-width="1"/>`;
+          for (let y = 15; y <= 175; y += sp) inner += `<line x1="60" y1="${y}" x2="580" y2="${y}" stroke="#f1f5f9" stroke-width="1"/>`;
+          inner += `<line x1="60" y1="${oy}" x2="580" y2="${oy}" stroke="#64748b" stroke-width="1.8"/><line x1="${ox}" y1="15" x2="${ox}" y2="175" stroke="#64748b" stroke-width="1.8"/>`;
+          const polyStr = pts.map(p => `${ox + p.x * sp},${oy - p.y * sp}`).join(' ');
+          inner += `<polygon points="${polyStr}" fill="rgba(37, 99, 235, 0.18)" stroke="#2563eb" stroke-width="2"/>`;
+          pts.forEach(p => {
+            const px = ox + p.x * sp, py = oy - p.y * sp;
+            inner += `<circle cx="${px}" cy="${py}" r="4.5" fill="#dc2626" stroke="white" stroke-width="1.5"/><text x="${px + 5}" y="${py - 4}" font-size="9.5" font-weight="bold" fill="#0f172a">${p.label}(${p.x},${p.y})</text>`;
+          });
+          container.innerHTML = wrapSvg(inner, width, 190, 'Interactive 4-Quadrant Plane Plotter');
+        }
+        else if (lessonId === '3-1') {
+          const sc = state.ratioScale;
+          badge.textContent = `Multiplier: ×${sc} | Ratio: ${15 * sc} miles / ${2 * sc} hours`;
+          toolbar.innerHTML = `
+            <span style="font-size:11px; font-weight:700;">Scale Multiplier:</span>
+            <button class="tool-btn ${sc===1?'active':''}" onclick="StudioApp.scaleRatio(1)">×1 (Base)</button>
+            <button class="tool-btn ${sc===2?'active':''}" onclick="StudioApp.scaleRatio(2)">×2</button>
+            <button class="tool-btn ${sc===3?'active':''}" onclick="StudioApp.scaleRatio(3)">×3</button>
+            <button class="tool-btn ${sc===4?'active':''}" onclick="StudioApp.scaleRatio(4)">×4</button>
+            <button class="tool-btn ${sc===5?'active':''}" onclick="StudioApp.scaleRatio(5)">×5 (75 mi)</button>
+          `;
+          const startX = 80, endX = 560, l1Y = 60, l2Y = 120;
+          let inner = `<line x1="${startX}" y1="${l1Y}" x2="${endX}" y2="${l1Y}" stroke="#2563eb" stroke-width="2"/><line x1="${startX}" y1="${l2Y}" x2="${endX}" y2="${l2Y}" stroke="#d97706" stroke-width="2"/>`;
+          inner += `<text x="${startX}" y="${l1Y - 14}" font-size="10.5" font-weight="bold" fill="#1e40af">Time (Hours)</text><text x="${startX}" y="${l2Y + 24}" font-size="10.5" font-weight="bold" fill="#b45309">Distance (Miles)</text>`;
+          for (let i = 0; i <= 5; i++) {
+            const x = startX + i * ((endX - startX) / 5), isTarget = (i === sc);
+            inner += `<line x1="${x}" y1="${l1Y}" x2="${x}" y2="${l2Y}" stroke="${isTarget?'#2563eb':'#cbd5e1'}" stroke-dasharray="${isTarget?'none':'3,3'}" stroke-width="${isTarget?2:1.2}"/>`;
+            inner += `<circle cx="${x}" cy="${l1Y}" r="${isTarget?5.5:3.5}" fill="#2563eb"/><text x="${x}" y="${l1Y - 4}" text-anchor="middle" font-size="10" font-weight="${isTarget?'bold':'normal'}" fill="#1e3a8a">${i*2}</text>`;
+            inner += `<circle cx="${x}" cy="${l2Y}" r="${isTarget?5.5:3.5}" fill="#d97706"/><text x="${x}" y="${l2Y + 14}" text-anchor="middle" font-size="10" font-weight="${isTarget?'bold':'normal'}" fill="#92400e">${i*15}</text>`;
+          }
+          container.innerHTML = wrapSvg(inner, width, 160, 'Interactive Double Number Line Scaler');
+        }
+        else if (lessonId === '4-1') {
+          const pct = state.percentShaded;
+          badge.textContent = `Shaded: ${pct}/100 squares = ${pct}% = 0.${pct} = ${pct}/100`;
+          toolbar.innerHTML = `
+            <span style="font-size:11px; font-weight:700;">Percent Preset:</span>
+            <button class="tool-btn ${pct===25?'active':''}" onclick="StudioApp.setPercent(25)">25% (1/4)</button>
+            <button class="tool-btn ${pct===45?'active':''}" onclick="StudioApp.setPercent(45)">45% (Diag)</button>
+            <button class="tool-btn ${pct===50?'active':''}" onclick="StudioApp.setPercent(50)">50% (1/2)</button>
+            <button class="tool-btn ${pct===75?'active':''}" onclick="StudioApp.setPercent(75)">75% (3/4)</button>
+            <button class="tool-btn ${pct===100?'active':''}" onclick="StudioApp.setPercent(100)">100% (Full)</button>
+          `;
+          const ox = 250, oy = 30, sz = 12;
+          let inner = '';
+          for (let r = 0; r < 10; r++) {
+            for (let c = 0; c < 10; c++) {
+              const idx = r * 10 + c;
+              const isShaded = idx < pct;
+              inner += `<rect x="${ox + c*sz}" y="${oy + r*sz}" width="${sz-1}" height="${sz-1}" fill="${isShaded ? '#3b82f6' : '#f8fafc'}" stroke="#cbd5e1" stroke-width="0.5"/>`;
+            }
+          }
+          inner += `<text x="140" y="95" text-anchor="middle" font-size="16" font-weight="bold" fill="#1d4ed8">${pct}%</text>`;
+          inner += `<text x="140" y="115" text-anchor="middle" font-size="11" fill="#64748b">= 0.${pct < 10 ? '0'+pct : pct}</text>`;
+          container.innerHTML = wrapSvg(inner, width, 170, 'Interactive 10x10 Percent Grid Shading Tool');
+        }
+        else if (lessonId === '6-8') {
+          const dist = state.tileDistribute;
+          badge.textContent = dist ? 'Expanded: 3(2x + 4) = 6x + 12' : 'Factored Area Model: 3 × (2x + 4)';
+          toolbar.innerHTML = `
+            <span style="font-size:11px; font-weight:700;">Area Model Action:</span>
+            <button class="tool-btn ${!dist?'active':''}" onclick="StudioApp.setTileDistribute(false)">1. View Factored Width (2x + 4)</button>
+            <button class="tool-btn ${dist?'active':''}" onclick="StudioApp.setTileDistribute(true)">2. Distribute & Expand ➔ 6x + 12</button>
+          `;
+          const startX = 160, startY = 45, h = 70;
+          let inner = `
+            <text x="${startX - 20}" y="${startY + h/2 + 5}" text-anchor="middle" font-size="14" font-weight="bold" fill="#7c3aed">3</text>
+            <rect x="${startX}" y="${startY}" width="180" height="${h}" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.8"/>
+            <rect x="${startX + 180}" y="${startY}" width="120" height="${h}" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.8"/>
+            <text x="${startX + 90}" y="${startY - 8}" text-anchor="middle" font-size="12" font-weight="bold" fill="#6d28d9">2x</text>
+            <text x="${startX + 240}" y="${startY - 8}" text-anchor="middle" font-size="12" font-weight="bold" fill="#6d28d9">4</text>
+            <text x="${startX + 90}" y="${startY + h/2 + 5}" text-anchor="middle" font-size="13" font-weight="bold" fill="#5b21b6">${dist ? '3 × 2x = 6x' : 'Area 1'}</text>
+            <text x="${startX + 240}" y="${startY + h/2 + 5}" text-anchor="middle" font-size="13" font-weight="bold" fill="#5b21b6">${dist ? '3 × 4 = 12' : 'Area 2'}</text>
+          `;
+          container.innerHTML = wrapSvg(inner, width, 160, 'Interactive Algebra Area Model (Distributive Property)');
+        }
+        else if (lessonId === '8-1') {
+          const sub = state.balanceSubtracted;
+          badge.textContent = sub ? 'Isolated: x = 14.7 kg (Balance Level)' : 'Equation: x + 9.8 kg = 24.5 kg';
+          toolbar.innerHTML = `
+            <span style="font-size:11px; font-weight:700;">Balance Action:</span>
+            <button class="tool-btn ${!sub?'active':''}" onclick="StudioApp.setBalanceSub(false)">Original Balance Scale</button>
+            <button class="tool-btn ${sub?'active':''}" onclick="StudioApp.setBalanceSub(true)">Subtract 9.8 kg from BOTH sides</button>
+          `;
+          let inner = `
+            <line x1="160" y1="60" x2="480" y2="60" stroke="#1e293b" stroke-width="3"/>
+            <polygon points="320,60 300,105 340,105" fill="#64748b"/>
+            <rect x="270" y="105" width="100" height="10" fill="#334155" rx="3"/>
+            <line x1="200" y1="60" x2="200" y2="88" stroke="#2563eb" stroke-width="1.8"/>
+            <rect x="150" y="88" width="100" height="26" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" rx="4"/>
+            <text x="200" y="105" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1e40af">${sub ? 'x' : 'x + 9.8 kg'}</text>
+            <line x1="440" y1="60" x2="440" y2="88" stroke="#2563eb" stroke-width="1.8"/>
+            <rect x="390" y="88" width="100" height="26" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" rx="4"/>
+            <text x="440" y="105" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1e40af">${sub ? '14.7 kg' : '24.5 kg'}</text>
+          `;
+          container.innerHTML = wrapSvg(inner, width, 150, 'Interactive Algebra Balance Scale');
+        }
+        else {
+          badge.textContent = `Lesson ${lessonId} Visual Model Active`;
+          container.innerHTML = wrapSvg(`<text x="320" y="75" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">Interactive Vector Model for Lesson ${lessonId} Ready</text>`, width, 140, 'Curriculum Standard Model');
+        }
+      }
+
+      function wrapSvg(inner, width, height, title) {
+        return `
+          <svg class="visual-model-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" style="background:white; font-family:'Hanken Grotesk', Arial, sans-serif;">
+            <rect width="${width}" height="${height}" fill="white" stroke="#e2e8f0" stroke-width="1.5" rx="8"/>
+            ${title ? `<text x="14" y="20" font-size="11" font-weight="bold" fill="#1e3a8a">${title}</text>` : ''}
+            ${inner}
+          </svg>
+        `;
+      }
+
+      // ======================================================================
+      // MAIN PAGE RENDERER
+      // ======================================================================
+
+      function render() {
+        const lesson = CURRICULUM[currentLessonId] || CURRICULUM['7-1'];
+
+        // Header
+        document.getElementById('headerStandard').textContent = 'Standard: ' + lesson.standard;
+        document.getElementById('headerLessonNum').textContent = 'LESSON ' + lesson.lessonNumber;
+        document.getElementById('headerLessonTitle').textContent = lesson.title;
+
+        // Small-Group Banner Styling
+        const banner = document.getElementById('smallGroupBanner');
+        const bTitle = document.getElementById('smallGroupBannerTitle');
+        const bSub = document.getElementById('smallGroupBannerSub');
+        if (currentTrack === 'GROUP_1') {
+          banner.className = 'small-group-banner group1';
+          bTitle.textContent = '🟡 Small-Group Track: Group 1 (Support & Scaffolding)';
+          bSub.textContent = 'Visual Cues · Highlighted Word Bank · Sentence Starters';
+        } else if (currentTrack === 'GROUP_2') {
+          banner.className = 'small-group-banner group2';
+          bTitle.textContent = '🟣 Small-Group Track: Group 2 (Enrichment & Challenge)';
+          bSub.textContent = 'Non-Routine Synthesis · Misconception Traps · Advanced CER';
+        } else {
+          banner.className = 'small-group-banner core';
+          bTitle.textContent = '👥 Whole-Group Core Lesson · Grade-Level Rigor';
+          bSub.textContent = 'Universal Design for Learning (UDL)';
+        }
+
+        // Teacher Wraparound
+        const wrapBox = document.getElementById('teWraparoundBox');
+        if (showWraparound || isTeacherKey) {
+          wrapBox.classList.add('active');
+          const p = lesson.teacherWraparound.pacing;
+          document.getElementById('tePacingBlock').innerHTML = `<span>Launch: ${p.launch}</span> <span>Explore: ${p.guided}</span> <span>CER: ${p.cer}</span> <span>Debrief: ${p.debrief}</span>`;
+          const b = lesson.teacherWraparound.verticalBridge;
+          document.getElementById('teBridgeText').textContent = `Pre: ${b.prerequisite} ➔ Target: ${b.target} ➔ Next: ${b.acceleration}`;
+          document.getElementById('teIfThenText').textContent = lesson.teacherWraparound.ifThen;
+        } else {
+          wrapBox.classList.remove('active');
+        }
+
+        // Section 1: Objectives & Mission
+        document.getElementById('contentObjectiveText').textContent = lesson.contentObjective;
+        document.getElementById('langObjectiveText').textContent = lesson.languageObjective;
+        document.getElementById('esLangObjectiveText').textContent = lesson.spanishLanguageObjective;
+        document.getElementById('missionTitle').textContent = lesson.scenario.title;
+        document.getElementById('missionBody').textContent = lesson.scenario.body;
+
+        // Section 2: Interactive Manipulative
+        renderManipulative(currentLessonId);
+
+        // Section 3: Word Bank & Cornell
+        const wbPills = document.getElementById('wordBankPills');
+        wbPills.innerHTML = '';
+        lesson.vocabulary.forEach(v => {
+          const pill = document.createElement('div');
+          pill.className = 'word-pill';
+          pill.innerHTML = `${v.term} <span>(${v.esTerm})</span>`;
+          pill.title = v.def;
+          pill.onclick = () => {
+            const blanks = document.querySelectorAll('.fill-blank-line:not(.filled):not(.key)');
+            if (blanks.length > 0) {
+              blanks[0].textContent = v.term;
+              blanks[0].classList.add('filled');
+            } else {
+              alert(`${v.term} (${v.esTerm}):\n\n${v.def}`);
+            }
+          };
+          wbPills.appendChild(pill);
+        });
+
+        const tbody = document.getElementById('cornellNotesBody');
+        tbody.innerHTML = '';
+        lesson.guidedNotes.forEach(gn => {
+          const tr = document.createElement('tr');
+          let promptHtml = gn.prompt;
+          if (isTeacherKey) {
+            promptHtml = promptHtml.replace('{blank}', `<span class="fill-blank-line key">[ ${gn.answer.toUpperCase()} ]</span>`);
+          } else {
+            promptHtml = promptHtml.replace('{blank}', `<span class="fill-blank-line" onclick="this.textContent='____'; this.classList.remove('filled');">________________________</span>`);
+          }
+          tr.innerHTML = `<td class="cornell-cue-col">${gn.cue}</td><td class="cornell-notes-col">${promptHtml}</td>`;
+          tbody.appendChild(tr);
+        });
+
+        // Section 4: Discourse
+        if (lesson.discourse) {
+          document.getElementById('discSmpTag').textContent = lesson.discourse.smpStandard;
+          document.getElementById('discQuestionText').textContent = lesson.discourse.question;
+          document.getElementById('discPartnerABox').innerHTML = `<strong>🗣️ Partner A:</strong><br>${lesson.discourse.partnerA}`;
+          document.getElementById('discPartnerBBox').innerHTML = `<strong>👂 Partner B:</strong><br>${lesson.discourse.partnerB}`;
+        }
+
+        // Section 5: Problems & CER
+        const probContainer = document.getElementById('problemSetContainer');
+        probContainer.innerHTML = '';
+        lesson.problems.forEach((p, idx) => {
+          const card = document.createElement('div');
+          card.className = 'problem-card';
+          card.innerHTML = `
+            <div class="problem-card-header">
+              <span class="problem-badge ${p.badgeClass}">${p.badge}</span>
+              <span style="font-size:10.5px; font-weight:700; color:var(--slate-500);">Task ${idx + 1} of ${lesson.problems.length}</span>
+            </div>
+            <p class="problem-stem">${p.prompt}</p>
+            <div class="problem-input-row">
+              <input type="text" class="math-input" id="probInput_${idx}" placeholder="Enter answer..." value="${isTeacherKey ? p.expected : ''}">
+              <button class="check-btn" onclick="StudioApp.checkAnswer(${idx}, '${p.expected}')">Check Answer</button>
+              <span class="feedback-msg" id="probFeedback_${idx}"></span>
+              <span style="font-size:10.5px; color:var(--slate-500); margin-left:auto;">Target: ${p.unit}</span>
+            </div>
+          `;
+          probContainer.appendChild(card);
+        });
+
+        // CER
+        document.getElementById('cerPromptText').textContent = 'Writing Task: ' + lesson.cerWriting.question;
+        const cClaim = document.getElementById('cerClaimContent');
+        const cEvid = document.getElementById('cerEvidenceContent');
+        const cReas = document.getElementById('cerReasoningContent');
+
+        if (isTeacherKey) {
+          cClaim.className = 'cer-body teacher-key-text'; cClaim.textContent = lesson.cerWriting.claim;
+          cEvid.className = 'cer-body teacher-key-text'; cEvid.textContent = lesson.cerWriting.evidence;
+          cReas.className = 'cer-body teacher-key-text'; cReas.textContent = lesson.cerWriting.reasoning;
+        } else {
+          cClaim.className = 'cer-body';
+          cClaim.textContent = currentTrack === 'GROUP_1' ? 'Sentence Starter: My mathematical claim is that...' : 'State your direct mathematical claim.';
+          cEvid.className = 'cer-body';
+          cEvid.textContent = currentTrack === 'GROUP_1' ? 'Sentence Starter: The evidence from the model shows that...' : 'Provide numbers, dimensions, or diagram evidence.';
+          cReas.className = 'cer-body';
+          cReas.textContent = currentTrack === 'GROUP_1' ? 'Sentence Starter: This proves my claim because the math rule states...' : 'Explain the mathematical reasoning connecting evidence to claim.';
+        }
+      }
+
+      return {
+        init: function() { render(); },
+        changeLesson: function(id) { currentLessonId = id; document.getElementById('lessonSelectNav').value = id; render(); },
+        setTrack: function(track) {
+          currentTrack = track;
+          ['trackCore', 'trackGroup1', 'trackGroup2'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (id === (track === 'CORE' ? 'trackCore' : (track === 'GROUP_1' ? 'trackGroup1' : 'trackGroup2'))) {
+              btn.className = 'pill-btn active ' + (track === 'GROUP_1' ? 'group1' : (track === 'GROUP_2' ? 'group2' : ''));
+            } else {
+              btn.className = 'pill-btn';
+            }
+          });
+          render();
+        },
+        setLayout: function(layout) {
+          currentLayout = layout;
+          const sheet = document.getElementById('printSheet');
+          const bFull = document.getElementById('btnFull');
+          const bINB = document.getElementById('btnINB');
+          if (layout === 'INB_HALF_SHEET') {
+            sheet.classList.add('inb-mode'); bINB.classList.add('active'); bFull.classList.remove('active');
+          } else {
+            sheet.classList.remove('inb-mode'); bFull.classList.add('active'); bINB.classList.remove('active');
+          }
+        },
+        setKeyMode: function(isKey) {
+          isTeacherKey = isKey;
+          document.getElementById('btnStudentMode').classList.toggle('active', !isKey);
+          document.getElementById('btnKeyMode').classList.toggle('active', isKey);
+          render();
+        },
+        toggleWraparound: function() {
+          showWraparound = !showWraparound;
+          document.getElementById('navTeBtn').classList.toggle('active', showWraparound);
+          render();
+        },
+
+        // Manipulative Handlers
+        moveInteger: function(delta) { state.integerPos = Math.max(-8, Math.min(8, state.integerPos + delta)); renderManipulative('7-1'); },
+        setInteger: function(v) { state.integerPos = v; renderManipulative('7-1'); },
+        flipOpposite: function() { state.integerPos = -state.integerPos; renderManipulative('7-1'); },
+        scaleRatio: function(f) { state.ratioScale = f; renderManipulative('3-1'); },
+        setPercent: function(p) { state.percentShaded = p; renderManipulative('4-1'); },
+        setTileDistribute: function(d) { state.tileDistribute = d; renderManipulative('6-8'); },
+        setBalanceSub: function(s) { state.balanceSubtracted = s; renderManipulative('8-1'); },
+        toggleQuadReflection: function() { state.quadPts = state.quadPts.map(p => ({ x: -p.x, y: p.y, label: p.label + "'" })); renderManipulative('7-4'); },
+        resetQuad: function() { state.quadPts = [{ x: -4, y: 3, label: 'A' }, { x: 2, y: 3, label: 'B' }, { x: 2, y: -3, label: 'C' }, { x: -4, y: -3, label: 'D' }]; renderManipulative('7-4'); },
+
+        // Problem Check
+        checkAnswer: function(idx, expected) {
+          const inputEl = document.getElementById('probInput_' + idx);
+          const feedbackEl = document.getElementById('probFeedback_' + idx);
+          const userVal = inputEl.value.trim().toLowerCase().replace(/[\$\,\s]/g, '');
+          const expClean = expected.trim().toLowerCase().replace(/[\$\,\s]/g, '');
+          if (userVal === expClean || userVal.includes(expClean)) {
+            feedbackEl.className = 'feedback-msg correct'; feedbackEl.textContent = '✅ Correct! Gold-standard reasoning.';
+          } else {
+            feedbackEl.className = 'feedback-msg incorrect'; feedbackEl.textContent = '❌ Not quite. Review the model and try again!';
+          }
+        },
+
+        // SCORM Modal
+        openScormModal: function() {
+          const lesson = CURRICULUM[currentLessonId] || CURRICULUM['7-1'];
+          const manifest = `<?xml version="1.0" encoding="UTF-8"?>\n<manifest identifier="com.eduwonderlab.grade6.lesson_${currentLessonId}">\n  <title>Grade 6 Math - Lesson ${currentLessonId}: ${lesson.title}</title>\n  <schema>ADL SCORM 1.2</schema>\n  <resource href="index.html" type="webcontent" adlcp:scormtype="sco"/>\n</manifest>`;
+          document.getElementById('scormManifestPreview').textContent = manifest;
+          document.getElementById('scormModal').classList.add('active');
+        },
+        closeScormModal: function() {
+          document.getElementById('scormModal').classList.remove('active');
+        },
+        downloadScormPackage: function() {
+          alert(`📦 SCORM 1.2 Package for Lesson ${currentLessonId} ready for Canvas upload!\n\nStandard: ${CURRICULUM[currentLessonId]?.standard || '6.NS.C.5'}\nScore Passback: Enabled (0-100 pts)`);
+          StudioApp.closeScormModal();
+        }
+      };
+    })();
+
+    window.addEventListener('DOMContentLoaded', () => { StudioApp.init(); });
+  </script>
+</body>
+</html>

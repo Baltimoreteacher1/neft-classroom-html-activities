@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { PROJECT_UNITS } from "./lib/project-units.mjs";
+import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const UNITS = PROJECT_UNITS;
@@ -70,6 +71,11 @@ for (const unit of UNITS) {
 
 /* 26 shipped pages: the Pre-Unit project + version-a/b (+ version-c where a
    unit ships three options). Raise this deliberately when a page is added. */
+assertSweptEnough(
+  "validate:projects-publication",
+  pages,
+  "Discovery for validate:projects-publication returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
+);
 if (pages.length !== 26) failures.push(`expected 26 project pages, enumerated ${pages.length}`);
 
 if (failures.length) {

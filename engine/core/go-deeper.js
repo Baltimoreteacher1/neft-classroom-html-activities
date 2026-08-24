@@ -94,10 +94,10 @@ function injectStyles() {
   style.id = "ntgd-styles";
   style.textContent = `
 .ntgd{color-scheme:light;border:2px solid #c4b5fd;border-radius:14px;background:#f5f3ff;margin:20px 0;color:#1e1b4b}
-.ntgd>summary{cursor:pointer;padding:14px 18px;font-weight:800;font-size:1.05rem;list-style:none;display:flex;gap:10px;align-items:center}
+.ntgd>summary{cursor:pointer;padding:14px 18px;font-weight:700;font-size:1.05rem;list-style:none;display:flex;gap:10px;align-items:center}
 .ntgd>summary::-webkit-details-marker{display:none}
 .ntgd>summary:focus-visible{outline:3px solid #5b21b6;outline-offset:2px;border-radius:12px}
-.ntgd-tag{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:#5b21b6;color:#fff;border-radius:999px;padding:3px 10px}
+.ntgd-tag{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:#5b21b6;color:#fff;border-radius:999px;padding:3px 10px}
 .ntgd-body{padding:4px 18px 18px;display:grid;gap:14px}
 .ntgd-en{display:block}
 .ntgd-es{display:block;font-size:.88em;color:#5b21b6;font-style:italic}
@@ -105,22 +105,22 @@ function injectStyles() {
 .ntgd-step[data-locked="true"]{opacity:.55}
 .ntgd-step[data-locked="true"] textarea,.ntgd-step[data-locked="true"] input,.ntgd-step[data-locked="true"] button{pointer-events:none}
 .ntgd-step h4{margin:0;font-size:1rem;display:flex;gap:8px;align-items:center}
-.ntgd-n{width:26px;height:26px;border-radius:50%;background:#5b21b6;color:#fff;display:inline-grid;place-items:center;font-size:.85rem;font-weight:800;flex:none}
-.ntgd-stem{background:#faf5ff;border-left:4px solid #5b21b6;border-radius:8px;padding:10px 12px;font-weight:600}
+.ntgd-n{width:26px;height:26px;border-radius:50%;background:#5b21b6;color:#fff;display:inline-grid;place-items:center;font-size:.85rem;font-weight:700;flex:none}
+.ntgd-stem{background:#faf5ff;border-left:4px solid #5b21b6;border-radius:8px;padding:10px 12px;font-weight:500}
 .ntgd textarea,.ntgd input[type="text"]{width:100%;box-sizing:border-box;border:1.5px solid #c4b5fd;border-radius:10px;padding:10px;font:inherit;font-size:1rem;min-height:44px;background:#fff;color:inherit}
 .ntgd textarea:focus,.ntgd input:focus{outline:3px solid #5b21b6;outline-offset:1px}
 .ntgd-moves{display:flex;flex-wrap:wrap;gap:8px}
-.ntgd-move{border:1.5px solid #5b21b6;background:#fff;color:#5b21b6;border-radius:999px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer;min-height:44px}
+.ntgd-move{border:1.5px solid #5b21b6;background:#fff;color:#5b21b6;border-radius:999px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer;min-height:44px}
 .ntgd-move[aria-pressed="true"]{background:#5b21b6;color:#fff}
 .ntgd-move:focus-visible{outline:3px solid #1e1b4b;outline-offset:2px}
 .ntgd-frame{font-size:.92rem;background:#ede9fe;border-radius:8px;padding:8px 10px}
-.ntgd-btn{justify-self:start;border:0;border-radius:10px;background:#5b21b6;color:#fff;font:inherit;font-weight:800;padding:10px 18px;cursor:pointer;min-height:44px}
+.ntgd-btn{justify-self:start;border:0;border-radius:10px;background:#5b21b6;color:#fff;font:inherit;font-weight:700;padding:10px 18px;cursor:pointer;min-height:44px}
 .ntgd-btn:disabled{background:#a78bfa;cursor:not-allowed}
 .ntgd-btn:focus-visible{outline:3px solid #1e1b4b;outline-offset:2px}
 .ntgd-btn:not(.ntgd-ghost) .ntgd-es{color:#ede9fe}
 .ntgd-move[aria-pressed="true"] .ntgd-es{color:#ede9fe}
 .ntgd-ghost{background:#fff;color:#5b21b6;border:1.5px solid #5b21b6}
-.ntgd-status{margin:0;font-weight:700;color:#166534}
+.ntgd-status{margin:0;font-weight:600;color:#166534}
 .ntgd-done{border:2px solid #86efac;background:#f0fdf4;border-radius:12px;padding:14px;position:relative;overflow:hidden}
 .ntgd-spark{position:absolute;top:50%;left:50%;width:8px;height:8px;border-radius:50%;background:#5b21b6;pointer-events:none;animation:ntgd-pop .9s ease-out forwards}
 @keyframes ntgd-pop{to{transform:translate(var(--ntgd-x),var(--ntgd-y)) scale(0);opacity:0}}

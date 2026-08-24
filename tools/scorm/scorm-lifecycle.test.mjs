@@ -336,3 +336,4 @@ if (failures.length) {
   process.exit(1);
 }
 console.log("RESULT: PASS ✅");
+process.exit(0);

@@ -42,9 +42,9 @@ function injectStyles() {
 .stat-towers .st-block{position:absolute;left:0;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.22,.9,.34,1.15),opacity .4s;}
 .stat-towers .st-face{position:absolute;inset:0;border:1px solid rgba(18,53,91,.35);border-radius:3px;}
 .stat-towers .st-meanline{position:absolute;left:4%;right:4%;border-top:3px dashed ${C.meanLine};opacity:0;transition:opacity .5s,bottom .55s;pointer-events:none;}
-.stat-towers .st-meanline .st-meantag{position:absolute;right:0;top:-24px;background:${C.meanLine};color:#fff;font-weight:800;font-size:.78rem;padding:2px 8px;border-radius:8px;font-family:system-ui;}
+.stat-towers .st-meanline .st-meantag{position:absolute;right:0;top:-24px;background:${C.meanLine};color:#fff;font-weight:700;font-size:.78rem;padding:2px 8px;border-radius:8px;font-family:system-ui;}
 .stat-towers .st-val{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font:700 .8rem system-ui;color:${C.navy};}
-.stat-towers .st-btn{min-height:44px;padding:0 16px;border:2px solid ${C.line};border-radius:12px;background:#fff;color:${C.navy};font-weight:700;cursor:pointer;font-size:.95rem;}
+.stat-towers .st-btn{min-height:44px;padding:0 16px;border:2px solid ${C.line};border-radius:12px;background:#fff;color:${C.navy};font-weight:600;cursor:pointer;font-size:.95rem;}
 .stat-towers .st-btn[data-primary]{background:${C.teal};border-color:${C.teal};color:#fff;}
 .stat-towers .st-btn:disabled{opacity:.5;cursor:default;}
 @media (prefers-reduced-motion: reduce){.stat-towers .st-block{transition:opacity .3s;}}

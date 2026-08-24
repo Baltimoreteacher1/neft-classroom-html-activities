@@ -14,9 +14,10 @@
 
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { buildInstructionalSequence } from "../curriculum/instructional-sequence.js";
 
 import {
   continueTomorrow,
@@ -131,13 +132,52 @@ test("180 instructional dates, of which 5 are shortened", () => {
  * 2. Canonical mapping — the plan points at curriculum that exists
  * ══════════════════════════════════════════════════════════════════════════ */
 
-test("all 84 canonical lessons are scheduled exactly once", () => {
-  const core = baseline.days.filter((d) => d.plan.dayType === "Core Lesson").map((d) => d.plan.lessonId);
-  assert.equal(core.length, 84);
-  assert.equal(new Set(core).size, 84, "no lesson is scheduled twice");
+/* The calendar and the instructional sequence are the same list, laid out on
+ * dates. Built here from the same three files tools/import-pacing-baseline.mjs
+ * reads, so a re-import that drifts from the sequence fails rather than shipping
+ * a second answer to "what is taught, in what order". */
+const ROOT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const readData = (p) => JSON.parse(readFileSync(join(ROOT_DIR, p), "utf8"));
+const sequence = buildInstructionalSequence({
+  ranges: readData("data/pacing-unit-ranges.json"),
+  authored: readData("data/pacing-unit-lessons.json"),
+  manifest: readData("data/curriculum-launch-manifest.json"),
+});
+
+test("the calendar schedules exactly the instructional sequence, once each", () => {
+  const core = baseline.days
+    .filter((d) => d.plan.dayType === "Core Lesson")
+    .map((d) => d.plan.lessonId);
+  assert.equal(new Set(core).size, core.length, "no lesson is scheduled twice");
+
+  /* WHY THIS IS NOT "all 84". The curriculum owns 84 lessons; the district plan
+   * teaches 79 of them. The authored Pre-Unit (1-1, 2-6, 2-7, 6-1, 6-2) replaces
+   * curriculum unit 1's membership, which leaves the Unit 1 "Math Is…" arc
+   * 1-2 … 1-6 real, reachable, and unscheduled. Naming them here makes that a
+   * stated fact rather than a silent gap — and makes it fail loudly if the plan
+   * later drops a lesson nobody meant to drop. */
+  const paced = sequence.order.filter((id) => sequence.entries.get(id).paced);
+  assert.deepEqual([...core].sort(), [...paced].sort());
+  assert.equal(core.length, 79);
+  assert.deepEqual(sequence.unpaced, ["1-2", "1-3", "1-4", "1-5", "1-6"]);
+
   const canonical = new Set(launch.lessons.map((l) => l.id));
   assert.equal(canonical.size, 84);
   for (const id of core) assert.ok(canonical.has(id), `${id} is a canonical lesson`);
+});
+
+test("the calendar's teaching order IS the instructional sequence", () => {
+  const taught = [];
+  for (const d of baseline.days) {
+    const id = d.plan.lessonId;
+    if (!id || !["Core Lesson", "Continued Lesson"].includes(d.plan.dayType)) continue;
+    if (taught[taught.length - 1] !== id) taught.push(id);
+  }
+  assert.deepEqual(
+    taught,
+    sequence.order.filter((id) => sequence.entries.get(id).paced),
+    "the dated plan and the sequence the warmups resolve against must be one list",
+  );
 });
 
 test("every scheduled id resolves to a real curriculum surface", () => {
@@ -152,19 +192,25 @@ test("every scheduled id resolves to a real curriculum surface", () => {
   }
 });
 
-test("lesson order is preserved within every unit", () => {
+test("lesson order is preserved within every unit BLOCK", () => {
+  /* Grouped by the PACING unit key, not by the lesson's curriculum unit. The
+   * Pre-Unit borrows 2-6, 2-7, 6-1 and 6-2 from Units 2 and 6, so grouping by
+   * `lesson.unit` puts August's 6-1 and November's 6-3 in one list and calls the
+   * plan out of order. The claim that actually matters is that a teacher working
+   * through one block on the calendar never goes backwards inside it. */
   const seen = new Map();
   for (const d of baseline.days) {
     if (d.plan.dayType !== "Core Lesson") continue;
     const lesson = launch.lessons.find((l) => l.id === d.plan.lessonId);
-    const prev = seen.get(lesson.unit);
+    const key = `${d.plan.unitKey}:${lesson.unit}`;
+    const prev = seen.get(key);
     if (prev !== undefined) {
       assert.ok(
         lesson.lesson > prev,
-        `unit ${lesson.unit}: ${d.plan.lessonId} comes after lesson ${prev}`,
+        `${d.plan.unitKey} / unit ${lesson.unit}: ${d.plan.lessonId} comes after lesson ${prev}`,
       );
     }
-    seen.set(lesson.unit, lesson.lesson);
+    seen.set(key, lesson.lesson);
   }
 });
 
@@ -401,9 +447,15 @@ test("resolveYear keeps the original plan beside the current one", () => {
 test("flex capacity counts the real reserve in the shipped plan", () => {
   const resolved = resolveYear(baseline, {});
   const cap = flexCapacity(resolved);
-  assert.equal(cap.flex, 3);
+  /* Eight, not three. Five teaching days were freed when the plan stopped
+   * teaching 2-6, 2-7, 6-1 and 6-2 a second time in their home units and stopped
+   * scheduling the displaced Unit 1 arc — one in the Pre-Unit, two in Unit 6 and
+   * two in Unit 2. They became buffer at the end of each block rather than being
+   * absorbed into invented second days, which would have shifted Unit 2 far
+   * enough to strand the 2-3 Catch-Up day ahead of the lesson it follows. */
+  assert.equal(cap.flex, 8);
   assert.equal(cap.catchUp, 21);
-  assert.equal(cap.total, 24, "24 absorbing days, matching the source validation");
+  assert.equal(cap.total, 29, "29 absorbing days");
 });
 
 test("pacing position is stated in days and neutral language", () => {

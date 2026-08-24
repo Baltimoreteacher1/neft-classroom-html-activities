@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { skipExit } from "./lib/skip-exit.mjs";
+
 /* =============================================================================
  * smoke-planning.mjs — the Pacing Planner, checked against a running site
  * -----------------------------------------------------------------------------
@@ -110,8 +112,20 @@ async function phaseA() {
   /* The API must refuse an unauthenticated caller. `not-configured` is a valid
    * answer on a deployment with no key set; 200 with data is never valid. */
   const api = await get("/api/pacing/state");
+  const servedHtml = /text\/html/i.test(api.res?.headers.get("content-type") || "");
   if (api.status === 401 || api.status === 503)
     pass("pacing API refuses anonymous", `HTTP ${api.status}`);
+  else if (api.status === 200 && servedHtml && !IS_PRODUCTION)
+    // `npm run preview` is a static server with no Functions runtime, so its
+    // SPA fallback answers /api/* with index.html and a 200. Reading that as a
+    // successful anonymous API read failed this check on every local run and
+    // taught everyone to ignore it. Only `wrangler pages dev` (or production)
+    // can actually answer for the gate.
+    skip(
+      "pacing API refuses anonymous",
+      "no Functions runtime here — the static preview answered /api/pacing/state with the SPA " +
+        "fallback page. Point --base at `wrangler pages dev` to verify the gate for real",
+    );
   else
     fail("pacing API refuses anonymous", `HTTP ${api.status} — an unauthenticated read succeeded`);
 }
@@ -280,7 +294,8 @@ if (skipped.length) {
   console.error(
     `\nsmoke-planning: ${skipped.length} check(s) SKIPPED — this run did NOT verify the authenticated planner.`,
   );
-  if (process.env.CI) process.exit(1);
-  process.exit(0);
+  // Exit 3 = SKIP (tools/lib/skip-exit.mjs): not a pass, not a push-blocker.
+  // Reporting it as 0 is what let a run that verified nothing print green.
+  process.exit(skipExit(`${skipped.length} planner check(s) could not run`));
 }
 console.log("\nsmoke-planning: PASS");

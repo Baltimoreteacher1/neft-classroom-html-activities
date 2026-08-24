@@ -60,7 +60,7 @@ export function mountSymbolPad(input, opts = {}) {
 
   const hint = document.createElement("span");
   hint.textContent = "Tap to add:";
-  hint.style.cssText = "font-size:0.85rem; font-weight:700; color:#56627a;";
+  hint.style.cssText = "font-size:0.85rem; font-weight:600; color:#56627a;";
   pad.append(hint);
 
   for (const sym of keys) {
@@ -71,7 +71,7 @@ export function mountSymbolPad(input, opts = {}) {
     btn.title = LABELS[sym] || sym;
     btn.setAttribute("aria-label", `Insert ${LABELS[sym] || sym}`);
     btn.style.cssText =
-      "min-width:44px; min-height:44px; font-size:1.15rem; font-weight:800; " +
+      "min-width:44px; min-height:44px; font-size:1.15rem; font-weight:700; " +
       "background:#fff; color:#14223a; border:2px solid #cbd5e1; border-radius:10px; cursor:pointer;";
     btn.addEventListener("click", () => insertAtCaret(input, sym));
     pad.append(btn);

@@ -106,41 +106,41 @@ function ensureStyles() {
   s.textContent = `
   .fdiv-presetwrap{margin:var(--sp-3,12px) 0;display:flex;flex-direction:column;align-items:center;}
   .fdiv-presets{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:8px;}
-  .fdiv-chip{padding:5px 13px;font:inherit;font-size:.85rem;font-weight:700;color:${C.navy};background:#f4f8ff;
+  .fdiv-chip{padding:5px 13px;font:inherit;font-size:.85rem;font-weight:600;color:${C.navy};background:#f4f8ff;
     border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;}
   .fdiv-chip:hover{background:#e2ecff;border-color:${C.accent};}
   .fdiv-chip[aria-pressed="true"]{background:${C.accent};color:#fff;border-color:${C.accent};}
   .fdiv-wrap{width:100%;max-width:420px;margin:0 auto;font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};
     display:flex;flex-direction:column;align-items:center;}
-  .fdiv-title{font-weight:800;color:${C.navy};margin-bottom:4px;font-size:1rem;text-align:center;}
+  .fdiv-title{font-weight:700;color:${C.navy};margin-bottom:4px;font-size:1rem;text-align:center;}
   .fdiv-hint{font-size:.82rem;color:${C.muted};margin-bottom:10px;text-align:center;max-width:380px;line-height:1.45;}
-  .fdiv-problem{font-size:1.5rem;font-weight:800;color:${C.navy};margin-bottom:12px;}
+  .fdiv-problem{font-size:1.5rem;font-weight:700;color:${C.navy};margin-bottom:12px;}
   .fdiv-steps{width:100%;display:flex;flex-direction:column;gap:10px;}
   .fdiv-step{box-sizing:border-box;padding:12px 14px;border:1px solid ${C.line};border-left:4px solid ${C.accent};
     border-radius:12px;background:${C.cardTint};}
   .fdiv-step[hidden]{display:none;}
-  .fdiv-step-num{font-weight:800;color:${C.navy};font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
-  .fdiv-prompt{font-size:.92rem;color:${C.ink};line-height:1.5;font-weight:600;}
+  .fdiv-step-num{font-weight:700;color:${C.navy};font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+  .fdiv-prompt{font-size:.92rem;color:${C.ink};line-height:1.5;font-weight:500;}
   .fdiv-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:9px;}
-  .fdiv-inp{width:88px;border:2px dashed ${C.accent};border-radius:8px;background:#fff;color:${C.ink};font-weight:800;
+  .fdiv-inp{width:88px;border:2px dashed ${C.accent};border-radius:8px;background:#fff;color:${C.ink};font-weight:700;
     font-size:1rem;text-align:center;padding:6px 4px;box-sizing:border-box;}
   .fdiv-inp:focus{outline:none;border-style:solid;box-shadow:0 0 0 3px rgba(29,78,216,.18);}
   .fdiv-inp.correct{border-style:solid;border-color:${C.teal};background:${C.tealFill};color:${C.tealInk};}
   .fdiv-inp.wrong{border-color:${C.wrong};background:#fdeceb;color:${C.wrong};animation:fdiv-shake .3s;}
   @keyframes fdiv-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
   @media (prefers-reduced-motion:reduce){.fdiv-inp.wrong{animation:none;}}
-  .fdiv-lab{font-weight:700;color:${C.muted};font-size:.9rem;}
-  .fdiv-op{font-weight:800;color:${C.navy};font-size:1.1rem;}
-  .fdiv-btn{font:inherit;font-weight:700;font-size:.85rem;border-radius:999px;padding:7px 16px;cursor:pointer;border:2px solid transparent;}
+  .fdiv-lab{font-weight:600;color:${C.muted};font-size:.9rem;}
+  .fdiv-op{font-weight:700;color:${C.navy};font-size:1.1rem;}
+  .fdiv-btn{font:inherit;font-weight:600;font-size:.85rem;border-radius:999px;padding:7px 16px;cursor:pointer;border:2px solid transparent;}
   .fdiv-btn-check{background:${C.accent};color:#fff;}
   .fdiv-btn-check:hover{filter:brightness(1.05);}
   .fdiv-btn:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .fdiv-btn-ghost{background:#fff;color:${C.navy};border-color:${C.line};}
-  .fdiv-status{min-height:1.1em;margin-top:7px;font-size:.85rem;font-weight:700;}
+  .fdiv-status{min-height:1.1em;margin-top:7px;font-size:.85rem;font-weight:600;}
   .fdiv-status.ok{color:${C.teal};}
   .fdiv-status.no{color:${C.wrong};}
   .fdiv-controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px;}
-  .fdiv-result{margin-top:10px;font-size:1.1rem;font-weight:900;color:${C.teal};text-align:center;}
+  .fdiv-result{margin-top:10px;font-size:1.1rem;font-weight:800;color:${C.teal};text-align:center;}
   .fdiv-result[hidden]{display:none;}
   `;
   document.head.appendChild(s);

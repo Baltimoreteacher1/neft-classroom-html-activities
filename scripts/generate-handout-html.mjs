@@ -89,7 +89,7 @@ function buildHandout(config) {
   <title>${esc(config.title)} — Student Handout</title>
   <style>
     ${EDITORIAL_FONT_IMPORT}
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Hanken+Grotesk:wght@400;600&display=swap');
+    @import url('/assets/fonts/outfit-hanken-grotesk-e0dfae.css');
     * { box-sizing: border-box; }
     body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; }
     h1, h2 { font-family: Outfit, system-ui, sans-serif; margin: 0 0 8px; }

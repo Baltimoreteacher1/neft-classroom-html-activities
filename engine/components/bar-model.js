@@ -1,6 +1,8 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
+import { stackContent } from "../core/i18n.js";
+
 let BM_STYLE_INJECTED = false;
 
 function injectBarModelStyle() {
@@ -70,7 +72,18 @@ function injectBarModelStyle() {
 }
 
 export function renderBarModel(container, config) {
-  const { bars, totalLabel, questionText, answer, tolerance, label, onComplete } = config;
+  const {
+    bars,
+    totalLabel,
+    totalLabelEs,
+    questionText,
+    questionTextEs,
+    answer,
+    tolerance,
+    label,
+    labelEs,
+    onComplete,
+  } = config;
   injectBarModelStyle();
 
   // Adapter: some lessons author a ratio/part-whole bar model as
@@ -89,8 +102,8 @@ export function renderBarModel(container, config) {
 
   if (label) {
     const lbl = document.createElement("p");
-    lbl.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
-    lbl.textContent = label;
+    lbl.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
+    lbl.innerHTML = stackContent(label, labelEs);
     wrapper.append(lbl);
   }
 
@@ -112,10 +125,10 @@ export function renderBarModel(container, config) {
     totalBar.className = "bm-total";
     totalBar.style.cssText = `
       height:${BAR_H}px; background:var(--navy); border-radius:var(--radius-sm);
-      display:grid; place-items:center; color:white; font-weight:800; font-size:0.95rem;
+      display:grid; place-items:center; color:white; font-weight:700; font-size:0.95rem;
       margin-bottom:${GAP}px;
     `;
-    totalBar.textContent = `${totalLabel}: ${totalValue}`;
+    totalBar.innerHTML = `${stackContent(totalLabel, totalLabelEs)}: ${totalValue}`;
     vizWrap.append(totalBar);
   }
 
@@ -132,7 +145,7 @@ export function renderBarModel(container, config) {
     const bgColor = colors[i % colors.length];
     seg.style.cssText = `
       flex:${pct}; background:${bgColor}; border-radius:var(--radius-sm);
-      display:grid; place-items:center; color:white; font-weight:800; font-size:0.88rem;
+      display:grid; place-items:center; color:white; font-weight:700; font-size:0.88rem;
       position:relative; min-width:40px;
     `;
     // Left-to-right entrance stagger. Set AFTER cssText (which replaces the
@@ -169,7 +182,7 @@ export function renderBarModel(container, config) {
     const annotation = document.createElement("div");
     annotation.className = "bm-annotation bm-fade-in";
     annotation.style.cssText = `
-      flex:${pct}; text-align:center; font-size:0.72rem; font-weight:700;
+      flex:${pct}; text-align:center; font-size:0.72rem; font-weight:600;
       color:${colors[i % colors.length]}; border-top:2px solid ${colors[i % colors.length]};
       padding-top:2px; min-width:40px;
     `;
@@ -191,8 +204,8 @@ export function renderBarModel(container, config) {
       "background:var(--teal-light); border:1px solid rgba(31,166,162,0.15); border-radius:var(--radius-md); padding:var(--sp-4); margin-bottom:var(--sp-3);";
 
     const qText = document.createElement("p");
-    qText.style.cssText = "font-weight:700; margin:0 0 var(--sp-3);";
-    qText.textContent = questionText;
+    qText.style.cssText = "font-weight:600; margin:0 0 var(--sp-3);";
+    qText.innerHTML = stackContent(questionText, questionTextEs);
     qCard.append(qText);
 
     const inputRow = document.createElement("div");
@@ -325,7 +338,7 @@ function renderRatioBarModel(container, config) {
   if (instructions) {
     const prompt = document.createElement("p");
     prompt.style.cssText =
-      "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+      "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     prompt.textContent = instructions;
     wrapper.append(prompt);
   }
@@ -349,7 +362,7 @@ function renderRatioBarModel(container, config) {
     totalBar.className = "bm-total";
     totalBar.style.cssText = `
       height:${BAR_H}px; background:var(--navy); border-radius:var(--radius-sm);
-      display:grid; place-items:center; color:white; font-weight:800; font-size:0.95rem;
+      display:grid; place-items:center; color:white; font-weight:700; font-size:0.95rem;
       margin-bottom:${GAP}px;
     `;
     totalBar.textContent = `Total: ${whole}`;
@@ -364,7 +377,7 @@ function renderRatioBarModel(container, config) {
     seg.className = "bm-seg bm-seg-in";
     seg.style.cssText = `
       flex:${pct}; background:${part.color || palette[i % palette.length]}; border-radius:var(--radius-sm);
-      display:grid; place-items:center; color:white; font-weight:800; font-size:0.82rem;
+      display:grid; place-items:center; color:white; font-weight:700; font-size:0.82rem;
       position:relative; min-width:40px; text-align:center; line-height:1.15;
     `;
     // Entrance stagger — set after cssText (which replaces inline style).

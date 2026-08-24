@@ -56,6 +56,461 @@ const LESSONS = join(ROOT, "lessons");
  * Legacy fields `correction`/`it.explanation`-as-fix are NOT read anymore.
  */
 
+/* ---------- SVG mathematical model builders (print-safe, inline) ---------- */
+const DATA_1 = "#0f8a84"; // teal - primary series
+const DATA_2 = "#c2603f"; // clay - second series
+const DATA_3 = "#b07d12"; // ochre - third series
+const DATA_4 = "#3b6ea5"; // blue - fourth series
+
+function figureWrap(svgHtml, title = "", caption = "") {
+  if (!svgHtml) return "";
+  const titleHtml = title
+    ? `<div class="ws-fig-title" style="font-weight:700;font-size:12px;color:var(--navy);margin-bottom:4px;text-align:center;">${esc(title)}</div>`
+    : "";
+  const capHtml = caption
+    ? `<div class="ws-fig-cap" style="font-size:11px;color:var(--muted);font-style:italic;margin-top:4px;text-align:center;">${esc(caption)}</div>`
+    : "";
+  return `<div class="ws-figure-wrap" style="margin:8px 0;display:flex;flex-direction:column;align-items:center;">${titleHtml}${svgHtml}${capHtml}</div>`;
+}
+
+function renderNumberLineSvg(cfg) {
+  const min = Number(cfg.min ?? 0);
+  const max = Number(cfg.max ?? 10);
+  const step = Number(cfg.step ?? 1);
+  const W = 480,
+    H = 80,
+    padL = 28,
+    padR = 28,
+    y = 38;
+  const span = Math.max(1, max - min);
+  const plotW = W - padL - padR;
+  const xOf = (v) => padL + ((v - min) / span) * plotW;
+
+  let ticks = "";
+  const stride = (max - min) / step > 15 ? Math.ceil((max - min) / step / 10) * step : step;
+  for (let v = min; v <= max + 1e-9; v += step) {
+    const showLabel =
+      Math.abs(Math.round((v - min) / stride) * stride - (v - min)) < 1e-6 ||
+      v === min ||
+      v === max;
+    ticks += `<line x1="${xOf(v).toFixed(1)}" y1="${y - 5}" x2="${xOf(v).toFixed(1)}" y2="${y + 5}" stroke="#263238" stroke-width="1.5"/>`;
+    if (showLabel) {
+      ticks += `<text x="${xOf(v).toFixed(1)}" y="${y + 19}" text-anchor="middle" font-size="11" fill="#263238" font-family="Hanken Grotesk,sans-serif">${+v.toFixed(2)}</text>`;
+    }
+  }
+
+  let pts = "";
+  (cfg.points || []).forEach((p) => {
+    const val = Number(p.value != null ? p.value : p);
+    if (!Number.isFinite(val)) return;
+    const px = xOf(val);
+    pts += `<circle cx="${px.toFixed(1)}" cy="${y}" r="6" fill="${DATA_2}" stroke="#ffffff" stroke-width="2"/>`;
+    if (p.label) {
+      pts += `<text x="${px.toFixed(1)}" y="${y - 10}" text-anchor="middle" font-size="11" font-weight="700" fill="${DATA_2}" font-family="Hanken Grotesk,sans-serif">${esc(p.label)}</text>`;
+    }
+  });
+
+  const axis =
+    `<line x1="${padL - 8}" y1="${y}" x2="${W - padR + 8}" y2="${y}" stroke="#263238" stroke-width="2"/>` +
+    `<polygon points="${W - padR + 12},${y} ${W - padR + 4},${y - 4} ${W - padR + 4},${y + 4}" fill="#263238"/>` +
+    `<polygon points="${padL - 12},${y} ${padL - 4},${y - 4} ${padL - 4},${y + 4}" fill="#263238"/>`;
+
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Number line from ${min} to ${max}" style="background:white;max-width:100%;height:auto;border:1px solid #d7e2ed;border-radius:8px;padding:4px;">${axis}${ticks}${pts}</svg>`;
+  return figureWrap(svg, cfg.title, cfg.caption);
+}
+
+function renderCoordPlaneSvg(cfg) {
+  const m = Number(cfg.max ?? 6);
+  const W = 280,
+    H = 280,
+    pad = 20;
+  const span = 2 * m;
+  const plot = W - 2 * pad;
+  const unit = plot / span;
+  const cx = pad + m * unit,
+    cy = pad + m * unit;
+  const X = (x) => pad + (x + m) * unit;
+  const Y = (y) => pad + (m - y) * unit;
+  const stride = m > 6 ? 2 : 1;
+
+  let grid = "";
+  for (let i = -m; i <= m; i++) {
+    grid += `<line x1="${X(i)}" y1="${pad}" x2="${X(i)}" y2="${H - pad}" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>`;
+    grid += `<line x1="${pad}" y1="${Y(i)}" x2="${W - pad}" y2="${Y(i)}" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>`;
+    if (i !== 0 && i % stride === 0) {
+      grid += `<text x="${X(i)}" y="${cy + 12}" text-anchor="middle" font-size="9" fill="#64748b">${i}</text>`;
+      grid += `<text x="${cx - 4}" y="${Y(i) + 3}" text-anchor="end" font-size="9" fill="#64748b">${i}</text>`;
+    }
+  }
+
+  const axes =
+    `<line x1="${pad}" y1="${cy}" x2="${W - pad}" y2="${cy}" stroke="#1e293b" stroke-width="1.75"/>` +
+    `<line x1="${cx}" y1="${pad}" x2="${cx}" y2="${H - pad}" stroke="#1e293b" stroke-width="1.75"/>` +
+    `<text x="${W - pad + 6}" y="${cy + 3}" font-size="10" font-weight="700" fill="#1e293b">x</text>` +
+    `<text x="${cx + 4}" y="${pad - 4}" font-size="10" font-weight="700" fill="#1e293b">y</text>`;
+
+  const rawPts = (cfg.points || []).map((p) => ({
+    x: Number(p.x),
+    y: Number(p.y),
+    label: p.label,
+  }));
+
+  let outline = "";
+  if (rawPts.length >= 3) {
+    const gx = rawPts.reduce((s, p) => s + p.x, 0) / rawPts.length;
+    const gy = rawPts.reduce((s, p) => s + p.y, 0) / rawPts.length;
+    const ring = rawPts
+      .slice()
+      .sort((a, b) => Math.atan2(a.y - gy, a.x - gx) - Math.atan2(b.y - gy, b.x - gx));
+    const poly = ring.map((p) => `${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ");
+    outline = `<polygon points="${poly}" fill="rgba(31,166,162,0.12)" stroke="#0d9488" stroke-width="2"/>`;
+  }
+
+  let pts = "";
+  rawPts.forEach((p) => {
+    if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) return;
+    const px = X(p.x),
+      py = Y(p.y);
+    const lbl = p.label || `(${p.x}, ${p.y})`;
+    pts +=
+      `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="5" fill="${DATA_2}" stroke="#fff" stroke-width="1.5"/>` +
+      `<text x="${(px + 6).toFixed(1)}" y="${(py - 6).toFixed(1)}" font-size="10" font-weight="700" fill="#0f172a">${esc(lbl)}</text>`;
+  });
+
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Coordinate plane from -${m} to ${m}" style="background:white;max-width:100%;height:auto;border:1px solid #d7e2ed;border-radius:8px;padding:4px;">${grid}${axes}${outline}${pts}</svg>`;
+  return figureWrap(svg, cfg.title, cfg.caption);
+}
+
+function renderTapeDiagramSvg(cfg) {
+  const rows = Array.isArray(cfg.rows) ? cfg.rows : [];
+  if (!rows.length) return "";
+  const W = 460,
+    padL = 8,
+    padR = 8,
+    rowH = 34,
+    gap = 10,
+    labelW = 80;
+  const H = 16 + rows.length * (rowH + gap);
+  const palette = [DATA_1, DATA_2, DATA_3, DATA_4];
+  const totals = rows.map((r) => (r.parts || []).reduce((s, p) => s + (Number(p.value) || 0), 0));
+  const maxTotal = Math.max(...totals, 1);
+  const trackW = W - padL - padR - labelW;
+
+  let y = 10;
+  let body = "";
+  rows.forEach((r) => {
+    let x = padL + labelW;
+    let segs = "";
+    (r.parts || []).forEach((p, i) => {
+      const w = ((Number(p.value) || 0) / maxTotal) * trackW;
+      const fill = p.fill || palette[i % palette.length];
+      const lbl = p.label != null ? p.label : p.value;
+      segs +=
+        `<rect x="${x.toFixed(1)}" y="${y}" width="${Math.max(0, w - 2).toFixed(1)}" height="${rowH}" rx="3" fill="${fill}"/>` +
+        `<text x="${(x + w / 2).toFixed(1)}" y="${y + rowH / 2 + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="Hanken Grotesk,sans-serif">${esc(lbl)}</text>`;
+      x += w;
+    });
+    const rowLabel = `<text x="${padL}" y="${y + rowH / 2 + 4}" font-size="11" font-weight="700" fill="#1e293b" font-family="Hanken Grotesk,sans-serif">${esc(r.label || "")}</text>`;
+    body += rowLabel + segs;
+    y += rowH + gap;
+  });
+
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Tape diagram model" style="background:white;max-width:100%;height:auto;border:1px solid #d7e2ed;border-radius:8px;padding:4px;">${body}</svg>`;
+  return figureWrap(svg, cfg.title, cfg.caption);
+}
+
+function renderFactorTreeSvg(cfg) {
+  const W = 320,
+    H = 160;
+  let elements = [];
+  function traverse(node, x, y, dx) {
+    if (!node) return;
+    const isPrime = !node.left && !node.right;
+    const fill = isPrime ? "#e2f9f5" : "#fbf4e6";
+    const stroke = isPrime ? "#0d7a76" : "#d4952a";
+    const textColor = isPrime ? "#095350" : "#8a5800";
+    elements.push({ type: "node", x, y, value: node.value, fill, stroke, textColor });
+    if (node.left) {
+      const lx = x - dx,
+        ly = y + 42;
+      elements.push({ type: "line", x1: x, y1: y + 14, x2: lx, y2: ly - 14 });
+      traverse(node.left, lx, ly, dx * 0.5);
+    }
+    if (node.right) {
+      const rx = x + dx,
+        ry = y + 42;
+      elements.push({ type: "line", x1: x, y1: y + 14, x2: rx, y2: ry - 14 });
+      traverse(node.right, rx, ry, dx * 0.5);
+    }
+  }
+  traverse(cfg, W / 2, 22, W / 4);
+
+  let inner = "";
+  elements.forEach((el) => {
+    if (el.type === "line") {
+      inner += `<line x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#cbd5e1" stroke-width="2"/>`;
+    } else if (el.type === "node") {
+      inner +=
+        `<circle cx="${el.x}" cy="${el.y}" r="14" fill="${el.fill}" stroke="${el.stroke}" stroke-width="1.75"/>` +
+        `<text x="${el.x}" y="${el.y + 4}" font-size="11" font-weight="700" fill="${el.textColor}" text-anchor="middle" font-family="Hanken Grotesk,sans-serif">${esc(el.value)}</text>`;
+    }
+  });
+
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Factor tree diagram" style="background:white;max-width:100%;height:auto;border:1px solid #d7e2ed;border-radius:8px;padding:4px;">${inner}</svg>`;
+  return figureWrap(svg, cfg.title, cfg.caption);
+}
+
+function renderBarChartSvg(cfg) {
+  const bars = Array.isArray(cfg.bars) ? cfg.bars : [];
+  if (!bars.length) return "";
+  const W = 420,
+    H = 180,
+    padL = 36,
+    padR = 16,
+    padT = 20,
+    padB = 36;
+  const plotW = W - padL - padR,
+    plotH = H - padT - padB;
+  const maxV = Math.max(...bars.map((b) => Number(b.value) || 0), 1);
+  const bw = plotW / bars.length;
+  const baseY = padT + plotH;
+
+  let rects = "";
+  bars.forEach((b, i) => {
+    const v = Number(b.value) || 0;
+    const h = (v / maxV) * plotH;
+    const x = padL + i * bw + bw * 0.15;
+    const y = baseY - h;
+    const w = bw * 0.7;
+    rects +=
+      `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${DATA_1}"/>` +
+      `<text x="${(x + w / 2).toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="#1e293b">${v}</text>` +
+      `<text x="${(x + w / 2).toFixed(1)}" y="${(baseY + 14).toFixed(1)}" text-anchor="middle" font-size="10" fill="#475569">${esc(b.label ?? "")}</text>`;
+  });
+
+  const axis = `<line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="#334155" stroke-width="1.5"/>`;
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Bar chart" style="background:white;max-width:100%;height:auto;border:1px solid #d7e2ed;border-radius:8px;padding:4px;">${axis}${rects}</svg>`;
+  return figureWrap(svg, cfg.title, cfg.caption);
+}
+
+function renderHistogramSvg(cfg) {
+  const bars = Array.isArray(cfg.bars) ? cfg.bars : [];
+  if (!bars.length) return "";
+  const W = 420,
+    H = 180,
+    padL = 36,
+    padR = 16,
+    padT = 20,
+    padB = 36;
+  const plotW = W - padL - padR,
+    plotH = H - padT - padB;
+  const maxV = Math.max(...bars.map((b) => Number(b.value) || 0), 1);
+  const bw = plotW / bars.length;
+  const baseY = padT + plotH;
+
+  let rects = "";
+  bars.forEach((b, i) => {
+    const v = Number(b.value) || 0;
+    const h = (v / maxV) * plotH;
+    const x = padL + i * bw;
+    const y = baseY - h;
+    rects +=
+      `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" fill="${DATA_1}" stroke="#ffffff" stroke-width="1"/>` +
+      `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="#1e293b">${v}</text>` +
+      `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 14).toFixed(1)}" text-anchor="middle" font-size="9" fill="#475569">${esc(b.label ?? "")}</text>`;
+  });
+
+  const axis = `<line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="#334155" stroke-width="1.5"/>`;
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Histogram" style="background:white;max-width:100%;height:auto;border:1px solid #d7e2ed;border-radius:8px;padding:4px;">${axis}${rects}</svg>`;
+  return figureWrap(svg, cfg.title, cfg.caption);
+}
+
+function renderDotPlotSvg(cfg) {
+  const vals = Array.isArray(cfg.values) ? cfg.values.map(Number).filter(Number.isFinite) : [];
+  if (!vals.length) return "";
+  const min = Number(cfg.min ?? Math.min(...vals));
+  const max = Number(cfg.max ?? Math.max(...vals));
+  const W = 420,
+    H = 140,
+    padL = 28,
+    padR = 28,
+    baseY = 100;
+  const span = Math.max(1, max - min);
+  const plotW = W - padL - padR;
+  const xOf = (v) => padL + ((v - min) / span) * plotW;
+
+  const counts = {};
+  vals.forEach((v) => {
+    counts[v] = (counts[v] || 0) + 1;
+  });
+
+  let dots = "";
+  Object.entries(counts).forEach(([vStr, cnt]) => {
+    const v = Number(vStr);
+    const x = xOf(v);
+    for (let c = 0; c < cnt; c++) {
+      const y = baseY - 12 - c * 14;
+      dots += `<circle cx="${x.toFixed(1)}" cy="${y}" r="5" fill="${DATA_2}"/>`;
+    }
+  });
+
+  let ticks = "";
+  for (let v = min; v <= max; v++) {
+    const x = xOf(v);
+    ticks +=
+      `<line x1="${x.toFixed(1)}" y1="${baseY - 4}" x2="${x.toFixed(1)}" y2="${baseY + 4}" stroke="#334155" stroke-width="1.5"/>` +
+      `<text x="${x.toFixed(1)}" y="${baseY + 16}" text-anchor="middle" font-size="10" fill="#334155">${v}</text>`;
+  }
+
+  const axis = `<line x1="${padL - 6}" y1="${baseY}" x2="${W - padR + 6}" y2="${baseY}" stroke="#334155" stroke-width="2"/>`;
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Dot plot" style="background:white;max-width:100%;height:auto;border:1px solid #d7e2ed;border-radius:8px;padding:4px;">${axis}${ticks}${dots}</svg>`;
+  return figureWrap(svg, cfg.title, cfg.caption);
+}
+
+function renderBoxPlotSvg(cfg) {
+  const min = Number(cfg.min ?? 0);
+  const max = Number(cfg.max ?? 10);
+  const q1 = Number(cfg.q1 ?? min + (max - min) * 0.25);
+  const med = Number(cfg.median ?? min + (max - min) * 0.5);
+  const q3 = Number(cfg.q3 ?? min + (max - min) * 0.75);
+  const W = 420,
+    H = 110,
+    padL = 28,
+    padR = 28,
+    boxY = 28,
+    boxH = 36,
+    axisY = 82;
+  const span = Math.max(1, max - min);
+  const plotW = W - padL - padR;
+  const xOf = (v) => padL + ((v - min) / span) * plotW;
+
+  const box =
+    `<rect x="${xOf(q1).toFixed(1)}" y="${boxY}" width="${(xOf(q3) - xOf(q1)).toFixed(1)}" height="${boxH}" fill="rgba(15,138,132,0.18)" stroke="${DATA_1}" stroke-width="2"/>` +
+    `<line x1="${xOf(med).toFixed(1)}" y1="${boxY}" x2="${xOf(med).toFixed(1)}" y2="${boxY + boxH}" stroke="${DATA_2}" stroke-width="2.5"/>` +
+    `<line x1="${xOf(min).toFixed(1)}" y1="${boxY + boxH / 2}" x2="${xOf(q1).toFixed(1)}" y2="${boxY + boxH / 2}" stroke="#334155" stroke-width="1.5"/>` +
+    `<line x1="${xOf(q3).toFixed(1)}" y1="${boxY + boxH / 2}" x2="${xOf(max).toFixed(1)}" y2="${boxY + boxH / 2}" stroke="#334155" stroke-width="1.5"/>` +
+    `<line x1="${xOf(min).toFixed(1)}" y1="${boxY + 6}" x2="${xOf(min).toFixed(1)}" y2="${boxY + boxH - 6}" stroke="#334155" stroke-width="2"/>` +
+    `<line x1="${xOf(max).toFixed(1)}" y1="${boxY + 6}" x2="${xOf(max).toFixed(1)}" y2="${boxY + boxH - 6}" stroke="#334155" stroke-width="2"/>`;
+
+  let ticks = "";
+  const step = Math.max(1, Math.round((max - min) / 8));
+  for (let v = min; v <= max; v += step) {
+    const x = xOf(v);
+    ticks +=
+      `<line x1="${x.toFixed(1)}" y1="${axisY - 3}" x2="${x.toFixed(1)}" y2="${axisY + 3}" stroke="#64748b" stroke-width="1"/>` +
+      `<text x="${x.toFixed(1)}" y="${axisY + 14}" text-anchor="middle" font-size="9" fill="#64748b">${v}</text>`;
+  }
+  const axis = `<line x1="${padL}" y1="${axisY}" x2="${W - padR}" y2="${axisY}" stroke="#64748b" stroke-width="1.5"/>`;
+
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Box plot" style="background:white;max-width:100%;height:auto;border:1px solid #d7e2ed;border-radius:8px;padding:4px;">${box}${axis}${ticks}</svg>`;
+  return figureWrap(svg, cfg.title, cfg.caption);
+}
+
+function renderPercentGridSvg(cfg) {
+  const pct = Math.max(0, Math.min(100, Number(cfg.percent ?? cfg.value ?? 25)));
+  const size = 160,
+    pad = 10,
+    gridW = size - 2 * pad,
+    cell = gridW / 10;
+  let cells = "";
+  for (let r = 0; r < 10; r++) {
+    for (let c = 0; c < 10; c++) {
+      const idx = r * 10 + c;
+      const shaded = idx < pct;
+      const x = pad + c * cell,
+        y = pad + r * cell;
+      cells += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(cell - 1).toFixed(1)}" height="${(cell - 1).toFixed(1)}" fill="${shaded ? DATA_1 : "#f8fafc"}" stroke="#cbd5e1" stroke-width="0.5"/>`;
+    }
+  }
+  const svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="100-square grid with ${pct} squares shaded" style="background:white;border:1px solid #d7e2ed;border-radius:6px;padding:2px;">${cells}</svg>`;
+  return figureWrap(svg, cfg.title, cfg.caption);
+}
+
+function renderFractionModelSvg(cfg) {
+  const num = Number(cfg.numerator ?? 1);
+  const den = Math.max(1, Number(cfg.denominator ?? 4));
+  const W = 320,
+    H = 50,
+    pad = 8,
+    w = (W - 2 * pad) / den;
+  let parts = "";
+  for (let i = 0; i < den; i++) {
+    const x = pad + i * w;
+    const shaded = i < num;
+    parts += `<rect x="${x.toFixed(1)}" y="${pad}" width="${(w - 2).toFixed(1)}" height="${H - 2 * pad}" rx="3" fill="${shaded ? DATA_1 : "#f8fafc"}" stroke="#94a3b8" stroke-width="1.2"/>`;
+  }
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Fraction bar showing ${num} out of ${den} parts" style="background:white;max-width:100%;height:auto;border:1px solid #d7e2ed;border-radius:6px;">${parts}</svg>`;
+  return figureWrap(svg, cfg.title, cfg.caption);
+}
+
+function renderPolygonSvg(spec) {
+  const sides = Number(spec.sides || 6);
+  const size = 100,
+    c = size / 2,
+    r = c - 8;
+  const pt = (i) => {
+    const a = (2 * Math.PI * i) / sides - Math.PI / 2;
+    return [
+      Math.round((c + Math.cos(a) * r) * 10) / 10,
+      Math.round((c + Math.sin(a) * r) * 10) / 10,
+    ];
+  };
+  let wedges = "";
+  for (let i = 0; i < sides; i++) {
+    const [x1, y1] = pt(i),
+      [x2, y2] = pt(i + 1);
+    wedges += `<polygon points="${c},${c} ${x1},${y1} ${x2},${y2}" fill="${i % 2 === 0 ? "rgba(31,166,162,0.12)" : "rgba(31,166,162,0.06)"}" stroke="#0d9488" stroke-width="1.5"/>`;
+  }
+  const svg = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="Regular polygon with ${sides} sides" style="background:white;display:block;margin:4px auto;">${wedges}</svg>`;
+  return figureWrap(svg, spec.title, spec.caption);
+}
+
+function renderDataChipsHtml(cfg) {
+  const values = Array.isArray(cfg.values) ? cfg.values : [];
+  if (!values.length) return "";
+  const chips = values
+    .map(
+      (v) =>
+        `<span style="background:#eef6ff;border:1px solid #b9d5f7;border-radius:6px;padding:3px 8px;font-weight:700;font-size:12px;color:var(--navy);">${esc(v)}</span>`,
+    )
+    .join(" ");
+  return `<div style="margin:6px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">${cfg.title ? `<span style="font-weight:600;font-size:11px;color:var(--muted);">${esc(cfg.title)}:</span> ` : ""}${chips}</div>`;
+}
+
+function renderProblemDiagram(it) {
+  const d = it.diagram || it.visual || it.figure;
+  if (d && typeof d === "object") {
+    const kind = d.kind || d.type || "";
+    if (kind === "number-line" || kind === "numberLine") return renderNumberLineSvg(d);
+    if (kind === "coordinate-plane" || kind === "coord-plane" || kind === "coordPlane")
+      return renderCoordPlaneSvg(d);
+    if (kind === "tape-diagram" || kind === "tapeDiagram" || kind === "bar-model")
+      return renderTapeDiagramSvg(d);
+    if (kind === "factor-tree" || kind === "factorTree") return renderFactorTreeSvg(d);
+    if (kind === "histogram") return renderHistogramSvg(d);
+    if (kind === "bar-chart" || kind === "barChart") return renderBarChartSvg(d);
+    if (kind === "dot-plot" || kind === "dotPlot") return renderDotPlotSvg(d);
+    if (kind === "box-plot" || kind === "boxPlot") return renderBoxPlotSvg(d);
+    if (kind === "regular-polygon") return renderPolygonSvg(d);
+    if (kind === "percent-grid") return renderPercentGridSvg(d);
+    if (kind === "fraction-model" || kind === "area-model") return renderFractionModelSvg(d);
+    if (kind === "data-chips") return renderDataChipsHtml(d);
+  }
+  if (Array.isArray(it.points) && it.points.length && (it.min != null || it.max != null)) {
+    return renderNumberLineSvg({
+      min: it.min,
+      max: it.max,
+      step: it.step,
+      points: it.points,
+      title: it.figureTitle,
+    });
+  }
+  if (it.shape === "regular-polygon") {
+    return renderPolygonSvg(it);
+  }
+  return "";
+}
+
 /* ---------- helpers ------------------------------------------------------- */
 const esc = (s) =>
   String(s ?? "")
@@ -199,6 +654,7 @@ function renderGeneric(it, _n, key) {
 
 function renderProblem(it, n, { key = false, supported = false, commonMistake = "" } = {}) {
   if (!it || !it.type) return renderGeneric(it || {}, n, key);
+  const diagramHtml = renderProblemDiagram(it);
   let body;
   switch (it.type) {
     case "multiple-choice":
@@ -223,7 +679,7 @@ function renderProblem(it, n, { key = false, supported = false, commonMistake = 
     default:
       body = renderGeneric(it, n, key);
   }
-  return `<li class="ws-problem"><span class="ws-pnum">${n}</span><div class="ws-pbody">${body}</div></li>`;
+  return `<li class="ws-problem"><span class="ws-pnum">${n}</span><div class="ws-pbody">${diagramHtml}${body}</div></li>`;
 }
 
 /* deterministic shuffle (seedless but stable enough for print bank order) */
@@ -238,13 +694,20 @@ function shuffle(arr) {
 
 /* ---------- version + page builders -------------------------------------- */
 function wordBank(vocab = []) {
-  if (!vocab.length) return "";
+  if (!vocab || !vocab.length) return "";
   const chips = vocab
     .slice(0, 8)
-    .map((v) => `<span class="ws-bankword">${esc(v.term)}</span>`)
+    .map((v) => {
+      const en = esc(v.term || v.en || "");
+      const es = v.spanish || v.es || v.termEs || "";
+      const esBadge = es
+        ? ` <span class="ws-es-term" style="font-weight:500;color:var(--muted);font-style:italic">(${esc(es)})</span>`
+        : "";
+      return `<span class="ws-bankword">${en}${esBadge}</span>`;
+    })
     .join("");
   return `<section class="ws-bank">
-    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <h2 class="ws-bank-h">📕 Word Bank / Banco de Palabras</h2>
     <div class="ws-bankwords">${chips}</div>
   </section>`;
 }
@@ -270,14 +733,22 @@ function workedExample(cfg) {
 }
 
 function pageHeader(cfg, versionLabel, sub) {
+  const wbUrl = `/curriculum/math-workbench/?lesson=${esc(cfg.lessonId)}`;
   return `<header class="ws-head">
     <div class="ws-head-top">
       <span class="ws-std">${esc(cfg.standard || "")}</span>
       <span class="ws-ver">${esc(versionLabel)}</span>
     </div>
-    <h1 class="ws-title">${esc(cfg.title || cfg.lessonId || "Practice")}</h1>
-    <p class="ws-sub">${esc(sub)}</p>
-    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+    <div class="ws-title-row" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
+      <div>
+        <h1 class="ws-title">${esc(cfg.title || cfg.lessonId || "Practice")}</h1>
+        <p class="ws-sub">${esc(sub)}</p>
+      </div>
+      <div class="ws-digital-badge" style="background:#eef6ff;border:1px solid #c7dcf7;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;color:var(--blue);">
+        <span aria-hidden="true">⚡</span> <a href="${wbUrl}" target="_blank" rel="noopener" style="color:var(--blue);text-decoration:none;"><b>Interactive Workbench &amp; Models</b> &rarr;</a>
+      </div>
+    </div>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span><span>Period: <span class="ws-fill ws-fill-sm" style="width:70px"></span></span></div>
   </header>`;
 }
 
@@ -344,9 +815,7 @@ function buildWorksheet(cfg, { key = false } = {}) {
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${title} — ${titleSuffix}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="/assets/fonts/worksheet-pages.css" rel="stylesheet" />
 <style>
 :root{
   --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
@@ -409,11 +878,14 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
 .ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
 .ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+.ws-figure-wrap{margin:10px auto;max-width:100%;display:flex;flex-direction:column;align-items:center;}
+.ws-figure-wrap svg{max-width:100%;height:auto;}
 
 @media print{
   body{background:#fff;font-size:12pt;}
   .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
   .ws-page:last-child{page-break-after:auto;}
+  .ws-digital-badge{background:transparent !important;border:none !important;padding:0 !important;}
   @page{margin:1.5cm;}
   a{color:#000;}
 }

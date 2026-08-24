@@ -1,6 +1,11 @@
 import { downloadWeekCalendar } from "./calendar-event.js";
 import { translationsEs } from "./shared/copy-defaults.js";
-import { createDefaultSnapshot, resolveSection, safeExternalUrl } from "./shared/model.js";
+import {
+  createDefaultSnapshot,
+  resolveSection,
+  safeExternalUrl,
+  weekNote,
+} from "./shared/model.js";
 import {
   familyWeekShare,
   familyWeekSpeech,
@@ -10,6 +15,7 @@ import {
   renderSectionOptions,
   renderSpotlight,
   renderWeek,
+  renderWeekPractice,
   renderWeekVocab,
 } from "./shared/render.js";
 
@@ -91,8 +97,25 @@ function isConfiguredDestination(value) {
   return url.pathname !== "/" || Boolean(url.search || url.hash);
 }
 
+// Practice tied to the posted week. The teacher publishes the calendar; this is
+// the same set families see on the day cards, surfaced as full practice cards.
+function renderPostedPractice(lang) {
+  return renderWeekPractice(
+    byId("week-practice"),
+    byId("week-practice-grid"),
+    state.snapshot,
+    state.lessons,
+    state.snapshot.homeworkOverrides,
+    state.sectionId,
+    lang,
+  );
+}
+
 function renderHomeworkLibrary(resetLimit = false) {
   if (resetLimit) state.visibleHomework = 12;
+  const lang = state.preferences.language;
+  const es = lang === "es";
+  const postedCount = renderPostedPractice(lang);
   const result = renderHomework(
     byId("homework-grid"),
     state.lessons,
@@ -101,12 +124,25 @@ function renderHomeworkLibrary(resetLimit = false) {
       query: byId("homework-search").value,
       unit: byId("unit-filter").value,
       limit: state.visibleHomework,
+      lang,
     },
   );
   const hasFilters = Boolean(byId("homework-search").value.trim() || byId("unit-filter").value);
-  byId("homework-count").textContent = hasFilters
-    ? `${result.filtered.length} matching lessons`
-    : `${result.all.length} lessons available`;
+  const chip = byId("homework-count");
+  if (hasFilters) {
+    chip.textContent = es
+      ? `${result.filtered.length} lecciones coinciden`
+      : `${result.filtered.length} matching lessons`;
+  } else if (postedCount) {
+    const plural = postedCount === 1 ? "" : "s";
+    chip.textContent = es
+      ? `${postedCount} ${postedCount === 1 ? "lección publicada" : "lecciones publicadas"} esta semana`
+      : `${postedCount} lesson${plural} posted this week`;
+  } else {
+    chip.textContent = es
+      ? `${result.all.length} lecciones disponibles`
+      : `${result.all.length} lessons available`;
+  }
   byId("clear-homework-filters").hidden = !hasFilters;
   byId("load-more").hidden = result.visible >= result.filtered.length;
 }
@@ -122,7 +158,7 @@ function renderExperience() {
   renderSpotlight(byId("week-spotlight"), state.snapshot, state.lessons, state.sectionId, lang);
   renderWeekVocab(byId("week-vocab"), state.snapshot, state.lessons, state.sectionId, lang);
   byId("published-week-label").textContent = section.week.label;
-  byId("published-week-note").textContent = section.week.note;
+  byId("published-week-note").textContent = weekNote(section.week, lang);
   renderFreshness();
   updateWeekActions(section, lang);
   renderAnnouncements(byId("family-announcements"), byId("announcement-grid"), state.snapshot);
@@ -276,7 +312,7 @@ function bindEvents() {
     window.speechSynthesis.cancel();
     const es = state.preferences.language === "es";
     const utterance = new SpeechSynthesisUtterance(
-      familyWeekSpeech(state.snapshot, state.lessons, state.sectionId),
+      familyWeekSpeech(state.snapshot, state.lessons, state.sectionId, es ? "es" : "en"),
     );
     utterance.lang = es ? "es-US" : "en-US";
     const voice = pickVoice(es ? "es" : "en");
@@ -302,6 +338,7 @@ function bindEvents() {
   });
   bindWeekActions();
   bindPulse();
+  bindPracticeSignal();
   bindScrollSpy();
 }
 
@@ -318,6 +355,25 @@ function bindWeekActions() {
       // Parent dismissed the share sheet — nothing to do.
     }
   });
+}
+
+/* Which entry point families actually use. The beacon is aggregate-only and
+ * inherits nt-usage's do-not-track and teacher-mode guards; without it there is
+ * no way to tell whether posting the week moved practice opens at all. */
+function bindPracticeSignal() {
+  document.addEventListener(
+    "click",
+    (event) => {
+      const trigger = event.target.closest?.("[data-practice-open]");
+      if (!trigger) return;
+      try {
+        window.NTUsage?.reportPractice?.(trigger.dataset.lessonId, trigger.dataset.practiceOpen);
+      } catch {
+        // Measurement must never stand between a family and the practice.
+      }
+    },
+    { capture: true },
+  );
 }
 
 function bindPulse() {

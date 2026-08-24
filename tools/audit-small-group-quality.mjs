@@ -71,13 +71,27 @@ function itemText(it) {
 }
 
 function demand(it) {
-  // The authored item TYPE is the strongest signal there is — it is a decision
-  // someone made about the task, not an inference from its wording.
+  // An explicit `demand` on the item is the strongest signal there is — a
+  // decision someone made about the task, not an inference from its wording.
+  // It exists because the TYPE could not carry that decision: of the four type
+  // families this used to read, three name types the engine cannot render.
+  // engine/core renders exactly twelve — multiple-choice, open-response,
+  // error-analysis, drag-sort, fill-table, matching-game, number-line,
+  // bar-model, balance-scale, coordinate-grid, net-folder, fraction-bars — and
+  // no config anywhere uses strategy-compare, always-sometimes-never,
+  // conjecture, transfer or apply-new, because authoring one would render
+  // nothing. So `error-analysis` was the only type branch that could ever fire,
+  // and every other deep item had to be caught by phrase matching or missed.
+  // That is why thirty challenge lessons read as 77–92% procedural while
+  // carrying items that ask a student to compare two classmates' estimates or
+  // justify whether an answer lands high or low. Depth the author intended is
+  // now sayable: set `demand` and this stops guessing.
+  const declared = String(it.demand || "").toLowerCase();
+  if (/^(reasoning|generalization|strategic|transfer|conceptual|procedural)$/.test(declared))
+    return declared;
+
   const t = String(it.type || "").toLowerCase();
   if (/error-analysis|critique/.test(t)) return "reasoning";
-  if (/always-sometimes-never|conjecture|generaliz/.test(t)) return "generalization";
-  if (/strategy-compare|compare-strategies|multiple-solution/.test(t)) return "strategic";
-  if (/transfer|apply-new/.test(t)) return "transfer";
 
   const s = itemText(it);
   if (
@@ -194,11 +208,25 @@ function auditOne(id, cfg, fac, coreCfg) {
     // How many lessons this one reviews. Catch-up objectives name a range
     // ("Lessons 6.4–6.15"); everything else reviews itself.
     lessonsCovered: (() => {
-      const m = /Lessons?\s*([\d.]+)\s*[–-]\s*([\d.]+)/.exec(cfg.contentObjective || "");
-      if (!m) return 1;
-      const a = Number(String(m[1]).split(".")[1]);
-      const b = Number(String(m[2]).split(".")[1]);
-      return Number.isFinite(a) && Number.isFinite(b) ? Math.max(1, b - a + 1) : 1;
+      const objective = cfg.contentObjective || "";
+      const m = /Lessons?\s*([\d.]+)\s*[–-]\s*([\d.]+)/.exec(objective);
+      if (m) {
+        const a = Number(String(m[1]).split(".")[1]);
+        const b = Number(String(m[2]).split(".")[1]);
+        if (Number.isFinite(a) && Number.isFinite(b)) return Math.max(1, b - a + 1);
+      }
+      // Catch-up objectives come in TWO shapes, and reading only the first one
+      // is what made this number lie. A contiguous block writes a range
+      // ("Lessons 2.4–2.12"); a block with holes in it writes the list
+      // ("Lessons 2.2 · 2.4 · 2.5 · 2.10"). The range-only regex returned 1 for
+      // every list, so sixteen catch-ups were divided by one instead of by the
+      // three or four lessons they actually review, and every one of them was
+      // reported as carrying twenty-odd items for a single lesson. They sit at
+      // 6.3–7.0 items per reviewed lesson — inside the fleet's uniform band.
+      // A finding that lands on 16 of 36 lessons is a detector bug; this was.
+      const list = /Lessons\s+((?:\d+\.\d+\s*(?:·|,|&|and)\s*)+\d+\.\d+)/.exec(objective);
+      const named = list ? list[1].match(/\d+\.\d+/g) : null;
+      return named && named.length > 1 ? named.length : 1;
     })(),
     demand: {
       procedural: tally("procedural"),

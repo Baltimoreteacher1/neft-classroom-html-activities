@@ -49,7 +49,7 @@ function injectVocabExploreTaskStyles() {
       margin: 0;
       font-family: var(--font-display);
       font-size: 0.95rem;
-      font-weight: 700;
+      font-weight: 600;
       color: var(--muted, #6b7280);
       list-style: none;
       padding: 0;
@@ -74,7 +74,7 @@ function injectVocabExploreTaskStyles() {
     }
     .vet-crumb-sep {
       color: var(--line, #cbd5e1);
-      font-weight: 800;
+      font-weight: 700;
     }
 
     /* Mobile Yes/No layout aid (not motion): on narrow screens the Yes/No pair
@@ -273,14 +273,14 @@ export function bilingualTermEl(term) {
   wrap.style.cssText = "text-align:center;";
   const en = document.createElement("div");
   en.style.cssText =
-    "font-family:var(--font-display); font-weight:800; font-size:1.5rem; color:var(--navy); line-height:1.2;";
+    "font-family:var(--font-display); font-weight:700; font-size:1.5rem; color:var(--navy); line-height:1.2;";
   en.textContent = term.term;
   wrap.append(en);
   if (term.termEs) {
     const es = document.createElement("div");
     es.lang = "es";
     es.style.cssText =
-      "font-style:italic; font-weight:600; font-size:1.05rem; color:var(--teal-ink); margin-top:2px;";
+      "font-style:italic; font-weight:500; font-size:1.05rem; color:var(--teal-ink); margin-top:2px;";
     es.textContent = term.termEs;
     wrap.append(es);
   }
@@ -323,7 +323,7 @@ function stepCard(heading, badge) {
   const h = document.createElement("h4");
   h.style.cssText = `
     margin:0; display:flex; align-items:center; gap:var(--sp-2);
-    font-family:var(--font-display); font-weight:800; font-size:1rem; color:var(--navy);`;
+    font-family:var(--font-display); font-weight:700; font-size:1rem; color:var(--navy);`;
   h.innerHTML = `<span aria-hidden="true">${escapeHtml(badge)}</span><span>${escapeHtml(heading)}</span>`;
   card.append(h);
   return card;
@@ -365,7 +365,7 @@ function feedbackLine() {
   p.setAttribute("role", "status");
   p.setAttribute("aria-live", "polite");
   p.style.cssText =
-    "margin:0; min-height:1.4em; font-size:1.02rem; font-weight:600; line-height:1.5;";
+    "margin:0; min-height:1.4em; font-size:1.02rem; font-weight:500; line-height:1.5;";
   return p;
 }
 
@@ -714,13 +714,13 @@ export function buildConfirmation(term) {
     border:2px solid var(--teal); animation:phaseIn 0.3s var(--ease-out) both;`;
   const en = document.createElement("div");
   en.style.cssText =
-    "font-family:var(--font-display); font-weight:800; font-size:1.1rem; color:var(--navy);";
+    "font-family:var(--font-display); font-weight:700; font-size:1.1rem; color:var(--navy);";
   en.textContent = `🎉 You explored: ${term.term}!`;
   box.append(en);
   if (term.termEs) {
     const es = document.createElement("div");
     es.lang = "es";
-    es.style.cssText = "font-style:italic; color:var(--teal-ink); font-weight:600; margin-top:2px;";
+    es.style.cssText = "font-style:italic; color:var(--teal-ink); font-weight:500; margin-top:2px;";
     es.textContent = `¡Exploraste: ${term.termEs}!`;
     box.append(es);
   }

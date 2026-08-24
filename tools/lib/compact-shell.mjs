@@ -19,11 +19,9 @@ export function shellHtml(id, label, desc) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="${desc}" />
     <title>${label} — Neft Teacher</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       id="sg-fonts"
-      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@700;800;900&display=swap"
+      href="/assets/fonts/lesson-group.css"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/assets/learning-supports/learning-supports.css?v=${SUPPORTS_V}" />

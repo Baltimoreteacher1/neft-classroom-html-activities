@@ -41,13 +41,13 @@ export function openVocabPopOut(t) {
     <div class="vocab-popout-content" style="max-width: 680px; width: 100%; margin: auto; flex: 0 0 auto; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.6); cursor: default; border: 2.5px solid #cbd5e1;" onclick="event.stopPropagation()">
       <div style="background: linear-gradient(135deg, #0f2b48 0%, #134074 100%); padding: 22px 26px; color: #ffffff; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
         <div>
-          <div style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; color: #38bdf8; margin-bottom: 4px;">📖 Math Vocabulary Pop-Out</div>
-          <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.75rem; font-weight: 900; margin: 0; line-height: 1.2;">
+          <div style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #38bdf8; margin-bottom: 4px;">📖 Math Vocabulary Pop-Out</div>
+          <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.75rem; font-weight: 800; margin: 0; line-height: 1.2;">
             ${_esc(term)}
-            ${termEs ? `<span style="font-size: 1.1rem; font-weight: 700; color: #93c5fd; margin-left: 8px;">(${_esc(termEs)})</span>` : ""}
+            ${termEs ? `<span style="font-size: 1.1rem; font-weight: 600; color: #93c5fd; margin-left: 8px;">(${_esc(termEs)})</span>` : ""}
           </h2>
         </div>
-        <button type="button" class="vocab-popout-speech-btn" style="padding: 8px 18px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.18); color: #ffffff; font-weight: 800; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+        <button type="button" class="vocab-popout-speech-btn" style="padding: 8px 18px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.18); color: #ffffff; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; gap: 6px;">
           🔊 Listen
         </button>
       </div>
@@ -60,8 +60,8 @@ export function openVocabPopOut(t) {
 
         <!-- ENGLISH DEFINITION -->
         <div style="background: #f8fbff; border: 1.5px solid #cbd5e1; border-left: 5px solid #0369a1; border-radius: 14px; padding: 16px 18px; margin-bottom: 14px;">
-          <div style="font-size: 0.95rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: #0369a1; margin-bottom: 4px;">🇺🇸 English Definition</div>
-          <div style="font-size: 1.1rem; font-weight: 700; color: #0f172a; line-height: 1.55;">${_esc(defEn)}</div>
+          <div style="font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #0369a1; margin-bottom: 4px;">🇺🇸 English Definition</div>
+          <div style="font-size: 1.1rem; font-weight: 600; color: #0f172a; line-height: 1.55;">${_esc(defEn)}</div>
         </div>
 
         <!-- SPANISH DEFINITION -->
@@ -69,8 +69,8 @@ export function openVocabPopOut(t) {
           defEs
             ? `
         <div style="background: #fffdf5; border: 1.5px solid #fed7aa; border-left: 5px solid #ea580c; border-radius: 14px; padding: 16px 18px; margin-bottom: 14px;">
-          <div style="font-size: 0.95rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: #c2410c; margin-bottom: 4px;">🇲🇽 Definición en Español</div>
-          <div style="font-size: 1.1rem; font-weight: 700; color: #431407; line-height: 1.55;">${_esc(defEs)}</div>
+          <div style="font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #c2410c; margin-bottom: 4px;">🇲🇽 Definición en Español</div>
+          <div style="font-size: 1.1rem; font-weight: 600; color: #431407; line-height: 1.55;">${_esc(defEs)}</div>
         </div>`
             : ""
         }
@@ -80,14 +80,14 @@ export function openVocabPopOut(t) {
           example
             ? `
         <div style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-left: 5px solid #16a34a; border-radius: 14px; padding: 14px 18px; margin-bottom: 18px;">
-          <div style="font-size: 0.95rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; color: #15803d; margin-bottom: 4px;">💡 Example & Visual Note</div>
-          <div style="font-size: 1.02rem; font-weight: 600; color: #14532d; line-height: 1.5;">${_esc(example)}</div>
+          <div style="font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #15803d; margin-bottom: 4px;">💡 Example & Visual Note</div>
+          <div style="font-size: 1.02rem; font-weight: 500; color: #14532d; line-height: 1.5;">${_esc(example)}</div>
         </div>`
             : ""
         }
 
         <div style="text-align: center; margin-top: 20px;">
-          <button type="button" class="vocab-popout-close-btn" style="padding: 12px 36px; border-radius: 999px; border: none; background: #0f172a; color: #ffffff; font-weight: 800; font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.25);">
+          <button type="button" class="vocab-popout-close-btn" style="padding: 12px 36px; border-radius: 999px; border: none; background: #0f172a; color: #ffffff; font-weight: 700; font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.25);">
             ✕ Close
           </button>
         </div>

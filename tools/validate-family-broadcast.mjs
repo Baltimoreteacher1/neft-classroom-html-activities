@@ -67,9 +67,15 @@ const {
 // when someone has authored the family-facing half of each new tag. Bumping it
 // to silence a failure is how a tag ships with a teacher label and no
 // kitchen-table activity for the family who gets the broadcast.
-if (canonicalTags.length !== 37) {
+// Bumped 37 → 42 on 2026-08-23 for the five CONCEPTUAL tags
+// (factors-multiples-confused, property-order-vs-grouping,
+// factorization-stopped-early, stat-question-no-variability,
+// ratio-compared-without-common-basis). Each was authored with its own family
+// label AND its own kitchen-table activity before this number moved, which is
+// the only reason moving it is legitimate.
+if (canonicalTags.length !== 42) {
   fail(
-    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 37 — update this validator deliberately, not by accident`,
+    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 42 — update this validator deliberately, not by accident`,
   );
 }
 

@@ -143,6 +143,11 @@ const lc1 = (s) => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
 
 // Strip artifacts irrelevant to a 20-min screen pull-out.
 function stripHeavy(out) {
+  // Core notebook checkpoints target the whole-group renderer; the six-tab
+  // small-group renderer has no checkpoint surface, so a cloned `notebook`
+  // block would be an inert declaration (validate:notebook-checkpoints FAILs
+  // on exactly this). Strip it until that surface exists.
+  delete out.notebook;
   delete out.googleForms;
   delete out.printables;
   delete out.graphicNovel;
@@ -172,6 +177,46 @@ function uniquePractice(...tiers) {
     seen.add(key);
     return true;
   });
+}
+
+// Build-not-select practice: the widget types the small-group flow renders
+// (small-group-practice.js interleaves them; small-group-labs.js loads them).
+const CONSTRUCTIVE = new Set([
+  "drag-sort",
+  "fill-table",
+  "matching-game",
+  "number-line",
+  "coordinate-grid",
+  "balance-scale",
+  "bar-model",
+]);
+
+/** Take up to `cap` items, reserving room for constructive (hands-on) work.
+ *
+ * preferRich sorts every widget BEHIND the rich answer-entry types, and the
+ * old bare `.slice(0, 12)` then cut them all off whenever a base lesson had
+ * 12+ rich items — 26 of 168 small-group lessons ended up with NOTHING to
+ * build (8-5/8-6 at the extreme: 20 answer-entry items, zero manipulatives),
+ * even though their core lessons author fill-table, drag-sort AND
+ * balance-scale. The core lessons were never at fault; the slice was.
+ *
+ * This keeps the rich-first order the compact renderer expects, but holds
+ * `reserve` seats for the first constructive items, exactly as many as the
+ * base lesson actually offers — a lesson with none is unchanged. */
+function takeBalanced(ordered, cap = 12, reserve = 2) {
+  const constructive = ordered.filter((item) => CONSTRUCTIVE.has(item.type));
+  const keepC = constructive.slice(0, reserve);
+  if (!keepC.length) return ordered.slice(0, cap);
+  const keepSet = new Set(keepC);
+  const rest = ordered.filter((item) => !keepSet.has(item)).slice(0, cap - keepC.length);
+  // The constructive seats live at the END OF THE FIRST SIX, not the tail.
+  // Both builders slice this list positionally, and both slices are hostile
+  // to a tail: group1 replaces `practice.slice(6)` wholesale when a lesson
+  // has an authored bank (which would silently delete a tail reserve — that
+  // is exactly how the first version of this fix failed on 1-1-group1), and
+  // group2 keeps only slice(0, 4) + extending. Seats 5–6 survive both.
+  const head = Math.max(0, Math.min(6, cap / 2) - keepC.length);
+  return [...rest.slice(0, head), ...keepC, ...rest.slice(head)];
 }
 
 function extractFacilitation(config) {
@@ -312,12 +357,9 @@ function buildGroup1(base, u, m) {
   };
 
   const p = base.practice || {};
-  const practice = uniquePractice(
-    p.approaching || [],
-    p.onLevel || [],
-    p.optional || [],
-    p.extending || [],
-  ).slice(0, 12);
+  const practice = takeBalanced(
+    uniquePractice(p.approaching || [], p.onLevel || [], p.optional || [], p.extending || []),
+  );
   out.practice = {
     // The base lesson's interactive practice lab (factor-tree, area-morph,
     // equation-balance-lab, …). small-group-renderer.js already mounts
@@ -413,6 +455,10 @@ function buildGroup2(base, u, m) {
 
   const ci = clone(base.launch?.conceptIntro || {});
   const p = base.practice || {};
+  // Group 1's frames rehearse the STEPS ("My first step is ___"). This group's
+  // languageObjective is to justify to a skeptic and name the method's limits,
+  // so its frame asks for the reason and the boundary instead.
+  const proveFrame = "My method works because ___ . It would stop working if ___ .";
 
   out.launch = out.launch || {};
   out.launch.badge = "Small Group · Challenge";
@@ -428,29 +474,72 @@ function buildGroup2(base, u, m) {
     keyIdea: ci.keyIdea
       ? `${String(ci.keyIdea).replace(/[.\s]+$/, "")} — and you can say why it is true, and where it would stop being true.`
       : "You can say why today's idea is true, and where it would stop being true.",
-    // The Build step is a quick warm-up; the real challenge — generalizing,
-    // justifying, and defending — lives in the guided "Prove It" tab (see
-    // engine/core/small-group-innovation.js).
     iDo: ci.iDo || { title: "Start from the answer", lines: [] },
+    // Group 2 used to STOP after "Watch me". The reasoning was that the real
+    // challenge — generalizing, justifying, defending — lives in the guided
+    // Prove-It tab, which is true; but it left the Build card with no gradual
+    // release at all, so a challenge student went straight from watching
+    // someone else work to working alone. Group 1 gets watch → try together →
+    // try with support; group 2 got watch → nothing (Joel, 2026-08-23).
+    //
+    // Nothing here is newly authored mathematics. The try-together turn IS the
+    // lesson's own guided example — the same verified lines group 1 gets, and
+    // the same lines the deck projects — and the two turns after it introduce
+    // no numbers at all, because a challenge group's extension is
+    // justification, not bigger arithmetic. Deliberately no reference to "the
+    // picture" or to anything positioned on the card: validate:concept-intro
+    // fails a Build line that names an artifact the card does not render.
+    weDo: {
+      title: "Try it together — then prove it",
+      lines: [
+        ...(ci.weDo?.lines || []),
+        "Now prove it: say why that move had to work at all — not just that it did.",
+        `Sentence frame — convince a skeptic: "${proveFrame}"`,
+      ],
+    },
+    youDo: {
+      title: "Now you try — and defend it",
+      lines: [
+        "Try the problems below on your own. Getting the answer is half the work — be ready to say why your method works, and where it would stop working.",
+        // Quotes nothing. Group 1's hand-off restates the key idea, which is
+        // right when the risk is forgetting the method; this group's stated
+        // language objective is to connect the method to a SECOND strategy or
+        // representation, so its hand-off asks for that instead. Quoting
+        // keyIdea here would also drift: the group-2 keyIdea is built above
+        // with a suffix, so a graft and a full regeneration would disagree.
+        "Then pick one problem and show it a second way. If two different methods agree, that agreement is your proof.",
+      ],
+    },
   };
 
   // Inherited core items first, then the authored challenge layer. A challenge
   // group has already mastered the core target, so re-serving core items alone
   // makes the extension "the same questions again" — see
   // tools/lib/small-group-challenge-tasks.mjs for what is authored and why.
-  const inherited = uniquePractice(
+  const inheritedAll = uniquePractice(
     p.onLevel || [],
     p.extending || [],
     p.optional || [],
     p.approaching || [],
-  ).slice(0, 12);
+  );
+  const inherited = takeBalanced(inheritedAll);
   const challenge = applyChallengeTasks(id, inherited);
-  if (challenge.unmatchedDrops.length) {
-    // A drop fragment matching nothing means the core item was reworded, so this
-    // lesson is now serving an item the author decided to remove. Fail loudly:
-    // silence here quietly restores arithmetic filler to a challenge group.
+  // A drop fragment can miss for two very different reasons. If it matches an
+  // item in the UNCAPPED inherited list, the cap already evicted that item —
+  // the author wanted it gone and it is gone, nothing to report. Only a
+  // fragment matching nothing anywhere means the core item was reworded, so
+  // this lesson is now serving an item the author decided to remove. Fail
+  // loudly there: silence would quietly restore arithmetic filler to a
+  // challenge group.
+  const trulyUnmatched = challenge.unmatchedDrops.filter(
+    (fragment) =>
+      !inheritedAll.some((it) =>
+        `${it.stem || ""} ${it.title || ""}`.toLowerCase().includes(fragment.toLowerCase()),
+      ),
+  );
+  if (trulyUnmatched.length) {
     throw new Error(
-      `${id}: challenge-task drop fragment matched no item — ${challenge.unmatchedDrops.join("; ")}`,
+      `${id}: challenge-task drop fragment matched no item — ${trulyUnmatched.join("; ")}`,
     );
   }
   const practice = challenge.items;

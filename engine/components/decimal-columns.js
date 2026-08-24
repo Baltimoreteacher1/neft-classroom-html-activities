@@ -77,10 +77,10 @@ function ensureStyles() {
   s.textContent = `
   .dccols-wrap{margin:var(--sp-3,12px) 0;display:flex;flex-direction:column;align-items:center;
     font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
-  .dccols-title{font-weight:800;color:${C.navy};margin-bottom:4px;font-size:1rem;text-align:center;}
+  .dccols-title{font-weight:700;color:${C.navy};margin-bottom:4px;font-size:1rem;text-align:center;}
   .dccols-hint{font-size:.82rem;color:${C.muted};margin-bottom:10px;text-align:center;max-width:360px;line-height:1.4;}
   .dccols-presets{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:12px;}
-  .dccols-chip{padding:5px 13px;font:inherit;font-size:.85rem;font-weight:700;color:${C.navy};background:#f4f8ff;
+  .dccols-chip{padding:5px 13px;font:inherit;font-size:.85rem;font-weight:600;color:${C.navy};background:#f4f8ff;
     border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;}
   .dccols-chip:hover{background:#e2ecff;border-color:${C.accent};}
   .dccols-chip[aria-pressed="true"]{background:${C.accent};color:#fff;border-color:${C.accent};}
@@ -89,14 +89,14 @@ function ensureStyles() {
   .dccols-grid{display:inline-block;font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;}
   .dccols-row{display:flex;justify-content:flex-end;align-items:flex-end;}
   .dccols-cell{width:2.2em;height:2.2em;display:flex;align-items:center;justify-content:center;
-    font-size:1.5rem;font-weight:800;color:${C.navy};}
+    font-size:1.5rem;font-weight:700;color:${C.navy};}
   .dccols-cell.op{color:${C.muted};}
   .dccols-cell.point{width:.9em;color:${C.navy};}
   .dccols-cell.pad{color:#9fb2c6;}          /* zero-padded place with no original digit */
   .dccols-rule{border-top:3px solid ${C.navy};margin:4px 0 6px;width:100%;}
   /* regroup / carry row sits above, in a smaller amber cell */
   .dccols-row-rg .dccols-cell{height:1.5em;}
-  .dccols-rg{width:1.6em;height:1.5em;text-align:center;font:inherit;font-size:.95rem;font-weight:800;
+  .dccols-rg{width:1.6em;height:1.5em;text-align:center;font:inherit;font-size:.95rem;font-weight:700;
     color:${C.carryInk};border:1.5px dashed #e6c98a;border-radius:6px;background:${C.carryBg};padding:0;box-sizing:border-box;
     -moz-appearance:textfield;}
   .dccols-rg::-webkit-outer-spin-button,.dccols-rg::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
@@ -104,7 +104,7 @@ function ensureStyles() {
   .dccols-rg:focus-visible{outline:none;border-color:${C.carryInk};box-shadow:0 0 0 3px rgba(138,88,0,.14);}
   .dccols-rg.correct{border-style:solid;border-color:${C.teal};background:${C.tealFill};color:${C.tealInk};}
   .dccols-rg.wrong{border-style:solid;border-color:${C.wrong};background:#fdeceb;color:${C.wrong};}
-  .dccols-inp{width:1.9em;height:1.9em;text-align:center;font:inherit;font-size:1.5rem;font-weight:800;
+  .dccols-inp{width:1.9em;height:1.9em;text-align:center;font:inherit;font-size:1.5rem;font-weight:700;
     color:${C.ink};border:2px solid ${C.line};border-radius:8px;background:#fbfcfe;padding:0;box-sizing:border-box;
     -moz-appearance:textfield;}
   .dccols-inp::-webkit-outer-spin-button,.dccols-inp::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
@@ -114,16 +114,16 @@ function ensureStyles() {
   @keyframes dccols-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
   @media (prefers-reduced-motion:reduce){.dccols-inp.wrong{animation:none;}}
   .dccols-controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px;}
-  .dccols-btn{font:inherit;font-weight:700;font-size:.88rem;border-radius:999px;padding:8px 18px;cursor:pointer;
+  .dccols-btn{font:inherit;font-weight:600;font-size:.88rem;border-radius:999px;padding:8px 18px;cursor:pointer;
     border:2px solid transparent;}
   .dccols-btn-check{background:${C.accent};color:#fff;}
   .dccols-btn-check:hover{filter:brightness(1.06);}
   .dccols-btn:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .dccols-btn-ghost{background:#fff;color:${C.navy};border-color:${C.line};}
-  .dccols-status{min-height:1.2em;margin-top:10px;font-size:.9rem;font-weight:700;text-align:center;max-width:380px;line-height:1.4;}
+  .dccols-status{min-height:1.2em;margin-top:10px;font-size:.9rem;font-weight:600;text-align:center;max-width:380px;line-height:1.4;}
   .dccols-status.ok{color:${C.teal};}
   .dccols-status.no{color:${C.wrong};}
-  .dccols-result{margin-top:8px;font-size:1.05rem;font-weight:900;color:${C.teal};text-align:center;}
+  .dccols-result{margin-top:8px;font-size:1.05rem;font-weight:800;color:${C.teal};text-align:center;}
   `;
   document.head.appendChild(s);
 }

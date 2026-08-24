@@ -31,6 +31,7 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { skipExit } from "../tools/lib/skip-exit.mjs";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const AS_JSON = process.argv.includes("--json");
@@ -168,7 +169,8 @@ if (rows === null) {
   if (AS_JSON) console.log(JSON.stringify({ ok: false, reason: "d1-unreachable" }, null, 2));
   else
     console.log("audit-score-writers: could not reach D1 (offline or unauthenticated) — skipped.");
-  process.exit(0);
+  // A SKIP, not a pass: no score writer was audited on this run.
+  process.exit(skipExit("D1 is unreachable (offline or unauthenticated)"));
 }
 
 const wrote = new Map(rows.map((r) => [String(r.game_id), r]));

@@ -42,7 +42,7 @@ async function launchAR(shape) {
     <div style="position:absolute; top:12px; left:50%; transform:translateX(-50%); background:rgba(18,53,91,.82); color:#fff; padding:8px 16px; border-radius:999px; font-size:.9rem; pointer-events:none;">
       Point at a flat surface, then tap to place the shape
     </div>
-    <button class="ar-solid-exit" style="position:absolute; top:12px; right:12px; pointer-events:auto; background:#fff; color:#12355b; border:0; border-radius:999px; width:44px; height:44px; font-size:1.2rem; font-weight:800; box-shadow:0 2px 8px rgba(0,0,0,.3);" aria-label="Exit augmented reality">✕</button>`;
+    <button class="ar-solid-exit" style="position:absolute; top:12px; right:12px; pointer-events:auto; background:#fff; color:#12355b; border:0; border-radius:999px; width:44px; height:44px; font-size:1.2rem; font-weight:700; box-shadow:0 2px 8px rgba(0,0,0,.3);" aria-label="Exit augmented reality">✕</button>`;
   document.body.appendChild(overlay);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -151,7 +151,7 @@ export async function mountARButton(container, { shape = "cube", label } = {}) {
   btn.className = "ar-solid-launch";
   btn.textContent = `📱 View ${label || "it"} in your space`;
   btn.style.cssText =
-    "display:inline-flex; align-items:center; gap:8px; margin-top:10px; padding:10px 16px; min-height:44px; background:var(--navy,#12355b); color:#fff; border:0; border-radius:12px; font-weight:700; font-size:.95rem; cursor:pointer;";
+    "display:inline-flex; align-items:center; gap:8px; margin-top:10px; padding:10px 16px; min-height:44px; background:var(--navy,#12355b); color:#fff; border:0; border-radius:12px; font-weight:600; font-size:.95rem; cursor:pointer;";
   btn.addEventListener("click", async () => {
     btn.disabled = true;
     const original = btn.textContent;

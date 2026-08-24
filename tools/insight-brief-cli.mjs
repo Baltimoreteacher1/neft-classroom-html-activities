@@ -15,6 +15,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { skipExit } from "./lib/skip-exit.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -39,7 +40,9 @@ if (!key) {
   console.log(
     "insight-brief-cli: no teacher key (set NEFT_TEACHER_KEY or ~/.config/neft/teacher-key) — skipping.",
   );
-  process.exit(0);
+  // SKIP, not PASS: no brief was produced. Exit 3 keeps a caller (a cron, a
+  // gate) from reading "nothing happened" as "everything is fine".
+  process.exit(skipExit("no teacher key is available"));
 }
 
 // Engine + lesson registry (browser globals shimmed for node).

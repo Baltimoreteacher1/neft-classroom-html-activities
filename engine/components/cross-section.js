@@ -304,7 +304,7 @@ export function renderCrossSection(
   const control = document.createElement("div");
   control.style.cssText = "margin-top:8px;";
   control.innerHTML =
-    '<label style="font-weight:800;color:' +
+    '<label style="font-weight:700;color:' +
     C.muted +
     ';font-size:.8rem;display:block;margin-bottom:4px;">◀ Slide the cut up and down ▶</label>' +
     '<input type="range" min="4" max="96" value="45" step="1" aria-label="Slice height" style="width:90%;accent-color:' +
@@ -316,7 +316,7 @@ export function renderCrossSection(
   const right = document.createElement("div");
   right.style.cssText = "flex:0 1 240px; min-width:180px; text-align:center;";
   right.innerHTML =
-    '<div style="font-weight:800;color:' + C.navy + ';margin-bottom:6px;">The cut face</div>';
+    '<div style="font-weight:700;color:' + C.navy + ';margin-bottom:6px;">The cut face</div>';
   right.appendChild(xsvg);
   const caption = document.createElement("div");
   caption.setAttribute("aria-live", "polite");

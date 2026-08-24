@@ -28,11 +28,23 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildInstructionalSequence } from "../shared/curriculum/instructional-sequence.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = JSON.parse(readFileSync(join(ROOT, "data/curriculum-manifest.json"), "utf8"));
 const order = manifest.lessons.map((l) => l.lessonId || l.id);
-const position = new Map(order.map((id, i) => [id, i]));
+
+/* Position comes from the INSTRUCTIONAL sequence, not the manifest. The manifest
+ * is book order, and this district does not teach in book order: 5-1 opens Unit
+ * 5 in MARCH, after 9-4, so a manifest-ordered check called its honest
+ * prevLessonId a forward reference. See shared/curriculum/instructional-sequence.js. */
+const read = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
+const sequence = buildInstructionalSequence({
+  ranges: read("data/pacing-unit-ranges.json"),
+  authored: read("data/pacing-unit-lessons.json"),
+  manifest: read("data/curriculum-launch-manifest.json"),
+});
+const position = new Map([...sequence.entries].map(([id, e]) => [id, e.index]));
 
 /** Unit openers that intentionally ship without a warmup. Empty, and it should
  *  stay that way; add an entry only with a reason a reader can evaluate. */

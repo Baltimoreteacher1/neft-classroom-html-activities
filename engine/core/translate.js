@@ -57,7 +57,7 @@ export function mountTranslate({ getPhaseEl }) {
   function renderMenu() {
     const last = safeGet();
     menu.innerHTML =
-      '<div style="font-weight:800;color:#12355b;padding:8px 12px;font-size:1rem;">Read this part in…</div>' +
+      '<div style="font-weight:700;color:#12355b;padding:8px 12px;font-size:1rem;">Read this part in…</div>' +
       (last ? langRow(last, true) : "") +
       LANGS.filter((l) => l !== last)
         .map((l) => langRow(l, false))

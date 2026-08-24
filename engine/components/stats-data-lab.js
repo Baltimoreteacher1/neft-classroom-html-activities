@@ -284,24 +284,24 @@ function injectStyles() {
   s.id = "sdlab-styles";
   s.textContent = `
   .sdlab{max-width:720px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
-  .sdlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.05rem;}
+  .sdlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:700;color:${C.navy};font-size:1.05rem;}
   .sdlab-hint{margin:4px 0 12px;color:${C.muted};font-size:.9rem;line-height:1.45;}
   .sdlab-presets{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;}
-  .sdlab-chip{padding:5px 12px;font-size:.9rem;font-weight:700;color:${C.navy};background:${C.chipBg};border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;font-family:inherit;}
+  .sdlab-chip{padding:5px 12px;font-size:.9rem;font-weight:600;color:${C.navy};background:${C.chipBg};border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;font-family:inherit;}
   .sdlab-chip:hover{background:#e2ecff;border-color:${C.accent};}
   .sdlab-datarow{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 12px;background:#f8fbff;border:1px solid ${C.line};border-radius:12px;}
-  .sdlab-datalabel{font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:${C.muted};}
+  .sdlab-datalabel{font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${C.muted};}
   .sdlab-chips{display:flex;flex-wrap:wrap;gap:5px;}
-  .sdlab-datachip{display:inline-flex;align-items:center;gap:3px;padding:3px 6px 3px 9px;font-weight:800;font-size:.95rem;color:${C.navy};background:#fff;border:1.5px solid ${C.line};border-radius:8px;cursor:pointer;font-family:inherit;}
+  .sdlab-datachip{display:inline-flex;align-items:center;gap:3px;padding:3px 6px 3px 9px;font-weight:700;font-size:.95rem;color:${C.navy};background:#fff;border:1.5px solid ${C.line};border-radius:8px;cursor:pointer;font-family:inherit;}
   .sdlab-datachip:hover{border-color:${C.amber};color:${C.amber};}
   .sdlab-x{font-size:.85rem;opacity:.6;}
   .sdlab-empty{color:${C.muted};font-size:.9rem;}
   .sdlab-addrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
-  .sdlab-input{width:110px;padding:9px 10px;font-size:1rem;font-weight:700;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;font-family:inherit;}
+  .sdlab-input{width:110px;padding:9px 10px;font-size:1rem;font-weight:600;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;font-family:inherit;}
   .sdlab-input:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
-  .sdlab-addbtn{padding:9px 16px;font-size:.9rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;font-family:inherit;}
+  .sdlab-addbtn{padding:9px 16px;font-size:.9rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;font-family:inherit;}
   .sdlab-addbtn:hover{filter:brightness(1.08);}
-  .sdlab-clear{padding:9px 14px;font-size:.85rem;font-weight:800;color:${C.navy};background:#fff;border:1.5px solid ${C.line};border-radius:10px;cursor:pointer;font-family:inherit;}
+  .sdlab-clear{padding:9px 14px;font-size:.85rem;font-weight:700;color:${C.navy};background:#fff;border:1.5px solid ${C.line};border-radius:10px;cursor:pointer;font-family:inherit;}
   .sdlab-clear:hover{background:${C.chipBg};}
   .sdlab-addbtn:focus-visible,.sdlab-clear:focus-visible,.sdlab-chip:focus-visible,.sdlab-datachip:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .sdlab-plot{margin-top:10px;}
@@ -309,8 +309,8 @@ function injectStyles() {
   .sdlab-measures{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
   .sdlab-mcard{flex:1 1 90px;min-width:84px;padding:9px 10px;background:#fbfcfe;border:1px solid ${C.line};border-radius:12px;text-align:center;}
   .sdlab-mcard-hi{background:#f4f2ff;border-color:#d9d0ff;}
-  .sdlab-mlabel{display:block;font-size:.68rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:${C.muted};}
-  .sdlab-mval{display:block;margin-top:2px;font-family:"Outfit",system-ui,sans-serif;font-size:1.2rem;font-weight:800;color:${C.navy};}
+  .sdlab-mlabel{display:block;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${C.muted};}
+  .sdlab-mval{display:block;margin-top:2px;font-family:"Outfit",system-ui,sans-serif;font-size:1.2rem;font-weight:700;color:${C.navy};}
   .sdlab-note{margin-top:10px;}
   .sdlab-msg{padding:10px 14px;border-radius:12px;font-size:.92rem;line-height:1.5;background:#f4f2ff;color:${C.navy};border:1px solid #d9d0ff;}
   @media (max-width:480px){.sdlab-mcard{flex-basis:calc(50% - 4px);}}

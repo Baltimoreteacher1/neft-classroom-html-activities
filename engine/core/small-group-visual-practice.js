@@ -111,7 +111,7 @@ const gridStep = (maxN) => PLOT_SIZE / maxN;
 const gridPx = (x, y, step) => [PLOT_LEFT + x * step, PLOT_BOTTOM - y * step];
 function coordinatePlane(maxN) {
   const step = gridStep(maxN);
-  const tick = 'style="font-size:13px;fill:#6b7688;font-weight:600"';
+  const tick = 'style="font-size:13px;fill:#6b7688;font-weight:500"';
   const every = maxN > 12 ? 2 : 1; // thin the labels (not the gridlines) when dense
   let out = "";
   for (let i = 1; i <= maxN; i++) {
@@ -868,7 +868,7 @@ function typedDivision(item, steps, events) {
   };
   const opText = (t) => {
     const s = el("span", "sg-div-op", t);
-    s.style.cssText = "font-weight:700; color:var(--navy,#12355b);";
+    s.style.cssText = "font-weight:600; color:var(--navy,#12355b);";
     return s;
   };
 
@@ -877,7 +877,7 @@ function typedDivision(item, steps, events) {
     block.style.cssText =
       "border:1px solid var(--line,#cbd5e1); border-radius:8px; padding:8px 10px; background:#fff;";
     const lab = el("div", "sg-div-steplab", `Step ${i + 1}`);
-    lab.style.cssText = "font-weight:800; color:var(--navy,#12355b); margin-bottom:4px;";
+    lab.style.cssText = "font-weight:700; color:var(--navy,#12355b); margin-bottom:4px;";
     block.appendChild(lab);
 
     const line1 = el("div", "sg-div-line");
@@ -1034,7 +1034,7 @@ function typedRateBars(item, steps, events) {
     row.style.cssText =
       "display:flex; align-items:center; gap:10px; width:100%; text-align:left; background:#fff; border:2px solid var(--line,#cbd5e1); border-radius:10px; padding:8px 10px; cursor:pointer;";
     const tag = el("span", null, label);
-    tag.style.cssText = "font-weight:800; color:var(--navy,#12355b); min-width:58px;";
+    tag.style.cssText = "font-weight:700; color:var(--navy,#12355b); min-width:58px;";
     const track = el("div");
     track.style.cssText =
       "flex:1; height:20px; background:#eef4fb; border-radius:6px; overflow:hidden;";
@@ -1043,7 +1043,7 @@ function typedRateBars(item, steps, events) {
     track.appendChild(fill);
     const num = el("span", null, `${(Math.round(rate * 100) / 100).toString()} /blue`);
     num.style.cssText =
-      "font-weight:700; color:var(--muted,#54677c); min-width:70px; text-align:right;";
+      "font-weight:600; color:var(--muted,#54677c); min-width:70px; text-align:right;";
     row.append(tag, track, num);
     row.addEventListener("click", () => {
       if (done) return;
@@ -1485,7 +1485,7 @@ function verticalDecimal(values, operation) {
   box.style.cssText = "display:flex;flex-direction:column;align-items:center;margin:8px 0 4px;";
   const stack = el("div");
   stack.style.cssText =
-    "font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.5rem;font-weight:800;color:var(--navy,#12355b);";
+    "font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.5rem;font-weight:700;color:var(--navy,#12355b);";
 
   // Division is not a stacked column: show the whole-number-divisor rewrite so
   // students see the actual first move (never an addition stack).
@@ -1501,14 +1501,14 @@ function verticalDecimal(values, operation) {
       line(`${a} ÷ ${b}`),
       line(
         `↓ move the point ${bDec} place${bDec === 1 ? "" : "s"} right`,
-        "font-size:.8rem;font-weight:600;color:var(--muted,#54677c);margin:4px 0;",
+        "font-size:.8rem;font-weight:500;color:var(--muted,#54677c);margin:4px 0;",
       ),
       line(`${shift(a)} ÷ ${shift(b)} = ?`, "color:var(--amber-ink,#8a5a00);"),
     );
     box.append(stack);
     const cap = el("div", null, "Make the divisor a whole number, then divide as usual.");
     cap.style.cssText =
-      "font-size:.75rem;font-weight:600;color:var(--muted,#54677c);text-align:center;margin-top:6px;";
+      "font-size:.75rem;font-weight:500;color:var(--muted,#54677c);text-align:center;margin-top:6px;";
     box.append(cap);
     return box;
   }
@@ -1546,10 +1546,12 @@ function verticalDecimal(values, operation) {
       : "Line up the decimal points — the answer goes in the blank.",
   );
   cap.style.cssText =
-    "font-size:.75rem;font-weight:600;color:var(--muted,#54677c);text-align:center;margin-top:6px;";
+    "font-size:.75rem;font-weight:500;color:var(--muted,#54677c);text-align:center;margin-top:6px;";
   box.append(cap);
   return box;
 }
+
+let guidanceUid = 0;
 
 export function appendVisualPractice(card, item, { mode = "guided", events = {} } = {}) {
   const kind = String(item.visual?.kind || "");
@@ -1559,6 +1561,69 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
   const stepsApi = guidedSteps(item, mode, events);
   const stepsNodes = stepsApi ? [stepsApi.node] : [];
   const question = card.querySelector(".q");
+  // Notebook-first on the independent tabs (Practice & Check, More Practice):
+  // the DEFAULT flow is read → solve in your NOTEBOOK → type the answer to
+  // check. The on-screen workspace, model and guided steps still exist in
+  // full — parked one tap away behind "Show the guidance", auto-opened by the
+  // struggle path (2 misses) and the adaptive coach's stabilize move, and
+  // fully unhidden in print. The Guided tab keeps its workspace pre-opened:
+  // solving IN the model together is that tab's whole point.
+  const insertSupport = (...nodes) => {
+    if (mode === "guided" || !nodes.length) {
+      question?.after(...nodes);
+      return;
+    }
+    const guidance = el("div", "sg-guidance");
+    guidance.id = `sg-guidance-${++guidanceUid}`;
+    guidance.hidden = true;
+    guidance.append(...nodes);
+    const row = el("div", "sg-notebook-row");
+    const cue = el("p", "sg-notebook-cue");
+    cue.innerHTML = esLane()
+      ? "📓 <b>Resuélvelo primero en tu cuaderno</b> — muestra tus pasos. Luego escribe tu respuesta aquí para comprobarla."
+      : "📓 <b>Solve it in your notebook first</b> — show your steps. Then type your answer here to check it.";
+    // The problem read-aloud must not disappear into the folded guidance —
+    // appending it here relocates it out of the support head.
+    row.append(cue, read);
+    const hasContent =
+      guidance.querySelector(
+        "svg, input, button, details, .sg-fill-step, .sg-problem-visual, .colmath",
+      ) || guidance.textContent.trim().length > 0;
+    if (!hasContent) {
+      question?.after(row);
+      return;
+    }
+    const toggle = el("button", "btn ghost sg-guidance-btn", "");
+    toggle.type = "button";
+    toggle.setAttribute("aria-controls", guidance.id);
+    const setLabel = () => {
+      toggle.textContent = guidance.hidden
+        ? esLane()
+          ? "🧭 Ver el apoyo"
+          : "🧭 Show the guidance"
+        : esLane()
+          ? "Ocultar el apoyo"
+          : "Hide the guidance";
+      toggle.setAttribute("aria-expanded", String(!guidance.hidden));
+    };
+    toggle.onclick = () => {
+      guidance.hidden = !guidance.hidden;
+      setLabel();
+    };
+    setLabel();
+    row.append(toggle);
+    question?.after(row, guidance);
+    card.__openGuidance = () => {
+      if (!guidance.hidden) return;
+      guidance.hidden = false;
+      setLabel();
+    };
+    const prevSupport = card.sgApplySupport;
+    card.sgApplySupport = () => {
+      prevSupport?.();
+      card.__openGuidance?.();
+    };
+  };
   // Place-value problems: the answer control's stacked column IS the giant
   // workspace — students work the problem in it, so no display-only figure.
   if (kind.includes("place-value")) {
@@ -1570,7 +1635,7 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
     // stacks as whole numbers, divide shows the whole-divisor rewrite) with a
     // blank answer line, above the guided steps.
     const vd = verticalDecimal(item.visual?.values, item.visual?.operation);
-    question?.after(top, ...(vd ? [vd] : []), ...stepsNodes);
+    insertSupport(top, ...(vd ? [vd] : []), ...stepsNodes);
     return card;
   }
   // Typed model first: students put the numbers into the model themselves,
@@ -1579,7 +1644,7 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
   if (typed) {
     const top = el("div", "sg-problem-support-head");
     top.append(el("div", "sg-visual-title", "Work in the model"), read);
-    question?.after(top, typed, ...stepsNodes);
+    insertSupport(top, typed, ...stepsNodes);
     return card;
   }
   const markup = visualMarkup(item);
@@ -1588,7 +1653,7 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
     // the figure and value tool — a chart of scraped numbers misleads.
     const top = el("div", "sg-problem-support-head");
     top.append(el("span"), read);
-    question?.after(top, ...stepsNodes);
+    insertSupport(top, ...stepsNodes);
     return card;
   }
   const visual = el("div", "sg-problem-visual", markup);
@@ -1638,7 +1703,7 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
     card.addEventListener("input", flashMorph);
     card.addEventListener("change", flashMorph);
   }
-  question?.after(top, visual, symbolic, ...(morph ? [morph] : []), tool, ...stepsNodes);
+  insertSupport(top, visual, symbolic, ...(morph ? [morph] : []), tool, ...stepsNodes);
   return card;
 }
 

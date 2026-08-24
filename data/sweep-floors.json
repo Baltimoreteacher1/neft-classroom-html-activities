@@ -1,0 +1,121 @@
+{
+  "$comment": "Pinned sweep floors, one per gate. A gate that discovers fewer files than its floor exits non-zero: a sweep that collapses from 9,774 files to 101 verified almost nothing and must not report a pass. Floors are ~90% of the measured baseline in reports/sweep-baseline.md, so ordinary content churn does not break a build but a broken glob does. Raise a floor when the real count grows; lower one only with a written reason in the commit.",
+  "$policy": "floor = round(baseline * 0.9), floor >= 1. Baselines are the size of the subject each gate ACTUALLY guards, measured with SWEEP_GUARD_REPORT=1 — not the size its name implies. Where those differ the gap is recorded in reports/sweep-baseline.md as a finding.",
+  "floors": {
+    "audit": {
+      "baseline": 291,
+      "floor": 262,
+      "subject": "lesson directories (NOT the 3,206 HTML it scans)"
+    },
+    "audit:dead-code": {
+      "baseline": 782,
+      "floor": 704,
+      "subject": "source files in the reference graph"
+    },
+    "audit:depth": {
+      "baseline": 288,
+      "floor": 259,
+      "subject": "lessons measured"
+    },
+    "audit:duplicates": {
+      "baseline": 5252,
+      "floor": 4727,
+      "subject": "tracked files hashed"
+    },
+    "audit:homework": {
+      "baseline": 84,
+      "floor": 76,
+      "subject": "core lessons audited"
+    },
+    "audit:interaction": {
+      "baseline": 288,
+      "floor": 259,
+      "subject": "lessons graded"
+    },
+    "validate:ccss": {
+      "baseline": 37,
+      "floor": 33,
+      "subject": "distinct standards collected from lesson configs"
+    },
+    "validate:css-integrity": {
+      "baseline": 826,
+      "floor": 743,
+      "subject": "source files scanned"
+    },
+    "validate:determinism": {
+      "baseline": 84,
+      "floor": 76,
+      "subject": "lessons in the Command Center rebuild"
+    },
+    "validate:es-parity": {
+      "baseline": 3045,
+      "floor": 2741,
+      "subject": "small-group practice items read for English/Spanish parity"
+    },
+    "validate:js-syntax": {
+      "baseline": 11263,
+      "floor": 10137,
+      "subject": "script files and inline blocks parsed"
+    },
+    "validate:level-labels": {
+      "baseline": 362,
+      "floor": 326,
+      "subject": "HTML pages under math/, curriculum/ and lessons/ that mention ESOL at all (routes, ids and comments included)"
+    },
+    "validate:preunit-project": {
+      "baseline": 5,
+      "floor": 4,
+      "subject": "source lessons resolved"
+    },
+    "validate:projects-publication": {
+      "baseline": 26,
+      "floor": 23,
+      "subject": "project pages enumerated"
+    },
+    "validate:save-resume": {
+      "baseline": 2526,
+      "floor": 2273,
+      "subject": "active activity pages scanned"
+    },
+    "validate:scope": {
+      "baseline": 84,
+      "floor": 76,
+      "subject": "core lessons on the spine"
+    },
+    "validate:secrets": {
+      "baseline": 8205,
+      "floor": 7384,
+      "subject": "tracked text files scanned"
+    },
+    "validate:self-hosted-fonts": {
+      "baseline": 1717,
+      "floor": 1545,
+      "subject": "HTML pages referencing a self-hosted /assets/fonts/ bundle"
+    },
+    "validate:small-groups": {
+      "baseline": 168,
+      "floor": 151,
+      "subject": "small-group lesson variants enumerated from the generated rows manifest"
+    },
+    "validate:static": {
+      "baseline": 14,
+      "floor": 13,
+      "subject": "required deployment files (NOT the 3,197 HTML it walks)"
+    },
+    "validate:uifr": {
+      "baseline": 288,
+      "floor": 259,
+      "subject": "lessons audited"
+    },
+    "validate:vocab-attributes": {
+      "baseline": 3194,
+      "floor": 2874,
+      "subject": "tracked HTML pages scanned for glossary links in attribute position"
+    },
+    "validate:external-scripts": {
+      "baseline": 3194,
+      "floor": 2874,
+      "subject": "tracked HTML pages scanned for third-party code references"
+    }
+  }
+}

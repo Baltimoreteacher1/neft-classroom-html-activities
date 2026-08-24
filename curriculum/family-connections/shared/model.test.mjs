@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import * as familyModel from "./model.js";
 import { COPY_KEYS, translationsEs } from "./copy-defaults.js";
+import { familyWeekShare } from "./render.js";
 import {
   buildCanvasAnnouncement,
   buildCanvasExport,
@@ -18,6 +19,9 @@ const manifest = JSON.parse(
 const lessons = normalizeLessons(manifest.lessons);
 
 assert.ok(COPY_KEYS.includes("browsePractice"));
+assert.ok(COPY_KEYS.includes("weekPracticeTitle"));
+assert.ok(COPY_KEYS.includes("weekPracticeHint"));
+assert.match(translationsEs.weekPracticeTitle, /lecciones de esta semana/i);
 assert.ok(COPY_KEYS.includes("askTitle"));
 assert.equal(COPY_KEYS.includes("findHomework"), false);
 assert.match(translationsEs.homeworkTitle, /Práctica familiar opcional/i);
@@ -100,6 +104,61 @@ assert.deepEqual(moduleLinks[0], {
   lessonUrl: "https://eduwonderlab.com/lessons/6-13/",
   homeworkUrl: "https://eduwonderlab.com/lessons/6-13/homework.html",
 });
+
+// Optional family practice must mirror the posted week, not the whole library.
+snapshot.sections[0].week.days[1] = {
+  day: "Tuesday",
+  status: "lesson",
+  lessonId: "6-13",
+  note: "Same lesson, second day.",
+};
+snapshot.sections[0].week.days[2] = {
+  day: "Wednesday",
+  status: "lesson",
+  lessonId: "1-1",
+  note: "",
+};
+snapshot.sections[0].week.days[3] = { day: "Thursday", status: "assessment", lessonId: "", note: "" };
+const posted = familyModel.weekHomework(snapshot, lessons, {}, snapshot.sections[0].id);
+assert.deepEqual(
+  posted.map((item) => item.id),
+  ["6-13", "1-1"],
+  "posted practice follows calendar order and dedupes a lesson taught twice",
+);
+assert.deepEqual(posted[0].days, ["Monday", "Tuesday"]);
+assert.deepEqual(posted[1].days, ["Wednesday"]);
+assert.ok(posted[0].directions, "posted practice carries the merged teacher directions");
+assert.ok(
+  posted.length < mergeHomework(lessons, {}).length,
+  "posted practice must be a subset of the browse-all library",
+);
+const hidden = familyModel.weekHomework(snapshot, lessons, { "1-1": { visible: false } }, snapshot.sections[0].id);
+assert.deepEqual(
+  hidden.map((item) => item.id),
+  ["6-13"],
+  "a lesson the teacher hid stays hidden even when it is on the calendar",
+);
+assert.deepEqual(
+  familyModel.weekHomework(createDefaultSnapshot(), lessons, {}, "all-families"),
+  [],
+  "an unposted week shows no week-synced practice",
+);
+
+// The week a family takes with them must carry the practice link, once per lesson.
+const share = familyWeekShare(snapshot, lessons, snapshot.sections[0].id);
+const urls = share.body.match(/https:\/\/eduwonderlab\.com\/lessons\/[^\s]+/g) ?? [];
+assert.deepEqual(
+  urls,
+  [
+    "https://eduwonderlab.com/lessons/6-13/homework.html",
+    "https://eduwonderlab.com/lessons/1-1/homework.html",
+  ],
+  "one practice link per lesson, in day order, even when a lesson runs two days",
+);
+assert.match(share.body, /Practice together: https:/);
+const shareEs = familyWeekShare(snapshot, lessons, snapshot.sections[0].id, "es");
+assert.match(shareEs.body, /Práctica juntos: https:/);
+assert.doesNotMatch(shareEs.body, /Practice together/);
 
 const canvasExport = buildCanvasExport(snapshot, lessons, snapshot.sections[0].id);
 assert.equal(canvasExport.schemaVersion, 1);

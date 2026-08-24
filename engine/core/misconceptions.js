@@ -439,6 +439,64 @@ export const MISCONCEPTIONS = {
     studentEs:
       "Revisa la gráfica antes de contar. Cada barra pertenece a un intervalo, y un valor cuenta solo si cae entre los extremos de ese intervalo. Señala los extremos y cuenta otra vez.",
   },
+
+  // ── Conceptual errors, authored-only by construction ────────────────────
+  //
+  // The five below name errors that are NOT arithmetic slips, so no numeric
+  // predictor can reach them: the student's answer is a NAME or a CATEGORY
+  // ("Associative Property", "1, 12"), and re-computing the stem tells you
+  // nothing about why they chose it. Only the item's own distractor knows.
+  //
+  // They exist because `reports/misconception-coverage.md` found seven core
+  // lessons that could diagnose NOTHING — not because their feedback was
+  // missing (it is excellent) but because the error each one teaches against
+  // had no entry in this taxonomy at all. A lesson that diagnoses nothing is
+  // invisible to the heatmap, the class pulse and the family broadcast.
+  "factors-multiples-confused": {
+    label: "Confused factors with multiples",
+    labelEs: "Confundió factores con múltiplos",
+    watchFor: "Ask which number divides which — factors go INTO it, multiples come OUT of it.",
+    student:
+      "Those are multiples — where you land counting BY the number. Factors are the numbers that divide INTO it evenly. 12 has factors 1, 2, 3, 4, 6 and 12; its multiples are 12, 24, 36, 48.",
+    studentEs:
+      "Esos son múltiplos: donde caes al contar DE ese número en ese número. Los factores son los números que lo dividen exactamente. El 12 tiene factores 1, 2, 3, 4, 6 y 12; sus múltiplos son 12, 24, 36, 48.",
+  },
+  "property-order-vs-grouping": {
+    label: "Confused the commutative and associative properties",
+    labelEs: "Confundió la propiedad conmutativa con la asociativa",
+    watchFor: "Ask what actually MOVED: the order of the numbers, or the parentheses?",
+    student:
+      "Commutative changes the ORDER the numbers are written in. Associative changes the GROUPING — which pair sits inside the parentheses. Read both sides left to right and name what moved.",
+    studentEs:
+      "La conmutativa cambia el ORDEN en que se escriben los números. La asociativa cambia la AGRUPACIÓN: qué par queda dentro del paréntesis. Lee los dos lados de izquierda a derecha y di qué se movió.",
+  },
+  "factorization-stopped-early": {
+    label: "Stopped factoring before every factor was prime",
+    labelEs: "Dejó de factorizar antes de que todos los factores fueran primos",
+    watchFor: "Point at each factor and ask: can this one still be broken apart?",
+    student:
+      "That is a correct factor pair, but not the PRIME factorization — at least one of your factors still breaks down. Keep splitting every branch until it ends on a prime.",
+    studentEs:
+      "Ese es un par de factores correcto, pero no la descomposición en factores PRIMOS: al menos uno de tus factores todavía se puede separar. Sigue separando cada rama hasta que termine en un primo.",
+  },
+  "stat-question-no-variability": {
+    label: "Chose a question with only one fixed answer",
+    labelEs: "Escogió una pregunta con una sola respuesta fija",
+    watchFor: "Ask: would two different people give two different answers?",
+    student:
+      "A statistical question expects answers that VARY. That one has a single fixed answer, so there is no data to collect. Ask what would change from one person to the next.",
+    studentEs:
+      "Una pregunta estadística espera respuestas que VARÍEN. Esa tiene una sola respuesta fija, así que no hay datos que recoger. Pregúntate qué cambiaría de una persona a otra.",
+  },
+  "ratio-compared-without-common-basis": {
+    label: "Compared two ratios without a common basis",
+    labelEs: "Comparó dos razones sin una base común",
+    watchFor: "Ask what ONE of each is worth before either ratio is compared.",
+    student:
+      "Two ratios cannot be compared side by side until they share a basis. Turn each into an amount per ONE, or scale both until their second numbers match, and then compare.",
+    studentEs:
+      "Dos razones no se pueden comparar lado a lado hasta que compartan una base. Convierte cada una en una cantidad por UNO, o escala las dos hasta que sus segundos números coincidan, y luego compara.",
+  },
 };
 
 // Configs already carry a sparse authored vocabulary in `misconceptionTags` (a

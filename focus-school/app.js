@@ -15,16 +15,16 @@
     if (!document.querySelector('link[href*="katex"]')) {
       var link = document.createElement("link");
       link.rel = "stylesheet";
-      link.href = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css";
+      link.href = "/assets/vendor/katex-0.16.8/katex.min.css";
       link.crossOrigin = "anonymous";
       document.head.appendChild(link);
     }
     var script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js";
+    script.src = "/assets/vendor/katex-0.16.8/katex.min.js";
     script.crossOrigin = "anonymous";
     script.onload = function () {
       var ext = document.createElement("script");
-      ext.src = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js";
+      ext.src = "/assets/vendor/katex-0.16.8/contrib/auto-render.min.js";
       ext.crossOrigin = "anonymous";
       ext.onload = callback;
       document.head.appendChild(ext);
@@ -13905,12 +13905,16 @@ function owningAssignmentId(item) {
   return item.id;
 }
 
-function plannerCtx(todayIso = todayKey()) {
+// `nowMinutes` is injectable for the same reason todayIso is: how much of
+// tonight is left is a function of the wall clock, so a test that cannot pin
+// it is a test that changes its answer at bedtime. Production always passes
+// the real clock.
+function plannerCtx(todayIso = todayKey(), nowMinutes = nowMin()) {
   const items = plannerItems(todayIso);
   return {
     items,
     todayIso,
-    availableMin: PC.availableMinutes(state.schedule, todayIso, nowMin(), {
+    availableMin: PC.availableMinutes(state.schedule, todayIso, nowMinutes, {
       bedtime: state.settings.bedtime,
       maxWorkMin: state.settings.maxWorkMin,
     }),
@@ -14002,11 +14006,11 @@ function ensureStudyTask(item) {
 // Adding a test/quiz automatically produces its study plan. Noam never picks
 // which days to study — that is exactly the executive-function load this
 // product exists to remove.
-function regenerateStudyPlan(assessment, { force = false } = {}) {
+function regenerateStudyPlan(assessment, { force = false, todayIso = todayKey() } = {}) {
   if (!assessment || assessment.kind !== "assessment" || !assessment.due)
     return;
   const existing = state.studyPlans[assessment.id] || [];
-  const fresh = PC.buildStudyPlan(assessment, todayKey());
+  const fresh = PC.buildStudyPlan(assessment, todayIso);
   if (!force && existing.some((s) => s.done)) {
     // Preserve completed study history; only re-plan the sessions still ahead.
     const doneDates = new Set(
@@ -14614,10 +14618,10 @@ function saveQuickEntry() {
 }
 
 // Break a project into steps and spread them across the days before it's due.
-function autoBreakdown(a) {
+function autoBreakdown(a, { todayIso = todayKey() } = {}) {
   if (!a || !a.due) return;
   const steps = a.steps.length ? a.steps : PC.defaultProjectSteps(a.title);
-  a.steps = PC.scheduleProjectSteps(steps, todayKey(), a.due).map((s) => ({
+  a.steps = PC.scheduleProjectSteps(steps, todayIso, a.due).map((s) => ({
     id: s.id && String(s.id).startsWith("st_") ? uid("s") : s.id || uid("s"),
     text: s.text,
     done: !!s.done,
@@ -14738,14 +14742,14 @@ function repairMissedWork() {
   // ===========================================================================
   // OVERLOAD — say it plainly, then fix it
   // ===========================================================================
-  function overloadReport(todayIso = todayKey()) {
-    const ctx = plannerCtx(todayIso);
+  function overloadReport(todayIso = todayKey(), nowMinutes = nowMin()) {
+    const ctx = plannerCtx(todayIso, nowMinutes);
     const need = remainingMinutesToday(todayIso);
     const have = ctx.availableMin;
     if (!need || have <= 0 || need <= have) {
       return { overloaded: false, need, have };
     }
-    const plan = PC.buildPlan({ ...ctx, startMin: nowMin() });
+    const plan = PC.buildPlan({ ...ctx, startMin: nowMinutes });
     return {
       overloaded: true,
       need,

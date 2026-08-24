@@ -31,6 +31,14 @@ export const MISCONCEPTIONS = {
     label: "Multiplied the base by the exponent",
     watchFor: "Expand it once — write out every factor before evaluating.",
   },
+  "factorization-stopped-early": {
+    label: "Stopped factoring before every factor was prime",
+    watchFor: "Point at each factor and ask: can this one still be broken apart?",
+  },
+  "factors-multiples-confused": {
+    label: "Confused factors with multiples",
+    watchFor: "Ask which number divides which — factors go INTO it, multiples come OUT of it.",
+  },
   "fraction-added-denominators": {
     label: "Added the denominators",
     watchFor: "Return to a bar model — thirds plus fifths cannot become eighths.",
@@ -108,6 +116,10 @@ export const MISCONCEPTIONS = {
     label: "Used the percent as a plain number",
     watchFor: "Make them say the percent as “per hundred” out loud.",
   },
+  "property-order-vs-grouping": {
+    label: "Confused the commutative and associative properties",
+    watchFor: "Ask what actually MOVED: the order of the numbers, or the parentheses?",
+  },
   "rate-not-per-one": {
     label: "Gave the total instead of the unit rate",
     watchFor: "Ask “per ONE what?” and make them finish the sentence.",
@@ -116,6 +128,10 @@ export const MISCONCEPTIONS = {
     label: "Combined the two amounts instead of comparing them",
     watchFor:
       "Have them say the comparison out loud — “for every ___ there are ___” — before writing anything.",
+  },
+  "ratio-compared-without-common-basis": {
+    label: "Compared two ratios without a common basis",
+    watchFor: "Ask what ONE of each is worth before either ratio is compared.",
   },
   "ratio-inverted": {
     label: "Flipped the ratio",
@@ -151,6 +167,10 @@ export const MISCONCEPTIONS = {
     label: "Used the mean where the median was asked (or the reverse)",
     watchFor:
       "Ask them to say which word the question used, then what that word tells you to DO with the numbers.",
+  },
+  "stat-question-no-variability": {
+    label: "Chose a question with only one fixed answer",
+    watchFor: "Ask: would two different people give two different answers?",
   },
   "stat-range-for-iqr": {
     label: "Used the full range instead of the IQR",

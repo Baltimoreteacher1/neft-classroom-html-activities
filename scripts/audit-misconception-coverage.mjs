@@ -215,15 +215,36 @@ for (const [tag, g] of [...globalTag.entries()].sort((a, b) => b[1].items - a[1]
 }
 L.push("");
 
+// Why a defined tag is unelicited matters more than the count. Two of these are
+// READY AND WAITING — a distractor could produce them, no shipped item happens
+// to offer one. The third can NEVER be produced by a distractor, because the
+// error yields the correct answer. Collapsing those into one bullet list invites
+// the wrong fix: authoring practice items purely to turn a number green, which
+// is how invented content gets shipped.
+const UNELICITED_REASON = {
+  "fraction-straight-across-division":
+    "**cannot** come from a distractor — dividing straight across is algebraically valid " +
+    "and yields the CORRECT answer, so the error is only visible in a written method. " +
+    "Reachable through an authored tag on an error-analysis item, never through a wrong option.",
+};
+
 if (unusedTags.length) {
-  L.push(`## Taxonomy entries nothing can diagnose`);
+  L.push(`## Taxonomy entries no shipped item elicits`);
   L.push("");
   L.push(
-    `These are defined in \`engine/core/misconceptions.js\` with student-facing text in EN and ES, ` +
-      `but no shipped item's distractors produce them — so they can never fire.`,
+    `These are defined in \`engine/core/misconceptions.js\` with student-facing text in EN and ES ` +
+      `and are complete across all six surfaces — they simply have nothing to fire on yet.`,
   );
   L.push("");
-  for (const t of unusedTags) L.push(`- \`${t}\` — ${MISCONCEPTIONS[t].label}`);
+  for (const t of unusedTags) {
+    const why = UNELICITED_REASON[t];
+    L.push(
+      why
+        ? `- \`${t}\` — ${MISCONCEPTIONS[t].label}. This one ${why}`
+        : `- \`${t}\` — ${MISCONCEPTIONS[t].label}. A distractor COULD produce this; none currently does. ` +
+            `Authoring one is a content decision about what students should meet, not a gap to close for its own sake.`,
+    );
+  }
   L.push("");
 }
 

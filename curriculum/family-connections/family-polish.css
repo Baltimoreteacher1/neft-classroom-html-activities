@@ -458,7 +458,9 @@
   .site-header,
   .family-quick-nav,
   .week-toolbar,
-  .homework-section,
+  .homework-library-panel,
+  .practice-heading .count-chip,
+  .homework-details-disclosure,
   .scheduler-section,
   .support-section,
   .connect-section,
@@ -475,6 +477,42 @@
 
   .week-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  /* This week's practice prints with the week — a paper copy is useless if it
+     cannot tell a family where the practice lives, so links print their URL. */
+  /* No posted week means nothing to print here — do not leave a bare heading. */
+  .homework-section:not(:has(.week-practice:not([hidden]))) {
+    display: none !important;
+  }
+
+  .homework-section,
+  .week-practice {
+    padding: 0 !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .homework-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .homework-card {
+    border: 1px solid #999 !important;
+    background: #fff !important;
+    color: #000 !important;
+    break-inside: avoid;
+  }
+
+  .homework-card *,
+  .homework-day-chip {
+    color: #000 !important;
+    background: transparent !important;
+  }
+
+  .homework-actions a[href^="/"]::after {
+    content: " (eduwonderlab.com" attr(href) ")";
+    font-weight: 400;
   }
 
   .day-card,

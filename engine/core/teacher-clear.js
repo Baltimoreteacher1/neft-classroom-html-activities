@@ -191,7 +191,7 @@ function buildPagePicker(pop, info, close) {
   snapLink.rel = "noopener";
   snapLink.className = "nt-teacher-clear-sub";
   snapLink.style.cssText =
-    "display:block; margin-top:10px; font-weight:800; color:#0f6d78; text-decoration:none;";
+    "display:block; margin-top:10px; font-weight:700; color:#0f6d78; text-decoration:none;";
   snapLink.textContent = "📊 Open Live Class Snapshot & Small Groups ↗";
 
   actions.append(clearSel, clearAll);

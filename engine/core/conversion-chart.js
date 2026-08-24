@@ -631,7 +631,7 @@ function renderContent(category = "all", searchQuery = "") {
   });
 
   if (!filteredGroups.length) {
-    container.innerHTML = `<p style="text-align:center; padding: 24px; color:#5f6f80; font-weight:600;">No conversion facts found matching "${searchQuery}".</p>`;
+    container.innerHTML = `<p style="text-align:center; padding: 24px; color:#5f6f80; font-weight:500;">No conversion facts found matching "${searchQuery}".</p>`;
     return;
   }
 

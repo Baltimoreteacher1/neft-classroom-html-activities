@@ -108,10 +108,13 @@ function setArmed(next) {
 // apply the armed mark and disarm.
 function consumeArmed() {
   if (!armed) return;
-  if (!currentRangeIn(armed.host)) return;
+  // The selection must be lesson text — not a drag that ended inside the dock
+  // itself, and not inside a form control.
+  if (!lessonRange()) return;
   const { host, className } = armed;
   applyMark(host, className);
   setArmed(null);
+  setDockStatus("Mark added. Select more, or tap a tool again.");
 }
 
 // Attach the shared, document-level selection-complete listeners exactly once.
@@ -128,76 +131,155 @@ function ensureGlobalListeners() {
   });
 }
 
-// Build the toolbar for one annotatable text block.
-function buildToolbar(host) {
-  const bar = document.createElement("div");
-  bar.className = "annot-bar";
-  bar.setAttribute("role", "toolbar");
-  bar.setAttribute("aria-label", "Mark up the problem");
+/* ── The always-on dock ─────────────────────────────────────────────────────
+   One small control, fixed to the edge of the viewport, present in EVERY phase
+   of the lesson for students and teachers alike.
 
-  const tip = document.createElement("span");
-  tip.className = "annot-tip";
-  tip.textContent = "Select text then tap — or tap a tool, then select the text:";
-  bar.append(tip);
+   It replaces the per-problem toolbars this module used to insert above each
+   stem. Those only existed where a problem stem happened to render, so Launch,
+   Learn It, Connect and Reflect — all of them text a student marks up — had no
+   tools at all, and where they did appear it was a tip sentence plus four
+   buttons above every single problem. One dock is both smaller and available
+   everywhere, which is the whole point of a mark-up tool. */
 
-  const buttons = [
-    { cls: "annot-hl", label: "🖍️ Highlight" },
-    { cls: "annot-ul", label: "U͟ Underline" },
-    { cls: "annot-bd", label: "𝗕 Bold" },
-  ];
-  buttons.forEach(({ cls, label }) => {
+const TOOLS = [
+  { cls: "annot-hl", icon: "🖍️", label: "Highlight" },
+  { cls: "annot-ul", icon: "U̲", label: "Underline" },
+  { cls: "annot-bd", icon: "B", label: "Bold" },
+];
+
+let dock = null;
+
+/** The region a mark may be made in: the lesson itself, never the chrome. */
+function annotationRoot() {
+  return document.getElementById("app") || document.body;
+}
+
+/** The live selection if it lies inside the lesson content and is not inside
+ *  the dock or a form control (marking up a button's label helps nobody). */
+function lessonRange() {
+  const root = annotationRoot();
+  if (!root) return null;
+  const found = currentRangeIn(root);
+  if (!found) return null;
+  let node = found.range.commonAncestorContainer;
+  if (node && node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+  if (!node || !node.closest) return null;
+  if (node.closest(".annot-dock, input, textarea, select, button")) return null;
+  return found;
+}
+
+function setDockStatus(text) {
+  const status = dock && dock.querySelector(".annot-dock-status");
+  if (status) status.textContent = text;
+}
+
+function buildDock() {
+  const host = document.createElement("div");
+  host.className = "annot-dock";
+  host.dataset.open = "false";
+
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "annot-dock-toggle";
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.setAttribute("aria-label", "Mark up this page — highlight, underline, bold");
+  toggle.innerHTML = '<span aria-hidden="true">🖍️</span>';
+  host.append(toggle);
+
+  const panel = document.createElement("div");
+  panel.className = "annot-dock-panel";
+  panel.setAttribute("role", "toolbar");
+  panel.setAttribute("aria-label", "Mark up this page");
+  host.append(panel);
+
+  for (const { cls, icon, label } of TOOLS) {
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "annot-btn";
-    btn.textContent = label;
-    // aria-pressed advertises the armed state to assistive tech (toggle button).
+    btn.className = `annot-btn annot-dock-btn ${cls}-btn`;
     btn.setAttribute("aria-pressed", "false");
-    // mousedown (not click) so a live text selection isn't lost to focus change.
+    btn.setAttribute("aria-label", `${label} selected words`);
+    btn.innerHTML = `<span class="annot-dock-icon" aria-hidden="true">${icon}</span><span class="annot-dock-label">${label}</span>`;
+    // mousedown, not click: a click would move focus first and drop the live
+    // text selection the student just made.
     btn.addEventListener("mousedown", (e) => {
       e.preventDefault();
-      // Direction (a): text already selected → apply immediately.
-      if (currentRangeIn(host)) {
-        applyMark(host, cls);
+      const root = annotationRoot();
+      if (lessonRange()) {
+        applyMark(root, cls);
         setArmed(null);
+        setDockStatus(`${label} added.`);
         return;
       }
-      // Direction (b): nothing selected → arm this tool (or disarm if re-tapped).
-      if (armed && armed.host === host && armed.className === cls) {
+      if (armed && armed.className === cls) {
         setArmed(null);
+        setDockStatus("Select words in the lesson, then tap a tool.");
       } else {
-        setArmed({ host, className: cls, btn });
+        setArmed({ host: root, className: cls, btn });
+        setDockStatus(`${label} is on — now select the words.`);
       }
     });
-    bar.append(btn);
-  });
+    panel.append(btn);
+  }
 
   const erase = document.createElement("button");
   erase.type = "button";
-  erase.className = "annot-btn annot-erase";
-  erase.textContent = "✕ Clear";
+  erase.className = "annot-btn annot-dock-btn annot-erase";
+  erase.setAttribute("aria-label", "Clear all mark-up on this page");
+  erase.innerHTML =
+    '<span class="annot-dock-icon" aria-hidden="true">✕</span><span class="annot-dock-label">Clear</span>';
   erase.addEventListener("mousedown", (e) => {
     e.preventDefault();
     setArmed(null);
-    clearMarks(host);
+    clearMarks(annotationRoot());
+    setDockStatus("Mark-up cleared.");
   });
-  bar.append(erase);
+  panel.append(erase);
 
-  return bar;
+  const status = document.createElement("span");
+  status.className = "annot-dock-status";
+  status.setAttribute("role", "status");
+  status.setAttribute("aria-live", "polite");
+  status.textContent = "Select words in the lesson, then tap a tool.";
+  panel.append(status);
+
+  toggle.addEventListener("click", () => {
+    const open = host.dataset.open === "true";
+    host.dataset.open = open ? "false" : "true";
+    toggle.setAttribute("aria-expanded", open ? "false" : "true");
+    if (open) setArmed(null);
+  });
+
+  return host;
 }
 
-// Attach a toolbar to a single text element.
+/** Mount the dock once. Idempotent, so every render path may call it. */
+function ensureDock() {
+  if (dock && dock.isConnected) return dock;
+  if (typeof document === "undefined" || !document.body) return null;
+  const existing = document.querySelector(".annot-dock");
+  if (existing) {
+    dock = existing;
+    return dock;
+  }
+  dock = buildDock();
+  document.body.append(dock);
+  return dock;
+}
+
+// Mark a text block as annotatable. The dock does the marking now, so this only
+// records that the block is student text (the text cursor is the affordance).
 function attach(host) {
   if (!host || host.dataset.annotateReady === "1") return;
   host.dataset.annotateReady = "1";
   host.classList.add("annotatable");
-  const bar = buildToolbar(host);
-  host.parentNode.insertBefore(bar, host);
 }
 
 // Public: enable annotation on every word-problem text block inside `root`.
 /** @param {Document|HTMLElement} [root] */
 export function enableWordProblemAnnotation(root = document) {
   ensureGlobalListeners();
+  ensureDock();
   const scope = root && root.querySelectorAll ? root : document;
   scope.querySelectorAll(ANNOTATABLE).forEach((el) => attach(el));
 }
@@ -225,6 +307,7 @@ let observerReady = false;
 // bold is available on EVERY text problem, whenever and however it appears.
 export function observeWordProblemAnnotation(root = document.body) {
   ensureGlobalListeners();
+  ensureDock();
   const host = root && root.nodeType ? root : document.body;
   if (!host) return;
   enableWordProblemAnnotation(host);

@@ -10,11 +10,13 @@
  *   POST /api/signal/view    { path, dwellMs, device }              -> { ok }
  *   POST /api/signal/error   { path, message, source, line }        -> { ok }
  *   POST /api/signal/vital   { path, metric, value, device }        -> { ok }
+ *   POST /api/signal/practice{ lessonId, source }                    -> { ok }
  *   GET  /api/signal/health                                         -> { ok, d1 }
  *   GET  /api/signal/status                                         -> aggregate health only
  *   GET  /api/signal/usage?days=14&limit=100   (TEACHER_KEY)        -> { ok, rows }
  *   GET  /api/signal/errors?days=7&limit=100   (TEACHER_KEY)        -> { ok, rows }
  *   GET  /api/signal/vitals?days=28&limit=200  (TEACHER_KEY)        -> { ok, rows }
+ *   GET  /api/signal/practice?days=28          (TEACHER_KEY)        -> { ok, rows, totals }
  *
  * WRITES ARE UNAUTHENTICATED — they must be, they come from student devices
  * with no login. That is only safe because a write can express nothing worth
@@ -51,6 +53,13 @@ const AREAS = [
   "esol",
   "reveal-math",
 ];
+
+/* Where a family started the optional practice from. A CLOSED vocabulary: the
+ * question this answers is "does posting the week actually move practice
+ * opens?", and that only needs to tell the posted week apart from browsing. An
+ * open referrer field would be a tracking surface for no extra answer. */
+const PRACTICE_SOURCES = new Set(["week", "library", "spotlight", "other"]);
+const LESSON_ID = /^\d{1,2}-\d{1,2}(?:-flagship)?$/;
 
 const MAX_PATH = 200;
 const MAX_MESSAGE = 300;
@@ -160,7 +169,49 @@ async function ensureSchema(db) {
       `CREATE UNIQUE INDEX IF NOT EXISTS idx_web_vital_key
          ON web_vital (path, day, device, metric, rating)`,
     ),
+    /* Same counter shape and the same privacy posture as usage_signal: one row
+     * per (lesson, source, day) with no person key, so it can count opens and
+     * can never reconstruct a family's session. */
+    db.prepare(
+      `CREATE TABLE IF NOT EXISTS family_practice_open (
+         id INTEGER PRIMARY KEY AUTOINCREMENT,
+         lesson_id TEXT NOT NULL, source TEXT NOT NULL, day TEXT NOT NULL,
+         opens INTEGER DEFAULT 0, updated_at TEXT NOT NULL)`,
+    ),
+    db.prepare(
+      `CREATE UNIQUE INDEX IF NOT EXISTS idx_family_practice_key
+         ON family_practice_open (lesson_id, source, day)`,
+    ),
   ]);
+}
+
+/** The whole write surface of the practice counter, as a pure function so the
+ *  closed vocabulary is testable without a database. Returns null to reject. */
+export function normalizePracticeOpen(body) {
+  const lessonId = clamp(body && body.lessonId, 40).trim();
+  const source = clamp(body && body.source, 20)
+    .trim()
+    .toLowerCase();
+  if (!LESSON_ID.test(lessonId) || !PRACTICE_SOURCES.has(source)) return null;
+  return { lessonId, source };
+}
+
+async function recordPracticeOpen(db, body) {
+  const entry = normalizePracticeOpen(body);
+  if (!entry) return false;
+  const { lessonId, source } = entry;
+  const day = utcDay();
+  await db
+    .prepare(
+      `INSERT INTO family_practice_open (lesson_id, source, day, opens, updated_at)
+       VALUES (?1, ?2, ?3, 1, ?4)
+       ON CONFLICT (lesson_id, source, day) DO UPDATE SET
+         opens = opens + 1,
+         updated_at = ?4`,
+    )
+    .bind(lessonId, source, day, new Date().toISOString())
+    .run();
+  return true;
 }
 
 async function recordView(db, body) {
@@ -353,12 +404,16 @@ export async function onRequest(context) {
   }
 
   try {
-    if (request.method === "POST" && (route === "view" || route === "error" || route === "vital")) {
+    if (
+      request.method === "POST" &&
+      (route === "view" || route === "error" || route === "vital" || route === "practice")
+    ) {
       const body = await readBody(request);
       if (!body) return accepted();
       await ensureSchema(env.DB);
       if (route === "view") await recordView(env.DB, body);
       else if (route === "error") await recordError(env.DB, body);
+      else if (route === "practice") await recordPracticeOpen(env.DB, body);
       else await recordVital(env.DB, body);
       return accepted();
     }
@@ -366,6 +421,38 @@ export async function onRequest(context) {
     if (request.method === "GET" && route === "status") {
       await ensureSchema(env.DB);
       return json({ backend: "d1", ...(await fieldStatus(env.DB)) });
+    }
+
+    if (request.method === "GET" && route === "practice") {
+      const auth = teacherAuthorized(env, request, url);
+      if (auth !== "ok") {
+        return json(
+          {
+            ok: false,
+            error: auth,
+            message:
+              auth === "not-configured"
+                ? "Set the TEACHER_KEY env var on the Pages project to read signal."
+                : "A valid teacher key is required.",
+          },
+          auth === "not-configured" ? 503 : 401,
+        );
+      }
+      await ensureSchema(env.DB);
+      const from = sinceDay(url.searchParams.get("days"));
+      const rows = await env.DB.prepare(
+        `SELECT lesson_id, source, SUM(opens) AS opens, MAX(day) AS last_day
+           FROM family_practice_open WHERE day >= ?1
+          GROUP BY lesson_id, source
+          ORDER BY opens DESC LIMIT 500`,
+      )
+        .bind(from)
+        .all();
+      const totals = {};
+      for (const row of rows.results || []) {
+        totals[row.source] = (totals[row.source] || 0) + Number(row.opens || 0);
+      }
+      return json({ ok: true, since: from, rows: rows.results || [], totals });
     }
 
     if (

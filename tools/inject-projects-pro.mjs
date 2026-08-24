@@ -28,8 +28,8 @@ const DRY = globalThis.process.argv.includes("--dry-run");
 
 const HEAD_BLOCK = [
   "<!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->",
-  '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />',
-  '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />',
+  "",
+  '<link href="/assets/fonts/plus-jakarta-sans-4f1f37.css" rel="stylesheet" />',
   '<link rel="stylesheet" href="/shared/projects/projects-pro.css" />',
   "<!-- projects-pro-injected:end -->",
 ];

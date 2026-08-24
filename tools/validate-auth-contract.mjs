@@ -204,19 +204,19 @@ for (const f of files) {
 
 // The invariants.
 const middleware = read("functions/_middleware.js");
-for (const [name, fn] of Object.entries(DETECTORS)) {
+for (const [_name, fn] of Object.entries(DETECTORS)) {
   checks++;
   const problem = fn(middleware);
   if (problem) failures.push(`functions/_middleware.js — ${problem}`);
 }
 const store = read("curriculum/planning/planning-store.js");
-for (const [name, fn] of Object.entries(STORE_DETECTORS)) {
+for (const [_name, fn] of Object.entries(STORE_DETECTORS)) {
   checks++;
   const problem = fn(store);
   if (problem) failures.push(`curriculum/planning/planning-store.js — ${problem}`);
 }
 const pin = read("engine/core/teacher-mode.js");
-for (const [name, fn] of Object.entries(PIN_DETECTORS)) {
+for (const [_name, fn] of Object.entries(PIN_DETECTORS)) {
   checks++;
   const problem = fn(pin);
   if (problem) failures.push(`engine/core/teacher-mode.js — ${problem}`);

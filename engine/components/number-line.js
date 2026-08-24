@@ -1,3 +1,4 @@
+import { stackContent } from "../core/i18n.js";
 import { mountSymbolPad } from "../core/symbol-pad.js";
 export function renderNumberLine(container, config) {
   // Shape adapter, applied BEFORE anything reads the config: several lessons
@@ -51,7 +52,7 @@ export function renderNumberLine(container, config) {
 
   if (label) {
     const lbl = document.createElement("p");
-    lbl.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    lbl.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     lbl.textContent = label;
     wrapper.append(lbl);
   }
@@ -453,14 +454,14 @@ function renderSequentialNumberLine(container, config) {
   const lead = config.hideStem ? label : label || instructions;
   if (lead) {
     const p = document.createElement("p");
-    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-3); line-height:1.5;";
     p.textContent = lead;
     wrapper.append(p);
   }
 
   const prompt = document.createElement("p");
   prompt.style.cssText =
-    "margin:0 0 var(--sp-2); font-weight:700; color:var(--navy,#12355b); text-align:center;";
+    "margin:0 0 var(--sp-2); font-weight:600; color:var(--navy,#12355b); text-align:center;";
   wrapper.append(prompt);
 
   const PAD_LEFT = 40;
@@ -593,7 +594,7 @@ function renderSequentialNumberLine(container, config) {
   let idx = 0;
   const showTarget = () => {
     const t = targets[idx];
-    prompt.innerHTML = `Move the dot to: <span style="color:var(--teal,#0d7a76)">${escHtml(t.label || formatNum(t.value))}</span> &nbsp;<span style="color:var(--muted,#5f6f80); font-weight:600;">(${idx + 1} of ${targets.length})</span>`;
+    prompt.innerHTML = `Move the dot to: <span style="color:var(--teal,#0d7a76)">${escHtml(t.label || formatNum(t.value))}</span> &nbsp;<span style="color:var(--muted,#5f6f80); font-weight:500;">(${idx + 1} of ${targets.length})</span>`;
     targetMarker.style.display = "none";
   };
   showTarget();
@@ -887,7 +888,7 @@ function renderInequalityGraphs(container, config) {
   const lead = config.hideStem ? label : instructions || label;
   if (lead) {
     const p = document.createElement("p");
-    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = lead;
     wrapper.append(p);
   }
@@ -903,7 +904,7 @@ function renderInequalityGraphs(container, config) {
 
     if (prob.label) {
       const cap = document.createElement("p");
-      cap.style.cssText = "font-weight:600; margin:0 0 var(--sp-2); font-size:0.95rem;";
+      cap.style.cssText = "font-weight:500; margin:0 0 var(--sp-2); font-size:0.95rem;";
       cap.textContent = prob.label;
       row.append(cap);
     }
@@ -997,6 +998,7 @@ function renderJumpNumberLine(container, config) {
     instructions,
     label,
     questionText,
+    questionTextEs,
     answer,
     totalJumps,
     min,
@@ -1013,7 +1015,7 @@ function renderJumpNumberLine(container, config) {
   const lead = config.hideStem ? label : instructions || label;
   if (lead) {
     const p = document.createElement("p");
-    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = lead;
     wrapper.append(p);
   }
@@ -1064,8 +1066,8 @@ function renderJumpNumberLine(container, config) {
     "background:var(--teal-light); border:1px solid rgba(31,166,162,0.15); border-radius:var(--radius-md); padding:var(--sp-4); margin-top:var(--sp-3);";
   if (questionText) {
     const qt = document.createElement("p");
-    qt.style.cssText = "font-weight:700; margin:0 0 var(--sp-3);";
-    qt.textContent = questionText;
+    qt.style.cssText = "font-weight:600; margin:0 0 var(--sp-3);";
+    qt.innerHTML = stackContent(questionText, questionTextEs);
     q.append(qt);
   }
   const controls = document.createElement("div");

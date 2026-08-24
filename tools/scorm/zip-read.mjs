@@ -21,6 +21,8 @@ function crc32(bytes) {
 }
 
 /** Parse a stored-ZIP buffer via its central directory. Throws on corruption. */
+import { inflateRawSync } from "node:zlib";
+
 export function readZip(buf) {
   const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
   const dec = new TextDecoder();
@@ -44,7 +46,18 @@ export function readZip(buf) {
   for (let i = 0; i < count; i++) {
     if (dv.getUint32(p, true) !== SIG_CENTRAL)
       throw new Error(`central directory entry ${i} has a bad signature`);
+    // Method and COMPRESSED size, both of which this reader used to ignore.
+    // It sliced `size` (the UNCOMPRESSED size at +24) out of the file and
+    // CRC'd that. For a stored entry the two sizes are equal, so the bug was
+    // invisible against this repo's own builder, which stores. Against a
+    // deflated archive it slices the wrong length and throws "data runs past
+    // end of file" — corruption, in the only words this reader has. Every one
+    // of the 309 older neft-lesson-*.zip packages reads that way while
+    // `unzip -t` reports them intact. A gate that calls a healthy package
+    // corrupt is as broken as one that calls a broken package clean.
+    const method = dv.getUint16(p + 10, true);
     const crc = dv.getUint32(p + 16, true);
+    const compSize = dv.getUint32(p + 20, true);
     const size = dv.getUint32(p + 24, true);
     const nameLen = dv.getUint16(p + 28, true);
     const extraLen = dv.getUint16(p + 30, true);
@@ -57,9 +70,18 @@ export function readZip(buf) {
     const lNameLen = dv.getUint16(localOffset + 26, true);
     const lExtraLen = dv.getUint16(localOffset + 28, true);
     const dataStart = localOffset + 30 + lNameLen + lExtraLen;
-    if (dataStart + size > buf.length)
+    if (dataStart + compSize > buf.length)
       throw new Error(`entry "${name}": data runs past end of file`);
-    const data = buf.subarray(dataStart, dataStart + size);
+    const raw = buf.subarray(dataStart, dataStart + compSize);
+    let data;
+    if (method === 0) data = raw;
+    else if (method === 8) data = inflateRawSync(raw);
+    else
+      throw new Error(
+        `entry "${name}": unsupported compression method ${method} — not corruption, an unread format`,
+      );
+    if (data.length !== size)
+      throw new Error(`entry "${name}": inflated to ${data.length} bytes, header says ${size}`);
     if (crc32(data) !== crc) throw new Error(`entry "${name}": CRC-32 mismatch (corrupt)`);
 
     entries.push({ name, size, data, text: () => dec.decode(data) });

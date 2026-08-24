@@ -497,7 +497,7 @@ export function renderAreaMorph(container, cfg = {}) {
   const formula = document.createElement("div");
   formula.setAttribute("aria-live", "polite");
   formula.style.cssText =
-    "text-align:center; font-size:1.15rem; font-weight:800; color:" +
+    "text-align:center; font-size:1.15rem; font-weight:700; color:" +
     C.navy +
     "; background:" +
     C.tealSoft +
@@ -511,7 +511,7 @@ export function renderAreaMorph(container, cfg = {}) {
   caption.style.cssText =
     "text-align:center; color:" +
     C.ink +
-    "; font-size:1rem; margin:0 4px 12px; min-height:3.1em; font-weight:600; line-height:1.35;";
+    "; font-size:1rem; margin:0 4px 12px; min-height:3.1em; font-weight:500; line-height:1.35;";
   root.appendChild(caption);
 
   /* ── Predict first ──────────────────────────────────────────────────────────
@@ -537,7 +537,7 @@ export function renderAreaMorph(container, cfg = {}) {
   const predictQ = document.createElement("span");
   predictQ.textContent =
     "Before you move it — does the AREA get bigger, smaller, or stay the same?";
-  predictQ.style.cssText = `flex:1 1 100%; text-align:center; font-size:.9rem; font-weight:700; color:${C.navy};`;
+  predictQ.style.cssText = `flex:1 1 100%; text-align:center; font-size:.9rem; font-weight:600; color:${C.navy};`;
   predictRow.appendChild(predictQ);
   const predictLive = document.createElement("span");
   predictLive.setAttribute("aria-live", "polite");
@@ -546,7 +546,7 @@ export function renderAreaMorph(container, cfg = {}) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.textContent = choice === "same" ? "Stays the same" : `Gets ${choice}`;
-    btn.style.cssText = `min-height:44px; padding:6px 14px; border:1.5px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:.85rem; font-weight:700; cursor:pointer;`;
+    btn.style.cssText = `min-height:44px; padding:6px 14px; border:1.5px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:.85rem; font-weight:600; cursor:pointer;`;
     btn.setAttribute("aria-pressed", "false");
     btn.addEventListener("click", () => {
       prediction = choice;
@@ -571,7 +571,7 @@ export function renderAreaMorph(container, cfg = {}) {
     C.teal +
     "; border-radius:14px; padding:10px 12px 6px; background:#f7fdfd;";
   sliderWrap.innerHTML =
-    '<label for="am-slider-ID" style="display:block; text-align:center; font-weight:800; color:' +
+    '<label for="am-slider-ID" style="display:block; text-align:center; font-weight:700; color:' +
     C.navy +
     '; font-size:.95rem; margin-bottom:2px;">Drag to transform the figure</label>' +
     '<input id="am-slider-ID" type="range" min="0" max="1000" value="0" step="25" style="display:block; width:100%; min-height:44px; accent-color:' +
@@ -579,7 +579,7 @@ export function renderAreaMorph(container, cfg = {}) {
     ';" />' +
     '<div style="display:flex; justify-content:space-between; color:' +
     C.muted +
-    '; font-size:.8rem; font-weight:700; margin-top:-2px;"><span>' +
+    '; font-size:.8rem; font-weight:600; margin-top:-2px;"><span>' +
     esc(def.steps[0].replace(/^\d+\s·\s/, "")) +
     "</span><span>" +
     esc(def.steps[2].replace(/^\d+\s·\s/, "")) +
@@ -600,10 +600,10 @@ export function renderAreaMorph(container, cfg = {}) {
     def.steps
       .map(
         (name, i) =>
-          `<button type="button" class="morph-step-btn" data-step="${i}" aria-pressed="false" style="min-height:44px; padding:6px 12px; border:1.5px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:.82rem; font-weight:700; cursor:pointer;">${esc(name)}</button>`,
+          `<button type="button" class="morph-step-btn" data-step="${i}" aria-pressed="false" style="min-height:44px; padding:6px 12px; border:1.5px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:.82rem; font-weight:600; cursor:pointer;">${esc(name)}</button>`,
       )
       .join("") +
-    `<button type="button" data-act="play" aria-label="Watch the whole transformation" style="min-height:44px; padding:6px 14px; border:1.5px solid ${C.navy}; border-radius:10px; background:#fff; color:${C.navy}; font-size:.82rem; font-weight:700; cursor:pointer;">Watch it</button>`;
+    `<button type="button" data-act="play" aria-label="Watch the whole transformation" style="min-height:44px; padding:6px 14px; border:1.5px solid ${C.navy}; border-radius:10px; background:#fff; color:${C.navy}; font-size:.82rem; font-weight:600; cursor:pointer;">Watch it</button>`;
   // The step chips sit ABOVE the caption, not at the very bottom. In a lesson
   // this component mounts inside `.nt-work-tool`, a STICKY column, while the
   // lesson floats a fixed "Next: …" button over the viewport's bottom-right.

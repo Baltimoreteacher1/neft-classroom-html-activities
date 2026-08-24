@@ -350,37 +350,37 @@ function injectStyles() {
   s.textContent = `
   .ftlab{max-width:640px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
   .ftlab-head{display:flex;align-items:center;gap:8px;}
-  .ftlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.05rem;}
+  .ftlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:700;color:${C.navy};font-size:1.05rem;}
   .ftlab-hint{margin:4px 0 12px;color:${C.muted};font-size:.9rem;line-height:1.4;}
   .ftlab-controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;}
-  .ftlab-field{display:flex;flex-direction:column;gap:3px;font-size:.72rem;font-weight:700;color:${C.muted};text-transform:uppercase;letter-spacing:.03em;}
-  .ftlab-field input{width:96px;padding:8px 10px;font-size:1.1rem;font-weight:700;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;text-transform:none;letter-spacing:normal;}
+  .ftlab-field{display:flex;flex-direction:column;gap:3px;font-size:.72rem;font-weight:600;color:${C.muted};text-transform:uppercase;letter-spacing:.03em;}
+  .ftlab-field input{width:96px;padding:8px 10px;font-size:1.1rem;font-weight:600;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;text-transform:none;letter-spacing:normal;}
   .ftlab-field input:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
-  .ftlab-go{padding:9px 16px;font-size:.95rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
+  .ftlab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
   .ftlab-go:hover{filter:brightness(1.08);}
-  .ftlab-rand{padding:9px 12px;font-size:.85rem;font-weight:700;color:${C.navy};background:#eef4ff;border:1px solid ${C.line};border-radius:10px;cursor:pointer;}
+  .ftlab-rand{padding:9px 12px;font-size:.85rem;font-weight:600;color:${C.navy};background:#eef4ff;border:1px solid ${C.line};border-radius:10px;cursor:pointer;}
   .ftlab-go:focus-visible,.ftlab-rand:focus-visible,.ftlab-chip:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .ftlab-presets{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;}
-  .ftlab-chip{padding:5px 12px;font-size:.9rem;font-weight:700;color:${C.navy};background:#f4f8ff;border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;}
+  .ftlab-chip{padding:5px 12px;font-size:.9rem;font-weight:600;color:${C.navy};background:#f4f8ff;border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;}
   .ftlab-chip:hover{background:#e2ecff;border-color:${C.accent};}
   .ftlab-stage{margin:14px 0 4px;padding:12px;background:#f8fbff;border:1px solid ${C.line};border-radius:14px;overflow-x:auto;}
   .ftlab-tree{display:flex;justify-content:center;}
   .ftlab-pair{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;}
   .ftlab-col{flex:1 1 220px;min-width:200px;display:flex;flex-direction:column;align-items:center;gap:6px;}
-  .ftlab-col-label{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.05rem;}
-  .ftlab-col-eqn{font-weight:700;color:${C.compInk};font-size:.95rem;}
+  .ftlab-col-label{font-family:"Outfit",system-ui,sans-serif;font-weight:700;color:${C.navy};font-size:1.05rem;}
+  .ftlab-col-eqn{font-weight:600;color:${C.compInk};font-size:.95rem;}
   .ftlab-result{margin-top:12px;text-align:center;}
   .ftlab-eqn{display:flex;flex-direction:column;gap:2px;align-items:center;}
-  .ftlab-eqn-line{font-family:"Outfit",system-ui,sans-serif;font-weight:800;font-size:1.15rem;color:${C.navy};}
+  .ftlab-eqn-line{font-family:"Outfit",system-ui,sans-serif;font-weight:700;font-size:1.15rem;color:${C.navy};}
   .ftlab-eqn-exp{color:${C.primeStroke};font-size:1.05rem;}
-  .ftlab-answer{font-family:"Outfit",system-ui,sans-serif;font-weight:900;font-size:1.3rem;color:${C.primeStroke};}
+  .ftlab-answer{font-family:"Outfit",system-ui,sans-serif;font-weight:800;font-size:1.3rem;color:${C.primeStroke};}
   .ftlab-explain{margin:6px auto 0;max-width:520px;color:${C.ink};font-size:.92rem;line-height:1.5;}
   .ftlab-legend{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:center;margin-top:8px;font-size:.8rem;color:${C.muted};}
   .ftlab-key{display:inline-flex;align-items:center;gap:5px;}
   .ftlab-key::before{content:"";width:12px;height:12px;border-radius:50%;border:2px solid;}
   .ftlab-key.is-comp::before{background:${C.compFill};border-color:${C.compStroke};}
   .ftlab-key.is-prime::before{background:${C.primeFill};border-color:${C.primeStroke};}
-  .ftlab-tag{font-weight:800;padding:1px 8px;border-radius:999px;}
+  .ftlab-tag{font-weight:700;padding:1px 8px;border-radius:999px;}
   .ftlab-tag.is-prime{background:${C.primeFill};color:${C.primeInk};}
   /* Build-in motion: root pops in, children spring in from their parent with a
      spring ease, connectors fade in after their child lands. "backwards" fill

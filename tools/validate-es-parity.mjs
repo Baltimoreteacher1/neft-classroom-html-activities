@@ -24,6 +24,7 @@
 // node tools/apply-es-translations.mjs
 
 import { missingStrings, practiceItems, readConfig, smallGroupLessons } from "./es-parity-lib.mjs";
+import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 
 /** Words of two or more letters — the signal that a string is prose, not math. */
 const proseWords = (text) => String(text ?? "").match(/[A-Za-z]{2,}/g) || [];
@@ -94,6 +95,17 @@ for (const lesson of smallGroupLessons()) {
     for (const problem of checkItem(item, `practice[${index}]`)) note(lesson, problem);
   });
 }
+
+// The self-test above proves the DETECTOR fires. Nothing proved the SWEEP found
+// anything: if smallGroupLessons() or practiceItems() ever returned empty, this
+// gate printed "✓ Spanish parity: 0 small-group practice items complete in both
+// languages" and exited 0 — a green check over an unread fleet, which is the
+// exact failure tools/lib/sweep-guard.mjs exists to end.
+assertSweptEnough(
+  "validate:es-parity",
+  items,
+  "Discovery for validate:es-parity returned far fewer practice items than this gate's pinned floor — see data/sweep-floors.json.",
+);
 
 if (failures.length) {
   console.error(`Spanish parity: ${failures.length} problem(s) across ${items} items`);

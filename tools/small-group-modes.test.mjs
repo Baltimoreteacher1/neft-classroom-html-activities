@@ -310,4 +310,37 @@ assert.ok(
   "the sticky rail needs the always-visible progress meter",
 );
 
+// --- the teacher door is not in a student SCORM package ---------------------
+// mountSmallGroupTeacherAccess() mounts a "Student Mode / Teacher access" bar
+// whose link points at /teacher-small-group/<id>/. Harmless on the open web.
+// Inside a SCORM package it sits in the iframe the LMS is grading, so a student
+// who taps it navigates the tracked frame off the lesson — and it is teacher
+// UI in a student assignment either way. Core lessons never showed one; this
+// only became reachable when the 168 group1/group2 variants were added to the
+// SCORM catalog. Guarded by isScormLaunch(), the single reader of that question.
+{
+  const src = readFileSync(
+    new URL("../engine/core/small-group-teacher-access.js", import.meta.url),
+    "utf8",
+  );
+  assert.match(
+    src,
+    /import \{ isScormLaunch \} from "\.\/scorm-bridge\.js"/,
+    "small-group teacher access must ask scorm-bridge, not re-derive the SCORM test",
+  );
+  assert.match(
+    src,
+    /if \(isScormLaunch\(\)\) return false;/,
+    "a SCORM launch must mount no teacher-access bar at all",
+  );
+  // The guard has to come BEFORE the student-mode bar is mounted, or the bar
+  // still renders and the check is decorative.
+  const guardAt = src.indexOf("if (isScormLaunch()) return false;");
+  const barAt = src.indexOf('mountBar(app, modeBar("student"');
+  assert.ok(
+    guardAt > 0 && barAt > guardAt,
+    "the SCORM guard must precede mounting the student bar",
+  );
+}
+
 console.log("small-group mode, structure, and practice contracts passed");

@@ -655,10 +655,10 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
   function renderFactHelper() {
     if (!plan || !plan.divisor) return;
     const d = plan.divisor;
-    let html = `<strong style="font-weight:900;">Multiplication Facts for ${d}:</strong><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">`;
+    let html = `<strong style="font-weight:800;">Multiplication Facts for ${d}:</strong><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">`;
     for (let i = 1; i <= 9; i++) {
       const prod = d * i;
-      html += `<button type="button" class="ldl-fact-chip" data-val="${prod}" style="padding:4px 8px; font-size:0.82rem; font-weight:800; color:#15803d; background:#ffffff; border:1px solid #86efac; border-radius:6px; cursor:pointer;">${d} × ${i} = ${prod}</button>`;
+      html += `<button type="button" class="ldl-fact-chip" data-val="${prod}" style="padding:4px 8px; font-size:0.82rem; font-weight:700; color:#15803d; background:#ffffff; border:1px solid #86efac; border-radius:6px; cursor:pointer;">${d} × ${i} = ${prod}</button>`;
     }
     html += `</div>`;
     factHelper.innerHTML = html;
