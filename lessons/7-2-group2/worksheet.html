@@ -90,6 +90,37 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .wsd .wsd-cell{fill:none;stroke:#c8d2e0;stroke-width:1;stroke-dasharray:3 3;}
 .wsd .wsd-given{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:19px;fill:#0f172a;}
 .wsd-rail{list-style:none;margin:0;padding:0;display:grid;gap:5px;min-width:150px;}
+/* ── scaffolds ──────────────────────────────────────────────────────────
+   All print-first: hairlines, no fills, nothing that costs toner. Every one
+   is BLANK STRUCTURE — labels and room, never a quantity the item did not
+   state. */
+.wss-body{flex:1 1 300px;min-width:250px;}
+.wss-panel{border:1.5px dashed var(--line);border-radius:10px;padding:6px 10px 4px;}
+.wss-panel-tight{margin-top:8px;}
+.wss-panel-t{display:block;color:var(--muted);font-size:11px;font-weight:700;margin-bottom:2px;}
+.wss-rules{display:grid;gap:0;}
+.wss-rule{display:block;border-bottom:1px solid #dbe3ee;height:26px;}
+.wss-ledger{width:100%;border-collapse:collapse;margin:2px 0 0;}
+.wss-ledger th{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);
+  text-align:left;font-weight:700;padding:0 6px 3px;border-bottom:1.5px solid var(--line);}
+.wss-cell{height:30px;border-bottom:1px solid #dbe3ee;padding:0 6px;}
+.wss-cell-why{width:42%;border-left:1px dashed #dbe3ee;}
+.wss-steps{display:grid;gap:7px;}
+.wss-slot{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:end;}
+.wss-slot-t{font-size:11.5px;font-weight:700;color:#12355b;white-space:nowrap;padding-bottom:2px;}
+.wss-slot-w{border-bottom:1.5px solid var(--line);height:26px;}
+.wss-ratio{border-collapse:collapse;margin:0;min-width:210px;}
+.wss-ratio th{height:22px;border:1px solid var(--line);border-bottom-width:1.5px;width:105px;}
+.wss-ratio .wss-cell{border:1px solid #dbe3ee;height:30px;}
+.wss-row-per .wss-cell{border-color:var(--blue);border-width:1.5px;}
+.wss-per{font-size:10.5px;font-weight:800;color:var(--blue);letter-spacing:.04em;}
+.wss-bar{display:grid;grid-template-columns:repeat(10,1fr);border:1.5px solid var(--line);border-radius:6px;overflow:hidden;height:26px;}
+.wss-bar span{border-right:1px solid #dbe3ee;}
+.wss-bar span:last-child{border-right:0;}
+.wss-barlab{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-weight:700;margin-top:2px;}
+.wss-cols{display:grid;grid-template-columns:repeat(6,1fr);gap:0;border:1.5px dashed var(--line);border-radius:8px;height:34px;}
+.wss-col{border-right:1px dashed #dbe3ee;}
+.wss-col:last-child{border-right:0;}
 .wsd-step{display:grid;grid-template-columns:20px 1fr;row-gap:0;column-gap:7px;align-items:baseline;
   border-left:2.5px solid var(--blue);padding:2px 0 3px 8px;}
 .wsd-step-n{grid-row:span 2;font-weight:800;font-size:12px;color:var(--blue);
@@ -182,10 +213,11 @@ header.packet h1::after{
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which rational number is closest to 0 on the number line?</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-1/4</li><li class="ws-opt"><span class="ws-bub">B</span>0.5</li><li class="ws-opt"><span class="ws-bub">C</span>-2</li><li class="ws-opt"><span class="ws-bub">D</span>1.75</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Spot the Mistake: Plotting -2.25</p>
   <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Plot -2.25 on the number line.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">It is negative, so I go past -2. The .25 is one quarter, so I count toward 0 (to the right) by a quarter unit and land between -2 and -1.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">Point plotted at -1.75, between -2 and -1.</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which number is farthest to the LEFT on a number line?</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-1</li><li class="ws-opt"><span class="ws-bub">B</span>0</li><li class="ws-opt"><span class="ws-bub">C</span>-4</li><li class="ws-opt"><span class="ws-bub">D</span>2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is the opposite of -3/4?</p><div class="wsd-wrap">
-      <div class="wsd-frame"><svg class="wsd" viewBox="0 0 105 178" width="105" height="178" role="img" aria-label="Blank long-division frame for 3 divided by 4, with one column per place value."><rect class="wsd-cell" x="63" y="8" width="24" height="22" rx="3"/><text class="wsd-given" x="44" y="58" text-anchor="middle">4</text><path class="wsd-rule" d="M 54 40 q 8 17 0 34" fill="none"/><line class="wsd-rule" x1="54" y1="40" x2="96" y2="40"/><text class="wsd-given" x="75" y="58" text-anchor="middle">3</text><rect class="wsd-cell" x="63" y="72" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="106" width="24" height="22" rx="3"/><rect class="wsd-cell" x="63" y="140" width="24" height="22" rx="3"/></svg></div>
-      
-    </div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>3/4</li><li class="ws-opt"><span class="ws-bub">B</span>-3/4</li><li class="ws-opt"><span class="ws-bub">C</span>4/3</li><li class="ws-opt"><span class="ws-bub">D</span>0</li></ol></div></li></ol>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which number is farthest to the LEFT on a number line?</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-1</li><li class="ws-opt"><span class="ws-bub">B</span>0</li><li class="ws-opt"><span class="ws-bub">C</span>-4</li><li class="ws-opt"><span class="ws-bub">D</span>2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is the opposite of -3/4?</p><div class="wsd-wrap"><div class="wss-body"><div class="wss-steps">
+      <div class="wss-slot"><span class="wss-slot-t">Rewrite each fraction</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
+      <div class="wss-slot"><span class="wss-slot-t">Simplify</span><span class="wss-slot-w"></span></div>
+    </div></div></div><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>3/4</li><li class="ws-opt"><span class="ws-bub">B</span>-3/4</li><li class="ws-opt"><span class="ws-bub">C</span>4/3</li><li class="ws-opt"><span class="ws-bub">D</span>0</li></ol></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
