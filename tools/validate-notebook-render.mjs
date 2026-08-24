@@ -87,8 +87,22 @@ if (baseArg) {
 const BOOT_TIMEOUT = 12000;
 
 try {
+  // PW_CHROMIUM_PATH points at a system Chromium when the Playwright-managed
+  // download is missing or version-mismatched — the same convention
+  // smoke-lesson-boot.mjs, validate-scorm-self-contained.mjs and
+  // canvas-notebook-probe.mjs already follow. Without it this launch threw an
+  // UNCAUGHT exception ("Executable doesn't exist at …chromium_headless_shell-1234"),
+  // which fails validate:hub and therefore blocks every push from a machine
+  // whose browser is not the exact pinned build. That is a crash, not a
+  // verdict: it says nothing about the notebooks.
+  //
+  // Deliberately NOT a skip. A browser probe that quietly passes when it cannot
+  // open a browser is the failure mode this repo documents for
+  // validate:lesson-boot. This only lets the check RUN where it previously
+  // could not; when no browser can be found at all it still throws.
   const browser = await chromium.launch({
     headless: true,
+    ...(process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {}),
   });
 
   console.log(
