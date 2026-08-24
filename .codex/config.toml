@@ -54,3 +54,19 @@ type = "command"
 command = "python3 .codex/hooks/final_qa.py"
 timeout = 10
 statusMessage = "Checking final QA readiness"
+
+# Remote MCP servers Codex may reach from this repo. Docs lookup, read-only
+# Cloudflare bindings/telemetry, and a locally spawned browser driver — none of
+# these can write to production, which stays behind `npm run ship`.
+[mcp_servers.cloudflare-bindings]
+url = "https://bindings.mcp.cloudflare.com/mcp"
+
+[mcp_servers.cloudflare-observability]
+url = "https://observability.mcp.cloudflare.com/mcp"
+
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@latest"]
