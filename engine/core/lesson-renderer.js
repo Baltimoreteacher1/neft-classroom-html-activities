@@ -1188,7 +1188,15 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
   // Optional per-item visual: an explicit or auto-extracted `diagram`
   // (long-division-builder, factor-tree, tape-diagram, …) renders above the
   // component through the buildVisual bridge.
-  const itemDiagram = problemDef.diagram || extractDivisionDiagram(problemDef);
+  // `suppressAutoDiagram` is set by callers that ALREADY rendered a
+  // section-level figure for this item (Explore mounts `explore.diagram` beside
+  // the activity). Passing `diagram: undefined` was not enough on its own: the
+  // auto-extractor reads the stem, and an Explore stem naturally names the very
+  // division the section figure is already showing — so the student got the same
+  // long-division builder twice, once in each column.
+  const itemDiagram =
+    problemDef.diagram ||
+    (problemDef.suppressAutoDiagram ? null : extractDivisionDiagram(problemDef));
   if (itemDiagram?.kind) {
     const fig = document.createElement("div");
     fig.className = "problem-item-figure";
@@ -3705,7 +3713,13 @@ function renderExplorePhase(el, state, ctx, config) {
     // `label` is dropped for the same reason as `diagram`: the component prints
     // it directly above its own widget, one line under the stem that already
     // said it. One instruction, one place.
-    { ...cfg, diagram: undefined, label: undefined, stem: cfg.instructions || cfg.stem },
+    {
+      ...cfg,
+      diagram: undefined,
+      suppressAutoDiagram: Boolean(exploreFig),
+      label: undefined,
+      stem: cfg.instructions || cfg.stem,
+    },
     () => {
       if (cfg.discourse) {
         // Post-activity discussion is now a SPOKEN Turn & Talk (not a writing

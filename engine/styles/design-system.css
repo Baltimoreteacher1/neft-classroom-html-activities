@@ -5108,8 +5108,21 @@ textarea.syw-input {
   position: fixed;
   right: 0;
   top: 50%;
-  transform: translateY(-50%);
-  z-index: 60;
+  /* NOT a plain -50%. The right edge at exactly 50% already belongs to the
+     Learning-Supports dock (.ewl-supports-tools-dock, z-index 9998), and its
+     collapsed "Tools" pill is 100px wide -- so it covered this 44px
+     toggle outright and students simply had no highlighter on any whole-group
+     lesson (measured: toggle at x1236 y478, pill at x1180 y480, elementFromPoint
+     resolved to the pill). The small-group surface hit the identical bug and
+     solved it by offsetting 58px BELOW centre; matching that number here keeps
+     the two lesson surfaces behaving alike and leaves the slot 58px ABOVE
+     centre to .nt-tooldock. Offsetting from the centre (rather than pinning to
+     a corner) is what keeps it clear of the bottom-right Save/Resume cluster on
+     short screens. See assets/small-group-designsystem.css section 11. */
+  transform: translateY(calc(-50% + 58px));
+  /* Above the supports dock: an EXPANDED supports rail can grow to 86vh and
+     reach this slot, and at z-index 60 it would take the click again. */
+  z-index: 9998;
   /* row-reverse, so the panel opens INWARD from the right edge. In DOM order
      the toggle comes first (it is the thing you tab to); laid out left-to-right
      that would push the panel off the side of the screen. */

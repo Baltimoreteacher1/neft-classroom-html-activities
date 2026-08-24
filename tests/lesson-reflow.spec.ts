@@ -177,6 +177,73 @@ test.describe("shared lesson shell reflow", () => {
     });
   }
 
+  // The mark-up dock (highlight / underline / bold) is the student's only route
+  // to annotating a whole-group lesson, and it was PRESENT-BUT-UNREACHABLE:
+  // `.annot-dock` sat at `right:0; top:50%`, the exact slot the Learning-Supports
+  // rail already owns at z-index 9998, so that rail's collapsed 100px "Tools"
+  // pill covered the 44px toggle outright. `querySelector` therefore found the
+  // dock on all 85 whole-group lessons while no student could open it — which is
+  // why the first assertion here is a HIT TEST, not existence. The small-group
+  // surface hit the same bug and fixed it the same way
+  // (assets/small-group-designsystem.css section 11).
+  //
+  // Two assertions, because either alone can pass while the bug is present:
+  //
+  //   • The hit test only proves something while the supports pill is actually
+  //     on screen, and whether it paints depends on what that student has been
+  //     assigned. Driven on /lessons/1-1/ WITHOUT `?sn=`, which is the route a
+  //     student takes and the one where the pill was measured; the test states
+  //     that precondition rather than assuming it.
+  //   • The offset assertion needs no pill at all: the viewport's vertical
+  //     centre is the slot the supports rail owns, so the dock must not be
+  //     centred there. This is what catches a revert to plain `translateY(-50%)`
+  //     on any lesson, in any support configuration.
+  for (const [width, height, label] of [
+    [1440, 900, "desktop"],
+    [1280, 800, "laptop"],
+    [1024, 768, "chromebook"],
+  ] as const) {
+    test(`the mark-up dock is reachable, not just present, at ${label} size`, async ({ page }) => {
+      await page.setViewportSize({ width, height });
+      await page.goto("/lessons/1-1/", { waitUntil: "networkidle" });
+      const start = page.locator(".flagship-mission-start");
+      if (await start.count()) {
+        await start.click();
+        await page.locator(".flagship-mission").waitFor({ state: "detached" });
+      }
+      await page.locator(".annot-dock-toggle").waitFor();
+
+      const reach = await page.evaluate(() => {
+        const toggle = document.querySelector<HTMLElement>(".annot-dock-toggle");
+        if (!toggle) return null;
+        const box = toggle.getBoundingClientRect();
+        const top = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+        const pill = document.querySelector<HTMLElement>(".ewl-supports-dock-reopen");
+        const pillBox = pill?.getBoundingClientRect();
+        return {
+          clickable: top === toggle || toggle.contains(top),
+          blockedBy: (top as HTMLElement | null)?.className ?? "",
+          pillOnScreen: !!pillBox && pillBox.width > 0 && pillBox.height > 0,
+          offsetFromCentre: Math.abs(box.top + box.height / 2 - window.innerHeight / 2),
+        };
+      });
+
+      expect(reach, "every lesson mounts the mark-up dock").not.toBeNull();
+      expect(
+        reach?.pillOnScreen,
+        "this route must show the supports pill, or the hit test proves nothing",
+      ).toBe(true);
+      expect(
+        reach?.clickable,
+        `the mark-up toggle must receive its own clicks (covered by "${reach?.blockedBy}")`,
+      ).toBe(true);
+      expect(
+        reach?.offsetFromCentre ?? 0,
+        "the dock must claim its own slot, not the centred one the supports rail owns",
+      ).toBeGreaterThan(30);
+    });
+  }
+
   test("centers the lesson column when browser zoom exposes a wide layout viewport", async ({
     page,
   }) => {
