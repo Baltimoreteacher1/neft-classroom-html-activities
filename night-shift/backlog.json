@@ -48,6 +48,15 @@
       "timeoutMinutes": 25,
       "output": "night-shift/audits/generator-write-collisions.md",
       "prompt": "Read every inventory file present under night-shift/audits/ (generator-write-inventory*.md) and find output paths that MORE THAN ONE generator writes. State up front which inventory files you found and what fraction of the generators they cover \u2014 if part 2 is missing, say the analysis is partial rather than implying it is complete.\n\nFor each collision report: the shared output path; every generator that writes it; each one's write mode; and the resulting hazard, stated concretely. A WHOLE-FILE write to a path another generator also contributes to is the case that silently destroys content \u2014 call those out first. Two MERGE writers are usually fine; say so rather than padding the list.\n\nVerify each collision against the actual source before reporting it; the inventories are a lead, not proof. Cite file:line from the generators themselves. If a collision turns out to be spurious on inspection, leave it out.\n\nWrite exactly one file: night-shift/audits/generator-write-collisions.md. Change no other file."
+    },
+    {
+      "id": "audit-almost-right-lab-drift",
+      "title": "Report how far generate-almost-right-lab.mjs has drifted from its live pages",
+      "type": "claude",
+      "status": "pending",
+      "timeoutMinutes": 25,
+      "output": "night-shift/audits/almost-right-lab-drift.md",
+      "prompt": "scripts/generate-almost-right-lab.mjs writes its output to join(__dirname, 'curriculum/...'), and __dirname is scripts/ \u2014 so it writes under scripts/curriculum/ while its own console.log claims curriculum/. Every sibling generator resolves ROOT as join(__dirname, '..'). Correcting that path alone is UNSAFE: the generator's template has drifted from the live pages, so a corrected write would overwrite real improvements.\n\nDo NOT change any code. Produce the reconciliation analysis a human needs before that path can be fixed.\n\nCompare what makePage() in the generator emits against the five live pages at curriculum/almost-right-lab/equations/mission-{1..5}/index.html. For each difference report: what the live page has that the generator would not reproduce; whether it is a sentinel-wrapped injected block (which scripts/lib/preserve-injected.mjs would restore) or an unprotected edit (which it would not); and the file:line on both sides.\n\nKnown starting points, which you should verify rather than trust: the live pages carry script tags for /assets/nt-usage.js, /assets/math-workbench-launcher.js and /assets/formula-popup.js; and the answer-marking logic in the live pages marks only the button the student chose, where the generator marks both correct and wrong. Confirm each against the actual files and find anything else.\n\nClose with a section stating exactly what would have to change in the generator before its output path can be corrected safely. Where a difference is a pedagogical choice rather than a mechanical one, say so and leave the decision to the reader.\n\nWrite exactly one file: night-shift/audits/almost-right-lab-drift.md. Change no other file."
     }
   ]
 }
