@@ -22,14 +22,32 @@
       "title": "Regenerate homework HTML",
       "type": "regen",
       "script": "generate-homework-html",
-      "status": "in-review"
+      "status": "pending"
     },
     {
       "id": "regen-activity-guides",
       "title": "Regenerate editable activity teacher guides",
       "type": "regen",
       "script": "generate-activity-guides",
-      "status": "in-review"
+      "status": "pending"
+    },
+    {
+      "id": "audit-generator-writes-part2",
+      "title": "Inventory generator output paths and write modes (part 2)",
+      "type": "claude",
+      "status": "pending",
+      "timeoutMinutes": 25,
+      "output": "night-shift/audits/generator-write-inventory-part2.md",
+      "prompt": "Continue the generator write inventory. Part 1 covered the first 25 of the scripts matching `ls scripts/generate-*.mjs`; this pass covers the REMAINDER (26th onward). Read night-shift/audits/generator-write-inventory.md first to match its table columns, mode legend, and conventions exactly, so the two files can be concatenated.\n\nFor each script in scope record: script name; output path(s), as literals where the code gives literals and as the expression where a path is built at runtime; write mode (WHOLE-FILE / MERGE / UNCLEAR per part 1's legend); and the file:line of the write call.\n\nNo collision analysis and no risk ranking \u2014 a later pass does that. Record only what the code shows; mark anything undetermined as UNCLEAR rather than inferring it.\n\nWrite exactly one file: night-shift/audits/generator-write-inventory-part2.md. Change no other file."
+    },
+    {
+      "id": "audit-generator-write-collisions",
+      "title": "Find output paths written by more than one generator",
+      "type": "claude",
+      "status": "pending",
+      "timeoutMinutes": 25,
+      "output": "night-shift/audits/generator-write-collisions.md",
+      "prompt": "Read every inventory file present under night-shift/audits/ (generator-write-inventory*.md) and find output paths that MORE THAN ONE generator writes. State up front which inventory files you found and what fraction of the generators they cover \u2014 if part 2 is missing, say the analysis is partial rather than implying it is complete.\n\nFor each collision report: the shared output path; every generator that writes it; each one's write mode; and the resulting hazard, stated concretely. A WHOLE-FILE write to a path another generator also contributes to is the case that silently destroys content \u2014 call those out first. Two MERGE writers are usually fine; say so rather than padding the list.\n\nVerify each collision against the actual source before reporting it; the inventories are a lead, not proof. Cite file:line from the generators themselves. If a collision turns out to be spurious on inspection, leave it out.\n\nWrite exactly one file: night-shift/audits/generator-write-collisions.md. Change no other file."
     }
   ]
 }
