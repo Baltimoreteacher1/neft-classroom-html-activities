@@ -1,6 +1,14 @@
 {
-  "_comment": "Queue for the Backlog Advancer. type 'regen' runs `npm run <script>` in a worktree; type 'claude' runs a scoped headless claude prompt (gated by enableClaudeTasks). status: pending | in-review | done.",
+  "_comment": "Queue for the Backlog Advancer. type 'regen' runs `npm run <script>` in a worktree; type 'claude' runs a scoped headless claude prompt (gated by enableClaudeTasks). A claude task gets Read/Glob/Grep/Edit/Write only \u2014 declare `allowedTools` to widen it. status: pending | in-review | done.",
   "tasks": [
+    {
+      "id": "audit-generator-destructive-writes",
+      "title": "Audit generators for destructive whole-file writes",
+      "type": "claude",
+      "status": "pending",
+      "timeoutMinutes": 25,
+      "prompt": "Audit the generator scripts in scripts/ (files matching generate-*.mjs and any *inject*.mjs) for the destructive-write pattern: a script that rewrites a whole output file when it only owns a few fields or regions of that file, and so silently drops content another generator or a human previously wrote there.\n\nFor each generator, determine: (a) which output paths it writes, (b) whether it writes whole-file (fs.writeFile of a freshly built string) or merges into existing content, and (c) whether any OTHER generator or hand-authored layer also writes the same path. A whole-file write to a path that something else also contributes to is the finding worth reporting.\n\nWrite your findings to reports/generator-write-safety.md as a markdown table sorted with the highest-risk generators first, with columns: Generator | Output path(s) | Write mode | Also written by | Risk | Evidence (file:line). Under the table, add a short 'How to confirm' section naming the exact greps or commands a human would run to verify each high-risk row.\n\nReport only what the code actually shows. If you cannot establish a claim from the source, say so in the row rather than inferring it. Do not rank anything as high risk without a file:line citation.\n\nWrite exactly one file: reports/generator-write-safety.md. Change no other file."
+    },
     {
       "id": "regen-worksheets",
       "title": "Regenerate per-lesson practice worksheets",
