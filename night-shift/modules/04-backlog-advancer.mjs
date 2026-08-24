@@ -3,6 +3,7 @@
 // worktree; if build+validate stay clean, commit to a branch, push, open a PR.
 // `claude` tasks run a scoped headless `claude -p` and are gated off by default.
 // NEVER deploys.
+import fs from "node:fs/promises";
 import path from "node:path";
 import { sh, hasCommand, resolveCommand, readJson, writeJson } from "../lib/util.mjs";
 
@@ -19,6 +20,14 @@ async function makeWorktree(ctx, branch, baseRef) {
   // regen diff — never the dirty working branch the repo happens to sit on.
   const r = await ctx.git.raw("worktree", "add", "-B", branch, wt, baseRef);
   return r.ok ? wt : null;
+}
+
+// The briefing has to be able to explain a silent run. Discarding stdout is
+// exactly what let the first no-op pass as a ✅.
+async function writeTranscript(ctx, taskId, text) {
+  const file = path.join(ctx.root, "night-shift", "briefings", `claude-${taskId}.log`);
+  await fs.writeFile(file, text, "utf8").catch(() => {});
+  return file;
 }
 
 async function cleanupWorktree(ctx, wt) {
@@ -83,6 +92,7 @@ export async function run(ctx) {
 
     try {
       let workOk = false;
+      let transcriptNote = "";
       if (task.type === "regen") {
         const r = await sh("npm", ["run", task.script], { cwd: wt, timeout: 20 * 60_000 });
         workOk = r.ok;
@@ -98,6 +108,33 @@ export async function run(ctx) {
           { cwd: wt, timeout: (task.timeoutMinutes || 30) * 60_000 },
         );
         workOk = r.ok;
+        const said = (r.stdout || "").trim();
+        if (said) {
+          await writeTranscript(ctx, task.id, said);
+          transcriptNote = said.split("\n").slice(-2).join(" / ").slice(0, 200);
+        }
+        // A task that names its output gets checked for it. Two runs were lost
+        // to a report written into a git-excluded directory: the file was there,
+        // `git status` was empty, and the module read that as "already current".
+        // An invisible artifact must be loud, not indistinguishable from idle.
+        if (workOk && task.output) {
+          const abs = path.join(wt, task.output);
+          const exists = await fs
+            .access(abs)
+            .then(() => true)
+            .catch(() => false);
+          if (!exists) {
+            workOk = false;
+            details.push(`❌ "${task.title}" — declared output ${task.output} was never written.`);
+          } else if ((await sh("git", ["-C", wt, "check-ignore", task.output])).ok) {
+            workOk = false;
+            worst = "warn";
+            details.push(
+              `⚠️ "${task.title}" — wrote ${task.output}, but git ignores that path, so it can never reach a PR.`,
+            );
+            actions.push(`Point "${task.title}" at a tracked path, or un-ignore ${task.output}.`);
+          }
+        }
         if (!workOk) {
           // A 30-minute wall clock and a broken prompt are different problems;
           // reporting both as ❌ is how a briefing stops being worth reading.
@@ -125,6 +162,19 @@ export async function run(ctx) {
       const wtGit = (...a) => sh("git", ["-C", wt, ...a]);
       const status = (await wtGit("status", "--porcelain")).stdout.trim();
       if (!status) {
+        // For an idempotent generator, an empty diff means the tree was already
+        // current — a real pass. For a claude task it means the run produced
+        // nothing at all, and retiring the task as "done" on the strength of
+        // work that never happened is how a backlog quietly empties itself.
+        if (task.type === "claude") {
+          worst = "warn";
+          details.push(
+            `⚠️ "${task.title}" — claude exited cleanly but wrote nothing; left pending.` +
+              (transcriptNote ? ` Last said: ${transcriptNote}` : ""),
+          );
+          actions.push(`"${task.title}" produced nothing — narrow its scope, then re-run.`);
+          continue;
+        }
         details.push(`✅ "${task.title}" — ran clean, no changes produced (already current).`);
         task.status = "done";
         continue;
