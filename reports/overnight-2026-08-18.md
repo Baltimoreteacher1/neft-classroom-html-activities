@@ -2041,3 +2041,80 @@ commit-often workflow that makes every commit cost minutes and, as above, it can
 corrupt a concurrent measurement. Worth knowing before installing it on a
 machine where you commit in a tight loop.
 
+---
+
+# Block 11 — reconciling with main, and verifying the font fix rather than trusting it
+
+`origin/main` moved **165 commits** (`c1883486` → `dc00d0dd`) while this branch
+sat, and PR #191 went `mergeable_state: dirty`. Merged main in; two conflicts,
+both resolved: `package.json` took main's `validate` line wholesale (verified it
+still carries `validate:lesson-catalogues`, `validate:downloads` and
+`validate:workflow-yaml`), and the report kept this branch's later blocks, which
+main's copy does not have.
+
+**The headline fix already shipped.** `ecaf7eb1` on main is a cherry-pick of
+`b491192e` — the wrong-materials fix — and `tools/validate-lesson-catalogues.mjs`
+went with it. So the defect that motivated PR #191 is live independently of the
+PR.
+
+## Section 1 was overtaken, and by more than I proposed
+
+Three commits on main — `4111143a`, `7b3aacfa`, `fed97ea4` — self-host the fonts
+for the **whole site**, not just the accessibility face, behind
+`validate:self-hosted-fonts`. `1b3c504e` did the blocking-CDN-`<script>` half
+and pinned `validate:external-scripts` at 0. Between them they cover both halves
+of the class I described in Block 9.
+
+**Two of my own numbers were wrong on the way to confirming this, and neither
+reached a conclusion.**
+
+1. I first read "zero `fonts.googleapis.com` on main" out of
+   `git grep -c … <rev> | wc -l`, which counts lines of output from a form that
+   printed none. The honest count is **56 files**.
+2. I then nearly reported those 56 as unconverted pages. They are the **bundle
+   CSS files themselves**, carrying the original Google URL as a provenance
+   comment on line 2. Checked for a fetching position (`@import`, `src:`) across
+   all 56: **zero**. Pages referencing both a bundle and the CDN: **zero**.
+
+The gate is also honest about its own scope in a way worth repeating: it does
+NOT assert repo-wide zero, because 941 printables were deliberately reverted
+when a superset bundle changed their font matching and shifted their layout. The
+invariant it holds is "a converted page may not regress", which is true and
+keepable, rather than a zero that would fail on a deliberate decision.
+
+## The verification that matters: the same probe, on the fixed tree
+
+A passing gate is not a painting page. Re-ran the Block 9 blackhole probe — both
+font hosts routed to a handler that never answers, which is how a filter that
+drops packets behaves — against a fresh `npm run build`:
+
+```
+path                        first paint      requests to font host   text rendered
+/curriculum/units/          596ms            0                       40,035 chars
+/curriculum/                228ms            0                        5,852 chars
+/lessons/1-1/               364ms            0                          637 chars
+/lessons/1-1/worksheet.html 184ms            0                        3,693 chars
+```
+
+Block 9 measured `/curriculum/units/` **blank at 330 seconds** under exactly this
+condition. It now paints in 596ms and never contacts the host at all. The
+built `dist/` has **0** live font-CDN references in a fetching position.
+
+The blank-page failure mode is gone. Not mitigated — the request is not made.
+
+## Item 3: the QA gate no longer depends on a per-clone setting
+
+`scripts/ship.sh` delegated the whole gate to `.githooks/pre-push`, which only
+fires when `core.hooksPath` points at `.githooks` — a per-clone setting made by
+`npm run qa:install-hooks` and not carried by a clone. This clone was found with
+it empty. `ship.sh` now runs `npm run qa:loop` itself against `"$WT"`, the
+assembled deploy worktree, and aborts before the push on failure. Four
+assertions added to `tools/deploy-path.test.mjs`, each proven by mutation:
+
+- remove the `qa:loop` run → 3 assertions fail
+- gate the local tree instead of `$WT` → the `$WT` assertion fails
+- move the gate after the push → the ordering assertion fails
+- downgrade `fail` to `say` → the abort assertion fails
+
+7/7 restored.
+
