@@ -21,6 +21,15 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      # `npm run validate` includes sweeps that shell out to ripgrep, which the
+      # ubuntu-24.04 runner image no longer ships. See predeploy-verify.yml.
+      - name: Install ripgrep
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+      # validate:notebook-render launches Playwright. This job never installed a
+      # browser (its playwright install lives in a different job), so that check
+      # could only ever fail here. See predeploy-verify.yml.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
       - name: Validate (static + reveal-math + hub lock)
         run: npm run validate
       - name: Internal link audit
