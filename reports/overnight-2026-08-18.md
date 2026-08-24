@@ -2177,3 +2177,82 @@ run names each page (`PASS 1-1 #app/mount 999`) and ends `17/17 pages rendered`;
 a skipped one is reported by name as `SKIPPED (verified NOTHING)`. The runner
 already prints that line — it is what caught the skip in the rejected push above.
 
+---
+
+# Block 13 — CI's red gate is main's defect, and I contaminated my own evidence
+
+## The CI failure, reproduced and root-caused
+
+`Required quality gate` failed on `9b6567b1` with two red steps —
+`Unit and contract tests` and `Repository validation`. **One cause, not two:**
+`npm run validate` begins `npm run validate:workflow-yaml && npm run test`, so a
+failing test fails both.
+
+Reproduced locally by supplying the one thing CI has that this sandbox does not:
+
+```
+$ node tools/workbench-live-runtime.test.mjs
+↷ Live Board runtime test skipped (set MWB_RUNTIME_TEST=1 with local Vite + Worker)
+SKIPPED: MWB_RUNTIME_TEST is not set — nothing was verified by this check.
+
+$ CI=1 node tools/workbench-live-runtime.test.mjs
+SKIPPED: MWB_RUNTIME_TEST is not set — nothing was verified by this check.
+   CI must not report a skipped check as a pass.
+```
+
+`CI=1 npm test` → **238/239**, failing exactly there.
+
+**The test is behaving correctly.** `tools/lib/skip-exit.mjs` is deliberate and
+right: SKIP is exit 3, never a pass, and in CI it becomes exit 1 because
+"infrastructure that cannot run a check is a failure". Its own header names the
+`validate:lesson-boot` false-PASS as the failure it exists to end.
+
+**The defect is that CI was never given what the test needs.** No workflow sets
+`MWB_RUNTIME_TEST`, and none starts the Vite + Worker pair it requires:
+
+```
+$ grep -rn "MWB_RUNTIME_TEST" .github/workflows/
+  NOT SET in any workflow
+```
+
+`tools/workbench-live-runtime.test.mjs` landed in `ff0d6bba`, which is on
+`origin/main`. `predeploy-verify.yml` is **PR-triggered**, so pushes to `main`
+never ran it and nothing went red there. **This blocks every pull request opened
+against main**, not just this one. PR #191 is the messenger.
+
+**Not fixed here, deliberately.** The honest fix is to give CI the Vite + Worker
+and set `MWB_RUNTIME_TEST=1`; the cheap fix is to let the skip pass in CI, which
+would delete the exact property `skip-exit.mjs` was written to guarantee. That is
+a CI-infrastructure decision on someone else's commit, and CLAUDE.md says not to
+change the deploy workflow unasked. Written down instead.
+
+## Where I got it wrong
+
+**I contaminated my own evidence.** I said a second consecutive local
+`validate:lesson-boot` failure "changes my read" from race to real. It does not:
+I had launched `CI=1 npm test` in the background **while that push's `qa:loop`
+was running**, so the 11:27 run had a full second test suite competing with it
+for the tree it was reading. The interference I then cited as evidence was
+manufactured by me. The 11:21 failure had no such contamination and remains
+genuinely unexplained.
+
+**I nearly reported a fixture as a finding.** This line appears in the test
+output:
+
+```
+FAIL  validate:self-hosted-fonts: swept 0 HTML pages referencing a self-hosted
+/assets/fonts/ bundle (floor 1545, baseline 1717)…
+```
+
+It is a **fixture string printed by a self-test** proving the sweep-guard fires,
+not a real sweep result. Read as real it would have said the font work was
+broken — the opposite of what the browser probe measured minutes earlier. Caught
+before it reached a conclusion; recorded because it is exactly the class of
+mistake the standing rule exists for.
+
+**My local green and CI's red are both honest.** `qa:loop` PASSed 99/99 locally
+without `CI` set, where this test SKIPs and a skip does not block a local push by
+design. CI sets `CI`, where a skip is a failure. Neither run is lying; they are
+answering different questions, and the PR body's "PASS 99/99" needs reading with
+that qualifier attached.
+
