@@ -21,6 +21,10 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      # `npm run validate` includes sweeps that shell out to ripgrep, which the
+      # ubuntu-24.04 runner image no longer ships. See predeploy-verify.yml.
+      - name: Install ripgrep
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
       - name: Validate (static + reveal-math + hub lock)
         run: npm run validate
       - name: Internal link audit
