@@ -1,3 +1,4 @@
+import { DIVISION_FIGURE_CSS } from "./division-walk-figure.js";
 import { getPreferredLang } from "./i18n.js";
 
 //
@@ -962,6 +963,7 @@ export function injectSmallGroupStyles(accent) {
        alignment, and its caption names what the student is looking at. */
     .sg-divfig{max-width:420px}
     .sg-divfig svg{max-width:100%;margin:0 auto}
+    ${DIVISION_FIGURE_CSS}
     .sg-divfig-cap{margin-top:6px;color:var(--sg-muted);font-size:13px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.04em}
     .sg-checkstep-wrap{margin:0 0 9px}
     .sg-checkstep-wrap .sg-checkstep{margin:0}

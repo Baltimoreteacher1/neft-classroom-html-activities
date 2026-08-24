@@ -341,3 +341,30 @@ export function carriedDivisionFigures(lines) {
   }
   return out;
 }
+
+/**
+ * The stroke and fill this figure's own classes need, owned by the module that
+ * writes them.
+ *
+ * The bracket and the subtraction rules are an SVG `<path>` and `<line>`, whose
+ * default stroke is `none` — so a surface that renders the figure without these
+ * rules shows the digits and NO long-division house at all. That shipped: the
+ * whole-group Learn It panel carried these five rules privately, and when the
+ * small groups started rendering the same tableau (2026-08-23) they inherited
+ * the markup and not the stroke, leaving students who need the model most
+ * looking at "12 1344" floating in a box. Both surfaces now interpolate this
+ * string, so neither can render the figure without dressing it.
+ */
+export const DIVISION_FIGURE_CSS = `
+  .dwf { display: block; }
+  .dwf text {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 22px;
+    fill: #0f172a;
+  }
+  .dwf .dwf-bracket { stroke: #0f172a; stroke-width: 2.5; fill: none; }
+  .dwf .dwf-rule { stroke: #0f172a; stroke-width: 2; }
+  .dwf .dwf-q { font-weight: 700; }
+  .dwf .dwf-bring { fill: #b45309; }
+  .dwf .dwf-new { fill: #0d7a76; font-weight: 700; }
+`;

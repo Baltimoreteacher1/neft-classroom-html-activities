@@ -1,5 +1,5 @@
 import { workedFigure, workedStepFigures } from "../../scripts/lib/learn-figures.mjs";
-import { carriedDivisionFigures } from "../core/division-walk-figure.js";
+import { carriedDivisionFigures, DIVISION_FIGURE_CSS } from "../core/division-walk-figure.js";
 import { getPreferredLang } from "../core/i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "../core/interactive-visual.js";
 import {
@@ -1204,17 +1204,7 @@ function injectVocabLearnStyles() {
       max-width: 420px;
       height: auto;
     }
-    .dwf { display: block; }
-    .dwf text {
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      font-size: 22px;
-      fill: #0f172a;
-    }
-    .dwf .dwf-bracket { stroke: #0f172a; stroke-width: 2.5; }
-    .dwf .dwf-rule { stroke: #0f172a; stroke-width: 2; }
-    .dwf .dwf-q { font-weight: 700; }
-    .dwf .dwf-bring { fill: #b45309; }
-    .dwf .dwf-new { fill: #0d7a76; font-weight: 700; }
+    ${DIVISION_FIGURE_CSS}
     .sr-only {
       position: absolute;
       width: 1px;
