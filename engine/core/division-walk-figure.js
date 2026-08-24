@@ -3,7 +3,7 @@
 // When a worked example narrates the standard algorithm (DIVIDE → MULTIPLY →
 // SUBTRACT → BRING DOWN), each authored line gets a snapshot of the vertical
 // tableau as it stands AFTER that line — quotient digits above the bar,
-// divisor ⟌ dividend, products and differences in their columns, the newest
+// divisor into dividend, products and differences in their columns, the newest
 // marks highlighted. Reading "13 − 12 = 1" without seeing where the 1 lands
 // under the bracket is the whole difficulty of long division.
 //
@@ -298,7 +298,7 @@ const CYCLE_STEP = /\b(?:divide|multiply|subtract|bring down|cycle|remainder)\b/
  * `divisionStepFigures` emits a snapshot only for a line that MAKES a move, and
  * a worked example does not read that way. Lesson 2-7 states nine lines and
  * makes moves on four of them, so rendering the raw array blinks the model out
- * on the setup line ("Now I write it the tall way — 63⟌189") and again on the
+ * on the setup line ("Now I write it the tall way — 63 into 189") and again on the
  * line that states the answer ("BRING DOWN: there are no digits left to bring
  * down, so the cycle is finished and the remainder is 0"). Joel reported this
  * as "the tableau stops after the SUBTRACT step" — the picture vanished exactly

@@ -215,7 +215,16 @@ the strongest one(s) relevant to what you changed:
 > shared `/data` manifest must go through `window.NTJsonCache`, and the hub must
 > load it first — seven scripts each fetching the same two manifests is what put
 > `/curriculum/` over its 60-request perf budget, and no per-file check can see
-> it because each of those files is individually correct). It is wired into `npm run validate`, so every `ship` gates on it.
+> it because each of those files is individually correct), and
+> `tools/unrenderable-glyphs.test.mjs` (no character the shipped fonts cannot
+> draw may reach a student — U+27CC, the long-division bracket, was absent from
+> Outfit and every mono fallback and shipped as a hairline hook or a tofu box in
+> the small-group practice model, six lesson configs and the Math Workbench's
+> tool picker; it parses, lints, types, renders and serves 200, and a screenshot
+> gate cannot see it because a hairline hook IS pixels. The banned list is
+> deliberately short — only characters whose failure was observed here — and the
+> detector is run against the exact line that shipped before it is trusted).
+> It is wired into `npm run validate`, so every `ship` gates on it.
 > `npm run check` (Biome: lint **+ formatting**) is a member of the `qa:loop`
 > gate — it replaced `npm run lint` there on 2026-08-05, because `lint` alone
 > says nothing about formatting, so the only thing checking it was the PR-only

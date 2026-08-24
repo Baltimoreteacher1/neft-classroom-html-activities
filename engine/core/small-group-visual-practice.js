@@ -880,7 +880,7 @@ function typedDivision(item, steps, events) {
     "For each step: how many times does the divisor go in, multiply, subtract, then bring down the next digit.",
   );
   const status = modelStatus();
-  // The long-division house is DRAWN, not typed. U+27CC (⟌) is absent from
+  // The long-division house is DRAWN, not typed. U+27CC is absent from
   // Outfit and from the mono fallbacks, so on most student devices the symbol
   // came out as a hairline hook or a tofu box — and the old rule ran across the
   // whole line, barring the divisor as well as the dividend. Borders give every
