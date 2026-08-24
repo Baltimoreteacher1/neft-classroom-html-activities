@@ -3,6 +3,7 @@ import { isRight, numberOf } from "./answer-match.js";
 import { detectConceptTool } from "./concept-tool.js";
 import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
 import { extractDivisionDiagram } from "./division-helper.js";
+import { MISCONCEPTIONS } from "./misconceptions.js";
 import { compareYourWorkFor } from "./notebook-prompt.js";
 import { pickWorkedModel } from "./small-group-adaptive.js";
 import { figureBlock } from "./small-group-labs.js";
@@ -15,6 +16,65 @@ import { mountSymbolPad, needsSymbolPad } from "./symbol-pad.js";
 import { renderToolChip } from "./tool-drawer.js";
 
 const firstHint = (item) => item.hints?.[0] || item.hint || null;
+
+/**
+ * The distinct misconceptions THIS lesson's own practice items are tagged with,
+ * in the order they first appear.
+ *
+ * The authored `commonMistake` paragraph runs 85 words at the median and 145 at
+ * the longest, and it opened the practice phase — for the support group, behind
+ * a disclosure, in English only. A Level 1 student meeting a wall of prose
+ * before the first problem reads none of it. These tags are the same warning,
+ * already written short and already bilingual, and every one of them is a tag
+ * the lesson itself put on one of its own items — nothing here is inferred from
+ * the prose. Capped at three: a list of six things to avoid is a wall again.
+ */
+function lessonMisconceptions(config, limit = 3) {
+  const seen = new Set();
+  const out = [];
+  const take = (item) => {
+    for (const tag of item?.misconceptionTags || []) {
+      const entry = tag && MISCONCEPTIONS[tag];
+      if (!entry?.label || seen.has(tag)) continue;
+      seen.add(tag);
+      out.push(entry);
+    }
+  };
+  for (const tier of ["approaching", "onLevel", "extending", "optional"])
+    for (const item of config.practice?.[tier] || []) take(item);
+  for (const item of config.parallelPractice || []) take(item);
+  return out.slice(0, limit);
+}
+
+/**
+ * The mistake itself, as one short line, taken verbatim from the authored text.
+ *
+ * The paragraph is written to a house shape — "A common mistake in <Topic> is
+ * <THE MISTAKE> — for example, <an instance>." — so the mistake is a contiguous
+ * run inside the first sentence, wrapped in a stock preamble and trailed by an
+ * illustration. Both wrappers are dropped and the run between them is kept
+ * WORD FOR WORD; nothing is rewritten, summarised or composed. Measured over
+ * the 10 lessons that reach this path, it turns 19-67 words into 6-20.
+ *
+ * A trim that does not land short enough is abandoned in favour of the whole
+ * sentence — a half-cut sentence reads as a rendering fault, and the full text
+ * is one tap away under "Why this happens" either way.
+ */
+const MISTAKE_PREAMBLE =
+  /^(?:a|the|one|another)\s+(?:most\s+)?common\s+(?:mistake|error)\b[^.]*?\bis\s+/i;
+const MISTAKE_ASIDE = /\s+[—–-]\s+|:\s+|,\s+(?:for example|like|such as)\b|;\s+/;
+
+function shortMistake(text) {
+  const trimmed = String(text || "").trim();
+  const sentence = (trimmed.match(/^.*?[.!?](?=\s|$)/)?.[0] || trimmed).trim();
+  const body = sentence.replace(MISTAKE_PREAMBLE, "");
+  const clause = body
+    .split(MISTAKE_ASIDE)[0]
+    .replace(/[\s.,;:—–-]+$/, "")
+    .trim();
+  if (!clause || clause.split(/\s+/).length > 22) return sentence;
+  return clause.charAt(0).toUpperCase() + clause.slice(1);
+}
 
 function answerOf(item) {
   if (
@@ -1187,13 +1247,39 @@ export function createPracticeSection(
   const mistake = config.practice?.commonMistake;
   const mistakeText = typeof mistake === "string" ? mistake : mistake?.text || mistake?.mistake;
   if (mistakeText && config.variant !== "group2" && options.showMistake !== false) {
-    section.appendChild(
+    // Short and visual first, prose second. The chips are the lesson's own
+    // misconception tags (bilingual, ~6 words each); when a lesson carries no
+    // tags the paragraph's opening sentence stands in, so every lesson leads
+    // with ONE readable line instead of a paragraph. The full authored text is
+    // never dropped — it moves behind "Why this happens", where a student who
+    // wants the whole explanation can still reach it, and print unfolds it.
+    const card = el("section", "sg-watchout");
+    card.setAttribute("role", "note");
+    card.appendChild(el("div", "sg-watchout-head", bi("⚠️ Watch out for this", "⚠️ Ojo con esto")));
+    const flags = lessonMisconceptions(config);
+    const list = el("ul", "sg-watchout-list");
+    if (flags.length) {
+      for (const flag of flags) {
+        const row = el("li", "sg-watchout-item");
+        row.appendChild(el("span", "sg-watchout-x", "✗"));
+        row.appendChild(el("span", "sg-watchout-text", bi(flag.label, flag.labelEs || "")));
+        list.appendChild(row);
+      }
+    } else {
+      const row = el("li", "sg-watchout-item");
+      row.appendChild(el("span", "sg-watchout-x", "✗"));
+      row.appendChild(el("span", "sg-watchout-text", esc(shortMistake(mistakeText))));
+      list.appendChild(row);
+    }
+    card.appendChild(list);
+    card.appendChild(
       el(
         "details",
-        "mistake",
-        `<summary>⚠️ Before you start: common mistake</summary><p>${esc(mistakeText)}</p>`,
+        "mistake sg-watchout-why",
+        `<summary>${bi("Why this happens", "Por qué pasa")}</summary><p>${esc(mistakeText)}</p>`,
       ),
     );
+    section.appendChild(card);
   }
   let solved = 0;
   // Live solves only — feeds the every-third-solve table check. Restored
