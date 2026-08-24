@@ -1,6 +1,15 @@
 {
-  "_comment": "Queue for the Backlog Advancer. type 'regen' runs `npm run <script>` in a worktree; type 'claude' runs a scoped headless claude prompt (gated by enableClaudeTasks). status: pending | in-review | done.",
+  "_comment": "Queue for the Backlog Advancer. type 'regen' runs `npm run <script>` in a worktree; type 'claude' runs a scoped headless claude prompt (gated by enableClaudeTasks). A claude task gets Read/Glob/Grep/Edit/Write only \u2014 declare `allowedTools` to widen it. status: pending | in-review | done.",
   "tasks": [
+    {
+      "id": "audit-generator-destructive-writes",
+      "title": "Inventory generator output paths and write modes",
+      "type": "claude",
+      "status": "pending",
+      "timeoutMinutes": 25,
+      "prompt": "Build an inventory of what the repo's generators write. Scope it to at most 25 scripts: run `ls scripts/generate-*.mjs`, and if there are more than 25, take the first 25 alphabetically and say so in the report.\n\nThis is an inventory pass, not a deep analysis. For each script, skim it for its write calls (writeFile, writeFileSync, outputFile, cp, rename) and record:\n  - Script name\n  - Output path(s) it writes, as literals where the code gives literals; if a path is built at runtime, record the expression rather than guessing the result\n  - Write mode: WHOLE-FILE if it serializes a freshly built string over the whole file, MERGE if it reads the existing file and edits regions or fields, UNCLEAR if the code does not plainly say\n  - The file:line of the write call\n\nDo not attempt cross-generator collision analysis and do not rank risk; a later pass does that. Accuracy and coverage of these four columns is the whole job.\n\nWrite the inventory to night-shift/audits/generator-write-inventory.md as a markdown table with those columns, sorted by script name, preceded by one line stating how many scripts exist and how many this pass covered. Record only what the code shows; mark anything you could not determine as UNCLEAR rather than inferring it.\n\nWrite exactly one file: night-shift/audits/generator-write-inventory.md. Change no other file.",
+      "output": "night-shift/audits/generator-write-inventory.md"
+    },
     {
       "id": "regen-worksheets",
       "title": "Regenerate per-lesson practice worksheets",
@@ -13,14 +22,41 @@
       "title": "Regenerate homework HTML",
       "type": "regen",
       "script": "generate-homework-html",
-      "status": "in-review"
+      "status": "pending"
     },
     {
       "id": "regen-activity-guides",
       "title": "Regenerate editable activity teacher guides",
       "type": "regen",
       "script": "generate-activity-guides",
-      "status": "in-review"
+      "status": "pending"
+    },
+    {
+      "id": "audit-generator-writes-part2",
+      "title": "Inventory generator output paths and write modes (part 2)",
+      "type": "claude",
+      "status": "pending",
+      "timeoutMinutes": 25,
+      "output": "night-shift/audits/generator-write-inventory-part2.md",
+      "prompt": "Continue the generator write inventory. Part 1 covered the first 25 of the scripts matching `ls scripts/generate-*.mjs`; this pass covers the REMAINDER (26th onward). Read night-shift/audits/generator-write-inventory.md first to match its table columns, mode legend, and conventions exactly, so the two files can be concatenated.\n\nFor each script in scope record: script name; output path(s), as literals where the code gives literals and as the expression where a path is built at runtime; write mode (WHOLE-FILE / MERGE / UNCLEAR per part 1's legend); and the file:line of the write call.\n\nNo collision analysis and no risk ranking \u2014 a later pass does that. Record only what the code shows; mark anything undetermined as UNCLEAR rather than inferring it.\n\nWrite exactly one file: night-shift/audits/generator-write-inventory-part2.md. Change no other file."
+    },
+    {
+      "id": "audit-generator-write-collisions",
+      "title": "Find output paths written by more than one generator",
+      "type": "claude",
+      "status": "pending",
+      "timeoutMinutes": 25,
+      "output": "night-shift/audits/generator-write-collisions.md",
+      "prompt": "Read every inventory file present under night-shift/audits/ (generator-write-inventory*.md) and find output paths that MORE THAN ONE generator writes. State up front which inventory files you found and what fraction of the generators they cover \u2014 if part 2 is missing, say the analysis is partial rather than implying it is complete.\n\nFor each collision report: the shared output path; every generator that writes it; each one's write mode; and the resulting hazard, stated concretely. A WHOLE-FILE write to a path another generator also contributes to is the case that silently destroys content \u2014 call those out first. Two MERGE writers are usually fine; say so rather than padding the list.\n\nVerify each collision against the actual source before reporting it; the inventories are a lead, not proof. Cite file:line from the generators themselves. If a collision turns out to be spurious on inspection, leave it out.\n\nWrite exactly one file: night-shift/audits/generator-write-collisions.md. Change no other file."
+    },
+    {
+      "id": "audit-almost-right-lab-drift",
+      "title": "Report how far generate-almost-right-lab.mjs has drifted from its live pages",
+      "type": "claude",
+      "status": "pending",
+      "timeoutMinutes": 25,
+      "output": "night-shift/audits/almost-right-lab-drift.md",
+      "prompt": "scripts/generate-almost-right-lab.mjs writes its output to join(__dirname, 'curriculum/...'), and __dirname is scripts/ \u2014 so it writes under scripts/curriculum/ while its own console.log claims curriculum/. Every sibling generator resolves ROOT as join(__dirname, '..'). Correcting that path alone is UNSAFE: the generator's template has drifted from the live pages, so a corrected write would overwrite real improvements.\n\nDo NOT change any code. Produce the reconciliation analysis a human needs before that path can be fixed.\n\nCompare what makePage() in the generator emits against the five live pages at curriculum/almost-right-lab/equations/mission-{1..5}/index.html. For each difference report: what the live page has that the generator would not reproduce; whether it is a sentinel-wrapped injected block (which scripts/lib/preserve-injected.mjs would restore) or an unprotected edit (which it would not); and the file:line on both sides.\n\nKnown starting points, which you should verify rather than trust: the live pages carry script tags for /assets/nt-usage.js, /assets/math-workbench-launcher.js and /assets/formula-popup.js; and the answer-marking logic in the live pages marks only the button the student chose, where the generator marks both correct and wrong. Confirm each against the actual files and find anything else.\n\nClose with a section stating exactly what would have to change in the generator before its output path can be corrected safely. Where a difference is a pedagogical choice rather than a mechanical one, say so and leave the decision to the reader.\n\nWrite exactly one file: night-shift/audits/almost-right-lab-drift.md. Change no other file."
     }
   ]
 }

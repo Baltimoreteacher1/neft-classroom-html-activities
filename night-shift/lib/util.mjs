@@ -32,10 +32,44 @@ export async function sh(cmd, args = [], opts = {}) {
   }
 }
 
-/** True if an executable resolves on PATH. */
-export async function hasCommand(name) {
-  const r = await sh("bash", ["-lc", `command -v ${name} >/dev/null 2>&1 && echo yes || echo no`]);
-  return r.stdout.trim() === "yes";
+// Resolution has to hand back a PATH, not a yes/no, and it has to answer for
+// the environment the caller will actually execute in. Under launchd this job
+// gets the bare PATH from its plist; `claude` lives in a mise-managed node
+// prefix that only ever joins PATH via `mise activate` in ~/.zshrc — and .zshrc
+// is sourced for INTERACTIVE shells only. So no login-shell probe, bash or zsh,
+// can see it from a scheduled run: the old check said yes from a terminal and
+// no at 2am. Ask the PATH we will really use, then ask mise directly.
+const commandCache = new Map();
+
+/** Absolute path to an executable, or null. Safe to execFile as-is. */
+export async function resolveCommand(name, opts = {}) {
+  const key = `${name}::${opts.cwd || ""}`;
+  if (commandCache.has(key)) return commandCache.get(key);
+
+  const absolute = (out) => {
+    const first = (out || "").trim().split("\n")[0].trim();
+    // `command -v` also echoes builtins and functions by bare name; only an
+    // absolute path is something execFile can run.
+    return first.startsWith("/") ? first : null;
+  };
+
+  // 1. The process PATH — identical to what execFile will search.
+  let resolved = absolute((await sh("bash", ["-c", `command -v ${name} 2>/dev/null`])).stdout);
+
+  // 2. Version-manager shims live outside that PATH under launchd. mise itself
+  //    is installed system-wide, so it can be asked where the real binary is.
+  if (!resolved && (await sh("bash", ["-c", "command -v mise 2>/dev/null"])).stdout.trim()) {
+    const r = await sh("mise", ["which", name], { cwd: opts.cwd });
+    if (r.ok) resolved = absolute(r.stdout);
+  }
+
+  commandCache.set(key, resolved);
+  return resolved;
+}
+
+/** True if an executable resolves — via the same lookup the caller will run. */
+export async function hasCommand(name, opts = {}) {
+  return (await resolveCommand(name, opts)) !== null;
 }
 
 export function makeLogger(prefix = "night-shift") {
