@@ -783,6 +783,7 @@
       var TEACH_PARTS = [
         ["guidedNotes", "Guided notes"],
         ["handout", "Student handout"],
+        ["worksheet", "Worksheet"],
         ["exitTicket", "Exit ticket"],
       ];
       var HOME_PARTS = [

@@ -63,6 +63,17 @@ function resourcesFor(id) {
       file: `lessons/${id}/handout.html`,
       applicable: true,
     },
+    /* The print practice sheet (Version A + Version B), written by
+       generate-worksheets.mjs. It existed on disk for all 84 lessons and was
+       named by no resource key at all, so every surface that asks the manifest
+       what a lesson ships — the hub's lesson picker included — could not offer
+       it. The sibling worksheet-answer-key.html is deliberately NOT a key here:
+       `answer-key` is what marks a teacher surface. */
+    worksheet: {
+      path: `/lessons/${id}/worksheet.html`,
+      file: `lessons/${id}/worksheet.html`,
+      applicable: true,
+    },
     homework: {
       path: `/lessons/${id}/homework.html`,
       file: `lessons/${id}/homework.html`,

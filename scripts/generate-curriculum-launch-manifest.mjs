@@ -12,6 +12,7 @@ const SAFE_RESOURCE_KEYS = [
   "lesson",
   "guidedNotes",
   "handout",
+  "worksheet",
   "homework",
   "familyPage",
   "studentHelp",
