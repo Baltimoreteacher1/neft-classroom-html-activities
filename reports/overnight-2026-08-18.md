@@ -2256,3 +2256,59 @@ design. CI sets `CI`, where a skip is a failure. Neither run is lying; they are
 answering different questions, and the PR body's "PASS 99/99" needs reading with
 that qualifier attached.
 
+---
+
+# Block 14 — the gate was racing itself, and I mis-called it twice
+
+Three of four consecutive pushes were rejected by `qa:loop`, always on
+`validate:lesson-boot` and/or `smoke:injection`. I called it a transient, then
+called it real for the wrong reason, then found the actual cause.
+
+## The defect
+
+`scripts/qa-run.mjs` declares `build` a barrier on the stated grounds that it is
+**"the only member of the gate that writes to the working tree"**. That is false.
+`npm test` runs `tools/build-injectors-idempotent.test.mjs` and
+`tools/generated-pages-fresh.test.mjs`, **both of which execute build steps** in
+order to assert the build is idempotent. So `test` rewrites `dist/` for most of
+its ~211 seconds — while `validate:lesson-boot` and `smoke:injection` are serving
+`dist/` to a browser.
+
+Every symptom I had been treating as a separate mystery is one cause:
+
+- `/esol-study-guide/` returned **404** while the file sits in `dist` on disk
+- `Failed to resolve module specifier "web-vitals"` — `vite.config.js` snapshots
+  `assets/nt-web-vitals.js` and restores it **after** the static copy
+  (`UNHASHED_BUNDLES`), so mid-build `dist` briefly holds the raw source, whose
+  line 9 is `import { onCLS, onINP, onLCP } from "web-vitals"`
+- `/shared/save-resume/*` 404 mid-page
+- **lesson 8-1**, chased in Block 10 as a possible blank-page bug
+
+## The fix, and its proof
+
+`test` added to `EXCLUSIVE` — a mechanism already in that file for exactly this
+shape of problem. Measured after: **PASS 99/99, wall 282.4s**, with
+`validate:lesson-boot` 6.4s and `smoke:injection` 11.3s both green. Cost +16.5s
+against a predicted ~+19s.
+
+`tools/qa-run.test.mjs` section 8 pins it and was proven to fail when reverted —
+removing `"test"` names the exact check. A second assertion pins the
+**justification** rather than the fix: if those two tests ever stop executing
+build steps, it fails and says the wall-time cost can be given back, so the
+reason cannot go stale silently.
+
+## Where I was wrong
+
+1. **"Transient, retry once."** It was not transient. It was reproducible at 3
+   in 4, and the run that passed was the lucky one.
+2. **"A second failure changes my read."** Right conclusion, wrong evidence — I
+   had launched `CI=1 npm test` concurrently with that push's own `qa:loop`, so
+   I manufactured the interference I then cited.
+3. **"The 11:21 failure remains genuinely unexplained."** It is explained, and it
+   was never a flake.
+
+This one mattered more than an ordinary flake because `ship.sh` now runs
+`qa:loop` on the deploy path (Block 12). A gate that rejects 3 pushes in 4, with
+symptoms that look like real student-facing defects, is precisely how
+`--no-verify` becomes muscle memory — the habit the gate exists to prevent.
+
