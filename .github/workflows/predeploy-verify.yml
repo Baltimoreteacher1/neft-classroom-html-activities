@@ -106,6 +106,17 @@ jobs:
         id: tests
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: npm test
+      # BEFORE validation, not after it. `npm run validate` includes
+      # validate:notebook-render, which launches Playwright — with the install
+      # sitting further down (it was gated on the build), that check died with
+      # "Executable doesn't exist" and took the whole required gate red. The
+      # browser journeys below need the same browser, so this is the same
+      # install moved earlier, not an extra one.
+      - name: Install Chromium
+        id: chromium
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npx playwright install --with-deps chromium
+
       - name: Static + reveal-math + hub-lock validation
         id: validate
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
@@ -118,9 +129,6 @@ jobs:
       # ── Browser journeys — gated on the build, not on the checks above ───────
       # With no dist/ there is nothing to serve, so this chain would cascade-fail
       # for a reason already reported one line up. That is noise, not a finding.
-      - name: Install Chromium
-        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-        run: npx playwright install --with-deps chromium
       - name: Serve the verified production build
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: npx vite preview --host 127.0.0.1 --port 4178 --strictPort &
