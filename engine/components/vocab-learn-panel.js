@@ -6,6 +6,7 @@ import {
   extractEquation,
   extractStepMove,
   parseKeyIdea,
+  parseStepCycle,
   splitGuidedLine,
 } from "../core/learn-step-model.js";
 import { underlineVocabTerms } from "../core/lesson-renderer.js";
@@ -806,6 +807,72 @@ function injectVocabLearnStyles() {
       margin-bottom: 4px;
     }
     .vl-topic-line { margin: 4px 0 0; font-size: 1.2rem; font-weight: 700; color: #0f172a; }
+    /* The algorithm's steps as a ladder: initial large enough to be the
+       mnemonic, the operation's symbol beside it, the sentence to its right. */
+    .vl-cycle {
+      background: #f0f7ff;
+      border: 2px solid #b9d6f2;
+      border-radius: 16px;
+      padding: 14px 18px 16px;
+      margin: 14px 0 6px;
+    }
+    .vl-cycle .vl-formula-label { color: #0f4c81; }
+    .vl-cycle-steps {
+      list-style: none;
+      margin: 8px 0 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+      counter-reset: none;
+    }
+    .vl-cycle-step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 14px;
+      background: #ffffff;
+      border: 1px solid #cfe2f5;
+      border-radius: 14px;
+    }
+    .vl-cycle-key {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 4.6rem;
+    }
+    .vl-cycle-letter {
+      font-size: clamp(2.1rem, 5vw, 3rem);
+      font-weight: 900;
+      line-height: 1;
+      color: #0f4c81;
+      font-variant-numeric: tabular-nums;
+    }
+    .vl-cycle-symbol {
+      font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+      font-weight: 800;
+      line-height: 1;
+      color: #b45309;
+    }
+    .vl-cycle-body { display: grid; gap: 2px; }
+    .vl-cycle-name {
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: #0f172a;
+    }
+    .vl-cycle-detail { font-size: 1rem; line-height: 1.5; color: #334155; }
+    .vl-cycle-note {
+      margin: 12px 0 0;
+      font-size: 1rem;
+      line-height: 1.55;
+      font-weight: 600;
+      color: #0f4c81;
+    }
+    @media (max-width: 480px) {
+      .vl-cycle-step { grid-template-columns: 1fr; gap: 4px; }
+      .vl-cycle-key { min-width: 0; }
+    }
     .vl-rulepoints {
       margin: 0 0 16px;
       padding: 0 0 0 0;
@@ -1442,6 +1509,29 @@ export function renderLearnItPanel(container, config, options = {}) {
     `Understanding ${config.title}`;
   const intro = pickEs(concept.intro, concept.introEs) || config.contentObjective || "";
   const keyIdea = parseKeyIdea(concept.keyIdea || config.contentObjective || "");
+  // The algorithm's named steps, when the lesson authors one (long division's
+  // DIVIDE · MULTIPLY · SUBTRACT · BRING DOWN). Parsed from the reader's OWN
+  // language so the initials spell the mnemonic they are being taught; null
+  // for every lesson whose key idea is not a named cycle.
+  const stepCycle = parseStepCycle(
+    parseKeyIdea(pickEs(concept.keyIdea, concept.keyIdeaEs) || "").points,
+  );
+  const cycleHtml = stepCycle
+    ? `<div class="vl-cycle">
+         <span class="vl-formula-label">🪜 ${
+           isEs ? "Estos son los pasos — en este orden" : "These are the steps — in this order"
+}</span>
+         <ol class="vl-cycle-steps">${stepCycle.steps
+           .map(
+             (step) => `<li class="vl-cycle-step">
+                  <span class="vl-cycle-key"><span class="vl-cycle-letter">${escHtml(step.letter)}</span><span class="vl-cycle-symbol">${escHtml(step.symbol)}</span></span>
+                  <span class="vl-cycle-body"><b class="vl-cycle-name">${escHtml(step.name)}</b><span class="vl-cycle-detail">${renderMathText(step.detail)}</span></span>
+                </li>`,
+           )
+           .join("")}</ol>
+         ${stepCycle.note ? `<p class="vl-cycle-note">${renderMathText(stepCycle.note)}</p>` : ""}
+       </div>`
+    : "";
   const iDo = concept.iDo || {};
   const weDo = concept.weDo || {};
   const isLine = (l) => typeof l === "string" && l.trim();
@@ -1519,6 +1609,38 @@ export function renderLearnItPanel(container, config, options = {}) {
   // verbatim from launch.narrative (the canonical field the deck's Scenario
   // Launch slide prints), never paraphrased; Step 6 returns to solve it.
   const todaysProblem = String(config.launch?.narrative || "").trim();
+  // "See How It Works" listed the rule as numbered prose and then "Watch Me
+  // Solve It" walked those same moves against the real problem — the same
+  // teaching twice, the weaker copy first. Where a walkthrough exists the
+  // listing step is dropped and its two pieces of real content move to where
+  // they earn their place: the example beside the rule it demonstrates, and
+  // the visual model at the head of the walk it illustrates. A lesson with no
+  // walkthrough keeps the step exactly as it was.
+  const hasWalkthrough = iLines.length > 0;
+  const exampleCardHtml = keyIdea.example
+    ? `<div class="vl-example-card">
+         <span class="vl-formula-label">${isEs ? "Por ejemplo:" : "Like this:"}</span>
+         ${mathLine(keyIdea.example)}
+       </div>`
+    : "";
+  const visualCardHtml = visuals?.content?.src
+    ? `<div class="vl-visual-card">
+         <div class="vl-visual-img-wrap" id="vlVisualZoomTarget" title="Click to enlarge visual model">
+           <img src="${visuals.content.src}" alt="${escHtml(visuals.content.alt)}" loading="lazy" />
+         </div>
+         <div class="vl-visual-caption">
+           <span>📊 <strong>${isEs ? "Modelo visual:" : "The math as a picture:"}</strong> ${escHtml(visuals.content.caption)}</span>
+           <span class="vl-zoom-badge">🔍 ${isEs ? "Toca para ampliar" : "Click to enlarge"}</span>
+         </div>
+       </div>`
+    : "";
+  const wireVisualZoom = (host) => {
+    const zoomTarget = host.querySelector("#vlVisualZoomTarget");
+    if (!zoomTarget) return;
+    zoomTarget.addEventListener("click", () => {
+      openVisualLightbox(visuals.content.src, visuals.content.caption);
+    });
+  };
   steps.push({
     icon: "💡",
     label: isEs ? "La gran idea" : "The Big Idea",
@@ -1535,6 +1657,7 @@ export function renderLearnItPanel(container, config, options = {}) {
         }
         <h4 class="vl-step-question">${renderMathText(heading)}</h4>
         ${intro ? `<p class="vl-bigidea-text">${renderMathText(intro)}</p>` : ""}
+        ${cycleHtml}
         ${
           keyIdea.formula
             ? `<div class="vl-formula-card">
@@ -1547,12 +1670,14 @@ export function renderLearnItPanel(container, config, options = {}) {
                    <p class="vl-topic-line">${renderMathText(keyIdea.topic)}</p>
                  </div>`
               : ""
-        }`;
+        }
+        ${hasWalkthrough ? exampleCardHtml : ""}`;
     },
   });
 
   // ② See How It Works — the rule as short numbered moves + the visual model.
-  if (keyIdea.points.length || keyIdea.example || visuals?.content?.src) {
+  // Only for a lesson with no worked walkthrough; see `hasWalkthrough`.
+  if (!hasWalkthrough && (keyIdea.points.length || keyIdea.example || visuals?.content?.src)) {
     steps.push({
       icon: "👁️",
       label: isEs ? "Cómo funciona" : "See How It Works",
@@ -1566,33 +1691,9 @@ export function renderLearnItPanel(container, config, options = {}) {
                   .join("")}</ol>`
               : ""
           }
-          ${
-            keyIdea.example
-              ? `<div class="vl-example-card">
-                   <span class="vl-formula-label">${isEs ? "Por ejemplo:" : "Like this:"}</span>
-                   ${mathLine(keyIdea.example)}
-                 </div>`
-              : ""
-          }
-          ${
-            visuals?.content?.src
-              ? `<div class="vl-visual-card">
-                   <div class="vl-visual-img-wrap" id="vlVisualZoomTarget" title="Click to enlarge visual model">
-                     <img src="${visuals.content.src}" alt="${escHtml(visuals.content.alt)}" loading="lazy" />
-                   </div>
-                   <div class="vl-visual-caption">
-                     <span>📊 <strong>${isEs ? "Modelo visual:" : "The math as a picture:"}</strong> ${escHtml(visuals.content.caption)}</span>
-                     <span class="vl-zoom-badge">🔍 ${isEs ? "Toca para ampliar" : "Click to enlarge"}</span>
-                   </div>
-                 </div>`
-              : ""
-          }`;
-        const zoomTarget = host.querySelector("#vlVisualZoomTarget");
-        if (zoomTarget) {
-          zoomTarget.addEventListener("click", () => {
-            openVisualLightbox(visuals.content.src, visuals.content.caption);
-          });
-        }
+          ${exampleCardHtml}
+          ${visualCardHtml}`;
+        wireVisualZoom(host);
       },
     });
   }
@@ -1706,6 +1807,7 @@ export function renderLearnItPanel(container, config, options = {}) {
               ? `<figure class="vl-stepfig vl-workedfig">${workedFig.svg}<figcaption class="vl-stepfig-cap">${isEs ? "El problema se ve así" : "The problem looks like this"}</figcaption></figure>`
               : ""
           }
+          ${!workedFig ? visualCardHtml : ""}
           <ol class="vl-solve-steps">
             ${iLines
               .map(
@@ -1741,6 +1843,7 @@ export function renderLearnItPanel(container, config, options = {}) {
               : ""
           }`;
         speakButtonsIn(host);
+        wireVisualZoom(host);
         // Each step's workspace, mounted where its own sentence sits. Loaded on
         // demand so a lesson whose steps yield no move pays nothing for it.
         const workHosts = host.querySelectorAll("[data-step-work]");

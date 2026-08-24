@@ -28,7 +28,7 @@ export function parseKeyIdea(keyIdea) {
 
   // "Example: …" trails the numbered points; lift it off first so it does not
   // get swallowed into the final point.
-  const exampleMatch = text.match(/(?:^|\s)Example:\s*(.+)$/);
+  const exampleMatch = text.match(/(?:^|\s)(?:Example|Ejemplo):\s*(.+)$/);
   if (exampleMatch) {
     out.example = exampleMatch[1].trim().replace(/\.\s*$/, "");
     text = text.slice(0, exampleMatch.index).trim();
@@ -45,7 +45,7 @@ export function parseKeyIdea(keyIdea) {
   }
 
   // "Formula: …" — everything from the marker to the end of what remains.
-  const formulaMatch = text.match(/(?:^|\s)Formula:\s*(.+)$/);
+  const formulaMatch = text.match(/(?:^|\s)(?:Formula|Fórmula):\s*(.+)$/);
   if (formulaMatch) {
     out.formula = formulaMatch[1].trim().replace(/\.\s*$/, "");
     text = text.slice(0, formulaMatch.index).trim();
@@ -53,6 +53,81 @@ export function parseKeyIdea(keyIdea) {
 
   out.topic = text.replace(/\.\s*$/, "").trim();
   return out;
+}
+
+// The operation each named step of an algorithm performs. A cycle is only
+// drawn as a symbol ladder when EVERY one of its steps is in this table: a
+// ladder with a blank rung reads as a rendering fault, and a step whose
+// operation we had to guess would teach the wrong move.
+const STEP_SYMBOLS = {
+  DIVIDE: "÷",
+  MULTIPLY: "×",
+  SUBTRACT: "−",
+  ADD: "+",
+  "BRING DOWN": "↓",
+  "BRING THE NEXT DIGIT DOWN": "↓",
+  COMPARE: "⋛",
+  CHECK: "✓",
+  // The same table in Spanish, so a Spanish reader gets the ladder built from
+  // the Spanish step names (D · M · R · B) rather than English initials over
+  // Spanish sentences.
+  DIVIDIR: "÷",
+  MULTIPLICA: "×",
+  MULTIPLICAR: "×",
+  RESTA: "−",
+  RESTAR: "−",
+  SUMA: "+",
+  SUMAR: "+",
+  BAJA: "↓",
+  BAJAR: "↓",
+  COMPARA: "⋛",
+  COMPRUEBA: "✓",
+};
+
+/**
+ * Read an algorithm's named steps out of `parseKeyIdea().points`.
+ *
+ * Lessons that teach a repeating algorithm author their key idea as named,
+ * ALL-CAPS steps — "1. DIVIDE: how many times … 2. MULTIPLY: multiply the
+ * digit …" — and the panel showed them as a numbered prose list, which is the
+ * one form a student cannot hold in their head while working the problem.
+ * Named this way they can be drawn as a ladder: the initial large, the
+ * operation's own symbol beside it, the sentence underneath.
+ *
+ * Returns null unless the shape is unambiguous — at least three named steps,
+ * every name a known operation, and every initial distinct (D · M · S · B is a
+ * mnemonic; D · D · S · B is a puzzle). An unnumbered trailing sentence
+ * ("REPEAT the same four steps …") is the cycle's own note, not a step.
+ *
+ * @param {string[]} points
+ * @returns {{ steps: Array<{letter:string,name:string,symbol:string,detail:string}>, note: string }|null}
+ */
+export function parseStepCycle(points) {
+  if (!Array.isArray(points) || points.length < 3) return null;
+  const steps = [];
+  let note = "";
+  for (const raw of points) {
+    const text = String(raw || "").trim();
+    if (!text) continue;
+    const match = text.match(/^([A-Z][A-Z ]*[A-Z])\s*:\s*(.+)$/);
+    if (!match) {
+      // The first unnamed point closes the ladder; everything after it is prose
+      // about the cycle as a whole. Two of them means this is not a step list.
+      if (note) return null;
+      note = text;
+      continue;
+    }
+    // A named step AFTER the closing note would mean the ladder is interleaved
+    // with prose, which is not the authored shape.
+    if (note) return null;
+    const name = match[1].trim();
+    const symbol = STEP_SYMBOLS[name];
+    if (!symbol) return null;
+    steps.push({ letter: name[0], name, symbol, detail: match[2].trim() });
+  }
+  if (steps.length < 3) return null;
+  if (new Set(steps.map((step) => step.letter)).size !== steps.length) return null;
+  return { steps, note };
 }
 
 // A value token: 1,344  78.50  3/4  50%  (12)  ½  2²

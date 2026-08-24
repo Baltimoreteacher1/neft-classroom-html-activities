@@ -3646,6 +3646,40 @@ function renderExplorePhase(el, state, ctx, config) {
     el.append(cont);
   };
 
+  // `explore.type: "tool-only"` — the section tool IS the task, full width,
+  // with no second activity beside it. Authored where the side task restated
+  // the work the tool already walks: lesson 2-6 asked students to fill a table
+  // whose four columns were the four steps of the long division the builder
+  // next to it steps through, so the same division was on screen twice and the
+  // student was asked to do it in the weaker of the two. There is nothing to
+  // grade here — Explore never was graded — so the discussion and Continue
+  // follow the tool directly.
+  if (cfg.type === "tool-only" && exploreFig) {
+    if (cfg.instructions) {
+      const lead = document.createElement("p");
+      lead.className = "explore-tool-lead";
+      lead.style.cssText = "font-weight:500; margin-bottom:var(--sp-3);";
+      lead.innerHTML = stackContent(cfg.instructions, cfg.instructionsEs || "");
+      el.append(lead);
+    }
+    el.append(exploreFig);
+    mountInteractiveVisuals(exploreFig, { state, phaseId: 1 });
+    renderRevealSlides(el, config, "explore");
+    showTurnTalkThenComplete(
+      cfg.discourse
+        ? {
+            phase: "explore-discuss",
+            question: deriveDiscussionFollowUp(cfg.discourse.prompt, config, {
+              authored: cfg.discourse.followUp,
+              keywords: cfg.discourse.keywords,
+            }),
+            stems: DEFAULT_TURN_TALK_STEMS,
+          }
+        : undefined,
+    );
+    return;
+  }
+
   const exploreShell = document.createElement("div");
   exploreShell.className = "explore-problem-wrap";
   if (exploreFig) {
