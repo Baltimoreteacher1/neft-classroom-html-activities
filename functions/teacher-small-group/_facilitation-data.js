@@ -105,7 +105,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Multiplied when the problem divides; Divided when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the tape diagram, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
@@ -150,8 +151,9 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies; Added the dimensions instead of multiplying. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the area model, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      ask: "On the bar graph, is this one group repeated, or two amounts joined? Which operation matches?",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
@@ -197,7 +199,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the bar graph, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
@@ -250,7 +253,7 @@ export const FACILITATION_BY_LESSON = {
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, make sense of a problem means ___ .",
+      "In this problem, representation means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -293,7 +296,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies; Added the dimensions instead of multiplying. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the area model, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
@@ -339,7 +343,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the number line, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
@@ -432,7 +437,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided in the wrong order; Added when the problem multiplies; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Which number is being shared out, and which says how many shares?",
-      lookFor: "Students divided in the wrong order — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Divided in the wrong order” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask “what is being split, and into how many?” before they write it.",
     },
     frames: [
@@ -525,7 +531,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the percent grid, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
@@ -568,17 +575,16 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Chose a question with only one fixed answer. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "What is one dot or bar on the dot plot — one person, or one measurement?",
       lookFor:
-        "Watch for: judging a question by its topic or its numbers instead of its variability.",
-      ifStuck:
-        "Work the first step together on the dot plot, then hand the second one back to them.",
+        "Watch for the “Chose a question with only one fixed answer” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Ask: would two different people give two different answers?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, statistical questions and data means ___ .",
+      "In this problem, statistical question means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -596,7 +602,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
       ask: "Change one value to make the mean move but the median stay put. What did you change?",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
+      lookFor:
+        "A student who can explain why the “Chose a question with only one fixed answer” error fails in every case, not just this one.",
       ifStuck: "Hand them a second data set on the dot plot and ask which claim survives both.",
       extend: "Ask which measure they would report to argue each side, and what that reveals.",
     },
@@ -620,12 +627,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Confused a measure of center with a measure of spread; Chose the mean when an outlier distorts it. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Is there a value far from the rest? Which measure does it drag?",
-      lookFor: "Students chose the mean when an outlier distorts it — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Chose the mean when an outlier distorts it” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Have them cover the outlier and recompute — how far does the mean move?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, appropriate measures of center means ___ .",
+      "In this problem, mean means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -668,12 +676,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Estimate to the nearest whole first — then check where the point lands on the place-value columns.",
-      lookFor: "Students right digits, wrong magnitude — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Right digits, wrong magnitude” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, add and subtract decimals means ___ .",
+      "In this problem, decimal means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -716,12 +725,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right digits, wrong magnitude; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the place-value columns, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, multiply decimals means ___ .",
+      "In this problem, product means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -765,13 +775,13 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "Point at this interval's two endpoints on the histogram. Which values belong inside?",
       lookFor:
-        "Students misread the bins or the scale on a data display — that is this lesson's error.",
+        "Watch for the “Misread the bins or the scale on a data display” error — that is the one this lesson's check diagnoses.",
       ifStuck:
         "Have them point to the interval's two endpoints and say which values belong inside it.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, display data with histograms means ___ .",
+      "In this problem, histogram means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -816,13 +826,13 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "Which word did the question use? What does that word tell you to DO?",
       lookFor:
-        "Students used the mean where the median was asked (or the reverse) — that is this lesson's error.",
+        "Watch for the “Used the mean where the median was asked (or the reverse)” error — that is the one this lesson's check diagnoses.",
       ifStuck:
         "Ask them to say which word the question used, then what that word tells you to DO with the numbers.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, describe the data using the median means ___ .",
+      "In this problem, median means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -866,13 +876,13 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "Does the question want a typical value, or how spread out the data is?",
       lookFor:
-        "Students confused a measure of center with a measure of spread — that is this lesson's error.",
+        "Watch for the “Confused a measure of center with a measure of spread” error — that is the one this lesson's check diagnoses.",
       ifStuck:
         "Ask what the question wants to know: a typical value, or how scattered the data is?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, display data with box plots means ___ .",
+      "In this problem, box plot means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -915,7 +925,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Used the full range instead of the IQR; Confused a measure of center with a measure of spread. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Which two numbers does the IQR use? Point at them.",
-      lookFor: "Students used the full range instead of the IQR — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Used the full range instead of the IQR” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Have them mark Q1 and Q3 on the plot and cover everything outside them.",
     },
     frames: [
@@ -958,15 +969,17 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
     teacherMoves: {
-      ask: "Estimate to the nearest whole first — then check where the point lands on the division frame.",
-      lookFor: "Students right digits, wrong magnitude — that is this lesson's error.",
-      ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
+      ask: "What does each place stand for on the division frame?",
+      lookFor:
+        "Watch for: skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place.",
+      ifStuck:
+        "Work the first step together on the division frame, then hand the second one back to them.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, divide multi-digit numbers means ___ .",
+      "In this problem, dividend means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -983,10 +996,9 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Why does multiplying by a number under 1 shrink the answer? Explain with place value.",
-      lookFor:
-        "A student who can explain why the “Right digits, wrong magnitude” error fails in every case, not just this one.",
-      ifStuck: "Ask them to estimate first, then say which digit their answer disagrees with.",
+      ask: "Does this strategy still hold for numbers smaller than 1? Test it.",
+      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
+      ifStuck: "Ask them to test the claim on a friendlier number first, then return.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
     frames: [
@@ -1009,7 +1021,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Estimate to the nearest whole first — then check where the point lands on the division frame.",
-      lookFor: "Students right digits, wrong magnitude — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Right digits, wrong magnitude” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
     },
     frames: [
@@ -1057,7 +1070,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added the data set instead of averaging it; Added when the problem multiplies; Multiplied when the problem adds. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Could your answer be one real value from this list? An average has to land inside.",
-      lookFor: "Students added the data set instead of averaging it — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added the data set instead of averaging it” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask whether the answer could be a realistic single value in that set.",
     },
     frames: [
@@ -1106,7 +1120,7 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "Does the question want a typical value, or how spread out the data is?",
       lookFor:
-        "Students confused a measure of center with a measure of spread — that is this lesson's error.",
+        "Watch for the “Confused a measure of center with a measure of spread” error — that is the one this lesson's check diagnoses.",
       ifStuck:
         "Ask what the question wants to know: a typical value, or how scattered the data is?.",
     },
@@ -1155,12 +1169,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Flipped the ratio; Combined the two amounts instead of comparing them. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Which quantity does the question name FIRST? Label both before you write.",
-      lookFor: "Students flipped the ratio — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Flipped the ratio” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Have them label both quantities with units before writing the ratio.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, understand ratios means ___ .",
+      "In this problem, ratio means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -1201,12 +1216,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the ratio table, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, convert measurement units means ___ .",
+      "In this problem, conversion factor means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -1247,7 +1263,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided in the wrong order; Gave the total instead of the unit rate. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "What does ONE of them cost? Finish: “for one ___, there is ___.”",
-      lookFor: "Students gave the total instead of the unit rate — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Gave the total instead of the unit rate” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask “per ONE what?” and make them finish the sentence.",
     },
     frames: [
@@ -1295,7 +1312,7 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "On the ratio table, how many TIMES bigger did the first amount get?",
       lookFor:
-        "Students scaled a ratio by adding instead of multiplying — that is this lesson's error.",
+        "Watch for the “Scaled a ratio by adding instead of multiplying” error — that is the one this lesson's check diagnoses.",
       ifStuck:
         "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
     },
@@ -1344,13 +1361,13 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "On the tape diagram, how many TIMES bigger did the first amount get?",
       lookFor:
-        "Students scaled a ratio by adding instead of multiplying — that is this lesson's error.",
+        "Watch for the “Scaled a ratio by adding instead of multiplying” error — that is the one this lesson's check diagnoses.",
       ifStuck:
         "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, graph ratio tables means ___ .",
+      "In this problem, coordinate plane means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -1389,17 +1406,16 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Compared two ratios without a common basis. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Point at the unit-rate table — what does ONE part stand for here?",
       lookFor:
-        "Watch for: thinking the ratio with the bigger raw number automatically wins — like assuming Chef Tran's 8 tablespoons of cocoa must be more chocolatey than Ch….",
-      ifStuck:
-        "Cover every row but the first, and rebuild the next row from it one step at a time.",
+        "Watch for the “Compared two ratios without a common basis” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Ask what ONE of each is worth before either ratio is compared.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, compare ratios means ___ .",
+      "In this problem, unit rate means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -1416,7 +1432,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
       ask: "If both quantities double, what happens to the ratio — and why?",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
+      lookFor:
+        "A student who can explain why the “Compared two ratios without a common basis” error fails in every case, not just this one.",
       ifStuck:
         "Shrink it: give them a 1-to-something case on the unit-rate table, then ask what changed.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
@@ -1440,12 +1457,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the ratio table, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, convert measurements within the same system means ___ .",
+      "In this problem, conversion factor means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -1486,12 +1504,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the ratio table, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, convert measurements between systems means ___ .",
+      "In this problem, conversion factor means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -1532,12 +1551,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Gave the total instead of the unit rate. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "What does ONE of them cost? Finish: “for one ___, there is ___.”",
-      lookFor: "Students gave the total instead of the unit rate — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Gave the total instead of the unit rate” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask “per ONE what?” and make them finish the sentence.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, unit rate problem solving means ___ .",
+      "In this problem, unit rate means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -1580,7 +1600,7 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "On the ratio table, how many TIMES bigger did the first amount get?",
       lookFor:
-        "Students scaled a ratio by adding instead of multiplying — that is this lesson's error.",
+        "Watch for the “Scaled a ratio by adding instead of multiplying” error — that is the one this lesson's check diagnoses.",
       ifStuck:
         "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
     },
@@ -1628,12 +1648,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the tape diagram, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, understand percent means ___ .",
+      "In this problem, percent means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -1681,7 +1702,7 @@ export const FACILITATION_BY_LESSON = {
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, fractions, decimals, and percents means ___ .",
+      "In this problem, percent means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -1721,7 +1742,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Percent answer off by a factor of 100; Right digits, wrong magnitude; Used the percent as a plain number. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Estimate to the nearest whole first — then check where the point lands on the percent grid.",
-      lookFor: "Students right digits, wrong magnitude — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Right digits, wrong magnitude” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
     },
     frames: [
@@ -1774,7 +1796,7 @@ export const FACILITATION_BY_LESSON = {
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, percent of a number means ___ .",
+      "In this problem, percent means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -1814,12 +1836,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Should the answer be bigger or smaller than what you started with? Say why first.",
-      lookFor: "Students multiplied when the problem divides — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Multiplied when the problem divides” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Estimate first — should the answer be bigger or smaller than you started?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, determine the whole given the part and percent means ___ .",
+      "In this problem, part means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -1860,12 +1883,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Multiplied when the problem divides; Swapped area and perimeter. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the area model, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, area of parallelograms means ___ .",
+      "In this problem, slanted side means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -1905,14 +1929,14 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added the dimensions instead of multiplying. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "How many cubes fit along each edge on the cross-section? What do you do with those three numbers?",
+      ask: "How many cubes fit along each edge on the model? What do you do with those three numbers?",
       lookFor:
-        "Students added the dimensions instead of multiplying — that is this lesson's error.",
+        "Watch for the “Added the dimensions instead of multiplying” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Build one layer of unit cubes first, then count the layers.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, volume of rectangular prisms means ___ .",
+      "In this problem, volume means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -1933,7 +1957,7 @@ export const FACILITATION_BY_LESSON = {
       lookFor:
         "A student who can explain why the “Added the dimensions instead of multiplying” error fails in every case, not just this one.",
       ifStuck:
-        "Ask how many unit cubes fit along each edge of the cross-section, then what to do with the three numbers.",
+        "Ask how many unit cubes fit along each edge of the model, then what to do with the three numbers.",
       extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
     frames: [
@@ -1956,12 +1980,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found base × height but forgot the half. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Draw the rectangle around the triangle on the area model. How much of it is the triangle?",
-      lookFor: "Students found base × height but forgot the half — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Found base × height but forgot the half” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Draw the rectangle around the triangle — the triangle is half of it.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, area of a triangle means ___ .",
+      "In this problem, base means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2002,12 +2027,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found base × height but forgot the half. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Draw the rectangle around the triangle on the area model. How much of it is the triangle?",
-      lookFor: "Students found base × height but forgot the half — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Found base × height but forgot the half” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Draw the rectangle around the triangle — the triangle is half of it.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, area of trapezoids means ___ .",
+      "In this problem, trapezoid means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2048,12 +2074,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Swapped area and perimeter; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Are we covering the inside, or walking around the edge? What unit does that need?",
-      lookFor: "Students swapped area and perimeter — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Swapped area and perimeter” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the unit should be — units or square units?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, area of composite figures means ___ .",
+      "In this problem, composite figure means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2095,12 +2122,12 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "How many cubes fit along each edge on the cross-section? What do you do with those three numbers?",
       lookFor:
-        "Students added the dimensions instead of multiplying — that is this lesson's error.",
+        "Watch for the “Added the dimensions instead of multiplying” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Build one layer of unit cubes first, then count the layers.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, volume with whole-number edges means ___ .",
+      "In this problem, volume means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2145,13 +2172,13 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "Are we wrapping the outside or filling the inside? Which unit says so?",
       lookFor:
-        "Students found the volume instead of the surface area — that is this lesson's error.",
+        "Watch for the “Found the volume instead of the surface area” error — that is the one this lesson's check diagnoses.",
       ifStuck:
         "Ask what the unit has to be — square units cover a surface, cubic units fill a space.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, surface area using nets means ___ .",
+      "In this problem, surface area means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2195,13 +2222,13 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "Are we wrapping the outside or filling the inside? Which unit says so?",
       lookFor:
-        "Students found the volume instead of the surface area — that is this lesson's error.",
+        "Watch for the “Found the volume instead of the surface area” error — that is the one this lesson's check diagnoses.",
       ifStuck:
         "Ask what the unit has to be — square units cover a surface, cubic units fill a space.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, surface area of prisms means ___ .",
+      "In this problem, surface area means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2245,13 +2272,13 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "Are we wrapping the outside or filling the inside? Which unit says so?",
       lookFor:
-        "Students found the volume instead of the surface area — that is this lesson's error.",
+        "Watch for the “Found the volume instead of the surface area” error — that is the one this lesson's check diagnoses.",
       ifStuck:
         "Ask what the unit has to be — square units cover a surface, cubic units fill a space.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, surface area of pyramids means ___ .",
+      "In this problem, pyramid means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2294,12 +2321,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found base × height but forgot the half; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Draw the rectangle around the triangle on the area model. How much of it is the triangle?",
-      lookFor: "Students found base × height but forgot the half — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Found base × height but forgot the half” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Draw the rectangle around the triangle — the triangle is half of it.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, area of regular polygons means ___ .",
+      "In this problem, regular polygon means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2340,12 +2368,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided fractions without inverting. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Should the answer be bigger or smaller than what you started with? Say why first.",
-      lookFor: "Students multiplied when the problem divides — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Multiplied when the problem divides” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Estimate first — should the answer be bigger or smaller than you started?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, division of fractions means ___ .",
+      "In this problem, dividend means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2386,12 +2415,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided in the wrong order; Divided fractions without inverting. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Which number is being shared out, and which says how many shares?",
-      lookFor: "Students divided in the wrong order — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Divided in the wrong order” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask “what is being split, and into how many?” before they write it.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, divide mixed numbers means ___ .",
+      "In this problem, mixed number means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2432,12 +2462,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided in the wrong order; Divided fractions without inverting. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Which number is being shared out, and which says how many shares?",
-      lookFor: "Students divided in the wrong order — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Divided in the wrong order” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask “what is being split, and into how many?” before they write it.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, fraction division problem solving means ___ .",
+      "In this problem, model means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2478,7 +2509,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the factor tree, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
@@ -2523,13 +2555,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Stopped factoring before every factor was prime. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "What does each place stand for on the factor tree?",
       lookFor:
-        "Watch for: stopping the factor tree too soon — leaving a composite number like 4, 6, 8, or 9 in the final answer instead of continuing to split it.",
-      ifStuck:
-        "Work the first step together on the factor tree, then hand the second one back to them.",
+        "Watch for the “Stopped factoring before every factor was prime” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Point at each factor and ask: can this one still be broken apart?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -2551,7 +2582,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
       ask: "Does this strategy still hold for numbers smaller than 1? Test it.",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
+      lookFor:
+        "A student who can explain why the “Stopped factoring before every factor was prime” error fails in every case, not just this one.",
       ifStuck: "Ask them to test the claim on a friendlier number first, then return.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
@@ -2575,7 +2607,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Distributed to the first term only. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Does the outside number touch BOTH terms? Trace it on the tape diagram.",
-      lookFor: "Students distributed to the first term only — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Distributed to the first term only” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Draw the area model — the outside factor touches BOTH terms.",
     },
     frames: [
@@ -2621,12 +2654,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem adds. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Show me on the tape diagram — are we combining two amounts, or scaling one of them?",
-      lookFor: "Students multiplied when the problem adds — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Multiplied when the problem adds” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Have them restate the problem as a story, then name the operation.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, simplify algebraic expressions means ___ .",
+      "In this problem, like terms means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2667,12 +2701,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided fractions without inverting; Divided in the wrong order. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "How many halves fit in one whole? Does dividing here make it bigger or smaller?",
-      lookFor: "Students divided fractions without inverting — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Divided fractions without inverting” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask them to check with a whole-number case they already trust.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, divide fractions means ___ .",
+      "In this problem, dividend means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2714,12 +2749,12 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "Which operation has to happen first here, and how do you know?",
       lookFor:
-        "Students worked left to right instead of by operation order — that is this lesson's error.",
+        "Watch for the “Worked left to right instead of by operation order” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Have them circle the operation that must go first, then compute.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, powers and exponents means ___ .",
+      "In this problem, exponent means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2767,7 +2802,7 @@ export const FACILITATION_BY_LESSON = {
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, write and evaluate numerical expressions with exponents means ___ .",
+      "In this problem, numerical expression means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2807,12 +2842,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the tape diagram, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, write algebraic expressions means ___ .",
+      "In this problem, variable means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2853,7 +2889,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem adds. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Show me on the tape diagram — are we combining two amounts, or scaling one of them?",
-      lookFor: "Students multiplied when the problem adds — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Multiplied when the problem adds” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Have them restate the problem as a story, then name the operation.",
     },
     frames: [
@@ -2896,17 +2933,16 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Confused factors with multiples. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "What does each place stand for on the factor tree?",
       lookFor:
-        "Watch for: reaching for the wrong tool: listing FACTORS for a problem about repeating cycles.",
-      ifStuck:
-        "Work the first step together on the factor tree, then hand the second one back to them.",
+        "Watch for the “Confused factors with multiples” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Ask which number divides which — factors go INTO it, multiples come OUT of it.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, find factors and multiples means ___ .",
+      "In this problem, factor means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -2924,7 +2960,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
       ask: "Does this strategy still hold for numbers smaller than 1? Test it.",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
+      lookFor:
+        "A student who can explain why the “Confused factors with multiples” error fails in every case, not just this one.",
       ifStuck: "Ask them to test the claim on a friendlier number first, then return.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
@@ -2945,13 +2982,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Confused the commutative and associative properties. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Which part of this expression happens first, and how do you know?",
       lookFor:
-        "Watch for: applying the commutative property where it does not belong, or confusing it with the associative property.",
-      ifStuck:
-        "Work the first step together on the step-by-step solver, then hand the second one back to them.",
+        "Watch for the “Confused the commutative and associative properties” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Ask what actually MOVED: the order of the numbers, or the parentheses?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -2972,7 +3008,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
       ask: "Is there a different expression with the same value? Show why they match.",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
+      lookFor:
+        "A student who can explain why the “Confused the commutative and associative properties” error fails in every case, not just this one.",
       ifStuck: "Ask them to substitute one number into both expressions and compare.",
       extend: "Ask them to write an expression a classmate would simplify wrongly, and say why.",
     },
@@ -2995,12 +3032,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided in the wrong order. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Should the answer be bigger or smaller than what you started with? Say why first.",
-      lookFor: "Students multiplied when the problem divides — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Multiplied when the problem divides” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Estimate first — should the answer be bigger or smaller than you started?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, divide whole numbers by fractions means ___ .",
+      "In this problem, whole number means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3097,7 +3135,7 @@ export const FACILITATION_BY_LESSON = {
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, rational numbers on the number line means ___ .",
+      "In this problem, rational number means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3146,7 +3184,7 @@ export const FACILITATION_BY_LESSON = {
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, integers and absolute value means ___ .",
+      "In this problem, integer means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3195,7 +3233,7 @@ export const FACILITATION_BY_LESSON = {
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, compare and order integers means ___ .",
+      "In this problem, number line means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3237,12 +3275,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Swapped the x and y coordinates. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Trace the across move first, then the up move, on the coordinate plane.",
-      lookFor: "Students swapped the x and y coordinates — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Swapped the x and y coordinates” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Have them trace the horizontal move with a finger before the vertical one.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, graph on the coordinate plane means ___ .",
+      "In this problem, coordinate plane means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3286,12 +3325,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem adds. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Show me on the model — are we combining two amounts, or scaling one of them?",
-      lookFor: "Students multiplied when the problem adds — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Multiplied when the problem adds” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Have them restate the problem as a story, then name the operation.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, distance on the coordinate plane means ___ .",
+      "In this problem, distance means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3334,7 +3374,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Swapped area and perimeter; Added when the problem multiplies; Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Are we covering the inside, or walking around the edge? What unit does that need?",
-      lookFor: "Students swapped area and perimeter — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Swapped area and perimeter” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the unit should be — units or square units?.",
     },
     frames: [
@@ -3380,12 +3421,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Swapped the x and y coordinates. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Trace the across move first, then the up move, on the coordinate plane.",
-      lookFor: "Students swapped the x and y coordinates — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Swapped the x and y coordinates” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Have them trace the horizontal move with a finger before the vertical one.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, ordered pairs in all four quadrants means ___ .",
+      "In this problem, quadrant means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3429,12 +3471,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Swapped the x and y coordinates. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Trace the across move first, then the up move, on the coordinate plane.",
-      lookFor: "Students swapped the x and y coordinates — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Swapped the x and y coordinates” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Have them trace the horizontal move with a finger before the vertical one.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, reflect points across axes means ___ .",
+      "In this problem, reflection means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3478,12 +3521,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem adds; Added when the problem multiplies; Divided when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Show me on the tape diagram — are we combining two amounts, or scaling one of them?",
-      lookFor: "Students multiplied when the problem adds — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Multiplied when the problem adds” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Have them restate the problem as a story, then name the operation.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, write equations means ___ .",
+      "In this problem, equation means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3525,12 +3569,12 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "Which number is the unknown, and which one was handed to you?",
       lookFor:
-        "Students answered with a number already in the equation — that is this lesson's error.",
+        "Watch for the “Answered with a number already in the equation” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask them to substitute their answer back into the original equation out loud.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, solve one-step addition and subtraction equations means ___ .",
+      "In this problem, equation means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3571,12 +3615,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Did not undo the operation; Answered with a number already in the equation. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "What is being done to the variable? Show the undo on the tape diagram.",
-      lookFor: "Students did not undo the operation — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Did not undo the operation” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Have them name the operation acting on the variable BEFORE they touch both sides.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, solve multiplication and division equations means ___ .",
+      "In this problem, inverse operation means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3618,12 +3663,12 @@ export const FACILITATION_BY_LESSON = {
     teacherMoves: {
       ask: "Is the boundary number itself allowed? Read the words again.",
       lookFor:
-        "Students boundary value wrongly included or excluded — that is this lesson's error.",
+        "Watch for the “Boundary value wrongly included or excluded” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Have them test the boundary value itself — does it make the statement true?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, write inequalities means ___ .",
+      "In this problem, inequality means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3664,12 +3709,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Boundary value wrongly included or excluded; Graph shaded toward the wrong side. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Pick a number on your shaded side of the number line. Does it make the statement true?",
-      lookFor: "Students graph shaded toward the wrong side — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Graph shaded toward the wrong side” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Make them test one number from the shaded side out loud before accepting a graph.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, graph inequalities means ___ .",
+      "In this problem, number line means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3710,12 +3756,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right boundary, symbol reversed. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Test one number from your answer on the number line. Does it actually work?",
-      lookFor: "Students right boundary, symbol reversed — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Right boundary, symbol reversed” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask which moves can flip a symbol — adding and subtracting never do.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, solve and graph inequalities means ___ .",
+      "In this problem, solve means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3756,12 +3803,13 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Should the answer be bigger or smaller than what you started with? Say why first.",
-      lookFor: "Students multiplied when the problem divides — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Multiplied when the problem divides” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Estimate first — should the answer be bigger or smaller than you started?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
-      "In this problem, equations and inequalities problem solving means ___ .",
+      "In this problem, model means ___ .",
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
@@ -3802,7 +3850,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the ratio table, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
@@ -3850,7 +3899,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Swapped the x and y coordinates. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the ratio table, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
@@ -3898,7 +3948,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Swapped the x and y coordinates; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the model, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
@@ -3944,7 +3995,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Gave the total instead of the unit rate; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the model, is this one group repeated, or two amounts joined? Which operation matches?",
-      lookFor: "Students added when the problem multiplies — that is this lesson's error.",
+      lookFor:
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [

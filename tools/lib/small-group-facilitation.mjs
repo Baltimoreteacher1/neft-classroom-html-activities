@@ -432,7 +432,17 @@ export function buildAsk({ group, family, model, tags, taxonomy }) {
 export function buildLookFor({ group, config, tags, taxonomy }) {
   if (group === 1) {
     const label = tags.length ? taxonomy[tags[0]]?.label : null;
-    if (label) return `Students ${lower1(trimDot(label))} — that is this lesson's error.`;
+    // Most taxonomy labels are past-tense verb phrases ("Flipped the ratio"),
+    // which read correctly after "Students". Three are NOUN phrases naming the
+    // shape of the wrong answer instead — "Right digits, wrong magnitude",
+    // "Right boundary, symbol reversed", "Graph shaded toward the wrong side" —
+    // and splicing those after "Students" produced six teacher-facing lines
+    // with no verb in them ("Students right digits, wrong magnitude"). Quoting
+    // the label fits every shape, which is the same reason the challenge branch
+    // below already quotes it.
+    if (label) {
+      return `Watch for the “${trimDot(label)}” error — that is the one this lesson's check diagnoses.`;
+    }
     const mistake = commonMistakeText(config);
     // "Students …" only works in front of a verb phrase, which a taxonomy label
     // is and free prose is not. Prose gets a frame that fits any shape.

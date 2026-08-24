@@ -28,6 +28,31 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS = join(ROOT, "lessons");
 const TIERS = ["approaching", "onLevel", "extending", "optional"];
 
+/**
+ * An item's own words, for asking whether the mathematics it shows matches the
+ * error it claims to diagnose.
+ */
+function itemText(item) {
+  return [item?.stem, ...(item?.choices || []), item?.explanation].filter(Boolean).join(" | ");
+}
+
+/* A DECIMAL error cannot be diagnosed by a problem that contains no decimal.
+ *
+ * The engine's own numeric predictor already knows this — it guards
+ * `decimal-place-value` behind `hasDecimal` so "a clean whole-number problem
+ * never gets a decimal label" — but an AUTHORED tag bypasses the predictor
+ * entirely, and `place-value` is aliased straight to `decimal-place-value`.
+ * Sixteen whole-number items were tagged that way, including "What is the prime
+ * factorization of 30?" and "Which ratio is greater: 3:4 or 5:8?". Nothing
+ * caught it, because the tag resolves, has student text and sits on a wrong
+ * answer — every existing check passes.
+ *
+ * The cost was teacher-facing: lesson 2-6 is whole-number long division, and
+ * its small-group panel told the teacher to "check where the point lands" and
+ * to "count decimal places out loud" on 1,344 ÷ 12. */
+const DECIMAL_TAGS = new Set(["decimal-place-value"]);
+const HAS_DECIMAL = /\d\.\d/;
+
 const problems = [];
 let tagged = 0;
 let items = 0;
@@ -76,6 +101,10 @@ for (const id of readdirSync(LESSONS, { withFileTypes: true })
         if (index === item.correctIndex)
           problems.push(
             `${id}: the CORRECT choice (index ${index}) carries tag "${tag}" — a right answer diagnoses nothing`,
+          );
+        if (DECIMAL_TAGS.has(resolved) && !HAS_DECIMAL.test(itemText(item)))
+          problems.push(
+            `${id}: "${tag}" (→ ${resolved}) is a DECIMAL error, but this item states no decimal — "${String(item.stem || "").slice(0, 60)}". The teacher move for it says to count decimal places.`,
           );
       });
     }
