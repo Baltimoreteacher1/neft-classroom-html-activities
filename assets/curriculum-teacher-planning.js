@@ -609,19 +609,21 @@
       // to — the manifest already carries the relationship, so nothing here
       // infers a variant's purpose from its number.
       var variantsByParent = Object.create(null);
-      function addVariant(entry, fallbackLabel) {
+      function addVariant(entry, fallbackLabel, shortLabel) {
         if (!entry || !entry.parent || !entry.resources || !entry.resources.lesson) return;
         (variantsByParent[entry.parent] = variantsByParent[entry.parent] || []).push({
           id: entry.id,
           title: entry.title || fallbackLabel,
+          shortLabel: shortLabel,
           href: entry.resources.lesson,
+          resources: entry.resources,
         });
       }
       (manifest.smallGroups || []).forEach(function (g) {
-        addVariant(g, "Small group");
+        addVariant(g, "Small group", g.group ? "Group " + g.group : "Small group");
       });
       (manifest.catchUps || []).forEach(function (c) {
-        addVariant(c, "Catch-up");
+        addVariant(c, "Catch-up", "Catch-up");
       });
 
       /* End-of-unit culminating projects, keyed by unit. They are offered at the
@@ -789,6 +791,17 @@
         ["studentHelp", "Student help"],
       ];
 
+      /* What a small-group or catch-up variant hands out, in the order the
+       * teacher meets it at the table: the sheet the group writes on during the
+       * session, then the packet that continues it afterwards. Same [manifest
+       * key, label] shape and same dead-button rule as the parts above — a
+       * catch-up has a worksheet and no practice set, and the manifest says so
+       * per variant rather than this file guessing from the id. */
+      var VARIANT_PARTS = [
+        ["worksheet", "Worksheet"],
+        ["practice", "Practice Set"],
+      ];
+
       /** One labelled row of links, appended only if it has something in it. */
       function partRow(lesson, parts, labelText, className) {
         var present = parts.filter(function (p) {
@@ -883,6 +896,19 @@
             group.appendChild(va);
           });
           openBox.appendChild(group);
+
+          /* One row per variant for what it hands out. Kept separate from the
+           * lessons row above, and labelled with the group it belongs to,
+           * because two groups' worksheets in one undifferentiated row is a
+           * teacher printing Group 2's sheet for Group 1 at 7:55am. */
+          variants.forEach(function (v) {
+            partRow(
+              v,
+              VARIANT_PARTS,
+              (v.shortLabel || v.title) + " printables",
+              "tws-open-variant-parts",
+            );
+          });
         }
 
         /* Everything else the lesson ships with. Choosing a lesson here used to

@@ -462,10 +462,14 @@ await t("a selected lesson resolves its own routes, and only real ones", async (
   const hrefs = [...p.open.querySelectorAll("a")].map((a) => a.getAttribute("href"));
   assert.ok(hrefs.includes("/lessons/5-3/"), "whole-group route missing");
   assert.ok(hrefs.some((h) => h.startsWith("/curriculum/student-supports/?lesson=5-3")));
+  /* EVERY route each variant carries, not just its lesson — a small group's
+   * worksheet and practice set are what the teacher prints for the table, and
+   * deriving them from the manifest means adding a variant resource without
+   * surfacing it fails here rather than shipping a packet nobody can reach. */
   const expectedVariants = [
     ...(MANIFEST.smallGroups || []).filter((g) => g.parent === "5-3"),
     ...(MANIFEST.catchUps || []).filter((c) => c.parent === "5-3"),
-  ].map((v) => v.resources.lesson);
+  ].flatMap((v) => Object.values(v.resources));
   for (const href of expectedVariants) assert.ok(hrefs.includes(href), `variant ${href} missing`);
 
   /* EVERY part the manifest carries for this lesson is offered. Derived from the
