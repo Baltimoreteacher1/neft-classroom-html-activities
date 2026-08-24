@@ -2118,3 +2118,62 @@ assertions added to `tools/deploy-path.test.mjs`, each proven by mutation:
 
 7/7 restored.
 
+---
+
+# Block 12 — the gate refused a push, and the skip heuristic is now inverted
+
+## The gate did its job
+
+With `ship.sh`/`qa:loop` actually running, the first push of the merged branch
+was **rejected**: `PASS 96/99`, `FAILED: validate:hub, smoke:injection`,
+`SKIPPED (verified NOTHING): validate:lesson-boot`. Nothing was bypassed.
+
+**`validate:hub`** — `tools/validate-notebook-render.mjs` launched Playwright
+with no `executablePath` and no `PW_CHROMIUM_PATH` support, and threw an
+UNCAUGHT exception on any machine whose browser is not the exact pinned build.
+That is a crash, not a verdict: it says nothing about the notebooks, and it
+blocks every push. Three sibling tools already follow the convention
+(`smoke-lesson-boot.mjs`, `validate-scorm-self-contained.mjs`,
+`canvas-notebook-probe.mjs`); this one missed it. Added — and deliberately NOT a
+skip, since a browser probe that quietly passes when it cannot open a browser is
+the precise failure this repo documents. With a browser it runs and passes: **24
+assertions** across 2-4, 5-10 and 6-2.
+
+**`smoke:injection`** — passes standalone, 6/6 pages clean. Transient inside the
+loop; the 404s on `/shared/…` and the `web-vitals` pageerror in that output are
+the mid-build `dist/` churn signature already recorded in Block 10. It passed in
+the clean re-run (12.1s).
+
+Re-run with `PW_CHROMIUM_PATH` exported: **PASS 99/99, wall 265s, zero skips.**
+Pushed `844c6dfe..9b6567b1`.
+
+## The documented skip-detection heuristic is now WRONG, and dangerously so
+
+CLAUDE.md said, in two places, that a real `validate:lesson-boot` costs ~200s and
+**"that time difference is the tell"** for spotting a skip. That is dead.
+
+Measured standalone, with a browser, on this tree:
+
+```
+17/17 pages rendered; 0 failed.
+PASS — all probed pages render.
+real  0m7.412s
+```
+
+7.4 seconds, naming every page with its render evidence. Under the old rule that
+green would be dismissed as a skip wearing a costume — the exact heuristic I have
+been applying all session, now pointing the wrong way.
+
+**Why it changed, stated as strongly-supported inference rather than measurement:**
+the self-hosted-font work removed a render-blocking `fonts.googleapis.com`
+stylesheet from every page. Block 9 measured that stall at ~12.9s per page in
+this sandbox; 16 pages × 12.9s ≈ **206s**, against a documented ~200s. The
+arithmetic matches closely enough to be the explanation, but the old timing was
+never re-measured on the old tree in this session, so it is consistent-with
+rather than proven.
+
+**Corrected in CLAUDE.md**: judge the check by its OUTPUT, not the clock. A real
+run names each page (`PASS 1-1 #app/mount 999`) and ends `17/17 pages rendered`;
+a skipped one is reported by name as `SKIPPED (verified NOTHING)`. The runner
+already prints that line — it is what caught the skip in the rejected push above.
+
