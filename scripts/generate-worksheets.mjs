@@ -34,6 +34,15 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+/* The same drawer the lesson and the small-group shell use for the vertical
+ * tableau. Importing it rather than re-drawing one here is the point: a worked
+ * example that models a DIFFERENT house from the one on screen is the drift
+ * this repo keeps paying for. Dependency-free by design, so a print script can
+ * use it. */
+import {
+  carriedDivisionFigures,
+  DIVISION_FIGURE_CSS,
+} from "../engine/core/division-walk-figure.js";
 import { EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 
@@ -528,6 +537,126 @@ function lessonDirs() {
     .sort();
 }
 
+/* ---------- vertical work space ------------------------------------------
+ *
+ * The gap this closes: a computational multiple-choice item rendered as a stem
+ * and four bubbles, and nothing else. A student asked "What is 936 ÷ 12?" has
+ * to run the long-division algorithm somewhere, and the sheet gave them
+ * nowhere — so they either work in the margin, on a separate page, or (the
+ * common case in a support group) guess between the four numbers. The answer
+ * bubbles are the LAST step of the work; the sheet has to hold the rest of it.
+ */
+
+/** Parse "a ÷ b" (or "a divided by b") out of a stem. Commas and $ stripped. */
+function divisionInStem(stem) {
+  const text = String(stem || "").replace(/[,$]/g, "");
+  const m = /(\d+(?:\.\d+)?)\s*(?:÷|\/|\bdivided by\b)\s*(\d+(?:\.\d+)?)/i.exec(text) || null;
+  if (!m) return null;
+  const dividend = m[1];
+  const divisor = m[2];
+  // A decimal on either side is a different algorithm with a different frame;
+  // this one is the whole-number tableau only.
+  if (dividend.includes(".") || divisor.includes(".")) return null;
+  if (dividend.length > 7 || divisor.length > 3) return null;
+  return { dividend, divisor };
+}
+
+/* The long-division house, drawn empty for the student to fill.
+ *
+ * Deliberately a PLACE-COLUMN grid rather than an open box: one faint cell per
+ * dividend digit, above the bar and below it. That is the scaffold the
+ * algorithm actually needs — `division-quotient-missing-zero` (a dropped
+ * placeholder zero) is this lesson's named error, and it happens precisely
+ * because a digit gets written in the wrong column or not at all. A blank
+ * rectangle cannot catch that; a column can. */
+function longDivisionFrame({ dividend, divisor }, { extraRows = 0 } = {}) {
+  const U = 30; // one place column
+  const R = 34; // one work row
+  const digits = String(dividend).split("");
+  const quotientDigits = Math.max(
+    1,
+    String(Math.floor(Number(dividend) / Math.max(1, Number(divisor)))).length,
+  );
+  const rows = Math.min(9, Math.max(3, quotientDigits * 2 + extraRows));
+  const left = (String(divisor).length + 1) * U;
+  const width = left + digits.length * U + U / 2;
+  const top = R; // quotient row sits above the bar
+  const height = top + R + rows * R + 8;
+  const barY = top + 6;
+  const colX = (i) => left + i * U + U / 2;
+
+  const parts = [];
+  // Quotient cells — one per place, so a missing digit is visible as a gap.
+  digits.forEach((_, i) => {
+    parts.push(
+      `<rect class="wsd-cell" x="${colX(i) - U / 2 + 3}" y="${top - R + 8}" width="${U - 6}" height="${R - 12}" rx="3"/>`,
+    );
+  });
+  // The house: divisor outside, curved bracket, bar over the dividend.
+  // Right-aligned so it sits against the bracket. Drawing it from the left
+  // margin instead leaves a gap the width of the longest divisor the sheet
+  // happens to contain, which reads as a missing digit.
+  const dvs = String(divisor).split("");
+  dvs.forEach((d, i) => {
+    const x = left - 16 - (dvs.length - 1 - i) * U;
+    parts.push(
+      `<text class="wsd-given" x="${x}" y="${top + R - 10}" text-anchor="middle">${esc(d)}</text>`,
+    );
+  });
+  parts.push(
+    `<path class="wsd-rule" d="M ${left - 6} ${barY} q 8 ${R / 2} 0 ${R}" fill="none"/>`,
+    `<line class="wsd-rule" x1="${left - 6}" y1="${barY}" x2="${width - U / 2 + 6}" y2="${barY}"/>`,
+  );
+  digits.forEach((d, i) => {
+    parts.push(
+      `<text class="wsd-given" x="${colX(i)}" y="${top + R - 10}" text-anchor="middle">${esc(d)}</text>`,
+    );
+  });
+  // Work rows, ruled by column so subtraction stacks stay in place value.
+  for (let r = 0; r < rows; r += 1) {
+    const y = top + R + r * R;
+    digits.forEach((_, i) => {
+      parts.push(
+        `<rect class="wsd-cell" x="${colX(i) - U / 2 + 3}" y="${y + 4}" width="${U - 6}" height="${R - 12}" rx="3"/>`,
+      );
+    });
+  }
+  return `<svg class="wsd" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-label="Blank long-division frame for ${esc(dividend)} divided by ${esc(divisor)}, with one column per place value.">${parts.join("")}</svg>`;
+}
+
+/* The cycle, written down the page instead of across it. Support tiers get the
+ * four moves as labelled rails beside the frame so the student can see which
+ * move they are on; on-level gets the frame alone. */
+const DIVISION_CYCLE = [
+  ["Divide", "How many fit?"],
+  ["Multiply", "Multiply back."],
+  ["Subtract", "What is left?"],
+  ["Bring down", "Next digit."],
+];
+function divisionCycleRail() {
+  const items = DIVISION_CYCLE.map(
+    ([name, hint], i) =>
+      `<li class="wsd-step"><span class="wsd-step-n">${i + 1}</span><span class="wsd-step-t">${esc(name)}</span><span class="wsd-step-h">${esc(hint)}</span></li>`,
+  ).join("");
+  return `<ol class="wsd-rail">${items}</ol>`;
+}
+
+/**
+ * The work space for one problem, chosen by what the problem actually asks.
+ * Returns "" for items where a work box is noise (matching, sorting, a written
+ * explanation that already has ruled lines).
+ */
+function workArea(it, { supported = false } = {}) {
+  const div = divisionInStem(it?.stem);
+  if (div) {
+    return `<div class="wsd-wrap${supported ? " wsd-supported" : ""}">
+      <div class="wsd-frame">${longDivisionFrame(div, { extraRows: supported ? 1 : 0 })}</div>
+      ${supported ? divisionCycleRail() : ""}
+    </div>`;
+  }
+  return workBox(supported ? "Show every step here" : "Show your work");
+}
+
 function blankLines(n = 3) {
   return `<div class="ws-lines">${'<span class="ws-line"></span>'.repeat(n)}</div>`;
 }
@@ -536,7 +665,7 @@ function workBox(label = "Show your work") {
 }
 
 /* ---------- per-problem print renderers ----------------------------------- */
-function renderMC(it, _n, key, commonMistake) {
+function renderMC(it, _n, key, commonMistake, supported = false) {
   const opts = (it.choices || [])
     .map((c, i) => {
       const correct = key && i === it.correctIndex;
@@ -551,7 +680,12 @@ function renderMC(it, _n, key, commonMistake) {
     const watch = it.watchFor || it.distractorRationale || commonMistake;
     if (watch) notes += `<p class="ws-watch"><b>Watch for:</b> ${esc(watch)}</p>`;
   }
-  return `<p class="ws-stem">${esc(it.stem)}</p><ol class="ws-opts">${opts}</ol>${notes}`;
+  /* The bubbles are the last step, not the work. A computational stem gets the
+   * space its algorithm needs BEFORE the choices, so the sheet reads
+   * problem → work → answer rather than problem → guess. The key skips it:
+   * a teacher copy does not need blank space. */
+  const work = key ? "" : workArea(it, { supported });
+  return `<p class="ws-stem">${esc(it.stem)}</p>${work}<ol class="ws-opts">${opts}</ol>${notes}`;
 }
 
 function renderMatching(it, _n, key) {
@@ -658,7 +792,7 @@ function renderProblem(it, n, { key = false, supported = false, commonMistake = 
   let body;
   switch (it.type) {
     case "multiple-choice":
-      body = renderMC(it, n, key, commonMistake);
+      body = renderMC(it, n, key, commonMistake, supported);
       break;
     case "matching-game":
     case "matching":
@@ -713,7 +847,41 @@ function wordBank(vocab = []) {
 }
 
 function workedExample(cfg) {
-  // Prefer a commonMistake/extending error-analysis as a worked model.
+  /* THE MODEL AND ITS PICTURE MUST BE THE SAME PROBLEM.
+   *
+   * This used to source the model from an `error-analysis` item — an item whose
+   * whole purpose is to contain a deliberate mistake. Printing the lesson's
+   * canonical tableau beside that produced a "Worked Example" showing
+   * 1,134 ÷ 9 narrated to a wrong quotient on the left and a correct
+   * 1,344 ÷ 12 house on the right, under one heading, as if the second were
+   * the answer to the first.
+   *
+   * So the lesson's own `launch.conceptIntro.iDo` wins: it is the canonical
+   * correct walk, and it is the field the tableau is derived from, which makes
+   * the words and the picture the same problem by construction rather than by
+   * luck. Only when a lesson has no concept intro does the old error-analysis
+   * prose stand in — and then it stands alone, with no picture. */
+  const iDo = cfg.launch?.conceptIntro?.iDo;
+  const lines = Array.isArray(iDo?.lines) ? iDo.lines.filter(Boolean) : [];
+  if (lines.length) {
+    let tableau = "";
+    try {
+      const svg = (carriedDivisionFigures(lines) || []).filter(Boolean).pop();
+      if (svg)
+        tableau = `<figure class="ws-example-fig">${svg}<figcaption>The finished division</figcaption></figure>`;
+    } catch (_error) {
+      tableau = "";
+    }
+    const steps = lines.map((line) => `<li>${esc(line)}</li>`).join("");
+    return `<section class="ws-example">
+      <h2 class="ws-example-h">✏️ Worked Example</h2>
+      <div class="ws-example-body">
+        <ol class="ws-example-steps">${steps}</ol>
+        ${tableau}
+      </div>
+    </section>`;
+  }
+
   const pools = [cfg.practice?.extending, cfg.practice?.onLevel, cfg.practice?.optional].filter(
     Boolean,
   );
@@ -724,14 +892,13 @@ function workedExample(cfg) {
   }
   if (!ex) return "";
   const steps = (ex.workedExample || [])
-    .map((s) => `<li><b>${esc(s.label)}:</b> ${esc(s.work)}</li>`)
+    .map((step) => `<li><b>${esc(step.label)}:</b> ${esc(step.work)}</li>`)
     .join("");
   return `<section class="ws-example">
     <h2 class="ws-example-h">✏️ Worked Example</h2>
     <ol class="ws-example-steps">${steps}</ol>
   </section>`;
 }
-
 function pageHeader(cfg, versionLabel, sub) {
   const wbUrl = `/curriculum/math-workbench/?lesson=${esc(cfg.lessonId)}`;
   return `<header class="ws-head">
@@ -874,6 +1041,30 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-lines{margin:8px 0 0;}
 .ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
 .ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+/* Vertical work space. The frame and the cycle rail sit side by side on paper
+   and stack on a narrow screen; both are print-first, so no shadows, no fills
+   that cost toner, and hairlines that survive a classroom copier. */
+.wsd-wrap{display:flex;gap:14px;align-items:flex-start;margin:10px 0 2px;flex-wrap:wrap;}
+.ws-example-body{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;}
+.ws-example-body .ws-example-steps{flex:1 1 320px;margin:0;}
+.ws-example-fig{flex:0 0 auto;margin:0;text-align:center;}
+.ws-example-fig figcaption{margin-top:4px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);}
+${DIVISION_FIGURE_CSS}
+.wsd-frame{flex:0 0 auto;}
+.wsd{display:block;}
+.wsd .wsd-rule{stroke:#0f172a;stroke-width:1.8;fill:none;}
+.wsd .wsd-cell{fill:none;stroke:#c8d2e0;stroke-width:1;stroke-dasharray:3 3;}
+.wsd .wsd-given{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;font-size:19px;fill:#0f172a;}
+.wsd-rail{list-style:none;margin:0;padding:0;display:grid;gap:5px;min-width:150px;}
+.wsd-step{display:grid;grid-template-columns:20px 1fr;row-gap:0;column-gap:7px;align-items:baseline;
+  border-left:2.5px solid var(--blue);padding:2px 0 3px 8px;}
+.wsd-step-n{grid-row:span 2;font-weight:800;font-size:12px;color:var(--blue);
+  border:1.5px solid var(--blue);border-radius:50%;width:20px;height:20px;line-height:17px;text-align:center;}
+.wsd-step-t{font-weight:700;font-size:12.5px;color:#12355b;}
+.wsd-step-h{grid-column:2;font-size:11px;color:var(--muted);}
+@media print{
+  .wsd-wrap{break-inside:avoid;page-break-inside:avoid;}
+}
 .ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
 .ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
 .ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
