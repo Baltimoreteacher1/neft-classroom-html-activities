@@ -116,7 +116,16 @@ const CONFIGS_ONLY = process.argv.includes("--configs-only");
  * content. This keeps the source of truth in the generator (edit the builder,
  * re-run, done) while making a routine refresh safe.
  */
-const FACILITATION_ONLY = process.argv.includes("--facilitation-only");
+/* --check answers "is the committed facilitation module what this generator
+ * would write today?" and writes nothing at all. It exists because that module
+ * had no freshness gate: `_facilitation-data.js` sat on main stale enough that
+ * regenerating it moved 82 lines with no source change in the same commit, and
+ * nothing anywhere said so. Generated lesson PAGES have
+ * tools/generated-pages-fresh.test.mjs; this generated teacher DATA had
+ * nothing, so a change to a lesson's vocabulary or to a facilitation template
+ * reached the panel only if somebody remembered to re-run the generator. */
+const CHECK = process.argv.includes("--check");
+const FACILITATION_ONLY = CHECK || process.argv.includes("--facilitation-only");
 /* Deliberately rebuild from the base, discarding authored layers. The escape
  * hatch exists so "the overlay always wins" can never become a reason a
  * correction cannot be applied — but it is opt-in, and it says so. */
@@ -839,6 +848,43 @@ if (!DRY) {
       .sort()
       .map((k) => [k, merged[k]]),
   );
+  if (CHECK) {
+    /* Compare the DATA, not the file text. The module is written by
+     * JSON.stringify and then reformatted by Biome, so a text comparison would
+     * fail on whitespace and teach everyone to ignore this gate. */
+    let onDisk = {};
+    try {
+      const mod = await import(`file://${FACILITATION_MODULE}?t=${Date.now()}`);
+      onDisk = mod.FACILITATION_BY_LESSON || {};
+    } catch (error) {
+      console.error(`facilitation freshness FAILED: cannot read the module (${error.message})`);
+      process.exit(1);
+    }
+    const ids = [...new Set([...Object.keys(ordered), ...Object.keys(onDisk)])].sort();
+    const drifted = ids.filter((id) => JSON.stringify(onDisk[id]) !== JSON.stringify(ordered[id]));
+    if (drifted.length) {
+      console.error(
+        `facilitation freshness FAILED: ${drifted.length} of ${ids.length} lesson(s) in ` +
+          `functions/teacher-small-group/_facilitation-data.js do not match what the ` +
+          `generator would write.`,
+      );
+      for (const id of drifted.slice(0, 15)) {
+        const why = !onDisk[id]
+          ? "missing on disk"
+          : !ordered[id]
+            ? "no longer generated"
+            : "content drifted";
+        console.error(`  ✗ ${id} — ${why}`);
+      }
+      if (drifted.length > 15) console.error(`  … and ${drifted.length - 15} more`);
+      console.error(`\n  Fix: node tools/generate-small-group-lessons.mjs --facilitation-only`);
+      process.exit(1);
+    }
+    console.log(
+      `facilitation freshness: ${ids.length} lesson(s) match what the generator would write.`,
+    );
+    process.exit(0);
+  }
   recordWrite(FACILITATION_MODULE);
   writeFileSync(
     FACILITATION_MODULE,
