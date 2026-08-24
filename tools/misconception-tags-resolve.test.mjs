@@ -29,11 +29,21 @@ const LESSONS = join(ROOT, "lessons");
 const TIERS = ["approaching", "onLevel", "extending", "optional"];
 
 /**
- * An item's own words, for asking whether the mathematics it shows matches the
- * error it claims to diagnose.
+ * An item's own MATHEMATICS, for asking whether it matches the error the item
+ * claims to diagnose.
+ *
+ * A lesson reference is not mathematics. The band-review catch-ups prefix their
+ * borrowed items with "(Lesson 2.6)", and reading that as a decimal is how two
+ * whole-number division items kept a decimal tag through the first sweep —
+ * `2.6` matched, so the item looked like it was about decimals. Strip the
+ * reference before deciding anything about the numbers.
  */
+const LESSON_REF = /\(?\b[Ll]esson\s+\d+[.-]\d+\)?/g;
 function itemText(item) {
-  return [item?.stem, ...(item?.choices || []), item?.explanation].filter(Boolean).join(" | ");
+  return [item?.stem, ...(item?.choices || []), item?.explanation]
+    .filter(Boolean)
+    .join(" | ")
+    .replace(LESSON_REF, " ");
 }
 
 /* A DECIMAL error cannot be diagnosed by a problem that contains no decimal.

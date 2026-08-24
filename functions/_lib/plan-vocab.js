@@ -19,6 +19,11 @@ export const MISCONCEPTIONS = {
     label: "Right digits, wrong magnitude",
     watchFor: "Estimate to the nearest whole first, then count decimal places out loud.",
   },
+  "division-quotient-missing-zero": {
+    label: "Dropped a placeholder zero in the quotient",
+    watchFor:
+      "Estimate first — 4,896 ÷ 12 is about 400, not 40 — then check the quotient has a digit above every digit that was brought down.",
+  },
   "equation-answered-with-given-number": {
     label: "Answered with a number already in the equation",
     watchFor: "Ask them to substitute their answer back into the original equation out loud.",

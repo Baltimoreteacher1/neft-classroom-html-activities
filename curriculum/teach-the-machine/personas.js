@@ -38,6 +38,7 @@
 const A = (id, en, es, match) => ({ id, en, es, match });
 
 export const TAGS = [
+  "division-quotient-missing-zero",
   "factors-multiples-confused",
   "factorization-stopped-early",
   "property-order-vs-grouping",
@@ -3060,6 +3061,83 @@ export const PERSONAS = {
     wordBankEs: ["orden", "agrupación", "paréntesis", "conmutativa", "asociativa", "mismo valor"],
   },
 
+  "division-quotient-missing-zero": {
+    tag: "division-quotient-missing-zero",
+    standards: ["6.NOS.2"],
+    persona: {
+      name: "Skipper",
+      blurb: "When a step will not divide, moves on without writing anything down.",
+      blurbEs: "Cuando un paso no se puede dividir, sigue adelante sin anotar nada.",
+    },
+    wrongIdea:
+      "a step that will not divide contributes no digit to the quotient",
+    wrongIdeaEs:
+      "un paso que no se puede dividir no aporta ning\u00fan d\u00edgito al cociente",
+    openingLine:
+      "4,896 \u00f7 12 is 48. Twelve goes into 48 four times, then the next step would not go, so I moved on to the last part and got 8. Two steps that worked, two digits in my answer.",
+    openingLineEs:
+      "4,896 \u00f7 12 es 48. El 12 cabe cuatro veces en 48, luego el siguiente paso no se pod\u00eda, as\u00ed que segu\u00ed a la \u00faltima parte y me dio 8. Dos pasos que s\u00ed funcionaron, dos d\u00edgitos en mi respuesta.",
+    probes: [
+      "Estimate before you divide: 4,896 is close to 4,800, and 4,800 \u00f7 12 is what? Is your answer anywhere near it?",
+      "Count them: how many digits did you bring down, and how many digits are in your answer?",
+      "Multiply your answer back by 12. Do you land on 4,896?",
+    ],
+    probesEs: [
+      "Estima antes de dividir: 4,896 est\u00e1 cerca de 4,800, y 4,800 \u00f7 12 da cu\u00e1nto? \u00bfTu respuesta se le parece?",
+      "Cu\u00e9ntalos: \u00bfcu\u00e1ntos d\u00edgitos bajaste y cu\u00e1ntos d\u00edgitos tiene tu respuesta?",
+      "Multiplica tu respuesta por 12. \u00bfLlegas a 4,896?",
+    ],
+    mustAddress: [
+      A(
+        "step-still-records-a-digit",
+        "A step that will not divide still records a digit — you write a 0 and bring the next one down",
+        "Un paso que no se puede dividir igual anota un d\u00edgito: escribes un 0 y bajas el siguiente",
+        [
+          ["write a 0"],
+          ["writes a 0"],
+          ["put a 0"],
+          ["write a zero"],
+          ["zero in the quotient"],
+          ["placeholder"],
+          ["escribe un 0"],
+          ["escribes un 0"],
+          ["cero en el cociente"],
+          ["cero de posici\u00f3n"],
+        ],
+      ),
+      A(
+        "estimate-catches-the-size",
+        "An estimate catches it: 4,896 \u00f7 12 is about 400, so 48 is ten times too small",
+        "Una estimaci\u00f3n lo detecta: 4,896 \u00f7 12 es como 400, as\u00ed que 48 es diez veces menor",
+        [
+          ["estimate"],
+          ["estimating"],
+          ["about 400"],
+          ["around 400"],
+          ["ten times"],
+          ["10 times"],
+          ["estima"],
+          ["estimaci\u00f3n"],
+          ["como 400"],
+          ["diez veces"],
+        ],
+      ),
+    ],
+    giveawayPhrases: ["408", "4 0 8", "write a 0", "placeholder zero", "escribe un 0"],
+    worked:
+      "Take it one place at a time. 12 into 48 is 4, and 4 \u00d7 12 = 48 leaves 0. Bring down the 9: 12 does not fit into 9, and that is still a step \u2014 write 0 above the 9 and bring the next digit down. Now 96: 12 into 96 is 8. The quotient reads 4, 0, 8 = 408. Check it: 12 \u00d7 408 = 4,896.",
+    workedEs:
+      "Ve lugar por lugar. 12 en 48 cabe 4 veces, y 4 \u00d7 12 = 48 no deja nada. Baja el 9: el 12 no cabe en 9, y eso sigue siendo un paso \u2014 escribe 0 encima del 9 y baja el siguiente d\u00edgito. Ahora 96: 12 en 96 cabe 8 veces. El cociente se lee 4, 0, 8 = 408. Comprueba: 12 \u00d7 408 = 4,896.",
+    wordBank: ["quotient", "dividend", "divisor", "place value", "bring down", "estimate"],
+    wordBankEs: [
+      "cociente",
+      "dividendo",
+      "divisor",
+      "valor posicional",
+      "bajar",
+      "estimar",
+    ],
+  },
   "factorization-stopped-early": {
     tag: "factorization-stopped-early",
     standards: ["6.NOS.4"],

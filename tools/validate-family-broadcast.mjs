@@ -73,9 +73,13 @@ const {
 // ratio-compared-without-common-basis). Each was authored with its own family
 // label AND its own kitchen-table activity before this number moved, which is
 // the only reason moving it is legitimate.
-if (canonicalTags.length !== 42) {
+// Bumped 42 → 43 on 2026-08-24 for division-quotient-missing-zero, the error
+// lesson 2-6 names in its own commonMistake and had been borrowing
+// decimal-place-value for. Same rule honoured: family label, watchFor in both
+// languages, and a five-minute kitchen-table activity were authored first.
+if (canonicalTags.length !== 43) {
   fail(
-    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 42 — update this validator deliberately, not by accident`,
+    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 43 — update this validator deliberately, not by accident`,
   );
 }
 

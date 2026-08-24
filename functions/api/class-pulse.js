@@ -42,6 +42,10 @@ const TAG_LABELS = {
     "Confused the commutative and associative properties",
     "Confundió la propiedad conmutativa con la asociativa",
   ],
+  "division-quotient-missing-zero": [
+    "Dropped a placeholder zero in the quotient",
+    "Omitió un cero de posición en el cociente",
+  ],
   "factorization-stopped-early": [
     "Stopped factoring before every factor was prime",
     "Dejó de factorizar antes de que todos los factores fueran primos",
@@ -188,6 +192,7 @@ const TAG_LABELS = {
 const TAG_STANDARDS = {
   "factors-multiples-confused": ["6.NOS.4"],
   "property-order-vs-grouping": ["6.AT.7"],
+  "division-quotient-missing-zero": ["6.NOS.2"],
   "factorization-stopped-early": ["6.NOS.4"],
   "stat-question-no-variability": ["6.DS.1"],
   "ratio-compared-without-common-basis": ["6.AT.3"],

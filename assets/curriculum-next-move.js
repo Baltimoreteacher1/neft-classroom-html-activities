@@ -65,6 +65,7 @@
     "algebra-distributive-partial": "Distributed to the first term only",
     "factors-multiples-confused": "Confused factors with multiples",
     "property-order-vs-grouping": "Confused the commutative and associative properties",
+    "division-quotient-missing-zero": "Dropped a placeholder zero in the quotient",
     "factorization-stopped-early": "Stopped factoring before every factor was prime",
     "stat-question-no-variability": "Chose a question with only one fixed answer",
     "ratio-compared-without-common-basis": "Compared two ratios without a common basis",
@@ -132,6 +133,8 @@
       "Ask which number divides which — factors go INTO it, multiples come OUT of it.",
     "property-order-vs-grouping":
       "Ask what actually MOVED: the order of the numbers, or the parentheses?",
+    "division-quotient-missing-zero":
+      "Have them estimate before dividing, then check the answer is that size.",
     "factorization-stopped-early":
       "Point at each factor and ask: can this one still be broken apart?",
     "stat-question-no-variability": "Ask: would two different people give two different answers?",

@@ -149,6 +149,8 @@ const UI = {
 /* Spanish for the repo's English `watchFor` coaching lines. The English side is
  * read straight from data/misconception-labels.json so it never drifts. */
 const WATCH_ES = {
+  "division-quotient-missing-zero":
+    "Estimen primero: 4,896 \u00f7 12 es como 400, no 40. Luego revisen que el cociente tenga un d\u00edgito encima de cada d\u00edgito que bajaron.",
   "ratio-scaled-additively":
     "Pregunte cuánto vale UNA tanda y luego cuántas tandas — una razón crece por copias, no por pasos.",
   "ratio-as-difference":

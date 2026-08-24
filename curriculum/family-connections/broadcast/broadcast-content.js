@@ -582,6 +582,15 @@ export const TAGS = Object.freeze({
     watchForEs: "Pregunte qué se MOVIÓ en realidad: el orden de los números o los paréntesis.",
     standards: ["6.AT.7"],
   },
+  "division-quotient-missing-zero": {
+    label: "Dropped a placeholder zero in the quotient",
+    labelEs: "Omiti\u00f3 un cero de posici\u00f3n en el cociente",
+    watchFor:
+      "Estimate first \u2014 4,896 \u00f7 12 is about 400, not 40 \u2014 then check the quotient has a digit above every digit that was brought down.",
+    watchForEs:
+      "Pida una estimaci\u00f3n r\u00e1pida antes de empezar la divisi\u00f3n larga y luego revise que la respuesta sea de ese tama\u00f1o.",
+    standards: ["6.NOS.2"],
+  },
   "factorization-stopped-early": {
     label: "Stopped factoring before every factor was prime",
     labelEs: "Dejó de factorizar antes de que todos los factores fueran primos",
@@ -999,6 +1008,28 @@ export const KITCHEN_TABLE = Object.freeze({
     why: "The bag makes the parentheses physical, so 'grouping' stops being a word and becomes something you can see move.",
     whyEs:
       "La bolsa hace físicos los paréntesis, así que «agrupación» deja de ser una palabra y se vuelve algo que se ve moverse.",
+  },
+  "division-quotient-missing-zero": {
+    minutes: 5,
+    title: "Guess the size first",
+    titleEs: "Adivinen el tama\u00f1o primero",
+    materials: "Paper and a pencil.",
+    materialsEs: "Papel y l\u00e1piz.",
+    steps: [
+      "Write 4,896 \u00f7 12 and DO NOT solve it yet. Ask: roughly how big will the answer be?",
+      "Round together \u2014 about 4,800 \u00f7 12 \u2014 and agree out loud on an estimate near 400.",
+      "Now work it out. If the answer comes out as 48, the estimate already told you a place is missing.",
+      "Find the missing place: the step where 12 does not fit into 9 still writes a 0 above the 9. Read it back \u2014 408 \u2014 and check with 12 \u00d7 408.",
+    ],
+    stepsEs: [
+      "Escriban 4,896 \u00f7 12 y NO lo resuelvan todav\u00eda. Pregunten: \u00bfm\u00e1s o menos de qu\u00e9 tama\u00f1o ser\u00e1 la respuesta?",
+      "Redondeen juntos \u2014 como 4,800 \u00f7 12 \u2014 y acuerden en voz alta una estimaci\u00f3n cerca de 400.",
+      "Ahora res\u00faelvanlo. Si la respuesta sale 48, la estimaci\u00f3n ya les dijo que falta un lugar.",
+      "Busquen el lugar que falta: el paso donde el 12 no cabe en 9 igual escribe un 0 encima del 9. L\u00e9anlo de nuevo \u2014 408 \u2014 y comprueben con 12 \u00d7 408.",
+    ],
+    why: "Estimating first turns a place-value slip into something the student catches themselves, before anyone checks the answer.",
+    whyEs:
+      "Estimar primero convierte un desliz de valor posicional en algo que el estudiante detecta solo, antes de que alguien revise la respuesta.",
   },
   "factorization-stopped-early": {
     minutes: 5,

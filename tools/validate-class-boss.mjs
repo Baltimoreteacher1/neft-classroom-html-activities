@@ -59,6 +59,8 @@ const F = (n, d) => {
 };
 const R = (a, b) => `${a / g(a, b)} : ${b / g(a, b)}`;
 const rd = (x, p = 4) => Math.round(x * 10 ** p) / 10 ** p;
+/** A number with every 0 digit deleted — the answer a dropped placeholder leaves. */
+const dropZeros = (x) => Number(String(x).replace(/0/g, ""));
 const sum = (v) => v.reduce((s, x) => s + x, 0);
 
 /* ---------------------------------------------------------------------------
@@ -224,6 +226,15 @@ const EXPECT = {
   "dec-tenth-whole": (v) => [rd((v.a / 10) * v.b), v.a * v.b],
   "dec-div-100": (v) => [rd(v.n / 100), rd(v.n / 10)],
   "dec-times-10": (v) => [rd((v.w + v.f / 10) * 10), rd((v.w + v.f / 10) * 100)],
+
+  // division-quotient-missing-zero — the quotient really does divide out, and
+  // the distractor is that same quotient with its zero digits deleted. Computed
+  // here by DIVIDING the dividend, which is the independent path: the template
+  // multiplies up from the digits it chose, this divides back down.
+  "divzero-tens": (v) => [v.n / v.d, dropZeros(v.n / v.d)],
+  "divzero-trailing": (v) => [v.n / v.d, dropZeros(v.n / v.d)],
+  "divzero-two-digit-divisor": (v) => [v.n / v.d, dropZeros(v.n / v.d)],
+  "divzero-thousands": (v) => [v.n / v.d, dropZeros(v.n / v.d)],
 
   // exponent-as-multiplication — distractor multiplies base by exponent.
   "exp-power": (v) => [Math.pow(v.b, v.e), v.b * v.e],

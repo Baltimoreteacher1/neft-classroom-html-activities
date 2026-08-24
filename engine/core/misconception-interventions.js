@@ -301,6 +301,13 @@ export const INTERVENTIONS = {
     rejects: ["order", "orden"],
     then: "The grouping moved — 2, 5, 9 appear in that same order on both sides. Only the parentheses shifted, and that is the associative property.",
   },
+  "division-quotient-missing-zero": {
+    probe:
+      "Quick one: dividing 4,896 by 12, the first step gives 4. The next step will not divide. What goes in the quotient before you bring the next digit down?",
+    accept: ["0", "zero", "a 0", "a zero", "cero", "un 0", "un cero"],
+    rejects: ["nothing", "skip", "skip it", "nada", "nada, sigo", "next digit"],
+    then: "You write a 0 and keep going. That 0 holds the tens place, so 4,896 ÷ 12 is 408 — not 48. An estimate says the same thing: 4,800 ÷ 12 is about 400.",
+  },
   "factorization-stopped-early": {
     probe: "Quick one: in 2 × 6, which factor still breaks down into smaller factors?",
     accept: ["6", "six", "seis"],

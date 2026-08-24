@@ -36,6 +36,7 @@ export const BOSS_TAGS = [
   "stat-mean-skewed-by-outlier",
   "stat-range-for-iqr",
   "decimal-place-value",
+  "division-quotient-missing-zero",
   "exponent-as-multiplication",
   "fraction-added-denominators",
   "fraction-no-reciprocal",
@@ -684,6 +685,75 @@ export const QUESTION_BANK = {
         prompt: {
           en: `A library shelf holds ${n} books. The librarian adds ${p}% MORE books. How many books are on the shelf now?`,
           es: `Un estante de la biblioteca tiene ${n} libros. La bibliotecaria agrega un ${p}% MÁS de libros. ¿Cuántos libros hay ahora en el estante?`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Dropped a placeholder zero in the quotient ------------------------- */
+  /* Every quotient here is built to CONTAIN a zero, and every distractor is
+     that same quotient with the zero deleted — the wrong answer a student
+     actually writes when a step "will not divide" and they move on without
+     recording it. Building the dividend as divisor x quotient keeps the
+     division exact, so the item never turns into a remainder question. */
+  "division-quotient-missing-zero": [
+    T("divzero-tens", (r) => {
+      const d = r.int(3, 9);
+      const a = r.int(1, 9);
+      const b = r.int(1, 9);
+      const q = a * 100 + b;
+      return {
+        values: { d, n: d * q },
+        correct: q,
+        distractor: a * 10 + b,
+        prompt: {
+          en: `What is ${d * q} \u00f7 ${d}?`,
+          es: `\u00bfCu\u00e1nto es ${d * q} \u00f7 ${d}?`,
+        },
+      };
+    }),
+    T("divzero-trailing", (r) => {
+      const d = r.int(3, 9);
+      const a = r.int(1, 9) * 10 + r.int(1, 9);
+      const q = a * 10;
+      return {
+        values: { d, n: d * q },
+        correct: q,
+        distractor: a,
+        prompt: {
+          en: `What is ${d * q} \u00f7 ${d}?`,
+          es: `\u00bfCu\u00e1nto es ${d * q} \u00f7 ${d}?`,
+        },
+      };
+    }),
+    T("divzero-two-digit-divisor", (r) => {
+      const d = r.int(11, 25);
+      const a = r.int(1, 9);
+      const b = r.int(1, 9);
+      const q = a * 100 + b;
+      return {
+        values: { d, n: d * q },
+        correct: q,
+        distractor: a * 10 + b,
+        prompt: {
+          en: `What is ${d * q} \u00f7 ${d}?`,
+          es: `\u00bfCu\u00e1nto es ${d * q} \u00f7 ${d}?`,
+        },
+      };
+    }),
+    T("divzero-thousands", (r) => {
+      const d = r.int(3, 9);
+      const a = r.int(1, 9);
+      const b = r.int(1, 9);
+      const c = r.int(1, 9);
+      const q = a * 1000 + b * 10 + c;
+      return {
+        values: { d, n: d * q },
+        correct: q,
+        distractor: a * 100 + b * 10 + c,
+        prompt: {
+          en: `What is ${d * q} \u00f7 ${d}?`,
+          es: `\u00bfCu\u00e1nto es ${d * q} \u00f7 ${d}?`,
         },
       };
     }),

@@ -969,13 +969,13 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Dropped a placeholder zero in the quotient. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "What does each place stand for on the division frame?",
       lookFor:
-        "Watch for: skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place.",
+        "Watch for the “Dropped a placeholder zero in the quotient” error — that is the one this lesson's check diagnoses.",
       ifStuck:
-        "Work the first step together on the division frame, then hand the second one back to them.",
+        "Estimate first — 4,896 ÷ 12 is about 400, not 40 — then check the quotient has a digit above every digit that was brought down.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -997,7 +997,8 @@ export const FACILITATION_BY_LESSON = {
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
       ask: "Does this strategy still hold for numbers smaller than 1? Test it.",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
+      lookFor:
+        "A student who can explain why the “Dropped a placeholder zero in the quotient” error fails in every case, not just this one.",
       ifStuck: "Ask them to test the claim on a friendlier number first, then return.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },

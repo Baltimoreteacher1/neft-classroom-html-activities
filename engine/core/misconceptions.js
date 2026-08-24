@@ -452,6 +452,21 @@ export const MISCONCEPTIONS = {
   // missing (it is excellent) but because the error each one teaches against
   // had no entry in this taxonomy at all. A lesson that diagnoses nothing is
   // invisible to the heatmap, the class pulse and the family broadcast.
+  /* The error lesson 2-6 names in its own commonMistake, and the reason the
+     whole-number division lessons could not use `decimal-place-value`: the
+     digits ARE right and the magnitude IS wrong, but nothing about it involves
+     a decimal point, so the decimal tag's teacher move ("count decimal places
+     out loud") is advice for a different mistake. */
+  "division-quotient-missing-zero": {
+    label: "Dropped a placeholder zero in the quotient",
+    labelEs: "Omitió un cero de posición en el cociente",
+    watchFor:
+      "Estimate first — 4,896 ÷ 12 is about 400, not 40 — then check the quotient has a digit above every digit that was brought down.",
+    student:
+      "Your digits are right, but a place is missing. Every time a step will not divide, you still write a 0 in the quotient before bringing the next digit down — skip it and every digit after it slides one place over. 4,896 ÷ 12 is 408, not 48.",
+    studentEs:
+      "Tus dígitos están bien, pero falta un lugar. Cada vez que un paso no se puede dividir, igual escribes un 0 en el cociente antes de bajar el siguiente dígito; si lo saltas, todos los dígitos que siguen se recorren un lugar. 4,896 ÷ 12 es 408, no 48.",
+  },
   "factors-multiples-confused": {
     label: "Confused factors with multiples",
     labelEs: "Confundió factores con múltiplos",
