@@ -695,27 +695,15 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     });
   });
 
-  const focusToggle = /** @type {HTMLButtonElement|null} */ (root.querySelector(".ldl-focus-toggle"));
-  if (focusToggle) {
-    focusToggle.addEventListener("click", () => {
-      const isFocus = document.body.classList.toggle("nt-focus-mode");
-      focusToggle.classList.toggle("is-on", isFocus);
-      focusToggle.setAttribute("aria-pressed", isFocus ? "true" : "false");
-      focusToggle.textContent = isFocus ? "✕ Exit Focus" : "🎯 Focus Screen";
+  const hideToggle = /** @type {HTMLButtonElement|null} */ (root.querySelector(".ldl-hide-toggle"));
+  if (hideToggle) {
+    hideToggle.addEventListener("click", () => {
+      const isHidden = root.classList.toggle("ldl-buttons-hidden");
+      hideToggle.classList.toggle("is-on", isHidden);
+      hideToggle.setAttribute("aria-pressed", isHidden ? "true" : "false");
+      hideToggle.textContent = isHidden ? "👁️ Show Other Buttons" : "👁️ Hide Other Buttons";
     });
   }
-
-  const onKeyEsc = (e) => {
-    if (e.key === "Escape" && document.body.classList.contains("nt-focus-mode")) {
-      document.body.classList.remove("nt-focus-mode");
-      if (focusToggle) {
-        focusToggle.classList.remove("is-on");
-        focusToggle.setAttribute("aria-pressed", "false");
-        focusToggle.textContent = "🎯 Focus Screen";
-      }
-    }
-  };
-  document.addEventListener("keydown", onKeyEsc);
 
   for (const chip of root.querySelectorAll(".ldl-chip")) {
     chip.addEventListener("click", () => {

@@ -58,7 +58,7 @@ export function template(uid, decimal, presets, mode) {
     `<div class="ldl-modes" role="group" aria-label="How do you want to use the lab?">` +
     `<button type="button" class="ldl-mode${on("solve")}" data-mode="solve" aria-pressed="${pressed("solve")}">✏️ I'll solve it</button>` +
     `<button type="button" class="ldl-mode${on("watch")}" data-mode="watch" aria-pressed="${pressed("watch")}">👀 Watch it solved</button>` +
-    `<button type="button" class="ldl-mode ldl-focus-toggle" title="Hide extra buttons and focus directly on the division screen">🎯 Focus Screen</button>` +
+    `<button type="button" class="ldl-mode ldl-hide-toggle" title="Hide extra setup buttons to focus cleanly on solving">👁️ Hide Other Buttons</button>` +
     `</div>` +
     `<div class="ldl-controls">` +
     `<label class="ldl-field" for="${uid}-dividend"><span>Dividend</span></label>` +
@@ -229,28 +229,11 @@ export function injectStyles() {
   .ldl-result{margin:12px 0 0;padding:12px;background:#f2fbf7;border:1px solid #bfe3cf;border-radius:var(--tool-radius);text-align:center;}
   .ldl-final{font-family:"Outfit",system-ui,sans-serif;font-weight:800;font-size:1.3rem;color:${C.teal};}
   .ldl-words,.ldl-verify{margin:6px auto 0;max-width:520px;font-size:.92rem;line-height:1.5;color:${C.ink};}
-  .ldl-again{margin-top:10px;}
-  body.nt-focus-mode .sidebar,
-  body.nt-focus-mode .lesson-hero,
-  body.nt-focus-mode .export-toolbar,
-  body.nt-focus-mode .nt-next-phase-btn,
-  body.nt-focus-mode .utility-menu,
-  body.nt-focus-mode .status-bar-wrapper,
-  body.nt-focus-mode .site-header {
+  .ldl.ldl-buttons-hidden .ldl-presets,
+  .ldl.ldl-buttons-hidden .ldl-controls,
+  .ldl.ldl-buttons-hidden .ldl-dmsb-banner,
+  .ldl.ldl-buttons-hidden .ldl-sub {
     display: none !important;
-  }
-  body.nt-focus-mode .main-content,
-  body.nt-focus-mode .app-container,
-  body.nt-focus-mode .phase {
-    margin: 0 !important;
-    max-width: 100vw !important;
-    width: 100% !important;
-    padding: 10px !important;
-  }
-  body.nt-focus-mode .ldl {
-    max-width: 1060px !important;
-    margin: 0 auto !important;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.12);
   }
   @media (max-width:430px){
     .ldl{padding:12px 12px 14px;}

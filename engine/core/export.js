@@ -522,17 +522,19 @@ export function mountExportToolbar(state, config) {
     }, 300);
   });
 
-  // Focus Mode button — expands screen and hides distractions
-  const focusBtn = document.createElement("button");
-  focusBtn.className = "export-btn export-btn-secondary";
-  focusBtn.setAttribute("data-nt-focus-toggle", "1");
-  focusBtn.innerHTML = `<span>🎯</span><span class="nt-focus-label">Focus Mode</span>`;
-  focusBtn.title = "Hide sidebar and menus to focus on the screen (Esc to exit)";
-  focusBtn.addEventListener("click", () => {
-    import("./focus-mode.js").then((m) => m.toggleFocusMode());
+  // Hide Extra Buttons toggle — hides utility menus and floating tools cleanly
+  const hideBtn = document.createElement("button");
+  hideBtn.className = "export-btn export-btn-secondary";
+  hideBtn.setAttribute("data-nt-hide-toggle", "1");
+  hideBtn.innerHTML = `<span>👁️</span><span class="nt-hide-label">Hide Extra Buttons</span>`;
+  hideBtn.title = "Hide extra menus and floating buttons";
+  hideBtn.addEventListener("click", () => {
+    const isHidden = document.body.classList.toggle("nt-hide-buttons");
+    const label = hideBtn.querySelector(".nt-hide-label");
+    if (label) label.textContent = isHidden ? "Show Extra Buttons" : "Hide Extra Buttons";
   });
 
-  bar.append(buildReadinessChip(state), dlBtn, pdfBtn, copyBtn, focusBtn);
+  bar.append(buildReadinessChip(state), dlBtn, pdfBtn, copyBtn, hideBtn);
   document.body.prepend(bar);
   return bar;
 }

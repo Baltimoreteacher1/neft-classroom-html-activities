@@ -47,7 +47,6 @@ import {
 } from "./teacher-mode.js";
 import { mountTranslate } from "./translate.js";
 import { mountUtilityMenu } from "./utility-menu.js";
-import { mountUniversalFocusButton } from "./focus-mode.js";
 import { mountVoiceNav } from "./voice-nav.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/motion.css";
@@ -2050,7 +2049,6 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   // Mount the export toolbar (sticky top bar with Save / Copy buttons)
   mountExportToolbar(state, config);
   mountUtilityMenu();
-  mountUniversalFocusButton();
   initNotebook(config);
   window.openMathNotesModel = (cfg) => openMathNotesModel(cfg || config);
 
