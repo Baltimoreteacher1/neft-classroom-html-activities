@@ -828,18 +828,13 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   // Named indices for the phases the pre-lesson tabs hand off to. The tabs
   // used to hardcode raw numbers (3, 2) that no longer matched this list.
   const PHASE_WARMUP = 0;
-  const PHASE_LAUNCH = 2;
-  const PHASE_EXPLORE = 3;
+  const PHASE_LAUNCH = 0;
+  const PHASE_EXPLORE = 1;
 
   const phaseConfigs = [
-    { name: phaseName(0), icon: "⚡" }, // Warmup (Phase 1)
-    { name: phaseName(1), icon: "🎯" }, // Objectives (Phase 2)
-    { name: phaseName(2), icon: "🚀" }, // Launch (Phase 3)
-    { name: phaseName(3), icon: "🔍" }, // Explore (Phase 4)
-    { name: phaseName(4), icon: "✏️" }, // Practice (Phase 5)
-    { name: phaseName(5), icon: "🌎" }, // Connect (Phase 6)
-    { name: phaseName(6), icon: "💡" }, // Reflect (Phase 7)
-    { name: phaseName(7), icon: "🎯" }, // Objectives (Phase 8)
+    { name: phaseName(0), icon: "🚀" }, // Act 1: Launch & Focus
+    { name: phaseName(1), icon: "📐" }, // Act 2: Interactive Studio
+    { name: phaseName(2), icon: "📝" }, // Act 3: Exit Ticket
   ];
 
   state.initPhases(phaseConfigs);
@@ -1229,7 +1224,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   state.subscribe(() => {
     if (exitTicketReported) return;
     const phases = state.get().phases;
-    if (phases.length > 6 && phases[6]?.status === "completed") {
+    const isExitDone =
+      (phases.length <= 3 && phases[phases.length - 1]?.status === "completed") ||
+      (phases.length > 6 && phases[6]?.status === "completed");
+    if (isExitDone) {
       exitTicketReported = true;
       reportExitTicketScore(state, config);
     }

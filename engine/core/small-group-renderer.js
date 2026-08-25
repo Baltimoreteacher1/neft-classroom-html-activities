@@ -944,36 +944,15 @@ function renderStudio(config) {
   };
   const tabSteps = [
     {
-      id: "sg-tab-vocab",
-      label: "Vocabulary",
-      sub: "The words",
-      panel: makePanel("sg-tab-vocab", [vocab]),
-    },
-    {
       id: "sg-tab-learn",
-      label: "Learn It",
-      sub: "Worked example",
-      panel: makePanel("sg-tab-learn", [pulseCard, build, explore, model]),
+      label: "Focus & Learn",
+      sub: "Key words & worked model",
+      panel: makePanel("sg-tab-learn", [pulseCard, vocab, build, explore, model]),
     },
     {
-      id: "sg-tab-guided",
-      label: "Guided",
-      sub: "Together",
-      panel: makePanel("sg-tab-guided", [guided, createAdaptiveCoach(variant, state, store)]),
-    },
-    {
-      // Practice and Check are one continuous "do the work, then show you've
-      // got it" step — merged into a single tab so a 15–20 min small group
-      // moves through fewer, clearer stops. The completion celebration lives
-      // here so it appears in the tab the student is actually on when they
-      // finish the reflection.
       id: "sg-tab-practice",
-      label: "Practice & Check",
-      sub: "On your own",
-      // practiceLab: the same optional practice.diagram slot the full lesson
-      // honors (step-solver, box-plot-builder, equation-balance-lab, …),
-      // mounted first so students can rehearse the skill with the tool before
-      // the graded items.
+      label: "Practice Studio",
+      sub: "Guided & independent",
       panel: makePanel("sg-tab-practice", [
         ...(config.practice?.diagram
           ? (Array.isArray(config.practice.diagram)
@@ -981,27 +960,29 @@ function renderStudio(config) {
               : [config.practice.diagram]
             ).map((d, i) => figureBlock(d, { store, slot: `practice-lab-${i}` }))
           : []),
+        guided,
+        createAdaptiveCoach(variant, state, store),
         practice,
         talk,
+      ]),
+    },
+    {
+      id: "sg-tab-more",
+      label: "Check & Growth",
+      sub: "Show it & celebrate",
+      panel: makePanel("sg-tab-more", [
+        mathCheck,
         check,
         reflection.section,
         evidence.section,
         packet.section,
         completion,
+        masteryLadder,
+        morePractice,
+        mission,
+        apply,
+        goDeeper,
       ]),
-    },
-    {
-      id: "sg-tab-more",
-      label: "More Practice",
-      sub: "Stretch",
-      panel: makePanel("sg-tab-more", [masteryLadder, morePractice, mission, apply, goDeeper]),
-    },
-    // Group 2 only — keep the stable id for saved-tab compatibility.
-    {
-      id: "sg-tab-prove",
-      label: "Math Check",
-      sub: "Show it",
-      panel: makePanel("sg-tab-prove", [mathCheck]),
     },
   ];
 

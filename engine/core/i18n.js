@@ -245,13 +245,16 @@ const STRINGS = {
 };
 
 const PHASE_NAMES = {
-  warmup: { en: "Warmup", es: "Calentamiento" },
-  launch: { en: "Launch", es: "Inicio" },
+  act1: { en: "Launch & Focus", es: "Inicio y Enfoque" },
+  act2: { en: "Interactive Studio", es: "Estudio Interactivo" },
+  act3: { en: "Exit Ticket", es: "Boleto de Salida" },
+  warmup: { en: "Launch & Focus", es: "Inicio y Enfoque" },
+  launch: { en: "Launch & Focus", es: "Inicio y Enfoque" },
   vocab: { en: "Vocabulary", es: "Vocabulario" },
-  explore: { en: "Explore", es: "Explorar" },
-  practice: { en: "Practice", es: "Práctica" },
-  connect: { en: "Connect", es: "Conectar" },
-  reflect: { en: "Reflect", es: "Reflexionar" },
+  explore: { en: "Interactive Studio", es: "Estudio Interactivo" },
+  practice: { en: "Interactive Studio", es: "Estudio Interactivo" },
+  connect: { en: "Interactive Studio", es: "Estudio Interactivo" },
+  reflect: { en: "Exit Ticket", es: "Boleto de Salida" },
   objectives: { en: "Objectives", es: "Objetivos" },
 };
 
@@ -371,21 +374,21 @@ export function badgeName(id, lang) {
   return entry[l] || entry.en;
 }
 
-/** Phase name by engine index (0=Warmup, 1=Launch … 5=Reflect). */
+/** Phase name by engine index (0=Act 1, 1=Act 2, 2=Act 3). */
 export function phaseName(index, lang) {
   const keys = [
-    "warmup",
-    "objectives",
-    "launch",
+    "act1",
+    "act2",
+    "act3",
     "explore",
     "practice",
     "connect",
     "reflect",
     "objectives",
   ];
-  const key = keys[index];
+  const key = keys[index] || `act${index + 1}`;
   const entry = PHASE_NAMES[key];
-  if (!entry) return `Phase ${index + 1}`;
+  if (!entry) return `Act ${index + 1}`;
   const l = lang || getPreferredLang();
   return entry[l] || entry.en;
 }

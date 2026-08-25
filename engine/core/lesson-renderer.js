@@ -126,18 +126,11 @@ export function bootLesson(config) {
   }
   createApp({
     ...config,
-    // Vocabulary lives only in the Vocab tab now (the Vocab Explorer), so it is
-    // no longer a graded phase. Phases: Launch, Explore, Practice, Connect,
-    // Reflect (indices 0–4). See migrateVocabPhaseRemoval in state.js.
+    // 3-Act Streamlined Pedagogical Flow (Launch & Focus → Interactive Studio → Exit Ticket)
     phases: [
-      (el, state, ctx) => renderWarmupPhase(el, state, ctx, config),
-      (el, state, ctx) => renderObjectivesIntroPhase(el, state, ctx, config),
-      (el, state, ctx) => renderLaunchPhase(el, state, ctx, config),
-      (el, state, ctx) => renderExplorePhase(el, state, ctx, config),
-      (el, state, ctx) => renderPracticePhase(el, state, ctx, config),
-      (el, state, ctx) => renderConnectPhase(el, state, ctx, config),
-      (el, state, ctx) => renderReflectPhase(el, state, ctx, config),
-      (el, state, ctx) => renderObjectivesReviewPhase(el, state, ctx, config),
+      (el, state, ctx) => renderAct1Launch(el, state, ctx, config),
+      (el, state, ctx) => renderAct2Studio(el, state, ctx, config),
+      (el, state, ctx) => renderAct3ExitTicket(el, state, ctx, config),
     ],
   });
 
@@ -2443,17 +2436,19 @@ function fmtWarmupClock(seconds) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 }
 
-function renderWarmupPhase(el, state, ctx, config) {
+function renderWarmupPhase(el, state, ctx, config, opts = {}) {
   const warmup = config.warmup;
   if (!warmup || !Array.isArray(warmup.questions) || warmup.questions.length === 0) return;
 
-  phaseHeader(
-    el,
-    "1",
-    "section-icon-teal",
-    "Phase 1: Warmup",
-    "Complete these 3–4 quick warmup questions reviewing previous lesson material before starting today's lesson.",
-  );
+  if (opts.standalone !== false) {
+    phaseHeader(
+      el,
+      "1",
+      "section-icon-teal",
+      "Act 1: Launch & Focus · Warmup",
+      "Complete these quick warmup questions reviewing previous lesson material.",
+    );
+  }
 
   // Spaced retrieval runs BEFORE today's warmup. The warmup reviews the previous
   // lesson (yesterday); this reviews what the schedule says is about to be
@@ -2939,13 +2934,7 @@ function renderObjectivesIntroPhase(el, state, ctx, config) {
         <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 2 · Objectives</span>
         <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">🎯 Today's Learning Objectives</h3>
       </div>
-      <div style="font-size:13px; font-weight:800; color:#0f6d78; background:#e0f2fe; border:1px solid #bae6fd; padding:6px 14px; border-radius:10px;">
-        Goal Setting
-      </div>
     </div>
-    <p style="margin:0 0 16px; font-size:15px; color:#56627a;">
-      Read through today's Content Goal and Language Goal. These are the skills you will master by the end of today's lesson!
-    </p>
   `;
 
   renderObjectives(card, config, state);
@@ -3094,7 +3083,7 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
   }
 }
 
-function renderLaunchPhase(el, state, ctx, config) {
+function renderLaunchPhase(el, state, ctx, config, opts = {}) {
   const cfg = config.launch;
 
   // When the lesson ships a richer Reveal "Notice & Wonder" card (rendered by
@@ -3102,17 +3091,18 @@ function renderLaunchPhase(el, state, ctx, config) {
   // notice/wonder capture and we skip the generic grid below — no duplicates.
   const hasRevealNW = !!(config.noticeAndWonder && typeof config.noticeAndWonder === "object");
 
-  // Top: student identity (name / period), homework link, pre-lesson hint.
-  renderLaunchHeader(el, state, config);
+  if (opts.standalone !== false) {
+    // Top: student identity (name / period), homework link, pre-lesson hint.
+    renderLaunchHeader(el, state, config);
 
-  // ── Phase 3: Launch ────────────────────────────────────────────────────────
-  phaseHeader(
-    el,
-    "3",
-    "section-icon-teal",
-    "Phase 3: Launch",
-    "Look at today's scene. What do you notice? What do you wonder?",
-  );
+    phaseHeader(
+      el,
+      "1",
+      "section-icon-teal",
+      "Act 1: Launch & Focus",
+      "Look at today's scene. What do you notice? What do you wonder?",
+    );
+  }
 
   // The observation visual (the scene students look at) renders FIRST, so the
   // "I notice / I wonder" prompts have something concrete to observe and the
@@ -3295,21 +3285,20 @@ function renderLaunchPhase(el, state, ctx, config) {
   el.append(btn);
 }
 
-// ── Phase 3: Explore ──
-function renderExplorePhase(el, state, ctx, config) {
+// ── Act 2 / Phase 3: Explore ──
+function renderExplorePhase(el, state, ctx, config, opts = {}) {
   const cfg = config.explore;
-  // The header states the POINT of the phase; the task itself is printed once,
-  // on the activity card below. Printing `instructions` here as well meant a
-  // student read the same sentence three times (header, stem, tool label)
-  // before reaching anything they could touch.
-  phaseHeader(
-    el,
-    "🔍",
-    "section-icon-teal",
-    "Explore",
-    cfg.goal ||
-      "Build it yourself first. You do not need the formula yet — you are looking for it.",
-  );
+
+  if (opts.standalone !== false) {
+    phaseHeader(
+      el,
+      "🔍",
+      "section-icon-teal",
+      "Act 2: Interactive Studio · Explore",
+      cfg.goal ||
+        "Build it yourself first. You do not need the formula yet — you are looking for it.",
+    );
+  }
 
   // Opt-in data diagram shown up front so students can SEE and read the visual
   // while they work the interaction below it. `diagram` accepts any visual kind
@@ -3843,14 +3832,16 @@ function practiceLabHeaderHtml(lab) {
   );
 }
 
-function renderPracticePhase(el, state, ctx, config) {
-  phaseHeader(
-    el,
-    "✏️",
-    "section-icon-navy",
-    "Practice",
-    "Problems adapt to how you're doing — keep going!",
-  );
+function renderPracticePhase(el, state, ctx, config, opts = {}) {
+  if (opts.standalone !== false) {
+    phaseHeader(
+      el,
+      "✏️",
+      "section-icon-navy",
+      "Act 2: Interactive Studio · Practice",
+      "Problems adapt to how you're doing — keep going!",
+    );
+  }
 
   instructionCallout(
     el,
@@ -4269,16 +4260,18 @@ function renderConnectFrame(cfg, state) {
   return { el: frame, inputs, composed, grade, blankCount };
 }
 
-// ── Phase 5: Connect ──
-function renderConnectPhase(el, state, ctx, config) {
+// ── Act 2 / Phase 5: Connect ──
+function renderConnectPhase(el, state, ctx, config, opts = {}) {
   const cfg = config.connect;
-  phaseHeader(
-    el,
-    "🌎",
-    "section-icon-teal",
-    "Real-World Connection",
-    "Where does this math live in the wild?",
-  );
+  if (opts.standalone !== false) {
+    phaseHeader(
+      el,
+      "🌎",
+      "section-icon-teal",
+      "Act 2: Real-World Connection",
+      "Where does this math live in the wild?",
+    );
+  }
 
   const card = document.createElement("div");
   card.className = "card connect-scenario-card";
@@ -4539,91 +4532,19 @@ function renderConnectPhase(el, state, ctx, config) {
   });
 }
 
-// ── Phase 6: Reflect ──
+// ── Phase 6/7: Reflect & Exit Ticket ──
 function renderReflectPhase(el, state, ctx, config) {
   const cfg = config.reflect;
-  phaseHeader(el, "💡", "section-icon-coral", phaseName(4), t("reflectDesc"));
+  phaseHeader(el, "🎯", "section-icon-navy", "Exit Ticket & Reflection", "Complete your exit ticket questions and reflection to demonstrate today's learning!");
 
   // Teacher-only: the Socratic question ladders this student worked through.
-  // Reflect is where a teacher conferring with a student ends up, so the record
-  // of which question stopped them belongs here rather than behind another tab.
   if (isTeacherMode()) mountQuestionLadderReader(el, state);
 
-  // The 3-2-1 reflection grid was removed (2026-08-07): three open textareas
-  // asking for three things, two connections and one question sat directly
-  // above "One thing I learned" and the confidence check, which ask the same
-  // thing more simply. Reflect now opens on the single prompt students answer.
-  // One thing I learned (exit ticket prep)
-  const learnedCard = document.createElement("div");
-  learnedCard.className = "card card-amber";
-  learnedCard.innerHTML = `<h4 style="color:var(--amber-ink); margin-bottom:var(--sp-3);">✨ ${stackHtml(t("oneThingToday", "en"), t("oneThingToday", "es"))}</h4>`;
-  const learnedTA = document.createElement("textarea");
-  learnedTA.className = "text-input";
-  learnedTA.rows = 2;
-  learnedTA.placeholder = t("oneThingPlaceholder");
-  learnedTA.value = state.getResponse(4, "one_thing_learned") || "";
-  learnedTA.addEventListener("input", () =>
-    state.saveResponse(4, "one_thing_learned", learnedTA.value),
-  );
-  learnedCard.append(learnedTA);
-  el.append(learnedCard);
-
-  // Confidence slider (1–5)
-  const confCard = document.createElement("div");
-  confCard.className = "card card-teal confidence-card";
-  const savedConf = Number(state.getResponse(4, "confidence")) || 3;
-  confCard.innerHTML = `
-    <h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">${t("howConfident")} ${esc(config.title)}?</h4>
-    <div class="confidence-slider-wrap">
-      <input type="range" class="confidence-slider" min="1" max="5" step="1" value="${savedConf}" aria-label="Confidence level 1 to 5" />
-      <div class="confidence-labels">
-        <span>😅 ${stackHtml(t("notYet", "en"), t("notYet", "es"))}</span><span>🤔 ${stackHtml(t("gettingThere", "en"), t("gettingThere", "es"))}</span><span>😊 ${stackHtml(t("gotIt", "en"), t("gotIt", "es"))}</span>
-      </div>
-      <output class="confidence-output" aria-live="polite">${savedConf}/5</output>
-    </div>
-    <div class="self-assess-quick" style="display:flex; gap:var(--sp-2); margin-top:var(--sp-3); justify-content:center;">
-      ${[`😊 ${t("gotIt")}|5`, `🤔 ${t("almost")}|3`, `😅 ${t("needHelp")}|1`]
-        .map((s) => {
-          const [txt, lv] = s.split("|");
-          return `<button type="button" class="btn btn-secondary self-assess" data-level="${lv}" style="flex:1; max-width:140px;">${txt}</button>`;
-        })
-        .join("")}
-    </div>`;
-  const slider = confCard.querySelector(".confidence-slider");
-  const output = confCard.querySelector(".confidence-output");
-  slider.addEventListener("input", () => {
-    output.textContent = `${slider.value}/5`;
-    state.saveResponse(4, "confidence", slider.value);
-    state.saveResponse(4, "self-assess", slider.value);
-  });
-  confCard.querySelectorAll(".self-assess").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      slider.value = btn.dataset.level;
-      output.textContent = `${btn.dataset.level}/5`;
-      state.saveResponse(4, "confidence", btn.dataset.level);
-      state.saveResponse(4, "self-assess", btn.dataset.level);
-      confCard.querySelectorAll(".self-assess").forEach((b) => {
-        b.classList.toggle("is-selected", b === btn);
-      });
-    });
-  });
-  el.append(confCard);
-
-  // Capstone discussion moment: right before the exit ticket, students convince
-  // and question a partner about their answer. Opt-in, non-graded, dismissible.
+  // Capstone discussion moment: right before the exit ticket questions.
   mountDiscussionMoment(el, { phase: "connect", phaseId: 4, config, state, variant: "capstone" });
-
-  // el.append(buildPrintableSummary(state, config));
 
   // Inline Reveal Math slides for the closing/reflect section.
   renderRevealSlides(el, config, "closure");
-
-  // Exit ticket — 3 quick questions: an auto-graded skill check, an
-  // explain-your-thinking response, and a mistake-analysis response. Q2/Q3
-  // reuse curated lesson content (the authored MC explanation and the
-  // common-mistake text) as attempt-gated self-check model answers, so every
-  // lesson gets a full ticket without inventing new math.
-  phaseHeader(el, "🎯", "section-icon-navy", "Exit Ticket", t("exitTicketIntro"));
 
   const etCard = (labelKey) => {
     const card = document.createElement("div");
@@ -4647,7 +4568,6 @@ function renderReflectPhase(el, state, ctx, config) {
     const card = etCard(labelKey);
 
     // "Spot the mistake" needs a mistake to spot: show the flawed worked example
-    // (the step with the error highlighted) so the question isn't open-ended.
     if (errorExample?.steps?.length) {
       const work = document.createElement("div");
       work.className = "et-flawed-work";
@@ -4739,9 +4659,7 @@ function renderReflectPhase(el, state, ctx, config) {
   let q2TA = null;
   let q3TA = null;
 
-  // Q1 — authored skill-check MC. XP is awarded on the answer exactly as
-  // before, but the full-screen phase-complete takeover now waits for an
-  // explicit "Finish lesson" tap so Questions 2–3 stay reachable.
+  // Q1 — authored skill-check MC.
   const q1Card = etCard("etQ1Label");
   const finishRow = document.createElement("div");
   finishRow.className = "problem-check-row";
@@ -4753,10 +4671,6 @@ function renderReflectPhase(el, state, ctx, config) {
   renderMultipleChoice(q1Card, {
     ...cfg.exitTicket,
     onAnswer(isCorrect) {
-      // Adaptive follow-up: a missed skill check offers a fresh, generator-
-      // verified variant to retry before finishing. Self-contained tray (no XP,
-      // no gating) — attachRegenPractice no-ops when the item can't be safely
-      // regenerated. The graded Q1 result above stays exactly as answered.
       if (!isCorrect && !q1Card.dataset.regenOffered) {
         q1Card.dataset.regenOffered = "1";
         attachRegenPractice(
@@ -4778,7 +4692,6 @@ function renderReflectPhase(el, state, ctx, config) {
       finishBtn.className = "btn btn-primary";
       finishBtn.textContent = "🏁 Finish lesson / Terminar la lección";
       finishBtn.addEventListener("click", async () => {
-        // One gentle nudge toward the written questions; never a hard block.
         if (!finishWarned && (!q2TA?.value.trim() || !q3TA?.value.trim())) {
           finishWarned = true;
           finishNote.className = "problem-check-result visible is-incorrect";
@@ -4809,10 +4722,7 @@ function renderReflectPhase(el, state, ctx, config) {
     model: cfg.exitTicket?.explanation || "",
   });
 
-  // Q3 — mistake analysis, self-checked against the lesson's common-mistake text.
-  // "Spot the mistake": show the lesson's flawed worked example to critique. When
-  // one exists, the prompt points at that work and the model answer is the fix;
-  // otherwise fall back to the open self-generated question.
+  // Q3 — mistake analysis
   const errorExample = deriveErrorExample(config);
   q3TA = buildOpenET({
     labelKey: "etQ3Label",
@@ -4833,7 +4743,62 @@ function renderReflectPhase(el, state, ctx, config) {
     errorExample,
   });
 
-  // The Finish button appears inside finishRow once Q1 is answered.
+  // Reflection section combined directly into the Exit Ticket card
+  const reflectCard = document.createElement("div");
+  reflectCard.className = "card exit-ticket-card exit-ticket-reflect-card";
+  const savedConf = Number(state.getResponse(4, "confidence")) || 3;
+  reflectCard.innerHTML = `
+    <div class="badge badge-navy mb-4">${stackHtml("Exit Ticket · Reflection", "Boleto de salida · Reflexión")}</div>
+    <div style="margin-bottom:var(--sp-4);">
+      <h4 style="color:var(--amber-ink); margin-bottom:var(--sp-2);">✨ ${stackHtml(t("oneThingToday", "en"), t("oneThingToday", "es"))}</h4>
+      <textarea class="text-input" id="et-learned-ta" rows="2" placeholder="${esc(t("oneThingPlaceholder"))}"></textarea>
+    </div>
+    <div>
+      <h4 style="color:var(--teal-ink); margin-bottom:var(--sp-3);">${t("howConfident")} ${esc(config.title)}?</h4>
+      <div class="confidence-slider-wrap">
+        <input type="range" class="confidence-slider" min="1" max="5" step="1" value="${savedConf}" aria-label="Confidence level 1 to 5" />
+        <div class="confidence-labels">
+          <span>😅 ${stackHtml(t("notYet", "en"), t("notYet", "es"))}</span><span>🤔 ${stackHtml(t("gettingThere", "en"), t("gettingThere", "es"))}</span><span>😊 ${stackHtml(t("gotIt", "en"), t("gotIt", "es"))}</span>
+        </div>
+        <output class="confidence-output" aria-live="polite">${savedConf}/5</output>
+      </div>
+      <div class="self-assess-quick" style="display:flex; gap:var(--sp-2); margin-top:var(--sp-3); justify-content:center;">
+        ${[`😊 ${t("gotIt")}|5`, `🤔 ${t("almost")}|3`, `😅 ${t("needHelp")}|1`]
+          .map((s) => {
+            const [txt, lv] = s.split("|");
+            return `<button type="button" class="btn btn-secondary self-assess" data-level="${lv}" style="flex:1; max-width:140px;">${txt}</button>`;
+          })
+          .join("")}
+      </div>
+    </div>
+  `;
+
+  const learnedTA = reflectCard.querySelector("#et-learned-ta");
+  learnedTA.value = state.getResponse(4, "one_thing_learned") || "";
+  learnedTA.addEventListener("input", () =>
+    state.saveResponse(4, "one_thing_learned", learnedTA.value),
+  );
+
+  const slider = reflectCard.querySelector(".confidence-slider");
+  const output = reflectCard.querySelector(".confidence-output");
+  slider.addEventListener("input", () => {
+    output.textContent = `${slider.value}/5`;
+    state.saveResponse(4, "confidence", slider.value);
+    state.saveResponse(4, "self-assess", slider.value);
+  });
+  reflectCard.querySelectorAll(".self-assess").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      slider.value = btn.dataset.level;
+      output.textContent = `${btn.dataset.level}/5`;
+      state.saveResponse(4, "confidence", btn.dataset.level);
+      state.saveResponse(4, "self-assess", btn.dataset.level);
+      reflectCard.querySelectorAll(".self-assess").forEach((b) => {
+        b.classList.toggle("is-selected", b === btn);
+      });
+    });
+  });
+
+  el.append(reflectCard);
   el.append(finishNote, finishRow);
 }
 
@@ -5087,40 +5052,6 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
 
   renderObjectives(card, config, state, { review: true });
 
-  const checkWrap = document.createElement("div");
-  checkWrap.style.cssText =
-    "margin-top:20px; padding:16px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; display:flex; flex-direction:column; gap:10px;";
-
-  const savedChecks = state.getResponse(phaseIndex, "objectives_mastery") || {};
-
-  // Third person to match the goal cards above: "Samuel can now demonstrate…".
-  const subject = name ? esc(name) : "I";
-  const verb = name ? "can now" : "can";
-  const usedVerb = name ? `${esc(name)} used` : "I used";
-
-  checkWrap.innerHTML = `
-    <div style="font-size:14px; font-weight:800; color:#0f172a;">${name ? `Track ${esc(name)}'s Goal Mastery:` : "Track Your Goal Mastery:"}</div>
-    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:14px; color:#334155;">
-      <input type="checkbox" id="chkObjContent" ${savedChecks.content ? "checked" : ""}>
-      <span><strong>Content Goal:</strong> ${subject} ${verb} demonstrate and apply today's math concept!</span>
-    </label>
-    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:14px; color:#334155;">
-      <input type="checkbox" id="chkObjLang" ${savedChecks.lang ? "checked" : ""}>
-      <span><strong>Language Goal:</strong> ${usedVerb} academic vocabulary and clear math reasoning!</span>
-    </label>
-  `;
-
-  checkWrap.querySelectorAll("input[type='checkbox']").forEach((chk) => {
-    chk.addEventListener("change", () => {
-      savedChecks.content = checkWrap.querySelector("#chkObjContent").checked;
-      savedChecks.lang = checkWrap.querySelector("#chkObjLang").checked;
-      state.saveResponse(phaseIndex, "objectives_mastery", savedChecks);
-      state.markCompleted(phaseIndex);
-    });
-  });
-
-  card.append(checkWrap);
-
   const finishBtn = document.createElement("button");
   finishBtn.type = "button";
   finishBtn.className = "btn btn-teal";
@@ -5134,4 +5065,147 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
 
   card.append(finishBtn);
   el.append(card);
+}
+
+// ── Act 1: Launch & Focus ──
+export function renderAct1Launch(el, state, ctx, config) {
+  phaseHeader(
+    el,
+    "1",
+    "section-icon-teal",
+    "Act 1: Launch & Focus",
+    "Warm up with previous concepts, check today's learning targets, and explore the launch scene!",
+  );
+
+  // 1. Identity & Homework Header
+  renderLaunchHeader(el, state, config);
+
+  // 2. Warmup Section (if warmup questions exist)
+  if (config.warmup && Array.isArray(config.warmup.questions) && config.warmup.questions.length > 0) {
+    renderWarmupPhase(el, state, ctx, config, { standalone: false });
+  }
+
+  // 3. Learning Objectives (Content & Language)
+  const objCard = document.createElement("div");
+  objCard.className = "card card-objectives-intro-phase";
+  objCard.style.cssText =
+    "margin: 16px 0 24px; border: 2px solid #0f766e; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 4px 16px rgba(15,118,110,0.08);";
+  objCard.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
+      <div>
+        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f766e; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Act 1 · Targets</span>
+        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">🎯 Today's Learning Objectives</h3>
+      </div>
+    </div>
+  `;
+  renderObjectives(objCard, config, state);
+  el.append(objCard);
+
+  // 4. Real-World Hook & Notice/Wonder
+  renderLaunchPhase(el, state, ctx, config, { standalone: false });
+
+  // 5. Direct Action Button to Act 2
+  const nextBtn = document.createElement("button");
+  nextBtn.type = "button";
+  nextBtn.className = "btn btn-primary";
+  nextBtn.style.cssText =
+    "margin: 28px auto 16px; display: block; padding: 14px 36px; font-weight: 800; font-size: 16px; border-radius: 12px; background: #0f766e; color: #ffffff; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25); cursor: pointer;";
+  nextBtn.textContent = "Start Act 2: Interactive Studio 🚀";
+  nextBtn.addEventListener("click", () => {
+    state.markCompleted(0);
+    if (ctx && typeof ctx.nextPhase === "function") {
+      ctx.nextPhase();
+    }
+  });
+  el.append(nextBtn);
+}
+
+// ── Act 2: Interactive Studio ──
+export function renderAct2Studio(el, state, ctx, config) {
+  phaseHeader(
+    el,
+    "2",
+    "section-icon-coral",
+    "Act 2: Interactive Studio",
+    "Explore the visual model, solve core practice problems, and collaborate in small groups.",
+  );
+
+  // 1. Dual-Track Small Group Facilitation Banner
+  const sgBanner = document.createElement("div");
+  sgBanner.className = "card card-small-group-banner";
+  sgBanner.style.cssText =
+    "margin: 16px 0 20px; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 16px 20px; background: linear-gradient(135deg, #f8fafc, #f1f5f9); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; box-shadow: 0 2px 8px rgba(15,23,42,0.04);";
+  sgBanner.innerHTML = `
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span style="font-size:26px;">👥</span>
+      <div>
+        <div style="font-weight:800; font-size:15px; color:#14223a;">2-Track Small Group Facilitation</div>
+        <div style="font-size:13px; color:#475569;">Track A: Teacher Table Clinic &nbsp;|&nbsp; Track B: Digital Studio &amp; Peer Lab</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <button type="button" class="btn btn-secondary nt-track-timer-btn" style="font-size:13px; padding:8px 14px; font-weight:700;">⏱️ 12m Timer</button>
+      <button type="button" class="btn btn-primary nt-track-switch-btn" style="font-size:13px; padding:8px 14px; font-weight:700; background:#0f766e; color:#ffffff;">Switch Tracks 🔄</button>
+    </div>
+  `;
+  const timerBtn = sgBanner.querySelector(".nt-track-timer-btn");
+  let timerInterval = null;
+  let secondsLeft = 720;
+  timerBtn.addEventListener("click", () => {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      timerBtn.textContent = "⏱️ 12m Timer";
+    } else {
+      timerInterval = setInterval(() => {
+        secondsLeft--;
+        const m = Math.floor(secondsLeft / 60);
+        const s = secondsLeft % 60;
+        timerBtn.textContent = `⏱️ ${m}:${String(s).padStart(2, "0")}`;
+        if (secondsLeft <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          timerBtn.textContent = "🔔 Time to Switch!";
+          if (window.AudioSynth) window.AudioSynth.tada();
+        }
+      }, 1000);
+    }
+  });
+  const switchBtn = sgBanner.querySelector(".nt-track-switch-btn");
+  switchBtn.addEventListener("click", () => {
+    switchBtn.classList.toggle("switched");
+    const isSwitched = switchBtn.classList.contains("switched");
+    switchBtn.textContent = isSwitched ? "Track B at Teacher Table 🔁" : "Switch Tracks 🔄";
+    if (window.AudioSynth) window.AudioSynth.click();
+  });
+  el.append(sgBanner);
+
+  // 2. Interactive Explore Model
+  renderExplorePhase(el, state, ctx, config, { standalone: false });
+
+  // 3. Core Practice
+  renderPracticePhase(el, state, ctx, config, { standalone: false });
+
+  // 4. Real-World Connect
+  renderConnectPhase(el, state, ctx, config, { standalone: false });
+
+  // 5. Action Button to Proceed to Act 3
+  const nextBtn = document.createElement("button");
+  nextBtn.type = "button";
+  nextBtn.className = "btn btn-primary";
+  nextBtn.style.cssText =
+    "margin: 28px auto 16px; display: block; padding: 14px 36px; font-weight: 800; font-size: 16px; border-radius: 12px; background: #0f766e; color: #ffffff; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25); cursor: pointer;";
+  nextBtn.textContent = "Proceed to Act 3: Exit Ticket 📝";
+  nextBtn.addEventListener("click", () => {
+    state.markCompleted(1);
+    if (ctx && typeof ctx.nextPhase === "function") {
+      ctx.nextPhase();
+    }
+  });
+  el.append(nextBtn);
+}
+
+// ── Act 3: Exit Ticket & Reflection ──
+export function renderAct3ExitTicket(el, state, ctx, config) {
+  renderReflectPhase(el, state, ctx, config);
 }

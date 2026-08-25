@@ -433,7 +433,7 @@ export function injectSmallGroupStyles(accent) {
        — so a callout inside a card inside the page read as one flat surface and
        the studio looked unfinished no matter how good the type was. Keep the
        steps visible. */
-    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#d8dfe6;--sg-paper:#fdfaf3;--sg-card:#fff;--sg-text:#1d2a36;--sg-muted:#5a6b7c;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e0f3ef;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fcede7;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fffdf8;--sg-fill:#e8eff6;
+    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:#f1f5f9;--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#e2e8f0;--sg-paper:#f8f9fa;--sg-card:#ffffff;--sg-text:#14223a;--sg-muted:#475569;--sg-good:#0f766e;--sg-warn:#d97706;--sg-good-bg:#e0f2fe;--sg-good-ink:#0f766e;--sg-bad:#dc2626;--sg-bad-bg:#fee2e2;--sg-bad-ink:#991b1b;--sg-warn-bg:#fef3c7;--sg-warn-ink:#92400e;--sg-warn-line:#f59e0b;--sg-figure:#ffffff;--sg-fill:#f1f5f9;
       /* Type pairing. Outfit (the site display face, already loaded by the
          lesson shell) for anything that acts as a heading or a label; Atkinson
          Hyperlegible — chosen for these pathways because it is the most legible
