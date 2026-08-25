@@ -84,6 +84,22 @@ export function mountUtilityMenu() {
   });
   actions.appendChild(saveResume);
 
+  // Projector / Smartboard Mode — high visibility toggle
+  const projectorBtn = document.createElement("button");
+  projectorBtn.type = "button";
+  projectorBtn.className = "nt-utility-item";
+  const updateProjectorBtnText = () => {
+    const isOn = document.body.classList.contains("projector-mode");
+    projectorBtn.innerHTML = `<span aria-hidden="true">📽️</span><span>Projector Mode: <strong>${isOn ? "ON" : "OFF"}</strong></span>`;
+  };
+  updateProjectorBtnText();
+  projectorBtn.addEventListener("click", () => {
+    document.body.classList.toggle("projector-mode");
+    updateProjectorBtnText();
+    close();
+  });
+  actions.appendChild(projectorBtn);
+
   // Math Workbench — resolves to the lesson-aware launcher's deep link when
   // that shared script is on the page (its FAB is hidden by the menu's CSS).
   const workbench = document.createElement("a");

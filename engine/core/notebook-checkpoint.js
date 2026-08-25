@@ -326,7 +326,8 @@ export function closeMathNotesModel() {
  * inside the checkpoint blocks, which are two phases apart. Reported by Joel
  * 2026-08-18: "I'm not seeing the updated math notes."
  */
-function renderLessonNotesHtml(config) {
+function renderLessonNotesHtml(config, lang = "en") {
+  const isEs = lang === "es";
   const cps = readCheckpoints(config);
   if (cps.length === 0) {
     throw new Error(
@@ -340,7 +341,7 @@ function renderLessonNotesHtml(config) {
         `Math Notes: lesson ${(config && config.lessonId) || "unknown"} is missing box 2 copyPanel rule`,
       );
     }
-    const panel = renderCopyPanelHtml(cp);
+    const panel = renderCopyPanelHtml(cp, isEs, config);
     if (!panel) {
       if (cp.box === 2) {
         throw new Error(
@@ -349,9 +350,12 @@ function renderLessonNotesHtml(config) {
       }
       continue;
     }
+    const subhead = isEs
+      ? (cp.box === 1 ? "Sección 1: Palabras de Matemáticas" : "Sección 2: Matemáticas de Hoy")
+      : cp.heading.replace(/^Notebook time — /, "");
     sections.push(`
       <section class="nt-nb-model-section">
-        <h3 class="nt-nb-model-subhead">${esc(cp.heading.replace(/^Notebook time — /, ""))}</h3>
+        <h3 class="nt-nb-model-subhead">${esc(subhead)}</h3>
         ${panel}
       </section>`);
   }
@@ -360,45 +364,67 @@ function renderLessonNotesHtml(config) {
       `Math Notes: lesson ${(config && config.lessonId) || "unknown"} produced 0 notes sections`,
     );
   }
-  const title = String((config && config.title) || "").trim();
-  // The page header a student recreates by hand: "Date" with a blank to fill
-  // in (never a printed date — a fabricated "Sept. 3" is the exact defect the
-  // provenance layer removed), then a title naming what these notes are about.
-  // The title is the lesson's own declared title, so it always describes the
-  // notes below it and never borrows another lesson's words.
+  const title = String(isEs && config.titleEs ? config.titleEs : (config && config.title) || "").trim();
+  const dateLabel = isEs ? "Fecha:" : "Date:";
+  const datePrompt = isEs ? "escribe la fecha de hoy" : "write today's date";
+  const defaultTitle = isEs ? "Notas de Matemáticas de Hoy" : "Today's Math Notes";
+
   return `
     <div class="nt-nb-model-lesson">
-      <p class="nt-nb-model-date">Date: <span class="nt-nb-model-date-blank" aria-hidden="true"></span><span class="nt-nb-visually-hidden">write today's date</span></p>
-      <p class="nt-nb-model-lessonlead">${title ? esc(title) : "Today's Math Notes"}</p>
+      <p class="nt-nb-model-date">${dateLabel} <span class="nt-nb-model-date-blank" aria-hidden="true"></span><span class="nt-nb-visually-hidden">${datePrompt}</span></p>
+      <p class="nt-nb-model-lessonlead">${title ? esc(title) : defaultTitle}</p>
       ${sections.join("\n")}
     </div>`;
 }
 
-export function openMathNotesModel(config) {
+export function openMathNotesModel(config, defaultLang) {
   const lessonConfig = config || activeConfig;
   const existing = /** @type {HTMLDialogElement|null} */ (
     document.getElementById("nt-notebook-model")
   );
-  // Rebuilt on every open: a student who opens this from Warmup and again from
-  // Explore must see the same lesson's notes, not a dialog cached before the
-  // checkpoints were read.
   if (existing) existing.remove();
+
+  let currentLang = defaultLang || (document.documentElement.lang === "es" ? "es" : "en");
+
   const dlg = document.createElement("dialog");
   dlg.id = "nt-notebook-model";
   dlg.className = "nt-nb-model";
   dlg.setAttribute("aria-label", "Math Notes — what my notebook page looks like");
-  dlg.innerHTML = `
-    <div class="nt-nb-model-head">
-      <h2>What should my page look like?</h2>
-      <button type="button" class="nt-nb-model-close" aria-label="Close">✕</button>
-    </div>
-    ${renderLessonNotesHtml(lessonConfig)}`;
-  dlg.querySelector(".nt-nb-model-close").addEventListener("click", () => dlg.close());
+
+  function renderDialog() {
+    const isEs = currentLang === "es";
+    dlg.innerHTML = `
+      <div class="nt-nb-model-head">
+        <h2>${isEs ? "¿Cómo debe verse mi página?" : "What should my page look like?"}</h2>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="nt-nb-lang-toggle" role="group" aria-label="Math Notes Language">
+            <button type="button" class="nt-nb-lang-btn ${!isEs ? 'active' : ''}" data-lang="en">🇺🇸 EN</button>
+            <button type="button" class="nt-nb-lang-btn ${isEs ? 'active' : ''}" data-lang="es">🇲🇽 ES</button>
+          </div>
+          <button type="button" class="nt-nb-model-close" aria-label="Close">✕</button>
+        </div>
+      </div>
+      ${renderLessonNotesHtml(lessonConfig, currentLang)}`;
+
+    dlg.querySelector(".nt-nb-model-close")?.addEventListener("click", () => dlg.close());
+    dlg.querySelectorAll(".nt-nb-lang-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const targetLang = /** @type {HTMLElement} */ (e.currentTarget).dataset.lang;
+        if (targetLang && targetLang !== currentLang) {
+          currentLang = targetLang;
+          renderDialog();
+        }
+      });
+    });
+    attachImageZoomAll(dlg, "img.nt-nb-copy-art");
+  }
+
+  renderDialog();
+
   dlg.addEventListener("click", (e) => {
     if (e.target === dlg) dlg.close();
   });
   document.body.append(dlg);
-  attachImageZoomAll(dlg, "img.nt-nb-copy-art");
   dlg.showModal();
   return dlg;
 }
@@ -441,64 +467,73 @@ function renderOwnWordsHtml(cp) {
  * Render the visually unmistakable copy panel containing exactly what the
  * student writes by hand in their notebook — nothing else.
  */
-function renderCopyPanelHtml(cp) {
+function renderCopyPanelHtml(cp, isEs = false, config = null) {
   if (!cp) return "";
   if (cp.contentSource === "own-words") return renderOwnWordsHtml(cp);
   if (!cp.copyPanel) return "";
+  const bannerText = isEs ? "Copia en tu cuaderno:" : "Copy into your notebook:";
+
   if (cp.box === 1 && Array.isArray(cp.copyPanel.items) && cp.copyPanel.items.length > 0) {
-    // Three columns — word, what it means, and the picture the lesson already
-    // uses for that word. The image is decorative here (the definition beside
-    // it carries the meaning), so it is aria-hidden and the row stays readable
-    // with images off. A term whose only match would be a generic category tile
-    // gets no picture at all rather than one that does not depict it.
+    const vocabList = (config && config.vocabulary) || [];
     const listItems = cp.copyPanel.items
       .map((item) => {
-        // `art` is written by scripts/generate-notebook-copy-panels.mjs only
-        // when the artwork's own <title> names this word and no earlier row in
-        // this panel already used it. The renderer has no filesystem, so it
-        // trusts that decision and never guesses a picture.
+        let displayTerm = item.term;
+        let displayMeaning = item.meaning;
+        if (isEs) {
+          const match = vocabList.find(
+            (v) => v && v.term && v.term.trim().toLowerCase() === item.term.trim().toLowerCase(),
+          );
+          if (match) {
+            if (match.termEs) displayTerm = match.termEs;
+            if (match.definitionEs) {
+              const firstSentenceEs = String(match.definitionEs).split(/(?<=[.!?])\s+/)[0];
+              displayMeaning = firstSentenceEs.replace(/[.;]+$/, "");
+            }
+          }
+        }
         const art = item.art
-          ? `<img class="nt-nb-copy-art" src="${esc(item.art)}" alt="${esc(vocabImageAlt(item.term, item.meaning))}" loading="lazy" width="72" height="72" />`
+          ? `<img class="nt-nb-copy-art" src="${esc(item.art)}" alt="${esc(vocabImageAlt(displayTerm, displayMeaning))}" loading="lazy" width="72" height="72" />`
           : `<span class="nt-nb-copy-art nt-nb-copy-art-empty" aria-hidden="true"></span>`;
         return `<li>
-          <span class="nt-nb-copy-term">${esc(item.term)}</span>
-          <span class="nt-nb-copy-meaning">${esc(item.meaning)}</span>
+          <span class="nt-nb-copy-term">${esc(displayTerm)}</span>
+          <span class="nt-nb-copy-meaning">${esc(displayMeaning)}</span>
           ${art}
         </li>`;
       })
       .join("\n");
     return `
-    <div class="nt-nb-copy-panel nt-nb-copy-box1" data-no-vocab="true" aria-label="Copy into your notebook">
-      <div class="nt-nb-copy-banner">Copy into your notebook:</div>
+    <div class="nt-nb-copy-panel nt-nb-copy-box1" data-no-vocab="true" aria-label="${bannerText}">
+      <div class="nt-nb-copy-banner">${bannerText}</div>
       <ol class="nt-nb-copy-list nt-nb-copy-grid">
         ${listItems}
       </ol>
     </div>`;
   }
   if (cp.box === 2 && cp.copyPanel.rule) {
+    let ruleText = cp.copyPanel.rule;
+    if (isEs && config && config.launch && config.launch.conceptIntro && config.launch.conceptIntro.keyIdeaEs) {
+      const firstIdeaSentence = config.launch.conceptIntro.keyIdeaEs.split(/\.\s+/)[0];
+      if (firstIdeaSentence) ruleText = firstIdeaSentence.trim();
+    }
     const stepsHtml =
       Array.isArray(cp.copyPanel.steps) && cp.copyPanel.steps.length > 0
         ? `<ol class="nt-nb-copy-steps">${cp.copyPanel.steps.map(renderStepHtml).join("")}</ol>`
         : "";
-    // A lesson may state several formulas on one line, separated by a spaced
-    // "|" ("Range = Maximum − Minimum | IQR = Q3 − Q1"). Each gets its own
-    // display line — one long pipe-joined string is exactly the wall of
-    // symbols a student cannot copy at a glance. The split requires spaces on
-    // both sides so absolute-value bars ("|x1 − x2|") never match.
     const formulaHtml = cp.copyPanel.formula
       ? `<div class="nt-nb-copy-formulas" role="group" aria-label="Formulas to copy">${cp.copyPanel.formula
           .split(/\s\|\s/)
           .map((f) => `<div class="nt-nb-copy-formula">${esc(f.trim())}</div>`)
           .join("")}</div>`
       : "";
+    const exampleLabel = isEs ? "Ejemplo:" : "Example:";
     return `
-    <div class="nt-nb-copy-panel nt-nb-copy-box2" data-no-vocab="true" aria-label="Copy into your notebook">
-      <div class="nt-nb-copy-banner">Copy into your notebook:</div>
-      <div class="nt-nb-copy-rule">${esc(cp.copyPanel.rule)}</div>
+    <div class="nt-nb-copy-panel nt-nb-copy-box2" data-no-vocab="true" aria-label="${bannerText}">
+      <div class="nt-nb-copy-banner">${bannerText}</div>
+      <div class="nt-nb-copy-rule">${esc(ruleText)}</div>
       ${formulaHtml}
       ${stepsHtml}
       ${cp.copyPanel.meaning ? `<div class="nt-nb-copy-meaning">${esc(cp.copyPanel.meaning)}</div>` : ""}
-      ${cp.copyPanel.example ? `<div class="nt-nb-copy-example"><span class="nt-nb-copy-example-label">Example:</span> <span class="nt-nb-eq">${esc(cp.copyPanel.example)}</span></div>` : ""}
+      ${cp.copyPanel.example ? `<div class="nt-nb-copy-example"><span class="nt-nb-copy-example-label">${exampleLabel}</span> <span class="nt-nb-eq">${esc(cp.copyPanel.example)}</span></div>` : ""}
     </div>`;
   }
   return "";

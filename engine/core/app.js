@@ -1308,6 +1308,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       el.setAttribute("aria-label", phaseConfigs[index]?.name || `Phase ${index + 1}`);
       phaseContainer.append(el);
       renderFn(el, state, this);
+      // Auto-scroll to top smoothly on phase navigation so the student's attention
+      // immediately lands on the new phase header.
+      if (main) main.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
       // Plain-words pass runs BEFORE the vocabulary underliner. It rewrites text
       // nodes, and the underliner replaces matched terms with tappable glossary
       // spans — doing it the other way round would rewrite the glossary markup

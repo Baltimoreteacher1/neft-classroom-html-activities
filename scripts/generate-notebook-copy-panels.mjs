@@ -159,8 +159,9 @@ export function buildBox1(config) {
     return { panel: null, reason: "fewer than 3 declared vocabulary entries with definitions" };
   const items = [];
   const usedArt = new Set();
+  const maxItems = config.lessonId === "2-6" ? 4 : 3;
   for (const v of vocab) {
-    if (items.length === 3) break; // 3 essential terms is optimal for 2-4 min copy budget
+    if (items.length === maxItems) break;
     const term = v.term.trim().replace(/\.$/, "");
     // Only the definition's FIRST sentence: crossing a full stop is how
     // "A number sentence with an equal sign. The percent one is" happened.

@@ -454,6 +454,15 @@ function hero(config, accent, voice) {
   // studio will feel (supportive build / mathematician's press / fresh start).
   copy.appendChild(el("p", "sg-tagline", bi(voice.tagline, voice.taglineEs)));
   const chips = el("div", "sg-chips");
+  const focusByVariant = {
+    catchup: "Focus: Concrete Visual Models & Foundations",
+    group1: "Focus: Step-by-Step Problem Solving & Scaffolding",
+    group2: "Focus: Direct Practice & Fluency Building",
+    challenge: "Focus: Multi-Step Real-World Application",
+  };
+  const variantKey = config.variant || (config.smallGroup ? `group${config.smallGroup.group}` : "catchup");
+  const focusLabel = focusByVariant[variantKey] || "Focus: Targeted Small-Group Practice";
+  chips.appendChild(el("span", "sg-chip sg-chip-focus", esc(focusLabel)));
   chips.appendChild(el("span", "sg-chip", esc(config.timeEstimate || "15–20 min")));
   if (config.standard) chips.appendChild(el("span", "sg-chip", esc(config.standard)));
   chips.appendChild(el("span", "sg-chip", "Private · saved on this device"));
@@ -587,6 +596,80 @@ function footer() {
   return foot;
 }
 
+function mountStationTimer() {
+  if (typeof document === "undefined") return;
+  if (document.querySelector(".sg-station-timer")) return;
+
+  const timerWrap = document.createElement("div");
+  timerWrap.className = "sg-station-timer";
+  timerWrap.setAttribute("role", "timer");
+  timerWrap.setAttribute("aria-label", "Station rotation countdown timer");
+
+  let remainingSec = 15 * 60;
+  let timerInterval = null;
+
+  const fmt = (s) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec < 10 ? "0" : ""}${sec}`;
+  };
+
+  timerWrap.innerHTML = `
+    <span class="sg-timer-icon" aria-hidden="true">⏱️</span>
+    <span class="sg-timer-time">${fmt(remainingSec)}</span>
+    <button type="button" class="sg-timer-toggle" title="Start station timer">▶</button>
+    <button type="button" class="sg-timer-reset" title="Reset to 15 min">↺</button>
+  `;
+
+  const timeEl = timerWrap.querySelector(".sg-timer-time");
+  const toggleBtn = timerWrap.querySelector(".sg-timer-toggle");
+  const resetBtn = timerWrap.querySelector(".sg-timer-reset");
+
+  const tick = () => {
+    if (remainingSec > 0) {
+      remainingSec--;
+      timeEl.textContent = fmt(remainingSec);
+      if (remainingSec === 0) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        toggleBtn.textContent = "▶";
+        timerWrap.classList.add("sg-timer-alarm");
+        if (window.AudioSynth && typeof window.AudioSynth.tada === "function") {
+          window.AudioSynth.tada();
+        }
+      }
+    }
+  };
+
+  toggleBtn.addEventListener("click", () => {
+    timerWrap.classList.remove("sg-timer-alarm");
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      toggleBtn.textContent = "▶";
+      toggleBtn.title = "Resume station timer";
+    } else {
+      if (remainingSec === 0) remainingSec = 15 * 60;
+      timerInterval = setInterval(tick, 1000);
+      toggleBtn.textContent = "⏸";
+      toggleBtn.title = "Pause station timer";
+    }
+  });
+
+  resetBtn.addEventListener("click", () => {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      toggleBtn.textContent = "▶";
+    }
+    remainingSec = 15 * 60;
+    timeEl.textContent = fmt(remainingSec);
+    timerWrap.classList.remove("sg-timer-alarm");
+  });
+
+  document.body.appendChild(timerWrap);
+}
+
 function renderStudio(config) {
   const variant =
     config.variant || (config.smallGroup ? `group${config.smallGroup.group}` : "catchup");
@@ -643,6 +726,7 @@ function renderStudio(config) {
   };
   mountTeacherClearButton(window.__ntClearLessonAnswers);
   mountPresentWidget();
+  mountStationTimer();
   const state = {
     before: null,
     after: null,
