@@ -1449,7 +1449,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           });
         });
 
-        const header = el.querySelector(".phase-title, .lesson-hero, .phase-header, h1");
+        const header = el.querySelector(".section-header, .phase-title, .lesson-hero, .phase-header, .phero, h1");
         if (header && header.parentElement) {
           header.insertAdjacentElement("afterend", ribbon);
         } else {

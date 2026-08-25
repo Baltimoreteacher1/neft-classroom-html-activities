@@ -919,6 +919,40 @@ function conceptVisualSvg(config) {
       </svg>`;
   }
 
+  if (topic === "division") {
+    return `
+      <svg viewBox="0 0 420 210" class="concept-svg" role="img" aria-label="Long Division Algorithm DMSB">
+        <rect x="8" y="10" width="404" height="190" rx="12" fill="#fffdf5" stroke="#12355b" stroke-width="2"/>
+        <text x="210" y="32" text-anchor="middle" font-size="14" font-weight="800" fill="#12355b">Long Division Algorithm: D-M-S-B</text>
+        
+        <!-- Long division bracket: 12 ) 1344 = 112 -->
+        <text x="55" y="80" font-size="18" font-weight="800" fill="#12355b">12</text>
+        <line x1="68" y1="58" x2="68" y2="88" stroke="#12355b" stroke-width="2.5"/>
+        <line x1="68" y1="58" x2="165" y2="58" stroke="#12355b" stroke-width="2.5"/>
+        <text x="75" y="80" font-size="18" font-weight="800" fill="#12355b">1,344</text>
+        <text x="75" y="52" font-size="18" font-weight="800" fill="#0d7a76">112</text>
+        
+        <!-- 4 steps pills -->
+        <rect x="180" y="48" width="220" height="28" rx="6" fill="#fef2f2" stroke="#ef4444"/>
+        <text x="188" y="67" font-size="12" font-weight="800" fill="#dc2626">1. D (Divide)</text>
+        <text x="265" y="67" font-size="11" fill="#1e293b">13 ÷ 12 = 1</text>
+        
+        <rect x="180" y="82" width="220" height="28" rx="6" fill="#fef2f2" stroke="#ef4444"/>
+        <text x="188" y="101" font-size="12" font-weight="800" fill="#dc2626">2. M (Multiply)</text>
+        <text x="275" y="101" font-size="11" fill="#1e293b">1 × 12 = 12</text>
+        
+        <rect x="180" y="116" width="220" height="28" rx="6" fill="#fefce8" stroke="#eab308"/>
+        <text x="188" y="135" font-size="12" font-weight="800" fill="#854d0e">3. S (Subtract)</text>
+        <text x="272" y="135" font-size="11" fill="#1e293b">13 − 12 = 1</text>
+        
+        <rect x="180" y="150" width="220" height="28" rx="6" fill="#fffbeb" stroke="#d97706"/>
+        <text x="188" y="169" font-size="12" font-weight="800" fill="#b45309">4. B (Bring down)</text>
+        <text x="290" y="169" font-size="11" fill="#1e293b">Bring down 4</text>
+        
+        <text x="210" y="195" text-anchor="middle" font-size="11" font-weight="700" fill="#5f6f80">Repeat cycle until no digits remain · Quotient: 112</text>
+      </svg>`;
+  }
+
   const steps = buildConceptSteps(config);
   return `
     <div class="concept-fallback-visual" aria-hidden="true">
