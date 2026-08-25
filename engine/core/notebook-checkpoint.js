@@ -268,6 +268,9 @@ export function isSatisfied(box) {
  */
 export function initNotebook(config) {
   activeConfig = config;
+  if (typeof window !== "undefined") {
+    window.openMathNotesModel = (cfg) => openMathNotesModel(cfg || activeConfig);
+  }
   loadStore(config);
   if (persisted) return;
   const sr = typeof window !== "undefined" && window.NeftSaveResume;
