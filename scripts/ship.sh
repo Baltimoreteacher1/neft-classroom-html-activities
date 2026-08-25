@@ -268,9 +268,35 @@ if [ "$DRY_RUN" = "1" ]; then
   exit 0
 fi
 
-# --- Push (pre-push hook runs the QA loop; CF Git integration deploys) -----------------
+# --- Gate: run the QA loop HERE, on the exact tree being shipped -----------------------
+#
+# This used to be delegated entirely to .githooks/pre-push. That hook only runs
+# if `core.hooksPath` points at .githooks, which is a per-clone setting made by
+# `npm run qa:install-hooks` — it is not carried by a clone. A clone that never
+# ran it pushes to main with NO gate at all and says nothing, which is exactly
+# the failure this repo keeps re-learning: a check that silently does not run
+# looks identical to a check that passes.
+#
+# The gate now lives on the deploy PATH instead of on a machine's setup state.
+# It runs against "$WT" — the clean detached worktree holding origin/main plus
+# the cherry-picks — because that, not the local working tree, is what is about
+# to become production.
+#
+# If the hook IS installed it will run the loop a second time on push. That is
+# a few wasted minutes on a deploy and it is the right trade: making this
+# conditional on hook detection would re-create the same class of bug, just
+# inverted, and a wrong detection would mean zero runs rather than two.
 say ""
-say "Pushing ${NEW_SHA:0:9} → origin/main (pre-push QA loop runs first)..."
+say "Running the QA gate on ${NEW_SHA:0:9} (the tree being shipped)..."
+if ! (cd "$WT" && npm run qa:loop); then
+  KEEP_WT=1
+  fail "QA gate failed on the assembled deploy commit — nothing pushed."
+fi
+say "✓ QA gate passed."
+
+# --- Push (pre-push hook re-runs the loop if installed; CF Git integration deploys) ----
+say ""
+say "Pushing ${NEW_SHA:0:9} → origin/main..."
 if ! git -C "$WT" push origin HEAD:main; then
   KEEP_WT=1
   fail "push failed (QA loop failure or remote rejection — see output above)"

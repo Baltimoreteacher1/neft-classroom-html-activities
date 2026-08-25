@@ -108,8 +108,9 @@ const GATE = [
   "smoke:injection",
 ];
 
-/* `build` is a BARRIER, not just a peer. It is the only member of the gate that
- * writes to the working tree — the injectors under tools/inject-*.mjs rewrite
+/* `build` is a BARRIER, not just a peer. It is the LARGEST writer to the working
+ * tree, though not the only one — see EXCLUSIVE below, where `test` turned out to
+ * run build steps of its own — the injectors under tools/inject-*.mjs rewrite
  * curriculum pages, generate-printable-lesson.mjs emits lesson HTML, and vite
  * populates dist/. Every validator reads some of that, so running one
  * concurrently with the build would let it observe a half-written tree. The
@@ -124,8 +125,31 @@ const needsOf = (c) => (c === "build" ? [] : ["build"]);
 /* Never run more than one of these at a time. `validate:lesson-boot` binds a
  * fixed port; `smoke:injection` launches a second Chromium, and two browser
  * harnesses racing on a loaded machine is how a gate becomes flaky enough to
- * get bypassed. */
-const EXCLUSIVE = new Set(["validate:lesson-boot", "smoke:injection"]);
+ * get bypassed.
+ *
+ * `test` is here for a different reason, and the comment above `needsOf` was
+ * wrong about it: build is NOT "the only member of the gate that writes to the
+ * working tree". `npm test` runs tools/build-injectors-idempotent.test.mjs and
+ * tools/generated-pages-fresh.test.mjs, both of which EXECUTE build steps in
+ * order to assert the build is idempotent. So `test` rewrites dist/ too — for
+ * 211 of a 266-second run — while `validate:lesson-boot` and `smoke:injection`
+ * are serving dist/ to a browser.
+ *
+ * Measured, this made the gate fail 3 pushes out of 4, always with symptoms
+ * that read like real defects and were not:
+ *   · pages 404 that exist on disk (/esol-study-guide/)
+ *   · `Failed to resolve module specifier "web-vitals"` — the copy plugin
+ *     snapshots assets/nt-web-vitals.js and restores it AFTER the static copy,
+ *     so mid-build there is a window where dist holds the raw source, whose
+ *     line 9 is a bare `import … from "web-vitals"`
+ *   · /shared/save-resume/* 404 mid-page
+ * Each looked alarming enough to chase, and one of them (lesson 8-1) was
+ * chased. A gate that cries wolf at that rate is one people learn to bypass,
+ * which is worse than the missing hook this loop exists to replace.
+ *
+ * Cost of the fix: `test` no longer overlaps the two browser probes, so wall
+ * time grows by roughly their duration (~19s on a ~266s run). */
+const EXCLUSIVE = new Set(["validate:lesson-boot", "smoke:injection", "test"]);
 
 /* --------------------------------------------------------------------------
  * Change coverage. Each rule is [RegExp, checks[]]. A changed path uses the
@@ -530,6 +554,7 @@ export {
   CARRIES_SCRIPT,
   COVERAGE,
   classifyResult,
+  EXCLUSIVE,
   expand,
   GATE,
   needsOf,

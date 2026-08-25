@@ -16,7 +16,15 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { COVERAGE, expand, GATE, needsOf, resolveSet, scopeFor } from "../scripts/qa-run.mjs";
+import {
+  COVERAGE,
+  EXCLUSIVE,
+  expand,
+  GATE,
+  needsOf,
+  resolveSet,
+  scopeFor,
+} from "../scripts/qa-run.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
@@ -120,6 +128,47 @@ check(
   expand("build").join() === "build",
   "`build` is not a pure npm-run chain and must stay atomic",
 );
+
+/* --- 8. Nothing that WRITES the tree may run beside a check that SERVES it --- */
+/*
+ * `build` was made a barrier on the stated grounds that it is "the only member
+ * of the gate that writes to the working tree". That was false. `npm test` runs
+ * build-injectors-idempotent.test.mjs and generated-pages-fresh.test.mjs, both
+ * of which EXECUTE build steps to prove the build is idempotent — so `test`
+ * rewrites dist/ for most of its ~211s, while validate:lesson-boot and
+ * smoke:injection are serving dist/ to a browser.
+ *
+ * Measured before the fix: 3 of 4 consecutive pushes rejected, every time with
+ * symptoms that read as real defects — a page 404ing that exists on disk, and
+ * `Failed to resolve module specifier "web-vitals"`, which is the raw source of
+ * assets/nt-web-vitals.js visible in dist during the copy plugin's
+ * snapshot-and-restore window. One of those false alarms was chased for real.
+ *
+ * This is pinned because the fix costs wall-clock time, and wall-clock time is
+ * exactly what a later change would be tempted to trade away.
+ */
+for (const c of ["validate:lesson-boot", "smoke:injection", "test"]) {
+  check(
+    EXCLUSIVE.has(c),
+    `${c} must be EXCLUSIVE in qa-run.mjs: it either serves dist/ to a browser or ` +
+      `rewrites dist/ mid-run, and overlapping the two makes the gate fail ~3 pushes ` +
+      `in 4 with symptoms that look like real defects`,
+  );
+}
+
+/* The justification above must stay true. If these stop running build steps,
+ * `test` no longer needs to be serialised and the wall-time cost can be given
+ * back; if they are renamed, this fails rather than leaving a stale reason. */
+for (const f of [
+  "tools/build-injectors-idempotent.test.mjs",
+  "tools/generated-pages-fresh.test.mjs",
+]) {
+  check(
+    /execFileSync|execSync|spawnSync/.test(readFileSync(join(ROOT, f), "utf8")),
+    `${f} is why \`test\` is EXCLUSIVE in qa-run.mjs — it ran build steps. It no ` +
+      `longer executes anything; re-check whether \`test\` still needs serialising.`,
+  );
+}
 
 /* -------------------------------------------------------------------------- */
 if (failures.length) {

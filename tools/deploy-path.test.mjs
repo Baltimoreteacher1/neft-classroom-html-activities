@@ -35,6 +35,53 @@ test("ship.sh pushes through the pre-push hook rather than bypassing it", () => 
   assert.doesNotMatch(ship, /\bnpm run validate:production\b/);
 });
 
+/*
+ * The gate must not depend on a per-clone setting.
+ *
+ * .githooks/pre-push only fires when `core.hooksPath` points at .githooks, and
+ * that is set by `npm run qa:install-hooks` on each machine — a clone does not
+ * carry it. This clone was found with core.hooksPath unset, meaning every push
+ * it had made to date went through no gate whatsoever, silently. So ship.sh
+ * runs the loop itself, against the worktree it assembled.
+ */
+test("ship.sh runs the QA loop itself, not only via the hook", () => {
+  assert.match(
+    ship,
+    /npm run qa:loop/,
+    "ship.sh must run the QA gate on the deploy path; the pre-push hook is a " +
+      "per-clone setting and cannot be the only gate",
+  );
+});
+
+test("ship.sh gates the tree it is shipping, not the local working tree", () => {
+  const gateLine = ship.split("\n").find((l) => l.includes("npm run qa:loop"));
+  assert.ok(gateLine, "no qa:loop invocation found in ship.sh");
+  assert.match(
+    gateLine,
+    /\$WT/,
+    'the QA loop must run in "$WT" (the assembled deploy worktree). Running it ' +
+      "in the local tree gates whatever branch happens to be checked out, with " +
+      "whatever uncommitted edits are in flight — not what is about to go live",
+  );
+});
+
+test("a failing QA gate stops the ship before the push", () => {
+  const lines = ship.split("\n");
+  const gateAt = lines.findIndex((l) => l.includes("npm run qa:loop"));
+  const pushAt = lines.findIndex((l) => /git -C "\$WT" push origin HEAD:main/.test(l));
+  assert.ok(gateAt > -1 && pushAt > -1, "expected both a qa:loop run and a push");
+  assert.ok(
+    gateAt < pushAt,
+    "the QA gate must run BEFORE the push, or it is a report rather than a gate",
+  );
+  const between = lines.slice(gateAt, pushAt).join("\n");
+  assert.match(
+    between,
+    /fail "QA gate failed/,
+    "a failing QA gate must abort the ship, not merely print",
+  );
+});
+
 test("the push GATE includes validate and does not treat validate:production as the gate", () => {
   assert.ok(
     GATE.includes("validate"),
