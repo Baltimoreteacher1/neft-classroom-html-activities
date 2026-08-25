@@ -42,12 +42,32 @@ const wordCount = (s) => String(s).trim().split(/\s+/).filter(Boolean).length;
 /** Longest VERBATIM prefix of `text` that ends at a clause boundary and fits
  *  the word budget. Never reorders, never substitutes, never paraphrases. */
 export function shortenVerbatim(text, maxWords) {
-  const clean = String(text || "")
+  let clean = String(text || "")
     .replace(/\s+/g, " ")
     .trim()
     .replace(/[.;]+$/, "");
   if (!clean) return "";
-  if (wordCount(clean) <= maxWords) return clean;
+
+  const DANGLING =
+    /^(with|from|and|or|of|the|a|an|to|that|which|for|in|on|by|into|than|as|is|are|be|one|another|each|both|either)$/i;
+
+  const fixTrailing = (str) => {
+    let s = String(str || "").trim().replace(/[,;:—–]+$/, "");
+    // If cut inside an unmatched opening parenthesis, trim back to before the paren
+    const openP = (s.match(/\(/g) || []).length;
+    const closeP = (s.match(/\)/g) || []).length;
+    if (openP > closeP) {
+      const idx = s.lastIndexOf("(");
+      if (idx >= 0) s = s.slice(0, idx).trim().replace(/[,;:—–]+$/, "");
+    }
+    const words = s.split(/\s+/);
+    while (words.length > 3 && DANGLING.test(words[words.length - 1])) {
+      words.pop();
+    }
+    return words.join(" ").replace(/[,;:—–]+$/, "");
+  };
+
+  if (wordCount(clean) <= maxWords) return fixTrailing(clean);
 
   // Prefer a real clause boundary inside the budget.
   const boundaries = [];
@@ -63,25 +83,17 @@ export function shortenVerbatim(text, maxWords) {
     )
     .filter((c) => c && wordCount(c) <= maxWords);
 
-  // The SHORTEST clause that still says something whole beats the longest one
-  // that fits: cutting "…what you have done, felt, and learned" at the last
-  // comma leaves a dangling list item, while cutting at the em-dash leaves a
-  // complete phrase. Below five words a clause is usually too thin to mean
-  // anything, so those fall through to the longest fitting prefix.
   const whole = fitting
     .filter((c) => wordCount(c) >= 5)
     .sort((a, b) => wordCount(a) - wordCount(b))[0];
-  if (whole) return whole;
+  if (whole) return fixTrailing(whole);
   const longest = fitting.sort((a, b) => wordCount(b) - wordCount(a))[0];
-  if (longest) return longest;
+  if (longest) return fixTrailing(longest);
 
-  // No boundary fits: hard-cut on the word budget, still a verbatim prefix,
-  // then drop any trailing word that leaves the phrase hanging.
-  const DANGLING =
-    /^(with|from|and|or|of|the|a|an|to|that|which|for|in|on|by|into|than|as|is|are|be|one|another|each|both|either)$/i;
+  // No boundary fits: hard-cut on the word budget
   const cut = clean.split(/\s+/).slice(0, maxWords);
   while (cut.length > 3 && DANGLING.test(cut[cut.length - 1])) cut.pop();
-  return cut.join(" ").replace(/[,;:—–]+$/, "");
+  return fixTrailing(cut.join(" "));
 }
 
 /** Vocabulary this lesson declares, in the lesson's own order, concept role
@@ -148,7 +160,7 @@ export function buildBox1(config) {
   const items = [];
   const usedArt = new Set();
   for (const v of vocab) {
-    if (items.length === 5) break;
+    if (items.length === 3) break; // 3 essential terms is optimal for 2-4 min copy budget
     const term = v.term.trim().replace(/\.$/, "");
     // Only the definition's FIRST sentence: crossing a full stop is how
     // "A number sentence with an equal sign. The percent one is" happened.
