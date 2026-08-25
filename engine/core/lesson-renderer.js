@@ -3608,7 +3608,17 @@ function renderExplorePhase(el, state, ctx, config, opts = {}) {
       "Act 2: Interactive Studio · Explore",
       cfg.goal ||
         "Build it yourself first. You do not need the formula yet — you are looking for it.",
+      cfg.goal ? cfg.goalEs || "" : t("exploreGoalDefault"),
     );
+  } else if (cfg.goal) {
+    // Inside the step strip the phase header is skipped, so the authored goal
+    // (and its Spanish lane) still leads the Explore step.
+    const goalLine = document.createElement("p");
+    goalLine.className = "explore-goal-line";
+    goalLine.style.cssText =
+      "margin:0 0 12px; font-size:1.02rem; font-weight:600; color:#3f4a5f; line-height:1.5;";
+    goalLine.innerHTML = stackContent(cfg.goal, cfg.goalEs);
+    el.append(goalLine);
   }
 
   // Opt-in data diagram shown up front so students can SEE and read the visual
