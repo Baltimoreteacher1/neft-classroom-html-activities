@@ -92,7 +92,7 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
 
   const root = document.createElement("div");
   root.className = "ldl";
-  root.innerHTML = template(uid, decimal, presets, mode);
+  root.innerHTML = template(uid, decimal, presets);
   host.appendChild(root);
 
   const inDividend = inputEl(root, `#${uid}-dividend`);
@@ -485,11 +485,6 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
   /** Flip between the two modes over the SAME problem. */
   function setMode(next, announce) {
     mode = next === "watch" ? "watch" : "solve";
-    for (const b of root.querySelectorAll(".ldl-mode")) {
-      const on = /** @type {HTMLElement} */ (b).dataset.mode === mode;
-      b.classList.toggle("is-on", on);
-      b.setAttribute("aria-pressed", on ? "true" : "false");
-    }
     restart(announce);
     if (announce && ready) {
       say(
@@ -635,9 +630,6 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     showFrame();
   });
   mineBtn.addEventListener("click", () => setMode("solve", true));
-  for (const b of root.querySelectorAll(".ldl-mode")) {
-    b.addEventListener("click", () => setMode(/** @type {HTMLElement} */ (b).dataset.mode, true));
-  }
   el(root, ".ldl-go").addEventListener("click", () =>
     load(inDividend.value, inDivisor.value, true),
   );
@@ -695,16 +687,6 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     });
   });
 
-  const hideToggle = /** @type {HTMLButtonElement|null} */ (root.querySelector(".ldl-hide-toggle"));
-  if (hideToggle) {
-    hideToggle.addEventListener("click", () => {
-      const isHidden = root.classList.toggle("ldl-buttons-hidden");
-      hideToggle.classList.toggle("is-on", isHidden);
-      hideToggle.setAttribute("aria-pressed", isHidden ? "true" : "false");
-      hideToggle.textContent = isHidden ? "👁️ Show Other Buttons" : "👁️ Hide Other Buttons";
-    });
-  }
-
   for (const chip of root.querySelectorAll(".ldl-chip")) {
     chip.addEventListener("click", () => {
       const [a, b] = String(/** @type {HTMLElement} */ (chip).dataset.p).split("/");
@@ -721,8 +703,6 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
   return {
     destroy: () => {
       stopPlay();
-      document.removeEventListener("keydown", onKeyEsc);
-      document.body.classList.remove("nt-focus-mode");
       root.remove();
     },
   };

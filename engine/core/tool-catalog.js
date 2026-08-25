@@ -123,17 +123,14 @@ export const TOOL_CATALOG = {
   "long-division-builder": {
     name: "Long Division Lab",
     nameEs: "Laboratorio de división larga",
-    purpose:
-      "Work the standard algorithm one step at a time — divide, multiply, subtract, bring down, repeat — or watch the lab work it and explain every step.",
-    purposeEs:
-      "Trabaja el algoritmo estándar paso a paso —divide, multiplica, resta, baja el siguiente dígito y repite— o mira cómo el laboratorio lo resuelve y explica cada paso.",
+    purpose: "Divide step by step, checking each move as you go.",
+    purposeEs: "Divide paso a paso, comprobando cada movimiento.",
     howTo: [
       "Type any dividend and divisor, or tap one of the quick-pick problems.",
-      "Pick “Watch it solved” to see it worked step by step, or “I'll solve it” to work it yourself.",
-      "DIVIDE, MULTIPLY, SUBTRACT, then BRING DOWN the next digit — and repeat until no digits remain.",
+      "Work one step at a time until no digits remain.",
     ],
     tryThis: [
-      "Watch 2408 ÷ 8, then solve it yourself. What has to happen in the quotient when a step gives 0?",
+      "Solve 2408 ÷ 8. What has to happen in the quotient when a step gives 0?",
       "Predict the remainder before you start, then check with divisor × quotient + remainder.",
     ],
   },

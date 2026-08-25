@@ -41,24 +41,14 @@ export function esc(s) {
  * @param {string} uid
  * @param {boolean} decimal
  * @param {string[]} presets
- * @param {"solve"|"watch"} mode Which mode starts selected.
  */
-export function template(uid, decimal, presets, mode) {
-  const pressed = (m) => (m === mode ? "true" : "false");
-  const on = (m) => (m === mode ? " is-on" : "");
+export function template(uid, decimal, presets) {
   return (
-    `<div class="ldl-title">Long Division Lab</div>` +
-    `<p class="ldl-sub">Follow the standard algorithm: <b>Divide → Multiply → Subtract → Bring down (DMSB)</b> until every digit is divided.</p>` +
     `<div class="ldl-dmsb-banner" aria-label="Algorithm steps: Divide, Multiply, Subtract, Bring down">` +
     `<span class="ldl-dmsb-chip d"><b class="ldl-dmsb-badge">D</b> <span class="ldl-dmsb-op">÷</span> Divide</span>` +
     `<span class="ldl-dmsb-chip m"><b class="ldl-dmsb-badge">M</b> <span class="ldl-dmsb-op">×</span> Multiply</span>` +
     `<span class="ldl-dmsb-chip s"><b class="ldl-dmsb-badge">S</b> <span class="ldl-dmsb-op">−</span> Subtract</span>` +
     `<span class="ldl-dmsb-chip b"><b class="ldl-dmsb-badge">B</b> <span class="ldl-dmsb-op">↓</span> Bring down</span>` +
-    `</div>` +
-    `<div class="ldl-modes" role="group" aria-label="How do you want to use the lab?">` +
-    `<button type="button" class="ldl-mode${on("solve")}" data-mode="solve" aria-pressed="${pressed("solve")}">✏️ I'll solve it</button>` +
-    `<button type="button" class="ldl-mode${on("watch")}" data-mode="watch" aria-pressed="${pressed("watch")}">👀 Watch it solved</button>` +
-    `<button type="button" class="ldl-mode ldl-hide-toggle" title="Hide extra setup buttons to focus cleanly on solving">👁️ Hide Other Buttons</button>` +
     `</div>` +
     `<div class="ldl-controls">` +
     `<label class="ldl-field" for="${uid}-dividend"><span>Dividend</span></label>` +
@@ -120,16 +110,10 @@ export function injectStyles() {
   s.textContent = `
   .ldl{max-width:680px;margin:0 auto;text-align:center;background:var(--tool-surface);border:1.5px solid var(--tool-line);border-radius:var(--tool-radius);padding:18px 20px 22px;font-family:"Hanken Grotesk",system-ui,sans-serif;color:var(--tool-ink);box-shadow:0 4px 16px rgba(18,53,91,0.06);}
   .ldl [hidden]{display:none!important;}
-  .ldl-title{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.2rem;text-align:center;}
-  .ldl-sub{margin:4px auto 10px;max-width:540px;color:${C.muted};font-size:.9rem;line-height:1.45;text-align:center;}
   .ldl-dmsb-banner{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:0 auto 12px;padding:8px 12px;background:var(--tool-canvas);border:1px solid var(--tool-line);border-radius:var(--tool-radius-sm);max-width:max-content;}
   .ldl-dmsb-chip{display:inline-flex;align-items:center;gap:5px;font-size:.82rem;font-weight:700;color:${C.navy};}
   .ldl-dmsb-badge{display:inline-grid;place-items:center;width:1.55em;height:1.55em;border-radius:50%;background:#ef4444;color:#fff;font-size:.78rem;font-weight:800;}
   .ldl-dmsb-op{font-weight:800;color:#dc2626;}
-  .ldl-modes{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:0 auto 12px;}
-  .ldl-mode{display:inline-flex;align-items:center;min-height:var(--tool-control-h);padding:0 15px;font:inherit;font-size:.92rem;font-weight:600;color:var(--tool-control-ink);background:var(--tool-control-bg);border:1px solid var(--tool-control-line);border-radius:999px;cursor:pointer;}
-  .ldl-mode:hover{background:var(--tool-control-hover);border-color:var(--tool-accent);}
-  .ldl-mode.is-on{color:var(--tool-control-active-ink);background:var(--tool-control-active-bg);border-color:var(--tool-control-active-bg);font-weight:700;box-shadow:inset 0 -3px 0 color-mix(in srgb,#000 22%,var(--tool-control-active-bg));}
   .ldl-controls{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:0 auto;}
   .ldl-field{font-size:.72rem;font-weight:600;color:${C.muted};text-transform:uppercase;}
   .ldl-num{width:96px;max-width:38vw;min-height:var(--tool-control-h);padding:8px 10px;font:inherit;font-size:1.05rem;font-weight:600;text-align:center;color:var(--tool-ink);border:1px solid var(--tool-line);border-radius:var(--tool-radius-sm);background:var(--tool-surface);}
@@ -206,12 +190,6 @@ export function injectStyles() {
   .ldl-result{margin:12px 0 0;padding:12px;background:#f2fbf7;border:1px solid #bfe3cf;border-radius:var(--tool-radius);text-align:center;}
   .ldl-final{font-family:"Outfit",system-ui,sans-serif;font-weight:800;font-size:1.3rem;color:${C.teal};}
   .ldl-words,.ldl-verify{margin:6px auto 0;max-width:520px;font-size:.92rem;line-height:1.5;color:${C.ink};}
-  .ldl.ldl-buttons-hidden .ldl-presets,
-  .ldl.ldl-buttons-hidden .ldl-controls,
-  .ldl.ldl-buttons-hidden .ldl-dmsb-banner,
-  .ldl.ldl-buttons-hidden .ldl-sub {
-    display: none !important;
-  }
   @media (max-width:430px){
     .ldl{padding:12px 12px 14px;}
     .ldl-board{font-size:1.2rem;padding:12px 6px 8px;}

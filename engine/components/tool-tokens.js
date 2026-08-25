@@ -119,9 +119,6 @@ export function injectToolTokens() {
      piece of mathematics. Guarded by .interactive-visual, so a tool used
      standalone keeps the card it needs. */
   .interactive-visual > .ldl{border:0;border-radius:0;padding:0;max-width:none;background:none;}
-  .interactive-visual > .ldl > .ldl-title{
-    position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;
-  }
 
   /* One focus treatment across every tool. */
   .tool-btn:focus-visible,.tool-chip:focus-visible,.tool-toggle:focus-visible{

@@ -594,7 +594,7 @@ function buildVisual(v) {
     case "long-division-builder": {
       return interactiveVisualHost(v, {
         ariaLabel:
-          "Interactive long-division lab. Work the standard algorithm one step at a time — divide, multiply, subtract, bring down, repeat — to find the quotient and remainder.",
+          "Interactive long-division lab. Divide step by step to find the quotient and remainder.",
         fallback:
           "Interactive long-division builder. Turn on JavaScript to work the divide, multiply, subtract, bring down cycle.",
       });
@@ -926,7 +926,11 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   timerLabel.setAttribute("aria-live", "polite");
   timerLabel.style.cssText = "font-weight:700; color:var(--coral);";
 
-  window.__ntTalkTimer = window.__ntTalkTimer || { isRunning: false, targetEnd: 0, intervalId: null };
+  window.__ntTalkTimer = window.__ntTalkTimer || {
+    isRunning: false,
+    targetEnd: 0,
+    intervalId: null,
+  };
   const talkTimer = window.__ntTalkTimer;
 
   const updateTalkDisplay = () => {
@@ -2843,7 +2847,11 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
         timerDisplay.textContent = fmtWarmupClock(left);
       }
       if (timerLabel) {
-        timerLabel.textContent = wt.isRunning ? "remaining" : wt.pausedRemaining != null ? "stopped" : "press Start";
+        timerLabel.textContent = wt.isRunning
+          ? "remaining"
+          : wt.pausedRemaining != null
+            ? "stopped"
+            : "press Start";
       }
       syncWarmupControls();
     }
@@ -5152,7 +5160,13 @@ function renderConnectPhase(el, state, ctx, config, opts = {}) {
 // ── Phase 6/7: Reflect & Exit Ticket ──
 function renderReflectPhase(el, state, ctx, config) {
   const cfg = config.reflect;
-  phaseHeader(el, "🎯", "section-icon-navy", "Exit Ticket & Reflection", "Complete your exit ticket questions and reflection to demonstrate today's learning!");
+  phaseHeader(
+    el,
+    "🎯",
+    "section-icon-navy",
+    "Exit Ticket & Reflection",
+    "Complete your exit ticket questions and reflection to demonstrate today's learning!",
+  );
 
   // Teacher-only: the Socratic question ladders this student worked through.
   if (isTeacherMode()) mountQuestionLadderReader(el, state);
@@ -5698,7 +5712,11 @@ export function renderAct1Launch(el, state, ctx, config) {
   renderLaunchHeader(el, state, config);
 
   // 2. Warmup Section (if warmup questions exist)
-  if (config.warmup && Array.isArray(config.warmup.questions) && config.warmup.questions.length > 0) {
+  if (
+    config.warmup &&
+    Array.isArray(config.warmup.questions) &&
+    config.warmup.questions.length > 0
+  ) {
     renderWarmupPhase(el, state, ctx, config, { standalone: false });
   }
 
