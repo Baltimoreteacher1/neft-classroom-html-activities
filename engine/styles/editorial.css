@@ -817,17 +817,47 @@ body.editorial small {
   }
 }
 
-/* ── Narrow screens: keep editorial measure, reduce padding ───────────────── */
+/* ── Narrow screens & Chromebook Viewport Optimization ───────────────────── */
+@media (max-width: 900px) {
+  body.editorial .wodb-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-3);
+  }
+}
+
 @media (max-width: 768px) {
   body.editorial .lesson-hero,
   body.editorial .phase .card {
     padding: var(--sp-5);
   }
+  body.editorial .btn-primary,
+  body.editorial .btn-check,
+  body.editorial .btn-next {
+    width: 100%;
+  }
+  body.editorial .rating-chips {
+    flex-wrap: wrap;
+  }
+  body.editorial .wodb-grid {
+    grid-template-columns: 1fr;
+  }
+  body.editorial .table-wrap,
+  body.editorial table {
+    max-width: 100%;
+    overflow-x: auto;
+    display: block;
+  }
 }
 
 /* ── Honor reduced-motion ─────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  body.editorial .btn-primary:hover {
-    transform: none;
+  body.editorial .btn,
+  body.editorial .btn-primary:hover,
+  body.editorial .mc-option-label,
+  body.editorial .retry-action-btn,
+  body.editorial .rating-chip {
+    transition: none !important;
+    transform: none !important;
   }
 }
+
