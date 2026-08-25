@@ -832,6 +832,38 @@ function playLessonEntrance(config, name, boot) {
   }
 }
 
+const PHASE_SUBTABS = {
+  0: [
+    { extra: "mathnotes", icon: "📓", label: "Math Notes" },
+    { jump: "card", icon: "⚡", label: "Warmup" },
+  ],
+  1: [
+    { jump: "card", icon: "🎯", label: "Goals" },
+  ],
+  2: [
+    { extra: "vocab", icon: "🔑", label: "Vocab" },
+    { extra: "learn", icon: "💡", label: "Learn It" },
+    { extra: "watchme", icon: "👀", label: "Watch Me" },
+  ],
+  3: [
+    { jump: "card", icon: "🤝", label: "Guided Steps" },
+  ],
+  4: [
+    { level: "1", icon: "🟢", label: "Level 1" },
+    { level: "2", icon: "🔵", label: "Level 2" },
+    { level: "3", icon: "🟣", label: "Level 3" },
+  ],
+  5: [
+    { jump: "card", icon: "👥", label: "Small Group" },
+  ],
+  6: [
+    { jump: "card", icon: "📝", label: "Exit Ticket" },
+  ],
+  7: [
+    { jump: "card", icon: "🏆", label: "Mastery" },
+  ],
+};
+
 function initMainApp(root, config, studentId, studentName, studentPeriod) {
   const state = createState(config.lessonId, studentId);
   const engagement = createEngagement(state);
@@ -1379,39 +1411,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       renderFn(el, state, this);
 
       // Mount subcards ribbon for 1-click jumps between lesson parts
-      const PHASE_SUBCARDS = {
-        0: [
-          { extra: "mathnotes", icon: "📓", label: "Math Notes" },
-          { jump: ".card", icon: "⚡", label: "Warmup" },
-        ],
-        1: [
-          { jump: ".card", icon: "🎯", label: "Goals" },
-        ],
-        2: [
-          { extra: "vocab", icon: "🔑", label: "Vocab" },
-          { extra: "learn", icon: "💡", label: "Learn It" },
-          { extra: "watchme", icon: "👀", label: "Watch Me" },
-        ],
-        3: [
-          { jump: ".card", icon: "🤝", label: "Guided Practice" },
-        ],
-        4: [
-          { level: "1", icon: "🟢", label: "Level 1" },
-          { level: "2", icon: "🔵", label: "Level 2" },
-          { level: "3", icon: "🟣", label: "Level 3" },
-        ],
-        5: [
-          { jump: ".card", icon: "👥", label: "Small Group" },
-        ],
-        6: [
-          { jump: ".card", icon: "📝", label: "Exit Ticket" },
-        ],
-        7: [
-          { jump: ".card", icon: "🏆", label: "Mastery" },
-        ],
-      };
-
-      const subcards = PHASE_SUBCARDS[index] || [];
+      const subcards = PHASE_SUBTABS[index] || [];
       if (subcards.length > 0) {
         const isEs = getPreferredLang() === "es";
         const ribbon = document.createElement("div");
@@ -1444,7 +1444,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         ribbon.querySelectorAll("[data-sub-jump]").forEach((b) => {
           b.addEventListener("click", () => {
             const sel = b.dataset.subJump;
-            const target = el.querySelector(sel);
+            const target = el.querySelector(`.${sel}, [data-section="${sel}"], #${sel}, .card`);
             if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
           });
         });
@@ -2466,29 +2466,6 @@ function updateSidebar(sidebar, state, phaseConfigs) {
   const nav = sidebar.querySelector('[data-bind="phases"]');
   if (!nav) return;
 
-  // The canonical Math Notes model, right under the Warmup (phase 1) button.
-  const mathNotesBtn = `
-    <button class="phase-btn extra-btn" data-extra="mathnotes">
-      <span class="phase-num" style="background:transparent; box-shadow:none; font-size:1.15rem;">📓</span>
-      <span>Math Notes</span>
-    </button>`;
-
-  // Vocab → Learn It → Watch Me ride directly under the Launch (phase 1) button as
-  // indented sub-tabs — reference material that lives with the lesson flow.
-  const launchSubTabs = [
-    { extra: "vocab", icon: "🔑", label: "Vocab" },
-    { extra: "learn", icon: "💡", label: "Learn It" },
-    { extra: "watchme", icon: "👀", label: "Watch Me" },
-  ]
-    .map(
-      (t) =>
-        `<button class="phase-btn extra-btn phase-subtab" data-extra="${t.extra}" style="margin-left:var(--sp-4, 18px);">
-        <span class="phase-num" style="background:transparent; box-shadow:none; font-size:1.05rem;">${t.icon}</span>
-        <span>${t.label}</span>
-      </button>`,
-    )
-    .join("\n");
-
   nav.innerHTML = s.phases
     .map((phase, i) => {
       const isCurrent = i === s.currentPhase;
@@ -2512,18 +2489,42 @@ function updateSidebar(sidebar, state, phaseConfigs) {
         <span class="phase-stars">${stars}</span>
       </button>
     `;
-      // Warmup is index 0 — drop Math Notes right beneath it.
-      if (i === 0) return btn + mathNotesBtn;
-      // Launch is phase index 2 (Phase 3) — drop Vocab/Learn It right beneath it.
-      if (i === 2) return btn + launchSubTabs;
-      return btn;
+
+      const subList = PHASE_SUBTABS[i] || [];
+      const subTabsHtml = subList
+        .map(
+          (t) =>
+            `<button class="phase-btn ${t.extra ? "extra-btn" : t.level ? "level-btn" : "jump-btn"} phase-subtab" ${t.extra ? `data-extra="${t.extra}"` : t.level ? `data-phase="${i}" data-level="${t.level}"` : `data-phase="${i}" data-jump="${t.jump}"`} style="margin-left:var(--sp-4, 18px); font-size:0.84rem; padding: 5px 12px; min-height: 32px;">
+            <span class="phase-num" style="background:transparent; box-shadow:none; font-size:0.95rem;">${t.icon}</span>
+            <span>${escHtml(t.label)}</span>
+          </button>`,
+        )
+        .join("\n");
+
+      return btn + subTabsHtml;
     })
     .join("");
 
-  nav.querySelectorAll("[data-phase]").forEach((btn) => {
+  nav.querySelectorAll("[data-phase]:not(.jump-btn):not(.level-btn)").forEach((btn) => {
     btn.addEventListener("click", () => {
       const idx = parseInt(btn.dataset.phase, 10);
       document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: idx } }));
+    });
+  });
+
+  nav.querySelectorAll(".jump-btn[data-jump]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.phase, 10);
+      const target = btn.dataset.jump;
+      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: idx, jump: target } }));
+    });
+  });
+
+  nav.querySelectorAll(".level-btn[data-level]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.phase, 10);
+      const lvl = btn.dataset.level;
+      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: idx, level: lvl } }));
     });
   });
 
