@@ -87,7 +87,7 @@ function lines(x, y, text, opts = {}) {
 }
 
 function svgWrap(inner, alt, h) {
-  return `<svg class="li-fig-svg" viewBox="0 0 ${W} ${h || H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(alt)}" xmlns="http://www.w3.org/2000/svg"><title>${esc(alt)}</title>${inner}</svg>`;
+  return `<svg class="li-fig-svg" width="${W}" height="${h || H}" viewBox="0 0 ${W} ${h || H}" style="background:white" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(alt)}" xmlns="http://www.w3.org/2000/svg"><title>${esc(alt)}</title>${inner}</svg>`;
 }
 
 // The square that tells a sixth grader the height is perpendicular — the whole
@@ -871,6 +871,59 @@ export function workedStepFigures(cfg = {}) {
   });
 }
 
+function doubleNumberLineFigure(total, unit) {
+  const lineH = 220;
+  const xStart = 50;
+  const xEnd = 410;
+  const lineLength = xEnd - xStart;
+  const yTop = 75;
+  const yBot = 155;
+  const u = unit ? " " + unit : "";
+
+  const benchmarks = [
+    { pct: 0, val: 0, frac: 0 },
+    { pct: 25, val: total * 0.25, frac: 0.25 },
+    { pct: 50, val: total * 0.5, frac: 0.5 },
+    { pct: 75, val: total * 0.75, frac: 0.75 },
+    { pct: 100, val: total, frac: 1.0 }
+  ];
+
+  const ticks = benchmarks.map(b => {
+    const x = xStart + b.frac * lineLength;
+    return `
+      <line x1="${x}" y1="${yTop}" x2="${x}" y2="${yBot}" stroke="${LINE}" stroke-width="1.5" stroke-dasharray="3 3" />
+      <line x1="${x}" y1="${yTop - 8}" x2="${x}" y2="${yTop + 8}" stroke="${NAVY}" stroke-width="2" />
+      ${label(x, yTop - 14, fmt(b.val) + u, { size: 12, weight: 700 })}
+      <line x1="${x}" y1="${yBot - 8}" x2="${x}" y2="${yBot + 8}" stroke="${TEAL_INK}" stroke-width="2" />
+      ${label(x, yBot + 20, b.pct + "%", { size: 12, color: TEAL_INK, weight: 700 })}
+    `;
+  }).join("");
+
+  return {
+    kind: "double-numberline",
+    h: lineH,
+    values: [0, total * 0.25, total * 0.5, total * 0.75, total, 25, 50, 75, 100],
+    alt: `A double number line showing ${fmt(total)}${u} corresponding to 100% with benchmark jumps of 25%.`,
+    inner: `
+      ${label(W / 2, 28, "Double Number Line Model", { size: 15, weight: 800, color: NAVY })}
+      <line x1="${xStart - 10}" y1="${yTop}" x2="${xEnd + 10}" y2="${yTop}" stroke="${NAVY}" stroke-width="3.5" stroke-linecap="round" />
+      ${label(xStart - 16, yTop + 4, unit || "Units", { anchor: "end", size: 11, weight: 800, color: NAVY })}
+      <line x1="${xStart - 10}" y1="${yBot}" x2="${xEnd + 10}" y2="${yBot}" stroke="${TEAL_INK}" stroke-width="3.5" stroke-linecap="round" />
+      ${label(xStart - 16, yBot + 4, "%", { anchor: "end", size: 11, weight: 800, color: TEAL_INK })}
+      ${ticks}
+    `
+  };
+}
+
+function readDoubleNumberLine(text) {
+  const m = text.match(/whole is ([\d.,]+)\s*(\w+)?\s*—\s*that is 100%/i) ||
+            text.match(/double number line.*?([\d.,]+)\s*(\w+)?.*?100%/i);
+  if (!m) return null;
+  const tot = num(m[1]);
+  if (!tot) return null;
+  return doubleNumberLineFigure(tot, m[2] || "GB");
+}
+
 const READERS = [
   readArea,
   readPrism,
@@ -878,6 +931,7 @@ const READERS = [
   readCoordinate,
   readEquationTape,
   readRatioTape,
+  readDoubleNumberLine,
 ];
 
 // The public entry point: a labelled picture of THIS lesson's worked example,
@@ -912,6 +966,7 @@ export const _internals = {
   readCoordinate,
   readEquationTape,
   readRatioTape,
+  readDoubleNumberLine,
   readFactorTree,
   isPrime,
 };

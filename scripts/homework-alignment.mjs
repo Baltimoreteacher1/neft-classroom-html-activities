@@ -83,9 +83,9 @@ export function detectVisualTopic(config) {
   if (/coordinate|quadrant|reflect|distance on/i.test(title)) return "coordinate-plane";
   if (/integer|absolute|rational number/i.test(title)) return "number-line";
   if (standard.startsWith("6.NOS.1") || /fraction|mixed number/i.test(title)) return "fractions";
-  if (standard === "6.NOS.2" || standard === "6.NOS.3" || /decimal/i.test(title)) return "decimals";
+  if (standard === "6.NOS.2" || (/divide multi/i.test(title) && !/decimal/i.test(title))) return "division";
+  if (standard === "6.NOS.3" || /decimal/i.test(title)) return "decimals";
   if (standard === "6.NOS.4" || /prime|factor|lcm|gcf|multiple/i.test(title)) return "factors";
-  if (/divide multi/i.test(title)) return "decimals";
   return "fallback";
 }
 
@@ -137,6 +137,7 @@ const TOPIC_KEYWORDS = {
   ],
   "number-line": ["integer", "absolute", "compare", "order", "rational", "number line", "negative"],
   fractions: ["fraction", "divide", "mixed", "reciprocal", "numerator", "denominator"],
+  division: ["dividend", "divisor", "quotient", "remainder", "divide", "algorithm", "bring down"],
   decimals: ["decimal", "divide", "multiply", "add", "subtract", "place value"],
   factors: ["prime", "factor", "composite", "multiple", "lcm", "gcf", "factorization"],
 };
@@ -154,6 +155,7 @@ const ANTI_KEYWORDS = {
   "coordinate-plane": ["exponent", "area", "volume", "prime factor"],
   "number-line": ["exponent", "area", "volume", "ratio table"],
   fractions: ["exponent", "area", "volume", "mean", "equation"],
+  division: ["decimal", "exponent", "ratio", "fraction divide", "area", "volume", "coordinate"],
   decimals: ["exponent", "area", "volume", "ratio", "fraction divide"],
   factors: ["exponent", "area", "volume", "equation", "ratio"],
 };

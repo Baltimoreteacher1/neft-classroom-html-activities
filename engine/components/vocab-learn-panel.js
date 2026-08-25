@@ -909,6 +909,95 @@ function injectVocabLearnStyles() {
       justify-content: center;
     }
     .vl-lead { margin: 0 0 12px; font-size: 1.05rem; color: #334155; }
+    /* Dual-Track Think-Aloud Workspace */
+    .vl-dual-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+      margin: 12px 0;
+    }
+    @media (max-width: 860px) {
+      .vl-dual-stage { grid-template-columns: 1fr; }
+    }
+    .vl-stage-visual {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(15,23,42,0.06);
+    }
+    .vl-stage-visual-head {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .vl-stage-think {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .vl-step-crumbs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .vl-crumb-pill {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #475569;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+    .vl-crumb-pill.active {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+    }
+    .vl-crumb-pill.completed {
+      background: #ccfbf1;
+      color: #0d9488;
+      border-color: #0d9488;
+    }
+    .vl-think-badge-notice {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #0284c7;
+      background: #e0f2fe;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .vl-think-badge-reason {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #0d9488;
+      background: #ccfbf1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
     .vl-solve-steps {
       list-style: none;
       margin: 0;
@@ -931,8 +1020,8 @@ function injectVocabLearnStyles() {
     .vl-solve-body { min-width: 0; }
     .vl-solve-body .vl-step-text {
       display: block;
-      font-size: 1.1rem;
-      line-height: 1.6;
+      font-size: 1.05rem;
+      line-height: 1.55;
       color: #0f172a;
     }
     /* The step's manipulable workspace (components/step-workspace.js). */
@@ -1694,13 +1783,22 @@ export function renderLearnItPanel(container, config, options = {}) {
   const wirePaced = (host, onAllShown) => {
     const items = Array.from(host.querySelectorAll(".vl-solve-step"));
     const pace = /** @type {HTMLElement|null} */ (host.querySelector(".vl-pace"));
+    const crumbs = Array.from(host.querySelectorAll(".vl-crumb-pill"));
     let shown = 1;
     const finish = () => {
       if (pace) pace.classList.add("vl-hidden");
       onAllShown?.();
     };
+    const updateCrumbs = () => {
+      crumbs.forEach((c, idx) => {
+        c.classList.remove("active", "completed");
+        if (idx < shown - 1) c.classList.add("completed");
+        else if (idx === shown - 1) c.classList.add("active");
+      });
+    };
     if (items.length <= 1 || !pace) {
       items.forEach((it) => it.classList.remove("vl-hidden"));
+      updateCrumbs();
       finish();
       return;
     }
@@ -1709,6 +1807,7 @@ export function renderLearnItPanel(container, config, options = {}) {
     const count = pace.querySelector(".vl-pace-count");
     const update = () => {
       if (count) count.textContent = `${shown} / ${items.length}`;
+      updateCrumbs();
     };
     update();
     nextBtn.addEventListener("click", () => {
@@ -1723,7 +1822,19 @@ export function renderLearnItPanel(container, config, options = {}) {
     allBtn.addEventListener("click", () => {
       items.forEach((it) => it.classList.remove("vl-hidden"));
       shown = items.length;
+      update();
       finish();
+    });
+    crumbs.forEach((c, idx) => {
+      c.addEventListener("click", () => {
+        items.forEach((it, i) => {
+          if (i <= idx) it.classList.remove("vl-hidden");
+        });
+        shown = Math.max(shown, idx + 1);
+        update();
+        if (!prefersReducedMotion) items[idx]?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        if (shown >= items.length) finish();
+      });
     });
   };
 
@@ -1790,14 +1901,21 @@ export function renderLearnItPanel(container, config, options = {}) {
       label: isEs ? "Mírame resolverlo" : "Watch Me Solve It",
       sub: isEs ? "Lee un paso, luego muestra el siguiente" : "Read one step, then show the next",
       build(host) {
-        host.innerHTML = `
-          ${iDo.title ? `<p class="vl-lead"><strong>${escHtml(isEs && iDo.titleEs ? iDo.titleEs : iDo.title)}</strong></p>` : ""}
-          ${
-            workedFig
-              ? `<figure class="vl-stepfig vl-workedfig">${workedFig.svg}<figcaption class="vl-stepfig-cap">${isEs ? "El problema se ve así" : "The problem looks like this"}</figcaption></figure>`
-              : ""
-          }
-          ${!workedFig ? visualCardHtml : ""}
+        const visualElemHtml = workedFig
+          ? `<figure class="vl-stepfig vl-workedfig">${workedFig.svg}<figcaption class="vl-stepfig-cap">${isEs ? "El problema se ve así" : "The problem looks like this"}</figcaption></figure>`
+          : visualCardHtml;
+
+        const crumbsHtml = iLines.length > 1
+          ? `<div class="vl-step-crumbs">
+               ${iLines.map((_, idx) => `
+                 <button type="button" class="vl-crumb-pill ${idx === 0 ? "active" : ""}" data-crumb-step="${idx}">
+                   <span>${isEs ? "Paso" : "Step"} ${idx + 1}</span>
+                 </button>
+               `).join("")}
+             </div>`
+          : "";
+
+        const stepsHtml = `
           <ol class="vl-solve-steps">
             ${iLines
               .map(
@@ -1824,6 +1942,25 @@ export function renderLearnItPanel(container, config, options = {}) {
             <button type="button" class="vl-pace-next">${isEs ? "Muestra el siguiente paso" : "Show the next step"} ▸ <span class="vl-pace-count"></span></button>
             <button type="button" class="vl-pace-all">${isEs ? "Mostrar todos" : "Show all steps"}</button>
           </div>
+        `;
+
+        host.innerHTML = `
+          ${iDo.title ? `<p class="vl-lead"><strong>${escHtml(isEs && iDo.titleEs ? iDo.titleEs : iDo.title)}</strong></p>` : ""}
+          ${visualElemHtml ? `
+            <div class="vl-dual-stage">
+              <div class="vl-stage-visual">
+                <div class="vl-stage-visual-head">🎨 ${isEs ? "Modelo visual del problema" : "Problem Visual Model"}</div>
+                ${visualElemHtml}
+              </div>
+              <div class="vl-stage-think">
+                ${crumbsHtml}
+                ${stepsHtml}
+              </div>
+            </div>
+          ` : `
+            ${crumbsHtml}
+            ${stepsHtml}
+          `}
           ${
             ivConfig && ivConfig.kind
               ? `<div class="vl-tool-block vl-hidden">

@@ -147,6 +147,16 @@ const LABS = {
       ["denominator", "Denominator", "Denominador", 2, 12, 4],
     ],
   },
+  division: {
+    name: "Equal Sharing Division Lab",
+    nameEs: "Laboratorio de división en partes iguales",
+    prompt: "Divide the total items into equal groups and find the quotient.",
+    promptEs: "Divide el total de objetos en grupos iguales y halla el cociente.",
+    controls: [
+      ["groups", "Equal Groups (Divisor)", "Grupos iguales (Divisor)", 2, 16, 12],
+      ["items", "Items per Group (Quotient)", "Objetos por grupo (Cociente)", 10, 150, 112],
+    ],
+  },
   decimals: {
     name: "Hundred Grid",
     nameEs: "Cuadrícula de cien",
