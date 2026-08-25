@@ -1971,6 +1971,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   // Mount the export toolbar (sticky top bar with Save / Copy buttons)
   mountExportToolbar(state, config);
   mountUtilityMenu();
+  initNotebook(config);
+  window.openMathNotesModel = (cfg) => openMathNotesModel(cfg || config);
 
   app.start();
 
