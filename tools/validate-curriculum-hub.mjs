@@ -112,6 +112,21 @@ check(
     /href="\/curriculum\/family-connections\/teacher\/"/.test(html),
   "missing public Family Mode or protected Teacher Mode link",
 );
+check(/class="curriculum-guide"/.test(html), "missing the .curriculum-guide header at top of hub");
+check(/Small-Group Studio/.test(html), "missing Small-Group Studio action card");
+check(/NetFold 3D Simulator/.test(html), "missing NetFold 3D Simulator action card");
+check(/Arcade Review Games/.test(html), "missing Arcade Review Games action card");
+check(/The Almost-Right Lab/.test(html), "missing The Almost-Right Lab action card");
+check(/Unit 0 · Math Mentors/.test(html), "missing Unit 0 Math Mentors action card");
+check(/My Progress/.test(html), "missing My Progress action card");
+
+// Middleware invariant: /curriculum/ must never be gated or redirected by _middleware.js
+const middlewareSrc = readFileSync(resolve(ROOT, "functions/_middleware.js"), "utf8");
+check(
+  !/isCurriculumHub|STUDENT_HUB/.test(middlewareSrc),
+  "functions/_middleware.js must NEVER gate or redirect /curriculum/ — the hub is public and must show its full content to all visitors",
+);
+
 check(
   /id="arcade-feature-title"/.test(html) && /href="\/curriculum\/arcade\/"/.test(html),
   "missing the Arcade Games featured card or /curriculum/arcade/ link",

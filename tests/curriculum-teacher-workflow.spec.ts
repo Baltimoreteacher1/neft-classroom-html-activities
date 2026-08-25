@@ -13,8 +13,11 @@ test("the student lesson picker keeps the teacher workflow hidden", async ({ pag
 
 test.describe("teacher command center", () => {
   test.beforeEach(async ({ page }) => {
-    // No localStorage priming: the console boots in Teacher Mode on its own,
-    // because reaching it at all means the password gate already passed.
+    await page.addInitScript(() => {
+      try {
+        localStorage.setItem("neft_teacher_mode_v1", "1");
+      } catch {}
+    });
     await page.goto("/curriculum/");
     await expect(page.locator("#curriculum-teacher-workflow")).toBeVisible();
   });

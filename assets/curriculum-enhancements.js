@@ -188,23 +188,7 @@
     return null;
   }
 
-  /**
-   * True on the Curriculum Hub INDEX — the teacher console.
-   *
-   * ⚠️ KEEP IN SYNC with isCurriculumHub() in functions/_lib/teacher-surface.js.
-   * The server redirects an unauthorized request for exactly these paths to the
-   * student lesson picker, so anyone whose browser is running this script on one
-   * of them has already proved they are a teacher: the hub renders in Teacher
-   * view unconditionally and has no student view to switch to.
-   *
-   * The match is EXACT. This same bundle also loads on /curriculum/units/ and on
-   * 64 homework pages, and those are student surfaces where the stored mode is
-   * still the source of truth.
-   */
-  function isHubConsole() {
-    var path = String(window.location.pathname || "").replace(/\/{2,}/g, "/");
-    return path === "/curriculum" || path === "/curriculum/" || path === "/curriculum/index.html";
-  }
+
 
   function requestTeacher(anchor, onRole) {
     if (typeof anchor === "function") {
@@ -560,44 +544,29 @@
     bar.id = "hub-enhance-bar";
     bar.className = "hub-enhance-controls";
 
-    if (isHubConsole()) {
-      // Teacher console: no mode toggle. The page is password-gated, so there is
-      // no student to hide anything from, and a "switch to Student" control here
-      // only ever produced a teacher looking at a hub where every panel had
-      // rendered nothing. The student equivalent is a separate page.
-      var studentLink = document.createElement("a");
-      studentLink.href = "/curriculum/units/";
-      studentLink.id = "hub-student-picker-link";
-      studentLink.className = "hub-mode-toggle";
-      studentLink.textContent = "🎒 Open the student lesson picker";
-      studentLink.title =
-        "The student-facing Units & Lessons page — safe to project or hand to a class.";
-      bar.appendChild(studentLink);
-    } else {
-      var modeBtn = document.createElement("button");
-      modeBtn.type = "button";
-      modeBtn.id = "hub-mode-toggle";
-      modeBtn.className = "hub-mode-toggle";
-      modeBtn.setAttribute("aria-pressed", "false");
-      modeBtn.textContent = "🎒 Student Mode";
-      modeBtn.addEventListener("click", function () {
-        // Switching INTO teacher requires the password; back to student is free.
-        if (!teacherMode) {
-          requestTeacher(modeBtn, function (role) {
-            teacherMode = true;
-            saveTeacherMode(true, role);
-            applyTeacherMode();
-            updateProgressSummary();
-          });
-          return;
-        }
-        teacherMode = false;
-        saveTeacherMode(false);
-        applyTeacherMode();
-        updateProgressSummary();
-      });
-      bar.appendChild(modeBtn);
-    }
+    var modeBtn = document.createElement("button");
+    modeBtn.type = "button";
+    modeBtn.id = "hub-mode-toggle";
+    modeBtn.className = "hub-mode-toggle";
+    modeBtn.setAttribute("aria-pressed", "false");
+    modeBtn.textContent = "🎒 Student Mode";
+    modeBtn.addEventListener("click", function () {
+      // Switching INTO teacher requires the password; back to student is free.
+      if (!teacherMode) {
+        requestTeacher(modeBtn, function (role) {
+          teacherMode = true;
+          saveTeacherMode(true, role);
+          applyTeacherMode();
+          updateProgressSummary();
+        });
+        return;
+      }
+      teacherMode = false;
+      saveTeacherMode(false);
+      applyTeacherMode();
+      updateProgressSummary();
+    });
+    bar.appendChild(modeBtn);
 
     var dashLink = document.createElement("a");
     dashLink.href = "/teacher-tools/curriculum-dashboard/";
@@ -608,19 +577,44 @@
     dashLink.title = "Teacher only — class progress summary";
     bar.appendChild(dashLink);
 
-    // The hint and the banner below exist only to get a student view back to
-    // Teacher Mode. The console has no student view, so on it they are not
-    // built at all rather than built and permanently hidden.
-    if (!isHubConsole()) {
-      var hint = document.createElement("p");
-      hint.id = "hub-student-hint";
-      hint.className = "hub-student-hint";
-      hint.hidden = true;
-      hint.innerHTML =
-        "Student view hides teacher-only links (Google Slides, Forms, printable packets). " +
-        '<button type="button" class="hub-hint-link" id="hub-hint-teacher">Switch to Teacher Mode</button> ' +
-        "to restore them.";
-      hint.querySelector("#hub-hint-teacher").addEventListener("click", function () {
+    var hint = document.createElement("p");
+    hint.id = "hub-student-hint";
+    hint.className = "hub-student-hint";
+    hint.hidden = true;
+    hint.innerHTML =
+      "Student view hides teacher-only links (Google Slides, Forms, printable packets). " +
+      '<button type="button" class="hub-hint-link" id="hub-hint-teacher">Switch to Teacher Mode</button> ' +
+      "to restore them.";
+    hint.querySelector("#hub-hint-teacher").addEventListener("click", function () {
+      requestTeacher(function (role) {
+        teacherMode = true;
+        saveTeacherMode(true, role);
+        applyTeacherMode();
+        updateProgressSummary();
+      });
+    });
+    controls.parentNode.insertBefore(hint, controls);
+
+    // Top-of-page mode banner. The mode controls live ~1300px down the hub, so
+    // a teacher in student view scrolls past a page where EVERY teacher panel
+    // (district pacing console, Teacher Command Center) has rendered nothing —
+    // which is indistinguishable from a broken site or a deploy that never
+    // landed. This states the view at the top, before any of that confusion.
+    // It reuses requestTeacher() rather than duplicating the PIN gate.
+    var header = document.querySelector(".curriculum-guide");
+    var h1 = header && header.querySelector("h1");
+    if (h1) {
+      var banner = document.createElement("p");
+      banner.id = "hub-mode-banner";
+      banner.className = "hub-mode-banner hub-student-only";
+      var bannerText = document.createElement("span");
+      bannerText.textContent = "🎒 You're in Student view — teacher tools are hidden. ";
+      var bannerBtn = document.createElement("button");
+      bannerBtn.type = "button";
+      bannerBtn.className = "hub-hint-link";
+      bannerBtn.id = "hub-mode-banner-switch";
+      bannerBtn.textContent = "Switch to Teacher view";
+      bannerBtn.addEventListener("click", function () {
         requestTeacher(function (role) {
           teacherMode = true;
           saveTeacherMode(true, role);
@@ -628,38 +622,8 @@
           updateProgressSummary();
         });
       });
-      controls.parentNode.insertBefore(hint, controls);
-
-      // Top-of-page mode banner. The mode controls live ~1300px down the hub, so
-      // a teacher in student view scrolls past a page where EVERY teacher panel
-      // (district pacing console, Teacher Command Center) has rendered nothing —
-      // which is indistinguishable from a broken site or a deploy that never
-      // landed. This states the view at the top, before any of that confusion.
-      // It reuses requestTeacher() rather than duplicating the PIN gate.
-      var header = document.querySelector(".curriculum-guide");
-      var h1 = header && header.querySelector("h1");
-      if (h1) {
-        var banner = document.createElement("p");
-        banner.id = "hub-mode-banner";
-        banner.className = "hub-mode-banner hub-student-only";
-        var bannerText = document.createElement("span");
-        bannerText.textContent = "🎒 You're in Student view — teacher tools are hidden. ";
-        var bannerBtn = document.createElement("button");
-        bannerBtn.type = "button";
-        bannerBtn.className = "hub-hint-link";
-        bannerBtn.id = "hub-mode-banner-switch";
-        bannerBtn.textContent = "Switch to Teacher view";
-        bannerBtn.addEventListener("click", function () {
-          requestTeacher(function (role) {
-            teacherMode = true;
-            saveTeacherMode(true, role);
-            applyTeacherMode();
-            updateProgressSummary();
-          });
-        });
-        banner.append(bannerText, bannerBtn);
-        h1.parentNode.insertBefore(banner, h1.nextSibling);
-      }
+      banner.append(bannerText, bannerBtn);
+      h1.parentNode.insertBefore(banner, h1.nextSibling);
     }
 
     controls.parentNode.insertBefore(bar, controls.nextSibling);
@@ -2388,17 +2352,7 @@
   }
 
   function initEnhancements() {
-    if (isHubConsole()) {
-      // The server already checked the password to serve this page (see
-      // functions/_middleware.js). Teacher view is the only view here, and it
-      // is written through to the shared key so lessons opened FROM the hub
-      // open in Teacher Mode too — the same thing unlocking the toggle used to
-      // do, minus the second password.
-      teacherMode = true;
-      saveTeacherMode(true, "site");
-    } else {
-      teacherMode = loadTeacherMode();
-    }
+    teacherMode = loadTeacherMode();
     loadProgress();
     buildControls();
     buildStandardFilter();

@@ -107,33 +107,15 @@ its Basic credential for the session regardless of the cookie, so a "sign out"
 control could not keep its promise. To hand a device to students, use the
 student surfaces directly (§2b).
 
-## 2b. The Curriculum Hub is the teacher console
+## 2b. The Curriculum Hub is public and student-open
 
-`/curriculum/` — the index, **exact match only** — is teacher-only. It has no
-student view and no mode toggle: everything that reaches it has already passed
-§2, so Teacher view is the only view.
+`/curriculum/` — the index — is **student-open and public**. It serves the full
+Curriculum Hub directly (with all header guide cards, student mode by default,
+and client-side teacher tools/mode toggle). It is never 302 redirected or challenged.
 
-Unauthorized, it does **not** 401. It **302s to `/curriculum/units/`**, the
-student lesson picker:
-
-| request for `/curriculum/` | answer |
-| --- | --- |
-| valid receipt, or correct Basic password | **200**, the console, `private, no-store` |
-| anything else | **302** → `/curriculum/units/` |
-| `SITE_PASSWORD` unset | **302** → `/curriculum/units/` (fails closed to students) |
-| `/curriculum/?teacher=1` | **401** + Basic challenge — the deliberate sign-in |
-
-**Why a redirect and not a 401.** `/curriculum/` is linked as "the Curriculum
-Hub" from ~600 pages, including every lesson page and every SCORM launch page a
-class opens from Canvas. A password prompt there is a dead end for a student on
-a surface with no other way back. The redirect keeps the link working and keeps
-the console private. It is the reason `isCurriculumHub()` is a **separate**
-predicate from `isTeacherSurface()` (§5): the other two callers of that
-predicate read it as "this path 401s".
-
-**Exact match, never a prefix.** `/curriculum/units/`, `/curriculum/arcade/`,
-`/curriculum/projects/`, `/curriculum/student-launch/`, `/curriculum/my-progress/`
-and every other child stay open to students.
+- `/curriculum/` answers with **200**, serving the full interactive curriculum hub.
+- All student action cards (Small-Group Studio, NetFold 3D Simulator, Arcade Review Games, Unit 0 Math Mentors, My Progress, The Almost-Right Lab, etc.) are public and immediately available.
+- Gating or redirecting `/curriculum/` to a stripped page is explicitly prohibited.
 
 ## 3. TEACHER_KEY — the API credential
 

@@ -18,12 +18,7 @@
 
 import { EXACT, PREFIX } from "./_lib/redirect-map.js";
 import { hasValidSession, mintSessionCookie } from "./_lib/teacher-session.js";
-import { isCurriculumHub, isTeacherSurface as isTeacherPath } from "./_lib/teacher-surface.js";
-
-// Where a student lands when they ask for the teacher console. The Curriculum
-// Hub is the teacher's planning console; /curriculum/units/ is the student
-// lesson picker that used to be the hub's "Student view".
-const STUDENT_HUB = "/curriculum/units/";
+import { isTeacherSurface as isTeacherPath } from "./_lib/teacher-surface.js";
 
 // Resolve a path against the generated redirect map. Returns a Response or null.
 //
@@ -109,32 +104,7 @@ async function privateTeacherResponse(next, setCookie) {
   });
 }
 
-/**
- * A student asked for the teacher console. Send them to the student lesson
- * picker instead of challenging them.
- *
- * WHY A REDIRECT AND NOT A 401. `/curriculum/` is linked as "the Curriculum
- * Hub" from ~600 pages, including every lesson and every SCORM launch page a
- * class opens from Canvas. Turning those into a password prompt would put a
- * dead end in front of students on surfaces that have no other way back. The
- * redirect keeps the link working and keeps the console private.
- *
- * 302, not 301: the same URL returns the teacher console for an authorized
- * request, so this must never be cached as the permanent answer for the path.
- */
-function studentHubRedirect(url) {
-  const target = new URL(STUDENT_HUB, url);
-  target.search = url.search;
-  target.searchParams.delete("teacher");
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: target.pathname + (target.search || ""),
-      "Cache-Control": "private, no-store",
-      Vary: "Cookie, Authorization",
-    },
-  });
-}
+
 
 /**
  * The one hostname this site is served from.
@@ -210,14 +180,6 @@ export async function onRequest(context) {
   const isTeacherSurface =
     (!isSharedStudentAsset && !isApiWithOwnPolicy && isTeacherPath(p)) ||
     (!isSharedStudentAsset && isFamilyPublishingApi);
-  // The Curriculum Hub index is teacher-only too, but it fails OPEN-TO-STUDENTS
-  // rather than closed: an unauthorized request is redirected to the student
-  // lesson picker instead of challenged. See studentHubRedirect().
-  const isHubConsole = isCurriculumHub(p);
-  // `?teacher=1` is the deliberate sign-in: it asks for the challenge instead of
-  // the redirect, so a teacher on a new device (or one whose 24 hours have run
-  // out) has a URL that reaches the password prompt.
-  const wantsTeacherChallenge = url.searchParams.get("teacher") === "1";
 
   // Student small-group configs never include facilitation fields. The
   // authenticated teacher route reads the original asset directly.
@@ -237,10 +199,6 @@ export async function onRequest(context) {
     if (isTeacherSurface) {
       return new Response("Teacher access is not configured.", { status: 503 });
     }
-    // The hub fails closed the same way, but its closed state is the student
-    // picker: serving the teacher console because nobody set the password is
-    // the leak, and 503-ing a link every lesson page carries is an outage.
-    if (isHubConsole) return studentHubRedirect(url);
     return nextWithRedirectFallback(next, request, url);
   }
 
@@ -265,7 +223,7 @@ export async function onRequest(context) {
   //   teacher-data-dashboard, dashboard, */dashboard (class/curriculum/games),
   //   math/unit-N/projects/answer-key, and any /admin surface.
   // Everything else is student-facing -> open, no password.
-  if (!isTeacherSurface && !isHubConsole) {
+  if (!isTeacherSurface) {
     return nextWithRedirectFallback(next, request, url);
   }
 
@@ -293,10 +251,6 @@ export async function onRequest(context) {
       return privateTeacherResponse(next, await mintSessionCookie(password));
     }
   }
-
-  // Unauthorized. The hub sends students on to the lesson picker; every other
-  // teacher surface challenges exactly as it always has.
-  if (isHubConsole && !wantsTeacherChallenge) return studentHubRedirect(url);
 
   return new Response("Authentication required.", {
     status: 401,

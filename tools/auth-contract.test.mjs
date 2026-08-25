@@ -209,38 +209,20 @@ test("an expired receipt is refused", async () => {
   assert.equal(res.status, 401);
 });
 
-/* ── §12 the Curriculum Hub console ────────────────────────────────────────── */
+/* ── §12 the Curriculum Hub is student-open ────────────────────────────── */
 
-test("the hub index is the teacher console, and a student is sent to the picker", async () => {
+test("the curriculum hub is open to everyone without password or redirect", async () => {
   for (const p of ["/curriculum", "/curriculum/", "/curriculum/index.html"]) {
     const res = await call(p);
-    assert.equal(res.status, 302, `${p} did not redirect`);
-    assert.equal(res.headers.get("location"), "/curriculum/units/");
-    // Never a password prompt: ~600 pages link here, including SCORM launches.
-    assert.equal(res.headers.get("www-authenticate"), null);
-    assert.match(res.headers.get("cache-control") || "", /no-store/);
+    assert.equal(res.status, 200, `${p} did not return 200 OK`);
+    assert.equal(res.headers.get("location"), null, `${p} unexpectedly redirected`);
+    assert.equal(res.headers.get("www-authenticate"), null, `${p} requested password`);
   }
 });
 
-test("an authorized request gets the hub itself", async () => {
-  for (const headers of [
-    basic(PW),
-    { Cookie: cookieFrom(await call("/curriculum/", { headers: basic(PW) })) },
-  ]) {
-    const res = await call("/curriculum/", { headers });
-    assert.equal(res.status, 200);
-    assert.equal(res.headers.get("cache-control"), "private, no-store");
-  }
-});
-
-test("?teacher=1 reaches the password prompt instead of the redirect", async () => {
-  const res = await call("/curriculum/?teacher=1");
-  assert.equal(res.status, 401);
-  assert.match(res.headers.get("www-authenticate") || "", /^Basic realm="EduWonderLab"/);
-});
-
-test("everything else under /curriculum/ stays open to students", async () => {
+test("everything under /curriculum/ stays open to students", async () => {
   for (const p of [
+    "/curriculum/",
     "/curriculum/units/",
     "/curriculum/arcade/",
     "/curriculum/projects/",
@@ -253,21 +235,7 @@ test("everything else under /curriculum/ stays open to students", async () => {
   }
 });
 
-test("the hub fails closed to the STUDENT PICKER when SITE_PASSWORD is unset", async () => {
-  // A 503 here would break a link that every lesson page carries; serving the
-  // console would leak it. The third option is the only correct one.
+test("the hub stays open when SITE_PASSWORD is unset", async () => {
   const res = await call("/curriculum/", { env: {} });
-  assert.equal(res.status, 302);
-  assert.equal(res.headers.get("location"), "/curriculum/units/");
-});
-
-test("the hub redirect cannot be turned into an open redirect", async () => {
-  for (const p of [
-    "/curriculum/?teacher=https://evil.example.com",
-    "/curriculum/?next=//evil.example.com",
-  ]) {
-    const res = await call(p);
-    assert.equal(res.status, 302);
-    assert.match(res.headers.get("location") || "", /^\/curriculum\/units\//);
-  }
+  assert.equal(res.status, 200);
 });

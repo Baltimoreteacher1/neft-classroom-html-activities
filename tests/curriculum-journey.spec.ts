@@ -30,6 +30,11 @@ import { expect, test, type Page } from "@playwright/test";
  * deliberate copy change.
  */
 async function enterTeacherMode(page: Page) {
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem("neft_teacher_mode_v1", "1");
+    } catch {}
+  });
   await page.goto("/curriculum/");
   await expect(page.locator("body")).toHaveClass(/teacher-mode/);
 }

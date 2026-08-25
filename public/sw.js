@@ -12,10 +12,7 @@
 const CACHE = "eduwonderlab-vmswdata2";
 const USER_OFFLINE_CACHE = "eduwonderlab-user-offline-v1";
 const PRECACHE_URLS = [
-  // The student lesson picker, NOT /curriculum/. The hub index is the teacher
-  // console: it answers a student with a 302 to this page, and `cache.put`
-  // rejects a redirected response — which would have failed the whole
-  // `addAll()` and silently precached nothing at all.
+  "/curriculum/",
   "/curriculum/units/",
   "/curriculum/arcade/",
   "/curriculum/student-launch/",

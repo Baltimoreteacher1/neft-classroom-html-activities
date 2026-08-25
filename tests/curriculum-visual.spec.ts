@@ -43,8 +43,7 @@ import { expect, type Page, test } from "@playwright/test";
 async function openConsole(page: Page) {
   await page.addInitScript(() => {
     try {
-      localStorage.clear();
-      sessionStorage.clear();
+      localStorage.setItem("neft_teacher_mode_v1", "1");
     } catch {
       /* blocked storage is already a clean slate */
     }
@@ -154,10 +153,8 @@ test.describe("curriculum hub — visual baselines", () => {
   test("teacher console, default view", async ({ page }) => {
     await openConsole(page);
     await stabilize(page);
-    // Teacher view with NO way to leave it: the toggle is not rendered at all,
-    // and the body class is on from boot rather than after a PIN.
     await expect(page.locator("body")).toHaveClass(/teacher-mode/);
-    await expect(page.locator("#hub-mode-toggle")).toHaveCount(0);
+    await expect(page.locator("#hub-mode-toggle")).toBeVisible();
     await expect(page).toHaveScreenshot("hub-console-default.png", SHOT);
   });
 

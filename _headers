@@ -84,17 +84,12 @@
 # /curriculum/ now fall through to the Pages default
 # (public, max-age=0, must-revalidate) — still revalidated on every load,
 # but 304-able.
-# `private, no-store`, not `public, no-cache`: the hub index is now the TEACHER
-# console (functions/_middleware.js serves it only to an authorized request and
-# 302s everyone else to /curriculum/units/). Its body varies by credential, so
-# it must never sit in a shared or a shared-device cache. The middleware sets the
-# same value on the response it builds; this is the belt to that pair of braces.
 /curriculum
-  Cache-Control: private, no-store
+  Cache-Control: public, no-cache, must-revalidate
 /curriculum/
-  Cache-Control: private, no-store
+  Cache-Control: public, no-cache, must-revalidate
 /curriculum/index.html
-  Cache-Control: private, no-store
+  Cache-Control: public, no-cache, must-revalidate
 
 # ACCESS Practice Lab HTML shell: the entry pages must be re-checked on every
 # load so a deploy is seen immediately (the versioned ?v= app.js/data underneath
