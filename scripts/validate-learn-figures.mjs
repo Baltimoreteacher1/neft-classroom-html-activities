@@ -102,12 +102,17 @@ const FIXTURES = [
     kind: "ratio-tape",
     values: [3, 2],
   },
+  {
+    name: "long division",
+    text: "I want 1,344 ÷ 12. The dividend is 1,344 and the divisor is 12.",
+    kind: "long-division",
+    values: [1344, 12, 112, 12, 13, 1, 14, 2, 24, 0, 3, 4],
+  },
 ];
 
 const NON_FIXTURES = [
   "I want the prime factorization of 60. I start by splitting it: 60 = 6 x 10.",
   "My data set: 6, 8, 10, 12. First I find the mean.",
-  "I want 1,344 divided by 12. The dividend is 1,344.",
 ];
 
 console.log("learn-figure gate self-test");

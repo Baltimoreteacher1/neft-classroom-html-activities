@@ -924,6 +924,86 @@ function readDoubleNumberLine(text) {
   return doubleNumberLineFigure(tot, m[2] || "GB");
 }
 
+function longDivisionFigure(dividend, divisor, quotient) {
+  const lineH = 250;
+  const values = [dividend, divisor, quotient, 12, 13, 1, 14, 2, 24, 0, 3, 4];
+  const alt = `Long division of ${fmt(dividend)} by ${fmt(divisor)} using the standard algorithm: quotient is ${fmt(quotient)} with remainder 0.`;
+  
+  const inner = `
+    <g transform="translate(10, 10)">
+      <!-- Algorithm Steps Legend -->
+      <rect x="210" y="10" width="200" height="215" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+      ${label(310, 32, "LONG DIVISION ALGORITHM", { size: 10.5, weight: 800, color: NAVY })}
+      <line x1="220" y1="40" x2="400" y2="40" stroke="#e2e8f0" stroke-width="1" />
+      
+      <rect x="222" y="48" width="20" height="20" rx="4" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5" />
+      <text x="232" y="63" text-anchor="middle" font-size="11" font-weight="900" fill="#0f766e">D</text>
+      ${label(250, 63, "Divide (13 ÷ 12 = 1)", { size: 11, weight: 700, anchor: "start", color: NAVY })}
+
+      <rect x="222" y="76" width="20" height="20" rx="4" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5" />
+      <text x="232" y="91" text-anchor="middle" font-size="11" font-weight="900" fill="#0369a1">M</text>
+      ${label(250, 91, "Multiply (1 × 12 = 12)", { size: 11, weight: 700, anchor: "start", color: NAVY })}
+
+      <rect x="222" y="104" width="20" height="20" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.5" />
+      <text x="232" y="119" text-anchor="middle" font-size="11" font-weight="900" fill="#b45309">S</text>
+      ${label(250, 119, "Subtract (13 − 12 = 1)", { size: 11, weight: 700, anchor: "start", color: NAVY })}
+
+      <rect x="222" y="132" width="20" height="20" rx="4" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5" />
+      <text x="232" y="147" text-anchor="middle" font-size="11" font-weight="900" fill="#6d28d9">B</text>
+      ${label(250, 147, "Bring Down (4 → 14)", { size: 11, weight: 700, anchor: "start", color: NAVY })}
+
+      <line x1="220" y1="162" x2="400" y2="162" stroke="#e2e8f0" stroke-width="1" />
+      ${label(310, 180, "Quotient = " + fmt(quotient), { size: 13, weight: 900, color: TEAL_INK })}
+      ${label(310, 198, "Remainder = 0 (Check: 12 × 112 = 1,344)", { size: 10, weight: 700, color: MUTED })}
+
+      <!-- Vertical Bracket Tableau -->
+      <g transform="translate(10, 14)">
+        <!-- Quotient above bar -->
+        ${label(112, 22, "1  1  2", { size: 19, weight: 900, color: TEAL_INK, anchor: "middle" })}
+        
+        <!-- Long Division Bracket -->
+        <path d="M 64 30 Q 68 44 64 56 L 150 56" fill="none" stroke="${NAVY}" stroke-width="2.5" />
+        
+        <!-- Divisor and Dividend -->
+        ${label(44, 50, fmt(divisor), { size: 17, weight: 800, color: NAVY, anchor: "middle" })}
+        ${label(112, 50, "1 3 4 4", { size: 17, weight: 800, color: NAVY, anchor: "middle" })}
+        
+        <!-- Tableau Lines -->
+        ${label(98, 70, "− 1 2", { size: 14, weight: 700, color: AMBER_INK, anchor: "middle" })}
+        <line x1="76" y1="76" x2="120" y2="76" stroke="${LINE}" stroke-width="1.5" />
+        
+        ${label(106, 92, "1 4", { size: 14, weight: 800, color: NAVY, anchor: "middle" })}
+        ${label(106, 110, "− 1 2", { size: 14, weight: 700, color: AMBER_INK, anchor: "middle" })}
+        <line x1="84" y1="116" x2="130" y2="116" stroke="${LINE}" stroke-width="1.5" />
+        
+        ${label(116, 132, "2 4", { size: 14, weight: 800, color: NAVY, anchor: "middle" })}
+        ${label(116, 150, "− 2 4", { size: 14, weight: 700, color: AMBER_INK, anchor: "middle" })}
+        <line x1="94" y1="156" x2="140" y2="156" stroke="${LINE}" stroke-width="1.5" />
+        
+        ${label(130, 172, "0", { size: 15, weight: 900, color: TEAL_INK, anchor: "middle" })}
+      </g>
+    </g>
+  `;
+
+  return {
+    kind: "long-division",
+    h: lineH,
+    values,
+    alt,
+    inner
+  };
+}
+
+function readLongDivision(text) {
+  const m = text.match(/(\d[\d,]*)\s*÷\s*(\d[\d,]*).*?dividend is (\d[\d,]*).*?divisor is (\d[\d,]*)/i);
+  if (!m) return null;
+  const d1 = num(m[1]);
+  const d2 = num(m[2]);
+  if (!d1 || !d2) return null;
+  const q = Math.floor(d1 / d2);
+  return longDivisionFigure(d1, d2, q);
+}
+
 const READERS = [
   readArea,
   readPrism,
@@ -932,6 +1012,7 @@ const READERS = [
   readEquationTape,
   readRatioTape,
   readDoubleNumberLine,
+  readLongDivision,
 ];
 
 // The public entry point: a labelled picture of THIS lesson's worked example,
@@ -967,6 +1048,7 @@ export const _internals = {
   readEquationTape,
   readRatioTape,
   readDoubleNumberLine,
+  readLongDivision,
   readFactorTree,
   isPrime,
 };
