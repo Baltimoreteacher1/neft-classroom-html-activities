@@ -582,7 +582,9 @@ function showIdentityScreen(root, config) {
   // name-entry screen. Restore their active session seamlessly.
   try {
     let activeSession = null;
-    const sessRaw = sessionStorage.getItem(`nt-active-session:${config.lessonId}`) || sessionStorage.getItem("nt-active-session");
+    const sessRaw =
+      sessionStorage.getItem(`nt-active-session:${config.lessonId}`) ||
+      sessionStorage.getItem("nt-active-session");
     if (sessRaw) {
       const parsed = JSON.parse(sessRaw);
       if (parsed && (parsed.lessonId === config.lessonId || !parsed.lessonId) && parsed.name) {
@@ -593,7 +595,7 @@ function showIdentityScreen(root, config) {
       const localRaw = localStorage.getItem(`nt-active-student:${config.lessonId}`);
       if (localRaw) {
         const parsed = JSON.parse(localRaw);
-        if (parsed && parsed.name && (Date.now() - (parsed.time || 0) < 12 * 3600 * 1000)) {
+        if (parsed && parsed.name && Date.now() - (parsed.time || 0) < 12 * 3600 * 1000) {
           activeSession = parsed;
         }
       }
@@ -752,8 +754,14 @@ function showIdentityScreen(root, config) {
     const period = periodInput.value.trim();
     // Persist active session so page refresh never returns to sign-in screen
     try {
-      sessionStorage.setItem(`nt-active-session:${config.lessonId}`, JSON.stringify({ lessonId: config.lessonId, name, period }));
-      localStorage.setItem(`nt-active-student:${config.lessonId}`, JSON.stringify({ name, period, time: Date.now() }));
+      sessionStorage.setItem(
+        `nt-active-session:${config.lessonId}`,
+        JSON.stringify({ lessonId: config.lessonId, name, period }),
+      );
+      localStorage.setItem(
+        `nt-active-student:${config.lessonId}`,
+        JSON.stringify({ name, period, time: Date.now() }),
+      );
     } catch (_) {}
     // Share the typed identity site-wide so grade sync, the save-code gradebook,
     // and curriculum progress sync all pick it up without the student retyping.
@@ -832,36 +840,16 @@ function playLessonEntrance(config, name, boot) {
   }
 }
 
+// Keyed by the 3-Act phase index. Only `extra` entries remain: `jump` chips
+// scrolled to cards that now live inside the in-act step panels (hidden until
+// their step is active), and the level pickers already sit at the top of the
+// Practice step itself.
 const PHASE_SUBTABS = {
-  0: [
-    { extra: "mathnotes", icon: "📓", label: "Math Notes" },
-    { jump: "card", icon: "⚡", label: "Warmup" },
-  ],
+  0: [{ extra: "mathnotes", icon: "📓", label: "Math Notes" }],
   1: [
-    { jump: "card", icon: "🎯", label: "Goals" },
-  ],
-  2: [
     { extra: "vocab", icon: "🔑", label: "Vocab" },
     { extra: "learn", icon: "💡", label: "Learn It" },
     { extra: "watchme", icon: "👀", label: "Watch Me" },
-  ],
-  3: [
-    { jump: "card", icon: "🤝", label: "Guided Steps" },
-  ],
-  4: [
-    { level: "level1", icon: "🟢", label: "Level 1" },
-    { level: "core", icon: "🔵", label: "Level 2" },
-    { level: "level3", icon: "🟣", label: "Level 3" },
-    { level: "auto", icon: "⚡", label: "Adaptive" },
-  ],
-  5: [
-    { jump: "card", icon: "👥", label: "Small Group" },
-  ],
-  6: [
-    { jump: "card", icon: "📝", label: "Exit Ticket" },
-  ],
-  7: [
-    { jump: "card", icon: "🏆", label: "Mastery" },
   ],
 };
 
@@ -1436,7 +1424,9 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         ribbon.querySelectorAll("[data-sub-level]").forEach((b) => {
           b.addEventListener("click", () => {
             const lvl = b.dataset.subLevel;
-            const targetBtn = el.querySelector(`.level-option[data-level="${lvl}"], .level-option[data-alias_${lvl}="true"], [data-level="${lvl}"]`);
+            const targetBtn = el.querySelector(
+              `.level-option[data-level="${lvl}"], .level-option[data-alias_${lvl}="true"], [data-level="${lvl}"]`,
+            );
             if (targetBtn) targetBtn.click();
           });
         });
@@ -1448,7 +1438,9 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           });
         });
 
-        const header = el.querySelector(".section-header, .phase-title, .lesson-hero, .phase-header, .phero, h1");
+        const header = el.querySelector(
+          ".section-header, .phase-title, .lesson-hero, .phase-header, .phero, h1",
+        );
         if (header && header.parentElement) {
           header.insertAdjacentElement("afterend", ribbon);
         } else {
@@ -1563,7 +1555,9 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       if (kind === "watchme") {
         this.openExtra("learn");
         setTimeout(() => {
-          const w = phaseContainer.querySelector(".vl-step-crumbs, .vl-stage-think, .vl-solve-steps, [data-learn-step]");
+          const w = phaseContainer.querySelector(
+            ".vl-step-crumbs, .vl-stage-think, .vl-solve-steps, [data-learn-step]",
+          );
           if (w) w.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 150);
         return;
@@ -2123,7 +2117,9 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     if (e.detail.level) {
       setTimeout(() => {
         const lvl = e.detail.level;
-        const lvlBtn = document.querySelector(`.level-option[data-level="${lvl}"], .level-option[data-alias_${lvl}="true"], [data-level="${lvl}"]`);
+        const lvlBtn = document.querySelector(
+          `.level-option[data-level="${lvl}"], .level-option[data-alias_${lvl}="true"], [data-level="${lvl}"]`,
+        );
         if (lvlBtn) lvlBtn.click();
       }, 120);
     }
@@ -2530,7 +2526,9 @@ function updateSidebar(sidebar, state, phaseConfigs) {
     btn.addEventListener("click", () => {
       const idx = parseInt(btn.dataset.phase, 10);
       const target = btn.dataset.jump;
-      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: idx, jump: target } }));
+      document.dispatchEvent(
+        new CustomEvent("rma:navigate", { detail: { phase: idx, jump: target } }),
+      );
     });
   });
 
@@ -2538,10 +2536,11 @@ function updateSidebar(sidebar, state, phaseConfigs) {
     btn.addEventListener("click", () => {
       const idx = parseInt(btn.dataset.phase, 10);
       const lvl = btn.dataset.level;
-      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: idx, level: lvl } }));
+      document.dispatchEvent(
+        new CustomEvent("rma:navigate", { detail: { phase: idx, level: lvl } }),
+      );
     });
   });
-
 
   nav.querySelectorAll(".extra-btn[data-extra]").forEach((btn) => {
     btn.addEventListener("click", () => {

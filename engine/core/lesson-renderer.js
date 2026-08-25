@@ -879,15 +879,13 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
       : "";
 
   card.innerHTML = `
-    <div style="display:flex; align-items:center; gap:var(--sp-2); margin-bottom:var(--sp-2);">
-      <span style="font-size:1.6rem;" aria-hidden="true">🗣️</span>
+    <div style="display:flex; align-items:center; flex-wrap:wrap; gap:var(--sp-2); margin-bottom:var(--sp-2);">
+      <span style="font-size:1.3rem;" aria-hidden="true">🗣️</span>
       <h4 id="${uid}-title" style="color:var(--coral); margin:0;">Turn &amp; Talk</h4>
+      <span class="badge badge-teal" style="font-size:.78rem;">🅰️ shares first</span>
+      <span class="badge badge-amber" style="font-size:.78rem;">🅱️ goes next</span>
     </div>
     <p style="font-weight:600; font-size:1.05rem; margin:0 0 var(--sp-3);">${esc(prompt.question)}</p>
-    <div style="display:flex; flex-wrap:wrap; gap:var(--sp-2); margin-bottom:var(--sp-3);">
-      <span class="badge badge-teal">🅰️ Partner A shares first</span>
-      <span class="badge badge-amber">🅱️ Partner B goes next</span>
-    </div>
     ${supportHtml}
     ${extendHtml}
   `;
@@ -1884,9 +1882,9 @@ function renderLaunchHeader(el, state, config) {
   block.innerHTML = `
     ${
       config.readiness
-        ? `<div class="launch-prelesson-hint" style="display:flex; align-items:center; gap:var(--sp-3); background:var(--cream, #fdf3e0); border:1px solid var(--gold, #d4952a); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 14px) var(--sp-4, 18px); margin-bottom:var(--sp-4, 18px);">
-            <span style="font-size:1.6rem;">📚</span>
-            <span>New to this skill? Open <strong>Get Ready</strong> and <strong>Notes</strong> under <em>Before the lesson</em> in the sidebar first — they're quick and not graded.</span>
+        ? `<div class="launch-prelesson-hint" style="display:flex; align-items:center; gap:var(--sp-2); background:var(--cream, #fdf3e0); border:1px solid var(--gold, #d4952a); border-radius:var(--radius-md, 12px); padding:8px 14px; margin-bottom:var(--sp-3, 14px); font-size:.92rem;">
+            <span style="font-size:1.15rem;">📚</span>
+            <span>New to this skill? Try <strong>Get Ready</strong> in the sidebar first.</span>
           </div>`
         : ""
     }
@@ -2304,10 +2302,11 @@ function renderObjectives(el, config, state, opts = {}) {
           ${o.checkLabel}
         </label>
       </div>
-      <p style="margin:0; font-size:1.32rem; font-weight:700; color:#0f172a; line-height:1.55; letter-spacing:-0.005em; -webkit-font-smoothing:antialiased;">${o.text}</p>
-      
-      <!-- PUBLISHER-GRADE VISUAL MODEL CARD DIRECTLY BELOW OBJECTIVE TEXT -->
-      <div class="visual-model-wrapper" style="margin-top:16px; margin-bottom:16px; border-radius:14px; overflow:hidden; border:1.5px solid rgba(15,23,42,0.18); box-shadow:0 1px 2px rgba(18,53,91,0.05); background:#0b0f19; cursor:zoom-in;">
+      <p style="margin:0; font-size:1.22rem; font-weight:700; color:#0f172a; line-height:1.5; letter-spacing:-0.005em; -webkit-font-smoothing:antialiased;">${o.text}</p>
+
+      <details class="objective-more" style="margin-top:12px;">
+      <summary style="cursor:pointer; font-size:.92rem; font-weight:700; color:${o.ink}; padding:6px 0; list-style-position:inside;">${o.icon} See the visual model &amp; talk prompts</summary>
+      <div class="visual-model-wrapper" style="margin-top:10px; margin-bottom:4px; border-radius:14px; overflow:hidden; border:1.5px solid rgba(15,23,42,0.18); box-shadow:0 1px 2px rgba(18,53,91,0.05); background:#0b0f19; cursor:zoom-in;">
         <img src="${o.img}" alt="${esc(o.alt)}" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
         <div style="padding:12px 16px; background:#ffffff; border-top:1.5px solid #e2e8f0; font-size:0.96rem; color:#0f172a; font-weight:700; line-height:1.5; -webkit-font-smoothing:antialiased;">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:7px;">
@@ -2342,9 +2341,11 @@ function renderObjectives(el, config, state, opts = {}) {
         }
       </div>
 
-      <div class="objective-discuss" style="margin-top:var(--sp-3); padding-top:var(--sp-2); border-top:1px dashed rgba(0,0,0,0.12);">
-        <span style="display:block; font-size:1.1rem; font-weight:700; letter-spacing:.02em; color:${o.ink}; margin-bottom:6px;">💬 Talk about it</span>
-        <span style="display:block; font-size:1.25rem; font-weight:600; color:#1e293b; line-height:1.6;">${o.discuss}</span>
+      </details>
+
+      <div class="objective-discuss" style="margin-top:var(--sp-2); padding-top:var(--sp-2); border-top:1px dashed rgba(0,0,0,0.12);">
+        <span style="display:block; font-size:.95rem; font-weight:700; letter-spacing:.02em; color:${o.ink}; margin-bottom:4px;">💬 Talk about it</span>
+        <span style="display:block; font-size:1.05rem; font-weight:600; color:#1e293b; line-height:1.55;">${o.discuss}</span>
       </div>
     </div>`;
 
@@ -2648,6 +2649,11 @@ function fmtWarmupClock(seconds) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 }
 
+/** A unit-opening warmup: prerequisite retrieval, with no previous lesson. */
+function isSpiralWarmup(warmup) {
+  return String(warmup?.kind || "") === "spiral";
+}
+
 function renderWarmupPhase(el, state, ctx, config, opts = {}) {
   const warmup = config.warmup;
   // Phase 1 is always in the sidebar (phaseConfigs is a fixed eight-phase list),
@@ -2725,19 +2731,16 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
     ? `Warmup: Prerequisite Review${esc(spiralFrom)}`
     : `Warmup: Previous Lesson Check${esc(prevTitle)}`;
   const warmupLede = isSpiral
-    ? "Answer these warmup questions. They review the skills today's lesson builds on."
-    : "Answer these 3–4 warmup questions reviewing previous lesson material before starting today's lesson.";
+    ? "Quick check on the skills today's lesson builds on."
+    : "Quick check on the last lesson — answer each one, then submit.";
   card.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
-      <div>
-        <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 1 · Warmup</span>
-        <h3 style="margin:6px 0 0; font-size:22px; font-weight:700; color:#14223a;">⚡ ${warmupHeading}</h3>
-      </div>
-      <div id="warmupScoreBadge" style="font-size:14.5px; font-weight:700; color:#0b5a63; background:#f0fdf4; border:1px solid #bbf7d0; padding:7px 15px; border-radius:10px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
+      <h3 style="margin:0; font-size:20px; font-weight:700; color:#14223a;">⚡ ${warmupHeading}</h3>
+      <div id="warmupScoreBadge" style="font-size:13.5px; font-weight:700; color:#0b5a63; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 12px; border-radius:10px;">
         ${warmup.questions.length} Questions · Autograded
       </div>
     </div>
-    <p style="margin:0 0 16px; font-size:16.5px; font-weight:500; line-height:1.55; color:#3f4a5f;">
+    <p style="margin:0 0 14px; font-size:15px; font-weight:500; line-height:1.5; color:#3f4a5f;">
       ${warmupLede}
     </p>
   `;
@@ -2752,6 +2755,10 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
   // submit handler further down still touches them, guarded by `if (timerBar)`.
   let timerBar = null;
   let warmupTimerId = null;
+  // Clock-face cache for the two teacher-mode handlers below; the live
+  // countdown itself runs on the shared `wt` state.
+  let warmupSecondsLeft = getWarmupSeconds();
+  const initialLocalSeconds = warmupSecondsLeft;
   if (isTeacherMode()) {
     timerBar = document.createElement("div");
     timerBar.className = "warmup-timer-bar";
@@ -3862,36 +3869,6 @@ function renderWorkedExamplePanel(host, config) {
   host.append(panel);
 }
 
-function renderCommonMistakeCallout(host, config) {
-  const text = deriveCommonMistake(config);
-  if (!text) return;
-
-  // Compact: lead with the core warning (first sentence) so the callout stays a
-  // quick glance; tuck any elaboration (examples, "before you submit…") into a
-  // collapsible instead of a full paragraph.
-  const parts = String(text)
-    .split(/(?<=[.!?])\s+/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const lead = parts.shift() || text;
-  const rest = parts.join(" ");
-
-  const box = document.createElement("div");
-  box.className = "common-mistake-callout";
-  box.innerHTML = `
-    <span class="common-mistake-icon" aria-hidden="true">⚠️</span>
-    <div>
-      <strong>${stackHtml(t("commonMistake", "en"), t("commonMistake", "es"))}</strong>
-      <p style="margin:2px 0 0;">${esc(lead)}</p>
-      ${
-        rest
-          ? `<details class="cm-more" style="margin-top:4px;"><summary style="cursor:pointer; font-size:.85rem; color:var(--muted);">See an example</summary><p style="margin:4px 0 0;">${esc(rest)}</p></details>`
-          : ""
-      }
-    </div>`;
-  host.append(box);
-}
-
 // Normalize a typed math answer for the "is this simple enough to mark wrong?"
 // heuristic below: lowercase, strip spaces, unify the many multiplication
 // symbols, and turn unicode superscripts into ^n. Equivalence itself is decided
@@ -4413,6 +4390,9 @@ function practiceLabHeaderHtml(lab) {
 }
 
 function renderPracticePhase(el, state, ctx, config, opts = {}) {
+  // The lesson's own formula, read ONCE — a property of the lesson, not of an
+  // item, so 1,000+ practice items never re-parse the same key idea.
+  const lessonModel = lessonModelFrom(config);
   if (opts.standalone !== false) {
     phaseHeader(
       el,
@@ -4426,7 +4406,7 @@ function renderPracticePhase(el, state, ctx, config, opts = {}) {
   instructionCallout(
     el,
     "🎯",
-    "<strong>Differentiated & Adaptive Practice:</strong> Choose <strong>🟢 Level 1</strong> for step-by-step hints & guided support, <strong>🔵 Level 2</strong> for on-level practice, <strong>🟣 Level 3</strong> for stretch challenge problems, or <strong>⚡ Adaptive</strong> to automatically adjust as you answer.",
+    "<strong>Pick your level:</strong> 🟢 guided help · 🔵 on-level · 🟣 challenge · ⚡ adjusts as you answer.",
   );
 
   // Optional interactive "practice lab(s)" (factor-tree-lab, power-builder,
@@ -4464,7 +4444,6 @@ function renderPracticePhase(el, state, ctx, config, opts = {}) {
   }
 
   renderWorkedExamplePanel(workHost, config);
-  renderCommonMistakeCallout(workHost, config);
 
   // Lead with real skill practice — solve problems, show steps — before the
   // interactive games/sorts below.
@@ -5733,6 +5712,124 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
   el.append(card);
 }
 
+// ── Act sub-steps ──────────────────────────────────────────────────────────
+// One act, several moments — shown ONE at a time behind a horizontal step
+// strip, instead of stacked into a single 6,000px scroll. Every step's content
+// still renders eagerly (save/resume and graders keep working on hidden
+// panels); only visibility changes. The student's place is saved per phase so
+// a reload reopens the step they were on.
+let actStepStylesInjected = false;
+function injectActStepStyles() {
+  if (actStepStylesInjected || document.getElementById("nt-act-steps-style")) {
+    actStepStylesInjected = true;
+    return;
+  }
+  actStepStylesInjected = true;
+  const s = document.createElement("style");
+  s.id = "nt-act-steps-style";
+  s.textContent = `
+  .act-steps{margin:4px 0 0;}
+  .act-steps [hidden]{display:none!important;}
+  .act-step-strip{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;margin:0 0 14px;background:#ffffff;border:1.5px solid #dbe4ee;border-radius:14px;box-shadow:0 2px 8px rgba(18,53,91,0.06);}
+  .act-step-chip{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 14px;font:inherit;font-size:.92rem;font-weight:700;color:#3f4a5f;background:#f5f8fb;border:1.5px solid #dbe4ee;border-radius:999px;cursor:pointer;}
+  .act-step-chip:hover{border-color:#0f766e;background:#eef7f6;}
+  .act-step-chip .act-step-num{display:inline-grid;place-items:center;width:1.6em;height:1.6em;border-radius:50%;background:#e2e8f0;color:#14223a;font-size:.8rem;font-weight:800;}
+  .act-step-chip.is-current{color:#ffffff;background:#0f766e;border-color:#0f766e;}
+  .act-step-chip.is-current .act-step-num{background:rgba(255,255,255,0.25);color:#ffffff;}
+  .act-step-chip.is-done{color:#0f6d78;background:#ecfdf5;border-color:#a7f3d0;}
+  .act-step-chip.is-done .act-step-num{background:#0f7a4d;color:#fff;}
+  .act-step-arrow{color:#94a3b8;font-weight:800;}
+  .act-step-next{display:flex;justify-content:flex-end;margin:18px 0 6px;}
+  @media (max-width:640px){.act-step-chip{font-size:.84rem;padding:0 10px;}}
+  `;
+  document.head.appendChild(s);
+}
+
+/**
+ * @param {HTMLElement} el
+ * @param {*} state
+ * @param {number} phaseIdx
+ * @param {{key:string, icon:string, label:string, render:(host:HTMLElement)=>void}[]} steps
+ */
+function renderActSteps(el, state, phaseIdx, steps) {
+  if (!steps.length) return;
+  injectActStepStyles();
+  const wrap = document.createElement("div");
+  wrap.className = "act-steps";
+  const strip = document.createElement("div");
+  strip.className = "act-step-strip";
+  strip.setAttribute("role", "tablist");
+  strip.setAttribute("aria-label", "Steps in this part of the lesson");
+  const panels = document.createElement("div");
+  wrap.append(strip, panels);
+  el.append(wrap);
+
+  /** @type {HTMLElement[]} */
+  const hosts = [];
+  /** @type {HTMLButtonElement[]} */
+  const chips = [];
+  const visited = new Set();
+
+  const show = (i, save) => {
+    hosts.forEach((h, j) => {
+      h.hidden = j !== i;
+    });
+    chips.forEach((c, j) => {
+      c.classList.toggle("is-current", j === i);
+      c.classList.toggle("is-done", j !== i && visited.has(j));
+      c.setAttribute("aria-selected", j === i ? "true" : "false");
+    });
+    visited.add(i);
+    if (save) {
+      state.saveResponse(phaseIdx, "act_step", String(i));
+      wrap.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  steps.forEach((step, i) => {
+    if (i > 0) {
+      const arrow = document.createElement("span");
+      arrow.className = "act-step-arrow";
+      arrow.setAttribute("aria-hidden", "true");
+      arrow.textContent = "→";
+      strip.append(arrow);
+    }
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "act-step-chip";
+    chip.setAttribute("role", "tab");
+    chip.innerHTML = `<span class="act-step-num">${i + 1}</span>${step.icon} ${esc(step.label)}`;
+    chip.addEventListener("click", () => show(i, true));
+    strip.append(chip);
+    chips.push(chip);
+
+    const host = document.createElement("div");
+    host.className = "act-step-panel";
+    host.hidden = true;
+    panels.append(host);
+    hosts.push(host);
+    step.render(host);
+    if (i < steps.length - 1) {
+      const row = document.createElement("div");
+      row.className = "act-step-next";
+      const next = document.createElement("button");
+      next.type = "button";
+      next.className = "btn btn-primary";
+      next.style.cssText =
+        "padding:12px 26px; font-weight:800; border-radius:12px; background:#0f766e; color:#ffffff;";
+      next.innerHTML = `Next: ${steps[i + 1].icon} ${esc(steps[i + 1].label)} →`;
+      next.addEventListener("click", () => show(i + 1, true));
+      row.append(next);
+      host.append(row);
+    }
+  });
+
+  const saved = Number(state.getResponse(phaseIdx, "act_step"));
+  const start = Number.isInteger(saved) && saved >= 0 && saved < steps.length ? saved : 0;
+  for (let j = 0; j < start; j += 1) visited.add(j);
+  show(start, false);
+}
+
 // ── Act 1: Launch & Focus ──
 export function renderAct1Launch(el, state, ctx, config) {
   phaseHeader(
@@ -5740,46 +5837,20 @@ export function renderAct1Launch(el, state, ctx, config) {
     "1",
     "section-icon-teal",
     "Act 1: Launch & Focus",
-    "Warm up with previous concepts, check today's learning targets, and explore the launch scene!",
+    "Warm up, see today's goal, then explore the launch scene.",
   );
 
-  // 1. Identity & Homework Header
+  // Identity & homework header stays above the steps — it is who you are, not
+  // a moment in the lesson.
   renderLaunchHeader(el, state, config);
 
-  // 2. Warmup Section (if warmup questions exist)
-  if (
-    config.warmup &&
-    Array.isArray(config.warmup.questions) &&
-    config.warmup.questions.length > 0
-  ) {
-    renderWarmupPhase(el, state, ctx, config, { standalone: false });
-  }
-
-  // 3. Learning Objectives (Content & Language)
-  const objCard = document.createElement("div");
-  objCard.className = "card card-objectives-intro-phase";
-  objCard.style.cssText =
-    "margin: 16px 0 24px; border: 2px solid #0f766e; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 4px 16px rgba(15,118,110,0.08);";
-  objCard.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
-      <div>
-        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f766e; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Act 1 · Targets</span>
-        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">🎯 Today's Learning Objectives</h3>
-      </div>
-    </div>
-  `;
-  renderObjectives(objCard, config, state);
-  el.append(objCard);
-
-  // 4. Real-World Hook & Notice/Wonder
-  renderLaunchPhase(el, state, ctx, config, { standalone: false });
-
-  // 5. Direct Action Button to Act 2
+  // The Act-advance button lives INSIDE the last step, so it appears when the
+  // student gets there rather than inviting a skip from step 1.
   const nextBtn = document.createElement("button");
   nextBtn.type = "button";
   nextBtn.className = "btn btn-primary";
   nextBtn.style.cssText =
-    "margin: 28px auto 16px; display: block; padding: 14px 36px; font-weight: 800; font-size: 16px; border-radius: 12px; background: #0f766e; color: #ffffff; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25); cursor: pointer;";
+    "margin: 24px auto 8px; display: block; padding: 14px 36px; font-weight: 800; font-size: 16px; border-radius: 12px; background: #0f766e; color: #ffffff; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25); cursor: pointer;";
   nextBtn.textContent = "Start Act 2: Interactive Studio 🚀";
   nextBtn.addEventListener("click", () => {
     state.markCompleted(0);
@@ -5787,7 +5858,36 @@ export function renderAct1Launch(el, state, ctx, config) {
       ctx.nextPhase();
     }
   });
-  el.append(nextBtn);
+
+  const steps = [];
+  if (
+    config.warmup &&
+    Array.isArray(config.warmup.questions) &&
+    config.warmup.questions.length > 0
+  ) {
+    steps.push({
+      key: "warmup",
+      icon: "⚡",
+      label: "Warm-Up",
+      render: (host) => renderWarmupPhase(host, state, ctx, config, { standalone: false }),
+    });
+  }
+  steps.push({
+    key: "goals",
+    icon: "🎯",
+    label: "Today's Goal",
+    render: (host) => renderObjectives(host, config, state),
+  });
+  steps.push({
+    key: "launch",
+    icon: "🚀",
+    label: "Launch",
+    render: (host) => {
+      renderLaunchPhase(host, state, ctx, config, { standalone: false });
+      host.append(nextBtn);
+    },
+  });
+  renderActSteps(el, state, 0, steps);
 }
 
 // ── Act 2: Interactive Studio ──
@@ -5797,10 +5897,57 @@ export function renderAct2Studio(el, state, ctx, config) {
     "2",
     "section-icon-coral",
     "Act 2: Interactive Studio",
-    "Explore the visual model, solve core practice problems, and collaborate in small groups.",
+    "Explore the model, then practice, then connect it to the real world.",
   );
 
-  // 1. Dual-Track Small Group Facilitation Banner
+  // 1. Dual-Track Small Group Facilitation Banner — a teacher management
+  // surface (track timer, switch signal), so it mounts in Teacher Mode only.
+  // Students see the mathematics, not the rotation logistics.
+  if (isTeacherMode()) renderTrackBanner(el);
+
+  // The Act-advance button lives inside the last step.
+  const act3Btn = document.createElement("button");
+  act3Btn.type = "button";
+  act3Btn.className = "btn btn-primary";
+  act3Btn.style.cssText =
+    "margin: 24px auto 8px; display: block; padding: 14px 36px; font-weight: 800; font-size: 16px; border-radius: 12px; background: #0f766e; color: #ffffff; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25); cursor: pointer;";
+  act3Btn.textContent = "Proceed to Act 3: Exit Ticket 📝";
+  act3Btn.addEventListener("click", () => {
+    state.markCompleted(1);
+    if (ctx && typeof ctx.nextPhase === "function") {
+      ctx.nextPhase();
+    }
+  });
+
+  const steps = [];
+  if (config.explore) {
+    steps.push({
+      key: "explore",
+      icon: "🔍",
+      label: "Explore",
+      render: (host) => renderExplorePhase(host, state, ctx, config, { standalone: false }),
+    });
+  }
+  steps.push({
+    key: "practice",
+    icon: "✏️",
+    label: "Practice",
+    render: (host) => renderPracticePhase(host, state, ctx, config, { standalone: false }),
+  });
+  steps.push({
+    key: "connect",
+    icon: "🌎",
+    label: "Connect",
+    render: (host) => {
+      renderConnectPhase(host, state, ctx, config, { standalone: false });
+      host.append(act3Btn);
+    },
+  });
+  renderActSteps(el, state, 1, steps);
+}
+
+// Teacher-only: the two-track rotation banner with its 12-minute switch timer.
+function renderTrackBanner(el) {
   const sgBanner = document.createElement("div");
   sgBanner.className = "card card-small-group-banner";
   sgBanner.style.cssText =
@@ -5849,30 +5996,6 @@ export function renderAct2Studio(el, state, ctx, config) {
     if (window.AudioSynth) window.AudioSynth.click();
   });
   el.append(sgBanner);
-
-  // 2. Interactive Explore Model
-  renderExplorePhase(el, state, ctx, config, { standalone: false });
-
-  // 3. Core Practice
-  renderPracticePhase(el, state, ctx, config, { standalone: false });
-
-  // 4. Real-World Connect
-  renderConnectPhase(el, state, ctx, config, { standalone: false });
-
-  // 5. Action Button to Proceed to Act 3
-  const nextBtn = document.createElement("button");
-  nextBtn.type = "button";
-  nextBtn.className = "btn btn-primary";
-  nextBtn.style.cssText =
-    "margin: 28px auto 16px; display: block; padding: 14px 36px; font-weight: 800; font-size: 16px; border-radius: 12px; background: #0f766e; color: #ffffff; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25); cursor: pointer;";
-  nextBtn.textContent = "Proceed to Act 3: Exit Ticket 📝";
-  nextBtn.addEventListener("click", () => {
-    state.markCompleted(1);
-    if (ctx && typeof ctx.nextPhase === "function") {
-      ctx.nextPhase();
-    }
-  });
-  el.append(nextBtn);
 }
 
 // ── Act 3: Exit Ticket & Reflection ──
