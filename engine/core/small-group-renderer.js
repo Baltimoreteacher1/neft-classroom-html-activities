@@ -23,7 +23,6 @@ import { ensureCanvasBridge } from "./scorm-bridge.js";
 import { createAutoPilot } from "./small-group-adaptive.js";
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
 import { createBuildVisualizer } from "./small-group-build-visuals.js";
-import { createDiagnosticLaunch, selectDiagnosticItems } from "./small-group-diagnostic.js";
 import {
   createMissionSection,
   createReflectionSection,
@@ -1016,14 +1015,11 @@ function renderStudio(config) {
     reflection.reveal();
   };
 
-  // The two-minute diagnostic comes out of the practice pool's tail — the
-  // overflow items a fifteen-minute rotation rarely reaches — so opening with a
-  // measurement costs the practice sequence nothing it was reliably delivering.
-  // When no tail item can produce a NAMED diagnosis, `picked` is empty, the pool
-  // is returned untouched, and the studio renders exactly as it did before.
-  const { picked: diagnosticItems, remaining: allPractice } = selectDiagnosticItems(
-    collectPracticeItems(config),
-  );
+  // A small-group rotation opens on the mathematics, not on a quiz (Joel,
+  // 2026-08-25: "get rid of 1 🎯 Warm-Up Check"). The two-minute entry
+  // diagnostic used to take the practice pool's tail; with it gone the tail
+  // returns to practice, which is where those items were authored to be.
+  const allPractice = collectPracticeItems(config);
   const preferredGuided =
     Number(config.smallGroupPractice?.guidedCount) || (variant === "group2" ? 3 : 4);
   const guidedCount =
@@ -1039,22 +1035,10 @@ function renderStudio(config) {
   const check = createCheckSection(config, revealReflection, tally, events, store);
   // Mission is the capstone — it renders after practice and supports.
   const mission = createMissionSection(config, variant, phaseDone("sg-tab-more", "launchDone"));
-  // Sits ahead of the readiness pulse deliberately: the pulse asks how ready a
-  // student FEELS, which is worth knowing and is not a finding. Ask what they
-  // actually do first, then how they feel about it.
-  const diagnostic = createDiagnosticLaunch({
-    items: diagnosticItems,
-    store,
-    events,
-    onDone(summary) {
-      // The focus error is the one thing worth carrying forward. The teacher
-      // console already reads state.misconceptions (fed through events.onAttempt
-      // above), so this only records what the diagnostic itself concluded.
-      state.diagnosticSummary = summary;
-      if (summary.focus) state.lastMisconception = summary.focus.tag;
-      document.dispatchEvent(new CustomEvent("sg:diagnostic-done", { detail: summary }));
-    },
-  });
+  // One private question, posted above the strip rather than made a step of its
+  // own: `state.before` steers the adaptive layer (small-group-innovation.js)
+  // and is exported as `confidenceBefore`, so it has to be asked, but it is a
+  // five-second rating and never was a moment in the session.
   const pulseCard = el("div", "card sg-pulse-card");
   pulseCard.appendChild(el("p", "block-lab", "Private readiness pulse — how ready do you feel?"));
   pulseCard.appendChild(
@@ -1230,19 +1214,18 @@ function renderStudio(config) {
   // still renders (save/resume, graders and the teacher console read hidden
   // panels fine); only visibility changes, and print reveals every step.
   injectSubstepStyles();
-  const makeStepPanel = (id, groups) => {
+  const makeStepPanel = (id, groups, lead = []) => {
     const live = groups
       .map((g) => ({ ...g, children: g.children.filter(Boolean) }))
       .filter((g) => g.children.length);
     // One real group needs no strip — render it plainly.
     if (live.length < 2) {
-      return makePanel(
-        id,
-        live.flatMap((g) => g.children),
-      );
+      return makePanel(id, [...lead, ...live.flatMap((g) => g.children)].filter(Boolean));
     }
     const panel = el("div", "sg-panel");
     panel.id = id;
+    // `lead` sits outside the strip: posted for the whole tab, not one step of it.
+    for (const node of lead) if (node) panel.appendChild(node);
     const strip = el("div", "sg-substeps");
     strip.setAttribute("role", "tablist");
     strip.setAttribute("aria-label", "Steps in this part of the session");
@@ -1304,12 +1287,15 @@ function renderStudio(config) {
       id: "sg-tab-learn",
       label: "Focus & Learn",
       sub: "Key words & worked model",
-      panel: makeStepPanel("sg-tab-learn", [
-        { icon: "🎯", label: "Warm-Up Check", children: [diagnostic, pulseCard] },
-        { icon: "🔑", label: "Key Words", children: [vocab] },
-        { icon: "🧱", label: "Build the Idea", children: [build, explore] },
-        { icon: "📝", label: "Worked Model", children: [model] },
-      ]),
+      panel: makeStepPanel(
+        "sg-tab-learn",
+        [
+          { icon: "🔑", label: "Key Words", children: [vocab] },
+          { icon: "🧱", label: "Build the Idea", children: [build, explore] },
+          { icon: "📝", label: "Worked Model", children: [model] },
+        ],
+        [pulseCard],
+      ),
     },
     {
       id: "sg-tab-practice",

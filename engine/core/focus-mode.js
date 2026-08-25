@@ -127,7 +127,10 @@ export function mountUniversalFocusButton() {
       body.nt-focus-mode #nsr-launcher,
       body.nt-focus-mode #mwb-launcher,
       body.nt-focus-mode .ewl-supports-launcher,
-      body.nt-focus-mode #nt-present-widget,
+      /* #nt-present-widget is deliberately NOT here. Hiding the clutter is what
+         a teacher does just BEFORE projecting, so taking Present away with the
+         clutter forced them back out of Focus Mode to start the projection —
+         losing the calm screen they had made (Joel, 2026-08-25). */
       body.nt-focus-mode .sg-station-timer,
       body.nt-focus-mode .annot-dock,
       body.nt-focus-mode .sg-annotation-tools,

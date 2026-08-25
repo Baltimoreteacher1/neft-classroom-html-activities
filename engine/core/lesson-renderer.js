@@ -5804,12 +5804,20 @@ export function renderAct1Launch(el, state, ctx, config) {
     "1",
     "section-icon-teal",
     "Act 1: Launch & Focus",
-    "Warm up, see today's goal, then explore the launch scene.",
+    "Today's goals are posted below. Warm up, then explore the launch scene.",
   );
 
   // Identity & homework header stays above the steps — it is who you are, not
   // a moment in the lesson.
   renderLaunchHeader(el, state, config);
+
+  // Today's objectives are POSTED, not stepped through. As a step they sat
+  // behind the Warm-Up in a one-panel-at-a-time strip, so a student who never
+  // clicked chip 2 finished Act 1 without ever seeing what the lesson was for
+  // (Joel, 2026-08-25: "I am not seeing the objectives"). A posted goal is also
+  // what the BCPS framework asks for, so it stays on screen for the whole Act
+  // rather than being one moment inside it.
+  renderObjectives(el, config, state);
 
   // The Act-advance button lives INSIDE the last step, so it appears when the
   // student gets there rather than inviting a skip from step 1.
@@ -5839,12 +5847,6 @@ export function renderAct1Launch(el, state, ctx, config) {
       render: (host) => renderWarmupPhase(host, state, ctx, config, { standalone: false }),
     });
   }
-  steps.push({
-    key: "goals",
-    icon: "🎯",
-    label: "Today's Goal",
-    render: (host) => renderObjectives(host, config, state),
-  });
   steps.push({
     key: "launch",
     icon: "🚀",
