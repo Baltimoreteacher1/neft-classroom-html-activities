@@ -3417,6 +3417,41 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
   }
 }
 
+// The application scenario + guided Show Your Work solve that lives under
+// Learn It. Exported (and called directly by app.js's openExtra("learn"))
+// rather than reached only through a ctx hook: the hook used to be assigned
+// inside renderLaunchPhase, so a student who opened Learn It before Launch had
+// rendered got NOTHING — the moved content was unreachable on that path.
+export function renderLearnItExtrasInto(learnHost, config, state) {
+  if (!learnHost) return;
+  const cfg = config.launch;
+
+  // 1) The application scenario card (the word problem + optional theme art).
+  const scenario = document.createElement("div");
+  scenario.className = "card launch-scenario-card";
+  scenario.innerHTML = `
+      <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
+      <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
+  if (cfg.contextImage || config.theme || config.heroFigure) {
+    renderThemeIllustration(scenario, config.theme, cfg.contextImage || null, config.heroFigure);
+  }
+  learnHost.append(scenario);
+
+  // Tap-to-reveal story beats: the same narrative chunked into labeled parts
+  // for readers who lose the thread in the full paragraph.
+  renderLaunchStoryBeats(learnHost, config);
+
+  // 2) Inline Reveal Math slides for the launch + instruction sections.
+  renderRevealSlides(learnHost, config, ["launch", "instruction"]);
+
+  // 3) Show Your Work — the application problem + a guided, typeable solve-it
+  //    scaffold. Persists on phase index 0 (Launch) so saved work survives.
+  renderShowYourWork(learnHost, config, state);
+
+  // 4) Let students mark up the word problems (highlight / underline / bold).
+  enableWordProblemAnnotation(learnHost);
+}
+
 function renderLaunchPhase(el, state, ctx, config, opts = {}) {
   const cfg = config.launch;
 
