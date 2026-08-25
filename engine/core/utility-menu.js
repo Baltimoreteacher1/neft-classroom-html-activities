@@ -171,19 +171,3 @@ export function mountUtilityMenu() {
   setTimeout(adopt, 1200);
   setTimeout(adopt, 3500);
 }
-
-function ensureExitFocusButton() {
-  let exitBtn = document.getElementById("nt-exit-focus-btn");
-  if (!exitBtn) {
-    exitBtn = document.createElement("button");
-    exitBtn.id = "nt-exit-focus-btn";
-    exitBtn.className = "nt-exit-focus-btn";
-    exitBtn.type = "button";
-    exitBtn.innerHTML = "✕ Exit Focus";
-    exitBtn.title = "Show sidebar and all lesson buttons (Esc)";
-    exitBtn.addEventListener("click", () => {
-      document.body.classList.remove("nt-focus-mode");
-    });
-    document.body.appendChild(exitBtn);
-  }
-}

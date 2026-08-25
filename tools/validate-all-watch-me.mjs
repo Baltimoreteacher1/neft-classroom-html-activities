@@ -9,9 +9,11 @@ import path from "path";
 import { workedFigure } from "../scripts/lib/learn-figures.mjs";
 
 const lessonsDir = path.resolve("lessons");
-const canonicalDirs = fs.readdirSync(lessonsDir).filter(d => /^\d+-\d+$/.test(d));
+const canonicalDirs = fs.readdirSync(lessonsDir).filter((d) => /^\d+-\d+$/.test(d));
 
-console.log(`🔍 Validating "Watch Me Solve It" across ${canonicalDirs.length} canonical lessons...\n`);
+console.log(
+  `🔍 Validating "Watch Me Solve It" across ${canonicalDirs.length} canonical lessons...\n`,
+);
 
 let passed = 0;
 let failed = 0;
@@ -37,11 +39,13 @@ for (const dir of canonicalDirs) {
       if (fig) {
         withWorkedFigures++;
         if (!fig.svg.includes('style="background:white"')) {
-          console.error(`  ❌ FAIL: Lesson ${dir} workedFigure SVG missing style="background:white"`);
+          console.error(
+            `  ❌ FAIL: Lesson ${dir} workedFigure SVG missing style="background:white"`,
+          );
           failed++;
           continue;
         }
-        if (!fig.svg.includes('</svg>')) {
+        if (!fig.svg.includes("</svg>")) {
           console.error(`  ❌ FAIL: Lesson ${dir} workedFigure SVG is not properly closed`);
           failed++;
           continue;
@@ -58,7 +62,9 @@ for (const dir of canonicalDirs) {
 }
 
 console.log(`\n======================================================`);
-console.log(`Validation Results: ${passed} canonical lessons validated (${withWorkedFigures} with active worked visual figures)`);
+console.log(
+  `Validation Results: ${passed} canonical lessons validated (${withWorkedFigures} with active worked visual figures)`,
+);
 console.log(`Failed: ${failed}`);
 console.log(`======================================================\n`);
 

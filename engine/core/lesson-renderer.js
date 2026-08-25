@@ -806,15 +806,24 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   const kernelHtml = prompt.kernel
     ? `<p style="margin:0 0 var(--sp-3); font-weight:500;"><span style="display:inline-block; font-weight:700; color:var(--coral); margin-right:var(--sp-2);">Start here:</span>${esc(prompt.kernel)}</p>`
     : "";
-  const wordBankHtml =
+  // Academic vocabulary belongs IN the talk, not just in the Vocab tab: when a
+  // prompt authors no word bank, hand students this lesson's own math terms so
+  // the conversation happens in the language of the discipline.
+  const bankWords =
     Array.isArray(prompt.wordBank) && prompt.wordBank.length
-      ? `<div style="margin:0 0 var(--sp-3);">
-      <span style="font-weight:600; margin-right:var(--sp-2);">Word bank:</span>
-      <span style="display:inline-flex; flex-wrap:wrap; gap:var(--sp-2); vertical-align:middle;">${prompt.wordBank
+      ? prompt.wordBank
+      : (Array.isArray(config?.vocabulary) ? config.vocabulary : [])
+          .map((v) => v && v.term)
+          .filter(Boolean)
+          .slice(0, 4);
+  const wordBankHtml = bankWords.length
+    ? `<div style="margin:0 0 var(--sp-3);">
+      <span style="font-weight:600; margin-right:var(--sp-2);">Use these math words:</span>
+      <span style="display:inline-flex; flex-wrap:wrap; gap:var(--sp-2); vertical-align:middle;">${bankWords
         .map((w) => `<span class="badge badge-teal">${esc(w)}</span>`)
         .join("")}</span>
     </div>`
-      : "";
+    : "";
   // Scaffold fading: how much of the support block LEADS depends on how much
   // Turn & Talk this student has already done in this unit (see frame-fading.js).
   // Everything the fade hides stays one tap away — the "Show sentence starters"
@@ -3240,48 +3249,6 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
   el.append(card);
 }
 
-function renderObjectivesIntroPhase(el, state, ctx, config) {
-  phaseHeader(
-    el,
-    "2",
-    "section-icon-teal",
-    "Learning Objectives",
-    "Review today's Content and Language Objectives so you know what you are aiming for!",
-  );
-
-  const card = document.createElement("div");
-  card.className = "card card-objectives-intro-phase";
-  card.style.cssText =
-    "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 1px 2px rgba(18,53,91,0.05);";
-
-  card.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
-      <div>
-        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 2 · Objectives</span>
-        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">🎯 Today's Learning Objectives</h3>
-      </div>
-    </div>
-  `;
-
-  renderObjectives(card, config, state);
-
-  const nextBtn = document.createElement("button");
-  nextBtn.type = "button";
-  nextBtn.className = "btn btn-teal";
-  nextBtn.style.cssText =
-    "margin-top:20px; padding:12px 24px; font-weight:700; font-size:15px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
-  nextBtn.innerHTML = stack("continueToLaunch", { html: true });
-  nextBtn.addEventListener("click", () => {
-    state.markCompleted(1);
-    if (ctx && typeof ctx.nextPhase === "function") {
-      ctx.nextPhase();
-    }
-  });
-
-  card.append(nextBtn);
-  el.append(card);
-}
-
 function renderReteachHelper(container, warmup, _correctCount, _total, config) {
   if (container.querySelector(".warmup-reteach-card")) return;
 
@@ -5657,14 +5624,7 @@ function showFinalSummary(el, state, config) {
 }
 
 function renderObjectivesReviewPhase(el, state, _ctx, config) {
-  const phaseIndex = state.get().currentPhase ?? 7;
-  phaseHeader(
-    el,
-    "8",
-    "section-icon-teal",
-    "Phase 8: Objectives Review",
-    "Revisit today's Content and Language Objectives to check your growth and celebrate what you learned!",
-  );
+  const phaseIndex = state.get().currentPhase ?? 2;
 
   const card = document.createElement("div");
   card.className = "card card-objectives-review-phase";
@@ -5681,16 +5641,10 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
     : "Now that you've completed today's lesson, revisit the goals you set at the beginning and check off what you mastered!";
 
   card.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
-      <div>
-        <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 8 · Objectives Review</span>
-        <h3 style="margin:6px 0 0; font-size:22px; font-weight:700; color:#14223a;">${heading}</h3>
-      </div>
-      <div style="font-size:13px; font-weight:700; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 14px; border-radius:10px;">
-        Self-Check &amp; Growth
-      </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
+      <h3 style="margin:0; font-size:20px; font-weight:700; color:#14223a;">${heading}</h3>
     </div>
-    <p style="margin:0 0 16px; font-size:15px; color:#56627a;">
+    <p style="margin:0 0 14px; font-size:15px; color:#56627a;">
       ${intro}
     </p>
   `;
@@ -6000,5 +5954,18 @@ function renderTrackBanner(el) {
 
 // ── Act 3: Exit Ticket & Reflection ──
 export function renderAct3ExitTicket(el, state, ctx, config) {
-  renderReflectPhase(el, state, ctx, config);
+  renderActSteps(el, state, 2, [
+    {
+      key: "exit",
+      icon: "📝",
+      label: "Exit Ticket",
+      render: (host) => renderReflectPhase(host, state, ctx, config),
+    },
+    {
+      key: "mastery",
+      icon: "🏆",
+      label: "Mastery Check",
+      render: (host) => renderObjectivesReviewPhase(host, state, ctx, config),
+    },
+  ]);
 }

@@ -10,7 +10,7 @@ import { figureBlock } from "./small-group-labs.js";
 import { mountReasoningReader } from "./small-group-reasoning.js";
 import { createRubricDetails } from "./small-group-rubric.js";
 import { appendTryAnotherWay } from "./small-group-strategies.js";
-import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
+import { bi, biHtml, celebrate, el, esc, framesRow, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
 import { mountSymbolPad, needsSymbolPad } from "./symbol-pad.js";
 import { renderToolChip } from "./tool-drawer.js";

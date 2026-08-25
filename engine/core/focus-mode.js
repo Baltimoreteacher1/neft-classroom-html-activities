@@ -3,9 +3,10 @@
 
 export function toggleFocusMode(forceState) {
   if (typeof document === "undefined") return false;
-  const isNowOn = typeof forceState === "boolean"
-    ? document.body.classList.toggle("nt-focus-mode", forceState)
-    : document.body.classList.toggle("nt-focus-mode");
+  const isNowOn =
+    typeof forceState === "boolean"
+      ? document.body.classList.toggle("nt-focus-mode", forceState)
+      : document.body.classList.toggle("nt-focus-mode");
 
   updateFocusControls();
   return isNowOn;

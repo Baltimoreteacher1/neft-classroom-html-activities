@@ -178,7 +178,7 @@ function panelBeats(panel, tabLabel) {
     if (cards.length > 1) {
       // The grid is one block; its cards are the beats. Sibling blocks after it
       // stay veiled until the words are done.
-      cards.forEach((card, i) => {
+      cards.forEach((_card, i) => {
         beats.push({
           label: `${label} · word ${i + 1}`,
           run: () => {

@@ -488,8 +488,22 @@ export function injectSmallGroupStyles(accent) {
        Before 2026-07-31 soft was #fbf9f4 — a hair off both white and the paper
        — so a callout inside a card inside the page read as one flat surface and
        the studio looked unfinished no matter how good the type was. Keep the
-       steps visible. */
-    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:#f1f5f9;--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#e2e8f0;--sg-paper:#f8f9fa;--sg-card:#ffffff;--sg-text:#14223a;--sg-muted:#475569;--sg-good:#0f766e;--sg-warn:#d97706;--sg-good-bg:#e0f2fe;--sg-good-ink:#0f766e;--sg-bad:#dc2626;--sg-bad-bg:#fee2e2;--sg-bad-ink:#991b1b;--sg-warn-bg:#fef3c7;--sg-warn-ink:#92400e;--sg-warn-line:#f59e0b;--sg-figure:#ffffff;--sg-fill:#f1f5f9;
+       steps visible.
+
+       PAPER, 2026-08-16. It was #eef1f5 and this comment still called it "warm
+       sand", which it had not been for some time: measured, that value is a
+       26%-saturation BLUE at 95% lightness, so the whole canvas carried a cold
+       cast — and it sat only 1.13:1 from the white sheet, which is under the
+       threshold where an edge reads as an edge. The result was the worst of
+       both: a page tinted enough to notice and not separated enough to give the
+       sheet a shape, so the mathematics floated on a faint blue wash.
+
+       #e6e8eb keeps a trace of the same hue (11% saturation, so it is not a
+       dead grey under classroom lighting) and moves to 1.23:1 against the
+       sheet. The canvas recedes, the sheet reads as a sheet, and no figure
+       competes with a background. Judged by those two numbers rather than by
+       eye — saturation for the cast, contrast for the separation. */
+    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#dde3ea;--sg-paper:#e6e8eb;--sg-card:#fff;--sg-plate:#f7f4ec;--sg-text:#1d2a36;--sg-muted:#516175;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e4f3f0;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fceee9;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fff;--sg-fill:#eaeff5;
       /* Type pairing. Outfit (the site display face, already loaded by the
          lesson shell) for anything that acts as a heading or a label; Atkinson
          Hyperlegible — chosen for these pathways because it is the most legible
@@ -964,17 +978,19 @@ export function injectSmallGroupStyles(accent) {
     .sg-another{margin-top:14px;padding-top:14px;border-top:1px dashed var(--sg-line)}
     .sg-another [hidden]{display:none!important}
     .sg-another-toggle{min-height:44px;padding:8px 13px}
-    .sg-another-panel{margin-top:11px;padding:16px;border:2px solid var(--sg);border-radius:16px;background:linear-gradient(135deg,var(--sg-card),var(--sg-soft))}
-    .sg-another-kicker{margin-bottom:3px;color:var(--sg);font-family:var(--sg-display);font-size:12px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}
+    .sg-another-panel{margin-top:11px;padding:16px;border:1px solid var(--sg-line);border-left:4px solid var(--sg);border-radius:var(--sg-radius-lg);background:var(--sg-card)}
+    .sg-another-kicker{margin-bottom:3px;color:var(--sg);font-family:var(--sg-display);font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+    /* Was an <h3>; see small-group-strategies.js. Keeps the h3 look, out of the outline. */
+    .sg-another-title{margin:0 0 6px;font-family:var(--sg-display);font-size:18px;font-weight:700;color:var(--sg-ink)}
     .sg-another-panel h3{font-size:20px}.sg-another-lede{margin:7px 0 12px;color:var(--sg-muted)}
     .sg-another-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px}
-    .sg-another-choice{display:flex;min-height:48px;align-items:center;gap:8px;padding:9px 12px;border:2px solid var(--sg-line);border-radius:12px;color:var(--sg-text);background:var(--sg-card);font-weight:800;text-align:left;cursor:pointer}
+    .sg-another-choice{display:flex;min-height:48px;align-items:center;gap:8px;padding:9px 12px;border:2px solid var(--sg-line);border-radius:12px;color:var(--sg-text);background:var(--sg-card);font-weight:700;text-align:left;cursor:pointer}
     .sg-another-choice:hover{border-color:var(--sg)}.sg-another-choice[aria-pressed="true"]{border-color:var(--sg);color:var(--sg-ink);background:var(--sg-soft)}
     .sg-another-prompt{margin-top:12px;padding:12px 14px;border-left:5px solid var(--sg);border-radius:10px;background:var(--sg-card);color:var(--sg-ink)}
     .sg-another-model .sg-figure{margin:12px 0;box-shadow:none}.sg-another-notes{margin-top:7px;background:var(--sg-card)}
-    .sg-reveal{margin-left:8px;min-height:44px;padding:8px 13px;border:2px dashed var(--sg);border-radius:999px;background:var(--sg-card);color:var(--sg-ink);font-size:13px;font-weight:800;cursor:pointer}
-    .sg-reveal-answer{display:inline-block;margin-left:8px;padding:3px 10px;border-radius:8px;background:var(--sg-soft);color:var(--sg-ink);font-weight:800;animation:sg-stepin .3s ease}
-    .sg-checkstep{display:flex;width:100%;align-items:center;gap:10px;margin:0 0 7px;padding:11px 13px;border:2px solid var(--sg-line);border-radius:11px;background:var(--sg-card);font-weight:600;text-align:left;cursor:pointer}
+    .sg-reveal{margin-left:8px;min-height:44px;padding:8px 13px;border:2px dashed var(--sg);border-radius:999px;background:var(--sg-card);color:var(--sg-ink);font-size:13px;font-weight:700;cursor:pointer}
+    .sg-reveal-answer{display:inline-block;margin-left:8px;padding:3px 10px;border-radius:8px;background:var(--sg-soft);color:var(--sg-ink);font-weight:700;animation:sg-stepin .3s ease}
+    .sg-checkstep{display:flex;width:100%;align-items:center;gap:10px;margin:0 0 7px;padding:11px 13px;border:2px solid var(--sg-line);border-radius:11px;background:var(--sg-card);font-weight:400;text-align:left;cursor:pointer}
     .sg-checkstep:hover{border-color:var(--sg)}
     .sg-checkstep.on{border-color:var(--sg-good);background:var(--sg-good-bg)}
     .sg-checkstep .tick{display:grid;width:26px;height:26px;flex:none;place-items:center;border-radius:8px;background:var(--sg-soft);color:var(--sg-ink);font-weight:700}
@@ -1019,7 +1035,7 @@ export function injectSmallGroupStyles(accent) {
     /* Kill the page ground: the graph rule and colour washes cost toner and
        print as grey haze behind the work a student is handing in. */
     body{background:#fff;background-image:none}
-    .sg-hero::before,.sg-hero::after{display:none}.sg-h{border-bottom-color:#111}.sg-mode,.sg-tabs,.sg-rail,.sg-meter,.sg-reveal,.sg-toolrow,.sg-pulse,.sg-timer,.sg-foot,.sg-teacher,.sg-another,.btn,.sg-speak,#mwb-launcher,.sg-problem-nav,.sg-annotation-tools{display:none!important}.sg-tabpanel[hidden]{display:block!important}.prob[hidden]{display:block!important}.sg-fill-step[hidden]{display:grid!important}.sg-fill-step.locked,.gs-row.locked,.sg-stage.locked,.sg-apply-step.locked{opacity:1!important;pointer-events:auto}.sg-reveal-answer[hidden]{display:inline-block!important}.sg-visual-gate .sg-step-visual[hidden]{display:block!important}#app{max-width:none;padding:0}.sg-hero{margin:0 0 16px;padding:0 0 12px;color:#111;background:var(--sg-card);border-bottom:3px solid #111}.sg-hero h1,.sg-obj,.sg-langobj{color:#111}.sg-kicker,.sg-chip{color:#111;background:#eee;border-color:#bbb}.card,.sg-mission,.sg-talk,.prob,.sg-vcard{box-shadow:none;break-inside:avoid}.sg-mission{display:block}.sg-mission-visual{display:none}.sg-sec{margin-bottom:18px}}
+    .sg-hero::before,.sg-hero::after{display:none}.sg-h{border-bottom-color:#111}.sg-mode,.sg-tabs,.sg-rail,.sg-meter,.sg-reveal,.sg-toolrow,.sg-pulse,.sg-timer,.sg-foot,.sg-teacher,.sg-another,.btn,.sg-speak,#mwb-launcher,.sg-problem-nav,.sg-annotation-tools{display:none!important}.sg-tabpanel[hidden]{display:block!important}.prob[hidden]{display:block!important}.sg-guidance[hidden]{display:block!important}.sg-watchout-why>p{display:block!important}.sg-watchout-why::details-content{content-visibility:visible!important}.sg-fill-step[hidden]{display:grid!important}.sg-fill-step.locked,.gs-row.locked,.sg-stage.locked,.sg-apply-step.locked{opacity:1!important;pointer-events:auto}.sg-reveal-answer[hidden]{display:inline-block!important}.sg-visual-gate .sg-step-visual[hidden]{display:block!important}#app{max-width:none;padding:0}.sg-hero{margin:0 0 16px;padding:0 0 12px;color:#111;background:var(--sg-card);border-bottom:3px solid #111}.sg-hero h1,.sg-obj,.sg-langobj{color:#111}.sg-kicker,.sg-chip{color:#111;background:#eee;border-color:#bbb}.card,.sg-mission,.sg-talk,.prob,.sg-vcard{box-shadow:none;break-inside:avoid}.sg-mission{display:block}.sg-mission-visual{display:none}.sg-sec{margin-bottom:18px}}
     /* prefers-contrast: darker lines + text and a heavier focus ring. */
     @media (prefers-contrast:more){:root{--sg-line:#5a6b82;--sg-muted:#26313f;--sg-rule:var(--sg-deep)}
       button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline-width:4px}

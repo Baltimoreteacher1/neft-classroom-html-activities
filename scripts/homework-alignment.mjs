@@ -83,7 +83,8 @@ export function detectVisualTopic(config) {
   if (/coordinate|quadrant|reflect|distance on/i.test(title)) return "coordinate-plane";
   if (/integer|absolute|rational number/i.test(title)) return "number-line";
   if (standard.startsWith("6.NOS.1") || /fraction|mixed number/i.test(title)) return "fractions";
-  if (standard === "6.NOS.2" || (/divide multi/i.test(title) && !/decimal/i.test(title))) return "division";
+  if (standard === "6.NOS.2" || (/divide multi/i.test(title) && !/decimal/i.test(title)))
+    return "division";
   if (standard === "6.NOS.3" || /decimal/i.test(title)) return "decimals";
   if (standard === "6.NOS.4" || /prime|factor|lcm|gcf|multiple/i.test(title)) return "factors";
   return "fallback";

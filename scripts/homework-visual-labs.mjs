@@ -150,8 +150,10 @@ const LABS = {
   division: {
     name: "Long Division Algorithm Lab",
     nameEs: "Laboratorio del algoritmo de división larga",
-    prompt: "Follow the standard algorithm: Divide (D) → Multiply (M) → Subtract (S) → Bring down (B) to find the quotient.",
-    promptEs: "Sigue el algoritmo estándar: Divide (D) → Multiplica (M) → Resta (S) → Baja (B) para hallar el cociente.",
+    prompt:
+      "Follow the standard algorithm: Divide (D) → Multiply (M) → Subtract (S) → Bring down (B) to find the quotient.",
+    promptEs:
+      "Sigue el algoritmo estándar: Divide (D) → Multiplica (M) → Resta (S) → Baja (B) para hallar el cociente.",
     controls: [
       ["dividend", "Dividend (Total)", "Dividendo (Total)", 100, 2400, 1344],
       ["divisor", "Divisor (Groups)", "Divisor (Grupos)", 2, 25, 12],

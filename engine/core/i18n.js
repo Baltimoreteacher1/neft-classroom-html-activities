@@ -499,16 +499,7 @@ export function badgeName(id, lang) {
 
 /** Phase name by engine index (0=Act 1, 1=Act 2, 2=Act 3). */
 export function phaseName(index, lang) {
-  const keys = [
-    "act1",
-    "act2",
-    "act3",
-    "explore",
-    "practice",
-    "connect",
-    "reflect",
-    "objectives",
-  ];
+  const keys = ["act1", "act2", "act3", "explore", "practice", "connect", "reflect", "objectives"];
   const key = keys[index] || `act${index + 1}`;
   const entry = PHASE_NAMES[key];
   if (!entry) return `Act ${index + 1}`;

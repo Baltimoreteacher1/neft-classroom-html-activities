@@ -1200,7 +1200,7 @@ function renderStudio(config) {
       id: "sg-tab-learn",
       label: "Focus & Learn",
       sub: "Key words & worked model",
-      panel: makePanel("sg-tab-learn", [pulseCard, vocab, build, explore, model]),
+      panel: makePanel("sg-tab-learn", [diagnostic, pulseCard, vocab, build, explore, model]),
     },
     {
       id: "sg-tab-practice",

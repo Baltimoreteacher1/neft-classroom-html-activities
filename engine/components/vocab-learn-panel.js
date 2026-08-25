@@ -1832,7 +1832,8 @@ export function renderLearnItPanel(container, config, options = {}) {
         });
         shown = Math.max(shown, idx + 1);
         update();
-        if (!prefersReducedMotion) items[idx]?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        if (!prefersReducedMotion)
+          items[idx]?.scrollIntoView({ behavior: "smooth", block: "nearest" });
         if (shown >= items.length) finish();
       });
     });
@@ -1932,15 +1933,20 @@ export function renderLearnItPanel(container, config, options = {}) {
           `;
         }
 
-        const crumbsHtml = iLines.length > 1
-          ? `<div class="vl-step-crumbs">
-               ${iLines.map((_, idx) => `
+        const crumbsHtml =
+          iLines.length > 1
+            ? `<div class="vl-step-crumbs">
+               ${iLines
+                 .map(
+                   (_, idx) => `
                  <button type="button" class="vl-crumb-pill ${idx === 0 ? "active" : ""}" data-crumb-step="${idx}">
                    <span>${isEs ? "Paso" : "Step"} ${idx + 1}</span>
                  </button>
-               `).join("")}
+               `,
+                 )
+                 .join("")}
              </div>`
-          : "";
+            : "";
 
         const stepsHtml = `
           <ol class="vl-solve-steps">
@@ -1973,7 +1979,9 @@ export function renderLearnItPanel(container, config, options = {}) {
 
         host.innerHTML = `
           ${iDo.title ? `<p class="vl-lead"><strong>${escHtml(isEs && iDo.titleEs ? iDo.titleEs : iDo.title)}</strong></p>` : ""}
-          ${visualElemHtml ? `
+          ${
+            visualElemHtml
+              ? `
             <div class="vl-dual-stage">
               <div class="vl-stage-visual">
                 <div class="vl-stage-visual-head">🎨 ${isEs ? "Modelo visual del problema" : "Problem Visual Model"}</div>
@@ -1984,10 +1992,12 @@ export function renderLearnItPanel(container, config, options = {}) {
                 ${stepsHtml}
               </div>
             </div>
-          ` : `
+          `
+              : `
             ${crumbsHtml}
             ${stepsHtml}
-          `}
+          `
+          }
           ${
             ivConfig && ivConfig.kind
               ? `<div class="vl-tool-block vl-hidden">

@@ -885,7 +885,7 @@ function conceptAnchorBox(cfg, isGroup1 = true) {
   `;
 }
 
-function discourseCard(discourse, isGroup1 = true) {
+function discourseCard(discourse, _isGroup1 = true) {
   const q = discourse?.question || "How does your visual model justify your mathematical solution?";
   const pA = discourse?.partnerA || 'Partner A: "I modeled this by..."';
   const pB = discourse?.partnerB || 'Partner B: "I agree/disagree with your step because..."';

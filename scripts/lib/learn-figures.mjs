@@ -885,19 +885,21 @@ function doubleNumberLineFigure(total, unit) {
     { pct: 25, val: total * 0.25, frac: 0.25 },
     { pct: 50, val: total * 0.5, frac: 0.5 },
     { pct: 75, val: total * 0.75, frac: 0.75 },
-    { pct: 100, val: total, frac: 1.0 }
+    { pct: 100, val: total, frac: 1.0 },
   ];
 
-  const ticks = benchmarks.map(b => {
-    const x = xStart + b.frac * lineLength;
-    return `
+  const ticks = benchmarks
+    .map((b) => {
+      const x = xStart + b.frac * lineLength;
+      return `
       <line x1="${x}" y1="${yTop}" x2="${x}" y2="${yBot}" stroke="${LINE}" stroke-width="1.5" stroke-dasharray="3 3" />
       <line x1="${x}" y1="${yTop - 8}" x2="${x}" y2="${yTop + 8}" stroke="${NAVY}" stroke-width="2" />
       ${label(x, yTop - 14, fmt(b.val) + u, { size: 12, weight: 700 })}
       <line x1="${x}" y1="${yBot - 8}" x2="${x}" y2="${yBot + 8}" stroke="${TEAL_INK}" stroke-width="2" />
       ${label(x, yBot + 20, b.pct + "%", { size: 12, color: TEAL_INK, weight: 700 })}
     `;
-  }).join("");
+    })
+    .join("");
 
   return {
     kind: "double-numberline",
@@ -911,13 +913,14 @@ function doubleNumberLineFigure(total, unit) {
       <line x1="${xStart - 10}" y1="${yBot}" x2="${xEnd + 10}" y2="${yBot}" stroke="${TEAL_INK}" stroke-width="3.5" stroke-linecap="round" />
       ${label(xStart - 16, yBot + 4, "%", { anchor: "end", size: 11, weight: 800, color: TEAL_INK })}
       ${ticks}
-    `
+    `,
   };
 }
 
 function readDoubleNumberLine(text) {
-  const m = text.match(/whole is ([\d.,]+)\s*(\w+)?\s*—\s*that is 100%/i) ||
-            text.match(/double number line.*?([\d.,]+)\s*(\w+)?.*?100%/i);
+  const m =
+    text.match(/whole is ([\d.,]+)\s*(\w+)?\s*—\s*that is 100%/i) ||
+    text.match(/double number line.*?([\d.,]+)\s*(\w+)?.*?100%/i);
   if (!m) return null;
   const tot = num(m[1]);
   if (!tot) return null;
@@ -928,7 +931,7 @@ function longDivisionFigure(dividend, divisor, quotient) {
   const lineH = 250;
   const values = [dividend, divisor, quotient, 12, 13, 1, 14, 2, 24, 0, 3, 4];
   const alt = `Long division of ${fmt(dividend)} by ${fmt(divisor)} using the standard algorithm: quotient is ${fmt(quotient)} with remainder 0.`;
-  
+
   const inner = `
     <g transform="translate(10, 10)">
       <!-- Algorithm Steps Legend -->
@@ -990,12 +993,14 @@ function longDivisionFigure(dividend, divisor, quotient) {
     h: lineH,
     values,
     alt,
-    inner
+    inner,
   };
 }
 
 function readLongDivision(text) {
-  const m = text.match(/(\d[\d,]*)\s*÷\s*(\d[\d,]*).*?dividend is (\d[\d,]*).*?divisor is (\d[\d,]*)/i);
+  const m = text.match(
+    /(\d[\d,]*)\s*÷\s*(\d[\d,]*).*?dividend is (\d[\d,]*).*?divisor is (\d[\d,]*)/i,
+  );
   if (!m) return null;
   const d1 = num(m[1]);
   const d2 = num(m[2]);

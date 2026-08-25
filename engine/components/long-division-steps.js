@@ -92,7 +92,9 @@ function plainString(value) {
  * @returns {{digits:number[], pointAt:number}}
  */
 function splitParts(text) {
-  const cleaned = String(text ?? "").replace(/,/g, "").trim();
+  const cleaned = String(text ?? "")
+    .replace(/,/g, "")
+    .trim();
   const dot = cleaned.indexOf(".");
   const rawInt = dot === -1 ? cleaned : cleaned.slice(0, dot);
   const rawFrac = dot === -1 ? "" : cleaned.slice(dot + 1);

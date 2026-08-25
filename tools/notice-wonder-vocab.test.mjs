@@ -154,13 +154,15 @@ const mount = () => {
       {
         term: "Dividend",
         termEs: "Dividendo",
-        definition: "The total number being divided into equal groups (the number inside the division bracket).",
+        definition:
+          "The total number being divided into equal groups (the number inside the division bracket).",
         definitionEs: "El número que estás repartiendo.",
       },
       {
         term: "Divisor",
         termEs: "Divisor",
-        definition: "The number of equal groups you are dividing into (the number outside the division bracket).",
+        definition:
+          "The number of equal groups you are dividing into (the number outside the division bracket).",
         definitionEs: "El número entre el que divides.",
       },
     ],

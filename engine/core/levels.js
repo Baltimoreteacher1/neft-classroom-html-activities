@@ -8,11 +8,41 @@
 // Non-stigmatizing language: never surface "remedial" or deficit framing in the UI — just "Level 1" / "Level 2" / "Level 3" / "Adaptive".
 
 export const LEVELS = {
-  auto: { id: "auto", label: "⚡ Adaptive", title: "Adaptive", tier: null, blurb: "Matches problems to how you're doing." },
-  level1: { id: "level1", label: "🟢 Level 1", title: "Level 1", tier: "level1", blurb: "Step-by-step with hints & guided support." },
-  core: { id: "core", label: "🔵 Level 2", title: "Level 2", tier: "core", blurb: "Grade-level standard practice." },
-  level2: { id: "core", label: "🔵 Level 2", title: "Level 2", tier: "core", blurb: "Grade-level standard practice." },
-  level3: { id: "level3", label: "🟣 Level 3", title: "Level 3", tier: "level2", blurb: "Stretch problems, error analysis & challenge." },
+  auto: {
+    id: "auto",
+    label: "⚡ Adaptive",
+    title: "Adaptive",
+    tier: null,
+    blurb: "Matches problems to how you're doing.",
+  },
+  level1: {
+    id: "level1",
+    label: "🟢 Level 1",
+    title: "Level 1",
+    tier: "level1",
+    blurb: "Step-by-step with hints & guided support.",
+  },
+  core: {
+    id: "core",
+    label: "🔵 Level 2",
+    title: "Level 2",
+    tier: "core",
+    blurb: "Grade-level standard practice.",
+  },
+  level2: {
+    id: "core",
+    label: "🔵 Level 2",
+    title: "Level 2",
+    tier: "core",
+    blurb: "Grade-level standard practice.",
+  },
+  level3: {
+    id: "level3",
+    label: "🟣 Level 3",
+    title: "Level 3",
+    tier: "level2",
+    blurb: "Stretch problems, error analysis & challenge.",
+  },
 };
 
 const STATE_KEY = "preferredLevel";
