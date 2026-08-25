@@ -1,4 +1,3 @@
-// @ts-nocheck
 // focus-mode.js — Clean, native distraction-free Focus Mode across whole-group lessons,
 // small-group studios, interactive labs, and math tools.
 
