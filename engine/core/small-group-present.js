@@ -311,10 +311,12 @@ body.nt-present .minimap-hud,
 body.nt-present .sg-mode,
 body.nt-present #nt-present-widget{display:none!important}
 /* Read from across a table, not from a laptop keyboard. */
-body.nt-present #app{max-width:74rem;margin-inline:auto;font-size:1.25rem;line-height:1.6}
-body.nt-present #app .sg-h h2,body.nt-present #app h2{font-size:1.9rem}
-body.nt-present #app .prob{font-size:1.3rem}
-body.nt-present #app .sg-vcard{font-size:1.35rem}
+body.nt-present #app{max-width:74rem;margin-inline:auto;font-size:1.35rem;line-height:1.6;color:#0f172a}
+body.nt-present #app .sg-h h2,body.nt-present #app h2,body.nt-present #app h3{font-size:2rem;font-weight:800;color:#0a2540}
+body.nt-present #app .prob{font-size:1.35rem;background:#ffffff;border:2px solid #cbd5e1;border-radius:16px;box-shadow:0 10px 30px -10px rgba(15,23,42,0.12);padding:24px 32px;margin-bottom:24px}
+body.nt-present #app .sg-vcard{font-size:1.4rem;background:#ffffff;border:2px solid #cbd5e1;border-radius:16px;padding:24px 32px;box-shadow:0 10px 30px -10px rgba(15,23,42,0.12)}
+body.nt-present #app input,body.nt-present #app select,body.nt-present #app textarea{min-height:54px;font-size:1.4rem;font-weight:700;border:2.5px solid #0284c7;border-radius:12px;padding:8px 16px}
+body.nt-present #app .math-display,body.nt-present #app .katex-display{font-size:1.5rem;font-weight:700;color:#0a2540;background:#f1f5f9;border:2px solid #e2e8f0;border-radius:12px;padding:14px 22px;margin:16px 0}
 /* The tab strip is sticky, so a beat scrolled to centre can slide underneath
    it. Reserve its height as scroll margin rather than moving the strip: the
    teacher uses it to see which step they are on. */
