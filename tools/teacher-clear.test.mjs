@@ -54,6 +54,7 @@ const PHASES = [
 function freshState() {
   globalThis.localStorage.__map.clear();
   const state = createState("test-1-1", "demo");
+  state.set({ studentName: "demo" });
   state.initPhases(PHASES);
   // Seed typed answers across three different pages.
   state.saveResponse(0, "launch1", "LAUNCH ANS");
@@ -130,4 +131,25 @@ test("never lets global xp go negative", () => {
   state.get().xp = 5; // less than Launch's 20 xpEarned
   state.clearPhaseResponses(0);
   assert.equal(state.get().xp, 0);
+});
+
+test("clearAllResponses wipes all responses and zeroes all phase scores while keeping identity", () => {
+  const state = freshState();
+  state.clearAllResponses();
+  const s = state.get();
+  assert.deepEqual(Object.keys(s.responses), []);
+  assert.equal(s.xp, 0);
+  assert.equal(s.totalAttempts, 0);
+  assert.equal(s.totalCorrect, 0);
+  assert.equal(s.streak, 0);
+  assert.equal(s.studentName, "demo");
+  s.phases.forEach((ph) => {
+    assert.equal(ph.xpEarned, 0);
+    assert.equal(ph.stars, 0);
+    assert.equal(ph.attempts, 0);
+    assert.equal(ph.correct, 0);
+  });
+  const raw = JSON.parse(globalThis.localStorage.getItem("rma_test-1-1_demo"));
+  assert.deepEqual(Object.keys(raw.responses), []);
+  assert.equal(raw.studentName, "demo");
 });

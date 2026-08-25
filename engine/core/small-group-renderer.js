@@ -618,21 +618,28 @@ function renderStudio(config) {
   const store = createStudioStore(config.lessonId);
 
   // Teacher-only "Clear answers": wipe this device's studio state for this
-  // lesson + the Save/Resume pointer, then reload it blank. Same control the
-  // Reveal lessons expose, so a teacher can project a fresh studio. Renders the
-  // floating button only in teacher mode; students never see it.
+  // lesson in-place without reloading or navigating away.
   window.__ntClearLessonAnswers = () => {
     try {
       store.clear();
     } catch (_) {
-      /* storage blocked — reload still clears in-memory state */
+      /* storage blocked */
     }
     try {
-      window.NeftSaveResume?.reset?.();
-    } catch (_) {
-      /* save/resume not present on this page */
-    }
-    window.location.reload();
+      document.querySelectorAll('input:not([type="hidden"]), textarea, select').forEach((input) => {
+        if (input.type === "checkbox" || input.type === "radio") input.checked = false;
+        else input.value = "";
+      });
+      document.querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected").forEach((el) => {
+        if (!el.classList.contains("sg-tab-btn") && !el.classList.contains("tab-btn")) {
+          el.classList.remove("is-selected", "is-correct", "is-incorrect", "correct", "wrong", "selected");
+        }
+      });
+      document.querySelectorAll(".fb, .feedback, [role='status']").forEach((el) => {
+        el.textContent = "";
+        el.style.display = "none";
+      });
+    } catch (_) {}
   };
   mountTeacherClearButton(window.__ntClearLessonAnswers);
   mountPresentWidget();

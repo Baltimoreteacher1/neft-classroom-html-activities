@@ -173,15 +173,13 @@ function buildPagePicker(pop, info, close) {
   clearAll.addEventListener("click", () => {
     if (
       !window.confirm(
-        "Clear ALL answers on this lesson and reload it fresh? This only affects this device.",
+        "Clear ALL answers on this lesson? This only affects this device.",
       )
     )
       return;
     try {
       info.clearAll();
-    } catch (_) {
-      window.location.reload();
-    }
+    } catch (_) {}
     close();
   });
 
@@ -204,7 +202,7 @@ function buildClearAll(pop, info, close) {
   title.textContent = "Clear answers";
   const sub = document.createElement("p");
   sub.className = "nt-teacher-clear-sub";
-  sub.textContent = "Reset this lesson to blank on this device?";
+  sub.textContent = "Reset answers on this lesson to blank on this device?";
 
   const actions = document.createElement("div");
   actions.className = "nt-teacher-clear-actions";
@@ -215,15 +213,13 @@ function buildClearAll(pop, info, close) {
   btn.addEventListener("click", () => {
     if (
       !window.confirm(
-        "Clear the answers on this lesson and reload it fresh? This only affects this device.",
+        "Clear the answers on this lesson? This only affects this device.",
       )
     )
       return;
     try {
       info.clearAll();
-    } catch (_) {
-      window.location.reload();
-    }
+    } catch (_) {}
     close();
   });
   actions.appendChild(btn);

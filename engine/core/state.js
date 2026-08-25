@@ -349,6 +349,25 @@ export function createState(lessonId, studentId) {
       notify();
     },
 
+    // Clear all answer responses across all phases on this device, zeroing
+    // all score/attempt progress while preserving student identity, active
+    // session, and current phase without navigating away or reloading.
+    clearAllResponses() {
+      state.responses = {};
+      (state.phases || []).forEach((ph) => {
+        ph.xpEarned = 0;
+        ph.stars = 0;
+        ph.attempts = 0;
+        ph.correct = 0;
+      });
+      state.xp = 0;
+      state.totalAttempts = 0;
+      state.totalCorrect = 0;
+      state.streak = 0;
+      save();
+      notify();
+    },
+
     // Clear only ONE page (phase) worth of answers on this device — used by the
     // teacher "Clear answers" control so a projector can be reset page-by-page
     // instead of wiping the whole lesson. Removes every response keyed to this
