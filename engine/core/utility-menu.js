@@ -108,10 +108,11 @@ export function mountUtilityMenu() {
   };
   updateFocusBtnText();
   focusBtn.addEventListener("click", () => {
-    document.body.classList.toggle("nt-focus-mode");
-    updateFocusBtnText();
-    ensureExitFocusButton();
-    close();
+    import("./focus-mode.js").then((m) => {
+      m.toggleFocusMode();
+      updateFocusBtnText();
+      close();
+    });
   });
   actions.appendChild(focusBtn);
 

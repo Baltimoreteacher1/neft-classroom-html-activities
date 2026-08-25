@@ -522,8 +522,17 @@ export function mountExportToolbar(state, config) {
     }, 300);
   });
 
-  bar.append(buildReadinessChip(state), dlBtn, pdfBtn, copyBtn);
-  document.body.prepend(bar);
+  // Focus Mode button — expands screen and hides distractions
+  const focusBtn = document.createElement("button");
+  focusBtn.className = "export-btn export-btn-secondary";
+  focusBtn.setAttribute("data-nt-focus-toggle", "1");
+  focusBtn.innerHTML = `<span>🎯</span><span class="nt-focus-label">Focus Mode</span>`;
+  focusBtn.title = "Hide sidebar and menus to focus on the screen (Esc to exit)";
+  focusBtn.addEventListener("click", () => {
+    import("./focus-mode.js").then((m) => m.toggleFocusMode());
+  });
 
+  bar.append(buildReadinessChip(state), dlBtn, pdfBtn, copyBtn, focusBtn);
+  document.body.prepend(bar);
   return bar;
 }

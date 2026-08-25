@@ -1,67 +1,92 @@
 // @ts-nocheck
-// focus-mode.js — Distraction-free Focus Mode across whole-group lessons,
+// focus-mode.js — Clean, native distraction-free Focus Mode across whole-group lessons,
 // small-group studios, interactive labs, and math tools.
+
+export function toggleFocusMode(forceState) {
+  if (typeof document === "undefined") return false;
+  const isNowOn = typeof forceState === "boolean"
+    ? document.body.classList.toggle("nt-focus-mode", forceState)
+    : document.body.classList.toggle("nt-focus-mode");
+
+  updateFocusControls();
+  return isNowOn;
+}
+
+export function isFocusModeActive() {
+  return typeof document !== "undefined" && document.body.classList.contains("nt-focus-mode");
+}
+
+function updateFocusControls() {
+  const active = isFocusModeActive();
+  document.querySelectorAll("[data-nt-focus-toggle]").forEach((btn) => {
+    btn.classList.toggle("is-active", active);
+    btn.setAttribute("aria-pressed", active ? "true" : "false");
+    const label = btn.querySelector(".nt-focus-label");
+    if (label) label.textContent = active ? "Exit Focus" : "Focus Mode";
+  });
+
+  // Ensure the exit pill exists when focus is active
+  let exitPill = document.getElementById("nt-exit-focus-pill");
+  if (active) {
+    if (!exitPill) {
+      exitPill = document.createElement("button");
+      exitPill.id = "nt-exit-focus-pill";
+      exitPill.className = "nt-exit-focus-pill no-print";
+      exitPill.type = "button";
+      exitPill.innerHTML = `✕ Exit Focus Mode <kbd>Esc</kbd>`;
+      exitPill.title = "Show sidebar and all menus (Esc)";
+      exitPill.addEventListener("click", () => toggleFocusMode(false));
+      document.body.appendChild(exitPill);
+    }
+  } else if (exitPill) {
+    exitPill.remove();
+  }
+}
 
 export function mountUniversalFocusButton() {
   if (typeof document === "undefined") return;
-  if (document.getElementById("ntUniversalFocusBtn")) return;
 
-  // Inject scoped focus mode styles if not already present
-  if (!document.getElementById("nt-focus-mode-global-styles")) {
+  // Inject focus mode stylesheet once
+  if (!document.getElementById("nt-focus-mode-styles")) {
     const style = document.createElement("style");
-    style.id = "nt-focus-mode-global-styles";
+    style.id = "nt-focus-mode-styles";
     style.textContent = `
-      .nt-universal-focus-btn {
+      /* Exit Focus floating pill — ONLY visible when in Focus Mode */
+      .nt-exit-focus-pill {
         position: fixed;
-        top: 12px;
-        right: 84px;
-        z-index: 9999;
+        top: 14px;
+        right: 18px;
+        z-index: 2147483647;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 6px 14px;
-        background: #ffffff;
-        color: #0f172a;
+        gap: 8px;
+        padding: 8px 16px;
+        background: #0f172a;
+        color: #ffffff;
         font-family: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
-        font-size: 0.82rem;
-        font-weight: 700;
-        border: 1.5px solid #cbd5e1;
+        font-size: 0.88rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        border: 1.5px solid rgba(255, 255, 255, 0.4);
         border-radius: 999px;
-        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
         cursor: pointer;
-        user-select: none;
         transition: all 0.15s ease;
       }
-      .nt-universal-focus-btn:hover {
-        background: #f1f5f9;
-        border-color: #94a3b8;
+      .nt-exit-focus-pill kbd {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-family: monospace;
+      }
+      .nt-exit-focus-pill:hover {
+        background: #1e293b;
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
-      }
-      .nt-universal-focus-btn:active {
-        transform: translateY(0);
+        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
       }
 
-      /* In Focus Mode: position prominently at top right */
-      body.nt-focus-mode .nt-universal-focus-btn {
-        position: fixed !important;
-        top: 14px !important;
-        right: 18px !important;
-        z-index: 100000 !important;
-        background: #0f172a !important;
-        color: #ffffff !important;
-        border: 1.5px solid rgba(255,255,255,0.4) !important;
-        padding: 8px 16px !important;
-        font-size: 0.88rem !important;
-        font-weight: 800 !important;
-        box-shadow: 0 6px 24px rgba(0,0,0,0.35) !important;
-      }
-      body.nt-focus-mode .nt-universal-focus-btn:hover {
-        background: #1e293b !important;
-        border-color: #ffffff !important;
-      }
-
-      /* ── Universal Focus Mode Layout Rules ────────────────────────────── */
+      /* ── Full Screen Clean Focus Mode Layout ───────────────────────────── */
       body.nt-focus-mode {
         background: #f8fafc !important;
       }
@@ -70,9 +95,9 @@ export function mountUniversalFocusButton() {
       body.nt-focus-mode #app {
         display: block !important;
         grid-template-columns: minmax(0, 1fr) !important;
-        max-width: 1080px !important;
+        max-width: 1100px !important;
         margin: 0 auto !important;
-        padding: 24px 16px 80px !important;
+        padding: 24px 20px 80px !important;
         width: 100% !important;
       }
 
@@ -126,47 +151,16 @@ export function mountUniversalFocusButton() {
         margin-right: auto !important;
         box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08) !important;
       }
-
-      @media (max-width: 768px) {
-        .nt-universal-focus-btn {
-          top: 8px;
-          right: 64px;
-          padding: 5px 10px;
-          font-size: 0.75rem;
-        }
-      }
     `;
     document.head.appendChild(style);
   }
 
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.id = "ntUniversalFocusBtn";
-  btn.className = "nt-universal-focus-btn no-print";
-  btn.setAttribute("aria-pressed", "false");
-  btn.setAttribute("aria-label", "Toggle Focus Mode (Hide extra menus and focus on screen)");
-  btn.title = "Hide surrounding menus and focus directly on the screen (Esc to exit)";
-  btn.innerHTML = `<span class="nt-focus-icon" aria-hidden="true">🎯</span> <span class="nt-focus-text">Focus Screen</span>`;
-
-  const syncState = () => {
-    const isFocus = document.body.classList.contains("nt-focus-mode");
-    btn.setAttribute("aria-pressed", isFocus ? "true" : "false");
-    btn.innerHTML = isFocus
-      ? `<span class="nt-focus-icon" aria-hidden="true">✕</span> <span class="nt-focus-text">Exit Focus</span>`
-      : `<span class="nt-focus-icon" aria-hidden="true">🎯</span> <span class="nt-focus-text">Focus Screen</span>`;
-  };
-
-  btn.addEventListener("click", () => {
-    document.body.classList.toggle("nt-focus-mode");
-    syncState();
-  });
-
+  // Keyboard shortcut listener (Esc exits focus mode, Alt+F toggles)
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && document.body.classList.contains("nt-focus-mode")) {
-      document.body.classList.remove("nt-focus-mode");
-      syncState();
+    if (e.key === "Escape" && isFocusModeActive()) {
+      toggleFocusMode(false);
+    } else if ((e.key === "f" || e.key === "F") && (e.altKey || e.metaKey)) {
+      toggleFocusMode();
     }
   });
-
-  document.body.appendChild(btn);
 }
