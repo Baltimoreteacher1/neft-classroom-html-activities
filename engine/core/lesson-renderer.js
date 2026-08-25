@@ -920,7 +920,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
     card.append(moreBtn);
   }
 
-  // Optional ~60s talk timer (low-friction, fully optional).
+  // Optional ~60s talk timer (low-friction, persistent across re-render/scroll).
   const timerRow = document.createElement("div");
   timerRow.style.cssText =
     "display:flex; align-items:center; gap:var(--sp-3); flex-wrap:wrap; margin-bottom:var(--sp-3);";
@@ -932,25 +932,43 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   timerLabel.setAttribute("role", "timer");
   timerLabel.setAttribute("aria-live", "polite");
   timerLabel.style.cssText = "font-weight:700; color:var(--coral);";
-  let timerId = null;
-  timerBtn.addEventListener("click", () => {
-    if (timerId) return;
-    let remaining = 60;
+
+  window.__ntTalkTimer = window.__ntTalkTimer || { isRunning: false, targetEnd: 0, intervalId: null };
+  const talkTimer = window.__ntTalkTimer;
+
+  const updateTalkDisplay = () => {
+    if (!talkTimer.isRunning) return;
+    const remaining = Math.max(0, Math.ceil((talkTimer.targetEnd - Date.now()) / 1000));
     timerLabel.textContent = `0:${String(remaining).padStart(2, "0")}`;
+    if (remaining <= 0) {
+      clearInterval(talkTimer.intervalId);
+      talkTimer.intervalId = null;
+      talkTimer.isRunning = false;
+      timerLabel.innerHTML = stack("timeWrapUp", { html: true });
+      timerBtn.disabled = false;
+      timerBtn.style.opacity = "1";
+      timerBtn.innerHTML = stack("restartTimer60", { html: true });
+    }
+  };
+
+  if (talkTimer.isRunning) {
     timerBtn.disabled = true;
     timerBtn.style.opacity = "0.6";
-    timerId = setInterval(() => {
-      remaining--;
-      timerLabel.textContent = `0:${String(Math.max(remaining, 0)).padStart(2, "0")}`;
-      if (remaining <= 0) {
-        clearInterval(timerId);
-        timerId = null;
-        timerLabel.innerHTML = stack("timeWrapUp", { html: true });
-        timerBtn.disabled = false;
-        timerBtn.style.opacity = "1";
-        timerBtn.innerHTML = stack("restartTimer60", { html: true });
-      }
-    }, 1000);
+    updateTalkDisplay();
+    if (!talkTimer.intervalId) {
+      talkTimer.intervalId = setInterval(updateTalkDisplay, 500);
+    }
+  }
+
+  timerBtn.addEventListener("click", () => {
+    if (talkTimer.isRunning) return;
+    talkTimer.isRunning = true;
+    talkTimer.targetEnd = Date.now() + 60000;
+    timerBtn.disabled = true;
+    timerBtn.style.opacity = "0.6";
+    updateTalkDisplay();
+    if (talkTimer.intervalId) clearInterval(talkTimer.intervalId);
+    talkTimer.intervalId = setInterval(updateTalkDisplay, 500);
   });
   timerRow.append(timerBtn, timerLabel);
   card.append(timerRow);
@@ -2758,15 +2776,30 @@ function renderWarmupPhase(el, state, ctx, config) {
     if (warmupHeaderBlock) warmupHeaderBlock.after(timerBar);
     else card.prepend(timerBar);
 
-    const initialLocalSeconds = getWarmupSeconds();
-    let warmupSecondsLeft = initialLocalSeconds;
+    window.__ntWarmupTimer = window.__ntWarmupTimer || {
+      isRunning: false,
+      targetEndTime: 0,
+      pausedRemaining: null,
+      intervalId: null,
+    };
+    const wt = window.__ntWarmupTimer;
+
     const timerDisplay = timerBar.querySelector("#warmupTimerDisplay");
     const timerLabel = timerBar.querySelector(".warmup-timer-label");
+
+    function getLiveWarmupRemaining() {
+      if (wt.isRunning && wt.targetEndTime > 0) {
+        return Math.max(0, Math.ceil((wt.targetEndTime - Date.now()) / 1000));
+      }
+      if (wt.pausedRemaining != null) return wt.pausedRemaining;
+      return getWarmupSeconds();
+    }
 
     // Paint the bar in the palette matching the time left: calm teal (>30s),
     // amber (11–30s), red (≤10s). Separated so pause/resume/reset restore the
     // right colors for the current count.
     function applyWarmupPalette(s) {
+      if (!timerDisplay || !timerBar) return;
       if (s <= 10) {
         timerDisplay.style.color = "#dc2626";
         timerBar.style.background = "linear-gradient(135deg, #fef2f2, #fee2e2)";
@@ -2782,73 +2815,85 @@ function renderWarmupPhase(el, state, ctx, config) {
       }
     }
 
-    // One countdown tick. Extracted so the interval can be re-armed on resume
-    // without duplicating the color/pulse/expiry logic.
-    function warmupTick() {
-      warmupSecondsLeft--;
-      timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
-      applyWarmupPalette(warmupSecondsLeft);
-      if (warmupSecondsLeft <= 10 && warmupSecondsLeft > 0) {
-        timerDisplay.style.animation = "none";
-        timerDisplay.offsetHeight; // reflow
-        timerDisplay.style.animation = "pulse 0.6s ease-in-out";
-      }
-      if (warmupSecondsLeft <= 0) {
-        clearInterval(warmupTimerId);
-        warmupTimerId = null;
-        timerDisplay.textContent = "0:00";
-        timerLabel.innerHTML = stack("timesUp", { html: true });
-        syncWarmupControls();
-        if (!savedAnswers.checked) checkBtn.click();
-      }
-    }
-
     // Assigned once the Pause/Reset controls are built so button labels track the
     // running/paused state; a no-op until then.
     let syncWarmupControls = () => {};
 
-    // Paint the clock for the current remaining time WITHOUT running it. This is
-    // the state the timer opens in: the warmup countdown is teacher-controlled,
-    // so it never starts on its own — a class that arrives mid-transition should
-    // not find 90 seconds already burned.
+    // One countdown tick. Extracted so the interval can be re-armed on resume
+    // without duplicating the color/pulse/expiry logic.
+    function warmupTick() {
+      if (!wt.isRunning) return;
+      const left = getLiveWarmupRemaining();
+      if (timerDisplay) {
+        timerDisplay.textContent = fmtWarmupClock(left);
+        applyWarmupPalette(left);
+        if (left <= 10 && left > 0) {
+          timerDisplay.style.animation = "none";
+          timerDisplay.offsetHeight; // reflow
+          timerDisplay.style.animation = "pulse 0.6s ease-in-out";
+        }
+      }
+      if (left <= 0) {
+        if (wt.intervalId) clearInterval(wt.intervalId);
+        wt.intervalId = null;
+        wt.isRunning = false;
+        wt.targetEndTime = 0;
+        wt.pausedRemaining = 0;
+        if (timerDisplay) timerDisplay.textContent = "0:00";
+        if (timerLabel) timerLabel.innerHTML = stack("timesUp", { html: true });
+        syncWarmupControls();
+        if (!savedAnswers.checked && checkBtn) checkBtn.click();
+      }
+    }
+
+    // Paint the clock for the current remaining time WITHOUT running it.
     function showWarmupCountdown() {
-      timerDisplay.style.animation = "none";
-      applyWarmupPalette(warmupSecondsLeft);
-      timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
-      timerLabel.textContent = warmupTimerId ? "remaining" : "press Start";
+      const left = getLiveWarmupRemaining();
+      if (timerDisplay) {
+        timerDisplay.style.animation = "none";
+        applyWarmupPalette(left);
+        timerDisplay.textContent = fmtWarmupClock(left);
+      }
+      if (timerLabel) {
+        timerLabel.textContent = wt.isRunning ? "remaining" : wt.pausedRemaining != null ? "stopped" : "press Start";
+      }
       syncWarmupControls();
     }
 
-    // Start (or restart) the countdown from warmupSecondsLeft — only ever from
-    // the teacher pressing Start.
+    // Start (or restart) the countdown from remaining seconds.
     function startWarmupCountdown() {
-      if (warmupTimerId) clearInterval(warmupTimerId);
-      if (warmupSecondsLeft <= 0) return;
-      timerDisplay.style.animation = "none";
-      applyWarmupPalette(warmupSecondsLeft);
-      timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
-      timerLabel.textContent = "remaining";
-      warmupTimerId = setInterval(warmupTick, 1000);
+      if (wt.intervalId) clearInterval(wt.intervalId);
+      const secsToRun = wt.pausedRemaining != null ? wt.pausedRemaining : getWarmupSeconds();
+      if (secsToRun <= 0) return;
+      wt.isRunning = true;
+      wt.targetEndTime = Date.now() + secsToRun * 1000;
+      wt.pausedRemaining = null;
+      showWarmupCountdown();
+      wt.intervalId = setInterval(warmupTick, 500);
       syncWarmupControls();
     }
 
     // Stop the running countdown, keeping the remaining time intact so Start
     // picks up exactly where it left off.
     function stopWarmupCountdown() {
-      if (!warmupTimerId) return;
-      clearInterval(warmupTimerId);
-      warmupTimerId = null;
-      timerDisplay.style.animation = "none";
-      timerLabel.textContent = "stopped";
+      if (!wt.isRunning) return;
+      if (wt.intervalId) clearInterval(wt.intervalId);
+      wt.intervalId = null;
+      wt.pausedRemaining = getLiveWarmupRemaining();
+      wt.isRunning = false;
+      wt.targetEndTime = 0;
+      if (timerDisplay) timerDisplay.style.animation = "none";
+      if (timerLabel) timerLabel.textContent = "stopped";
       syncWarmupControls();
     }
 
-    // Reset back to the configured warmup duration, STOPPED — the teacher starts
-    // it again when the class is ready.
+    // Reset back to the configured warmup duration, STOPPED.
     function resetWarmupCountdown() {
-      if (warmupTimerId) clearInterval(warmupTimerId);
-      warmupTimerId = null;
-      warmupSecondsLeft = getWarmupSeconds();
+      if (wt.intervalId) clearInterval(wt.intervalId);
+      wt.intervalId = null;
+      wt.isRunning = false;
+      wt.targetEndTime = 0;
+      wt.pausedRemaining = getWarmupSeconds();
       showWarmupCountdown();
     }
 
@@ -2895,10 +2940,11 @@ function renderWarmupPhase(el, state, ctx, config) {
 
       // Keep the Start/Stop button label in sync with the timer state.
       syncWarmupControls = () => {
-        const running = !!warmupTimerId;
+        const running = wt.isRunning;
+        const left = getLiveWarmupRemaining();
         runBtn.textContent = running ? "⏹ Stop" : "▶ Start";
         runBtn.title = running ? "Stop the warmup timer" : "Start the warmup timer";
-        runBtn.disabled = warmupSecondsLeft <= 0;
+        runBtn.disabled = left <= 0;
         runBtn.style.opacity = runBtn.disabled ? "0.5" : "1";
         runBtn.style.cursor = runBtn.disabled ? "default" : "pointer";
         // Filled while stopped so "press Start" is unmissable; outlined while
@@ -2908,7 +2954,7 @@ function renderWarmupPhase(el, state, ctx, config) {
       };
 
       runBtn.addEventListener("click", () => {
-        if (warmupTimerId) stopWarmupCountdown();
+        if (wt.isRunning) stopWarmupCountdown();
         else startWarmupCountdown();
       });
       resetBtn.addEventListener("click", () => resetWarmupCountdown());
@@ -3782,18 +3828,18 @@ function renderExplorePhase(el, state, ctx, config) {
 
 // ── Phase 4: Practice (adaptive) ──
 const TIER_LABELS = {
-  level1: { name: "Level 1", badge: "badge-teal" },
-  core: { name: "On Level", badge: "badge-amber" },
-  level2: { name: "Level 2", badge: "badge-navy" },
+  level1: { name: "🟢 Level 1 (Scaffolded)", badge: "badge-teal" },
+  core: { name: "🔵 Level 2 (On-Level)", badge: "badge-amber" },
+  level2: { name: "🟣 Level 3 (Challenge)", badge: "badge-navy" },
 };
 
 // Leveled coaching register per tier — the same voice contract the
 // small-group studio uses (supportive build / steady core / skeptic press).
 // Chrome only; the problems themselves are untouched.
 const TIER_VOICE = {
-  level1: "One step at a time — the hint below is part of the plan, not a penalty.",
-  core: "Solve it, check it, and be ready to say your because out loud.",
-  level2: "Push further: would your reasoning convince a skeptic?",
+  level1: "🟢 Step-by-step with hints — build your confidence one part at a time.",
+  core: "🔵 Standard grade-level practice — solve, check, and explain your steps.",
+  level2: "🟣 Stretch challenge & error analysis — test your deepest understanding.",
 };
 
 function renderWorkedExamplePanel(host, config) {
@@ -4391,7 +4437,7 @@ function renderPracticePhase(el, state, ctx, config) {
   instructionCallout(
     el,
     "🎯",
-    "<strong>Adaptive practice:</strong> Pick <strong>Level 1</strong> for step-by-step hints, <strong>Level 2</strong> for a stretch challenge, or <strong>Adaptive</strong> to let the activity adjust. Wrong answers teach — read the feedback and try again.",
+    "<strong>Differentiated & Adaptive Practice:</strong> Choose <strong>🟢 Level 1</strong> for step-by-step hints & guided support, <strong>🔵 Level 2</strong> for on-level practice, <strong>🟣 Level 3</strong> for stretch challenge problems, or <strong>⚡ Adaptive</strong> to automatically adjust as you answer.",
   );
 
   // Optional interactive "practice lab(s)" (factor-tree-lab, power-builder,

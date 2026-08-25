@@ -849,9 +849,10 @@ const PHASE_SUBTABS = {
     { jump: "card", icon: "🤝", label: "Guided Steps" },
   ],
   4: [
-    { level: "1", icon: "🟢", label: "Level 1" },
-    { level: "2", icon: "🔵", label: "Level 2" },
-    { level: "3", icon: "🟣", label: "Level 3" },
+    { level: "level1", icon: "🟢", label: "Level 1" },
+    { level: "core", icon: "🔵", label: "Level 2" },
+    { level: "level3", icon: "🟣", label: "Level 3" },
+    { level: "auto", icon: "⚡", label: "Adaptive" },
   ],
   5: [
     { jump: "card", icon: "👥", label: "Small Group" },
@@ -1437,7 +1438,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         ribbon.querySelectorAll("[data-sub-level]").forEach((b) => {
           b.addEventListener("click", () => {
             const lvl = b.dataset.subLevel;
-            const targetBtn = el.querySelector(`.practice-level-btn[data-level="${lvl}"], [data-level="${lvl}"]`);
+            const targetBtn = el.querySelector(`.level-option[data-level="${lvl}"], .level-option[data-alias_${lvl}="true"], [data-level="${lvl}"]`);
             if (targetBtn) targetBtn.click();
           });
         });
@@ -2113,7 +2114,16 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     },
   };
 
-  document.addEventListener("rma:navigate", (e) => app.navigateTo(e.detail.phase));
+  document.addEventListener("rma:navigate", (e) => {
+    app.navigateTo(e.detail.phase, e.detail.jump);
+    if (e.detail.level) {
+      setTimeout(() => {
+        const lvl = e.detail.level;
+        const lvlBtn = document.querySelector(`.level-option[data-level="${lvl}"], .level-option[data-alias_${lvl}="true"], [data-level="${lvl}"]`);
+        if (lvlBtn) lvlBtn.click();
+      }, 120);
+    }
+  });
 
   // Vocab/Notes sub-tabs live inside the data-bound phase nav (rebuilt on every
   // state change), so they signal via an event instead of a one-time binding.
