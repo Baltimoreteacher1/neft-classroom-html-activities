@@ -1458,10 +1458,16 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         }
       }
 
-      // Auto-scroll to top smoothly on phase navigation so the student's attention
-      // immediately lands on the new phase header.
-      if (main) main.scrollTo({ top: 0, behavior: "smooth" });
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      // Auto-scroll to top or target smoothly on phase navigation
+      if (jump) {
+        setTimeout(() => {
+          const target = el.querySelector(`.${jump}, [data-section="${jump}"], #${jump}, .card`);
+          if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      } else {
+        if (main) main.scrollTo({ top: 0, behavior: "smooth" });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
       // Plain-words pass runs BEFORE the vocabulary underliner. It rewrites text
       // nodes, and the underliner replaces matched terms with tappable glossary
       // spans — doing it the other way round would rewrite the glossary markup
