@@ -137,34 +137,12 @@ async function runEngine(engineName, engine, target, { authenticated }) {
   const page = await anon.newPage();
   for (const [label, path] of [
     ["site root is open", "/"],
-    // The student lesson picker, NOT /curriculum/ — the hub index is the teacher
-    // console now (AUTH_CONTRACT §2b) and answers a student with a redirect.
+    ["curriculum is open", "/curriculum/"],
     ["the student lesson picker is open", "/curriculum/units/"],
     ["a lesson is open", "/lessons/1-1/"],
   ]) {
     const r = await page.goto(target + path, { waitUntil: "domcontentloaded" }).catch(() => null);
     record(engineName, label, r?.status() === 200 ? "PASS" : "FAIL", `${r?.status()}`);
-  }
-
-  // The teacher console sends a student on to the picker, and never prompts:
-  // ~600 pages link to /curriculum/, including every SCORM launch page.
-  {
-    const r = await page
-      .goto(`${target}/curriculum/`, { waitUntil: "domcontentloaded" })
-      .catch(() => null);
-    const landed = page.url();
-    record(
-      engineName,
-      "the hub console sends an anonymous visitor to the student picker",
-      r?.status() === 200 && landed.endsWith("/curriculum/units/") ? "PASS" : "FAIL",
-      `${r?.status()} final=${landed}`,
-    );
-    record(
-      engineName,
-      "the hub console never challenges a student",
-      r?.headers?.()["www-authenticate"] ? "FAIL" : "PASS",
-      `${r?.headers?.()["www-authenticate"] || "no challenge"}`,
-    );
   }
 
   // 2. www → apex, before any challenge (production only: localhost has no www)
@@ -270,25 +248,8 @@ async function runEngine(engineName, engine, target, { authenticated }) {
       reopened?.status() === 200 && !reopened?.headers()["www-authenticate"] ? "PASS" : "FAIL",
       `${reopened?.status()} ${reopened?.headers()["www-authenticate"] || "no challenge"}`,
     );
-    const console_ = await rp.goto(`${target}/curriculum/`, { waitUntil: "domcontentloaded" });
-    record(
-      engineName,
-      "the receipt opens the hub console instead of redirecting",
-      console_?.status() === 200 && rp.url().endsWith("/curriculum/") ? "PASS" : "FAIL",
-      `${console_?.status()} final=${rp.url()}`,
-    );
-    // And the console renders as Teacher view with no way back to a student view.
-    const consoleState = await rp.evaluate(() => ({
-      teacher: document.body.classList.contains("teacher-mode"),
-      toggles: document.querySelectorAll("#hub-mode-toggle, #hub-student-hint, #hub-mode-banner")
-        .length,
-    }));
-    record(
-      engineName,
-      "the console is Teacher view only, with no mode toggle",
-      consoleState.teacher && consoleState.toggles === 0 ? "PASS" : "FAIL",
-      `teacher-mode=${consoleState.teacher} leftover-toggles=${consoleState.toggles}`,
-    );
+    // The hub is public again, so there is nothing console-specific to assert
+    // here. What matters is above: the receipt alone reopened a teacher surface.
     await returning.close();
   }
 

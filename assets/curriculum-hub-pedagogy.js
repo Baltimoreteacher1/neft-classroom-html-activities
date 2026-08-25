@@ -47,7 +47,13 @@ window.closeAwardShowcaseModal = function closeAwardShowcaseModal() {
 
 window.toggleUdlMenu = function toggleUdlMenu() {
   const menu = document.getElementById("udlMenuPopover");
-  if (menu) menu.style.display = menu.style.display === "none" ? "block" : "none";
+  if (!menu) return;
+  const open = menu.style.display === "none";
+  menu.style.display = open ? "block" : "none";
+  // The launcher is a real <button> with aria-expanded now. A state attribute
+  // that never changes is worse than none: it tells a screen-reader user the
+  // menu is closed while it is open.
+  document.getElementById("udlFloatingLauncher")?.setAttribute("aria-expanded", String(open));
 };
 
 window.toggleDyslexiaFont = function toggleDyslexiaFont(enable) {

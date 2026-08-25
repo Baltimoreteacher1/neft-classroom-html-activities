@@ -191,9 +191,24 @@ const COVERAGE = [
   // over these files, so touching one is a blocking event rather than an
   // invisible one. The browser half (`e2e:auth`, both engines) needs a server and
   // is not in the gate — run it before shipping any change to these paths.
+  //
+  // `validate:route-contract` rides along on the same paths and asks the OTHER
+  // question. The auth contract asks whether the model is intact; the route
+  // contract asks whether any URL changed what it ANSWERS. On 2026-08-25
+  // `/curriculum/` was turned from a public 200 into a 302 and shipped with
+  // qa:loop 99/99, e2e:auth 32/32 in both engines and smoke:live 34/34 — every
+  // gate asked "does this behave as specified?" and none asked "should this
+  // URL's answer change at all?". It was reverted within the hour.
   [
-    /^(functions\/_middleware\.js|functions\/_lib\/teacher-surface\.js|engine\/core\/teacher-mode\.js|curriculum\/planning\/planning-store\.js|functions\/api\/pacing\/.*|tools\/(validate-auth-contract|auth-contract\.test|e2e-auth)\.mjs|data\/auth-baseline\.json|AUTH_CONTRACT\.md)$/,
-    ["test", "validate:auth-contract", "validate:planning", "validate:js-syntax", "check"],
+    /^(functions\/_middleware\.js|functions\/_lib\/teacher-surface\.js|engine\/core\/teacher-mode\.js|curriculum\/planning\/planning-store\.js|functions\/api\/pacing\/.*|tools\/(validate-auth-contract|validate-route-contract|auth-contract\.test|e2e-auth)\.mjs|data\/(auth-baseline|public-route-contract)\.json|AUTH_CONTRACT\.md)$/,
+    [
+      "test",
+      "validate:auth-contract",
+      "validate:route-contract",
+      "validate:planning",
+      "validate:js-syntax",
+      "check",
+    ],
   ],
   // Shared interactive components + anything that ships CSS. `validate:css-integrity`
   // is the only check that can see the three ways malformed style reaches a

@@ -104,8 +104,6 @@ async function privateTeacherResponse(next, setCookie) {
   });
 }
 
-
-
 /**
  * The one hostname this site is served from.
  *

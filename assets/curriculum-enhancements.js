@@ -188,8 +188,6 @@
     return null;
   }
 
-
-
   function requestTeacher(anchor, onRole) {
     if (typeof anchor === "function") {
       onRole = anchor;

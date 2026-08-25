@@ -145,12 +145,18 @@
     var bar = document.createElement("div");
     bar.id = "ewl-workbench-preset-bar";
     bar.className = "ewl-preset-bar";
+    // role AND aria-label, not aria-label alone. An aria-label on a plain <div>
+    // names nothing: without a role the element is not a landmark, so axe counts
+    // this bar and everything inside it as content sitting outside any landmark
+    // ("region"). The label was already written for a landmark that did not
+    // exist yet.
+    bar.setAttribute("role", "region");
     bar.setAttribute("aria-label", "Interactive Math Workbench Presets");
 
     var html =
       '<div class="ewl-preset-header">' +
       '<span class="ewl-preset-badge">⚡ 1-Click Manipulatives</span>' +
-      '<h3 class="ewl-preset-title">Interactive Visual Math Presets</h3>' +
+      '<h2 class="ewl-preset-title">Interactive Visual Math Presets</h2>' +
       '<span class="ewl-preset-sub">Launch pre-configured 3D nets, balance scales, and ratio models in 1 click.</span>' +
       "</div>" +
       '<div class="ewl-preset-grid">';

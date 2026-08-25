@@ -82,7 +82,7 @@
         });
       }
     </script>
-    <link rel="stylesheet" href="/assets/curriculum-hub.css?v=5a546480" />
+    <link rel="stylesheet" href="/assets/curriculum-hub.css?v=f3aa24a5" />
     <link rel="stylesheet" href="/assets/curriculum-polish.css?v=msaoy7gp" />
     <link rel="stylesheet" href="/assets/curriculum-top1.css?v=msaoy7gp" />
     <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=msaoy7gp" />
@@ -189,8 +189,8 @@
     </style>
   </head>
   <body class="light-theme">
-    <a class="skip-link" href="/curriculum/units/">Skip to units and lessons</a>
     <header class="curriculum-guide" id="curriculum-start">
+      <a class="skip-link" href="/curriculum/units/">Skip to units and lessons</a>
       <p class="curriculum-guide__eyebrow">Neft Teacher · Grade 6 Math</p>
       <h1>Curriculum Hub</h1>
       <p class="curriculum-guide__lede hub-teacher-only">
@@ -398,7 +398,7 @@
             onclick="launchTargetLesson()"
             class="ewl-linkgen-copy"
             style="
-              background: #0284c7;
+              background: #027bb9;
               min-height: 42px;
               padding: 0 18px;
               font-size: 13.5px;
@@ -414,8 +414,8 @@
             onclick="executeQuickAction('build_week')"
             class="ewl-linkgen-scorm"
             style="
-              border: 1px solid #0284c7;
-              color: #0284c7;
+              border: 1px solid #027bb9;
+              color: #027bb9;
               min-height: 42px;
               padding: 0 16px;
               font-size: 13.5px;
@@ -431,8 +431,8 @@
             onclick="executeQuickAction('playlist')"
             class="ewl-linkgen-scorm"
             style="
-              border: 1px solid #0284c7;
-              color: #0284c7;
+              border: 1px solid #027bb9;
+              color: #027bb9;
               min-height: 42px;
               padding: 0 16px;
               font-size: 13.5px;
@@ -448,8 +448,8 @@
             onclick="executeQuickAction('unit_map')"
             class="ewl-linkgen-scorm"
             style="
-              border: 1px solid #0284c7;
-              color: #0284c7;
+              border: 1px solid #027bb9;
+              color: #027bb9;
               min-height: 42px;
               padding: 0 16px;
               font-size: 13.5px;
@@ -465,8 +465,8 @@
             onclick="executeQuickAction('groups')"
             class="ewl-linkgen-scorm"
             style="
-              border: 1px solid #0284c7;
-              color: #0284c7;
+              border: 1px solid #027bb9;
+              color: #027bb9;
               min-height: 42px;
               padding: 0 16px;
               font-size: 13.5px;
@@ -810,6 +810,9 @@
     <!-- Teacher Toolbelt: compact quick-launch for teacher tools + classroom experiences.
          Collapsed by default on narrow screens so daily Teach / Plan / Explore stay
          above the fold; opens automatically on wider viewports. -->
+    <!-- Wrapped in a nav landmark: this is a list of links to other tools, and
+         everything inside it was previously content in no landmark at all. -->
+    <nav class="teacher-toolbelt-region" aria-label="Teacher tools and classroom features">
     <details class="teacher-toolbelt" id="teacher-toolbelt">
       <summary id="ttb-heading" class="ttb-heading">
         <span class="hub-teacher-only">Teacher tools &amp; classroom features</span
@@ -951,6 +954,7 @@
         </div>
       </div>
     </details>
+    </nav>
     <script>
       (function () {
         var el = document.getElementById("teacher-toolbelt");
@@ -3854,12 +3858,16 @@
         })();
       </script>
 
-      <footer class="hub">
-        Neft Teacher · Grade 6 Math · 10 units · 84 lessons · 214 pathways (168 small-group / 36
-        catch-up / 10 unit projects) ·
-        <a href="/evidence/">Community Math Studio evidence</a>
-      </footer>
     </div>
+
+    <!-- OUTSIDE the role="main" wrapper above, deliberately. A contentinfo
+         landmark nested inside another landmark is not exposed as the page
+         footer, so a screen-reader user cannot jump to it. -->
+    <footer class="hub">
+      Neft Teacher · Grade 6 Math · 10 units · 84 lessons · 214 pathways (168 small-group / 36
+      catch-up / 10 unit projects) ·
+      <a href="/evidence/">Community Math Studio evidence</a>
+    </footer>
 
     <!-- Beautiful Custom Launch Modal -->
     <div
@@ -4387,9 +4395,15 @@
       </div>
     </div>
 
-    <!-- Floating UDL 3.0 & Pedagogy Control Launcher -->
-    <div
-      id="udlFloatingLauncher"
+    <!-- A complementary landmark, so the launcher and its popover are
+         reachable by landmark navigation instead of being loose content. -->
+    <aside aria-label="Pedagogy and UDL controls">
+      <!-- Floating UDL 3.0 & Pedagogy Control Launcher -->
+      <button
+        id="udlFloatingLauncher"
+        type="button"
+        aria-expanded="false"
+        aria-controls="udlMenuPopover"
       onclick="toggleUdlMenu()"
       style="
         position: fixed;
@@ -4405,6 +4419,7 @@
         border-radius: 30px;
         box-shadow: 0 8px 30px rgba(2, 132, 199, 0.4);
         cursor: pointer;
+        border: none;
         transition: transform 0.2s;
         display: flex;
         align-items: center;
@@ -4414,7 +4429,7 @@
       onmouseout="this.style.transform = 'scale(1)'"
     >
       <span>⚡ Pedagogy & UDL</span>
-    </div>
+      </button>
 
     <!-- Floating UDL Menu Popover -->
     <div
@@ -4488,6 +4503,7 @@
         </label>
       </div>
     </div>
+    </aside>
 
     <script src="/assets/curriculum-hub-pedagogy.js" defer></script>
     <script src="/assets/formula-popup.js" defer></script>
