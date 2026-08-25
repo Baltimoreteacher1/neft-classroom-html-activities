@@ -73,11 +73,35 @@
     align-items: start;
   }
 
-  .sg-hero-copy { grid-column: 1; grid-row: 1 / -1; }
-  .sg-hero-mark { justify-self: end; grid-column: 2; grid-row: 1; }
-  .sg-math-move { grid-column: 2; grid-row: 2; align-self: start; width: 292px; max-width: none; margin: 16px 0 0; }
-  .sg-room-chip { min-height: 62px; margin: 0; padding: 10px 12px; border: 1px solid var(--sg-line); border-radius: var(--sg-radius-sm); background: color-mix(in srgb, var(--sg-card) 82%, var(--sg-soft)); }
-  .sg-hero > .nt-toolpoint { min-height: 62px; margin: 0; }
+  .sg-hero-copy {
+    grid-column: 1;
+    grid-row: 1 / -1;
+  }
+  .sg-hero-mark {
+    justify-self: end;
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .sg-math-move {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    width: 292px;
+    max-width: none;
+    margin: 16px 0 0;
+  }
+  .sg-room-chip {
+    min-height: 62px;
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--sg-line);
+    border-radius: var(--sg-radius-sm);
+    background: color-mix(in srgb, var(--sg-card) 82%, var(--sg-soft));
+  }
+  .sg-hero > .nt-toolpoint {
+    min-height: 62px;
+    margin: 0;
+  }
 }
 
 /* Every surface that shows arithmetic: equal-width digits, so a column of
@@ -1108,7 +1132,10 @@
 .sg-reflect,
 .sg-map {
   border-radius: var(--sg-radius, 14px);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.2s ease;
 }
 
 .sg-vcard:hover,
@@ -1130,7 +1157,10 @@
 .fillin,
 .stepfill {
   border-radius: var(--sg-radius-sm, 8px);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -1480,12 +1510,17 @@
   color: #fff;
   padding: 6px 14px;
   border-radius: 999px;
-  box-shadow: 0 4px 14px rgba(18, 53, 91, 0.28);
+  /* Hairline lift only: the quiet-canvas contract allows exactly two floating
+     shells (annotation rail, vocab dialog) a heavy shadow — sweep:small-group
+     counts anything with blur > 8px. */
+  box-shadow: 0 2px 8px rgba(18, 53, 91, 0.24);
   font-family: var(--fl-body, system-ui, sans-serif);
   font-size: 14px;
   font-weight: 700;
   z-index: 900;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .sg-station-timer.sg-timer-alarm {
@@ -1540,4 +1575,3 @@
   background: #e2e8f0;
   color: #0f172a;
 }
-

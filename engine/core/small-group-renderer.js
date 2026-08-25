@@ -85,6 +85,34 @@ import { mountTeacherClearButton } from "./teacher-clear.js";
 import { mountToolDrawer } from "./tool-drawer.js";
 import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 
+// In-tab sub-steps: quiet-canvas styling (flat surfaces, sg tokens, no
+// gradients — sweep:small-group holds that), 44px targets, and a print block
+// that reveals every hidden step so the packet never loses a section.
+let substepStylesInjected = false;
+function injectSubstepStyles() {
+  if (substepStylesInjected || document.getElementById("sg-substep-styles")) {
+    substepStylesInjected = true;
+    return;
+  }
+  substepStylesInjected = true;
+  const s = document.createElement("style");
+  s.id = "sg-substep-styles";
+  s.textContent = `
+  .sg-substeps{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;margin:0 0 16px;background:var(--sg-card);border:1px solid var(--sg-line);border-radius:14px}
+  .sg-substep-chip{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 14px;font-family:var(--sg-display,inherit);font-size:14px;font-weight:700;color:var(--sg-muted);background:var(--sg-soft,#f5f7fa);border:1.5px solid var(--sg-line);border-radius:999px;cursor:pointer}
+  .sg-substep-chip:hover{border-color:var(--sg);color:var(--sg-ink)}
+  .sg-substep-chip.is-on{color:#fff;background:var(--sg);border-color:var(--sg)}
+  .sg-substep-num{display:inline-grid;place-items:center;width:1.6em;height:1.6em;border-radius:50%;background:var(--sg-fill,#eaeff5);color:var(--sg-ink);font-size:12px;font-weight:800;font-style:normal}
+  .sg-substep-chip.is-on .sg-substep-num{background:rgba(255,255,255,.25);color:#fff}
+  .sg-substep[hidden]{display:none!important}
+  .sg-substep-next{display:flex;justify-content:flex-end;margin:18px 0 4px}
+  .sg-substep-nextbtn{min-height:44px;padding:10px 22px;font-weight:800;border-radius:12px;color:#fff;background:var(--sg);border:1.5px solid var(--sg);cursor:pointer}
+  .sg-substep-nextbtn:hover{background:var(--sg-deep,var(--sg));border-color:var(--sg-deep,var(--sg))}
+  @media print{.sg-substeps,.sg-substep-next{display:none!important}.sg-substep[hidden]{display:block!important}}
+  `;
+  document.head.appendChild(s);
+}
+
 // One Build stage rendered as an interactive player instead of a static list.
 // "ido" and "wedo" reveal one step at a time; "wedo" also converts a trailing
 // authored parenthetical ("(You might say 3 × 4.)") into a think-first reveal
@@ -1195,46 +1223,121 @@ function renderStudio(config) {
     for (const child of children) if (child) panel.appendChild(child);
     return panel;
   };
+
+  // A tab whose sections all stack is a 6,000px scroll — the same crowding the
+  // whole-group Acts had before their step strips. Group each tab's sections
+  // into named moments shown ONE at a time behind a compact strip. Everything
+  // still renders (save/resume, graders and the teacher console read hidden
+  // panels fine); only visibility changes, and print reveals every step.
+  injectSubstepStyles();
+  const makeStepPanel = (id, groups) => {
+    const live = groups
+      .map((g) => ({ ...g, children: g.children.filter(Boolean) }))
+      .filter((g) => g.children.length);
+    // One real group needs no strip — render it plainly.
+    if (live.length < 2) {
+      return makePanel(
+        id,
+        live.flatMap((g) => g.children),
+      );
+    }
+    const panel = el("div", "sg-panel");
+    panel.id = id;
+    const strip = el("div", "sg-substeps");
+    strip.setAttribute("role", "tablist");
+    strip.setAttribute("aria-label", "Steps in this part of the session");
+    panel.appendChild(strip);
+    /** @type {HTMLElement[]} */
+    const hosts = [];
+    /** @type {HTMLButtonElement[]} */
+    const chips = [];
+    const storeKey = `substep-${id}`;
+    const show = (i, save) => {
+      hosts.forEach((h, j) => {
+        h.hidden = j !== i;
+      });
+      chips.forEach((c, j) => {
+        c.classList.toggle("is-on", j === i);
+        c.setAttribute("aria-selected", j === i ? "true" : "false");
+      });
+      if (save) {
+        store.set(storeKey, i);
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+    live.forEach((g, i) => {
+      const chip = el("button", "sg-substep-chip");
+      chip.type = "button";
+      chip.setAttribute("role", "tab");
+      chip.innerHTML = `<b class="sg-substep-num">${i + 1}</b> ${g.icon} ${esc(g.label)}`;
+      chip.addEventListener("click", () => show(i, true));
+      strip.appendChild(chip);
+      chips.push(chip);
+      const host = el("div", "sg-substep");
+      host.hidden = true;
+      for (const child of g.children) host.appendChild(child);
+      if (i < live.length - 1) {
+        const row = el("div", "sg-substep-next");
+        const next = el("button", "btn sg-substep-nextbtn");
+        next.type = "button";
+        next.innerHTML = `Next: ${live[i + 1].icon} ${esc(live[i + 1].label)} →`;
+        next.addEventListener("click", () => show(i + 1, true));
+        row.appendChild(next);
+        host.appendChild(row);
+      }
+      panel.appendChild(host);
+      hosts.push(host);
+    });
+    const saved = Number(store.get(storeKey));
+    show(Number.isInteger(saved) && saved >= 0 && saved < live.length ? saved : 0, false);
+    return panel;
+  };
+
+  const practiceLabs = config.practice?.diagram
+    ? (Array.isArray(config.practice.diagram)
+        ? config.practice.diagram
+        : [config.practice.diagram]
+      ).map((d, i) => figureBlock(d, { store, slot: `practice-lab-${i}` }))
+    : [];
   const tabSteps = [
     {
       id: "sg-tab-learn",
       label: "Focus & Learn",
       sub: "Key words & worked model",
-      panel: makePanel("sg-tab-learn", [diagnostic, pulseCard, vocab, build, explore, model]),
+      panel: makeStepPanel("sg-tab-learn", [
+        { icon: "🎯", label: "Warm-Up Check", children: [diagnostic, pulseCard] },
+        { icon: "🔑", label: "Key Words", children: [vocab] },
+        { icon: "🧱", label: "Build the Idea", children: [build, explore] },
+        { icon: "📝", label: "Worked Model", children: [model] },
+      ]),
     },
     {
       id: "sg-tab-practice",
       label: "Practice Studio",
       sub: "Guided & independent",
-      panel: makePanel("sg-tab-practice", [
-        ...(config.practice?.diagram
-          ? (Array.isArray(config.practice.diagram)
-              ? config.practice.diagram
-              : [config.practice.diagram]
-            ).map((d, i) => figureBlock(d, { store, slot: `practice-lab-${i}` }))
-          : []),
-        guided,
-        createAdaptiveCoach(variant, state, store),
-        practice,
-        talk,
+      panel: makeStepPanel("sg-tab-practice", [
+        {
+          icon: "🤝",
+          label: "Guided",
+          children: [...practiceLabs, guided, createAdaptiveCoach(variant, state, store)],
+        },
+        { icon: "✏️", label: "On My Own", children: [practice] },
+        { icon: "🗣️", label: "Talk It Out", children: [talk] },
       ]),
     },
     {
       id: "sg-tab-more",
       label: "Check & Growth",
       sub: "Show it & celebrate",
-      panel: makePanel("sg-tab-more", [
-        mathCheck,
-        check,
-        reflection.section,
-        evidence.section,
-        packet.section,
-        completion,
-        masteryLadder,
-        morePractice,
-        mission,
-        apply,
-        goDeeper,
+      panel: makeStepPanel("sg-tab-more", [
+        { icon: "✅", label: "Check", children: [mathCheck, check] },
+        {
+          icon: "💭",
+          label: "Reflect",
+          children: [reflection.section, evidence.section, packet.section],
+        },
+        { icon: "📈", label: "Grow", children: [completion, masteryLadder, morePractice] },
+        { icon: "🚀", label: "Mission", children: [mission, apply, goDeeper] },
       ]),
     },
   ];

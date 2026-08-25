@@ -86,6 +86,13 @@ async function check(id) {
         gradients: shell.filter((e) => /gradient/.test(getComputedStyle(e).backgroundImage)).length,
         heavyShadows: heavy.length,
         textLength: document.body.innerText.replace(/\s+/g, " ").trim().length,
+        // The tabs and in-tab sub-steps disclose progressively, so the
+        // rendered-content floor is judged on what the page HOLDS (textContent
+        // includes hidden step panels), while the visible floor below proves
+        // the page did not open on an empty step.
+        totalTextLength: (document.getElementById("app") || document.body).textContent
+          .replace(/\s+/g, " ")
+          .trim().length,
         tabs: document.querySelectorAll(".sg-tabs .sg-step, .sg-tabs [role='tab']").length,
       };
     });
@@ -104,8 +111,14 @@ async function check(id) {
     if (m.heavyShadows > 2) {
       failures.push(`${id}: ${m.heavyShadows} heavy shadows in the shell (2 float legitimately)`);
     }
-    // A calm page that rendered nothing is not an improvement.
-    if (m.textLength < 1200) failures.push(`${id}: only ${m.textLength} chars of content`);
+    // A calm page that rendered nothing is not an improvement. Sub-steps hide
+    // most sections until tapped, so the 1200-char floor is held against the
+    // page's TOTAL content; a separate visible floor catches a page that opens
+    // on an empty first step.
+    if (m.totalTextLength < 1200)
+      failures.push(`${id}: only ${m.totalTextLength} chars of content on the whole page`);
+    if (m.textLength < 150)
+      failures.push(`${id}: only ${m.textLength} chars visible on load — opens on an empty step`);
     if (!m.tabs) failures.push(`${id}: no phase tabs rendered`);
 
     stats.heroMax = Math.max(stats.heroMax, m.heroBottom || 0);
