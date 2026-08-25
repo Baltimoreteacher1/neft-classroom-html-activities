@@ -19,6 +19,7 @@ import {
 // all — the stylesheet reaches the page through Vite's shared CSS chunk, which
 // every lesson entry links.
 import { mountPresentWidget } from "./present-mode.js";
+import { mountUniversalFocusButton } from "./focus-mode.js";
 import { ensureCanvasBridge } from "./scorm-bridge.js";
 import { createAutoPilot } from "./small-group-adaptive.js";
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
@@ -1541,6 +1542,7 @@ export function bootSmallGroup(config) {
 
   // Arrow / Page keys scroll the studio panels, not just the mouse wheel.
   enableKeyboardScrolling();
+  mountUniversalFocusButton();
   // The studio had no click-to-enlarge at all: every attachImageZoom call lived
   // in the full-lesson renderer, so a small-group scene or diagram did nothing
   // when a student tapped it.

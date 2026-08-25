@@ -317,7 +317,42 @@
     }
   }
 
+  function mountFocusBtn() {
+    if (document.getElementById("ntUniversalFocusBtn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "ntUniversalFocusBtn";
+    btn.className = "nt-universal-focus-btn no-print";
+    btn.setAttribute("aria-pressed", "false");
+    btn.setAttribute("aria-label", "Toggle Focus Mode (Hide extra menus and focus on screen)");
+    btn.title = "Hide surrounding buttons and focus directly on the screen (Esc to exit)";
+    btn.innerHTML = '<span class="nt-focus-icon" aria-hidden="true">🎯</span> <span class="nt-focus-text">Focus Screen</span>';
+
+    var sync = function () {
+      var isF = document.body.classList.contains("nt-focus-mode");
+      btn.setAttribute("aria-pressed", isF ? "true" : "false");
+      btn.innerHTML = isF
+        ? '<span class="nt-focus-icon" aria-hidden="true">✕</span> <span class="nt-focus-text">Exit Focus</span>'
+        : '<span class="nt-focus-icon" aria-hidden="true">🎯</span> <span class="nt-focus-text">Focus Screen</span>';
+    };
+
+    btn.addEventListener("click", function () {
+      document.body.classList.toggle("nt-focus-mode");
+      sync();
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && document.body.classList.contains("nt-focus-mode")) {
+        document.body.classList.remove("nt-focus-mode");
+        sync();
+      }
+    });
+
+    document.body.appendChild(btn);
+  }
+
   function mount() {
+    mountFocusBtn();
     if (!isActivityPage()) return;
     document.body.appendChild(bar);
     publishBarHeight();
