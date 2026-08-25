@@ -65,7 +65,11 @@ function renderNumberLineSvg(cfg) {
   const min = Number(cfg.min ?? 0);
   const max = Number(cfg.max ?? 10);
   const step = Number(cfg.step ?? 1);
-  const W = 480, H = 84, padL = 32, padR = 32, y = 40;
+  const W = 480,
+    H = 84,
+    padL = 32,
+    padR = 32,
+    y = 40;
   const span = Math.max(1, max - min);
   const plotW = W - padL - padR;
   const xOf = (v) => padL + ((v - min) / span) * plotW;
@@ -85,7 +89,7 @@ function renderNumberLineSvg(cfg) {
 
   let pts = "";
   (cfg.points || cfg.targets || []).forEach((p) => {
-    const val = Number(p.value != null ? p.value : (typeof p === "number" ? p : p.x));
+    const val = Number(p.value != null ? p.value : typeof p === "number" ? p : p.x);
     if (!Number.isFinite(val)) return;
     const px = xOf(val);
     pts += `<circle cx="${px.toFixed(1)}" cy="${y}" r="6.5" fill="${DATA_2}" stroke="#ffffff" stroke-width="2.2"/>`;
@@ -105,11 +109,14 @@ function renderNumberLineSvg(cfg) {
 
 function renderCoordPlaneSvg(cfg) {
   const m = Number(cfg.max ?? cfg.xMax ?? 6);
-  const W = 280, H = 280, pad = 24;
+  const W = 280,
+    H = 280,
+    pad = 24;
   const span = 2 * m;
   const plot = W - 2 * pad;
   const unit = plot / span;
-  const cx = pad + m * unit, cy = pad + m * unit;
+  const cx = pad + m * unit,
+    cy = pad + m * unit;
   const X = (x) => pad + (x + m) * unit;
   const Y = (y) => pad + (m - y) * unit;
   const stride = m > 6 ? 2 : 1;
@@ -131,16 +138,18 @@ function renderCoordPlaneSvg(cfg) {
     `<text x="${cx + 4}" y="${pad - 5}" font-size="10.5" font-weight="800" fill="#0f172a" font-family="'Hanken Grotesk',Arial,sans-serif">y</text>`;
 
   const rawPts = (cfg.points || cfg.targets || []).map((p) => ({
-    x: Number(p.x != null ? p.x : (Array.isArray(p) ? p[0] : 0)),
-    y: Number(p.y != null ? p.y : (Array.isArray(p) ? p[1] : 0)),
-    label: p.label || (p.name ? p.name : "")
+    x: Number(p.x != null ? p.x : Array.isArray(p) ? p[0] : 0),
+    y: Number(p.y != null ? p.y : Array.isArray(p) ? p[1] : 0),
+    label: p.label || (p.name ? p.name : ""),
   }));
 
   let outline = "";
   if (rawPts.length >= 3) {
     const gx = rawPts.reduce((s, p) => s + p.x, 0) / rawPts.length;
     const gy = rawPts.reduce((s, p) => s + p.y, 0) / rawPts.length;
-    const ring = rawPts.slice().sort((a, b) => Math.atan2(a.y - gy, a.x - gx) - Math.atan2(b.y - gy, b.x - gx));
+    const ring = rawPts
+      .slice()
+      .sort((a, b) => Math.atan2(a.y - gy, a.x - gx) - Math.atan2(b.y - gy, b.x - gx));
     const poly = ring.map((p) => `${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ");
     outline = `<polygon points="${poly}" fill="rgba(15,138,132,0.12)" stroke="${DATA_1}" stroke-width="2"/>`;
   }
@@ -148,7 +157,8 @@ function renderCoordPlaneSvg(cfg) {
   let pts = "";
   rawPts.forEach((p) => {
     if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) return;
-    const px = X(p.x), py = Y(p.y);
+    const px = X(p.x),
+      py = Y(p.y);
     const lbl = p.label || `(${p.x}, ${p.y})`;
     pts +=
       `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="5" fill="${DATA_2}" stroke="#fff" stroke-width="1.8"/>` +
@@ -162,13 +172,27 @@ function renderCoordPlaneSvg(cfg) {
 function renderTapeDiagramSvg(cfg) {
   let rows = Array.isArray(cfg.rows) ? cfg.rows : [];
   if (!rows.length && (cfg.parts || cfg.total)) {
-    rows = [{ label: cfg.totalLabel || "Total", parts: Array.isArray(cfg.parts) ? cfg.parts : [{ value: cfg.total || 10, label: `${cfg.total || 10}` }] }];
+    rows = [
+      {
+        label: cfg.totalLabel || "Total",
+        parts: Array.isArray(cfg.parts)
+          ? cfg.parts
+          : [{ value: cfg.total || 10, label: `${cfg.total || 10}` }],
+      },
+    ];
   }
   if (!rows.length) return "";
-  const W = 460, padL = 10, padR = 10, rowH = 34, gap = 12, labelW = 84;
+  const W = 460,
+    padL = 10,
+    padR = 10,
+    rowH = 34,
+    gap = 12,
+    labelW = 84;
   const H = 20 + rows.length * (rowH + gap);
   const palette = [DATA_1, DATA_2, DATA_3, DATA_4];
-  const totals = rows.map((r) => (r.parts || []).reduce((s, p) => s + (Number(p.value != null ? p.value : p) || 0), 0));
+  const totals = rows.map((r) =>
+    (r.parts || []).reduce((s, p) => s + (Number(p.value != null ? p.value : p) || 0), 0),
+  );
   const maxTotal = Math.max(...totals, 1);
   const trackW = W - padL - padR - labelW;
 
@@ -181,7 +205,7 @@ function renderTapeDiagramSvg(cfg) {
       const v = Number(p.value != null ? p.value : p) || 0;
       const w = (v / maxTotal) * trackW;
       const fill = p.fill || palette[i % palette.length];
-      const lbl = p.label != null ? p.label : (p.value != null ? p.value : p);
+      const lbl = p.label != null ? p.label : p.value != null ? p.value : p;
       segs +=
         `<rect x="${x.toFixed(1)}" y="${y}" width="${Math.max(0, w - 2).toFixed(1)}" height="${rowH}" rx="4" fill="${fill}"/>` +
         `<text x="${(x + w / 2).toFixed(1)}" y="${y + rowH / 2 + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="'Hanken Grotesk',Arial,sans-serif">${esc(lbl)}</text>`;
@@ -197,7 +221,8 @@ function renderTapeDiagramSvg(cfg) {
 }
 
 function renderFactorTreeSvg(cfg) {
-  const W = 320, H = 160;
+  const W = 320,
+    H = 160;
   let elements = [];
   function traverse(node, x, y, dx) {
     if (!node) return;
@@ -207,12 +232,14 @@ function renderFactorTreeSvg(cfg) {
     const textColor = isPrime ? "#095350" : "#8a5800";
     elements.push({ type: "node", x, y, value: node.value, fill, stroke, textColor });
     if (node.left) {
-      const lx = x - dx, ly = y + 42;
+      const lx = x - dx,
+        ly = y + 42;
       elements.push({ type: "line", x1: x, y1: y + 14, x2: lx, y2: ly - 14 });
       traverse(node.left, lx, ly, dx * 0.5);
     }
     if (node.right) {
-      const rx = x + dx, ry = y + 42;
+      const rx = x + dx,
+        ry = y + 42;
       elements.push({ type: "line", x1: x, y1: y + 14, x2: rx, y2: ry - 14 });
       traverse(node.right, rx, ry, dx * 0.5);
     }
@@ -237,8 +264,14 @@ function renderFactorTreeSvg(cfg) {
 function renderBarChartSvg(cfg) {
   const bars = Array.isArray(cfg.bars) ? cfg.bars : [];
   if (!bars.length) return "";
-  const W = 420, H = 180, padL = 36, padR = 16, padT = 20, padB = 36;
-  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const W = 420,
+    H = 180,
+    padL = 36,
+    padR = 16,
+    padT = 20,
+    padB = 36;
+  const plotW = W - padL - padR,
+    plotH = H - padT - padB;
   const maxV = Math.max(...bars.map((b) => Number(b.value) || 0), 1);
   const bw = plotW / bars.length;
   const baseY = padT + plotH;
@@ -264,8 +297,14 @@ function renderBarChartSvg(cfg) {
 function renderHistogramSvg(cfg) {
   const bars = Array.isArray(cfg.bars) ? cfg.bars : [];
   if (!bars.length) return "";
-  const W = 420, H = 180, padL = 36, padR = 16, padT = 20, padB = 36;
-  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const W = 420,
+    H = 180,
+    padL = 36,
+    padR = 16,
+    padT = 20,
+    padB = 36;
+  const plotW = W - padL - padR,
+    plotH = H - padT - padB;
   const maxV = Math.max(...bars.map((b) => Number(b.value) || 0), 1);
   const bw = plotW / bars.length;
   const baseY = padT + plotH;
@@ -292,13 +331,19 @@ function renderDotPlotSvg(cfg) {
   if (!vals.length) return "";
   const min = Number(cfg.min ?? Math.min(...vals));
   const max = Number(cfg.max ?? Math.max(...vals));
-  const W = 420, H = 140, padL = 28, padR = 28, baseY = 100;
+  const W = 420,
+    H = 140,
+    padL = 28,
+    padR = 28,
+    baseY = 100;
   const span = Math.max(1, max - min);
   const plotW = W - padL - padR;
   const xOf = (v) => padL + ((v - min) / span) * plotW;
 
   const counts = {};
-  vals.forEach((v) => { counts[v] = (counts[v] || 0) + 1; });
+  vals.forEach((v) => {
+    counts[v] = (counts[v] || 0) + 1;
+  });
 
   let dots = "";
   Object.entries(counts).forEach(([vStr, cnt]) => {
@@ -329,7 +374,13 @@ function renderBoxPlotSvg(cfg) {
   const q1 = Number(cfg.q1 ?? min + (max - min) * 0.25);
   const med = Number(cfg.median ?? min + (max - min) * 0.5);
   const q3 = Number(cfg.q3 ?? min + (max - min) * 0.75);
-  const W = 420, H = 110, padL = 28, padR = 28, boxY = 28, boxH = 36, axisY = 82;
+  const W = 420,
+    H = 110,
+    padL = 28,
+    padR = 28,
+    boxY = 28,
+    boxH = 36,
+    axisY = 82;
   const span = Math.max(1, max - min);
   const plotW = W - padL - padR;
   const xOf = (v) => padL + ((v - min) / span) * plotW;
@@ -358,13 +409,17 @@ function renderBoxPlotSvg(cfg) {
 
 function renderPercentGridSvg(cfg) {
   const pct = Math.max(0, Math.min(100, Number(cfg.percent ?? cfg.value ?? 25)));
-  const size = 150, pad = 8, gridW = size - 2 * pad, cell = gridW / 10;
+  const size = 150,
+    pad = 8,
+    gridW = size - 2 * pad,
+    cell = gridW / 10;
   let cells = "";
   for (let r = 0; r < 10; r++) {
     for (let c = 0; c < 10; c++) {
       const idx = r * 10 + c;
       const shaded = idx < pct;
-      const x = pad + c * cell, y = pad + r * cell;
+      const x = pad + c * cell,
+        y = pad + r * cell;
       cells += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(cell - 1).toFixed(1)}" height="${(cell - 1).toFixed(1)}" fill="${shaded ? DATA_1 : "#f8fafc"}" stroke="#cbd5e1" stroke-width="0.5"/>`;
     }
   }
@@ -375,7 +430,10 @@ function renderPercentGridSvg(cfg) {
 function renderFractionModelSvg(cfg) {
   const num = Number(cfg.numerator ?? cfg.shaded ?? 1);
   const den = Math.max(1, Number(cfg.denominator ?? cfg.total ?? 4));
-  const W = 320, H = 50, pad = 8, w = (W - 2 * pad) / den;
+  const W = 320,
+    H = 50,
+    pad = 8,
+    w = (W - 2 * pad) / den;
   let parts = "";
   for (let i = 0; i < den; i++) {
     const x = pad + i * w;
@@ -387,25 +445,32 @@ function renderFractionModelSvg(cfg) {
 }
 
 function renderAreaModelSvg(cfg) {
-  const W = 340, H = 130, startX = 60, startY = 30, h = 60;
+  const W = 340,
+    H = 130,
+    startX = 60,
+    startY = 30,
+    h = 60;
   const factor1 = cfg.factor1 || "3";
-  const p1 = cfg.part1 || "2x", p2 = cfg.part2 || "4";
-  const val1 = cfg.val1 || "6x", val2 = cfg.val2 || "12";
+  const p1 = cfg.part1 || "2x",
+    p2 = cfg.part2 || "4";
+  const val1 = cfg.val1 || "6x",
+    val2 = cfg.val2 || "12";
   const svg = `
     <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Algebraic Area Model" style="background:white;border:1.5px solid #cbd5e1;border-radius:8px;padding:4px;">
-      <text x="${startX - 20}" y="${startY + h/2 + 5}" text-anchor="middle" font-size="14" font-weight="bold" fill="${DATA_PURPLE}" font-family="'Hanken Grotesk',Arial,sans-serif">${esc(factor1)}</text>
+      <text x="${startX - 20}" y="${startY + h / 2 + 5}" text-anchor="middle" font-size="14" font-weight="bold" fill="${DATA_PURPLE}" font-family="'Hanken Grotesk',Arial,sans-serif">${esc(factor1)}</text>
       <rect x="${startX}" y="${startY}" width="140" height="${h}" fill="#ede9fe" stroke="${DATA_PURPLE}" stroke-width="1.6" rx="2"/>
       <rect x="${startX + 140}" y="${startY}" width="100" height="${h}" fill="#f5f3ff" stroke="${DATA_PURPLE}" stroke-width="1.6" rx="2"/>
       <text x="${startX + 70}" y="${startY - 8}" text-anchor="middle" font-size="12" font-weight="bold" fill="#6d28d9" font-family="'Hanken Grotesk',Arial,sans-serif">${esc(p1)}</text>
       <text x="${startX + 190}" y="${startY - 8}" text-anchor="middle" font-size="12" font-weight="bold" fill="#6d28d9" font-family="'Hanken Grotesk',Arial,sans-serif">${esc(p2)}</text>
-      <text x="${startX + 70}" y="${startY + h/2 + 5}" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#5b21b6" font-family="'Hanken Grotesk',Arial,sans-serif">${esc(val1)}</text>
-      <text x="${startX + 190}" y="${startY + h/2 + 5}" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#5b21b6" font-family="'Hanken Grotesk',Arial,sans-serif">${esc(val2)}</text>
+      <text x="${startX + 70}" y="${startY + h / 2 + 5}" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#5b21b6" font-family="'Hanken Grotesk',Arial,sans-serif">${esc(val1)}</text>
+      <text x="${startX + 190}" y="${startY + h / 2 + 5}" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#5b21b6" font-family="'Hanken Grotesk',Arial,sans-serif">${esc(val2)}</text>
     </svg>`;
   return figureWrap(svg, cfg.title || "Distributive Area Model", cfg.caption);
 }
 
 function renderBalanceScaleSvg(cfg) {
-  const W = 360, H = 130;
+  const W = 360,
+    H = 130;
   const left = cfg.left || "x + 9.8";
   const right = cfg.right || "24.5";
   const svg = `
@@ -428,7 +493,12 @@ function renderProblemDiagram(it) {
   if (d && typeof d === "object") {
     const kind = d.kind || d.type || "";
     if (kind === "number-line" || kind === "numberLine") return renderNumberLineSvg(d);
-    if (kind === "coordinate-plane" || kind === "coord-plane" || kind === "coordPlane" || kind === "coordinate-grid")
+    if (
+      kind === "coordinate-plane" ||
+      kind === "coord-plane" ||
+      kind === "coordPlane" ||
+      kind === "coordinate-grid"
+    )
       return renderCoordPlaneSvg(d);
     if (kind === "tape-diagram" || kind === "tapeDiagram" || kind === "bar-model")
       return renderTapeDiagramSvg(d);
@@ -452,7 +522,13 @@ function renderProblemDiagram(it) {
     return renderFractionModelSvg({ numerator: it.target || 1, denominator: it.compare || 4 });
   }
   if (Array.isArray(it.points) && it.points.length && (it.min != null || it.max != null)) {
-    return renderNumberLineSvg({ min: it.min, max: it.max, step: it.step, points: it.points, title: it.figureTitle });
+    return renderNumberLineSvg({
+      min: it.min,
+      max: it.max,
+      step: it.step,
+      points: it.points,
+      title: it.figureTitle,
+    });
   }
   return "";
 }
@@ -549,7 +625,7 @@ function workArea(it, { supported = false } = {}) {
 }
 
 function workBox(label = "Show Your Work & Mathematical Strategy", tall = false) {
-  return `<div class="ws-work${tall ? ' ws-work-tall' : ''}"><span class="ws-work-label">✏️ ${esc(label)}</span></div>`;
+  return `<div class="ws-work${tall ? " ws-work-tall" : ""}"><span class="ws-work-label">✏️ ${esc(label)}</span></div>`;
 }
 
 /* ==========================================================================
@@ -572,7 +648,11 @@ function getStem(it) {
 
 function renderMC(it, _n, key, commonMistake, supported = false) {
   const stem = getStem(it);
-  const choices = Array.isArray(it.choices) ? it.choices : (Array.isArray(it.options) ? it.options : []);
+  const choices = Array.isArray(it.choices)
+    ? it.choices
+    : Array.isArray(it.options)
+      ? it.options
+      : [];
   const opts = choices
     .map((c, i) => {
       const correct = key && i === it.correctIndex;
@@ -582,7 +662,8 @@ function renderMC(it, _n, key, commonMistake, supported = false) {
 
   let notes = "";
   if (key) {
-    if (it.explanation) notes += `<p class="ws-keynote">💡 <b>Solution Rationale:</b> ${esc(it.explanation)}</p>`;
+    if (it.explanation)
+      notes += `<p class="ws-keynote">💡 <b>Solution Rationale:</b> ${esc(it.explanation)}</p>`;
     const watch = it.watchFor || it.distractorRationale || commonMistake;
     if (watch) notes += `<p class="ws-watch">⚠️ <b>Watch for (Misconception):</b> ${esc(watch)}</p>`;
   }
@@ -603,7 +684,10 @@ function renderMatching(it, _n, key) {
     .join("");
 
   const bankHtml = matches
-    .map((m, i) => `<li><span class="ws-bub ws-bub-sm">${LETTERS[i]}</span><span class="ws-match-desc">${esc(m)}</span></li>`)
+    .map(
+      (m, i) =>
+        `<li><span class="ws-bub ws-bub-sm">${LETTERS[i]}</span><span class="ws-match-desc">${esc(m)}</span></li>`,
+    )
     .join("");
 
   return `<p class="ws-stem">${esc(stem)}</p>
@@ -615,7 +699,7 @@ function renderErrorAnalysis(it, _n, key) {
   const steps = (it.workedExample || [])
     .map(
       (s, i) =>
-        `<li><span class="ws-step-n">${i + 1}</span><span class="ws-step-l">${esc(s.label || `Step ${i+1}`)}:</span><span class="ws-step-w">${esc(s.work || s.text || "")}</span></li>`
+        `<li><span class="ws-step-n">${i + 1}</span><span class="ws-step-l">${esc(s.label || `Step ${i + 1}`)}:</span><span class="ws-step-w">${esc(s.work || s.text || "")}</span></li>`,
     )
     .join("");
 
@@ -635,17 +719,21 @@ function renderErrorAnalysis(it, _n, key) {
 }
 
 function renderFillTable(it, _n, key) {
-  const cols = Array.isArray(it.columns) ? it.columns : (Array.isArray(it.headers) ? it.headers : ["Item", "Value", "Result"]);
+  const cols = Array.isArray(it.columns)
+    ? it.columns
+    : Array.isArray(it.headers)
+      ? it.headers
+      : ["Item", "Value", "Result"];
   const head = cols.map((c) => `<th>${esc(c)}</th>`).join("");
   const rows = (it.rows || [])
     .map((r) => {
       if (Array.isArray(r)) {
-        const cells = r.map((c, i) => `<td>${i === 0 ? esc(c) : (key ? esc(c) : "")}</td>`).join("");
+        const cells = r.map((c, i) => `<td>${i === 0 ? esc(c) : key ? esc(c) : ""}</td>`).join("");
         return `<tr>${cells}</tr>`;
       }
       const keys = Object.keys(r);
       const cells = keys
-        .map((k, i) => `<td>${i === 0 ? esc(r[k]) : (key ? esc(r[k]) : "")}</td>`)
+        .map((k, i) => `<td>${i === 0 ? esc(r[k]) : key ? esc(r[k]) : ""}</td>`)
         .join("");
       return `<tr>${cells}</tr>`;
     })
@@ -661,7 +749,11 @@ function renderDragSort(it, _n, key) {
   let catsHtml = "";
   let itemsHtml = "";
 
-  if (Array.isArray(it.categories) && it.categories.length && typeof it.categories[0] === "object") {
+  if (
+    Array.isArray(it.categories) &&
+    it.categories.length &&
+    typeof it.categories[0] === "object"
+  ) {
     const catLabels = it.categories.map((c) => c.label || c.title || "Group");
     catsHtml = catLabels.map((c) => `<span class="ws-cat-pill">${esc(c)}</span>`).join(" ");
     const allItems = [];
@@ -673,7 +765,7 @@ function renderDragSort(it, _n, key) {
     itemsHtml = allItems
       .map(
         (i) =>
-          `<li class="ws-sort-item"><span class="ws-blank ws-blank-sm">${key ? esc(i.category) : ""}</span><span class="ws-sort-text">${esc(i.text)}</span></li>`
+          `<li class="ws-sort-item"><span class="ws-blank ws-blank-sm">${key ? esc(i.category) : ""}</span><span class="ws-sort-text">${esc(i.text)}</span></li>`,
       )
       .join("");
   } else {
@@ -681,8 +773,9 @@ function renderDragSort(it, _n, key) {
     catsHtml = cats.map((c) => `<span class="ws-cat-pill">${esc(c)}</span>`).join(" ");
     const items = (it.items || it.cards || [])
       .map((i) => {
-        const text = typeof i === "string" ? i : (i.text || i.label || "");
-        const cat = typeof i === "object" ? (i.category || (i.correct != null ? cats[i.correct] : "")) : "";
+        const text = typeof i === "string" ? i : i.text || i.label || "";
+        const cat =
+          typeof i === "object" ? i.category || (i.correct != null ? cats[i.correct] : "") : "";
         return `<li class="ws-sort-item"><span class="ws-blank ws-blank-sm">${key ? esc(cat) : ""}</span><span class="ws-sort-text">${esc(text)}</span></li>`;
       })
       .join("");
@@ -696,14 +789,21 @@ function renderDragSort(it, _n, key) {
 
 function renderOpen(it, _n, key, supported) {
   const stem = getStem(it);
-  const frames = it.sentenceFrame || (Array.isArray(it.sentenceStems) ? it.sentenceStems.join("<br>") : it.sentenceStems);
-  const frameHtml = supported && frames ? `<div class="ws-frame">💬 <b>Sentence Starter:</b> ${esc(frames)}</div>` : "";
+  const frames =
+    it.sentenceFrame ||
+    (Array.isArray(it.sentenceStems) ? it.sentenceStems.join("<br>") : it.sentenceStems);
+  const frameHtml =
+    supported && frames
+      ? `<div class="ws-frame">💬 <b>Sentence Starter:</b> ${esc(frames)}</div>`
+      : "";
 
   let keyHtml = "";
   if (key) {
     const parts = [];
-    if (it.sampleAnswer || it.modelAnswer) parts.push(`Sample Answer: ${it.sampleAnswer || it.modelAnswer}`);
-    if (Array.isArray(it.keywords) && it.keywords.length) parts.push(`Key Terms to Look For: ${it.keywords.join(", ")}`);
+    if (it.sampleAnswer || it.modelAnswer)
+      parts.push(`Sample Answer: ${it.sampleAnswer || it.modelAnswer}`);
+    if (Array.isArray(it.keywords) && it.keywords.length)
+      parts.push(`Key Terms to Look For: ${it.keywords.join(", ")}`);
     if (it.explanation) parts.push(`Explanation: ${it.explanation}`);
     keyHtml = `<div class="ws-keynote">💡 <b>Exemplar Response:</b> ${esc(parts.join(" ") || "Student demonstrates accurate mathematical justification.")}</div>`;
   }
@@ -732,7 +832,7 @@ function renderProblem(it, n, { key = false, supported = false, commonMistake = 
     <li class="ws-problem-card">
       <div class="ws-problem-head">
         <span class="ws-pnum">${n}</span>
-        <span class="ws-pbadge">${t ? t.replace(/-/g, ' ').toUpperCase() : 'PRACTICE'}</span>
+        <span class="ws-pbadge">${t ? t.replace(/-/g, " ").toUpperCase() : "PRACTICE"}</span>
       </div>
       <div class="ws-pbody">
         ${diagramHtml}
@@ -769,15 +869,18 @@ function wordBank(vocab = []) {
 function conceptAnchorBox(cfg, isGroup1 = true) {
   const intro = cfg.conceptIntro || {};
   const heading = intro.heading || cfg.title || "Core Mathematical Strategy";
-  const keyIdea = intro.keyIdea || cfg.contentObjective || "Understand and apply the target mathematical relationship with precision.";
+  const keyIdea =
+    intro.keyIdea ||
+    cfg.contentObjective ||
+    "Understand and apply the target mathematical relationship with precision.";
   const iDo = intro.iDo || {};
   const steps = Array.isArray(iDo.lines) ? iDo.lines.map((l) => `<li>${esc(l)}</li>`).join("") : "";
 
   return `
-    <section class="ws-anchor-box ${isGroup1 ? 'ws-support-anchor' : 'ws-challenge-anchor'}">
+    <section class="ws-anchor-box ${isGroup1 ? "ws-support-anchor" : "ws-challenge-anchor"}">
       <div class="ws-anchor-title">📌 Concept Anchor &amp; Strategy Model: ${esc(heading)}</div>
       <p class="ws-anchor-idea"><b>Key Takeaway:</b> ${esc(keyIdea)}</p>
-      ${steps ? `<div class="ws-anchor-steps"><b>Worked Steps ("I Do" Strategy):</b><ol>${steps}</ol></div>` : ''}
+      ${steps ? `<div class="ws-anchor-steps"><b>Worked Steps ("I Do" Strategy):</b><ol>${steps}</ol></div>` : ""}
     </section>
   `;
 }
@@ -803,9 +906,15 @@ function discourseCard(discourse, isGroup1 = true) {
 
 function cerWritingMatrix(cerData, isGroup1 = true) {
   const q = cerData?.question || "Justify why your mathematical solution is accurate and complete.";
-  const claimHint = isGroup1 ? "Sentence Starter: My mathematical claim is that..." : "State your direct mathematical answer/claim with units.";
-  const evidHint = isGroup1 ? "Sentence Starter: The evidence from the model/calculation shows..." : "Cite exact numbers, calculations, dimensions, or graph data.";
-  const reasHint = isGroup1 ? "Sentence Starter: This proves my answer because the math rule states..." : "Explain the mathematical theorem, property, or definition connecting evidence to claim.";
+  const claimHint = isGroup1
+    ? "Sentence Starter: My mathematical claim is that..."
+    : "State your direct mathematical answer/claim with units.";
+  const evidHint = isGroup1
+    ? "Sentence Starter: The evidence from the model/calculation shows..."
+    : "Cite exact numbers, calculations, dimensions, or graph data.";
+  const reasHint = isGroup1
+    ? "Sentence Starter: This proves my answer because the math rule states..."
+    : "Explain the mathematical theorem, property, or definition connecting evidence to claim.";
 
   return `
     <section class="ws-cer-section">
@@ -852,14 +961,14 @@ function publisherHeader(cfg, levelBadge, levelSub, isKey = false) {
   const wbUrl = `/curriculum/math-workbench/?lesson=${esc(cfg.lessonId)}`;
   const title = esc(cfg.title || cfg.lessonId || "Mathematics Practice");
   const std = esc(cfg.standard || "CCSS.MATH.CONTENT.6.RP / 6.NS");
-  
+
   return `
     <header class="ws-publisher-header">
       <div class="ws-header-top-ribbon">
         <div class="ws-ribbon-left">
           <span class="ws-pill ws-pill-std">${std}</span>
           <span class="ws-pill ws-pill-lesson">Lesson ${esc(cfg.lessonId)}</span>
-          <span class="ws-pill ws-pill-level">${esc(isKey ? levelBadge + ' · Answer Key' : levelBadge)}</span>
+          <span class="ws-pill ws-pill-level">${esc(isKey ? levelBadge + " · Answer Key" : levelBadge)}</span>
         </div>
         <div class="ws-rubric-box">
           <div class="ws-rubric-score">SCORE: <span class="ws-score-blank">_______ / 10</span></div>
@@ -890,7 +999,9 @@ function publisherHeader(cfg, levelBadge, levelSub, isKey = false) {
    ========================================================================== */
 
 function buildGroup1SupportWorksheet(cfg, isKey = false) {
-  const approaching = (cfg.practice?.approaching || []).filter((p) => p && (p.type || p.stem || p.prompt));
+  const approaching = (cfg.practice?.approaching || []).filter(
+    (p) => p && (p.type || p.stem || p.prompt),
+  );
   const onLevel = (cfg.practice?.onLevel || []).filter((p) => p && (p.type || p.stem || p.prompt));
   const combined = approaching.length ? approaching : onLevel;
   const problems = combined.slice(0, 6);
@@ -913,13 +1024,15 @@ function buildGroup1SupportWorksheet(cfg, isKey = false) {
       <ol class="ws-problems-grid">${itemsHtml}</ol>
       ${discHtml}
       ${cerHtml}
-      ${!isKey ? studentSelfCheckBar() : ''}
+      ${!isKey ? studentSelfCheckBar() : ""}
     </section>
   `;
 }
 
 function buildGroup2ChallengeWorksheet(cfg, isKey = false) {
-  const extending = (cfg.practice?.extending || []).filter((p) => p && (p.type || p.stem || p.prompt));
+  const extending = (cfg.practice?.extending || []).filter(
+    (p) => p && (p.type || p.stem || p.prompt),
+  );
   const onLevel = (cfg.practice?.onLevel || []).filter((p) => p && (p.type || p.stem || p.prompt));
   const combined = extending.length ? extending : onLevel;
   const problems = combined.slice(0, 6);
@@ -933,13 +1046,15 @@ function buildGroup2ChallengeWorksheet(cfg, isKey = false) {
   const discHtml = cfg.explore?.discourse ? discourseCard(cfg.explore.discourse, false) : "";
   const cerHtml = cerWritingMatrix(cfg.cerWriting, false);
 
-  const authorBox = !isKey ? `
+  const authorBox = !isKey
+    ? `
     <section class="ws-author-challenge-box">
       <div class="ws-author-head">✍️ AUTHOR YOUR OWN EXTENSION CHALLENGE</div>
       <p class="ws-author-prompt">Create an original multi-step word problem aligned to this standard. Include constraints, and write the complete step-by-step mathematical proof below.</p>
       ${workBox("Author Workspace & Complete Solution Key", true)}
     </section>
-  ` : '';
+  `
+    : "";
 
   return `
     <section class="ws-page ws-group2-page">
@@ -949,13 +1064,15 @@ function buildGroup2ChallengeWorksheet(cfg, isKey = false) {
       ${discHtml}
       ${cerHtml}
       ${authorBox}
-      ${!isKey ? studentSelfCheckBar() : ''}
+      ${!isKey ? studentSelfCheckBar() : ""}
     </section>
   `;
 }
 
 function buildCatchupWorksheet(cfg, isKey = false) {
-  const approaching = (cfg.practice?.approaching || []).filter((p) => p && (p.type || p.stem || p.prompt));
+  const approaching = (cfg.practice?.approaching || []).filter(
+    (p) => p && (p.type || p.stem || p.prompt),
+  );
   const onLevel = (cfg.practice?.onLevel || []).filter((p) => p && (p.type || p.stem || p.prompt));
   const problems = (approaching.length ? approaching : onLevel).slice(0, 5);
   const commonMistake = isKey ? cfg.practice?.commonMistake || "" : "";
@@ -967,26 +1084,33 @@ function buildCatchupWorksheet(cfg, isKey = false) {
   return `
     <section class="ws-page ws-catchup-page">
       ${publisherHeader(cfg, "🔵 Prerequisite Catch-Up &amp; Skill Bridge", "Targeted Prerequisite Reinforcement · Visual Bridge to Grade 6 Standard", isKey)}
-      ${!isKey ? conceptAnchorBox(cfg, true) : ''}
-      ${!isKey ? wordBank(cfg.vocabulary) : ''}
+      ${!isKey ? conceptAnchorBox(cfg, true) : ""}
+      ${!isKey ? wordBank(cfg.vocabulary) : ""}
       <ol class="ws-problems-grid">${itemsHtml}</ol>
       ${cerWritingMatrix(cfg.cerWriting, true)}
-      ${!isKey ? studentSelfCheckBar() : ''}
+      ${!isKey ? studentSelfCheckBar() : ""}
     </section>
   `;
 }
 
-function buildCoreTierPage(cfg, pool, label, sub, { supported = false, isKey = false, extraScaffold = false } = {}) {
+function buildCoreTierPage(
+  cfg,
+  pool,
+  label,
+  sub,
+  { supported = false, isKey = false, extraScaffold = false } = {},
+) {
   const commonMistake = isKey ? cfg.practice?.commonMistake || "" : "";
   const itemsHtml = pool
     .map((p, i) => renderProblem(p, i + 1, { key: isKey, supported, commonMistake }))
     .join("");
 
-  const anchorHtml = (supported && !isKey) ? conceptAnchorBox(cfg, true) : "";
-  const bankHtml = (supported && !isKey) ? wordBank(cfg.vocabulary) : "";
-  const scaffoldBanner = (extraScaffold && !isKey)
-    ? `<div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>`
-    : "";
+  const anchorHtml = supported && !isKey ? conceptAnchorBox(cfg, true) : "";
+  const bankHtml = supported && !isKey ? wordBank(cfg.vocabulary) : "";
+  const scaffoldBanner =
+    extraScaffold && !isKey
+      ? `<div class="ws-scaffold-note">🧩 <b>Built-in Scaffolding:</b> Use the visual word bank and worked models. Sentence frames are provided under each problem.</div>`
+      : "";
 
   return `
     <section class="ws-page ws-core-tier-page">
@@ -996,7 +1120,7 @@ function buildCoreTierPage(cfg, pool, label, sub, { supported = false, isKey = f
       ${scaffoldBanner}
       <ol class="ws-problems-grid">${itemsHtml}</ol>
       ${cerWritingMatrix(cfg.cerWriting, supported)}
-      ${!isKey ? studentSelfCheckBar() : ''}
+      ${!isKey ? studentSelfCheckBar() : ""}
     </section>
   `;
 }
@@ -1023,14 +1147,44 @@ function buildWorksheet(cfg, { key = false } = {}) {
     const levelZero = approaching.slice(0, 4);
 
     const tiers = [
-      { pool: levelZero, label: "Level 0", sub: "Core Foundation · Step-by-Step Scaffolds", supported: true, extraScaffold: true },
-      { pool: approaching, label: "Version A", sub: "Approaching Standard · Supported Practice", supported: true, extraScaffold: false },
-      { pool: onLevel, label: "Version B", sub: "On-Level Core Mastery · Standard Rigor", supported: false, extraScaffold: false },
-      { pool: extending, label: "Challenge", sub: "Enrichment &amp; Non-Routine Synthesis", supported: false, extraScaffold: false }
+      {
+        pool: levelZero,
+        label: "Level 0",
+        sub: "Core Foundation · Step-by-Step Scaffolds",
+        supported: true,
+        extraScaffold: true,
+      },
+      {
+        pool: approaching,
+        label: "Version A",
+        sub: "Approaching Standard · Supported Practice",
+        supported: true,
+        extraScaffold: false,
+      },
+      {
+        pool: onLevel,
+        label: "Version B",
+        sub: "On-Level Core Mastery · Standard Rigor",
+        supported: false,
+        extraScaffold: false,
+      },
+      {
+        pool: extending,
+        label: "Challenge",
+        sub: "Enrichment &amp; Non-Routine Synthesis",
+        supported: false,
+        extraScaffold: false,
+      },
     ].filter((t) => t.pool.length);
 
     pages = tiers
-      .map((t) => buildCoreTierPage(cfg, t.pool, t.label, t.sub, { supported: t.supported, isKey: key, extraScaffold: t.extraScaffold }))
+      .map((t) =>
+        buildCoreTierPage(cfg, t.pool, t.label, t.sub, {
+          supported: t.supported,
+          isKey: key,
+          extraScaffold: t.extraScaffold,
+        }),
+      )
       .join("\n");
   }
 
@@ -1681,7 +1835,8 @@ function main() {
   const stale = [];
   const only = process.argv.slice(2).filter((a) => !a.startsWith("--"));
   const dirs = lessonDirs().filter((d) => (only.length ? only.includes(d) : true));
-  let written = 0, skipped = 0;
+  let written = 0,
+    skipped = 0;
 
   for (const d of dirs) {
     let cfg;
@@ -1694,8 +1849,11 @@ function main() {
 
     const hasAny =
       ["approaching", "onLevel", "extending", "optional"].some((tier) =>
-        (cfg.practice?.[tier] || []).some((p) => p && (p.type || p.stem || p.prompt))
-      ) || Boolean(cfg.lessonId && (cfg.lessonId.includes("-group") || cfg.lessonId.includes("-catchup")));
+        (cfg.practice?.[tier] || []).some((p) => p && (p.type || p.stem || p.prompt)),
+      ) ||
+      Boolean(
+        cfg.lessonId && (cfg.lessonId.includes("-group") || cfg.lessonId.includes("-catchup")),
+      );
 
     if (!hasAny) {
       skipped++;
@@ -1723,7 +1881,7 @@ function main() {
       console.error(
         `${stale.length} worksheet page(s) are STALE — the committed HTML no longer matches its config.json:\n  ${stale
           .slice(0, 15)
-          .join("\n  ")}\n\nFix: node scripts/generate-worksheets.mjs`
+          .join("\n  ")}\n\nFix: node scripts/generate-worksheets.mjs`,
       );
       process.exit(1);
     }

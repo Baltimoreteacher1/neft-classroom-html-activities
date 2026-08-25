@@ -177,9 +177,18 @@ export function createApp(config) {
         if (input.type === "checkbox" || input.type === "radio") input.checked = false;
         else if (input.id !== "studentNameInput" && input.name !== "studentName") input.value = "";
       });
-      document.querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected").forEach((el) => {
-        el.classList.remove("is-selected", "is-correct", "is-incorrect", "correct", "wrong", "selected");
-      });
+      document
+        .querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected")
+        .forEach((el) => {
+          el.classList.remove(
+            "is-selected",
+            "is-correct",
+            "is-incorrect",
+            "correct",
+            "wrong",
+            "selected",
+          );
+        });
     } catch (_) {}
   };
   mountTeacherClearButton(window.__ntClearLessonAnswers);
@@ -814,9 +823,18 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         if (input.type === "checkbox" || input.type === "radio") input.checked = false;
         else if (input.id !== "studentNameInput" && input.name !== "studentName") input.value = "";
       });
-      document.querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected").forEach((el) => {
-        el.classList.remove("is-selected", "is-correct", "is-incorrect", "correct", "wrong", "selected");
-      });
+      document
+        .querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected")
+        .forEach((el) => {
+          el.classList.remove(
+            "is-selected",
+            "is-correct",
+            "is-incorrect",
+            "correct",
+            "wrong",
+            "selected",
+          );
+        });
     } catch (_) {}
     const cur = state.get().currentPhase ?? 0;
     document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: cur } }));
@@ -848,13 +866,25 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         phases.forEach((_, i) => state.clearPhaseResponses(i));
       }
       try {
-        document.querySelectorAll('input:not([type="hidden"]), textarea, select').forEach((input) => {
-          if (input.type === "checkbox" || input.type === "radio") input.checked = false;
-          else if (input.id !== "studentNameInput" && input.name !== "studentName") input.value = "";
-        });
-        document.querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected").forEach((el) => {
-          el.classList.remove("is-selected", "is-correct", "is-incorrect", "correct", "wrong", "selected");
-        });
+        document
+          .querySelectorAll('input:not([type="hidden"]), textarea, select')
+          .forEach((input) => {
+            if (input.type === "checkbox" || input.type === "radio") input.checked = false;
+            else if (input.id !== "studentNameInput" && input.name !== "studentName")
+              input.value = "";
+          });
+        document
+          .querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected")
+          .forEach((el) => {
+            el.classList.remove(
+              "is-selected",
+              "is-correct",
+              "is-incorrect",
+              "correct",
+              "wrong",
+              "selected",
+            );
+          });
       } catch (_) {}
       const cur = state.get().currentPhase ?? 0;
       document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: cur } }));

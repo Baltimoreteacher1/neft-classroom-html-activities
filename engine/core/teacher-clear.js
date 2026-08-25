@@ -171,12 +171,7 @@ function buildPagePicker(pop, info, close) {
   clearAll.className = "nt-teacher-clear-do nt-teacher-clear-all";
   clearAll.textContent = "Clear all pages";
   clearAll.addEventListener("click", () => {
-    if (
-      !window.confirm(
-        "Clear ALL answers on this lesson? This only affects this device.",
-      )
-    )
-      return;
+    if (!window.confirm("Clear ALL answers on this lesson? This only affects this device.")) return;
     try {
       info.clearAll();
     } catch (_) {}
@@ -211,12 +206,7 @@ function buildClearAll(pop, info, close) {
   btn.className = "nt-teacher-clear-do nt-teacher-clear-all";
   btn.textContent = "Clear all answers";
   btn.addEventListener("click", () => {
-    if (
-      !window.confirm(
-        "Clear the answers on this lesson? This only affects this device.",
-      )
-    )
-      return;
+    if (!window.confirm("Clear the answers on this lesson? This only affects this device.")) return;
     try {
       info.clearAll();
     } catch (_) {}

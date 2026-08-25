@@ -460,7 +460,8 @@ function hero(config, accent, voice) {
     group2: "Focus: Direct Practice & Fluency Building",
     challenge: "Focus: Multi-Step Real-World Application",
   };
-  const variantKey = config.variant || (config.smallGroup ? `group${config.smallGroup.group}` : "catchup");
+  const variantKey =
+    config.variant || (config.smallGroup ? `group${config.smallGroup.group}` : "catchup");
   const focusLabel = focusByVariant[variantKey] || "Focus: Targeted Small-Group Practice";
   chips.appendChild(el("span", "sg-chip sg-chip-focus", esc(focusLabel)));
   chips.appendChild(el("span", "sg-chip", esc(config.timeEstimate || "15–20 min")));
@@ -713,11 +714,20 @@ function renderStudio(config) {
         if (input.type === "checkbox" || input.type === "radio") input.checked = false;
         else input.value = "";
       });
-      document.querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected").forEach((el) => {
-        if (!el.classList.contains("sg-tab-btn") && !el.classList.contains("tab-btn")) {
-          el.classList.remove("is-selected", "is-correct", "is-incorrect", "correct", "wrong", "selected");
-        }
-      });
+      document
+        .querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected")
+        .forEach((el) => {
+          if (!el.classList.contains("sg-tab-btn") && !el.classList.contains("tab-btn")) {
+            el.classList.remove(
+              "is-selected",
+              "is-correct",
+              "is-incorrect",
+              "correct",
+              "wrong",
+              "selected",
+            );
+          }
+        });
       document.querySelectorAll(".fb, .feedback, [role='status']").forEach((el) => {
         el.textContent = "";
         el.style.display = "none";

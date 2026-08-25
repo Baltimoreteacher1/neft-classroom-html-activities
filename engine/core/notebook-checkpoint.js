@@ -351,7 +351,9 @@ function renderLessonNotesHtml(config, lang = "en") {
       continue;
     }
     const subhead = isEs
-      ? (cp.box === 1 ? "Sección 1: Palabras de Matemáticas" : "Sección 2: Matemáticas de Hoy")
+      ? cp.box === 1
+        ? "Sección 1: Palabras de Matemáticas"
+        : "Sección 2: Matemáticas de Hoy"
       : cp.heading.replace(/^Notebook time — /, "");
     sections.push(`
       <section class="nt-nb-model-section">
@@ -364,7 +366,9 @@ function renderLessonNotesHtml(config, lang = "en") {
       `Math Notes: lesson ${(config && config.lessonId) || "unknown"} produced 0 notes sections`,
     );
   }
-  const title = String(isEs && config.titleEs ? config.titleEs : (config && config.title) || "").trim();
+  const title = String(
+    isEs && config.titleEs ? config.titleEs : (config && config.title) || "",
+  ).trim();
   const dateLabel = isEs ? "Fecha:" : "Date:";
   const datePrompt = isEs ? "escribe la fecha de hoy" : "write today's date";
   const defaultTitle = isEs ? "Notas de Matemáticas de Hoy" : "Today's Math Notes";
@@ -398,8 +402,8 @@ export function openMathNotesModel(config, defaultLang) {
         <h2>${isEs ? "¿Cómo debe verse mi página?" : "What should my page look like?"}</h2>
         <div style="display:flex; align-items:center; gap:10px;">
           <div class="nt-nb-lang-toggle" role="group" aria-label="Math Notes Language">
-            <button type="button" class="nt-nb-lang-btn ${!isEs ? 'active' : ''}" data-lang="en">🇺🇸 EN</button>
-            <button type="button" class="nt-nb-lang-btn ${isEs ? 'active' : ''}" data-lang="es">🇲🇽 ES</button>
+            <button type="button" class="nt-nb-lang-btn ${!isEs ? "active" : ""}" data-lang="en">🇺🇸 EN</button>
+            <button type="button" class="nt-nb-lang-btn ${isEs ? "active" : ""}" data-lang="es">🇲🇽 ES</button>
           </div>
           <button type="button" class="nt-nb-model-close" aria-label="Close">✕</button>
         </div>
@@ -511,7 +515,13 @@ function renderCopyPanelHtml(cp, isEs = false, config = null) {
   }
   if (cp.box === 2 && cp.copyPanel.rule) {
     let ruleText = cp.copyPanel.rule;
-    if (isEs && config && config.launch && config.launch.conceptIntro && config.launch.conceptIntro.keyIdeaEs) {
+    if (
+      isEs &&
+      config &&
+      config.launch &&
+      config.launch.conceptIntro &&
+      config.launch.conceptIntro.keyIdeaEs
+    ) {
       const firstIdeaSentence = config.launch.conceptIntro.keyIdeaEs.split(/\.\s+/)[0];
       if (firstIdeaSentence) ruleText = firstIdeaSentence.trim();
     }

@@ -62,6 +62,13 @@ if (typeof document === "undefined") {
     getElementById(_id) {
       return null;
     },
+    // openMathNotesModel() reads document.documentElement.lang to decide whether
+    // to open in Spanish. The mock predates that read, so every call threw
+    // "Cannot read properties of undefined (reading 'lang')" and this whole
+    // sweep died on lesson 1-1 — a harness gap, not a product defect. English is
+    // the right default here: the Spanish path is exercised by passing
+    // defaultLang explicitly.
+    documentElement: { lang: "en" },
     body: {
       append() {},
     },

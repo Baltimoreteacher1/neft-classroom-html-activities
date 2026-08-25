@@ -52,13 +52,19 @@ export function shortenVerbatim(text, maxWords) {
     /^(with|from|and|or|of|the|a|an|to|that|which|for|in|on|by|into|than|as|is|are|be|one|another|each|both|either)$/i;
 
   const fixTrailing = (str) => {
-    let s = String(str || "").trim().replace(/[,;:—–]+$/, "");
+    let s = String(str || "")
+      .trim()
+      .replace(/[,;:—–]+$/, "");
     // If cut inside an unmatched opening parenthesis, trim back to before the paren
     const openP = (s.match(/\(/g) || []).length;
     const closeP = (s.match(/\)/g) || []).length;
     if (openP > closeP) {
       const idx = s.lastIndexOf("(");
-      if (idx >= 0) s = s.slice(0, idx).trim().replace(/[,;:—–]+$/, "");
+      if (idx >= 0)
+        s = s
+          .slice(0, idx)
+          .trim()
+          .replace(/[,;:—–]+$/, "");
     }
     const words = s.split(/\s+/);
     while (words.length > 3 && DANGLING.test(words[words.length - 1])) {

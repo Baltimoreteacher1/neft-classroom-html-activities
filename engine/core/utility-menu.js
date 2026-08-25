@@ -48,12 +48,7 @@ export function mountUtilityMenu() {
   clearAnswers.className = "nt-utility-item nt-utility-item-danger";
   clearAnswers.innerHTML = '<span aria-hidden="true">🧹</span><span>Clear all answers</span>';
   clearAnswers.addEventListener("click", () => {
-    if (
-      !window.confirm(
-        "Clear the answers on this lesson? This only affects this device.",
-      )
-    )
-      return;
+    if (!window.confirm("Clear the answers on this lesson? This only affects this device.")) return;
     if (typeof window.__ntClearLessonAnswers === "function") {
       window.__ntClearLessonAnswers();
     } else {
@@ -61,10 +56,13 @@ export function mountUtilityMenu() {
         window.NeftSaveResume?.reset?.();
       } catch (_) {}
       try {
-        document.querySelectorAll('input:not([type="hidden"]), textarea, select').forEach((input) => {
-          if (input.type === "checkbox" || input.type === "radio") input.checked = false;
-          else if (input.id !== "studentNameInput" && input.name !== "studentName") input.value = "";
-        });
+        document
+          .querySelectorAll('input:not([type="hidden"]), textarea, select')
+          .forEach((input) => {
+            if (input.type === "checkbox" || input.type === "radio") input.checked = false;
+            else if (input.id !== "studentNameInput" && input.name !== "studentName")
+              input.value = "";
+          });
       } catch (_) {}
     }
     close();
