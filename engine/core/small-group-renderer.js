@@ -1423,6 +1423,10 @@ function renderStudio(config) {
   // numbered lesson section.
   mountToolDrawer(config, { panels: activeTabSteps, hero: heroNode });
 
+  // The always-visible "Hide buttons" pill (Focus Mode) — same affordance as
+  // the whole-group lessons.
+  import("./focus-mode.js").then((m) => m.mountUniversalFocusButton());
+
   // Print must show everything: open collapsed tools/steps for the duration
   // of the print, then restore the on-screen state.
   const openedForPrint = new Set();

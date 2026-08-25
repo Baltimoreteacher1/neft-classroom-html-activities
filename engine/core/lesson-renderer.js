@@ -196,6 +196,9 @@ export function bootLesson(config) {
   // dock — multiplication chart, number line, calculator. Useful, and not the
   // same thing: it never offers the model this lesson is actually about.
   mountToolDrawer(config);
+  // The always-visible "Hide buttons" pill (Focus Mode): one tap hides every
+  // other button, menu, and floating widget so only the mathematics remains.
+  import("./focus-mode.js").then((m) => m.mountUniversalFocusButton());
 }
 
 // ── Helpers ──

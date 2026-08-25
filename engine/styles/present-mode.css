@@ -586,3 +586,48 @@ body.nt-present #nt-present-widget:focus-within {
   }
 }
 
+
+/* ── Projection declutter ──────────────────────────────────────────────────
+   On the board, only the mathematics and the presenter's own controls belong
+   on screen. Every floating widget a student uses at their own desk — save
+   badge, workbench launcher, tools pill, annotation dock, supports launcher,
+   subcard ribbon, station timer, the Hide-buttons pill — leaves the canvas
+   while Present Mode is on. */
+body.nt-present #nsr-launcher,
+body.nt-present #mwb-launcher,
+body.nt-present .nt-utility-menu,
+body.nt-present .annot-dock,
+body.nt-present .sg-annotation-tools,
+body.nt-present .ewl-supports-launcher,
+body.nt-present .phase-subcards-ribbon,
+body.nt-present .sg-station-timer,
+body.nt-present .class-board-strip,
+body.nt-present #nt-focus-fab,
+body.nt-present #lesson-a11y-bar {
+  display: none !important;
+}
+
+/* The in-act step strip reads from the back of the room: bigger chips, and it
+   stays put under the fixed presenter chrome instead of sticking mid-scroll. */
+body.nt-present .act-step-strip {
+  position: static;
+  justify-content: center;
+  padding: 12px 16px;
+}
+body.nt-present .act-step-chip {
+  font-size: 1.05rem;
+  min-height: 48px;
+  padding: 0 18px;
+}
+body.nt-present .act-step-next .btn,
+body.nt-present .act-step-next button {
+  font-size: 1.05rem;
+}
+body.nt-present .sg-substeps {
+  position: static;
+  justify-content: center;
+}
+body.nt-present .sg-substep-chip {
+  font-size: 16px;
+  min-height: 48px;
+}

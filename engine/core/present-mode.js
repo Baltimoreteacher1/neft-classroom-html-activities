@@ -199,15 +199,44 @@ export function initPresentMode({ app, phaseConfigs, state } = {}) {
       });
     }
 
-    // 2. Check for Phase Configs
+    // 2. Check for Phase Configs. Each Act renders as an in-page step strip
+    //    (renderActSteps), so "one stop per Act" would project a stop whose
+    //    other steps are hidden panels the audience can never see. The MOUNTED
+    //    phase therefore contributes one stop per step (activating a stop
+    //    clicks its chip); the phases not yet in the DOM contribute one stop
+    //    each, and navigating to one rebuilds the rail so its steps appear.
     if (phaseConfigs && phaseConfigs.length > 0) {
-      return phaseConfigs.map((p, i) => ({
-        title: `${i + 1} · ${p?.name || `Part ${i + 1}`}`,
-        activate: () => {
-          if (app?.navigateTo) app.navigateTo(i);
-          document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: i } }));
-        },
-      }));
+      const parts = [];
+      const mountedPhase = state?.get?.().currentPhase;
+      const goToPhase = (i) => {
+        if (app?.navigateTo) app.navigateTo(i);
+        document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: i } }));
+        // The new phase brings its own step strip; let it mount, then rebuild
+        // the rail so the arrows walk its steps instead of skipping them.
+        setTimeout(() => {
+          renderRailContent();
+          if (nav) {
+            const fresh = getParts();
+            nav.querySelector(".pm-count").textContent = `${current + 1} / ${fresh.length}`;
+          }
+        }, 350);
+      };
+      phaseConfigs.forEach((p, i) => {
+        const base = `${i + 1} · ${p?.name || `Part ${i + 1}`}`;
+        const chips = i === mountedPhase ? [...document.querySelectorAll(".act-step-chip")] : [];
+        if (chips.length) {
+          chips.forEach((chip) => {
+            const label = chip.textContent
+              .trim()
+              .replace(/\s+/g, " ")
+              .replace(/^\d+\s*/, "");
+            parts.push({ title: `${base} — ${label}`, activate: () => chip.click() });
+          });
+        } else {
+          parts.push({ title: base, activate: () => goToPhase(i) });
+        }
+      });
+      return parts;
     }
 
     // 3. Fallback: check DOM for .phase elements

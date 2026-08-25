@@ -22,7 +22,13 @@ function updateFocusControls() {
     btn.classList.toggle("is-active", active);
     btn.setAttribute("aria-pressed", active ? "true" : "false");
     const label = btn.querySelector(".nt-focus-label");
-    if (label) label.textContent = active ? "Exit Focus" : "Focus Mode";
+    if (label) {
+      label.textContent = active
+        ? "Show buttons"
+        : btn.id === "nt-focus-fab"
+          ? "Hide buttons"
+          : "Focus Mode";
+    }
   });
 
   // Ensure the exit pill exists when focus is active
@@ -120,8 +126,49 @@ export function mountUniversalFocusButton() {
       body.nt-focus-mode .sg-footer,
       body.nt-focus-mode #nsr-launcher,
       body.nt-focus-mode #mwb-launcher,
-      body.nt-focus-mode .ewl-supports-launcher {
+      body.nt-focus-mode .ewl-supports-launcher,
+      body.nt-focus-mode #nt-present-widget,
+      body.nt-focus-mode .sg-station-timer,
+      body.nt-focus-mode .annot-dock,
+      body.nt-focus-mode .sg-annotation-tools,
+      body.nt-focus-mode .class-board-strip,
+      body.nt-focus-mode .phase-subcards-ribbon,
+      body.nt-focus-mode .teacher-panel {
         display: none !important;
+      }
+
+      /* The one button left standing: a quiet pill that puts everything back. */
+      .nt-focus-fab {
+        position: fixed;
+        left: 14px;
+        bottom: 14px;
+        z-index: 2147483000;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 44px;
+        padding: 8px 16px;
+        background: #ffffff;
+        color: #12355b;
+        font-family: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
+        font-size: 0.86rem;
+        font-weight: 700;
+        border: 1.5px solid #d7e2ed;
+        border-radius: 999px;
+        box-shadow: 0 2px 8px rgba(18, 53, 91, 0.14);
+        cursor: pointer;
+      }
+      .nt-focus-fab:hover {
+        border-color: #12355b;
+      }
+      body.nt-focus-mode .nt-focus-fab,
+      body.nt-present .nt-focus-fab {
+        display: none !important;
+      }
+      @media print {
+        .nt-focus-fab {
+          display: none !important;
+        }
       }
 
       body.nt-focus-mode .main,
@@ -153,6 +200,23 @@ export function mountUniversalFocusButton() {
       }
     `;
     document.head.appendChild(style);
+  }
+
+  // The visible entry point: one small pill that hides every other button,
+  // menu, and floating widget on the page. Despite this function's name it
+  // used to mount nothing — Focus Mode was only reachable through the Tools
+  // menu, which is itself one of the buttons a distracted student never opens.
+  if (!document.getElementById("nt-focus-fab")) {
+    const fab = document.createElement("button");
+    fab.id = "nt-focus-fab";
+    fab.type = "button";
+    fab.className = "nt-focus-fab no-print";
+    fab.setAttribute("data-nt-focus-toggle", "");
+    fab.setAttribute("aria-pressed", "false");
+    fab.title = "Hide every other button and menu — Esc brings them back";
+    fab.innerHTML = `<span aria-hidden="true">🙈</span> <span class="nt-focus-label">Hide buttons</span>`;
+    fab.addEventListener("click", () => toggleFocusMode());
+    document.body.appendChild(fab);
   }
 
   // Keyboard shortcut listener (Esc exits focus mode, Alt+F toggles)
