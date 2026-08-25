@@ -98,6 +98,23 @@ export function mountUtilityMenu() {
   });
   actions.appendChild(projectorBtn);
 
+  // Focus Mode / Hide Everything Else — full distraction-free screen
+  const focusBtn = document.createElement("button");
+  focusBtn.type = "button";
+  focusBtn.className = "nt-utility-item";
+  const updateFocusBtnText = () => {
+    const isOn = document.body.classList.contains("nt-focus-mode");
+    focusBtn.innerHTML = `<span aria-hidden="true">🎯</span><span>Focus Mode: <strong>${isOn ? "ON (Hidden)" : "OFF"}</strong></span>`;
+  };
+  updateFocusBtnText();
+  focusBtn.addEventListener("click", () => {
+    document.body.classList.toggle("nt-focus-mode");
+    updateFocusBtnText();
+    ensureExitFocusButton();
+    close();
+  });
+  actions.appendChild(focusBtn);
+
   // Math Workbench — resolves to the lesson-aware launcher's deep link when
   // that shared script is on the page (its FAB is hidden by the menu's CSS).
   const workbench = document.createElement("a");
@@ -152,4 +169,20 @@ export function mountUtilityMenu() {
   // (teacher-mode pill re-renders, shared widget scripts load deferred).
   setTimeout(adopt, 1200);
   setTimeout(adopt, 3500);
+}
+
+function ensureExitFocusButton() {
+  let exitBtn = document.getElementById("nt-exit-focus-btn");
+  if (!exitBtn) {
+    exitBtn = document.createElement("button");
+    exitBtn.id = "nt-exit-focus-btn";
+    exitBtn.className = "nt-exit-focus-btn";
+    exitBtn.type = "button";
+    exitBtn.innerHTML = "✕ Exit Focus";
+    exitBtn.title = "Show sidebar and all lesson buttons (Esc)";
+    exitBtn.addEventListener("click", () => {
+      document.body.classList.remove("nt-focus-mode");
+    });
+    document.body.appendChild(exitBtn);
+  }
 }
