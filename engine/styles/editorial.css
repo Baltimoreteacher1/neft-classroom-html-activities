@@ -628,29 +628,104 @@ body.editorial .rating-chip.active {
 
 
 
-/* ── Buttons: refined, less candy ─────────────────────────────────────────── */
+/* ── Buttons & Clear Next Actions (Student-First UX) ─────────────────────── */
 body.editorial .btn {
-  border-radius: 6px;
+  min-height: 48px;
+  padding: 10px 20px;
+  border-radius: 8px;
   font-family: var(--fl-body);
   font-weight: var(--fw-semibold);
+  font-size: 1rem;
   letter-spacing: 0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
   transition:
-    transform 0.12s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
+    transform 0.14s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
-body.editorial .btn-primary {
+
+body.editorial .btn-primary,
+body.editorial .btn-check,
+body.editorial .btn-next {
+  min-height: 52px;
   background: var(--navy);
-  border-color: var(--navy);
+  border: 1.5px solid var(--navy);
+  color: #ffffff;
+  font-weight: var(--fw-bold);
+  box-shadow: 0 1px 3px rgba(18, 53, 91, 0.1);
 }
-body.editorial .btn-primary:hover {
+
+body.editorial .btn-primary:hover,
+body.editorial .btn-check:hover,
+body.editorial .btn-next:hover {
   background: var(--navy-light);
+  border-color: var(--navy-light);
   transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(18, 53, 91, 0.15);
 }
+
 body.editorial .btn:focus-visible {
   outline: 3px solid var(--teal);
   outline-offset: 2px;
 }
+
+/* ── Mistake Recovery & Coaching Cards ────────────────────────────────────── */
+body.editorial .feedback-coaching,
+body.editorial .retry-card {
+  margin-top: var(--sp-4);
+  padding: 14px 18px;
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-left: 4px solid #f59e0b;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+body.editorial .retry-action-btn {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 8px 16px;
+  background: #ffffff;
+  border: 1.5px solid #f59e0b;
+  border-radius: 6px;
+  color: #78350f;
+  font-family: var(--fl-body);
+  font-weight: var(--fw-bold);
+  font-size: 0.92rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.14s ease;
+}
+
+body.editorial .retry-action-btn:hover {
+  background: #fef3c7;
+  transform: translateY(-1px);
+}
+
+/* ── Completed Card Visual Receding (Long-Task Comfort) ───────────────────── */
+body.editorial .card.is-completed,
+body.editorial .mc-problem.is-completed {
+  border-color: #cbd5e1;
+  background: #fafbfc;
+  transition: all 0.2s ease;
+}
+
+body.editorial .card.is-completed .card-title::after,
+body.editorial .mc-problem.is-completed .mc-pnum::after {
+  content: " ✓";
+  color: #16a34a;
+  font-weight: var(--fw-bold);
+}
+
 
 /* ── Sidebar: tighten typography, keep navy ───────────────────────────────── */
 body.editorial .sidebar {
