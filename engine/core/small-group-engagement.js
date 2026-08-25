@@ -852,12 +852,19 @@ export function createTalkSection(config, variant, onDone) {
     const frames = framesRow(stems);
     if (frames) card.appendChild(frames);
   }
-  if (talk.wordBank?.length) {
-    card.appendChild(el("p", "block-lab", "Word bank"));
+  // Academic vocabulary belongs IN the talk: when the prompt authors no word
+  // bank, hand students this lesson's own math terms so the conversation
+  // happens in the language of the discipline.
+  const bankWords = talk.wordBank?.length
+    ? talk.wordBank
+    : (Array.isArray(config.vocabulary) ? config.vocabulary : [])
+        .map((v) => v && v.term)
+        .filter(Boolean)
+        .slice(0, 5);
+  if (bankWords.length) {
+    card.appendChild(el("p", "block-lab", "Use these math words"));
     const bank = el("div", "sg-wordbank");
-    talk.wordBank
-      .slice(0, 10)
-      .forEach((word) => bank.appendChild(el("span", "sg-word", esc(word))));
+    bankWords.slice(0, 10).forEach((word) => bank.appendChild(el("span", "sg-word", esc(word))));
     card.appendChild(bank);
   }
 
