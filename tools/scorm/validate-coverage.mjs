@@ -49,6 +49,9 @@ const claim = (slug, source) => {
   else slugs.set(slug, source);
 };
 
+/** lessons/<id>/index.html — the engine boots the bridge for these. */
+const isEngineBooted = (file) => /^lessons\/[^/]+\/index\.html$/.test(file.replace(/\\/g, "/"));
+
 for (const a of catalog.activities) {
   const file = toFile(a.path);
   if (!existsSync(join(ROOT, file))) {
@@ -57,7 +60,14 @@ for (const a of catalog.activities) {
   }
   if (a.query && !a.id)
     problems.push(`catalog entry with query needs explicit id: ${a.path}${a.query}`);
-  if (!hasBridge(file)) problems.push(`catalog page lacks canvas-bridge: ${file}`);
+  // A Canvas grade path can arrive two ways, and only one of them is a
+  // sentinel in the HTML. `lessons/<id>/index.html` is rendered by the engine,
+  // which loads the bridge itself (engine/core/scorm-bridge.js) with the right
+  // per-type config; injecting a static tag there would race that and silently
+  // win with no config. So for engine-booted pathways the requirement is that
+  // the ENGINE path exists, not that a tag does.
+  if (!hasBridge(file) && !isEngineBooted(file))
+    problems.push(`catalog page lacks canvas-bridge: ${file}`);
   claim(toSlug(a), `activity ${a.path}${a.query || ""}`);
 }
 

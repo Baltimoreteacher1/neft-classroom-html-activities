@@ -9,6 +9,7 @@
 // Save/Resume also lives here (per Joel 2026-07-14): the menu item drives the
 // hidden #nsr-launcher, whose panel still opens in its usual spot.
 
+import { t } from "./i18n.js";
 import { isTeacherMode } from "./teacher-mode.js";
 
 export function mountUtilityMenu() {
@@ -23,7 +24,7 @@ export function mountUtilityMenu() {
   btn.className = "nt-utility-btn";
   btn.setAttribute("aria-haspopup", "true");
   btn.setAttribute("aria-expanded", "false");
-  btn.setAttribute("aria-label", "Lesson tools menu");
+  btn.setAttribute("aria-label", t("lessonToolsMenu"));
   btn.innerHTML =
     '<span aria-hidden="true">🧰</span><span>Tools</span>' +
     '<span class="nt-utility-caret" aria-hidden="true">▾</span>';
@@ -39,7 +40,7 @@ export function mountUtilityMenu() {
   const actions = pop.querySelector('[data-slot="actions"]');
 
   // Clear answers (teacher-only) — wipes THIS lesson's saved answers/progress on
-  // this device and reloads it blank, so a teacher can project a fresh copy
+  // this device in-place without reloading, so a teacher can project a fresh copy
   // without last period's (or their own demo) responses showing. Gated to
   // teacher mode so students can never erase their own work from here.
   const clearAnswers = document.createElement("button");
@@ -47,23 +48,22 @@ export function mountUtilityMenu() {
   clearAnswers.className = "nt-utility-item nt-utility-item-danger";
   clearAnswers.innerHTML = '<span aria-hidden="true">🧹</span><span>Clear all answers</span>';
   clearAnswers.addEventListener("click", () => {
-    if (
-      !window.confirm(
-        "Clear the answers on this lesson and reload it fresh? This only affects this device.",
-      )
-    )
-      return;
+    if (!window.confirm("Clear the answers on this lesson? This only affects this device.")) return;
     if (typeof window.__ntClearLessonAnswers === "function") {
       window.__ntClearLessonAnswers();
     } else {
-      // Fallback for pages without the lesson-engine hook: at least drop the
-      // Save/Resume pointer so auto-restore can't re-fill fields, then reload.
       try {
         window.NeftSaveResume?.reset?.();
-      } catch (_) {
-        /* save/resume not present */
-      }
-      window.location.reload();
+      } catch (_) {}
+      try {
+        document
+          .querySelectorAll('input:not([type="hidden"]), textarea, select')
+          .forEach((input) => {
+            if (input.type === "checkbox" || input.type === "radio") input.checked = false;
+            else if (input.id !== "studentNameInput" && input.name !== "studentName")
+              input.value = "";
+          });
+      } catch (_) {}
     }
     close();
   });
@@ -81,6 +81,40 @@ export function mountUtilityMenu() {
     close();
   });
   actions.appendChild(saveResume);
+
+  // Projector / Smartboard Mode — high visibility toggle
+  const projectorBtn = document.createElement("button");
+  projectorBtn.type = "button";
+  projectorBtn.className = "nt-utility-item";
+  const updateProjectorBtnText = () => {
+    const isOn = document.body.classList.contains("projector-mode");
+    projectorBtn.innerHTML = `<span aria-hidden="true">📽️</span><span>Projector Mode: <strong>${isOn ? "ON" : "OFF"}</strong></span>`;
+  };
+  updateProjectorBtnText();
+  projectorBtn.addEventListener("click", () => {
+    document.body.classList.toggle("projector-mode");
+    updateProjectorBtnText();
+    close();
+  });
+  actions.appendChild(projectorBtn);
+
+  // Focus Mode / Hide Everything Else — full distraction-free screen
+  const focusBtn = document.createElement("button");
+  focusBtn.type = "button";
+  focusBtn.className = "nt-utility-item";
+  const updateFocusBtnText = () => {
+    const isOn = document.body.classList.contains("nt-focus-mode");
+    focusBtn.innerHTML = `<span aria-hidden="true">🎯</span><span>Focus Mode: <strong>${isOn ? "ON (Hidden)" : "OFF"}</strong></span>`;
+  };
+  updateFocusBtnText();
+  focusBtn.addEventListener("click", () => {
+    import("./focus-mode.js").then((m) => {
+      m.toggleFocusMode();
+      updateFocusBtnText();
+      close();
+    });
+  });
+  actions.appendChild(focusBtn);
 
   // Math Workbench — resolves to the lesson-aware launcher's deep link when
   // that shared script is on the page (its FAB is hidden by the menu's CSS).
@@ -136,4 +170,20 @@ export function mountUtilityMenu() {
   // (teacher-mode pill re-renders, shared widget scripts load deferred).
   setTimeout(adopt, 1200);
   setTimeout(adopt, 3500);
+}
+
+function ensureExitFocusButton() {
+  let exitBtn = document.getElementById("nt-exit-focus-btn");
+  if (!exitBtn) {
+    exitBtn = document.createElement("button");
+    exitBtn.id = "nt-exit-focus-btn";
+    exitBtn.className = "nt-exit-focus-btn";
+    exitBtn.type = "button";
+    exitBtn.innerHTML = "✕ Exit Focus";
+    exitBtn.title = "Show sidebar and all lesson buttons (Esc)";
+    exitBtn.addEventListener("click", () => {
+      document.body.classList.remove("nt-focus-mode");
+    });
+    document.body.appendChild(exitBtn);
+  }
 }

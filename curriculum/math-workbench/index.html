@@ -15,11 +15,9 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <meta name="theme-color" content="#14223a" />
     <link rel="apple-touch-icon" href="icon-192.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+      href="/assets/fonts/hub-curriculum.css"
     />
     <style>
       /* ============================ Design tokens ============================ */
@@ -2929,14 +2927,6 @@
           </button>
           <button
             class="tbtn"
-            id="multBtn"
-            title="Open the times table (multiplication chart, 1–12)"
-            aria-pressed="false"
-          >
-            <span class="i">✖️</span><span class="txt">Times Table</span>
-          </button>
-          <button
-            class="tbtn"
             id="magicBtn"
             hidden
             title="Magic Ink — rough circles, lines, triangles and boxes snap into clean shapes"
@@ -2967,6 +2957,17 @@
             aria-pressed="false"
           >
             <span class="i">📡</span><span class="txt">Live Board</span>
+          </button>
+          <!-- Times Table sits in the top row, not behind "••• More": it is a
+               reference a student reaches for mid-problem, and a lookup you have
+               to open a menu to reach is a lookup you stop using. -->
+          <button
+            class="tbtn"
+            id="multBtn"
+            title="Open the times table (multiplication chart, 1–12)"
+            aria-pressed="false"
+          >
+            <span class="i">✖️</span><span class="txt">Times Table</span>
           </button>
           <button class="tbtn" id="undoBtn" title="Undo (Ctrl+Z)" disabled>
             <span class="i">↶</span><span class="txt">Undo</span>
@@ -7271,7 +7272,10 @@
               go: SPAWN_TOOLS.fraction,
             },
             {
-              svg: "<span style='font-size:1.9rem'>⟌</span>",
+              // Drawn, not typed: U+27CC is absent from this site's fonts, so the
+              // character rendered as a tofu box on devices with no system
+              // cover — an unlabelled-looking button in a student tool.
+              svg: "<svg viewBox='0 0 28 22' width='28' height='22' aria-hidden='true' focusable='false'><path d='M5 5 Q11 11 5 17 M5 5 H24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'/></svg>",
               name: "Long division",
               go: SPAWN_TOOLS.division,
             },
@@ -9205,7 +9209,7 @@
           id: "word",
           tag: "Word problems",
           title: "Read, Model, Solve, Explain",
-          desc: "A full problem-solving organizer with ESOL-friendly language.",
+          desc: "A full problem-solving organizer with plain, supportive language.",
           bg: "lined",
           items(x, y) {
             return [
@@ -11225,6 +11229,66 @@
           bg: "grid",
           tools: [{ type: "arraymodel", rows: 4, cols: 6 }],
           problem: "Find the GCF of 24 and 36. Use arrays or a factor list to show your thinking.",
+        },
+        "unit1-decimals": {
+          title: "Unit 1: Decimal Operations & Multi-Digit Division",
+          bg: "grid",
+          tools: [{ type: "placevalue" }],
+          problem: "Solve 0.45 × 3.2 and 1,428 ÷ 14. Use the place-value mat and area model to show your work.",
+        },
+        "unit2-statistics": {
+          title: "Unit 2: Statistics & Data Displays",
+          bg: "grid",
+          tools: [{ type: "dotplot" }],
+          problem: "The class scores were 4, 8, 6, 10, 8, 6, 8. Build the dot plot, then find the mean, median, IQR, and MAD.",
+        },
+        "unit3-ratios": {
+          title: "Unit 3: Ratios & Rates",
+          bg: "grid",
+          tools: [{ type: "ratiotable", cols: 4 }, { type: "dblnumline", intervals: 4 }],
+          problem: "A recipe uses 2 cups of flour for every 3 batches. Fill in the ratio table and find the unit rate.",
+        },
+        "unit4-percents": {
+          title: "Unit 4: Percents",
+          bg: "grid",
+          tools: [{ type: "tape", parts: 10 }],
+          problem: "What is 30% of 90? Shade the 10x10 percent grid and tape diagram to prove your answer.",
+        },
+        "unit5-geometry": {
+          title: "Unit 5: Area, Surface Area & Volume",
+          bg: "grid",
+          tools: [{ type: "shape2d", shape: "triangle" }],
+          problem: "Find the surface area and volume V = l·w·h of a rectangular prism with fractional dimensions.",
+        },
+        "unit6-expressions": {
+          title: "Unit 6: Numerical & Algebraic Expressions",
+          bg: "lined",
+          tools: [{ type: "fracbar", parts: 8 }],
+          problem: "Evaluate 3(2x + 4) when x = 5 and solve (2/3) ÷ (1/4) using visual fraction bars.",
+        },
+        "unit7-integers": {
+          title: "Unit 7: Integers & Coordinate Plane",
+          bg: "coord",
+          tools: [{ type: "coordgrid", min: -5, max: 5 }, { type: "numline" }],
+          problem: "Plot the points (2, 3), (-2, 3), (-2, -1), (2, -1) across all 4 quadrants. Find the distance between vertices.",
+        },
+        "unit8-equations": {
+          title: "Unit 8: Equations & Inequalities",
+          bg: "lined",
+          tools: [{ type: "tape", parts: 3 }, { type: "ineqline", min: -5, max: 5, point: 2, dir: "gt" }],
+          problem: "Solve 2x + 3 = 11 using the balance scale. Then graph x > 2 on the open number line.",
+        },
+        "unit9-variables": {
+          title: "Unit 9: Two-Variable Relationships",
+          bg: "coord",
+          tools: [{ type: "coordgrid", min: 0, max: 10 }],
+          problem: "Model y = 3x with an independent/dependent data table and continuous linear graph.",
+        },
+        "unit10-showcase": {
+          title: "Unit 10: Reflection & EOY Showcase",
+          bg: "grid",
+          tools: [],
+          problem: "Design a geometric tessellation pattern and curate your digital math growth portfolio.",
         },
       };
       function applyPresetFromUrl() {

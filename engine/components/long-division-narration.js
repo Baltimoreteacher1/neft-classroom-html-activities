@@ -146,8 +146,8 @@ export function buildNarration(plan) {
       headline: "Step 0 — MOVE THE POINT",
       text:
         `The divisor ${plan.divisorText} is not a whole number, so slide the point ${places} to the ` +
-        `right in BOTH numbers: ${plan.divisorText} ⟌ ${plan.dividendText} becomes ` +
-        `${plan.workingDivisorText} ⟌ ${plan.workingDividendText}. The answer does not change, and ` +
+        `right in BOTH numbers: ${plan.dividendText} ÷ ${plan.divisorText} becomes ` +
+        `${plan.workingDividendText} ÷ ${plan.workingDivisorText}. The answer does not change, and ` +
         `now the cycle runs exactly as it does with whole numbers.`,
       cycleRestart: false,
     });

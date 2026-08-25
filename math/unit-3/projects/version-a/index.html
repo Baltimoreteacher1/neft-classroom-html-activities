@@ -8,10 +8,8 @@
       name="description"
       content="Unit 3 Ratios & Rates culminating project. Design your own smoothie recipe, write ratios, scale with equivalent ratio tables, calculate unit rates, and compare deals."
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="/assets/fonts/project-pages.css"
       rel="stylesheet"
     />
     <style>
@@ -733,11 +731,6 @@
       }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
-      rel="stylesheet"
-    />
     <link rel="stylesheet" href="/shared/projects/projects-pro.css" />
     <!-- projects-pro-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
@@ -778,33 +771,6 @@
     <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-complete.css" />
     <!-- projects-complete-injected:end -->
-    <!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
-    <meta name="nt-project-id" content="unit-3-a" />
-    <meta
-      name="standard"
-      content="6.AT.1 · Unit 3"
-      data-standard="6.AT.1"
-      data-standard-legacy="6.RP.1"
-      data-unit="3"
-    />
-    <meta
-      name="standard"
-      content="6.AT.2 · Unit 3"
-      data-standard="6.AT.2"
-      data-standard-legacy="6.RP.2"
-      data-unit="3"
-    />
-    <meta
-      name="standard"
-      content="6.AT.3a · Unit 3"
-      data-standard="6.AT.3a"
-      data-standard-legacy="6.RP.3a"
-      data-unit="3"
-    />
-    <meta name="nt-project-standards" content="6.AT.1,6.AT.2,6.AT.3a" />
-    <meta name="nt-project-reveal-unit" content="3" />
-    <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
-    <!-- projects-meta-injected:end -->
     <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-check.css" />
     <!-- projects-check-injected:end -->
@@ -826,6 +792,15 @@
       <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
     <!-- projects-mode-pill-head:end -->
+    <!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
+    <meta name="nt-project-id" content="unit-3-a" />
+    <meta name="standard" content="6.AT.1 · Unit 3" data-standard="6.AT.1" data-standard-legacy="6.RP.1" data-unit="3" />
+    <meta name="standard" content="6.AT.2 · Unit 3" data-standard="6.AT.2" data-standard-legacy="6.RP.2" data-unit="3" />
+    <meta name="standard" content="6.AT.3a · Unit 3" data-standard="6.AT.3a" data-standard-legacy="6.RP.3a" data-unit="3" />
+    <meta name="nt-project-standards" content="6.AT.1,6.AT.2,6.AT.3a" />
+    <meta name="nt-project-reveal-unit" content="3" />
+    <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
+    <!-- projects-meta-injected:end -->
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -1281,7 +1256,7 @@
                 min="0.1"
                 step="0.1"
                 value="3"
-                oninput="
+                oninput="_ratioSolved=false; ladderReset('lvl2-simplified'); 
                   updateIngredientLabels();
                   calcRecipeRatio();
                 "
@@ -1311,7 +1286,7 @@
                 min="0.1"
                 step="0.1"
                 value="2"
-                oninput="
+                oninput="_ratioSolved=false; ladderReset('lvl2-simplified'); 
                   updateIngredientLabels();
                   calcRecipeRatio();
                 "
@@ -1326,7 +1301,7 @@
                 >Tu razón simplificada de números enteros (por ejemplo, 3 : 4 o 3 a 4)</span
               >
             </label>
-            <input type="text" id="lvl2-simplified" placeholder="" oninput="calcRecipeRatio()" />
+            <input type="text" id="lvl2-simplified" placeholder="" oninput="calcRecipeRatio()" onchange="commitAttempt('calcRecipeRatio')" />
             <div
               id="lvl2-ratio-feedback"
               style="font-size: 13px; font-weight: bold; margin-top: 8px"
@@ -1445,7 +1420,7 @@
                     id="scale-a-2"
                     placeholder="x2"
                     style="width: 75px"
-                    oninput="verifyScalingTable()"
+                    oninput="verifyScalingTable()" onchange="commitAttempt('verifyScalingTable')"
                   />
                 </td>
                 <td>
@@ -1454,7 +1429,7 @@
                     id="scale-a-5"
                     placeholder="x5"
                     style="width: 75px"
-                    oninput="verifyScalingTable()"
+                    oninput="verifyScalingTable()" onchange="commitAttempt('verifyScalingTable')"
                   />
                 </td>
                 <td>
@@ -1463,7 +1438,7 @@
                     id="scale-a-10"
                     placeholder="x10"
                     style="width: 75px"
-                    oninput="verifyScalingTable()"
+                    oninput="verifyScalingTable()" onchange="commitAttempt('verifyScalingTable')"
                   />
                 </td>
                 <td>
@@ -1472,7 +1447,7 @@
                     id="scale-a-20"
                     placeholder="x20"
                     style="width: 75px"
-                    oninput="verifyScalingTable()"
+                    oninput="verifyScalingTable()" onchange="commitAttempt('verifyScalingTable')"
                   />
                 </td>
               </tr>
@@ -1485,7 +1460,7 @@
                     id="scale-b-2"
                     placeholder="x2"
                     style="width: 75px"
-                    oninput="verifyScalingTable()"
+                    oninput="verifyScalingTable()" onchange="commitAttempt('verifyScalingTable')"
                   />
                 </td>
                 <td>
@@ -1494,7 +1469,7 @@
                     id="scale-b-5"
                     placeholder="x5"
                     style="width: 75px"
-                    oninput="verifyScalingTable()"
+                    oninput="verifyScalingTable()" onchange="commitAttempt('verifyScalingTable')"
                   />
                 </td>
                 <td>
@@ -1503,7 +1478,7 @@
                     id="scale-b-10"
                     placeholder="x10"
                     style="width: 75px"
-                    oninput="verifyScalingTable()"
+                    oninput="verifyScalingTable()" onchange="commitAttempt('verifyScalingTable')"
                   />
                 </td>
                 <td>
@@ -1512,7 +1487,7 @@
                     id="scale-b-20"
                     placeholder="x20"
                     style="width: 75px"
-                    oninput="verifyScalingTable()"
+                    oninput="verifyScalingTable()" onchange="commitAttempt('verifyScalingTable')"
                   />
                 </td>
               </tr>
@@ -1542,7 +1517,7 @@
                   id="lvl2-formula-a"
                   placeholder="Base Cups"
                   step="0.1"
-                  oninput="verifyScalingTable()"
+                  oninput="verifyScalingTable()" onchange="commitAttempt('verifyScalingTable')"
                 />
               </div>
               <div>
@@ -1552,7 +1527,7 @@
                   id="lvl2-formula-b"
                   placeholder="Base Cups"
                   step="0.1"
-                  oninput="verifyScalingTable()"
+                  oninput="verifyScalingTable()" onchange="commitAttempt('verifyScalingTable')"
                 />
               </div>
             </div>
@@ -2642,13 +2617,36 @@
 
       // ---- No-giveaway coaching ladder (per-input attempt tracker) ----
       const _tries = {};
+      /* The rungs are wired to `oninput`, so every KEYSTROKE used to count as a
+         wrong attempt: typing "6:4" walked rung 1 -> 2 -> 3 in three characters
+         and printed the worked path (with the answer in it) before the student
+         had finished typing. verifyScalingTable() is worse — ten inputs feed it,
+         so filling the table normally burned the ladder down.
+
+         A rung now advances only on a COMMITTED attempt (blur or Enter, via
+         commitAttempt below). Live typing still re-renders the feedback, it just
+         shows the rung already earned instead of buying the next one. */
+      let _committing = false;
       function ladderMsg(key, tier1, tier2, tier3) {
-        _tries[key] = (_tries[key] || 0) + 1;
-        const n = _tries[key];
+        if (_committing) _tries[key] = (_tries[key] || 0) + 1;
+        const n = Math.max(1, _tries[key] || 1);
         if (n === 1) return tier1;
         if (n === 2) return tier2;
         return tier3;
       }
+
+      /* onchange hook: mark this pass as a real attempt, then re-run the check. */
+      function commitAttempt(fn) {
+        _committing = true;
+        try {
+          if (typeof window[fn] === "function") window[fn]();
+        } finally {
+          _committing = false;
+        }
+      }
+      // Cleared whenever the recipe amounts change: new amounts, new ratio to find.
+      let _ratioSolved = false;
+
       function ladderReset(key) {
         _tries[key] = 0;
       }
@@ -2780,7 +2778,18 @@
           • Fraction form: <strong>${val1}/${val2}</strong><br>
         `;
 
-        if (simp[0] !== null && (simp[0] !== val1 || simp[1] !== val2)) {
+        /* At Level 2 the student is asked to TYPE the simplified ratio just
+           below this readout, so printing it here answered the question above
+           the question. Levels 0 and 1 are not asked for it — there the
+           simplified form is the intended teaching output and stays. */
+        const askedToSimplify =
+          document.getElementById("body").classList.contains("level-2") &&
+          document.getElementById("lvl2-simplified");
+        if (
+          simp[0] !== null &&
+          (simp[0] !== val1 || simp[1] !== val2) &&
+          (!askedToSimplify || _ratioSolved)
+        ) {
           outputHtml += `
             <br>
             <strong>Simplified Whole-Number Ratio:</strong><br>
@@ -2806,6 +2815,11 @@
 
             if (cleaned === expectedColon || cleaned === expectedWord) {
               ladderReset("lvl2-simplified");
+              if (!_ratioSolved) {
+                _ratioSolved = true;
+                // Re-render so the simplified forms appear now that they are earned.
+                setTimeout(calcRecipeRatio, 0);
+              }
               feedbackEl.innerHTML =
                 '<span style="color:var(--green)">✔ Correct! The simplified ratio is equivalent.</span>';
             } else {
@@ -3569,6 +3583,7 @@
     <script src="/shared/projects/projects-zoom.js" defer></script>
     <!-- projects-visuals-injected:end -->
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+    <script>window.NeftCanvasBridgeConfig=Object.assign({},window.NeftCanvasBridgeConfig,{activityId:"unit-3-version-a",manual:true,finishButton:false,completionOnly:true});</script>
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
     <!-- projects-3d-injected:begin (build-in-3D + WebXR AR — tools/inject-projects-3d.mjs) -->
@@ -3595,9 +3610,6 @@
     <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
     <script src="/shared/projects/projects-complete.js" defer></script>
     <!-- projects-complete-injected:end -->
-    <!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
-    <script src="/shared/projects/projects-meta.js?v=20260727-v2" defer></script>
-    <!-- projects-meta-injected:end -->
     <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
     <script src="/shared/projects/projects-check.js" defer></script>
     <!-- projects-check-injected:end -->
@@ -3621,5 +3633,8 @@
     <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
   <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
   <!-- projects-mode-pill-body:end -->
+  <!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
+  <script src="/shared/projects/projects-meta.js?v=20260727-v2" defer></script>
+  <!-- projects-meta-injected:end -->
 </body>
 </html>

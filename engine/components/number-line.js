@@ -1,3 +1,4 @@
+import { stackContent } from "../core/i18n.js";
 import { mountSymbolPad } from "../core/symbol-pad.js";
 export function renderNumberLine(container, config) {
   // Shape adapter, applied BEFORE anything reads the config: several lessons
@@ -51,7 +52,7 @@ export function renderNumberLine(container, config) {
 
   if (label) {
     const lbl = document.createElement("p");
-    lbl.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    lbl.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     lbl.textContent = label;
     wrapper.append(lbl);
   }
@@ -300,10 +301,20 @@ export function renderNumberLine(container, config) {
   checkBtn.textContent = "Check Placement";
 
   let completed = false;
+  /* Attempt counter for the reveal ladder. The first check used to light up a
+   * green target circle on every wrong dot, so a student who got 3 of 5 was
+   * immediately shown where the other two belong — the task was over on the
+   * first press. Now the first check marks which dots are wrong and names the
+   * error on one of them; the targets appear from the second check onward, so
+   * the answer is still reachable and nothing can stall. */
+  let attempts = 0;
 
   checkBtn.addEventListener("click", () => {
     if (completed) return;
+    attempts += 1;
+    const revealTargets = attempts >= 2;
     let correct = 0;
+    const misses = [];
 
     dots.forEach(({ g, getVal, target }, i) => {
       const val = getVal();
@@ -320,10 +331,13 @@ export function renderNumberLine(container, config) {
       } else {
         dot.setAttribute("fill", "#b64e2f");
         dot.setAttribute("stroke", "#b64e2f");
-        const marker = targetMarkers[i].marker;
-        marker.style.display = "";
-        // Trigger the grow + fade-in on the now-revealed target marker.
-        triggerTargetMarker(marker);
+        misses.push({ placed: val, target: target.value, label: target.label });
+        if (revealTargets) {
+          const marker = targetMarkers[i].marker;
+          marker.style.display = "";
+          // Trigger the grow + fade-in on the now-revealed target marker.
+          triggerTargetMarker(marker);
+        }
       }
     });
 
@@ -344,11 +358,32 @@ export function renderNumberLine(container, config) {
       );
       if (onComplete) onComplete(correct, targets.length);
     } else {
-      showFb(
-        feedbackSlot,
-        "hint",
-        `${correct} of ${targets.length} correct. The line snapped your dots to nearby ticks — green circles show where the remaining points belong and why.`,
-      );
+      /* Diagnose ONE miss rather than all of them: a list of four corrections
+       * is a solution, not a hint, and the student still has to do the others
+       * themselves. Pick the miss whose error type is nameable. */
+      const diagnosed = misses
+        .map((m) => ({ m, msg: diagnosePlacement(m.placed, m.target, { step }) }))
+        .find((x) => x.msg);
+      const count = `${correct} of ${targets.length} correct.`;
+      if (!revealTargets && diagnosed) {
+        showFb(
+          feedbackSlot,
+          "hint",
+          `${count} Look at ${diagnosed.m.label || formatNum(diagnosed.m.target)}: ${diagnosed.msg}`,
+        );
+      } else if (!revealTargets) {
+        showFb(
+          feedbackSlot,
+          "hint",
+          `${count} The red dots are not on their values yet. Find a labelled tick near each one and count the ticks from there.`,
+        );
+      } else {
+        showFb(
+          feedbackSlot,
+          "hint",
+          `${count} The line snapped your dots to nearby ticks — green circles show where the remaining points belong and why.`,
+        );
+      }
     }
   });
 
@@ -419,14 +454,14 @@ function renderSequentialNumberLine(container, config) {
   const lead = config.hideStem ? label : label || instructions;
   if (lead) {
     const p = document.createElement("p");
-    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-3); line-height:1.5;";
     p.textContent = lead;
     wrapper.append(p);
   }
 
   const prompt = document.createElement("p");
   prompt.style.cssText =
-    "margin:0 0 var(--sp-2); font-weight:700; color:var(--navy,#12355b); text-align:center;";
+    "margin:0 0 var(--sp-2); font-weight:600; color:var(--navy,#12355b); text-align:center;";
   wrapper.append(prompt);
 
   const PAD_LEFT = 40;
@@ -559,7 +594,7 @@ function renderSequentialNumberLine(container, config) {
   let idx = 0;
   const showTarget = () => {
     const t = targets[idx];
-    prompt.innerHTML = `Move the dot to: <span style="color:var(--teal,#0d7a76)">${escHtml(t.label || formatNum(t.value))}</span> &nbsp;<span style="color:var(--muted,#5f6f80); font-weight:600;">(${idx + 1} of ${targets.length})</span>`;
+    prompt.innerHTML = `Move the dot to: <span style="color:var(--teal,#0d7a76)">${escHtml(t.label || formatNum(t.value))}</span> &nbsp;<span style="color:var(--muted,#5f6f80); font-weight:500;">(${idx + 1} of ${targets.length})</span>`;
     targetMarker.style.display = "none";
   };
   showTarget();
@@ -594,10 +629,16 @@ function renderSequentialNumberLine(container, config) {
       targetMarker.style.display = "";
       triggerTargetMarker(targetMarker);
       const delta = Math.abs(curVal - Number(t.value));
+      /* Name the kind of error when the two values support one — an opposite,
+       * a place-value slip, negative ordering, a tick miscount. The distance
+       * message is the fallback, not the default: "6 away" describes the
+       * mistake without teaching anything about it. */
+      const diagnosis = diagnosePlacement(curVal, Number(t.value), { step: snapStep });
       showFb(
         feedbackSlot,
         "hint",
-        `Not yet — you landed near ${formatNum(curVal)}. ${formatNum(t.value)} is ${formatNum(delta)} away. The green circle shows the snap target.`,
+        diagnosis ||
+          `Not yet — you landed near ${formatNum(curVal)}. ${formatNum(t.value)} is ${formatNum(delta)} away. The green circle shows the snap target.`,
       );
     }
   });
@@ -622,6 +663,158 @@ function normalizeIneq(s) {
     .replace(/≤/g, "<=")
     .replace(/⩾/g, ">=")
     .replace(/⩽/g, "<=");
+}
+
+/**
+ * Parse a written inequality into the two facts a graph shows: which side of
+ * the boundary is shaded, and whether the boundary itself is included.
+ *
+ * Accepts both orders, because a student reading a graph left-to-right often
+ * writes the boundary first: "x > 4" and "4 < x" describe the same ray, and
+ * flipping the relation when the variable is on the right is what makes them
+ * comparable. Returns null for anything it cannot read, so the caller falls
+ * back to a general prompt rather than accusing the student of a mistake the
+ * parser invented.
+ *
+ * @returns {{boundary: number, direction: "left"|"right", inclusive: boolean}|null}
+ */
+export function parseInequality(text) {
+  const s = normalizeIneq(text);
+  const m = s.match(/^([a-z]|-?\d+(?:\.\d+)?)(>=|<=|>|<)([a-z]|-?\d+(?:\.\d+)?)$/);
+  if (!m) return null;
+  let [, left, rel, right] = m;
+  const leftIsVar = /^[a-z]$/.test(left);
+  const rightIsVar = /^[a-z]$/.test(right);
+  // Exactly one side must be the variable and the other a number.
+  if (leftIsVar === rightIsVar) return null;
+  if (rightIsVar) {
+    // "4 < x" → "x > 4": swap the operands and mirror the relation.
+    [left, right] = [right, left];
+    rel = { ">=": "<=", "<=": ">=", ">": "<", "<": ">" }[rel];
+  }
+  const boundary = Number(right);
+  if (!Number.isFinite(boundary)) return null;
+  return {
+    boundary,
+    direction: rel === ">" || rel === ">=" ? "right" : "left",
+    inclusive: rel === ">=" || rel === "<=",
+  };
+}
+
+/**
+ * Name the KIND of placement error, not just its size.
+ *
+ * "You landed near -3. 3 is 6 away" is arithmetic about the mistake; it does
+ * not tell a student what they misunderstood. A misplaced point on a number
+ * line is usually one of a small number of specific errors, and each is
+ * knowable by comparing the two values:
+ *
+ *   opposite       right distance from zero, wrong side  (-3 for 3)
+ *   place value    right digits, wrong scale             (0.7 for 0.07)
+ *   negative order thinks -5 sits right of -2            (further left = smaller)
+ *   off by ticks   the count slipped, usually by one
+ *
+ * Returns null when the evidence is ambiguous, so the caller falls back to the
+ * plain distance message rather than asserting a misconception it invented.
+ *
+ * @param {number} placed value the student left the dot on
+ * @param {number} target correct value
+ * @param {{step?: number}} [opts] tick size, for counting ticks
+ * @returns {string|null}
+ */
+export function diagnosePlacement(placed, target, { step = 1 } = {}) {
+  if (!Number.isFinite(placed) || !Number.isFinite(target)) return null;
+  const near = (a, b) => Math.abs(a - b) < 1e-9;
+  if (near(placed, target)) return null;
+
+  // Opposite: same distance from zero, other side. Checked first because it is
+  // the most specific claim the two numbers can support.
+  if (target !== 0 && near(placed, -target)) {
+    return `You are the right distance from 0, but on the wrong side. ${formatNum(placed)} and ${formatNum(target)} are opposites — they sit the same distance from 0 in opposite directions. Which side of 0 does ${formatNum(target)} belong on?`;
+  }
+
+  // Place value: the digits are right, the scale is off by a power of ten.
+  if (placed !== 0 && target !== 0) {
+    const ratio = target / placed;
+    for (const factor of [10, 100, 0.1, 0.01]) {
+      if (near(ratio, factor)) {
+        return `Your digits are right but the size is off: ${formatNum(placed)} is ${factor > 1 ? `${factor} times smaller` : `${1 / factor} times larger`} than ${formatNum(target)}. Check which place each digit is in, then count the ticks again.`;
+      }
+    }
+  }
+
+  // Ordering negatives: both negative, and the student put the more negative
+  // number on the wrong side of the other.
+  if (placed < 0 && target < 0 && Math.abs(placed) !== Math.abs(target)) {
+    if (placed > target) {
+      return `On a number line, further LEFT means smaller. ${formatNum(target)} is less than ${formatNum(placed)}, so it belongs further to the left, not to the right.`;
+    }
+  }
+
+  // A small whole number of ticks off — the count slipped.
+  if (step > 0) {
+    const ticks = (target - placed) / step;
+    if (near(ticks, Math.round(ticks)) && Math.abs(Math.round(ticks)) <= 3) {
+      const n = Math.round(ticks);
+      return `Close — you are ${Math.abs(n)} tick${Math.abs(n) === 1 ? "" : "s"} to the ${n > 0 ? "left" : "right"} of ${formatNum(target)}. Each tick is ${formatNum(step)}. Count them from a labelled mark rather than from where you started.`;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Is the student's inequality the same statement as the answer key?
+ *
+ * String comparison alone said no to "4 < x" for a key of "x > 4" — the same
+ * ray, written the way a student who reads the graph left-to-right naturally
+ * writes it, marked wrong. When both sides parse, compare the three facts a
+ * graph actually carries; otherwise fall back to the normalised string, which
+ * is what multi-step keys like "x + 4 > 10" need.
+ */
+export function matchesInequality(written, key) {
+  const a = parseInequality(written);
+  const b = parseInequality(key);
+  if (a && b)
+    return a.boundary === b.boundary && a.direction === b.direction && a.inclusive === b.inclusive;
+  return normalizeIneq(written) === normalizeIneq(key);
+}
+
+/**
+ * Name the specific thing the student's inequality gets wrong about the graph
+ * in front of them. A graph carries exactly three facts — where the boundary
+ * is, whether it is filled, and which way it shades — so a wrong answer is
+ * wrong in one or more of exactly those three ways, and saying which one is
+ * the difference between feedback that teaches and "check the circle type and
+ * shading direction", which just restates the task.
+ *
+ * @returns {string|null} null when nothing specific can be said.
+ */
+export function diagnoseInequality(written, prob) {
+  const got = parseInequality(written);
+  if (!got) return null;
+  const wantInclusive = prob.circleType === "closed";
+  const b = prob.boundary;
+
+  const wrongBoundary = got.boundary !== b;
+  const wrongDirection = got.direction !== prob.direction;
+  const wrongCircle = got.inclusive !== wantInclusive;
+
+  if (wrongBoundary) {
+    return `Your inequality turns at ${got.boundary}, but the circle on the graph sits at ${b}. Read the tick the circle is on first — that number is the boundary.`;
+  }
+  if (wrongDirection && wrongCircle) {
+    return `Two things to fix: the shading runs to the ${prob.direction}, so the solutions are the numbers ${prob.direction === "right" ? "greater" : "less"} than ${b} — and the circle is ${prob.circleType}, so ${b} itself ${wantInclusive ? "IS" : "is NOT"} a solution.`;
+  }
+  if (wrongDirection) {
+    return `You have the boundary right, but you shaded the wrong way. The ray points ${prob.direction}, so the solutions are the numbers ${prob.direction === "right" ? "greater" : "less"} than ${b}. Pick a number on the shaded part and test it in your inequality.`;
+  }
+  if (wrongCircle) {
+    return wantInclusive
+      ? `The circle at ${b} is filled in, so ${b} itself IS a solution. Is ${b} ${got.direction === "right" ? ">" : "<"} ${b} true? You need the symbol that also allows equal.`
+      : `The circle at ${b} is open, so ${b} itself is NOT a solution. Your symbol allows ${b} = ${b}, which the open circle rules out.`;
+  }
+  return null;
 }
 
 // Draw a single inequality graph (open/closed boundary circle + shaded ray) on
@@ -695,7 +888,7 @@ function renderInequalityGraphs(container, config) {
   const lead = config.hideStem ? label : instructions || label;
   if (lead) {
     const p = document.createElement("p");
-    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = lead;
     wrapper.append(p);
   }
@@ -711,7 +904,7 @@ function renderInequalityGraphs(container, config) {
 
     if (prob.label) {
       const cap = document.createElement("p");
-      cap.style.cssText = "font-weight:600; margin:0 0 var(--sp-2); font-size:0.95rem;";
+      cap.style.cssText = "font-weight:500; margin:0 0 var(--sp-2); font-size:0.95rem;";
       cap.textContent = prob.label;
       row.append(cap);
     }
@@ -755,26 +948,38 @@ function renderInequalityGraphs(container, config) {
         showFb(fb, "hint", "Type the inequality first.");
         return;
       }
-      if (normalizeIneq(val) === normalizeIneq(prob.inequality)) {
+      if (matchesInequality(val, prob.inequality)) {
         input.style.borderColor = "var(--success)";
         input.style.background = "var(--success-bg)";
         showFb(fb, "success", `Correct! ${prob.inequality}`);
         resolve(true);
       } else {
         attempts += 1;
-        if (attempts >= 2) {
+        /* A three-step ladder instead of "wrong, wrong, here's the answer".
+         * Step 1 names which of the graph's three facts the student's
+         * inequality disagrees with — the component already knows the
+         * boundary, the circle and the direction, so a generic "check the
+         * circle type and shading direction" was throwing that away. Step 2 is
+         * the authored hint. Only step 3 gives the answer, so the queue still
+         * never stalls. */
+        const diagnosis = diagnoseInequality(val, prob);
+        if (attempts === 1 && diagnosis) {
+          showFb(fb, "hint", diagnosis);
+        } else if (attempts < 3) {
+          showFb(
+            fb,
+            "hint",
+            (hints && hints[idx]) ||
+              diagnosis ||
+              `Write it as a letter, a symbol, then a number — like x > ${prob.boundary}. Read the circle first, then the shading.`,
+          );
+        } else {
           showFb(
             fb,
             "hint",
             `The answer is ${prob.inequality}. ${(hints && hints[idx]) || ""}`.trim(),
           );
           resolve(false);
-        } else {
-          showFb(
-            fb,
-            "hint",
-            (hints && hints[idx]) || "Check the circle type and shading direction.",
-          );
         }
       }
     });
@@ -793,6 +998,7 @@ function renderJumpNumberLine(container, config) {
     instructions,
     label,
     questionText,
+    questionTextEs,
     answer,
     totalJumps,
     min,
@@ -809,7 +1015,7 @@ function renderJumpNumberLine(container, config) {
   const lead = config.hideStem ? label : instructions || label;
   if (lead) {
     const p = document.createElement("p");
-    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = lead;
     wrapper.append(p);
   }
@@ -860,8 +1066,8 @@ function renderJumpNumberLine(container, config) {
     "background:var(--teal-light); border:1px solid rgba(31,166,162,0.15); border-radius:var(--radius-md); padding:var(--sp-4); margin-top:var(--sp-3);";
   if (questionText) {
     const qt = document.createElement("p");
-    qt.style.cssText = "font-weight:700; margin:0 0 var(--sp-3);";
-    qt.textContent = questionText;
+    qt.style.cssText = "font-weight:600; margin:0 0 var(--sp-3);";
+    qt.innerHTML = stackContent(questionText, questionTextEs);
     q.append(qt);
   }
   const controls = document.createElement("div");

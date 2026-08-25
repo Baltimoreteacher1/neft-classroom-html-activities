@@ -113,7 +113,7 @@ function savedField(labelText, labelEs, key, state, store, placeholder = "") {
  * with it. Sentence frames on every one, because the barrier to a 4 for an
  * emergent-bilingual student is almost never the mathematics.
  */
-function createLevelFourPanel(config, state, store, onProgress) {
+function createLevelFourPanel(_config, state, store, onProgress) {
   const panel = el("section", "sg-m4");
   panel.setAttribute("aria-label", "Go for a 4");
   panel.appendChild(

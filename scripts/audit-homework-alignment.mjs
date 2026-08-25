@@ -4,6 +4,8 @@
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
+import { assertSweptEnough } from "../tools/lib/sweep-guard.mjs";
 import {
   detectVisualMismatch,
   findNoteOwnershipConflicts,
@@ -89,6 +91,16 @@ const expectedCount = 84;
 const failures = [];
 const alignmentRows = [];
 
+assertNonEmpty(
+  "lessons to audit",
+  lessons,
+  "loadLessons() returned nothing — a zero-lesson audit reports zero misalignments.",
+);
+assertSweptEnough(
+  "audit:homework",
+  lessons,
+  "Discovery for audit:homework returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
+);
 console.log(`\nHomework alignment audit — ${lessons.length} lessons\n`);
 
 if (lessons.length !== expectedCount) {

@@ -123,19 +123,38 @@
       );
     }
     function stepper(key, val) {
+      /* Which number each stepper edits. The +/− buttons were labelled from the
+         start; the input between them was not, so a screen reader announced
+         four bare text fields with no way to tell the whole from the piece.
+         Declared INSIDE stepper: the surrounding `stepper` declaration hoists
+         and is called while the markup string is built, which is before a
+         `var` at this scope would have been assigned. */
+      var label =
+        {
+          wn: "whole amount, numerator",
+          wd: "whole amount, denominator",
+          pn: "piece size, numerator",
+          pd: "piece size, denominator",
+        }[key] || key;
       return (
         '<div class="pki-fd-stepwrap">' +
         '<button type="button" class="pki-fd-btn" data-dec="' +
         key +
-        '" aria-label="decrease">−</button>' +
-        '<input type="text" inputmode="numeric" data-val="' +
+        '" aria-label="decrease ' +
+        label +
+        '">−</button>' +
+        '<input type="text" inputmode="numeric" aria-label="' +
+        label +
+        '" data-val="' +
         key +
         '" value="' +
         val +
         '">' +
         '<button type="button" class="pki-fd-btn" data-inc="' +
         key +
-        '" aria-label="increase">+</button>' +
+        '" aria-label="increase ' +
+        label +
+        '">+</button>' +
         "</div>"
       );
     }

@@ -37,9 +37,9 @@
 
   // CDN libs used ONLY for slide upload parsing. Guarded: if offline / blocked,
   // the affected file type degrades gracefully and the rest of the tool works.
-  const PDFJS_URL = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
-  const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-  const JSZIP_URL = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+  const PDFJS_URL = "/assets/vendor/pdfjs-3.11.174.min.js";
+  const PDFJS_WORKER = "/assets/vendor/pdfjs-3.11.174.worker.min.js";
+  const JSZIP_URL = "/card-builder/vendor/jszip.min.js";
 
   /** @typedef {{type:string,prompt:string,choices?:string[],correctIndex?:number,answer?:string,standard?:string,explanation?:string}} Question */
 

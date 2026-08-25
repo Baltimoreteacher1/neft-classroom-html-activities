@@ -17,7 +17,7 @@ import { writeFileSync } from "node:fs";
 
 const NAVY = "#264653";
 const TEAL = "#2a9d8f";
-const AMBER = "#e9c46a";
+const _AMBER = "#e9c46a";
 const CORAL = "#d9795d";
 const INK = "#264653";
 const MUTED = "#6b7f88";

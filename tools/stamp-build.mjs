@@ -75,6 +75,12 @@ try {
   const currFiles = [
     join(root, "dist", "curriculum", "index.html"),
     join(root, "dist", "curriculum", "student-launch", "index.html"),
+    // Added 2026-08-24, the same way student-launch was: units/index.html loads
+    // curriculum-teacher-workflow.css with a ?v= and was never in this list, so
+    // that stylesheet has never been cache-busted on the browse hub. Found by
+    // editing the file and noticing dist/curriculum/units kept the source
+    // placeholder while dist/curriculum got a build id.
+    join(root, "dist", "curriculum", "units", "index.html"),
   ];
 
   for (const currPath of currFiles) {

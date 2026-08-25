@@ -207,8 +207,8 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
         : ` <button type="button" class="ldl-shiftgo">Move the point ${esc(places)} →</button>`;
     shiftBar.innerHTML = shiftDone
       ? `<span class="ldl-shift-done">✓ Point moved ${esc(places)}:</span> ` +
-        `<b>${esc(plan.divisorText)} ⟌ ${esc(plan.dividendText)}</b> → ` +
-        `<b class="ldl-shift-new">${esc(plan.workingDivisorText)} ⟌ ${esc(plan.workingDividendText)}</b>` +
+        `<b>${esc(plan.dividendText)} ÷ ${esc(plan.divisorText)}</b> → ` +
+        `<b class="ldl-shift-new">${esc(plan.workingDividendText)} ÷ ${esc(plan.workingDivisorText)}</b>` +
         ` — now it is a whole-number divisor, so the cycle works exactly the same.`
       : `<b>Step 0 — MOVE THE POINT.</b> The divisor <b>${esc(plan.divisorText)}</b> is not a whole number. ` +
         `Slide the point ${esc(places)} to the right in <em>both</em> numbers, then divide as usual.${button}`;
@@ -510,7 +510,7 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
       advance(step);
       return;
     }
-    const raw = answer.value.trim();
+    const raw = answer.value.replace(/,/g, "").trim();
     if (raw === "") {
       say("Type your answer for this step first.", "warn");
       return;
@@ -655,10 +655,10 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
   function renderFactHelper() {
     if (!plan || !plan.divisor) return;
     const d = plan.divisor;
-    let html = `<strong style="font-weight:900;">Multiplication Facts for ${d}:</strong><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">`;
+    let html = `<strong style="font-weight:800;">Multiplication Facts for ${d}:</strong><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">`;
     for (let i = 1; i <= 9; i++) {
       const prod = d * i;
-      html += `<button type="button" class="ldl-fact-chip" data-val="${prod}" style="padding:4px 8px; font-size:0.82rem; font-weight:800; color:#15803d; background:#ffffff; border:1px solid #86efac; border-radius:6px; cursor:pointer;">${d} × ${i} = ${prod}</button>`;
+      html += `<button type="button" class="ldl-fact-chip" data-val="${prod}" style="padding:4px 8px; font-size:0.82rem; font-weight:700; color:#15803d; background:#ffffff; border:1px solid #86efac; border-radius:6px; cursor:pointer;">${d} × ${i} = ${prod}</button>`;
     }
     html += `</div>`;
     factHelper.innerHTML = html;
@@ -695,6 +695,16 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     });
   });
 
+  const hideToggle = /** @type {HTMLButtonElement|null} */ (root.querySelector(".ldl-hide-toggle"));
+  if (hideToggle) {
+    hideToggle.addEventListener("click", () => {
+      const isHidden = root.classList.toggle("ldl-buttons-hidden");
+      hideToggle.classList.toggle("is-on", isHidden);
+      hideToggle.setAttribute("aria-pressed", isHidden ? "true" : "false");
+      hideToggle.textContent = isHidden ? "👁️ Show Other Buttons" : "👁️ Hide Other Buttons";
+    });
+  }
+
   for (const chip of root.querySelectorAll(".ldl-chip")) {
     chip.addEventListener("click", () => {
       const [a, b] = String(/** @type {HTMLElement} */ (chip).dataset.p).split("/");
@@ -711,6 +721,8 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
   return {
     destroy: () => {
       stopPlay();
+      document.removeEventListener("keydown", onKeyEsc);
+      document.body.classList.remove("nt-focus-mode");
       root.remove();
     },
   };

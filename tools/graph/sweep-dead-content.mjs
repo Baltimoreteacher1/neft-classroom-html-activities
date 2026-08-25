@@ -214,7 +214,7 @@ for (const f of files) {
 }
 
 const findings = [];
-let pagesWithLiterals = 0;
+let _pagesWithLiterals = 0;
 
 for (const [file, text] of contents) {
   if (!file.endsWith(".html")) continue;
@@ -241,7 +241,7 @@ for (const [file, text] of contents) {
     const dead = [...fields].filter(([key]) => !localReads.has(key) && !GLOBAL_READS.has(key));
     if (!dead.length) continue;
 
-    pagesWithLiterals++;
+    _pagesWithLiterals++;
     const prose = dead.filter(([, v]) => isProse(v));
     const other = dead.filter(([, v]) => !isProse(v));
     findings.push({

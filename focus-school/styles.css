@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap");
+@import url("/assets/fonts/outfit-plus-jakarta-sans-432af6.css");
 
 /* Noam School — Focus & Plan
    Executive-function planner. Calm, low-distraction. */
@@ -4143,3 +4143,537 @@ html[data-theme="dark"] .bg-blob-2 {
   100% { transform: translateX(110px) translateY(-10px) rotate(360deg); }
 }
 
+
+/* ==========================================================================
+   School OS — Today / School / Study / Setup
+   Visual language deliberately matches the existing card system: same radius,
+   same tokens, same spacing scale. The only new emphasis is that NEXT UP is
+   the largest, highest-contrast thing on the screen.
+   ========================================================================== */
+
+/* --- NOW / NEXT strip during the school day ------------------------------ */
+.today-school {
+  display: flex;
+  gap: 16px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.today-school .ts-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.today-school b {
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+.today-school small {
+  color: var(--muted);
+}
+
+/* --- NEXT UP ------------------------------------------------------------- */
+.nextup {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--accent);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.nextup h2 {
+  margin: 4px 0 6px;
+  font-size: 1.5rem;
+  line-height: 1.25;
+  /* Long assignment titles must wrap, never overflow the card. */
+  overflow-wrap: anywhere;
+}
+.nextup-why {
+  color: var(--muted);
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+}
+.nextup-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.nextup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.nextup.done {
+  border-left-color: var(--green, #15803d);
+}
+
+/* --- Today list ---------------------------------------------------------- */
+.today-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.today-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--line);
+  /* 44px minimum row height keeps every checkbox a comfortable tap target. */
+  min-height: 44px;
+}
+.today-list li:last-child {
+  border-bottom: 0;
+}
+.today-list .tl-title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.today-list .tl-min {
+  color: var(--muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.today-list li.is-next .tl-title {
+  font-weight: 700;
+}
+.today-total {
+  margin: 12px 0 0;
+  text-align: right;
+  color: var(--muted);
+}
+
+.plan-cta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.plan-cta small {
+  color: var(--muted);
+}
+
+.today-support {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 8px;
+}
+
+/* --- Coming up / two-week markers ---------------------------------------- */
+.coming,
+.wk-list,
+.periods,
+.ex-list,
+.study-plan {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.coming li,
+.wk-row,
+.periods li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 4px;
+  border-bottom: 1px solid var(--line);
+  min-height: 40px;
+  flex-wrap: wrap;
+}
+.coming li:last-child,
+.wk-row:last-child,
+.periods li:last-child {
+  border-bottom: 0;
+}
+.coming-day,
+.wk-day {
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  min-width: 72px;
+}
+/* Badges never rely on color alone — the word itself carries the meaning. */
+.coming-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+.coming-badge.test {
+  color: var(--red-text, #b3000f);
+}
+.coming-badge.quiz {
+  color: var(--amber-text, #7a4d0a);
+}
+.coming-badge.project {
+  color: var(--accent);
+}
+.coming-badge.due {
+  color: var(--muted);
+}
+.coming-badge.noschool,
+.coming-badge.early {
+  color: var(--green-text, #15803d);
+}
+
+.wk-marks {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.wk-row.is-today {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-radius: 8px;
+}
+.wk-row.no-school .wk-day {
+  opacity: 0.6;
+}
+
+/* --- School periods ------------------------------------------------------ */
+.periods .p-time {
+  min-width: 72px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.periods .p-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+}
+.periods .p-room {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.periods li.is-now {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-radius: 8px;
+  padding-inline: 8px;
+}
+
+/* --- Study --------------------------------------------------------------- */
+.study-prog {
+  margin: 8px 0 14px;
+}
+.study-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+.study-bar span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+.study-plan li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 9px 4px;
+  border-bottom: 1px solid var(--line);
+  min-height: 44px;
+}
+.study-plan li.done span {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+.study-plan li.is-now {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-radius: 8px;
+}
+.study-tools {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* --- Stuck / overwhelmed ------------------------------------------------- */
+.stuck-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.stuck-opt {
+  text-align: left;
+  justify-content: flex-start;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.stuck-opt small {
+  font-weight: 400;
+  opacity: 0.75;
+}
+.stuck-steps {
+  margin: 0 0 16px;
+  padding-left: 20px;
+  line-height: 1.7;
+}
+
+.overwhelm {
+  min-height: 55vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 18px;
+  padding: 32px 16px;
+}
+.overwhelm h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.overwhelm .ow-step {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.3;
+  max-width: 18ch;
+}
+.overwhelm .ow-exit {
+  opacity: 0.7;
+}
+
+/* --- Plan / pack / quick entry ------------------------------------------- */
+.plan-list {
+  margin: 0 0 12px;
+  padding-left: 22px;
+  line-height: 1.6;
+}
+.plan-list li {
+  margin-bottom: 8px;
+}
+.plan-list .plan-break {
+  list-style: none;
+  margin-left: -22px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.plan-total {
+  margin: 0 0 12px;
+}
+
+.pack-classes {
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+.pack-alert {
+  border-left: 4px solid var(--amber-text, #7a4d0a);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  background: color-mix(in srgb, currentColor 5%, transparent);
+}
+.pack-alert p {
+  margin: 2px 0;
+}
+.pack-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pack-list li {
+  padding: 8px 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.pack-list label {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.qe-preview {
+  margin: 12px 0;
+}
+.qe-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+}
+.qe-rows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.qe-warn {
+  margin: 8px 0 0;
+  color: var(--amber-text, #7a4d0a);
+  font-size: 0.85rem;
+}
+
+/* --- Setup editors ------------------------------------------------------- */
+.sched-row,
+.act-row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 0.8fr 0.6fr 0.8fr auto;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.act-row {
+  grid-template-columns: 1.4fr 0.8fr 0.8fr;
+}
+.act-row .ar-days {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+.ex-list li {
+  padding: 6px 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.blocked-card {
+  border-left: 4px solid var(--muted);
+}
+.blocked-card small {
+  display: block;
+  color: var(--muted);
+}
+
+.tmr-line {
+  margin: 4px 0;
+}
+
+/* --- Narrow screens: the hierarchy must survive, not just shrink --------- */
+@media (max-width: 640px) {
+  .nextup {
+    padding: 16px;
+  }
+  .nextup h2 {
+    font-size: 1.3rem;
+  }
+  .today-school {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .sched-row,
+  .act-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .sched-row .sr-name,
+  .act-row .ar-name {
+    grid-column: 1 / -1;
+  }
+  .coming-day,
+  .wk-day {
+    min-width: 62px;
+  }
+  .overwhelm .ow-step {
+    font-size: 1.45rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .study-bar span {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   Phase II — daily loop, overload, duplicates, demoted card board
+   ========================================================================== */
+
+/* The legacy card board is still fully functional, just no longer competing
+   with Today for attention. */
+.board-drawer,
+.today-later {
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.board-drawer > summary,
+.today-later > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 8px 4px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+.board-drawer > summary::-webkit-details-marker,
+.today-later > summary::-webkit-details-marker {
+  display: none;
+}
+.board-drawer > summary::before,
+.today-later > summary::before {
+  content: "▸";
+  margin-right: 8px;
+  transition: transform 0.15s ease;
+}
+.board-drawer[open] > summary::before,
+.today-later[open] > summary::before {
+  transform: rotate(90deg);
+}
+.board-drawer > summary:focus-visible,
+.today-later > summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Morning: the day ahead, not the backlog. */
+.morning-card {
+  border-left: 5px solid var(--accent);
+}
+
+/* Overload states the problem, then immediately shows the fix. Amber, not red:
+   a tight evening is a planning fact, not a failure. */
+.overload-card {
+  border-left: 5px solid var(--amber-text, #7a4d0a);
+}
+
+.dupe {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.dupe:last-child {
+  border-bottom: 0;
+}
+.dupe p {
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+
+.est-hint {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-drawer > summary::before,
+  .today-later > summary::before {
+    transition: none;
+  }
+}

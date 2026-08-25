@@ -126,6 +126,61 @@ function applyOp(side, op, k) {
   return side;
 }
 
+/**
+ * Did that move get the student CLOSER to an isolated variable, or just keep
+ * the scale balanced?
+ *
+ * Every legal move used to produce the same sentence — "Applied − 3 to both
+ * sides — still balanced" — which is true of a move that removes the constant
+ * and equally true of a move that doubles it. Both sides staying equal is the
+ * rule the student already followed; whether they are nearer to `x = ` is the
+ * thing they are actually trying to judge, and the lab holds the symbolic state
+ * to say so.
+ *
+ * A side is `a·x + b`. Isolation means the variable side reaches a = 1, b = 0.
+ * So "closer" is |b| shrinking toward 0, or |a| moving toward 1.
+ *
+ * @returns {{tone: "ok"|"warn", text: string}}
+ */
+export function describeProgress(before, after, v) {
+  // The variable lives on whichever side carries a non-zero coefficient.
+  const pick = (st) => (st.left.a !== 0 ? st.left : st.right);
+  const b0 = pick(before);
+  const b1 = pick(after);
+
+  const constBefore = Math.abs(b0.b);
+  const constAfter = Math.abs(b1.b);
+  const coefBefore = Math.abs(b0.a - 1);
+  const coefAfter = Math.abs(b1.a - 1);
+
+  if (constAfter < constBefore - 1e-9) {
+    return constAfter === 0
+      ? { tone: "ok", text: `The number is gone from the ${v} side — that is what you wanted. ` }
+      : {
+          tone: "ok",
+          text: `Closer: the number beside ${v} went from ${fmt(b0.b)} to ${fmt(b1.b)}. `,
+        };
+  }
+  if (coefAfter < coefBefore - 1e-9) {
+    return coefAfter === 0
+      ? { tone: "ok", text: `${v} now has a coefficient of 1 — it stands alone. ` }
+      : { tone: "ok", text: `Closer: the coefficient moved from ${fmt(b0.a)} to ${fmt(b1.a)}. ` };
+  }
+  if (constAfter > constBefore + 1e-9) {
+    return {
+      tone: "warn",
+      text: `Both sides stayed equal, so that move was legal — but it went the wrong way: the number beside ${v} grew from ${fmt(b0.b)} to ${fmt(b1.b)}. To clear ${fmt(b0.b)}, apply its inverse. `,
+    };
+  }
+  if (coefAfter > coefBefore + 1e-9) {
+    return {
+      tone: "warn",
+      text: `Legal, but further from the goal: ${v}'s coefficient moved from ${fmt(b0.a)} to ${fmt(b1.a)}, and you need it to be 1. `,
+    };
+  }
+  return { tone: "ok", text: "Still balanced, but nothing about the equation changed. " };
+}
+
 const isSolved = (left, right, _v) =>
   (left.a === 1 && left.b === 0 && right.a === 0) ||
   (right.a === 1 && right.b === 0 && left.a === 0);
@@ -316,9 +371,11 @@ export function renderEquationBalanceLab(container, cfg = {}) {
         `🎉 <strong>Solved!</strong> The variable is alone: <strong>${v} = ${fmt(sol)}</strong>. Every move kept both sides equal, so the scale stayed balanced. Substitute ${fmt(sol)} back into the original equation to prove it.`,
       );
     } else {
+      const progress = describeProgress(s, { left, right }, v);
       feed(
-        "ok",
-        `Applied <strong>${esc(note)}</strong> to both sides — still balanced. What's left to remove from the ${v} side?`,
+        progress.tone,
+        `Applied <strong>${esc(note)}</strong> to both sides — still balanced. ${esc(progress.text)}` +
+          (progress.tone === "ok" ? `What's left to remove from the ${v} side?` : ""),
       );
     }
   }
@@ -371,32 +428,32 @@ function injectStyles() {
   s.id = "eqlab-styles";
   s.textContent = `
   .eqlab{max-width:780px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
-  .eqlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.05rem;}
+  .eqlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:700;color:${C.navy};font-size:1.05rem;}
   .eqlab-hint{margin:4px 0 12px;color:${C.muted};font-size:.9rem;line-height:1.45;}
   .eqlab-presets{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;}
-  .eqlab-chip{padding:5px 12px;font-size:.9rem;font-weight:700;color:${C.navy};background:${C.chipBg};border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;font-family:inherit;}
+  .eqlab-chip{padding:5px 12px;font-size:.9rem;font-weight:600;color:${C.navy};background:${C.chipBg};border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;font-family:inherit;}
   .eqlab-chip:hover{background:#e2ecff;border-color:${C.accent};}
   .eqlab-eq{display:flex;align-items:center;justify-content:center;gap:14px;padding:8px;font-family:"Outfit",system-ui,sans-serif;}
-  .eqlab-side{font-size:1.5rem;font-weight:800;color:${C.navy};}
-  .eqlab-equals{font-size:1.4rem;font-weight:800;color:${C.muted};}
+  .eqlab-side{font-size:1.5rem;font-weight:700;color:${C.navy};}
+  .eqlab-equals{font-size:1.4rem;font-weight:700;color:${C.muted};}
   .eqlab-scale svg{width:100%;height:auto;display:block;}
   /* Two columns: scale (dominant, keeps its own aspect) + control panel. */
   .eqlab-stage{display:grid;grid-template-columns:minmax(0,1fr) 200px;align-items:start;gap:14px;margin-top:8px;}
   .eqlab-controls{display:flex;flex-direction:column;align-items:stretch;gap:10px;}
-  .eqlab-field{display:flex;flex-direction:column;gap:3px;font-size:.7rem;font-weight:800;color:${C.muted};text-transform:uppercase;letter-spacing:.03em;}
-  .eqlab-field input{width:100%;padding:9px 10px;font-size:1.1rem;font-weight:700;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;text-transform:none;font-family:inherit;}
+  .eqlab-field{display:flex;flex-direction:column;gap:3px;font-size:.7rem;font-weight:700;color:${C.muted};text-transform:uppercase;letter-spacing:.03em;}
+  .eqlab-field input{width:100%;padding:9px 10px;font-size:1.1rem;font-weight:600;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;text-transform:none;font-family:inherit;}
   .eqlab-field input:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
   .eqlab-ops{display:flex;flex-direction:column;gap:6px;}
-  .eqlab-op{padding:9px 12px;text-align:left;font-size:.85rem;font-weight:800;color:${C.navy};background:${C.chipBg};border:1.5px solid ${C.line};border-radius:10px;cursor:pointer;font-family:inherit;}
+  .eqlab-op{padding:9px 12px;text-align:left;font-size:.85rem;font-weight:700;color:${C.navy};background:${C.chipBg};border:1.5px solid ${C.line};border-radius:10px;cursor:pointer;font-family:inherit;}
   .eqlab-op:hover{background:#e2ecff;border-color:${C.accent};}
   .eqlab-op:focus-visible,.eqlab-btn:focus-visible,.eqlab-chip:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .eqlab-actions{display:flex;gap:8px;margin-top:10px;}
-  .eqlab-btn{padding:7px 14px;font-size:.85rem;font-weight:800;color:${C.navy};background:#fff;border:1.5px solid ${C.line};border-radius:9px;cursor:pointer;font-family:inherit;}
+  .eqlab-btn{padding:7px 14px;font-size:.85rem;font-weight:700;color:${C.navy};background:#fff;border:1.5px solid ${C.line};border-radius:9px;cursor:pointer;font-family:inherit;}
   .eqlab-btn:hover:not(:disabled){background:${C.chipBg};}
   .eqlab-btn:disabled{opacity:.4;cursor:default;}
   .eqlab-trail{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px;min-height:1em;}
-  .eqlab-trailstep{padding:2px 9px;font-size:.82rem;font-weight:800;color:${C.teal};background:${C.tealBg};border-radius:999px;}
-  .eqlab-arrow{color:${C.muted};font-weight:700;}
+  .eqlab-trailstep{padding:2px 9px;font-size:.82rem;font-weight:700;color:${C.teal};background:${C.tealBg};border-radius:999px;}
+  .eqlab-arrow{color:${C.muted};font-weight:600;}
   .eqlab-feed{margin-top:10px;}
   .eqlab-msg{padding:10px 14px;border-radius:12px;font-size:.95rem;line-height:1.5;}
   .eqlab-msg-ok{background:${C.tealBg};color:#095350;border:1px solid #9adbd2;}

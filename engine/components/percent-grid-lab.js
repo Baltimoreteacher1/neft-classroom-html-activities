@@ -10,20 +10,20 @@ function injectStyles() {
   s.textContent = `
   .pgl{color-scheme:light;--pg-teal:var(--teal,#2a9d8f);--pg-coral:var(--coral,#d9795d);--pg-navy:var(--navy,#264653);--pg-muted:var(--muted,#6b7280);
     border:1px solid rgba(38,70,83,.14);border-radius:12px;padding:12px;margin:var(--sp-3,12px) 0;background:#fff}
-  .pgl-title{font-weight:800;color:var(--pg-navy);margin:0 0 8px;font-size:.92rem}
+  .pgl-title{font-weight:700;color:var(--pg-navy);margin:0 0 8px;font-size:.92rem}
   .pgl-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;max-width:260px;margin:0 auto;touch-action:manipulation}
   .pgl-cell{aspect-ratio:1;border:1px solid rgba(38,70,83,.25);border-radius:3px;background:#fff;cursor:pointer;padding:0}
   .pgl-cell[aria-pressed="true"]{background:var(--pg-teal);border-color:var(--pg-teal)}
-  .pgl-read{text-align:center;font-weight:800;color:var(--pg-navy);margin:10px 0 6px}
+  .pgl-read{text-align:center;font-weight:700;color:var(--pg-navy);margin:10px 0 6px}
   .pgl-tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-  .pgl-btn{font:inherit;font-size:.82rem;font-weight:700;color:var(--pg-navy);background:#fff;border:1.5px solid rgba(38,70,83,.22);border-radius:999px;padding:6px 12px;cursor:pointer}
+  .pgl-btn{font:inherit;font-size:.82rem;font-weight:600;color:var(--pg-navy);background:#fff;border:1.5px solid rgba(38,70,83,.22);border-radius:999px;padding:6px 12px;cursor:pointer}
   .pgl-btn:hover{border-color:var(--pg-teal);color:var(--pg-teal)}
   .pgl-btn[aria-pressed="true"]{background:var(--pg-teal);border-color:var(--pg-teal);color:#fff}
   .pgl-forms{display:none;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:10px}
   .pgl.show .pgl-forms{display:flex}
   .pgl-form{background:#fff;border:1px solid rgba(38,70,83,.14);border-radius:10px;padding:6px 12px;text-align:center;min-width:74px}
   .pgl-form b{display:block;font-size:1.05rem;color:var(--pg-navy)}
-  .pgl-form span{font-size:.66rem;color:var(--pg-muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  .pgl-form span{font-size:.66rem;color:var(--pg-muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
 `;
   document.head.appendChild(s);
 }

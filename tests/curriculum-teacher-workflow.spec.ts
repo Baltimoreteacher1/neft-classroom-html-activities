@@ -1,16 +1,23 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-test("public curriculum keeps the teacher workflow hidden", async ({ page }) => {
-  await page.goto("/curriculum/");
-  await expect(page.locator("#hub-mode-toggle")).toContainText("Student Mode");
+test("the student lesson picker keeps the teacher workflow hidden", async ({ page }) => {
+  // /curriculum/ is the teacher console and no longer has a student view
+  // (AUTH_CONTRACT §2b), so the "does teacher material leak to a student?"
+  // question moved to the page a student can actually reach. It shares the same
+  // bundle, so the leak this guards against is still possible there.
+  await page.goto("/curriculum/units/");
   await expect(page.locator("#curriculum-teacher-workflow")).toBeHidden();
   await expect(page.getByText("Gradebook & Save Codes")).toBeHidden();
 });
 
 test.describe("teacher command center", () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => localStorage.setItem("nt-teacher-mode", "1"));
+    await page.addInitScript(() => {
+      try {
+        localStorage.setItem("neft_teacher_mode_v1", "1");
+      } catch {}
+    });
     await page.goto("/curriculum/");
     await expect(page.locator("#curriculum-teacher-workflow")).toBeVisible();
   });

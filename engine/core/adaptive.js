@@ -111,29 +111,86 @@ export function createAdaptiveSequence(config, state, opts = {}) {
   const maxItems = opts.maxItems || (reduced ? Math.max(3, Math.ceil(fullCount * 0.6)) : fullCount);
   let served = 0;
 
-  function pickFrom(tier) {
-    // Try requested tier, then gracefully fall back through neighbors.
-    const order =
-      tier === "level1"
-        ? ["level1", "core", "level2"]
-        : tier === "level2"
-          ? ["level2", "core", "level1"]
-          : ["core", "level1", "level2"];
+  // Items already handed out, tracked by identity so a targeted pull cannot
+  // serve the same problem twice. The plain cursors cannot express this on
+  // their own: a targeted pick takes an item from the MIDDLE of a bucket, and
+  // advancing the cursor past it would silently skip everything before it.
+  const servedItems = new WeakSet();
+
+  function take(tier, index) {
+    const prob = buckets[tier][index];
+    servedItems.add(prob);
+    // Keep the cursor honest: slide it past anything already served so the
+    // sequential path never re-offers a targeted pull.
+    while (cursors[tier] < buckets[tier].length && servedItems.has(buckets[tier][cursors[tier]])) {
+      cursors[tier]++;
+    }
+    return { ...prob, tier };
+  }
+
+  // Does this item's authoring trap the given misconception? Only authored tags
+  // count. The inference engine can name an error from a wrong ANSWER, but it
+  // cannot know in advance which item will elicit which error, so predicting
+  // that here would be guessing — and a "targeted" item that does not actually
+  // target anything is worse than the ordinary next item, because it displaces
+  // it for no reason.
+  function trapsTag(prob, tag) {
+    if (!prob || !tag) return false;
+    if (prob.misconceptionTag === tag) return true;
+    return Array.isArray(prob.misconceptionTags) && prob.misconceptionTags.includes(tag);
+  }
+
+  // Prefer an unserved item that traps `tag`, searching the requested tier first
+  // and then its neighbours in the same order the ordinary path would. Returns
+  // null when there is none, and the caller falls straight through to sequential
+  // order — this only ever CHANGES which item comes next, never whether one does.
+  function pickTargeted(order, tag) {
     for (const t of order) {
-      if (cursors[t] < buckets[t].length) {
-        const prob = buckets[t][cursors[t]++];
-        return { ...prob, tier: t };
+      const bucket = buckets[t];
+      for (let i = cursors[t]; i < bucket.length; i++) {
+        if (servedItems.has(bucket[i])) continue;
+        if (trapsTag(bucket[i], tag)) return take(t, i);
       }
+    }
+    return null;
+  }
+
+  function tierOrder(tier) {
+    // Try requested tier, then gracefully fall back through neighbors.
+    return tier === "level1"
+      ? ["level1", "core", "level2"]
+      : tier === "level2"
+        ? ["level2", "core", "level1"]
+        : ["core", "level1", "level2"];
+  }
+
+  function pickFrom(tier) {
+    for (const t of tierOrder(tier)) {
+      while (cursors[t] < buckets[t].length && servedItems.has(buckets[t][cursors[t]])) {
+        cursors[t]++;
+      }
+      if (cursors[t] < buckets[t].length) return take(t, cursors[t]);
     }
     return null;
   }
 
   return {
     buckets,
-    nextProblem(overrideTier) {
+    /**
+     * @param {string} [overrideTier]
+     * @param {{ targetTag?: string|null }} [pickOpts] `targetTag` names the
+     *   misconception this student just showed (or keeps showing across
+     *   lessons). When an unserved item traps that error, it is served next so
+     *   the student meets the trap while the correction is fresh and clearing it
+     *   counts as evidence. Purely a preference — never a filter.
+     */
+    nextProblem(overrideTier, pickOpts = {}) {
       if (served >= maxItems) return null;
       const tier = overrideTier || selectTier(state, opts);
-      const prob = pickFrom(tier);
+      const targetTag = pickOpts.targetTag;
+      let prob = targetTag ? pickTargeted(tierOrder(tier), targetTag) : null;
+      if (prob) prob.targetedFor = targetTag;
+      else prob = pickFrom(tier);
       if (prob) served++;
       return prob;
     },

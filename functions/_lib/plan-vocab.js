@@ -11,13 +11,38 @@ export const MISCONCEPTIONS = {
     label: "Distributed to the first term only",
     watchFor: "Draw the area model — the outside factor touches BOTH terms.",
   },
+  "coord-xy-swapped": {
+    label: "Swapped the x and y coordinates",
+    watchFor: "Have them trace the horizontal move with a finger before the vertical one.",
+  },
   "decimal-place-value": {
     label: "Right digits, wrong magnitude",
     watchFor: "Estimate to the nearest whole first, then count decimal places out loud.",
   },
+  "division-quotient-missing-zero": {
+    label: "Dropped a placeholder zero in the quotient",
+    watchFor:
+      "Estimate first — 4,896 ÷ 12 is about 400, not 40 — then check the quotient has a digit above every digit that was brought down.",
+  },
+  "equation-answered-with-given-number": {
+    label: "Answered with a number already in the equation",
+    watchFor: "Ask them to substitute their answer back into the original equation out loud.",
+  },
+  "equation-not-inverse-operation": {
+    label: "Did not undo the operation",
+    watchFor: "Have them name the operation acting on the variable BEFORE they touch both sides.",
+  },
   "exponent-as-multiplication": {
     label: "Multiplied the base by the exponent",
     watchFor: "Expand it once — write out every factor before evaluating.",
+  },
+  "factorization-stopped-early": {
+    label: "Stopped factoring before every factor was prime",
+    watchFor: "Point at each factor and ask: can this one still be broken apart?",
+  },
+  "factors-multiples-confused": {
+    label: "Confused factors with multiples",
+    watchFor: "Ask which number divides which — factors go INTO it, multiples come OUT of it.",
   },
   "fraction-added-denominators": {
     label: "Added the denominators",
@@ -43,6 +68,18 @@ export const MISCONCEPTIONS = {
   "geom-volume-added-dimensions": {
     label: "Added the dimensions instead of multiplying",
     watchFor: "Build one layer of unit cubes first, then count the layers.",
+  },
+  "inequality-boundary-inclusion": {
+    label: "Boundary value wrongly included or excluded",
+    watchFor: "Have them test the boundary value itself — does it make the statement true?",
+  },
+  "inequality-direction-flipped": {
+    label: "Right boundary, symbol reversed",
+    watchFor: "Ask which moves can flip a symbol — adding and subtracting never do.",
+  },
+  "inequality-graph-direction": {
+    label: "Graph shaded toward the wrong side",
+    watchFor: "Make them test one number from the shaded side out loud before accepting a graph.",
   },
   "measure-area-perimeter-swap": {
     label: "Swapped area and perimeter",
@@ -84,17 +121,65 @@ export const MISCONCEPTIONS = {
     label: "Used the percent as a plain number",
     watchFor: "Make them say the percent as “per hundred” out loud.",
   },
+  "property-order-vs-grouping": {
+    label: "Confused the commutative and associative properties",
+    watchFor: "Ask what actually MOVED: the order of the numbers, or the parentheses?",
+  },
   "rate-not-per-one": {
     label: "Gave the total instead of the unit rate",
     watchFor: "Ask “per ONE what?” and make them finish the sentence.",
+  },
+  "ratio-as-difference": {
+    label: "Combined the two amounts instead of comparing them",
+    watchFor:
+      "Have them say the comparison out loud — “for every ___ there are ___” — before writing anything.",
+  },
+  "ratio-compared-without-common-basis": {
+    label: "Compared two ratios without a common basis",
+    watchFor: "Ask what ONE of each is worth before either ratio is compared.",
   },
   "ratio-inverted": {
     label: "Flipped the ratio",
     watchFor: "Have them label both quantities with units before writing the ratio.",
   },
+  "ratio-scaled-additively": {
+    label: "Scaled a ratio by adding instead of multiplying",
+    watchFor:
+      "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
+  },
   "sign-dropped": {
     label: "Right magnitude, lost the negative sign",
     watchFor: "Place the answer on a number line — which side of zero?",
+  },
+  "stat-center-vs-spread": {
+    label: "Confused a measure of center with a measure of spread",
+    watchFor: "Ask what the question wants to know: a typical value, or how scattered the data is?",
+  },
+  "stat-frequency-vs-value": {
+    label: "Reported a data value where a frequency was asked",
+    watchFor: "Ask them to point at the axis their number came from before they answer.",
+  },
+  "stat-histogram-bin-misread": {
+    label: "Misread the bins or the scale on a data display",
+    watchFor:
+      "Have them point to the interval's two endpoints and say which values belong inside it.",
+  },
+  "stat-mean-skewed-by-outlier": {
+    label: "Chose the mean when an outlier distorts it",
+    watchFor: "Have them cover the outlier and recompute — how far does the mean move?",
+  },
+  "stat-mean-vs-median": {
+    label: "Used the mean where the median was asked (or the reverse)",
+    watchFor:
+      "Ask them to say which word the question used, then what that word tells you to DO with the numbers.",
+  },
+  "stat-question-no-variability": {
+    label: "Chose a question with only one fixed answer",
+    watchFor: "Ask: would two different people give two different answers?",
+  },
+  "stat-range-for-iqr": {
+    label: "Used the full range instead of the IQR",
+    watchFor: "Have them mark Q1 and Q3 on the plot and cover everything outside them.",
   },
   "stat-summed-instead-of-averaged": {
     label: "Added the data set instead of averaging it",

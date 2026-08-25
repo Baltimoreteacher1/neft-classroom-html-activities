@@ -12,10 +12,27 @@
 import { execFileSync } from "node:child_process";
 import { readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { SKIP_EXIT } from "./lib/skip-exit.mjs";
 
 const ROOT = process.cwd();
 const IGNORE_DIRS = new Set(["node_modules", "dist", ".git", ".qa-logs", "coverage"]);
 const TEST_RE = /\.test\.(mjs|cjs|js)$/;
+
+/**
+ * Tests that need a service NO automated run provides — a hand-started Vite dev
+ * server, a locally-run Worker — keyed to the env var that turns each one on.
+ *
+ * These are not "skips" in the skip-exit sense. That protocol is about a check
+ * that SHOULD have run and could not (no browser, no network), which in CI is
+ * correctly a failure. A test that structurally cannot run without someone
+ * manually starting two servers is a different thing: leaving it in the default
+ * suite made the required gate red on every PR forever, for a reason no PR could
+ * ever fix, which is exactly how a gate stops being read. Naming them here keeps
+ * that visible and deliberate instead of hiding it inside the test.
+ *
+ * Set the env var to include one; the summary always says which were left out.
+ */
+const OPT_IN_TESTS = new Map([["tools/workbench-live-runtime.test.mjs", "MWB_RUNTIME_TEST"]]);
 
 function findTests(dir, out = []) {
   for (const entry of readdirSync(dir)) {
@@ -36,23 +53,56 @@ function findTests(dir, out = []) {
   return out;
 }
 
-const tests = findTests(ROOT).sort();
+const discovered = findTests(ROOT).sort();
+const optedOut = [];
+const tests = discovered.filter((file) => {
+  const rel = relative(ROOT, file);
+  const gate = OPT_IN_TESTS.get(rel);
+  if (gate && process.env[gate] !== "1") {
+    optedOut.push(`${rel} (set ${gate}=1)`);
+    return false;
+  }
+  return true;
+});
 if (tests.length === 0) {
-  console.log("No test scripts found.");
-  process.exit(0);
+  // Finding nothing is a broken discovery walk, not a clean run. This used to
+  // exit 0, which is the same lie as a gate that skips and reports PASS.
+  console.error("No test scripts found — the discovery walk is broken, not the suite empty.");
+  process.exit(1);
 }
 
 let failed = 0;
+const skipped = [];
 for (const file of tests) {
   const rel = relative(ROOT, file);
   try {
     execFileSync(process.execPath, [file], { stdio: "inherit" });
     console.log(`PASS  ${rel}`);
-  } catch {
+  } catch (e) {
+    // Exit 3 = SKIP (tools/lib/skip-exit.mjs): the test could not run — a dirty
+    // tree it refuses to judge, a runtime it needs and does not have. Not a
+    // pass, not a failure, and NAMED in the summary either way.
+    if (e?.status === SKIP_EXIT) {
+      console.log(`SKIP  ${rel}  (did not run)`);
+      skipped.push(rel);
+      continue;
+    }
     console.error(`FAIL  ${rel}`);
     failed += 1;
   }
 }
 
-console.log(`\n${tests.length - failed}/${tests.length} test scripts passed.`);
+console.log(`\n${tests.length - failed - skipped.length}/${tests.length} test scripts passed.`);
+if (optedOut.length) {
+  // Always named, never silent: "what did this run actually verify?" must stay
+  // answerable, the same reason skipped tests are listed below.
+  console.log(`${optedOut.length} opt-in test(s) NOT run: ${optedOut.join(", ")}`);
+}
+if (skipped.length) {
+  console.log(`${skipped.length} SKIPPED (verified nothing): ${skipped.join(", ")}`);
+  if (process.env.CI) {
+    console.error("CI must not report skipped tests as a pass.");
+    process.exit(1);
+  }
+}
 process.exit(failed > 0 ? 1 : 0);

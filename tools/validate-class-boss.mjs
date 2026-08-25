@@ -59,12 +59,41 @@ const F = (n, d) => {
 };
 const R = (a, b) => `${a / g(a, b)} : ${b / g(a, b)}`;
 const rd = (x, p = 4) => Math.round(x * 10 ** p) / 10 ** p;
+/** A number with every 0 digit deleted — the answer a dropped placeholder leaves. */
+const dropZeros = (x) => Number(String(x).replace(/0/g, ""));
 const sum = (v) => v.reduce((s, x) => s + x, 0);
 
 /* ---------------------------------------------------------------------------
  * Expected [correct, distractor] per template id, recomputed from `values`.
  * Read each line against the prompt in questions.js, not against its code.
  * ------------------------------------------------------------------------- */
+
+/** Prime factors of n WITH repeats, by trial division. Independent of the bank. */
+function primeFactorCount(n) {
+  let x = Number(n);
+  let count = 0;
+  for (let p = 2; p * p <= x; p += 1) {
+    while (x % p === 0) {
+      x /= p;
+      count += 1;
+    }
+  }
+  if (x > 1) count += 1;
+  return count;
+}
+
+/**
+ * Given the two candidate questions, decide BY RULE which is statistical: a
+ * statistical question asks about EACH member of a group, so its answers vary.
+ * Returns [statistical, fixed] — the reverse of what the bank claims fails.
+ */
+function statisticalPair(options) {
+  const list = Array.isArray(options) ? options.map(String) : [];
+  const varying = list.find((q) => /\beach\b/i.test(q));
+  const fixed = list.find((q) => q !== varying);
+  return [varying, fixed];
+}
+
 const EXPECT = {
   // rate-not-per-one — distractor is the total, never divided by the count.
   "rate-apples": (v) => [v.total / v.n, v.total],
@@ -72,11 +101,113 @@ const EXPECT = {
   "rate-notebooks": (v) => [v.total / v.n, v.total],
   "rate-printer": (v) => [v.p / v.m, v.p],
 
+  // equation-not-inverse-operation — distractor applies the SAME operation again
+  // instead of its inverse, which is the error the tag names.
+  "inv-mul": (v) => [v.x, v.a * v.x * v.a],
+  "inv-div": (v) => [v.x, v.x / v.a / v.a],
+  "inv-add": (v) => [v.x, v.x + v.a + v.a],
+  "inv-sub": (v) => [v.x, v.x - v.a - v.a],
+
+  // equation-answered-with-given-number — distractor is the number printed in
+  // the equation rather than the unknown.
+  "given-add": (v) => [v.x, v.a],
+  "given-div": (v) => [v.x, v.a],
+  "given-mul": (v) => [v.x, v.a],
+  "given-sub": (v) => [v.x, v.a],
+
+  // inequality-direction-flipped — same boundary, symbol turned around.
+  "dir-add": (v) => [`x > ${v.b + v.a}`, `x < ${v.b + v.a}`],
+  "dir-sub": (v) => [`x < ${v.b - v.a}`, `x > ${v.b - v.a}`],
+  "dir-ge": (v) => [`x ≥ ${v.b + v.a}`, `x ≤ ${v.b + v.a}`],
+  "dir-le": (v) => [`x ≤ ${v.b - v.a}`, `x ≥ ${v.b - v.a}`],
+
+  // inequality-boundary-inclusion — same direction, boundary in/out swapped.
+  "inc-atleast": (v) => [`x ≥ ${v.b}`, `x > ${v.b}`],
+  "inc-atmost": (v) => [`x ≤ ${v.b}`, `x < ${v.b}`],
+  "inc-morethan": (v) => [`x > ${v.b}`, `x ≥ ${v.b}`],
+  "inc-fewerthan": (v) => [`x < ${v.b}`, `x ≤ ${v.b}`],
+
+  // inequality-graph-direction — same circle, shading on the wrong side.
+  "shade-gt": (v) => [`open circle at ${v.b}, shade right`, `open circle at ${v.b}, shade left`],
+  "shade-lt": (v) => [`open circle at ${v.b}, shade left`, `open circle at ${v.b}, shade right`],
+  "shade-ge": (v) => [
+    `filled circle at ${v.b}, shade right`,
+    `filled circle at ${v.b}, shade left`,
+  ],
+  "shade-le": (v) => [
+    `filled circle at ${v.b}, shade left`,
+    `filled circle at ${v.b}, shade right`,
+  ],
+
+  // stat-range-for-iqr — distractor is max − min, the full range.
+  "iqr-plot": (v) => [v.q3 - v.q1, v.max - v.min],
+  "iqr-quartiles": (v) => [v.q3 - v.q1, v.max - v.min],
+  "iqr-scores": (v) => [v.q3 - v.q1, v.max - v.min],
+  "iqr-times": (v) => [v.q3 - v.q1, v.max - v.min],
+
+  // stat-center-vs-spread — distractor is a measure of the other kind.
+  "cs-spread": (v) => [v.pick ? "range" : "interquartile range", "median"],
+  "cs-center": (v) => [v.pick ? "median" : "mean", "range"],
+  "cs-mode": () => ["mode", "range"],
+  "cs-iqr": () => ["interquartile range", "median"],
+
+  // stat-mean-skewed-by-outlier — distractor is the mean, the measure the
+  // outlier drags.
+  "out-times": () => ["median", "mean"],
+  "out-prices": () => ["median", "mean"],
+  "out-scores": () => ["median", "mean"],
+  "out-attendance": () => ["median", "mean"],
+
+  // stat-frequency-vs-value — distractor is a number off the value axis.
+  "freq-bar": (v) => [v.h, v.lo + 9],
+  "freq-tallest": (v) => [v.h, v.lo],
+  "freq-players": (v) => [v.h, v.lo + 4],
+  "freq-minutes": (v) => [v.h, v.lo + 9],
+
+  // coord-xy-swapped — distractor is the pair with its coordinates traded.
+  // Written out here rather than importing questions.js's point(), so this
+  // stays an INDEPENDENT statement of the answer: importing the helper under
+  // test would let one bad definition satisfy both sides.
+  "xy-plot": (v) => [`(${v.x}, ${v.y})`, `(${v.y}, ${v.x})`],
+  "xy-read": (v) => [`(${v.x}, ${v.y})`, `(${v.y}, ${v.x})`],
+  "xy-map": (v) => [`(${v.x}, ${v.y})`, `(${v.y}, ${v.x})`],
+  "xy-negative": (v) => [`(${v.x}, ${v.y})`, `(${v.y}, ${v.x})`],
+
   // ratio-inverted — distractor is the same ratio written back to front.
   "ratio-marbles": (v) => [R(v.first, v.second), R(v.second, v.first)],
   "ratio-pets": (v) => [R(v.first, v.second), R(v.second, v.first)],
   "ratio-recipe": (v) => [R(v.first, v.second), R(v.second, v.first)],
   "ratio-class": (v) => [R(v.first, v.second), R(v.second, v.first)],
+
+  // ratio-scaled-additively — the second quantity is grown by the SAME amount
+  // the first one grew by (a·k − a), instead of by the same FACTOR (×k).
+  "rsa-recipe": (v) => [v.b * v.k, v.b + (v.a * v.k - v.a)],
+  "rsa-paint": (v) => [v.b * v.k, v.b + (v.a * v.k - v.a)],
+  "rsa-gears": (v) => [v.b * v.k, v.b + (v.a * v.k - v.a)],
+  "rsa-map": (v) => [v.b * v.k, v.b + (v.a * v.k - v.a)],
+
+  // ratio-as-difference — distractor collapses the pair into ONE number: the
+  // gap between them for the first two, their total for the last two.
+  "rad-marbles": (v) => [R(v.first, v.second), String(v.second - v.first)],
+  "rad-team": (v) => [R(v.first, v.second), String(v.second - v.first)],
+  "rad-fruit": (v) => [R(v.first, v.second), String(v.first + v.second)],
+  "rad-books": (v) => [R(v.first, v.second), String(v.first + v.second)],
+
+  // stat-mean-vs-median — the prompt asks for the median (the 3rd of 5 sorted
+  // values); the distractor is the mean of the same five. Both recomputed here
+  // from the offsets written into each prompt, not read off the bank.
+  "mvm-scores": (v) => [v.base + 3, sum([0, 1, 3, 4, 12].map((o) => v.base + o)) / 5],
+  "mvm-times": (v) => [v.base + 4, sum([0, 2, 4, 6, 18].map((o) => v.base + o)) / 5],
+  "mvm-points": (v) => [v.base + 2, sum([0, 1, 2, 3, 19].map((o) => v.base + o)) / 5],
+  "mvm-temps": (v) => [v.base + 5, sum([0, 3, 5, 7, 20].map((o) => v.base + o)) / 5],
+
+  // stat-histogram-bin-misread — each distractor is a specific misreading:
+  // sweeping in the next bin, dropping the shortest bar, answering with the
+  // interval's endpoint instead of the bar height, and stopping at one bin.
+  "hbm-bin-count": (v) => [v.f2, v.f2 + v.f3],
+  "hbm-total": (v) => [v.f1 + v.f2 + v.f3, v.f1 + v.f2],
+  "hbm-tallest": (v) => [v.f2, 29],
+  "hbm-two-bins": (v) => [v.f1 + v.f2, v.f1],
 
   // percent-scale-off-by-100 — distractor is the answer 100 times too big.
   "pct-plain": (v) => [(v.n * v.p) / 100, v.n * v.p],
@@ -95,6 +226,15 @@ const EXPECT = {
   "dec-tenth-whole": (v) => [rd((v.a / 10) * v.b), v.a * v.b],
   "dec-div-100": (v) => [rd(v.n / 100), rd(v.n / 10)],
   "dec-times-10": (v) => [rd((v.w + v.f / 10) * 10), rd((v.w + v.f / 10) * 100)],
+
+  // division-quotient-missing-zero — the quotient really does divide out, and
+  // the distractor is that same quotient with its zero digits deleted. Computed
+  // here by DIVIDING the dividend, which is the independent path: the template
+  // multiplies up from the digits it chose, this divides back down.
+  "divzero-tens": (v) => [v.n / v.d, dropZeros(v.n / v.d)],
+  "divzero-trailing": (v) => [v.n / v.d, dropZeros(v.n / v.d)],
+  "divzero-two-digit-divisor": (v) => [v.n / v.d, dropZeros(v.n / v.d)],
+  "divzero-thousands": (v) => [v.n / v.d, dropZeros(v.n / v.d)],
 
   // exponent-as-multiplication — distractor multiplies base by exponent.
   "exp-power": (v) => [Math.pow(v.b, v.e), v.b * v.e],
@@ -147,6 +287,58 @@ const EXPECT = {
   "ap-perimeter": (v) => [2 * v.l + 2 * v.w, v.l * v.w],
   "ap-square": (v) => [v.s * v.s, 4 * v.s],
   "ap-carpet": (v) => [v.l * v.w, 2 * v.l + 2 * v.w],
+
+  // factors-multiples-confused — a factor DIVIDES n; a multiple is n counted up.
+  // Re-derived from n and d rather than copied: a factor must satisfy n % f === 0,
+  // and the tag's error offers something n divides INTO instead.
+  "fm-factor-of": (v) => [v.n / (v.n / v.d), v.n * 2],
+  "fm-multiple-of": (v) => [v.n * v.k, 1],
+  "fm-largest-factor": (v) => [v.n / 2, v.n * 2],
+  "fm-smallest-multiple": (v) => [v.n * 2, Math.max(2, Math.floor(v.n / 2))],
+
+  // property-order-vs-grouping — derived from the ARITY of the identity, not
+  // from the template's own label: a two-number identity (x∘y = y∘x) can only be
+  // commutative, and a three-number one with the same left-to-right order can
+  // only be associative. A template that mislabels itself fails here.
+  "prop-add-order": (v) =>
+    v.c === undefined
+      ? ["Commutative Property", "Associative Property"]
+      : ["Associative Property", "Commutative Property"],
+  "prop-mult-grouping": (v) =>
+    v.c === undefined
+      ? ["Commutative Property", "Associative Property"]
+      : ["Associative Property", "Commutative Property"],
+  "prop-add-grouping": (v) =>
+    v.c === undefined
+      ? ["Commutative Property", "Associative Property"]
+      : ["Associative Property", "Commutative Property"],
+  "prop-mult-order": (v) =>
+    v.c === undefined
+      ? ["Commutative Property", "Associative Property"]
+      : ["Associative Property", "Commutative Property"],
+
+  // factorization-stopped-early — the count of prime factors WITH repeats is
+  // recomputed here by trial division, so a hand-typed count in the bank cannot
+  // pass unless the arithmetic agrees. The error stops at a two-factor split.
+  "pf-count-12": (v) => [primeFactorCount(v.n), 2],
+  "pf-count-18": (v) => [primeFactorCount(v.n), 2],
+  "pf-count-20": (v) => [primeFactorCount(v.n), 2],
+  "pf-count-36": (v) => [primeFactorCount(v.n), 2],
+
+  // stat-question-no-variability — the validator picks the statistical question
+  // BY RULE (the one asking about EACH member of a group, so answers vary),
+  // never by reading which one the template called correct.
+  "sq-heights": (v) => statisticalPair(v.options),
+  "sq-minutes": (v) => statisticalPair(v.options),
+  "sq-shoes": (v) => statisticalPair(v.options),
+  "sq-pets": (v) => statisticalPair(v.options),
+
+  // ratio-compared-without-common-basis — per-ONE is recomputed by division;
+  // the error reports the TOTAL instead of the unit amount.
+  "cb-apples": (v) => [Number((v.costA / v.nA).toFixed(2)), v.costA],
+  "cb-pencils": (v) => [Number((v.cost / v.n).toFixed(2)), v.cost],
+  "cb-miles": (v) => [v.miles / v.gal, v.miles],
+  "cb-pages": (v) => [v.pages / v.mins, v.pages],
 
   // op-added-instead-of-multiplied
   "mul-boxes": (v) => [v.a * v.b, v.a + v.b],

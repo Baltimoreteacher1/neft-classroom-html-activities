@@ -13,6 +13,7 @@
 // block. See README.md for the schema.
 
 import { bootLesson } from "../../core/lesson-renderer.js";
+import { ensureCanvasBridge } from "../../core/scorm-bridge.js";
 import "../../../assets/design-tokens.css";
 import "./flagship.css";
 // The editorial design layer is now loaded engine-wide by createApp
@@ -23,6 +24,15 @@ import { isToolsMode } from "../../core/tools-mode.js";
 const PHASE_KEYS = ["launch", "vocab", "explore", "practice", "connect", "reflect"];
 
 export function bootFlagship(config) {
+  // Canvas/SCORM resume relay, attached BEFORE the mission intro rather than
+  // inherited from bootLesson. bootLesson runs inside showMissionIntro's
+  // callback — i.e. only after the student presses Start — so relying on the
+  // delegation would leave the SCORM wrapper without a handshake for as long as
+  // the student sat on the story screen, past the wrapper's handshake timeout,
+  // and any stored resume state would arrive after the lesson had already
+  // begun. Idempotent, so the later bootLesson call is a no-op.
+  ensureCanvasBridge(config);
+
   const fl = config.flagship || {};
   const scenes = normalizeScenes(fl.scenes);
 

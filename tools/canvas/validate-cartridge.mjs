@@ -23,6 +23,7 @@ import { existsSync, mkdtempSync, readdirSync, readFileSync, statSync } from "fs
 import { tmpdir } from "os";
 import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
+import { assertNonEmpty } from "../lib/non-empty.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");
@@ -144,12 +145,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           .filter((f) => f.endsWith(".imscc") || f.endsWith(".zip"))
           .map((f) => join(pkgDir, f))
       : [];
-    if (!targets.length) {
-      console.log(
-        "No packages in canvas-packages/. Build one first, e.g. npm run library-cartridge.",
-      );
-      process.exit(0);
-    }
+    // Six cartridges are TRACKED in canvas-packages/, so discovering none of
+    // them is broken discovery, not an empty subject — and this printed a
+    // friendly line and exited 0, which reads in a gate summary as "every
+    // cartridge validated". That was harmless while nothing ran this check; it
+    // became a vacuous pass the moment it joined `validate` on 2026-08-20.
+    // FAIL, not SKIP: the files are in the repo, so their absence is a defect
+    // here, not a property of the machine this ran on.
+    assertNonEmpty(
+      "Canvas cartridges in canvas-packages/",
+      targets,
+      "Tracked .imscc/.zip files live there; rebuild with `npm run library-cartridge` if genuinely missing.",
+    );
   }
 
   let allOk = true;

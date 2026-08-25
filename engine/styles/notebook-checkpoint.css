@@ -1,0 +1,709 @@
+/* ── Notebook Checkpoints ──────────────────────────────────────────────────
+   The "write it in your notebook" block that closes a gated phase, plus the
+   canonical Math Notes model dialog.
+
+   Existing tokens only — no new fonts, no new font sizes, no network requests.
+   Every selector is namespaced (.nt-nb / #nt-notebook-model) so nothing here
+   can leak into another surface that happens to load the engine bundle.
+   ------------------------------------------------------------------------ */
+
+.nt-nb {
+  margin: var(--sp-7, 32px) 0 var(--sp-4, 16px);
+  padding: var(--sp-5, 20px);
+  background: var(--card, #fff);
+  border: 2px solid var(--line, #d7e2ed);
+  border-left: 6px solid var(--teal, #1fa6a2);
+  border-radius: var(--radius-md, 14px);
+  box-shadow: var(--shadow-sm);
+}
+
+.nt-nb-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3, 12px);
+}
+
+.nt-nb-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-full, 999px);
+  background: var(--teal-ink, #0c6f6b);
+  color: #fff;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+}
+
+.nt-nb-title {
+  margin: 0;
+  font-size: var(--fs-xl);
+  color: var(--ink, #21313f);
+}
+
+.nt-nb-prompt {
+  margin: var(--sp-3, 12px) 0 0;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-base, 1.65);
+  color: var(--ink, #21313f);
+}
+
+/* ── Copy Panel (Publisher-Grade Speed + Clarity) ──────────────────────────
+   Visually unmistakable panel containing EXACTLY what the student writes by
+   hand in their notebook — nothing else.
+   Large, high-contrast, generous line-height for glancing between screen and paper.
+   ------------------------------------------------------------------------ */
+
+.nt-nb-copy-panel {
+  margin: var(--sp-4, 16px) 0;
+  padding: var(--sp-4, 16px) var(--sp-5, 20px);
+  background: #fafbfc;
+  border: 1.5px solid #cbd5e1;
+  border-left: 5px solid #12355b;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(18, 53, 91, 0.04);
+}
+
+.nt-nb-copy-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #12355b;
+  background: rgba(18, 53, 91, 0.06);
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: var(--sp-3, 12px);
+}
+
+.nt-nb-copy-banner::before {
+  content: "✎";
+  font-size: 0.95rem;
+}
+
+/* Box 1 — Math Words. Three columns: the word, what it means, and the picture
+   this lesson already uses for that word. */
+.nt-nb-copy-grid {
+  list-style: none;
+  padding-left: 0;
+  counter-reset: nt-nb-word;
+}
+
+.nt-nb-copy-grid li {
+  display: grid;
+  grid-template-columns: minmax(7em, 12em) minmax(0, 1fr) 72px;
+  align-items: center;
+  gap: var(--sp-3, 12px);
+  padding: 10px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.nt-nb-copy-grid li:last-child {
+  border-bottom: none;
+}
+
+.nt-nb-copy-art {
+  width: 72px;
+  height: 72px;
+  justify-self: end;
+  object-fit: contain;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+}
+
+.nt-nb-copy-art-empty {
+  display: block;
+  background: none;
+  border: 0;
+}
+
+@media (max-width: 560px) {
+  .nt-nb-copy-grid li {
+    grid-template-columns: minmax(0, 1fr) 52px;
+    gap: var(--sp-2, 8px);
+    row-gap: 2px;
+  }
+
+  .nt-nb-copy-grid .nt-nb-copy-term {
+    grid-column: 1;
+  }
+
+  .nt-nb-copy-grid .nt-nb-copy-meaning {
+    grid-column: 1;
+  }
+
+  .nt-nb-copy-art,
+  .nt-nb-copy-art-empty {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 52px;
+    height: 52px;
+  }
+}
+
+/* Box 1 — Math Words list */
+.nt-nb-copy-list {
+  margin: 0;
+  padding-left: 1.5em;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: #0b1520;
+}
+
+.nt-nb-copy-list li {
+  margin-bottom: var(--sp-2, 8px);
+  color: #0b1520;
+}
+
+.nt-nb-copy-list li:last-child {
+  margin-bottom: 0;
+}
+
+.nt-nb-copy-term {
+  font-weight: 800;
+  color: #0b1520;
+  font-size: 1.12rem;
+}
+
+.nt-nb-copy-meaning {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 1.05rem;
+}
+
+/* Box 2 — Today's Math rule & model */
+.nt-nb-copy-rule {
+  font-family: var(--fl-serif, Georgia, serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #12355b;
+  margin: var(--sp-2, 8px) 0;
+  letter-spacing: -0.01em;
+}
+
+/* Each formula on its own display line — one pipe-joined string of symbols is
+   a wall; a stack of short equations is something a hand can copy. */
+.nt-nb-copy-formulas {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-2, 8px);
+  margin: var(--sp-2, 8px) 0 var(--sp-3, 12px);
+}
+
+.nt-nb-copy-formula {
+  display: inline-block;
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Consolas, monospace, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #166534;
+}
+
+/* Steps as numbered cards: a badge, a bold action, a lighter detail line. */
+.nt-nb-copy-steps {
+  list-style: none;
+  margin: var(--sp-3, 12px) 0;
+  padding-left: 0;
+  display: grid;
+  gap: 10px;
+  font-size: 1.02rem;
+  line-height: 1.5;
+  color: #1e293b;
+}
+
+.nt-nb-step {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 10px 14px;
+  box-shadow: 0 1px 2px rgba(18, 53, 91, 0.02);
+}
+
+.nt-nb-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #12355b;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.nt-nb-step-lead {
+  display: block;
+  font-weight: 800;
+  color: #0b1520;
+  font-size: 1.06rem;
+  margin-bottom: 3px;
+}
+
+.nt-nb-step-detail {
+  display: block;
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 1.02rem;
+}
+
+/* An equation inside a sentence, set off so the symbols read at a glance. */
+.nt-nb-eq {
+  font-family: ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Consolas, monospace, sans-serif;
+  font-weight: 700;
+  color: #0c6f6b;
+  background: #dff2ee;
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
+.nt-nb-copy-box2 .nt-nb-copy-meaning {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #1e293b;
+  margin: var(--sp-2, 8px) 0;
+}
+
+.nt-nb-copy-example {
+  margin-top: var(--sp-3, 12px);
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px dashed #94a3b8;
+  border-radius: 6px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #1e293b;
+  font-style: normal;
+}
+
+.nt-nb-copy-example-label {
+  font-weight: 700;
+  color: #12355b;
+  margin-right: 6px;
+}
+
+.nt-nb-modellink {
+  margin-top: var(--sp-3, 12px);
+  min-height: 48px;
+  padding: var(--sp-2, 8px) var(--sp-4, 16px);
+  background: var(--teal-light, #dff2ee);
+  color: var(--teal-ink, #0c6f6b);
+  border: 2px solid var(--teal-ink, #0c6f6b);
+  border-radius: var(--radius-full, 999px);
+  font: inherit;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+}
+
+.nt-nb-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3, 12px);
+  margin-top: var(--sp-4, 16px);
+  flex-wrap: wrap;
+}
+
+.nt-nb-row-input {
+  align-items: baseline;
+}
+
+/* 48x48 touch target for the confirmation control, without a 48px checkbox
+   glyph: the box paints at 28px inside a 48px hit area. */
+.nt-nb-check {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  margin: 10px;
+  accent-color: var(--teal-ink, #0c6f6b);
+  cursor: pointer;
+}
+
+.nt-nb-checklabel,
+.nt-nb-inputlabel {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--ink, #21313f);
+  cursor: pointer;
+}
+
+.nt-nb-input {
+  flex: 1 1 240px;
+  min-height: 48px;
+  padding: var(--sp-2, 8px) var(--sp-3, 12px);
+  font: inherit;
+  font-size: var(--fs-lg);
+  color: var(--ink, #21313f);
+  background: #fff;
+  border: 2px solid var(--line, #d7e2ed);
+  border-radius: var(--radius-sm, 8px);
+}
+
+.nt-nb-check:focus-visible,
+.nt-nb-input:focus-visible,
+.nt-nb-modellink:focus-visible,
+.nt-nb-model-close:focus-visible {
+  outline: 3px solid var(--teal-ink, #0c6f6b);
+  outline-offset: 2px;
+}
+
+/* Progress, never correctness: "done" means the lesson can move on, and there
+   is no state that means the capture was wrong. */
+.nt-nb.is-done {
+  border-left-color: var(--success, #0f7c4a);
+}
+
+.nt-nb.is-blocked {
+  border-left-color: var(--amber-ink, #8a5a00);
+}
+
+.nt-nb-status {
+  margin: var(--sp-3, 12px) 0 0;
+  min-height: 1.4em;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--muted, #5f6f80);
+}
+
+.nt-nb.is-blocked .nt-nb-status {
+  color: var(--amber-ink, #8a5a00);
+}
+
+.nt-nb.is-done .nt-nb-status {
+  color: var(--success, #0f7c4a);
+}
+
+/* ── This lesson's notes, inside the model dialog ──────────────────────────
+   The dialog answers "what should my page look like?" with the page layout AND
+   with today's actual words, so a student opening Math Notes from any phase
+   sees the lesson they are in. The panels below are the SAME markup the
+   checkpoints render — one source, one set of words.
+   ------------------------------------------------------------------------ */
+
+.nt-nb-model-lesson {
+  margin: var(--sp-4, 16px) 0 var(--sp-2, 8px);
+}
+
+/* The notebook-page header the student copies: a "Date" line they fill in
+   with whatever today is, then the title of this set of notes. */
+.nt-nb-model-date {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2, 8px);
+  margin: 0 0 var(--sp-2, 8px);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold, 600);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-ink, #486581);
+}
+
+/* The blank the student's own date goes on — a ruled line, never a printed
+   date. */
+.nt-nb-model-date-blank {
+  flex: 0 1 180px;
+  min-width: 90px;
+  border-bottom: 2px solid var(--muted-ink, #486581);
+  height: 1.1em;
+}
+
+.nt-nb-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The title of this set of notes — the lesson's own title, styled as the
+   heading the student writes under the date. */
+.nt-nb-model-lessonlead {
+  margin: 0 0 var(--sp-3, 12px);
+  font-size: var(--fs-xl, 1.25rem);
+  font-weight: var(--fw-bold, 700);
+  color: var(--ink, #21313f);
+}
+
+.nt-nb-model-section + .nt-nb-model-section {
+  margin-top: var(--sp-4, 16px);
+}
+
+.nt-nb-model-subhead {
+  margin: 0 0 var(--sp-2, 8px);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold, 600);
+  color: var(--ink, #21313f);
+}
+
+.nt-nb-model-lesson .nt-nb-copy-panel,
+.nt-nb-model-lesson .nt-nb-own-panel {
+  margin: 0;
+}
+
+.nt-nb-model-lesson + .nt-nb-model-img {
+  margin-top: var(--sp-5, 20px);
+}
+
+/* ── The canonical model dialog ──────────────────────────────────────────── */
+
+#nt-notebook-model {
+  width: min(760px, 92vw);
+  max-height: 88vh;
+  overflow: auto;
+  padding: var(--sp-5, 20px);
+  border: none;
+  border-radius: var(--radius-lg, 22px);
+  background: var(--card, #fff);
+  color: var(--ink, #21313f);
+  box-shadow: var(--shadow-lg);
+  transition: all 0.2s ease;
+}
+
+#nt-notebook-model.is-fullscreen {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 24px 32px 60px !important;
+}
+
+#nt-notebook-model.is-fullscreen .nt-nb-model-lesson {
+  max-width: 1100px;
+  margin-inline: auto;
+}
+
+#nt-notebook-model::backdrop {
+  background: rgba(18, 53, 91, 0.55);
+}
+
+.nt-nb-model-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3, 12px);
+}
+
+.nt-nb-model-head h2 {
+  margin: 0;
+  font-size: var(--fs-2xl);
+}
+
+.nt-nb-fullscreen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1.5px solid var(--line, #cbd5e1);
+  border-radius: var(--radius-full, 999px);
+  background: #ffffff;
+  color: var(--ink, #1e293b);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.nt-nb-fullscreen-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.nt-nb-model-close {
+  min-width: 48px;
+  min-height: 48px;
+  border: 2px solid var(--line, #d7e2ed);
+  border-radius: var(--radius-full, 999px);
+  background: #fff;
+  color: var(--ink, #21313f);
+  font-size: var(--fs-lg);
+  cursor: pointer;
+}
+
+.nt-nb-model-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: var(--sp-4, 16px) 0;
+  border: 2px solid var(--line, #d7e2ed);
+  border-radius: var(--radius-md, 14px);
+  background: #fff;
+}
+
+.nt-nb-model-link {
+  display: inline-block;
+  min-height: 48px;
+  padding: var(--sp-3, 12px) var(--sp-4, 16px);
+  color: var(--teal-ink, #0c6f6b);
+  font-weight: var(--fw-semibold);
+}
+
+/* ── The student-generated state ────────────────────────────────────────────
+   Box 2 when the lesson states no rule this engine can quote with provenance.
+   It must read as a DIFFERENT KIND OF THING from the copy panel, at a glance
+   and before any word is read: a dashed edge and a warm ground where the copy
+   panel has a solid edge and a cool one, plus ruled lines that say "you write
+   here". The copy panel is something the lesson hands over; this is a space
+   the student fills.
+   ------------------------------------------------------------------------ */
+
+.nt-nb-own-panel {
+  margin: var(--sp-4, 16px) 0;
+  padding: var(--sp-4, 16px) var(--sp-5, 20px);
+  background: var(--amber-light, #fdf6e7);
+  border: 2px dashed var(--amber-ink, #8a5a00);
+  border-radius: var(--radius-md, 12px);
+}
+
+.nt-nb-own-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2, 8px);
+  font-size: var(--fs-xs, 0.78rem);
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--amber-ink, #8a5a00);
+}
+
+.nt-nb-own-mark {
+  font-size: var(--fs-md);
+  line-height: 1;
+}
+
+.nt-nb-own-hint {
+  margin: var(--sp-2, 8px) 0 0;
+  font-size: var(--fs-lg);
+  line-height: 1.6;
+  color: var(--ink, #21313f);
+}
+
+/* Two ruled lines — the notebook page this block is about, not a form field.
+   Decorative and aria-hidden; they collect no input and take no focus. */
+.nt-nb-own-lines {
+  margin-top: var(--sp-3, 12px);
+  height: 62px;
+  border-radius: var(--radius-sm, 8px);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 26px,
+    var(--amber-ink, #8a5a00) 26px,
+    var(--amber-ink, #8a5a00) 27px
+  );
+  opacity: 0.35;
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────────────
+   A phone reads this block top-to-bottom in one column: the confirm row and
+   the capture row both stop sharing a line with their labels, so nothing is
+   squeezed to a few characters wide.
+   ------------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .nt-nb {
+    padding: var(--sp-4, 16px);
+    border-left-width: 5px;
+  }
+
+  .nt-nb-copy-panel,
+  .nt-nb-own-panel {
+    padding: var(--sp-3, 12px) var(--sp-4, 16px);
+  }
+
+  .nt-nb-copy-list {
+    padding-left: 1.2em;
+  }
+
+  .nt-nb-row-input {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--sp-2, 8px);
+  }
+
+  .nt-nb-input {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .nt-nb-modellink {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nt-nb {
+    scroll-behavior: auto;
+  }
+}
+
+/* ── Bilingual Language Switch in Math Notes Modal ───────────────────────── */
+.nt-nb-lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: #e2e8f0;
+  border-radius: 20px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.nt-nb-lang-btn {
+  border: none;
+  background: transparent;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 16px;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nt-nb-lang-btn.active {
+  background: #12355b;
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.nt-nb-lang-btn:hover:not(.active) {
+  color: #0f172a;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* ── Checkpoint Saved Badge ─────────────────────────────────────────────── */
+.nt-nb-saved-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #15803d;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-top: 8px;
+}

@@ -249,6 +249,121 @@ export const MISCONCEPTIONS = {
     studentEs:
       "El número fuera del paréntesis debe multiplicar AMBOS términos de adentro, no solo el primero. Dibuja el modelo de área y revisa las dos partes.",
   },
+  // ── equations ────────────────────────────────────────────────────────────
+  // Both authored-only. An equation item's wrong answers are numbers the stem
+  // already contains (the addend, the divisor, the total), so a numeric
+  // predictor cannot tell "answered with the divisor" from "computed something
+  // that happens to equal the divisor". Only the item's own distractor knows.
+  "equation-not-inverse-operation": {
+    label: "Did not undo the operation",
+    labelEs: "No deshizo la operación",
+    watchFor: "Have them name the operation acting on the variable BEFORE they touch both sides.",
+    student:
+      "To get the variable alone you have to undo what is being done to it, and that means the opposite operation. Doing the same one again — multiplying a second time, adding again — moves you further away. What is happening to the variable right now?",
+    studentEs:
+      "Para dejar sola la variable hay que deshacer lo que se le está haciendo, y eso significa la operación opuesta. Repetir la misma —multiplicar otra vez, sumar otra vez— te aleja más. ¿Qué le está pasando a la variable ahora mismo?",
+  },
+  "equation-answered-with-given-number": {
+    label: "Answered with a number already in the equation",
+    labelEs: "Respondió con un número que ya estaba en la ecuación",
+    watchFor: "Ask them to substitute their answer back into the original equation out loud.",
+    student:
+      "That number is already in the equation — it is the amount being added, or the number you divide by. The unknown is the one nobody told you. Put your answer back into the equation and see whether both sides match.",
+    studentEs:
+      "Ese número ya está en la ecuación: es la cantidad que se suma o el número entre el que se divide. La incógnita es la que nadie te dio. Sustituye tu respuesta en la ecuación y fíjate si los dos lados coinciden.",
+  },
+
+  // ── inequalities ─────────────────────────────────────────────────────────
+  // Three entries, not one, because the repairs are genuinely different: one is
+  // about the symbol surviving a legal move, one about whether the endpoint is
+  // in the set, and one about reading a picture. A student can have any one of
+  // them right and the other two wrong.
+  "inequality-direction-flipped": {
+    label: "Right boundary, symbol reversed",
+    labelEs: "Límite correcto, símbolo invertido",
+    watchFor: "Ask which moves can flip a symbol — adding and subtracting never do.",
+    student:
+      "You found the right boundary number, but the symbol ended up pointing the other way. Adding or subtracting the same amount on both sides never changes which way an inequality points. Check the original symbol and keep it.",
+    studentEs:
+      "Encontraste el número límite correcto, pero el símbolo terminó apuntando al otro lado. Sumar o restar la misma cantidad en ambos lados nunca cambia hacia dónde apunta una desigualdad. Revisa el símbolo original y consérvalo.",
+  },
+  "inequality-boundary-inclusion": {
+    label: "Boundary value wrongly included or excluded",
+    labelEs: "Valor límite incluido o excluido por error",
+    watchFor: "Have them test the boundary value itself — does it make the statement true?",
+    student:
+      "The direction is right; what is off is whether the boundary number itself counts. Test that exact number in the inequality. If it makes a true statement it belongs in the set — a filled circle, ≤ or ≥. If not, it stays out.",
+    studentEs:
+      "La dirección está bien; lo que falla es si el número límite cuenta o no. Prueba ese número exacto en la desigualdad. Si la hace verdadera, pertenece al conjunto: círculo relleno, ≤ o ≥. Si no, queda fuera.",
+  },
+  "inequality-graph-direction": {
+    label: "Graph shaded toward the wrong side",
+    labelEs: "Gráfica sombreada hacia el lado equivocado",
+    watchFor: "Make them test one number from the shaded side out loud before accepting a graph.",
+    student:
+      "The shading is on the wrong side of the boundary. Pick any number from the shaded part and put it into the inequality — if it makes a false statement, the shading belongs on the other side.",
+    studentEs:
+      "El sombreado está del lado equivocado del límite. Escoge cualquier número de la parte sombreada y ponlo en la desigualdad: si resulta falso, el sombreado va del otro lado.",
+  },
+
+  // ── statistics ───────────────────────────────────────────────────────────
+  // Four entries, deliberately narrow. The statistics bank describes many
+  // distinct reasoning errors and it would be easy to collapse them into one
+  // "stats confusion" tag; that tag would be useless to a teacher, because the
+  // repair for "used the range when asked for the IQR" has nothing in common
+  // with the repair for "read a data value where a frequency was asked".
+  "stat-range-for-iqr": {
+    label: "Used the full range instead of the IQR",
+    labelEs: "Usó el rango completo en vez del rango intercuartílico",
+    watchFor: "Have them mark Q1 and Q3 on the plot and cover everything outside them.",
+    student:
+      "That is the whole spread, from the smallest value to the largest. The IQR only measures the middle half: it is Q3 − Q1, and it ignores the extremes entirely. Find those two quartiles and subtract.",
+    studentEs:
+      "Esa es la dispersión completa, del valor más pequeño al más grande. El rango intercuartílico solo mide la mitad central: es Q3 − Q1 e ignora por completo los extremos. Halla esos dos cuartiles y resta.",
+  },
+  "stat-center-vs-spread": {
+    label: "Confused a measure of center with a measure of spread",
+    labelEs: "Confundió una medida de centro con una de dispersión",
+    watchFor: "Ask what the question wants to know: a typical value, or how scattered the data is?",
+    student:
+      "Those two answer different questions. A measure of center says what a typical value is; a measure of spread says how far apart the values are. Read the question again and decide which one it is asking for.",
+    studentEs:
+      "Esas dos responden preguntas distintas. Una medida de centro dice cuál es un valor típico; una de dispersión dice qué tan separados están los valores. Vuelve a leer la pregunta y decide cuál te piden.",
+  },
+  "stat-mean-skewed-by-outlier": {
+    label: "Chose the mean when an outlier distorts it",
+    labelEs: "Eligió la media cuando un valor atípico la distorsiona",
+    watchFor: "Have them cover the outlier and recompute — how far does the mean move?",
+    student:
+      "The mean uses every value, so one unusually high or low number drags it away from what is typical. The median does not move like that. Look at the data: is there a value far from the rest?",
+    studentEs:
+      "La media usa todos los valores, así que un número inusualmente alto o bajo la aleja de lo típico. La mediana no se mueve así. Mira los datos: ¿hay un valor muy alejado de los demás?",
+  },
+  "stat-frequency-vs-value": {
+    label: "Reported a data value where a frequency was asked",
+    labelEs: "Dio un valor de los datos donde se pedía una frecuencia",
+    watchFor: "Ask them to point at the axis their number came from before they answer.",
+    student:
+      "That number came from the wrong axis. The bar's height counts HOW MANY, and the label underneath says WHICH values. The question is asking how many. Read the height, not the label.",
+    studentEs:
+      "Ese número viene del eje equivocado. La altura de la barra cuenta CUÁNTOS, y la etiqueta de abajo dice CUÁLES valores. La pregunta pide cuántos. Lee la altura, no la etiqueta.",
+  },
+
+  // Authored-only, like geom-surface-area-as-volume, and for the same reason:
+  // there is no honest numeric predictor. (3, 5) and (5, 3) are both perfectly
+  // well-formed ordered pairs, and nothing about the VALUE reveals which one the
+  // student meant — only the item's own distractor knows. The coordinate unit
+  // (7-5, 7-8, 7-9) states this error in its feedback on ~60 distractors and,
+  // until this entry existed, could diagnose nothing at all.
+  "coord-xy-swapped": {
+    label: "Swapped the x and y coordinates",
+    labelEs: "Intercambió las coordenadas x e y",
+    watchFor: "Have them trace the horizontal move with a finger before the vertical one.",
+    student:
+      "The two numbers traded places. In an ordered pair the first number is the across move and the second is the up-or-down move. Trace across first, then up.",
+    studentEs:
+      "Los dos números cambiaron de lugar. En un par ordenado, el primer número es el movimiento horizontal y el segundo el vertical. Muévete primero de lado y luego hacia arriba o abajo.",
+  },
   "measure-area-perimeter-swap": {
     label: "Swapped area and perimeter",
     labelEs: "Confundió área y perímetro",
@@ -257,6 +372,145 @@ export const MISCONCEPTIONS = {
       "Area and perimeter got swapped. Check the unit you should end with — plain units, or square units?",
     studentEs:
       "Se confundieron área y perímetro. Revisa con qué unidad debes terminar: ¿unidades o unidades cuadradas?",
+  },
+
+  // --- Proportional reasoning ----------------------------------------------
+  // Authored-only, and necessarily so. 2:3 → 4:5 and 2:3 → 4:6 are both pairs of
+  // whole numbers; the VALUE alone never says which move the student made, only
+  // the item's own distractor does. This is the defining Grade 6 proportional
+  // reasoning error — the jump from "add the same amount" to "multiply by the
+  // same factor" is the whole point of the ratio unit — and unit 3 states it in
+  // feedback on 65 distractors across 13 lessons that could diagnose nothing.
+  "ratio-scaled-additively": {
+    label: "Scaled a ratio by adding instead of multiplying",
+    labelEs: "Escaló una razón sumando en vez de multiplicando",
+    watchFor:
+      "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
+    student:
+      "You added the same amount to both numbers. Equivalent ratios come from multiplying both parts by the same factor, not from adding to both. Ask: how many times bigger is the new amount?",
+    studentEs:
+      "Sumaste la misma cantidad a los dos números. Las razones equivalentes se hacen multiplicando las dos partes por el mismo factor, no sumando. Pregúntate: ¿cuántas veces más grande es la nueva cantidad?",
+  },
+  // Distinct from ratio-scaled-additively: that one keeps a ratio and grows it
+  // wrongly; this one never forms a ratio at all, collapsing two quantities into
+  // a single sum or difference. Also authored-only — 3 and 5 give 8 and 2 by
+  // arithmetic the predictor can see, but nothing in the numbers says the
+  // student meant "compare" rather than "combine".
+  "ratio-as-difference": {
+    label: "Combined the two amounts instead of comparing them",
+    labelEs: "Combinó las dos cantidades en vez de compararlas",
+    watchFor:
+      "Have them say the comparison out loud — “for every ___ there are ___” — before writing anything.",
+    student:
+      "A ratio compares two amounts; it does not add or subtract them. Say it out loud first: “for every ___ there are ___.” Then write the two numbers in that order.",
+    studentEs:
+      "Una razón compara dos cantidades; no las suma ni las resta. Dilo primero en voz alta: “por cada ___ hay ___.” Luego escribe los dos números en ese orden.",
+  },
+
+  // --- Statistics ----------------------------------------------------------
+  // Deliberately narrower than stat-center-vs-spread (which is a centre swapped
+  // for a spread) and than stat-mean-skewed-by-outlier (which is choosing the
+  // mean when an outlier makes the median the better summary). This entry is
+  // only the procedural swap: the student computed or picked one measure of
+  // centre when the question named the other.
+  "stat-mean-vs-median": {
+    label: "Used the mean where the median was asked (or the reverse)",
+    labelEs: "Usó la media donde se pedía la mediana (o al revés)",
+    watchFor:
+      "Ask them to say which word the question used, then what that word tells you to DO with the numbers.",
+    student:
+      "Those are two different measures. The mean adds every value and divides; the median puts the values in order and takes the middle one. Read the question again and name which one it asked for.",
+    studentEs:
+      "Esas son dos medidas distintas. La media suma todos los valores y divide; la mediana ordena los valores y toma el del medio. Vuelve a leer la pregunta y di cuál te pidió.",
+  },
+  // Distinct from stat-frequency-vs-value, which is reading the wrong AXIS.
+  // This is reading the right axis wrongly: counting values into the wrong bin,
+  // comparing bar heights carelessly, or assuming a scale starts at zero when
+  // the display does not show it. Authored-only — the predictor cannot see a
+  // chart. Distribution SHAPE errors (skew, symmetry) are a separate error and
+  // are deliberately NOT folded in here; see reports/misconception-tagging.md.
+  "stat-histogram-bin-misread": {
+    label: "Misread the bins or the scale on a data display",
+    labelEs: "Leyó mal los intervalos o la escala de una gráfica",
+    watchFor:
+      "Have them point to the interval's two endpoints and say which values belong inside it.",
+    student:
+      "Check the display itself before you count. Every bar belongs to one interval, and a value counts only if it falls between that interval's endpoints. Point at the endpoints and count again.",
+    studentEs:
+      "Revisa la gráfica antes de contar. Cada barra pertenece a un intervalo, y un valor cuenta solo si cae entre los extremos de ese intervalo. Señala los extremos y cuenta otra vez.",
+  },
+
+  // ── Conceptual errors, authored-only by construction ────────────────────
+  //
+  // The five below name errors that are NOT arithmetic slips, so no numeric
+  // predictor can reach them: the student's answer is a NAME or a CATEGORY
+  // ("Associative Property", "1, 12"), and re-computing the stem tells you
+  // nothing about why they chose it. Only the item's own distractor knows.
+  //
+  // They exist because `reports/misconception-coverage.md` found seven core
+  // lessons that could diagnose NOTHING — not because their feedback was
+  // missing (it is excellent) but because the error each one teaches against
+  // had no entry in this taxonomy at all. A lesson that diagnoses nothing is
+  // invisible to the heatmap, the class pulse and the family broadcast.
+  /* The error lesson 2-6 names in its own commonMistake, and the reason the
+     whole-number division lessons could not use `decimal-place-value`: the
+     digits ARE right and the magnitude IS wrong, but nothing about it involves
+     a decimal point, so the decimal tag's teacher move ("count decimal places
+     out loud") is advice for a different mistake. */
+  "division-quotient-missing-zero": {
+    label: "Dropped a placeholder zero in the quotient",
+    labelEs: "Omitió un cero de posición en el cociente",
+    watchFor:
+      "Estimate first — 4,896 ÷ 12 is about 400, not 40 — then check the quotient has a digit above every digit that was brought down.",
+    student:
+      "Your digits are right, but a place is missing. Every time a step will not divide, you still write a 0 in the quotient before bringing the next digit down — skip it and every digit after it slides one place over. 4,896 ÷ 12 is 408, not 48.",
+    studentEs:
+      "Tus dígitos están bien, pero falta un lugar. Cada vez que un paso no se puede dividir, igual escribes un 0 en el cociente antes de bajar el siguiente dígito; si lo saltas, todos los dígitos que siguen se recorren un lugar. 4,896 ÷ 12 es 408, no 48.",
+  },
+  "factors-multiples-confused": {
+    label: "Confused factors with multiples",
+    labelEs: "Confundió factores con múltiplos",
+    watchFor: "Ask which number divides which — factors go INTO it, multiples come OUT of it.",
+    student:
+      "Those are multiples — where you land counting BY the number. Factors are the numbers that divide INTO it evenly. 12 has factors 1, 2, 3, 4, 6 and 12; its multiples are 12, 24, 36, 48.",
+    studentEs:
+      "Esos son múltiplos: donde caes al contar DE ese número en ese número. Los factores son los números que lo dividen exactamente. El 12 tiene factores 1, 2, 3, 4, 6 y 12; sus múltiplos son 12, 24, 36, 48.",
+  },
+  "property-order-vs-grouping": {
+    label: "Confused the commutative and associative properties",
+    labelEs: "Confundió la propiedad conmutativa con la asociativa",
+    watchFor: "Ask what actually MOVED: the order of the numbers, or the parentheses?",
+    student:
+      "Commutative changes the ORDER the numbers are written in. Associative changes the GROUPING — which pair sits inside the parentheses. Read both sides left to right and name what moved.",
+    studentEs:
+      "La conmutativa cambia el ORDEN en que se escriben los números. La asociativa cambia la AGRUPACIÓN: qué par queda dentro del paréntesis. Lee los dos lados de izquierda a derecha y di qué se movió.",
+  },
+  "factorization-stopped-early": {
+    label: "Stopped factoring before every factor was prime",
+    labelEs: "Dejó de factorizar antes de que todos los factores fueran primos",
+    watchFor: "Point at each factor and ask: can this one still be broken apart?",
+    student:
+      "That is a correct factor pair, but not the PRIME factorization — at least one of your factors still breaks down. Keep splitting every branch until it ends on a prime.",
+    studentEs:
+      "Ese es un par de factores correcto, pero no la descomposición en factores PRIMOS: al menos uno de tus factores todavía se puede separar. Sigue separando cada rama hasta que termine en un primo.",
+  },
+  "stat-question-no-variability": {
+    label: "Chose a question with only one fixed answer",
+    labelEs: "Escogió una pregunta con una sola respuesta fija",
+    watchFor: "Ask: would two different people give two different answers?",
+    student:
+      "A statistical question expects answers that VARY. That one has a single fixed answer, so there is no data to collect. Ask what would change from one person to the next.",
+    studentEs:
+      "Una pregunta estadística espera respuestas que VARÍEN. Esa tiene una sola respuesta fija, así que no hay datos que recoger. Pregúntate qué cambiaría de una persona a otra.",
+  },
+  "ratio-compared-without-common-basis": {
+    label: "Compared two ratios without a common basis",
+    labelEs: "Comparó dos razones sin una base común",
+    watchFor: "Ask what ONE of each is worth before either ratio is compared.",
+    student:
+      "Two ratios cannot be compared side by side until they share a basis. Turn each into an amount per ONE, or scale both until their second numbers match, and then compare.",
+    studentEs:
+      "Dos razones no se pueden comparar lado a lado hasta que compartan una base. Convierte cada una en una cantidad por UNO, o escala las dos hasta que sus segundos números coincidan, y luego compara.",
   },
 };
 

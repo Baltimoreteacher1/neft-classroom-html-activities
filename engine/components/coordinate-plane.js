@@ -27,7 +27,7 @@ export function renderCoordinatePlane(
   const text = label || instructions;
   if (text) {
     const p = document.createElement("p");
-    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = text;
     wrapper.append(p);
   }
@@ -317,7 +317,7 @@ export function renderCoordinatePlane(
     "flex:1 1 190px; min-width:170px; padding:14px 16px; background:var(--surface-soft); border:1px solid var(--line); border-radius:var(--radius-md);";
   const sideHead = document.createElement("p");
   sideHead.style.cssText =
-    "margin:0 0 10px; font-size:0.78rem; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; color:var(--teal-dark, #115e59);";
+    "margin:0 0 10px; font-size:0.78rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--teal-dark, #115e59);";
   sideHead.textContent = "Coordinates to plot";
   side.append(sideHead);
   const list = document.createElement("ol");
@@ -326,7 +326,7 @@ export function renderCoordinatePlane(
   const listItems = targets.map((t) => {
     const li = document.createElement("li");
     li.style.cssText =
-      "display:flex; align-items:center; gap:8px; font-size:0.98rem; font-weight:700; color:var(--ink);";
+      "display:flex; align-items:center; gap:8px; font-size:0.98rem; font-weight:600; color:var(--ink);";
     const dot = document.createElement("span");
     dot.style.cssText =
       "flex:0 0 auto; width:14px; height:14px; border-radius:50%; border:2px solid var(--line); background:#fff; transition:all .2s ease;";

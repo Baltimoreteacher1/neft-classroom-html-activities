@@ -150,7 +150,10 @@ assert.equal(lessonTopic({ standard: "6.AT.9", unit: 7 }), "inequalities");
 assert.equal(lessonTopic({ standard: "6.AT.6a", unit: 6 }), "expressions");
 assert.equal(lessonTopic({ standard: "6.AT.5", unit: 6 }), "exponents");
 assert.equal(lessonTopic({ standard: "6.GR.4", unit: 10 }), "solids");
-assert.equal(lessonTopic({ standard: "6.GR.2", unit: 10 }), "solids");
+// 6.GR.2 is VOLUME; 6.GR.4 is surface area and nets. They shared "solids" — a
+// prism beside its unfolded net with SA = 2(lw + lh + wh) — so lesson 5-10
+// opened on the formula of the lesson AFTER it. Separate models, pinned apart.
+assert.equal(lessonTopic({ standard: "6.GR.2", unit: 10 }), "prismVolume");
 assert.equal(lessonTopic({ standard: "6.GR.1", unit: 5 }), "planeArea");
 assert.equal(lessonTopic({ standard: "6.DS.5", unit: 8 }), "boxPlot");
 assert.equal(lessonTopic({ standard: "6.NOS.1", unit: 2 }), "fractionDivision");

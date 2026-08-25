@@ -35,6 +35,18 @@ const ANCHOR_RE = /<div class="step-panel active" id="step-\d+">/;
 // `attrs` are only set where a non-default is helpful; the widgets already ship
 // theme-appropriate defaults (e.g. gcf-bags = party goodie bags).
 const MAP = {
+  /* The Pre-Unit is the district's ASSEMBLED unit (1-1, 2-6, 2-7, 6-1, 6-2) and
+     its whole arc is division across number types, so the hero is the
+     "how many fit?" model that Lessons 6-1/6-2 build on. */
+  "math/pre-unit/projects": {
+    kind: "frac-divide",
+    emoji: "🚚",
+    attrs: {},
+    title: "How many fit?",
+    es: "¿Cuántos caben?",
+    intro:
+      "Cut a whole into equal pieces and count how many fit — the same question you will ask of whole numbers, decimals and fractions all project long.",
+  },
   "math/unit-1/projects": {
     kind: "block-party",
     emoji: "🎉",
@@ -44,14 +56,19 @@ const MAP = {
     intro:
       "Split the goodie bags (GCF), sync the entertainment (LCM), and set the budget to get the party ready.",
   },
+  // Canonical Unit 2 is "Data Detectives" (statistics) — see
+  // data/curriculum-unit-identities.json. math/unit-2/projects is a mirror of
+  // math/statistics/projects, so it MUST get the same stat-draft widget.
+  // It previously mapped to recipe-rush (fraction division), which is the
+  // legacy Reveal-era Unit 2. Never re-derive this unit from a path number.
   "math/unit-2/projects": {
-    kind: "recipe-rush",
-    emoji: "🧁",
+    kind: "stat-draft",
+    emoji: "🔍",
     attrs: {},
-    title: "Portion the batter",
-    es: "Reparte la masa en porciones",
+    title: "Read the data",
+    es: "Interpreta los datos",
     intro:
-      "Slice the batter into servings and watch how dividing by a smaller fraction makes MORE portions.",
+      "Spot the outlier that yanks the mean, then pick the measure — mean or median — that tells the truth.",
   },
   "math/unit-3/projects": {
     kind: "mix-lab",

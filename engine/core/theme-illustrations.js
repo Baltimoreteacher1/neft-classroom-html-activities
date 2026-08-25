@@ -256,7 +256,7 @@ export function themeIllustration(theme, figure, config) {
           <img src="${visuals.content.src}" alt="${esc(visuals.content.alt || config.title || "")}" class="theme-hero-img cover-svg-animate" style="max-width:100%; max-height:210px; height:auto; object-fit:contain; display:block; margin:0 auto;" />
         </div>`;
       }
-    } catch (e) {
+    } catch (_e) {
       // Fallback
     }
   }
@@ -281,7 +281,7 @@ export function renderThemeIllustration(host, theme, caption, figure, config) {
           cleanCaption = visuals.content.caption;
         }
       }
-    } catch (e) {
+    } catch (_e) {
       // Fallback
     }
   }
@@ -296,7 +296,7 @@ export function renderThemeIllustration(host, theme, caption, figure, config) {
     const figcap = document.createElement("figcaption");
     figcap.className = "theme-illustration-caption";
     figcap.style.cssText =
-      "margin-top:10px; font-size:0.92rem; font-weight:700; color:#334155; text-align:center; line-height:1.45;";
+      "margin-top:10px; font-size:0.92rem; font-weight:600; color:#334155; text-align:center; line-height:1.45;";
     figcap.textContent = cleanCaption;
     wrap.append(figcap);
   }

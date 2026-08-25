@@ -37,7 +37,10 @@ import {
 } from "./homework-guided-notes.mjs";
 import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
-import { writeGenerated } from "./lib/preserve-injected.mjs";
+import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
+
+/** --check writes nothing and exits non-zero if any committed page has drifted. */
+const CHECK = process.argv.includes("--check");
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -1115,9 +1118,7 @@ function generateHtml(lessonId, config) {
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Help Your Student — Lesson ${esc(displayLessonId(lessonId))}: ${esc(title)}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <style>
 ${EDITORIAL_FONT_IMPORT}
 :root {
@@ -4086,10 +4087,20 @@ function main() {
   const lessons = lessonConfigs();
   let count = 0;
 
+  const staleHomework = [];
   for (const { id, config } of lessons) {
     const homeworkHtml = localizeBilingualLabels(generateHtml(id, config));
     const lessonPath = join(lessonsDir, id, "homework.html");
     const normalizedHtml = `${homeworkHtml.replace(/^ {12}$/gm, "").trimEnd()}\n`;
+    // --check: report drift, write nothing. This page does NOT run in
+    // `npm run build`, so it rots whenever a config field it renders is added
+    // later — which is exactly how 18 pages ended up missing the vocabulary
+    // `visual` hints two enrichment waves had already authored.
+    if (CHECK) {
+      if (!isGeneratedFresh(lessonPath, normalizedHtml))
+        staleHomework.push(`lessons/${id}/homework.html`);
+      continue;
+    }
     // writeGenerated, NOT writeFileSync: this generator rebuilds the page from
     // the config alone, so a raw write drops every sentinel layer injected into
     // it afterwards. Each homework.html carries five (mobile-access, nsr, mwb,
@@ -4100,6 +4111,18 @@ function main() {
     count++;
   }
 
+  if (CHECK) {
+    if (staleHomework.length) {
+      console.error(
+        `${staleHomework.length} homework page(s) are STALE — the committed HTML no longer matches its config.json:\n  ${staleHomework
+          .slice(0, 20)
+          .join("\n  ")}\n\nFix: node scripts/generate-homework-html.mjs`,
+      );
+      process.exit(1);
+    }
+    console.log(`Homework pages up to date (${lessons.length} lessons).`);
+    return;
+  }
   console.log(`Successfully generated ${count} interactive homework HTML files.`);
 }
 

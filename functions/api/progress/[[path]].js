@@ -25,6 +25,8 @@
  * Do not store sensitive data in activity state.
  * ========================================================================== */
 
+import { STUDENT_LINK_COLUMNS } from "../../_lib/progress-schema.js";
+
 const JSON_HEADERS = {
   "Content-Type": "application/json",
   // Permit cross-origin use (e.g. lessons served from a custom domain).
@@ -133,7 +135,6 @@ async function ensureSchema(db) {
    Deliberately additive: older clients that never send these fields keep
    saving exactly as before, they just don't appear on the /today screen until
    the student next opens the activity. Nothing breaks, nothing is lost. */
-const STUDENT_LINK_COLUMNS = ["student_id", "class_code", "activity_url"];
 // progressPercent is the engine's own heuristic (filled fields / total), so it
 // rarely lands exactly on 100 even when a student is finished. Treat "almost
 // entirely filled in" as done rather than nagging them back into a lesson they

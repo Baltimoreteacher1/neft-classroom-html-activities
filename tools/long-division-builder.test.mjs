@@ -630,6 +630,8 @@ const ACCEPTED = [
   { dividend: "12.6", divisor: "0.4", decimal: true, quiet: true },
   { dividend: "7.5", divisor: "0.25", decimal: true, quiet: true },
   { dividend: "3", divisor: "4", decimal: true, quiet: true },
+  { dividend: "1,344", divisor: "12", quiet: true },
+  { dividend: "13,275", divisor: "15", quiet: true },
 ];
 for (const t of ACCEPTED) {
   check(

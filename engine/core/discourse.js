@@ -116,7 +116,7 @@ function ensureStyles() {
   style.textContent = `
 .discourse-trigger{display:inline-flex;align-items:center;gap:.5rem;margin:var(--sp-3,1rem) 0;
   padding:.6rem 1rem;border:2px solid var(--coral,#ef476f);border-radius:999px;background:var(--card,#fff);
-  color:var(--coral,#ef476f);font-weight:800;font-size:1rem;cursor:pointer;line-height:1.2;
+  color:var(--coral,#ef476f);font-weight:700;font-size:1rem;cursor:pointer;line-height:1.2;
   transition:transform .08s ease,box-shadow .12s ease;}
 .discourse-trigger:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.12);}
 .discourse-trigger:focus-visible{outline:3px solid var(--coral,#ef476f);outline-offset:2px;}
@@ -131,30 +131,30 @@ function ensureStyles() {
 .discourse-close{position:absolute;top:.6rem;right:.7rem;background:transparent;border:none;
   font-size:1.5rem;line-height:1;cursor:pointer;color:var(--muted,#64748b);padding:.25rem .5rem;border-radius:8px;}
 .discourse-close:focus-visible{outline:3px solid var(--coral,#ef476f);}
-.discourse-q{font-size:clamp(1.1rem,3vw,1.35rem);font-weight:800;line-height:1.35;margin:.75rem 0 1rem;}
+.discourse-q{font-size:clamp(1.1rem,3vw,1.35rem);font-weight:700;line-height:1.35;margin:.75rem 0 1rem;}
 .discourse-protocol{background:var(--surface-2,#f1f5f9);border-radius:14px;padding:1rem 1.1rem;margin:0 0 1rem;}
 .discourse-protocol ol{margin:.5rem 0 0;padding-left:1.3rem;}
-.discourse-protocol li{margin:.35rem 0;font-weight:600;line-height:1.4;}
+.discourse-protocol li{margin:.35rem 0;font-weight:500;line-height:1.4;}
 .discourse-probes{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem;}
 .discourse-probe{background:var(--card,#fff);border:2px solid var(--teal,#06d6a0);border-radius:999px;
-  padding:.3rem .7rem;font-weight:700;font-size:.95rem;}
-.discourse-probe em{display:block;color:var(--muted,#64748b);font-style:italic;font-weight:600;font-size:.85rem;}
+  padding:.3rem .7rem;font-weight:600;font-size:.95rem;}
+.discourse-probe em{display:block;color:var(--muted,#64748b);font-style:italic;font-weight:500;font-size:.85rem;}
 .discourse-support{border:2px solid var(--border,#e2e8f0);border-radius:14px;margin:0 0 .75rem;overflow:hidden;}
-.discourse-support>summary{cursor:pointer;padding:.7rem 1rem;font-weight:800;list-style:none;
+.discourse-support>summary{cursor:pointer;padding:.7rem 1rem;font-weight:700;list-style:none;
   display:flex;align-items:center;gap:.5rem;}
 .discourse-support>summary::-webkit-details-marker{display:none;}
 .discourse-support[open]>summary{border-bottom:1px solid var(--border,#e2e8f0);}
 .discourse-support .discourse-support-body{padding:.8rem 1rem;}
 .discourse-support ul{margin:.4rem 0 0;padding:0;list-style:none;}
 .discourse-support li{margin:.4rem 0;line-height:1.4;}
-.discourse-support li .es{display:block;color:var(--muted,#64748b);font-style:italic;font-weight:600;}
+.discourse-support li .es{display:block;color:var(--muted,#64748b);font-style:italic;font-weight:500;}
 .discourse-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem;}
-.discourse-chips .chip{background:var(--teal,#06d6a0);color:#fff;border-radius:999px;padding:.25rem .7rem;font-weight:700;font-size:.9rem;}
+.discourse-chips .chip{background:var(--teal,#06d6a0);color:#fff;border-radius:999px;padding:.25rem .7rem;font-weight:600;font-size:.9rem;}
 .discourse-actions{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1rem;}
 .discourse-done-btn{background:var(--teal,#06d6a0);color:#fff;border:none;border-radius:999px;
-  padding:.7rem 1.3rem;font-weight:800;font-size:1rem;cursor:pointer;}
+  padding:.7rem 1.3rem;font-weight:700;font-size:1rem;cursor:pointer;}
 .discourse-done-btn:focus-visible{outline:3px solid var(--teal,#06d6a0);outline-offset:2px;}
-.discourse-done-note{color:var(--teal,#06d6a0);font-weight:800;align-self:center;}
+.discourse-done-note{color:var(--teal,#06d6a0);font-weight:700;align-self:center;}
 @media (prefers-reduced-motion:reduce){.discourse-trigger{transition:none;}}
 `;
   document.head.appendChild(style);
@@ -171,7 +171,7 @@ function dialogBodyHtml(uid, title, question, supports) {
     .map((s) => `<li>${esc(s.en)}${s.es ? `<span class="es">${esc(s.es)}</span>` : ""}</li>`)
     .join("");
   const kernelHtml = supports.kernel
-    ? `<p style="margin:0 0 .6rem;font-weight:600;"><strong style="color:var(--coral,#ef476f);">Start here:</strong> ${esc(supports.kernel)}</p>`
+    ? `<p style="margin:0 0 .6rem;font-weight:500;"><strong style="color:var(--coral,#ef476f);">Start here:</strong> ${esc(supports.kernel)}</p>`
     : "";
   const wordBankHtml = supports.wordBank.length
     ? `<div class="discourse-chips">${supports.wordBank.map((w) => `<span class="chip">${esc(w)}</span>`).join("")}</div>`
@@ -194,7 +194,7 @@ function dialogBodyHtml(uid, title, question, supports) {
       <summary><span class="badge badge-teal">Level 1 support</span> Sentence starters &amp; words</summary>
       <div class="discourse-support-body">
         ${kernelHtml}
-        <p style="margin:0;font-weight:700;">Use a sentence starter / <em>Usa un inicio de oración</em>:</p>
+        <p style="margin:0;font-weight:600;">Use a sentence starter / <em>Usa un inicio de oración</em>:</p>
         <ul>${stems}</ul>
         ${wordBankHtml}
       </div>
@@ -202,7 +202,7 @@ function dialogBodyHtml(uid, title, question, supports) {
     <details class="discourse-support">
       <summary><span class="badge badge-amber">Level 2 stretch</span> Push your thinking</summary>
       <div class="discourse-support-body">
-        ${supports.extend ? `<p style="margin:0 0 .5rem;font-weight:700;">${esc(supports.extend)}</p>` : ""}
+        ${supports.extend ? `<p style="margin:0 0 .5rem;font-weight:600;">${esc(supports.extend)}</p>` : ""}
         <ul>${stretchStems}</ul>
       </div>
     </details>

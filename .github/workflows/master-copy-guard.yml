@@ -12,13 +12,26 @@ name: master-copy-guard
 # automation only ~54 of 482 commits in a sample window actually touched that
 # file. Since GitHub bills each job rounded up to a full minute, ~89% of these
 # runs were a paid minute spent re-checking a file that had not changed.
+# curriculum/units/index.html is watched too. The per-lesson content — every
+# lesson row, its resources and all 84 Google Slides links — lives THERE, not in
+# curriculum/index.html, and until 2026-08-18 this guard neither inspected that
+# file nor woke up when it changed. A `--force` regen of the page that actually
+# holds the lesson content could not have turned this job red.
 on:
   push:
     branches: [main]
-    paths: ["curriculum/index.html", "assets/curriculum-hub*.js", "assets/curriculum-hub.css"]
+    paths:
+      - "curriculum/index.html"
+      - "curriculum/units/index.html"
+      - "assets/curriculum-hub*.js"
+      - "assets/curriculum-hub.css"
   pull_request:
     branches: [main]
-    paths: ["curriculum/index.html", "assets/curriculum-hub*.js", "assets/curriculum-hub.css"]
+    paths:
+      - "curriculum/index.html"
+      - "curriculum/units/index.html"
+      - "assets/curriculum-hub*.js"
+      - "assets/curriculum-hub.css"
   # On-demand, so the guard can be proven green without waiting for a push that
   # happens to touch the hub. It went red for a day after the inline-script
   # extraction and there was no way to re-run it against a fix.
@@ -38,7 +51,24 @@ jobs:
       - name: Guard the curriculum master copy
         run: |
           f=curriculum/index.html
+          u=curriculum/units/index.html
           fail=0
+
+          # EVERY landmark is checked against the file that actually holds it.
+          # This guard used to grep curriculum/index.html for ">Google Slides</a"
+          # and report "the slides wiring was lost" when it found none. The
+          # wiring was not lost: there are 0 in that file and 84 in
+          # curriculum/units/index.html, where the per-lesson content moved. So
+          # the job failed on every commit regardless of what changed — it went
+          # red on one touching only .gitignore and a report file — and a check
+          # that is always red is a check nobody reads. It was in that state for
+          # the eight days the wrong-materials bug was live.
+          for page in "$f" "$u"; do
+            if [ ! -f "$page" ]; then
+              echo "::error file=$page::Hub master copy is missing."
+              fail=1
+            fi
+          done
 
           # The hub's three biggest inline <script> blocks were extracted to
           # /assets/curriculum-hub-*.js so they could be linted, cached and
@@ -51,7 +81,7 @@ jobs:
           # extracted search script, so grepping only the HTML reported it
           # missing on a page that renders it correctly.
           behaviour=$(mktemp)
-          cat "$f" assets/curriculum-hub-search.js assets/curriculum-hub-pacing.js \
+          cat "$f" "$u" assets/curriculum-hub-search.js assets/curriculum-hub-pacing.js \
               assets/curriculum-hub-options.js > "$behaviour"
 
           # Each extracted asset must exist AND still be referenced by the hub,
@@ -79,27 +109,45 @@ jobs:
             fail=1
           fi
 
-          # 3) The Teacher Tools panel must be present.
-          if ! grep -qi "Teacher Tools" "$f"; then
-            echo "::error file=$f::Missing the Teacher Tools panel."
+          # 3) The Teacher Tools panel must be present. Matched on the panel's
+          # own LABEL ELEMENT, not on the words. `grep -i "Teacher Tools"` found
+          # 10 hits in this file, and two of them are incidental prose — a
+          # comment reading "quick-launch for teacher tools + classroom
+          # experiences" and a differently-cased "Teacher tools &amp; classroom
+          # …" span. A regen could strip all eight real occurrences and this
+          # check would still pass on the leftovers, which is the same mistake as
+          # grepping the wrong file for the Slides links: a presence check that
+          # does not check the thing it is named after.
+          if ! grep -q ">Teacher Tools<" "$f"; then
+            echo "::error file=$f::Missing the Teacher Tools panel label."
             fail=1
           fi
 
-          # 4) Google Slides links must be present (added 2026-06-05).
-          slides=$(grep -c ">Google Slides</a" "$f" || true)
+          # 4) Google Slides links must be present (added 2026-06-05). They are
+          # per-lesson, so they live on the UNITS page — 84 of them — and never
+          # in curriculum/index.html. Grepping the wrong file here is the bug
+          # this guard shipped with.
+          slides=$(grep -c ">Google Slides</a" "$u" || true)
           if [ "${slides:-0}" -lt 1 ]; then
-            echo "::error file=$f::No Google Slides links found — the slides wiring was lost."
+            echo "::error file=$u::No Google Slides links found — the slides wiring was lost."
             fail=1
           fi
 
           # 5) Size tripwire: the stripped generator output is ~999 lines. The
           # healthy master was ~13,900 until the inline script/style extraction
           # of 2026-07-31 moved ~250 KB into /assets/curriculum-hub-*, leaving
-          # ~9,000. The floor stays at 3,000: far above the stripped version,
-          # far below anything healthy.
+          # ~4,500 on the hub and ~6,300 on the units page. The floor stays at
+          # 3,000 for BOTH: far above the stripped version, far below anything
+          # healthy. The units page needs its own floor — it is the bigger of the
+          # two and it was not covered at all.
           lines=$(wc -l < "$f")
           if [ "$lines" -lt 3000 ]; then
-            echo "::error file=$f::Only $lines lines — this looks like the stripped no-dropdown version (healthy master is ~9,000)."
+            echo "::error file=$f::Only $lines lines — this looks like the stripped no-dropdown version (healthy master is ~4,500)."
+            fail=1
+          fi
+          ulines=$(wc -l < "$u")
+          if [ "$ulines" -lt 3000 ]; then
+            echo "::error file=$u::Only $ulines lines — the per-lesson unit browser looks stripped (healthy master is ~6,300)."
             fail=1
           fi
 
@@ -109,4 +157,4 @@ jobs:
             echo "regenerate it. Never run 'npm run generate-curriculum -- --force'. See MASTER_COPY.md."
             exit 1
           fi
-          echo "Master-copy guard passed: $lines lines, $slides slides, dropdown + Teacher Tools present, no Vercel Forms."
+          echo "Master-copy guard passed: hub $lines lines, units $ulines lines, $slides slides links, dropdown + Teacher Tools present, no Vercel Forms."

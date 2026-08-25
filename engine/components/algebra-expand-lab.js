@@ -19,7 +19,7 @@ function ensureStyles() {
   s.textContent = `
   .axl-wrap{margin:var(--sp-3,12px) 0;display:flex;flex-direction:column;align-items:center;}
   .axl-presets{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:8px;}
-  .axl-chip{padding:5px 13px;font:inherit;font-size:.85rem;font-weight:700;color:#12355b;background:#f4f8ff;
+  .axl-chip{padding:5px 13px;font:inherit;font-size:.85rem;font-weight:600;color:#12355b;background:#f4f8ff;
     border:1.5px solid #d7e2ed;border-radius:999px;cursor:pointer;}
   .axl-chip:hover{background:#e2ecff;border-color:#1d4ed8;}
   .axl-chip[aria-pressed="true"]{background:#1d4ed8;color:#fff;border-color:#1d4ed8;}

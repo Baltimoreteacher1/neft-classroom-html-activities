@@ -1041,6 +1041,7 @@ export function buildTptSlideDeckV3(ctx) {
     exitTicketHtml,
     exitOpenStem,
     svgVisual,
+    noticeWonderVisual,
     interactiveWidget,
     drawingToolbarHtml,
     googleSlidesUrl,
@@ -1235,7 +1236,7 @@ export function buildTptSlideDeckV3(ctx) {
     "👀 Launch",
     "Be Curious",
     refNoticeWonder(
-      `<p class="ref-instruction">${esc(launchBadge)}</p><p class="card-desc">${esc(launchNarrative)}${readAloudBtn(launchNarrative, { label: "Read the prompt aloud" })}</p>${svgVisual || ""}`,
+      `<p class="ref-instruction">${esc(launchBadge)}</p><p class="card-desc">${esc(launchNarrative)}${readAloudBtn(launchNarrative, { label: "Read the prompt aloud" })}</p>${noticeWonderVisual || svgVisual || ""}`,
       noticeStemsHtml,
       wonderStemsHtml,
     ),

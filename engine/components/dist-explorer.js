@@ -80,7 +80,7 @@ export function renderDistExplorer(
       C.line +
       ";border-radius:12px;background:#fff;color:" +
       C.navy +
-      ';font-weight:700;cursor:pointer;">' +
+      ';font-weight:600;cursor:pointer;">' +
       t +
       "</button>"
     );

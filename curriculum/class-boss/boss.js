@@ -74,8 +74,7 @@ const UI = {
     attackWord: "Attack",
     questionTag: (n, name, label) => `Attack ${n} — ${name}: ${label}`,
     hitTitle: "Direct hit!",
-    hitBody: (dmg) =>
-      `You knocked ${dmg} health off the boss. The whole class shares that hit.`,
+    hitBody: (dmg) => `You knocked ${dmg} health off the boss. The whole class shares that hit.`,
     landTitle: (name) => `The boss used ${name}.`,
     youPicked: (v) => `You picked ${v}.`,
     thatIs: (label) => `That answer matches one exact slip: "${label}".`,
@@ -127,8 +126,7 @@ const UI = {
     attackWord: "Ataque",
     questionTag: (n, name, label) => `Ataque ${n} — ${name}: ${label}`,
     hitTitle: "¡Golpe directo!",
-    hitBody: (dmg) =>
-      `Le quitaste ${dmg} de vida al jefe. Toda la clase comparte ese golpe.`,
+    hitBody: (dmg) => `Le quitaste ${dmg} de vida al jefe. Toda la clase comparte ese golpe.`,
     landTitle: (name) => `El jefe usó ${name}.`,
     youPicked: (v) => `Elegiste ${v}.`,
     thatIs: (label) => `Esa respuesta corresponde a un error muy concreto: "${label}".`,
@@ -151,6 +149,17 @@ const UI = {
 /* Spanish for the repo's English `watchFor` coaching lines. The English side is
  * read straight from data/misconception-labels.json so it never drifts. */
 const WATCH_ES = {
+  "division-quotient-missing-zero":
+    "Estimen primero: 4,896 \u00f7 12 es como 400, no 40. Luego revisen que el cociente tenga un d\u00edgito encima de cada d\u00edgito que bajaron.",
+  "ratio-scaled-additively":
+    "Pregunte cuánto vale UNA tanda y luego cuántas tandas — una razón crece por copias, no por pasos.",
+  "ratio-as-difference":
+    "Pídales decir la comparación en voz alta — “por cada ___ hay ___” — antes de escribir nada.",
+  "stat-mean-vs-median":
+    "Pídales decir qué palabra usó la pregunta y luego qué dice esa palabra que HAY QUE HACER con los números.",
+  "stat-histogram-bin-misread":
+    "Pídales señalar los dos extremos del intervalo y decir qué valores caben dentro.",
+  "coord-xy-swapped": "Pídeles que tracen el movimiento horizontal con el dedo antes del vertical.",
   "decimal-place-value":
     "Primero estima al número entero más cercano y luego cuenta en voz alta los lugares decimales.",
   "exponent-as-multiplication":

@@ -32,7 +32,14 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          # 22, like every other workflow here. This was the lone "20", and it
+          # stopped being viable when the lockfile picked up undici@8.9.0, which
+          # declares `engines: {"node": ">=22.19.0"}`. jsdom@30 requires it, and
+          # scripts/generate-download-manifest.mjs imports jsdom inside
+          # `npm run build` — which is this suite's Playwright webServer. So the
+          # server died with `webidl.util.markAsUncloneable is not a function`
+          # before a single test ran, on every commit. Last green run: 2026-08-16.
+          node-version: "22"
           cache: "npm"
 
       - name: Install dependencies

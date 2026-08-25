@@ -2,13 +2,16 @@
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 
+import { carriedDivisionFigures } from "./division-walk-figure.js";
 import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { createGoDeeper } from "./go-deeper.js";
+import { observeContentImageZoom } from "./image-zoom.js";
 import { enableKeyboardScrolling } from "./keyboard-scroll.js";
 import {
   detectMisconception,
   MISCONCEPTIONS,
   recordMisconception,
+  resolveAuthoredTag,
   topMisconceptions,
 } from "./misconceptions.js";
 // NOTE: present-mode.css is NOT imported here. tools/small-group-modes.test.mjs
@@ -16,9 +19,11 @@ import {
 // all — the stylesheet reaches the page through Vite's shared CSS chunk, which
 // every lesson entry links.
 import { mountPresentWidget } from "./present-mode.js";
+import { ensureCanvasBridge } from "./scorm-bridge.js";
 import { createAutoPilot } from "./small-group-adaptive.js";
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
 import { createBuildVisualizer } from "./small-group-build-visuals.js";
+import { createDiagnosticLaunch, selectDiagnosticItems } from "./small-group-diagnostic.js";
 import {
   createMissionSection,
   createReflectionSection,
@@ -87,9 +92,42 @@ import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.j
 function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
   const lines = stage?.lines || [];
   if (!lines.length) return null;
+  // The worked example's Spanish, as a parallel array — the same shape as
+  // stemEs / hintsEs / choicesEs, filled from data/es-translations by
+  // tools/apply-es-concept-intro.mjs. ALL-OR-NOTHING on purpose: a partly
+  // translated walkthrough would put a Spanish step between two English ones,
+  // which reads as a broken page rather than as support. The lane switch and
+  // the stacking are bi()'s, so a student in English mode sees no change.
+  const esLines =
+    Array.isArray(stage?.linesEs) && stage.linesEs.length === lines.length ? stage.linesEs : null;
+  const lineHtml = (index, text) => bi(text, esLines ? esLines[index] : "");
   // One visualizer per stage so factor-tree steps accumulate into a single
   // growing tree (each step redraws the whole tree, newest branch highlighted).
   const visualFor = visualMode ? createBuildVisualizer() : null;
+  // When the stage narrates the standard long-division algorithm, each line
+  // also gets a snapshot of the VERTICAL tableau as it stands after that move —
+  // quotient above the bar, product and difference in their columns. Reading
+  // "63 × 3 = 189" without seeing where the 189 lands under the bracket is the
+  // whole difficulty of the algorithm, and the vertical layout is how these
+  // students were taught it (Joel, 2026-08-23). The full lesson's Learn It
+  // panel has drawn this since it shipped; the small groups — the students who
+  // need the model MOST — were the only surface that never got it.
+  //
+  // divisionStepFigures draws nothing unless every snapshot's numbers are the
+  // ones the authored line itself states, so a lesson it cannot verify keeps
+  // exactly the rendering it has today.
+  // One shared rule, in division-walk-figure.js: the tableau stays on screen
+  // once the walk starts, and carries one step past the last move so the line
+  // that STATES THE ANSWER still has a picture. See carriedDivisionFigures.
+  const divFigs = carriedDivisionFigures(lines);
+  const divisionFigureAt = (index) => {
+    const svg = divFigs[index];
+    if (!svg) return null;
+    const figure = el("figure", "sg-step-visual sg-divfig");
+    figure.innerHTML = svg;
+    figure.appendChild(el("figcaption", "sg-divfig-cap", "The division so far"));
+    return figure;
+  };
   // Level 2 gets the same verified models, but only AFTER committing to its own
   // thinking — a picture handed over up front is a giveaway, a picture used to
   // check your own reasoning is not. Support tiers see it open.
@@ -121,11 +159,13 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
 
   if (kind === "youdo") {
     let checked = 0;
-    lines.forEach((line) => {
+    lines.forEach((line, index) => {
       const item = el(
         "button",
         "sg-checkstep",
-        `<span class="tick">•</span><span>${esc(line)}</span>`,
+        // The loop's own index, never lines.indexOf(line): two identical
+        // check-off lines would both resolve to the first one's translation.
+        `<span class="tick">•</span><span>${lineHtml(index, line)}</span>`,
       );
       item.type = "button";
       item.setAttribute("aria-pressed", "false");
@@ -136,7 +176,9 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
         item.querySelector(".tick").textContent = "✓";
         if (++checked >= lines.length) finish();
       };
-      const visual = presentVisual(visualFor ? visualFor(line) : null);
+      const visual = presentVisual(
+        divisionFigureAt(list.children.length) || (visualFor ? visualFor(line) : null),
+      );
       if (visual) {
         const wrap = el("div", "sg-checkstep-wrap");
         wrap.append(item, visual);
@@ -149,15 +191,21 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
   }
 
   const renderLine = (line, number) => {
+    const esLine = esLines ? esLines[number - 1] : "";
     const step = el("div", "sg-buildstep");
     step.appendChild(el("span", "sn", String(number)));
     const body = el("div", "sg-buildstep-body");
     const reveal = kind === "wedo" ? String(line).match(/^(.*?)\s*\(([^()]{2,})\)\s*$/) : null;
     if (reveal) {
-      body.appendChild(el("span", null, esc(reveal[1])));
+      // A "think first, then reveal" line splits into prompt + answer. The
+      // Spanish sibling is split on the SAME parenthetical so the two lanes
+      // hide and reveal together; a Spanish line without one keeps its prompt
+      // whole rather than guessing where the answer starts.
+      const esReveal = esLine ? String(esLine).match(/^(.*?)\s*\(([^()]{2,})\)\s*$/) : null;
+      body.appendChild(el("span", null, bi(reveal[1], esReveal ? esReveal[1] : "")));
       const chip = el("button", "sg-reveal", "💭 Think first, then reveal");
       chip.type = "button";
-      const answer = el("span", "sg-reveal-answer", esc(reveal[2]));
+      const answer = el("span", "sg-reveal-answer", bi(reveal[2], esReveal ? esReveal[2] : ""));
       answer.hidden = true;
       chip.onclick = () => {
         answer.hidden = false;
@@ -165,9 +213,15 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
       };
       body.append(chip, answer);
     } else {
-      body.appendChild(el("span", null, esc(line)));
+      body.appendChild(el("span", null, bi(line, esLine)));
     }
-    if (visualFor) {
+    // The vertical tableau is the canonical model for a long-division step, so
+    // it wins over the generic relation visual for that line.
+    const tableau = divisionFigureAt(number - 1);
+    if (tableau) {
+      const shown = presentVisual(tableau);
+      if (shown) body.appendChild(shown);
+    } else if (visualFor) {
       // For "think first, then reveal" wedo lines, the parenthetical answer
       // holds the math — model the full authored line so the picture matches.
       const visual = presentVisual(visualFor(reveal ? `${reveal[1]} ${reveal[2]}` : line));
@@ -245,7 +299,8 @@ function conceptSection(config, onDone, voice, variant) {
   });
 
   // After the work: brief framing, then name the idea.
-  if (concept.intro) section.appendChild(el("p", "sg-build-intro", esc(concept.intro)));
+  if (concept.intro)
+    section.appendChild(el("p", "sg-build-intro", bi(concept.intro, concept.introEs)));
   if (concept.keyIdea)
     section.appendChild(
       el("div", "keyidea", `<span class="lab">💡 The big idea</span>${esc(concept.keyIdea)}`),
@@ -270,8 +325,34 @@ function conceptSection(config, onDone, voice, variant) {
 
 function teacherPanel(config, accent, talk) {
   const group = config.smallGroup;
-  if (!group || !(group.moves || group.who || talk?.listenFor)) return null;
+  if (!group || !(group.teacherMoves || group.moves || group.who || talk?.listenFor)) return null;
   const wrapper = el("aside", "sg-teacher");
+  /*
+   * ASK / LOOK FOR / IF STUCK / EXTEND, rendered as a labelled block rather
+   * than a bullet list. Small-group teaching is fast: a teacher glancing at the
+   * screen with 4-6 students waiting needs to find the next move by its LABEL,
+   * not read a paragraph. The labels are the scan targets, so they carry the
+   * weight and the prose stays one line each.
+   *
+   * `moves` (the old prose list) is gone from the data — 756 of its 840 lines
+   * repeated across 50+ lessons — but is still read here so a stale cached
+   * facilitation payload degrades to the old rendering instead of a blank panel.
+   */
+  const tm = group.teacherMoves || null;
+  const MOVE_LABELS = [
+    ["ask", "Ask"],
+    ["lookFor", "Look for"],
+    ["ifStuck", "If stuck"],
+    ["extend", "Extend"],
+  ];
+  const teacherMovesHtml = tm
+    ? `<dl class="sg-moves">${MOVE_LABELS.filter(([k]) => tm[k])
+        .map(
+          ([k, label]) =>
+            `<div class="sg-move sg-move--${k}"><dt>${esc(label)}</dt><dd>${esc(tm[k])}</dd></div>`,
+        )
+        .join("")}</dl>`
+    : "";
   const moves = (group.moves || []).map((move) => `<li>${esc(move)}</li>`).join("");
   const frames = (group.frames || [])
     .map((frame) => `<span class="sg-frame">${esc(frame)}</span>`)
@@ -309,6 +390,7 @@ function teacherPanel(config, accent, talk) {
     <div class="sg-tbody">
       ${group.who ? `<p><b>Pull:</b> ${esc(group.who)}</p>` : ""}
       <p><b>15–20 minute rhythm:</b> 2 min launch · 4 min build · 3 min talk · 7 min practice · 2 min check.</p>
+      ${teacherMovesHtml}
       ${moves ? `<p><b>High-leverage moves:</b></p><ul>${moves}</ul>` : ""}
       ${frames ? `<p><b>Reusable frames:</b></p><div class="sg-frames">${frames}</div>` : ""}
       ${talk?.listenFor ? `<p><b>Listen for during team talk:</b> ${esc(talk.listenFor)}</p>` : ""}
@@ -354,30 +436,46 @@ function hero(config, accent, voice) {
   const copy = el("div", "sg-hero-copy");
   copy.classList.add("sg-scene-enter");
   const badge = config.launch?.badge || `Small Group · ${accent.name}`;
-  copy.appendChild(el("div", null, `<span class="sg-kicker">${accent.emoji} ${esc(badge)}</span>`));
+  copy.appendChild(el("div", null, `<span class="sg-kicker">${esc(badge)}</span>`));
   copy.appendChild(el("h1", null, esc(studentTitle(config, badge))));
+  let more = copy.querySelector(".sg-obj-more");
   if (config.contentObjective) {
     // One crisp kid-facing line up top; full content + language objectives fold
     // into a collapsible detail so the hero stays readable for Level 1 students.
-    copy.appendChild(el("p", "sg-obj", `🎯 Today: ${esc(coreObjective(config.contentObjective))}`));
-    const more = el("details", "sg-obj-more");
+    copy.appendChild(el("p", "sg-obj", `Today: ${esc(coreObjective(config.contentObjective))}`));
+    more = el("details", "sg-obj-more");
     more.appendChild(el("summary", null, "Full objectives"));
-    more.appendChild(el("p", "sg-obj-full", `🎯 ${esc(studentVoice(config.contentObjective))}`));
+    more.appendChild(el("p", "sg-obj-full", esc(studentVoice(config.contentObjective))));
     if (config.languageObjective)
-      more.appendChild(el("p", "sg-langobj", `🗣️ ${esc(studentVoice(config.languageObjective))}`));
+      more.appendChild(el("p", "sg-langobj", esc(studentVoice(config.languageObjective))));
     copy.appendChild(more);
   }
   // Leveled coaching register — the one line that tells each group how this
   // studio will feel (supportive build / mathematician's press / fresh start).
   copy.appendChild(el("p", "sg-tagline", bi(voice.tagline, voice.taglineEs)));
   const chips = el("div", "sg-chips");
-  chips.appendChild(el("span", "sg-chip", `⏱ ${esc(config.timeEstimate || "15–20 min")}`));
+  const focusByVariant = {
+    catchup: "Focus: Concrete Visual Models & Foundations",
+    group1: "Focus: Step-by-Step Problem Solving & Scaffolding",
+    group2: "Focus: Direct Practice & Fluency Building",
+    challenge: "Focus: Multi-Step Real-World Application",
+  };
+  const variantKey =
+    config.variant || (config.smallGroup ? `group${config.smallGroup.group}` : "catchup");
+  const focusLabel = focusByVariant[variantKey] || "Focus: Targeted Small-Group Practice";
+  chips.appendChild(el("span", "sg-chip sg-chip-focus", esc(focusLabel)));
+  chips.appendChild(el("span", "sg-chip", esc(config.timeEstimate || "15–20 min")));
   if (config.standard) chips.appendChild(el("span", "sg-chip", esc(config.standard)));
   chips.appendChild(el("span", "sg-chip", "Private · saved on this device"));
   copy.appendChild(chips);
   const sceneName = themeDisplayName(config.theme);
   if (sceneName) {
-    copy.appendChild(el("div", "sg-hero-scene-chip", `Scene · ${esc(sceneName)}`));
+    const sceneChip = el("div", "sg-hero-scene-chip", `Scene · ${esc(sceneName)}`);
+    if (more) {
+      more.appendChild(sceneChip);
+    } else {
+      copy.appendChild(sceneChip);
+    }
   }
   const mathMove = mathMoveOfTheDay(config);
   const mark = el("div", "sg-hero-mark sg-scene-enter");
@@ -452,7 +550,9 @@ const MATH_MOVE_COPY = {
 };
 
 function mathMoveOfTheDay(config) {
-  const exploreType = config.explore?.type;
+  // A lesson that opted its hands-on lab out (`explore.lab: false`) must not
+  // advertise that lab's move — the chip would name a table nobody can reach.
+  const exploreType = config.explore?.lab === false ? null : config.explore?.type;
   const diagramKind = config.connect?.diagram?.kind || config.explore?.diagram?.kind || "";
   const key =
     (exploreType && MATH_MOVE_COPY[exploreType] && exploreType) ||
@@ -497,6 +597,80 @@ function footer() {
   return foot;
 }
 
+function mountStationTimer() {
+  if (typeof document === "undefined") return;
+  if (document.querySelector(".sg-station-timer")) return;
+
+  const timerWrap = document.createElement("div");
+  timerWrap.className = "sg-station-timer";
+  timerWrap.setAttribute("role", "timer");
+  timerWrap.setAttribute("aria-label", "Station rotation countdown timer");
+
+  let remainingSec = 15 * 60;
+  let timerInterval = null;
+
+  const fmt = (s) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec < 10 ? "0" : ""}${sec}`;
+  };
+
+  timerWrap.innerHTML = `
+    <span class="sg-timer-icon" aria-hidden="true">⏱️</span>
+    <span class="sg-timer-time">${fmt(remainingSec)}</span>
+    <button type="button" class="sg-timer-toggle" title="Start station timer">▶</button>
+    <button type="button" class="sg-timer-reset" title="Reset to 15 min">↺</button>
+  `;
+
+  const timeEl = timerWrap.querySelector(".sg-timer-time");
+  const toggleBtn = timerWrap.querySelector(".sg-timer-toggle");
+  const resetBtn = timerWrap.querySelector(".sg-timer-reset");
+
+  const tick = () => {
+    if (remainingSec > 0) {
+      remainingSec--;
+      timeEl.textContent = fmt(remainingSec);
+      if (remainingSec === 0) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        toggleBtn.textContent = "▶";
+        timerWrap.classList.add("sg-timer-alarm");
+        if (window.AudioSynth && typeof window.AudioSynth.tada === "function") {
+          window.AudioSynth.tada();
+        }
+      }
+    }
+  };
+
+  toggleBtn.addEventListener("click", () => {
+    timerWrap.classList.remove("sg-timer-alarm");
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      toggleBtn.textContent = "▶";
+      toggleBtn.title = "Resume station timer";
+    } else {
+      if (remainingSec === 0) remainingSec = 15 * 60;
+      timerInterval = setInterval(tick, 1000);
+      toggleBtn.textContent = "⏸";
+      toggleBtn.title = "Pause station timer";
+    }
+  });
+
+  resetBtn.addEventListener("click", () => {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      toggleBtn.textContent = "▶";
+    }
+    remainingSec = 15 * 60;
+    timeEl.textContent = fmt(remainingSec);
+    timerWrap.classList.remove("sg-timer-alarm");
+  });
+
+  document.body.appendChild(timerWrap);
+}
+
 function renderStudio(config) {
   const variant =
     config.variant || (config.smallGroup ? `group${config.smallGroup.group}` : "catchup");
@@ -528,24 +702,41 @@ function renderStudio(config) {
   const store = createStudioStore(config.lessonId);
 
   // Teacher-only "Clear answers": wipe this device's studio state for this
-  // lesson + the Save/Resume pointer, then reload it blank. Same control the
-  // Reveal lessons expose, so a teacher can project a fresh studio. Renders the
-  // floating button only in teacher mode; students never see it.
+  // lesson in-place without reloading or navigating away.
   window.__ntClearLessonAnswers = () => {
     try {
       store.clear();
     } catch (_) {
-      /* storage blocked — reload still clears in-memory state */
+      /* storage blocked */
     }
     try {
-      window.NeftSaveResume?.reset?.();
-    } catch (_) {
-      /* save/resume not present on this page */
-    }
-    window.location.reload();
+      document.querySelectorAll('input:not([type="hidden"]), textarea, select').forEach((input) => {
+        if (input.type === "checkbox" || input.type === "radio") input.checked = false;
+        else input.value = "";
+      });
+      document
+        .querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected")
+        .forEach((el) => {
+          if (!el.classList.contains("sg-tab-btn") && !el.classList.contains("tab-btn")) {
+            el.classList.remove(
+              "is-selected",
+              "is-correct",
+              "is-incorrect",
+              "correct",
+              "wrong",
+              "selected",
+            );
+          }
+        });
+      document.querySelectorAll(".fb, .feedback, [role='status']").forEach((el) => {
+        el.textContent = "";
+        el.style.display = "none";
+      });
+    } catch (_) {}
   };
   mountTeacherClearButton(window.__ntClearLessonAnswers);
   mountPresentWidget();
+  mountStationTimer();
   const state = {
     before: null,
     after: null,
@@ -614,15 +805,54 @@ function renderStudio(config) {
       ) {
         document.dispatchEvent(new CustomEvent("sg:auto-support"));
       }
+      let namedThisAttempt = null;
       if (!correct && item) {
         // A wrong answer is the richest signal in the room; until now it was
         // rendered as a red outline and discarded. Name it when — and only
         // when — the arithmetic identifies exactly one mechanism.
-        const named = detectMisconception(item, response, choiceIndex);
+        //
+        // Authored distractor tags come first. The studio used to consult only
+        // the predictor, which can name an error solely from a stem it can parse
+        // as arithmetic — so on a prose word problem an author who had already
+        // named the distractor was ignored, and the miss recorded nothing.
+        const authored =
+          (Array.isArray(item.misconceptionTags) &&
+            choiceIndex != null &&
+            item.misconceptionTags[choiceIndex]) ||
+          item.misconceptionTag ||
+          null;
+        const named =
+          resolveAuthoredTag(authored) || detectMisconception(item, response, choiceIndex);
         if (named) {
           state.misconceptions = recordMisconception(store, named) || state.misconceptions;
           state.lastMisconception = named;
+          namedThisAttempt = named;
         }
+      }
+      // Close the loop back to the core lesson.
+      //
+      // The studio produces the most carefully diagnosed evidence in the product
+      // and, until now, kept every bit of it inside its own device store. Four
+      // surfaces read window.NTSignal — the review arcade picks its items from
+      // it, the practice arcade its tier, the curriculum hub its suggestions, and
+      // (since the diagnosis-routing change) the core lesson's Practice targets
+      // the error a student keeps repeating. The studio wrote to none of them, so
+      // a student could have their misconception precisely named in small group
+      // on Tuesday and meet Wednesday's core lesson as a stranger.
+      //
+      // Recorded under the BASE lesson id, not the variant, because "2-11-group1"
+      // and "2-11" are the same mathematics and the core lesson asks about the
+      // latter. Device-local, no PII (a standard code and a tag slug), and fully
+      // guarded — a missing signal store is a silent no-op.
+      try {
+        window.NTSignal?.record?.({
+          standard: config.standard || "",
+          correct: Boolean(correct),
+          misconceptionTag: namedThisAttempt || undefined,
+          lesson: String(config.lessonId || "").replace(/-(?:group[12]|catchup)$/, ""),
+        });
+      } catch {
+        /* signals must never break a studio */
       }
       if (correct) {
         state.streak = (state.streak || 0) + 1;
@@ -758,7 +988,14 @@ function renderStudio(config) {
     reflection.reveal();
   };
 
-  const allPractice = collectPracticeItems(config);
+  // The two-minute diagnostic comes out of the practice pool's tail — the
+  // overflow items a fifteen-minute rotation rarely reaches — so opening with a
+  // measurement costs the practice sequence nothing it was reliably delivering.
+  // When no tail item can produce a NAMED diagnosis, `picked` is empty, the pool
+  // is returned untouched, and the studio renders exactly as it did before.
+  const { picked: diagnosticItems, remaining: allPractice } = selectDiagnosticItems(
+    collectPracticeItems(config),
+  );
   const preferredGuided =
     Number(config.smallGroupPractice?.guidedCount) || (variant === "group2" ? 3 : 4);
   const guidedCount =
@@ -774,6 +1011,22 @@ function renderStudio(config) {
   const check = createCheckSection(config, revealReflection, tally, events, store);
   // Mission is the capstone — it renders after practice and supports.
   const mission = createMissionSection(config, variant, phaseDone("sg-tab-more", "launchDone"));
+  // Sits ahead of the readiness pulse deliberately: the pulse asks how ready a
+  // student FEELS, which is worth knowing and is not a finding. Ask what they
+  // actually do first, then how they feel about it.
+  const diagnostic = createDiagnosticLaunch({
+    items: diagnosticItems,
+    store,
+    events,
+    onDone(summary) {
+      // The focus error is the one thing worth carrying forward. The teacher
+      // console already reads state.misconceptions (fed through events.onAttempt
+      // above), so this only records what the diagnostic itself concluded.
+      state.diagnosticSummary = summary;
+      if (summary.focus) state.lastMisconception = summary.focus.tag;
+      document.dispatchEvent(new CustomEvent("sg:diagnostic-done", { detail: summary }));
+    },
+  });
   const pulseCard = el("div", "card sg-pulse-card");
   pulseCard.appendChild(el("p", "block-lab", "Private readiness pulse — how ready do you feel?"));
   pulseCard.appendChild(
@@ -987,17 +1240,20 @@ function renderStudio(config) {
   ];
 
   const heroNode = hero(config, accent, voice);
-  // The table chip sits in the hero on purpose: a group that discovers the room
-  // halfway through has already answered everything alone, and the reveal only
-  // teaches anything if nobody has spoken yet.
-  heroNode.appendChild(
-    createRoomChip(room, {
-      onJoined: () => {
-        // Re-render the talk section's consensus lab against the new membership.
-        window.location.reload();
-      },
-    }),
-  );
+  // The table chip sits behind the Full objectives disclosure so the masthead
+  // stays compact and the first task is immediately visible above the fold.
+  const more = heroNode.querySelector(".sg-obj-more");
+  const roomChip = createRoomChip(room, {
+    onJoined: () => {
+      // Re-render the talk section's consensus lab against the new membership.
+      window.location.reload();
+    },
+  });
+  if (more) {
+    more.appendChild(roomChip);
+  } else {
+    heroNode.appendChild(roomChip);
+  }
   app.appendChild(heroNode);
   // Publisher-grade standards display: resolve the bare code to its full MCCRS
   // wording (best-effort) and fold it into the hero's objectives detail, so
@@ -1011,7 +1267,7 @@ function renderStudio(config) {
         el(
           "p",
           "sg-standard-line",
-          `📐 <b>${esc(entry.code)}${entry.shortLabel ? ` · ${esc(entry.shortLabel)}` : ""}:</b> ${esc(entry.fullText)}`,
+          `<b>${esc(entry.code)}${entry.shortLabel ? ` · ${esc(entry.shortLabel)}` : ""}:</b> ${esc(entry.fullText)}`,
         ),
       );
       const chip = [...heroNode.querySelectorAll(".sg-chip")].find(
@@ -1137,8 +1393,17 @@ function renderStudio(config) {
       const worksheet = el("a", "btn ghost", "📄 Worksheet + keys (A/B)");
       worksheet.href = "worksheet.html";
       worksheet.rel = "nofollow";
+      // The facilitation plan shipped for every studio but nothing ever linked
+      // it, so in practice it did not exist. It opens in its own tab on purpose:
+      // this is the sheet the teacher prints and holds, and presenting blacks
+      // out every teacher-only panel on the shared screen — the coaching has to
+      // live somewhere the group cannot read.
+      const plan = el("a", "btn ghost", "🧭 Small-group plan (print)");
+      plan.href = `/teacher-small-group/${encodeURIComponent(config.lessonId)}/plan`;
+      plan.target = "_blank";
+      plan.rel = "noopener nofollow";
       foot.prepend(back);
-      foot.append(worksheet, scorm);
+      foot.append(plan, worksheet, scorm);
     },
   });
 
@@ -1214,9 +1479,53 @@ export async function resolveAssignedVariant(config) {
   }
 }
 
+/**
+ * Lazy-load the device-local signal store and stamp the lesson meta global that
+ * deep engine components read. Best-effort by construction: every failure path
+ * leaves window.NTSignal absent, which every consumer already tolerates.
+ */
+function loadLearningSignals(config) {
+  try {
+    // Under the BASE lesson id — "2-11-group1" and "2-11" are the same
+    // mathematics, and the core lesson asks about the latter.
+    const base = String(config.lessonId || "").replace(/-(?:group[12]|catchup)$/, "");
+    window.__ntLessonMeta = { standard: config.standard || "", lesson: base };
+    if (!window.NTSignal && !document.querySelector('script[src^="/assets/nt-signal.js"]')) {
+      const sig = document.createElement("script");
+      sig.src = "/assets/nt-signal.js";
+      sig.defer = true;
+      document.head.append(sig);
+    }
+  } catch {
+    /* signals must never break a studio */
+  }
+}
+
 export function bootSmallGroup(config) {
+  // Same shared Canvas/SCORM resume relay as the whole-group lessons. No-op
+  // unless ?lms=scorm. Small-group variants are packageable too, so they must
+  // not be the one family that silently loses resume.
+  ensureCanvasBridge(config);
+  // Device-local learning signals (assets/nt-signal.js → window.NTSignal).
+  //
+  // The full-lesson entry (core/app.js) has lazy-loaded this for a while; the
+  // studio never did, so window.NTSignal was simply absent on every /lessons/
+  // <id>-group1/ page. That is not a missing feature so much as a broken one:
+  // the studio is where the most carefully diagnosed evidence in the product is
+  // produced, and it was the one surface structurally unable to contribute to
+  // the store that the arcades, the hub and (now) the core lesson all read.
+  //
+  // Loaded the same way and for the same reason: no HTML change to the lesson
+  // shells, and every consumer guards on window.NTSignal, so a failed load stays
+  // a silent no-op rather than a broken studio.
+  loadLearningSignals(config);
+
   // Arrow / Page keys scroll the studio panels, not just the mouse wheel.
   enableKeyboardScrolling();
+  // The studio had no click-to-enlarge at all: every attachImageZoom call lived
+  // in the full-lesson renderer, so a small-group scene or diagram did nothing
+  // when a student tapped it.
+  observeContentImageZoom(document.body);
   const params = new URLSearchParams(window.location.search);
 
   // ?mode=tools deep-link: render the standalone Interactive Tools page instead

@@ -48,7 +48,15 @@ const ANCHORS = [
   { path: "/", name: "Home portal" },
   { path: "/curriculum/", name: "Curriculum hub" },
   { path: "/directory/", name: "Activity directory" },
-  { path: "/lessons/6-13/", name: "Lesson 1-1 launcher" },
+  // Lessons need `enter` or the audit never gets past the door. A bare lesson
+  // URL renders a mission-briefing splash (flagship lessons) or a name gate,
+  // and bootLesson() has not run: no phase rail, no warmup, no hero. Auditing
+  // 6-13 that way reported ZERO phase buttons and ZERO inputs while a student
+  // on the same page sees 13 and 16 — so every lesson interior in the repo was
+  // unaudited while this file reported "0 violations". `?sn=` is the same name
+  // bypass tests/lesson-reflow.spec.ts uses.
+  { path: "/lessons/1-1/", name: "Lesson 1-1 (flagship interior)", enter: "lesson" },
+  { path: "/lessons/6-13/", name: "Lesson 6-13 (standard interior)", enter: "lesson" },
   { path: "/math/student-board/", name: "Class board" },
   { path: "/access-practice-lab/", name: "ACCESS practice lab" },
   { path: "/practice-engine/", name: "Practice engine" },
@@ -114,7 +122,9 @@ const keyboard = [];
 const errors = [];
 
 for (const page of PAGES) {
-  const url = `${BASE}${page.path}`;
+  // `sn` pre-fills the student name so the lesson boots instead of parking on
+  // the name gate. Fresh context per page keeps the bypass from leaking.
+  const url = `${BASE}${page.path}${page.enter === "lesson" ? "?sn=A11y%20Audit" : ""}`;
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const tab = await ctx.newPage();
   try {
@@ -128,6 +138,37 @@ for (const page of PAGES) {
       await ctx.close();
       continue;
     }
+    // Flagship lessons open on a full-screen story card and only call
+    // bootLesson() once the student presses Start. Without this the audit
+    // measures the splash screen and calls the lesson clean.
+    if (page.enter === "lesson") {
+      const start = tab.locator(".flagship-mission-start");
+      if (await start.count()) {
+        await start.click().catch(() => {});
+        await tab
+          .locator(".flagship-mission")
+          .waitFor({ state: "detached" })
+          .catch(() => {});
+      }
+      await tab
+        .locator(".sidebar")
+        .waitFor({ timeout: 15000 })
+        .catch(() => {});
+      // Fail loudly rather than silently auditing a door: a lesson with no
+      // phase rail did not boot, and reporting it as clean is the exact bug
+      // this `enter` step exists to end.
+      const booted = await tab.locator(".phase-btn").count();
+      if (!booted) {
+        errors.push({
+          page: page.name,
+          path: page.path,
+          detail: "lesson did not boot (0 phase buttons)",
+        });
+        await ctx.close();
+        continue;
+      }
+    }
+
     // Give injected layers (supports, chrome docks, FX) a chance to mount.
     await tab.waitForTimeout(1500);
 

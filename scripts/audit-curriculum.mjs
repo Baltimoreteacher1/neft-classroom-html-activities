@@ -36,6 +36,8 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
+import { assertSweptEnough } from "../tools/lib/sweep-guard.mjs";
 
 const root = process.cwd();
 const argv = new Set(process.argv.slice(2));
@@ -128,6 +130,14 @@ function isFunctionBackedRoute(link) {
 
 /** Does this absolute path exist as a file, or as a dir with index.html? */
 function targetExists(abs) {
+  // Vite serves everything under `public/` AT the site root, so a link to
+  // /assets/fonts/x.css resolves to public/assets/fonts/x.css even though no
+  // assets/fonts/ exists in the source tree. Checking the repo root alone
+  // called every public-only file a broken link.
+  if (abs.startsWith(root) && !existsSync(abs)) {
+    const inPublic = join(root, "public", abs.slice(root.length));
+    if (existsSync(inPublic)) return targetExists(inPublic);
+  }
   if (existsSync(abs)) {
     try {
       if (statSync(abs).isDirectory()) return existsSync(join(abs, "index.html"));
@@ -280,6 +290,17 @@ const lessonDirs = existsSync(lessonsDir)
       .filter((d) => d.isDirectory())
       .map((d) => d.name)
   : [];
+
+assertNonEmpty(
+  "lesson directories",
+  lessonDirs,
+  "lessons/ produced no directories — every lesson-level check below would then pass over an empty set.",
+);
+assertSweptEnough(
+  "audit",
+  lessonDirs,
+  "Discovery for audit returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
+);
 
 // Build a quick lookup of catalog entries by normalized path
 const catalogByPath = new Map();

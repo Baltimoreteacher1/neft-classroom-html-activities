@@ -97,7 +97,7 @@ export function getBadgeDefs() {
 }
 
 /** Enhanced identity/cover screen markup injected into identity-hero. */
-export function buildLessonCoverExtras(config, savedProgress) {
+export function buildLessonCoverExtras(_config, _savedProgress) {
   return `<div class="lesson-cover-art" aria-hidden="true"></div>`;
 }
 

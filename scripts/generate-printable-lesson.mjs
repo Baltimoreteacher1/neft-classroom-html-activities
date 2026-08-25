@@ -268,12 +268,28 @@ function renderItem(item, idx) {
       body = workLines(4);
   }
   const num = idx != null ? `<span class="qnum">${idx + 1}.</span> ` : "";
-  return `<div class="item">${num ? `<p class="qtext">${num}${esc(q)}</p>` : q ? `<p class="qtext">${esc(q)}</p>` : ""}${body}</div>`;
+  // data-practice-item is the anchor the runtime support layer uses to mark the
+  // tail of the set optional when a teacher applies the shorter-practice-set
+  // modification. A semantic marker, not a CSS selector, so re-styling the
+  // packet cannot quietly break the one support that changes the task.
+  return `<div class="item" data-practice-item>${num ? `<p class="qtext">${num}${esc(q)}</p>` : q ? `<p class="qtext">${esc(q)}</p>` : ""}${body}</div>`;
 }
+
+// Semantic support slots. The runtime support layer attaches blocks by these
+// NAMES, never by a CSS selector or an nth-child path — an adaptation anchored
+// to markup shape dies the next time the packet is restyled.
+const SUPPORT_SLOTS = {
+  Vocabulary: "vocabulary",
+  Launch: "workedExample",
+  Practice: "practice",
+  "Exit Ticket": "response",
+};
 
 function section(title, emoji, inner) {
   if (!inner) return "";
-  return `<section class="lp-section"><h2>${emoji ? esc(emoji) + " " : ""}${esc(title)}</h2>${inner}</section>`;
+  const slot = SUPPORT_SLOTS[title];
+  const slotAttr = slot ? ` data-support-slot="${slot}"` : "";
+  return `<section class="lp-section"${slotAttr}><h2>${emoji ? esc(emoji) + " " : ""}${esc(title)}</h2>${inner}</section>`;
 }
 
 // ---- Full-lesson builder --------------------------------------------------
@@ -402,7 +418,7 @@ function buildPrintable(config) {
   const meta = `${esc(config.standard || "")} · Unit ${esc(config.unit ?? "")}${config.lesson != null ? " · Lesson " + esc(config.lesson) : ""}`;
 
   return `<!doctype html>
-<html lang="en">
+<html lang="en" data-ewl-supports-lesson="${esc(id)}" data-support-audience="student">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -492,6 +508,14 @@ function buildPrintable(config) {
        (which is exactly what happened the first time). Generated pages must be
        instrumented by their generator. -->
   <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
+  <!-- The lesson adaptation layer, on paper. It renders the SAME effective
+       support configuration the interactive lesson renders (one resolver, in
+       shared/supports/lesson-supports.js) so a printed packet cannot disagree
+       with the lesson it was printed for. It is inert until a teacher has
+       configured supports for this lesson, and every failure path leaves this
+       page exactly as generated. Emitted here rather than injected for the
+       reason given above: this file is rewritten on every build. -->
+  <script src="/shared/supports/print-supports.js" defer></script>
 </body>
 </html>`;
 }

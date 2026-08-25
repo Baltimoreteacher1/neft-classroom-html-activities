@@ -3,6 +3,8 @@ import { isRight, numberOf } from "./answer-match.js";
 import { detectConceptTool } from "./concept-tool.js";
 import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
 import { extractDivisionDiagram } from "./division-helper.js";
+import { MISCONCEPTIONS } from "./misconceptions.js";
+import { compareYourWorkFor } from "./notebook-prompt.js";
 import { pickWorkedModel } from "./small-group-adaptive.js";
 import { figureBlock } from "./small-group-labs.js";
 import { mountReasoningReader } from "./small-group-reasoning.js";
@@ -14,6 +16,65 @@ import { mountSymbolPad, needsSymbolPad } from "./symbol-pad.js";
 import { renderToolChip } from "./tool-drawer.js";
 
 const firstHint = (item) => item.hints?.[0] || item.hint || null;
+
+/**
+ * The distinct misconceptions THIS lesson's own practice items are tagged with,
+ * in the order they first appear.
+ *
+ * The authored `commonMistake` paragraph runs 85 words at the median and 145 at
+ * the longest, and it opened the practice phase — for the support group, behind
+ * a disclosure, in English only. A Level 1 student meeting a wall of prose
+ * before the first problem reads none of it. These tags are the same warning,
+ * already written short and already bilingual, and every one of them is a tag
+ * the lesson itself put on one of its own items — nothing here is inferred from
+ * the prose. Capped at three: a list of six things to avoid is a wall again.
+ */
+function lessonMisconceptions(config, limit = 3) {
+  const seen = new Set();
+  const out = [];
+  const take = (item) => {
+    for (const tag of item?.misconceptionTags || []) {
+      const entry = tag && MISCONCEPTIONS[tag];
+      if (!entry?.label || seen.has(tag)) continue;
+      seen.add(tag);
+      out.push(entry);
+    }
+  };
+  for (const tier of ["approaching", "onLevel", "extending", "optional"])
+    for (const item of config.practice?.[tier] || []) take(item);
+  for (const item of config.parallelPractice || []) take(item);
+  return out.slice(0, limit);
+}
+
+/**
+ * The mistake itself, as one short line, taken verbatim from the authored text.
+ *
+ * The paragraph is written to a house shape — "A common mistake in <Topic> is
+ * <THE MISTAKE> — for example, <an instance>." — so the mistake is a contiguous
+ * run inside the first sentence, wrapped in a stock preamble and trailed by an
+ * illustration. Both wrappers are dropped and the run between them is kept
+ * WORD FOR WORD; nothing is rewritten, summarised or composed. Measured over
+ * the 10 lessons that reach this path, it turns 19-67 words into 6-20.
+ *
+ * A trim that does not land short enough is abandoned in favour of the whole
+ * sentence — a half-cut sentence reads as a rendering fault, and the full text
+ * is one tap away under "Why this happens" either way.
+ */
+const MISTAKE_PREAMBLE =
+  /^(?:a|the|one|another)\s+(?:most\s+)?common\s+(?:mistake|error)\b[^.]*?\bis\s+/i;
+const MISTAKE_ASIDE = /\s+[—–-]\s+|:\s+|,\s+(?:for example|like|such as)\b|;\s+/;
+
+function shortMistake(text) {
+  const trimmed = String(text || "").trim();
+  const sentence = (trimmed.match(/^.*?[.!?](?=\s|$)/)?.[0] || trimmed).trim();
+  const body = sentence.replace(MISTAKE_PREAMBLE, "");
+  const clause = body
+    .split(MISTAKE_ASIDE)[0]
+    .replace(/[\s.,;:—–-]+$/, "")
+    .trim();
+  if (!clause || clause.split(/\s+/).length > 22) return sentence;
+  return clause.charAt(0).toUpperCase() + clause.slice(1);
+}
 
 function answerOf(item) {
   if (
@@ -111,7 +172,92 @@ function questionCard(index, stem, stemEs, item = {}) {
     if (fig) card.appendChild(fig);
   }
 
+  const lens = teacherLens(item);
+  if (lens) card.appendChild(lens);
+
   return card;
+}
+
+/**
+ * Per-item teacher lens — the in-the-moment moves for THIS problem, visible
+ * only in Teacher Mode (`body.sg-is-teacher`, set by the authenticated
+ * ?teacher=1 flow in small-group-teacher-access.js).
+ *
+ * The lesson-level studio guide (teacherPanel) answers "how do I run this
+ * session"; this strip answers "what do I ask about problem 4 while six
+ * students wait". It is built ONLY from fields already authored on the item —
+ * the per-distractor probing questions in `choiceFeedback` (which already ship
+ * in the student DOM as answer feedback, so nothing new leaks) and the first
+ * hint as the nudge. No field is required: an item with neither renders no
+ * lens at all.
+ *
+ * CSS-gated rather than JS-gated on purpose: teacher access resolves ASYNC
+ * (an authenticated fetch), and practice may mount first. A hidden element
+ * that the `sg-is-teacher` class reveals is immune to that race.
+ */
+export function teacherLens(item) {
+  const probes = [];
+  if (Array.isArray(item.choices) && Array.isArray(item.choiceFeedback)) {
+    item.choices.forEach((choice, choiceIndex) => {
+      if (choiceIndex === item.correctIndex) return;
+      const feedbackLine = String(item.choiceFeedback[choiceIndex] || "").trim();
+      if (feedbackLine) probes.push({ choice, feedbackLine });
+    });
+    // Two probes cover the discussion without turning the strip into a study
+    // guide; the longest feedback lines carry the richest questions.
+    probes.sort((x, y) => y.feedbackLine.length - x.feedbackLine.length);
+    probes.length = Math.min(probes.length, 2);
+  }
+  const nudge = Array.isArray(item.hints) && item.hints.length ? String(item.hints[0]) : "";
+  const errorStep =
+    item.type === "error-analysis" && Number.isFinite(item.errorStep) ? item.errorStep : null;
+  if (!probes.length && !nudge && errorStep == null) return null;
+
+  const rows = [];
+  for (const probe of probes) {
+    rows.push(
+      `<div class="sg-lens-row"><b>If they pick “${esc(probe.choice)}”</b><span>${esc(
+        probe.feedbackLine,
+      )}</span></div>`,
+    );
+  }
+  if (errorStep != null) {
+    rows.push(
+      `<div class="sg-lens-row"><b>The error lives at step ${errorStep}</b><span>Let a student find it before you point — ask “which step would you defend?”</span></div>`,
+    );
+  }
+  if (nudge) {
+    rows.push(`<div class="sg-lens-row"><b>Nudge, not answer</b><span>${esc(nudge)}</span></div>`);
+  }
+  const lens = el("div", "sg-lens");
+  lens.innerHTML = `<div class="sg-lens-tag">👩‍🏫 Teacher lens · ask before telling</div>${rows.join("")}`;
+  return lens;
+}
+
+/**
+ * Table check — the show-me rhythm for a teacher-led table. Every third solve
+ * in a section, the just-finished card grows a group prompt: notebooks up,
+ * first steps visible. It rides INSIDE the solved card (never between cards)
+ * so pagination and Save/Resume indexes are untouched, and it is dismissible
+ * honor-system — the software cannot see a notebook, and pretending otherwise
+ * trains dismissal (the same reasoning as the no-lock notebook decision).
+ */
+export function tableCheck(problemNumber) {
+  const block = el("div", "sg-tablecheck");
+  block.setAttribute("role", "status");
+  block.innerHTML = `<span class="sg-tablecheck-icon" aria-hidden="true">📓</span><div>${biHtml(
+    `<b>Table check.</b> Everyone hold up your notebook — show your first step for #${problemNumber}.`,
+    `<b>Chequeo de mesa.</b> Todos levanten su cuaderno y muestren su primer paso del n.º ${problemNumber}.`,
+  )}</div>`;
+  const done = el("button", "sg-tablecheck-done", "We showed our work ✓");
+  done.type = "button";
+  done.onclick = () => {
+    block.classList.add("sg-tablecheck-ok");
+    done.disabled = true;
+    done.textContent = "Nice — keep going";
+  };
+  block.appendChild(done);
+  return block;
 }
 
 function feedback() {
@@ -178,6 +324,37 @@ function seededOrder(length, seed) {
   return order;
 }
 
+/**
+ * The "compare your written work" line, for a card that asked for a notebook.
+ *
+ * The card's own DOM is the source of truth: the setup is appended to the card
+ * by the section loop, so asking whether it is there cannot disagree with
+ * whether it was rendered. Recomputing eligibility here would be a second
+ * opinion that can drift from the first.
+ */
+function compareLine(within, item, correct) {
+  // `within` may be the card itself or anything inside it — the two call sites
+  // sit in different scopes (`multipleChoiceCard` has the card, `answerControl`
+  // only has the status element), and passing whichever is at hand is safer
+  // than threading a new parameter through a shared helper.
+  const card = within?.closest?.(".prob") || (within?.querySelector ? within : null);
+  // The gate is `.sg-notebook-cue`, the instruction small group has ALWAYS
+  // shown ("Solve it in your notebook first"). A notebook SETUP block was added
+  // here on 2026-08-20 and removed the same day: every independent-tier item
+  // already carried this cue, and the section already carries `soloDir` saying
+  // the same thing, so the block made three notebook instructions per problem.
+  // The compare line is the part small group genuinely lacked, so it stays —
+  // keyed to the cue that was already there rather than to a block that should
+  // never have been added.
+  if (!card?.querySelector?.(".sg-notebook-cue")) return "";
+  const c = compareYourWorkFor(item, { asked: true, correct });
+  if (!c) return "";
+  return `<span class="nb-compare"><span class="nb-compare-icon" aria-hidden="true">\u270F\uFE0F</span>${bi(
+    c.en,
+    c.es,
+  )}</span>`;
+}
+
 function multipleChoiceCard(item, index, onSolved, events = {}) {
   const card = questionCard(index, itemStem(item), item.stemEs, item);
   const status = feedback();
@@ -229,7 +406,7 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
       showFeedback(
         status,
         "ok",
-        `${streakNote(events)}${correctLead()} ${bi(item.explanation || "Say out loud why this choice works.", item.explanationEs)}`,
+        `${streakNote(events)}${correctLead()} ${bi(item.explanation || "Say out loud why this choice works.", item.explanationEs)}${compareLine(card, item, true)}`,
       );
       celebrate((events.streak?.() || 0) >= 3 ? "🔥" : "✓");
       onSolved();
@@ -487,7 +664,7 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
     showFeedback(
       status,
       "ok",
-      `${streakNote(events)}${correctLead()} ${bi(item.explanation || "Explain the step that convinced you.", item.explanationEs)}`,
+      `${streakNote(events)}${correctLead()} ${bi(item.explanation || "Explain the step that convinced you.", item.explanationEs)}${compareLine(status, item, true)}`,
     );
     celebrate((events.streak?.() || 0) >= 3 ? "🔥" : "✓");
     onSolved();
@@ -503,12 +680,32 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
   return box;
 }
 
-function explanationSteps(item) {
+// Six, not four. The cap silently truncated authored step sequences: the
+// worked explanation for "What is 14.6 + 3.85?" is six clean steps — line up,
+// hundredths, tenths, ones, tens, answer — and a student who pressed "Break it
+// into steps" got the first four and never saw 18.45. Across the studios 27
+// explanations ran past four sentences and 19 of them hid the result.
+//
+// Eight, with headroom. The fleet's longest authored explanation is seven
+// sentences (a fill-table item in 7-2-group2, whose last line is the
+// generalisation the rest builds to), and the distribution falls off a cliff
+// after four: 384 items at four, 20 at five, 21 at six, exactly one at seven.
+// Eight therefore shows every authored step today and leaves room for one more
+// without becoming a wall of text.
+//
+// A first pass set this to 6 on the belief that nothing exceeded six. That was
+// measured over items carrying `choices`, which silently excluded fill-table
+// items — the one seven-sentence explanation in the fleet is exactly such an
+// item. Count over everything with an `explanation`, not over what looks like a
+// multiple-choice question.
+const MAX_STEPS = 8;
+
+export function explanationSteps(item) {
   return String(item.explanation || "")
     .split(/(?<=[.!?])\s+/)
     .map((sentence) => sentence.trim())
     .filter((sentence) => sentence.length > 2)
-    .slice(0, 4);
+    .slice(0, MAX_STEPS);
 }
 
 function appendStepGuide(card, item, scaffold) {
@@ -571,12 +768,40 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
       status,
       onSolved,
       events,
-      () => revealGuide?.(),
+      () => {
+        revealGuide?.();
+        // Notebook-first cards fold the workspace away by default; two misses
+        // mean the notebook attempt needs the model, so it opens itself.
+        card.__openGuidance?.();
+      },
       () => openHint?.(),
     );
     card.appendChild(control);
   } else {
+    /*
+     * Sentence frames, finally rendered.
+     *
+     * 209 `sentenceStems` blocks are authored across 44 lesson configs and NOT
+     * ONE of them reached a student: nothing in engine/, assets/ or shared/ read
+     * the field. The content-preservation baseline fingerprints them, so they
+     * were protected — but protected and invisible. A struggling writer was
+     * being handed a blank box while the scaffold written for that exact task
+     * sat in the config.
+     *
+     * They belong here, above the box, where a student looks before writing.
+     */
+    const stems = framesRow(item.sentenceStems, item.sentenceStemsEs);
+    if (stems) {
+      const label = el("p", "block-lab", bi("Sentence frames", "Marcos de oración"));
+      label.id = `sg-frames-${index}`;
+      card.appendChild(label);
+      card.appendChild(stems);
+    }
+
     const response = el("textarea", "sg-ta");
+    // Point assistive tech at the frames, so the scaffold is announced with the
+    // box rather than sitting near it visually and nowhere semantically.
+    if (stems) response.setAttribute("aria-describedby", `sg-frames-${index}`);
     response.placeholder =
       variant === "group2"
         ? "Make a claim, use evidence, and explain why…"
@@ -715,6 +940,19 @@ export function collectPracticeItems(config) {
       for (const { item, tier } of varietySlice(config, config.variant, seen)) {
         seen.add(itemKey(item));
         items.push(tagPracticeItem(item, tier, items.length, standard));
+      }
+      // The table debugging task ("Fix our table's thinking") is a deliberate
+      // group ritual, not variety filler — when the round-robin fills its six
+      // seats before reaching it (an existing error-analysis item wins the
+      // lane), the ritual silently vanishes for that lesson. Measured before
+      // this guarantee: 30/84 group1 and 18/36 catch-up lessons reached it.
+      // Presence in the config is not reachability; give it its own seat.
+      for (const tier of ["approaching", "onLevel"]) {
+        for (const item of config.practice?.[tier] || []) {
+          if (!item?.tableDebug || seen.has(itemKey(item))) continue;
+          seen.add(itemKey(item));
+          items.push(tagPracticeItem(item, tier, items.length, standard));
+        }
       }
     }
     return items;
@@ -1009,15 +1247,44 @@ export function createPracticeSection(
   const mistake = config.practice?.commonMistake;
   const mistakeText = typeof mistake === "string" ? mistake : mistake?.text || mistake?.mistake;
   if (mistakeText && config.variant !== "group2" && options.showMistake !== false) {
-    section.appendChild(
+    // Short and visual first, prose second. The chips are the lesson's own
+    // misconception tags (bilingual, ~6 words each); when a lesson carries no
+    // tags the paragraph's opening sentence stands in, so every lesson leads
+    // with ONE readable line instead of a paragraph. The full authored text is
+    // never dropped — it moves behind "Why this happens", where a student who
+    // wants the whole explanation can still reach it, and print unfolds it.
+    const card = el("section", "sg-watchout");
+    card.setAttribute("role", "note");
+    card.appendChild(el("div", "sg-watchout-head", bi("⚠️ Watch out for this", "⚠️ Ojo con esto")));
+    const flags = lessonMisconceptions(config);
+    const list = el("ul", "sg-watchout-list");
+    if (flags.length) {
+      for (const flag of flags) {
+        const row = el("li", "sg-watchout-item");
+        row.appendChild(el("span", "sg-watchout-x", "✗"));
+        row.appendChild(el("span", "sg-watchout-text", bi(flag.label, flag.labelEs || "")));
+        list.appendChild(row);
+      }
+    } else {
+      const row = el("li", "sg-watchout-item");
+      row.appendChild(el("span", "sg-watchout-x", "✗"));
+      row.appendChild(el("span", "sg-watchout-text", esc(shortMistake(mistakeText))));
+      list.appendChild(row);
+    }
+    card.appendChild(list);
+    card.appendChild(
       el(
         "details",
-        "mistake",
-        `<summary>⚠️ Before you start: common mistake</summary><p>${esc(mistakeText)}</p>`,
+        "mistake sg-watchout-why",
+        `<summary>${bi("Why this happens", "Por qué pasa")}</summary><p>${esc(mistakeText)}</p>`,
       ),
     );
+    section.appendChild(card);
   }
   let solved = 0;
+  // Live solves only — feeds the every-third-solve table check. Restored
+  // cards call solveItem directly and never touch this.
+  let solvedLive = 0;
   // Count each item at most once so a restored-then-resolved card can't
   // double-credit the tally.
   const counted = new Set();
@@ -1052,6 +1319,12 @@ export function createPracticeSection(
     const solve = () => {
       card?.classList.add("sg-done-all");
       solveItem(storeIndex);
+      // Show-me rhythm: every third LIVE solve in this section (restored
+      // solves bypass this closure on purpose — no ritual for last session's
+      // work). One per card, appended inside it.
+      solvedLive += 1;
+      if (solvedLive % 3 === 0 && card && !card.querySelector(".sg-tablecheck"))
+        card.appendChild(tableCheck(index + 1));
       // Hot streak in a Foundations or Catch-Up lesson: offer the Challenge
       // bridge once, as an invitation — never a requirement. Catch-up maps to
       // its base lesson's group2 sibling (every base lesson has one).
@@ -1082,6 +1355,7 @@ export function createPracticeSection(
     });
     card.dataset.practiceIndex = String(storeIndex);
     card.dataset.tier = item._tier || "";
+
     cardsByIndex.set(storeIndex, card);
     appendVisualPractice(card, item, { mode: options.mode || "guided", events });
     // "Try another like this": infinite same-type reps — only appears when the

@@ -139,7 +139,7 @@ const CSS = `
 .nt-tool-foot button { font: 600 13px/1 var(--font-ui, system-ui, sans-serif); padding: 8px 14px; border-radius: 999px; cursor: pointer; border: 1px solid #cdd9e5; background: #fff; color: var(--ink, #12355b); }
 .nt-tool-foot button:hover { background: #eef4f9; }
 .nt-tools-objective { margin: 14px 0 0; padding: 12px 16px; border-radius: 12px; background: #f4faf9; border: 1px solid #d8ece9; font: 400 15px/1.5 var(--font-body, system-ui, sans-serif); color: var(--ink, #12355b); max-width: 70ch; }
-.nt-tools-objective b { font-weight: 700; }
+.nt-tools-objective b { font-weight: 600; }
 .nt-tools-standard { margin: 8px 0 0; font: 400 14px/1.5 var(--font-body, system-ui, sans-serif); color: #5f6f80; max-width: 70ch; }
 .nt-tools-jump { margin-top: 18px; }
 .nt-tools-jump h2 { font: 700 12px/1 var(--font-ui, system-ui, sans-serif); letter-spacing: .1em; text-transform: uppercase; color: #5f6f80; margin: 0 0 8px; }
@@ -157,7 +157,7 @@ const CSS = `
   .nt-tool-card { break-inside: avoid; box-shadow: none; border-color: #b9cee0; }
   .nt-tools-grid { grid-template-columns: 1fr; }
   .nt-tool-guide { border-color: #b9cee0; }
-  .nt-tool-guide > summary { font-weight: 700; }
+  .nt-tool-guide > summary { font-weight: 600; }
 }
 .nt-tool-edit { margin: 0 0 14px; border: 1px solid #dbe6f0; border-radius: 12px; background: #f7fafd; }
 .nt-tool-edit > summary { cursor: pointer; list-style: none; padding: 10px 14px; font: 600 14px/1.2 var(--font-ui, system-ui, sans-serif); color: var(--accent, #0d7a76); user-select: none; }

@@ -2,6 +2,7 @@ import { topMisconceptions } from "./misconceptions.js";
 import { selectedTalk } from "./small-group-engagement.js";
 import { mathCheckFor } from "./small-group-math-check.js";
 import { el, esc } from "./small-group-ui.js";
+import { firstVocabularyWord } from "./vocab-match.js";
 
 const PATHS = {
   stabilize: {
@@ -702,7 +703,13 @@ export function createEvidenceCard(config, state, getBand = null) {
     const before = Number(state.before || 0);
     const after = Number(state.after || 0);
     const change = after - before;
-    const vocabulary = config.vocabulary?.[0]?.term || config.vocabulary?.[0] || "lesson language";
+    // "Math language" on the evidence card names a word the student used, so
+    // it must skip the lesson-concept statement that sits at vocabulary[0] on
+    // most lessons — printing "Solve and Graph Inequalities" there described
+    // the lesson, not the language.
+    const chosen = firstVocabularyWord(config.vocabulary);
+    const vocabulary =
+      (chosen && typeof chosen === "object" ? chosen.term : chosen) || "lesson language";
     const strategyCell = state.mathCheckDone
       ? `<div><span>Math check</span><b>${esc(mathCheckFor(config).title)}</b></div>`
       : "";

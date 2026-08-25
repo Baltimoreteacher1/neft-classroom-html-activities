@@ -114,17 +114,96 @@
               <input id="week-start" type="date" />
             </label>
           </div>
-          <label class="full-field">
-            Short note for families
-            <textarea
-              id="week-note"
-              maxlength="500"
-              rows="3"
-              placeholder="What should families know this week?"
-            ></textarea>
-          </label>
+          <div class="note-lanes">
+            <label class="full-field">
+              Short note for families (English)
+              <textarea
+                id="week-note"
+                maxlength="500"
+                rows="3"
+                placeholder="What should families know this week?"
+              ></textarea>
+            </label>
+            <label class="full-field">
+              Nota para las familias (Español)
+              <textarea
+                id="week-note-es"
+                lang="es"
+                maxlength="500"
+                rows="3"
+                placeholder="¿Qué deben saber las familias esta semana?"
+              ></textarea>
+            </label>
+          </div>
+          <div class="note-build">
+            <button class="button button-secondary" id="week-note-build" type="button">
+              Write both notes from this week's lessons
+            </button>
+            <span class="note-build-hint">
+              Uses the curated family notes and vocabulary for the lessons you posted — no machine
+              translation.
+            </span>
+          </div>
+          <p class="note-build-status" id="week-note-status" role="status"></p>
+          <div class="pacing-fill" id="pacing-fill">
+            <div class="pacing-fill-copy">
+              <strong>Fill from my pacing plan</strong>
+              <span>
+                Pull this week straight from the Live Pacing Planner. Nothing goes out until you
+                publish, so edit anything first.
+              </span>
+            </div>
+            <label class="pacing-fill-week">
+              Week
+              <select id="pacing-week"></select>
+            </label>
+            <button class="button button-secondary" id="pacing-fill-apply" type="button">
+              Fill this week
+            </button>
+          </div>
+          <div class="pacing-calendar" id="pacing-calendar" hidden></div>
+          <p class="pacing-fill-status" id="pacing-fill-status" role="status"></p>
+
           <div class="weekday-editors" id="weekday-editors"></div>
         </section>
+
+        <details class="tool-disclosure" id="family-response-tools">
+          <summary>
+            <span
+              ><strong>How families used this week</strong
+              ><small>Practice opens by entry point, and who signed off</small></span
+            >
+            <span aria-hidden="true">+</span>
+          </summary>
+          <section class="tool-body" aria-labelledby="family-response-title">
+            <div class="tool-intro">
+              <p class="step-label">Reporting</p>
+              <h2 id="family-response-title">Did posting the week change anything?</h2>
+              <p>
+                Practice opens are counted per lesson and per entry point, never per family.
+                Sign-offs are what families typed on the homework page.
+              </p>
+            </div>
+            <div class="fr-controls">
+              <label>
+                Teacher key
+                <input id="family-response-key" type="password" autocomplete="off" />
+              </label>
+              <label>
+                Window
+                <select id="family-response-days">
+                  <option value="7">Last 7 days</option>
+                  <option value="28" selected>Last 28 days</option>
+                  <option value="90">Last 90 days</option>
+                </select>
+              </label>
+              <button class="button button-secondary" id="family-response-load" type="button">
+                Show family activity
+              </button>
+            </div>
+            <div class="fr-report" id="family-response-report" aria-live="polite"></div>
+          </section>
+        </details>
 
         <details class="tool-disclosure" id="homework-tools">
           <summary>

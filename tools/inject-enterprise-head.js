@@ -54,6 +54,9 @@ const PAGE_FILES = new Set([
   "notes-teacher.html",
   "homework.html",
   "worksheet.html",
+  "worksheet-answer-key.html",
+  "practice.html",
+  "practice-answer-key.html",
   "handout.html",
 ]);
 
@@ -72,14 +75,23 @@ const report = {
 const escapeAttr = (s) =>
   s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+/**
+ * Remove a sentinel block, as the EXACT inverse of how it is inserted.
+ *
+ * Insertion splices `"  " + BLOCK + "\n"` immediately before the anchor tag, so
+ * the strip has to take back both the indent and that trailing newline. It used
+ * to keep the newline (`.replace(/^\s*\n/, "\n")`), which made the pair
+ * asymmetric: every run left one more blank line than the last, on all 1,704
+ * pages, forever. The injector is wired into `npm run build`, so that is a diff
+ * on every deploy of a repo that auto-commits — and
+ * tools/build-injectors-idempotent.test.mjs is what caught it.
+ */
 const stripBlock = (html, begin, end) => {
   const b = html.indexOf(begin);
   if (b === -1) return html;
   const e = html.indexOf(end, b);
   if (e === -1) return html; // unbalanced — leave for validate:injection to flag
-  return (
-    html.slice(0, b).replace(/[ \t]*$/, "") + html.slice(e + end.length).replace(/^\s*\n/, "\n")
-  );
+  return html.slice(0, b).replace(/[ \t]*$/, "") + html.slice(e + end.length).replace(/^\n/, "");
 };
 
 function extractTitle(html) {
@@ -138,12 +150,29 @@ const SHELL_BLOCK = [
   SHELL_END,
 ].join("\n  ");
 
+/**
+ * A JS-rendered launcher shell — the pages whose whole body is mounted by the
+ * engine, and which therefore show a blank screen when boot fails.
+ *
+ * This used to require `<div id="app"></div>` to be literally EMPTY. The
+ * small-group shell later gained a boot placeholder
+ * (`<div id="app"><p class="sg-boot">Loading your math studio…</p></div>`), so
+ * the predicate silently stopped matching 204 pages it had already served —
+ * and because processFile strips both blocks before deciding, a re-run would
+ * have DELETED the blank-screen guard from the 148 of them that had it. A
+ * placeholder makes the guard more necessary, not less: a shell stuck behind
+ * "Loading your math studio…" forever is the same dead page, wearing a
+ * friendlier face.
+ *
+ * The test is now what the page IS: an `#app` mount point holding nothing but
+ * a placeholder (no nested block element), rendered by a module script.
+ */
 function isLauncherShell(html, file) {
-  return (
-    basename(file) === "index.html" &&
-    /<div id="app">\s*<\/div>/.test(html) &&
-    /type="module"/.test(html)
-  );
+  if (basename(file) !== "index.html") return false;
+  if (!/type="module"/.test(html)) return false;
+  const mount = html.match(/<div id="app">([\s\S]*?)<\/div>/);
+  if (!mount) return false;
+  return !/<(div|section|main|article|table|form)\b/i.test(mount[1]);
 }
 
 function processFile(file, dirName) {
@@ -168,7 +197,14 @@ function processFile(file, dirName) {
   html = `${html.slice(0, headAt)}  ${buildHeadBlock(file, dirName, html)}\n${html.slice(headAt)}`;
   report.headInjected++;
 
-  if (isLauncherShell(html, file)) {
+  // Additive only, which this file has always claimed to be and was not: the
+  // shell block is re-emitted whenever the page ALREADY carried one, even if
+  // the predicate no longer matches. A predicate can drift; a safety net that
+  // silently disappears from a live page because of that drift cannot be
+  // noticed by anything downstream — the page still builds and still serves
+  // 200. Removing the block stays possible, through --revert, on purpose.
+  const hadShell = original.includes(SHELL_BEGIN);
+  if (hadShell || isLauncherShell(html, file)) {
     const bodyAt = html.lastIndexOf("</body>");
     if (bodyAt !== -1) {
       html = `${html.slice(0, bodyAt)}  ${SHELL_BLOCK}\n${html.slice(bodyAt)}`;

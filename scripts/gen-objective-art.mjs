@@ -417,6 +417,17 @@ const TOPICS = [
     ],
   },
   {
+    key: "prismVolume",
+    model: M.prismVolume,
+    heading: "Volume as base area × height",
+    note: "B = l × w   ·   V = B × h",
+    talkHeading: "Saying how the base and the height make the volume",
+    lines: [
+      ["The base is the face the prism sits on, and its area", "is 2 × 1.5 = 3 square feet."],
+      ["Stacking that base 1 foot high gives 3 cubic feet —", "the same as 2 × 1.5 × 1."],
+    ],
+  },
+  {
     key: "solids",
     model: M.solids,
     heading: "3D shapes, nets, surface area and volume",

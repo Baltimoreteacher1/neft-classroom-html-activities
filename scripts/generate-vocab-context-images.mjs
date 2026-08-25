@@ -237,10 +237,21 @@ function numberLineFigure({ min, max, step = 0.25, marks = [], y = 46 }) {
     }
   }
   for (const m of marks) {
-    out.push(`<circle cx="${round(xOf(m.value))}" cy="${y}" r="5" fill="${CORAL}"/>`);
+    // A plotted point with no label still does work: it shows that an integer
+    // occupies a point on the SAME line as the fractions, which is the whole
+    // claim. The tick already prints its value, so labelling it twice is noise.
+    out.push(
+      `<circle cx="${round(xOf(m.value))}" cy="${y}" r="${m.small ? 3.5 : 5}" fill="${CORAL}"/>`,
+    );
     if (m.label) {
+      // All mark labels sit ABOVE the line. Below-the-line placement was tried
+      // and measured: the band under the line is already occupied by the tick
+      // numbers (y+18) and the caption (y+38), so a label there collided with
+      // both. Above the line there is empty canvas, and marks far enough apart
+      // in x do not need staggering at all.
+      const ly = y - 12;
       out.push(
-        `<text x="${round(xOf(m.value))}" y="${y - 12}" font-family="${FONT}" font-size="9" font-weight="800" fill="${CORAL}" text-anchor="middle">${esc(m.label)}</text>`,
+        `<text x="${round(xOf(m.value))}" y="${ly}" font-family="${FONT}" font-size="9" font-weight="800" fill="${CORAL}" text-anchor="middle">${esc(m.label)}</text>`,
       );
     }
   }
@@ -272,28 +283,45 @@ export const CARDS = [
   // said less than the definition it sat beside. The paragraph under each figure
   // is still the lesson's own `visual`, verbatim — that is what keeps the card
   // and the word wall in step (tools/vocab-context-images.test.mjs).
+  // Both cards used to draw a −1…1 line carrying a single marked point, so the
+  // picture showed one fraction and could not make the claim the lesson exists
+  // for: that integers, zero, fractions and decimals are not different kinds of
+  // point, they are all just numbers with exact positions on ONE line. Widened
+  // to −2…2 with half-unit ticks, and marked with several FORMS at once —
+  // integers as plain dots (their tick already names them) and the fractions
+  // labelled with their decimal equivalent, alternating above and below.
   {
     slug: "concept-rational-numbers-on-the-number-line",
-    title: "Rational Numbers on the Number Line: −1/2 and −0.5 name the same point.",
-    paragraph: "−1/2 and −0.5 name the same point.",
+    title:
+      "Rational Numbers on the Number Line: −3/2 sits halfway between −2 and −1, and 1/2 sits halfway between 0 and 1. Integers, fractions and decimals all take exact positions on the same line.",
+    paragraph: "−3/2 = −1.5 and 1/2 = 0.5 each sit at one exact point.",
     numberLine: {
-      min: -1,
-      max: 1,
-      step: 0.25,
-      marks: [{ value: -0.5, label: "−1/2 = −0.5" }],
+      min: -2,
+      max: 2,
+      step: 0.5,
+      marks: [
+        { value: -2, small: true },
+        { value: -1.5, label: "−3/2 = −1.5" },
+        { value: 0, small: true },
+        { value: 0.5, label: "1/2 = 0.5" },
+        { value: 2, small: true },
+      ],
     },
   },
   {
     slug: "concept-rational-number",
-    title: "Rational number: 1/2 = 0.5, -3/4 = -0.75, 6 = 6/1 — all rational numbers",
-    paragraph: "1/2 = 0.5, -3/4 = -0.75, 6 = 6/1 — all rational numbers",
+    title:
+      "Rational number: a number that can be written as a fraction of two integers. −1/2, 0 and 5/4 are marked on a number line from −2 to 2, showing that fractions, zero and integers all take exact positions on the same line.",
+    paragraph: "−1/2, 0 and 5/4 each sit at one exact point.",
     numberLine: {
-      min: -1,
-      max: 1,
-      step: 0.25,
+      min: -2,
+      max: 2,
+      step: 0.5,
       marks: [
-        { value: -0.75, label: "−3/4" },
-        { value: 0.5, label: "1/2" },
+        { value: -1, small: true },
+        { value: -0.5, label: "−1/2" },
+        { value: 0, label: "0" },
+        { value: 1.25, label: "5/4" },
       ],
     },
   },

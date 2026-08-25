@@ -22,6 +22,10 @@ for (const expected of [
   'id="homework-grid"',
   'id="clear-homework-filters"',
   'id="all-homework-panel"',
+  'id="week-practice"',
+  'id="week-practice-grid"',
+  'data-i18n="weekPracticeTitle"',
+  'data-i18n="weekPracticeHint"',
   'id="read-week"',
   'id="language-toggle"',
   'id="contrast-toggle"',
@@ -100,6 +104,14 @@ assert.match(css, /min-width:\s*0/);
 assert.match(css, /overflow-wrap:\s*anywhere/);
 assert.match(css, /@media\s*\(max-width:\s*40rem\)/);
 assert.match(css, /prefers-reduced-motion/);
+// A printed week has to say where the practice lives.
+assert.doesNotMatch(
+  css,
+  /@media print\s*\{[^}]*\.homework-section,/,
+  "printing must keep this week's practice, not hide the whole section",
+);
+assert.match(css, /\.homework-actions a\[href\^="\/"\]::after/);
+assert.match(css, /\.homework-library-panel,/);
 assert.match(css, /:focus-visible/);
 
 const app = await readFile(new URL("family-app.js", root), "utf8");
@@ -115,6 +127,35 @@ assert.match(renderer, /Learning focus/);
 assert.match(renderer, /Start optional practice/);
 assert.match(renderer, /Open family help/);
 assert.match(renderer, /Play lesson arcade/);
+assert.match(renderer, /weekHomework/);
+assert.match(renderer, /renderWeekPractice/);
+assert.match(renderer, /Practice together/);
+assert.match(renderer, /Práctica juntos/);
+assert.match(renderer, /absolutePublicUrl/);
+// Today's lesson leads the practice list, and every practice link is attributed.
+assert.match(renderer, /todayBadge: "Hoy"/);
+assert.match(renderer, /homework-today-badge/);
+assert.match(renderer, /dataset\.practiceOpen = source/);
+assert.match(renderer, /practiceOpen = "week"/);
+assert.match(renderer, /practiceOpen = "spotlight"/);
+assert.match(app, /reportPractice/);
+assert.match(app, /data-practice-open/);
+// Every family-visible string has to answer to the language toggle.
+assert.match(renderer, /dayNote\(entry, lang\)/);
+assert.match(renderer, /weekNote\(section\.week, lang\)/);
+assert.match(app, /weekNote\(section\.week, lang\)/);
+assert.match(app, /familyWeekSpeech\(state\.snapshot, state\.lessons, state\.sectionId, es \? "es" : "en"\)/);
+// Day statuses must read from the bilingual label table, not inline English.
+assert.match(renderer, /review: t\.statusReview/);
+assert.match(renderer, /assessment: t\.statusAssessment/);
+assert.match(renderer, /"no-class": t\.statusNoClass/);
+assert.match(renderer, /statusReview: "Repaso y práctica"/);
+assert.match(app, /renderWeekPractice/);
+assert.match(app, /posted this week/);
+assert.ok(
+  html.indexOf('id="week-practice"') < html.indexOf('id="all-homework-panel"'),
+  "This week's practice should sit above the browse-all library",
+);
 assert.match(renderer, /arcadePath/);
 assert.match(app, /isConfiguredDestination/);
 assert.match(app, /querySelectorAll\(["']\[data-classdojo-link\]["']\)/);

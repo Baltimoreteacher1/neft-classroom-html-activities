@@ -139,3 +139,45 @@ export function buildVocabMatcher(vocab) {
 
   return { entries, createRegex, resolveIndex, termFor };
 }
+
+// ── Concept entries vs. words a student can say ─────────────────────────────
+//
+// `vocabulary[0]` is, on 55 of the 84 core lessons, a statement of what the
+// lesson DOES rather than a term: "Display Data with Histograms", "Solve and
+// Graph Inequalities", "Determine the Whole Given the Part and Percent". Those
+// entries are fully authored — definition, Spanish, often an illustration — and
+// they earn their place as the first Word Wall card, which opens the lesson's
+// big idea before its component terms. Nothing about the card is wrong.
+//
+// What was wrong is every consumer that reaches for ONE word. They all read
+// index 0, so the language-objective card told students to say
+//
+//     I used the word "Display Data with Histograms".
+//
+// on both Objectives phases of every one of those lessons — and the code's own
+// docstring says it means to name "a word the student will actually hear
+// today". Slide decks and the projects card had the same shape.
+//
+// The distinction is AUTHORED, not inferred: an entry carries role:"concept"
+// or it does not. No word-count or capitalisation heuristic decides it — "Mean
+// Absolute Deviation" and "The Distributive Property" are multi-word entries
+// that ARE terms, and a rule about length would have moved them. Absent role
+// means term, so older data and the 148 generated variants keep working.
+export function isConceptEntry(entry) {
+  return !!entry && typeof entry === "object" && entry.role === "concept";
+}
+
+/**
+ * The first entry a student could be asked to SAY — the first one not marked
+ * as a lesson-concept statement. Falls back to the first entry of any kind, so
+ * a list made entirely of concept entries still yields something rather than
+ * nothing.
+ *
+ * @param {Array} vocab lesson `vocabulary`
+ * @returns {object|string|null}
+ */
+export function firstVocabularyWord(vocab) {
+  const list = Array.isArray(vocab) ? vocab : [];
+  if (!list.length) return null;
+  return list.find((entry) => !isConceptEntry(entry)) || list[0];
+}

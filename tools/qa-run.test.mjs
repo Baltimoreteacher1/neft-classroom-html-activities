@@ -95,6 +95,18 @@ check(
   scopeFor(["curriculum/showcase/showcase.js"])?.includes("validate:js-syntax"),
   "a .js change must pull in validate:js-syntax",
 );
+check(
+  scopeFor(["curriculum/plan-notes/plan-notes.js"])?.includes("validate:plan-notes"),
+  "a plan-notes change must pull in validate:plan-notes — coverage that names the file but not the gate is how stale vocab shipped",
+);
+check(
+  scopeFor(["scripts/generate-worksheets.mjs"])?.includes("validate:worksheet-audience"),
+  "a worksheet generator change must pull in validate:worksheet-audience",
+);
+check(
+  scopeFor([".github/workflows/predeploy-verify.yml"])?.includes("test"),
+  "a workflow edit must run test so a missing npm run X is caught by ci-scripts-exist",
+);
 
 /* --- 6. Every check named in the coverage table must actually exist --------- */
 for (const [re, checks] of COVERAGE) {

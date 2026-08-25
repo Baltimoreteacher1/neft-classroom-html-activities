@@ -15,6 +15,58 @@
  * Web-runtime only: TextEncoder / Uint8Array / DataView (Workers + Node 18+).
  */
 
+import { canonicalTitle, routeKnown, shortNameForId } from "./scorm-catalog.js";
+import {
+  ERROR_CODES,
+  LESSON_LOCATION_LIMIT,
+  MASTERY_SCORE,
+  SCORM_PROTOCOL_VERSION,
+  SCORM_RUNTIME_VERSION,
+  SUSPEND_DATA_LIMIT,
+  sco,
+} from "./scorm-sco.js";
+import { isTeacherSurface } from "./teacher-surface.js";
+
+// Re-exported so every existing importer (validators, tests, the CLI builders)
+// keeps one place to read these from, and so the runtime/protocol versions are
+// reachable from the same module that builds the package.
+export {
+  ERROR_CODES,
+  LESSON_LOCATION_LIMIT,
+  MASTERY_SCORE,
+  SCORM_PROTOCOL_VERSION,
+  SCORM_RUNTIME_VERSION,
+  SUSPEND_DATA_LIMIT,
+  sco,
+};
+
+/**
+ * Thrown when pre-flight refuses to hand a teacher a package that would not
+ * work. Distinct from TeacherSurfaceError so the endpoints can answer with the
+ * right status and the right sentence.
+ */
+export class PackagePreflightError extends Error {
+  constructor(message, status = 400) {
+    super(message);
+    this.name = "PackagePreflightError";
+    this.status = status;
+  }
+}
+
+/**
+ * Thrown when a caller asks for a package of a teacher-only surface. A distinct
+ * type so the endpoints can answer 403 rather than 400 without string-matching
+ * an error message. The message is deliberately plain: it tells a teacher what
+ * happened and nothing about how the gate decides.
+ */
+export class TeacherSurfaceError extends Error {
+  constructor() {
+    super("That page is teacher-only, so it can't be packaged as a student activity.");
+    this.name = "TeacherSurfaceError";
+    this.status = 403;
+  }
+}
+
 const SITE_DEFAULT = "https://eduwonderlab.com";
 // Only generate wrappers for our own site, so the endpoint can't be abused to
 // package arbitrary third-party origins as SCORM.
@@ -88,7 +140,7 @@ export function resolveTarget(target, site = SITE_DEFAULT) {
   if (!target) throw new Error("missing activity");
   const isUrl = /^https?:\/\//i.test(target);
   const isLessonId = !isUrl && !target.includes("/");
-  const lessonUrl = isUrl
+  let lessonUrl = isUrl
     ? target
     : isLessonId
       ? `${site}/lessons/${target}/`
@@ -97,9 +149,35 @@ export function resolveTarget(target, site = SITE_DEFAULT) {
   if (!ALLOWED_HOSTS.includes(u.hostname)) {
     throw new Error("activity must be on eduwonderlab.com");
   }
-  let id = isLessonId
-    ? slug(target)
-    : slug(u.pathname.split("/").filter(Boolean).pop() || "activity");
+  // A student SCORM package may only ever be built from a student surface.
+  // Packaging a teacher route was never a content leak — the launch URL still
+  // 401s — but a teacher who uploads that package gives a class an assignment
+  // that opens a password prompt, and the endpoint should not manufacture one.
+  // The check runs on the PARSED, normalized path, so encoded, doubled-slash
+  // and traversal spellings are judged the same as the plain one.
+  if (isTeacherSurface(u.pathname)) {
+    throw new TeacherSurfaceError();
+  }
+
+  // Use the PARSED href, never the caller's raw string. The raw form is echoed
+  // into an HTML attribute in the SCO, so a target carrying a quote (or any
+  // markup) would break out of it — `new URL()` percent-encodes those away.
+  lessonUrl = u.href;
+  // Build the id from the WHOLE path, not just its last segment. Every lesson's
+  // homework lives at /lessons/<id>/homework.html, so a last-segment id made all
+  // ~120 of them "homework-html": one SCORM identifier and one zip filename
+  // shared by every homework package on the site. A teacher downloading Unit 3
+  // and Unit 5 homework got two identically-named files, and an LMS that keys
+  // content by manifest identifier treats them as the same activity.
+  let id = slug(target);
+  if (!isLessonId) {
+    const segs = u.pathname.split("/").filter(Boolean);
+    if (segs[segs.length - 1] === "index.html") segs.pop();
+    if (segs[0] === "lessons") segs.shift(); // implied by context, and noise in a filename
+    const last = segs.pop() || "activity";
+    segs.push(last.replace(/\.html?$/i, ""));
+    id = slug(segs.join("-"));
+  }
   // Fold the recognizable query params into the id so assignables that share
   // a path (practice-arcade/?unit=1 vs ?lesson=1-3) get distinct zip
   // filenames + SCORM manifest identifiers instead of colliding.
@@ -114,7 +192,19 @@ export function resolveTarget(target, site = SITE_DEFAULT) {
   return { lessonUrl, id, origin: u.origin };
 }
 
-function manifest(id, title) {
+function manifest(id, title, meta = {}) {
+  // Non-sensitive diagnostic metadata, carried where a teacher (or a future
+  // agent) can read it out of an uploaded package without running anything:
+  // which runtime built it, which live route it targets, and when. Never a
+  // secret, a teacher key, or anything about a student.
+  const desc = [
+    `EduWonderLab SCORM Runtime v${SCORM_RUNTIME_VERSION} (protocol v${SCORM_PROTOCOL_VERSION}).`,
+    `Live target: ${meta.lessonUrl || ""}.`,
+    meta.generatedAt ? `Generated ${meta.generatedAt}.` : "",
+    "Plays the live lesson; lesson edits reach this package without re-uploading.",
+  ]
+    .filter(Boolean)
+    .join(" ");
   return `<?xml version="1.0" encoding="UTF-8"?>
 <manifest identifier="NEFT-${id}" version="1.0"
   xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
@@ -125,6 +215,8 @@ function manifest(id, title) {
     <schema>ADL SCORM</schema>
     <schemaversion>1.2</schemaversion>
   </metadata>
+  <!-- ${xmlEsc(desc)} -->
+  <!-- ewl:runtime=${SCORM_RUNTIME_VERSION} ewl:protocol=${SCORM_PROTOCOL_VERSION} ewl:activity=${xmlEsc(meta.id || id)} ewl:generator=${xmlEsc(meta.generator || "")} -->
   <organizations default="ORG-${id}">
     <organization identifier="ORG-${id}">
       <title>${title}</title>
@@ -143,129 +235,144 @@ function manifest(id, title) {
 `;
 }
 
-function sco(lessonUrl, launchQuery, origin, title) {
-  return `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${title}</title>
-    <style>
-      html, body { margin: 0; height: 100%; background: #fff; }
-      #lesson { border: 0; width: 100%; height: 100vh; display: block; }
-    </style>
-  </head>
-  <body>
-    <!-- SCORM 1.2 SCO wrapper for a Neft activity. Plays the LIVE activity, so
-         edits never require re-uploading. ?lms=scorm relays the score to Canvas
-         and hides the code popup; ?embed=1 alone keeps the save-code prompt. -->
-    <iframe id="lesson" data-src="${lessonUrl}${launchQuery}" allow="fullscreen; clipboard-write" title="${title}"></iframe>
-    <noscript><p style="padding:1rem;font-family:system-ui,-apple-system,sans-serif">This activity needs JavaScript enabled. <a href="${lessonUrl}">Open the activity directly</a>.</p></noscript>
-    <script>
-      (function () {
-        "use strict";
-        var LESSON_ORIGIN = "${origin}";
-        var MASTERY = 70;
-        // Locate the SCORM 1.2 API by walking parent frames then the opener.
-        // Every window access is wrapped: in Canvas the SCO is commonly framed
-        // cross-origin, where reading win.API / win.parent throws SecurityError.
-        // An uncaught throw here would abort the wrapper before launchUrl() runs
-        // — leaving a blank frame and no grade — so guard each access.
-        function findAPI(win) {
-          var tries = 0;
-          while (win && tries++ < 12) {
-            try { if (win.API != null) return win.API; } catch (e) { break; }
-            try {
-              if (!win.parent || win.parent === win) break;
-              win = win.parent;
-            } catch (e) { break; }
-          }
-          return null;
-        }
-        var API = null;
-        try { API = findAPI(window); } catch (e) {}
-        if (!API) { try { if (window.opener) API = findAPI(window.opener); } catch (e) {} }
-        var started = false, finished = false, startedAt = 0;
-        function start() {
-          if (API && !started) {
-            try { API.LMSInitialize(""); started = true; startedAt = Date.now(); API.LMSSetValue("cmi.core.lesson_status", "incomplete"); API.LMSCommit(""); } catch (e) {}
-          }
-        }
-        // SCORM 1.2 CMITimespan (HHHH:MM:SS) so the LMS records time-on-task.
-        function sessionTime() {
-          var s = Math.max(0, Math.round((Date.now() - (startedAt || Date.now())) / 1000));
-          function p(n) { return (n < 10 ? "0" : "") + n; }
-          return p(Math.floor(s / 3600)) + ":" + p(Math.floor((s % 3600) / 60)) + ":" + p(s % 60);
-        }
-        // Canvas identity → live activity: read the LMS-provided student name/id
-        // and hand them to the lesson so the student is auto-identified inside
-        // Canvas (no name-entry screen, resume keyed to the Canvas roster).
-        // SCORM 1.2 returns the name as "Last, First"; normalize to "First Last".
-        function lmsGet(key) { try { return API ? String(API.LMSGetValue(key) || "") : ""; } catch (e) { return ""; } }
-        function normalizeName(raw) {
-          raw = (raw || "").trim();
-          if (!raw) return "";
-          var c = raw.indexOf(",");
-          if (c > -1) return (raw.slice(c + 1).trim() + " " + raw.slice(0, c).trim()).trim();
-          return raw;
-        }
-        function launchUrl() {
-          var iframe = document.getElementById("lesson");
-          var base = iframe.getAttribute("data-src");
-          start();
-          var name = normalizeName(lmsGet("cmi.core.student_name"));
-          var sid = lmsGet("cmi.core.student_id");
-          var sep = base.indexOf("?") > -1 ? "&" : "?";
-          var q = "";
-          if (name) q += sep + "sn=" + encodeURIComponent(name);
-          if (sid) q += (q ? "&" : sep) + "si=" + encodeURIComponent(sid);
-          iframe.src = base + q;
-        }
-        function report(pct) {
-          // Never write after LMSFinish (illegal in SCORM 1.2) or before a
-          // successful LMSInitialize — some LMS runtimes throw on either.
-          if (!API || finished) return;
-          start();
-          if (!started) return;
-          var status = pct >= MASTERY ? "passed" : "completed";
-          try {
-            API.LMSSetValue("cmi.core.score.min", "0");
-            API.LMSSetValue("cmi.core.score.max", "100");
-            API.LMSSetValue("cmi.core.score.raw", String(Math.max(0, Math.min(100, Math.round(pct)))));
-            API.LMSSetValue("cmi.core.lesson_status", status);
-            API.LMSCommit("");
-          } catch (e) {}
-        }
-        function finish() {
-          if (API && started && !finished) {
-            try {
-              API.LMSSetValue("cmi.core.session_time", sessionTime());
-              API.LMSCommit("");
-              API.LMSFinish(""); finished = true;
-            } catch (e) {}
-          }
-        }
-        // Register the score listener BEFORE loading the activity so no early
-        // completion message is missed, then launch with the Canvas identity.
-        window.addEventListener("message", function (e) {
-          if (LESSON_ORIGIN && e.origin !== LESSON_ORIGIN) return;
-          var d = e.data || {};
-          if (d.source === "neft-lesson" && d.type === "score" && typeof d.percent === "number") report(d.percent);
-        });
-        window.addEventListener("pagehide", finish);
-        window.addEventListener("unload", finish);
-        launchUrl();
-      })();
-    </script>
-  </body>
-</html>
-`;
+/**
+ * Teacher-readable, filesystem-safe download name.
+ *
+ * `neft-3-4.zip` tells a teacher nothing once twelve of them are sitting in a
+ * Downloads folder, and Canvas shows the uploaded file name in its SCORM list.
+ * The stable SCORM identifier is unchanged — only the file name is friendly, so
+ * renaming a download can never re-key an existing Canvas assignment.
+ */
+export function packageFileName(id, codes) {
+  // The mode already lives in the id (…-codes) so the SCORM identifier is
+  // distinct; strip it here so the name still reads …_SaveCodes rather than
+  // falling through with a dangling suffix.
+  const base = (codes ? String(id).replace(/-codes$/, "") : String(id))
+    .replace(/[^A-Za-z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  // Runtime v2 naming: EduWonderLab_<id>_<Short_Title>_SCORM.zip.
+  //   EduWonderLab_1-1_Math_Is_Mine_SCORM.zip
+  //   EduWonderLab_1-1-homework_Homework_SCORM.zip
+  //   EduWonderLab_ratio-color-mixer_Ratio_Color_Mixer_SCORM.zip
+  // Deterministic (same inputs → same name, no hash, no timestamp), ASCII-only,
+  // and free of every character Windows rejects (\ / : * ? " < > |) and of
+  // spaces, which break naive shell and LMS-upload tooling.
+  const short = shortNameForId(id);
+  const parts = ["EduWonderLab", base, short, codes ? "SaveCodes" : "", "SCORM"].filter(Boolean);
+  return `${parts.join("_").slice(0, 140)}.zip`;
 }
 
-/** Build the two package files. Returns { id, lessonUrl, files }. */
-export function buildScormFiles({ target, title, codes, supports, lang }, site = SITE_DEFAULT) {
-  const { lessonUrl, id, origin } = resolveTarget(target, site);
-  const t = xmlEsc(title && String(title).trim() ? title.trim() : `Activity ${id}`);
+/**
+ * Structural pre-flight, run BEFORE a teacher is handed a zip.
+ *
+ * A broken package is worse than a refused one: the teacher only finds out
+ * after uploading it to Canvas, configuring an assignment and publishing it to
+ * a class. Everything decidable without the network is decided here; the
+ * endpoint adds a live 404 probe on top.
+ *
+ * Throws PackagePreflightError with a sentence a teacher can act on.
+ */
+export function preflight(files, { lessonUrl, id }) {
+  const problems = [];
+  if (!files["imsmanifest.xml"]) problems.push("the package has no imsmanifest.xml");
+  if (!files["index.html"]) problems.push("the package has no SCO entry file");
+  const mf = files["imsmanifest.xml"] || "";
+  // Every <file href> the manifest declares must be a real entry in the zip,
+  // and the launch href must be one of them — the two ways a structurally
+  // "valid" package still fails the moment Canvas opens it.
+  const href = /adlcp:scormtype="sco"[^>]*href="([^"]+)"/.exec(mf)?.[1];
+  if (!href) problems.push("the manifest declares no SCO launch file");
+  else if (!files[href])
+    problems.push(`the manifest launches ${href}, which is not in the package`);
+  for (const m of mf.matchAll(/<file href="([^"]+)"\s*\/>/g)) {
+    if (!files[m[1]]) problems.push(`the manifest lists ${m[1]}, which is not in the package`);
+  }
+  if (!/<schemaversion>1\.2<\/schemaversion>/.test(mf)) {
+    problems.push("the manifest does not declare SCORM 1.2");
+  }
+  if (!new RegExp(`identifier="NEFT-${id}"`).test(mf)) {
+    problems.push("the manifest identifier does not match the package id");
+  }
+
+  const html = files["index.html"] || "";
+  // The runtime is the whole point of the package; a wrapper missing it is a
+  // blank iframe in Canvas.
+  if (!html.includes(`ewl:runtime`) || !html.includes(`RUNTIME = ${SCORM_RUNTIME_VERSION}`)) {
+    problems.push("the SCORM Runtime v2 wrapper code is missing from the package");
+  }
+  if (!html.includes(lessonUrl)) problems.push("the SCO does not point at the resolved lesson URL");
+
+  // Every absolute URL in the wrapper must be an allowed production host. This
+  // is what stops a localhost, a preview deployment, or a stray third-party
+  // origin from being shipped to a class inside a package nobody opens.
+  for (const m of html.matchAll(/https?:\/\/([A-Za-z0-9._-]+)/g)) {
+    if (!ALLOWED_HOSTS.includes(m[1])) {
+      problems.push(`the package points at a non-production host: ${m[1]}`);
+      break;
+    }
+  }
+  if (/\blocalhost\b|127\.0\.0\.1|\.pages\.dev|\.workers\.dev|:\d{4,5}\//.test(html)) {
+    problems.push("the package points at a development or preview URL");
+  }
+  // Nothing in a student package may carry a secret or a teacher key.
+  if (/TEACHER_KEY|SITE_PASSWORD|x-teacher-key/i.test(html + mf)) {
+    problems.push("the package contains an authentication value and was not built");
+  }
+
+  if (problems.length) {
+    throw new PackagePreflightError(
+      `This package failed its pre-flight check and was not downloaded: ${problems.join("; ")}.`,
+      500,
+    );
+  }
+  return true;
+}
+
+/**
+ * Build the package files. Returns { id, title, lessonUrl, codes, files, meta }.
+ *
+ * `generatedAt` is deliberately DAY-granular. It is enough to diagnose a
+ * package found in a Canvas course months later, and it keeps two builds on the
+ * same day byte-identical — which is what `validate:scorm:fleet` asserts, and
+ * what makes a re-download comparable to the file already uploaded.
+ */
+export function buildScormFiles(
+  { target, title, codes, supports, lang, id: idOverride, generatedAt, generator },
+  site = SITE_DEFAULT,
+) {
+  const { lessonUrl, id: derivedId, origin } = resolveTarget(target, site);
+  // Pre-flight the ROUTE against the canonical curriculum before building
+  // anything: a lesson id the manifest has never heard of is a typo, and the
+  // only thing worse than refusing it is handing back a zip that iframes a 404.
+  if (routeKnown(lessonUrl) === "missing") {
+    throw new PackagePreflightError(
+      `There is no lesson at ${lessonUrl} in the curriculum. Check the lesson id and try again.`,
+      404,
+    );
+  }
+  /*
+   * An explicit id wins over the path-derived one. The Canvas packages page
+   * (tools/scorm/build-canvas-scorm-page.mjs) names its own packages —
+   * "homework-1-1" rather than the path-derived "1-1-homework" — and passes that
+   * name to the CLI builder, then copies the file it expects by name.
+   *
+   * The CLI rewrite dropped this third argument, so every homework and activity
+   * package was written under a name the caller did not expect and the copy
+   * failed with ENOENT for all 84 homework packages. Restored, and routed
+   * through slug() so a caller cannot inject a path or an XML-unsafe identifier.
+   */
+  const id = idOverride ? slug(idOverride) : derivedId;
+  // Title precedence: an explicit caller title, then the CANONICAL curriculum
+  // title, then a last-resort slug. The canonical title is read from the
+  // compiled curriculum vocabulary rather than kept here, so a renamed lesson
+  // renames its Canvas activity on the next download instead of carrying the
+  // old name forever.
+  const canonical = canonicalTitle(lessonUrl);
+  const plainTitle =
+    title && String(title).trim()
+      ? String(title).trim()
+      : canonical.title || `EduWonderLab — ${id}`;
+  const t = xmlEsc(plainTitle);
   // Joined with "&" when the target already carries a query (?unit=3 etc.) —
   // mirrors tools/scorm/build-scorm.mjs so both builders stay in lockstep.
   let launchQuery =
@@ -275,111 +382,46 @@ export function buildScormFiles({ target, title, codes, supports, lang }, site =
   // language) into the launch query so they activate for the student on load.
   const safeSupports = sanitizeSupports(supports);
   const safeLang = sanitizeLang(lang);
-  let personalId = id;
+  // Save-codes mode is a DIFFERENT package (different launch query, different
+  // grade path), so it needs a different SCORM identity. It used to differ only
+  // in the zip filename: a teacher who posted both the interactive and the
+  // save-codes variant of one lesson uploaded two packages that declared the
+  // same manifest identifier, which an LMS keying content by identifier treats
+  // as the same activity.
+  let personalId = codes ? slug(`${id}-codes`) : id;
   if (safeSupports) {
     launchQuery += `&supports=${safeSupports}`;
     if (safeLang) launchQuery += `&lang=${safeLang}`;
     // Distinct id/filename so a personalized package doesn't collide with the
     // standard one (e.g. neft-1-1-supports-... .zip).
-    personalId = slug(`${id}-supports-${safeSupports}${safeLang ? "-" + safeLang : ""}`);
+    personalId = slug(`${personalId}-supports-${safeSupports}${safeLang ? "-" + safeLang : ""}`);
   }
+
+  const meta = {
+    id: personalId,
+    lessonUrl,
+    generatedAt: generatedAt ? String(generatedAt).slice(0, 10) : "",
+    generator: generator || `eduwonderlab-scorm-runtime/${SCORM_RUNTIME_VERSION}`,
+  };
+
+  const files = {
+    "imsmanifest.xml": manifest(personalId, t, meta),
+    "index.html": sco(lessonUrl, launchQuery, origin, t, meta),
+  };
+  preflight(files, { lessonUrl, id: personalId });
 
   return {
     id: personalId,
+    title: plainTitle,
     lessonUrl,
     codes: !!codes,
-    files: {
-      "imsmanifest.xml": manifest(personalId, t),
-      "index.html": sco(lessonUrl, launchQuery, origin, t),
-    },
+    runtime: SCORM_RUNTIME_VERSION,
+    protocol: SCORM_PROTOCOL_VERSION,
+    meta,
+    files,
   };
 }
 
-// ---- Zero-dependency stored ZIP writer -----------------------------------
-function crc32(bytes) {
-  let crc = ~0;
-  for (let i = 0; i < bytes.length; i++) {
-    crc ^= bytes[i];
-    for (let j = 0; j < 8; j++) crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
-  }
-  return ~crc >>> 0;
-}
-
-/** files: { name: string } → Uint8Array of a valid (uncompressed) .zip. */
-export function zipStore(files) {
-  const enc = new TextEncoder();
-  const DOS_DATE = 0x21; // 1980-01-01, fixed for reproducible output
-  const locals = [];
-  const centrals = [];
-  let offset = 0;
-  let count = 0;
-
-  for (const name of Object.keys(files)) {
-    const nameBytes = enc.encode(name);
-    const data = enc.encode(files[name]);
-    const crc = crc32(data);
-
-    const lh = new Uint8Array(30 + nameBytes.length);
-    const ld = new DataView(lh.buffer);
-    ld.setUint32(0, 0x04034b50, true);
-    ld.setUint16(4, 20, true);
-    ld.setUint16(6, 0, true);
-    ld.setUint16(8, 0, true); // store
-    ld.setUint16(10, 0, true);
-    ld.setUint16(12, DOS_DATE, true);
-    ld.setUint32(14, crc, true);
-    ld.setUint32(18, data.length, true);
-    ld.setUint32(22, data.length, true);
-    ld.setUint16(26, nameBytes.length, true);
-    ld.setUint16(28, 0, true);
-    lh.set(nameBytes, 30);
-    locals.push(lh, data);
-
-    const ch = new Uint8Array(46 + nameBytes.length);
-    const cd = new DataView(ch.buffer);
-    cd.setUint32(0, 0x02014b50, true);
-    cd.setUint16(4, 20, true);
-    cd.setUint16(6, 20, true);
-    cd.setUint16(8, 0, true);
-    cd.setUint16(10, 0, true);
-    cd.setUint16(12, 0, true);
-    cd.setUint16(14, DOS_DATE, true);
-    cd.setUint32(16, crc, true);
-    cd.setUint32(20, data.length, true);
-    cd.setUint32(24, data.length, true);
-    cd.setUint16(28, nameBytes.length, true);
-    cd.setUint16(30, 0, true);
-    cd.setUint16(32, 0, true);
-    cd.setUint16(34, 0, true);
-    cd.setUint16(36, 0, true);
-    cd.setUint32(38, 0, true);
-    cd.setUint32(42, offset, true);
-    ch.set(nameBytes, 46);
-    centrals.push(ch);
-
-    offset += lh.length + data.length;
-    count++;
-  }
-
-  const cdSize = centrals.reduce((a, b) => a + b.length, 0);
-  const eocd = new Uint8Array(22);
-  const ed = new DataView(eocd.buffer);
-  ed.setUint32(0, 0x06054b50, true);
-  ed.setUint16(4, 0, true);
-  ed.setUint16(6, 0, true);
-  ed.setUint16(8, count, true);
-  ed.setUint16(10, count, true);
-  ed.setUint32(12, cdSize, true);
-  ed.setUint32(16, offset, true);
-  ed.setUint16(20, 0, true);
-
-  const all = [...locals, ...centrals, eocd];
-  const total = all.reduce((a, b) => a + b.length, 0);
-  const out = new Uint8Array(total);
-  let p = 0;
-  for (const part of all) {
-    out.set(part, p);
-    p += part.length;
-  }
-  return out;
-}
+// The stored-ZIP writer lives in assets/lib/zip-store.js so the browser-side
+// bulk downloader emits byte-identical archives from the same code.
+export { zipStore } from "../../assets/lib/zip-store.js";

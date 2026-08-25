@@ -310,7 +310,7 @@ let next = out.join("");
 // Jump bar labels follow the unit names.
 for (let u = 1; u <= 10; u++) {
   next = next.replace(
-    new RegExp(`(<a href="#unit-${u}" class="unit-jump-pill">)[^<]*(</a>)`),
+    new RegExp(`(<a href="#unit-${u}" class="unit-jump-pill">)[^<]*(</a>)`, "g"),
     `$1Unit ${u} ${UNIT_META[u].name}$2`,
   );
 }

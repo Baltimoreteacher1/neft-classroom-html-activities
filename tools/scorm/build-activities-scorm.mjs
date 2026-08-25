@@ -8,10 +8,11 @@ import { execFileSync } from "child_process";
 // Run AFTER `node tools/inject-canvas-bridge.js` (so the bridge is on the page).
 //
 // Usage:  node tools/scorm/build-activities-scorm.mjs
-// Output: scorm-packages/neft-lesson-<slug>.zip + scorm-packages/ACTIVITIES-CHECKLIST.md
+// Output: scorm-packages/<Teacher-Readable-Name>.zip + scorm-packages/ACTIVITIES-CHECKLIST.md
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import { packageFileName } from "../../functions/_lib/scorm.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");
@@ -60,7 +61,7 @@ const lines = [
   "re-upload.",
   "",
 ];
-for (const a of ok) lines.push(`- [ ] \`neft-lesson-${a.slug}.zip\` — ${a.title}`);
+for (const a of ok) lines.push(`- [ ] \`${packageFileName(a.slug, false)}\` — ${a.title}`);
 writeFileSync(resolve(outRoot, "ACTIVITIES-CHECKLIST.md"), lines.join("\n"));
 
 console.log("SCORM build (activities)");

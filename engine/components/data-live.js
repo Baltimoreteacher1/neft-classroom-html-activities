@@ -1,3 +1,5 @@
+import { pickLang } from "../core/i18n.js";
+
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
@@ -40,26 +42,26 @@ function injectStyles() {
   .dlive{color-scheme:light;--dl-teal:${DATA_1};--dl-coral:${DATA_2};--dl-navy:var(--navy,#264653);--dl-ink:var(--ink,#333);--dl-muted:var(--muted,#6b7280);
     border:1px solid rgba(38,70,83,.14);border-radius:14px;padding:14px 14px 12px;margin:var(--sp-3,12px) 0;background:linear-gradient(180deg,#fff, #fbfdfc);box-shadow:0 1px 3px rgba(38,70,83,.06)}
   .dlive-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-  .dlive-title{font-weight:800;color:var(--dl-navy);font-size:1rem}
-  .dlive-badge{font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--dl-teal);border:1px solid currentColor;border-radius:999px;padding:2px 8px}
+  .dlive-title{font-weight:700;color:var(--dl-navy);font-size:1rem}
+  .dlive-badge{font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--dl-teal);border:1px solid currentColor;border-radius:999px;padding:2px 8px}
   .dlive-plot{position:relative}
   .dlive-plot svg{width:100%;height:auto;max-width:560px;display:block;margin:0 auto;touch-action:manipulation}
   .dlive [data-hit]{cursor:pointer}
   .dlive [data-hit]:hover,.dlive [data-hit][data-on="1"]{filter:brightness(1.06)}
   .dlive-tools{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 2px;align-items:center}
-  .dlive-btn{font:inherit;font-size:.82rem;font-weight:700;color:var(--dl-navy);background:#fff;border:1.5px solid rgba(38,70,83,.22);border-radius:999px;padding:6px 12px;cursor:pointer;transition:.15s}
+  .dlive-btn{font:inherit;font-size:.82rem;font-weight:600;color:var(--dl-navy);background:#fff;border:1.5px solid rgba(38,70,83,.22);border-radius:999px;padding:6px 12px;cursor:pointer;transition:.15s}
   .dlive-btn:hover{border-color:var(--dl-teal);color:var(--dl-teal)}
   .dlive-btn[aria-pressed="true"]{background:var(--dl-teal);border-color:var(--dl-teal);color:#fff}
   .dlive-btn.ghost{border-style:dashed}
   .dlive-nudge{display:inline-flex;gap:4px;align-items:center;margin-left:auto;flex-wrap:wrap}
-  .dlive-nudge button{font:inherit;font-weight:800;width:34px;height:34px;border-radius:9px;border:1.5px solid rgba(38,70,83,.22);background:#fff;color:var(--dl-navy);cursor:pointer}
+  .dlive-nudge button{font:inherit;font-weight:700;width:34px;height:34px;border-radius:9px;border:1.5px solid rgba(38,70,83,.22);background:#fff;color:var(--dl-navy);cursor:pointer}
   .dlive-nudge button:hover{border-color:var(--dl-teal);color:var(--dl-teal)}
-  .dlive-nudge .lab{font-size:.78rem;color:var(--dl-muted);font-weight:700;margin-right:2px}
+  .dlive-nudge .lab{font-size:.78rem;color:var(--dl-muted);font-weight:600;margin-right:2px}
   .dlive-measures{display:none;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:8px;margin-top:10px}
   .dlive.show-m .dlive-measures{display:grid}
   .dlive-stat{background:#fff;border:1px solid rgba(38,70,83,.14);border-radius:10px;padding:7px 9px;text-align:center}
   .dlive-stat b{display:block;font-size:1.12rem;color:var(--dl-navy);line-height:1.1}
-  .dlive-stat span{font-size:.68rem;color:var(--dl-muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  .dlive-stat span{font-size:.68rem;color:var(--dl-muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
   .dlive-stat.hi b{color:var(--dl-coral)}
   .dlive-note{margin-top:9px;font-size:.86rem;color:var(--dl-ink);background:rgba(42,157,143,.08);border-left:3px solid var(--dl-teal);border-radius:0 8px 8px 0;padding:7px 10px;min-height:1.2em}
   .dlive-note:empty{display:none}
@@ -94,6 +96,22 @@ function fiveNum(values) {
     max: s[n - 1],
   };
 }
+/**
+ * Mean absolute deviation — the average distance of the data from its own mean.
+ *
+ * 6.SP.B.5c asks students to describe variability, and MAD is the measure the
+ * standard names. It was the one statistic this lab could not show, which left
+ * the What-if sandbox able to demonstrate that moving a point changes the mean
+ * while silently unable to demonstrate the more interesting fact: that moving a
+ * point AWAY from the mean changes the typical distance far more than it moves
+ * the centre.
+ */
+function mad(v) {
+  if (!v.length) return 0;
+  const m = v.reduce((a, b) => a + b, 0) / v.length;
+  return v.reduce((a, b) => a + Math.abs(b - m), 0) / v.length;
+}
+
 function mean(v) {
   return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
 }
@@ -137,7 +155,7 @@ function shell(host, cfg, ctrl) {
     `<div class="dlive-note" data-el="note" role="status" aria-live="polite"></div>`;
   host.appendChild(root);
   const el = (n) => root.querySelector(`[data-el="${n}"]`);
-  const state = { whatif: false, revealed: false, note: "" };
+  const state = { whatif: false, revealed: false, note: "", lastSummary: null };
 
   function paint() {
     el("plot").innerHTML = ctrl.svg(state);
@@ -152,9 +170,48 @@ function shell(host, cfg, ctrl) {
       state.note = t;
       el("note").textContent = t;
     },
-    repaint: paint,
+    /* Repaint, and when the student is editing data, say what the edit did to
+     * the centre and to the spread. The instructional point of a dot-plot
+     * sandbox is that moving a value AWAY from the mean barely shifts the
+     * centre but moves MAD a lot — and that is invisible if the numbers simply
+     * change while the student is looking at the dots. */
+    /* Repaint, and when the student is editing data, say what the edit did to
+     * the centre and to the spread. The instructional point of a dot-plot
+     * sandbox is that moving a value AWAY from the mean barely shifts the
+     * centre but moves MAD a lot — and that is invisible if the numbers simply
+     * change while the student is looking at the dots.
+     *
+     * The comparison is against the LAST PAINTED summary, not one snapshotted
+     * at the top of this function: the controllers mutate their data array and
+     * then call repaint(), so a snapshot taken here is already the new value
+     * and every edit reported "nothing changed". */
+    repaint() {
+      const before = state.lastSummary;
+      paint();
+      const after = ctrl.summary?.() || null;
+      state.lastSummary = after;
+      if (!state.whatif || !before || !after) return;
+      const moved = (a, b) => Math.abs(a - b) > 1e-9;
+      const bits = [];
+      if (moved(before.mean, after.mean))
+        bits.push(`mean ${num(before.mean)} → ${num(after.mean)}`);
+      if (moved(before.median, after.median))
+        bits.push(`median ${num(before.median)} → ${num(after.median)}`);
+      if (moved(before.mad, after.mad)) bits.push(`MAD ${num(before.mad)} → ${num(after.mad)}`);
+      if (!bits.length) {
+        api.say("The data changed, but the mean, median and MAD all stayed the same.");
+        return;
+      }
+      const spread =
+        moved(before.mad, after.mad) && !moved(before.median, after.median)
+          ? " The typical distance from the mean changed while the middle value did not."
+          : "";
+      api.say(`${bits.join(" · ")}.${spread}`);
+    },
     state,
   };
+
+  state.lastSummary = ctrl.summary?.() || null;
 
   el("reveal").addEventListener("click", () => {
     state.revealed = !state.revealed;
@@ -235,7 +292,7 @@ function dotPlot(host, cfg, viewOpts) {
           `<text x="${xOf(mn).toFixed(1)}" y="${baseY + 34}" text-anchor="middle" font-size="10.5" font-weight="800" fill="var(--navy,#264653)">mean ${num(mn)}</text>`;
       }
       const xLabel = cfg.xLabel
-        ? `<text x="${(W / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(cfg.xLabel)}</text>`
+        ? `<text x="${(W / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(pickLang(cfg.xLabel, cfg.xLabelEs))}</text>`
         : "";
       return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Interactive dot plot"><line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>${axisTicks}${dots}${overlay}${xLabel}</svg>`;
     },
@@ -252,8 +309,18 @@ function dotPlot(host, cfg, viewOpts) {
         statCard("Range", num(s[s.length - 1] - s[0])) +
         statCard("Mean", num(mn), true) +
         statCard("Median", num(md), true) +
+        statCard("MAD", num(mad(data)), true) +
         statCard("Mode", mo.length ? mo.map(num).join(", ") : "none")
       );
+    },
+    /* The three numbers the What-if sandbox exists to move. Exposed so the
+     * repaint wrapper can report what a student's edit actually DID, rather
+     * than silently redrawing and leaving them to spot the difference across
+     * six stat cards. Only the numeric plots implement this; a bar chart of
+     * categories has no mean to report. */
+    summary() {
+      if (!data.length) return null;
+      return { mean: mean(data), median: median([...data].sort((x, y) => x - y)), mad: mad(data) };
     },
     bind(plot, state, api) {
       const svg = plot.querySelector("svg");
@@ -316,30 +383,50 @@ function barFigure(host, cfg, opts) {
       focus = 0;
     },
     svg(state) {
-      const maxV = Math.max(...bars.map((b) => b.value), 1);
+      // Signed domain. Unit 7 plots depths below sea level, and anchoring the
+      // baseline to the bottom of the plot turned every negative bar into a
+      // <rect height="-214.7"> — invalid, so the browser drew nothing and the
+      // bar the caption asks about was simply missing. Zero always sits inside
+      // the domain, and each bar grows from the zero line in its own direction.
+      const minV = Math.min(0, ...bars.map((b) => b.value));
+      const signed = minV < 0;
+      // All-positive charts keep the original domain exactly — including the
+      // `, 1` floor, without which a chart of fractions below 1 would rescale.
+      const maxV = signed
+        ? Math.max(0, ...bars.map((b) => b.value))
+        : Math.max(...bars.map((b) => b.value), 1);
+      const span = maxV - minV || 1;
+      const yOf = (v) => padT + (plotH * (maxV - v)) / span;
+      const zeroY = signed ? yOf(0) : baseY;
+      const scale = (v) => (signed ? yOf(v) : baseY - (v / maxV) * plotH);
       const slot = plotW / bars.length,
         bw = touching ? slot - 1 : slot * 0.6;
       const rects = bars
         .map((b, i) => {
-          const h = (b.value / maxV) * plotH,
-            x = padL + i * slot + (touching ? 0 : (slot - bw) / 2),
-            y = baseY - h;
+          const vy = scale(b.value),
+            y = Math.min(vy, zeroY),
+            h = Math.abs(vy - zeroY),
+            x = padL + i * slot + (touching ? 0 : (slot - bw) / 2);
           const on = state.whatif && i === focus;
           const fill = on ? DATA_2 : DATA_1;
+          const valY = b.value < 0 ? vy + 15 : vy - 6;
           return (
             `<rect data-hit data-i="${i}" data-on="${on ? 1 : 0}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}"${touching ? ' stroke="#fff" stroke-width="1"' : ' rx="3"'} fill="${fill}"/>` +
-            `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${b.value}</text>` +
-            `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 18).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${esc(b.label)}</text>`
+            `<text x="${(x + bw / 2).toFixed(1)}" y="${valY.toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${b.value}</text>` +
+            `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + (signed ? 32 : 18)).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${esc(b.label)}</text>`
           );
         })
         .join("");
+      const zeroTick = signed
+        ? `<text x="${padL - 6}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" font-size="11" font-weight="700" fill="var(--ink,#333)">0</text>`
+        : "";
       const yl = cfg.yLabel
-        ? `<text x="13" y="${(padT + plotH / 2).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)" transform="rotate(-90 13 ${(padT + plotH / 2).toFixed(1)})">${esc(cfg.yLabel)}</text>`
+        ? `<text x="13" y="${(padT + plotH / 2).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)" transform="rotate(-90 13 ${(padT + plotH / 2).toFixed(1)})">${esc(pickLang(cfg.yLabel, cfg.yLabelEs))}</text>`
         : "";
       const xl = cfg.xLabel
-        ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(cfg.xLabel)}</text>`
+        ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(pickLang(cfg.xLabel, cfg.xLabelEs))}</text>`
         : "";
-      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Interactive ${opts.title.toLowerCase()}"><line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>${rects}${xl}${yl}</svg>`;
+      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Interactive ${opts.title.toLowerCase()}"><line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${W - padR}" y2="${zeroY.toFixed(1)}" stroke="var(--ink,#333)" stroke-width="1.5"/>${zeroTick}${rects}${xl}${yl}</svg>`;
     },
     measures() {
       return opts.measures(bars);
@@ -355,7 +442,10 @@ function barFigure(host, cfg, opts) {
         api.repaint();
       };
       nudge.querySelector('[data-d="dn"]').onclick = () => {
-        bars[focus].value = Math.max(0, bars[focus].value - 1);
+        // Histogram frequencies floor at 0; a signed bar chart may legitimately
+        // go below it (Unit 7 plots depths), so only clamp the counting case.
+        const floored = touching || bars.every((b) => b.value >= 0);
+        bars[focus].value = floored ? Math.max(0, bars[focus].value - 1) : bars[focus].value - 1;
         api.repaint();
       };
     },
@@ -425,8 +515,7 @@ function barChart(host, cfg, viewOpts) {
       return (
         statCard("Total", total) +
         statCard("Greatest", `${esc(maxB.label)} (${maxB.value})`, true) +
-        statCard("Least", `${esc(minB.label)} (${minB.value})`) +
-        `<div class="dlive-stat" style="grid-column:1/-1"><span>These are categories, so a mean or median has no meaning — that is what makes this a bar chart, not a histogram.</span></div>`
+        statCard("Least", `${esc(minB.label)} (${minB.value})`)
       );
     },
   });

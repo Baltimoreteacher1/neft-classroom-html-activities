@@ -22,6 +22,7 @@
  */
 import { execFileSync } from "node:child_process";
 import { Script } from "node:vm";
+import { isCloudflareAccess } from "./lib/cloudflare-access.mjs";
 
 const argv = process.argv.slice(2);
 const arg = (name) => (argv.includes(name) ? argv[argv.indexOf(name) + 1] : null);
@@ -29,8 +30,22 @@ const BASE = (arg("--base") || "https://eduwonderlab.com").replace(/\/$/, "");
 const EXPECT_SHA = arg("--expect");
 const TIMEOUT_MS = 20000;
 // External services get their own, longer budget — and unlike before, a budget
-// at all. Measured: the Apps Script insights endpoint answers in 5.5-10.2s.
-const EXTERNAL_TIMEOUT_MS = 30000;
+// at all.
+//
+// This was 30s on a comment claiming the Apps Script insights endpoint answers
+// in 5.5-10.2s. Re-measured 2026-08-12 over six sequential calls following the
+// redirect it actually issues (script.google.com 302s to googleusercontent):
+// 7.2, 9.0, 9.2, 19.6, 22.9, 23.7 seconds — and one of them came back 404. So
+// the old figure described the fast half of the distribution, the ceiling sat
+// barely above the slow half, and the check flapped whenever a cold start landed
+// on the tail. It warned on the 2026-08-12 deploy for exactly that reason.
+//
+// 45s clears the measured maximum with room for a cold start, and the retry
+// below covers the rest. Both numbers are measurements, not guesses; re-measure
+// before changing either.
+const EXTERNAL_TIMEOUT_MS = 45000;
+/** Attempts for an external check — same transport-blip logic as `get()`. */
+const EXTERNAL_ATTEMPTS = 3;
 
 /** Pages whose failure a student or teacher would hit within the first minute. */
 const PAGES = [
@@ -379,27 +394,67 @@ async function checkStatuses() {
  */
 async function checkExternals() {
   for (const [label, target, want] of EXTERNAL_CHECKS) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), EXTERNAL_TIMEOUT_MS);
     let status = 0;
     let error = null;
-    try {
-      status = (await fetch(target, { redirect: "follow", signal: controller.signal })).status;
-    } catch (err) {
-      error = err.name === "AbortError" ? `no response in ${EXTERNAL_TIMEOUT_MS}ms` : err.message;
-    } finally {
-      clearTimeout(timer);
+    let attempts = 0;
+
+    // Retry the same transport-level symptoms `get()` does, for the same reason
+    // stated at RETRY_ATTEMPTS: a blip is not a regression. This check was the
+    // one single-shot request in the script, which made it the noisiest — a
+    // cold Apps Script container produced a warning on an otherwise clean
+    // deploy, and a warning nobody can act on is how a gate gets ignored.
+    //
+    // A 404 counts as transient HERE, unlike anywhere else in this file. That is
+    // deliberate and narrow: the redirect target googleusercontent serves an
+    // intermittent 404 for a live deployment (observed 1 in 6 while measuring
+    // the timeout above), so on this endpoint it is a transport artefact rather
+    // than the "response arrived and was wrong" finding it would be on our own
+    // origin. The check is warn-only either way, so the cost of being wrong
+    // about that is a missing warning, not a missed regression.
+    for (attempts = 1; attempts <= EXTERNAL_ATTEMPTS; attempts++) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), EXTERNAL_TIMEOUT_MS);
+      status = 0;
+      error = null;
+      try {
+        status = (await fetch(target, { redirect: "follow", signal: controller.signal })).status;
+      } catch (err) {
+        error = err.name === "AbortError" ? `no response in ${EXTERNAL_TIMEOUT_MS}ms` : err.message;
+      } finally {
+        clearTimeout(timer);
+      }
+      if (status === want) break;
+      const transient = status === 0 || status === 404 || status === 429 || status >= 500;
+      // Never let a retry here delay a real alarm — same budget as everything else.
+      if (!transient || budgetSpent() || attempts === EXTERNAL_ATTEMPTS) break;
+      await sleep(RETRY_BASE_MS);
     }
-    if (status === want) pass(`external ${label}`, `${status}`);
+
+    if (status === want)
+      pass(`external ${label}`, `${status}${attempts > 1 ? ` (attempt ${attempts})` : ""}`);
     else
       warnCheck(
         `external ${label}`,
-        `${error || `got ${status}, expected ${want}`} — third-party, does NOT block this deploy`,
+        `${error || `got ${status}, expected ${want}`} after ${attempts} attempt(s) — third-party, does NOT block this deploy`,
       );
   }
 }
 
 console.log(`Smoke-testing ${BASE}${EXPECT_SHA ? ` (expecting ${EXPECT_SHA.slice(0, 9)})` : ""}\n`);
+
+{
+  const home = await get("/");
+  if (isCloudflareAccess(home.body)) {
+    console.error("NOT AVAILABLE IN THIS ENVIRONMENT — Cloudflare Access intercepted the origin.");
+    console.error("  This client received the Access sign-in page for `/` (and therefore for");
+    console.error("  every path). None of the checks below would be testing Pages.");
+    console.error(
+      "  Do not treat this as a Basic Auth failure, a missing asset, or a reason to roll back.",
+    );
+    process.exit(2);
+  }
+}
+
 await checkStamp();
 await checkPages();
 await checkAssets();

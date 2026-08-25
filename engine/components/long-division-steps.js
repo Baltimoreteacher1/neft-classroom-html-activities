@@ -77,7 +77,8 @@ const MAX_DIGITS = 24;
  * @returns {string|null} null when the value is not a finite number.
  */
 function plainString(value) {
-  const n = typeof value === "number" ? value : Number(String(value ?? "").trim());
+  const clean = typeof value === "string" ? value.replace(/,/g, "").trim() : value;
+  const n = typeof clean === "number" ? clean : Number(String(clean ?? "").trim());
   if (!Number.isFinite(n)) return null;
   let s = String(n);
   if (s.includes("e") || s.includes("E")) s = n.toFixed(12);
@@ -91,9 +92,10 @@ function plainString(value) {
  * @returns {{digits:number[], pointAt:number}}
  */
 function splitParts(text) {
-  const dot = text.indexOf(".");
-  const rawInt = dot === -1 ? text : text.slice(0, dot);
-  const rawFrac = dot === -1 ? "" : text.slice(dot + 1);
+  const cleaned = String(text ?? "").replace(/,/g, "").trim();
+  const dot = cleaned.indexOf(".");
+  const rawInt = dot === -1 ? cleaned : cleaned.slice(0, dot);
+  const rawFrac = dot === -1 ? "" : cleaned.slice(dot + 1);
   let intPart = rawInt.replace(/^0+(?=\d)/, "");
   if (intPart === "") intPart = "0";
   return {
@@ -365,8 +367,10 @@ export function checkInputs(input = {}) {
   if (d === "") return stop("Type a dividend first — the number being divided.", "dividend");
   if (v === "") return stop("Type a divisor first — the number you are dividing by.", "divisor");
 
-  const dn = Number(d);
-  const vn = Number(v);
+  const cleanD = d.replace(/,/g, "");
+  const cleanV = v.replace(/,/g, "");
+  const dn = Number(cleanD);
+  const vn = Number(cleanV);
   if (!Number.isFinite(dn)) {
     return stop(`“${d}” is not a number. Use digits only, like 754.`, "dividend");
   }

@@ -11,6 +11,29 @@
 import { validateConfig } from "./validate-math.mjs";
 
 const cases = [
+  // --- labelled blank equations (added 2026-08-12) --------------------------
+  // A prose label in front of the equation is not part of the mathematics, but
+  // it defeated evaluateExpression and silently skipped 1,083 checkable items.
+  {
+    want: "pass",
+    name: "labelled blank equation, correct",
+    config: { practice: { rows: [{ stem: "Base area: 6 × 5 = ___.", answer: "30" }] } },
+  },
+  {
+    want: "fail",
+    name: "labelled blank equation, WRONG",
+    config: { practice: { rows: [{ stem: "Base area: 6 × 5 = ___.", answer: "35" }] } },
+  },
+  {
+    want: "pass",
+    name: "rounded quotient at its own stated precision",
+    config: { practice: { rows: [{ stem: "Rate: 5 ÷ 3 = ___.", answer: "1.6667" }] } },
+  },
+  {
+    want: "fail",
+    name: "mis-rounded quotient",
+    config: { practice: { rows: [{ stem: "Rate: 5 ÷ 3 = ___.", answer: "1.6668" }] } },
+  },
   // --- must FAIL (a wrong answer that reaches a student is the whole point) ---
   {
     want: "fail",

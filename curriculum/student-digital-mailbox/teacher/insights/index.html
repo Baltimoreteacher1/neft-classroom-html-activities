@@ -9,11 +9,9 @@
       content="Class Pulse — anonymous insights dashboard for the Student Digital Mailbox (teacher only)."
     />
     <title>Class Pulse — Student Digital Mailbox Insights</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+      href="/assets/fonts/hub-curriculum.css"
     />
     <link rel="stylesheet" href="../../mailbox.css" />
     <style>
@@ -123,18 +121,17 @@
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <div class="wrap">
       <header class="mb-head">
         <p class="mb-eyebrow">Teacher · Anonymous Insights</p>
         <h1><span class="mb-emoji" aria-hidden="true">📊</span>Class Pulse</h1>
         <p class="mb-intro">
-          A live, anonymous read of your Student Digital Mailbox. No student
-          names are collected. Private Notes show counts only — read those in
-          the form. <span id="status">Loading…</span>
+          A live, anonymous read of your Student Digital Mailbox. No student names are collected.
+          Private Notes show counts only — read those in the form. <span id="status">Loading…</span>
         </p>
       </header>
 
@@ -150,9 +147,7 @@
       </section>
 
       <footer class="mb-foot">
-        <a
-          class="mb-btn ghost"
-          href="/curriculum/student-digital-mailbox/teacher/"
+        <a class="mb-btn ghost" href="/curriculum/student-digital-mailbox/teacher/"
           >← Teacher Setup</a
         >
         <a
@@ -180,8 +175,7 @@
 
       function render(data) {
         document.getElementById("status").textContent = "";
-        document.getElementById("generated").textContent =
-          "Updated " + (data.generated || "—");
+        document.getElementById("generated").textContent = "Updated " + (data.generated || "—");
 
         var stats = document.getElementById("stats");
         stats.innerHTML =
@@ -231,8 +225,7 @@
             bodyHtml = '<p class="empty">No entries this week.</p>';
           }
 
-          el.innerHTML =
-            "<h2>" + esc(c.label) + urgentBadge + "</h2>" + counts + bodyHtml;
+          el.innerHTML = "<h2>" + esc(c.label) + urgentBadge + "</h2>" + counts + bodyHtml;
           wrap.appendChild(el);
         });
       }
@@ -244,20 +237,67 @@
         box.textContent = msg;
       }
 
-      fetch(INSIGHTS_URL)
-        .then(function (r) {
-          if (!r.ok) throw new Error("HTTP " + r.status);
-          return r.json();
-        })
-        .then(render)
-        .catch(function () {
-          showError(
-            "Couldn't load live data right now. Open the responses folder in Drive to review submissions directly.",
-          );
-        });
+      // Apps Script's /exec redirects to googleusercontent, and that redirect
+      // target serves an intermittent 404 for a perfectly live deployment.
+      // Measured 2026-08-12: three of five sequential calls came back as
+      // Google's 404 page, the other two returned correct JSON. A single-shot
+      // fetch therefore showed this teacher "Couldn't load live data" more often
+      // than it showed the data — the deployment was fine every time.
+      //
+      // So: retry the transport, tell the teacher it is still working rather
+      // than freezing on "Loading…", and leave a way to ask again by hand
+      // instead of making a page reload the only recovery.
+      var ATTEMPTS = 3;
+      var RETRY_MS = 800;
+      var statusEl = document.getElementById("status");
+
+      function setStatus(text) {
+        if (statusEl) statusEl.textContent = text;
+      }
+
+      function loadInsights(attempt) {
+        attempt = attempt || 1;
+        setStatus(attempt === 1 ? "Loading…" : "Still loading… (try " + attempt + ")");
+        fetch(INSIGHTS_URL)
+          .then(function (r) {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+          })
+          .then(function (data) {
+            setStatus("");
+            render(data);
+          })
+          .catch(function () {
+            if (attempt < ATTEMPTS) {
+              setTimeout(function () {
+                loadInsights(attempt + 1);
+              }, RETRY_MS * attempt);
+              return;
+            }
+            showError(
+              "Couldn't load live data after " +
+                ATTEMPTS +
+                " tries. Open the responses folder in Drive to review submissions directly.",
+            );
+            var again = document.createElement("button");
+            again.type = "button";
+            again.className = "btn";
+            again.style.marginTop = "10px";
+            again.textContent = "Try again";
+            again.onclick = function () {
+              var box = document.getElementById("error");
+              box.hidden = true;
+              box.textContent = "";
+              loadInsights(1);
+            };
+            document.getElementById("error").appendChild(again);
+          });
+      }
+
+      loadInsights(1);
     </script>
-  <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
+    <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
     <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-</body>
+    <script src="/assets/formula-popup.js" defer></script>
+  </body>
 </html>

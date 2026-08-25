@@ -1,3 +1,19 @@
+/* ── Accent ──────────────────────────────────────────────────────────────────
+ * One accent value, defined once, chosen for CONTRAST rather than by eye.
+ *
+ * `.ewl-preset-btn` ("Launch Preset ↗") was white on #0284c7 at 13px/800 —
+ * 4.10:1, which is not large text, so AA wants 4.5:1. Twelve of them on the
+ * page, and it was the hub's only serious axe violation. #0369a1 is the same
+ * hue one step darker and reaches 5.93:1.
+ *
+ * It is a token rather than five literals because the value appeared five
+ * times — two backgrounds behind white text and three borders — and the two
+ * that mattered could be fixed while the three drifted a shade away.
+ * ────────────────────────────────────────────────────────────────────────── */
+:root {
+  --ewl-accent: #0369a1;
+}
+
 .lesson-standard-badge {
   display: inline-block;
   margin: 0 0 8px;
@@ -48,6 +64,26 @@ body.light-theme .hub-toolbar-sticky {
 
 body.light-theme .hub-clear-filters {
   background: #fff;
+}
+
+/* Top-of-hub view banner. Deliberately louder than .hub-student-hint below:
+   this one exists to stop a teacher concluding the site is broken when every
+   teacher-only panel silently renders nothing. Hidden in teacher view by
+   `body.teacher-mode .hub-student-only` (curriculum-top1.css). */
+.hub-mode-banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 14px;
+  padding: 10px 14px;
+  border: 1.5px solid #f59e0b;
+  border-radius: 10px;
+  background: #fffbeb;
+  color: #78350f;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
 }
 
 .hub-student-hint {
@@ -941,3 +977,263 @@ body.light-theme .lesson-real-world {
   font-size: 13px;
   color: #ff9a8a;
 }
+
+/* ── Interactive Math Workbench Presets Bar ───────────────────────────────── */
+.ewl-preset-bar {
+  background: #ffffff;
+  border: 1.5px solid var(--ewl-accent);
+  border-radius: 18px;
+  padding: 24px 28px;
+  margin: 24px 0;
+  box-shadow: 0 10px 30px -10px rgba(2, 132, 199, 0.15);
+}
+.ewl-preset-header {
+  margin-bottom: 18px;
+}
+.ewl-preset-badge {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.ewl-preset-title {
+  font-family: Nunito, sans-serif;
+  font-size: 1.5rem;
+  color: #0f172a;
+  margin: 0 0 4px;
+  font-weight: 900;
+}
+.ewl-preset-sub {
+  font-size: 0.95rem;
+  color: #475569;
+  display: block;
+}
+.ewl-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.ewl-preset-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.ewl-preset-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--ewl-accent);
+  box-shadow: 0 8px 20px -8px rgba(2, 132, 199, 0.25);
+}
+.ewl-preset-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+.ewl-preset-tag {
+  font-size: 11px;
+  font-weight: 800;
+  color: #0369a1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.ewl-preset-name {
+  font-size: 1rem;
+  color: #0f172a;
+  margin-bottom: 6px;
+  display: block;
+}
+.ewl-preset-desc {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0 0 14px;
+  line-height: 1.4;
+}
+.ewl-preset-btn {
+  background: var(--ewl-accent);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: auto;
+}
+
+/* ── Project Readiness Overlay Modal ─────────────────────────────────────── */
+.ewl-readiness-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.ewl-readiness-box {
+  background: #ffffff;
+  border-radius: 20px;
+  max-width: 620px;
+  width: 100%;
+  padding: 28px;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  font-family: Atkinson Hyperlegible, system-ui, sans-serif;
+}
+.ewl-rd-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-weight: 800;
+  font-size: 16px;
+  color: #475569;
+  cursor: pointer;
+}
+.ewl-rd-badge {
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.ewl-rd-header h2 {
+  font-family: Nunito, sans-serif;
+  font-size: 1.5rem;
+  margin: 0 0 6px;
+  color: #0f172a;
+}
+.ewl-rd-sub {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0 0 20px;
+}
+.ewl-rd-qbox {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.ewl-rd-qstem {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+.ewl-rd-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ewl-rd-opt {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ewl-rd-opt:hover:not(:disabled) {
+  border-color: var(--ewl-accent);
+  background: #f0f9ff;
+}
+.ewl-rd-opt.selected.correct {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #14532d;
+}
+.ewl-rd-opt.selected.wrong {
+  background: #fee2e2;
+  border-color: #dc2626;
+  color: #7f1d1d;
+}
+.ewl-rd-hint {
+  font-size: 0.88rem;
+  margin: 10px 0 0;
+  line-height: 1.4;
+}
+.ewl-rd-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8f0;
+}
+.ewl-rd-action-btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 13.5px;
+  text-decoration: none;
+  text-align: center;
+  flex: 1 1 180px;
+}
+.ewl-rd-action-btn.primary {
+  background: var(--ewl-accent);
+  color: #ffffff;
+}
+.ewl-rd-action-btn.secondary {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+}
+
+/* ── Dual-Language ESOL & A11y Supports Drawer ─────────────────────────── */
+.ewl-esol-a11y-bar {
+  background: #f0fdf4;
+  border: 1.5px solid #16a34a;
+  border-radius: 16px;
+  padding: 18px 24px;
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.ewl-esol-title {
+  font-family: Nunito, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #14532d;
+  margin: 0;
+}
+.ewl-esol-btn {
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 9px;
+  padding: 8px 16px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+

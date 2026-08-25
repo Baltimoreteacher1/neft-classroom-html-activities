@@ -1,4 +1,36 @@
+import { interventionFor } from "./misconception-interventions.js";
+import { misconceptionLabel, studentExplanation } from "./misconceptions.js";
+
+// The ladder a student walks after a miss. Two orders, not one, because the
+// right first move depends on whether we know WHY they missed.
+//
+//   GENERIC — we only know the answer was wrong. Start with a nudge back to the
+//   problem, then escalate: worked example, guided steps, an easier retry.
+//
+//   DIAGNOSED — the misconception engine named the specific error (it names one
+//   only when exactly one predicted wrong result matches, so a tag here means
+//   one thing). The generic "reread the problem" rung is then actively worse
+//   than nothing: it spends a retry telling a student who inverted a ratio to
+//   read more carefully, which is not their problem. So the diagnosed ladder
+//   OPENS on the named error in student voice and is one rung shorter — the
+//   student who shows a known, addressed error gets back to the mathematics
+//   sooner, and clearing it is real evidence rather than a second guess.
+//   The diagnosed ladder has TWO levels of misconception support, not one.
+//   `diagnosis` names the error in student voice — enough for a student who
+//   mis-stepped. `intervention` is what happens when that was not enough: a
+//   micro-task on tiny numbers where the error cannot hide (see
+//   misconception-interventions.js). Another sentence would be the wrong
+//   instrument at that point; the student has already shown that reading about
+//   the error did not shift it.
+//
+//   `level1Shown` exists because the item's OWN feedback often already showed
+//   the diagnosis — multiple-choice.js prints the named error as a chip plus the
+//   student-voice sentence and offers its own retry. When that has happened, the
+//   panel must not repeat it: two cards saying the same thing, each with its own
+//   retry button, is worse than one. The ladder then opens at `intervention`,
+//   which makes the panel purely additive.
 const STEP_ORDER = ["hint", "worked-example", "guided", "retry-easier", "done"];
+const DIAGNOSED_STEP_ORDER = ["diagnosis", "intervention", "guided", "retry-easier", "done"];
 
 function clampInt(n, lo, hi) {
   n = Math.round(Number(n));
@@ -32,6 +64,37 @@ export function deriveHint(question) {
       ? `Reread the problem carefully and underline what is being asked: "${stem}"`
       : "Reread the problem carefully and identify exactly what is being asked.",
     hints: [],
+  };
+}
+
+/**
+ * The opening rung when the misconception engine named the error.
+ *
+ * Everything it says is authored content that already exists in the taxonomy —
+ * `student` (what the learner reads instead of "Not quite", written to name the
+ * thinking without blaming the thinker and to stop short of stating the answer)
+ * and `label` (the short name of the error). Nothing here invents mathematics
+ * or paraphrases the item, because a diagnosis the student can argue with is
+ * worse than no diagnosis.
+ *
+ * Returns null when the tag is unknown, so a typo or a retired tag degrades to
+ * the generic ladder rather than rendering an empty card.
+ */
+export function deriveDiagnosis(question, misconception, lang = "en") {
+  if (!misconception) return null;
+  const text = studentExplanation(misconception, lang);
+  if (!text) return null;
+  return {
+    tag: misconception,
+    label: misconceptionLabel(misconception, lang) || "",
+    text,
+    // The authored hints still exist and are still useful — they just stop
+    // being the FIRST thing said. Offered here as the follow-on nudge.
+    hints: Array.isArray(question?.hints)
+      ? question.hints.slice()
+      : question?.hint
+        ? [question.hint]
+        : [],
   };
 }
 
@@ -217,8 +280,23 @@ async function nudgeTier(state, direction) {
   }
 }
 
-/** @param {{ question?: any, state?: any, level?: string }} [opts] */
-export function createRemediation({ question, state, level } = {}) {
+/**
+ * @param {{ question?: any, state?: any, level?: string, misconception?: string,
+ *   lang?: string }} [opts]
+ *
+ * `misconception` is the tag the diagnosis engine named for THIS student's wrong
+ * answer (or, when the lesson pre-arms from cross-lesson history, the recurring
+ * error this item is known to trap). Supplying it swaps in the shorter, targeted
+ * ladder; omitting it keeps the generic one byte-for-byte as it was.
+ */
+export function createRemediation({
+  question,
+  state,
+  level,
+  misconception,
+  lang = "en",
+  level1Shown = false,
+} = {}) {
   if (!question) throw new Error("createRemediation requires a question");
 
   let stage = -1;
@@ -226,13 +304,59 @@ export function createRemediation({ question, state, level } = {}) {
   let active = false;
   const supportLevel = level === "level1" || level === "support";
 
+  // Resolve the diagnosis ONCE, up front. A tag that resolves to nothing (typo,
+  // retired id) must fall back to the generic ladder here rather than at render
+  // time, or the student meets an empty first rung and loses a retry to it.
+  const diagnosis = deriveDiagnosis(question, misconception, lang);
+  // The second-level move. A tag with no authored micro-task simply has one
+  // fewer rung — the ladder still runs, it just steps past `intervention`.
+  const intervention = diagnosis ? interventionFor(misconception) : null;
+  const order = diagnosis ? DIAGNOSED_STEP_ORDER : STEP_ORDER;
+
+  // Where the ladder starts. Normally rung 0; when the item's own feedback has
+  // already named the error, rung 1, so the panel adds a move instead of
+  // repeating the one the student just read.
+  const firstStage = diagnosis && level1Shown ? 1 : 0;
+
   function step(kind, payload) {
     return { kind, payload: payload || {} };
+  }
+
+  // Skip rungs that have no content to show (an `intervention` rung for a tag
+  // with no authored micro-task). Returns the index of the next renderable rung.
+  function advanceTo(from) {
+    let i = from;
+    while (i < order.length - 1 && order[i] === "intervention" && !intervention) i++;
+    return i;
+  }
+
+  function render(kind) {
+    switch (kind) {
+      case "diagnosis":
+        return step("diagnosis", { ...diagnosis, attempt: misses });
+      case "intervention":
+        return step("intervention", { ...intervention, attempt: misses });
+      case "hint":
+        return step("hint", { ...deriveHint(question), attempt: misses });
+      case "worked-example":
+        return step("worked-example", { ...buildWorkedExample(question), attempt: misses });
+      case "guided":
+        return step("guided", { ...buildGuidedSteps(question), attempt: misses });
+      case "retry-easier":
+        return step("retry-easier", { question: buildEasierQuestion(question), attempt: misses });
+      default:
+        active = false;
+        return step("done", { reason: "exhausted", recovered: false });
+    }
   }
 
   return {
     isActive: () => active,
     misses: () => misses,
+    /** Which ladder is in play — read by the panel for its heading, and by tests. */
+    diagnosed: () => Boolean(diagnosis),
+    /** Whether a second-level micro-task exists for this error. */
+    hasIntervention: () => Boolean(intervention),
 
     nextStep(result) {
       const ok = result && result.correct === true;
@@ -241,53 +365,37 @@ export function createRemediation({ question, state, level } = {}) {
         if (ok) return step("done", { reason: "first-try-correct" });
         active = true;
         misses = 1;
-        stage = 0;
+        stage = advanceTo(firstStage);
         nudgeTier(state, "down");
-        return step("hint", {
-          ...deriveHint(question),
-          attempt: misses,
-        });
+        return render(order[stage]);
       }
 
       if (ok) {
         active = false;
         nudgeTier(state, "up");
         return step("done", {
-          reason: STEP_ORDER[Math.max(0, stage)] + "-recovered",
+          reason: order[Math.max(0, stage)] + "-recovered",
           recovered: true,
+          // WHICH rung recovered them is the interesting part for the teacher
+          // view: recovering after the named diagnosis is a different event from
+          // recovering only after an easier problem.
+          recoveredAt: order[Math.max(0, stage)],
         });
       }
 
       misses++;
       if (misses >= 2 && stage === 0) nudgeTier(state, "down");
-      stage = Math.min(stage + 1, STEP_ORDER.length - 1);
-      const kind = STEP_ORDER[stage];
+      stage = advanceTo(Math.min(stage + 1, order.length - 1));
+      const kind = order[stage];
 
-      switch (kind) {
-        case "worked-example":
-          return step("worked-example", {
-            ...buildWorkedExample(question),
-            attempt: misses,
-          });
-        case "guided":
-          return step("guided", {
-            ...buildGuidedSteps(question),
-            attempt: misses,
-          });
-        case "retry-easier":
-          return step("retry-easier", {
-            question: buildEasierQuestion(question),
-            attempt: misses,
-          });
-        default:
-          active = false;
-          return step("done", { reason: "exhausted", recovered: false });
-      }
+      return render(kind);
     },
 
     // Convenience for the renderer / tests: peek at all scaffolds up front.
     scaffolds() {
       return {
+        diagnosis,
+        intervention,
         hint: deriveHint(question),
         workedExample: buildWorkedExample(question),
         guided: buildGuidedSteps(question),

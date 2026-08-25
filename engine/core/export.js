@@ -11,6 +11,62 @@ function escHtml(str) {
   return d.innerHTML;
 }
 
+/* SUPPORT PROVENANCE ON AN EXPORTED WORK RECORD.
+ *
+ * This export is a record of what a student DID, not a blank task, so the
+ * honest thing for it to carry is not a word bank — pasting scaffolds into a
+ * completed answer sheet would be decoration. What a teacher reading this
+ * document actually needs is the CONTEXT the work was produced under: which
+ * supports were in place, and whether any of them changed the task.
+ *
+ * It resolves through the same `resolveEffectiveSupports` every other surface
+ * calls, with surface "export", so this document cannot disagree with the
+ * lesson it came from. Absent module, absent config, absent supports: nothing
+ * is added and the export is exactly what it was before.
+ */
+function buildSupportProvenanceHtml(config) {
+  try {
+    const LS = window.EWLLessonSupports;
+    const lessonId = document.documentElement.getAttribute("data-ewl-supports-lesson");
+    if (!LS || !lessonId) return "";
+    const status = window.EWLLearningSupports?.lessonSupportStatus?.();
+    const entry = status?.manifestEntry || config?.supportEntry || null;
+    const eff = LS.resolveEffectiveSupports({
+      lessonId,
+      store: LS.readStore(),
+      entry,
+      surface: "export",
+    });
+    const prov = LS.provenance(eff);
+    if (prov.isEmpty) return "";
+
+    const list = (items) => items.map((t) => `<li>${escHtml(t)}</li>`).join("");
+    let html =
+      '<hr style="border:none; border-top:1px solid #D7E2ED; margin:24px 0 12px;">' +
+      '<h2 style="color:#15487f; font-size:12pt; margin:0 0 6px;">Student supports applied</h2>';
+    html += prov.supports.length
+      ? `<ul style="margin:0 0 10px;">${list(prov.supports)}</ul>`
+      : '<p style="margin:0 0 10px;">None.</p>';
+    if (prov.modifications.length) {
+      html +=
+        '<h2 style="color:#93500f; font-size:12pt; margin:10px 0 6px;">Instructional modification</h2><ul style="margin:0 0 10px;">' +
+        prov.modifications
+          .map((m) => `<li>${escHtml(m.label)} — ${escHtml(m.consequence)}</li>`)
+          .join("") +
+        "</ul>";
+    }
+    if (prov.delivery.length) {
+      html +=
+        '<h2 style="color:#15487f; font-size:12pt; margin:10px 0 6px;">Teacher delivery notes</h2><ul style="margin:0 0 10px;">' +
+        prov.delivery.map((d) => `<li>${escHtml(d.label)} — ${escHtml(d.note)}</li>`).join("") +
+        "</ul>";
+    }
+    return html;
+  } catch (_e) {
+    return ""; // an export that fails to describe its supports still exports
+  }
+}
+
 /**
  * Build a clean HTML document string from lesson state + config.
  */
@@ -231,6 +287,8 @@ function buildExportHtml(state, config) {
   </table>
 
   ${responseSections}
+
+  ${buildSupportProvenanceHtml(config)}
 
   <hr style="border:none; border-top:1px solid #D7E2ED; margin:32px 0 16px;">
   <p style="color:#5F6F80; font-size:9pt; text-align:center;">
@@ -464,8 +522,19 @@ export function mountExportToolbar(state, config) {
     }, 300);
   });
 
-  bar.append(buildReadinessChip(state), dlBtn, pdfBtn, copyBtn);
-  document.body.prepend(bar);
+  // Hide Extra Buttons toggle — hides utility menus and floating tools cleanly
+  const hideBtn = document.createElement("button");
+  hideBtn.className = "export-btn export-btn-secondary";
+  hideBtn.setAttribute("data-nt-hide-toggle", "1");
+  hideBtn.innerHTML = `<span>👁️</span><span class="nt-hide-label">Hide Extra Buttons</span>`;
+  hideBtn.title = "Hide extra menus and floating buttons";
+  hideBtn.addEventListener("click", () => {
+    const isHidden = document.body.classList.toggle("nt-hide-buttons");
+    const label = hideBtn.querySelector(".nt-hide-label");
+    if (label) label.textContent = isHidden ? "Show Extra Buttons" : "Hide Extra Buttons";
+  });
 
+  bar.append(buildReadinessChip(state), dlBtn, pdfBtn, copyBtn, hideBtn);
+  document.body.prepend(bar);
   return bar;
 }

@@ -82,14 +82,14 @@ function buildHandout(config) {
   const wonder = (config.launch?.wonderPrompts || []).slice(0, 1);
 
   return `<!doctype html>
-<html lang="en">
+<html lang="en" data-ewl-supports-lesson="${esc(config.lessonId)}" data-support-audience="student">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${esc(config.title)} — Student Handout</title>
   <style>
     ${EDITORIAL_FONT_IMPORT}
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Hanken+Grotesk:wght@400;600&display=swap');
+    @import url('/assets/fonts/outfit-hanken-grotesk-e0dfae.css');
     * { box-sizing: border-box; }
     body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; }
     h1, h2 { font-family: Outfit, system-ui, sans-serif; margin: 0 0 8px; }
@@ -145,7 +145,7 @@ function buildHandout(config) {
       : ""
   }
 
-  <div class="box">
+  <div class="box" data-support-slot="vocabulary">
     <h2>Vocabulary / Vocabulario</h2>
     <table>
       <thead><tr><th>Term / Término</th><th>Definition / Definición</th></tr></thead>
@@ -153,12 +153,12 @@ function buildHandout(config) {
     </table>
   </div>
 
-  <div class="box">
+  <div class="box" data-support-slot="practice">
     <h2>Practice Preview / Vista previa de práctica</h2>
     <ol>${practicePreview(config)}</ol>
   </div>
 
-  <div class="box">
+  <div class="box" data-support-slot="response">
     <h2>Reflection / Reflexión</h2>
     <p>One thing I learned today / Una cosa que aprendí hoy:</p>
     <div class="work-space" style="min-height:64px"></div>
@@ -166,6 +166,9 @@ function buildHandout(config) {
 
   <footer class="footer">Neft Teacher · ${esc(config.lessonId)} · Printable student handout</footer>
 </main>
+  <!-- Same effective support configuration as the interactive lesson; see
+       shared/supports/print-supports.js. Inert until supports are configured. -->
+  <script src="/shared/supports/print-supports.js" defer></script>
 </body>
 </html>`;
 }

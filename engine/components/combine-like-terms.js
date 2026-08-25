@@ -78,42 +78,42 @@ function ensureStyles() {
   s.textContent = `
   .clt-presetwrap{margin:var(--sp-3,12px) 0;display:flex;flex-direction:column;align-items:center;}
   .clt-presets{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:8px;}
-  .clt-chip{padding:5px 13px;font:inherit;font-size:.85rem;font-weight:700;color:${C.navy};background:#f4f8ff;
+  .clt-chip{padding:5px 13px;font:inherit;font-size:.85rem;font-weight:600;color:${C.navy};background:#f4f8ff;
     border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;}
   .clt-chip:hover{background:#e2ecff;border-color:${C.accent};}
   .clt-chip[aria-pressed="true"]{background:${C.accent};color:#fff;border-color:${C.accent};}
   .clt-wrap{width:100%;max-width:430px;margin:0 auto;font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};
     display:flex;flex-direction:column;align-items:center;}
-  .clt-title{font-weight:800;color:${C.navy};margin-bottom:4px;font-size:1rem;text-align:center;}
+  .clt-title{font-weight:700;color:${C.navy};margin-bottom:4px;font-size:1rem;text-align:center;}
   .clt-hint{font-size:.82rem;color:${C.muted};margin-bottom:10px;text-align:center;max-width:400px;line-height:1.45;}
-  .clt-expr{font-size:1.4rem;font-weight:800;color:${C.navy};margin-bottom:12px;letter-spacing:.3px;}
+  .clt-expr{font-size:1.4rem;font-weight:700;color:${C.navy};margin-bottom:12px;letter-spacing:.3px;}
   .clt-expr .xt{background:${C.xTint};border-radius:6px;padding:1px 5px;}
   .clt-expr .ct{background:${C.cTint};border-radius:6px;padding:1px 5px;}
   .clt-steps{width:100%;display:flex;flex-direction:column;gap:10px;}
   .clt-step{box-sizing:border-box;padding:12px 14px;border:1px solid ${C.line};border-left:4px solid ${C.accent};
     border-radius:12px;background:${C.cardTint};}
   .clt-step[hidden]{display:none;}
-  .clt-step-num{font-weight:800;color:${C.navy};font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
-  .clt-prompt{font-size:.92rem;color:${C.ink};line-height:1.5;font-weight:600;}
+  .clt-step-num{font-weight:700;color:${C.navy};font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+  .clt-prompt{font-size:.92rem;color:${C.ink};line-height:1.5;font-weight:500;}
   .clt-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:9px;}
-  .clt-inp{width:96px;border:2px dashed ${C.accent};border-radius:8px;background:#fff;color:${C.ink};font-weight:800;
+  .clt-inp{width:96px;border:2px dashed ${C.accent};border-radius:8px;background:#fff;color:${C.ink};font-weight:700;
     font-size:1rem;text-align:center;padding:6px 4px;box-sizing:border-box;}
   .clt-inp:focus{outline:none;border-style:solid;box-shadow:0 0 0 3px rgba(29,78,216,.18);}
   .clt-inp.correct{border-style:solid;border-color:${C.teal};background:${C.tealFill};color:${C.tealInk};}
   .clt-inp.wrong{border-color:${C.wrong};background:#fdeceb;color:${C.wrong};animation:clt-shake .3s;}
   @keyframes clt-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
   @media (prefers-reduced-motion:reduce){.clt-inp.wrong{animation:none;}}
-  .clt-suffix{font-weight:800;color:${C.navy};font-size:1.05rem;}
-  .clt-btn{font:inherit;font-weight:700;font-size:.85rem;border-radius:999px;padding:7px 16px;cursor:pointer;border:2px solid transparent;}
+  .clt-suffix{font-weight:700;color:${C.navy};font-size:1.05rem;}
+  .clt-btn{font:inherit;font-weight:600;font-size:.85rem;border-radius:999px;padding:7px 16px;cursor:pointer;border:2px solid transparent;}
   .clt-btn-check{background:${C.accent};color:#fff;}
   .clt-btn-check:hover{filter:brightness(1.05);}
   .clt-btn:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .clt-btn-ghost{background:#fff;color:${C.navy};border-color:${C.line};}
-  .clt-status{min-height:1.1em;margin-top:7px;font-size:.85rem;font-weight:700;}
+  .clt-status{min-height:1.1em;margin-top:7px;font-size:.85rem;font-weight:600;}
   .clt-status.ok{color:${C.teal};}
   .clt-status.no{color:${C.wrong};}
   .clt-controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px;}
-  .clt-result{margin-top:10px;font-size:1.1rem;font-weight:900;color:${C.teal};text-align:center;}
+  .clt-result{margin-top:10px;font-size:1.1rem;font-weight:800;color:${C.teal};text-align:center;}
   .clt-result[hidden]{display:none;}
   `;
   document.head.appendChild(s);

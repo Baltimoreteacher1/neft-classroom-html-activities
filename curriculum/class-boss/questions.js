@@ -25,11 +25,27 @@
 /** The closed tag vocabulary, sorted. Mirrors data/misconception-labels.json. */
 export const BOSS_TAGS = [
   "algebra-distributive-partial",
+  "coord-xy-swapped",
+  "equation-answered-with-given-number",
+  "equation-not-inverse-operation",
+  "inequality-boundary-inclusion",
+  "inequality-direction-flipped",
+  "inequality-graph-direction",
+  "stat-center-vs-spread",
+  "stat-frequency-vs-value",
+  "stat-mean-skewed-by-outlier",
+  "stat-range-for-iqr",
   "decimal-place-value",
+  "division-quotient-missing-zero",
   "exponent-as-multiplication",
   "fraction-added-denominators",
   "fraction-no-reciprocal",
   "fraction-straight-across-division",
+  "factors-multiples-confused",
+  "factorization-stopped-early",
+  "property-order-vs-grouping",
+  "ratio-compared-without-common-basis",
+  "stat-question-no-variability",
   "geom-triangle-area-no-half",
   "geom-surface-area-as-volume",
   "geom-volume-added-dimensions",
@@ -45,6 +61,10 @@ export const BOSS_TAGS = [
   "percent-used-as-whole-number",
   "rate-not-per-one",
   "ratio-inverted",
+  "ratio-scaled-additively",
+  "ratio-as-difference",
+  "stat-mean-vs-median",
+  "stat-histogram-bin-misread",
   "sign-dropped",
   "stat-summed-instead-of-averaged",
 ];
@@ -116,6 +136,11 @@ export function frac(n, d) {
 export function ratio(a, b) {
   const g = gcd(a, b);
   return `${a / g} : ${b / g}`;
+}
+
+/** An ordered pair, rendered the one way every coordinate question shows it. */
+export function point(x, y) {
+  return `(${x}, ${y})`;
 }
 
 /** Kill binary-float dust without turning 0.12 into "0.12000000000000001". */
@@ -300,6 +325,255 @@ export const QUESTION_BANK = {
     }),
   ],
 
+  /* --- Scaled a ratio by adding instead of multiplying -------------------
+   * The distractor adds the SAME amount to the second quantity that the first
+   * one grew by, which is the additive-for-multiplicative move the tag names.
+   * Every COPRIME pair has a ≠ b, so the distractor can never collide with the
+   * correct answer (they agree only when k = 1 or a = b). ------------------ */
+  "ratio-scaled-additively": [
+    T("rsa-recipe", (r) => {
+      const [a, b] = r.pick(COPRIME);
+      const k = r.int(2, 6);
+      return {
+        values: { a, b, k },
+        correct: b * k,
+        distractor: b + a * (k - 1),
+        prompt: {
+          en: `A recipe uses ${a} cups of flour for every ${b} cups of sugar. If you use ${a * k} cups of flour, how many cups of sugar do you need?`,
+          es: `Una receta usa ${a} tazas de harina por cada ${b} tazas de azúcar. Si usas ${a * k} tazas de harina, ¿cuántas tazas de azúcar necesitas?`,
+        },
+      };
+    }),
+    T("rsa-paint", (r) => {
+      const [a, b] = r.pick(COPRIME);
+      const k = r.int(2, 5);
+      return {
+        values: { a, b, k },
+        correct: b * k,
+        distractor: b + a * (k - 1),
+        prompt: {
+          en: `A paint mix takes ${a} parts blue to ${b} parts white. With ${a * k} parts blue, how many parts white are needed?`,
+          es: `Una mezcla de pintura lleva ${a} partes de azul por ${b} partes de blanco. Con ${a * k} partes de azul, ¿cuántas partes de blanco se necesitan?`,
+        },
+      };
+    }),
+    T("rsa-gears", (r) => {
+      const [a, b] = r.pick(COPRIME);
+      const k = r.int(2, 5);
+      return {
+        values: { a, b, k },
+        correct: b * k,
+        distractor: b + a * (k - 1),
+        prompt: {
+          en: `A gear turns ${a} times for every ${b} turns of a second gear. If the first gear turns ${a * k} times, how many times does the second gear turn?`,
+          es: `Un engranaje gira ${a} veces por cada ${b} vueltas de un segundo engranaje. Si el primero gira ${a * k} veces, ¿cuántas vueltas da el segundo?`,
+        },
+      };
+    }),
+    T("rsa-map", (r) => {
+      const [a, b] = r.pick(COPRIME);
+      const k = r.int(2, 6);
+      return {
+        values: { a, b, k },
+        correct: b * k,
+        distractor: b + a * (k - 1),
+        prompt: {
+          en: `On a map, ${a} inches stands for ${b} miles. How many miles does ${a * k} inches stand for?`,
+          es: `En un mapa, ${a} pulgadas representan ${b} millas. ¿Cuántas millas representan ${a * k} pulgadas?`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Combined the two amounts instead of comparing them -----------------
+   * The distractor is a single number — the sum or the difference — where the
+   * answer has to be a comparison. That contrast (a ratio versus one number) is
+   * the whole point: the student collapsed two quantities into one. --------- */
+  "ratio-as-difference": [
+    T("rad-marbles", (r) => {
+      const [a, b] = r.pick(COPRIME);
+      const g = r.int(2, 6);
+      const first = a * g;
+      const second = b * g;
+      return {
+        values: { first, second },
+        correct: ratio(first, second),
+        distractor: String(second - first),
+        prompt: {
+          en: `A jar holds ${first} red marbles and ${second} blue marbles. Write the ratio of RED to BLUE in simplest form.`,
+          es: `Un frasco tiene ${first} canicas rojas y ${second} canicas azules. Escribe la razón de ROJAS a AZULES en su forma más simple.`,
+        },
+      };
+    }),
+    T("rad-team", (r) => {
+      const [a, b] = r.pick(COPRIME);
+      const g = r.int(2, 5);
+      const first = a * g;
+      const second = b * g;
+      return {
+        values: { first, second },
+        correct: ratio(first, second),
+        distractor: String(second - first),
+        prompt: {
+          en: `A team won ${first} games and lost ${second} games. Write the ratio of WINS to LOSSES in simplest form.`,
+          es: `Un equipo ganó ${first} partidos y perdió ${second}. Escribe la razón de VICTORIAS a DERROTAS en su forma más simple.`,
+        },
+      };
+    }),
+    T("rad-fruit", (r) => {
+      const [a, b] = r.pick(COPRIME);
+      const g = r.int(2, 4);
+      const first = a * g;
+      const second = b * g;
+      return {
+        values: { first, second },
+        correct: ratio(first, second),
+        distractor: String(first + second),
+        prompt: {
+          en: `A bowl holds ${first} apples and ${second} oranges. Write the ratio of APPLES to ORANGES in simplest form.`,
+          es: `Un tazón tiene ${first} manzanas y ${second} naranjas. Escribe la razón de MANZANAS a NARANJAS en su forma más simple.`,
+        },
+      };
+    }),
+    T("rad-books", (r) => {
+      const [a, b] = r.pick(COPRIME);
+      const g = r.int(2, 5);
+      const first = a * g;
+      const second = b * g;
+      return {
+        values: { first, second },
+        correct: ratio(first, second),
+        distractor: String(first + second),
+        prompt: {
+          en: `A shelf holds ${first} novels and ${second} comics. Write the ratio of NOVELS to COMICS in simplest form.`,
+          es: `Un estante tiene ${first} novelas y ${second} cómics. Escribe la razón de NOVELAS a CÓMICS en su forma más simple.`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Used the mean where the median was asked ---------------------------
+   * Each offset set is written so both measures are whole numbers and the two
+   * genuinely differ, so the distractor is always the OTHER measure of centre
+   * rather than an arithmetic slip. Values arrive pre-sorted. -------------- */
+  "stat-mean-vs-median": [
+    T("mvm-scores", (r) => {
+      const base = r.int(10, 40);
+      const vals = [base, base + 1, base + 3, base + 4, base + 12];
+      return {
+        values: { base },
+        correct: base + 3,
+        distractor: base + 4,
+        prompt: {
+          en: `Quiz scores: ${list(vals)}. What is the MEDIAN?`,
+          es: `Puntajes de una prueba: ${list(vals)}. ¿Cuál es la MEDIANA?`,
+        },
+      };
+    }),
+    T("mvm-times", (r) => {
+      const base = r.int(10, 40);
+      const vals = [base, base + 2, base + 4, base + 6, base + 18];
+      return {
+        values: { base },
+        correct: base + 4,
+        distractor: base + 6,
+        prompt: {
+          en: `Race times in seconds: ${list(vals)}. What is the MEDIAN?`,
+          es: `Tiempos de carrera en segundos: ${list(vals)}. ¿Cuál es la MEDIANA?`,
+        },
+      };
+    }),
+    T("mvm-points", (r) => {
+      const base = r.int(5, 30);
+      const vals = [base, base + 1, base + 2, base + 3, base + 19];
+      return {
+        values: { base },
+        correct: base + 2,
+        distractor: base + 5,
+        prompt: {
+          en: `Points scored: ${list(vals)}. What is the MEDIAN?`,
+          es: `Puntos anotados: ${list(vals)}. ¿Cuál es la MEDIANA?`,
+        },
+      };
+    }),
+    T("mvm-temps", (r) => {
+      const base = r.int(20, 50);
+      const vals = [base, base + 3, base + 5, base + 7, base + 20];
+      return {
+        values: { base },
+        correct: base + 5,
+        distractor: base + 7,
+        prompt: {
+          en: `Daily temperatures: ${list(vals)}. What is the MEDIAN?`,
+          es: `Temperaturas diarias: ${list(vals)}. ¿Cuál es la MEDIANA?`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Misread the bins or the scale on a data display --------------------
+   * Distractors are the specific reading errors: sweeping in the next bin,
+   * dropping the shortest bar from a total, and answering with the interval
+   * label instead of the bar height. ------------------------------------- */
+  "stat-histogram-bin-misread": [
+    T("hbm-bin-count", (r) => {
+      const f1 = r.int(2, 9);
+      const f2 = r.int(2, 9);
+      const f3 = r.int(2, 9);
+      return {
+        values: { f1, f2, f3 },
+        correct: f2,
+        distractor: f2 + f3,
+        prompt: {
+          en: `A histogram shows 10–19: ${f1} values, 20–29: ${f2} values, 30–39: ${f3} values. How many values fall in the 20–29 interval?`,
+          es: `Un histograma muestra 10–19: ${f1} valores, 20–29: ${f2} valores, 30–39: ${f3} valores. ¿Cuántos valores caen en el intervalo 20–29?`,
+        },
+      };
+    }),
+    T("hbm-total", (r) => {
+      const f1 = r.int(5, 12);
+      const f2 = r.int(5, 12);
+      const f3 = r.int(2, 4);
+      return {
+        values: { f1, f2, f3 },
+        correct: f1 + f2 + f3,
+        distractor: f1 + f2,
+        prompt: {
+          en: `A histogram has three bars with heights ${f1}, ${f2} and ${f3}. How many values are in the whole data set?`,
+          es: `Un histograma tiene tres barras de alturas ${f1}, ${f2} y ${f3}. ¿Cuántos valores hay en todo el conjunto de datos?`,
+        },
+      };
+    }),
+    T("hbm-tallest", (r) => {
+      const f1 = r.int(2, 6);
+      const f2 = r.int(8, 14);
+      const f3 = r.int(2, 6);
+      return {
+        values: { f1, f2, f3 },
+        correct: f2,
+        distractor: 29,
+        prompt: {
+          en: `A histogram shows 10–19: ${f1} values, 20–29: ${f2} values, 30–39: ${f3} values. What is the GREATEST number of values in any one interval?`,
+          es: `Un histograma muestra 10–19: ${f1} valores, 20–29: ${f2} valores, 30–39: ${f3} valores. ¿Cuál es la MAYOR cantidad de valores en un solo intervalo?`,
+        },
+      };
+    }),
+    T("hbm-two-bins", (r) => {
+      const f1 = r.int(3, 9);
+      const f2 = r.int(3, 9);
+      const f3 = r.int(3, 9);
+      return {
+        values: { f1, f2, f3 },
+        correct: f1 + f2,
+        distractor: f1,
+        prompt: {
+          en: `A histogram shows 0–9: ${f1} values, 10–19: ${f2} values, 20–29: ${f3} values. How many values are LESS THAN 20?`,
+          es: `Un histograma muestra 0–9: ${f1} valores, 10–19: ${f2} valores, 20–29: ${f3} valores. ¿Cuántos valores son MENORES QUE 20?`,
+        },
+      };
+    }),
+  ],
+
   /* --- Percent answer off by a factor of 100 ----------------------------- */
   "percent-scale-off-by-100": [
     T("pct-plain", (r) => {
@@ -411,6 +685,75 @@ export const QUESTION_BANK = {
         prompt: {
           en: `A library shelf holds ${n} books. The librarian adds ${p}% MORE books. How many books are on the shelf now?`,
           es: `Un estante de la biblioteca tiene ${n} libros. La bibliotecaria agrega un ${p}% MÁS de libros. ¿Cuántos libros hay ahora en el estante?`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Dropped a placeholder zero in the quotient ------------------------- */
+  /* Every quotient here is built to CONTAIN a zero, and every distractor is
+     that same quotient with the zero deleted — the wrong answer a student
+     actually writes when a step "will not divide" and they move on without
+     recording it. Building the dividend as divisor x quotient keeps the
+     division exact, so the item never turns into a remainder question. */
+  "division-quotient-missing-zero": [
+    T("divzero-tens", (r) => {
+      const d = r.int(3, 9);
+      const a = r.int(1, 9);
+      const b = r.int(1, 9);
+      const q = a * 100 + b;
+      return {
+        values: { d, n: d * q },
+        correct: q,
+        distractor: a * 10 + b,
+        prompt: {
+          en: `What is ${d * q} \u00f7 ${d}?`,
+          es: `\u00bfCu\u00e1nto es ${d * q} \u00f7 ${d}?`,
+        },
+      };
+    }),
+    T("divzero-trailing", (r) => {
+      const d = r.int(3, 9);
+      const a = r.int(1, 9) * 10 + r.int(1, 9);
+      const q = a * 10;
+      return {
+        values: { d, n: d * q },
+        correct: q,
+        distractor: a,
+        prompt: {
+          en: `What is ${d * q} \u00f7 ${d}?`,
+          es: `\u00bfCu\u00e1nto es ${d * q} \u00f7 ${d}?`,
+        },
+      };
+    }),
+    T("divzero-two-digit-divisor", (r) => {
+      const d = r.int(11, 25);
+      const a = r.int(1, 9);
+      const b = r.int(1, 9);
+      const q = a * 100 + b;
+      return {
+        values: { d, n: d * q },
+        correct: q,
+        distractor: a * 10 + b,
+        prompt: {
+          en: `What is ${d * q} \u00f7 ${d}?`,
+          es: `\u00bfCu\u00e1nto es ${d * q} \u00f7 ${d}?`,
+        },
+      };
+    }),
+    T("divzero-thousands", (r) => {
+      const d = r.int(3, 9);
+      const a = r.int(1, 9);
+      const b = r.int(1, 9);
+      const c = r.int(1, 9);
+      const q = a * 1000 + b * 10 + c;
+      return {
+        values: { d, n: d * q },
+        correct: q,
+        distractor: a * 100 + b * 10 + c,
+        prompt: {
+          en: `What is ${d * q} \u00f7 ${d}?`,
+          es: `\u00bfCu\u00e1nto es ${d * q} \u00f7 ${d}?`,
         },
       };
     }),
@@ -738,6 +1081,561 @@ export const QUESTION_BANK = {
   ],
 
   /* --- Swapped area and perimeter ---------------------------------------- */
+  /* --- Did not undo the operation ---------------------------------------- */
+  "equation-not-inverse-operation": [
+    T("inv-mul", (r) => {
+      const a = r.int(3, 12),
+        x = r.int(3, 15);
+      return {
+        values: { a, x },
+        correct: x,
+        distractor: a * x * a,
+        prompt: { en: `Solve for x: ${a}x = ${a * x}.`, es: `Resuelve para x: ${a}x = ${a * x}.` },
+      };
+    }),
+    T("inv-div", (r) => {
+      const a = r.int(2, 9),
+        x = r.int(4, 15);
+      return {
+        values: { a, x },
+        correct: x,
+        distractor: x / a / a,
+        prompt: {
+          en: `Solve for x: x ÷ ${a} = ${x / a}.`,
+          es: `Resuelve para x: x ÷ ${a} = ${x / a}.`,
+        },
+      };
+    }),
+    T("inv-add", (r) => {
+      const a = r.int(3, 19),
+        x = r.int(5, 25);
+      return {
+        values: { a, x },
+        correct: x,
+        distractor: x + a + a,
+        prompt: {
+          en: `Solve for x: x + ${a} = ${x + a}.`,
+          es: `Resuelve para x: x + ${a} = ${x + a}.`,
+        },
+      };
+    }),
+    T("inv-sub", (r) => {
+      const a = r.int(2, 15),
+        x = r.int(18, 40);
+      return {
+        values: { a, x },
+        correct: x,
+        distractor: x - a - a,
+        prompt: {
+          en: `Solve for x: x − ${a} = ${x - a}.`,
+          es: `Resuelve para x: x − ${a} = ${x - a}.`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Answered with a number already in the equation --------------------- */
+  "equation-answered-with-given-number": [
+    T("given-add", (r) => {
+      const a = r.int(4, 18);
+      let x = r.int(6, 30);
+      if (x === a) x = a + 7; // the given number must never BE the unknown
+      return {
+        values: { a, x },
+        correct: x,
+        distractor: a,
+        prompt: {
+          en: `Solve for n: n + ${a} = ${x + a}.`,
+          es: `Resuelve para n: n + ${a} = ${x + a}.`,
+        },
+      };
+    }),
+    T("given-div", (r) => {
+      const a = r.int(3, 11);
+      let x = r.int(4, 14);
+      if (x === a) x = a + 5;
+      return {
+        values: { a, x },
+        correct: x,
+        distractor: a,
+        prompt: { en: `Solve for y: y ÷ ${a} = ${x}.`, es: `Resuelve para y: y ÷ ${a} = ${x}.` },
+      };
+    }),
+    T("given-mul", (r) => {
+      const a = r.int(3, 12);
+      let x = r.int(3, 14);
+      if (x === a) x = a + 4;
+      return {
+        values: { a, x },
+        correct: x,
+        distractor: a,
+        prompt: { en: `Solve for m: ${a}m = ${a * x}.`, es: `Resuelve para m: ${a}m = ${a * x}.` },
+      };
+    }),
+    T("given-sub", (r) => {
+      const a = r.int(3, 16);
+      let x = r.int(20, 45);
+      if (x === a) x = a + 9;
+      return {
+        values: { a, x },
+        correct: x,
+        distractor: a,
+        prompt: {
+          en: `Solve for d: d − ${a} = ${x - a}.`,
+          es: `Resuelve para d: d − ${a} = ${x - a}.`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Right boundary, symbol reversed ------------------------------------ */
+  "inequality-direction-flipped": [
+    T("dir-add", (r) => {
+      const a = r.int(2, 9),
+        b = r.int(5, 20);
+      return {
+        values: { a, b },
+        correct: `x > ${b + a}`,
+        distractor: `x < ${b + a}`,
+        decoys: [`x > ${b - a}`, `x < ${b - a}`],
+        prompt: { en: `Solve: x − ${a} > ${b}.`, es: `Resuelve: x − ${a} > ${b}.` },
+      };
+    }),
+    T("dir-sub", (r) => {
+      const a = r.int(2, 9),
+        b = r.int(10, 30);
+      return {
+        values: { a, b },
+        correct: `x < ${b - a}`,
+        distractor: `x > ${b - a}`,
+        decoys: [`x < ${b + a}`, `x > ${b + a}`],
+        prompt: { en: `Solve: x + ${a} < ${b}.`, es: `Resuelve: x + ${a} < ${b}.` },
+      };
+    }),
+    T("dir-ge", (r) => {
+      const a = r.int(3, 12),
+        b = r.int(8, 25);
+      return {
+        values: { a, b },
+        correct: `x ≥ ${b + a}`,
+        distractor: `x ≤ ${b + a}`,
+        decoys: [`x ≥ ${b - a}`, `x > ${b + a}`],
+        prompt: { en: `Solve: x − ${a} ≥ ${b}.`, es: `Resuelve: x − ${a} ≥ ${b}.` },
+      };
+    }),
+    T("dir-le", (r) => {
+      const a = r.int(3, 12),
+        b = r.int(15, 35);
+      return {
+        values: { a, b },
+        correct: `x ≤ ${b - a}`,
+        distractor: `x ≥ ${b - a}`,
+        decoys: [`x ≤ ${b + a}`, `x < ${b - a}`],
+        prompt: { en: `Solve: x + ${a} ≤ ${b}.`, es: `Resuelve: x + ${a} ≤ ${b}.` },
+      };
+    }),
+  ],
+
+  /* --- Boundary value wrongly included or excluded ------------------------ */
+  "inequality-boundary-inclusion": [
+    T("inc-atleast", (r) => {
+      const b = r.int(10, 60);
+      return {
+        values: { b },
+        correct: `x ≥ ${b}`,
+        distractor: `x > ${b}`,
+        decoys: [`x ≤ ${b}`, `x < ${b}`],
+        prompt: {
+          en: `Write it: a ride needs a height of AT LEAST ${b} cm.`,
+          es: `Escríbelo: una atracción exige una estatura de AL MENOS ${b} cm.`,
+        },
+      };
+    }),
+    T("inc-atmost", (r) => {
+      const b = r.int(10, 80);
+      return {
+        values: { b },
+        correct: `x ≤ ${b}`,
+        distractor: `x < ${b}`,
+        decoys: [`x ≥ ${b}`, `x > ${b}`],
+        prompt: {
+          en: `Write it: a lift carries AT MOST ${b} kilograms.`,
+          es: `Escríbelo: un ascensor carga COMO MÁXIMO ${b} kilogramos.`,
+        },
+      };
+    }),
+    T("inc-morethan", (r) => {
+      const b = r.int(2, 30);
+      return {
+        values: { b },
+        correct: `x > ${b}`,
+        distractor: `x ≥ ${b}`,
+        decoys: [`x < ${b}`, `x ≤ ${b}`],
+        prompt: {
+          en: `Write it: a stay costs extra after MORE THAN ${b} hours.`,
+          es: `Escríbelo: una estancia cuesta más después de MÁS DE ${b} horas.`,
+        },
+      };
+    }),
+    T("inc-fewerthan", (r) => {
+      const b = r.int(3, 40);
+      return {
+        values: { b },
+        correct: `x < ${b}`,
+        distractor: `x ≤ ${b}`,
+        decoys: [`x > ${b}`, `x ≥ ${b}`],
+        prompt: {
+          en: `Write it: a class runs only with FEWER THAN ${b} students.`,
+          es: `Escríbelo: una clase funciona solo con MENOS DE ${b} estudiantes.`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Graph shaded toward the wrong side ---------------------------------- */
+  "inequality-graph-direction": [
+    T("shade-gt", (r) => {
+      const b = r.int(2, 20);
+      return {
+        values: { b },
+        correct: `open circle at ${b}, shade right`,
+        distractor: `open circle at ${b}, shade left`,
+        decoys: [`filled circle at ${b}, shade right`, `filled circle at ${b}, shade left`],
+        prompt: { en: `Which graph shows x > ${b}?`, es: `¿Cuál gráfica muestra x > ${b}?` },
+      };
+    }),
+    T("shade-lt", (r) => {
+      const b = r.int(2, 20);
+      return {
+        values: { b },
+        correct: `open circle at ${b}, shade left`,
+        distractor: `open circle at ${b}, shade right`,
+        decoys: [`filled circle at ${b}, shade left`, `filled circle at ${b}, shade right`],
+        prompt: { en: `Which graph shows x < ${b}?`, es: `¿Cuál gráfica muestra x < ${b}?` },
+      };
+    }),
+    T("shade-ge", (r) => {
+      const b = r.int(2, 20);
+      return {
+        values: { b },
+        correct: `filled circle at ${b}, shade right`,
+        distractor: `filled circle at ${b}, shade left`,
+        decoys: [`open circle at ${b}, shade right`, `open circle at ${b}, shade left`],
+        prompt: { en: `Which graph shows x ≥ ${b}?`, es: `¿Cuál gráfica muestra x ≥ ${b}?` },
+      };
+    }),
+    T("shade-le", (r) => {
+      const b = r.int(2, 20);
+      return {
+        values: { b },
+        correct: `filled circle at ${b}, shade left`,
+        distractor: `filled circle at ${b}, shade right`,
+        decoys: [`open circle at ${b}, shade left`, `open circle at ${b}, shade right`],
+        prompt: { en: `Which graph shows x ≤ ${b}?`, es: `¿Cuál gráfica muestra x ≤ ${b}?` },
+      };
+    }),
+  ],
+
+  /* --- Used the full range instead of the IQR ------------------------------ */
+  "stat-range-for-iqr": [
+    T("iqr-plot", (r) => {
+      const min = r.int(2, 12),
+        q1 = min + r.int(3, 8),
+        q3 = q1 + r.int(4, 12),
+        max = q3 + r.int(3, 9);
+      return {
+        values: { min, q1, q3, max },
+        correct: q3 - q1,
+        distractor: max - min,
+        prompt: {
+          en: `A box plot shows min ${min}, Q1 ${q1}, Q3 ${q3}, max ${max}. What is the IQR?`,
+          es: `Un diagrama de caja muestra mín ${min}, Q1 ${q1}, Q3 ${q3}, máx ${max}. ¿Cuál es el rango intercuartílico?`,
+        },
+      };
+    }),
+    T("iqr-quartiles", (r) => {
+      const q1 = r.int(10, 30),
+        q3 = q1 + r.int(5, 20),
+        min = q1 - r.int(3, 8),
+        max = q3 + r.int(3, 8);
+      return {
+        values: { min, q1, q3, max },
+        correct: q3 - q1,
+        distractor: max - min,
+        prompt: {
+          en: `Q1 is ${q1} and Q3 is ${q3}; the least value is ${min} and the greatest is ${max}. Find the IQR.`,
+          es: `Q1 es ${q1} y Q3 es ${q3}; el valor menor es ${min} y el mayor es ${max}. Halla el rango intercuartílico.`,
+        },
+      };
+    }),
+    T("iqr-scores", (r) => {
+      const q1 = r.int(60, 75),
+        q3 = q1 + r.int(6, 18),
+        min = q1 - r.int(5, 12),
+        max = q3 + r.int(4, 10);
+      return {
+        values: { min, q1, q3, max },
+        correct: q3 - q1,
+        distractor: max - min,
+        prompt: {
+          en: `Test scores: least ${min}, Q1 ${q1}, Q3 ${q3}, greatest ${max}. What is the interquartile range?`,
+          es: `Puntajes: menor ${min}, Q1 ${q1}, Q3 ${q3}, mayor ${max}. ¿Cuál es el rango intercuartílico?`,
+        },
+      };
+    }),
+    T("iqr-times", (r) => {
+      const q1 = r.int(15, 28),
+        q3 = q1 + r.int(4, 14),
+        min = q1 - r.int(4, 9),
+        max = q3 + r.int(5, 11);
+      return {
+        values: { min, q1, q3, max },
+        correct: q3 - q1,
+        distractor: max - min,
+        prompt: {
+          en: `Ride times in minutes: min ${min}, Q1 ${q1}, Q3 ${q3}, max ${max}. Find the IQR.`,
+          es: `Tiempos en minutos: mín ${min}, Q1 ${q1}, Q3 ${q3}, máx ${max}. Halla el rango intercuartílico.`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Confused a measure of center with a measure of spread --------------- */
+  "stat-center-vs-spread": [
+    T("cs-spread", (r) => {
+      const pick = r.int(0, 1);
+      return {
+        values: { pick },
+        correct: pick ? "range" : "interquartile range",
+        distractor: "median",
+        decoys: ["mean", "mode"],
+        prompt: {
+          en: `Which one measures how SPREAD OUT the data is?`,
+          es: `¿Cuál mide qué tan DISPERSOS están los datos?`,
+        },
+      };
+    }),
+    T("cs-center", (r) => {
+      const pick = r.int(0, 1);
+      return {
+        values: { pick },
+        correct: pick ? "median" : "mean",
+        distractor: "range",
+        decoys: ["interquartile range", "the greatest value"],
+        prompt: {
+          en: `Which one describes a TYPICAL value in the data?`,
+          es: `¿Cuál describe un valor TÍPICO de los datos?`,
+        },
+      };
+    }),
+    T("cs-mode", (r) => {
+      const pick = r.int(0, 1);
+      return {
+        values: { pick },
+        correct: "mode",
+        distractor: "range",
+        decoys: ["interquartile range", "the least value"],
+        prompt: {
+          en: `Which one names the value that appears MOST OFTEN?`,
+          es: `¿Cuál nombra el valor que aparece CON MÁS FRECUENCIA?`,
+        },
+      };
+    }),
+    T("cs-iqr", (r) => {
+      const pick = r.int(0, 1);
+      return {
+        values: { pick },
+        correct: "interquartile range",
+        distractor: "median",
+        decoys: ["mean", "mode"],
+        prompt: {
+          en: `Which one describes the spread of just the MIDDLE HALF of the data?`,
+          es: `¿Cuál describe la dispersión solo de la MITAD CENTRAL de los datos?`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Chose the mean when an outlier distorts it -------------------------- */
+  "stat-mean-skewed-by-outlier": [
+    T("out-times", (r) => {
+      const b = r.int(6, 9),
+        out = b + r.int(20, 40);
+      return {
+        values: { b, out },
+        correct: "median",
+        distractor: "mean",
+        decoys: ["mode", "range"],
+        prompt: {
+          en: `Mile times are ${b}, ${b + 1}, ${b + 1}, ${b + 2} and ${out} minutes. Which measure best describes a typical run?`,
+          es: `Los tiempos son ${b}, ${b + 1}, ${b + 1}, ${b + 2} y ${out} minutos. ¿Cuál medida describe mejor una carrera típica?`,
+        },
+      };
+    }),
+    T("out-prices", (r) => {
+      const b = r.int(4, 9),
+        out = b + r.int(30, 60);
+      return {
+        values: { b, out },
+        correct: "median",
+        distractor: "mean",
+        decoys: ["range", "the greatest value"],
+        prompt: {
+          en: `Lunch prices are $${b}, $${b + 1}, $${b + 1}, $${b + 2} and $${out}. Which measure best describes a typical price?`,
+          es: `Los precios son $${b}, $${b + 1}, $${b + 1}, $${b + 2} y $${out}. ¿Cuál medida describe mejor un precio típico?`,
+        },
+      };
+    }),
+    T("out-scores", (r) => {
+      const b = r.int(80, 90),
+        out = b - r.int(50, 70);
+      return {
+        values: { b, out },
+        correct: "median",
+        distractor: "mean",
+        decoys: ["mode", "interquartile range"],
+        prompt: {
+          en: `Scores are ${b}, ${b + 2}, ${b + 3}, ${b + 4} and ${out}. Which measure best describes a typical score?`,
+          es: `Los puntajes son ${b}, ${b + 2}, ${b + 3}, ${b + 4} y ${out}. ¿Cuál medida describe mejor un puntaje típico?`,
+        },
+      };
+    }),
+    T("out-attendance", (r) => {
+      const b = r.int(20, 30),
+        out = b + r.int(80, 150);
+      return {
+        values: { b, out },
+        correct: "median",
+        distractor: "mean",
+        decoys: ["range", "mode"],
+        prompt: {
+          en: `Club attendance is ${b}, ${b + 1}, ${b + 2}, ${b + 3} and ${out}. Which measure best describes a typical night?`,
+          es: `La asistencia es ${b}, ${b + 1}, ${b + 2}, ${b + 3} y ${out}. ¿Cuál medida describe mejor una noche típica?`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Reported a data value where a frequency was asked ------------------- */
+  "stat-frequency-vs-value": [
+    T("freq-bar", (r) => {
+      const lo = r.int(10, 60),
+        h = r.int(3, 18);
+      return {
+        values: { lo, h },
+        correct: h,
+        distractor: lo + 9,
+        prompt: {
+          en: `A histogram bar covers ${lo}–${lo + 9} and stands ${h} tall. How many values fall in that interval?`,
+          es: `Una barra del histograma cubre ${lo}–${lo + 9} y mide ${h} de alto. ¿Cuántos valores caen en ese intervalo?`,
+        },
+      };
+    }),
+    T("freq-tallest", (r) => {
+      const lo = r.int(20, 70),
+        h = r.int(8, 20);
+      return {
+        values: { lo, h },
+        correct: h,
+        distractor: lo,
+        prompt: {
+          en: `The tallest bar covers ${lo}–${lo + 9} with a height of ${h}. How many students are in it?`,
+          es: `La barra más alta cubre ${lo}–${lo + 9} con altura ${h}. ¿Cuántos estudiantes hay en ella?`,
+        },
+      };
+    }),
+    T("freq-players", (r) => {
+      const lo = r.int(0, 15);
+      let h = r.int(4, 16);
+      if (h === lo + 4) h = h + 1; // height must never equal the value read off the axis
+      return {
+        values: { lo, h },
+        correct: h,
+        distractor: lo + 4,
+        prompt: {
+          en: `A bar for ${lo}–${lo + 4} goals reaches ${h}. How many players scored in that range?`,
+          es: `Una barra de ${lo}–${lo + 4} goles llega a ${h}. ¿Cuántos jugadores anotaron en ese rango?`,
+        },
+      };
+    }),
+    T("freq-minutes", (r) => {
+      const lo = r.int(5, 40);
+      let h = r.int(2, 14);
+      if (h === lo + 9) h = h - 1;
+      return {
+        values: { lo, h },
+        correct: h,
+        distractor: lo + 9,
+        prompt: {
+          en: `A bar for ${lo}–${lo + 9} minutes has height ${h}. How many days fall in that interval?`,
+          es: `Una barra de ${lo}–${lo + 9} minutos tiene altura ${h}. ¿Cuántos días caen en ese intervalo?`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Swapped the x and y coordinates ---------------------------------- */
+  // Every template keeps x !== y: on (4, 4) the swap IS the answer, so the
+  // question could not tell a confident student from a confused one.
+  "coord-xy-swapped": [
+    T("xy-plot", (r) => {
+      const x = r.int(1, 9);
+      let y = r.int(1, 9);
+      if (y === x) y = x === 9 ? x - 1 : x + 1;
+      return {
+        values: { x, y },
+        correct: point(x, y),
+        distractor: point(y, x),
+        prompt: {
+          en: `Start at the origin, move ${x} units RIGHT, then ${y} units UP. Which ordered pair is that point?`,
+          es: `Empieza en el origen, muévete ${x} unidades a la DERECHA y luego ${y} unidades hacia ARRIBA. ¿Cuál par ordenado es ese punto?`,
+        },
+      };
+    }),
+    T("xy-read", (r) => {
+      const x = r.int(2, 10);
+      let y = r.int(1, 9);
+      if (y === x) y = x - 1;
+      return {
+        values: { x, y },
+        correct: point(x, y),
+        distractor: point(y, x),
+        prompt: {
+          en: `A point sits ${x} units along the x-axis and ${y} units up the y-axis. Write it as an ordered pair.`,
+          es: `Un punto está a ${x} unidades sobre el eje x y a ${y} unidades hacia arriba en el eje y. Escríbelo como par ordenado.`,
+        },
+      };
+    }),
+    T("xy-map", (r) => {
+      const x = r.int(1, 8);
+      let y = r.int(2, 9);
+      if (y === x) y = x + 1;
+      return {
+        values: { x, y },
+        correct: point(x, y),
+        distractor: point(y, x),
+        prompt: {
+          en: `On a park map, the fountain is ${x} blocks east and ${y} blocks north of the entrance. What are its coordinates?`,
+          es: `En el mapa de un parque, la fuente está a ${x} cuadras al este y ${y} cuadras al norte de la entrada. ¿Cuáles son sus coordenadas?`,
+        },
+      };
+    }),
+    T("xy-negative", (r) => {
+      const x = -r.int(1, 8);
+      let y = r.int(1, 9);
+      if (Math.abs(y) === Math.abs(x)) y = Math.abs(x) + 1;
+      return {
+        values: { x, y },
+        correct: point(x, y),
+        distractor: point(y, x),
+        prompt: {
+          en: `Move ${Math.abs(x)} units LEFT of the origin, then ${y} units UP. Which ordered pair is that point?`,
+          es: `Muévete ${Math.abs(x)} unidades a la IZQUIERDA del origen y luego ${y} unidades hacia ARRIBA. ¿Cuál par ordenado es ese punto?`,
+        },
+      };
+    }),
+  ],
+
   "measure-area-perimeter-swap": [
     T("ap-area", (r) => {
       const l = r.int(4, 15);
@@ -1551,6 +2449,293 @@ export const QUESTION_BANK = {
       };
     }),
   ],
+
+  /* --- Confused factors with multiples ----------------------------------- */
+  "factors-multiples-confused": [
+    T("fm-factor-of", (r) => {
+      const d = r.int(2, 9);
+      const n = d * r.int(2, 5);
+      return {
+        values: { n, d },
+        correct: d,
+        distractor: n * 2,
+        decoys: [n + 1, d + 1],
+        prompt: {
+          en: `Which number is a FACTOR of ${n} — a number that divides into it exactly?`,
+          es: `¿Qué número es un FACTOR de ${n}, es decir, un número que lo divide exactamente?`,
+        },
+      };
+    }),
+    T("fm-multiple-of", (r) => {
+      const n = r.int(3, 9);
+      const k = r.int(3, 6);
+      return {
+        values: { n, k },
+        correct: n * k,
+        distractor: 1,
+        decoys: [n * k + 1, n + k],
+        prompt: {
+          en: `Which number is a MULTIPLE of ${n} — a number you land on counting by ${n}?`,
+          es: `¿Qué número es un MÚLTIPLO de ${n}, es decir, un número donde caes al contar de ${n} en ${n}?`,
+        },
+      };
+    }),
+    T("fm-largest-factor", (r) => {
+      const half = r.int(3, 12);
+      const n = half * 2;
+      return {
+        values: { n, half },
+        correct: half,
+        distractor: n * 2,
+        decoys: [n - 1, half + 1],
+        prompt: {
+          en: `What is the LARGEST factor of ${n} that is smaller than ${n} itself?`,
+          es: `¿Cuál es el FACTOR más grande de ${n} que es menor que ${n} mismo?`,
+        },
+      };
+    }),
+    T("fm-smallest-multiple", (r) => {
+      const n = r.int(4, 12);
+      return {
+        values: { n },
+        correct: n * 2,
+        distractor: Math.max(2, Math.floor(n / 2)),
+        decoys: [n + 1, n * 3],
+        prompt: {
+          en: `What is the SMALLEST multiple of ${n} that is greater than ${n} itself?`,
+          es: `¿Cuál es el MÚLTIPLO más pequeño de ${n} que es mayor que ${n} mismo?`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Confused the commutative and associative properties ---------------- */
+  "property-order-vs-grouping": [
+    T("prop-add-order", (r) => {
+      const a = r.int(2, 9);
+      const b = r.int(2, 9);
+      return {
+        values: { a, b },
+        correct: "Commutative Property",
+        distractor: "Associative Property",
+        decoys: ["Identity Property", "Distributive Property"],
+        prompt: {
+          en: `Which property is shown? ${a} + ${b} = ${b} + ${a}`,
+          es: `¿Qué propiedad se muestra? ${a} + ${b} = ${b} + ${a}`,
+        },
+      };
+    }),
+    T("prop-mult-grouping", (r) => {
+      const a = r.int(2, 6);
+      const b = r.int(2, 6);
+      const c = r.int(2, 6);
+      return {
+        values: { a, b, c },
+        correct: "Associative Property",
+        distractor: "Commutative Property",
+        decoys: ["Identity Property", "Distributive Property"],
+        prompt: {
+          en: `Which property is shown? (${a} × ${b}) × ${c} = ${a} × (${b} × ${c})`,
+          es: `¿Qué propiedad se muestra? (${a} × ${b}) × ${c} = ${a} × (${b} × ${c})`,
+        },
+      };
+    }),
+    T("prop-add-grouping", (r) => {
+      const a = r.int(2, 9);
+      const b = r.int(2, 9);
+      const c = r.int(2, 9);
+      return {
+        values: { a, b, c },
+        correct: "Associative Property",
+        distractor: "Commutative Property",
+        decoys: ["Identity Property", "Distributive Property"],
+        prompt: {
+          en: `Which property is shown? (${a} + ${b}) + ${c} = ${a} + (${b} + ${c})`,
+          es: `¿Qué propiedad se muestra? (${a} + ${b}) + ${c} = ${a} + (${b} + ${c})`,
+        },
+      };
+    }),
+    T("prop-mult-order", (r) => {
+      const a = r.int(2, 9);
+      const b = r.int(2, 9);
+      return {
+        values: { a, b },
+        correct: "Commutative Property",
+        distractor: "Associative Property",
+        decoys: ["Identity Property", "Distributive Property"],
+        prompt: {
+          en: `Which property is shown? ${a} × ${b} = ${b} × ${a}`,
+          es: `¿Qué propiedad se muestra? ${a} × ${b} = ${b} × ${a}`,
+        },
+      };
+    }),
+  ],
+
+  /* --- Stopped factoring before every factor was prime -------------------- */
+  "factorization-stopped-early": [
+    T("pf-count-12", () => ({
+      values: { n: 12 },
+      // 12 = 2 × 2 × 3 — three prime factors counting repeats.
+      correct: 3,
+      distractor: 2,
+      decoys: [4, 6],
+      prompt: {
+        en: "12 can be written as 2 × 6. Counting repeats, how many PRIME factors does 12 have in total?",
+        es: "12 se puede escribir como 2 × 6. Contando repeticiones, ¿cuántos factores PRIMOS tiene 12 en total?",
+      },
+    })),
+    T("pf-count-18", () => ({
+      values: { n: 18 },
+      // 18 = 2 × 3 × 3
+      correct: 3,
+      distractor: 2,
+      decoys: [4, 5],
+      prompt: {
+        en: "18 can be written as 2 × 9. Counting repeats, how many PRIME factors does 18 have in total?",
+        es: "18 se puede escribir como 2 × 9. Contando repeticiones, ¿cuántos factores PRIMOS tiene 18 en total?",
+      },
+    })),
+    T("pf-count-20", () => ({
+      values: { n: 20 },
+      // 20 = 2 × 2 × 5
+      correct: 3,
+      distractor: 2,
+      decoys: [4, 6],
+      prompt: {
+        en: "20 can be written as 4 × 5. Counting repeats, how many PRIME factors does 20 have in total?",
+        es: "20 se puede escribir como 4 × 5. Contando repeticiones, ¿cuántos factores PRIMOS tiene 20 en total?",
+      },
+    })),
+    T("pf-count-36", () => ({
+      values: { n: 36 },
+      // 36 = 2 × 2 × 3 × 3
+      correct: 4,
+      distractor: 2,
+      decoys: [3, 6],
+      prompt: {
+        en: "36 can be written as 6 × 6. Counting repeats, how many PRIME factors does 36 have in total?",
+        es: "36 se puede escribir como 6 × 6. Contando repeticiones, ¿cuántos factores PRIMOS tiene 36 en total?",
+      },
+    })),
+  ],
+
+  /* --- Chose a question with only one fixed answer ------------------------ */
+  "stat-question-no-variability": [
+    T("sq-heights", () => ({
+      // `options` lets the validator pick the statistical question BY RULE
+      // (the one asking about EACH person) instead of trusting this template.
+      values: { options: ["How tall is each student in our class?", "How many students are in our class?"] },
+      correct: "How tall is each student in our class?",
+      distractor: "How many students are in our class?",
+      decoys: ["How many minutes are in an hour?", "What day of the week is it?"],
+      prompt: {
+        en: "Which of these is a STATISTICAL question — one whose answers vary?",
+        es: "¿Cuál de estas es una pregunta ESTADÍSTICA, es decir, una cuyas respuestas varían?",
+      },
+    })),
+    T("sq-minutes", () => ({
+      // `options` lets the validator pick the statistical question BY RULE
+      // (the one asking about EACH person) instead of trusting this template.
+      values: { options: ["How many minutes did each student read last night?", "How many minutes are in one hour?"] },
+      correct: "How many minutes did each student read last night?",
+      distractor: "How many minutes are in one hour?",
+      decoys: ["How many days are in a week?", "What time does the bell ring?"],
+      prompt: {
+        en: "Which of these is a STATISTICAL question — one whose answers vary?",
+        es: "¿Cuál de estas es una pregunta ESTADÍSTICA, es decir, una cuyas respuestas varían?",
+      },
+    })),
+    T("sq-shoes", () => ({
+      // `options` lets the validator pick the statistical question BY RULE
+      // (the one asking about EACH person) instead of trusting this template.
+      values: { options: ["What shoe size does each player on the team wear?", "How many players are on the team?"] },
+      correct: "What shoe size does each player on the team wear?",
+      distractor: "How many players are on the team?",
+      decoys: ["What colour is the team jersey?", "How many quarters are in the game?"],
+      prompt: {
+        en: "Which of these is a STATISTICAL question — one whose answers vary?",
+        es: "¿Cuál de estas es una pregunta ESTADÍSTICA, es decir, una cuyas respuestas varían?",
+      },
+    })),
+    T("sq-pets", () => ({
+      // `options` lets the validator pick the statistical question BY RULE
+      // (the one asking about EACH person) instead of trusting this template.
+      values: { options: ["How many pets does each family in our class have?", "How many families are in our class?"] },
+      correct: "How many pets does each family in our class have?",
+      distractor: "How many families are in our class?",
+      decoys: ["How many legs does one dog have?", "What month is it?"],
+      prompt: {
+        en: "Which of these is a STATISTICAL question — one whose answers vary?",
+        es: "¿Cuál de estas es una pregunta ESTADÍSTICA, es decir, una cuyas respuestas varían?",
+      },
+    })),
+  ],
+
+  /* --- Compared two ratios without a common basis ------------------------- */
+  "ratio-compared-without-common-basis": [
+    T("cb-apples", (r) => {
+      const perA = r.int(2, 6) / 10 + 0.1; // A cheaper per one
+      const nA = r.int(4, 8);
+      const nB = nA + r.int(2, 5);
+      const costA = Number((perA * nA).toFixed(2));
+      const costB = Number(((perA + 0.1) * nB).toFixed(2));
+      return {
+        values: { nA, costA, nB, costB },
+        correct: Number(perA.toFixed(2)),
+        distractor: costA,
+        decoys: [Number((perA + 0.1).toFixed(2)), Number((costA + costB).toFixed(2))],
+        prompt: {
+          en: `Stand A sells ${nA} apples for $${costA.toFixed(2)}. What does ONE apple cost at Stand A, in dollars?`,
+          es: `El puesto A vende ${nA} manzanas por $${costA.toFixed(2)}. ¿Cuánto cuesta UNA manzana en el puesto A, en dólares?`,
+        },
+      };
+    }),
+    T("cb-pencils", (r) => {
+      const per = r.int(2, 5) / 10;
+      const n = r.int(5, 10);
+      const cost = Number((per * n).toFixed(2));
+      return {
+        values: { n, cost },
+        correct: Number(per.toFixed(2)),
+        distractor: cost,
+        decoys: [Number((per + 0.1).toFixed(2)), n],
+        prompt: {
+          en: `A pack of ${n} pencils costs $${cost.toFixed(2)}. What is the price of ONE pencil, in dollars?`,
+          es: `Un paquete de ${n} lápices cuesta $${cost.toFixed(2)}. ¿Cuál es el precio de UN lápiz, en dólares?`,
+        },
+      };
+    }),
+    T("cb-miles", (r) => {
+      const per = r.int(20, 35);
+      const gal = r.int(3, 8);
+      const miles = per * gal;
+      return {
+        values: { miles, gal },
+        correct: per,
+        distractor: miles,
+        decoys: [per + 1, gal],
+        prompt: {
+          en: `A car goes ${miles} miles on ${gal} gallons. How many miles does it go on ONE gallon?`,
+          es: `Un carro recorre ${miles} millas con ${gal} galones. ¿Cuántas millas recorre con UN galón?`,
+        },
+      };
+    }),
+    T("cb-pages", (r) => {
+      const per = r.int(8, 20);
+      const mins = r.int(3, 7);
+      const pages = per * mins;
+      return {
+        values: { pages, mins },
+        correct: per,
+        distractor: pages,
+        decoys: [per + 2, mins],
+        prompt: {
+          en: `A reader finishes ${pages} pages in ${mins} minutes. How many pages is that in ONE minute?`,
+          es: `Un lector termina ${pages} páginas en ${mins} minutos. ¿Cuántas páginas son en UN minuto?`,
+        },
+      };
+    }),
+  ],
 };
 
 /* ---------------------------------------------------------------------------
@@ -1583,9 +2768,19 @@ function fractionDecoys(correct) {
   return [frac(n + 1, d), frac(n, d + 1), frac(n + 2, d), frac(n * 2, d + 1), frac(n + d, d)];
 }
 
+// Ordered pairs need their own near misses. Without this they fall through to
+// fractionDecoys, which reads "(3, 1)" as a number and offers nonsense.
+// Deliberately NOT the swapped pair — that is the tag's distractor, and a decoy
+// identical to the error would give a student two ways to be diagnosed wrong.
+function pointDecoys(correct) {
+  const [x, y] = correct.replace(/[()]/g, "").split(",").map(Number);
+  return [point(x + 1, y), point(x, y + 1), point(-x, y), point(x, -y), point(x + 2, y)];
+}
+
 function decoyPool(correct, distractor) {
   if (typeof correct === "number") return numericDecoys(correct, distractor);
   if (String(correct).includes(" : ")) return ratioDecoys(String(correct));
+  if (String(correct).startsWith("(")) return pointDecoys(String(correct));
   return fractionDecoys(String(correct));
 }
 
@@ -1640,7 +2835,17 @@ export function buildQuestion(tag, index, seed) {
   const template = templates[i];
   const r = makeRng(`${seed}|${tag}|${template.id}`);
   const built = template.build(r);
-  const decoys = pickDecoys(built.correct, built.distractor);
+  // A template may supply its own decoys. Numbers, ratios and ordered pairs can
+  // all be perturbed mechanically, but an inequality statement or a word answer
+  // ("range", "median") cannot — fractionDecoys would read "x > 5" as a number
+  // and offer nonsense. Those tags name their own near misses instead.
+  const decoys = Array.isArray(built.decoys)
+    ? built.decoys
+        .filter(
+          (d) => String(d) !== String(built.correct) && String(d) !== String(built.distractor),
+        )
+        .slice(0, 2)
+    : pickDecoys(built.correct, built.distractor);
   return {
     tag,
     id: template.id,

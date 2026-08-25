@@ -54,7 +54,17 @@ dialog.nt-tool-dialog::backdrop { background: rgba(18,53,91,.48); }
   dialog.nt-tool-dialog { width: 100vw; max-width: 100vw; max-height: 100vh; border-radius: 0; }
   .nt-tool-dialog-body { max-height: calc(100vh - 92px); }
 }
-@media print { .nt-toolpoint { display: none !important; } }
+/* Always-reachable dock. The chip rows are anchored to the END of each panel,
+   which means a student halfway down a long panel had to scroll to find them.
+   This rail sits directly above the mark-up dock at any scroll depth, on every
+   tab, and opens the same drawer (Joel, 2026-08-23: "when there are interactive
+   tools, these should be available throughout"). */
+.nt-tooldock { position: fixed; right: 0; top: 50%; transform: translateY(calc(-50% - 58px)); z-index: 40; }
+.nt-tooldock-btn { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; font-size: 20px; line-height: 1; cursor: pointer; border: 2px solid color-mix(in srgb, var(--sg, #12355b) 55%, white); border-right: 0; border-radius: 14px 0 0 14px; background: #fff; color: var(--sg-deep, #0b2540); box-shadow: -4px 0 14px rgba(18,53,91,.14); }
+.nt-tooldock-btn:hover { background: var(--sg-soft, #eef2fa); }
+.nt-tooldock-btn:focus-visible { outline: 3px solid var(--sg-pop, #2f8f7d); outline-offset: 2px; }
+@media (max-width: 560px) { .nt-tooldock { transform: translateY(calc(-50% - 52px)); } .nt-tooldock-btn { width: 40px; height: 40px; font-size: 18px; } }
+@media print { .nt-toolpoint, .nt-tooldock { display: none !important; } }
 `;
 
 function ensureStyles() {
@@ -73,9 +83,25 @@ function ensureStyles() {
 // is an authoring detail; a student mid-practice needs the model either way.
 const POINTS = [
   {
+    // Vocabulary is the studio's FIRST stop and had no tool point at all, so a
+    // student who wanted to see the model before the words had to leave the tab.
+    tabId: "sg-tab-vocab",
+    sections: ["explore", "launch"],
+    hint: "Want to see the model these words describe? Open it here.",
+  },
+  {
     tabId: "sg-tab-learn",
     sections: ["explore", "connect"],
-    hint: "Open the model we just used and try it yourself.",
+    // Anchored INSIDE the worked example rather than at the foot of the tab.
+    // Learn It is the longest panel in the studio (diagnostic, worked example,
+    // lab, model), so a chip at its end was several screens below the steps it
+    // refers to. It matters most here: 90 of the 204 small-group worked
+    // examples draw no model beside any step, because the build visualiser only
+    // draws what it can verify from the lesson's own numbers — correctly. The
+    // lesson's real manipulative is the model those steps are missing, and it
+    // already exists in the config (Joel, 2026-08-23).
+    within: "#sg-build",
+    hint: "Now try that same move yourself on the model.",
   },
   {
     tabId: "sg-tab-guided",
@@ -244,7 +270,10 @@ export function mountToolDrawer(config, { panels = [], hero = null } = {}) {
     if (!panel) continue;
     const preferred = tools.filter((t) => point.sections.includes(t.section));
     const forPoint = preferred.length ? preferred : tools;
-    panel.appendChild(buildPoint(forPoint, point.hint, drawer));
+    // `within` puts the row beside the work it refers to; the panel itself is
+    // the fallback when that section is not on this lesson.
+    const host = (point.within && panel.querySelector(point.within)) || panel;
+    host.appendChild(buildPoint(forPoint, point.hint, drawer));
     points += 1;
   }
 
@@ -275,7 +304,36 @@ export function mountToolDrawer(config, { panels = [], hero = null } = {}) {
     points += 1;
   }
 
+  mountToolDock(tools, drawer);
+
   return { points, drawer };
+}
+
+// The docked rail. Body-mounted (not inside `app`) for the same reason the
+// mark-up dock is: the studio's motion layer transforms its ancestors, and a
+// transformed ancestor breaks position:fixed. One per document.
+function mountToolDock(tools, drawer) {
+  if (document.querySelector(".nt-tooldock")) return;
+  const dock = document.createElement("div");
+  dock.className = "nt-tooldock";
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "nt-tooldock-btn";
+  // NOT the toolbox glyph. Whole-group lessons already dock a "🧰 Tools" rail on
+  // the same edge — that is the LEARNING SUPPORTS dock (multiplication chart,
+  // number line, calculator), a different thing that never offers the model
+  // this lesson is about. Two 🧰 buttons an inch apart read as one control.
+  button.textContent = "🧩";
+  const name =
+    tools.length === 1
+      ? `Open the ${toolMeta(tools[0].v).name}`
+      : `Open the ${tools.length} math tools for this lesson`;
+  button.title = name;
+  button.setAttribute("aria-label", name);
+  button.setAttribute("aria-haspopup", "dialog");
+  button.addEventListener("click", () => drawer.open(tools, button, "Math Tools"));
+  dock.appendChild(button);
+  document.body.appendChild(dock);
 }
 
 /**

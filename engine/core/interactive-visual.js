@@ -316,6 +316,21 @@ const REGISTRY = {
     const { renderDistExplorer } = await import("../components/dist-explorer.js");
     return renderDistExplorer(host, { max: cfg.max, unit: cfg.unit, label: cfg.label });
   },
+  // Volume of a rectangular prism as base area × height, with half-unit edges.
+  // Deliberately narrower than `cube-builder`: no surface area, no water fill,
+  // no nets — those are 6.GR.4 and belong to the lesson that teaches them.
+  "prism-volume": async (host, cfg) => {
+    const { renderPrismVolume } = await import("../components/prism-volume.js");
+    return renderPrismVolume(host, {
+      l: cfg.l,
+      w: cfg.w,
+      h: cfg.h,
+      unit: cfg.unit,
+      max: cfg.max,
+      step: cfg.step,
+      label: cfg.label,
+    });
+  },
   "cross-section": async (host, cfg) => {
     const { renderCrossSection } = await import("../components/cross-section.js");
     return renderCrossSection(host, {
@@ -431,7 +446,7 @@ export function mountInteractiveVisuals(root, opts) {
           note.className = "interactive-visual-error";
           note.setAttribute("role", "status");
           note.style.cssText =
-            "margin:0; padding:12px 14px; border:1px dashed rgba(0,0,0,.25); border-radius:12px; font-size:0.9rem; font-weight:600; line-height:1.5;";
+            "margin:0; padding:12px 14px; border:1px dashed rgba(0,0,0,.25); border-radius:12px; font-size:0.9rem; font-weight:500; line-height:1.5;";
           note.textContent =
             "This model could not load right now. Reload the page to try again — the rest of the lesson still works.";
           host.appendChild(note);

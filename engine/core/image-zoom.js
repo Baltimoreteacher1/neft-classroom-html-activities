@@ -115,6 +115,7 @@ export function ensureLessonLightbox() {
     open = false;
     document.body.classList.remove("lesson-lightbox-open");
     big.removeAttribute("src");
+    clearNode();
     // Return focus to the image the student clicked, so keyboard users land
     // back where they were instead of at the top of the document.
     if (lastFocus?.focus) {
@@ -150,10 +151,56 @@ export function ensureLessonLightbox() {
     });
   }
 
+  /* A figure drawn as inline SVG — the tape diagrams, number lines and area
+     models — has no `src` to hand the <img>, so it is shown by cloning the node
+     into the dialog at full size. The clone is inert: no ids are carried over
+     that could collide, and any interactive lab is excluded before we get here. */
+  const nodeHost = document.createElement("div");
+  nodeHost.className = "lesson-lightbox-node";
+  nodeHost.hidden = true;
+  lb.append(nodeHost);
+  nodeHost.addEventListener("click", hide);
+
+  const clearNode = () => {
+    nodeHost.replaceChildren();
+    nodeHost.hidden = true;
+  };
+
   _lessonLightbox = {
     isOpen: () => open,
+    openNode(node, label, opener) {
+      if (!node || typeof node.cloneNode !== "function") return;
+      const clone = node.cloneNode(true);
+      clone.removeAttribute?.("id");
+      clone.removeAttribute?.("tabindex");
+      clone.classList?.remove?.("is-zoomable");
+      clone.style.width = "min(92vw, 1400px)";
+      clone.style.height = "auto";
+      clone.style.maxHeight = "88vh";
+      nodeHost.replaceChildren(clone);
+      nodeHost.hidden = false;
+      big.hidden = true;
+      lb.setAttribute("aria-label", label || "Enlarged figure");
+      lastFocus = opener || null;
+      open = true;
+      document.body.classList.add("lesson-lightbox-open");
+      if (modalCapable) {
+        if (!lb.open) lb.showModal();
+      } else {
+        lb.hidden = false;
+        lb.setAttribute("open", "");
+      }
+      setTimeout(() => {
+        try {
+          close.focus();
+        } catch {}
+      }, 0);
+    },
     open(src, alt, opener) {
       if (!src) return; // a broken image has nothing to enlarge
+      clearNode();
+      big.hidden = false;
+      lb.setAttribute("aria-label", "Enlarged image");
       lastFocus = opener || null;
       big.src = src;
       big.alt = alt || "";
@@ -223,4 +270,159 @@ export function attachImageZoomAll(root, selector) {
     n++;
   }
   return n;
+}
+
+/* Every picture a student meets should enlarge — not only the five the renderer
+   happened to wire by hand.
+ *
+ * The affordance was attached at five call sites in lesson-renderer.js (reveal
+ * slides, Notice & Wonder, the word-problem art, the vocab pop-up, the objective
+ * visual-model card) and at exactly ZERO sites in the small-group renderer. So a
+ * tape-diagram or scene image outside those five paths looked identical to one
+ * inside them and simply did nothing when tapped — and the whole small-group
+ * fleet had no zoom at all.
+ *
+ * Wiring per call site is what created that gap, so this watches the document
+ * instead: images already present are wired now, and anything a lazily-rendered
+ * phase mounts later is wired when it appears. It mirrors
+ * observeWordProblemAnnotation, which solved the same "phases render late"
+ * problem for markup tools.
+ *
+ * What is deliberately NOT zoomable:
+ *   • anything inside the lightbox itself (it would reopen over itself)
+ *   • icons and avatars — an image under 64px in either authored dimension is
+ *     chrome, not content
+ *   • opt-outs: [data-no-zoom], and images inside [data-no-zoom] containers
+ *   • interactive SVG manipulatives, which are not <img> at all and must keep
+ *     their own pointer handling
+ */
+const ZOOM_SKIP = ".lesson-lightbox, [data-no-zoom]";
+const ICON_MAX = 64;
+
+/* An inline-SVG figure is zoomable only when it is a PICTURE. Anything a
+   student drags, types into or drops onto keeps its own pointer handling —
+   stealing the click there would break the manipulative. Interactive visuals
+   mark their host with data-iv-mounted (see interactive-visual.js), which is the
+   reliable signal; the rest are structural. */
+const SVG_SKIP = "[data-iv-mounted], button, a, label, .iv-lab, .annotator, [data-no-zoom]";
+const SVG_MIN = 120;
+
+/**
+ * A figure the page has declared decorative is not content, and must never be
+ * made a keyboard stop.
+ *
+ * axe reports this as `aria-hidden-focus` on every small-group lesson: the
+ * themed hero banner ships as `<svg role="img" aria-hidden="true">`, this file
+ * measured it as a large picture and gave it `tabindex="0"`, and a screen-reader
+ * user then tabbed onto an element their reader is required to skip — a stop
+ * that announces nothing and has no way out but to keep tabbing.
+ *
+ * Zoom is dropped entirely rather than merely un-focused. Keeping the click and
+ * removing the tab stop would leave an affordance a mouse can reach and a
+ * keyboard cannot, which trades one accessibility defect for another.
+ *
+ * `aria-hidden` is inherited, so an ancestor hiding the subtree counts. The
+ * presentation roles are included because they make the same claim in different
+ * words, and `inert` because it removes the node from the tab order anyway.
+ */
+const DECORATIVE = '[aria-hidden="true"], [role="presentation"], [role="none"], [inert]';
+
+function isDecorative(node) {
+  if (!node || typeof node.closest !== "function") return false;
+  return !!node.closest(DECORATIVE);
+}
+
+function isContentFigure(svg) {
+  if (!svg || svg.dataset?.zoomable === "1") return false;
+  if (typeof svg.closest !== "function" || svg.closest(SVG_SKIP)) return false;
+  if (isDecorative(svg)) return false;
+  if (svg.closest(ZOOM_SKIP)) return false;
+  if (svg.querySelector("input, textarea, foreignObject")) return false;
+  const box = typeof svg.getBoundingClientRect === "function" ? svg.getBoundingClientRect() : null;
+  if (box && box.width && box.width < SVG_MIN) return false;
+  const view = svg.getAttribute?.("viewBox");
+  if (!box?.width && view) {
+    const w = Number(String(view).trim().split(/\s+/)[2]);
+    if (Number.isFinite(w) && w < SVG_MIN) return false;
+  }
+  return true;
+}
+
+/** Make one inline-SVG figure tap-to-enlarge. */
+export function attachFigureZoom(svg) {
+  if (!svg || svg.dataset?.zoomable === "1") return;
+  // Exported, so a direct caller can reach here without isContentFigure().
+  if (isDecorative(svg)) return;
+  svg.dataset.zoomable = "1";
+  svg.classList.add("is-zoomable");
+  svg.setAttribute("tabindex", "0");
+  if (!svg.getAttribute("role")) svg.setAttribute("role", "img");
+  if (!svg.getAttribute("title")) svg.setAttribute("title", "Click to enlarge");
+  const label =
+    svg.querySelector("title")?.textContent || svg.getAttribute("aria-label") || "Enlarged figure";
+  const open = () => ensureLessonLightbox().openNode(svg, label, svg);
+  svg.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    open();
+  });
+  svg.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+      open();
+    }
+  });
+}
+
+function isContentImage(img) {
+  if (!img || img.dataset.zoomable === "1") return false;
+  if (img.closest(ZOOM_SKIP)) return false;
+  if (isDecorative(img)) return false;
+  const w = Number(img.getAttribute("width"));
+  const h = Number(img.getAttribute("height"));
+  if (Number.isFinite(w) && w > 0 && w < ICON_MAX) return false;
+  if (Number.isFinite(h) && h > 0 && h < ICON_MAX) return false;
+  return true;
+}
+
+/**
+ * Wire every content image under `root`, now and as more arrive.
+ * Safe to call more than once per document; attachImageZoom is idempotent.
+ *
+ * @returns {() => void} stop observing
+ */
+export function observeContentImageZoom(root) {
+  const host = root || document.body;
+  if (!host || typeof host.querySelectorAll !== "function") return () => {};
+
+  const wireWithin = (node) => {
+    if (node.nodeType !== 1) return;
+    if (node.tagName === "IMG") {
+      if (isContentImage(node)) attachImageZoom(node);
+      return;
+    }
+    if (node.tagName === "svg" || node.namespaceURI === "http://www.w3.org/2000/svg") {
+      if (isContentFigure(node)) attachFigureZoom(node);
+      return;
+    }
+    if (typeof node.querySelectorAll !== "function") return;
+    for (const img of node.querySelectorAll("img")) {
+      if (isContentImage(img)) attachImageZoom(img);
+    }
+    for (const svg of node.querySelectorAll("svg")) {
+      if (isContentFigure(svg)) attachFigureZoom(svg);
+    }
+  };
+
+  wireWithin(host);
+
+  if (typeof MutationObserver !== "function") return () => {};
+  const observer = new MutationObserver((records) => {
+    for (const record of records) {
+      for (const node of record.addedNodes) wireWithin(node);
+    }
+  });
+  observer.observe(host, { childList: true, subtree: true });
+  return () => observer.disconnect();
 }

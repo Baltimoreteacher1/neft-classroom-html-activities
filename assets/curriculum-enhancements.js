@@ -216,11 +216,11 @@
       '<h3 style="margin:0 0 6px; font-family:Nunito,sans-serif; font-size:20px; font-weight:800; color:#0f172a;">Teacher Mode Access</h3>' +
       '<p style="margin:0 0 18px; font-size:13.5px; color:#64748b;">Enter your teacher PIN to unlock answer keys, lesson plans, IEP accommodations, and teacher tools.</p>' +
       '<input type="text" name="username" value="teacher" autocomplete="username" readonly tabindex="-1" aria-hidden="true" class="nt-credential-user" style="display:none;" />' +
-      '<input type="password" name="password" class="hub-teacher-pin" autocomplete="current-password" placeholder="Enter PIN (e.g. TeacherNeft)" aria-label="Enter teacher password" style="width:100%; min-height:46px; padding:0 16px; border:1.5px solid #cbd5e1; border-radius:12px; font-size:15px; margin-bottom:14px; outline:none;" />' +
+      '<input type="password" name="password" class="hub-teacher-pin" autocomplete="current-password" placeholder="Enter teacher password" aria-label="Enter teacher password" style="width:100%; min-height:46px; padding:0 16px; border:1.5px solid #cbd5e1; border-radius:12px; font-size:15px; margin-bottom:14px; outline:none;" />' +
       '<div style="display:flex; gap:10px;">' +
       '<button type="button" class="hub-teacher-cancel" style="flex:1; min-height:44px; border:1px solid #cbd5e1; background:#f8fafc; color:#475569; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer;">Cancel</button>' +
       '<button type="submit" class="hub-teacher-go" style="flex:1; min-height:44px; border:none; background:#0284c7; color:#ffffff; border-radius:10px; font-weight:800; font-size:14px; cursor:pointer;">Unlock</button>' +
-      '</div>' +
+      "</div>" +
       '<p class="hub-teacher-err" role="alert" hidden style="margin:12px 0 0; font-size:13px; color:#ef4444; font-weight:700;">That password did not work. Try again.</p>';
 
     var pin = form.querySelector(".hub-teacher-pin");
@@ -338,7 +338,18 @@
     var btn = document.getElementById("hub-mode-toggle");
     if (btn) {
       btn.setAttribute("aria-pressed", teacherMode ? "true" : "false");
-      btn.textContent = teacherMode ? "👩‍🏫 Teacher Mode" : "🎒 Student Mode";
+      // State AND action, both spelled out. This used to print the bare current
+      // mode ("🎒 Student Mode"), which reads equally as "you are in student
+      // mode" and "click to switch to student mode" — so the one control that
+      // answers "which mode am I in?" was the reason nobody could tell. The
+      // teacher-only panels render nothing in student mode, so an ambiguous
+      // label here looks exactly like a broken or un-deployed page.
+      btn.textContent = teacherMode
+        ? "👩‍🏫 You're in Teacher view — switch to Student"
+        : "🎒 You're in Student view — switch to Teacher";
+      btn.title = teacherMode
+        ? "Teacher view: pacing console and command center are visible. Click to switch to the student view."
+        : "Student view: teacher-only panels are hidden. Click to switch to the teacher view.";
     }
     updateStudentHint();
     refreshHub();
@@ -581,6 +592,37 @@
       });
     });
     controls.parentNode.insertBefore(hint, controls);
+
+    // Top-of-page mode banner. The mode controls live ~1300px down the hub, so
+    // a teacher in student view scrolls past a page where EVERY teacher panel
+    // (district pacing console, Teacher Command Center) has rendered nothing —
+    // which is indistinguishable from a broken site or a deploy that never
+    // landed. This states the view at the top, before any of that confusion.
+    // It reuses requestTeacher() rather than duplicating the PIN gate.
+    var header = document.querySelector(".curriculum-guide");
+    var h1 = header && header.querySelector("h1");
+    if (h1) {
+      var banner = document.createElement("p");
+      banner.id = "hub-mode-banner";
+      banner.className = "hub-mode-banner hub-student-only";
+      var bannerText = document.createElement("span");
+      bannerText.textContent = "🎒 You're in Student view — teacher tools are hidden. ";
+      var bannerBtn = document.createElement("button");
+      bannerBtn.type = "button";
+      bannerBtn.className = "hub-hint-link";
+      bannerBtn.id = "hub-mode-banner-switch";
+      bannerBtn.textContent = "Switch to Teacher view";
+      bannerBtn.addEventListener("click", function () {
+        requestTeacher(function (role) {
+          teacherMode = true;
+          saveTeacherMode(true, role);
+          applyTeacherMode();
+          updateProgressSummary();
+        });
+      });
+      banner.append(bannerText, bannerBtn);
+      h1.parentNode.insertBefore(banner, h1.nextSibling);
+    }
 
     controls.parentNode.insertBefore(bar, controls.nextSibling);
 

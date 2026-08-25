@@ -35,6 +35,21 @@ const DEDICATED = new Set([
   "profession",
   "math-biography",
   "math-story",
+  // Unit 1's process vocabulary used to be routed to whichever tile was closest:
+  // `quantity` borrowed VARIABLE (an orange x captioned "stands for a number"),
+  // `relationship` and `table of values` both borrowed the juice/water RATIO
+  // TABLE, and `pattern`, `pattern rule` and `generalization` shared one picture,
+  // so three of lesson 1-5's five word-wall cards showed the same image. Each now
+  // has its own tile from scripts/gen-mindset-vocab-art.mjs, so the synonyms below
+  // are gone on purpose — do not "restore" them.
+  "quantity",
+  "relationship",
+  "representation",
+  "round-trip",
+  "pattern-rule",
+  "generalization",
+  "table-of-values",
+  "reasonableness",
   "ingenuity",
   "ratio",
   // Both have art on disk but were never listed, so anything aliased to them
@@ -190,12 +205,9 @@ const SYNONYMS = {
   "mirror-image": "reflection",
   coordinates: "ordered-pair",
   "distance-between-vertices": "distance",
-  "round-trip": "distance",
   "double-number-line": "number-line",
-  "table-of-values": "ratio-table",
   "tape-diagram": "bar-model",
   represent: "bar-model",
-  representation: "bar-model",
   "negative-number": "negative",
   "positive-number": "positive",
   polygon: "regular-polygon",
@@ -203,15 +215,11 @@ const SYNONYMS = {
   "dependent-variable": "variable",
   "depends-on": "variable",
   "define-the-variables": "variable",
-  quantity: "variable",
-  relationship: "ratio-table",
-  "pattern-rule": "pattern",
   "pattern-unit": "pattern",
   repetition: "pattern",
   rhythm: "pattern",
   predictability: "pattern",
   predict: "pattern",
-  generalization: "pattern",
   // "rotation" and "gear" used to borrow reflection.svg and ratio.svg — a turn
   // drawn as a mirror image, and a toothed wheel drawn as a colon ratio. Each
   // now has its own diagram (Unit 10 bicycle-gear lesson depends on both).
@@ -233,6 +241,9 @@ const SYNONYMS = {
   "cross-multiply": "proportion",
   scale: "scale-factor",
   "better-buy": "unit-rate",
+  // A unit price IS a unit rate — the one that carries money. Official Reveal 3.2
+  // names it, so 3-2 teaches the term, and it shows the unit-rate picture.
+  "unit-price": "unit-rate",
   // markup / tax / tip used to resolve to percent.svg — a plain "50 out of 100"
   // grid. That picture says what a percent IS, not what these three words DO
   // (each adds an amount on top of a starting price), so the word wall showed
@@ -263,6 +274,10 @@ const SYNONYMS = {
   // diagram that never shows a place. It now has its own chart (place-value.svg);
   // the plural is mapped because lessons author both spellings.
   "place-values": "place-value",
+  // Two shared-glossary words that resolved only to a generic category tile.
+  digit: "place-value",
+  digits: "place-value",
+  "least-common-denominator": "least-common-multiple",
   "rational-number": "number-line",
 
   "negative-integer": "negative",
@@ -295,6 +310,7 @@ const SYNONYMS = {
   apex: "pyramid",
   pyramid: "pyramid",
   "triangular-prism": "rectangular-prism",
+  prism: "rectangular-prism",
   "regular-polygon": "regular-polygon",
   "two-dimensional": "square-unit",
   composite: "composite-figure",
@@ -330,6 +346,7 @@ const SYNONYMS = {
   gap: "histogram",
   symmetry: "symmetric",
   "statistical-question": "data",
+  "dot-plot": "data",
   survey: "data",
   graph: "histogram",
 
@@ -374,6 +391,23 @@ const SYNONYMS = {
 
   product: "product",
   multiply: "multiply",
+  // The OPERATION NAMES a student reads in prose ("division", "multiplication",
+  // "addition", "subtraction") had no slug of their own, so every one of them
+  // fell through to the generic cat-number "#" tile. Each now points at the
+  // picture of the operation it names.
+  multiplication: "multiply",
+  addition: "add",
+  subtraction: "subtract",
+  division: "divide",
+  // The standard algorithm and its fourth step have drawn art of their own.
+  algorithm: "concept-long-division",
+  "standard-algorithm": "concept-long-division",
+  "long-division": "concept-long-division",
+  "division-algorithm": "concept-long-division",
+  "bring-down": "concept-bring-down",
+  // Regrouping is a place-value move, so it shows the place-value chart.
+  regroup: "place-value",
+  regrouping: "place-value",
   divide: "divide",
   dividend: "dividend",
   divisor: "divisor",
@@ -416,7 +450,6 @@ const SYNONYMS = {
   property: "operation",
   simplify: "fraction",
   equivalent: "fraction",
-  reasonableness: "number",
   "problem-solving": "number",
 };
 
@@ -464,6 +497,17 @@ export function resolveVocabFallback(term) {
 
 // Slugs that have dedicated SVGs but are referenced only via the synonym map.
 const EXTRA_DEDICATED = new Set([
+  "multi-digit",
+  // Concept tiles that the shared math glossary points at, so words a student
+  // meets in prose ("long division", "algorithm", "bring down") open a picture
+  // of the actual procedure instead of the generic "#" number tile.
+  "concept-long-division",
+  "concept-bring-down",
+  // Drawn art of its own: the point moving one place in BOTH numbers, then the
+  // whole-number division. Registering it here is also what tells the context
+  // -image generator this term already has a picture, so it does not write a
+  // second, text-only card for the same word.
+  "decimal-division-algorithm",
   "regular-polygon",
   "area-of-regular-polygons",
   "decompose",

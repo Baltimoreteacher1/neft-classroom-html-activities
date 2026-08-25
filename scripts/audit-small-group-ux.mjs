@@ -44,6 +44,7 @@
  */
 
 import { chromium } from "@playwright/test";
+import { exitSkipped } from "../tools/lib/skip-exit.mjs";
 
 const baseIx = process.argv.indexOf("--base");
 const BASE = baseIx !== -1 ? process.argv[baseIx + 1] : "http://localhost:4499";
@@ -57,6 +58,20 @@ const IGNORED_CONSOLE = [/sg-room/, /favicon/];
 
 const findings = [];
 const note = (ctx, msg) => findings.push(`${ctx} :: ${msg}`);
+
+/* The preview server is this sweep's subject; without it there is nothing to
+ * report. It used to proceed anyway and die on the first locator with an
+ * uncaught TimeoutError — a stack trace where a report should be, which reads
+ * as "this tool is broken" rather than "start the server". */
+try {
+  const probe = await fetch(BASE, { method: "GET" });
+  if (!probe.ok) throw new Error(`HTTP ${probe.status}`);
+} catch (e) {
+  exitSkipped(
+    `no preview server at ${BASE} (${String(e.message || e).slice(0, 80)})`,
+    "Start one with:  npm run preview -- --port 4499",
+  );
+}
 
 const browser = await chromium.launch();
 
@@ -127,8 +142,21 @@ for (const size of SIZES) {
     page.on("pageerror", (e) => errors.add(`PAGEERROR ${String(e).slice(0, 110)}`));
 
     await page.goto(`${BASE}/lessons/${id}/`, { waitUntil: "networkidle" });
-    const name = page.locator('input[type="text"]').first();
-    if (await name.count()) await name.fill("Sam");
+    /* The student-name field, if this lesson opens with one.
+     *
+     * This used to be `input[type="text"]` + `.count()`, and `.count()` proves
+     * a node EXISTS, not that it can be typed into. The first text input on a
+     * small-group page is `.sg-room-code` ("Table code"), which is present but
+     * hidden — so `.fill()` blocked for its full 30s default and threw an
+     * uncaught TimeoutError, killing a REPORT-ONLY tool before it printed a
+     * single finding. Ask for a visible field, and bound the wait: this is one
+     * optional convenience step, not the thing being audited. */
+    const name = page.locator('input[type="text"]:visible').first();
+    if (await name.count()) {
+      await name.fill("Sam", { timeout: 2000 }).catch(() => {
+        note(ctxBase, "could not fill the visible name field (continuing without it)");
+      });
+    }
     const go = page
       .locator('button:has-text("Start"), button:has-text("Begin"), button[type="submit"]')
       .first();

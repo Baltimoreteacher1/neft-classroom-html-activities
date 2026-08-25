@@ -265,18 +265,81 @@ assert.deepEqual(
     "(explore|practice|connect|launch|reflect × diagram|visual|simulator|lab); " +
     "a tool authored anywhere else is invisible to ?mode=tools and to the in-lesson drawer",
 );
+/* ── The Explore/Practice contract, and what it cost ─────────────────────────
+ *
+ * READ THIS BEFORE SATISFYING THIS ASSERTION.
+ *
+ * This is a COVERAGE quota, and a coverage quota with no alignment requirement
+ * does not produce missing tools — it produces irrelevant ones. Lesson 1-4
+ * ("Math is Explaining and Sharing", 5.MD.C.5) is a sorting task about kinds of
+ * mathematical argument. It has no second manipulative to give. When commit
+ * a0dab02d4 brought twenty lessons up to this contract at once, 1-4 was handed a
+ * trapezoid AREA explorer labelled "Garden footprint…" — in a lesson whose whole
+ * point is defending a packaging choice with VOLUME, and whose own practice item
+ * offers "240 square inches" as a tagged distractor to correct exactly that
+ * square-versus-cubic confusion. The widget worked. Every gate passed it.
+ *
+ * So the correct way to satisfy this assertion is to author a tool that serves
+ * the lesson's mathematics. If there is none — and that is a real answer, not a
+ * failure — record the lesson in TOOL_EXEMPT below with a written reason and
+ * review it in data/interactive-alignment-review.json. An empty slot a human
+ * chose is worth more than a widget nobody wanted.
+ *
+ * validate:interactive-alignment holds the other half of this: every tool that
+ * IS authored has to belong.
+ */
+const TOOL_EXEMPT = new Map([
+  // lessonId -> why this lesson's mathematics needs no tool in that slot.
+  [
+    "1-4",
+    "EXPLORE. The Explore task is a drag-sort of KINDS OF ARGUMENT — equations, " +
+      "drawings, words — not a computation, so there is no quantity to manipulate " +
+      "there. The lesson's volume mathematics is carried by the two tools that do " +
+      "belong: prism-volume in Learn It on the lesson's own 8 x 3 x 10 cereal box, " +
+      "and the Practice bar-chart comparing the two packaging options' volumes. It " +
+      "previously held a cross-section slicer on the same box, which showed a third " +
+      "solid-geometry idea (slicing) the lesson never uses and duplicated the solid " +
+      "Learn It already models. This slot is empty because a human chose it.",
+  ],
+]);
+
+/**
+ * A variant inherits its parent's exemption.
+ *
+ * Small-group and catch-up lessons are GENERATED from the canonical lesson and
+ * carry its Explore task, so a slot the parent deliberately leaves empty is
+ * empty in all three. Listing `1-4`, `1-4-group1` and `1-4-group2` separately
+ * would be three copies of one decision, and the day a fourth variant kind is
+ * added it would silently fail instead of inheriting.
+ */
+const parentOf = (id) => id.replace(/-(?:group\d+|catchup)$/, "");
+const unexplained = (list) =>
+  list.filter((id) => !TOOL_EXEMPT.has(id) && !TOOL_EXEMPT.has(parentOf(id)));
+
 assert.deepEqual(
-  noExplore,
+  unexplained(noExplore),
   [],
   "every lesson needs a tool in EXPLORE — that is where the concept is built. " +
     "If a figure is parked in a legacy back-compat slot (explore.histogram), promote it to " +
-    "explore.diagram with an explicit `kind`, the way connect.diagram already is",
+    "explore.diagram with an explicit `kind`, the way connect.diagram already is. " +
+    "If the lesson's mathematics genuinely needs no manipulative here, add it to TOOL_EXEMPT " +
+    "with a reason — do NOT invent a widget to satisfy this count",
 );
 assert.deepEqual(
-  noPractice,
+  unexplained(noPractice),
   [],
-  "every lesson needs a tool in PRACTICE — that is where it is used",
+  "every lesson needs a tool in PRACTICE — that is where it is used. " +
+    "Same rule: an aligned tool, or a reasoned TOOL_EXEMPT entry, never a filler widget",
 );
+// The exemption list is a ratchet, not a dumping ground: an entry for a lesson
+// that now HAS a tool is stale and must be removed, or the escape hatch quietly
+// becomes the norm.
+for (const [id] of TOOL_EXEMPT) {
+  assert.ok(
+    noExplore.includes(id) || noPractice.includes(id),
+    `${id} is in TOOL_EXEMPT but now has tools in both slots — remove the exemption`,
+  );
+}
 assert.deepEqual(
   unregistered,
   [],

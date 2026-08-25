@@ -126,18 +126,54 @@ function para(children, opts = {}) {
   });
 }
 
-// Section heading (Heading 1): bold navy with a teal rule beneath. Page breaks
-// are applied by callers via pageBreakBefore for clean print separation.
+// Section heading (Heading 1): bold navy with a teal rule beneath.
+//
+// `keepNext` is not optional here. Every section used to force a page break, so
+// a short section stranded the rest of its page — half a sheet of white paper
+// per packet, which is what "the PDF is off page" looked like in print. Now only
+// the sections that MUST start on a fresh sheet ask for a break (see callers),
+// and the rest flow. keepNext is what makes flowing safe: it binds the heading
+// to the block after it, so "Guided Practice" can never sit alone at the foot of
+// a page with its content overleaf.
 function sectionHeading(text, opts = {}) {
   return new Paragraph({
     heading: HeadingLevel.HEADING_1,
     pageBreakBefore: !!opts.pageBreak,
-    spacing: { before: opts.pageBreak ? 0 : 260, after: 140 },
+    keepNext: true,
+    keepLines: true,
+    spacing: { before: opts.pageBreak ? 0 : 300, after: 140 },
     border: {
       bottom: { style: BorderStyle.SINGLE, size: 14, space: 6, color: TEAL },
     },
     children: [new TextRun({ text, bold: true, color: NAVY, size: 30 })],
   });
+}
+
+// A blank a student can actually write on.
+//
+// Cloze sentences arrive from config carrying literal "___" — about 4mm at 11pt,
+// which is a mark on the page, not a space to write in. Underscores also print
+// as a lumpy dotted rule. This swaps every run of 2+ underscores for an
+// underlined span of non-breaking spaces: a clean continuous rule, sized so a
+// sixth-grader's handwriting fits, that never breaks across a line.
+// Plain underscores, deliberately — not an underlined span of spaces. Underlined
+// whitespace renders with visible gaps where the word processor kerns the run
+// (LibreOffice breaks it into segments), and the underline attribute is one of
+// the first things Google Docs drops when it converts a .docx. A straight run of
+// underscores is one unbroken rule in Word, LibreOffice, Google Docs and print
+// alike. 16 of them is roughly 3cm at 11pt — enough for a sixth-grader to write
+// a word, where the "___" that arrives in config is about 4mm.
+const BLANK_RULE = "_".repeat(16);
+function clozeRuns(sentence, size = 22) {
+  const parts = String(sentence).split(/_{2,}/);
+  const runs = [];
+  parts.forEach((part, i) => {
+    if (part) runs.push(new TextRun({ text: part, size }));
+    if (i < parts.length - 1) {
+      runs.push(new TextRun({ text: BLANK_RULE, size }));
+    }
+  });
+  return runs;
 }
 
 // Sub-heading (Heading 2) with optional italic tag (e.g. an "I Do" cue).
@@ -552,7 +588,7 @@ function workedExampleBlock(cfg, worked) {
   const hasWorked = Boolean(worked && worked.iDo);
   if (!hasLaunch && !hasExplore && !hasWorked) return [];
 
-  const out = [sectionHeading("Worked Example", { pageBreak: true })];
+  const out = [sectionHeading("Worked Example")];
   out.push(subHeading("Watch & Read", "I Do — follow along with your teacher", TEAL));
 
   const inner = [];
@@ -611,7 +647,7 @@ function guidedPracticeBlock(cfg, worked) {
   const hasWeDo = Boolean(worked && worked.weDo);
   if (!connect.scenario && !tt.length && !hasWeDo) return [];
 
-  const out = [sectionHeading("Guided Practice", { pageBreak: true })];
+  const out = [sectionHeading("Guided Practice")];
   out.push(subHeading("Solve Together", "We Do — work with your class", PURPLE));
 
   // We-Do worked problem: same step scaffold as the solved example, blank for
@@ -722,6 +758,19 @@ function _gatherPractice(practice = {}) {
 // Tier metadata: the differentiation already encoded in every config. Student-
 // facing labels never say "approaching"/"ESOL" — they read Level 1 / On Level /
 // Level 2, matching the L0<L1<L2 scheme used across the math HTML activities.
+// The three leveled-mode tiers the HTML notes template renders (html.level-l1 /
+// l2 / l3), and the practice tier each one draws from. generate-pdf.mjs prints
+// these by flipping a CSS class; the DOCX has no CSS, so it selects the tier
+// directly. Same three names, same meaning, so a Word packet and its PDF twin
+// hold the same problems.
+const LEVELS = [
+  { key: "l1", label: "Level 1 · Support" },
+  { key: "l2", label: "Level 2 · Standard" },
+  { key: "l3", label: "Level 3 · Enrichment" },
+];
+const LEVEL_TIER = { l1: "approaching", l2: "onLevel", l3: "extending" };
+const LEVEL_LABEL = Object.fromEntries(LEVELS.map((l) => [l.key, l.label]));
+
 const PRACTICE_TIERS = [
   { key: "approaching", label: "Level 1 Support", cue: "extra scaffolding", color: TEAL },
   { key: "onLevel", label: "On Level", cue: "grade-level practice", color: NAVY },
@@ -732,10 +781,14 @@ const PRACTICE_TIERS = [
 // problems (the only items that render as numbered "You Do" questions), capping
 // the total so the packet stays a clean single section. Numbering is continuous
 // across tiers so the answer key lines up with the student copy.
-function gatherPracticeTiered(practice = {}, excludeStems = new Set(), maxTotal = 6) {
+function gatherPracticeTiered(practice = {}, excludeStems = new Set(), maxTotal = 6, level = null) {
   const groups = [];
   let count = 0;
-  for (const tier of PRACTICE_TIERS) {
+  // A leveled packet carries ONE tier. The differentiation already lives in the
+  // config as approaching / onLevel / extending, which is exactly L1 / L2 / L3 —
+  // so a leveled copy is that tier's problems, not a re-authored set.
+  const tiers = level ? PRACTICE_TIERS.filter((t) => t.key === LEVEL_TIER[level]) : PRACTICE_TIERS;
+  for (const tier of tiers) {
     if (count >= maxTotal) break;
     const items = (practice[tier.key] || []).filter(
       (it) => it && it.stem && !excludeStems.has(it.stem),
@@ -750,11 +803,11 @@ function gatherPracticeTiered(practice = {}, excludeStems = new Set(), maxTotal 
 }
 
 // ── INDEPENDENT PRACTICE / "You Do" (numbered problems + work space) ─────────
-function independentPracticeBlock(cfg, excludeStems = new Set()) {
-  const groups = gatherPracticeTiered(cfg.practice, excludeStems);
+function independentPracticeBlock(cfg, excludeStems = new Set(), level = null) {
+  const groups = gatherPracticeTiered(cfg.practice, excludeStems, 6, level);
   if (!groups.length) return [];
 
-  const out = [sectionHeading("Independent Practice", { pageBreak: true })];
+  const out = [sectionHeading("Independent Practice")];
   out.push(subHeading("On Your Own", "You Do — show your work", AMBER));
   out.push(muted("Solve each problem. Show your thinking in the work box."));
 
@@ -796,7 +849,7 @@ function independentPracticeBlock(cfg, excludeStems = new Set()) {
 // ── WRITE ABOUT THE MATH (ESOL-SCAFFOLDED) ──────────────────────────────────
 function writingBlock(cfg) {
   const twr = deriveTWR(cfg);
-  const out = [sectionHeading("Write About the Math", { pageBreak: true })];
+  const out = [sectionHeading("Write About the Math")];
   out.push(muted("Use the support level you need. Every level answers the same math question."));
 
   out.push(subHeading("1. Understand the Question", twr.focus.action, AMBER));
@@ -906,7 +959,7 @@ function writingBlock(cfg) {
 function reflectBlock(cfg) {
   const et = (cfg.reflect || {}).exitTicket || {};
   if (!et.stem) return [];
-  const out = [sectionHeading("Exit Ticket", { pageBreak: true })];
+  const out = [sectionHeading("Exit Ticket")];
   out.push(muted("Answer on your own. This shows what you learned today."));
   out.push(
     para(
@@ -1112,14 +1165,16 @@ function guidedNotesBlock(cfg) {
     const sentence =
       v.cloze && /_{2,}/.test(v.cloze)
         ? v.cloze
-        : `__________  —  ${v.definition || "Write what this word means."}`;
+        : `___  —  ${v.definition || "Write what this word means."}`;
     out.push(
       para(
         [
           new TextRun({ text: `${i + 1}.  `, bold: true, color: NAVY, size: 22 }),
-          new TextRun({ text: sentence, size: 22 }),
+          ...clozeRuns(sentence, 22),
         ],
-        { spacing: { before: 80, after: 120 } },
+        // Roomier than the old 80/120: these lines are written on, so they need
+        // vertical space as well as horizontal.
+        { spacing: { before: 200, after: 260 }, keepLines: true },
       ),
     );
   });
@@ -1222,7 +1277,7 @@ function level0Block(cfg) {
 
 // ── DOCUMENT ASSEMBLY ─────────────────────────────────────────────────────────
 // variant: "student" (default) | "teacher" | "level0"
-function buildDoc(id, cfg, variant = "student") {
+function buildDoc(id, cfg, variant = "student", level = null) {
   const teacher = variant === "teacher";
   const level0 = variant === "level0";
   const worked = deriveWorkedSteps(cfg);
@@ -1232,6 +1287,13 @@ function buildDoc(id, cfg, variant = "student") {
   const excludeStems = new Set(
     [worked.iDo && worked.iDo.problem, worked.weDo && worked.weDo.problem].filter(Boolean),
   );
+  const levelStamp = level
+    ? [
+        para([new TextRun({ text: LEVEL_LABEL[level], bold: true, color: TEAL, size: 22 })], {
+          spacing: { before: 0, after: 200 },
+        }),
+      ]
+    : [];
   const body = level0
     ? [
         // Level 0 / IEP copy: the same supported vocab + worked model students
@@ -1248,13 +1310,17 @@ function buildDoc(id, cfg, variant = "student") {
       ]
     : [
         ...coverBlock(id, cfg),
+        ...levelStamp,
         ...objectivesBlock(cfg),
         ...vocabBlock(cfg.vocabulary),
         ...guidedNotesBlock(cfg),
         ...writingBlock(cfg),
         ...workedExampleBlock(cfg, worked),
-        ...guidedPracticeBlock(cfg, worked),
-        ...independentPracticeBlock(cfg, excludeStems),
+        // L3 drops the We-Do scaffold: an enrichment packet that walks the
+        // student through a second modelled problem is not enrichment. L1 and L2
+        // keep it — it is the bridge from watching to doing.
+        ...(level === "l3" ? [] : guidedPracticeBlock(cfg, worked)),
+        ...independentPracticeBlock(cfg, excludeStems, level),
         ...reflectBlock(cfg),
         // Answer Key & Teacher Guide only on the teacher copy.
         ...(teacher ? answerKeyBlock(cfg, worked, excludeStems) : []),
@@ -1370,6 +1436,7 @@ async function main() {
   const ids = lessonIds(filter);
   let ok = 0;
   let l0 = 0;
+  let leveled = 0;
   for (const id of ids) {
     const cfg = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
     const outDir = join(lessonsDir, id, "downloads");
@@ -1380,6 +1447,18 @@ async function main() {
     // Teacher copy — includes the Answer Key & Teacher Guide.
     const teacherBuf = await Packer.toBuffer(buildDoc(id, cfg, "teacher"));
     writeFileSync(join(outDir, `${id}-notes-teacher.docx`), teacherBuf);
+    // Leveled copies, student + teacher, named to match their PDF twins
+    // (<id>-notes-l1.pdf etc). generate-pdf.mjs has printed these three tiers
+    // since it learned the leveled mode; the DOCX side never did, so the L1
+    // support and L3 enrichment packets existed only as PDFs a teacher could
+    // not edit. Same filenames, same tiers — now both formats exist for all six.
+    for (const lv of LEVELS) {
+      const sBuf = await Packer.toBuffer(buildDoc(id, cfg, "student", lv.key));
+      writeFileSync(join(outDir, `${id}-notes-${lv.key}.docx`), sBuf);
+      const tBuf = await Packer.toBuffer(buildDoc(id, cfg, "teacher", lv.key));
+      writeFileSync(join(outDir, `${id}-notes-teacher-${lv.key}.docx`), tBuf);
+      leveled += 2;
+    }
     // Level 0 / IEP copy — only when the lesson supplies practice.level0.
     if (Array.isArray(cfg.practice && cfg.practice.level0) && cfg.practice.level0.length) {
       const l0Buf = await Packer.toBuffer(buildDoc(id, cfg, "level0"));
@@ -1389,7 +1468,7 @@ async function main() {
     ok++;
   }
   console.log(
-    `Generated ${ok}/${ids.length} notes DOCX files (student + teacher)` +
+    `Generated ${ok}/${ids.length} notes DOCX files (student + teacher) + ${leveled} leveled` +
       (l0 ? ` + ${l0} Level 0 copies` : ""),
   );
 }

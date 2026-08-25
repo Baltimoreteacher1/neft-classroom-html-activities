@@ -31,6 +31,7 @@
 // lessons contain `<` and `>`.
 
 import { OBJECTIVE_IMAGES } from "./objective-art-catalog.js";
+import { firstVocabularyWord } from "./vocab-match.js";
 
 export { MANIPULATIVES, OBJECTIVE_IMAGES } from "./objective-art-catalog.js";
 
@@ -92,6 +93,7 @@ export const TOPICS = {
   quadrants: { content: "quadrantsContent", language: "quadrantsTalk" },
   distance: { content: "distanceContent", language: "distanceTalk" },
   planeArea: { content: "planeAreaContent", language: "planeAreaTalk" },
+  prismVolume: { content: "prismVolumeContent", language: "prismVolumeTalk" },
   solids: { content: "solidsContent", language: "solidsTalk" },
 };
 
@@ -146,7 +148,10 @@ const BY_STANDARD = {
   "6.DS.6c": { topic: "mad" },
   "6.DS.6d": { topic: "centre" },
   "6.GR.1": { topic: "planeArea" },
-  "6.GR.2": { topic: "solids" },
+  // 6.GR.2 is VOLUME and 6.GR.4 is surface area and nets. They pointed at one
+  // picture — a prism beside its unfolded net with SA = 2(lw + lh + wh) — so a
+  // volume lesson opened on the next lesson's formula. Separated 2026-08-16.
+  "6.GR.2": { topic: "prismVolume" },
   "6.GR.4": { topic: "solids" },
 };
 
@@ -560,7 +565,14 @@ export function resolveContentTalkPrompts(config) {
 export function resolveLanguageTalkPrompts(config) {
   const cfg = config || {};
   const vocabList = vocabTerms(cfg);
-  const word = firstTerm(vocabList);
+  // These bullets put the term in a student's mouth — "I used the word ___" —
+  // so they need a word, not the lesson-concept statement that sits at
+  // vocabulary[0] on 55 of the 84 lessons. firstVocabularyWord skips entries
+  // authored as role:"concept"; see engine/core/vocab-match.js.
+  const chosen = firstVocabularyWord(cfg.vocabulary);
+  const word =
+    (chosen && typeof chosen === "object" ? chosen.term || chosen.word : chosen) ||
+    firstTerm(vocabList);
 
   const wordSay = word ? `I used the word "${word}".` : "I used today's math words.";
   const wordSayEs = word ? `Usé la palabra "${word}".` : "Usé las palabras de hoy.";

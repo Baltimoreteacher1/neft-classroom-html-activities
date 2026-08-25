@@ -6,10 +6,14 @@
  * Bump CACHE on any deploy that must purge the precached shell.
  * ========================================================================== */
 
-const CACHE = "eduwonderlab-vmswdata1";
+// Bumped for the teacher-console change: an already-installed worker holds a
+// precached copy of /curriculum/ from when the hub was public, and that page is
+// now credential-dependent. A new cache name is what actually evicts it.
+const CACHE = "eduwonderlab-vmswdata2";
 const USER_OFFLINE_CACHE = "eduwonderlab-user-offline-v1";
 const PRECACHE_URLS = [
   "/curriculum/",
+  "/curriculum/units/",
   "/curriculum/arcade/",
   "/curriculum/student-launch/",
   "/curriculum/data-privacy/",
@@ -114,7 +118,13 @@ self.addEventListener("fetch", (event) => {
     path.includes("teacher") ||
     path.includes("dashboard") ||
     path.includes("answer-key") ||
-    path.startsWith("/admin");
+    path.startsWith("/admin") ||
+    // The Curriculum Hub index is the teacher console. Exact match only — every
+    // other page under /curriculum/ (units, arcade, projects, student-launch)
+    // is a student surface that must stay cacheable for offline Chromebooks.
+    path === "/curriculum" ||
+    path === "/curriculum/" ||
+    path === "/curriculum/index.html";
   if (isProtectedPath) return;
 
   // API calls are dynamic and must never be served stale from cache — a

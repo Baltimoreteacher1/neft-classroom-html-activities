@@ -1,0 +1,442 @@
+/* student-supports.css — styles for /curriculum/student-supports/.
+ * Every selector is scoped under .student-supports-wrap on purpose: shared stylesheets on
+ * this site have leaked onto lesson pages before, and the generated validator
+ * fails if a bare element selector appears here. */
+
+.student-supports-wrap {
+  --ink: #15233b;
+  --muted: #55617a;
+  --accent: #15487f;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 4rem;
+  font-family: "Hanken Grotesk", system-ui, sans-serif;
+  color: var(--ink);
+}
+
+.student-supports-wrap .backlink {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.student-supports-wrap .backlink:hover,
+.student-supports-wrap .backlink:focus-visible {
+  text-decoration: underline;
+}
+
+.student-supports-wrap header {
+  margin-bottom: 2rem;
+}
+
+.student-supports-wrap .page-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.student-supports-wrap h1 {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  margin: 0.5rem 0 0.25rem;
+}
+
+.student-supports-wrap .lede {
+  font-size: 1.125rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.student-supports-wrap .empty-state {
+  padding: 2rem;
+  border: 2px dashed #c9d3e4;
+  border-radius: 0.75rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.student-supports-wrap .skip-link:focus-visible,
+.student-supports-wrap :focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Lesson picker ────────────────────────────────────────────────────────── */
+.student-supports-wrap .picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+}
+
+.student-supports-wrap .picker label {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.student-supports-wrap .picker select {
+  font: inherit;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.student-supports-wrap .picker select:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ── Context and the rigor statement ──────────────────────────────────────── */
+.student-supports-wrap .sup-context {
+  margin: 1.5rem 0 0.25rem;
+  font-size: 1.05rem;
+}
+
+.student-supports-wrap .sup-family {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.55rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.student-supports-wrap .sup-rigor {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ── One block per teacher question ───────────────────────────────────────── */
+.student-supports-wrap .sup-block {
+  margin: 0 0 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.student-supports-wrap .sup-block h2 {
+  margin: 0 0 0.75rem;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.student-supports-wrap .sup-block h3 {
+  margin: 1.1rem 0 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.student-supports-wrap .sup-block p {
+  margin: 0 0 0.5rem;
+  line-height: 1.55;
+}
+
+.student-supports-wrap .frame {
+  padding: 0.6rem 0.85rem;
+  border-left: 4px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  background: #f4f7fc;
+  font-weight: 600;
+}
+
+.student-supports-wrap .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.student-supports-wrap .chips li {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.student-supports-wrap .bbs,
+.student-supports-wrap .routes {
+  margin: 0 0 0.5rem;
+  padding-left: 1.15rem;
+  line-height: 1.55;
+}
+
+.student-supports-wrap .bbs li,
+.student-supports-wrap .routes li {
+  margin-bottom: 0.3rem;
+}
+
+/* ── Actions ──────────────────────────────────────────────────────────────── */
+.student-supports-wrap .sup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.student-supports-wrap .btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none;
+}
+
+.student-supports-wrap .btn.ghost {
+  background: #fff;
+  color: var(--accent);
+}
+
+.student-supports-wrap .btn:hover,
+.student-supports-wrap .btn:focus-visible {
+  text-decoration: underline;
+}
+
+.student-supports-wrap .btn:focus-visible {
+  outline: 3px solid #0b2f57;
+  outline-offset: 2px;
+}
+
+.student-supports-wrap .sup-note {
+  margin-top: 1.5rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: var(--muted);
+  font-size: 0.93rem;
+  line-height: 1.55;
+}
+
+/* --- Support configuration (Phase 3: select → preview → apply → teach) ----
+ * Everything below stays scoped under .student-supports-wrap, like the rest of
+ * this file: shared stylesheets on this site have leaked onto lesson pages
+ * before, and the generated validator fails on a bare element selector here. */
+
+.student-supports-wrap .sup-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.student-supports-wrap .sup-presets-label {
+  font-weight: 700;
+  color: var(--muted);
+  margin-right: 0.25rem;
+}
+
+.student-supports-wrap .sup-preset[aria-pressed="true"] {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.student-supports-wrap .sup-category {
+  border: 1px solid #d7e0ee;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.student-supports-wrap .sup-category.is-modification {
+  border-color: #e0b48a;
+  background: #fffaf4;
+}
+
+.student-supports-wrap .sup-category legend {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-weight: 700;
+  padding: 0 0.4rem;
+}
+
+.student-supports-wrap .sup-modification-note {
+  margin: 0.25rem 0 0.75rem;
+  color: #8a5a22;
+  font-size: 0.95rem;
+}
+
+.student-supports-wrap .sup-choices {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.student-supports-wrap .sup-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  /* 44px is the touch-target floor the rest of the site holds to; a support
+   * control that is fiddly on a phone is a support control that goes unused. */
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+
+.student-supports-wrap .sup-choice input {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: none;
+}
+
+.student-supports-wrap .sup-choice-label {
+  font-weight: 600;
+}
+
+.student-supports-wrap .sup-impact {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+
+/* Impact is never signalled by colour alone — each badge carries its own words,
+ * so the distinction survives greyscale, colour blindness and high contrast. */
+.student-supports-wrap .sup-impact.is-access {
+  color: #1c6152;
+}
+
+.student-supports-wrap .sup-impact.is-scaffold {
+  color: #2f5aa8;
+}
+
+.student-supports-wrap .sup-impact.is-modification {
+  color: #93500f;
+}
+
+.student-supports-wrap .sup-not-implemented {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.student-supports-wrap .sup-not-implemented summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.student-supports-wrap .sup-preview-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.student-supports-wrap .sup-preview-item {
+  border-left: 4px solid #cddaeb;
+  padding-left: 0.9rem;
+}
+
+.student-supports-wrap .sup-preview-head {
+  font-weight: 700;
+  margin: 0 0 0.2rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.student-supports-wrap .sup-preview-where,
+.student-supports-wrap .sup-preview-none,
+.student-supports-wrap .sup-preview-guard {
+  margin: 0.15rem 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.student-supports-wrap .sup-preview-adds {
+  margin: 0.35rem 0;
+  padding-left: 1.1rem;
+}
+
+.student-supports-wrap .sup-preview-adds li {
+  margin: 0.2rem 0;
+}
+
+.student-supports-wrap .sup-preview-mod-warning {
+  font-weight: 700;
+  color: #8a5a22;
+}
+
+.student-supports-wrap .sup-preview-unchanged,
+.student-supports-wrap .sup-preview-empty,
+.student-supports-wrap .sup-empty-note {
+  color: var(--muted);
+}
+
+.student-supports-wrap .sup-targets {
+  margin-top: 1rem;
+}
+
+.student-supports-wrap .sup-status {
+  display: inline-block;
+  margin-left: 0.5rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+@media (max-width: 40rem) {
+  .student-supports-wrap .sup-choice {
+    align-items: flex-start;
+  }
+}
+
+/* Not offered for this lesson — instructional reasons, in plain language. */
+.student-supports-wrap .sup-unavailable {
+  border-left: 4px solid #cddaeb;
+  padding: 0.25rem 0 0.25rem 0.9rem;
+  margin: 0.5rem 0 1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.student-supports-wrap .sup-unavailable-head {
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+  color: var(--ink);
+}
+
+.student-supports-wrap .sup-unavailable ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+/* Which class this configuration belongs to. A class is context: the canonical
+   lesson is identical for 601, 602 and 603, and only the teacher's support
+   selection differs. Nothing about a student appears here. */
+.student-supports-wrap .sup-class {
+  margin: 0 0 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-left: 4px solid var(--accent);
+  background: #f4f8fd;
+  color: var(--ink);
+  font-size: 0.98rem;
+}

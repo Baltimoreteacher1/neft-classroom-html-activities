@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Room Makeover Budget — Unit 5 Culminating Project</title>
     <meta name="description" content="Unit 5 Area and Composite Figures culminating project. Students plan a room makeover by calculating floor area, wall paint coverage (subtracting windows/doors), and total makeover costs." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="/assets/fonts/project-pages.css" rel="stylesheet" />
     <style>
       :root {
         --navy: #1e1b4b; /* dark indigo */
@@ -292,8 +290,6 @@
       body.level-0 .lvl0-only { display: block; }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/shared/projects/projects-pro.css" />
     <!-- projects-pro-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
@@ -335,14 +331,6 @@
 <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-complete.css" />
     <!-- projects-complete-injected:end -->
-<!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
-    <meta name="nt-project-id" content="unit-5-b" />
-    <meta name="standard" content="6.GR.1 · Unit 5" data-standard="6.GR.1" data-standard-legacy="6.G.1" data-unit="5" />
-    <meta name="standard" content="6.GR.4 · Unit 5" data-standard="6.GR.4" data-standard-legacy="6.G.4" data-unit="5" />
-    <meta name="nt-project-standards" content="6.GR.1,6.GR.4" />
-    <meta name="nt-project-reveal-unit" content="5" />
-    <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
-    <!-- projects-meta-injected:end -->
 <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-check.css" />
     <!-- projects-check-injected:end -->
@@ -364,6 +352,14 @@
     <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
     <!-- projects-mode-pill-head:end -->
+    <!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
+    <meta name="nt-project-id" content="unit-5-b" />
+    <meta name="standard" content="6.GR.1 · Unit 5" data-standard="6.GR.1" data-standard-legacy="6.G.1" data-unit="5" />
+    <meta name="standard" content="6.GR.4 · Unit 5" data-standard="6.GR.4" data-standard-legacy="6.G.4" data-unit="5" />
+    <meta name="nt-project-standards" content="6.GR.1,6.GR.4" />
+    <meta name="nt-project-reveal-unit" content="5" />
+    <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
+    <!-- projects-meta-injected:end -->
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
 
@@ -624,10 +620,23 @@
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcFloor()">
-            <span class="en-text">🧮 Calculate Floor Area</span>
-            <span class="es-text">🧮 Calcular área del piso</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="mb-user-floor" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter the Floor Area (sq ft)</span>
+              <span class="es-text">✍️ Calcula e ingresa el área del piso (pies²)</span>
+            </label>
+            <input
+              type="number"
+              id="mb-user-floor"
+              step="0.01"
+              placeholder="e.g. 154"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn" onclick="checkFloorSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Floor Area</span>
+              <span class="es-text">✓ Comprobar mi área del piso</span>
+            </button>
+          </div>
           <div class="readout" id="floor-out"></div>
 
           <details class="hint">
@@ -768,10 +777,23 @@
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="calcPaint()">
-            <span class="en-text">🎨 Calculate Paint Needed</span>
-            <span class="es-text">🎨 Calcular pintura necesaria</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="mb-user-wall" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter the NET Paintable Wall Area (sq ft)</span>
+              <span class="es-text">✍️ Calcula e ingresa el área NETA de pared por pintar (pies²)</span>
+            </label>
+            <input
+              type="number"
+              id="mb-user-wall"
+              step="0.01"
+              placeholder="e.g. 365"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn teal" onclick="checkPaintSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Wall Area</span>
+              <span class="es-text">✓ Comprobar mi área de pared</span>
+            </button>
+          </div>
           <div class="readout" id="paint-out"></div>
 
           <details class="hint">
@@ -905,10 +927,23 @@
             </div>
           </div>
 
-          <button class="calc-btn gold" onclick="calcCost()">
-            <span class="en-text">💵 Calculate Total Makeover Cost</span>
-            <span class="es-text">💵 Calcular costo total de remodelación</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="mb-user-cost" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter the Total Makeover Cost ($)</span>
+              <span class="es-text">✍️ Calcula e ingresa el costo total de la remodelación ($)</span>
+            </label>
+            <input
+              type="number"
+              id="mb-user-cost"
+              step="0.01"
+              placeholder="e.g. 589.00"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn gold" onclick="checkCostSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Total Cost</span>
+              <span class="es-text">✓ Comprobar mi costo total</span>
+            </button>
+          </div>
           <div class="readout" id="cost-out"></div>
 
           <div style="margin-top:22px;">
@@ -1613,6 +1648,93 @@
       }
 
       // ---- Calculations ----
+      /* Which results the student has worked out. Every step here says
+         "Calculate ...", and before this gate the page printed the floor area,
+         the gross and net wall areas, the gallons needed and the full cost the
+         instant the room dimensions were typed. */
+      const SOLVED = { floor: false, paint: false, cost: false };
+
+      function mbEs() { return document.body.classList.contains('es'); }
+      function mbWarn(out, en, es) {
+        showReadout(out, '<span style="color:#ef4444;font-weight:bold;">⚠️ ' + (mbEs() ? es : en) + '</span>');
+      }
+      function mbMiss(out, en, es) {
+        showReadout(out, '<span style="color:#ef4444;font-weight:bold;">🤔 ' + (mbEs() ? es : en) + '</span>');
+      }
+
+      function checkFloorSolve() {
+        const l = parseFloat(document.getElementById('floor-length').value);
+        const w = parseFloat(document.getElementById('floor-width').value);
+        const user = parseFloat(document.getElementById('mb-user-floor').value);
+        if (isNaN(l) || isNaN(w) || l <= 0 || w <= 0) {
+          mbWarn('floor-out', 'Enter the room length and width above first!', '¡Ingresa el largo y el ancho del cuarto arriba primero!');
+          return;
+        }
+        if (isNaN(user)) {
+          mbWarn('floor-out', 'Type your calculated floor area in the box before checking!', '¡Escribe tu área del piso calculada antes de comprobar!');
+          return;
+        }
+        if (Math.abs(user - l * w) < 0.2) { SOLVED.floor = true; calcFloor(); return; }
+        const perim = Math.abs(user - 2 * (l + w)) < 0.2;
+        mbMiss('floor-out',
+          'You entered ' + user + '. ' + (perim ? 'That is the distance AROUND the room (its perimeter), not the space inside it.' : 'Floor area is length x width.') + ' Try ' + l + ' x ' + w + '.',
+          'Ingresaste ' + user + '. ' + (perim ? 'Ese es el contorno del cuarto (el perímetro), no el espacio interior.' : 'El área del piso es largo x ancho.') + ' Intenta ' + l + ' x ' + w + '.');
+      }
+
+      function checkPaintSolve() {
+        const l = parseFloat(document.getElementById('floor-length').value);
+        const w = parseFloat(document.getElementById('floor-width').value);
+        const h = parseFloat(document.getElementById('wall-height').value);
+        const win = parseFloat(document.getElementById('window-area').value) || 0;
+        const door = parseFloat(document.getElementById('door-area').value) || 0;
+        const user = parseFloat(document.getElementById('mb-user-wall').value);
+        if (isNaN(l) || isNaN(w) || isNaN(h) || h <= 0) {
+          mbWarn('paint-out', 'Enter the room dimensions and the wall height above first!', '¡Ingresa las dimensiones del cuarto y la altura de la pared primero!');
+          return;
+        }
+        if (isNaN(user)) {
+          mbWarn('paint-out', 'Type your net paintable wall area in the box before checking!', '¡Escribe tu área neta de pared antes de comprobar!');
+          return;
+        }
+        const gross = 2 * (l + w) * h;
+        const net = Math.max(0, gross - win - door);
+        if (Math.abs(user - net) < 0.5) { SOLVED.paint = true; calcPaint(); return; }
+        const forgot = Math.abs(user - gross) < 0.5;
+        mbMiss('paint-out',
+          'You entered ' + user + '. ' + (forgot ? 'That is the GROSS wall area — the windows and doors do not get painted, so subtract them.' : 'Find all four walls first: 2 x (length + width) x height, then subtract the windows and doors.') + '',
+          'Ingresaste ' + user + '. ' + (forgot ? 'Esa es el área BRUTA — las ventanas y puertas no se pintan, así que réstalas.' : 'Halla primero las cuatro paredes: 2 x (largo + ancho) x altura, luego resta ventanas y puertas.') + '');
+      }
+
+      function checkCostSolve() {
+        if (!SOLVED.floor || !SOLVED.paint) {
+          mbWarn('cost-out', 'Check your floor area (Step 2) and wall area (Step 3) first.', 'Primero comprueba el área del piso (Paso 2) y la de las paredes (Paso 3).');
+          return;
+        }
+        const user = parseFloat(document.getElementById('mb-user-cost').value);
+        if (isNaN(user)) {
+          mbWarn('cost-out', 'Type your total makeover cost in the box before checking!', '¡Escribe tu costo total antes de comprobar!');
+          return;
+        }
+        const l = parseFloat(document.getElementById('floor-length').value);
+        const w = parseFloat(document.getElementById('floor-width').value);
+        const h = parseFloat(document.getElementById('wall-height').value);
+        const win = parseFloat(document.getElementById('window-area').value) || 0;
+        const door = parseFloat(document.getElementById('door-area').value) || 0;
+        const fSel = document.getElementById('flooring-select').value;
+        let fPrice = parseFloat(fSel);
+        if (fSel === 'custom') fPrice = parseFloat(document.getElementById('custom-flooring-price').value) || 0;
+        const pSel = document.getElementById('paint-select').value;
+        let pPrice = parseFloat(pSel);
+        if (pSel === 'custom') pPrice = parseFloat(document.getElementById('custom-paint-price').value) || 0;
+        const gallons = Math.max(0, Math.ceil(Math.max(0, 2 * (l + w) * h - win - door) / 350)) || 0;
+        const expected = l * w * fPrice + gallons * pPrice;
+        if (Math.abs(user - expected) < 0.05) { SOLVED.cost = true; calcCost(); comparePeer(); return; }
+        const floorOnly = Math.abs(user - l * w * fPrice) < 0.05;
+        mbMiss('cost-out',
+          'You entered ' + '$' + user.toFixed(2) + '. ' + (floorOnly ? 'That is the flooring only — the paint still has to be added.' : 'Total = (floor area x flooring price) + (gallons x paint price). Remember you buy WHOLE gallons.') + '',
+          'Ingresaste ' + '$' + user.toFixed(2) + '. ' + (floorOnly ? 'Ese es solo el piso — todavía falta sumar la pintura.' : 'Total = (área del piso x precio del piso) + (galones x precio de la pintura). Recuerda que compras galones ENTEROS.') + '');
+      }
+
       function calcFloor() {
         const l = parseFloat(document.getElementById('floor-length').value);
         const w = parseFloat(document.getElementById('floor-width').value);
@@ -1625,9 +1747,11 @@
         
         if (sl) sl.textContent = !isNaN(l) ? l + (isEs ? ' pies' : ' ft') : (isEs ? 'Largo (L)' : 'Length (L)');
         if (sw) sw.textContent = !isNaN(w) ? w + (isEs ? ' pies' : ' ft') : (isEs ? 'Ancho (A)' : 'Width (W)');
-        if (sa) sa.textContent = (!isNaN(l) && !isNaN(w)) ? (l * w).toFixed(1) + (isEs ? ' pies²' : ' sq ft') : (isEs ? 'Área = L × A' : 'Area = L × W');
+        if (sa) sa.textContent = SOLVED.floor && !isNaN(l) && !isNaN(w)
+          ? (l * w).toFixed(1) + (isEs ? ' pies²' : ' sq ft')
+          : (isEs ? 'Área = L × A' : 'Area = L × W');
 
-        if (isNaN(l) || isNaN(w) || l <= 0 || w <= 0) {
+        if (isNaN(l) || isNaN(w) || l <= 0 || w <= 0 || !SOLVED.floor) {
           document.getElementById('floor-out').classList.remove('show');
           return;
         }
@@ -1649,6 +1773,11 @@
       }
 
       function calcPaint() {
+        if (!SOLVED.paint) {
+          const _o = document.getElementById('paint-out');
+          if (_o) _o.classList.remove('show');
+          return;
+        }
         const l = parseFloat(document.getElementById('floor-length').value);
         const w = parseFloat(document.getElementById('floor-width').value);
         const h = parseFloat(document.getElementById('wall-height').value);
@@ -1702,6 +1831,11 @@
       }
 
       function calcCost() {
+        if (!SOLVED.cost) {
+          const _o = document.getElementById('cost-out');
+          if (_o) _o.classList.remove('show');
+          return;
+        }
         const l = parseFloat(document.getElementById('floor-length').value);
         const w = parseFloat(document.getElementById('floor-width').value);
         const floorArea = l * w;
@@ -1776,6 +1910,18 @@
       }
 
       function comparePeer() {
+      /* This panel computes the student's OWN floor area, paint gallons and
+         total cost — the three findings the steps ask them to produce. Without
+         this gate a student could skip those steps, type a partner's numbers
+         here, and read their own results off the comparison. Ask for the
+         student's own work first; there is nothing to compare until then. */
+      if (!SOLVED.floor || !SOLVED.paint || !SOLVED.cost) {
+        const needEs = document.body.classList.contains('es');
+        showReadout('peer-out', needEs
+          ? '<strong>Primero termina tus propios cálculos.</strong><br><small>Necesitas el área del piso, los galones de pintura y tu costo total antes de compararlos con los de tu compañero.</small>'
+          : '<strong>Finish your own calculations first.</strong><br><small>You need your floor area, your paint gallons, and your total cost before you can compare them with your partner\'s.</small>');
+        return;
+      }
         const l = parseFloat(document.getElementById('floor-length').value);
         const w = parseFloat(document.getElementById('floor-width').value);
         const floorArea = l * w;
@@ -2241,6 +2387,7 @@
   <script src="/shared/projects/projects-zoom.js" defer></script>
   <!-- projects-visuals-injected:end -->
   <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+  <script>window.NeftCanvasBridgeConfig=Object.assign({},window.NeftCanvasBridgeConfig,{activityId:"unit-5-version-b",manual:true,finishButton:false,completionOnly:true});</script>
   <script src="/assets/canvas-bridge.js" defer></script>
   <!-- canvas-bridge-injected:end -->
   <!-- projects-3d-injected:begin (build-in-3D + WebXR AR — tools/inject-projects-3d.mjs) -->
@@ -2267,9 +2414,6 @@
 <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
   <script src="/shared/projects/projects-complete.js" defer></script>
   <!-- projects-complete-injected:end -->
-<!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
-  <script src="/shared/projects/projects-meta.js?v=20260727-v2" defer></script>
-  <!-- projects-meta-injected:end -->
 <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
   <script src="/shared/projects/projects-check.js" defer></script>
   <!-- projects-check-injected:end -->
@@ -2293,5 +2437,8 @@
   <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
   <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
   <!-- projects-mode-pill-body:end -->
+  <!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
+  <script src="/shared/projects/projects-meta.js?v=20260727-v2" defer></script>
+  <!-- projects-meta-injected:end -->
 </body>
 </html>

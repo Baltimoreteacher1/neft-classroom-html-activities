@@ -1,3 +1,4 @@
+import { checkIntervention } from "../core/misconception-interventions.js";
 import { createRemediation } from "../core/remediation.js";
 import { renderMultipleChoice } from "./multiple-choice.js";
 
@@ -198,9 +199,19 @@ function continueButton(label, onClick) {
  * Mounts the scaffolded remediation flow for a single missed practice question.
  * Calls onComplete({ recovered }) when the student exits the loop.
  */
-export function renderRemediation(container, { question, state, level, onComplete }) {
+export function renderRemediation(
+  container,
+  { question, state, level, misconception, lang, level1Shown, onComplete, onProbe },
+) {
   injectStyles();
-  const controller = createRemediation({ question, state, level });
+  const controller = createRemediation({
+    question,
+    state,
+    level,
+    misconception,
+    lang,
+    level1Shown,
+  });
   const root = document.createElement("div");
   root.className = "remediation";
   root.style.position = "relative";
@@ -222,6 +233,10 @@ export function renderRemediation(container, { question, state, level, onComplet
   function drive(result) {
     const { kind, payload } = controller.nextStep(result);
     switch (kind) {
+      case "diagnosis":
+        return showDiagnosis(payload);
+      case "intervention":
+        return showIntervention(payload);
       case "hint":
         return showHint(payload);
       case "worked-example":
@@ -246,6 +261,130 @@ export function renderRemediation(container, { question, state, level, onComplet
         : "Good effort. Let's keep going — you can revisit this later.",
     );
     onComplete?.({ recovered, reason: payload?.reason });
+  }
+
+  // The diagnosed opening rung. It replaces "Hint — try again" when the engine
+  // named the specific error, and it deliberately looks different from a hint:
+  // a hint is a nudge toward the problem, this is a statement about the
+  // student's own reasoning, so it leads with the named error and then the
+  // authored student-voice explanation. Neither states the answer — the retry
+  // below is still a real retry.
+  function showDiagnosis(payload) {
+    clearSteps();
+    const { card, body } = stepCard("Let's look at your thinking", "🔍");
+
+    if (payload.label) {
+      const tag = document.createElement("p");
+      tag.className = "remediation-diagnosis-label";
+      tag.style.cssText =
+        "margin:0 0 var(--sp-2); font-weight:600; color:var(--navy); font-size:var(--fs-sm);";
+      tag.textContent = payload.label;
+      body.append(tag);
+    }
+
+    const p = document.createElement("p");
+    p.style.cssText = "margin:0 0 var(--sp-3); line-height:1.55;";
+    p.textContent = payload.text;
+    body.append(p);
+
+    const retry = continueButton("I see it — try again", () => {
+      mountRetry(card, question, (ok) => drive({ correct: ok }));
+    });
+    body.append(retry);
+    root.append(card);
+    announce(`${payload.label ? payload.label + ". " : ""}${payload.text}`);
+    focusStep(card);
+  }
+
+  // Level two: the micro-task. Reached when naming the error was not enough, so
+  // it deliberately stops talking about the student's problem and gives them one
+  // tiny case where the error cannot hide. Answering it correctly is the
+  // strongest signal we get that the misconception actually shifted — it is a
+  // fresh question, not a second guess at a four-option item.
+  function showIntervention(payload) {
+    clearSteps();
+    const { card, body } = stepCard("Let's try a smaller one", "🎯");
+
+    const probe = document.createElement("p");
+    probe.style.cssText = "margin:0 0 var(--sp-3); line-height:1.55; font-weight:500;";
+    probe.textContent = payload.probe;
+    body.append(probe);
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "text-input remediation-probe-input";
+    input.setAttribute("aria-label", payload.probe);
+    input.autocomplete = "off";
+    input.style.cssText =
+      "padding:var(--sp-2); border:1px solid var(--line); border-radius:var(--radius-sm); font:inherit; min-width:9rem;";
+    body.append(input);
+
+    const status = document.createElement("div");
+    status.setAttribute("aria-live", "polite");
+    status.style.cssText = "margin-top:var(--sp-2); line-height:1.5;";
+
+    const check = document.createElement("button");
+    check.type = "button";
+    check.className = "btn btn-primary";
+    check.style.marginLeft = "var(--sp-2)";
+    check.textContent = "Check";
+
+    let probeMisses = 0;
+    const settle = (correctedProbe) => {
+      input.readOnly = true;
+      check.remove();
+      const onward = document.createElement("button");
+      onward.type = "button";
+      onward.className = "btn btn-primary mt-4";
+      onward.textContent = "Back to my problem";
+      onward.addEventListener("click", () => {
+        tapFeedback(onward);
+        // The micro-task is not the assessment — the student's own problem is.
+        // Whatever happened here, they go back and retry it.
+        mountRetry(card, question, (ok) => drive({ correct: ok }));
+      });
+      body.append(onward);
+      onProbe?.({ tag: payload.tag, corrected: correctedProbe });
+    };
+
+    check.addEventListener("click", () => {
+      tapFeedback(check);
+      const typed = input.value.trim();
+      if (!typed) {
+        status.textContent = "Have a go — even a guess is worth more than skipping it.";
+        input.focus();
+        return;
+      }
+      if (checkIntervention(payload.tag, typed)) {
+        status.style.color = "var(--success, #2e9e5b)";
+        status.textContent = `✓ Yes. ${payload.then}`;
+        announce(`Correct. ${payload.then}`);
+        settle(true);
+        return;
+      }
+      probeMisses++;
+      if (probeMisses === 1) {
+        status.style.color = "";
+        status.textContent = "Not quite — picture it with objects, then try once more.";
+        announce("Not quite. Try once more.");
+        input.select?.();
+        input.focus();
+        return;
+      }
+      // Second miss on the micro-task: this is as small as the ladder goes, so
+      // show the answer rather than leaving a student stuck on the scaffold that
+      // was supposed to unstick them.
+      status.style.color = "";
+      status.innerHTML = `<strong>${esc(payload.accept[0])}.</strong> ${esc(payload.then)}`;
+      announce(`The answer is ${payload.accept[0]}. ${payload.then}`);
+      settle(false);
+    });
+
+    body.append(check, status);
+    root.append(card);
+    announce(`Let's try a smaller one. ${payload.probe}`);
+    focusStep(card);
+    input.focus?.();
   }
 
   function showHint(payload) {
@@ -305,7 +444,7 @@ export function renderRemediation(container, { question, state, level, onComplet
     const intro = document.createElement("p");
     intro.style.cssText = "margin:0 0 var(--sp-3); color:var(--muted);";
     intro.textContent =
-      "Now your turn on the same problem. Reveal each step as you think it through.";
+      "Now your turn on the same problem. Answer each step in your own words first — then check it against the model.";
     body.append(intro);
 
     const prompts = payload.prompts || [];
@@ -324,7 +463,7 @@ export function renderRemediation(container, { question, state, level, onComplet
           once: true,
         });
         body.append(nextBtn);
-        announce("All guided steps revealed. Continue when ready.");
+        announce("All guided steps done. Continue when ready.");
         return;
       }
       const sp = prompts[revealed];
@@ -333,34 +472,95 @@ export function renderRemediation(container, { question, state, level, onComplet
       row.style.cssText =
         "background:var(--cream); border-radius:var(--radius-sm); padding:var(--sp-3);";
       const q = document.createElement("p");
-      q.style.cssText = "margin:0 0 var(--sp-2); font-weight:600;";
+      q.style.cssText = "margin:0 0 var(--sp-2); font-weight:500;";
       q.textContent = sp.prompt;
       row.append(q);
 
-      const revealBtn = document.createElement("button");
-      revealBtn.className = "btn btn-secondary";
-      revealBtn.textContent = "Reveal this step";
-      revealBtn.addEventListener("click", () => {
-        tapFeedback(revealBtn);
+      // The student writes the step BEFORE the model appears. This used to be a
+      // bare "Reveal this step" button, which made the guided rung the only part
+      // of the ladder that asked nothing of the student — they clicked four
+      // times and read four sentences, and that reading was counted as having
+      // worked through it.
+      //
+      // The model answers here are prose derived from the item's explanation, so
+      // they cannot be honestly auto-graded. Rather than fake a check, this uses
+      // the site's attempt-gated self-check pattern: the model appears only
+      // after a real attempt, next to what the student actually wrote, and the
+      // student judges the match themselves. That judgement is not scored — the
+      // point is that the sentence exists in their words before they see it.
+      const input = document.createElement("textarea");
+      input.className = "remediation-guided-input";
+      input.rows = 2;
+      input.setAttribute("aria-label", sp.prompt);
+      input.placeholder = "Write what happens in this step…";
+      input.style.cssText =
+        "width:100%; box-sizing:border-box; padding:var(--sp-2); border:1px solid var(--line); border-radius:var(--radius-sm); font:inherit; line-height:1.5; resize:vertical;";
+      row.append(input);
+
+      const checkBtn = document.createElement("button");
+      checkBtn.className = "btn btn-secondary";
+      checkBtn.style.marginTop = "var(--sp-2)";
+      checkBtn.type = "button";
+      checkBtn.textContent = "Check my thinking";
+      checkBtn.disabled = true;
+      input.addEventListener("input", () => {
+        checkBtn.disabled = input.value.trim().length === 0;
+      });
+
+      checkBtn.addEventListener("click", () => {
+        tapFeedback(checkBtn);
+        const written = input.value.trim();
+        if (!written) return;
+        input.readOnly = true;
+        checkBtn.remove();
+
         const ans = document.createElement("div");
         ans.setAttribute("role", "status");
-        ans.style.cssText = "margin-top:var(--sp-2); font-family:var(--font-mono);";
-        ans.innerHTML = `<strong>${esc(sp.label)}:</strong> ${esc(sp.answer)}`;
+        ans.style.cssText =
+          "margin-top:var(--sp-2); padding:var(--sp-2); background:var(--success-bg); border-radius:var(--radius-sm);";
+        ans.innerHTML = `<strong>${esc(sp.label)}:</strong> <span style="font-family:var(--font-mono);">${esc(sp.answer)}</span>`;
         row.append(ans);
         revealAnim(ans);
-        revealBtn.remove();
-        announce(`Step revealed. ${sp.label}: ${sp.answer}`);
-        revealed++;
-        renderGuidedStep();
+        announce(`Model answer. ${sp.label}: ${sp.answer}`);
+
+        // Self-rating, deliberately unscored. It is here so the student has to
+        // decide whether their sentence matched — a comparison they will skip
+        // if the next control just says "Continue".
+        const rate = document.createElement("div");
+        rate.style.cssText = "display:flex; gap:var(--sp-2); margin-top:var(--sp-3);";
+        [
+          ["That matches mine", "matched"],
+          ["Mine was different", "differed"],
+        ].forEach(([label, verdict]) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "btn btn-secondary";
+          b.textContent = label;
+          b.addEventListener("click", () => {
+            tapFeedback(b);
+            rate.remove();
+            announce(
+              verdict === "matched"
+                ? "Marked as matching. Next step."
+                : "Marked as different. Next step — read the model again as you go.",
+            );
+            revealed++;
+            renderGuidedStep();
+          });
+          rate.append(b);
+        });
+        row.append(rate);
+        revealAnim(rate);
       });
-      row.append(revealBtn);
+      row.append(checkBtn);
       stepsWrap.append(row);
       revealAnim(row, revealed);
+      input.focus?.();
     }
 
     renderGuidedStep();
     root.append(card);
-    announce("Guided steps. Reveal each step as you work.");
+    announce("Guided steps. Write each step in your own words, then check it.");
     focusStep(card);
   }
 

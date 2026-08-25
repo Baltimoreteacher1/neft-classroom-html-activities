@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="The live SY26-27 Grade 6 Math pacing calendar: today's lesson, the week, the month, the year — and what was actually taught."
+    />
+    <title>Pacing Planner — Neft Teacher</title>
+    <link rel="canonical" href="https://eduwonderlab.com/curriculum/planning/" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#15487f" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="/assets/fonts/outfit-hanken-grotesk-fddd17.css"
+    />
+    <link rel="stylesheet" href="./planning.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to the main content</a>
+
+    <div class="planning-wrap">
+      <a class="backlink" href="/curriculum/">&#8592; Back to curriculum</a>
+
+      <header class="pp-header">
+        <div class="pp-title">
+          <h1>Pacing Planner</h1>
+          <p class="lede">
+            SY 2026&ndash;27 &middot; Course 1 Grade&nbsp;6 Mathematics. The live plan &mdash; move
+            a lesson, record what you taught, and the calendar keeps up.
+          </p>
+        </div>
+        <div class="pp-status">
+          <p class="pp-save" data-role="save" role="status" aria-live="polite">Loading&hellip;</p>
+          <button type="button" class="pp-btn pp-btn-quiet" data-action="undo" disabled>
+            Undo last adjustment
+          </button>
+          <!-- Shown only until a key is stored. An inline field rather than a
+               prompt(): a modal browser prompt blocks the page from painting,
+               so the planner appeared to hang before showing anything. -->
+          <form class="pp-keyform" data-role="keyform" hidden>
+            <label class="pp-sr" for="pp-key">Teacher key</label>
+            <input id="pp-key" type="password" data-role="key" placeholder="Teacher key" autocomplete="current-password" />
+            <button type="submit" class="pp-btn pp-btn-primary">Unlock saving</button>
+          </form>
+        </div>
+      </header>
+
+      <!-- CLASS SCOPE. A radio group, not a <select>: the three classes are the
+           planner's primary axis and a teacher switches between them constantly
+           during a prep period, so they are one tap each and all visible at
+           once. "Shared plan" is a real, selectable layer — it is what all three
+           classes inherit, and hiding it would make grade-wide edits impossible
+           to make deliberately. -->
+      <fieldset class="pp-scope" data-role="scope">
+        <legend class="pp-sr">Which class are you planning?</legend>
+        <div class="pp-scope-row">
+          <span class="pp-scope-label" aria-hidden="true">Planning</span>
+          <div class="pp-scope-tabs" role="radiogroup" aria-label="Class section"></div>
+        </div>
+        <p class="pp-scope-now" data-role="scope-now" role="status" aria-live="polite"></p>
+      </fieldset>
+
+      <nav class="pp-views" aria-label="Planner views">
+        <button type="button" class="pp-view" data-view="today" aria-current="page">Today</button>
+        <button type="button" class="pp-view" data-view="week">Week</button>
+        <button type="button" class="pp-view" data-view="month">Month</button>
+        <button type="button" class="pp-view" data-view="unit">Units</button>
+        <button type="button" class="pp-view" data-view="year">Year</button>
+      </nav>
+
+      <div class="pp-toolbar">
+        <div class="pp-move">
+          <button type="button" class="pp-btn pp-btn-quiet" data-action="prev">
+            <span aria-hidden="true">&#8592;</span> Previous
+          </button>
+          <button type="button" class="pp-btn pp-btn-quiet" data-action="today-jump">Today</button>
+          <button type="button" class="pp-btn pp-btn-quiet" data-action="next">
+            Next <span aria-hidden="true">&#8594;</span>
+          </button>
+          <p class="pp-range" data-role="range"></p>
+        </div>
+
+        <div class="pp-find">
+          <label class="pp-sr" for="pp-search">Search the year</label>
+          <input
+            id="pp-search"
+            type="search"
+            placeholder="Lesson, title, standard, unit or date&hellip;"
+            autocomplete="off"
+            data-role="search"
+          />
+          <label class="pp-sr" for="pp-filter">Filter</label>
+          <select id="pp-filter" data-role="filter">
+            <option value="">All days</option>
+            <option value="type:Assessment">Assessments</option>
+            <option value="type:Project">Projects</option>
+            <option value="type:Flex">Flex days</option>
+            <option value="type:Catch-Up">Catch-up days</option>
+            <option value="shifted">Shifted from the original plan</option>
+            <option value="untaught">Not yet recorded</option>
+            <option value="mcap">MCAP window</option>
+            <option value="q:Q1">Quarter 1</option>
+            <option value="q:Q2">Quarter 2</option>
+            <option value="q:Q3">Quarter 3</option>
+            <option value="q:Q4">Quarter 4</option>
+          </select>
+          <button type="button" class="pp-btn pp-btn-quiet" data-action="export-docx">
+            Export Word
+          </button>
+          <button type="button" class="pp-btn pp-btn-quiet" data-action="export-xlsx">
+            Export Excel
+          </button>
+          <button type="button" class="pp-btn pp-btn-quiet" data-action="print">Print</button>
+        </div>
+      </div>
+
+      <main id="main" data-role="main" tabindex="-1">
+        <p class="pp-loading" data-role="loading">Loading the pacing plan&hellip;</p>
+      </main>
+
+      <p class="pp-footnote">
+        Fixed calendar events come from the official SY26-27 school calendar and the Course&nbsp;1
+        scope and sequence. Lesson titles, standards and links come from the live EduWonderLab
+        curriculum. <a href="#" data-action="assumptions">Planning assumptions</a>
+      </p>
+    </div>
+
+    <!-- Day editor. A dialog rather than an inline panel so keyboard focus is
+         trapped and Escape always gets out. -->
+    <dialog class="pp-dialog" data-role="day-dialog" aria-labelledby="pp-day-title">
+      <form method="dialog" class="pp-dialog-body">
+        <h2 id="pp-day-title">Day</h2>
+        <div data-role="day-dialog-body"></div>
+        <div class="pp-dialog-actions">
+          <button type="submit" class="pp-btn pp-btn-quiet" value="close">Close</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Cascade preview. Nothing is written until Apply is pressed here. -->
+    <dialog class="pp-dialog" data-role="preview-dialog" aria-labelledby="pp-preview-title">
+      <div class="pp-dialog-body">
+        <h2 id="pp-preview-title">Preview changes</h2>
+        <div data-role="preview-body"></div>
+        <div class="pp-dialog-actions">
+          <button type="button" class="pp-btn pp-btn-quiet" data-action="preview-cancel">
+            Cancel
+          </button>
+          <button type="button" class="pp-btn pp-btn-primary" data-action="preview-apply">
+            Apply
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="pp-dialog" data-role="info-dialog" aria-labelledby="pp-info-title">
+      <form method="dialog" class="pp-dialog-body">
+        <h2 id="pp-info-title">Planning assumptions</h2>
+        <div data-role="info-body"></div>
+        <div class="pp-dialog-actions">
+          <button type="submit" class="pp-btn pp-btn-quiet" value="close">Close</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- The lesson adaptation layer, read-only here. The planner REPORTS whether
+         a scheduled lesson has supports configured; it never configures them —
+         one configuration surface, so the two cannot drift. Loaded before the
+         planner so the status suffix is available on first render, and entirely
+         optional: without it the links simply carry no status. -->
+    <script src="/shared/supports/lesson-supports.js"></script>
+    <script src="./planning.js" type="module"></script>
+  </body>
+</html>

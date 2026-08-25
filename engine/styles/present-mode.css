@@ -1,44 +1,259 @@
 /* ============================================================================
    Present mode — teacher-facing slide projection (engine/core/present-mode.js)
    ----------------------------------------------------------------------------
-   Styled in the editorial design language (paper, navy/teal, Fraunces via
-   --fl-serif, hairline rules, restrained radii). Opt-in via Tools ▸ Present
-   or ?present=1; body carries `nt-present` while active.
+   Projector & Smartboard optimized: big typography, high-contrast dark ink,
+   crisp card formatting, enlarged math expressions, jumbo touch/click targets,
+   and clean slide navigation.
    ============================================================================ */
 
-/* Maximize the board: sidebar yields to the slide rail while presenting */
+/* ── Global Projector Layout & Canvas ──────────────────────────────────────── */
 body.nt-present {
   overflow-x: hidden;
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body.nt-present .app,
 body.nt-present #app {
-  padding-right: 200px;
+  padding-right: 220px !important;
   box-sizing: border-box;
+  max-width: 1100px;
+  margin-inline: auto;
 }
 
 body.nt-present .app .sidebar {
   display: none !important;
 }
 
-/* .app is `grid-template-columns: 300px minmax(0, 1fr)`. Hiding the sidebar
-   removes it from the grid, which drops the lesson itself into the leftover
-   300px track — a thin ribbon of text on a classroom board. Collapse to one
-   full-width column so the lesson actually fills the projection. */
+/* Single full-width projection column */
 body.nt-present .app {
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) !important;
 }
 
-/* Projection legibility: step the reading size up while presenting */
+/* ── Projection Legibility & High-Clarity Typography ───────────────────────── */
+body.nt-present {
+  --fl-base: 1.35rem;
+  font-size: 1.35rem;
+  line-height: 1.6;
+}
+
 body.nt-present .phase,
-body.nt-present .sg-panel {
-  --fl-base: 1.25rem;
-  font-size: 1.0625em;
+body.nt-present .sg-panel,
+body.nt-present .phase-container {
+  --fl-base: 1.35rem;
+  font-size: 1.35rem;
+  line-height: 1.6;
+  padding-bottom: 100px;
 }
 
-body.nt-present .phase-container,
-body.nt-present #app {
-  padding-bottom: 92px;
+/* Headings: Crisp, prominent, high contrast */
+body.nt-present h1,
+body.nt-present .phase-title,
+body.nt-present .hero-title {
+  font-size: 2.4rem !important;
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
+  color: #0a2540 !important;
+  letter-spacing: -0.015em !important;
+  margin-top: 0 !important;
+  margin-bottom: 18px !important;
+}
+
+body.nt-present h2,
+body.nt-present h3,
+body.nt-present .card-title,
+body.nt-present .section-title,
+body.nt-present .step-title,
+body.nt-present .prob-title {
+  font-size: 1.85rem !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  color: #0f172a !important;
+  margin-top: 0 !important;
+  margin-bottom: 14px !important;
+}
+
+/* Prompts, Problem Stems, and Instructions */
+body.nt-present .prompt,
+body.nt-present .problem-stem,
+body.nt-present .question-text,
+body.nt-present .instruction-text,
+body.nt-present .exercise-prompt,
+body.nt-present .stem,
+body.nt-present .sg-h strong {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  line-height: 1.55 !important;
+  color: #0f172a !important;
+  margin-bottom: 16px !important;
+}
+
+/* Paragraphs & General Text */
+body.nt-present p,
+body.nt-present li,
+body.nt-present label {
+  font-size: 1.35rem;
+  line-height: 1.6;
+  color: #1e293b;
+}
+
+/* ── High-Contrast Cards & Structure ───────────────────────────────────────── */
+body.nt-present .card,
+body.nt-present .phase-card,
+body.nt-present .step-card,
+body.nt-present .prob,
+body.nt-present .sg-vcard,
+body.nt-present .sg-panel,
+body.nt-present .wb-surface,
+body.nt-present .explore-card,
+body.nt-present .card-frame {
+  background: #ffffff !important;
+  border: 2px solid #cbd5e1 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.12) !important;
+  padding: 28px 36px !important;
+  margin-bottom: 24px !important;
+  color: #0f172a !important;
+}
+
+/* ── Math Displays & Formulas ──────────────────────────────────────────────── */
+body.nt-present .math-display,
+body.nt-present .katex-display,
+body.nt-present .formula-display,
+body.nt-present .equation,
+body.nt-present table.math-table,
+body.nt-present .fraction,
+body.nt-present span.katex {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: #0a2540 !important;
+}
+
+body.nt-present .math-display,
+body.nt-present .katex-display,
+body.nt-present .equation-box {
+  background: #f1f5f9 !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 16px 24px !important;
+  margin: 18px 0 !important;
+  text-align: center;
+}
+
+/* ── Jumbo Inputs & Multiple-Choice Options ────────────────────────────────── */
+body.nt-present input[type="text"],
+body.nt-present input[type="number"],
+body.nt-present textarea,
+body.nt-present select,
+body.nt-present .math-input,
+body.nt-present .inline-input {
+  min-height: 56px !important;
+  font-size: 1.45rem !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  background: #ffffff !important;
+  border: 2.5px solid #0284c7 !important;
+  border-radius: 12px !important;
+  padding: 10px 20px !important;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.12) !important;
+}
+
+body.nt-present input:focus,
+body.nt-present textarea:focus,
+body.nt-present select:focus {
+  outline: 4px solid rgba(2, 132, 199, 0.35) !important;
+  border-color: #0369a1 !important;
+}
+
+/* Choice Option Cards & Buttons */
+body.nt-present .choice-btn,
+body.nt-present .option-btn,
+body.nt-present .choice-card,
+body.nt-present button.option,
+body.nt-present .mc-option,
+body.nt-present .sg-choice,
+body.nt-present .answer-choice {
+  min-height: 60px !important;
+  font-size: 1.35rem !important;
+  font-weight: 600 !important;
+  padding: 14px 24px !important;
+  border-radius: 14px !important;
+  border: 2px solid #94a3b8 !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  margin-bottom: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+body.nt-present .choice-btn:hover,
+body.nt-present .option-btn:hover,
+body.nt-present button.option:hover,
+body.nt-present .mc-option:hover {
+  border-color: #0284c7 !important;
+  background: #f0f9ff !important;
+  transform: translateY(-1px);
+}
+
+body.nt-present .choice-btn.selected,
+body.nt-present .option-btn.selected,
+body.nt-present button.option.selected,
+body.nt-present .mc-option.is-selected,
+body.nt-present .choice-card.is-selected {
+  border: 3px solid #0284c7 !important;
+  background: #e0f2fe !important;
+  color: #0369a1 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25) !important;
+}
+
+/* Primary Action Buttons */
+body.nt-present .btn-check,
+body.nt-present .btn-action,
+body.nt-present .btn-primary,
+body.nt-present .submit-btn,
+body.nt-present .btn-next-step,
+body.nt-present .btn-submit {
+  min-height: 56px !important;
+  font-size: 1.35rem !important;
+  font-weight: 800 !important;
+  padding: 12px 32px !important;
+  border-radius: 12px !important;
+  background: #0284c7 !important;
+  color: #ffffff !important;
+  border: none !important;
+  cursor: pointer !important;
+  box-shadow: 0 6px 20px -4px rgba(2, 132, 199, 0.45) !important;
+  transition: all 0.15s ease !important;
+}
+
+body.nt-present .btn-check:hover,
+body.nt-present .btn-action:hover,
+body.nt-present .btn-primary:hover,
+body.nt-present .submit-btn:hover {
+  background: #0369a1 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -4px rgba(2, 132, 199, 0.55) !important;
+}
+
+/* ── Inline Visual Models & SVGs ───────────────────────────────────────────── */
+body.nt-present svg {
+  background: #ffffff !important;
+  border-radius: 12px;
+  stroke-width: 2.5px;
+  max-width: 100% !important;
+}
+
+body.nt-present svg text {
+  fill: #0f172a !important;
+  font-weight: 800 !important;
+  font-size: 15px !important;
 }
 
 /* ── Slide rail (right) — editorial contents column ──────────────────────── */
@@ -47,133 +262,147 @@ body.nt-present .pm-rail {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 190px;
+  width: 210px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  /* Top padding clears the floating Tools chip, which is fixed to the same
-     top-right corner and otherwise sits on top of the "Presenting" heading. */
-  padding: 58px 12px 14px;
-  background: var(--fl-page, #fffdf8);
-  border-left: 1px solid var(--fl-rule, #e4d9c2);
+  padding: 60px 14px 18px;
+  background: #ffffff;
+  border-left: 2px solid #e2e8f0;
   z-index: 55;
-  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.05);
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
 }
 
 body.nt-present .pm-rail-head {
-  font-family: var(--fl-body, var(--font-body));
-  font-weight: 700;
-  font-size: var(--fs-2xs);
-  letter-spacing: 0.18em;
+  font-family: var(--fl-body, system-ui, sans-serif);
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--teal-ink, var(--teal-ink));
-  border-bottom: 2px solid var(--navy, var(--navy));
+  color: #0284c7;
+  border-bottom: 2px solid #0284c7;
   padding-bottom: 8px;
 }
 
 body.nt-present .pm-rail-phases {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding-top: 6px;
+  gap: 6px;
+  padding-top: 8px;
 }
 
 body.nt-present .pm-rail-phase {
-  font-family: var(--fl-body, var(--font-body));
-  font-weight: 600;
-  font-size: var(--fs-xs);
-  line-height: 1.35;
+  font-family: var(--fl-body, system-ui, sans-serif);
+  font-weight: 700;
+  font-size: 13.5px;
+  line-height: 1.4;
   text-align: left;
-  color: var(--ink, var(--ink));
-  background: var(--fl-paper, #f5f0e6);
-  border: 1px solid var(--fl-rule, #e4d9c2);
-  border-radius: 6px;
-  padding: 8px 10px;
+  color: #1e293b;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
   cursor: pointer;
-  transition: all var(--duration-fast) ease;
+  transition: all 0.15s ease;
 }
 
 body.nt-present .pm-rail-phase:hover {
-  background: #e6ded0;
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #0f172a;
 }
 
 body.nt-present .pm-rail-phase.pm-sel {
-  background: var(--navy, var(--navy));
-  color: #fff;
-  border-color: var(--navy, var(--navy));
-  box-shadow: 0 2px 6px rgba(18, 53, 91, 0.2);
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+  font-weight: 800;
 }
 
 body.nt-present .pm-exit {
-  font-family: var(--fl-body, var(--font-body));
-  font-weight: 700;
-  font-size: var(--fs-xs);
-  color: var(--navy, var(--navy));
-  background: transparent;
-  border: 1px solid var(--fl-rule-strong, #d8c9a8);
-  border-radius: 6px;
-  padding: 8px;
+  font-family: var(--fl-body, system-ui, sans-serif);
+  font-weight: 800;
+  font-size: 13px;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px;
   cursor: pointer;
   margin-top: auto;
+  transition: all 0.15s ease;
 }
 
 body.nt-present .pm-exit:hover {
-  background: var(--fl-paper, #f5f0e6);
+  background: #fee2e2;
+  border-color: #fca5a5;
 }
 
-/* ── Arrows — bottom center, clear of the dock (bottom-right) ────────────── */
+/* ── Navigation Arrows & Step Counter (Bottom Center) ─────────────────────── */
 .pm-nav {
   display: none;
 }
 
 body.nt-present .pm-nav {
   position: fixed;
-  left: calc(50% - 95px);
-  bottom: 16px;
+  left: calc(50% - 105px);
+  bottom: 18px;
   transform: translateX(-50%);
-  z-index: 60;
+  z-index: 9999;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 8px 16px;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 body.nt-present .pm-arrow {
-  width: 46px;
-  height: 46px;
-  border: 1px solid var(--navy, var(--navy));
-  border-radius: 6px;
-  background: var(--navy, var(--navy));
-  color: #fff;
-  font-size: var(--fs-lg);
-  font-weight: 700;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 800;
+  border: none;
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(18, 53, 91, 0.22);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  transition: all 0.15s ease;
+}
+
+body.nt-present .pm-arrow:hover:not(:disabled) {
+  background: #0369a1;
+  transform: scale(1.08);
 }
 
 body.nt-present .pm-arrow:disabled {
-  opacity: 0.35;
+  opacity: 0.3;
   cursor: default;
 }
 
-body.nt-present .pm-arrow:focus-visible {
-  outline: 3px solid var(--teal, var(--teal));
-  outline-offset: 2px;
-}
-
 body.nt-present .pm-count {
-  font-family: var(--fl-serif, Georgia, serif);
-  font-weight: 600;
-  color: var(--navy, var(--navy));
-  background: var(--fl-page, #fffdf8);
-  border: 1px solid var(--fl-rule, #e4d9c2);
-  border-radius: 6px;
-  padding: 8px 14px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  color: #ffffff;
+  background: transparent;
+  border: none;
+  padding: 4px 10px;
   font-variant-numeric: tabular-nums;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  letter-spacing: 0.05em;
 }
 
-/* Full-page pre-lesson tabs (Vocab / Learn It / Notes) take the viewport */
+/* Full-page pre-lesson tabs take the viewport */
 html.nt-extra-fullpage-open body.nt-present .pm-nav,
 html.nt-extra-fullpage-open body.nt-present .pm-rail {
   display: none;
@@ -183,8 +412,8 @@ html.nt-extra-fullpage-open body.nt-present .pm-rail {
 @media (max-width: 900px) {
   body.nt-present .app,
   body.nt-present #app {
-    padding-right: 0;
-    grid-template-columns: minmax(0, 1fr);
+    padding-right: 0 !important;
+    grid-template-columns: minmax(0, 1fr) !important;
   }
   body.nt-present .pm-rail {
     display: none;
@@ -198,24 +427,14 @@ html.nt-extra-fullpage-open body.nt-present .pm-rail {
   }
 }
 
-/* ── Presenter widget (teacher-only floating control) ─────────────────────────
-   Moved here from assets/learning-supports/learning-supports.css so the styles
-   ship with the module that builds the widget (engine/core/present-mode.js) and
-   are available on every lesson type, not just the shells that happen to link
-   the learning-supports stylesheet. */
+/* ── Presenter Widget Floating Control ─────────────────────────────────────── */
 #nt-present-widget {
   position: fixed;
   top: 14px;
   right: 180px;
   z-index: 9999;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
-  transition: all var(--duration-normal) cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition: all var(--duration-normal, 0.2s) cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nt-present-bar {
@@ -233,7 +452,7 @@ html.nt-extra-fullpage-open body.nt-present .pm-rail {
 }
 
 .nt-present-label {
-  font-size: var(--fs-xs);
+  font-size: var(--fs-xs, 12px);
   font-weight: 700;
   letter-spacing: 0.02em;
   color: #7dd3fc;
@@ -241,12 +460,12 @@ html.nt-extra-fullpage-open body.nt-present .pm-rail {
 }
 
 .nt-present-act-btn {
-  background: linear-gradient(135deg, var(--teal-ink) 0%, var(--teal-ink) 100%);
+  background: linear-gradient(135deg, var(--teal-ink, #0284c7) 0%, #0369a1 100%);
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 999px;
   padding: 6px 14px;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-xs, 12px);
   font-weight: 700;
   cursor: pointer;
   display: inline-flex;
@@ -254,13 +473,13 @@ html.nt-extra-fullpage-open body.nt-present .pm-rail {
   gap: 6px;
   box-shadow: 0 2px 8px rgba(13, 122, 118, 0.4);
   transition:
-    transform var(--duration-fast) ease,
-    background var(--duration-fast) ease;
+    transform 0.15s ease,
+    background 0.15s ease;
 }
 
 .nt-present-act-btn:hover {
   transform: translateY(-1px) scale(1.02);
-  background: linear-gradient(135deg, var(--teal-ink) 0%, #115e59 100%);
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
 }
 
 /* Active state: the same button exits Present mode */
@@ -283,11 +502,11 @@ html.nt-extra-fullpage-open body.nt-present .pm-rail {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-sm, 14px);
   cursor: pointer;
   transition:
-    background var(--duration-fast) ease,
-    transform var(--duration-fast) ease;
+    background 0.15s ease,
+    transform 0.15s ease;
 }
 
 .nt-present-min-btn:hover {
@@ -303,7 +522,7 @@ html.nt-extra-fullpage-open body.nt-present .pm-rail {
   color: #ffffff;
   border-radius: 999px;
   padding: 6px 14px;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-xs, 12px);
   font-weight: 700;
   cursor: pointer;
   display: inline-flex;
@@ -311,28 +530,27 @@ html.nt-extra-fullpage-open body.nt-present .pm-rail {
   gap: 6px;
   box-shadow: 0 4px 14px rgba(12, 38, 66, 0.3);
   transition:
-    transform var(--duration-fast) ease,
-    background var(--duration-fast) ease;
+    transform 0.15s ease,
+    background 0.15s ease;
 }
 
 .nt-present-btn-mini:hover {
   transform: scale(1.04);
-  background: var(--teal-ink);
+  background: #0284c7;
 }
 
 .nt-present-expand-icon {
-  font-size: var(--fs-2xs);
+  font-size: 11px;
   opacity: 0.8;
 }
 
-/* While presenting, the widget itself must not sit on the projected board.
-   Bottom-left, out of the way of the Save/Resume pill in the right corner. */
+/* While presenting, the widget sits in the bottom-left corner */
 body.nt-present #nt-present-widget {
   top: auto;
   right: auto;
   left: 12px;
   bottom: 12px;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 body.nt-present #nt-present-widget:hover,
@@ -350,7 +568,7 @@ body.nt-present #nt-present-widget:focus-within {
   color: #f8fafc;
   padding: 10px 20px;
   border-radius: 999px;
-  font-size: var(--fs-sm);
+  font-size: 14px;
   font-weight: 600;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -367,3 +585,4 @@ body.nt-present #nt-present-widget:focus-within {
     transform: translate(-50%, 0);
   }
 }
+

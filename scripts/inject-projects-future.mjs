@@ -17,6 +17,7 @@
 import { globSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PROJECT_PAGE_GLOBS } from "../tools/lib/project-units.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CHECK = process.argv.includes("--check");
@@ -41,11 +42,12 @@ const INCLUDES = [
   },
 ];
 
-const patterns = [
-  "math/unit-*/projects/version-a/index.html",
-  "math/unit-*/projects/version-b/index.html",
-  "math/statistics/projects/version-*/index.html",
-];
+/* Glob the version folder, never a hardcoded ["version-a","version-b"] list.
+   That list is why unit-8/version-c was invisible to nearly every projects-*
+   layer, and it was still here: all three version-c pages were missing the
+   coach/reflect layer, so `.ntf-reflect textarea` did not exist on them and the
+   Publication Quality Check reported "0 explanation reflections" forever. */
+const patterns = [...PROJECT_PAGE_GLOBS];
 
 const files = [...new Set(patterns.flatMap((p) => globSync(p, { cwd: ROOT })))].sort();
 

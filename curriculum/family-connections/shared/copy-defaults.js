@@ -126,6 +126,20 @@ export const COPY_FIELDS = Object.freeze([
     es: "Esto es aparte de la tarea regular de su estudiante. Úselo solo cuando funcione para su familia, como una oportunidad para repasar o practicar juntos. No se califica.",
   },
   {
+    key: "weekPracticeTitle",
+    group: "Optional family practice",
+    label: "This week's practice heading",
+    en: "Practice for this week's lessons",
+    es: "Práctica para las lecciones de esta semana",
+  },
+  {
+    key: "weekPracticeHint",
+    group: "Optional family practice",
+    label: "This week's practice hint",
+    en: "These match the lessons posted on the calendar above. Start with the day your student had in class.",
+    es: "Estas corresponden a las lecciones publicadas en el calendario de arriba. Empiece con el día que su estudiante tuvo en clase.",
+  },
+  {
     key: "browsePractice",
     group: "Optional family practice",
     label: "Library disclosure",

@@ -1,14 +1,20 @@
 @import url("../../assets/design-tokens.css");
 @import url("../../assets/mobile-access.css");
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,700;1,400&display=swap");
+@import url("/assets/fonts/engine-body.css");
 
 /* ── Reveal Math Activities — Design System ── */
 
 :root {
   /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(18, 53, 91, 0.06);
-  --shadow-md: 0 8px 24px rgba(18, 53, 91, 0.1);
-  --shadow-lg: 0 18px 38px rgba(18, 53, 91, 0.13);
+  /* SEPARATION COMES FROM THE CANVAS, NOT FROM SHADOWS.
+     A white card on a flat ground already reads as a card. These were a
+     24px and a 38px lift used on ordinary surfaces, which is what made a
+     screen of mathematics look like a stack of floating panels. --shadow-lg
+     stays a real lift because genuinely floating chrome — docks, dialogs, the
+     teacher rail — still floats. */
+  --shadow-sm: 0 1px 2px rgba(18, 53, 91, 0.05);
+  --shadow-md: 0 2px 6px rgba(18, 53, 91, 0.07);
+  --shadow-lg: 0 6px 18px -8px rgba(18, 53, 91, 0.16);
   --shadow-glow: 0 0 0 3px rgba(31, 166, 162, 0.25);
 
   /* Radii (engine-only extensions) */
@@ -42,6 +48,17 @@
   --fs-4xl: 2.2rem;
   --fs-5xl: 2.6rem;
 
+  /* Weight scale — the companion to --fs-*. Retune here, never per component.
+     Body copy is REGULAR. It used to be 700, which meant every direction,
+     every answer choice, every card and every sentence of a lesson arrived
+     already emphasised, so nothing could be emphasised against it: a page of
+     mathematics read as a page of shouting. Bold now means something. */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-display: 800;
+
   /* Transitions */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -66,12 +83,16 @@ html {
 body {
   margin: 0;
   font-family: var(--font-body);
-  font-weight: 700;
+  font-weight: var(--fw-regular);
   color: var(--ink, #0f172a);
-  background:
-    radial-gradient(ellipse 85% 55% at 100% 0%, var(--theme-glow) 0%, transparent 58%),
-    radial-gradient(ellipse 70% 45% at 0% 100%, var(--theme-glow-alt) 0%, transparent 52%),
-    linear-gradient(180deg, var(--bg) 0%, #f3efe6 100%);
+  /* A QUIET CANVAS. One flat colour, no image, nothing behind the words.
+     This carried two themed glow washes and a vertical gradient — the same
+     treatment the small-group shell had before 2026-08-15, removed there for
+     the same reason: a tinted, moving ground competes with the mathematics on
+     a classroom Chromebook and reads as a product demo rather than a place to
+     work. The per-lesson THEME is not lost; it still colours the hero, which
+     is where lesson identity belongs. */
+  background: var(--bg);
   font-size: var(--fs-base);
   line-height: var(--lh-base);
   letter-spacing: 0.005em;
@@ -144,7 +165,7 @@ h4 {
   top: 0;
   height: 100vh;
   overflow-y: auto;
-  background: linear-gradient(180deg, var(--navy) 0%, var(--navy-light) 100%);
+  background: var(--navy);
   color: white;
   padding: var(--sp-6) var(--sp-5);
   display: flex;
@@ -166,20 +187,20 @@ h4 {
   width: 48px;
   height: 48px;
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, var(--amber), var(--teal));
+  background: var(--teal);
   display: grid;
   place-items: center;
   font-size: var(--fs-xl);
-  font-weight: 900;
+  font-weight: var(--fw-display);
   color: var(--navy);
   flex-shrink: 0;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-sm);
 }
 
 .sidebar-title {
   font-family: var(--font-display);
   font-size: var(--fs-md);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   line-height: 1.15;
 }
 
@@ -203,7 +224,7 @@ h4 {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: rgba(255, 255, 255, 0.6);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   margin: var(--sp-2) 0 var(--sp-1);
 }
 
@@ -243,7 +264,7 @@ h4 {
 
 .xp-label {
   font-size: var(--fs-xs);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--amber);
@@ -252,7 +273,7 @@ h4 {
 .xp-value {
   font-family: var(--font-display);
   font-size: var(--fs-sm);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: white;
 }
 
@@ -265,7 +286,7 @@ h4 {
 
 .xp-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--amber), var(--teal));
+  background: var(--teal);
   border-radius: var(--radius-full);
   transition: width var(--duration-slow) var(--ease-out);
   width: 0%;
@@ -291,7 +312,7 @@ h4 {
   color: white;
   border-radius: var(--radius-md);
   padding: 12px 12px;
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   font-size: var(--fs-md);
   transition: all var(--duration-fast) ease;
 }
@@ -305,13 +326,29 @@ h4 {
   background: white;
   color: var(--navy);
   border-color: white;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
-  font-weight: 800;
+  /* Shell audit 2026-08-16: 18px blur on the active phase button. The state is
+     real and worth showing, but it is already carried by fill and aria-current;
+     the shadow only needs to lift the tab, not float it. */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+  font-weight: var(--fw-bold);
 }
 
 .phase-btn.completed {
   border-color: rgba(31, 166, 162, 0.4);
   background: rgba(31, 166, 162, 0.12);
+}
+
+/* The phase you are ON and have already finished. `.completed` and `.active`
+   have equal specificity, so `.completed` (declared later) took the background
+   while `.active`'s dark `color` stayed — leaving navy text on the navy rail at
+   a 1.14:1 contrast ratio, i.e. an invisible label. This fires the moment a
+   student finishes the warmup, on every lesson. "You are here" is the stronger
+   signal, so it keeps the white fill; completion still reads from the green
+   number badge, the filled stars, and the teal border. */
+.phase-btn.active.completed {
+  background: white;
+  color: var(--navy);
+  border-color: rgba(31, 166, 162, 0.55);
 }
 
 .phase-btn.locked {
@@ -331,21 +368,29 @@ h4 {
   background: #0f6d78;
   display: grid;
   place-items: center;
-  font-weight: 900;
+  font-weight: var(--fw-display);
   font-size: var(--fs-md);
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-sm);
   transition: all var(--duration-fast) ease;
 }
 
 .phase-btn.active .phase-num {
-  background: #10b981;
+  /* White on #10b981 was 2.54:1 — the worst contrast in the rail, and on the
+     state a student sees most (the phase they are currently on, before they
+     finish it). Emerald-700 carries white at 5.43:1 and stays lighter than the
+     completed badge below, so "here" still reads brighter than "done". */
+  background: #047857;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  /* Shell audit 2026-08-16: a coloured glow on a number badge inside an already
+     elevated button — elevation inside elevation, communicating nothing. */
+  box-shadow: none;
 }
 
 .phase-btn.completed .phase-num {
-  background: #059669;
+  /* 3.77:1 before — also under the 4.5:1 floor for 16px/800 text, which does
+     not qualify as large. Emerald-800: 7.68:1. */
+  background: #065f46;
   color: #ffffff;
 }
 
@@ -462,7 +507,7 @@ h4 {
 
 .section-title {
   font-size: var(--fs-3xl);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--navy);
   letter-spacing: -0.02em;
 }
@@ -482,7 +527,7 @@ h4 {
   padding: 5px 12px;
   border-radius: var(--radius-full);
   font-size: var(--fs-xs);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -512,7 +557,7 @@ h4 {
   gap: var(--sp-2);
   padding: 12px 24px;
   border-radius: var(--radius-md);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   font-size: var(--fs-md);
   letter-spacing: 0.01em;
   transition: all var(--duration-fast) ease;
@@ -522,13 +567,15 @@ h4 {
 .btn-primary {
   background: var(--teal-ink);
   color: white;
-  box-shadow: 0 4px 12px rgba(12, 111, 107, 0.32);
+  /* Shell audit 2026-08-16: a primary button sits ON the page, it does not float
+     above it. Enough shadow to separate it from the card, no glow. */
+  box-shadow: 0 1px 3px rgba(12, 111, 107, 0.22);
 }
 
 .btn-primary:hover {
   background: #0a5b58;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(31, 166, 162, 0.4);
+  box-shadow: 0 2px 6px rgba(31, 166, 162, 0.3);
 }
 
 .btn-primary:active {
@@ -538,7 +585,7 @@ h4 {
 .btn-secondary {
   background: white;
   color: var(--navy);
-  border: 2px solid var(--line);
+  border: 1px solid var(--line);
 }
 
 .btn-secondary:hover {
@@ -607,7 +654,7 @@ h4 {
   padding: 2px 4px;
   margin: 0 4px;
   color: var(--teal-ink);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
 }
 
 /* Typable sentence-frame blanks (Connect). Replaces the read-only `.blank`
@@ -630,7 +677,7 @@ h4 {
   color: var(--teal-ink);
   font-family: inherit;
   font-size: var(--fs-md);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   text-align: center;
 }
 
@@ -669,7 +716,7 @@ h4 {
 
 .connect-check-stem {
   margin: 0 0 var(--sp-3);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   line-height: 1.6;
 }
 
@@ -681,7 +728,7 @@ h4 {
   border-radius: 50%;
   background: var(--amber, #f59e0b);
   color: #1f2937;
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   line-height: 26px;
   text-align: center;
 }
@@ -750,7 +797,7 @@ h4 {
 }
 
 .connect-check-icon {
-  font-weight: 800;
+  font-weight: var(--fw-bold);
 }
 
 /* Answer reveal, shown only after the response is submitted. */
@@ -765,7 +812,7 @@ h4 {
 .connect-reveal-title {
   margin-bottom: var(--sp-2);
   color: #14532d;
-  font-weight: 800;
+  font-weight: var(--fw-bold);
 }
 
 .connect-reveal-body {
@@ -788,7 +835,7 @@ h4 {
   display: none;
   padding: var(--sp-4);
   border-radius: var(--radius-md);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   font-size: var(--fs-md);
   line-height: 1.5;
   animation: feedbackIn 0.3s var(--ease-spring);
@@ -808,7 +855,7 @@ h4 {
   place-items: center;
   flex-shrink: 0;
   font-size: var(--fs-sm);
-  font-weight: 900;
+  font-weight: var(--fw-display);
 }
 
 .feedback-success {
@@ -889,7 +936,7 @@ h4 {
   text-align: left;
   padding: 12px 16px;
   font-size: var(--fs-sm);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -933,7 +980,7 @@ h4 {
   background: white;
   border: 2px solid var(--line);
   border-radius: var(--radius-md);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   font-size: var(--fs-md);
   cursor: grab;
   user-select: none;
@@ -1117,12 +1164,12 @@ h4 {
   display: none;
 }
 .obj-popup-tr-label {
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--teal, #1c8c8c);
 }
 .obj-popup-tr-es {
   font-size: var(--fs-lg);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   color: var(--navy, #1f2a44);
 }
 
@@ -1150,7 +1197,7 @@ h4 {
   background: var(--cream, #f4f1ea);
   color: var(--navy, #1f2a44);
   font-size: var(--fs-lg);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   line-height: 1.6;
   text-align: left;
 }
@@ -1198,7 +1245,7 @@ body.obj-popup-open {
 .phase-complete-xp {
   font-family: var(--font-display);
   font-size: var(--fs-5xl);
-  font-weight: 900;
+  font-weight: var(--fw-display);
   color: var(--amber);
 }
 
@@ -1276,7 +1323,7 @@ body.obj-popup-open {
   color: white;
   border-radius: var(--radius-full);
   font-family: var(--font-display);
-  font-weight: 900;
+  font-weight: var(--fw-display);
   font-size: var(--fs-md);
   box-shadow: 0 4px 16px rgba(255, 107, 53, 0.4);
   opacity: 0;
@@ -1311,7 +1358,7 @@ body.obj-popup-open {
 .streak-badge {
   margin-top: var(--sp-3);
   font-size: var(--fs-sm);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--coral);
 }
 
@@ -1402,7 +1449,7 @@ body.obj-popup-open {
   top: 50%;
   transform: translateY(-50%);
   color: var(--success);
-  font-weight: 900;
+  font-weight: var(--fw-display);
 }
 @keyframes cellCheck {
   0% {
@@ -1489,7 +1536,7 @@ body.obj-popup-open {
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
   font-size: var(--fs-sm);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   cursor: pointer;
   z-index: 2;
 }
@@ -1728,7 +1775,7 @@ body.obj-popup-open {
 .identity-meta {
   font-family: var(--font-display);
   font-size: var(--fs-2xs);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--teal-light);
@@ -1742,7 +1789,7 @@ body.obj-popup-open {
 .identity-title {
   font-family: var(--font-display);
   font-size: var(--fs-3xl);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: white;
   margin: 0 0 var(--sp-2);
   line-height: 1.15;
@@ -1762,7 +1809,7 @@ body.obj-popup-open {
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.18);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   margin-bottom: var(--sp-4);
 }
 .identity-objectives {
@@ -1784,7 +1831,7 @@ body.obj-popup-open {
   display: inline-block;
   background: var(--amber);
   color: var(--navy);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   font-size: var(--fs-2xs);
   padding: 2px 8px;
   border-radius: var(--radius-full);
@@ -1804,7 +1851,7 @@ body.obj-popup-open {
 }
 .identity-form label {
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -1828,7 +1875,7 @@ body.obj-popup-open {
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--fs-md);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   cursor: pointer;
   transition: opacity var(--duration-fast) ease;
 }
@@ -1847,7 +1894,7 @@ body.obj-popup-open {
 }
 .identity-saved-label {
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -1871,14 +1918,24 @@ body.obj-popup-open {
   border-color: var(--teal);
   background: var(--teal-light);
 }
+/* These sit in `.student-info`, a 10% white veil inside the NAVY sidebar, and
+   they were styled dark: --navy text on a barely-lightened navy is 1.18:1, and
+   --muted is 1.54:1. Effectively invisible, and it had been that way for a long
+   time — axe could not measure it because the sidebar behind them was a
+   GRADIENT, and the contrast rule skips backgrounds it cannot resolve to a
+   single colour. Flattening the sidebar in this pass is what made the failure
+   measurable; the text was always unreadable.
+
+   Light text on the dark ground, which is what every other label in this sidebar
+   already does. */
 .student-name-display {
-  font-weight: 700;
-  color: var(--navy);
+  font-weight: var(--fw-semibold);
+  color: #ffffff;
   font-size: var(--fs-sm);
 }
 .student-period-display {
   font-size: var(--fs-xs);
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.82);
 }
 
 /* ── Export Toolbar ── */
@@ -1904,7 +1961,7 @@ body.obj-popup-open {
 .export-readiness {
   margin-right: auto;
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   padding: 4px 10px;
   border-radius: 999px;
   line-height: 1.3;
@@ -1936,7 +1993,7 @@ body.obj-popup-open {
   border-radius: var(--radius-full);
   font-family: var(--font-body);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   cursor: pointer;
   border: none;
   transition: all var(--duration-fast) ease;
@@ -2014,7 +2071,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 .level-selector-intro {
   font-size: var(--fs-sm);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--muted);
   margin-bottom: var(--sp-3);
 }
@@ -2048,7 +2105,7 @@ body:has(.identity-screen) .export-toolbar {
   outline-offset: 2px;
 }
 .level-option-title {
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   font-size: var(--fs-md);
   color: var(--navy);
 }
@@ -2096,13 +2153,13 @@ body:has(.identity-screen) .export-toolbar {
 .lesson-hero-title {
   font-family: var(--font-display);
   font-size: var(--fs-xl);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   margin: 0;
   line-height: 1.2;
 }
 .lesson-hero-meta {
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   opacity: 0.85;
   margin-top: 4px;
 }
@@ -2120,7 +2177,7 @@ body:has(.identity-screen) .export-toolbar {
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.2);
   font-size: var(--fs-2xs);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -2132,7 +2189,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 .phase-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--amber), var(--teal));
+  background: var(--teal);
   border-radius: var(--radius-full);
   transition: width var(--duration-slow) var(--ease-out);
 }
@@ -2140,7 +2197,7 @@ body:has(.identity-screen) .export-toolbar {
   display: flex;
   justify-content: space-between;
   font-size: var(--fs-2xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   margin-top: 6px;
   opacity: 0.9;
 }
@@ -2155,7 +2212,7 @@ body:has(.identity-screen) .export-toolbar {
   display: flex;
   justify-content: space-between;
   font-size: var(--fs-2xs);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: rgba(255, 255, 255, 0.7);
@@ -2168,7 +2225,7 @@ body:has(.identity-screen) .export-toolbar {
   gap: var(--sp-3);
   align-items: flex-start;
   padding: var(--sp-4);
-  background: linear-gradient(180deg, #fffdf8 0%, var(--card) 100%);
+  background: var(--card);
   border: 1px solid rgba(242, 193, 91, 0.35);
   border-left: 4px solid var(--amber);
   border-radius: var(--radius-md);
@@ -2200,7 +2257,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 .scaffold-panel summary {
   cursor: pointer;
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--hint);
   list-style: none;
 }
@@ -2262,7 +2319,7 @@ body:has(.identity-screen) .export-toolbar {
 /* ── Problem cards (homework parity) ── */
 .problem-card {
   background: white;
-  border: 2px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: var(--radius-lg, 16px);
   padding: var(--sp-5);
   margin-bottom: var(--sp-5);
@@ -2314,7 +2371,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .problem-number-badge {
   font-family: var(--font-display);
-  font-weight: 900;
+  font-weight: var(--fw-display);
   font-size: var(--fs-xl);
   color: var(--navy);
   background: var(--cream);
@@ -2325,7 +2382,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .problem-of-total {
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--muted);
 }
 
@@ -2339,7 +2396,7 @@ body:has(.identity-screen) .export-toolbar {
 .problem-type-badge {
   font-family: var(--font-display);
   font-size: var(--fs-2xs);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--teal-ink);
@@ -2350,7 +2407,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .problem-tier-badge {
   font-size: var(--fs-2xs);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   padding: 4px 10px;
   border-radius: var(--radius-full);
   text-transform: uppercase;
@@ -2391,10 +2448,134 @@ body:has(.identity-screen) .export-toolbar {
 
 .problem-stem {
   font-size: var(--fs-md);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--navy);
   margin: 0 0 var(--sp-4);
   line-height: 1.5;
+}
+
+/* Notebook setup — the model and page structure for doing this problem on paper.
+   It is a SETUP, not an alert. The first version was a single line telling the
+   student to use their notebook; it helped nobody, because the barrier is a
+   blank page rather than willingness. Quiet styling on purpose: a banner
+   students learn to skip is worse than no prompt, since it trains dismissal.
+   No animation, and no colour that competes with the correct/incorrect states.
+
+   HEIGHT IS A FEATURE CONSTRAINT, not a detail. This block sits between the
+   stem and the answer choices, so every pixel here pushes the answers toward
+   the fold — the failure that put a small-group masthead at 581-615px and the
+   first task at or below the fold on a classroom laptop. Hence two steps, not
+   three, and a tighter box on narrow viewports. */
+.nb-setup {
+  margin: 0 0 var(--sp-4);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--paper, #fbfaf6);
+  border-left: 3px solid var(--teal-light);
+  border-radius: 0 8px 8px 0;
+}
+
+.nb-setup-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--navy);
+  line-height: 1.4;
+}
+
+.nb-setup-icon {
+  flex: none;
+}
+
+.nb-setup-model {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-sm);
+  color: var(--navy);
+}
+
+/* The model is the thing to copy, so it is set apart as something transcribed
+   rather than read. The dashed edge reads as "write this down". */
+/* One box per formula, so a lesson that states two does not render its
+   separator inside something a student is told to copy. */
+.nb-setup-model code + code {
+  margin-left: var(--sp-1, 4px);
+}
+
+.nb-setup-model code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--navy);
+  background: #fff;
+  border: 1px dashed var(--teal);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.nb-setup-steps {
+  margin: var(--sp-2) 0 0;
+  padding-left: 1.25em;
+}
+
+.nb-setup-steps li {
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--navy);
+}
+
+/* The card recolours its own chrome on a result; the setup is not a result and
+   must not look like one. */
+.problem-correct .nb-setup,
+.problem-incorrect .nb-setup {
+  opacity: 0.6;
+}
+
+@media (max-width: 640px) {
+  /* Every pixel here costs answer visibility on a phone. */
+  .nb-setup {
+    padding: var(--sp-2);
+  }
+  .nb-setup-steps {
+    margin-top: var(--sp-1, 4px);
+  }
+}
+
+@media print {
+  /* On paper the instruction is noise — the student is already writing. */
+  .nb-setup {
+    display: none;
+  }
+}
+
+/* "Check your written work" — the after-answer reframe. It rides alongside the
+   existing feedback rather than replacing it: the explanation was always shown,
+   what was missing is what the moment is FOR. Deliberately understated, and
+   never coloured like a verdict, because it is neither praise nor correction. */
+.nb-compare {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  line-height: 1.45;
+  color: var(--navy);
+  opacity: 0.9;
+}
+
+.nb-compare-icon {
+  flex: none;
+}
+
+@media print {
+  .nb-compare {
+    display: none;
+  }
 }
 
 .problem-check-row {
@@ -2413,7 +2594,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .problem-check-result {
   font-size: var(--fs-md);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   line-height: 1.45;
   padding: var(--sp-3);
   border-radius: var(--radius-md);
@@ -2476,7 +2657,7 @@ body:has(.identity-screen) .export-toolbar {
   border-radius: var(--radius-md);
   padding: 14px 18px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   font-size: var(--fs-md);
   transition: all var(--duration-fast) ease;
   min-height: 52px;
@@ -2536,7 +2717,7 @@ body:has(.identity-screen) .export-toolbar {
   background: var(--cream);
   border-radius: 10px;
   font-family: var(--font-display);
-  font-weight: 900;
+  font-weight: var(--fw-display);
   font-size: var(--fs-sm);
   color: var(--navy);
   flex-shrink: 0;
@@ -2647,7 +2828,7 @@ body:has(.identity-screen) .export-toolbar {
   margin: 0;
   font-family: var(--font-display);
   font-size: var(--fs-lg);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
 }
 
 .vocab-thumb-wrap {
@@ -2689,7 +2870,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .flip-prompt {
   font-size: var(--fs-2xs);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--teal-ink);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -2711,7 +2892,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .vocab-def {
   font-size: var(--fs-md);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   line-height: 1.45;
   margin: 0;
 }
@@ -2791,7 +2972,7 @@ body:has(.identity-screen) .export-toolbar {
 .worked-example-summary {
   cursor: pointer;
   font-size: var(--fs-md);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--navy);
   display: flex;
   align-items: center;
@@ -2808,7 +2989,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .worked-example-problem {
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   font-size: var(--fs-md);
   margin: 0 0 var(--sp-3);
   padding: var(--sp-3);
@@ -2840,7 +3021,7 @@ body:has(.identity-screen) .export-toolbar {
   background: var(--teal);
   color: white;
   border-radius: 50%;
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   font-size: var(--fs-xs);
 }
 
@@ -2851,7 +3032,7 @@ body:has(.identity-screen) .export-toolbar {
   border: 1px solid var(--success);
   border-radius: var(--radius-sm);
   color: var(--success);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
 }
 
 /* ── Common mistake callout ── */
@@ -2887,7 +3068,7 @@ body:has(.identity-screen) .export-toolbar {
   color: white;
   border-radius: var(--radius-md);
   margin-bottom: var(--sp-4);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   font-size: var(--fs-sm);
   position: sticky;
   top: 0;
@@ -2964,7 +3145,7 @@ body:has(.identity-screen) .export-toolbar {
   background: var(--amber);
   color: var(--navy);
   font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   font-size: var(--fs-2xs);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -2998,7 +3179,7 @@ body:has(.identity-screen) .export-toolbar {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--muted);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   margin-bottom: var(--sp-1);
 }
 
@@ -3006,7 +3187,7 @@ body:has(.identity-screen) .export-toolbar {
   display: block;
   font-family: var(--font-display);
   font-size: var(--fs-2xl);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--navy);
   border-bottom: 2px solid var(--teal);
   padding-bottom: var(--sp-2);
@@ -3029,7 +3210,7 @@ body:has(.identity-screen) .export-toolbar {
 .cert-stat-value {
   font-family: var(--font-display);
   font-size: var(--fs-3xl);
-  font-weight: 900;
+  font-weight: var(--fw-display);
   color: var(--amber);
 }
 
@@ -3044,7 +3225,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .cert-stat-label {
   font-size: var(--fs-2xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--muted);
@@ -3053,7 +3234,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .certificate-streak,
 .certificate-pace {
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--coral);
   margin-bottom: var(--sp-3);
 }
@@ -3075,7 +3256,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .cert-phase-name {
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   font-size: var(--fs-sm);
 }
 
@@ -3096,7 +3277,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .certificate-brand {
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--navy);
 }
 
@@ -3142,7 +3323,7 @@ body:has(.identity-screen) .export-toolbar {
   flex-direction: column;
   align-items: center;
   vertical-align: middle;
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   margin: 0 2px;
   line-height: 1.1;
 }
@@ -3162,7 +3343,7 @@ body:has(.identity-screen) .export-toolbar {
 .math-exp {
   font-size: 0.75em;
   vertical-align: super;
-  font-weight: 800;
+  font-weight: var(--fw-bold);
 }
 
 @media (max-width: 640px) {
@@ -3244,7 +3425,7 @@ body:has(.identity-screen) .export-toolbar {
   background: linear-gradient(135deg, var(--amber), var(--gold));
   color: var(--navy);
   font-family: var(--font-display);
-  font-weight: 900;
+  font-weight: var(--fw-display);
   font-size: var(--fs-xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -3301,7 +3482,7 @@ body:has(.identity-screen) .export-toolbar {
 .cover-goal-label {
   display: block;
   font-size: var(--fs-2xs);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--teal-ink);
@@ -3310,7 +3491,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .cover-goal-text {
   margin: 0;
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   line-height: 1.5;
   color: var(--ink);
 }
@@ -3362,7 +3543,7 @@ body:has(.identity-screen) .export-toolbar {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 900;
+  font-weight: var(--fw-display);
   font-size: var(--fs-xs);
   color: var(--navy);
 }
@@ -3381,7 +3562,7 @@ body:has(.identity-screen) .export-toolbar {
   border: 1px solid var(--line);
   border-radius: var(--radius-full);
   font-size: var(--fs-2xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--navy);
 }
 
@@ -3393,7 +3574,7 @@ body:has(.identity-screen) .export-toolbar {
   background: var(--teal-light);
   border: 1px solid var(--teal);
   border-radius: var(--radius-md);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   font-size: var(--fs-sm);
   color: var(--navy);
   cursor: pointer;
@@ -3514,19 +3695,19 @@ body:has(.identity-screen) .export-toolbar {
 .nt-entrance-welcome {
   margin: 0 0 var(--sp-1);
   font-size: 1.3rem;
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--navy, #12355b);
 }
 .nt-entrance-title {
   margin: 0 0 var(--sp-3);
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   color: var(--muted, #5b6773);
 }
 .nt-entrance-go {
   margin: 0;
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--teal-ink, #0f766e);
 }
 @keyframes ntBadgeStamp {
@@ -3588,20 +3769,20 @@ body:has(.identity-screen) .export-toolbar {
   justify-content: center;
   background: var(--amber);
   color: white;
-  font-weight: 900;
+  font-weight: var(--fw-display);
   border-radius: 50%;
   font-family: var(--font-display);
 }
 
 .story-beat-label {
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--navy);
 }
 
 .story-beat-teaser {
   font-size: var(--fs-xs);
   color: var(--muted);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
 }
 
 .story-beat-reveal {
@@ -3629,7 +3810,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .hint-ladder-title {
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   font-size: var(--fs-sm);
   color: var(--navy);
 }
@@ -3637,7 +3818,7 @@ body:has(.identity-screen) .export-toolbar {
 .hint-ladder-count {
   font-size: var(--fs-xs);
   color: var(--muted);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
 }
 
 .hint-ladder-steps {
@@ -3667,7 +3848,7 @@ body:has(.identity-screen) .export-toolbar {
   background: white;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   cursor: pointer;
 }
 
@@ -3701,7 +3882,7 @@ body:has(.identity-screen) .export-toolbar {
   background: var(--cream);
   border-radius: var(--radius-full);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--navy);
 }
 
@@ -3718,7 +3899,7 @@ body:has(.identity-screen) .export-toolbar {
 .phase-next-label {
   display: block;
   font-size: var(--fs-2xs);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
@@ -3732,7 +3913,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 
 .phase-complete-badge {
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--amber);
   margin-bottom: var(--sp-2);
 }
@@ -3749,7 +3930,7 @@ body:has(.identity-screen) .export-toolbar {
   padding: 6px 14px;
   background: linear-gradient(135deg, var(--amber), var(--gold));
   color: var(--navy);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   font-size: var(--fs-xs);
   border-radius: var(--radius-full);
   animation: starPop 0.5s var(--ease-spring);
@@ -3765,7 +3946,7 @@ body:has(.identity-screen) .export-toolbar {
 .connect-prompt-label {
   display: block;
   font-size: var(--fs-md);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   margin: 0 0 var(--sp-3);
   line-height: 1.5;
 }
@@ -3793,7 +3974,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .connect-scenario-theme {
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   text-transform: capitalize;
   color: var(--muted);
 }
@@ -3816,14 +3997,14 @@ body:has(.identity-screen) .export-toolbar {
   justify-content: space-between;
   font-size: var(--fs-xs);
   color: var(--muted);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
 }
 
 .confidence-output {
   display: block;
   text-align: center;
   font-family: var(--font-display);
-  font-weight: 900;
+  font-weight: var(--fw-display);
   font-size: var(--fs-xl);
   color: var(--teal-ink);
   margin-top: var(--sp-2);
@@ -3852,7 +4033,7 @@ body:has(.identity-screen) .export-toolbar {
   padding: 6px 14px;
   background: var(--navy);
   color: white;
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   font-size: var(--fs-xs);
   border-radius: var(--radius-full);
 }
@@ -3865,7 +4046,7 @@ body:has(.identity-screen) .export-toolbar {
 
 .coins-label {
   font-size: var(--fs-sm);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--amber);
 }
 
@@ -3908,7 +4089,7 @@ body:has(.identity-screen) .export-toolbar {
   padding: var(--sp-3);
   background: var(--navy);
   color: white;
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   border: none;
   border-radius: var(--radius-md) var(--radius-md) 0 0;
   cursor: pointer;
@@ -3976,7 +4157,7 @@ body:has(.identity-screen) .export-toolbar {
   gap: 8px;
   background: var(--teal, #128a87);
   color: #fff;
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   padding: 8px 14px;
   border: 0;
   box-shadow: 0 4px 14px rgba(18, 53, 91, 0.3);
@@ -3985,7 +4166,7 @@ body:has(.identity-screen) .export-toolbar {
   filter: brightness(1.08);
 }
 .mode-toggle-pill .mode-toggle-action {
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   opacity: 0.9;
   border-left: 1px solid rgba(255, 255, 255, 0.45);
   padding-left: 8px;
@@ -4007,7 +4188,7 @@ body:has(.identity-screen) .export-toolbar {
   border: 0;
   color: inherit;
   font: inherit;
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   cursor: pointer;
   padding: 4px 2px;
 }
@@ -4041,7 +4222,7 @@ body:has(.identity-screen) .export-toolbar {
   color: #fff;
   border: 0;
   border-radius: 8px;
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   padding: 6px 12px;
   cursor: pointer;
 }
@@ -4072,7 +4253,7 @@ body:has(.identity-screen) .export-toolbar {
   background: none;
   border: 1px solid var(--navy, var(--navy));
   color: var(--navy, var(--navy));
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   font-size: var(--fs-xs);
   padding: 7px 16px;
   border-radius: 999px;
@@ -4100,7 +4281,7 @@ body:has(.identity-screen) .export-toolbar {
   background: var(--navy, var(--navy));
   color: #fff;
   border: 0;
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
@@ -4113,7 +4294,7 @@ body:has(.identity-screen) .export-toolbar {
   margin: 2px 0 0;
   color: var(--amber, #c85a3a);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
 }
 .identity-teacher.is-on {
   display: flex;
@@ -4123,7 +4304,7 @@ body:has(.identity-screen) .export-toolbar {
   gap: 10px;
 }
 .identity-teacher-label {
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   font-size: var(--fs-xs);
   color: var(--teal, #128a87);
 }
@@ -4131,7 +4312,7 @@ body:has(.identity-screen) .export-toolbar {
   background: none;
   border: 1px solid var(--gray-300, #cbd5e1);
   color: var(--navy, var(--navy));
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   font-size: var(--fs-xs);
   padding: 6px 14px;
   border-radius: 999px;
@@ -4155,7 +4336,7 @@ body:has(.identity-screen) .export-toolbar {
 }
 .teacher-timer-display {
   font-family: var(--font-display, system-ui);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   font-variant-numeric: tabular-nums;
   font-size: var(--fs-lg);
   color: var(--navy);
@@ -4244,7 +4425,7 @@ html.projector .main {
 .uifr-tag {
   display: inline-block;
   font-size: var(--fs-2xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   padding: 1px 6px;
   border-radius: 6px;
   vertical-align: middle;
@@ -4274,11 +4455,11 @@ html.projector .main {
 .math-sub {
   font-size: 0.75em;
   vertical-align: sub;
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
 }
 
 .math-eq {
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--teal-ink);
   padding: 0 2px;
 }
@@ -4372,7 +4553,7 @@ html[lang^="es"] .i18n-es {
   gap: var(--sp-1);
   font-family: var(--font-display);
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--teal-ink);
@@ -4413,7 +4594,7 @@ html[lang^="es"] .i18n-es {
 .nw-eyebrow {
   font-family: var(--font-display);
   font-size: var(--fs-xs);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--teal-ink);
@@ -4422,7 +4603,7 @@ html[lang^="es"] .i18n-es {
   margin: var(--sp-1) 0 0;
   font-family: var(--font-display);
   font-size: var(--fs-2xl);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--navy);
 }
 .nw-context {
@@ -4487,7 +4668,7 @@ html[lang^="es"] .i18n-es {
   margin: 0 0 var(--sp-3);
   font-family: var(--font-display);
   font-size: var(--fs-xl);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--navy);
 }
 .nw-chips {
@@ -4500,7 +4681,7 @@ html[lang^="es"] .i18n-es {
   padding: 8px 15px;
   font-family: var(--font-body);
   font-size: var(--fs-md);
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   color: var(--navy);
   background: var(--card);
   border: 1px solid rgba(18, 53, 91, 0.18);
@@ -4593,7 +4774,7 @@ html[lang^="es"] .i18n-es {
   min-width: 44px;
   padding: 8px 10px;
   border-left: 1px solid currentColor;
-  font-weight: 800;
+  font-weight: var(--fw-bold);
 }
 .nw-vocab-word:hover,
 .nw-vocab-word:focus-visible,
@@ -4602,6 +4783,97 @@ html[lang^="es"] .i18n-es {
   background: rgba(255, 255, 255, 0.7);
   outline: 3px solid var(--navy);
   outline-offset: -3px;
+}
+
+/* ── Academic Vocabulary (config.vocabulary) ───────────────────────────────
+   The lesson's own academic words, listed in Launch. Reuses the card surface
+   and the `.obj-term` glossary button, so a term looks and behaves exactly as
+   it does when underlined inside an objective. Two columns on wide screens,
+   one on narrow; the term column is sized to the longest realistic term rather
+   than a fixed width, so "statistical question" and "mean" both wrap cleanly.
+   Rendered only when the lesson authors vocabulary — see
+   renderAcademicVocabulary in engine/core/lesson-renderer.js. */
+.av-card {
+  border-top: 4px solid var(--amber, #d99a3d);
+  margin-top: var(--sp-4);
+}
+.av-title {
+  margin: 0 0 var(--sp-1);
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  color: var(--navy);
+}
+.av-title-es {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--muted);
+}
+.av-hint {
+  margin: 0 0 var(--sp-4);
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  line-height: 1.5;
+}
+.av-hint [lang="es"] {
+  font-style: italic;
+}
+.av-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-3) var(--sp-5);
+  margin: 0;
+}
+.av-item {
+  display: grid;
+  gap: 2px;
+  /* `start`, not the default `stretch`: grid rows are as tall as the tallest
+     item across BOTH columns, so a short entry ("Quotient — The answer when you
+     divide.") beside a long one had its definition pushed to the bottom of the
+     row with a gap under the term. */
+  align-content: start;
+  padding: var(--sp-2) 0;
+  border-top: 1px solid rgba(15, 23, 42, 0.1);
+  min-width: 0;
+}
+.av-term {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+/* The term itself is a `.obj-term` button, already styled site-wide. Only the
+   weight is lifted here so it reads as the heading of its row. */
+.av-term .obj-term {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
+}
+.av-term-es {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  font-style: italic;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.av-def {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.av-def-es {
+  display: block;
+  margin-top: 2px;
+  font-style: italic;
+  color: var(--muted);
+}
+@media (max-width: 480px) {
+  .av-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── Reveal Word Problem (config.revealWordProblem) ────────────────────────
@@ -4624,7 +4896,7 @@ html[lang^="es"] .i18n-es {
   padding: 4px 12px;
   font-family: var(--font-display);
   font-size: var(--fs-xs);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--teal-ink);
@@ -4635,7 +4907,7 @@ html[lang^="es"] .i18n-es {
   margin: 0;
   font-family: var(--font-display);
   font-size: var(--fs-2xl);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--navy);
 }
 .wp-text {
@@ -4680,7 +4952,7 @@ html[lang^="es"] .i18n-es {
 .syw-wordcount {
   align-self: flex-end;
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--muted);
 }
 .syw-wordcount.is-ready {
@@ -4705,7 +4977,7 @@ html[lang^="es"] .i18n-es {
   background: transparent;
   padding: var(--sp-3) var(--sp-4);
   font-family: var(--font-display, system-ui);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   font-size: var(--fs-md);
   color: var(--navy);
   cursor: pointer;
@@ -4725,7 +4997,7 @@ html[lang^="es"] .i18n-es {
   color: var(--navy);
   border-radius: 999px;
   padding: 6px 14px;
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   font-size: var(--fs-sm);
   cursor: pointer;
   min-height: 40px;
@@ -4764,7 +5036,7 @@ html[lang^="es"] .i18n-es {
   margin: 0 4px;
 }
 .stuck-frame {
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   color: var(--navy);
 }
 @media (max-width: 768px) {
@@ -4774,7 +5046,7 @@ html[lang^="es"] .i18n-es {
 }
 .syw-label {
   font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--navy);
   font-size: var(--fs-md);
 }
@@ -4807,7 +5079,7 @@ textarea.syw-input {
 }
 .syw-check-title {
   margin: 0 0 var(--sp-2);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--navy);
 }
 .syw-checklist ul {
@@ -4827,25 +5099,106 @@ textarea.syw-input {
   }
 }
 
-/* ── Word-problem annotation ────────────────────────────────────────────────
-   Toolbar + marks that let students highlight, underline, and bold the text of
-   a word problem (see engine/core/annotate.js). */
-.annot-bar {
+/* ── Mark-up dock ───────────────────────────────────────────────────────────
+   One small control, fixed to the right edge, present in every phase for both
+   students and teachers (see engine/core/annotate.js). Collapsed it is a single
+   round button; opened it is the four tools. It deliberately mirrors the
+   small-group rail's position so the two lesson surfaces behave alike. */
+.annot-dock {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  /* NOT a plain -50%. The right edge at exactly 50% already belongs to the
+     Learning-Supports dock (.ewl-supports-tools-dock, z-index 9998), and its
+     collapsed "Tools" pill is 100px wide -- so it covered this 44px
+     toggle outright and students simply had no highlighter on any whole-group
+     lesson (measured: toggle at x1236 y478, pill at x1180 y480, elementFromPoint
+     resolved to the pill). The small-group surface hit the identical bug and
+     solved it by offsetting 58px BELOW centre; matching that number here keeps
+     the two lesson surfaces behaving alike and leaves the slot 58px ABOVE
+     centre to .nt-tooldock. Offsetting from the centre (rather than pinning to
+     a corner) is what keeps it clear of the bottom-right Save/Resume cluster on
+     short screens. See assets/small-group-designsystem.css section 11. */
+  transform: translateY(calc(-50% + 58px));
+  /* Above the supports dock: an EXPANDED supports rail can grow to 86vh and
+     reach this slot, and at z-index 60 it would take the click again. */
+  z-index: 9998;
+  /* row-reverse, so the panel opens INWARD from the right edge. In DOM order
+     the toggle comes first (it is the thing you tab to); laid out left-to-right
+     that would push the panel off the side of the screen. */
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: row-reverse;
   align-items: center;
-  gap: var(--sp-2);
-  margin: 0 0 var(--sp-2);
+  gap: 0;
+  max-width: min(280px, calc(100vw - 12px));
 }
-.annot-tip {
-  font-size: var(--fs-sm);
-  font-weight: 600;
+.annot-dock-toggle {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--navy, #264653);
+  background: var(--card, #fff);
+  border: 2px solid var(--line, #e4ddc9);
+  border-right: 0;
+  border-radius: 12px 0 0 12px;
+  box-shadow: 0 2px 10px rgba(18, 53, 91, 0.14);
+}
+.annot-dock-toggle:hover {
+  background: var(--cream, #fdf3e0);
+  border-color: var(--gold, #d4952a);
+}
+.annot-dock-panel {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: var(--card, #fff);
+  border: 2px solid var(--line, #e4ddc9);
+  border-radius: 12px 0 0 12px;
+  box-shadow: 0 2px 14px rgba(18, 53, 91, 0.16);
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+}
+.annot-dock[data-open="true"] .annot-dock-panel {
+  display: flex;
+}
+.annot-dock-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  text-align: left;
+}
+.annot-dock-icon {
+  width: 1.25em;
+  text-align: center;
+}
+.annot-dock-label {
+  white-space: nowrap;
+}
+.annot-dock-status {
+  font-size: var(--fs-xs, 0.75rem);
+  line-height: 1.35;
   color: var(--muted, #5e6e7e);
+  max-width: 170px;
+}
+/* The dock is a screen tool; a printed page has nothing to tap. */
+@media print {
+  .annot-dock {
+    display: none !important;
+  }
 }
 .annot-btn {
   font: inherit;
   font-size: var(--fs-sm);
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   line-height: 1;
   color: var(--navy);
   background: var(--card, #fff);
@@ -4883,7 +5236,7 @@ textarea.syw-input {
   text-underline-offset: 3px;
 }
 .annot-bd {
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--navy);
 }
 @media (prefers-reduced-motion: reduce) {
@@ -4919,16 +5272,9 @@ textarea.syw-input {
   align-items: baseline;
   font-size: var(--fs-lg);
   line-height: 1.6;
-  font-weight: 600;
+  font-weight: var(--fw-medium);
   color: var(--navy, #264653);
   margin: 0 0 var(--sp-3);
-}
-/* The annotation toolbar (annotate.js) is injected as a child of this flex
-   row. Force it onto its own full-width line ABOVE the number + question so it
-   never wedges between them and pushes the problem text off to the side. */
-.sp-stem .annot-bar {
-  flex: 0 0 100%;
-  order: -1;
 }
 .sp-num {
   flex: 0 0 auto;
@@ -4943,7 +5289,7 @@ textarea.syw-input {
   color: #fff;
   font-family: var(--font-display);
   font-size: var(--fs-sm);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
 }
 .sp-row {
   display: flex;
@@ -4953,7 +5299,7 @@ textarea.syw-input {
   margin-top: var(--sp-2);
 }
 .sp-answer-label {
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   color: var(--navy, #264653);
 }
 .sp-answer {
@@ -4995,8 +5341,7 @@ textarea.syw-input {
 #nt-read-progress .nt-read-progress-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--amber, #f59e0b), var(--gold, #d4952a));
-  box-shadow: 0 0 6px rgba(212, 149, 42, 0.5);
+  background: var(--amber, #f59e0b);
   transition: width 0.12s linear;
 }
 @media print {
@@ -5079,6 +5424,15 @@ textarea.syw-input {
   .extra-panel.extra-panel--fullpage {
     inset: 0;
   }
+  /* On phones the takeover is edge-to-edge (inset: 0), but the sidebar carries
+   * an inline z-index of 9999 (app.js lifts it above the drawing canvas at
+   * 9998), which beats the takeover's 8000 and paints the phase rail over the
+   * panel's whole first screen — hero, step rail and step title were unreachable
+   * at 390px, on production too. While the takeover is open the sidebar has no
+   * job on a phone, so drop it back under (inline style needs !important). */
+  html.nt-extra-fullpage-open .app .sidebar {
+    z-index: 0 !important;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .extra-panel.extra-panel--fullpage {
@@ -5115,10 +5469,12 @@ html.nt-extra-fullpage-open body {
   background: var(--navy, var(--navy));
   color: #fff;
   font: inherit;
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   font-size: var(--fs-sm);
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(18, 53, 91, 0.3);
+  /* Shell audit 2026-08-16: the Tools button is chrome pinned to the corner,
+     not a floating surface. */
+  box-shadow: 0 1px 4px rgba(18, 53, 91, 0.22);
 }
 .nt-utility-btn:hover {
   filter: brightness(1.15);
@@ -5166,7 +5522,7 @@ html.nt-extra-fullpage-open body {
   background: none;
   color: var(--navy, var(--navy));
   font: inherit;
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   text-align: left;
   text-decoration: none;
   cursor: pointer;
@@ -5186,11 +5542,19 @@ html.nt-extra-fullpage-open body {
   background: #fef2f2;
 }
 
-/* Minimap HUD — the phase-dot pill. app.js sets everything BUT `left`; the
-   offset lives here so the pill docks beside the phase rail rather than over
-   it (see --nt-rail-w). */
+/* Minimap HUD — the phase-dot pill. Collapsed/hidden on wide desktop where the
+   sidebar has full progress; visible on narrow viewports or when sidebar collapses. */
 .minimap-hud {
+  display: none;
   left: calc(var(--nt-rail-w, 0px) + 16px);
+}
+@media (max-width: 1023px) {
+  .minimap-hud {
+    display: flex !important;
+  }
+}
+.nt-sidebar-collapsed .minimap-hud {
+  display: flex !important;
 }
 
 /* Teacher-only, compact "Clear answers" control. A small round 🧹 icon
@@ -5254,7 +5618,7 @@ html.nt-extra-fullpage-open body {
 }
 .nt-teacher-clear-title {
   margin: 0 0 2px;
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   font-size: var(--fs-md);
 }
 .nt-teacher-clear-sub {
@@ -5300,7 +5664,7 @@ html.nt-extra-fullpage-open body {
   background: #b91c1c;
   color: #fff;
   font: inherit;
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   font-size: var(--fs-sm);
   cursor: pointer;
 }
@@ -5467,7 +5831,7 @@ body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-doc
 .nt-solve-gate-line {
   margin: 0;
   font-size: var(--fs-md, 1rem);
-  font-weight: 800;
+  font-weight: var(--fw-bold);
   color: var(--navy, #12355b);
 }
 
@@ -5499,7 +5863,7 @@ body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-doc
 .vocab-dm-def,
 .drag-item.vocab-sort-item {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: var(--fw-semibold);
   line-height: 1.45;
   min-height: 48px;
   padding: 12px 16px;
@@ -5533,5 +5897,89 @@ body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-doc
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--sp-3, 12px);
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Minimum interactive target for the compact core-lesson controls.
+
+   Measured across 10 stratified lessons at 1366/1024/390: 16-18 of ~31 visible
+   controls fell under the 44px target this repo already enforces elsewhere
+   (tools/validate-curriculum-top1 checks it on progress controls). The offenders
+   are all deliberately small for good reasons — a 12px minimap dot is a phase
+   indicator, and `.obj-term` sits INLINE inside the objective sentence, so
+   inflating either box would wreck the thing it belongs to.
+
+   So the visual size is left exactly as authored and only the HIT AREA grows,
+   via a transparent pseudo-element centred on the control. This is the pattern
+   already proven on `.sg-vcard .sg-speak-inline`, and it survives inline styles:
+   `.minimap-dot` and `.pub-btn` set their width/height with style.cssText in
+   engine/core/app.js, which would beat any width rule here but cannot beat an
+   ::after.
+
+   Deliberately NOT applied to controls that are already >= 44px, and not used to
+   make anything look bigger — nothing about the rendered design changes.
+   ─────────────────────────────────────────────────────────────────────────── */
+.minimap-dot,
+.obj-term,
+.pub-btn,
+.nt-sb-toggle,
+.nt-utility-btn,
+#nsr-launcher,
+.ewl-supports-dock-reopen {
+  position: relative;
+}
+
+.minimap-dot::after,
+.obj-term::after,
+.pub-btn::after,
+.nt-sb-toggle::after,
+.nt-utility-btn::after,
+#nsr-launcher::after,
+.ewl-supports-dock-reopen::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 44px;
+  min-height: 44px;
+  width: 100%;
+  height: 100%;
+  /* The extender must not paint, and must not intercept anything the control
+     itself would not have received — it is a child of the button, so the click
+     still resolves to the button. */
+  background: transparent;
+  pointer-events: auto;
+}
+
+/* An inline vocabulary button inside a sentence must not have its 44px hit area
+   swallow the words on either side of it, so it grows vertically only. */
+.obj-term::after {
+  min-width: 0;
+}
+
+@media (pointer: fine) {
+  /* A mouse does not need the same slack as a finger, and overlapping targets
+     in a dense minimap column are worse than small ones. Keep the full 44px for
+     touch, relax it slightly for precise pointers. */
+  .minimap-dot::after {
+    min-width: 32px;
+    min-height: 32px;
+  }
+}
+
+/* The compact support nubs dock against the right edge at mid-height on narrow
+   screens (Teacher Mode only). The hero title is the one full-bleed line tall
+   enough to reach them — 8px of its box sat under the nub at 390px — so it
+   keeps a gutter wide enough to clear one. Nothing else on the page runs that
+   close to the edge. */
+@media (max-width: 640px) {
+  /* Matched to the warm-deck skin's own specificity — a bare .lesson-hero-title
+     loses to body.editorial.skin-warm-deck .lesson-hero-title and the gutter
+     never lands. */
+  .lesson-hero-title,
+  body.editorial.skin-warm-deck .lesson-hero-title {
+    padding-right: 52px;
   }
 }

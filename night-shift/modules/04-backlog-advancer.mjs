@@ -3,10 +3,15 @@
 // worktree; if build+validate stay clean, commit to a branch, push, open a PR.
 // `claude` tasks run a scoped headless `claude -p` and are gated off by default.
 // NEVER deploys.
+import fs from "node:fs/promises";
 import path from "node:path";
-import { sh, hasCommand, readJson, writeJson } from "../lib/util.mjs";
+import { sh, hasCommand, resolveCommand, readJson, writeJson } from "../lib/util.mjs";
 
 export const name = "Backlog Advancer";
+
+// Read, search, and edit files — no Bash, no network. A task that genuinely
+// needs to run something declares `allowedTools` for itself.
+const DEFAULT_CLAUDE_TOOLS = ["Read", "Glob", "Grep", "Edit", "Write"];
 
 async function makeWorktree(ctx, branch, baseRef) {
   const wt = path.join(ctx.root, ".night-shift-worktrees", branch.replace(/[^\w.-]/g, "_"));
@@ -15,6 +20,14 @@ async function makeWorktree(ctx, branch, baseRef) {
   // regen diff — never the dirty working branch the repo happens to sit on.
   const r = await ctx.git.raw("worktree", "add", "-B", branch, wt, baseRef);
   return r.ok ? wt : null;
+}
+
+// The briefing has to be able to explain a silent run. Discarding stdout is
+// exactly what let the first no-op pass as a ✅.
+async function writeTranscript(ctx, taskId, text) {
+  const file = path.join(ctx.root, "night-shift", "briefings", `claude-${taskId}.log`);
+  await fs.writeFile(file, text, "utf8").catch(() => {});
+  return file;
 }
 
 async function cleanupWorktree(ctx, wt) {
@@ -42,7 +55,10 @@ export async function run(ctx) {
   const max = cfg.maxTasksPerRun || 1;
   const batch = pending.slice(0, max);
   const haveGh = await hasCommand("gh");
-  const haveClaude = await hasCommand("claude");
+  // Absolute path, not a bare name: launchd's PATH has no version-manager
+  // shims, and no non-interactive shell sources the mise activation either, so
+  // a bare `claude` is unrunnable from a scheduled run. See resolveCommand.
+  const claudeBin = await resolveCommand("claude", { cwd: ctx.root });
 
   // Resolve the deploy branch as the base for all generated worktrees.
   const remote = ctx.config.divergenceWatch?.remote || "origin";
@@ -55,8 +71,10 @@ export async function run(ctx) {
       details.push(`⏭️ "${task.title}" — claude task, but enableClaudeTasks is off.`);
       continue;
     }
-    if (task.type === "claude" && !haveClaude) {
-      details.push(`⏭️ "${task.title}" — \`claude\` CLI not found, skipped.`);
+    if (task.type === "claude" && !claudeBin) {
+      worst = "warn";
+      details.push(`⚠️ "${task.title}" — \`claude\` CLI did not resolve on PATH; skipped.`);
+      actions.push("Night Shift could not find the `claude` CLI — check the login-shell PATH.");
       continue;
     }
     if (ctx.dryRun) {
@@ -74,18 +92,58 @@ export async function run(ctx) {
 
     try {
       let workOk = false;
+      let transcriptNote = "";
       if (task.type === "regen") {
         const r = await sh("npm", ["run", task.script], { cwd: wt, timeout: 20 * 60_000 });
         workOk = r.ok;
         if (!workOk) details.push(`❌ "${task.title}" — \`npm run ${task.script}\` failed.`);
       } else if (task.type === "claude") {
         const prompt = `${task.prompt}\n\nConstraints: scoped diff only; do NOT deploy; do NOT touch unrelated files.`;
-        const r = await sh("claude", ["-p", prompt, "--permission-mode", "acceptEdits"], {
-          cwd: wt,
-          timeout: 30 * 60_000,
-        });
+        // An unattended run gets no Bash unless the task asks for it by name:
+        // nothing here should be able to shell out at 2am on its own initiative.
+        const tools = (task.allowedTools || DEFAULT_CLAUDE_TOOLS).join(",");
+        const r = await sh(
+          claudeBin,
+          ["-p", prompt, "--permission-mode", "acceptEdits", "--allowedTools", tools],
+          { cwd: wt, timeout: (task.timeoutMinutes || 30) * 60_000 },
+        );
         workOk = r.ok;
-        if (!workOk) details.push(`❌ "${task.title}" — headless claude run failed.`);
+        const said = (r.stdout || "").trim();
+        if (said) {
+          await writeTranscript(ctx, task.id, said);
+          transcriptNote = said.split("\n").slice(-2).join(" / ").slice(0, 200);
+        }
+        // A task that names its output gets checked for it. Two runs were lost
+        // to a report written into a git-excluded directory: the file was there,
+        // `git status` was empty, and the module read that as "already current".
+        // An invisible artifact must be loud, not indistinguishable from idle.
+        if (workOk && task.output) {
+          const abs = path.join(wt, task.output);
+          const exists = await fs
+            .access(abs)
+            .then(() => true)
+            .catch(() => false);
+          if (!exists) {
+            workOk = false;
+            details.push(`❌ "${task.title}" — declared output ${task.output} was never written.`);
+          } else if ((await sh("git", ["-C", wt, "check-ignore", task.output])).ok) {
+            workOk = false;
+            worst = "warn";
+            details.push(
+              `⚠️ "${task.title}" — wrote ${task.output}, but git ignores that path, so it can never reach a PR.`,
+            );
+            actions.push(`Point "${task.title}" at a tracked path, or un-ignore ${task.output}.`);
+          }
+        }
+        if (!workOk) {
+          // A 30-minute wall clock and a broken prompt are different problems;
+          // reporting both as ❌ is how a briefing stops being worth reading.
+          const why = r.timedOut
+            ? `timed out after ${task.timeoutMinutes || 30}m`
+            : `exited ${r.code}`;
+          const tail = (r.stderr || r.stdout || "").trim().split("\n").slice(-3).join(" / ");
+          details.push(`❌ "${task.title}" — headless claude ${why}.${tail ? ` ${tail}` : ""}`);
+        }
       }
 
       if (!workOk) {
@@ -104,6 +162,19 @@ export async function run(ctx) {
       const wtGit = (...a) => sh("git", ["-C", wt, ...a]);
       const status = (await wtGit("status", "--porcelain")).stdout.trim();
       if (!status) {
+        // For an idempotent generator, an empty diff means the tree was already
+        // current — a real pass. For a claude task it means the run produced
+        // nothing at all, and retiring the task as "done" on the strength of
+        // work that never happened is how a backlog quietly empties itself.
+        if (task.type === "claude") {
+          worst = "warn";
+          details.push(
+            `⚠️ "${task.title}" — claude exited cleanly but wrote nothing; left pending.` +
+              (transcriptNote ? ` Last said: ${transcriptNote}` : ""),
+          );
+          actions.push(`"${task.title}" produced nothing — narrow its scope, then re-run.`);
+          continue;
+        }
         details.push(`✅ "${task.title}" — ran clean, no changes produced (already current).`);
         task.status = "done";
         continue;

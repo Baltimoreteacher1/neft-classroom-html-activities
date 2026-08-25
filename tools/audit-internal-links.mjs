@@ -117,6 +117,11 @@ for (const file of htmlFiles) {
     if (url.startsWith("/")) {
       pathname = url;
       fsPath = join(ROOT, url);
+      // Vite serves `public/` AT the site root, so /assets/fonts/x.css is a
+      // real URL even though no assets/fonts/ exists in the source tree.
+      // Resolving only against the repo root reported every such file as a
+      // broken link — the file ships, the checker just looked in one place.
+      if (!existsTarget(fsPath) && existsTarget(join(ROOT, "public", url))) continue;
     } else {
       fsPath = resolve(fileDir, url);
       pathname = "/" + fsPath.slice(ROOT.length + 1);

@@ -18,12 +18,21 @@ import {
   linkifyObjectiveTerms,
   observeVocabTerms,
   renderComponent,
+  renderLearnItExtrasInto,
   resolveContentObjective,
   resolveLanguageObjective,
   underlineVocabTerms,
   wireObjectiveTermPopups,
 } from "./lesson-renderer.js";
 import { augmentVocabWithGlossary } from "./math-glossary.js";
+import {
+  announceBlocked,
+  canLeavePhase,
+  closeMathNotesModel,
+  initNotebook,
+  mountNotebookCheckpoint,
+  openMathNotesModel,
+} from "./notebook-checkpoint.js";
 import { applyPlainLanguage, isPlainLanguageOn } from "./plain-language.js";
 import { applyPhaseAccent, buildLessonCoverExtras, mountCoverArt } from "./premium.js";
 import { initPresentMode } from "./present-mode.js";
@@ -45,6 +54,7 @@ import "@engine/styles/themes.css";
 import "@engine/styles/editorial.css";
 import "@engine/styles/present-mode.css";
 import "@engine/styles/theme-warm.css";
+import "@engine/styles/notebook-checkpoint.css";
 
 export function createApp(config) {
   const root = document.getElementById("app");
@@ -157,11 +167,32 @@ export function createApp(config) {
   window.__ntClearLessonAnswers = () => {
     clearLessonStorage(config.lessonId);
     try {
+      sessionStorage.removeItem(`nt-active-session:${config.lessonId}`);
+      sessionStorage.removeItem("nt-active-session");
+      localStorage.removeItem(`nt-active-student:${config.lessonId}`);
       window.NeftSaveResume?.reset?.();
     } catch (_) {
       /* save/resume not present on this page */
     }
-    window.location.reload();
+    // Clear DOM input fields on current screen in-place
+    try {
+      document.querySelectorAll('input:not([type="hidden"]), textarea').forEach((input) => {
+        if (input.type === "checkbox" || input.type === "radio") input.checked = false;
+        else if (input.id !== "studentNameInput" && input.name !== "studentName") input.value = "";
+      });
+      document
+        .querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected")
+        .forEach((el) => {
+          el.classList.remove(
+            "is-selected",
+            "is-correct",
+            "is-incorrect",
+            "correct",
+            "wrong",
+            "selected",
+          );
+        });
+    } catch (_) {}
   };
   mountTeacherClearButton(window.__ntClearLessonAnswers);
 
@@ -293,17 +324,17 @@ function upsertLinkRel(rel, href) {
 // three student forms (Notes / Practice / Quiz). Teacher edit links are
 // intentionally NOT rendered here — the student lesson page must not expose any
 // teacher-facing Drive/edit links (teacherEditFolder is ignored).
-function formsCardHtml(config) {
+function _formsCardHtml(config) {
   const gf = config.googleForms;
   if (!gf || !gf.student) return "";
   const s = gf.student;
   const link = (href, label, emoji) =>
     href
-      ? `<a href="${href}" target="_blank" rel="noopener" style="flex:1; min-width:84px; display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:inherit; background:#fff; border:1px solid var(--gold,#d4952a); border-radius:10px; padding:10px 8px; font-weight:700;"><span style="font-size:1.3rem;" aria-hidden="true">${emoji}</span><span>${label}</span></a>`
+      ? `<a href="${href}" target="_blank" rel="noopener" style="flex:1; min-width:84px; display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; color:inherit; background:#fff; border:1px solid var(--gold,#d4952a); border-radius:10px; padding:10px 8px; font-weight:600;"><span style="font-size:1.3rem;" aria-hidden="true">${emoji}</span><span>${label}</span></a>`
       : "";
   return `
       <div class="identity-forms" style="background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
-        <div style="font-weight:800; margin-bottom:8px;">📋 ${t("lessonForms")}</div>
+        <div style="font-weight:700; margin-bottom:8px;">📋 ${t("lessonForms")}</div>
         <p style="margin:0 0 8px; font-size:0.84rem; color:var(--muted,#52606d);">These optional links open Google Forms. Responses leave this site and follow your school Google account and form settings.</p>
         <div style="display:flex; gap:8px;">
           ${link(s.notes, t("notes"), "📝")}
@@ -330,11 +361,11 @@ function _objectivesBlockHtml(config) {
     <div class="identity-objectives">
       <div class="identity-objective-row">
         <span class="identity-objective-badge">${t("target")}</span>
-        <span style="font-weight:600;">${content}</span>
+        <span style="font-weight:500;">${content}</span>
       </div>
       <div class="identity-objective-row">
         <span class="identity-objective-badge">${t("discuss")}</span>
-        <span style="font-weight:600;">${language}</span>
+        <span style="font-weight:500;">${language}</span>
       </div>
     </div>`;
 }
@@ -355,7 +386,7 @@ function mountWelcomeGoogleSlidesLink(lessonId, slot) {
   loadGoogleSlidesUrlMap().then((map) => {
     const url = map && map[lessonId];
     if (!url) return;
-    slot.innerHTML = ` · <a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:var(--teal-ink); font-weight:700;">↗ ${stackHtml(t("googleSlides", "en"), t("googleSlides", "es"))}</a>`;
+    slot.innerHTML = ` · <a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:var(--teal-ink); font-weight:600;">↗ ${stackHtml(t("googleSlides", "en"), t("googleSlides", "es"))}</a>`;
   });
 }
 
@@ -407,11 +438,11 @@ function mountJoinCodeEntry(screen, nameInput, periodInput, startBtn) {
   wrap.className = "identity-join";
   wrap.style.cssText = "margin-bottom:12px;text-align:left;";
   wrap.innerHTML =
-    `<button type="button" id="id-join-toggle" style="background:none;border:0;padding:0;font:inherit;font-size:0.82rem;font-weight:700;color:var(--teal-ink,#0f766e);cursor:pointer;text-decoration:underline;">` +
+    `<button type="button" id="id-join-toggle" style="background:none;border:0;padding:0;font:inherit;font-size:0.82rem;font-weight:600;color:var(--teal-ink,#0f766e);cursor:pointer;text-decoration:underline;">` +
     `${stackHtml("Have a class code?", "¿Tienes un código de clase?")}</button>` +
     `<span id="id-join-row" hidden style="display:inline-flex;gap:8px;margin-left:10px;align-items:center;">` +
     `<input id="id-join-code" type="text" autocomplete="off" autocapitalize="characters" placeholder="MK7Q9C" maxlength="8" style="width:110px;padding:8px;border-radius:8px;border:1px solid #cbd5e1;font:inherit;text-transform:uppercase;letter-spacing:2px;" />` +
-    `<button type="button" id="id-join-go" style="padding:8px 12px;border-radius:8px;border:0;background:var(--teal-ink,#0f766e);color:#fff;font:inherit;font-weight:700;cursor:pointer;">Go</button>` +
+    `<button type="button" id="id-join-go" style="padding:8px 12px;border-radius:8px;border:0;background:var(--teal-ink,#0f766e);color:#fff;font:inherit;font-weight:600;cursor:pointer;">Go</button>` +
     `<span id="id-join-msg" style="font-size:0.78rem;color:#64748b;"></span></span>`;
   form.insertBefore(wrap, form.firstChild);
   const row = wrap.querySelector("#id-join-row");
@@ -544,15 +575,46 @@ function showIdentityScreen(root, config) {
         return;
       }
     }
-  } catch {
-    /* sessionStorage blocked or corrupt — fall through to the name-entry screen */
+  } catch (_) {}
+
+  // Auto-resume active session on page reload:
+  // When a student/teacher refreshes the page, avoid dropping them back to the
+  // name-entry screen. Restore their active session seamlessly.
+  try {
+    let activeSession = null;
+    const sessRaw = sessionStorage.getItem(`nt-active-session:${config.lessonId}`) || sessionStorage.getItem("nt-active-session");
+    if (sessRaw) {
+      const parsed = JSON.parse(sessRaw);
+      if (parsed && (parsed.lessonId === config.lessonId || !parsed.lessonId) && parsed.name) {
+        activeSession = parsed;
+      }
+    }
+    if (!activeSession) {
+      const localRaw = localStorage.getItem(`nt-active-student:${config.lessonId}`);
+      if (localRaw) {
+        const parsed = JSON.parse(localRaw);
+        if (parsed && parsed.name && (Date.now() - (parsed.time || 0) < 12 * 3600 * 1000)) {
+          activeSession = parsed;
+        }
+      }
+    }
+    if (activeSession && activeSession.name) {
+      const studentId = normalizeStudentId(activeSession.name);
+      try {
+        window.NeftIdentity?.set({ name: activeSession.name, section: activeSession.period || "" });
+      } catch (_) {}
+      initMainApp(root, config, studentId, activeSession.name, activeSession.period || "");
+      return;
+    }
+  } catch (_) {
+    /* session restore error — fall through to name screen */
   }
 
   const themeEmoji = config.themeEmoji || "📐";
   const saved = findSavedStudents(config.lessonId);
-  const homeworkHtmlHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.html`;
-  const handoutHref = `/lessons/${encodeURIComponent(config.lessonId)}/handout.html`;
-  const slidesHref = `/lessons/${encodeURIComponent(config.lessonId)}/slides.html`;
+  const _homeworkHtmlHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.html`;
+  const _handoutHref = `/lessons/${encodeURIComponent(config.lessonId)}/handout.html`;
+  const _slidesHref = `/lessons/${encodeURIComponent(config.lessonId)}/slides.html`;
 
   const screen = document.createElement("div");
   screen.className = "identity-screen";
@@ -572,7 +634,7 @@ function showIdentityScreen(root, config) {
           <span class="instruction-callout-icon" aria-hidden="true">👋</span>
           <span>${t("enterNamePrompt")}</span>
           <button type="button" id="id-lang-toggle" aria-pressed="${getPreferredLang() === "es" ? "true" : "false"}"
-            style="margin-left:auto;flex:none;padding:6px 12px;border-radius:999px;border:1px solid #cbd5e1;background:${getPreferredLang() === "es" ? "var(--teal-ink,#0f766e)" : "#fff"};color:${getPreferredLang() === "es" ? "#fff" : "var(--teal-ink,#0f766e)"};font:inherit;font-size:0.8rem;font-weight:700;cursor:pointer;"
+            style="margin-left:auto;flex:none;padding:6px 12px;border-radius:999px;border:1px solid #cbd5e1;background:${getPreferredLang() === "es" ? "var(--teal-ink,#0f766e)" : "#fff"};color:${getPreferredLang() === "es" ? "#fff" : "var(--teal-ink,#0f766e)"};font:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;"
             title="Cambiar el idioma de la lección / Switch lesson language">🌎 Español</button>
         </p>
         <div id="welcome-teacher-slot"></div>
@@ -688,6 +750,11 @@ function showIdentityScreen(root, config) {
     if (!name) return;
     const studentId = normalizeStudentId(name);
     const period = periodInput.value.trim();
+    // Persist active session so page refresh never returns to sign-in screen
+    try {
+      sessionStorage.setItem(`nt-active-session:${config.lessonId}`, JSON.stringify({ lessonId: config.lessonId, name, period }));
+      localStorage.setItem(`nt-active-student:${config.lessonId}`, JSON.stringify({ name, period, time: Date.now() }));
+    } catch (_) {}
     // Share the typed identity site-wide so grade sync, the save-code gradebook,
     // and curriculum progress sync all pick it up without the student retyping.
     try {
@@ -765,6 +832,39 @@ function playLessonEntrance(config, name, boot) {
   }
 }
 
+const PHASE_SUBTABS = {
+  0: [
+    { extra: "mathnotes", icon: "📓", label: "Math Notes" },
+    { jump: "card", icon: "⚡", label: "Warmup" },
+  ],
+  1: [
+    { jump: "card", icon: "🎯", label: "Goals" },
+  ],
+  2: [
+    { extra: "vocab", icon: "🔑", label: "Vocab" },
+    { extra: "learn", icon: "💡", label: "Learn It" },
+    { extra: "watchme", icon: "👀", label: "Watch Me" },
+  ],
+  3: [
+    { jump: "card", icon: "🤝", label: "Guided Steps" },
+  ],
+  4: [
+    { level: "level1", icon: "🟢", label: "Level 1" },
+    { level: "core", icon: "🔵", label: "Level 2" },
+    { level: "level3", icon: "🟣", label: "Level 3" },
+    { level: "auto", icon: "⚡", label: "Adaptive" },
+  ],
+  5: [
+    { jump: "card", icon: "👥", label: "Small Group" },
+  ],
+  6: [
+    { jump: "card", icon: "📝", label: "Exit Ticket" },
+  ],
+  7: [
+    { jump: "card", icon: "🏆", label: "Mastery" },
+  ],
+};
+
 function initMainApp(root, config, studentId, studentName, studentPeriod) {
   const state = createState(config.lessonId, studentId);
   const engagement = createEngagement(state);
@@ -781,28 +881,40 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
   // Teacher-only "Clear answers" hook (invoked from the Tools menu item in
   // utility-menu.js). Wipes THIS lesson's saved responses/progress on this
-  // device and drops the Save/Resume pointer so an auto-restore can't re-fill
-  // them, then reloads to re-render the lesson blank. Lets a teacher project a
-  // fresh copy without last period's (or their own demo) answers showing.
+  // device in-place and re-renders the current phase blank without reloading
+  // or redirecting back to the sign-in screen.
   window.__ntClearLessonAnswers = () => {
     try {
-      state.reset();
+      state.clearAllResponses();
     } catch (_) {
-      /* storage blocked — reload still clears in-memory answers */
+      const phases = state.get().phases || [];
+      phases.forEach((_, i) => state.clearPhaseResponses(i));
     }
     try {
-      window.NeftSaveResume?.reset?.();
-    } catch (_) {
-      /* save/resume not present on this page */
-    }
-    window.location.reload();
+      document.querySelectorAll('input:not([type="hidden"]), textarea, select').forEach((input) => {
+        if (input.type === "checkbox" || input.type === "radio") input.checked = false;
+        else if (input.id !== "studentNameInput" && input.name !== "studentName") input.value = "";
+      });
+      document
+        .querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected")
+        .forEach((el) => {
+          el.classList.remove(
+            "is-selected",
+            "is-correct",
+            "is-incorrect",
+            "correct",
+            "wrong",
+            "selected",
+          );
+        });
+    } catch (_) {}
+    const cur = state.get().currentPhase ?? 0;
+    document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: cur } }));
   };
 
   // Per-page teacher "Clear answers" API. Lets the compact control clear the
-  // current page or any set of pages (not the whole lesson) — it clears each
-  // phase's saved answers on this device and re-renders the current phase blank
-  // via the same rma:navigate event the sidebar uses (no reload, so Save/Resume
-  // can't re-fill it). clearAll keeps the old full-wipe-and-reload behavior.
+  // current page, any set of pages, or all pages on this device in-place,
+  // re-rendering the active phase blank without reloading or navigating away.
   window.__ntLessonClearApi = {
     phases: () =>
       (state.get().phases || []).map((p, i) => ({ index: i, name: p.name, icon: p.icon })),
@@ -818,7 +930,37 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const cur = state.get().currentPhase ?? 0;
       document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: cur } }));
     },
-    clearAll: () => window.__ntClearLessonAnswers(),
+    clearAll: () => {
+      try {
+        state.clearAllResponses();
+      } catch (_) {
+        const phases = state.get().phases || [];
+        phases.forEach((_, i) => state.clearPhaseResponses(i));
+      }
+      try {
+        document
+          .querySelectorAll('input:not([type="hidden"]), textarea, select')
+          .forEach((input) => {
+            if (input.type === "checkbox" || input.type === "radio") input.checked = false;
+            else if (input.id !== "studentNameInput" && input.name !== "studentName")
+              input.value = "";
+          });
+        document
+          .querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected")
+          .forEach((el) => {
+            el.classList.remove(
+              "is-selected",
+              "is-correct",
+              "is-incorrect",
+              "correct",
+              "wrong",
+              "selected",
+            );
+          });
+      } catch (_) {}
+      const cur = state.get().currentPhase ?? 0;
+      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: cur } }));
+    },
   };
 
   if (!state.get().studentName) {
@@ -1076,14 +1218,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     const drawHud = document.createElement("div");
     drawHud.id = "lesson-draw-hud";
     drawHud.style.cssText =
-      "position:fixed; bottom:24px; left:270px; background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.15); border-radius:30px; padding:6px 12px; display:none; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.25);";
+      "position:fixed; bottom:24px; left:270px; background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.15); border-radius:30px; padding:6px 12px; display:none; gap:8px; z-index:9999; box-shadow:0 6px 18px -8px rgba(0,0,0,0.35);";
     drawHud.innerHTML = `
       <button class="color-btn" data-color="#ef4444" style="width:20px; height:20px; border-radius:50%; border:2px solid #fff; background:#ef4444; cursor:pointer; padding:0;"></button>
       <button class="color-btn" data-color="#3b82f6" style="width:20px; height:20px; border-radius:50%; border:none; background:#3b82f6; cursor:pointer; padding:0;"></button>
       <button class="color-btn" data-color="#10b981" style="width:20px; height:20px; border-radius:50%; border:none; background:#10b981; cursor:pointer; padding:0;"></button>
       <button class="color-btn" data-color="rgba(253,224,71,0.5)" style="width:20px; height:20px; border-radius:50%; border:none; background:#fde047; cursor:pointer; padding:0;"></button>
-      <button id="draw-undo-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer; margin-left:8px;">Undo</button>
-      <button id="draw-clear-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer;">Clear</button>
+      <button id="draw-undo-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:600; cursor:pointer; margin-left:8px;">Undo</button>
+      <button id="draw-clear-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:600; cursor:pointer;">Clear</button>
     `;
     document.body.append(drawHud);
 
@@ -1149,7 +1291,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // `left` is deliberately NOT set here — design-system.css offsets it past
     // the phase rail (--nt-rail-w) so the pill cannot cover a phase button's
     // label. An inline left would beat that rule and re-break it.
-    "position:fixed; bottom:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; display:flex; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:0.3s;";
+    "position:fixed; bottom:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; gap:8px; z-index:9999; box-shadow:0 6px 18px -8px rgba(15,23,42,0.22); transition:0.3s;";
   document.body.append(minimapHUD);
 
   // The phase dots PERSIST across renders, and that is the whole point.
@@ -1244,7 +1386,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     phaseContainer,
     celebrationOverlay,
 
-    renderPhase(index, renderFn) {
+    renderPhase(index, renderFn, jump) {
+      closeMathNotesModel();
       applyPhaseAccent(main, index);
       // Stop watching the phase we're replacing so its observer doesn't linger.
       if (this._vocabObserver) {
@@ -1265,6 +1408,64 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       el.setAttribute("aria-label", phaseConfigs[index]?.name || `Phase ${index + 1}`);
       phaseContainer.append(el);
       renderFn(el, state, this);
+
+      // Mount subcards ribbon for 1-click jumps between lesson parts
+      const subcards = PHASE_SUBTABS[index] || [];
+      if (subcards.length > 0) {
+        const isEs = getPreferredLang() === "es";
+        const ribbon = document.createElement("div");
+        ribbon.className = "phase-subcards-ribbon no-print";
+        ribbon.setAttribute("role", "navigation");
+        ribbon.setAttribute("aria-label", "Lesson sub-parts");
+        ribbon.innerHTML = `
+          <span class="phase-subcards-label">📍 ${isEs ? "Partes:" : "Subcards:"}</span>
+          <div class="phase-subcards-list">
+            ${subcards
+              .map(
+                (t) => `
+              <button type="button" class="phase-subcard-chip" ${t.extra ? `data-sub-extra="${t.extra}"` : t.level ? `data-sub-level="${t.level}"` : `data-sub-jump="${t.jump}"`}>
+                <span class="phase-subcard-icon">${t.icon}</span> <span>${escHtml(t.label)}</span>
+              </button>`,
+              )
+              .join("")}
+          </div>
+        `;
+        ribbon.querySelectorAll("[data-sub-extra]").forEach((b) => {
+          b.addEventListener("click", () => this.openExtra(b.dataset.subExtra));
+        });
+        ribbon.querySelectorAll("[data-sub-level]").forEach((b) => {
+          b.addEventListener("click", () => {
+            const lvl = b.dataset.subLevel;
+            const targetBtn = el.querySelector(`.level-option[data-level="${lvl}"], .level-option[data-alias_${lvl}="true"], [data-level="${lvl}"]`);
+            if (targetBtn) targetBtn.click();
+          });
+        });
+        ribbon.querySelectorAll("[data-sub-jump]").forEach((b) => {
+          b.addEventListener("click", () => {
+            const sel = b.dataset.subJump;
+            const target = el.querySelector(`.${sel}, [data-section="${sel}"], #${sel}, .card`);
+            if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        });
+
+        const header = el.querySelector(".section-header, .phase-title, .lesson-hero, .phase-header, .phero, h1");
+        if (header && header.parentElement) {
+          header.insertAdjacentElement("afterend", ribbon);
+        } else {
+          el.prepend(ribbon);
+        }
+      }
+
+      // Auto-scroll to top or target smoothly on phase navigation
+      if (jump) {
+        setTimeout(() => {
+          const target = el.querySelector(`.${jump}, [data-section="${jump}"], #${jump}, .card`);
+          if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      } else {
+        if (main) main.scrollTo({ top: 0, behavior: "smooth" });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
       // Plain-words pass runs BEFORE the vocabulary underliner. It rewrites text
       // nodes, and the underliner replaces matched terms with tappable glossary
       // spans — doing it the other way round would rewrite the glossary markup
@@ -1293,11 +1494,21 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       );
     },
 
-    navigateTo(index) {
+    navigateTo(index, jump) {
+      // THE gate. Every way out of a phase — Continue, the sidebar, a minimap
+      // dot, an in-phase control — arrives here, so a notebook checkpoint is
+      // enforced once, in one place, by phase INDEX. Backward moves are never
+      // blocked.
+      const from = state.get().currentPhase ?? 0;
+      if (!canLeavePhase(config, from, index)) {
+        announceBlocked(config, from);
+        return false;
+      }
+      closeMathNotesModel();
       this.clearExtraActive();
       state.setPhase(index);
       if (config.phases[index]) {
-        this.renderPhase(index, config.phases[index]);
+        this.renderPhase(index, config.phases[index], jump);
       }
     },
 
@@ -1310,8 +1521,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const current = state.get().currentPhase ?? 0;
       const next = current + 1;
       if (next >= config.phases.length) return false;
-      this.navigateTo(next);
-      return true;
+      // navigateTo returns false when a notebook checkpoint blocks the move, and
+      // that answer belongs to the caller: a Continue button must not report a
+      // successful advance that did not happen.
+      return this.navigateTo(next) !== false;
     },
 
     // Mark/unmark which (if any) pre-lesson tab is currently being viewed.
@@ -1331,6 +1544,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       );
     },
     clearExtraActive() {
+      closeMathNotesModel();
       this.setExtraActive(null);
     },
 
@@ -1338,10 +1552,22 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // lesson shell. Non-graded: this never touches phase state, XP, or stars —
     // the student's place in the graded flow is preserved underneath.
     openExtra(kind) {
+      // The canonical Math Notes model opens OVER the lesson rather than
+      // replacing the phase body — a student checking the page layout has not
+      // left the lesson and loses nothing on screen.
+      if (kind === "mathnotes") return openMathNotesModel(config);
       if (kind === "projects") return this.openProjects();
       if (kind === "printables") return this.openPrintables();
       if (kind === "activity") return this.openActivity();
       if (kind === "objectives") return this.openObjectives();
+      if (kind === "watchme") {
+        this.openExtra("learn");
+        setTimeout(() => {
+          const w = phaseContainer.querySelector(".vl-step-crumbs, .vl-stage-think, .vl-solve-steps, [data-learn-step]");
+          if (w) w.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 150);
+        return;
+      }
 
       if (kind === "vocab") {
         this.setExtraActive("vocab");
@@ -1395,6 +1621,13 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           // Practice skipped the Explore phase entirely.
           state,
           onComplete: () => this.navigateTo(PHASE_EXPLORE),
+          // The application scenario + Show Your Work moved out of Launch to
+          // live under Learn It. This branch predates the
+          // ctx.renderLearnItExtras hook and never called it, so the moved
+          // content rendered NOWHERE — the panel now hosts it as its final
+          // "Apply It" step. Called directly (not via the hook) because the
+          // hook is only assigned once the Launch phase has rendered.
+          renderExtras: (host) => renderLearnItExtrasInto(host, config, state),
         });
         el.append(
           chainContinueButton("Continue to Explore 🔍 →", () => this.navigateTo(PHASE_EXPLORE)),
@@ -1524,7 +1757,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         b.type = "button";
         b.className = "btn btn-primary btn-lg";
         b.style.cssText =
-          "padding:14px 28px; font-weight:800; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
+          "padding:14px 28px; font-weight:700; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
         b.textContent = label;
         b.addEventListener("click", onClick);
         wrap.append(b);
@@ -1620,22 +1853,22 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
       const objectiveCard = ({ accent, color, icon, label, text, key, prompt, starter }) =>
         `<div class="card ${accent} obj-card" style="margin-bottom:var(--sp-4, 18px); padding:var(--sp-5, 22px);">
-          <div style="font-size:1.15rem; font-weight:800; color:var(${color}); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
-          <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:600; color:var(--navy, #264653);">${linkifyObjectiveTerms(text, objectiveVocab)}</p>
+          <div style="font-size:1.15rem; font-weight:700; color:var(${color}); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
+          <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:500; color:var(--navy, #264653);">${linkifyObjectiveTerms(text, objectiveVocab)}</p>
           <div style="display:flex; flex-direction:column; gap:var(--sp-2, 8px); background:#fff; border:2px solid var(${color}); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 14px) var(--sp-4, 18px); margin-bottom:var(--sp-3, 12px);">
-            <div style="font-weight:800; color:var(--navy, #264653); font-size:1.05rem;">Can I do this?</div>
+            <div style="font-weight:700; color:var(--navy, #264653); font-size:1.05rem;">Can I do this?</div>
             <label style="display:flex; align-items:center; gap:10px; font-size:1.2rem; cursor:pointer;"><input type="checkbox" data-obj-check="${key}-before" style="width:22px; height:22px; flex:0 0 auto;" /> <span>⏱️ <strong>Before</strong> the lesson — I can do this.</span></label>
             <label style="display:flex; align-items:center; gap:10px; font-size:1.2rem; cursor:pointer;"><input type="checkbox" data-obj-check="${key}-after" style="width:22px; height:22px; flex:0 0 auto;" /> <span>✅ <strong>After</strong> the lesson — I can do this now!</span></label>
           </div>
           <div class="objective-talk" style="background:var(--cream, #fdf3e0); border:1px solid var(--gold, #d4952a); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 12px) var(--sp-4, 16px);">
-            <div style="font-weight:800; color:var(--navy, #264653); margin-bottom:var(--sp-1, 4px);">💬 Talk about it</div>
+            <div style="font-weight:700; color:var(--navy, #264653); margin-bottom:var(--sp-1, 4px);">💬 Talk about it</div>
             <p style="margin:0 0 var(--sp-2, 8px); font-size:1.1rem;">${prompt}</p>
             <p style="margin:0; font-style:italic; color:var(--navy, #264653); font-size:1.1rem;">Say: "${starter}"</p>
           </div>
         </div>`;
 
       el.innerHTML = `
-        <style>.obj-key{ text-decoration-thickness:2px; text-underline-offset:2px; font-weight:800; color:var(--navy, #264653); }</style>
+        <style>.obj-key{ text-decoration-thickness:2px; text-underline-offset:2px; font-weight:700; color:var(--navy, #264653); }</style>
         <div class="extra-head" style="margin-bottom:var(--sp-4, 18px);">
           <div>
             <div class="section-title" style="font-size:2rem;">🎯 Today's Goals</div>
@@ -1773,7 +2006,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         return `
           <div class="project-card" style="border:1px solid var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--card, #fff); padding:var(--sp-4, 16px); display:flex; flex-direction:column; gap:var(--sp-2, 8px);">
             <div style="font-size:1.8rem; line-height:1;">${escHtml(p.emoji || "🎮")}</div>
-            <div style="font-weight:800; font-size:1.1rem; color:var(--navy, #264653);">${escHtml(p.title || "Project")}</div>
+            <div style="font-weight:700; font-size:1.1rem; color:var(--navy, #264653);">${escHtml(p.title || "Project")}</div>
             ${p.desc ? `<div class="section-desc" style="font-size:0.9rem;">${escHtml(p.desc)}</div>` : ""}
             <div style="display:flex; flex-wrap:wrap; gap:var(--sp-2, 8px); margin-top:auto; padding-top:var(--sp-2, 8px);">
               ${links
@@ -1790,7 +2023,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         ? `<div class="project-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:var(--sp-3, 12px);">${projects.map(card).join("")}</div>`
         : `<div class="project-empty" style="text-align:center; padding:var(--sp-6, 32px) var(--sp-4, 16px); border:2px dashed var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--cream, #fdf6ec);">
             <div style="font-size:2.4rem;">🚧</div>
-            <div style="font-weight:800; font-size:1.15rem; color:var(--navy, #264653); margin-top:var(--sp-2, 8px);">Projects coming soon</div>
+            <div style="font-weight:700; font-size:1.15rem; color:var(--navy, #264653); margin-top:var(--sp-2, 8px);">Projects coming soon</div>
             <div class="section-desc" style="max-width:46ch; margin:var(--sp-2, 8px) auto 0;">Hands-on projects and challenge games for this lesson will appear here as they are built. Check back soon!</div>
           </div>`;
 
@@ -1829,14 +2062,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         return `
           <div class="printable-card" style="border:1px solid var(--line, #e4ddc9); border-radius:var(--radius-md, 12px); background:var(--card, #fff); padding:var(--sp-4, 16px); display:flex; flex-direction:column; gap:var(--sp-2, 8px);">
             <div style="font-size:1.8rem; line-height:1;">${escHtml(p.emoji || "📄")}</div>
-            <div style="font-weight:800; font-size:1.05rem; color:var(--navy, #264653);">${escHtml(p.name || "Printable")}</div>
+            <div style="font-weight:700; font-size:1.05rem; color:var(--navy, #264653);">${escHtml(p.name || "Printable")}</div>
             ${p.desc ? `<div class="section-desc" style="font-size:0.9rem;">${escHtml(p.desc)}</div>` : ""}
             ${
               chips.length
                 ? `<div style="display:flex; flex-wrap:wrap; gap:var(--sp-1, 4px);">${chips
                     .map(
                       (c) =>
-                        `<span style="font-size:0.72rem; font-weight:700; background:var(--cream, #fdf6ec); border:1px solid var(--line, #e4ddc9); border-radius:999px; padding:2px 10px; color:var(--navy, #264653);">${escHtml(c)}</span>`,
+                        `<span style="font-size:0.72rem; font-weight:600; background:var(--cream, #fdf6ec); border:1px solid var(--line, #e4ddc9); border-radius:999px; padding:2px 10px; color:var(--navy, #264653);">${escHtml(c)}</span>`,
                     )
                     .join("")}</div>`
                 : ""
@@ -1885,7 +2118,16 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     },
   };
 
-  document.addEventListener("rma:navigate", (e) => app.navigateTo(e.detail.phase));
+  document.addEventListener("rma:navigate", (e) => {
+    app.navigateTo(e.detail.phase, e.detail.jump);
+    if (e.detail.level) {
+      setTimeout(() => {
+        const lvl = e.detail.level;
+        const lvlBtn = document.querySelector(`.level-option[data-level="${lvl}"], .level-option[data-alias_${lvl}="true"], [data-level="${lvl}"]`);
+        if (lvlBtn) lvlBtn.click();
+      }, 120);
+    }
+  });
 
   // Vocab/Notes sub-tabs live inside the data-bound phase nav (rebuilt on every
   // state change), so they signal via an event instead of a one-time binding.
@@ -1900,6 +2142,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   // Mount the export toolbar (sticky top bar with Save / Copy buttons)
   mountExportToolbar(state, config);
   mountUtilityMenu();
+  initNotebook(config);
+  window.openMathNotesModel = (cfg) => openMathNotesModel(cfg || config);
 
   app.start();
 
@@ -1933,8 +2177,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // overlay — turning Draw on used to cover this button and make it dead.
       "position:fixed; right:16px; bottom:16px; z-index:9999; display:inline-flex; " +
       "align-items:center; gap:8px; min-height:48px; padding:0 22px; border:0; " +
-      "border-radius:99px; background:#12355b; color:#fff; font-weight:800; " +
-      "font-size:1rem; cursor:pointer; box-shadow:0 4px 14px rgba(12,27,42,.28);";
+      "border-radius:99px; background:#12355b; color:#fff; font-weight:700; " +
+      "font-size:1rem; cursor:pointer; box-shadow:0 1px 2px rgba(18,53,91,.06);";
     document.body.appendChild(nextBtn);
 
     function refresh() {
@@ -2025,7 +2269,7 @@ function chainContinueButton(label, onClick) {
   b.type = "button";
   b.className = "btn btn-primary btn-lg";
   b.style.cssText =
-    "padding:14px 28px; font-weight:800; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
+    "padding:14px 28px; font-weight:700; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
   b.textContent = label;
   b.addEventListener("click", onClick);
   wrap.append(b);
@@ -2158,7 +2402,7 @@ function bonusNavHtml(config) {
   if (!act || !hasItems) return "";
   return `
     <div class="bonus-nav" data-bind="bonus">
-      <div class="prelesson-label" style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Bonus</div>
+      <div class="prelesson-label" style="font-size:0.68rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; opacity:0.55; padding:0 var(--sp-2, 8px); margin:var(--sp-3, 12px) 0 var(--sp-1, 4px);">Bonus</div>
       <button class="phase-btn extra-btn" data-extra="activity">
         <span class="phase-num">${escHtml(act.emoji || "🎯")}</span>
         <span>${escHtml(act.name || "Bonus Activity")}</span>
@@ -2184,7 +2428,7 @@ export const UNIT_CULMINATING_PROJECT = {
   10: "/math/unit-10/projects/",
 };
 
-function buildLessonHero(config, _state, phaseConfigs) {
+function buildLessonHero(config, _state, _phaseConfigs) {
   const hero = document.createElement("header");
   hero.className = "lesson-hero";
   hero.setAttribute("aria-label", "Lesson overview");
@@ -2196,52 +2440,22 @@ function buildLessonHero(config, _state, phaseConfigs) {
       </div>
       <div class="lesson-hero-badges">
         <span class="lesson-hero-badge lesson-hero-standard" data-bind="hero-standard" title="${escHtml(config.standard)}">${escHtml(config.standard)}</span>
-        <span class="lesson-hero-badge" data-bind="hero-phase">Phase 1</span>
         <span class="lesson-hero-badge">🪙 <span data-bind="hero-coins">0</span></span>
         <span class="lesson-hero-badge">⭐ <span data-bind="hero-stars">0</span>/18</span>
       </div>
-    </div>
-    <div class="phase-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" data-bind="hero-progressbar">
-      <div class="phase-progress-fill" data-bind="hero-progress" style="width:0%"></div>
-    </div>
-    <div class="phase-progress-label">
-      <span data-bind="hero-phase-name">${escHtml(phaseConfigs[0]?.name || "Launch")}</span>
-      <span data-bind="hero-phase-count">0 of 6 complete</span>
     </div>`;
   return hero;
 }
 
-function updateLessonHero(hero, state, phaseConfigs) {
+function updateLessonHero(hero, state, _phaseConfigs) {
   if (!hero) return;
   const s = state.get();
-  const completed = s.phases.filter((p) => p.status === "completed").length;
-  const total = s.phases.length || 6;
-  const pct = total ? Math.round((completed / total) * 100) : 0;
-  const current = phaseConfigs[s.currentPhase] || phaseConfigs[0];
-
-  const phaseBadge = hero.querySelector('[data-bind="hero-phase"]');
-  if (phaseBadge) phaseBadge.textContent = `Phase ${(s.currentPhase ?? 0) + 1} of ${total}`;
 
   const stars = hero.querySelector('[data-bind="hero-stars"]');
   if (stars) stars.textContent = String(s.phases.reduce((sum, p) => sum + (p.stars || 0), 0));
 
   const coins = hero.querySelector('[data-bind="hero-coins"]');
   if (coins) coins.textContent = String(s.coins || 0);
-
-  const fill = hero.querySelector('[data-bind="hero-progress"]');
-  if (fill) fill.style.width = `${pct}%`;
-
-  const bar = hero.querySelector('[data-bind="hero-progressbar"]');
-  if (bar) {
-    bar.setAttribute("aria-valuenow", String(completed));
-    bar.setAttribute("aria-valuemax", String(total));
-  }
-
-  const phaseName = hero.querySelector('[data-bind="hero-phase-name"]');
-  if (phaseName) phaseName.textContent = current?.name || `Phase ${s.currentPhase + 1}`;
-
-  const phaseCount = hero.querySelector('[data-bind="hero-phase-count"]');
-  if (phaseCount) phaseCount.textContent = `${completed} of ${total} complete`;
 }
 
 function updateSidebar(sidebar, state, phaseConfigs) {
@@ -2266,26 +2480,6 @@ function updateSidebar(sidebar, state, phaseConfigs) {
   const nav = sidebar.querySelector('[data-bind="phases"]');
   if (!nav) return;
 
-  // Vocab → Notes → Learn It ride directly under the Launch (phase 1) button as
-  // indented sub-tabs — reference material that lives with the lesson flow, not
-  // in the "Before the lesson" group above. Order is deliberate: get curious
-  // (Launch), pick up the words (Vocab), read along (Notes), then Learn It
-  // teaches the concept step by step and leads into the lesson. Rendered inside
-  // the data-bound phase nav so they sit immediately beneath Launch; click is
-  // delegated via rma:openextra.
-  const launchSubTabs = [
-    { extra: "vocab", icon: "🔑", label: "Vocab" },
-    { extra: "learn", icon: "💡", label: "Learn It" },
-  ]
-    .map(
-      (t) =>
-        `<button class="phase-btn extra-btn phase-subtab" data-extra="${t.extra}" style="margin-left:var(--sp-4, 18px);">
-        <span class="phase-num" style="background:transparent; box-shadow:none; font-size:1.05rem;">${t.icon}</span>
-        <span>${t.label}</span>
-      </button>`,
-    )
-    .join("\n");
-
   nav.innerHTML = s.phases
     .map((phase, i) => {
       const isCurrent = i === s.currentPhase;
@@ -2309,17 +2503,45 @@ function updateSidebar(sidebar, state, phaseConfigs) {
         <span class="phase-stars">${stars}</span>
       </button>
     `;
-      // Launch is phase index 2 (Phase 3) — drop Vocab/Notes right beneath it.
-      return i === 2 ? btn + launchSubTabs : btn;
+
+      const subList = PHASE_SUBTABS[i] || [];
+      const subTabsHtml = subList
+        .map(
+          (t) =>
+            `<button class="phase-btn ${t.extra ? "extra-btn" : t.level ? "level-btn" : "jump-btn"} phase-subtab" ${t.extra ? `data-extra="${t.extra}"` : t.level ? `data-phase="${i}" data-level="${t.level}"` : `data-phase="${i}" data-jump="${t.jump}"`} style="margin-left:var(--sp-4, 18px); font-size:0.84rem; padding: 5px 12px; min-height: 32px;">
+            <span class="phase-num" style="background:transparent; box-shadow:none; font-size:0.95rem;">${t.icon}</span>
+            <span>${escHtml(t.label)}</span>
+          </button>`,
+        )
+        .join("\n");
+
+      return btn + subTabsHtml;
     })
     .join("");
 
-  nav.querySelectorAll("[data-phase]").forEach((btn) => {
+  nav.querySelectorAll("[data-phase]:not(.jump-btn):not(.level-btn)").forEach((btn) => {
     btn.addEventListener("click", () => {
       const idx = parseInt(btn.dataset.phase, 10);
       document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: idx } }));
     });
   });
+
+  nav.querySelectorAll(".jump-btn[data-jump]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.phase, 10);
+      const target = btn.dataset.jump;
+      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: idx, jump: target } }));
+    });
+  });
+
+  nav.querySelectorAll(".level-btn[data-level]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.phase, 10);
+      const lvl = btn.dataset.level;
+      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: idx, level: lvl } }));
+    });
+  });
+
 
   nav.querySelectorAll(".extra-btn[data-extra]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -2366,7 +2588,7 @@ function initDeployWatcher() {
     const toast = document.createElement("div");
     toast.setAttribute("role", "status");
     toast.style.cssText =
-      "position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#155fa0,#0f6d78);color:#fff;text-align:center;padding:12px 20px;font-weight:600;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,.2);";
+      "position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#155fa0,#0f6d78);color:#fff;text-align:center;padding:12px 20px;font-weight:500;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,.2);";
     toast.textContent = "🚀 New version deployed — refreshing now…";
     document.body.appendChild(toast);
     setTimeout(() => window.location.reload(), 1500);

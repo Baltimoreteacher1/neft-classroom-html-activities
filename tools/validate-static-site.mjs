@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join } from "node:path";
+import { assertNonEmpty } from "./lib/non-empty.mjs";
+import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 
 const root = process.cwd();
 const requiredFiles = [
@@ -19,6 +21,18 @@ const requiredFiles = [
   "teacher-tools/neftos-command-center/manifest.json",
   "teacher-tools/neftos-command-center/service-worker.js",
 ];
+
+assertNonEmpty(
+  "required deployment files",
+  requiredFiles,
+  "The required-file list is empty, so this gate would confirm a deployment by checking nothing.",
+  5,
+);
+assertSweptEnough(
+  "validate:static",
+  requiredFiles,
+  "Discovery for validate:static returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
+);
 
 const errors = [];
 const warnings = [];

@@ -27,20 +27,20 @@ function injectStyles() {
   .ssim{color-scheme:light;--ss-teal:${DATA_1};--ss-coral:${DATA_2};--ss-navy:var(--navy,#264653);--ss-ink:var(--ink,#333);--ss-muted:var(--muted,#6b7280);
     border:1px solid rgba(38,70,83,.14);border-radius:14px;padding:14px 14px 12px;margin:var(--sp-3,12px) 0;background:linear-gradient(180deg,#fff,#fbfdfc);box-shadow:0 1px 3px rgba(38,70,83,.06)}
   .ssim-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-  .ssim-title{font-weight:800;color:var(--ss-navy);font-size:1rem}
-  .ssim-badge{font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ss-teal);border:1px solid currentColor;border-radius:999px;padding:2px 8px}
-  .ssim-read{font-size:1.35rem;font-weight:800;color:var(--ss-navy);text-align:center;line-height:1.25;margin:4px 0 2px;overflow-wrap:anywhere}
+  .ssim-title{font-weight:700;color:var(--ss-navy);font-size:1rem}
+  .ssim-badge{font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ss-teal);border:1px solid currentColor;border-radius:999px;padding:2px 8px}
+  .ssim-read{font-size:1.35rem;font-weight:700;color:var(--ss-navy);text-align:center;line-height:1.25;margin:4px 0 2px;overflow-wrap:anywhere}
   .ssim-read b{color:var(--ss-coral)}
-  .ssim-rel{text-align:center;font-size:.9rem;color:var(--ss-muted);font-weight:700;margin-bottom:10px;overflow-wrap:anywhere}
+  .ssim-rel{text-align:center;font-size:.9rem;color:var(--ss-muted);font-weight:600;margin-bottom:10px;overflow-wrap:anywhere}
   .ssim-model{margin:8px 0}
   .ssim-model svg{width:100%;height:auto;max-width:520px;display:block;margin:0 auto;touch-action:manipulation}
   .ssim-ctl{display:flex;flex-direction:column;gap:6px;margin:12px 0 2px}
   .ssim-ctl-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
-  .ssim-ctl label{font-weight:700;color:var(--ss-navy);font-size:.9rem}
-  .ssim-ctl output{font-weight:800;color:var(--ss-teal);font-size:1.05rem;font-variant-numeric:tabular-nums}
+  .ssim-ctl label{font-weight:600;color:var(--ss-navy);font-size:.9rem}
+  .ssim-ctl output{font-weight:700;color:var(--ss-teal);font-size:1.05rem;font-variant-numeric:tabular-nums}
   .ssim-range{width:100%;accent-color:var(--ss-teal);height:30px;cursor:pointer;touch-action:pan-y}
   .ssim-range:focus-visible{outline:3px solid rgba(42,157,143,.5);outline-offset:3px;border-radius:6px}
-  .ssim-ends{display:flex;justify-content:space-between;font-size:.72rem;color:var(--ss-muted);font-weight:700}
+  .ssim-ends{display:flex;justify-content:space-between;font-size:.72rem;color:var(--ss-muted);font-weight:600}
   .ssim-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;max-width:260px;margin:0 auto}
   .ssim-cell{aspect-ratio:1;border-radius:2px;background:rgba(38,70,83,.1);transition:background .08s}
   .ssim-cell.on{background:var(--ss-teal)}

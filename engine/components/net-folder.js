@@ -219,7 +219,7 @@ export function renderNetFolder(
 
   if (instructions) {
     const p = document.createElement("p");
-    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = instructions;
     wrapper.append(p);
   }
@@ -379,7 +379,7 @@ export function renderNetFolder(
     "display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-4);";
   const foldLbl = document.createElement("label");
   foldLbl.textContent = "Fold the net:";
-  foldLbl.style.cssText = "font-weight:700; color:var(--navy);";
+  foldLbl.style.cssText = "font-weight:600; color:var(--navy);";
   const slider = document.createElement("input");
   slider.type = "range";
   slider.min = "0";
@@ -413,7 +413,7 @@ export function renderNetFolder(
   explodeBtn.textContent = "💥 Explode Net";
   explodeBtn.title = "Deconstruct 3D faces in spatial view";
   explodeBtn.style.cssText =
-    "font-weight:700; color:#4f46e5; border:1.5px solid #818cf8; background:rgba(99,102,241,0.06); border-radius:8px; padding:4px 10px; cursor:pointer;";
+    "font-weight:600; color:#4f46e5; border:1.5px solid #818cf8; background:rgba(99,102,241,0.06); border-radius:8px; padding:4px 10px; cursor:pointer;";
   explodeBtn.addEventListener("click", () => {
     isExploded = !isExploded;
     explodeBtn.style.background = isExploded ? "#4f46e5" : "rgba(99,102,241,0.06)";
@@ -440,7 +440,7 @@ export function renderNetFolder(
 
   if (question && Array.isArray(question.choices) && question.choices.length) {
     const q = document.createElement("p");
-    q.style.cssText = "font-weight:600; margin:var(--sp-4) 0 var(--sp-2);";
+    q.style.cssText = "font-weight:500; margin:var(--sp-4) 0 var(--sp-2);";
     q.textContent = question.stem;
     wrapper.append(q);
 
@@ -495,7 +495,7 @@ export function renderNetFolder(
   launch3DBtn.target = "_blank";
   launch3DBtn.rel = "noopener";
   launch3DBtn.style.cssText =
-    "display:inline-flex; align-items:center; gap:6px; font-weight:700; color:#0d9488; border:1.5px solid #0d9488; background:rgba(13,148,136,0.06); border-radius:10px; padding:8px 14px; text-decoration:none; margin-top:12px; font-size:0.88rem;";
+    "display:inline-flex; align-items:center; gap:6px; font-weight:600; color:#0d9488; border:1.5px solid #0d9488; background:rgba(13,148,136,0.06); border-radius:10px; padding:8px 14px; text-decoration:none; margin-top:12px; font-size:0.88rem;";
   launch3DBtn.innerHTML =
     "<span>📦 Open NetFold Pro 3D Studio</span> <span aria-hidden='true'>↗</span>";
   wrapper.append(launch3DBtn);

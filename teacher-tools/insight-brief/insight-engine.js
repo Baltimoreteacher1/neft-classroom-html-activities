@@ -14,16 +14,16 @@
   // A band's lesson covers that unit's lessons from the previous boundary+1
   // through the boundary itself.
   var CATCHUP_BANDS = {
-    1: [3, 7],
-    2: [3, 5],
-    3: [3, 7],
-    4: [3, 7],
-    5: [3, 5],
-    6: [3, 7],
-    7: [3, 7],
+    1: [3, 6],
+    2: [3, 12],
+    3: [3, 10],
+    4: [3, 5],
+    5: [3, 10],
+    6: [3, 15],
+    7: [3, 9],
     8: [3, 7],
-    9: [3, 7],
-    10: [3, 5],
+    9: [3, 4],
+    10: [3, 6],
   };
 
   function lessonPath(id) {

@@ -23,6 +23,7 @@
 
 interface Window {
   $: any;
+  __NT_PACING_DATES: any;
   AudioSynth: any;
   CURRICULUM_SYNC: any;
   CurriculumCockpit: any;
@@ -57,6 +58,7 @@ interface Window {
   NTComplete: any;
   NTDeclutter: any;
   NTDiscourse: any;
+  NTDistrictPacing: any;
   NTEdgeTwins: any;
   NTFocus: any;
   NTFuture: any;
@@ -367,6 +369,21 @@ interface Window {
    * simply will not have it.
    */
   openVocabModal?: (termOrKey: string) => void;
+  /**
+   * `assets/curriculum-download.js` publishes this so the Curriculum Hub's
+   * inline bootstrap can open the bulk downloader after lazily importing the
+   * module. Optional because the hub only loads it on demand.
+   */
+  NTCurriculumDownload?: {
+    open: (options?: {
+      unit?: string | number;
+      lesson?: string;
+      view?: string;
+      preset?: string;
+    }) => Promise<void>;
+  };
+  /** Memoized /data manifest reader (assets/curriculum-json-cache.js). */
+  NTJsonCache?: { json: (url: string) => Promise<any>; text: (url: string) => Promise<string> };
 }
 
 /**

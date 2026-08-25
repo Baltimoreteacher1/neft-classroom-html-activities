@@ -16,7 +16,11 @@ const SLIDES_EDITORIAL = `
 }`;
 
 import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
-import { writeGenerated } from "./lib/preserve-injected.mjs";
+import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
+
+/** --check writes nothing and exits non-zero if any committed deck has drifted. */
+const CHECK = process.argv.includes("--check");
+
 import { REFERENCE_CSS, tokensToCssVars } from "./lib/slide-reference-theme.mjs";
 import { getUnitPalette, paletteToCssVars } from "./lib/slide-theme-palettes.mjs";
 import { linkifyDeck } from "./lib/vocab-linkify.mjs";
@@ -484,11 +488,17 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
 
   // Slide 2 Narrative Launch Bindings
   const launchBadge = data.launch ? data.launch.badge || "Scenario Launch" : "Scenario Launch";
-  const launchNarrative = data.launch
-    ? data.launch.narrative || "Solve the problem and record observations."
-    : "Solve the problem and record observations.";
-  const noticePrompts = data.launch ? data.launch.noticePrompts || [] : [];
-  const wonderPrompts = data.launch ? data.launch.wonderPrompts || [] : [];
+  const launchNarrative =
+    (data.launch && data.launch.narrative) ||
+    (data.noticeAndWonder && data.noticeAndWonder.context) ||
+    "Solve the problem and record observations.";
+  // Two schemas exist for Notice & Wonder and only one was ever read here:
+  // `launch.noticePrompts` (66 lessons) and `noticeAndWonder.noticeStarters`
+  // (18 lessons, all of Unit 1 and Unit 10). Lessons authored in the second
+  // shape rendered a Be Curious slide with no stems at all, silently.
+  const nwBlock = data.noticeAndWonder || {};
+  const noticePrompts = (data.launch && data.launch.noticePrompts) || nwBlock.noticeStarters || [];
+  const wonderPrompts = (data.launch && data.launch.wonderPrompts) || nwBlock.wonderStarters || [];
   const noticeStemsHtml = noticePrompts.map((p) => `<div>🔹 ${esc(p)}</div>`).join("");
   const wonderStemsHtml = wonderPrompts.map((p) => `<div>🔹 ${esc(p)}</div>`).join("");
 
@@ -824,6 +834,18 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
   const svgVisual = generateMathVisualSvg(lessonId, data);
   const interactiveWidget = generateInteractiveWidgetHtml(lessonId, standard);
 
+  // The authored Be Curious artwork. `noticeAndWonder.image` is set on 64
+  // lessons and resolves on disk for every one of them — and none of it ever
+  // reached a slide, because the Be Curious slide only ever drew the generic
+  // grid SVG from `launch.visual`. Where a real picture exists, it wins.
+  const nwImage = (data.noticeAndWonder && data.noticeAndWonder.image) || "";
+  const noticeWonderVisual = nwImage
+    ? `<div class="nw-figure"><img src="${esc(nwImage)}" alt="${esc(
+        (data.noticeAndWonder && data.noticeAndWonder.imageAlt) ||
+          "Notice and wonder scene for this lesson",
+      )}" /></div>`
+    : svgVisual;
+
   const drawingToolbarHtml = `
               <div>
                 <p class="card-desc" style="font-size:12px; line-height:1.4; margin:0;">Use the drawing tray below to annotate the visual model. Teacher: say &quot;Click to reveal&quot; on key steps.</p>
@@ -922,6 +944,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
     exitTicketHtml,
     exitOpenStem,
     svgVisual,
+    noticeWonderVisual,
     interactiveWidget,
     drawingToolbarHtml,
     googleSlidesUrl,
@@ -939,9 +962,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${esc(title)} — Google Slides</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="/assets/fonts/outfit-hanken-grotesk-62c0a7.css" rel="stylesheet" />
   <style>
     ${EDITORIAL_FONT_IMPORT}
     :root {${tokensToCssVars(unitPalette, getThemeColor(data.theme))}
@@ -3874,6 +3895,8 @@ function main() {
   }
 
   let count = 0;
+  let checked = 0;
+  const staleDecks = [];
   lessons.forEach((id) => {
     try {
       const configPath = path.join(lessonsDir, id, "config.json");
@@ -3886,6 +3909,15 @@ function main() {
       const html = linkifyDeck(generateSlidesHtml(id, data, googleSlidesUrl));
 
       const outputPath = path.join(lessonsDir, id, "slides.html");
+      // --check: report drift, write nothing. slides.html is a committed second
+      // copy of the lesson and does NOT run in `npm run build`, so it rots
+      // silently — the C1 wave left seven decks teaching a Ferris wheel estimate
+      // the lesson no longer made. tools/generated-pages-fresh.test.mjs gates it.
+      if (CHECK) {
+        checked++;
+        if (!isGeneratedFresh(outputPath, html)) staleDecks.push(`lessons/${id}/slides.html`);
+        return;
+      }
       // writeGenerated, not fs.writeFileSync: the injectors (Save/Resume,
       // mobile-access, math-workbench) splice sentinel blocks into this page
       // AFTER it is generated, and a plain overwrite silently deletes them.
@@ -3898,6 +3930,18 @@ function main() {
     }
   });
 
+  if (CHECK) {
+    if (staleDecks.length) {
+      console.error(
+        `${staleDecks.length} slides page(s) are STALE — the committed HTML no longer matches its config.json:\n  ${staleDecks
+          .slice(0, 15)
+          .join("\n  ")}\n\nFix: node scripts/generate-slides.mjs`,
+      );
+      process.exit(1);
+    }
+    console.log(`Slides up to date (${checked} lessons).`);
+    return;
+  }
   console.log(`Successfully generated premium slides.html for ${count} lessons.`);
 }
 

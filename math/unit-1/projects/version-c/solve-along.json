@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "_note": "Worked numbers differ from anything the page asks the student to compute.",
+  "solves": [
+    {
+      "step": "step-2",
+      "strand": "LCM · Unit 1",
+      "title": {
+        "en": "First day both shuttles dock",
+        "es": "Primer día en que ambos se acoplan"
+      },
+      "prompt": {
+        "en": "Shuttle Alpha docks every 6 days and Shuttle Beta every 10 days. Both docked on day 0. What is the first day they dock together again?",
+        "es": "El transbordador Alfa se acopla cada 6 días y el Beta cada 10. Ambos se acoplaron el día 0. ¿Cuál es el primer día en que vuelven a acoplarse juntos?"
+      },
+      "steps": [
+        {
+          "do": {
+            "en": "List the multiples of each cycle.",
+            "es": "Enumera los múltiplos de cada ciclo."
+          },
+          "math": "6, 12, 18, 24, 30, 36…   10, 20, 30, 40…",
+          "why": {
+            "en": "Each list is the days that shuttle is at the station.",
+            "es": "Cada lista son los días en que ese transbordador está en la estación."
+          }
+        },
+        {
+          "do": {
+            "en": "Find the FIRST day that appears in both lists.",
+            "es": "Halla el PRIMER día que aparece en ambas listas."
+          },
+          "math": "30 is in both lists; nothing smaller is",
+          "why": {
+            "en": "The first shared multiple is the least common multiple.",
+            "es": "El primer múltiplo compartido es el mínimo común múltiplo."
+          }
+        },
+        {
+          "do": {
+            "en": "Check it against the mission rule.",
+            "es": "Compruébalo con la regla de la misión."
+          },
+          "math": "LCM(6, 10) = 30 ≤ 30",
+          "why": {
+            "en": "Day 30 is inside the 30-day window, so this pair of cycles is legal.",
+            "es": "El día 30 está dentro de la ventana de 30 días, así que este par de ciclos es válido."
+          }
+        }
+      ],
+      "answer": {
+        "en": "Day 30 — LCM(6, 10) = 30.",
+        "es": "Día 30: mcm(6, 10) = 30."
+      },
+      "yourTurn": {
+        "items": [
+          {
+            "ask": {
+              "en": "Cycles of 4 days and 6 days. First day they dock together?",
+              "es": "Ciclos de 4 y 6 días. ¿Primer día en que se acoplan juntos?"
+            },
+            "unit": {
+              "en": "days",
+              "es": "días"
+            },
+            "answer": 12,
+            "expr": "12",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "List and match.",
+                  "es": "Enumera y compara."
+                },
+                "math": "4, 8, 12…  6, 12… → LCM = 12",
+                "why": {
+                  "en": "12 is the first day on both lists.",
+                  "es": "12 es el primer día en ambas listas."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "Cycles of 8 days and 9 days. First shared docking day?",
+              "es": "Ciclos de 8 y 9 días. ¿Primer día de acoplamiento compartido?"
+            },
+            "unit": {
+              "en": "days",
+              "es": "días"
+            },
+            "answer": 72,
+            "expr": "8 * 9",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Check whether the cycles share any factor.",
+                  "es": "Revisa si los ciclos comparten algún factor."
+                },
+                "math": "8 = 2×2×2, 9 = 3×3 — no shared factor → LCM = 8 × 9 = 72",
+                "why": {
+                  "en": "When two numbers share no factor, their LCM is simply their product — and 72 is outside a 30-day window, so this pair breaks the mission rule.",
+                  "es": "Cuando dos números no comparten factores, su mcm es su producto, y 72 queda fuera de una ventana de 30 días, así que este par rompe la regla."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -34,68 +34,142 @@
   // MCAP packet) attached to each lesson card. Surfaced in the activity
   // dropdown. Generated from each lesson's config.json printables[].
   var LESSON_PRINTABLES = {
-    "1-1": [
+    "2-1": [
       {
         text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/6-13/worksheet.html",
+        href: "/lessons/2-1/worksheet.html",
         isPrintable: true,
       },
       {
-        text: "🎲 Factor Tree Relay",
-        href: "/lessons/6-13/downloads/printables/1-1-activity.pdf",
+        text: "🎲 Statistical Question Sort",
+        href: "/lessons/2-1/downloads/printables/8-1-activity.pdf",
         isPrintable: true,
       },
       {
-        text: "🎨 Prime Factorization — Color by Number",
-        href: "/lessons/6-13/downloads/printables/1-1-color-by-number.pdf",
+        text: "🎨 Statistical Questions and Data — Color by Number",
+        href: "/lessons/2-1/downloads/printables/8-1-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Statistical Questions and Data — Vocabulary Word Search",
+        href: "/lessons/2-1/downloads/printables/8-1-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Statistical Questions and Data — MCAP-Style Practice",
+        href: "/lessons/2-1/downloads/printables/8-1-mcap-practice.docx",
         isPrintable: true,
       },
     ],
-    "1-2": [
+    "2-2": [
       {
         text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/6-7/worksheet.html",
+        href: "/lessons/2-2/worksheet.html",
         isPrintable: true,
       },
       {
-        text: "🎲 GCF Factor Grid Challenge",
-        href: "/lessons/6-7/downloads/printables/1-2-activity.pdf",
+        text: "🎲 Histogram Interval Builder",
+        href: "/lessons/2-2/downloads/printables/8-6-activity.pdf",
         isPrintable: true,
       },
       {
-        text: "🎨 Greatest Common Factor — Color by Number",
-        href: "/lessons/6-7/downloads/printables/1-2-color-by-number.pdf",
+        text: "🎨 Display Data: Histograms — Color by Number",
+        href: "/lessons/2-2/downloads/printables/8-6-color-by-number.pdf",
         isPrintable: true,
       },
       {
-        text: "🔎 Greatest Common Factor — Vocabulary Word Search",
-        href: "/lessons/6-7/downloads/printables/1-2-word-search.pdf",
+        text: "🔎 Display Data: Histograms — Vocabulary Word Search",
+        href: "/lessons/2-2/downloads/printables/8-6-word-search.pdf",
         isPrintable: true,
       },
       {
-        text: "📝 Greatest Common Factor — MCAP-Style Practice",
-        href: "/lessons/6-7/downloads/printables/1-2-mcap-practice.docx",
+        text: "📝 Display Data: Histograms — MCAP-Style Practice",
+        href: "/lessons/2-2/downloads/printables/8-6-mcap-practice.docx",
         isPrintable: true,
       },
     ],
-    "1-3": [
+    "2-3": [
       {
         text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/6-12/worksheet.html",
+        href: "/lessons/2-3/worksheet.html",
         isPrintable: true,
       },
       {
-        text: "🎲 Multiple Race Track",
-        href: "/lessons/6-12/downloads/printables/1-3-activity.pdf",
+        text: "🎲 Center Measure Card Game",
+        href: "/lessons/2-3/downloads/printables/8-2-activity.pdf",
         isPrintable: true,
       },
       {
-        text: "🎨 Least Common Multiple — Color by Number",
-        href: "/lessons/6-12/downloads/printables/1-3-color-by-number.pdf",
+        text: "🎨 Mean, Median, and Mode — Color by Number",
+        href: "/lessons/2-3/downloads/printables/8-2-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Mean, Median, and Mode — Vocabulary Word Search",
+        href: "/lessons/2-3/downloads/printables/8-2-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Mean, Median, and Mode — MCAP-Style Practice",
+        href: "/lessons/2-3/downloads/printables/8-2-mcap-practice.docx",
         isPrintable: true,
       },
     ],
-    "1-4": [
+    "2-4": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/2-4/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Five-Number Summary Box Plot",
+        href: "/lessons/2-4/downloads/printables/8-5-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Display Data: Box Plots — Color by Number",
+        href: "/lessons/2-4/downloads/printables/8-5-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Display Data: Box Plots — Vocabulary Word Search",
+        href: "/lessons/2-4/downloads/printables/8-5-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Display Data: Box Plots — MCAP-Style Practice",
+        href: "/lessons/2-4/downloads/printables/8-5-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "2-5": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/2-5/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Distribution Shape Gallery",
+        href: "/lessons/2-5/downloads/printables/8-7-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Shape of Data Distributions — Color by Number",
+        href: "/lessons/2-5/downloads/printables/8-7-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Shape of Data Distributions — Vocabulary Word Search",
+        href: "/lessons/2-5/downloads/printables/8-7-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Shape of Data Distributions — MCAP-Style Practice",
+        href: "/lessons/2-5/downloads/printables/8-7-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "2-6": [
       {
         text: "📝 Practice Worksheet (A & B)",
         href: "/lessons/2-6/worksheet.html",
@@ -122,41 +196,7 @@
         isPrintable: true,
       },
     ],
-    "1-5": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/2-11/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Decimal Bank Ledger",
-        href: "/lessons/2-11/downloads/printables/1-5-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Add and Subtract Decimals — Color by Number",
-        href: "/lessons/2-11/downloads/printables/1-5-color-by-number.pdf",
-        isPrintable: true,
-      },
-    ],
-    "1-6": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/2-12/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Decimal Product Shop",
-        href: "/lessons/2-12/downloads/printables/1-6-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Multiply Decimals — Color by Number",
-        href: "/lessons/2-12/downloads/printables/1-6-color-by-number.pdf",
-        isPrintable: true,
-      },
-    ],
-    "1-7": [
+    "2-7": [
       {
         text: "📝 Practice Worksheet (A & B)",
         href: "/lessons/2-7/worksheet.html",
@@ -183,233 +223,91 @@
         isPrintable: true,
       },
     ],
-    "10-1": [
+    "2-9": [
       {
         text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/5-5/worksheet.html",
+        href: "/lessons/2-9/worksheet.html",
         isPrintable: true,
       },
       {
-        text: "🎲 Volume Cube Stack Task Cards",
-        href: "/lessons/5-5/downloads/printables/10-1-activity.pdf",
+        text: "🎲 MAD Step-Strip Lab",
+        href: "/lessons/2-9/downloads/printables/8-3-activity.pdf",
         isPrintable: true,
       },
       {
-        text: "🎨 Volume with Whole Number Edges — Color by Number",
-        href: "/lessons/5-5/downloads/printables/10-1-color-by-number.pdf",
+        text: "🎨 Mean Absolute Deviation — Color by Number",
+        href: "/lessons/2-9/downloads/printables/8-3-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Mean Absolute Deviation — Vocabulary Word Search",
+        href: "/lessons/2-9/downloads/printables/8-3-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Mean Absolute Deviation — MCAP-Style Practice",
+        href: "/lessons/2-9/downloads/printables/8-3-mcap-practice.docx",
         isPrintable: true,
       },
     ],
-    "10-2": [
+    "2-10": [
       {
         text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/5-10/worksheet.html",
+        href: "/lessons/2-10/worksheet.html",
         isPrintable: true,
       },
       {
-        text: "🎲 Fractional Edge Volume Boxes",
-        href: "/lessons/5-10/downloads/printables/10-2-activity.pdf",
+        text: "🎲 Best Measure of Center Court",
+        href: "/lessons/2-10/downloads/printables/8-4-activity.pdf",
         isPrintable: true,
       },
       {
-        text: "🎨 Volume of Rectangular Prisms — Color by Number",
-        href: "/lessons/5-10/downloads/printables/10-2-color-by-number.pdf",
+        text: "🎨 Appropriate Measures — Color by Number",
+        href: "/lessons/2-10/downloads/printables/8-4-color-by-number.pdf",
         isPrintable: true,
       },
       {
-        text: "🔎 Volume of Rectangular Prisms — Vocabulary Word Search",
-        href: "/lessons/5-10/downloads/printables/10-2-word-search.pdf",
+        text: "🔎 Appropriate Measures — Vocabulary Word Search",
+        href: "/lessons/2-10/downloads/printables/8-4-word-search.pdf",
         isPrintable: true,
       },
       {
-        text: "📝 Volume of Rectangular Prisms — MCAP-Style Practice",
-        href: "/lessons/5-10/downloads/printables/10-2-mcap-practice.docx",
+        text: "📝 Appropriate Measures — MCAP-Style Practice",
+        href: "/lessons/2-10/downloads/printables/8-4-mcap-practice.docx",
         isPrintable: true,
       },
     ],
-    "10-3": [
+    "2-11": [
       {
         text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/5-6/worksheet.html",
+        href: "/lessons/2-11/worksheet.html",
         isPrintable: true,
       },
       {
-        text: "🎲 Net Detective",
-        href: "/lessons/5-6/downloads/printables/10-3-activity.pdf",
+        text: "🎲 Decimal Bank Ledger",
+        href: "/lessons/2-11/downloads/printables/1-5-activity.pdf",
         isPrintable: true,
       },
       {
-        text: "🎨 Surface Area Using Nets — Color by Number",
-        href: "/lessons/5-6/downloads/printables/10-3-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Surface Area Using Nets — Vocabulary Word Search",
-        href: "/lessons/5-6/downloads/printables/10-3-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Surface Area Using Nets — MCAP-Style Practice",
-        href: "/lessons/5-6/downloads/printables/10-3-mcap-practice.docx",
+        text: "🎨 Add and Subtract Decimals — Color by Number",
+        href: "/lessons/2-11/downloads/printables/1-5-color-by-number.pdf",
         isPrintable: true,
       },
     ],
-    "10-4": [
+    "2-12": [
       {
         text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/5-7/worksheet.html",
+        href: "/lessons/2-12/worksheet.html",
         isPrintable: true,
       },
       {
-        text: "🎲 Prism Surface Area Wrap",
-        href: "/lessons/5-7/downloads/printables/10-4-activity.pdf",
+        text: "🎲 Decimal Product Shop",
+        href: "/lessons/2-12/downloads/printables/1-6-activity.pdf",
         isPrintable: true,
       },
       {
-        text: "🎨 Surface Area of Prisms — Color by Number",
-        href: "/lessons/5-7/downloads/printables/10-4-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Surface Area of Prisms — Vocabulary Word Search",
-        href: "/lessons/5-7/downloads/printables/10-4-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Surface Area of Prisms — MCAP-Style Practice",
-        href: "/lessons/5-7/downloads/printables/10-4-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "10-5": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/5-8/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Pyramid Surface Area Build",
-        href: "/lessons/5-8/downloads/printables/10-5-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Surface Area of Pyramids — Color by Number",
-        href: "/lessons/5-8/downloads/printables/10-5-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Surface Area of Pyramids — Vocabulary Word Search",
-        href: "/lessons/5-8/downloads/printables/10-5-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Surface Area of Pyramids — MCAP-Style Practice",
-        href: "/lessons/5-8/downloads/printables/10-5-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "2-1": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/6-1/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Fraction Division Model Match",
-        href: "/lessons/6-1/downloads/printables/2-1-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Interpret Division of Fractions — Color by Number",
-        href: "/lessons/6-1/downloads/printables/2-1-color-by-number.pdf",
-        isPrintable: true,
-      },
-    ],
-    "2-2": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/6-9/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Serving Size Scoops",
-        href: "/lessons/6-9/downloads/printables/2-2-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Divide Whole Numbers by Fractions — Color by Number",
-        href: "/lessons/6-9/downloads/printables/2-2-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Divide Whole Numbers by Fractions — Vocabulary Word Search",
-        href: "/lessons/6-9/downloads/printables/2-2-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Divide Whole Numbers by Fractions — MCAP-Style Practice",
-        href: "/lessons/6-9/downloads/printables/2-2-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "2-3": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/6-2/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Reciprocal Card Duel",
-        href: "/lessons/6-2/downloads/printables/2-3-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Divide Fractions — Color by Number",
-        href: "/lessons/6-2/downloads/printables/2-3-color-by-number.pdf",
-        isPrintable: true,
-      },
-    ],
-    "2-4": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/6-10/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Mixed Number Conversion Trail",
-        href: "/lessons/6-10/downloads/printables/2-4-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Divide Mixed Numbers — Color by Number",
-        href: "/lessons/6-10/downloads/printables/2-4-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Divide Mixed Numbers — Vocabulary Word Search",
-        href: "/lessons/6-10/downloads/printables/2-4-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Divide Mixed Numbers — MCAP-Style Practice",
-        href: "/lessons/6-10/downloads/printables/2-4-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "2-5": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/6-11/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Fraction Division Story Court",
-        href: "/lessons/6-11/downloads/printables/2-5-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Fraction Division Problem Solving — Color by Number",
-        href: "/lessons/6-11/downloads/printables/2-5-color-by-number.pdf",
+        text: "🎨 Multiply Decimals — Color by Number",
+        href: "/lessons/2-12/downloads/printables/1-6-color-by-number.pdf",
         isPrintable: true,
       },
     ],
@@ -443,6 +341,33 @@
     "3-2": [
       {
         text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/3-2/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Unit Rate Shopping War",
+        href: "/lessons/3-2/downloads/printables/4-1-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Rates and Unit Rates — Color by Number",
+        href: "/lessons/3-2/downloads/printables/4-1-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Rates and Unit Rates — Vocabulary Word Search",
+        href: "/lessons/3-2/downloads/printables/4-1-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Rates and Unit Rates — MCAP-Style Practice",
+        href: "/lessons/3-2/downloads/printables/4-1-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "3-3": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
         href: "/lessons/3-3/worksheet.html",
         isPrintable: true,
       },
@@ -467,7 +392,7 @@
         isPrintable: true,
       },
     ],
-    "3-3": [
+    "3-4": [
       {
         text: "📝 Practice Worksheet (A & B)",
         href: "/lessons/3-4/worksheet.html",
@@ -491,23 +416,6 @@
       {
         text: "📝 Graph Ratio Tables — MCAP-Style Practice",
         href: "/lessons/3-4/downloads/printables/3-3-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "3-4": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/3-9/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Equivalent Ratio Card Capture",
-        href: "/lessons/3-9/downloads/printables/3-4-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Equivalent Ratios — Color by Number",
-        href: "/lessons/3-9/downloads/printables/3-4-color-by-number.pdf",
         isPrintable: true,
       },
     ],
@@ -572,30 +480,81 @@
         isPrintable: true,
       },
     ],
+    "3-8": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/3-8/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Unit Rate Decision Tournament",
+        href: "/lessons/3-8/downloads/printables/4-7-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Solve Problems with Unit Rates — Color by Number",
+        href: "/lessons/3-8/downloads/printables/4-7-color-by-number.pdf",
+        isPrintable: true,
+      },
+    ],
+    "3-9": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/3-9/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Equivalent Ratio Card Capture",
+        href: "/lessons/3-9/downloads/printables/3-4-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Equivalent Ratios — Color by Number",
+        href: "/lessons/3-9/downloads/printables/3-4-color-by-number.pdf",
+        isPrintable: true,
+      },
+    ],
+    "3-10": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/3-10/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Measurement Conversion Ladder",
+        href: "/lessons/3-10/downloads/printables/4-6-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Convert Measurement Units — Color by Number",
+        href: "/lessons/3-10/downloads/printables/4-6-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Convert Measurement Units — Vocabulary Word Search",
+        href: "/lessons/3-10/downloads/printables/4-6-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Convert Measurement Units — MCAP-Style Practice",
+        href: "/lessons/3-10/downloads/printables/4-6-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
     "4-1": [
       {
         text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/3-2/worksheet.html",
+        href: "/lessons/4-1/worksheet.html",
         isPrintable: true,
       },
       {
-        text: "🎲 Unit Rate Shopping War",
-        href: "/lessons/3-2/downloads/printables/4-1-activity.pdf",
+        text: "🎲 Extreme Percent Headline Sort",
+        href: "/lessons/4-1/downloads/printables/4-3-activity.pdf",
         isPrintable: true,
       },
       {
-        text: "🎨 Rates and Unit Rates — Color by Number",
-        href: "/lessons/3-2/downloads/printables/4-1-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Rates and Unit Rates — Vocabulary Word Search",
-        href: "/lessons/3-2/downloads/printables/4-1-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Rates and Unit Rates — MCAP-Style Practice",
-        href: "/lessons/3-2/downloads/printables/4-1-mcap-practice.docx",
+        text: "🎨 Percents Greater Than 100% and Less Than 1% — Color by Number",
+        href: "/lessons/4-1/downloads/printables/4-3-color-by-number.pdf",
         isPrintable: true,
       },
     ],
@@ -623,23 +582,6 @@
       {
         text: "📝 Relate Fractions, Decimals, and Percents — MCAP-Style Practice",
         href: "/lessons/4-2/downloads/printables/4-2-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "4-3": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/4-1/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Extreme Percent Headline Sort",
-        href: "/lessons/4-1/downloads/printables/4-3-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Percents Greater Than 100% and Less Than 1% — Color by Number",
-        href: "/lessons/4-1/downloads/printables/4-3-color-by-number.pdf",
         isPrintable: true,
       },
     ],
@@ -697,50 +639,6 @@
         isPrintable: true,
       },
     ],
-    "4-6": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/3-10/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Measurement Conversion Ladder",
-        href: "/lessons/3-10/downloads/printables/4-6-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Convert Measurement Units — Color by Number",
-        href: "/lessons/3-10/downloads/printables/4-6-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Convert Measurement Units — Vocabulary Word Search",
-        href: "/lessons/3-10/downloads/printables/4-6-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Convert Measurement Units — MCAP-Style Practice",
-        href: "/lessons/3-10/downloads/printables/4-6-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "4-7": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/3-8/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Unit Rate Decision Tournament",
-        href: "/lessons/3-8/downloads/printables/4-7-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Solve Problems with Unit Rates — Color by Number",
-        href: "/lessons/3-8/downloads/printables/4-7-color-by-number.pdf",
-        isPrintable: true,
-      },
-    ],
     "5-1": [
       {
         text: "📝 Practice Worksheet (A & B)",
@@ -771,33 +669,6 @@
     "5-2": [
       {
         text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/5-3/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Trapezoid Formula Builder Puzzle",
-        href: "/lessons/5-3/downloads/printables/5-2-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Area of Trapezoids — Color by Number",
-        href: "/lessons/5-3/downloads/printables/5-2-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Area of Trapezoids — Vocabulary Word Search",
-        href: "/lessons/5-3/downloads/printables/5-2-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Area of Trapezoids — MCAP-Style Practice",
-        href: "/lessons/5-3/downloads/printables/5-2-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "5-3": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
         href: "/lessons/5-2/worksheet.html",
         isPrintable: true,
       },
@@ -822,24 +693,34 @@
         isPrintable: true,
       },
     ],
-    "5-4": [
+    "5-3": [
       {
         text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/5-9/worksheet.html",
+        href: "/lessons/5-3/worksheet.html",
         isPrintable: true,
       },
       {
-        text: "🎲 Polygon Decompose Gallery",
-        href: "/lessons/5-9/downloads/printables/5-4-activity.pdf",
+        text: "🎲 Trapezoid Formula Builder Puzzle",
+        href: "/lessons/5-3/downloads/printables/5-2-activity.pdf",
         isPrintable: true,
       },
       {
-        text: "🎨 Area of Regular Polygons — Color by Number",
-        href: "/lessons/5-9/downloads/printables/5-4-color-by-number.pdf",
+        text: "🎨 Area of Trapezoids — Color by Number",
+        href: "/lessons/5-3/downloads/printables/5-2-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Area of Trapezoids — Vocabulary Word Search",
+        href: "/lessons/5-3/downloads/printables/5-2-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Area of Trapezoids — MCAP-Style Practice",
+        href: "/lessons/5-3/downloads/printables/5-2-mcap-practice.docx",
         isPrintable: true,
       },
     ],
-    "5-5": [
+    "5-4": [
       {
         text: "📝 Practice Worksheet (A & B)",
         href: "/lessons/5-4/worksheet.html",
@@ -866,7 +747,183 @@
         isPrintable: true,
       },
     ],
+    "5-5": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/5-5/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Volume Cube Stack Task Cards",
+        href: "/lessons/5-5/downloads/printables/10-1-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Volume with Whole Number Edges — Color by Number",
+        href: "/lessons/5-5/downloads/printables/10-1-color-by-number.pdf",
+        isPrintable: true,
+      },
+    ],
+    "5-6": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/5-6/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Net Detective",
+        href: "/lessons/5-6/downloads/printables/10-3-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Surface Area Using Nets — Color by Number",
+        href: "/lessons/5-6/downloads/printables/10-3-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Surface Area Using Nets — Vocabulary Word Search",
+        href: "/lessons/5-6/downloads/printables/10-3-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Surface Area Using Nets — MCAP-Style Practice",
+        href: "/lessons/5-6/downloads/printables/10-3-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "5-7": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/5-7/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Prism Surface Area Wrap",
+        href: "/lessons/5-7/downloads/printables/10-4-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Surface Area of Prisms — Color by Number",
+        href: "/lessons/5-7/downloads/printables/10-4-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Surface Area of Prisms — Vocabulary Word Search",
+        href: "/lessons/5-7/downloads/printables/10-4-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Surface Area of Prisms — MCAP-Style Practice",
+        href: "/lessons/5-7/downloads/printables/10-4-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "5-8": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/5-8/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Pyramid Surface Area Build",
+        href: "/lessons/5-8/downloads/printables/10-5-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Surface Area of Pyramids — Color by Number",
+        href: "/lessons/5-8/downloads/printables/10-5-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Surface Area of Pyramids — Vocabulary Word Search",
+        href: "/lessons/5-8/downloads/printables/10-5-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Surface Area of Pyramids — MCAP-Style Practice",
+        href: "/lessons/5-8/downloads/printables/10-5-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "5-9": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/5-9/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Polygon Decompose Gallery",
+        href: "/lessons/5-9/downloads/printables/5-4-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Area of Regular Polygons — Color by Number",
+        href: "/lessons/5-9/downloads/printables/5-4-color-by-number.pdf",
+        isPrintable: true,
+      },
+    ],
+    "5-10": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/5-10/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Fractional Edge Volume Boxes",
+        href: "/lessons/5-10/downloads/printables/10-2-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Volume of Rectangular Prisms — Color by Number",
+        href: "/lessons/5-10/downloads/printables/10-2-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Volume of Rectangular Prisms — Vocabulary Word Search",
+        href: "/lessons/5-10/downloads/printables/10-2-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Volume of Rectangular Prisms — MCAP-Style Practice",
+        href: "/lessons/5-10/downloads/printables/10-2-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
     "6-1": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/6-1/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Fraction Division Model Match",
+        href: "/lessons/6-1/downloads/printables/2-1-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Interpret Division of Fractions — Color by Number",
+        href: "/lessons/6-1/downloads/printables/2-1-color-by-number.pdf",
+        isPrintable: true,
+      },
+    ],
+    "6-2": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/6-2/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Reciprocal Card Duel",
+        href: "/lessons/6-2/downloads/printables/2-3-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Divide Fractions — Color by Number",
+        href: "/lessons/6-2/downloads/printables/2-3-color-by-number.pdf",
+        isPrintable: true,
+      },
+    ],
+    "6-3": [
       {
         text: "📝 Practice Worksheet (A & B)",
         href: "/lessons/6-3/worksheet.html",
@@ -893,7 +950,7 @@
         isPrintable: true,
       },
     ],
-    "6-2": [
+    "6-4": [
       {
         text: "📝 Practice Worksheet (A & B)",
         href: "/lessons/6-4/worksheet.html",
@@ -920,7 +977,7 @@
         isPrintable: true,
       },
     ],
-    "6-3": [
+    "6-5": [
       {
         text: "📝 Practice Worksheet (A & B)",
         href: "/lessons/6-5/worksheet.html",
@@ -944,50 +1001,6 @@
       {
         text: "📝 Write Algebraic Expressions — MCAP-Style Practice",
         href: "/lessons/6-5/downloads/printables/6-3-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "6-4": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/6-8/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Property Sorting Court",
-        href: "/lessons/6-8/downloads/printables/6-4-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Properties of Operations — Color by Number",
-        href: "/lessons/6-8/downloads/printables/6-4-color-by-number.pdf",
-        isPrintable: true,
-      },
-    ],
-    "6-5": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/6-14/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Distributive Area Model Tiles",
-        href: "/lessons/6-14/downloads/printables/6-5-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 The Distributive Property — Color by Number",
-        href: "/lessons/6-14/downloads/printables/6-5-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 The Distributive Property — Vocabulary Word Search",
-        href: "/lessons/6-14/downloads/printables/6-5-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 The Distributive Property — MCAP-Style Practice",
-        href: "/lessons/6-14/downloads/printables/6-5-mcap-practice.docx",
         isPrintable: true,
       },
     ],
@@ -1021,6 +1034,182 @@
     "6-7": [
       {
         text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/6-7/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 GCF Factor Grid Challenge",
+        href: "/lessons/6-7/downloads/printables/1-2-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Greatest Common Factor — Color by Number",
+        href: "/lessons/6-7/downloads/printables/1-2-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Greatest Common Factor — Vocabulary Word Search",
+        href: "/lessons/6-7/downloads/printables/1-2-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Greatest Common Factor — MCAP-Style Practice",
+        href: "/lessons/6-7/downloads/printables/1-2-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "6-8": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/6-8/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Property Sorting Court",
+        href: "/lessons/6-8/downloads/printables/6-4-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Properties of Operations — Color by Number",
+        href: "/lessons/6-8/downloads/printables/6-4-color-by-number.pdf",
+        isPrintable: true,
+      },
+    ],
+    "6-9": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/6-9/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Serving Size Scoops",
+        href: "/lessons/6-9/downloads/printables/2-2-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Divide Whole Numbers by Fractions — Color by Number",
+        href: "/lessons/6-9/downloads/printables/2-2-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Divide Whole Numbers by Fractions — Vocabulary Word Search",
+        href: "/lessons/6-9/downloads/printables/2-2-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Divide Whole Numbers by Fractions — MCAP-Style Practice",
+        href: "/lessons/6-9/downloads/printables/2-2-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "6-10": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/6-10/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Mixed Number Conversion Trail",
+        href: "/lessons/6-10/downloads/printables/2-4-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Divide Mixed Numbers — Color by Number",
+        href: "/lessons/6-10/downloads/printables/2-4-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Divide Mixed Numbers — Vocabulary Word Search",
+        href: "/lessons/6-10/downloads/printables/2-4-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Divide Mixed Numbers — MCAP-Style Practice",
+        href: "/lessons/6-10/downloads/printables/2-4-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "6-11": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/6-11/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Fraction Division Story Court",
+        href: "/lessons/6-11/downloads/printables/2-5-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Fraction Division Problem Solving — Color by Number",
+        href: "/lessons/6-11/downloads/printables/2-5-color-by-number.pdf",
+        isPrintable: true,
+      },
+    ],
+    "6-12": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/6-12/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Multiple Race Track",
+        href: "/lessons/6-12/downloads/printables/1-3-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Least Common Multiple — Color by Number",
+        href: "/lessons/6-12/downloads/printables/1-3-color-by-number.pdf",
+        isPrintable: true,
+      },
+    ],
+    "6-13": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/6-13/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Factor Tree Relay",
+        href: "/lessons/6-13/downloads/printables/1-1-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Prime Factorization — Color by Number",
+        href: "/lessons/6-13/downloads/printables/1-1-color-by-number.pdf",
+        isPrintable: true,
+      },
+    ],
+    "6-14": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/6-14/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Distributive Area Model Tiles",
+        href: "/lessons/6-14/downloads/printables/6-5-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 The Distributive Property — Color by Number",
+        href: "/lessons/6-14/downloads/printables/6-5-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 The Distributive Property — Vocabulary Word Search",
+        href: "/lessons/6-14/downloads/printables/6-5-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 The Distributive Property — MCAP-Style Practice",
+        href: "/lessons/6-14/downloads/printables/6-5-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "6-15": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
         href: "/lessons/6-15/worksheet.html",
         isPrintable: true,
       },
@@ -1035,446 +1224,7 @@
         isPrintable: true,
       },
     ],
-    "7-1": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/8-1/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Equation Story Match",
-        href: "/lessons/8-1/downloads/printables/7-1-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Write Equations — Color by Number",
-        href: "/lessons/8-1/downloads/printables/7-1-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Write Equations — Vocabulary Word Search",
-        href: "/lessons/8-1/downloads/printables/7-1-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Write Equations — MCAP-Style Practice",
-        href: "/lessons/8-1/downloads/printables/7-1-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
     "7-2": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/8-2/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Balance Scale Inverse Cards",
-        href: "/lessons/8-2/downloads/printables/7-2-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Solve One-Step Addition and Subtraction Equations — Color by Number",
-        href: "/lessons/8-2/downloads/printables/7-2-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Solve One-Step Addition and Subtraction Equations — Vocabulary Word Search",
-        href: "/lessons/8-2/downloads/printables/7-2-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Solve One-Step Addition and Subtraction Equations — MCAP-Style Practice",
-        href: "/lessons/8-2/downloads/printables/7-2-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "7-3": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/8-3/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Equation Match Sprint",
-        href: "/lessons/8-3/downloads/printables/7-3-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Solve Multiplication and Division Equations — Color by Number",
-        href: "/lessons/8-3/downloads/printables/7-3-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Solve Multiplication and Division Equations — Vocabulary Word Search",
-        href: "/lessons/8-3/downloads/printables/7-3-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Solve Multiplication and Division Equations — MCAP-Style Practice",
-        href: "/lessons/8-3/downloads/printables/7-3-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "7-4": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/8-4/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Inequality Statement Sort",
-        href: "/lessons/8-4/downloads/printables/7-4-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Write Inequalities — Color by Number",
-        href: "/lessons/8-4/downloads/printables/7-4-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Write Inequalities — Vocabulary Word Search",
-        href: "/lessons/8-4/downloads/printables/7-4-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Write Inequalities — MCAP-Style Practice",
-        href: "/lessons/8-4/downloads/printables/7-4-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "7-5": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/8-5/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Number Line Gallery Walk",
-        href: "/lessons/8-5/downloads/printables/7-5-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Graph Inequalities — Color by Number",
-        href: "/lessons/8-5/downloads/printables/7-5-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Graph Inequalities — Vocabulary Word Search",
-        href: "/lessons/8-5/downloads/printables/7-5-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Graph Inequalities — MCAP-Style Practice",
-        href: "/lessons/8-5/downloads/printables/7-5-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "7-6": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/8-6/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Solve-and-Graph Relay",
-        href: "/lessons/8-6/downloads/printables/7-6-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Solve and Graph Inequalities — Color by Number",
-        href: "/lessons/8-6/downloads/printables/7-6-color-by-number.pdf",
-        isPrintable: true,
-      },
-    ],
-    "7-7": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/8-7/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Model-It Choice Board",
-        href: "/lessons/8-7/downloads/printables/7-7-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Equations and Inequalities Problem Solving — Color by Number",
-        href: "/lessons/8-7/downloads/printables/7-7-color-by-number.pdf",
-        isPrintable: true,
-      },
-    ],
-    "8-1": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/2-1/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Statistical Question Sort",
-        href: "/lessons/2-1/downloads/printables/8-1-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Statistical Questions and Data — Color by Number",
-        href: "/lessons/2-1/downloads/printables/8-1-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Statistical Questions and Data — Vocabulary Word Search",
-        href: "/lessons/2-1/downloads/printables/8-1-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Statistical Questions and Data — MCAP-Style Practice",
-        href: "/lessons/2-1/downloads/printables/8-1-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "8-2": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/2-3/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Center Measure Card Game",
-        href: "/lessons/2-3/downloads/printables/8-2-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Mean, Median, and Mode — Color by Number",
-        href: "/lessons/2-3/downloads/printables/8-2-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Mean, Median, and Mode — Vocabulary Word Search",
-        href: "/lessons/2-3/downloads/printables/8-2-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Mean, Median, and Mode — MCAP-Style Practice",
-        href: "/lessons/2-3/downloads/printables/8-2-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "8-3": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/2-9/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 MAD Step-Strip Lab",
-        href: "/lessons/2-9/downloads/printables/8-3-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Mean Absolute Deviation — Color by Number",
-        href: "/lessons/2-9/downloads/printables/8-3-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Mean Absolute Deviation — Vocabulary Word Search",
-        href: "/lessons/2-9/downloads/printables/8-3-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Mean Absolute Deviation — MCAP-Style Practice",
-        href: "/lessons/2-9/downloads/printables/8-3-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "8-4": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/2-10/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Best Measure of Center Court",
-        href: "/lessons/2-10/downloads/printables/8-4-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Appropriate Measures — Color by Number",
-        href: "/lessons/2-10/downloads/printables/8-4-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Appropriate Measures — Vocabulary Word Search",
-        href: "/lessons/2-10/downloads/printables/8-4-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Appropriate Measures — MCAP-Style Practice",
-        href: "/lessons/2-10/downloads/printables/8-4-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "8-5": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/2-4/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Five-Number Summary Box Plot",
-        href: "/lessons/2-4/downloads/printables/8-5-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Display Data: Box Plots — Color by Number",
-        href: "/lessons/2-4/downloads/printables/8-5-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Display Data: Box Plots — Vocabulary Word Search",
-        href: "/lessons/2-4/downloads/printables/8-5-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Display Data: Box Plots — MCAP-Style Practice",
-        href: "/lessons/2-4/downloads/printables/8-5-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "8-6": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/2-2/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Histogram Interval Builder",
-        href: "/lessons/2-2/downloads/printables/8-6-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Display Data: Histograms — Color by Number",
-        href: "/lessons/2-2/downloads/printables/8-6-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Display Data: Histograms — Vocabulary Word Search",
-        href: "/lessons/2-2/downloads/printables/8-6-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Display Data: Histograms — MCAP-Style Practice",
-        href: "/lessons/2-2/downloads/printables/8-6-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "8-7": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/2-5/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Distribution Shape Gallery",
-        href: "/lessons/2-5/downloads/printables/8-7-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Shape of Data Distributions — Color by Number",
-        href: "/lessons/2-5/downloads/printables/8-7-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Shape of Data Distributions — Vocabulary Word Search",
-        href: "/lessons/2-5/downloads/printables/8-7-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Shape of Data Distributions — MCAP-Style Practice",
-        href: "/lessons/2-5/downloads/printables/8-7-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "9-1": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/7-5/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Coordinate Treasure Hunt",
-        href: "/lessons/7-5/downloads/printables/9-1-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Graph on the Coordinate Plane — Color by Number",
-        href: "/lessons/7-5/downloads/printables/9-1-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Graph on the Coordinate Plane — Vocabulary Word Search",
-        href: "/lessons/7-5/downloads/printables/9-1-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Graph on the Coordinate Plane — MCAP-Style Practice",
-        href: "/lessons/7-5/downloads/printables/9-1-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "9-2": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/7-3/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Integer & Absolute Value Battle",
-        href: "/lessons/7-3/downloads/printables/9-2-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Integers and Absolute Value — Color by Number",
-        href: "/lessons/7-3/downloads/printables/9-2-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Integers and Absolute Value — Vocabulary Word Search",
-        href: "/lessons/7-3/downloads/printables/9-2-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Integers and Absolute Value — MCAP-Style Practice",
-        href: "/lessons/7-3/downloads/printables/9-2-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "9-3": [
-      {
-        text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/7-4/worksheet.html",
-        isPrintable: true,
-      },
-      {
-        text: "🎲 Integer Order Relay",
-        href: "/lessons/7-4/downloads/printables/9-3-activity.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🎨 Compare and Order Integers — Color by Number",
-        href: "/lessons/7-4/downloads/printables/9-3-color-by-number.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "🔎 Compare and Order Integers — Vocabulary Word Search",
-        href: "/lessons/7-4/downloads/printables/9-3-word-search.pdf",
-        isPrintable: true,
-      },
-      {
-        text: "📝 Compare and Order Integers — MCAP-Style Practice",
-        href: "/lessons/7-4/downloads/printables/9-3-mcap-practice.docx",
-        isPrintable: true,
-      },
-    ],
-    "9-4": [
       {
         text: "📝 Practice Worksheet (A & B)",
         href: "/lessons/7-2/worksheet.html",
@@ -1501,24 +1251,88 @@
         isPrintable: true,
       },
     ],
-    "9-5": [
+    "7-3": [
       {
         text: "📝 Practice Worksheet (A & B)",
-        href: "/lessons/7-8/worksheet.html",
+        href: "/lessons/7-3/worksheet.html",
         isPrintable: true,
       },
       {
-        text: "🎲 Four-Quadrant Battleship",
-        href: "/lessons/7-8/downloads/printables/9-5-activity.pdf",
+        text: "🎲 Integer & Absolute Value Battle",
+        href: "/lessons/7-3/downloads/printables/9-2-activity.pdf",
         isPrintable: true,
       },
       {
-        text: "🎨 Ordered Pairs in All Four Quadrants — Color by Number",
-        href: "/lessons/7-8/downloads/printables/9-5-color-by-number.pdf",
+        text: "🎨 Integers and Absolute Value — Color by Number",
+        href: "/lessons/7-3/downloads/printables/9-2-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Integers and Absolute Value — Vocabulary Word Search",
+        href: "/lessons/7-3/downloads/printables/9-2-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Integers and Absolute Value — MCAP-Style Practice",
+        href: "/lessons/7-3/downloads/printables/9-2-mcap-practice.docx",
         isPrintable: true,
       },
     ],
-    "9-6": [
+    "7-4": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/7-4/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Integer Order Relay",
+        href: "/lessons/7-4/downloads/printables/9-3-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Compare and Order Integers — Color by Number",
+        href: "/lessons/7-4/downloads/printables/9-3-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Compare and Order Integers — Vocabulary Word Search",
+        href: "/lessons/7-4/downloads/printables/9-3-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Compare and Order Integers — MCAP-Style Practice",
+        href: "/lessons/7-4/downloads/printables/9-3-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "7-5": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/7-5/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Coordinate Treasure Hunt",
+        href: "/lessons/7-5/downloads/printables/9-1-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Graph on the Coordinate Plane — Color by Number",
+        href: "/lessons/7-5/downloads/printables/9-1-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Graph on the Coordinate Plane — Vocabulary Word Search",
+        href: "/lessons/7-5/downloads/printables/9-1-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Graph on the Coordinate Plane — MCAP-Style Practice",
+        href: "/lessons/7-5/downloads/printables/9-1-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "7-6": [
       {
         text: "📝 Practice Worksheet (A & B)",
         href: "/lessons/7-6/worksheet.html",
@@ -1545,7 +1359,24 @@
         isPrintable: true,
       },
     ],
-    "9-7": [
+    "7-8": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/7-8/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Four-Quadrant Battleship",
+        href: "/lessons/7-8/downloads/printables/9-5-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Ordered Pairs in All Four Quadrants — Color by Number",
+        href: "/lessons/7-8/downloads/printables/9-5-color-by-number.pdf",
+        isPrintable: true,
+      },
+    ],
+    "7-9": [
       {
         text: "📝 Practice Worksheet (A & B)",
         href: "/lessons/7-9/worksheet.html",
@@ -1559,6 +1390,175 @@
       {
         text: "🎨 Reflect Points Across Axes — Color by Number",
         href: "/lessons/7-9/downloads/printables/9-7-color-by-number.pdf",
+        isPrintable: true,
+      },
+    ],
+    "8-1": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/8-1/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Equation Story Match",
+        href: "/lessons/8-1/downloads/printables/7-1-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Write Equations — Color by Number",
+        href: "/lessons/8-1/downloads/printables/7-1-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Write Equations — Vocabulary Word Search",
+        href: "/lessons/8-1/downloads/printables/7-1-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Write Equations — MCAP-Style Practice",
+        href: "/lessons/8-1/downloads/printables/7-1-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "8-2": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/8-2/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Balance Scale Inverse Cards",
+        href: "/lessons/8-2/downloads/printables/7-2-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Solve One-Step Addition and Subtraction Equations — Color by Number",
+        href: "/lessons/8-2/downloads/printables/7-2-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Solve One-Step Addition and Subtraction Equations — Vocabulary Word Search",
+        href: "/lessons/8-2/downloads/printables/7-2-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Solve One-Step Addition and Subtraction Equations — MCAP-Style Practice",
+        href: "/lessons/8-2/downloads/printables/7-2-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "8-3": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/8-3/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Equation Match Sprint",
+        href: "/lessons/8-3/downloads/printables/7-3-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Solve Multiplication and Division Equations — Color by Number",
+        href: "/lessons/8-3/downloads/printables/7-3-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Solve Multiplication and Division Equations — Vocabulary Word Search",
+        href: "/lessons/8-3/downloads/printables/7-3-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Solve Multiplication and Division Equations — MCAP-Style Practice",
+        href: "/lessons/8-3/downloads/printables/7-3-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "8-4": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/8-4/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Inequality Statement Sort",
+        href: "/lessons/8-4/downloads/printables/7-4-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Write Inequalities — Color by Number",
+        href: "/lessons/8-4/downloads/printables/7-4-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Write Inequalities — Vocabulary Word Search",
+        href: "/lessons/8-4/downloads/printables/7-4-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Write Inequalities — MCAP-Style Practice",
+        href: "/lessons/8-4/downloads/printables/7-4-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "8-5": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/8-5/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Number Line Gallery Walk",
+        href: "/lessons/8-5/downloads/printables/7-5-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Graph Inequalities — Color by Number",
+        href: "/lessons/8-5/downloads/printables/7-5-color-by-number.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🔎 Graph Inequalities — Vocabulary Word Search",
+        href: "/lessons/8-5/downloads/printables/7-5-word-search.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Graph Inequalities — MCAP-Style Practice",
+        href: "/lessons/8-5/downloads/printables/7-5-mcap-practice.docx",
+        isPrintable: true,
+      },
+    ],
+    "8-6": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/8-6/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Solve-and-Graph Relay",
+        href: "/lessons/8-6/downloads/printables/7-6-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Solve and Graph Inequalities — Color by Number",
+        href: "/lessons/8-6/downloads/printables/7-6-color-by-number.pdf",
+        isPrintable: true,
+      },
+    ],
+    "8-7": [
+      {
+        text: "📝 Practice Worksheet (A & B)",
+        href: "/lessons/8-7/worksheet.html",
+        isPrintable: true,
+      },
+      {
+        text: "🎲 Model-It Choice Board",
+        href: "/lessons/8-7/downloads/printables/7-7-activity.pdf",
+        isPrintable: true,
+      },
+      {
+        text: "🎨 Equations and Inequalities Problem Solving — Color by Number",
+        href: "/lessons/8-7/downloads/printables/7-7-color-by-number.pdf",
         isPrintable: true,
       },
     ],
@@ -1927,7 +1927,16 @@
     var a = document.createElement("a");
     a.className = className;
     a.href = scormDownloadHref(target, title);
-    a.title = "Download “" + title + "” as a Canvas-ready SCORM package";
+    // Unmistakable wording. "Export" / "Download package" / "LMS file" all
+    // leave a teacher guessing which of several formats they just got; this
+    // names the destination and the format, and the second line is the
+    // pre-upload confidence check (§ download summary in docs/scorm-runtime.md):
+    // what it is, what it targets, and that it plays the live lesson.
+    a.title =
+      "Download Canvas SCORM — “" +
+      title +
+      "”\nSCORM 1.2 · EduWonderLab Runtime v2 · plays the live lesson" +
+      "\nUpload the .zip to Canvas without unzipping it, then publish the assignment.";
     a.setAttribute("aria-label", a.title);
     a.textContent = label;
     return a;
@@ -2483,7 +2492,7 @@
           makeScormLink(
             "/math/games/practice-arcade/?unit=" + u.unitIndex,
             u.num + " Review Game",
-            "🎓 Canvas (SCORM)",
+            "🎓 Download Canvas SCORM",
             "unit-resource-btn scorm-dl",
           ),
         );
@@ -2495,7 +2504,7 @@
         var zipBtn = makeScormLink(
           "/math/unit-" + u.unitIndex + "/projects/",
           u.num + " Project",
-          "📦 Unit Packet (ZIP)",
+          "📦 Unit Project — Canvas SCORM",
           "unit-resource-btn scorm-dl",
         );
         zipBtn.style.background = "#256b5b";

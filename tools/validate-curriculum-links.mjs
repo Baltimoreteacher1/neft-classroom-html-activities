@@ -16,6 +16,8 @@
  *     non-hidden lesson count within tolerance (bonus docs may add, never drop).
  *
  * Run: npm run validate:curriculum-links
+ * Wired into `npm run validate`, so a hub unit-block that points at the wrong
+ * lesson fails the pre-push gate rather than waiting for a teacher to notice.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -30,7 +32,10 @@ const check = (ok, msg) => {
   if (!ok) failures.push(msg);
 };
 
-const hub = read("curriculum/index.html");
+/* The unit blocks this gate carves up moved to their own page when the hub
+   stopped hosting the units browser; the check itself is unchanged, it just
+   reads them where they now live. */
+const hub = read("curriculum/units/index.html");
 const manifest = readJson("data/curriculum-manifest.json");
 
 // --- carve the hub into unit blocks, keyed by the "Unit N" label inside each ---
@@ -97,6 +102,34 @@ for (const l of lessons) {
     existsSync(resolve(ROOT, rel, "index.html")) || existsSync(resolve(ROOT, rel)),
     `lessonPath missing on disk: ${l.lessonPath} (lesson ${l.id})`,
   );
+}
+
+// 3b. hub whole-group row labels still name the manifest title and standard
+{
+  const heads = [
+    ...hub.matchAll(
+      /Lesson (\d+-\d+)\s*·\s*([\s\S]*?)<span class="badge badge-std">\s*([^<]+?)\s*<\/span>/g,
+    ),
+  ];
+  check(heads.length >= 80, `expected ~84 whole-group hub labels, found ${heads.length}`);
+  for (const m of heads) {
+    const id = m[1];
+    const title = m[2].replace(/\s+/g, " ").trim();
+    const standard = m[3].trim();
+    const lesson = lessonById.get(id);
+    if (!lesson) {
+      check(false, `hub labels Lesson ${id} but it is not in the manifest`);
+      continue;
+    }
+    check(
+      title === lesson.title,
+      `hub labels Lesson ${id} as "${title}", manifest title is "${lesson.title}"`,
+    );
+    check(
+      standard === lesson.standard,
+      `hub labels Lesson ${id} as ${standard}, manifest standard is ${lesson.standard}`,
+    );
+  }
 }
 
 // 4. search index joins to manifest (ID-join drift guard)

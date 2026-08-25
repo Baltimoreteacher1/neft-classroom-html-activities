@@ -71,7 +71,7 @@ function ensureStyles() {
   s.id = "ft-fill-styles";
   s.textContent = `
   .ftb-wrap{margin:var(--sp-3,12px) 0;display:flex;flex-direction:column;align-items:center;}
-  .ftb-title{font-weight:700;color:var(--navy,${C.navy});margin-bottom:6px;font-size:.98rem;text-align:center;}
+  .ftb-title{font-weight:600;color:var(--navy,${C.navy});margin-bottom:6px;font-size:.98rem;text-align:center;}
   .ftb-hint{font-size:.82rem;color:${C.muted};margin-bottom:10px;text-align:center;max-width:420px;line-height:1.4;}
   .ftb-stage{width:100%;max-width:100%;overflow-x:auto;background:#fff;border:1px solid ${C.line};
     border-radius:12px;padding:14px 10px;display:flex;justify-content:center;}
@@ -88,7 +88,7 @@ function ensureStyles() {
   .ftb-root>.ftb-li::before,.ftb-root>.ftb-li::after{display:none;}
   .ftb-node{display:flex;flex-direction:column;align-items:center;gap:4px;}
   .ftb-bubble{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-    font-weight:800;font-size:1rem;border:2px solid ${C.compStroke};background:${C.compFill};color:${C.compInk};}
+    font-weight:700;font-size:1rem;border:2px solid ${C.compStroke};background:${C.compFill};color:${C.compInk};}
   .ftb-bubble.prime{border-color:${C.primeStroke};background:${C.primeFill};color:${C.primeInk};
     box-shadow:0 0 0 0 rgba(13,122,118,.35);animation:ftb-prime-glow 1.6s ease-in-out infinite;}
   .ftb-bubble.root{width:48px;height:48px;font-size:1.1rem;border-color:${C.navy};color:${C.navy};background:#eef4fb;animation:none;box-shadow:none;}
@@ -96,17 +96,17 @@ function ensureStyles() {
   @keyframes ftb-prime-glow{0%,100%{box-shadow:0 0 0 0 rgba(13,122,118,.28)}50%{box-shadow:0 0 0 8px rgba(13,122,118,0)}}
   @keyframes ftb-nudge{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
   @media (prefers-reduced-motion:reduce){.ftb-bubble.prime{animation:none;box-shadow:0 0 0 3px rgba(13,122,118,.25)}.ftb-bubble.composite-nudge,.ftb-split.shake,.ftb-exp-input.wrong{animation:none}}
-  .ftb-prime-tag{font-size:.62rem;font-weight:800;color:${C.primeStroke};text-transform:uppercase;letter-spacing:.04em;}
+  .ftb-prime-tag{font-size:.62rem;font-weight:700;color:${C.primeStroke};text-transform:uppercase;letter-spacing:.04em;}
   .ftb-split{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:3px;margin-top:2px;}
   .ftb-fac{width:34px;height:30px;border:2px dashed ${C.compStroke};border-radius:7px;background:#fffdf7;color:${C.ink};
-    font-weight:800;font-size:.9rem;text-align:center;padding:0;box-sizing:border-box;-moz-appearance:textfield;}
+    font-weight:700;font-size:.9rem;text-align:center;padding:0;box-sizing:border-box;-moz-appearance:textfield;}
   .ftb-fac::-webkit-outer-spin-button,.ftb-fac::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
   .ftb-fac:focus{outline:none;border-style:solid;border-color:${C.accent};box-shadow:0 0 0 3px rgba(29,78,216,.18);}
-  .ftb-x{color:${C.muted};font-weight:800;font-size:.85rem;}
-  .ftb-go{font:inherit;font-weight:700;font-size:.72rem;border:0;border-radius:999px;background:${C.accent};
+  .ftb-x{color:${C.muted};font-weight:700;font-size:.85rem;}
+  .ftb-go{font:inherit;font-weight:600;font-size:.72rem;border:0;border-radius:999px;background:${C.accent};
     color:#fff;padding:5px 10px;cursor:pointer;}
   .ftb-go:hover{filter:brightness(1.05);}
-  .ftb-err{flex-basis:100%;font-size:.68rem;font-weight:700;color:${C.wrong};text-align:center;min-height:.9em;}
+  .ftb-err{flex-basis:100%;font-size:.68rem;font-weight:600;color:${C.wrong};text-align:center;min-height:.9em;}
   .ftb-split.shake{animation:ftb-shake .32s;}
   @keyframes ftb-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
   /* Growth motion (additive only): freshly split branches spring out of their
@@ -129,31 +129,31 @@ function ensureStyles() {
     .ftb-li-in::after,.ftb-li-in .ftb-prime-tag,.ftb-root-in>.ftb-node{animation:none;}
   }
   .ftb-controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px;}
-  .ftb-btn{font:inherit;font-weight:700;font-size:.85rem;border-radius:999px;padding:7px 16px;cursor:pointer;
+  .ftb-btn{font:inherit;font-weight:600;font-size:.85rem;border-radius:999px;padding:7px 16px;cursor:pointer;
     border:2px solid ${C.line};background:#fff;color:${C.navy};}
   .ftb-btn:hover{border-color:${C.accent};}
-  .ftb-status{min-height:1.2em;margin-top:10px;font-size:.88rem;font-weight:700;text-align:center;}
+  .ftb-status{min-height:1.2em;margin-top:10px;font-size:.88rem;font-weight:600;text-align:center;}
   .ftb-status.ok{color:${C.primeStroke};}
-  .ftb-result{margin-top:8px;font-size:1rem;color:${C.navy};text-align:center;font-weight:800;}
+  .ftb-result{margin-top:8px;font-size:1rem;color:${C.navy};text-align:center;font-weight:700;}
   .ftb-exp{margin-top:14px;width:100%;max-width:380px;box-sizing:border-box;padding:12px 14px;
     border:1px solid ${C.line};border-left:4px solid ${C.accent};border-radius:12px;background:#f7faff;}
-  .ftb-exp-title{font-weight:800;color:${C.navy};font-size:.94rem;text-align:center;}
+  .ftb-exp-title{font-weight:700;color:${C.navy};font-size:.94rem;text-align:center;}
   .ftb-exp-hint{font-size:.78rem;color:${C.muted};margin:2px 0 12px;text-align:center;line-height:1.4;}
   .ftb-exp-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2px;
-    font-size:1.7rem;line-height:1;font-weight:800;color:${C.ink};}
+    font-size:1.7rem;line-height:1;font-weight:700;color:${C.ink};}
   .ftb-exp-factor{display:inline-flex;align-items:flex-start;cursor:text;}
   .ftb-exp-base{line-height:1;}
   .ftb-exp-times{margin:0 8px;color:${C.muted};align-self:center;}
   /* Exponent input: a small raised box that reads as a superscript. flex-start on
      the factor tops-aligns it against the tall base digit, so it sits high like ². */
   .ftb-exp-input{width:19px;height:19px;margin-left:1px;border:1.5px dashed ${C.accent};border-radius:5px;
-    background:#fff;color:${C.ink};font-weight:800;font-size:.72rem;line-height:1;text-align:center;padding:0;
+    background:#fff;color:${C.ink};font-weight:700;font-size:.72rem;line-height:1;text-align:center;padding:0;
     box-sizing:border-box;-moz-appearance:textfield;}
   .ftb-exp-input::-webkit-outer-spin-button,.ftb-exp-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
   .ftb-exp-input:focus{outline:none;border-style:solid;box-shadow:0 0 0 3px rgba(29,78,216,.18);}
   .ftb-exp-input.correct{border-style:solid;border-color:${C.primeStroke};background:${C.primeFill};color:${C.primeInk};}
   .ftb-exp-input.wrong{border-color:${C.wrong};background:#fdeceb;color:${C.wrong};animation:ftb-shake .32s;}
-  .ftb-exp-status{min-height:1.2em;margin-top:10px;font-size:.85rem;font-weight:700;text-align:center;}
+  .ftb-exp-status{min-height:1.2em;margin-top:10px;font-size:.85rem;font-weight:600;text-align:center;}
   .ftb-exp-status.ok{color:${C.primeStroke};}
   .ftb-exp-status.no{color:${C.wrong};}
   `;

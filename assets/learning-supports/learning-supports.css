@@ -12,7 +12,12 @@
   --ewl-color-text-muted: #475569;
   --ewl-color-white: #ffffff;
   --ewl-color-focus: #3b82f6;
-  --ewl-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+  /* The supports chrome genuinely floats over the lesson — a fixed rail, a
+     dialog, a panel — so it keeps elevation rather than a hairline. It is
+     softened from a 30px/15% double shadow because everything it now floats
+     ABOVE is flat: at the old weight the dock read as a different application
+     sitting on top of the page rather than part of it. */
+  --ewl-shadow: 0 6px 18px -8px rgba(15, 23, 42, 0.16);
 }
 
 /* Base Namespaced Reset & Typography */
@@ -307,13 +312,18 @@
   max-height: 86vh;
 }
 
-/* Collapse (hide) button — small circle riding just right of the tools pill. */
+/* Collapse (hide) button — a circle riding just right of the tools pill.
+   44px, not 36px: this and the reopen pill are the two controls a student uses
+   to get the dock out of the way and bring it back, and they were the only
+   controls in the whole supports layer under the 44px floor the rest of it
+   holds to. The circle is the TARGET, not just the paint — a pseudo-element
+   patch would leave the two of them overlapping, since they sit 8px apart. */
 .ewl-supports-dock-collapse {
   pointer-events: auto;
   align-self: center;
   margin-left: 8px;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1px solid var(--ewl-color-border);
   background: var(--ewl-color-bg-glass);
@@ -335,7 +345,8 @@
   display: none;
   align-items: center;
   gap: 6px;
-  min-height: 40px;
+  min-height: 44px;
+  min-width: 44px;
   padding: 0 18px;
   border-radius: 99px;
   border: 1px solid var(--ewl-color-border);
@@ -2203,3 +2214,92 @@ body.nt-overlays-compact .mode-toggle-pill.is-teacher .mode-toggle-state::after 
    module that owns them: engine/styles/present-mode.css. The duplicate widget
    that used to be built here was removed so engine/core/present-mode.js is the
    single Presenter implementation on every lesson type. */
+
+/* --- This lesson's supports (teacher dialog, Phase 3) ---------------------
+ * A status block, not a second configuration surface. It lives inside the
+ * already teacher-gated Prepare Supports dialog, so students never see it. */
+.ewl-supports-lesson-profile {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid #d7e0ee;
+  border-radius: 12px;
+  background: #f7fafd;
+}
+
+.ewl-supports-lesson-profile h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.ewl-supports-lesson-profile-status {
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+
+.ewl-supports-lesson-profile-dedup {
+  margin: 0 0 8px;
+  color: #55617a;
+  font-size: 0.92rem;
+}
+
+.ewl-supports-lesson-profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  align-items: center;
+}
+
+.ewl-supports-lesson-profile-actions a.ewl-supports-preset-chip {
+  text-decoration: none;
+}
+
+.ewl-supports-lesson-profile-names {
+  margin: 0 0 6px;
+  color: #55617a;
+  font-size: 0.92rem;
+}
+
+/* A task modification is never folded into the support count or its colour —
+ * it gets its own line, its own border, and its own words. */
+.ewl-supports-lesson-profile-mod {
+  margin: 0 0 8px;
+  padding: 6px 8px;
+  border: 2px solid #e0b48a;
+  border-radius: 8px;
+  background: #fffaf4;
+  color: #8a5a22;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+/* ── Narrow screens: the side tabs become nubs ─────────────────────────────
+   At 390px the two vertical tabs are 72px wide against a 390px viewport, and
+   they sit on top of the lesson — measured covering the lesson title in
+   Teacher Mode on a phone. (In Student Mode they do not render at all, which
+   is why this only bites a teacher working from a handset.)
+
+   This is the SAME treatment the teacher's minimize toggle already applies via
+   body.nt-overlays-compact — labels off, icon only — reached automatically by
+   width instead of by tapping. Both panels still open on tap and both keep a
+   44px touch target, so nothing becomes unreachable.
+   ------------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .ewl-supports-tab-label {
+    display: none;
+  }
+
+  .ewl-supports-btn-teacher,
+  .ewl-supports-math-tab {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 6px;
+    font-size: 18px;
+  }
+
+  /* Re-anchor the math tab under the now-shorter Prepare Supports nub. */
+  .ewl-supports-math-dock {
+    top: calc(50% + 56px);
+  }
+}

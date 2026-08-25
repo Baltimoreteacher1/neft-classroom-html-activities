@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { execSync } from "child_process";
 /**
  * build-scorm.mjs — package a Neft lesson as a SCORM 1.2 zip for Canvas upload.
  *
@@ -7,29 +6,42 @@ import { execSync } from "child_process";
  * gradebook (no codes, no CSV). Because content stays on the live site, editing
  * a lesson does NOT require re-uploading the package.
  *
+ * SINGLE SOURCE OF TRUTH: the SCO and manifest come from functions/_lib/scorm.js
+ * — the same code /api/scorm serves — and the bytes come from the same
+ * assets/lib/zip-store.js writer. This file used to fill its own copy of the SCO
+ * from tools/scorm/template/, kept in step with the live builder by a list of
+ * invariant strings in validate-sco.mjs. That list could only pin the invariants
+ * someone thought to add: every hardening fix had to be applied twice, and a
+ * teacher downloading from the site and a teacher running this script could get
+ * materially different packages. There is now one implementation, so there is
+ * nothing to keep in lockstep.
+ *
+ * It also no longer shells out to `zip`, which made output non-deterministic
+ * (timestamps) and interpolated the lesson id straight into a shell command.
+ *
  * Usage:
- *   node tools/scorm/build-scorm.mjs <lessonId> ["Assignment Title"]
+ *   node tools/scorm/build-scorm.mjs <lessonId | /path/ | url> ["Title"] [--codes]
  *   npm run scorm -- 1-3 "Unit 1 Lesson 3: Ratios"
  *
  * Env: NEFT_SITE overrides the base site (default https://eduwonderlab.com).
- * Output: scorm-packages/neft-lesson-<lessonId>.zip
+ * Output: scorm-packages/<Teacher-Readable-Name>.zip
  */
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { mkdirSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import { buildScormFiles, packageFileName, zipStore } from "../../functions/_lib/scorm.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
 // --codes / --sheets (anywhere on the line) launches the activity in normal
 // student mode so the save-code prompt shows and progress flows to the Google
 // Sheets gradebook. Default mode keeps the Canvas auto-grade (SCORM) behavior.
 const rawArgs = process.argv.slice(2);
 const CODES_MODE = rawArgs.some((a) => a === "--codes" || a === "--sheets");
+// Third argument is an explicit package id. The Canvas packages page names its
+// own packages and then copies them by that name, so dropping this silently
+// broke all 84 homework packages with ENOENT.
 const [target, titleArg, idArg] = rawArgs.filter((a) => !a.startsWith("--"));
-// ?lms=scorm relays the score to Canvas AND hides the save-code prompt. Codes
-// mode drops it so students enter a save code → roster/grades land in the Sheets.
-// Joined with "&" (not "?") when the target URL already carries a query string
-// (e.g. practice-arcade/?unit=3) so we never emit a second "?".
-const LAUNCH_PARAMS = CODES_MODE ? "embed=1" : "lms=scorm&embed=1";
 
 if (!target) {
   console.error(
@@ -44,71 +56,48 @@ if (!target) {
 }
 
 const SITE = (process.env.NEFT_SITE || "https://eduwonderlab.com").replace(/\/$/, "");
-const origin = new URL(SITE).origin;
 
-// Accept three target forms:
-//   - a bare lesson id ("1-3")        → /lessons/6-12/   (back-compat)
-//   - a site-relative path ("/x/")    → SITE + /x/
-//   - a full URL                      → used as-is
-// A "lesson id" is the legacy shorthand: no slash and no scheme.
-const isUrl = /^https?:\/\//i.test(target);
-const isLessonId = !isUrl && !target.includes("/");
-const lessonUrl = isUrl
-  ? target
-  : isLessonId
-    ? `${SITE}/lessons/${target}/`
-    : `${SITE}/${target.replace(/^\/+/, "")}`;
-// Stable id/slug for filenames + the SCORM manifest identifier. When no
-// explicit id is given, fold the recognizable query params in so targets that
-// share a path (practice-arcade/?unit=1 vs ?lesson=1-3) never collide —
-// mirrors functions/_lib/scorm.js resolveTarget.
-const defaultId = () => {
-  const u = new URL(lessonUrl);
-  let id = u.pathname.split("/").filter(Boolean).pop() || "activity";
-  const qLesson = u.searchParams.get("lesson");
-  const qUnit = u.searchParams.get("unit");
-  if (qLesson) id += `-lesson-${qLesson}`;
-  else if (qUnit) id += `-unit-${qUnit}`;
-  if (u.searchParams.get("route") === "auto") id += "-auto";
-  return id;
-};
-const lessonId = (idArg && idArg.trim()) || (isLessonId ? target : defaultId());
-const title = titleArg || (isLessonId ? `Lesson ${target}` : lessonId);
-const LAUNCH_QUERY = (lessonUrl.includes("?") ? "&" : "?") + LAUNCH_PARAMS;
-
-const tplDir = resolve(__dirname, "template");
-const fill = (s) =>
-  s
-    .replaceAll("{{LESSON_ID}}", lessonId)
-    .replaceAll("{{TITLE}}", title)
-    .replaceAll("{{LESSON_URL}}", lessonUrl)
-    .replaceAll("{{LAUNCH_QUERY}}", LAUNCH_QUERY)
-    .replaceAll("{{LESSON_ORIGIN}}", origin);
-
-const outRoot = resolve(__dirname, "../../scorm-packages");
-const stage = resolve(outRoot, `_stage-${lessonId}`);
-mkdirSync(stage, { recursive: true });
-// [templateFile, outputFile] — the SCO template is *.tpl so the site audit
-// doesn't treat its {{LESSON_URL}} placeholder as a broken link.
-for (const [src, dest] of [
-  ["imsmanifest.xml", "imsmanifest.xml"],
-  ["index.html.tpl", "index.html"],
-]) {
-  writeFileSync(resolve(stage, dest), fill(readFileSync(resolve(tplDir, src), "utf8")));
+let pkg;
+try {
+  pkg = buildScormFiles(
+    {
+      target,
+      title: titleArg,
+      codes: CODES_MODE,
+      id: idArg,
+      // Day-granular on purpose: enough to date a package found in a Canvas
+      // course later, and it keeps two builds on the same day byte-identical
+      // so a re-download is comparable to the file already uploaded.
+      generatedAt: new Date().toISOString().slice(0, 10),
+      generator: "eduwonderlab/build-scorm.mjs",
+    },
+    SITE,
+  );
+} catch (e) {
+  console.error("✗ " + (e?.message || e));
+  process.exit(1);
 }
 
-const zip = resolve(outRoot, `neft-lesson-${lessonId}${CODES_MODE ? "-codes" : ""}.zip`);
-rmSync(zip, { force: true });
-execSync(`cd "${stage}" && zip -r -q "${zip}" .`);
-rmSync(stage, { recursive: true, force: true });
+const outRoot = resolve(__dirname, "../../scorm-packages");
+mkdirSync(outRoot, { recursive: true });
+const outFile = resolve(outRoot, packageFileName(pkg.id, pkg.codes));
+writeFileSync(outFile, zipStore(pkg.files));
 
-console.log("✓ SCORM package built:");
-console.log("  " + zip);
-console.log("  Lesson: " + lessonUrl);
+// The pre-upload summary. A teacher should be able to read this and know
+// exactly what is about to go into Canvas without opening the zip.
+console.log("✓ Canvas SCORM package built (pre-flight passed):");
+console.log("  File    : " + outFile);
+console.log("  Title   : " + pkg.title + "   ← what Canvas will show");
+console.log("  Activity: " + pkg.id);
+console.log("  Target  : " + pkg.lessonUrl + "   ← live lesson, not a bundled copy");
+console.log(`  Runtime : EduWonderLab SCORM Runtime v${pkg.runtime} (protocol v${pkg.protocol})`);
 console.log(
-  "  Mode:   " +
+  "  Mode    : " +
     (CODES_MODE ? "save codes → Google Sheets gradebook" : "Canvas auto-grade (SCORM score)"),
 );
-console.log(
-  "\nUpload it in Canvas: Settings → Navigation/Apps → SCORM, or via the SCORM tool, then deploy as a graded assignment.",
-);
+console.log("\nNext (all manual, in Canvas):");
+console.log("  1. Upload the .zip WITHOUT unzipping it, via the course's SCORM area.");
+console.log("  2. Create/complete the assignment Canvas offers for the uploaded package.");
+console.log("  3. Configure points and availability, then publish it.");
+console.log("  4. Open it once in Student View to confirm the lesson launches.");
+console.log("\nSee docs/scorm-runtime.md for the full workflow and troubleshooting codes.");

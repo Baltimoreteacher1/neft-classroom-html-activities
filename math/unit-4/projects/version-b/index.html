@@ -8,10 +8,8 @@
       name="description"
       content="Unit 4 Rates &amp; Percents culminating project. Compare deals, find unit rates, and model discounts and tax on clearly identified taxable nonfood items."
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="/assets/fonts/project-pages.css"
       rel="stylesheet"
     />
     <style>
@@ -757,11 +755,6 @@
       }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
-      rel="stylesheet"
-    />
     <link rel="stylesheet" href="/shared/projects/projects-pro.css" />
     <!-- projects-pro-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
@@ -803,14 +796,6 @@
 <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-complete.css" />
     <!-- projects-complete-injected:end -->
-<!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
-    <meta name="nt-project-id" content="unit-4-b" />
-    <meta name="standard" content="6.AT.2 · Unit 4" data-standard="6.AT.2" data-standard-legacy="6.RP.2" data-unit="4" />
-    <meta name="standard" content="6.AT.4 · Unit 4" data-standard="6.AT.4" data-standard-legacy="6.RP.3c" data-unit="4" />
-    <meta name="nt-project-standards" content="6.AT.2,6.AT.4" />
-    <meta name="nt-project-reveal-unit" content="4" />
-    <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
-    <!-- projects-meta-injected:end -->
 <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-check.css" />
     <!-- projects-check-injected:end -->
@@ -832,6 +817,14 @@
     <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
     <!-- projects-mode-pill-head:end -->
+    <!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
+    <meta name="nt-project-id" content="unit-4-b" />
+    <meta name="standard" content="6.AT.2 · Unit 4" data-standard="6.AT.2" data-standard-legacy="6.RP.2" data-unit="4" />
+    <meta name="standard" content="6.AT.4 · Unit 4" data-standard="6.AT.4" data-standard-legacy="6.RP.3c" data-unit="4" />
+    <meta name="nt-project-standards" content="6.AT.2,6.AT.4" />
+    <meta name="nt-project-reveal-unit" content="4" />
+    <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
+    <!-- projects-meta-injected:end -->
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -1759,10 +1752,23 @@
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="calcPercentSavings()">
-            <span class="en-text">🏷️ Calculate Savings</span>
-            <span class="es-text">🏷️ Calcular ahorros</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="sh-user-sale" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter the SALE Price you would actually pay ($)</span>
+              <span class="es-text">✍️ Calcula e ingresa el precio de OFERTA que pagarías ($)</span>
+            </label>
+            <input
+              type="number"
+              id="sh-user-sale"
+              step="0.01"
+              placeholder="e.g. 9.60"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn teal" onclick="checkSavingsSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Sale Price</span>
+              <span class="es-text">✓ Comprobar mi precio de oferta</span>
+            </button>
+          </div>
           <div class="readout" id="savings-out"></div>
 
           <details class="hint">
@@ -2100,10 +2106,23 @@
             </div>
           </div>
 
-          <button class="calc-btn gold" onclick="calcTotalBill()">
-            <span class="en-text">🧾 Calculate Final Bill</span>
-            <span class="es-text">🧾 Calcular factura final</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="sh-user-total" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter the Final Bill Total, tax included ($)</span>
+              <span class="es-text">✍️ Calcula e ingresa el total final de la factura, con impuesto ($)</span>
+            </label>
+            <input
+              type="number"
+              id="sh-user-total"
+              step="0.01"
+              placeholder="e.g. 43.20"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn gold" onclick="checkBillSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Final Bill</span>
+              <span class="es-text">✓ Comprobar mi factura final</span>
+            </button>
+          </div>
           <div class="readout" id="bill-out"></div>
 
           <!-- Real-world grocery comparisons -->
@@ -3508,7 +3527,74 @@
       }
 
       // ---- Step 2: Percent Savings ----
+      /* Step 3 asks for the percent savings and Step 4 for the taxed total —
+         the two skills Unit 4 exists to assess. Before this gate both were
+         printed, with the bar model and the receipt filled in, the moment a
+         price was typed. */
+      const SOLVED = { savings: false, bill: false };
+
+      function shEs() {
+        const b = document.getElementById("body") || document.body;
+        return b.classList.contains("es");
+      }
+      function shWarn(out, en, es) {
+        showReadout(out, '<span style="color:#ef4444;font-weight:bold;">⚠️ ' + (shEs() ? es : en) + '</span>');
+      }
+      function shMiss(out, en, es) {
+        showReadout(out, '<span style="color:#ef4444;font-weight:bold;">🤔 ' + (shEs() ? es : en) + '</span>');
+      }
+
+      function checkSavingsSolve() {
+        const price = parseFloat(document.getElementById("s-price").value);
+        const pct = parseFloat(document.getElementById("s-percent").value);
+        const user = parseFloat(document.getElementById("sh-user-sale").value);
+        if (isNaN(price) || isNaN(pct) || price <= 0) {
+          shWarn("savings-out", "Enter the original price and the percent off above first!", "¡Ingresa el precio original y el porcentaje de descuento primero!");
+          return;
+        }
+        if (isNaN(user)) {
+          shWarn("savings-out", "Type the sale price you would pay in the box before checking!", "¡Escribe el precio de oferta que pagarías antes de comprobar!");
+          return;
+        }
+        const discount = price * (pct / 100);
+        const sale = price - discount;
+        if (Math.abs(user - sale) < 0.02) { SOLVED.savings = true; calcPercentSavings(); comparePeer(); return; }
+        const gaveDiscount = Math.abs(user - discount) < 0.02;
+        shMiss("savings-out",
+          "You entered $" + user.toFixed(2) + ". " + (gaveDiscount ? "That is how much you SAVE, not what you PAY. Subtract the saving from the original price." : "Find " + pct + "% of $" + price.toFixed(2) + " first, then take it off the original price.") + "",
+          "Ingresaste $" + user.toFixed(2) + ". " + (gaveDiscount ? "Eso es lo que AHORRAS, no lo que PAGAS. Resta el ahorro del precio original." : "Halla primero el " + pct + "% de $" + price.toFixed(2) + " y luego réstalo del precio original.") + "");
+      }
+
+      function checkBillSolve() {
+        const i1 = parseFloat(document.getElementById("t-item1").value) || 0;
+        const i2 = parseFloat(document.getElementById("t-item2").value) || 0;
+        const i3 = parseFloat(document.getElementById("t-item3").value) || 0;
+        const tax = parseFloat(document.getElementById("t-tax").value);
+        const user = parseFloat(document.getElementById("sh-user-total").value);
+        const subtotal = i1 + i2 + i3;
+        if (subtotal <= 0 || isNaN(tax)) {
+          shWarn("bill-out", "Enter your three item prices and the tax rate above first!", "¡Ingresa los precios de los tres artículos y la tasa de impuesto primero!");
+          return;
+        }
+        if (isNaN(user)) {
+          shWarn("bill-out", "Type your final bill total in the box before checking!", "¡Escribe el total final de tu factura antes de comprobar!");
+          return;
+        }
+        const total = subtotal * (1 + tax / 100);
+        if (Math.abs(user - total) < 0.02) { SOLVED.bill = true; calcTotalBill(); comparePeer(); return; }
+        const noTax = Math.abs(user - subtotal) < 0.02;
+        const taxOnly = Math.abs(user - subtotal * (tax / 100)) < 0.02;
+        shMiss("bill-out",
+          "You entered $" + user.toFixed(2) + ". " + (noTax ? "That is the subtotal — the tax still has to be added on top." : taxOnly ? "That is the tax by itself, not the bill." : "Find " + tax + "% of your subtotal, then add it to the subtotal.") + "",
+          "Ingresaste $" + user.toFixed(2) + ". " + (noTax ? "Ese es el subtotal: todavía falta sumarle el impuesto." : taxOnly ? "Ese es solo el impuesto, no la factura." : "Halla el " + tax + "% de tu subtotal y luego súmalo al subtotal.") + "");
+      }
+
       function calcPercentSavings() {
+        if (!SOLVED.savings) {
+          const _o = document.getElementById("savings-out");
+          if (_o) _o.classList.remove("show");
+          return;
+        }
         const originalPrice = parseFloat(
           document.getElementById("s-price").value,
         );
@@ -3583,6 +3669,11 @@
 
       // ---- Step 3: Total Bill with Tax ----
       function calcTotalBill() {
+        if (!SOLVED.bill) {
+          const _o = document.getElementById("bill-out");
+          if (_o) _o.classList.remove("show");
+          return;
+        }
         const item1 = parseFloat(document.getElementById("t-item1").value) || 0;
         const item2 = parseFloat(document.getElementById("t-item2").value) || 0;
         const item3 = parseFloat(document.getElementById("t-item3").value) || 0;
@@ -3624,6 +3715,24 @@
 
       // ---- Step 4: Showdown (Peer Compare) ----
       function comparePeer() {
+        /* Recomputes the student's OWN sale savings and final bill — the two
+           findings steps 2 and 3 ask them to produce — and prints both, in the
+           readout and on the SVG labels. Without this gate step 5 was a way to
+           read your own savings and bill without doing either step. */
+        if (!SOLVED.savings || !SOLVED.bill) {
+          const needEs = document.body.classList.contains("es");
+          showReadout(
+            "peer-out",
+            needEs
+              ? "<strong>Primero termina tus propios cálculos.</strong><br><small>Necesitas tu ahorro y tu cuenta final antes de compararlos con los de tu compañero.</small>"
+              : "<strong>Finish your own calculations first.</strong><br><small>You need your savings and your final bill before you can compare them with your partner's.</small>",
+          );
+          for (const id of ["svg-txt-my-save", "svg-txt-my-bill"]) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = "?";
+          }
+          return;
+        }
         const myPrice =
           parseFloat(document.getElementById("s-price").value) || 0;
         const myPercent =
@@ -4000,6 +4109,7 @@
   <script src="/shared/projects/projects-zoom.js" defer></script>
   <!-- projects-visuals-injected:end -->
   <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+  <script>window.NeftCanvasBridgeConfig=Object.assign({},window.NeftCanvasBridgeConfig,{activityId:"unit-4-version-b",manual:true,finishButton:false,completionOnly:true});</script>
   <script src="/assets/canvas-bridge.js" defer></script>
   <!-- canvas-bridge-injected:end -->
   <!-- projects-3d-injected:begin (build-in-3D + WebXR AR — tools/inject-projects-3d.mjs) -->
@@ -4026,9 +4136,6 @@
 <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
   <script src="/shared/projects/projects-complete.js" defer></script>
   <!-- projects-complete-injected:end -->
-<!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
-  <script src="/shared/projects/projects-meta.js?v=20260727-v2" defer></script>
-  <!-- projects-meta-injected:end -->
 <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
   <script src="/shared/projects/projects-check.js" defer></script>
   <!-- projects-check-injected:end -->
@@ -4052,5 +4159,8 @@
   <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
   <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
   <!-- projects-mode-pill-body:end -->
+  <!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
+  <script src="/shared/projects/projects-meta.js?v=20260727-v2" defer></script>
+  <!-- projects-meta-injected:end -->
 </body>
 </html>

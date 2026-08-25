@@ -40,6 +40,19 @@
       "I wonder how to write the strips as ___.",
       "I wonder why two different-looking sides can still ___.",
       "I wonder how I could check both sides ___."
+    ],
+    "imageAlt": "The same square shown two ways, once divided into strips and unit squares and once as one whole square.",
+    "contextEs": "El mismo cuadrado se muestra de dos maneras — separado en tiras verdes y cuadros unitarios amarillos a la izquierda, y como un solo cuadrado rojo entero a la derecha.",
+    "imageAltEs": "El mismo cuadrado mostrado de dos maneras, una dividido en tiras y cuadros unitarios y otra como un solo cuadrado entero.",
+    "noticeStartersEs": [
+      "Yo noto que el lado izquierdo está hecho de ___.",
+      "Yo noto que los dos lados cubren el mismo ___.",
+      "Yo noto que las tiras y los cuadritos son ___."
+    ],
+    "wonderStartersEs": [
+      "Yo me pregunto cómo escribir las tiras como ___.",
+      "Yo me pregunto por qué dos lados que se ven distintos todavía pueden ___.",
+      "Yo me pregunto cómo podría comprobar los dos lados ___."
     ]
   },
   "revealWordProblem": {
@@ -160,7 +173,20 @@
       "definition": "Expressions that look different but have the same value for every allowed variable value.",
       "definitionEs": "Expresiones que se ven diferentes pero tienen el mismo valor para cada valor permitido de la variable.",
       "visual": "2(x + 3) and 2x + 6 are equivalent.",
-      "image": "/assets/vocab-images/concept-equivalent-expressions.svg"
+      "image": "/assets/vocab-images/concept-equivalent-expressions.svg",
+      "cloze": "Expressions with the same value for ___ allowed number are equivalent.",
+      "examples": [
+        {
+          "text": "2(x + 3) and 2x + 6",
+          "isExample": true,
+          "why": "Equal for every x."
+        },
+        {
+          "text": "2x + 6 and 8x",
+          "isExample": false,
+          "why": "Only equal when x is 1."
+        }
+      ]
     },
     {
       "term": "Equivalent",
@@ -178,16 +204,41 @@
           "correct": false
         }
       ],
-      "image": "/assets/vocab-images/like-terms.svg"
+      "image": "/assets/vocab-images/like-terms.svg",
+      "examples": [
+        {
+          "text": "3x + 2x and 5x",
+          "isExample": true,
+          "why": "Equal for every value of x."
+        },
+        {
+          "text": "2x + 6 and 8x",
+          "isExample": false,
+          "why": "They differ once x is anything but 1."
+        }
+      ],
+      "cloze": "Expressions that always have the same value are ___."
     },
     {
       "term": "Simplify",
       "termEs": "Simplificar",
-      "definition": "To write an expression in a shorter, simpler way.",
-      "definitionEs": "Escribir una expresión de forma más corta y simple.",
+      "definition": "To rewrite an expression in a shorter form that is still equal to the original.",
+      "definitionEs": "Reescribir una expresión en una forma más corta que sigue siendo igual a la original.",
       "visual": "3x + 2x + 5 simplifies to 5x + 5 — fewer terms, same value",
-      "cloze": "To write an expression in its shortest equal form is to ___ it.",
-      "image": "/assets/vocab-images/like-terms.svg"
+      "cloze": "Rewriting an expression in a shorter form that is still equal to it is to ___ it.",
+      "image": "/assets/vocab-images/like-terms.svg",
+      "examples": [
+        {
+          "text": "3x + 2x + 5 written as 5x + 5",
+          "isExample": true,
+          "why": "The two x-terms combine; the value is unchanged."
+        },
+        {
+          "text": "3x + 2x + 5 written as 10x",
+          "isExample": false,
+          "why": "The 5 is not an x-term, so it cannot join them."
+        }
+      ]
     },
     {
       "term": "Like Terms",
@@ -215,7 +266,19 @@
       "definition": "To add or subtract terms with the same letter into one.",
       "definitionEs": "Sumar o restar términos con la misma letra en uno solo.",
       "visual": "4n + 3n = 7n — add the coefficients (4 + 3 = 7) and keep the variable (n)",
-      "cloze": "To add or subtract like terms into one term is to ___ them."
+      "cloze": "To add or subtract like terms into one term is to ___ them.",
+      "examples": [
+        {
+          "text": "3x + 2x making 5x",
+          "isExample": true,
+          "why": "Same variable, added."
+        },
+        {
+          "text": "3x + 5 making 8x",
+          "isExample": false,
+          "why": "A constant cannot join a variable term."
+        }
+      ]
     },
     {
       "term": "Coefficient",
@@ -223,7 +286,19 @@
       "definition": "The number in front of a letter, like the 3 in 3x.",
       "definitionEs": "El número frente a una letra, como el 3 en 3x.",
       "visual": "In 5x + 3, the coefficient of x is 5 — when x = 2, the 5x part equals 10",
-      "cloze": "A number multiplied by a variable is a ___."
+      "cloze": "A number multiplied by a variable is a ___.",
+      "examples": [
+        {
+          "text": "The 3 in 3x",
+          "isExample": true,
+          "why": "The number multiplying the variable."
+        },
+        {
+          "text": "The x in 3x",
+          "isExample": false,
+          "why": "That is the variable."
+        }
+      ]
     }
   ],
   "launch": {
@@ -295,8 +370,48 @@
           "I test x = 4. For A: 3(4) + 2(4) + 10 = 12 + 8 + 10 = 30.",
           "For B: 5(4) + 10 = 20 + 10 = 30.",
           "Both give 30, and 3x + 2x is just 5x, so they are equivalent."
-        ]
-      }
+        ],
+        "linesEs": [
+          "El productor A escribió 3x + 2x + 10 y el productor B escribió 5x + 10. ¿Son equivalentes?",
+          "Pruebo con x = 4. Para A: 3(4) + 2(4) + 10 = 12 + 8 + 10 = 30.",
+          "Para B: 5(4) + 10 = 20 + 10 = 30.",
+          "Las dos dan 30, y 3x + 2x es justamente 5x, así que son equivalentes."
+        ],
+        "titleEs": "Mírame"
+      },
+      "weDo": {
+        "title": "Try it together — then prove it",
+        "lines": [
+          "Let's check 2x + 3x and 5x. Try x = 2.",
+          "2(2) + 3(2) = 4 + 6 = 10, and 5(2) = 10. Same answer.",
+          "So 2x + 3x and 5x are equivalent.",
+          "Now prove it: say why that move had to work at all — not just that it did.",
+          "Sentence frame — convince a skeptic: \"My method works because ___ . It would stop working if ___ .\""
+        ],
+        "linesEs": [
+          "Comprobemos 2x + 3x y 5x. Prueba con x = 2.",
+          "2(2) + 3(2) = 4 + 6 = 10, y 5(2) = 10. La misma respuesta.",
+          "Entonces 2x + 3x y 5x son equivalentes.",
+          "Ahora demuéstralo: di por qué ese paso tenía que funcionar — no solo que funcionó.",
+          "Marco de oración — convence a alguien que duda: «Mi método funciona porque ___ . Dejaría de funcionar si ___ .»"
+        ],
+        "titleEs": "Inténtalo con nosotros — luego demuéstralo"
+      },
+      "youDo": {
+        "title": "Now you try — and defend it",
+        "lines": [
+          "Try the problems below on your own. Getting the answer is half the work — be ready to say why your method works, and where it would stop working.",
+          "Then pick one problem and show it a second way. If two different methods agree, that agreement is your proof."
+        ],
+        "linesEs": [
+          "Intenta los problemas de abajo por tu cuenta. Obtener la respuesta es la mitad del trabajo — prepárate para decir por qué funciona tu método y dónde dejaría de funcionar.",
+          "Luego elige un problema y muéstralo de una segunda manera. Si dos métodos distintos coinciden, esa coincidencia es tu prueba."
+        ],
+        "titleEs": "Ahora inténtalo tú — y defiéndelo"
+      },
+      "headingEs": "Ve más allá — ¿Cuándo son equivalentes dos expresiones?",
+      "introEs": "Esto ya lo sabes hacer. Así que subimos de nivel, no de número: halla lo que siempre es cierto, muéstralo de una segunda manera y prepárate para defenderlo con una razón en lugar de una respuesta.",
+      "keyIdeaEs": "Las expresiones equivalentes dan la misma respuesta para todos los valores de la variable — y puedes decir por qué es cierto y dónde dejaría de serlo."
     }
   },
   "explore": {
@@ -341,15 +456,18 @@
     "categories": [
       {
         "id": "group-5x",
-        "label": "Group A"
+        "label": "Group A",
+        "labelEs": "Grupo A"
       },
       {
         "id": "group-2n8",
-        "label": "Group B"
+        "label": "Group B",
+        "labelEs": "Grupo B"
       },
       {
         "id": "group-6a3",
-        "label": "Group C"
+        "label": "Group C",
+        "labelEs": "Grupo C"
       }
     ],
     "discourse": {
@@ -362,8 +480,11 @@
         "distribute",
         "equivalent",
         "same value"
-      ]
-    }
+      ],
+      "promptEs": "¿Cómo decidiste qué expresiones van en el mismo grupo? ¿Qué estrategias usaste?",
+      "sentenceFrameEs": "Supe que ___ y ___ son equivalentes porque cuando ___ los términos, me dio la misma expresión."
+    },
+    "instructionsEs": "Ve más a fondo: Clasifica cada expresión en el grupo de su expresión equivalente. Mientras trabajas, pregúntate por qué funciona."
   },
   "practice": {
     "diagram": {
@@ -422,7 +543,11 @@
         "titleEs": "Detecta el error al combinar términos",
         "explanation": "7x and 2x are like terms, so 7x + 2x = 9x is fine — but the step keeps going and adds the 9 to the 3. A constant like 3 has no variable, so it cannot join 9x in one term. The simplified form is 9x + 3. Check with x = 2: 7(2) + 3 + 2(2) = 21 and 9(2) + 3 = 21, but 12(2) = 24.",
         "explanationEs": "7x y 2x son términos semejantes, así que 7x + 2x = 9x está bien, pero el paso sigue y suma el 9 con el 3. Una constante como 3 no tiene variable, así que no puede unirse con 9x en un solo término. La forma simplificada es 9x + 3. Comprueba con x = 2: 7(2) + 3 + 2(2) = 21 y 9(2) + 3 = 21, pero 12(2) = 24.",
-        "correctWorkEs": "Solo los términos SEMEJANTES se combinan. 7x y 2x son términos semejantes (7x + 2x = 9x), pero el 3 es una constante y no puede sumarse al 9x. La forma simplificada es 9x + 3. Comprueba x = 2: 7(2) + 3 + 2(2) = 21 y 9(2) + 3 = 21, pero 12(2) = 24 — así que 12x está mal."
+        "correctWorkEs": "Solo los términos SEMEJANTES se combinan. 7x y 2x son términos semejantes (7x + 2x = 9x), pero el 3 es una constante y no puede sumarse al 9x. La forma simplificada es 9x + 3. Comprueba x = 2: 7(2) + 3 + 2(2) = 21 y 9(2) + 3 = 21, pero 12(2) = 24 — así que 12x está mal.",
+        "hintsEs": [
+          "¿Puedes juntar 9x y 3 en un solo término? ¿Son términos semejantes?",
+          "Sustituye x = 2 en 7x + 3 + 2x y en 12x. ¿Obtienes el mismo valor?"
+        ]
       },
       {
         "type": "error-analysis",
@@ -456,7 +581,11 @@
         "titleEs": "Encuentra el error de simplificación",
         "explanation": "Rearranging to 3x + 2x + 5 + 1 is correct. The error is in the last step: combining like terms adds the COEFFICIENTS, so 3x + 2x = 5x, not 5x². The exponent never changes when you add like terms, so the answer is 5x + 6.",
         "explanationEs": "Reacomodar a 3x + 2x + 5 + 1 está correcto. El error está en el último paso: combinar términos semejantes suma los COEFICIENTES, así que 3x + 2x = 5x, no 5x². El exponente no cambia nunca al sumar términos semejantes, así que la respuesta es 5x + 6.",
-        "correctWorkEs": "3x + 2x = 5x (NO 5x²). Al combinar términos semejantes, sumas los coeficientes, no los multiplicas. La respuesta correcta es 5x + 6."
+        "correctWorkEs": "3x + 2x = 5x (NO 5x²). Al combinar términos semejantes, sumas los coeficientes, no los multiplicas. La respuesta correcta es 5x + 6.",
+        "hintsEs": [
+          "Cuando combinas 3x + 2x, ¿sumas los exponentes o los coeficientes?",
+          "3x significa 3 grupos de x. 2x significa 2 grupos de x. Juntos son ___ grupos de x."
+        ]
       },
       {
         "type": "open-response",
@@ -514,10 +643,110 @@
           "Dos expresiones son equivalentes cuando dan el mismo valor para cualquier número que sustituyas.",
           "El 2 que está fuera del paréntesis multiplica a todo lo de adentro: esa es la propiedad distributiva.",
           "Empieza multiplicando 2 · x para obtener el primer término, luego haz lo mismo con el 3 de adentro y escribe los dos resultados como una suma."
+        ],
+        "choicesEs": [
+          "2x + 6",
+          "2x + 3",
+          "x + 6",
+          "2x + 5"
         ]
       }
     ],
     "extending": [
+      {
+        "type": "drag-sort",
+        "instructions": "Match each expression with its simplified form.",
+        "items": [
+          {
+            "text": "8y + 2y → 10y",
+            "category": "match"
+          },
+          {
+            "text": "3(a + 6) → 3a + 18",
+            "category": "match"
+          },
+          {
+            "text": "5n + 4 + 2n → 7n + 4",
+            "category": "match"
+          },
+          {
+            "text": "9p − 3p → 6p",
+            "category": "match"
+          },
+          {
+            "text": "4(2x − 1) → 8x − 4",
+            "category": "match"
+          },
+          {
+            "text": "6t + t → 7t",
+            "category": "match"
+          }
+        ],
+        "categories": [
+          {
+            "id": "match",
+            "label": "Correctly Matched",
+            "labelEs": "Emparejado correctamente"
+          }
+        ],
+        "hints": [
+          "Each card claims an expression simplifies to the given form. Verify the claim before placing it.",
+          "Redo the work yourself: combine like terms or distribute, and check both the variable part and the constant.",
+          "First card: 8y + 2y — add the coefficients 8 + 2 and see whether the result matches the card's 10y."
+        ],
+        "explanation": "Every card on this deck checks out. 8y + 2y = 10y and 6t + t = 7t come from adding coefficients, 9p − 3p = 6p from subtracting them, and 5n + 4 + 2n = 7n + 4 combines only the n terms while the 4 stays put. The other two come from distributing to BOTH terms inside the parentheses: 3(a + 6) = 3a + 18 and 4(2x − 1) = 8x − 4.",
+        "explanationEs": "Todas las tarjetas de este grupo son correctas. 8y + 2y = 10y y 6t + t = 7t salen de sumar coeficientes, 9p − 3p = 6p de restarlos, y 5n + 4 + 2n = 7n + 4 combina solo los términos con n mientras el 4 se queda igual. Las otras dos salen de distribuir a LOS DOS términos del paréntesis: 3(a + 6) = 3a + 18 y 4(2x − 1) = 8x − 4.",
+        "instructionsEs": "Une cada expresión con su forma simplificada.",
+        "hintsEs": [
+          "Cada tarjeta afirma que una expresión se simplifica a la forma dada. Verifica la afirmación antes de colocarla.",
+          "Rehaz el trabajo tú mismo: combina términos semejantes o distribuye, y revisa tanto la parte variable como la constante.",
+          "Primera tarjeta: 8y + 2y — suma los coeficientes 8 + 2 y mira si el resultado coincide con el 10y de la tarjeta."
+        ]
+      },
+      {
+        "type": "matching-game",
+        "pairs": [
+          {
+            "term": "6x + 2x",
+            "match": "8x"
+          },
+          {
+            "term": "3(n + 5)",
+            "match": "3n + 15"
+          },
+          {
+            "term": "4a + 7 + a",
+            "match": "5a + 7"
+          },
+          {
+            "term": "2(3y − 4)",
+            "match": "6y − 8"
+          },
+          {
+            "term": "10m − 4m + 1",
+            "match": "6m + 1"
+          },
+          {
+            "term": "5(x + 2)",
+            "match": "5x + 10"
+          }
+        ],
+        "label": "Match each expression to its simplified equivalent.",
+        "columns": 4,
+        "hints": [
+          "Each left card simplifies to exactly one right card. Simplify first, then hunt for the result.",
+          "Two tools: combine like terms (add coefficients) or distribute a factor across parentheses. Constants stay separate.",
+          "Start with 6x + 2x: add 6 + 2 to get the coefficient, then find the card with that many x's."
+        ],
+        "explanation": "Each expression on the left simplifies to exactly one card on the right. Combining like terms gives 6x + 2x = 8x, 4a + 7 + a = 5a + 7, and 10m − 4m + 1 = 6m + 1. Distributing gives 3(n + 5) = 3n + 15, 2(3y − 4) = 6y − 8, and 5(x + 2) = 5x + 10, since the outside factor multiplies both terms inside.",
+        "explanationEs": "Cada expresión de la izquierda se simplifica exactamente a una tarjeta de la derecha. Combinar términos semejantes da 6x + 2x = 8x, 4a + 7 + a = 5a + 7 y 10m − 4m + 1 = 6m + 1. Distribuir da 3(n + 5) = 3n + 15, 2(3y − 4) = 6y − 8 y 5(x + 2) = 5x + 10, porque el factor de afuera multiplica a los dos términos de adentro.",
+        "labelEs": "Une cada expresión con su equivalente simplificado.",
+        "hintsEs": [
+          "Cada tarjeta de la izquierda se simplifica a exactamente una de la derecha. Simplifica primero y luego busca el resultado.",
+          "Dos herramientas: combinar términos semejantes (sumar coeficientes) o distribuir un factor por el paréntesis. Las constantes van aparte.",
+          "Empieza con 6x + 2x: suma 6 + 2 para obtener el coeficiente y luego busca la tarjeta con esa cantidad de x."
+        ]
+      },
       {
         "type": "multiple-choice",
         "stem": "A track stacks 3x and then one more x. Which expression is equivalent to 3x + x?",
@@ -546,6 +775,12 @@
           "Los términos semejantes comparten la misma variable, así que se pueden combinar en un solo término.",
           "Una x sola significa 1x, así que el segundo término ya tiene coeficiente, solo que no está escrito.",
           "Reescribe la expresión como 3x + 1x y luego suma los dos coeficientes para hallar el nuevo coeficiente de x."
+        ],
+        "choicesEs": [
+          "4x",
+          "3x²",
+          "4",
+          "3x"
         ]
       },
       {
@@ -576,6 +811,12 @@
           "Dos expresiones son equivalentes cuando siempre tienen el mismo valor, aunque los términos estén escritos en otro orden.",
           "La suma se puede hacer en cualquier orden, pero cada número debe quedarse unido a su propio término.",
           "Fíjate en que 2x es un término completo y 5 es otro. Escribe los dos términos en el otro orden, dejando el 2 pegado a la x, y prueba las dos versiones con x = 10."
+        ],
+        "choicesEs": [
+          "2x + 5",
+          "7x",
+          "10x",
+          "5x + 2"
         ]
       },
       {
@@ -610,7 +851,11 @@
         "titleEs": "Extensión de Nivel 2: el remix falso",
         "explanation": "2x and 6 are NOT like terms — 2x carries a variable and 6 is just a number — so they cannot be merged into one term. 2x + 6 is already in simplest form; the only rewrite available is factoring: 2x + 6 = 2(x + 3). Testing x = 5 confirms it: 2(5) + 6 = 16, but 8(5) = 40.",
         "explanationEs": "2x y 6 NO son términos semejantes: 2x lleva una variable y 6 es solo un número, así que no se pueden unir en un solo término. 2x + 6 ya está en su forma más simple; lo único que se puede hacer es factorizar: 2x + 6 = 2(x + 3). Probar con x = 5 lo confirma: 2(5) + 6 = 16, pero 8(5) = 40.",
-        "correctWorkEs": "2x y 6 NO son términos semejantes — 2x tiene una variable y 6 es solo un número, así que no pueden combinarse en un solo término. 2x + 6 ya está simplificado. Podrías reescribirlo factorizando: 2x + 6 = 2(x + 3). Comprueba x = 5: 2(5) + 6 = 16, pero 8(5) = 40 — no son iguales, así que 8x está mal."
+        "correctWorkEs": "2x y 6 NO son términos semejantes — 2x tiene una variable y 6 es solo un número, así que no pueden combinarse en un solo término. 2x + 6 ya está simplificado. Podrías reescribirlo factorizando: 2x + 6 = 2(x + 3). Comprueba x = 5: 2(5) + 6 = 16, pero 8(5) = 40 — no son iguales, así que 8x está mal.",
+        "hintsEs": [
+          "¿2x y 6 son términos semejantes? Uno tiene variable y el otro no.",
+          "Prueba sustituir x = 5 en 2x + 6 y en 8x. ¿Obtienes el mismo valor?"
+        ]
       },
       {
         "type": "multiple-choice",
@@ -640,6 +885,18 @@
           "4x y 3x comparten exactamente la misma variable, x: eso los hace términos semejantes.",
           "Combina términos semejantes sumando los coeficientes (la parte numérica). La variable se queda igual.",
           "Suma los coeficientes: 4 + 3. Conserva la x tal cual: no aparece ningún exponente nuevo."
+        ],
+        "misconceptionTags": [
+          null,
+          "op-multiplied-instead-of-added",
+          null,
+          null
+        ],
+        "choicesEs": [
+          "7x",
+          "12x",
+          "7x²",
+          "43x"
         ]
       },
       {
@@ -670,6 +927,12 @@
           "El 2 de afuera del paréntesis debe multiplicar tanto a la m como al 5.",
           "Distribuye: escribe 2 × m y 2 × 5, y luego une los productos con +.",
           "Empieza: 2 × m = 2m. Ahora multiplica 2 × 5 y agrega ese producto."
+        ],
+        "choicesEs": [
+          "2m + 10",
+          "2m + 5",
+          "m + 10",
+          "7m"
         ]
       },
       {
@@ -709,68 +972,32 @@
         ]
       },
       {
-        "type": "multiple-choice",
-        "stem": "Simplify: 5n + 2n",
-        "choices": [
-          "7n",
-          "10n",
-          "7n²",
-          "52n"
-        ],
-        "correctIndex": 0,
-        "explanation": "5n + 2n = 7n. Add the coefficients: 5 + 2 = 7. The variable stays as n.",
-        "choiceFeedback": [
-          "",
-          "5n and 2n are like terms. 5n + 2n = 7n.",
-          "Combine: 5 + 2 = 7, so 5n + 2n = 7n.",
-          "Both terms have n. Add the coefficients: 5 + 2."
-        ],
-        "hints": [
-          "5n and 2n both have the variable n — they're like terms, so they can combine.",
-          "Add the number parts (coefficients) and keep n the same. Don't multiply them.",
-          "Compute 5 + 2 for the new coefficient, then write it in front of n."
-        ],
-        "stemEs": "Simplifica: 5n + 2n",
-        "explanationEs": "5n + 2n = 7n. Suma los coeficientes: 5 + 2 = 7. La variable sigue siendo n.",
-        "hintsEs": [
-          "5n y 2n tienen ambos la variable n: son términos semejantes, así que se pueden combinar.",
-          "Suma las partes numéricas (coeficientes) y conserva n igual. No los multipliques.",
-          "Calcula 5 + 2 para el coeficiente nuevo y luego escríbelo delante de n."
-        ]
-      },
-      {
         "type": "error-analysis",
-        "title": "Spot the Distributive Mistake",
+        "title": "Fix our table's thinking",
         "workedExample": [
           {
-            "label": "Expression",
-            "work": "3(x + 4)",
-            "labelEs": "Expresión",
-            "workEs": "3(x + 4)"
+            "label": "The problem",
+            "work": "Which property is shown: 3(x + 7) = 3x + 21?",
+            "labelEs": "El problema",
+            "workEs": "¿Qué propiedad se muestra: 3(x + 7) = 3x + 21?"
           },
           {
-            "label": "Distribute",
-            "work": "Multiply the 3 by the first term only: 3 · x + 4",
-            "labelEs": "Distribuye",
-            "workEs": "Multiplica el 3 solo por el primer término: 3 · x + 4"
-          },
-          {
-            "label": "Result",
-            "work": "3(x + 4) = 3x + 4",
-            "labelEs": "Resultado",
-            "workEs": "3(x + 4) = 3x + 4"
+            "label": "A classmate at our table answered",
+            "work": "Commutative",
+            "labelEs": "Un compañero de nuestra mesa respondió",
+            "workEs": "Conmutativa"
           }
         ],
         "errorStep": 1,
-        "correctWork": "The 3 must multiply BOTH terms inside the parentheses, not just the first one: 3 · x + 3 · 4 = 3x + 12. Check x = 2: 3(2 + 4) = 18 and 3(2) + 12 = 18, but 3(2) + 4 = 10 — so 3x + 4 is wrong.",
+        "correctWork": "The correct answer is Distributive. Multiplying 3 by each term inside the parentheses is the distributive property.",
+        "correctWorkEs": "La respuesta correcta es Distributiva. Multiplicar el 3 por cada término dentro del paréntesis es la propiedad distributiva.",
         "hints": [
-          "How many terms are inside the parentheses? The 3 multiplies each one.",
-          "Substitute x = 2 into 3(x + 4) and into 3x + 4. Do you get the same value?"
+          "Watch what happened to the 3: it multiplied the x AND the 7 across the parentheses."
         ],
-        "titleEs": "Detecta el error con la propiedad distributiva",
-        "explanation": "The 3 sits outside parentheses that hold two terms, so it must multiply BOTH of them: 3 · x + 3 · 4 = 3x + 12. Multiplying only the x leaves the 4 untouched. Testing x = 2 shows the difference: 3(2 + 4) = 18 and 3(2) + 12 = 18, but 3(2) + 4 = 10.",
-        "explanationEs": "El 3 está fuera de un paréntesis que contiene dos términos, así que debe multiplicar a LOS DOS: 3 · x + 3 · 4 = 3x + 12. Multiplicar solo la x deja el 4 sin tocar. Probar con x = 2 muestra la diferencia: 3(2 + 4) = 18 y 3(2) + 12 = 18, pero 3(2) + 4 = 10.",
-        "correctWorkEs": "El 3 debe multiplicar AMBOS términos dentro del paréntesis, no solo el primero: 3 · x + 3 · 4 = 3x + 12. Comprueba x = 2: 3(2 + 4) = 18 y 3(2) + 12 = 18, pero 3(2) + 4 = 10 — así que 3x + 4 está mal."
+        "hintsEs": [
+          "Fíjate en lo que le pasó al 3: multiplicó a la x Y al 7 a través del paréntesis."
+        ],
+        "tableDebug": true
       }
     ],
     "optional": [],
@@ -803,7 +1030,8 @@
               "value": 30,
               "label": "30"
             }
-          ]
+          ],
+          "labelEs": "Cliente A"
         },
         {
           "label": "Client B",
@@ -816,9 +1044,12 @@
               "value": 30,
               "label": "30"
             }
-          ]
+          ],
+          "labelEs": "Cliente B"
         }
-      ]
+      ],
+      "titleEs": "Dos precios justos del estudio",
+      "captionEs": "Las dos barras miden lo mismo: el 4h y el 2h del cliente A se combinan en 6h, y los dos suman 30 — así que 4h + 2h + 30 es igual a 6h + 30."
     },
     "scenario": "A music studio charges different clients using different formulas. Client A pays 4h + 2h + 30 for h hours. Client B pays 6h + 30. A new client asks if the pricing is fair.",
     "promptQuestion": "Are these expressions equivalent? How can you prove it?",
@@ -842,7 +1073,9 @@
           "4h + 32"
         ],
         "answer": 0,
-        "explanation": "4h and 2h are like terms: 4h + 2h = 6h. The 30 has no h, so it stays separate."
+        "explanation": "4h and 2h are like terms: 4h + 2h = 6h. The 30 has no h, so it stays separate.",
+        "stemEs": "Simplifica 4h + 2h + 30.",
+        "explanationEs": "4h y 2h son términos semejantes: 4h + 2h = 6h. El 30 no tiene h, así que se queda aparte."
       },
       {
         "stem": "Are the two pricing formulas equivalent?",
@@ -853,7 +1086,15 @@
           "Only when h = 0"
         ],
         "answer": 0,
-        "explanation": "They simplify to the same expression, so both clients pay the same for any number of hours. The pricing is fair."
+        "explanation": "They simplify to the same expression, so both clients pay the same for any number of hours. The pricing is fair.",
+        "stemEs": "¿Las dos fórmulas de precio son equivalentes?",
+        "explanationEs": "Se simplifican a la misma expresión, así que los dos clientes pagan lo mismo por cualquier número de horas. Los precios son justos.",
+        "choicesEs": [
+          "Sí — 4h + 2h + 30 se simplifica exactamente a 6h + 30",
+          "No — el cliente A paga más",
+          "No — el cliente B paga más",
+          "Solo cuando h = 0"
+        ]
       },
       {
         "stem": "Test it: what does each expression equal when h = 5?",
@@ -864,7 +1105,15 @@
           "A = 50 and B = 60"
         ],
         "answer": 0,
-        "explanation": "Client A: 4(5) + 2(5) + 30 = 20 + 10 + 30 = 60. Client B: 6(5) + 30 = 30 + 30 = 60. Same value."
+        "explanation": "Client A: 4(5) + 2(5) + 30 = 20 + 10 + 30 = 60. Client B: 6(5) + 30 = 30 + 30 = 60. Same value.",
+        "stemEs": "Pruébalo: ¿cuánto vale cada expresión cuando h = 5?",
+        "explanationEs": "Cliente A: 4(5) + 2(5) + 30 = 20 + 10 + 30 = 60. Cliente B: 6(5) + 30 = 30 + 30 = 60. El mismo valor.",
+        "choicesEs": [
+          "Las dos dan 60",
+          "Las dos dan 90",
+          "A = 60 y B = 55",
+          "A = 50 y B = 60"
+        ]
       }
     ],
     "answers": [
@@ -878,7 +1127,20 @@
       null,
       null
     ],
-    "modelAnswer": "The expressions ARE equivalent. Combining like terms, 4h + 2h + 30 = 6h + 30 — exactly Client B's formula. Substituting a value proves it: at h = 5, Client A pays 20 + 10 + 30 = 60 and Client B pays 30 + 30 = 60. The pricing is fair."
+    "modelAnswer": "The expressions ARE equivalent. Combining like terms, 4h + 2h + 30 = 6h + 30 — exactly Client B's formula. Substituting a value proves it: at h = 5, Client A pays 20 + 10 + 30 = 60 and Client B pays 30 + 30 = 60. The pricing is fair.",
+    "promptEs": "Las expresiones ___ equivalentes porque cuando simplifico 4h + 2h + 30, obtengo ___. Lo puedo probar sustituyendo h = ___: las dos expresiones dan ___.",
+    "scenarioEs": "Un estudio de música les cobra a distintos clientes con fórmulas distintas. El cliente A paga 4h + 2h + 30 por h horas. El cliente B paga 6h + 30. Un cliente nuevo pregunta si los precios son justos.",
+    "promptQuestionEs": "¿Estas expresiones son equivalentes? ¿Cómo lo puedes probar?",
+    "modelAnswerEs": "Las expresiones sí son equivalentes. Al combinar términos semejantes, 4h + 2h + 30 = 6h + 30 — exactamente la fórmula del cliente B. Sustituir un valor lo prueba: con h = 5, el cliente A paga 20 + 10 + 30 = 60 y el cliente B paga 30 + 30 = 60. Los precios son justos.",
+    "keywordsEs": [
+      "son",
+      "6h + 30",
+      "equivalente",
+      "combinar",
+      "términos semejantes",
+      "sustituir",
+      "el mismo valor"
+    ]
   },
   "reflect": {
     "exitTicket": {
@@ -901,6 +1163,25 @@
         "Sort the terms into two families: n-terms (6n, 3n) and plain numbers (4, −1).",
         "Combine each family separately — add the n coefficients, then handle 4 − 1. Never mix the families.",
         "Start with the n-terms: 6n + 3n. Add those coefficients, then combine 4 − 1 for the constant part."
+      ],
+      "stemEs": "Explica tu razonamiento — ¿Qué expresión es equivalente a 6n + 4 + 3n − 1?",
+      "choicesEs": [
+        "9n + 3",
+        "9n + 5",
+        "63n",
+        "18n + 4"
+      ],
+      "explanationEs": "6n + 3n = 9n y 4 − 1 = 3, así que la expresión simplificada es 9n + 3.",
+      "choiceFeedbackEs": [
+        null,
+        "3x + 2x = 5x (combina términos semejantes). 3 + 5 = 8. Juntos: 5x + 8.",
+        "¿Combinaste 3 + 2 + x? Recuerda: 3x + 2x = 5x, y luego suma 8.",
+        "Primero los términos semejantes: 3x + 2x = 5x. Luego suma la constante 8."
+      ],
+      "hintsEs": [
+        "Clasifica los términos en dos familias: los términos con n (6n, 3n) y los números solos (4, −1).",
+        "Combina cada familia por separado — suma los coeficientes de n y luego resuelve 4 − 1. Nunca mezcles las familias.",
+        "Empieza con los términos con n: 6n + 3n. Suma esos coeficientes y luego combina 4 − 1 para la parte constante."
       ]
     }
   },
@@ -908,56 +1189,89 @@
   "timeEstimate": "~15–20 min",
   "warmup": {
     "title": "Warmup: Previous Lesson Check",
+    "reviews": "6-5",
     "prevLessonId": "6-5",
-    "prevLessonTitle": "The Distributive Property",
+    "prevLessonTitle": "Write and Evaluate Algebraic Expressions",
     "questions": [
       {
-        "id": "warmup-6-6-1",
-        "stem": "Expand 4(5 − 2) using the distributive property.",
+        "id": "warmup-6-6-group2-1",
+        "stem": "Evaluate 4n + 3 when n = 5.",
         "choices": [
-          "20 − 2",
-          "9",
-          "12",
-          "22"
+          "23",
+          "35",
+          "27",
+          "45"
         ],
-        "correctIndex": 2,
-        "explanation": "4(5 − 2) = 4 × 5 − 4 × 2 = 20 − 8 = 12."
+        "correctIndex": 0,
+        "explanation": "4 × 5 = 20, and 20 + 3 = 23.",
+        "stemEs": "Evalúa 4n + 3 cuando n = 5.",
+        "choicesEs": [
+          "23",
+          "35",
+          "27",
+          "45"
+        ],
+        "explanationEs": "4 × 5 = 20, y 20 + 3 = 23."
       },
       {
-        "id": "warmup-6-6-2",
-        "stem": "Expand 3(x + 4) using the distributive property.",
+        "id": "warmup-6-6-group2-2",
+        "stem": "Which expression means '7 more than a number x'?",
         "choices": [
-          "3x + 4",
-          "3x + 12",
-          "x + 12",
-          "7x"
+          "x + 7",
+          "7x",
+          "x − 7",
+          "7 − x"
         ],
-        "correctIndex": 1,
-        "explanation": "3(x + 4) = 3 × x + 3 × 4 = 3x + 12."
+        "correctIndex": 0,
+        "explanation": "'More than' means add, so x + 7.",
+        "stemEs": "¿Qué expresión significa «7 más que un número x»?",
+        "choicesEs": [
+          "x + 7",
+          "7x",
+          "x − 7",
+          "7 − x"
+        ],
+        "explanationEs": "«Más que» significa sumar, así que x + 7."
       },
       {
-        "id": "warmup-6-6-3",
-        "stem": "When using the distributive property with a(b + c), you must multiply 'a' by:",
+        "id": "warmup-6-6-group2-3",
+        "stem": "A ticket costs $9. Which expression gives the cost of t tickets?",
         "choices": [
-          "Only b",
-          "Only c",
-          "b + c first, then multiply",
-          "Both b and c"
+          "9t",
+          "t + 9",
+          "9 + t",
+          "t ÷ 9"
         ],
-        "correctIndex": 3,
-        "explanation": "The distributive property says a(b + c) = ab + ac. You multiply the outside factor by EACH term inside the parentheses."
+        "correctIndex": 0,
+        "explanation": "Each ticket is $9, so t tickets cost 9 × t, written 9t.",
+        "stemEs": "Un boleto cuesta $9. ¿Qué expresión da el costo de t boletos?",
+        "choicesEs": [
+          "9t",
+          "t + 9",
+          "9 + t",
+          "t ÷ 9"
+        ],
+        "explanationEs": "Cada boleto son $9, así que t boletos cuestan 9 × t, que se escribe 9t."
       },
       {
-        "id": "warmup-6-6-4",
-        "stem": "Expand 6(n + 3) using the distributive property.",
+        "id": "warmup-6-6-group2-4",
+        "stem": "Evaluate 30 − 4y when y = 6.",
         "choices": [
-          "6n + 3",
-          "6n + 18",
-          "n + 18",
-          "6n + 9"
+          "6",
+          "156",
+          "20",
+          "24"
         ],
-        "correctIndex": 1,
-        "explanation": "6(n + 3) = 6 × n + 6 × 3 = 6n + 18."
+        "correctIndex": 0,
+        "explanation": "4 × 6 = 24, and 30 − 24 = 6.",
+        "stemEs": "Evalúa 30 − 4y cuando y = 6.",
+        "choicesEs": [
+          "6",
+          "156",
+          "20",
+          "24"
+        ],
+        "explanationEs": "4 × 6 = 24, y 30 − 24 = 6."
       }
     ]
   },

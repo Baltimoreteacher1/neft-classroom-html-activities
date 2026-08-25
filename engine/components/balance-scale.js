@@ -60,7 +60,7 @@ export function renderBalanceScale(container, config) {
 
   if (label) {
     const lbl = document.createElement("p");
-    lbl.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    lbl.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     lbl.textContent = label;
     wrapper.append(lbl);
   }
@@ -319,13 +319,13 @@ export function renderBalanceScale(container, config) {
     "display:flex; gap:var(--sp-3); align-items:center; justify-content:center; margin-top:var(--sp-3);";
 
   const ansLabel = document.createElement("span");
-  ansLabel.style.cssText = "font-weight:800; font-size:1rem; color:var(--navy);";
+  ansLabel.style.cssText = "font-weight:700; font-size:1rem; color:var(--navy);";
   ansLabel.textContent = `${variable || "x"} = `;
 
   const ansInput = document.createElement("input");
   ansInput.type = "text";
   ansInput.className = "text-input bs-input";
-  ansInput.style.cssText = "max-width:100px; text-align:center; font-weight:800; font-size:1.1rem;";
+  ansInput.style.cssText = "max-width:100px; text-align:center; font-weight:700; font-size:1.1rem;";
   ansInput.placeholder = "?";
   ansInput.setAttribute("aria-label", `Value of ${variable || "x"}`);
 
@@ -460,7 +460,7 @@ function renderBalanceCompare(container, config) {
 
   if (instructions || label) {
     const p = document.createElement("p");
-    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = instructions || label;
     wrapper.append(p);
   }
@@ -530,7 +530,7 @@ function renderBalanceVerify(container, config) {
 
   if (instructions || label) {
     const p = document.createElement("p");
-    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:500; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = instructions || label;
     wrapper.append(p);
   }
@@ -546,7 +546,7 @@ function renderBalanceVerify(container, config) {
 
     const expr = document.createElement("p");
     expr.style.cssText =
-      "font-weight:700; margin:0 0 var(--sp-3); text-align:center; font-size:1.02rem;";
+      "font-weight:600; margin:0 0 var(--sp-3); text-align:center; font-size:1.02rem;";
     expr.innerHTML = `<span>${item.left}</span> <span style="color:var(--muted);">⚖</span> <span>${item.right}</span>`;
     row.append(expr);
 

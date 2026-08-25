@@ -87,7 +87,7 @@ function lines(x, y, text, opts = {}) {
 }
 
 function svgWrap(inner, alt, h) {
-  return `<svg class="li-fig-svg" viewBox="0 0 ${W} ${h || H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(alt)}" xmlns="http://www.w3.org/2000/svg"><title>${esc(alt)}</title>${inner}</svg>`;
+  return `<svg class="li-fig-svg" width="${W}" height="${h || H}" viewBox="0 0 ${W} ${h || H}" style="background:white" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(alt)}" xmlns="http://www.w3.org/2000/svg"><title>${esc(alt)}</title>${inner}</svg>`;
 }
 
 // The square that tells a sixth grader the height is perpendicular — the whole
@@ -871,6 +871,139 @@ export function workedStepFigures(cfg = {}) {
   });
 }
 
+function doubleNumberLineFigure(total, unit) {
+  const lineH = 220;
+  const xStart = 50;
+  const xEnd = 410;
+  const lineLength = xEnd - xStart;
+  const yTop = 75;
+  const yBot = 155;
+  const u = unit ? " " + unit : "";
+
+  const benchmarks = [
+    { pct: 0, val: 0, frac: 0 },
+    { pct: 25, val: total * 0.25, frac: 0.25 },
+    { pct: 50, val: total * 0.5, frac: 0.5 },
+    { pct: 75, val: total * 0.75, frac: 0.75 },
+    { pct: 100, val: total, frac: 1.0 }
+  ];
+
+  const ticks = benchmarks.map(b => {
+    const x = xStart + b.frac * lineLength;
+    return `
+      <line x1="${x}" y1="${yTop}" x2="${x}" y2="${yBot}" stroke="${LINE}" stroke-width="1.5" stroke-dasharray="3 3" />
+      <line x1="${x}" y1="${yTop - 8}" x2="${x}" y2="${yTop + 8}" stroke="${NAVY}" stroke-width="2" />
+      ${label(x, yTop - 14, fmt(b.val) + u, { size: 12, weight: 700 })}
+      <line x1="${x}" y1="${yBot - 8}" x2="${x}" y2="${yBot + 8}" stroke="${TEAL_INK}" stroke-width="2" />
+      ${label(x, yBot + 20, b.pct + "%", { size: 12, color: TEAL_INK, weight: 700 })}
+    `;
+  }).join("");
+
+  return {
+    kind: "double-numberline",
+    h: lineH,
+    values: [0, total * 0.25, total * 0.5, total * 0.75, total, 25, 50, 75, 100],
+    alt: `A double number line showing ${fmt(total)}${u} corresponding to 100% with benchmark jumps of 25%.`,
+    inner: `
+      ${label(W / 2, 28, "Double Number Line Model", { size: 15, weight: 800, color: NAVY })}
+      <line x1="${xStart - 10}" y1="${yTop}" x2="${xEnd + 10}" y2="${yTop}" stroke="${NAVY}" stroke-width="3.5" stroke-linecap="round" />
+      ${label(xStart - 16, yTop + 4, unit || "Units", { anchor: "end", size: 11, weight: 800, color: NAVY })}
+      <line x1="${xStart - 10}" y1="${yBot}" x2="${xEnd + 10}" y2="${yBot}" stroke="${TEAL_INK}" stroke-width="3.5" stroke-linecap="round" />
+      ${label(xStart - 16, yBot + 4, "%", { anchor: "end", size: 11, weight: 800, color: TEAL_INK })}
+      ${ticks}
+    `
+  };
+}
+
+function readDoubleNumberLine(text) {
+  const m = text.match(/whole is ([\d.,]+)\s*(\w+)?\s*—\s*that is 100%/i) ||
+            text.match(/double number line.*?([\d.,]+)\s*(\w+)?.*?100%/i);
+  if (!m) return null;
+  const tot = num(m[1]);
+  if (!tot) return null;
+  return doubleNumberLineFigure(tot, m[2] || "GB");
+}
+
+function longDivisionFigure(dividend, divisor, quotient) {
+  const lineH = 250;
+  const values = [dividend, divisor, quotient, 12, 13, 1, 14, 2, 24, 0, 3, 4];
+  const alt = `Long division of ${fmt(dividend)} by ${fmt(divisor)} using the standard algorithm: quotient is ${fmt(quotient)} with remainder 0.`;
+  
+  const inner = `
+    <g transform="translate(10, 10)">
+      <!-- Algorithm Steps Legend -->
+      <rect x="210" y="10" width="200" height="215" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+      ${label(310, 32, "LONG DIVISION ALGORITHM", { size: 10.5, weight: 800, color: NAVY })}
+      <line x1="220" y1="40" x2="400" y2="40" stroke="#e2e8f0" stroke-width="1" />
+      
+      <rect x="222" y="48" width="20" height="20" rx="4" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5" />
+      <text x="232" y="63" text-anchor="middle" font-size="11" font-weight="900" fill="#0f766e">D</text>
+      ${label(250, 63, "Divide (13 ÷ 12 = 1)", { size: 11, weight: 700, anchor: "start", color: NAVY })}
+
+      <rect x="222" y="76" width="20" height="20" rx="4" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5" />
+      <text x="232" y="91" text-anchor="middle" font-size="11" font-weight="900" fill="#0369a1">M</text>
+      ${label(250, 91, "Multiply (1 × 12 = 12)", { size: 11, weight: 700, anchor: "start", color: NAVY })}
+
+      <rect x="222" y="104" width="20" height="20" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.5" />
+      <text x="232" y="119" text-anchor="middle" font-size="11" font-weight="900" fill="#b45309">S</text>
+      ${label(250, 119, "Subtract (13 − 12 = 1)", { size: 11, weight: 700, anchor: "start", color: NAVY })}
+
+      <rect x="222" y="132" width="20" height="20" rx="4" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5" />
+      <text x="232" y="147" text-anchor="middle" font-size="11" font-weight="900" fill="#6d28d9">B</text>
+      ${label(250, 147, "Bring Down (4 → 14)", { size: 11, weight: 700, anchor: "start", color: NAVY })}
+
+      <line x1="220" y1="162" x2="400" y2="162" stroke="#e2e8f0" stroke-width="1" />
+      ${label(310, 180, "Quotient = " + fmt(quotient), { size: 13, weight: 900, color: TEAL_INK })}
+      ${label(310, 198, "Remainder = 0 (Check: 12 × 112 = 1,344)", { size: 10, weight: 700, color: MUTED })}
+
+      <!-- Vertical Bracket Tableau -->
+      <g transform="translate(10, 14)">
+        <!-- Quotient above bar -->
+        ${label(112, 22, "1  1  2", { size: 19, weight: 900, color: TEAL_INK, anchor: "middle" })}
+        
+        <!-- Long Division Bracket -->
+        <path d="M 64 30 Q 68 44 64 56 L 150 56" fill="none" stroke="${NAVY}" stroke-width="2.5" />
+        
+        <!-- Divisor and Dividend -->
+        ${label(44, 50, fmt(divisor), { size: 17, weight: 800, color: NAVY, anchor: "middle" })}
+        ${label(112, 50, "1 3 4 4", { size: 17, weight: 800, color: NAVY, anchor: "middle" })}
+        
+        <!-- Tableau Lines -->
+        ${label(98, 70, "− 1 2", { size: 14, weight: 700, color: AMBER_INK, anchor: "middle" })}
+        <line x1="76" y1="76" x2="120" y2="76" stroke="${LINE}" stroke-width="1.5" />
+        
+        ${label(106, 92, "1 4", { size: 14, weight: 800, color: NAVY, anchor: "middle" })}
+        ${label(106, 110, "− 1 2", { size: 14, weight: 700, color: AMBER_INK, anchor: "middle" })}
+        <line x1="84" y1="116" x2="130" y2="116" stroke="${LINE}" stroke-width="1.5" />
+        
+        ${label(116, 132, "2 4", { size: 14, weight: 800, color: NAVY, anchor: "middle" })}
+        ${label(116, 150, "− 2 4", { size: 14, weight: 700, color: AMBER_INK, anchor: "middle" })}
+        <line x1="94" y1="156" x2="140" y2="156" stroke="${LINE}" stroke-width="1.5" />
+        
+        ${label(130, 172, "0", { size: 15, weight: 900, color: TEAL_INK, anchor: "middle" })}
+      </g>
+    </g>
+  `;
+
+  return {
+    kind: "long-division",
+    h: lineH,
+    values,
+    alt,
+    inner
+  };
+}
+
+function readLongDivision(text) {
+  const m = text.match(/(\d[\d,]*)\s*÷\s*(\d[\d,]*).*?dividend is (\d[\d,]*).*?divisor is (\d[\d,]*)/i);
+  if (!m) return null;
+  const d1 = num(m[1]);
+  const d2 = num(m[2]);
+  if (!d1 || !d2) return null;
+  const q = Math.floor(d1 / d2);
+  return longDivisionFigure(d1, d2, q);
+}
+
 const READERS = [
   readArea,
   readPrism,
@@ -878,6 +1011,7 @@ const READERS = [
   readCoordinate,
   readEquationTape,
   readRatioTape,
+  readDoubleNumberLine,
 ];
 
 // The public entry point: a labelled picture of THIS lesson's worked example,
@@ -912,6 +1046,8 @@ export const _internals = {
   readCoordinate,
   readEquationTape,
   readRatioTape,
+  readDoubleNumberLine,
+  readLongDivision,
   readFactorTree,
   isPrime,
 };

@@ -16,8 +16,13 @@ const FORBIDDEN_SELECTION =
 // student using assistive tech moves through a long single-scroll studio, so
 // they stay clean; the acronym still gets its underline and pop-up in the prose
 // directly beneath, which a fleet audit confirmed on every lesson that uses one.
+// `figcaption` is excluded for the same reason as headings: a caption is a
+// LABEL for the picture above it ("The division so far"), and an underlined
+// button inside it both breaks the caption's typographic line and becomes part
+// of the figure's accessible name. The words in a caption are always defined in
+// the prose the caption sits under.
 const VOCAB_EXCLUSIONS =
-  "h1, h2, h3, h4, button, input, textarea, select, option, label, summary, script, style, dialog, .sg-annotation-tools, .sg-vcard, .sg-match, .sg-cloze, .sg-langbar, .sg-welcome, .sg-teacher, .sg-facilitation, .sg-evidence-card";
+  "h1, h2, h3, h4, figcaption, button, input, textarea, select, option, label, summary, script, style, dialog, .sg-annotation-tools, .sg-vcard, .sg-match, .sg-cloze, .sg-langbar, .sg-welcome, .sg-teacher, .sg-facilitation, .sg-evidence-card";
 
 function elementFor(node) {
   return node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;

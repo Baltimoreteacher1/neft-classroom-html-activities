@@ -39,16 +39,36 @@
     "percent-used-as-whole-number": "Used the percent as a plain number",
     "percent-scale-off-by-100": "Percent answer off by a factor of 100",
     "ratio-inverted": "Flipped the ratio",
+    "ratio-scaled-additively": "Scaled a ratio by adding instead of multiplying",
+    "ratio-as-difference": "Combined the two amounts instead of comparing them",
+    "stat-mean-vs-median": "Used the mean where the median was asked (or the reverse)",
+    "stat-histogram-bin-misread": "Misread the bins or the scale on a data display",
     "rate-not-per-one": "Gave the total instead of the unit rate",
     "exponent-as-multiplication": "Multiplied the base by the exponent",
     "order-of-operations-left-to-right": "Worked left to right instead of by operation order",
     "sign-dropped": "Right magnitude, lost the negative sign",
     "stat-summed-instead-of-averaged": "Added the data set instead of averaging it",
+    "equation-not-inverse-operation": "Did not undo the operation",
+    "equation-answered-with-given-number": "Answered with a number already in the equation",
+    "inequality-direction-flipped": "Right boundary, symbol reversed",
+    "inequality-boundary-inclusion": "Boundary value wrongly included or excluded",
+    "inequality-graph-direction": "Graph shaded toward the wrong side",
+    "stat-range-for-iqr": "Used the full range instead of the IQR",
+    "stat-center-vs-spread": "Confused a measure of center with a measure of spread",
+    "stat-mean-skewed-by-outlier": "Chose the mean when an outlier distorts it",
+    "stat-frequency-vs-value": "Reported a data value where a frequency was asked",
+    "coord-xy-swapped": "Swapped the x and y coordinates",
     "measure-area-perimeter-swap": "Swapped area and perimeter",
     "geom-triangle-area-no-half": "Found base × height but forgot the half",
     "geom-surface-area-as-volume": "Found the volume instead of the surface area",
     "geom-volume-added-dimensions": "Added the dimensions instead of multiplying",
     "algebra-distributive-partial": "Distributed to the first term only",
+    "factors-multiples-confused": "Confused factors with multiples",
+    "property-order-vs-grouping": "Confused the commutative and associative properties",
+    "division-quotient-missing-zero": "Dropped a placeholder zero in the quotient",
+    "factorization-stopped-early": "Stopped factoring before every factor was prime",
+    "stat-question-no-variability": "Chose a question with only one fixed answer",
+    "ratio-compared-without-common-basis": "Compared two ratios without a common basis",
   };
 
   var MOVES = {
@@ -69,12 +89,39 @@
     "percent-used-as-whole-number": "Make them say the percent as “per hundred” out loud.",
     "percent-scale-off-by-100": "Benchmark against 50% and 10% before trusting the number.",
     "ratio-inverted": "Have them label both quantities with units before writing the ratio.",
+    "ratio-scaled-additively":
+      "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
+    "ratio-as-difference":
+      "Have them say the comparison out loud — “for every ___ there are ___” — before writing anything.",
+    "stat-mean-vs-median":
+      "Ask them to say which word the question used, then what that word tells you to DO with the numbers.",
+    "stat-histogram-bin-misread":
+      "Have them point to the interval's two endpoints and say which values belong inside it.",
     "rate-not-per-one": "Ask “per ONE what?” and make them finish the sentence.",
     "exponent-as-multiplication": "Expand it once — write every factor before evaluating.",
     "order-of-operations-left-to-right": "Have them circle the operation that must go first.",
     "sign-dropped": "Place the answer on a number line — which side of zero?",
     "stat-summed-instead-of-averaged":
       "Ask whether the answer could be a real single value in that set.",
+    "equation-not-inverse-operation":
+      "Have them name the operation acting on the variable BEFORE they touch both sides.",
+    "equation-answered-with-given-number":
+      "Ask them to substitute their answer back into the original equation out loud.",
+    "inequality-direction-flipped":
+      "Ask which moves can flip a symbol — adding and subtracting never do.",
+    "inequality-boundary-inclusion":
+      "Have them test the boundary value itself — does it make the statement true?",
+    "inequality-graph-direction":
+      "Make them test one number from the shaded side out loud before accepting a graph.",
+    "stat-range-for-iqr": "Have them mark Q1 and Q3 on the plot and cover everything outside them.",
+    "stat-center-vs-spread":
+      "Ask what the question wants: a typical value, or how scattered the data is?",
+    "stat-mean-skewed-by-outlier":
+      "Have them cover the outlier and recompute — how far does the mean move?",
+    "stat-frequency-vs-value":
+      "Ask them to point at the axis their number came from before they answer.",
+    "coord-xy-swapped":
+      "Have them trace the horizontal move with a finger before the vertical one.",
     "measure-area-perimeter-swap": "Ask what the unit should be — units or square units?",
     "geom-triangle-area-no-half":
       "Draw the rectangle around the triangle — the triangle is half of it.",
@@ -82,6 +129,17 @@
       "Unfold the net and count the faces before anyone computes anything.",
     "geom-volume-added-dimensions": "Build one layer of unit cubes first, then count the layers.",
     "algebra-distributive-partial": "Draw the area model — the outside factor touches BOTH terms.",
+    "factors-multiples-confused":
+      "Ask which number divides which — factors go INTO it, multiples come OUT of it.",
+    "property-order-vs-grouping":
+      "Ask what actually MOVED: the order of the numbers, or the parentheses?",
+    "division-quotient-missing-zero":
+      "Have them estimate before dividing, then check the answer is that size.",
+    "factorization-stopped-early":
+      "Point at each factor and ask: can this one still be broken apart?",
+    "stat-question-no-variability": "Ask: would two different people give two different answers?",
+    "ratio-compared-without-common-basis":
+      "Ask what ONE of each is worth before either ratio is compared.",
   };
 
   var LANES = {

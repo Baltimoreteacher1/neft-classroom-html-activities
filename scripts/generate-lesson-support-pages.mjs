@@ -298,7 +298,7 @@ function teacherNotesPage(id, cfg, unit, lesson) {
   <ul>
     <li>Print / open: <a href="/lessons/${esc(id)}/notes.html">guided notes</a>, <a href="/lessons/${esc(id)}/homework.html">homework</a>, <a href="/lessons/${esc(id)}/slides.html">slides</a>.</li>
     <li>Have the <a href="/lessons/${esc(id)}/family/">family page</a> link ready for absent students.</li>
-    <li>Preview the key vocabulary below with ESOL students.</li>
+    <li>Preview the key vocabulary below before the lesson.</li>
   </ul>
 </section>
 <section>
@@ -316,7 +316,7 @@ function teacherNotesPage(id, cfg, unit, lesson) {
   <p>${esc(cfg.practice?.commonMistake || "Watch for students who memorize steps without understanding the key idea above.")}</p>
 </section>
 <section>
-  <h2>ESOL / SPED supports</h2>
+  <h2>Language &amp; learning supports</h2>
   <ul>
     ${v.length ? `<li>Pre-teach: ${v.map((w) => `<span class="kw">${esc(w.term)}</span>`).join(", ")} (Spanish + visuals are in the lesson vocabulary).</li>` : ""}
     <li>Offer the sentence frames: ${SENTENCE_FRAMES.map((f) => `“${esc(f)}”`).join(" ")}</li>

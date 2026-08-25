@@ -12,6 +12,7 @@ const SAFE_RESOURCE_KEYS = [
   "lesson",
   "guidedNotes",
   "handout",
+  "worksheet",
   "homework",
   "familyPage",
   "studentHelp",
@@ -79,6 +80,26 @@ const GROUP_KINDS = [
 ];
 const baseIds = new Set(lessons.filter((lesson) => !/-flagship$/.test(lesson.id)).map((l) => l.id));
 
+/* The printables a small-group or catch-up variant ships with, in the order the
+ * teacher meets them at the table: the sheet the group writes on during the
+ * session, then the packet that continues it afterwards. Presence is decided by
+ * the file on disk — catch-ups have a worksheet and no practice set, and a
+ * button for a page that is not there is the dead button this manifest refuses
+ * to carry. Answer keys are deliberately absent: this manifest feeds a
+ * student-reachable surface, which is what FORBIDDEN_RESOURCE encodes above. */
+const GROUP_PRINTABLES = [
+  ["worksheet", "worksheet.html"],
+  ["practice", "practice.html"],
+];
+
+function groupResources(id) {
+  const resources = { lesson: `/lessons/${id}/` };
+  for (const [key, file] of GROUP_PRINTABLES) {
+    if (existsSync(resolve(LESSONS_DIR, id, file))) resources[key] = `/lessons/${id}/${file}`;
+  }
+  return resources;
+}
+
 function groupConfig(id) {
   const configPath = resolve(LESSONS_DIR, id, "config.json");
   if (!existsSync(configPath)) return null;
@@ -97,7 +118,7 @@ function groupConfig(id) {
     timeEstimate: cleanText(config.timeEstimate) || "~30 min",
     vocabulary,
     sentenceFrames: [],
-    resources: { lesson: `/lessons/${id}/` },
+    resources: groupResources(id),
   };
 }
 

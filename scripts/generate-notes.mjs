@@ -8,7 +8,7 @@ import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { workedFigure, workedStepFigures } from "./lib/learn-figures.mjs";
 import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
-import { writeGenerated } from "./lib/preserve-injected.mjs";
+import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -1570,7 +1570,7 @@ function notesSection(cfg = {}, _worked = null, fillHtml = "") {
     ? `<p class="gn-directions">✏️ Fill in each blank as we go. Use the Word Bank to help you.</p>${fillHtml}`
     : "";
 
-  return `<section class="section notes">
+  return `<section class="section notes" data-support-slot="response">
   <h2>My Notes
     <span class="level-tag level-1 l1-only">Level 1 Support</span>
     <span class="level-tag level-2 l2-only">Level 2 Standard</span>
@@ -2739,7 +2739,7 @@ function twrSection(cfg, teacher = false) {
     .join("");
 
   return `<section class="section twr">
-  <h2>Write About the Math <span class="twr-method">Guided ESOL writing</span></h2>
+  <h2>Write About the Math <span class="twr-method">Guided writing support</span></h2>
   <p class="level-note">Use the support level you need. Every level answers the same math question.</p>
   <div class="twr-guide-step">
     <h3>1. Understand the Question</h3>
@@ -2800,7 +2800,7 @@ function buildPacket(id, cfg, isFlagship, teacher = false) {
   const unit = cfg.unit != null ? `Unit ${esc(cfg.unit)}` : "";
   const flagBadge = isFlagship ? `<span class="flagship-badge">Flagship</span>` : "";
   return `<!doctype html>
-<html lang="en">
+<html lang="en" data-ewl-supports-lesson="${esc(id)}" data-support-audience="${teacher ? "teacher" : "student"}">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -3169,6 +3169,13 @@ ${autoSaveScript(`nt-notes:${esc(id)}`)}
   ${teacher ? answerKeySection({}, cfg.reflect, cfg, null, new Set(), gn.keyRows) : ""}
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson ${esc(id)}${standard ? " · " + standard : ""}${teacher ? " · Teacher Copy" : ""}</footer>
 </main>
+<!-- The lesson adaptation layer, on paper. Renders the SAME effective support
+     configuration the interactive lesson renders (one resolver, in
+     shared/supports/lesson-supports.js). The TEACHER copy additionally carries
+     the provenance summary and the delivery notes for supports paper cannot
+     carry; the student copy carries the supports and no commentary about them.
+     Inert until a teacher configures supports for this lesson. -->
+<script src="/shared/supports/print-supports.js" defer></script>
 </body>
 </html>`;
 }
@@ -3687,6 +3694,52 @@ a:hover{text-decoration:underline;}
 
 /* ---------- run ---------- */
 
+/* ---------- --check: is the committed HTML still what we would write? ----- */
+
+// Every page this generator owns, with the builder that produces it. Keeping
+// them in one table is what lets `--check` cover any subset without the check
+// and the write drifting apart.
+const PAGES = {
+  "notes.html": (id, cfg, flagship) => buildPacket(id, cfg, flagship, false),
+  "notes-teacher.html": (id, cfg, flagship) => buildPacket(id, cfg, flagship, true),
+  "learn.html": (id, cfg, flagship) => buildLearnPage(id, cfg, flagship),
+  "vocab.html": (id, cfg, flagship) => buildVocabPage(id, cfg, flagship),
+};
+
+/**
+ * `--check` writes nothing and exits non-zero if any committed page has drifted
+ * from what this generator would produce.
+ *
+ * `--pages a,b` narrows it. That exists because this generator owns FOUR page
+ * types and tools/generated-pages-fresh.test.mjs currently gates one of them —
+ * learn.html, which rotted through C1 while every other gate stayed green. A
+ * flag beats a second script: the check and the write share this PAGES table,
+ * so they cannot describe different HTML.
+ */
+function runCheck(targets, pages) {
+  const stale = [];
+  for (const { id, cfg, isFlagship } of targets) {
+    for (const page of pages) {
+      const build = PAGES[page];
+      if (!build) throw new Error(`--pages: unknown page "${page}"`);
+      const file = join(lessonsDir, id, page);
+      if (!isGeneratedFresh(file, build(id, cfg, isFlagship))) stale.push(`lessons/${id}/${page}`);
+    }
+  }
+  if (stale.length) {
+    console.error(
+      `${stale.length} generated page(s) are STALE — the committed HTML no longer matches its config.json:\n  ${stale
+        .slice(0, 15)
+        .join("\n  ")}${stale.length > 15 ? `\n  …and ${stale.length - 15} more` : ""}` +
+        `\n\nFix: node scripts/generate-notes.mjs`,
+    );
+    process.exit(1);
+  }
+  console.log(
+    `Notes pages up to date (${targets.length} lessons × ${pages.length}: ${pages.join(", ")}).`,
+  );
+}
+
 function main() {
   const lessons = lessonConfigs();
   // Scope only the per-lesson writes; the global index is always rebuilt from
@@ -3697,6 +3750,14 @@ function main() {
     console.log(
       `Scoped notes to ${targets.length} lesson(s): ${targets.map((l) => l.id).join(", ")}`,
     );
+
+  if (process.argv.includes("--check")) {
+    const i = process.argv.indexOf("--pages");
+    const pages = i === -1 ? Object.keys(PAGES) : process.argv[i + 1].split(",").filter(Boolean);
+    runCheck(targets, pages);
+    return;
+  }
+
   let count = 0;
   let flagshipCount = 0;
   for (const { id, cfg, isFlagship } of targets) {

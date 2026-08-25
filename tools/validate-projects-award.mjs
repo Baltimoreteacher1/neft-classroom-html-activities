@@ -3,9 +3,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PROJECT_UNITS } from "./lib/project-units.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const units = [...Array.from({ length: 10 }, (_, index) => `unit-${index + 1}`), "statistics"];
+const units = PROJECT_UNITS;
 const failures = [];
 
 /* Enumerate version folders from disk (version-a, version-b, version-c, …) so
@@ -98,14 +99,17 @@ if (Object.keys(entries).length !== expectedProjectCount)
     `award configuration: expected ${expectedProjectCount} projects, found ${Object.keys(entries).length}`,
   );
 
-const curriculum = read("curriculum/index.html");
+/* The unit/lesson markup moved to curriculum/units/index.html when the hub
+   stopped hosting the units browser. Same assertion, new home. */
+const curriculum = read("curriculum/units/index.html");
 const expectedLinks = [
   'href="/math/unit-8/projects/">Culminating Project',
   'href="/math/statistics/projects/">Culminating Project',
   'href="/math/unit-7/projects/">Culminating Project',
 ];
 for (const expected of expectedLinks)
-  if (!curriculum.includes(expected)) failures.push(`curriculum/index.html: missing ${expected}`);
+  if (!curriculum.includes(expected))
+    failures.push(`curriculum/units/index.html: missing ${expected}`);
 
 /* answer-key-gate.js must carry no client-side teacher secret.
    This used to grep for the then-current PIN literal. A rotated PIN would have

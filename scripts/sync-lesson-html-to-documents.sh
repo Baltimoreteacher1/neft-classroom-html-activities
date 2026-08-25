@@ -26,14 +26,17 @@ cd "$REPO"
 
 # 2. Back up to Google Drive (reliable, syncs to cloud).
 mkdir -p "$DRIVE_DEST"
-rsync -a --delete "$SRC"/ "$DRIVE_DEST"/
+# Never --delete. A weekly rsync --delete into Google Drive was an active
+# deletion vector (LaunchAgent com.neft.lesson-html-sync). Extra files on
+# Drive stay; this job only adds and updates.
+rsync -a "$SRC"/ "$DRIVE_DEST"/
 echo "$STAMP" >"$DRIVE_DEST/LAST_SYNC.txt"
 echo "Synced lesson HTML to Google Drive: $DRIVE_DEST"
 
 # 3. Best-effort copy to ~/Documents (may be blocked under launchd by macOS TCC).
-if mkdir -p "$DOCS_DEST" 2>/dev/null && rsync -a --delete "$SRC"/ "$DOCS_DEST"/ 2>/dev/null; then
-	echo "$STAMP" >"$DOCS_DEST/LAST_SYNC.txt"
-	echo "Synced lesson HTML to Documents: $DOCS_DEST"
+if mkdir -p "$DOCS_DEST" 2>/dev/null && rsync -a "$SRC"/ "$DOCS_DEST"/ 2>/dev/null; then
+  echo "$STAMP" >"$DOCS_DEST/LAST_SYNC.txt"
+  echo "Synced lesson HTML to Documents: $DOCS_DEST"
 else
-	echo "Skipped Documents copy (no permission in this context) — Google Drive copy is current."
+  echo "Skipped Documents copy (no permission in this context) — Google Drive copy is current."
 fi

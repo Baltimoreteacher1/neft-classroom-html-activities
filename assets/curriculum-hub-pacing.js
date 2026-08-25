@@ -126,12 +126,24 @@
         });
         var stdCount = Object.keys(stds).length;
         var EXTENSION_LESSONS = {
-          "2-11": 1, "2-12": 1,
-          "3-8": 1, "3-9": 1, "3-10": 1,
-          "5-9": 1, "5-10": 1,
-          "6-9": 1, "6-10": 1, "6-11": 1, "6-12": 1, "6-13": 1, "6-14": 1, "6-15": 1,
-          "7-8": 1, "7-9": 1,
-          "8-6": 1, "8-7": 1
+          "2-11": 1,
+          "2-12": 1,
+          "3-8": 1,
+          "3-9": 1,
+          "3-10": 1,
+          "5-9": 1,
+          "5-10": 1,
+          "6-9": 1,
+          "6-10": 1,
+          "6-11": 1,
+          "6-12": 1,
+          "6-13": 1,
+          "6-14": 1,
+          "6-15": 1,
+          "7-8": 1,
+          "7-9": 1,
+          "8-6": 1,
+          "8-7": 1,
         };
         var det = u.lessons
           .map(function (l, i) {
@@ -143,7 +155,7 @@
               : ' <span class="pace-badge pace-core">📌 Core Pacing</span>';
             var probeHtml = isProbe
               ? '<div class="pace-probe-callout">🧪 <strong>Formative Math Probe</strong> — Administer 0.5-day diagnostic probe before progressing</div>'
-              : '';
+              : "";
             return (
               '<li><span class="pace-day">Day ' +
               (startDay + i) +

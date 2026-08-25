@@ -8,10 +8,8 @@
       name="description"
       content="Unit 10 Volume &amp; Surface Area culminating project. Design an open-top glass aquarium tank, calculating water volume and glass surface area. Clean step-by-step tab-based guide."
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="/assets/fonts/project-pages.css"
       rel="stylesheet"
     />
     <style>
@@ -743,11 +741,6 @@
       body.level-0 .lvl0-only { display: block; }
     </style>
     <!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
-      rel="stylesheet"
-    />
     <link rel="stylesheet" href="/shared/projects/projects-pro.css" />
     <!-- projects-pro-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
@@ -789,14 +782,6 @@
 <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-complete.css" />
     <!-- projects-complete-injected:end -->
-<!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
-    <meta name="nt-project-id" content="unit-10-b" />
-    <meta name="standard" content="6.GR.2 · Unit 10" data-standard="6.GR.2" data-standard-legacy="6.G.2" data-unit="10" />
-    <meta name="standard" content="6.GR.4 · Unit 10" data-standard="6.GR.4" data-standard-legacy="6.G.4" data-unit="10" />
-    <meta name="nt-project-standards" content="6.GR.2,6.GR.4" />
-    <meta name="nt-project-reveal-unit" content="10" />
-    <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
-    <!-- projects-meta-injected:end -->
 <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-check.css" />
     <!-- projects-check-injected:end -->
@@ -818,6 +803,14 @@
     <!-- projects-mode-pill-head:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-mode-pill.css?v=20260810" />
     <!-- projects-mode-pill-head:end -->
+    <!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
+    <meta name="nt-project-id" content="unit-10-b" />
+    <meta name="standard" content="6.GR.2 · Unit 10" data-standard="6.GR.2" data-standard-legacy="6.G.2" data-unit="10" />
+    <meta name="standard" content="6.GR.4 · Unit 10" data-standard="6.GR.4" data-standard-legacy="6.G.4" data-unit="10" />
+    <meta name="nt-project-standards" content="6.GR.2,6.GR.4" />
+    <meta name="nt-project-reveal-unit" content="10" />
+    <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
+    <!-- projects-meta-injected:end -->
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -1278,7 +1271,7 @@
                 min="1"
                 data-save
                 placeholder=""
-                oninput="recalcAll()"
+                oninput="onTankDimsChanged()"
               />
             </div>
             <div>
@@ -1294,7 +1287,7 @@
                 min="1"
                 data-save
                 placeholder=""
-                oninput="recalcAll()"
+                oninput="onTankDimsChanged()"
               />
             </div>
             <div>
@@ -1310,15 +1303,28 @@
                 min="1"
                 data-save
                 placeholder=""
-                oninput="recalcAll()"
+                oninput="onTankDimsChanged()"
               />
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcVolume()">
-            <span class="en-text">🧮 Calculate Tank Volume</span>
-            <span class="es-text">🧮 Calcular Volumen del Tanque</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="v-user-vol" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter Your Tank Volume (in³)</span>
+              <span class="es-text">✍️ Calcula e Ingresa el Volumen de tu Tanque (pulg³)</span>
+            </label>
+            <input
+              type="number"
+              id="v-user-vol"
+              step="0.01"
+              placeholder="e.g. 5184"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn" onclick="checkVolumeSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Volume Calculation</span>
+              <span class="es-text">✓ Comprobar Mi Cálculo de Volumen</span>
+            </button>
+          </div>
           <div class="readout" id="volume-out"></div>
 
           <details class="hint">
@@ -1329,7 +1335,7 @@
             <p>
               <span class="en-text"
                 >To find the volume of a rectangular prism, multiply length
-                &times; width &times; height ($V = l \times w \times h$). Since
+                &times; width &times; height (V = l &times; w &times; h). Since
                 1 gallon of water fills exactly 231 cubic inches, divide your
                 total volume by 231 to find the volume in gallons.<br /><strong
                   >Example:</strong
@@ -1339,7 +1345,7 @@
               >
               <span class="es-text"
                 >Para encontrar el volumen de un prisma rectangular, multiplica
-                largo &times; ancho &times; alto ($V = l \times w \times h$).
+                largo &times; ancho &times; alto (V = l &times; w &times; h).
                 Dado que 1 galón de agua llena exactamente 231 pulgadas cúbicas,
                 divide tu volumen total por 231 para encontrar el volumen en
                 galones.<br /><strong>Ejemplo:</strong> 20 pulg &times; 10 pulg
@@ -1518,12 +1524,23 @@
             />
           </div>
 
-          <button class="calc-btn teal" onclick="calcSurfaceArea()">
-            <span class="en-text">🧮 Calculate Glass Surface Area</span>
-            <span class="es-text"
-              >🧮 Calcular Área de Superficie del Vidrio</span
-            >
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="sa-user-total" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter Your Glass Surface Area (5 faces, in²)</span>
+              <span class="es-text">✍️ Calcula e Ingresa el Área de Superficie del Vidrio (5 caras, pulg²)</span>
+            </label>
+            <input
+              type="number"
+              id="sa-user-total"
+              step="0.01"
+              placeholder="e.g. 1584"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn teal" onclick="checkSASolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Surface Area Calculation</span>
+              <span class="es-text">✓ Comprobar Mi Cálculo del Área</span>
+            </button>
+          </div>
           <div
             class="readout"
             id="sa-out"
@@ -1538,7 +1555,7 @@
             <p>
               <span class="en-text"
                 >Compute the area of the 5 rectangles on the net:<br />
-                - Bottom face: Length &times; Width ($l \times w$)<br />
+                - Bottom face: Length &times; Width (l &times; w)<br />
                 - Front &amp; Back faces: 2 &times; Length &times; Height
                 ($2lh$)<br />
                 - Left &amp; Right faces: 2 &times; Width &times; Height
@@ -1547,7 +1564,7 @@
               >
               <span class="es-text"
                 >Calcula el área de los 5 rectángulos en el desarrollo plano:<br />
-                - Cara del fondo: Largo &times; Ancho ($l \times w$)<br />
+                - Cara del fondo: Largo &times; Ancho (l &times; w)<br />
                 - Caras del frente y de atrás: 2 &times; Largo &times; Alto
                 ($2lh$)<br />
                 - Caras izquierda y derecha: 2 &times; Ancho &times; Alto
@@ -1692,10 +1709,23 @@
             </div>
           </div>
 
-          <button class="calc-btn gold" onclick="calcCost()">
-            <span class="en-text">💵 Calculate Total Cost</span>
-            <span class="es-text">💵 Calcular Costo Total</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="cost-user-val" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter Your Total Project Cost ($)</span>
+              <span class="es-text">✍️ Calcula e Ingresa el Costo Total del Proyecto ($)</span>
+            </label>
+            <input
+              type="number"
+              id="cost-user-val"
+              step="0.01"
+              placeholder="e.g. 272.60"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn gold" onclick="checkCostSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Cost Calculation</span>
+              <span class="es-text">✓ Comprobar Mi Cálculo del Costo</span>
+            </button>
+          </div>
           <div class="readout" id="cost-out"></div>
 
           <!-- Real-world retail prices table -->
@@ -2627,6 +2657,24 @@
       }
 
       // ---- Recalc All ----
+      /* Wired to the three tank dimensions. Resizing the tank invalidates every
+         total the student had already earned, so the gates close again and the
+         earned readouts are cleared — leaving "2,400 in³" up for a tank that no
+         longer exists both states a wrong number and hands over the new one. */
+      function onTankDimsChanged() {
+        SOLVED.volume = false;
+        SOLVED.sa = false;
+        SOLVED.cost = false;
+        for (const id of ["volume-out", "sa-out", "cost-out"]) {
+          const el = document.getElementById(id);
+          if (el) {
+            el.classList.remove("show");
+            el.innerHTML = "";
+          }
+        }
+        recalcAll();
+      }
+
       function recalcAll() {
         calcVolume();
         calcSurfaceArea();
@@ -2659,6 +2707,130 @@
       }
 
       // ---- Volume Calculations ----
+      /* Which of the three results the student has worked out for themselves.
+         Every step of this project says "Calculate ..."; before this gate the
+         page printed the volume, all five face areas, the total surface area and
+         the full cost breakdown the moment the dimensions were typed. */
+      const SOLVED = { volume: false, sa: false, cost: false };
+
+      /* The readouts above were gated by SOLVED, but the two DIAGRAMS were not:
+         the blueprint's VOLUME SUMMARY card and the net's SURFACE AREA card
+         printed both totals from the preset dimensions, so the answers to steps
+         2 and 3 were on screen before the student typed anything at all.
+         Withhold ONLY the totals — the formula, the labelled dimensions and each
+         face's product stay, because those are the givens the student works
+         from, not the findings the steps ask for. */
+      const solvedMask = (value, solved) => (solved ? value : "?");
+
+      function dims() {
+        return {
+          l: parseFloat(document.getElementById("t-length").value),
+          w: parseFloat(document.getElementById("t-width").value),
+          h: parseFloat(document.getElementById("t-height").value),
+        };
+      }
+
+      function solveMsg(outId, html) {
+        const el = document.getElementById(outId);
+        if (!el) return;
+        el.innerHTML = html;
+        el.classList.add("show");
+      }
+
+      function isEsNow() {
+        return document.getElementById("body").classList.contains("es");
+      }
+
+      function checkVolumeSolve() {
+        const { l, w, h } = dims();
+        const user = parseFloat(document.getElementById("v-user-vol").value);
+        const es = isEsNow();
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          solveMsg("volume-out", es
+            ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Ingresa el largo, el ancho y el alto arriba primero!</span>'
+            : '<span style="color:#ef4444;font-weight:bold;">⚠️ Enter length, width and height above first!</span>');
+          return;
+        }
+        if (isNaN(user)) {
+          solveMsg("volume-out", es
+            ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Escribe tu volumen calculado antes de comprobar!</span>'
+            : '<span style="color:#ef4444;font-weight:bold;">⚠️ Type your calculated volume in the box before checking!</span>');
+          return;
+        }
+        const expected = l * w * h;
+        if (Math.abs(user - expected) < 0.5) {
+          SOLVED.volume = true;
+          calcVolume();
+          comparePartner();
+          return;
+        }
+        const flat = Math.abs(user - l * w) < 0.5;
+        solveMsg("volume-out", es
+          ? '<span style="color:#ef4444;font-weight:bold;">🤔 Ingresaste ' + user + '. ' + (flat ? 'Eso es solo largo × ancho — el área del fondo, no el volumen.' : 'El volumen usa las tres dimensiones.') + '</span><br><small>Intenta calcular: <strong>' + l + ' × ' + w + ' × ' + h + '</strong>.</small>'
+          : '<span style="color:#ef4444;font-weight:bold;">🤔 You entered ' + user + '. ' + (flat ? 'That is only length × width — the bottom face area, not the volume.' : 'Volume uses all three dimensions.') + '</span><br><small>Try calculating: <strong>' + l + ' × ' + w + ' × ' + h + '</strong>.</small>');
+      }
+
+      function checkSASolve() {
+        const { l, w, h } = dims();
+        const user = parseFloat(document.getElementById("sa-user-total").value);
+        const es = isEsNow();
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          solveMsg("sa-out", es
+            ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Ingresa las dimensiones del tanque primero!</span>'
+            : '<span style="color:#ef4444;font-weight:bold;">⚠️ Enter your tank dimensions first!</span>');
+          return;
+        }
+        if (isNaN(user)) {
+          solveMsg("sa-out", es
+            ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Escribe tu área de superficie antes de comprobar!</span>'
+            : '<span style="color:#ef4444;font-weight:bold;">⚠️ Type your surface area in the box before checking!</span>');
+          return;
+        }
+        const open = l * w + 2 * l * h + 2 * w * h;
+        const closed = open + l * w;
+        if (Math.abs(user - open) < 0.5) {
+          SOLVED.sa = true;
+          calcSurfaceArea();
+          return;
+        }
+        const countedLid = Math.abs(user - closed) < 0.5;
+        solveMsg("sa-out", es
+          ? '<span style="color:#ef4444;font-weight:bold;">🤔 Ingresaste ' + user + '. ' + (countedLid ? 'Parece que contaste 6 caras — este tanque es abierto arriba, así que solo lleva vidrio en 5.' : 'Suma el fondo, el frente y atrás, y los dos lados.') + '</span><br><small>Caras: fondo (' + l + ' × ' + w + '), frente y atrás (2 × ' + l + ' × ' + h + '), lados (2 × ' + w + ' × ' + h + ').</small>'
+          : '<span style="color:#ef4444;font-weight:bold;">🤔 You entered ' + user + '. ' + (countedLid ? 'It looks like you counted 6 faces — this tank is open-topped, so only 5 need glass.' : 'Add the bottom, the front and back, and the two sides.') + '</span><br><small>Faces: bottom (' + l + ' × ' + w + '), front and back (2 × ' + l + ' × ' + h + '), sides (2 × ' + w + ' × ' + h + ').</small>');
+      }
+
+      function checkCostSolve() {
+        const { l, w, h } = dims();
+        const user = parseFloat(document.getElementById("cost-user-val").value);
+        const rate = parseFloat(document.getElementById("gc-rate").value);
+        const acc = parseFloat(document.getElementById("ac-cost").value);
+        const es = isEsNow();
+        if (!SOLVED.sa) {
+          solveMsg("cost-out", es
+            ? '<span style="color:#ef4444;font-weight:bold;">⚠️ Primero comprueba tu área de superficie en el Paso 2.</span>'
+            : '<span style="color:#ef4444;font-weight:bold;">⚠️ Check your surface area in Step 2 first.</span>');
+          return;
+        }
+        if (isNaN(user) || isNaN(rate) || isNaN(acc)) {
+          solveMsg("cost-out", es
+            ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Completa el precio del vidrio, los accesorios y tu costo total antes de comprobar!</span>'
+            : '<span style="color:#ef4444;font-weight:bold;">⚠️ Fill in the glass rate, the accessory cost and your total before checking!</span>');
+          return;
+        }
+        const sa = l * w + 2 * l * h + 2 * w * h;
+        const expected = sa * rate + acc;
+        if (Math.abs(user - expected) < 0.05) {
+          SOLVED.cost = true;
+          calcCost();
+          comparePartner();
+          return;
+        }
+        const forgotAcc = Math.abs(user - sa * rate) < 0.05;
+        solveMsg("cost-out", es
+          ? '<span style="color:#ef4444;font-weight:bold;">🤔 Ingresaste $' + user.toFixed(2) + '. ' + (forgotAcc ? 'Ese es solo el vidrio — todavía falta sumar los accesorios.' : 'El total es (área × precio del vidrio) + accesorios.') + '</span><br><small>Intenta: <strong>' + sa + ' × ' + rate.toFixed(2) + ' + ' + acc.toFixed(2) + '</strong>.</small>'
+          : '<span style="color:#ef4444;font-weight:bold;">🤔 You entered $' + user.toFixed(2) + '. ' + (forgotAcc ? 'That is the glass only — the accessories still have to be added.' : 'The total is (area × glass rate) + accessories.') + '</span><br><small>Try: <strong>' + sa + ' × ' + rate.toFixed(2) + ' + ' + acc.toFixed(2) + '</strong>.</small>');
+      }
+
       function calcVolume() {
         const l = parseFloat(document.getElementById("t-length").value);
         const w = parseFloat(document.getElementById("t-width").value);
@@ -2675,6 +2847,14 @@
         const vol = l * w * h;
         const gal = vol / CONFIG.gallonConversionFactor;
         const isEs = document.getElementById("body").classList.contains("es");
+
+        // The volume is what Step 1 asks the student to find, so it is not
+        // printed until they have submitted their own value and it checked out.
+        if (!SOLVED.volume) {
+          volOut.classList.remove("show");
+          drawAquariumVolumeSVG();
+          return;
+        }
 
         if (isEs) {
           volOut.innerHTML = `
@@ -2706,7 +2886,7 @@
         const saOut = document.getElementById("sa-out");
         if (!saOut) return;
 
-        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0 || !SOLVED.sa) {
           saOut.classList.remove("show");
           drawNetSVG();
           return;
@@ -2742,6 +2922,11 @@
 
       // ---- Cost Calculations ----
       function calcCost() {
+        if (!SOLVED.cost) {
+          const co = document.getElementById("cost-out");
+          if (co) co.classList.remove("show");
+          return;
+        }
         const myData = getMyVolumeAndCost();
         const costOut = document.getElementById("cost-out");
         if (!costOut) return;
@@ -2791,6 +2976,21 @@
         const myData = getMyVolumeAndCost();
         const peerOut = document.getElementById("peer-out");
         if (!peerOut) return;
+
+        /* Comparing needs YOUR numbers, and this panel computed them: a student
+           could skip steps 2 and 4 entirely, type a partner's figures here, and
+           read their own tank volume and total cost straight off the comparison.
+           Ask for the two findings first — which is also the honest order, since
+           there is nothing to compare until you have computed your own. */
+        if (!SOLVED.volume || !SOLVED.cost) {
+          const needEs = document.getElementById("body").classList.contains("es");
+          peerOut.innerHTML = needEs
+            ? '<strong>Primero termina los Pasos 2 y 4.</strong><br><small>Necesitas el volumen y el costo total de TU tanque antes de compararlos con los de tu compañero.</small>'
+            : '<strong>Finish Steps 2 and 4 first.</strong><br><small>You need YOUR tank\'s volume and total cost before you can compare them with your partner\'s.</small>';
+          peerOut.classList.add("show");
+          drawPartnerSVG(0, 0, 0, 0, pName);
+          return;
+        }
 
         if (
           myData.gal === 0 ||
@@ -2988,9 +3188,9 @@
           <text x="441" y="68" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a">${isEs ? "RESUMEN DE VOLUMEN" : "VOLUME SUMMARY"}</text>
           <line x1="387" y1="76" x2="495" y2="76" stroke="#cbd5e1" stroke-width="1" />
           <text x="441" y="94" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">V = l × w × h</text>
-          <text x="441" y="118" text-anchor="middle" font-size="15" font-weight="800" fill="#0369a1">${volCalc} in³</text>
+          <text x="441" y="118" text-anchor="middle" font-size="15" font-weight="800" fill="#0369a1">${solvedMask(volCalc, SOLVED.volume)} in³</text>
           <rect x="391" y="132" width="100" height="24" rx="6" fill="#0369a1" />
-          <text x="441" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">≈ ${galCalc} gal</text>
+          <text x="441" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">≈ ${solvedMask(galCalc, SOLVED.volume)} gal</text>
           <text x="441" y="172" text-anchor="middle" font-size="9" fill="#64748b">(1 gal = 231 in³)</text>
         `;
       }
@@ -3111,7 +3311,7 @@
           <text x="387" y="108" font-size="9" fill="#475569">Front/Back (2): ${2*l*h} in²</text>
           <text x="387" y="123" font-size="9" fill="#475569">Sides (2): ${2*w*h} in²</text>
           <rect x="387" y="133" width="108" height="24" rx="6" fill="#0f766e" />
-          <text x="441" y="149" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">SA = ${saVal} in²</text>
+          <text x="441" y="149" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">SA = ${solvedMask(saVal, SOLVED.sa)} in²</text>
           <text x="441" y="173" text-anchor="middle" font-size="9" font-style="italic" fill="#0f766e">(5 ${isEs ? "caras" : "faces total"})</text>
         `;
       }
@@ -3769,6 +3969,7 @@
   <script src="/shared/projects/projects-zoom.js" defer></script>
   <!-- projects-visuals-injected:end -->
   <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+  <script>window.NeftCanvasBridgeConfig=Object.assign({},window.NeftCanvasBridgeConfig,{activityId:"unit-10-version-b",manual:true,finishButton:false,completionOnly:true});</script>
   <script src="/assets/canvas-bridge.js" defer></script>
   <!-- canvas-bridge-injected:end -->
   <!-- projects-3d-injected:begin (build-in-3D + WebXR AR — tools/inject-projects-3d.mjs) -->
@@ -3795,9 +3996,6 @@
 <!-- projects-complete-injected:begin (completion record + rubric self-scoring + reflection + submit — tools/inject-projects-complete.mjs) -->
   <script src="/shared/projects/projects-complete.js" defer></script>
   <!-- projects-complete-injected:end -->
-<!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
-  <script src="/shared/projects/projects-meta.js?v=20260727-v2" defer></script>
-  <!-- projects-meta-injected:end -->
 <!-- projects-check-injected:begin (step answer checking + hint ladder — tools/inject-projects-check.mjs) -->
   <script src="/shared/projects/projects-check.js" defer></script>
   <!-- projects-check-injected:end -->
@@ -3821,5 +4019,8 @@
   <!-- projects-mode-pill-body:begin (Teacher/Student mode chip — tools/inject-projects-mode-pill.mjs) -->
   <script src="/shared/projects/projects-mode-pill.js?v=20260810" defer></script>
   <!-- projects-mode-pill-body:end -->
+  <!-- projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs) -->
+  <script src="/shared/projects/projects-meta.js?v=20260727-v2" defer></script>
+  <!-- projects-meta-injected:end -->
 </body>
 </html>

@@ -34,6 +34,30 @@
 // engine/core/misconceptions.js). Inlined because Pages Functions cannot read
 // repo data files at runtime; tools/validate-nervous-system.mjs asserts parity.
 const TAG_LABELS = {
+  "factors-multiples-confused": [
+    "Confused factors with multiples",
+    "Confundió factores con múltiplos",
+  ],
+  "property-order-vs-grouping": [
+    "Confused the commutative and associative properties",
+    "Confundió la propiedad conmutativa con la asociativa",
+  ],
+  "division-quotient-missing-zero": [
+    "Dropped a placeholder zero in the quotient",
+    "Omitió un cero de posición en el cociente",
+  ],
+  "factorization-stopped-early": [
+    "Stopped factoring before every factor was prime",
+    "Dejó de factorizar antes de que todos los factores fueran primos",
+  ],
+  "stat-question-no-variability": [
+    "Chose a question with only one fixed answer",
+    "Escogió una pregunta con una sola respuesta fija",
+  ],
+  "ratio-compared-without-common-basis": [
+    "Compared two ratios without a common basis",
+    "Comparó dos razones sin una base común",
+  ],
   "decimal-place-value": [
     "Right digits, wrong magnitude",
     "Dígitos correctos, magnitud equivocada",
@@ -67,6 +91,40 @@ const TAG_LABELS = {
     "Distributed to the first term only",
     "Distribuyó solo al primer término",
   ],
+  "equation-not-inverse-operation": ["Did not undo the operation", "No deshizo la operación"],
+  "equation-answered-with-given-number": [
+    "Answered with a number already in the equation",
+    "Respondió con un número que ya estaba en la ecuación",
+  ],
+  "inequality-direction-flipped": [
+    "Right boundary, symbol reversed",
+    "Límite correcto, símbolo invertido",
+  ],
+  "inequality-boundary-inclusion": [
+    "Boundary value wrongly included or excluded",
+    "Valor límite incluido o excluido por error",
+  ],
+  "inequality-graph-direction": [
+    "Graph shaded toward the wrong side",
+    "Gráfica sombreada hacia el lado equivocado",
+  ],
+  "stat-range-for-iqr": [
+    "Used the full range instead of the IQR",
+    "Usó el rango completo en vez del rango intercuartílico",
+  ],
+  "stat-center-vs-spread": [
+    "Confused a measure of center with a measure of spread",
+    "Confundió una medida de centro con una de dispersión",
+  ],
+  "stat-mean-skewed-by-outlier": [
+    "Chose the mean when an outlier distorts it",
+    "Eligió la media cuando un valor atípico la distorsiona",
+  ],
+  "stat-frequency-vs-value": [
+    "Reported a data value where a frequency was asked",
+    "Dio un valor de los datos donde se pedía una frecuencia",
+  ],
+  "coord-xy-swapped": ["Swapped the x and y coordinates", "Intercambió las coordenadas x e y"],
   "measure-area-perimeter-swap": ["Swapped area and perimeter", "Intercambió área y perímetro"],
   "op-added-instead-of-multiplied": [
     "Added when the problem multiplies",
@@ -103,6 +161,22 @@ const TAG_LABELS = {
     "Dio el total en vez de la tasa unitaria",
   ],
   "ratio-inverted": ["Flipped the ratio", "Invirtió la razón"],
+  "ratio-scaled-additively": [
+    "Scaled a ratio by adding instead of multiplying",
+    "Escaló una razón sumando en vez de multiplicando",
+  ],
+  "ratio-as-difference": [
+    "Combined the two amounts instead of comparing them",
+    "Combinó las dos cantidades en vez de compararlas",
+  ],
+  "stat-mean-vs-median": [
+    "Used the mean where the median was asked (or the reverse)",
+    "Usó la media donde se pedía la mediana (o al revés)",
+  ],
+  "stat-histogram-bin-misread": [
+    "Misread the bins or the scale on a data display",
+    "Leyó mal los intervalos o la escala de una gráfica",
+  ],
   "sign-dropped": [
     "Right magnitude, lost the negative sign",
     "Magnitud correcta, perdió el signo negativo",
@@ -116,6 +190,12 @@ const TAG_LABELS = {
 // Which standard each tag is diagnostic of — mirrors the tagStandards block of
 // data/standards-prerequisites.json so the Boss and the map agree on targets.
 const TAG_STANDARDS = {
+  "factors-multiples-confused": ["6.NOS.4"],
+  "property-order-vs-grouping": ["6.AT.7"],
+  "division-quotient-missing-zero": ["6.NOS.2"],
+  "factorization-stopped-early": ["6.NOS.4"],
+  "stat-question-no-variability": ["6.DS.1"],
+  "ratio-compared-without-common-basis": ["6.AT.3"],
   "decimal-place-value": ["6.NOS.3"],
   "exponent-as-multiplication": ["6.AT.5"],
   "fraction-added-denominators": ["6.NOS.1", "6.NOS.4"],
@@ -125,6 +205,16 @@ const TAG_STANDARDS = {
   "geom-surface-area-as-volume": ["6.GR.4"],
   "geom-volume-added-dimensions": ["6.GR.2"],
   "algebra-distributive-partial": ["6.AT.7"],
+  "equation-not-inverse-operation": ["6.AT.8"],
+  "equation-answered-with-given-number": ["6.AT.8"],
+  "inequality-direction-flipped": ["6.AT.9", "6.AT.8"],
+  "inequality-boundary-inclusion": ["6.AT.9"],
+  "inequality-graph-direction": ["6.AT.9"],
+  "stat-range-for-iqr": ["6.DS.3", "6.DS.5"],
+  "stat-center-vs-spread": ["6.DS.3", "6.DS.4"],
+  "stat-mean-skewed-by-outlier": ["6.DS.6d", "6.DS.4"],
+  "stat-frequency-vs-value": ["6.DS.5"],
+  "coord-xy-swapped": ["6.NOS.6", "6.NOS.7"],
   "measure-area-perimeter-swap": ["6.GR.1"],
   "op-added-instead-of-multiplied": ["6.AT.6a"],
   "op-divided-instead-of-multiplied": ["6.AT.3"],
@@ -137,6 +227,10 @@ const TAG_STANDARDS = {
   "percent-used-as-whole-number": ["6.AT.4"],
   "rate-not-per-one": ["6.AT.2"],
   "ratio-inverted": ["6.AT.1"],
+  "ratio-scaled-additively": ["6.AT.1", "6.AT.3c"],
+  "ratio-as-difference": ["6.AT.1"],
+  "stat-mean-vs-median": ["6.DS.4", "6.DS.3"],
+  "stat-histogram-bin-misread": ["6.DS.5"],
   "sign-dropped": ["6.NOS.5", "6.NOS.6c"],
   "stat-summed-instead-of-averaged": ["6.DS.4"],
 };

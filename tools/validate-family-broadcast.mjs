@@ -57,11 +57,29 @@ const {
   DEFAULT_NEXT_UP,
 } = content;
 
-/* ---------------------------------------- 1. bank covers all 19 tags ------ */
+/* ---------------------------------------- 1. bank covers every tag -------- */
 
-if (canonicalTags.length !== 23) {
+// A ratchet, not a fact: it moves 19 → 22 (2026-08-05) → 23 → 24 (coord-xy-
+// swapped) → 33 (2026-08-12, the equation/inequality/statistics clusters) →
+// 37 (2026-08-13, the proportional-reasoning and data-display clusters:
+// ratio-scaled-additively, ratio-as-difference, stat-mean-vs-median,
+// stat-histogram-bin-misread — each with its own kitchen-table activity) only
+// when someone has authored the family-facing half of each new tag. Bumping it
+// to silence a failure is how a tag ships with a teacher label and no
+// kitchen-table activity for the family who gets the broadcast.
+// Bumped 37 → 42 on 2026-08-23 for the five CONCEPTUAL tags
+// (factors-multiples-confused, property-order-vs-grouping,
+// factorization-stopped-early, stat-question-no-variability,
+// ratio-compared-without-common-basis). Each was authored with its own family
+// label AND its own kitchen-table activity before this number moved, which is
+// the only reason moving it is legitimate.
+// Bumped 42 → 43 on 2026-08-24 for division-quotient-missing-zero, the error
+// lesson 2-6 names in its own commonMistake and had been borrowing
+// decimal-place-value for. Same rule honoured: family label, watchFor in both
+// languages, and a five-minute kitchen-table activity were authored first.
+if (canonicalTags.length !== 43) {
   fail(
-    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 23 — update this validator deliberately, not by accident`,
+    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 43 — update this validator deliberately, not by accident`,
   );
 }
 

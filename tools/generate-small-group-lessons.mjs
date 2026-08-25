@@ -22,12 +22,23 @@
 // writeGenerated(), which re-splices the injected blocks. The flag survives
 // only as a SCOPE option: skip index.html and lesson.js when you just want the
 // configs refreshed. It is no longer protecting anything.
+import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { writeGenerated } from "../scripts/lib/preserve-injected.mjs";
+import { authoredPaths, mergeAuthoredOverlay } from "./lib/authored-overlay.mjs";
 import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
+import { authoredBank, authoredMoves } from "./lib/small-group-authored-banks.mjs";
+import { applyChallengeTasks, challengeFacilitation } from "./lib/small-group-challenge-tasks.mjs";
+import { buildTeacherMoves } from "./lib/small-group-facilitation.mjs";
 import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
+import {
+  assertWriteSetContained,
+  recordWrite,
+  setWriteSetRoot,
+  writtenPaths,
+} from "./lib/write-set.mjs";
 
 const ROOT = process.env.REPO || resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -87,8 +98,38 @@ function diagnosedErrors(base) {
 }
 const LESSONS = join(ROOT, "lessons");
 const FACILITATION_MODULE = join(ROOT, "functions", "teacher-small-group", "_facilitation-data.js");
-const DRY = process.argv.includes("--dry");
+/* `--dry-run` is the name every other generator here uses; `--dry` predates it
+ * and still works. A safety flag that only answers to a spelling nobody guesses
+ * is a safety flag nobody uses. */
+const DRY = process.argv.includes("--dry") || process.argv.includes("--dry-run");
 const CONFIGS_ONLY = process.argv.includes("--configs-only");
+/*
+ * --facilitation-only rebuilds ONLY the teacher-facing facilitation module and
+ * writes no lesson file at all.
+ *
+ * It exists because a full run is destructive in ways that have nothing to do
+ * with teacher moves: regenerating 3-1 alone deleted 142 lines from its two
+ * configs, including the `choicesEs` / `hintsEs` / `correctWorkEs` Spanish that
+ * lives in data/es-translations and is applied by a later step. Facilitation is
+ * derived data — it can be rebuilt from the base lessons at any time — so the
+ * maintainable answer is a pathway that regenerates it WITHOUT touching student
+ * content. This keeps the source of truth in the generator (edit the builder,
+ * re-run, done) while making a routine refresh safe.
+ */
+/* --check answers "is the committed facilitation module what this generator
+ * would write today?" and writes nothing at all. It exists because that module
+ * had no freshness gate: `_facilitation-data.js` sat on main stale enough that
+ * regenerating it moved 82 lines with no source change in the same commit, and
+ * nothing anywhere said so. Generated lesson PAGES have
+ * tools/generated-pages-fresh.test.mjs; this generated teacher DATA had
+ * nothing, so a change to a lesson's vocabulary or to a facilitation template
+ * reached the panel only if somebody remembered to re-run the generator. */
+const CHECK = process.argv.includes("--check");
+const FACILITATION_ONLY = CHECK || process.argv.includes("--facilitation-only");
+/* Deliberately rebuild from the base, discarding authored layers. The escape
+ * hatch exists so "the overlay always wins" can never become a reason a
+ * correction cannot be applied — but it is opt-in, and it says so. */
+const PRUNE = process.argv.includes("--prune");
 const onlyIx = process.argv.indexOf("--only");
 const ONLY = onlyIx !== -1 ? process.argv[onlyIx + 1] : null;
 const MINIMUM_PRACTICE = 10;
@@ -111,6 +152,11 @@ const lc1 = (s) => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
 
 // Strip artifacts irrelevant to a 20-min screen pull-out.
 function stripHeavy(out) {
+  // Core notebook checkpoints target the whole-group renderer; the six-tab
+  // small-group renderer has no checkpoint surface, so a cloned `notebook`
+  // block would be an inert declaration (validate:notebook-checkpoints FAILs
+  // on exactly this). Strip it until that surface exists.
+  delete out.notebook;
   delete out.googleForms;
   delete out.printables;
   delete out.graphicNovel;
@@ -140,6 +186,46 @@ function uniquePractice(...tiers) {
     seen.add(key);
     return true;
   });
+}
+
+// Build-not-select practice: the widget types the small-group flow renders
+// (small-group-practice.js interleaves them; small-group-labs.js loads them).
+const CONSTRUCTIVE = new Set([
+  "drag-sort",
+  "fill-table",
+  "matching-game",
+  "number-line",
+  "coordinate-grid",
+  "balance-scale",
+  "bar-model",
+]);
+
+/** Take up to `cap` items, reserving room for constructive (hands-on) work.
+ *
+ * preferRich sorts every widget BEHIND the rich answer-entry types, and the
+ * old bare `.slice(0, 12)` then cut them all off whenever a base lesson had
+ * 12+ rich items — 26 of 168 small-group lessons ended up with NOTHING to
+ * build (8-5/8-6 at the extreme: 20 answer-entry items, zero manipulatives),
+ * even though their core lessons author fill-table, drag-sort AND
+ * balance-scale. The core lessons were never at fault; the slice was.
+ *
+ * This keeps the rich-first order the compact renderer expects, but holds
+ * `reserve` seats for the first constructive items, exactly as many as the
+ * base lesson actually offers — a lesson with none is unchanged. */
+function takeBalanced(ordered, cap = 12, reserve = 2) {
+  const constructive = ordered.filter((item) => CONSTRUCTIVE.has(item.type));
+  const keepC = constructive.slice(0, reserve);
+  if (!keepC.length) return ordered.slice(0, cap);
+  const keepSet = new Set(keepC);
+  const rest = ordered.filter((item) => !keepSet.has(item)).slice(0, cap - keepC.length);
+  // The constructive seats live at the END OF THE FIRST SIX, not the tail.
+  // Both builders slice this list positionally, and both slices are hostile
+  // to a tail: group1 replaces `practice.slice(6)` wholesale when a lesson
+  // has an authored bank (which would silently delete a tail reserve — that
+  // is exactly how the first version of this fix failed on 1-1-group1), and
+  // group2 keeps only slice(0, 4) + extending. Seats 5–6 survive both.
+  const head = Math.max(0, Math.min(6, cap / 2) - keepC.length);
+  return [...rest.slice(0, head), ...keepC, ...rest.slice(head)];
 }
 
 function extractFacilitation(config) {
@@ -197,6 +283,28 @@ function baseDiagram(base) {
   );
 }
 
+/* Regeneration must never DELETE a hand-authored practice lab set.
+ *
+ * `baseDiagram()` returns ONE tool. A committed group can carry several — the
+ * 3-1 groups mount a tape diagram AND a double number line, the two
+ * representations official Reveal 3.1 builds its lesson on, scaled for each
+ * group's level. A plain re-run collapsed both back to a single shared tool and
+ * silently undid that authoring, the same class of loss withPriorVocabulary()
+ * exists to stop. Only an ARRAY on disk is treated as deliberate; a group whose
+ * committed diagram is a single object still tracks its base lesson.
+ */
+function withPriorDiagram(diagram, id) {
+  const priorPath = join(LESSONS, id, "config.json");
+  if (!existsSync(priorPath)) return diagram;
+  let prior;
+  try {
+    prior = JSON.parse(readFileSync(priorPath, "utf8")).practice?.diagram;
+  } catch {
+    return diagram; // unreadable prior config is not a reason to fail the run
+  }
+  return Array.isArray(prior) && prior.length ? prior : diagram;
+}
+
 function buildGroup1(base, u, m) {
   const out = clone(base);
   const id = `${u}-${m}-group1`;
@@ -213,9 +321,24 @@ function buildGroup1(base, u, m) {
   out.languageObjective = `I can talk through each step out loud using a sentence frame and the lesson's key words.`;
 
   const ci = clone(base.launch?.conceptIntro || {});
+  // Sentence frames tied to THIS lesson: the old pair hard-coded
+  // "multiples/steps" for all 84 topics, which read as nonsense in a median or
+  // inequality group. The middle frame pulls the lesson's own first vocabulary
+  // term, so students speak the word the objective is about (TEACH 5).
+  // Skip the lesson-concept statement authored at vocabulary[0] on most
+  // lessons: this frame puts the term in a student's mouth ("in this problem,
+  // ___ means ___"), and "display data with histograms means ___" is not a
+  // sentence a support group can finish. See engine/core/vocab-match.js.
+  const keyTerm = (base.vocabulary || [])
+    .filter((v) => !(v && v.role === "concept"))
+    .map((v) => v.term)
+    .find(Boolean);
   const frames = [
-    `The multiples/steps I need are ___ , and the answer is ___ .`,
-    `I know because ___ .`,
+    `My first step is ___ , because the problem asks for ___ .`,
+    keyTerm
+      ? `In this problem, ${String(keyTerm).toLowerCase()} means ___ .`
+      : `The most important value in this problem is ___ , because ___ .`,
+    `I know my answer makes sense because ___ .`,
   ];
   out.launch = out.launch || {};
   out.launch.badge = "Small Group · Foundations";
@@ -243,19 +366,16 @@ function buildGroup1(base, u, m) {
   };
 
   const p = base.practice || {};
-  const practice = uniquePractice(
-    p.approaching || [],
-    p.onLevel || [],
-    p.optional || [],
-    p.extending || [],
-  ).slice(0, 12);
+  const practice = takeBalanced(
+    uniquePractice(p.approaching || [], p.onLevel || [], p.optional || [], p.extending || []),
+  );
   out.practice = {
     // The base lesson's interactive practice lab (factor-tree, area-morph,
     // equation-balance-lab, …). small-group-renderer.js already mounts
     // `practice.diagram` at the top of the Practice & Check tab; rebuilding
     // `out.practice` from scratch used to drop it, so every small group lost
     // the one put-your-own-numbers-in tool the full lesson gives students.
-    diagram: baseDiagram(base),
+    diagram: withPriorDiagram(baseDiagram(base), id),
     approaching: practice.slice(0, 6),
     onLevel: practice.slice(6),
     extending: [],
@@ -271,7 +391,13 @@ function buildGroup1(base, u, m) {
       : undefined,
   };
   out.smallGroupPractice = { guidedCount: 4, minimum: MINIMUM_PRACTICE };
-  out.parallelPractice = buildParallelPractice(base, id, 1);
+  const bank1 = buildParallelPractice(base, id, 1);
+  if (bank1) out.parallelPractice = bank1;
+  else delete out.parallelPractice;
+  // Authored tasks written against this lesson objective become its on-level
+  // practice — they ARE the lesson, not an addition to a drill set.
+  const authored1 = authoredBank(base.lessonId, 1);
+  if (authored1) out.practice.onLevel = authored1;
 
   if (out.explore?.instructions)
     out.explore.instructions = `Quick warm-up together: ${out.explore.instructions}`;
@@ -299,15 +425,15 @@ function buildGroup1(base, u, m) {
         .slice(0, 3)
         .join("; ")}. Group students who made the SAME error; they need different repairs.`;
     })(),
-    moves: [
-      "Open with the worked example (I Do) — think aloud, don't just show.",
-      "Do the We Do together; require every student to say the sentence frame.",
-      "Release to the practice problems; the hint ladder is the safety net.",
-      p.commonMistake
-        ? `Watch for the common mistake: ${String(typeof p.commonMistake === "string" ? p.commonMistake : p.commonMistake.text || p.commonMistake.mistake || "see lesson note").replace(/\s*\.\s*$/, "")}.`
-        : "Watch for where this group's thinking breaks down and name it out loud.",
-      "Close with the exit-ticket check — celebrate the growth.",
-    ],
+    // ASK / LOOK FOR / IF STUCK, built from THIS lesson's misconception tags,
+    // common mistake and model. Replaces five prose bullets of which four were
+    // identical across all 84 support lessons.
+    // Authored moves win where the lesson authored its own bank — the generated
+    // ones describe the mathematics the mapped family contained.
+    teacherMoves:
+      authoredMoves(base.lessonId, 1) ||
+      buildTeacherMoves({ base, group: 1, taxonomy: MISCONCEPTION_LABELS }),
+
     frames,
   };
   return { id, out };
@@ -338,6 +464,10 @@ function buildGroup2(base, u, m) {
 
   const ci = clone(base.launch?.conceptIntro || {});
   const p = base.practice || {};
+  // Group 1's frames rehearse the STEPS ("My first step is ___"). This group's
+  // languageObjective is to justify to a skeptic and name the method's limits,
+  // so its frame asks for the reason and the boundary instead.
+  const proveFrame = "My method works because ___ . It would stop working if ___ .";
 
   out.launch = out.launch || {};
   out.launch.badge = "Small Group · Challenge";
@@ -353,21 +483,78 @@ function buildGroup2(base, u, m) {
     keyIdea: ci.keyIdea
       ? `${String(ci.keyIdea).replace(/[.\s]+$/, "")} — and you can say why it is true, and where it would stop being true.`
       : "You can say why today's idea is true, and where it would stop being true.",
-    // The Build step is a quick warm-up; the real challenge — generalizing,
-    // justifying, and defending — lives in the guided "Prove It" tab (see
-    // engine/core/small-group-innovation.js).
     iDo: ci.iDo || { title: "Start from the answer", lines: [] },
+    // Group 2 used to STOP after "Watch me". The reasoning was that the real
+    // challenge — generalizing, justifying, defending — lives in the guided
+    // Prove-It tab, which is true; but it left the Build card with no gradual
+    // release at all, so a challenge student went straight from watching
+    // someone else work to working alone. Group 1 gets watch → try together →
+    // try with support; group 2 got watch → nothing (Joel, 2026-08-23).
+    //
+    // Nothing here is newly authored mathematics. The try-together turn IS the
+    // lesson's own guided example — the same verified lines group 1 gets, and
+    // the same lines the deck projects — and the two turns after it introduce
+    // no numbers at all, because a challenge group's extension is
+    // justification, not bigger arithmetic. Deliberately no reference to "the
+    // picture" or to anything positioned on the card: validate:concept-intro
+    // fails a Build line that names an artifact the card does not render.
+    weDo: {
+      title: "Try it together — then prove it",
+      lines: [
+        ...(ci.weDo?.lines || []),
+        "Now prove it: say why that move had to work at all — not just that it did.",
+        `Sentence frame — convince a skeptic: "${proveFrame}"`,
+      ],
+    },
+    youDo: {
+      title: "Now you try — and defend it",
+      lines: [
+        "Try the problems below on your own. Getting the answer is half the work — be ready to say why your method works, and where it would stop working.",
+        // Quotes nothing. Group 1's hand-off restates the key idea, which is
+        // right when the risk is forgetting the method; this group's stated
+        // language objective is to connect the method to a SECOND strategy or
+        // representation, so its hand-off asks for that instead. Quoting
+        // keyIdea here would also drift: the group-2 keyIdea is built above
+        // with a suffix, so a graft and a full regeneration would disagree.
+        "Then pick one problem and show it a second way. If two different methods agree, that agreement is your proof.",
+      ],
+    },
   };
 
-  const practice = uniquePractice(
+  // Inherited core items first, then the authored challenge layer. A challenge
+  // group has already mastered the core target, so re-serving core items alone
+  // makes the extension "the same questions again" — see
+  // tools/lib/small-group-challenge-tasks.mjs for what is authored and why.
+  const inheritedAll = uniquePractice(
     p.onLevel || [],
     p.extending || [],
     p.optional || [],
     p.approaching || [],
-  ).slice(0, 12);
+  );
+  const inherited = takeBalanced(inheritedAll);
+  const challenge = applyChallengeTasks(id, inherited);
+  // A drop fragment can miss for two very different reasons. If it matches an
+  // item in the UNCAPPED inherited list, the cap already evicted that item —
+  // the author wanted it gone and it is gone, nothing to report. Only a
+  // fragment matching nothing anywhere means the core item was reworded, so
+  // this lesson is now serving an item the author decided to remove. Fail
+  // loudly there: silence would quietly restore arithmetic filler to a
+  // challenge group.
+  const trulyUnmatched = challenge.unmatchedDrops.filter(
+    (fragment) =>
+      !inheritedAll.some((it) =>
+        `${it.stem || ""} ${it.title || ""}`.toLowerCase().includes(fragment.toLowerCase()),
+      ),
+  );
+  if (trulyUnmatched.length) {
+    throw new Error(
+      `${id}: challenge-task drop fragment matched no item — ${trulyUnmatched.join("; ")}`,
+    );
+  }
+  const practice = challenge.items;
   out.practice = {
     // Same rehearsal tool the full lesson mounts — see buildGroup1.
-    diagram: baseDiagram(base),
+    diagram: withPriorDiagram(baseDiagram(base), id),
     approaching: [],
     onLevel: practice.slice(0, 4),
     extending: practice.slice(4),
@@ -384,7 +571,17 @@ function buildGroup2(base, u, m) {
       : undefined,
   };
   out.smallGroupPractice = { guidedCount: 3, minimum: MINIMUM_PRACTICE };
-  out.parallelPractice = buildParallelPractice(base, id, 2);
+  const bank2 = buildParallelPractice(base, id, 2);
+  if (bank2) out.parallelPractice = bank2;
+  else delete out.parallelPractice;
+  // Authored tasks LEAD the practice rather than replacing it: the inherited
+  // items for this lesson (the math-story open responses) are aligned and the
+  // group still needs its minimum count.
+  const authored2 = authoredBank(base.lessonId, 2);
+  if (authored2) {
+    out.practice.onLevel = [...authored2.slice(0, 3), ...out.practice.onLevel];
+    out.practice.extending = [...authored2.slice(3), ...out.practice.extending];
+  }
 
   if (out.explore?.instructions)
     out.explore.instructions = `Go deeper: ${out.explore.instructions} As you work, ask yourself WHY it works.`;
@@ -401,12 +598,23 @@ function buildGroup2(base, u, m) {
     label: "Challenge",
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
-    moves: [
-      "Launch the challenge fast — skip the re-teach, they don't need it.",
-      "Step back. Let them wrestle; protect the productive struggle.",
-      'Ask "How do you know?" and "Can you show it a second way?" more than you explain.',
-      "Push for a generalization: when does this hold, and when would it break?",
-      "Close by having one student justify a claim to the group.",
+    // ASK / LOOK FOR / IF STUCK / EXTEND — justification and generalisation,
+    // never the support move with bigger numbers. All 84 challenge lessons
+    // previously shared one identical move list.
+    // Authored moves win where a lesson authored its own tasks: the generated
+    // ones key off an inherited item tag and can describe another lesson.
+    teacherMoves:
+      authoredMoves(base.lessonId, 2) ||
+      challengeFacilitation(id) ||
+      buildTeacherMoves({ base, group: 2, taxonomy: MISCONCEPTION_LABELS }),
+
+    // Challenge groups never carried frames at all. These are argumentation
+    // frames — claim/evidence, strategy comparison, self-check — because the
+    // challenge variant's work is justification, not step recitation.
+    frames: [
+      `I claim ___ , and my evidence is ___ .`,
+      `A different strategy would be ___ ; mine fits here because ___ .`,
+      `I can check my answer by ___ .`,
     ],
   };
   return { id, out };
@@ -431,25 +639,82 @@ function assertValid(id, out) {
 }
 
 // ---------------------------------------------------------------- Write
+
+/* Every authored value this run carried forward, and every one it could not,
+ * so a regeneration reports what it protected instead of hoping. */
+const overlayKept = [];
+const overlayDropped = [];
+const plannedWrites = [];
+
+/**
+ * A small-group config is GENERATED, and it is also the file two later steps
+ * write into: tools/apply-es-translations.mjs adds the Spanish overlay, and the
+ * alignment pass adds `launch.conceptIntro.interactiveVisual`. Writing `out`
+ * straight over the file erased both — reproduced on main, where `--only 5-10`
+ * deleted 74 lines from 5-10-group1 including ten Spanish arrays.
+ *
+ * The rule is now one sentence: the generator owns what it emits, and anything
+ * on disk it does not emit is authored and survives. `--prune` opts out for a
+ * deliberate clean rebuild. See tools/lib/authored-overlay.mjs for why array
+ * elements are paired by identity and never by index.
+ */
+function withAuthoredOverlay(id, out) {
+  const file = join(LESSONS, id, "config.json");
+  if (PRUNE || !existsSync(file)) return out;
+  let prior;
+  try {
+    prior = JSON.parse(readFileSync(file, "utf8"));
+  } catch {
+    return out; // an unreadable prior config is not a reason to lose this run
+  }
+  for (const path of authoredPaths(out, prior)) overlayKept.push(`${id}.${path}`);
+  return mergeAuthoredOverlay(out, prior, {
+    onDrop: (path) => overlayDropped.push(`${id}.${path}`),
+  });
+}
+
+/* --dry-run: say exactly what a real run would touch, and what authored content
+ * it would be protecting, without writing anything. */
+function planLesson(id, out) {
+  const file = join(LESSONS, id, "config.json");
+  for (const p of ["config.json", "index.html", "lesson.js"]) {
+    plannedWrites.push(
+      `${existsSync(join(LESSONS, id, p)) ? "change" : "create"}  lessons/${id}/${p}`,
+    );
+  }
+  if (!existsSync(file)) return;
+  try {
+    const prior = JSON.parse(readFileSync(file, "utf8"));
+    for (const path of authoredPaths(out, prior)) overlayKept.push(`${id}.${path}`);
+    mergeAuthoredOverlay(out, prior, { onDrop: (path) => overlayDropped.push(`${id}.${path}`) });
+  } catch {
+    /* unreadable prior config: nothing to report about its overlay */
+  }
+}
+
 function writeLesson(id, out) {
   mkdirSync(join(LESSONS, id), { recursive: true });
-  writeFileSync(join(LESSONS, id, "config.json"), JSON.stringify(out, null, 2) + "\n");
+  const merged = withAuthoredOverlay(id, out);
+  recordWrite(join(LESSONS, id, "config.json"));
+  writeFileSync(join(LESSONS, id, "config.json"), JSON.stringify(merged, null, 2) + "\n");
   if (CONFIGS_ONLY) return;
   // writeGenerated, not writeFileSync — see tools/generators-preserve-injected.test.mjs.
   // All 148 group/catch-up index.html shells carry injected sentinel blocks, and a
   // plain overwrite strips every one. On a brand-new lesson there is nothing to
   // preserve and this behaves identically to a plain write.
+  recordWrite(join(LESSONS, id, "index.html"));
   writeGenerated(
     join(LESSONS, id, "index.html"),
     shellHtml(id, out.title, `Grade 6 Reveal Math small-group lesson — ${out.title}`),
   );
+  recordWrite(join(LESSONS, id, "lesson.js"));
   writeFileSync(join(LESSONS, id, "lesson.js"), LESSON_JS);
 }
 
 // ---------------------------------------------------------------- Main
 const bases = readdirSync(LESSONS)
   .filter((d) => BASE_RE.test(d) && existsSync(join(LESSONS, d, "config.json")))
-  .filter((d) => !ONLY || d === ONLY)
+  .filter((d) => FACILITATION_ONLY || !ONLY || d === ONLY)
   .sort((a, b) => {
     const [au, am] = a.split("-").map(Number);
     const [bu, bm] = b.split("-").map(Number);
@@ -498,7 +763,8 @@ for (const baseId of bases) {
     const facilitation = extractFacilitation(out);
     const studentOut = toStudentConfig(out);
     facilitationByLesson[id] = facilitation;
-    if (!DRY) writeLesson(id, studentOut);
+    if (!DRY && !FACILITATION_ONLY) writeLesson(id, studentOut);
+    else if (DRY && !FACILITATION_ONLY) planLesson(id, studentOut);
     const group = facilitation.group;
     rows.push({
       id,
@@ -523,14 +789,123 @@ for (const baseId of bases) {
 }
 
 if (!DRY) {
-  writeFileSync(
-    new URL("./small-group-rows.json", import.meta.url),
-    JSON.stringify(rows, null, 2) + "\n",
+  // `rows` describes only the lessons this run visited, so a scoped run must not
+  // republish it as if it were the whole fleet.
+  if (!ONLY && !FACILITATION_ONLY) {
+    recordWrite(new URL("./small-group-rows.json", import.meta.url).pathname);
+    writeFileSync(
+      new URL("./small-group-rows.json", import.meta.url),
+      JSON.stringify(rows, null, 2) + "\n",
+    );
+  }
+  /*
+   * MERGE, never replace. `facilitationByLesson` holds only the lessons this run
+   * built, and the previous code serialised it wholesale: `--only 3-1` rewrote
+   * the module with 2 entries and silently destroyed facilitation for the other
+   * 166 lessons, whose teacher route then had nothing to serve. A scoped run now
+   * updates its own keys and leaves every other lesson intact.
+   */
+  let merged = facilitationByLesson;
+  if (ONLY) {
+    let existing = {};
+    try {
+      /*
+       * Read the prior data by IMPORTING the module, not by slicing text out of
+       * it and JSON.parse-ing that.
+       *
+       * The text-slice version was broken in the worst possible way. This
+       * generator writes the file with JSON.stringify — quoted keys, valid JSON
+       * — and then Biome reformats it to idiomatic JS with UNQUOTED keys
+       * (`group: 1`). JSON.parse then threw on every subsequent scoped run, the
+       * catch swallowed it, `existing` stayed empty, and the merge below
+       * "merged" this run's handful of lessons over nothing — silently
+       * rewriting the module with 2 entries and destroying facilitation for the
+       * other 166 lessons, which is precisely the failure the comment above
+       * says was fixed. Discovered by running `--only 9-1` and reading the diff:
+       * 3454 lines deleted.
+       *
+       * Importing the module asks JavaScript to evaluate its own source, so no
+       * formatting choice can break it. The cache-buster matters because this
+       * process may already have imported the module.
+       */
+      const mod = await import(`file://${FACILITATION_MODULE}?t=${Date.now()}`);
+      existing = mod.FACILITATION_BY_LESSON || {};
+      if (!Object.keys(existing).length) {
+        throw new Error("facilitation module parsed but held no lessons");
+      }
+    } catch (error) {
+      // Never fall back to "start from empty" — that is the data-loss path.
+      throw new Error(
+        `${FACILITATION_MODULE}: could not read existing facilitation for a scoped run ` +
+          `(${error.message}). Refusing to continue: writing now would drop every lesson ` +
+          `this run did not build. Run without --only to rebuild the whole file.`,
+      );
+    }
+    merged = { ...existing, ...facilitationByLesson };
+  }
+  const ordered = Object.fromEntries(
+    Object.keys(merged)
+      .sort()
+      .map((k) => [k, merged[k]]),
   );
+  if (CHECK) {
+    /* Compare the DATA, not the file text. The module is written by
+     * JSON.stringify and then reformatted by Biome, so a text comparison would
+     * fail on whitespace and teach everyone to ignore this gate. */
+    let onDisk = {};
+    try {
+      const mod = await import(`file://${FACILITATION_MODULE}?t=${Date.now()}`);
+      onDisk = mod.FACILITATION_BY_LESSON || {};
+    } catch (error) {
+      console.error(`facilitation freshness FAILED: cannot read the module (${error.message})`);
+      process.exit(1);
+    }
+    const ids = [...new Set([...Object.keys(ordered), ...Object.keys(onDisk)])].sort();
+    const drifted = ids.filter((id) => JSON.stringify(onDisk[id]) !== JSON.stringify(ordered[id]));
+    if (drifted.length) {
+      console.error(
+        `facilitation freshness FAILED: ${drifted.length} of ${ids.length} lesson(s) in ` +
+          `functions/teacher-small-group/_facilitation-data.js do not match what the ` +
+          `generator would write.`,
+      );
+      for (const id of drifted.slice(0, 15)) {
+        const why = !onDisk[id]
+          ? "missing on disk"
+          : !ordered[id]
+            ? "no longer generated"
+            : "content drifted";
+        console.error(`  ✗ ${id} — ${why}`);
+      }
+      if (drifted.length > 15) console.error(`  … and ${drifted.length - 15} more`);
+      console.error(`\n  Fix: node tools/generate-small-group-lessons.mjs --facilitation-only`);
+      process.exit(1);
+    }
+    console.log(
+      `facilitation freshness: ${ids.length} lesson(s) match what the generator would write.`,
+    );
+    process.exit(0);
+  }
+  recordWrite(FACILITATION_MODULE);
   writeFileSync(
     FACILITATION_MODULE,
-    `// Generated by tools/generate-small-group-lessons.mjs. Teacher route only.\nexport const FACILITATION_BY_LESSON = ${JSON.stringify(facilitationByLesson, null, 2)};\n`,
+    `// Generated by tools/generate-small-group-lessons.mjs. Teacher route only.\nexport const FACILITATION_BY_LESSON = ${JSON.stringify(ordered, null, 2)};\n`,
   );
+  /*
+   * Format the file we just wrote. JSON.stringify quotes every key and omits
+   * trailing commas; Biome wants the opposite, so a plain write left
+   * `npm run check` failing after every regeneration — which is how a generated
+   * file ends up either hand-formatted or committed red.
+   *
+   * Calling the formatter is the right fix rather than emitting Biome's style by
+   * hand: half a reimplementation of a formatter drifts the moment its config
+   * changes. Best-effort — a generator that cannot format is not a generator
+   * that should fail, and `npm run check` still catches it.
+   */
+  try {
+    execFileSync("npx", ["biome", "format", "--write", FACILITATION_MODULE], { stdio: "ignore" });
+  } catch (_error) {
+    console.warn("  (biome format skipped — format the facilitation module before committing)");
+  }
 }
 
 console.log(
@@ -540,3 +915,44 @@ for (const r of rows)
   console.log(
     `${r.id.padEnd(16)} after ${r.afterLesson.padEnd(6)} g${r.group} ${r.label.padEnd(14)} v${r.counts.vocab} a${r.counts.approaching} o${r.counts.onLevel} e${r.counts.extending} opt${r.counts.optional}`,
   );
+
+/* ── Write-set containment ───────────────────────────────────────────────────
+ *
+ * The declared dependent artifact is the facilitation module: it is derived
+ * from the lessons this run built, and a lesson changing without it changing
+ * leaves the teacher route serving stale moves. Everything else must be a
+ * variant of the targeted base.
+ */
+setWriteSetRoot(ROOT);
+if (DRY) {
+  console.log(`\n--dry-run — nothing was written.`);
+  console.log(plannedWrites.map((l) => `  ${l}`).join("\n"));
+  console.log(`  change  functions/teacher-small-group/_facilitation-data.js`);
+  console.log(`\nauthored values that would be preserved: ${overlayKept.length}`);
+  if (overlayDropped.length) {
+    console.warn(
+      `authored values AT RISK (${overlayDropped.length}) — the item they belong to is no ` +
+        `longer generated:\n  ${overlayDropped.join("\n  ")}`,
+    );
+  }
+}
+if (!DRY) {
+  if (ONLY) {
+    const allowed = new RegExp(`^lessons/${ONLY}(?:-group\\d+|-catchup)?/`);
+    assertWriteSetContained({
+      scope: `--only ${ONLY}`,
+      allow: (p) => allowed.test(p) || p === "functions/teacher-small-group/_facilitation-data.js",
+    });
+  }
+  const files = writtenPaths();
+  console.log(`\nwrote ${files.length} file(s)${ONLY ? ` (scope: --only ${ONLY})` : ""}`);
+  if (overlayKept.length) {
+    console.log(`authored values preserved: ${overlayKept.length}`);
+  }
+  if (overlayDropped.length) {
+    console.warn(
+      `authored values that could NOT be placed (${overlayDropped.length}) — the item they ` +
+        `belonged to is no longer generated:\n  ${overlayDropped.join("\n  ")}`,
+    );
+  }
+}

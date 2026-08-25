@@ -1,7 +1,14 @@
 .ctw-panel {
+  /* Both accent values are the MINIMUM darkening that clears WCAG AA 4.5:1,
+     not a redesign: #0f8a7a -> #0e8071 and #0284c7 -> #027bb9, each about 7%
+     down the same hue, each measured at 4.64:1. They failed only where they
+     meet small bold text — the section headings here are 12px bold and the
+     buttons 13.5-14.4px bold, all under the 18.66px large-text threshold, so
+     the 4.10:1 both used to score was judged against 4.5:1 and lost. Anything
+     larger in the same colour always passed, which is why this went unseen. */
   --ctw-navy: #102a43;
   --ctw-blue: #1769aa;
-  --ctw-teal: #0f8a7a;
+  --ctw-teal: #0e8071;
   --ctw-gold: #f6c453;
   --ctw-paper: #f5f8fb;
   --ctw-card: #ffffff;
@@ -77,59 +84,118 @@ button.ctw-ql-card {
   font-size: 0.9rem;
 }
 
+/* The header deliberately mirrors #district-pacing-console at the top of the
+   hub — same white card, same blue rule, same uppercase chip. The two panels
+   carry the same "Plan it. Teach it. Launch it." promise, so reading as two
+   different products was the whole complaint. Change them together. */
 .ctw-header {
   position: relative;
   overflow: hidden;
-  padding: clamp(24px, 5vw, 42px);
-  border-radius: 22px 22px 0 0;
-  color: #fff;
-  background:
-    radial-gradient(circle at 90% 10%, rgba(246, 196, 83, 0.27), transparent 28%),
-    linear-gradient(135deg, #102a43, #164e63 60%, #0f766e);
+  padding: clamp(20px, 4vw, 28px);
+  border: 1.5px solid #027bb9;
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  color: var(--ctw-ink);
+  background: #ffffff;
 }
 
 .ctw-header h2 {
-  margin: 4px 0 8px;
-  color: #fff;
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  line-height: 1.08;
+  margin: 0 0 6px;
+  color: #0f172a;
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 1.65rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
 }
 
-.ctw-header p:last-child {
+/* Direct child ONLY. As a descendant selector this also matched
+   .ctw-pacing-stamp (last child of .ctw-headrow) and, at specificity 0,2,1,
+   beat the stamp's own 0,1,0 rule — rendering the stamp as 15px body copy. */
+.ctw-header > p:last-child {
   max-width: 72ch;
   margin: 0;
-  color: #e9f5f3;
-  font-size: 1rem;
+  color: #475569;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Chip + pacing stamp sit on one row, exactly like the top console. */
+/* Sits inside #district-pacing-console at the top of the hub. */
+.ctw-jump-link {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 16px;
+  border: 1.5px solid #027bb9;
+  border-radius: 10px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ctw-jump-link:hover {
+  background: #bae6fd;
+}
+
+.ctw-headrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .ctw-kicker {
+  display: inline-block;
   margin: 0;
-  color: #fce8a7;
-  font-size: 0.76rem;
-  font-weight: 850;
-  letter-spacing: 0.09em;
+  padding: 4px 12px;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
+/* "Grade 6 Math · Course 1 District Pacing" — names the sequence this cockpit
+   is currently pointed at, so the lesson it opens on is never a mystery. */
+.ctw-pacing-stamp {
+  margin: 0;
+  color: #64748b;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+/* Tabs and stage continue the header's card rather than introducing a second
+   surface. The grey strip (#e8f0f5) and grey stage read as a different product
+   sitting under a white panel — the whole reason the bottom of the hub did not
+   look like the district console at the top. */
 .ctw-tabs {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding: 12px;
-  background: #e8f0f5;
-  border: 1px solid var(--ctw-line);
+  padding: 12px 16px;
+  background: #fff;
+  border: 1.5px solid #027bb9;
   border-top: 0;
+  border-bottom: 1px solid #e2e8f0;
   scrollbar-width: thin;
 }
 
 .ctw-stage {
-  padding: clamp(18px, 4vw, 32px);
-  border: 1px solid var(--ctw-line);
+  padding: clamp(18px, 4vw, 28px);
+  border: 1.5px solid #027bb9;
   border-top: 0;
-  border-radius: 0 0 22px 22px;
-  background: var(--ctw-paper);
+  border-radius: 0 0 18px 18px;
+  background: #fff;
 }
 
+/* One button language, matching the console's outlined blue pills. */
 .ctw-button {
   min-height: 44px;
   display: inline-flex;
@@ -137,10 +203,10 @@ button.ctw-ql-card {
   justify-content: center;
   gap: 7px;
   padding: 9px 15px;
-  border: 2px solid #a8bfd0;
+  border: 1.5px solid #7dd3fc;
   border-radius: 10px;
   background: #fff;
-  color: var(--ctw-navy);
+  color: #0369a1;
   font: inherit;
   font-size: 0.9rem;
   font-weight: 800;
@@ -151,47 +217,55 @@ button.ctw-ql-card {
 }
 
 .ctw-button:hover {
-  border-color: var(--ctw-blue);
-  color: var(--ctw-blue);
+  border-color: #027bb9;
+  background: #e0f2fe;
+  color: #075985;
 }
 
 .ctw-button[aria-pressed="true"] {
-  border-color: var(--ctw-teal);
-  background: #dff5f0;
-  color: #075f56;
+  border-color: #027bb9;
+  background: #027bb9;
+  color: #fff;
 }
 
+/* The one solid call-to-action per view, like "Launch Today's Lesson" up top. */
 .ctw-primary {
-  background: var(--ctw-blue);
-  border-color: var(--ctw-blue);
+  background: #027bb9;
+  border-color: #027bb9;
   color: #fff;
 }
 
 .ctw-primary:hover {
   color: #fff;
-  background: #0f548b;
+  background: #0369a1;
 }
 
+/* Student-facing and generator actions keep a distinct hue so a teacher can
+   still tell "this sends something to students" from "this opens a tool" at a
+   glance — but as tinted outlines, not solid green/purple slabs. Colour still
+   carries the meaning; it no longer looks like a different design system. */
 .ctw-student {
-  background: var(--ctw-teal);
-  border-color: var(--ctw-teal);
-  color: #fff;
+  background: #ecfdf5;
+  border-color: #6ee7b7;
+  color: #047857;
 }
 
 .ctw-student:hover {
-  color: #fff;
-  background: #087267;
+  color: #065f46;
+  background: #d1fae5;
+  border-color: #059669;
 }
 
 .ctw-generator {
-  background: #6b3fa0;
-  border-color: #6b3fa0;
-  color: #fff;
+  background: #f5f3ff;
+  border-color: #c4b5fd;
+  color: #6d28d9;
 }
 
 .ctw-generator:hover {
-  color: #fff;
-  background: #572f86;
+  color: #5b21b6;
+  background: #ede9fe;
+  border-color: #7c3aed;
 }
 
 .ctw-panel a:focus-visible,
@@ -479,6 +553,17 @@ button.ctw-ql-card {
   padding: 0 clamp(18px, 4vw, 36px);
 }
 
+/* The Pacing Planner card, lifted out of the tools drawer so a collapsed
+   drawer cannot hide it (assets/curriculum-teacher-planning.js). Marker class
+   only — the layout the lifted card needs is applied inline by that script,
+   because three separate sheets (this one, curriculum-polish.css, and the
+   hub's inline <style>) all style .mailbox-feature and the winner depends on
+   load order. This class stays so the lifted card is findable in review and
+   in tests. */
+.cns-lifted {
+  display: block;
+}
+
 .ctw-tools-drawer > summary {
   min-height: 44px;
   display: flex;
@@ -764,8 +849,15 @@ button.ctw-ql-card {
   font-weight: 700;
 }
 .ctw-actions .ctw-warmup {
-  background: #7c2d12;
-  color: #fff;
+  background: #fff7ed;
+  border-color: #fdba74;
+  color: #9a3412;
+}
+
+.ctw-actions .ctw-warmup:hover {
+  background: #ffedd5;
+  border-color: #ea580c;
+  color: #7c2d12;
 }
 
 /* ---- Next move card (assets/curriculum-next-move.js) --------------------- */
@@ -817,4 +909,247 @@ button.ctw-ql-card {
   font-size: 0.95rem;
   font-weight: 640;
   color: var(--ctw-navy);
+}
+
+/* ── Teacher workspace ──────────────────────────────────────────────────────
+   The first thing a teacher sees on /curriculum/: Teach, Plan, Support
+   Students. Built by assets/curriculum-teacher-planning.js.
+
+   Hierarchy is carried by SIZE and ORDER, not by colour alone: Lessons is a
+   full-width band with the largest heading, Planner and Supports are a pair
+   beneath it, and More is body text with a link. Deliberately not four equal
+   cards — equal weight would say these are four equal choices, and they are
+   not. */
+.tws {
+  max-width: 1180px;
+  margin: 0 auto 18px;
+  padding: 0 clamp(18px, 4vw, 36px);
+}
+
+.tws-lead {
+  padding: clamp(18px, 3vw, 28px) clamp(18px, 3vw, 30px);
+  border: 1px solid #d7e2ed;
+  border-left: 6px solid #15487f;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.tws-pair {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  margin-top: 12px;
+}
+
+.tws-card {
+  padding: clamp(14px, 2vw, 20px) clamp(16px, 2vw, 22px);
+  border: 1px solid #d7e2ed;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.tws-kicker {
+  margin: 0 0 2px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #55617a;
+}
+
+.tws-lead h2 {
+  margin: 0 0 6px;
+  font-size: clamp(1.9rem, 3.4vw, 2.5rem);
+  line-height: 1.1;
+  color: #12355b;
+}
+
+.tws-card h2 {
+  margin: 0 0 6px;
+  font-size: clamp(1.15rem, 1.9vw, 1.4rem);
+  line-height: 1.2;
+  color: #12355b;
+}
+
+.tws-sub {
+  margin: 0;
+  max-width: 62ch;
+  color: #3d4a60;
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+
+.tws-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0;
+}
+
+.tws-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 18px;
+  border: 2px solid #15487f;
+  border-radius: 10px;
+  background: #15487f;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.94rem;
+  text-decoration: none;
+}
+
+.tws-btn.ghost {
+  background: #fff;
+  color: #15487f;
+}
+
+.tws-btn:hover,
+.tws-btn:focus-visible {
+  text-decoration: underline;
+}
+
+.tws-btn:focus-visible {
+  outline: 3px solid #0b2f57;
+  outline-offset: 2px;
+}
+
+.tws-more {
+  margin: 14px 0 0;
+  color: #55617a;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.tws-more a {
+  color: #15487f;
+  font-weight: 700;
+}
+
+/* The planner card keeps its full description below the workspace, but the
+   workspace is now what announces the planner, so the card no longer needs to
+   shout. */
+.cns-lifted.tws-has-card {
+  margin-top: 0 !important;
+}
+
+/* ── Lesson picker (Teach band) ─────────────────────────────────────────────
+   Section → Unit → Lesson, then the lesson's own actions. A compact teacher
+   control, deliberately not three cards: these are one decision made in three
+   steps, and boxing each step would say they were three separate things. */
+.tws-pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin: 14px 0 0;
+}
+
+.tws-pick-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  /* Lesson titles are long; the lesson control gets the room it needs and the
+     three wrap to a stack on a narrow screen rather than shrinking the text. */
+  flex: 1 1 15rem;
+  min-width: 0;
+}
+
+/* Section holds the longest labels ("Geometric Reasoning and Measurement") and
+   Lesson holds the longest values, so those two get the room. Unit is "Unit 7". */
+.tws-pick-field:first-child {
+  flex: 1.3 1 17rem;
+}
+
+.tws-pick-field:nth-child(2) {
+  flex: 0.6 1 8rem;
+}
+
+.tws-pick-field:last-child {
+  flex: 2 1 22rem;
+}
+
+.tws-pick-field label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #55617a;
+}
+
+.tws-pick-field select {
+  font: inherit;
+  font-size: 0.96rem;
+  min-height: 44px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #9db0cb;
+  border-radius: 10px;
+  background: #fff;
+  color: #12355b;
+}
+
+.tws-pick-field select:disabled {
+  background: #f2f5f9;
+  color: #55617a;
+}
+
+.tws-pick-field select:focus-visible {
+  outline: 3px solid #0b2f57;
+  outline-offset: 2px;
+}
+
+.tws-open:empty {
+  display: none;
+}
+
+.tws-open {
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  border: 1px solid #d7e2ed;
+  border-radius: 12px;
+  background: #f7fafd;
+}
+
+.tws-open-title {
+  margin: 0;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #12355b;
+}
+
+.tws-open-actions {
+  margin-top: 10px;
+}
+
+/* The labelled rows of the expansion — small-group versions, what each of those
+   versions hands out, the lesson's own materials, and what goes home. One rule,
+   because they are one kind of thing: a labelled row of routes the manifest
+   carries for this lesson. Styling them separately is how one of them drifts. */
+.tws-open-variants,
+.tws-open-variant-parts,
+.tws-open-parts,
+.tws-open-home {
+  margin-top: 8px;
+  align-items: center;
+}
+
+.tws-open-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #55617a;
+}
+
+.tws-pick-error {
+  margin: 14px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: #85381f;
+  font-size: 0.95rem;
 }

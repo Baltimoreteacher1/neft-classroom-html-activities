@@ -382,252 +382,128 @@
     },
     "/math/unit-2/projects/version-a/": {
       "skipFields": [
-        "p1-div-num",
-        "p1-div-den",
-        "p1-div-num2",
-        "p1-div-den2",
-        "p2-batch-input",
-        "p2-scoop-den",
-        "p3-roll-w-input",
-        "p3-roll-num",
-        "p3-roll-den",
-        "p3-slice-num",
-        "p3-slice-den"
+        "p-mean",
+        "p-median",
+        "p-range",
+        "p-mad"
       ],
       "steps": {
-        "step-4": {
-          "checks": [
-            {
-              "ref": "bakery-compare",
-              "kind": "nonempty",
-              "minWords": 15
-            }
-          ],
-          "talk": {
-            "question": {
-              "en": "Your roll length is a mixed number. Show your partner how you rewrote it before dividing, and convince them your leftover piece makes sense.",
-              "es": "Tu rollo mide un número mixto. Muéstrale a tu compañero cómo lo reescribiste antes de dividir y convéncelo de que el pedazo sobrante tiene sentido."
-            },
-            "stems": [
-              {
-                "en": "I rewrote ___ as the improper fraction ___.",
-                "es": "Reescribí ___ como la fracción impropia ___."
-              },
-              {
-                "en": "My quotient is ___ slices, and the leftover means ___.",
-                "es": "Mi cociente es ___ rebanadas, y lo que sobra significa ___."
-              },
-              {
-                "en": "Where someone could go wrong here is ___.",
-                "es": "Donde alguien podría equivocarse aquí es ___."
-              }
-            ]
-          }
-        },
-        "step-5": {
-          "checks": [
-            {
-              "ref": "peer-reflect",
-              "kind": "nonempty",
-              "minWords": 15
-            }
-          ],
-          "talk": false
-        },
-        "step-6": {
-          "checks": [
-            {
-              "ref": "pitch",
-              "kind": "nonempty",
-              "minWords": 25
-            }
-          ]
-        },
         "step-2": {
-          "talk": {
-            "question": {
-              "en": "You divided by a number less than 1 and got MORE portions than you started with. Explain to your partner why that is not a mistake.",
-              "es": "Dividiste entre un número menor que 1 y obtuviste MÁS porciones de las que empezaste. Explícale a tu compañero por qué eso no es un error."
-            },
-            "stems": [
-              {
-                "en": "I divided ___ cups by ___ cup and got ___ portions.",
-                "es": "Dividí ___ tazas entre ___ de taza y obtuve ___ porciones."
-              },
-              {
-                "en": "The answer is bigger than the dividend because ___.",
-                "es": "La respuesta es mayor que el dividendo porque ___."
-              },
-              {
-                "en": "A picture that proves it looks like ___.",
-                "es": "Un dibujo que lo demuestra se ve así: ___."
-              }
-            ]
-          }
-        },
-        "step-3": {
-          "talk": {
-            "question": {
-              "en": "Compare your scoop size with your partner's. Whose scoop makes more servings from the same batch — and what does that tell you about dividing by a smaller unit fraction?",
-              "es": "Compara el tamaño de tu cuchara con el de tu compañero. ¿Con cuál se obtienen más porciones del mismo lote, y qué te dice eso sobre dividir entre una fracción unitaria más pequeña?"
-            },
-            "stems": [
-              {
-                "en": "My scoop is ___ cup, so ___ whole cups make ___ servings.",
-                "es": "Mi cuchara es ___ de taza, así que ___ tazas enteras dan ___ porciones."
-              },
-              {
-                "en": "A smaller scoop gives ___ servings because ___.",
-                "es": "Una cuchara más pequeña da ___ porciones porque ___."
-              },
-              {
-                "en": "I can check by multiplying back: ___ × ___ = ___.",
-                "es": "Puedo comprobarlo multiplicando de vuelta: ___ × ___ = ___."
-              }
-            ]
-          }
-        }
-      },
-      "peer": {
-        "step": "step-5",
-        "capture": [
-          {
-            "id": "partner-name",
-            "type": "text",
-            "label": {
-              "en": "Partner chef's name or initials",
-              "es": "Nombre o iniciales del chef compañero"
-            }
-          },
-          {
-            "id": "partner-portions",
-            "type": "number",
-            "label": {
-              "en": "Partner's portions (Step 1)",
-              "es": "Porciones de tu compañero (Paso 1)"
-            }
-          },
-          {
-            "id": "partner-scoop",
-            "type": "text",
-            "label": {
-              "en": "Partner's scoop size (unit fraction)",
-              "es": "Tamaño de cuchara de tu compañero (fracción unitaria)"
-            }
-          },
-          {
-            "id": "partner-servings",
-            "type": "number",
-            "label": {
-              "en": "Partner's servings (Step 2)",
-              "es": "Porciones de tu compañero (Paso 2)"
-            }
-          },
-          {
-            "id": "partner-slices",
-            "type": "number",
-            "label": {
-              "en": "Partner's roll slices (Step 3)",
-              "es": "Rebanadas de rollo de tu compañero (Paso 3)"
-            }
-          }
-        ],
-        "frames": [
-          {
-            "en": "My divisor was ___ and my partner's divisor was ___.",
-            "es": "Mi divisor fue ___ y el divisor de mi compañero fue ___."
-          },
-          {
-            "en": "The smaller divisor produced ___ pieces, which shows that ___.",
-            "es": "El divisor más pequeño produjo ___ pedazos, lo que muestra que ___."
-          },
-          {
-            "en": "I can prove it with numbers: ___ ÷ ___ = ___ compared to ___ ÷ ___ = ___.",
-            "es": "Puedo probarlo con números: ___ ÷ ___ = ___ comparado con ___ ÷ ___ = ___."
-          }
-        ],
-        "compare": {
-          "en": "Whose bakery gets more servings out of the same amount of food — and is it because of the AMOUNT or because of the DIVISOR? Prove it with both sets of numbers.",
-          "es": "¿Qué panadería obtiene más porciones de la misma cantidad de comida, y es por la CANTIDAD o por el DIVISOR? Pruébalo con los dos conjuntos de números."
-        }
-      }
-    },
-    "/math/unit-2/projects/version-b/": {
-      "steps": {
-        "step-3": {
           "checks": [
             {
-              "ref": "w-whole",
+              "ref": "val-1",
               "kind": "range",
               "min": 0,
-              "max": 100
-            },
-            {
-              "ref": "w-num",
-              "kind": "relation",
-              "op": "<",
-              "expr": "{w-den}",
-              "operation": {
-                "en": "In a mixed number the fraction part is always LESS than one whole. Compare your numerator with your denominator before you cut anything.",
-                "es": "En un número mixto la parte fraccionaria siempre es MENOR que un entero. Compara tu numerador con tu denominador antes de cortar."
-              },
+              "max": 24,
               "hints": [
                 {
-                  "en": "",
-                  "es": ""
+                  "en": "Each box holds ONE person's hours of sleep in ONE night. There are only 24 hours in a day, so no data value can pass 24.",
+                  "es": "Cada casilla contiene las horas de sueño de UNA persona en UNA noche. Solo hay 24 horas en un día, así que ningún dato puede pasar de 24."
                 },
                 {
-                  "en": "",
-                  "es": ""
-                },
-                {
-                  "en": "Look at the two boxes side by side: the numerator is on the left, the denominator on the right. In a mixed number the left number must be the smaller one. Change whichever number you mistyped.",
-                  "es": "Mira las dos casillas juntas: el numerador está a la izquierda y el denominador a la derecha. En un número mixto el de la izquierda debe ser el menor. Cambia el número que escribiste mal."
+                  "en": "If you wrote minutes, divide by 60 to turn them into hours before you type. 480 minutes is 8 hours, not 480.",
+                  "es": "Si escribiste minutos, divide entre 60 para convertirlos en horas antes de escribir. 480 minutos son 8 horas, no 480."
                 }
               ]
             },
             {
-              "ref": "w-strip-num",
-              "kind": "relation",
-              "op": "<",
-              "expr": "{w-strip-den}",
-              "operation": {
-                "en": "A strip length is a fraction OF ONE FOOT, so the numerator has to be smaller than the denominator. Re-read the label above the two boxes.",
-                "es": "El largo de una tira es una fracción DE UN PIE, así que el numerador debe ser menor que el denominador. Vuelve a leer la etiqueta de las dos casillas."
-              },
+              "ref": "val-2",
+              "kind": "range",
+              "min": 0,
+              "max": 24,
               "hints": [
                 {
-                  "en": "",
-                  "es": ""
+                  "en": "Each box holds ONE person's hours of sleep in ONE night. There are only 24 hours in a day, so no data value can pass 24.",
+                  "es": "Cada casilla contiene las horas de sueño de UNA persona en UNA noche. Solo hay 24 horas en un día, así que ningún dato puede pasar de 24."
                 },
                 {
-                  "en": "",
-                  "es": ""
+                  "en": "If you wrote minutes, divide by 60 to turn them into hours before you type. 480 minutes is 8 hours, not 480.",
+                  "es": "Si escribiste minutos, divide entre 60 para convertirlos en horas antes de escribir. 480 minutos son 8 horas, no 480."
+                }
+              ]
+            },
+            {
+              "ref": "val-3",
+              "kind": "range",
+              "min": 0,
+              "max": 24,
+              "hints": [
+                {
+                  "en": "Each box holds ONE person's hours of sleep in ONE night. There are only 24 hours in a day, so no data value can pass 24.",
+                  "es": "Cada casilla contiene las horas de sueño de UNA persona en UNA noche. Solo hay 24 horas en un día, así que ningún dato puede pasar de 24."
                 },
                 {
-                  "en": "Read your two strip numbers out loud as a fraction. If the top number is bigger than the bottom one, your strip is longer than a whole foot — which the label does not allow. Adjust one of them.",
-                  "es": "Lee tus dos números de la tira en voz alta como fracción. Si el de arriba es mayor que el de abajo, tu tira mide más de un pie entero, y la etiqueta no lo permite. Ajusta uno de los dos."
+                  "en": "If you wrote minutes, divide by 60 to turn them into hours before you type. 480 minutes is 8 hours, not 480.",
+                  "es": "Si escribiste minutos, divide entre 60 para convertirlos en horas antes de escribir. 480 minutos son 8 horas, no 480."
+                }
+              ]
+            },
+            {
+              "ref": "val-4",
+              "kind": "range",
+              "min": 0,
+              "max": 24,
+              "hints": [
+                {
+                  "en": "Each box holds ONE person's hours of sleep in ONE night. There are only 24 hours in a day, so no data value can pass 24.",
+                  "es": "Cada casilla contiene las horas de sueño de UNA persona en UNA noche. Solo hay 24 horas en un día, así que ningún dato puede pasar de 24."
+                },
+                {
+                  "en": "If you wrote minutes, divide by 60 to turn them into hours before you type. 480 minutes is 8 hours, not 480.",
+                  "es": "Si escribiste minutos, divide entre 60 para convertirlos en horas antes de escribir. 480 minutos son 8 horas, no 480."
+                }
+              ]
+            },
+            {
+              "ref": "val-5",
+              "kind": "range",
+              "min": 0,
+              "max": 24,
+              "hints": [
+                {
+                  "en": "Each box holds ONE person's hours of sleep in ONE night. There are only 24 hours in a day, so no data value can pass 24.",
+                  "es": "Cada casilla contiene las horas de sueño de UNA persona en UNA noche. Solo hay 24 horas en un día, así que ningún dato puede pasar de 24."
+                },
+                {
+                  "en": "If you wrote minutes, divide by 60 to turn them into hours before you type. 480 minutes is 8 hours, not 480.",
+                  "es": "Si escribiste minutos, divide entre 60 para convertirlos en horas antes de escribir. 480 minutos son 8 horas, no 480."
+                }
+              ]
+            },
+            {
+              "ref": "val-6",
+              "kind": "range",
+              "min": 0,
+              "max": 24,
+              "hints": [
+                {
+                  "en": "Each box holds ONE person's hours of sleep in ONE night. There are only 24 hours in a day, so no data value can pass 24.",
+                  "es": "Cada casilla contiene las horas de sueño de UNA persona en UNA noche. Solo hay 24 horas en un día, así que ningún dato puede pasar de 24."
+                },
+                {
+                  "en": "If you wrote minutes, divide by 60 to turn them into hours before you type. 480 minutes is 8 hours, not 480.",
+                  "es": "Si escribiste minutos, divide entre 60 para convertirlos en horas antes de escribir. 480 minutos son 8 horas, no 480."
                 }
               ]
             }
           ],
           "talk": {
             "question": {
-              "en": "Your board length is a mixed number. Walk your partner through the rewrite step by step, then trade and check each other's work.",
-              "es": "Tu tabla mide un número mixto. Guía a tu compañero paso a paso por la reescritura, luego intercambien y revisen el trabajo del otro."
+              "en": "Your mean and your median are different numbers. Explain to your partner what each one measures, and which one your data is better described by.",
+              "es": "Tu media y tu mediana son números distintos. Explícale a tu compañero qué mide cada una y cuál describe mejor tus datos."
             },
             "stems": [
               {
-                "en": "First I rewrote ___ as ___, then I ___.",
-                "es": "Primero reescribí ___ como ___, luego ___."
+                "en": "My mean is ___ and my median is ___.",
+                "es": "Mi media es ___ y mi mediana es ___."
               },
               {
-                "en": "My strategy was ___ because ___.",
-                "es": "Mi estrategia fue ___ porque ___."
+                "en": "The mean is pulled toward ___ because ___.",
+                "es": "La media es jalada hacia ___ porque ___."
               },
               {
-                "en": "Checking your work, I noticed ___.",
-                "es": "Al revisar tu trabajo, noté ___."
+                "en": "I would report the ___ because ___.",
+                "es": "Yo reportaría la ___ porque ___."
               }
             ]
           }
@@ -635,52 +511,28 @@
         "step-4": {
           "checks": [
             {
-              "ref": "f-swatch-num",
-              "kind": "relation",
-              "op": "<",
-              "expr": "{f-swatch-den}",
-              "operation": {
-                "en": "A swatch is a fraction OF ONE YARD, so the numerator has to be smaller than the denominator. Check the label above the two boxes.",
-                "es": "Una muestra es una fracción DE UNA YARDA, así que el numerador debe ser menor que el denominador. Revisa la etiqueta de las dos casillas."
-              },
-              "hints": [
-                {
-                  "en": "",
-                  "es": ""
-                },
-                {
-                  "en": "",
-                  "es": ""
-                },
-                {
-                  "en": "Read your two swatch numbers out loud as a fraction. If the top number is bigger than the bottom one, your swatch is larger than a whole yard — which the label does not allow. Adjust one of them.",
-                  "es": "Lee tus dos números de la muestra en voz alta como fracción. Si el de arriba es mayor que el de abajo, tu muestra mide más de una yarda entera, y la etiqueta no lo permite. Ajusta uno de los dos."
-                }
-              ]
-            },
-            {
-              "ref": "world-compare",
+              "ref": "world-reflect",
               "kind": "nonempty",
-              "minWords": 12
+              "minWords": 18
             }
           ],
           "talk": {
             "question": {
-              "en": "Compare which material gave you the most pieces. Is that because you had more material, or because the piece size was smaller? Convince your partner with numbers.",
-              "es": "Compara qué material te dio más pedazos. ¿Es porque tenías más material o porque el tamaño de cada pedazo era menor? Convence a tu compañero con números."
+              "en": "Describe the shape of your dot plot to your partner without using the word 'normal'. Where do most of the dots sit, and what does that say about your class?",
+              "es": "Describe la forma de tu diagrama de puntos a tu compañero sin usar la palabra «normal». ¿Dónde se agrupan la mayoría de los puntos y qué dice eso de tu clase?"
             },
             "stems": [
               {
-                "en": "My rope, wood, and fabric gave ___, ___, and ___ pieces.",
-                "es": "Mi cuerda, madera y tela dieron ___, ___ y ___ pedazos."
+                "en": "Most of my dots are between ___ and ___.",
+                "es": "La mayoría de mis puntos están entre ___ y ___."
               },
               {
-                "en": "The most pieces came from ___ because its divisor was ___.",
-                "es": "La mayor cantidad de pedazos vino de ___ porque su divisor era ___."
+                "en": "My distribution is skewed ___ / symmetrical because ___.",
+                "es": "Mi distribución está sesgada hacia ___ / es simétrica porque ___."
               },
               {
-                "en": "If the piece size were half as big, I would get ___ because ___.",
-                "es": "Si el tamaño del pedazo fuera la mitad, obtendría ___ porque ___."
+                "en": "Compared to the national average of ___, my class ___ because ___.",
+                "es": "Comparado con el promedio nacional de ___, mi clase ___ porque ___."
               }
             ]
           }
@@ -688,9 +540,9 @@
         "step-5": {
           "checks": [
             {
-              "ref": "peer-reflect",
+              "ref": "partner-reflect",
               "kind": "nonempty",
-              "minWords": 15
+              "minWords": 18
             }
           ],
           "talk": false
@@ -700,28 +552,28 @@
             {
               "ref": "pitch",
               "kind": "nonempty",
-              "minWords": 25
+              "minWords": 20
             }
           ]
         },
-        "step-2": {
+        "step-3": {
           "talk": {
             "question": {
-              "en": "Explain to your partner what the answer to your rope division actually counts — pieces or feet? How do you know?",
-              "es": "Explícale a tu compañero qué cuenta realmente la respuesta de tu división de cuerda: ¿pedazos o pies? ¿Cómo lo sabes?"
+              "en": "Add the outlier and watch the numbers move. Convince your partner why the MAD and range jump so much more than the median does.",
+              "es": "Agrega el valor atípico y observa cómo se mueven los números. Convence a tu compañero de por qué la DAM y el rango cambian mucho más que la mediana."
             },
             "stems": [
               {
-                "en": "I divided ___ feet by ___ foot, so the answer counts ___.",
-                "es": "Dividí ___ pies entre ___ de pie, así que la respuesta cuenta ___."
+                "en": "Before the outlier my range was ___; after, it is ___.",
+                "es": "Antes del valor atípico mi rango era ___; después es ___."
               },
               {
-                "en": "The unit of my answer is ___ because ___.",
-                "es": "La unidad de mi respuesta es ___ porque ___."
+                "en": "The median barely moved because ___.",
+                "es": "La mediana casi no se movió porque ___."
               },
               {
-                "en": "I agree / disagree with my partner because ___.",
-                "es": "Estoy de acuerdo / en desacuerdo con mi compañero porque ___."
+                "en": "MAD measures ___, which is why ___.",
+                "es": "La DAM mide ___, por eso ___."
               }
             ]
           }
@@ -739,55 +591,342 @@
             }
           },
           {
-            "id": "partner-rope",
+            "id": "partner-mean",
             "type": "number",
             "label": {
-              "en": "Partner's rope pieces",
-              "es": "Pedazos de cuerda de tu compañero"
+              "en": "Partner's mean (average)",
+              "es": "Media (promedio) de tu compañero"
             }
           },
           {
-            "id": "partner-wood",
+            "id": "partner-median",
             "type": "number",
             "label": {
-              "en": "Partner's wood strips",
-              "es": "Tiras de madera de tu compañero"
+              "en": "Partner's median (middle)",
+              "es": "Mediana (valor central) de tu compañero"
             }
           },
           {
-            "id": "partner-fabric",
+            "id": "partner-range",
             "type": "number",
             "label": {
-              "en": "Partner's fabric swatches",
-              "es": "Retazos de tela de tu compañero"
+              "en": "Partner's range",
+              "es": "Rango de tu compañero"
             }
           },
           {
-            "id": "partner-smallest-divisor",
-            "type": "text",
+            "id": "partner-mad",
+            "type": "number",
             "label": {
-              "en": "Partner's smallest piece size (divisor)",
-              "es": "Tamaño de pedazo más pequeño de tu compañero (divisor)"
+              "en": "Partner's MAD (variability)",
+              "es": "DAM (variabilidad) de tu compañero"
+            }
+          },
+          {
+            "id": "partner-n",
+            "type": "number",
+            "label": {
+              "en": "How many data values the partner collected",
+              "es": "Cuántos valores de datos recogió tu compañero"
             }
           }
         ],
         "frames": [
           {
-            "en": "My total pieces = ___ + ___ + ___ = ___; my partner's = ___ + ___ + ___ = ___.",
-            "es": "Mis pedazos totales = ___ + ___ + ___ = ___; los de mi compañero = ___ + ___ + ___ = ___."
+            "en": "My MAD is ___ and my partner's MAD is ___.",
+            "es": "Mi DAM es ___ y la DAM de mi compañero es ___."
           },
           {
-            "en": "My partner got more / fewer pieces because their divisor was ___.",
-            "es": "Mi compañero obtuvo más / menos pedazos porque su divisor era ___."
+            "en": "A larger MAD means the data is ___, so ___ has the more spread-out data.",
+            "es": "Una DAM mayor significa que los datos están ___, así que ___ tiene los datos más dispersos."
           },
           {
-            "en": "I can prove it with numbers: ___ ÷ ___ = ___ compared to ___ ÷ ___ = ___.",
-            "es": "Puedo probarlo con números: ___ ÷ ___ = ___ comparado con ___ ÷ ___ = ___."
+            "en": "Our centers are close / far apart (___ vs ___), but our spreads are ___ because ___.",
+            "es": "Nuestros centros están cerca / lejos (___ vs ___), pero nuestras dispersiones son ___ porque ___."
           }
         ],
         "compare": {
-          "en": "Whose workshop design yielded more total pieces — and was the deciding factor the amount of material or the size of each cut? Prove it with numbers.",
-          "es": "¿Qué diseño de taller produjo más pedazos en total, y el factor decisivo fue la cantidad de material o el tamaño de cada corte? Pruébalo con números."
+          "en": "Whose data is more spread out? Two data sets can share the same mean and still be very different — compare MAD and range, not just the center, and say what the difference tells you about daily habits.",
+          "es": "¿Los datos de quién están más dispersos? Dos conjuntos pueden tener la misma media y aun así ser muy distintos — compara la DAM y el rango, no solo el centro, y di qué revela la diferencia sobre los hábitos diarios."
+        }
+      }
+    },
+    "/math/unit-2/projects/version-b/": {
+      "skipFields": [
+        "display-best",
+        "region-match"
+      ],
+      "steps": {
+        "step-1": {
+          "checks": [
+            {
+              "ref": "stat-question",
+              "kind": "nonempty",
+              "minWords": 6,
+              "hints": [
+                {
+                  "en": "A statistical question must EXPECT different answers. Re-read the two examples above the box: one expects variability, one always has a single answer.",
+                  "es": "Una pregunta estadística debe ESPERAR respuestas distintas. Vuelve a leer los dos ejemplos sobre la casilla: uno espera variabilidad y el otro siempre tiene una sola respuesta."
+                },
+                {
+                  "en": "Write a full question, ending in a question mark, that names WHAT you measured, WHERE, and OVER HOW MANY days.",
+                  "es": "Escribe una pregunta completa, terminada en signo de interrogación, que diga QUÉ mediste, DÓNDE y DURANTE CUÁNTOS días."
+                },
+                {
+                  "en": "Try this frame and fill in your own blanks: \"What was the daily high temperature in ___ on each of the ___ days I recorded?\"",
+                  "es": "Prueba este modelo y completa tus propios espacios: \"¿Cuál fue la temperatura máxima diaria en ___ en cada uno de los ___ días que registré?\""
+                }
+              ]
+            },
+            {
+              "ref": "temp-1",
+              "kind": "range",
+              "min": -40,
+              "max": 130,
+              "hints": [
+                {
+                  "en": "Each box holds ONE day's high temperature in degrees Fahrenheit — not the average, not the range, and not a Celsius reading.",
+                  "es": "Cada casilla contiene la temperatura máxima de UN día en grados Fahrenheit: no el promedio, no el rango y no una lectura en Celsius."
+                },
+                {
+                  "en": "Real daily highs in the United States sit roughly between −40 °F and 130 °F. If your number is far outside that, check whether you copied a Celsius value.",
+                  "es": "Las máximas diarias reales en Estados Unidos están aproximadamente entre −40 °F y 130 °F. Si tu número queda muy fuera, revisa si copiaste un valor en Celsius."
+                }
+              ]
+            },
+            {
+              "ref": "temp-2",
+              "kind": "range",
+              "min": -40,
+              "max": 130,
+              "hints": [
+                {
+                  "en": "Each box holds ONE day's high temperature in degrees Fahrenheit — not the average, not the range, and not a Celsius reading.",
+                  "es": "Cada casilla contiene la temperatura máxima de UN día en grados Fahrenheit: no el promedio, no el rango y no una lectura en Celsius."
+                },
+                {
+                  "en": "Real daily highs in the United States sit roughly between −40 °F and 130 °F. If your number is far outside that, check whether you copied a Celsius value.",
+                  "es": "Las máximas diarias reales en Estados Unidos están aproximadamente entre −40 °F y 130 °F. Si tu número queda muy fuera, revisa si copiaste un valor en Celsius."
+                }
+              ]
+            },
+            {
+              "ref": "temp-3",
+              "kind": "range",
+              "min": -40,
+              "max": 130,
+              "hints": [
+                {
+                  "en": "Each box holds ONE day's high temperature in degrees Fahrenheit — not the average, not the range, and not a Celsius reading.",
+                  "es": "Cada casilla contiene la temperatura máxima de UN día en grados Fahrenheit: no el promedio, no el rango y no una lectura en Celsius."
+                },
+                {
+                  "en": "Real daily highs in the United States sit roughly between −40 °F and 130 °F. If your number is far outside that, check whether you copied a Celsius value.",
+                  "es": "Las máximas diarias reales en Estados Unidos están aproximadamente entre −40 °F y 130 °F. Si tu número queda muy fuera, revisa si copiaste un valor en Celsius."
+                }
+              ]
+            },
+            {
+              "ref": "temp-4",
+              "kind": "range",
+              "min": -40,
+              "max": 130,
+              "hints": [
+                {
+                  "en": "Each box holds ONE day's high temperature in degrees Fahrenheit — not the average, not the range, and not a Celsius reading.",
+                  "es": "Cada casilla contiene la temperatura máxima de UN día en grados Fahrenheit: no el promedio, no el rango y no una lectura en Celsius."
+                },
+                {
+                  "en": "Real daily highs in the United States sit roughly between −40 °F and 130 °F. If your number is far outside that, check whether you copied a Celsius value.",
+                  "es": "Las máximas diarias reales en Estados Unidos están aproximadamente entre −40 °F y 130 °F. Si tu número queda muy fuera, revisa si copiaste un valor en Celsius."
+                }
+              ]
+            },
+            {
+              "ref": "temp-5",
+              "kind": "range",
+              "min": -40,
+              "max": 130,
+              "hints": [
+                {
+                  "en": "Each box holds ONE day's high temperature in degrees Fahrenheit — not the average, not the range, and not a Celsius reading.",
+                  "es": "Cada casilla contiene la temperatura máxima de UN día en grados Fahrenheit: no el promedio, no el rango y no una lectura en Celsius."
+                },
+                {
+                  "en": "Real daily highs in the United States sit roughly between −40 °F and 130 °F. If your number is far outside that, check whether you copied a Celsius value.",
+                  "es": "Las máximas diarias reales en Estados Unidos están aproximadamente entre −40 °F y 130 °F. Si tu número queda muy fuera, revisa si copiaste un valor en Celsius."
+                }
+              ]
+            }
+          ],
+          "talk": {
+            "question": {
+              "en": "Read your statistical question to your partner. Does it expect a range of answers rather than one answer? Fix it together if it does not.",
+              "es": "Lee tu pregunta estadística a tu compañero. ¿Espera un rango de respuestas en vez de una sola? Corríjanla juntos si no es así."
+            },
+            "stems": [
+              {
+                "en": "My statistical question is ___.",
+                "es": "Mi pregunta estadística es ___."
+              },
+              {
+                "en": "It is statistical because the answers ___.",
+                "es": "Es estadística porque las respuestas ___."
+              },
+              {
+                "en": "A question that is NOT statistical would be ___ because ___.",
+                "es": "Una pregunta que NO es estadística sería ___ porque ___."
+              }
+            ]
+          }
+        },
+        "step-2": {
+          "checks": [
+            {
+              "ref": "display-explain",
+              "kind": "nonempty",
+              "minWords": 15
+            }
+          ],
+          "talk": {
+            "question": {
+              "en": "Defend your display choice to your partner. What can a box plot show about your temperatures that a dot plot cannot?",
+              "es": "Defiende tu elección de gráfica ante tu compañero. ¿Qué puede mostrar un diagrama de caja sobre tus temperaturas que un diagrama de puntos no puede?"
+            },
+            "stems": [
+              {
+                "en": "I chose a ___ because it shows ___.",
+                "es": "Elegí ___ porque muestra ___."
+              },
+              {
+                "en": "A ___ would hide ___ because ___.",
+                "es": "Un ___ ocultaría ___ porque ___."
+              },
+              {
+                "en": "I agree / disagree with your choice because ___.",
+                "es": "Estoy de acuerdo / en desacuerdo con tu elección porque ___."
+              }
+            ]
+          }
+        },
+        "step-3": {
+          "checks": [
+            {
+              "ref": "region-explain",
+              "kind": "nonempty",
+              "minWords": 15
+            }
+          ],
+          "talk": {
+            "question": {
+              "en": "You matched your data to a region using the IQR. Convince your partner that IQR — not the highest temperature — is the better evidence for that match.",
+              "es": "Emparejaste tus datos con una región usando el RIC. Convence a tu compañero de que el RIC (no la temperatura más alta) es la mejor evidencia para ese emparejamiento."
+            },
+            "stems": [
+              {
+                "en": "My IQR is ___ °F, which matches the ___ region.",
+                "es": "Mi RIC es ___ °F, lo que coincide con la región ___."
+              },
+              {
+                "en": "IQR is better evidence than the maximum because ___.",
+                "es": "El RIC es mejor evidencia que el máximo porque ___."
+              },
+              {
+                "en": "The science reason for that climate is ___.",
+                "es": "La razón científica de ese clima es ___."
+              }
+            ]
+          }
+        },
+        "step-4": {
+          "checks": [
+            {
+              "ref": "p-reflect",
+              "kind": "nonempty",
+              "minWords": 18
+            }
+          ],
+          "talk": false
+        },
+        "step-5": {
+          "checks": [
+            {
+              "ref": "pitch",
+              "kind": "nonempty",
+              "minWords": 20
+            }
+          ]
+        }
+      },
+      "peer": {
+        "step": "step-4",
+        "capture": [
+          {
+            "id": "partner-name",
+            "type": "text",
+            "label": {
+              "en": "Classmate's name or initials",
+              "es": "Nombre o iniciales de tu compañero"
+            }
+          },
+          {
+            "id": "partner-median",
+            "type": "number",
+            "label": {
+              "en": "Partner's median temperature (°F)",
+              "es": "Temperatura mediana de tu compañero (°F)"
+            }
+          },
+          {
+            "id": "partner-iqr",
+            "type": "number",
+            "label": {
+              "en": "Partner's temperature IQR (°F)",
+              "es": "RIC de temperatura de tu compañero (°F)"
+            }
+          },
+          {
+            "id": "partner-q1",
+            "type": "number",
+            "label": {
+              "en": "Partner's Q1 (°F)",
+              "es": "Q1 de tu compañero (°F)"
+            }
+          },
+          {
+            "id": "partner-q3",
+            "type": "number",
+            "label": {
+              "en": "Partner's Q3 (°F)",
+              "es": "Q3 de tu compañero (°F)"
+            }
+          },
+          {
+            "id": "partner-region",
+            "type": "text",
+            "label": {
+              "en": "Region the partner matched",
+              "es": "Región que emparejó tu compañero"
+            }
+          }
+        ],
+        "frames": [
+          {
+            "en": "My median is ___ °F and my partner's is ___ °F, a difference of ___ °F.",
+            "es": "Mi mediana es ___ °F y la de mi compañero es ___ °F, una diferencia de ___ °F."
+          },
+          {
+            "en": "My IQR is ___ °F and theirs is ___ °F, so ___ has the steadier climate because ___.",
+            "es": "Mi RIC es ___ °F y el suyo es ___ °F, así que ___ tiene el clima más estable porque ___."
+          },
+          {
+            "en": "A similar median with a different IQR means ___.",
+            "es": "Una mediana parecida con un RIC diferente significa ___."
+          }
+        ],
+        "compare": {
+          "en": "Compare medians AND IQRs. Two locations can share a median and still have completely different climates — say which measure tells you about the typical day and which tells you about day-to-day swing, then justify your conclusion with both numbers.",
+          "es": "Compara las medianas Y los RIC. Dos lugares pueden compartir la mediana y aun así tener climas totalmente distintos — di qué medida habla del día típico y cuál del cambio diario, y luego justifica tu conclusión con ambos números."
         }
       }
     },
@@ -1011,7 +1150,9 @@
         "ub-rate",
         "deal-better",
         "comp-p1-pts",
-        "comp-p1-games"
+        "comp-p1-games",
+        "ss-user-rate",
+        "ss-user-ppg"
       ],
       "steps": {
         "step-2": {
@@ -1499,7 +1640,9 @@
       "skipFields": [
         "ua-rate",
         "ub-rate",
-        "deal-better"
+        "deal-better",
+        "sh-user-sale",
+        "sh-user-total"
       ],
       "steps": {
         "step-2": {
@@ -1772,7 +1915,9 @@
     "/math/unit-5/projects/version-a/": {
       "skipFields": [
         "f-user-area",
-        "c-total-area"
+        "c-total-area",
+        "t-user-area",
+        "c-user-cost"
       ],
       "steps": {
         "step-2": {
@@ -2175,7 +2320,12 @@
           "en": "Who planned the more budget-friendly makeover? Compare cost per square foot, not just the total — a small room with expensive paint can beat a big room on total and still lose on value. Prove it with numbers.",
           "es": "¿Quién planificó la renovación más económica? Compara el costo por pie cuadrado, no solo el total — un cuarto pequeño con pintura cara puede ganar en total y aun así perder en valor. Pruébalo con números."
         }
-      }
+      },
+      "skipFields": [
+        "mb-user-floor",
+        "mb-user-wall",
+        "mb-user-cost"
+      ]
     },
     "/math/unit-6/projects/version-a/": {
       "skipFields": [
@@ -4675,7 +4825,12 @@
           "en": "Who designed the more cost-effective tank? Compare cost PER GALLON, not total cost — a small cheap tank can lose on value. Prove it with both divisions.",
           "es": "¿Quién diseñó el tanque más rentable? Compara el costo POR GALÓN, no el costo total — un tanque pequeño y barato puede perder en valor. Pruébalo con las dos divisiones."
         }
-      }
+      },
+      "skipFields": [
+        "v-user-vol",
+        "sa-user-total",
+        "cost-user-val"
+      ]
     },
     "/math/statistics/projects/version-a/": {
       "skipFields": [
@@ -5224,6 +5379,585 @@
         "compare": {
           "en": "Compare medians AND IQRs. Two locations can share a median and still have completely different climates — say which measure tells you about the typical day and which tells you about day-to-day swing, then justify your conclusion with both numbers.",
           "es": "Compara las medianas Y los RIC. Dos lugares pueden compartir la mediana y aun así tener climas totalmente distintos — di qué medida habla del día típico y cuál del cambio diario, y luego justifica tu conclusión con ambos números."
+        }
+      }
+    },
+    "/math/unit-1/projects/version-c/": {
+      "steps": {
+        "step-1": {
+          "checks": [
+            {
+              "ref": "student-gcf",
+              "kind": "derived",
+              "expr": "gcd({gcf-a}, {gcf-b})",
+              "hints": [
+                {
+                  "en": "You are looking for a factor that divides BOTH amounts with nothing left over. List the factors of each number and find the ones they share.",
+                  "es": "Buscas un factor que divida AMBAS cantidades sin dejar residuo. Haz la lista de factores de cada número y busca los que comparten."
+                },
+                {
+                  "en": "You may have a common factor, but not the greatest one. Check whether a larger shared factor also works — a bigger factor means more kits.",
+                  "es": "Puede que tengas un factor común, pero no el mayor. Revisa si un factor compartido más grande también funciona: un factor mayor significa más kits."
+                }
+              ]
+            },
+            {
+              "ref": "kit-oxy",
+              "kind": "derived",
+              "expr": "{gcf-a} / gcd({gcf-a}, {gcf-b})",
+              "hints": [
+                {
+                  "en": "Split the oxygen canisters across the kits you just found. How many does each kit get?",
+                  "es": "Reparte los tanques de oxígeno entre los kits que acabas de hallar. ¿Cuántos recibe cada kit?"
+                },
+                {
+                  "en": "If this division leaves a remainder, the number of kits is not a factor of the canisters — go back and re-check Step 1.",
+                  "es": "Si esta división deja residuo, el número de kits no es un factor de los tanques: vuelve y revisa el Paso 1."
+                }
+              ]
+            },
+            {
+              "ref": "kit-ration",
+              "kind": "derived",
+              "expr": "{gcf-b} / gcd({gcf-a}, {gcf-b})",
+              "hints": [
+                {
+                  "en": "Same move as the canisters, but with the ration packs.",
+                  "es": "El mismo paso que con los tanques, pero con los paquetes de raciones."
+                },
+                {
+                  "en": "Every kit must be identical, so the ration packs have to divide evenly across the same number of kits.",
+                  "es": "Todos los kits deben ser idénticos, así que las raciones deben repartirse exactamente entre el mismo número de kits."
+                }
+              ]
+            },
+            {
+              "ref": "gcf-why",
+              "kind": "nonempty",
+              "minWords": 15
+            }
+          ],
+          "talk": {
+            "question": {
+              "en": "Convince your partner the GCF — not the LCM — is the right tool for packing identical kits. What would the LCM have told you instead?",
+              "es": "Convence a tu compañero de que el MCD, y no el mcm, es la herramienta correcta para empacar kits idénticos. ¿Qué te habría dicho el mcm en su lugar?"
+            },
+            "stems": [
+              {
+                "en": "I packed ___ identical kits because ___ is the largest number that divides both ___ and ___.",
+                "es": "Empaqué ___ kits idénticos porque ___ es el mayor número que divide tanto ___ como ___."
+              },
+              {
+                "en": "The LCM would have told me ___, which is not what I need because ___.",
+                "es": "El mcm me habría dicho ___, que no es lo que necesito porque ___."
+              }
+            ]
+          }
+        },
+        "step-2": {
+          "checks": [
+            {
+              "ref": "student-lcm",
+              "kind": "derived",
+              "expr": "lcm({lcm-a}, {lcm-b})",
+              "hints": [
+                {
+                  "en": "Skip-count the multiples of each cycle and look for the first day that appears in both lists.",
+                  "es": "Cuenta salteado los múltiplos de cada ciclo y busca el primer día que aparece en ambas listas."
+                },
+                {
+                  "en": "You may have found a day they BOTH dock, but not the FIRST one. Check whether an earlier shared day exists.",
+                  "es": "Quizá hallaste un día en que AMBOS se acoplan, pero no el PRIMERO. Revisa si existe un día compartido anterior."
+                }
+              ]
+            },
+            {
+              "ref": "alpha-visits",
+              "kind": "derived",
+              "expr": "lcm({lcm-a}, {lcm-b}) / {lcm-a}",
+              "hints": [
+                {
+                  "en": "How many of Alpha’s cycles fit into the shared docking day?",
+                  "es": "¿Cuántos ciclos del Alfa caben en el día de acoplamiento compartido?"
+                },
+                {
+                  "en": "Divide the shared day by Alpha’s cycle length. It should come out even.",
+                  "es": "Divide el día compartido entre la longitud del ciclo del Alfa. Debe salir exacto."
+                }
+              ]
+            },
+            {
+              "ref": "beta-visits",
+              "kind": "derived",
+              "expr": "lcm({lcm-a}, {lcm-b}) / {lcm-b}",
+              "hints": [
+                {
+                  "en": "Same idea, using Beta’s cycle.",
+                  "es": "La misma idea, con el ciclo del Beta."
+                },
+                {
+                  "en": "Divide the shared day by Beta’s cycle length.",
+                  "es": "Divide el día compartido entre la longitud del ciclo del Beta."
+                }
+              ]
+            },
+            {
+              "ref": "lcm-why",
+              "kind": "nonempty",
+              "minWords": 15
+            }
+          ],
+          "talk": false
+        },
+        "step-3": {
+          "checks": [
+            {
+              "ref": "student-total",
+              "kind": "derived",
+              "expr": "{dec-a} + {dec-b}",
+              "hints": [
+                {
+                  "en": "Line the decimal points up before you add — the tenths must sit under the tenths.",
+                  "es": "Alinea los puntos decimales antes de sumar: las décimas deben quedar bajo las décimas."
+                },
+                {
+                  "en": "Check that you carried correctly across the decimal point.",
+                  "es": "Revisa que hayas llevado correctamente a través del punto decimal."
+                }
+              ]
+            },
+            {
+              "ref": "student-per",
+              "kind": "derived",
+              "expr": "{div-power} / {div-modules}",
+              "hints": [
+                {
+                  "en": "Use long division: total power units shared equally across the modules.",
+                  "es": "Usa división larga: las unidades de energía repartidas por igual entre los módulos."
+                },
+                {
+                  "en": "If your quotient is not a whole number, your module count breaks the mission rule — pick a module count that divides the power evenly.",
+                  "es": "Si tu cociente no es un número entero, tu número de módulos rompe la regla de la misión: elige uno que divida la energía exactamente."
+                }
+              ]
+            },
+            {
+              "ref": "budget-why",
+              "kind": "nonempty",
+              "minWords": 20
+            }
+          ],
+          "talk": {
+            "question": {
+              "en": "Your partner picked a different module count. Whose station splits its power more evenly, and how can you both tell without a calculator?",
+              "es": "Tu compañero eligió otro número de módulos. ¿Cuál estación reparte su energía de forma más pareja, y cómo lo pueden saber sin calculadora?"
+            },
+            "stems": [
+              {
+                "en": "I chose ___ modules, so each one gets ___ power units.",
+                "es": "Elegí ___ módulos, así que cada uno recibe ___ unidades de energía."
+              },
+              {
+                "en": "I knew it would divide evenly because ___.",
+                "es": "Supe que se dividiría exactamente porque ___."
+              }
+            ]
+          }
+        },
+        "step-4": {
+          "checks": [
+            {
+              "ref": "debrief-self",
+              "kind": "nonempty",
+              "minWords": 20
+            },
+            {
+              "ref": "debrief-peer",
+              "kind": "nonempty",
+              "minWords": 15
+            },
+            {
+              "ref": "debrief-world",
+              "kind": "nonempty",
+              "minWords": 15
+            }
+          ],
+          "talk": false
+        }
+      }
+    },
+    "/math/unit-10/projects/version-c/": {
+      "steps": {
+        "step-1": {
+          "checks": [
+            {
+              "ref": "student-floor",
+              "kind": "derived",
+              "expr": "{vol-l} * {vol-w}",
+              "hints": [
+                {
+                  "en": "The floor is a rectangle. Multiply its two side lengths.",
+                  "es": "El piso es un rectángulo. Multiplica sus dos lados."
+                },
+                {
+                  "en": "With a half-metre edge, multiply as decimals — 4.5 × 3.5 is not 4 × 3.",
+                  "es": "Con una arista de medio metro, multiplica como decimales: 4.5 × 3.5 no es 4 × 3."
+                }
+              ]
+            },
+            {
+              "ref": "student-vol",
+              "kind": "derived",
+              "expr": "{vol-l} * {vol-w} * {vol-h}",
+              "hints": [
+                {
+                  "en": "Take the floor area you just found and multiply by the height.",
+                  "es": "Toma el área del piso que hallaste y multiplícala por la altura."
+                },
+                {
+                  "en": "Volume uses all three dimensions. If you only used two, you found an area, not a volume.",
+                  "es": "El volumen usa las tres dimensiones. Si solo usaste dos, hallaste un área, no un volumen."
+                }
+              ]
+            },
+            {
+              "ref": "vol-why",
+              "kind": "nonempty",
+              "minWords": 15
+            }
+          ],
+          "talk": false
+        },
+        "step-2": {
+          "checks": [
+            {
+              "ref": "sa-tb",
+              "kind": "derived",
+              "expr": "2 * {vol-l} * {vol-w}",
+              "hints": [
+                {
+                  "en": "Top and bottom are twins. Find one, then double it.",
+                  "es": "El techo y el piso son gemelos. Halla uno y duplícalo."
+                },
+                {
+                  "en": "This pair uses length and width — the same rectangle as your floor.",
+                  "es": "Este par usa largo y ancho: el mismo rectángulo que tu piso."
+                }
+              ]
+            },
+            {
+              "ref": "sa-fb",
+              "kind": "derived",
+              "expr": "2 * {vol-l} * {vol-h}",
+              "hints": [
+                {
+                  "en": "Front and back are twins too. Which two dimensions form that face?",
+                  "es": "El frente y el atrás también son gemelos. ¿Qué dos dimensiones forman esa cara?"
+                },
+                {
+                  "en": "This pair uses length and height.",
+                  "es": "Este par usa el largo y la altura."
+                }
+              ]
+            },
+            {
+              "ref": "sa-lr",
+              "kind": "derived",
+              "expr": "2 * {vol-w} * {vol-h}",
+              "hints": [
+                {
+                  "en": "The last pair uses the two dimensions you have not paired yet.",
+                  "es": "El último par usa las dos dimensiones que aún no has emparejado."
+                },
+                {
+                  "en": "This pair uses width and height.",
+                  "es": "Este par usa el ancho y la altura."
+                }
+              ]
+            },
+            {
+              "ref": "student-sa",
+              "kind": "derived",
+              "expr": "2 * {vol-l} * {vol-w} + 2 * {vol-l} * {vol-h} + 2 * {vol-w} * {vol-h}",
+              "hints": [
+                {
+                  "en": "Add your three pair areas together. All six faces must be counted once.",
+                  "es": "Suma las áreas de tus tres pares. Las seis caras deben contarse una vez."
+                },
+                {
+                  "en": "If your total is smaller than the biggest pair, you missed a pair.",
+                  "es": "Si tu total es menor que el par más grande, te faltó un par."
+                }
+              ]
+            },
+            {
+              "ref": "student-cost",
+              "kind": "derived",
+              "expr": "(2 * {vol-l} * {vol-w} + 2 * {vol-l} * {vol-h} + 2 * {vol-w} * {vol-h}) * {mat-cost}",
+              "hints": [
+                {
+                  "en": "You pay per square metre of panel. Multiply your surface area by the panel price.",
+                  "es": "Pagas por metro cuadrado de panel. Multiplica tu área de superficie por el precio del panel."
+                },
+                {
+                  "en": "Use the surface area, not the volume — you are buying the outside, not the inside.",
+                  "es": "Usa el área de superficie, no el volumen: compras el exterior, no el interior."
+                }
+              ]
+            },
+            {
+              "ref": "sa-why",
+              "kind": "nonempty",
+              "minWords": 20
+            }
+          ],
+          "talk": {
+            "question": {
+              "en": "Surface area is what you pay for, but volume is what you sell. Explain to your partner why making the pavilion taller does not affect those two numbers the same way.",
+              "es": "Lo que pagas es el área de superficie, pero lo que vendes es el volumen. Explica a tu compañero por qué hacer el pabellón más alto no afecta igual a esos dos números."
+            },
+            "stems": [
+              {
+                "en": "My surface area is ___ m², which costs .",
+                "es": "Mi área de superficie es ___ m², que cuesta ."
+              },
+              {
+                "en": "If I raise the height by 0.5 m, the volume changes by ___ but the surface area changes by ___, because ___.",
+                "es": "Si subo la altura 0.5 m, el volumen cambia ___ pero el área de superficie cambia ___, porque ___."
+              }
+            ]
+          }
+        },
+        "step-3": {
+          "checks": [
+            {
+              "ref": "alt-sa",
+              "kind": "derived",
+              "expr": "2 * {alt-l} * {alt-w} + 2 * {alt-l} * {alt-h} + 2 * {alt-w} * {alt-h}",
+              "hints": [
+                {
+                  "en": "Same three pairs as before, using your rival design’s dimensions.",
+                  "es": "Los mismos tres pares que antes, con las dimensiones de tu diseño rival."
+                },
+                {
+                  "en": "Fill in all three rival dimensions first, then add the three pair areas.",
+                  "es": "Primero completa las tres dimensiones del diseño rival, luego suma las áreas de los tres pares."
+                }
+              ]
+            },
+            {
+              "ref": "argue",
+              "kind": "nonempty",
+              "minWords": 30
+            }
+          ],
+          "talk": false
+        },
+        "step-4": {
+          "checks": [
+            {
+              "ref": "debrief-self",
+              "kind": "nonempty",
+              "minWords": 20
+            },
+            {
+              "ref": "debrief-peer",
+              "kind": "nonempty",
+              "minWords": 15
+            },
+            {
+              "ref": "debrief-world",
+              "kind": "nonempty",
+              "minWords": 15
+            }
+          ],
+          "talk": false
+        }
+      }
+    },
+    "/math/pre-unit/projects/version-a/": {
+      "skipFields": [
+        "student-buses-input",
+        "student-packs-input",
+        "student-banners-input",
+        "student-bags-input",
+        "student-equiv-input",
+        "err-diagnosis",
+        "err-correct",
+        "d-buses",
+        "d-packs",
+        "d-banners",
+        "peer-buses"
+      ],
+      "steps": {
+        "step-2": {
+          "checks": [
+            {
+              "ref": "bus-students",
+              "kind": "range",
+              "min": 1,
+              "max": 100000
+            },
+            {
+              "ref": "bus-seats",
+              "kind": "range",
+              "min": 1,
+              "max": 200
+            },
+            {
+              "ref": "bus-remainder-meaning",
+              "kind": "nonempty",
+              "minWords": 10
+            }
+          ],
+          "talk": {
+            "question": {
+              "en": "Two people can divide the same numbers correctly and still order a different number of buses. How is that possible?",
+              "es": "Dos personas pueden dividir los mismos números correctamente y aun así pedir distinta cantidad de autobuses. ¿Cómo es posible?"
+            },
+            "stems": [
+              {
+                "en": "I divided ___ by ___ and got ___ with ___ left over.",
+                "es": "Dividí ___ entre ___ y obtuve ___ con ___ de sobra."
+              },
+              {
+                "en": "The leftover students matter because ___.",
+                "es": "Los estudiantes que sobran importan porque ___."
+              },
+              {
+                "en": "So the quotient is not the answer on its own — you also have to ___.",
+                "es": "Entonces el cociente por sí solo no es la respuesta: también hay que ___."
+              }
+            ]
+          }
+        },
+        "step-3": {
+          "checks": [
+            {
+              "ref": "sup-total",
+              "kind": "range",
+              "min": 0.01,
+              "max": 100000
+            },
+            {
+              "ref": "sup-unit",
+              "kind": "range",
+              "min": 0.01,
+              "max": 10000
+            }
+          ],
+          "talk": {
+            "question": {
+              "en": "Why does multiplying BOTH numbers by the same power of 10 leave the quotient unchanged?",
+              "es": "¿Por qué multiplicar AMBOS números por la misma potencia de 10 no cambia el cociente?"
+            },
+            "stems": [
+              {
+                "en": "I rewrote ___ ÷ ___ as ___ ÷ ___.",
+                "es": "Reescribí ___ ÷ ___ como ___ ÷ ___."
+              },
+              {
+                "en": "The quotient stays the same because ___.",
+                "es": "El cociente no cambia porque ___."
+              },
+              {
+                "en": "If I moved only one decimal point, ___ would happen.",
+                "es": "Si moviera solo un punto decimal, pasaría ___."
+              }
+            ]
+          }
+        },
+        "step-4": {
+          "checks": [
+            {
+              "ref": "bag-justify",
+              "kind": "nonempty",
+              "minWords": 12
+            }
+          ],
+          "talk": {
+            "question": {
+              "en": "You divided by a number smaller than 1 and got MORE than you started with. Convince your partner that is not a mistake.",
+              "es": "Dividiste entre un número menor que 1 y obtuviste MÁS de lo que empezaste. Convence a tu compañero de que no es un error."
+            },
+            "stems": [
+              {
+                "en": "Dividing asks how many ___ fit inside ___.",
+                "es": "Dividir pregunta cuántos ___ caben en ___."
+              },
+              {
+                "en": "Because each piece is smaller than one whole, ___.",
+                "es": "Como cada pieza es menor que un entero, ___."
+              },
+              {
+                "en": "My model and the reciprocal agree because ___.",
+                "es": "Mi modelo y el recíproco coinciden porque ___."
+              }
+            ]
+          }
+        },
+        "step-5": {
+          "checks": [
+            {
+              "ref": "err-explain",
+              "kind": "nonempty",
+              "minWords": 12
+            },
+            {
+              "ref": "peer-reflect",
+              "kind": "nonempty",
+              "minWords": 12
+            }
+          ],
+          "talk": false
+        },
+        "step-6": {
+          "checks": [
+            {
+              "ref": "d-students",
+              "kind": "range",
+              "min": 1,
+              "max": 100000
+            },
+            {
+              "ref": "d-seats",
+              "kind": "range",
+              "min": 1,
+              "max": 200
+            },
+            {
+              "ref": "d-budget",
+              "kind": "range",
+              "min": 0.01,
+              "max": 100000
+            },
+            {
+              "ref": "d-unit-cost",
+              "kind": "range",
+              "min": 0.01,
+              "max": 10000
+            },
+            {
+              "ref": "pitch",
+              "kind": "nonempty",
+              "minWords": 25
+            },
+            {
+              "ref": "r-math",
+              "kind": "nonempty",
+              "minWords": 6
+            },
+            {
+              "ref": "r-rep",
+              "kind": "nonempty",
+              "minWords": 6
+            },
+            {
+              "ref": "r-ready",
+              "kind": "nonempty",
+              "minWords": 6
+            }
+          ]
         }
       }
     }

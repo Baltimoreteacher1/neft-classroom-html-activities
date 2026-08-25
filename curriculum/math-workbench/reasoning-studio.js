@@ -81,12 +81,14 @@
     details.innerHTML =
       '<summary aria-label="Open more Workbench tools">••• More</summary><div class="mwb-more-menu"></div>';
     const menu = details.querySelector(".mwb-more-menu");
-    ["bgTopBtn", "snapBtn", "calcBtn", "multBtn", "backupBtn", "openBtn", "helpBtn"].forEach(
-      (id) => {
-        const node = document.getElementById(id);
-        if (node) menu.appendChild(node);
-      },
-    );
+    // multBtn is deliberately NOT collected here. The Times Table is a
+    // reference a student reaches for mid-problem, so it stays in the top row
+    // where it can be tapped without opening a menu first; this builder used to
+    // pull it in and undo that placement at runtime.
+    ["bgTopBtn", "snapBtn", "calcBtn", "backupBtn", "openBtn", "helpBtn"].forEach((id) => {
+      const node = document.getElementById(id);
+      if (node) menu.appendChild(node);
+    });
     bar.appendChild(details);
     document.addEventListener("click", (event) => {
       if (details.open && !details.contains(event.target)) details.open = false;

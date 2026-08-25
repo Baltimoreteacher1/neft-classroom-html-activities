@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { validateSmallGroups } from "./validate-small-group-lessons.mjs";
 
-const html = readFileSync(new URL("../curriculum/index.html", import.meta.url), "utf8");
+/* The detector under test reads the unit/lesson markup, which now lives on the
+   units page; this fixture has to come from the same file the gate reads. */
+const html = readFileSync(new URL("../curriculum/units/index.html", import.meta.url), "utf8");
 const rows = JSON.parse(readFileSync(new URL("./small-group-rows.json", import.meta.url), "utf8"));
 const readLessonConfig = (lessonId) =>
   JSON.parse(readFileSync(new URL(`../lessons/${lessonId}/config.json`, import.meta.url), "utf8"));
@@ -49,7 +51,9 @@ for (const lessonId of ["6-2", "6-2-group1", "6-2-group2"]) {
 // parallel-practice contract as the small-group lessons (typed-in visual
 // models + guided steps, unique ids/stems, catch-up-scoped ids).
 const catchups = JSON.parse(readFileSync(new URL("./catchup-rows.json", import.meta.url), "utf8"));
-assert.equal(catchups.length, 20, "expected 20 catch-up stations");
+// 20 unit-slice bands + 16 legacy-strand stations the generator adopted on
+// 2026-08-14 (see LEGACY_STRAND_BANDS in generate-catchup-lessons.mjs).
+assert.equal(catchups.length, 36, "expected 36 catch-up stations");
 for (const row of catchups) {
   const config = readLessonConfig(row.id);
   const parallel = config.parallelPractice || [];

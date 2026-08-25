@@ -31,6 +31,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { skipExit } from "./lib/skip-exit.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const git = (...a) => execFileSync("git", a, { cwd: ROOT, encoding: "utf8", maxBuffer: 1 << 28 });
@@ -143,7 +144,8 @@ if (dirtyTracked().length) {
     "   ⚠ skipped: tracked files already modified. Commit or stash, then re-run —\n" +
       "     otherwise a generator's output cannot be told from your edits.",
   );
-  process.exit(0);
+  // SKIP, not PASS: no generator output was compared on this run.
+  process.exit(skipExit("the tree already has modified tracked files"));
 }
 
 const untrackedBefore = new Set(untracked());

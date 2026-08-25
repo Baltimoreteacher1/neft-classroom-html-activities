@@ -677,9 +677,53 @@
     setTimeout(pollForHook, 150 * wrapAttempts);
   }
 
+  /* DETERMINISTIC ARMING. Measured on live unit-1-version-a: __ntWrapped was
+     still false at click time, so completion was being recorded by the text
+     fallback, not the wrapper — the bounded retry above loses the race on a
+     page whose inline script defines buildReport late. Rather than lengthen the
+     retry (which only moves the race), define the property so ANY later
+     assignment routes through the wrapper.
+
+     Best-effort by design: a page that declared `function buildReport(){}` at
+     top level owns a non-configurable binding on some engines, so this can
+     throw. It returns false there and pollForHook + the click fallback still
+     cover it — this narrows the window, it does not replace the backstops. */
+  function armHookDeterministically() {
+    if (ensureWrapped()) return true;
+    var current = window.buildReport;
+    try {
+      Object.defineProperty(window, "buildReport", {
+        configurable: true,
+        enumerable: true,
+        get: function () {
+          return current;
+        },
+        set: function (fn) {
+          current = fn;
+          // Wrap on assignment, so the page defining buildReport later is armed
+          // the instant it does so rather than whenever a poll next fires.
+          if (typeof fn === "function" && !fn.__ntWrapped) {
+            setTimeout(ensureWrapped, 0);
+          }
+        },
+      });
+      return true;
+    } catch (_e) {
+      return false;
+    }
+  }
+
   // "I'm done" affordances — always a real completion.
+  /* Articles and determiners are optional on BOTH sides. The literal forms
+     missed math/pre-unit/projects/version-a, whose button reads
+     "🏁 Finish the project 🏁 Terminar el proyecto": "finish the project" and
+     "terminar el proyecto" both failed, the Spanish one on a single article.
+     A completion path that depends on exact button text is a completion path
+     that fails silently on a bilingual site, for the students least able to
+     report it. Widened, and the deterministic hook below means this is now a
+     backstop rather than the primary mechanism. */
   var FINISH_RE =
-    /(project finished|finish project|i'?m finished|proyecto terminado|terminar proyecto)/i;
+    /(project\s+finished|finish(?:\s+(?:the|my|this))?\s+project|i'?m\s+finished|proyecto\s+terminado|terminar\s+(?:el\s+|mi\s+|este\s+)?proyecto)/i;
   // "Make my summary" affordances — a completion ONLY if the report actually
   // filled in. Some pages (e.g. statistics-b) guard buildReport behind
   // "do Step 1 first" and return false; that must NOT count as finished.
@@ -717,10 +761,167 @@
     );
   }
 
+  /* ------------------------------------------- state-based completion ----- */
+  /* PRIMARY MECHANISM. Keyed on the report actually being GENERATED — the
+     report container going from empty to populated — not on a click whose
+     button text matches a regex.
+
+     Why text matching had to stop being primary: 23 of 27 pages label the
+     trigger "Generate Summary" with inconsistent prefixes, 4 carry no such
+     label at all, and math/pre-unit/projects/version-a reads "Terminar el
+     proyecto" against a pattern demanding "terminar proyecto" — one determiner
+     silently killed every completion on that page, and nothing visibly failed
+     from the student's side.
+
+     Why this signal cannot fire without real completion: the container is empty
+     until the page's own report builder writes into it, and that builder only
+     runs when the student generates their report. Reaching the final wizard
+     step does NOT populate it — that distinction matters, because recording on
+     "reached the last step" would count students who clicked to the end without
+     doing the work, which is the same class of lie as the hardcoded 100. */
+  var REPORT_SELECTOR = "#reportBox, #report-out, [data-project-report]";
+
+  function observeReportGeneration() {
+    var nodes = document.querySelectorAll(REPORT_SELECTOR);
+    if (!nodes.length || typeof MutationObserver !== "function") return false;
+    var seen = false;
+    var obs = new MutationObserver(function () {
+      if (seen) return;
+      for (var i = 0; i < nodes.length; i++) {
+        // "Populated" = real rendered text, not a stray whitespace node.
+        if (String(nodes[i].textContent || "").trim().length > 40) {
+          seen = true;
+          obs.disconnect();
+          recordCompletion("report-state");
+          return;
+        }
+      }
+    });
+    for (var i = 0; i < nodes.length; i++) {
+      obs.observe(nodes[i], { childList: true, subtree: true, characterData: true });
+    }
+    return true;
+  }
+
+  /* A project page with no report container and no trigger this layer
+     recognises has NO completion path at all — the student finishes and the
+     tracker records nothing, while the portfolio counts the page in its
+     denominator. Those pages read as permanently unfinished. Rather than patch
+     each one, the layer guarantees the affordance: it renders its own finish
+     control, but ONLY where nothing else can record a completion, so it never
+     duplicates or competes with an existing path. */
+  function ensureFinishAffordance() {
+    if (document.querySelector(REPORT_SELECTOR)) return false;
+    if (document.getElementById("ntc-finish")) return false;
+    var existing = [].slice.call(document.querySelectorAll("button, a, [role='button']"));
+    for (var i = 0; i < existing.length; i++) {
+      var txt = String(existing[i].textContent || "")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (txt && txt.length <= 80 && (FINISH_RE.test(txt) || REPORT_RE.test(txt))) return false;
+    }
+    // Host must be BODY, not <main>. On math/unit-10/projects/world-architect
+    // the page is a multi-screen app and the first <main> sits inside a
+    // SECTION.screen that is display:none, so the control rendered with zero
+    // height and no offsetParent — present in the DOM, unreachable by a
+    // student. body is the only container guaranteed not to be hidden.
+    var host = document.body;
+    if (!host) return false;
+    var wrap = document.createElement("div");
+    wrap.className = "ntc-finish-wrap";
+    wrap.style.cssText =
+      "margin:24px auto;padding:16px;max-width:640px;text-align:center;" +
+      "border-top:2px solid rgba(0,0,0,.08);";
+    var b = document.createElement("button");
+    b.id = "ntc-finish";
+    b.type = "button";
+    b.className = "ntc-finish-btn";
+    b.style.cssText =
+      "min-height:48px;padding:12px 24px;font:700 16px system-ui,Segoe UI,sans-serif;" +
+      "color:#fff;background:#1c8c8c;border:0;border-radius:999px;cursor:pointer;";
+    // BOTH languages, always — via the page's own sibling-span convention, not
+    // t(). t() keys on body.es, which a ?lang=es support link does not set, so
+    // the control rendered English-only for exactly the students the Spanish
+    // label exists for. bi() is what every other bilingual control here uses.
+    b.innerHTML = bi("🏁 I finished this project", "🏁 Terminé este proyecto");
+    b.setAttribute(
+      "aria-label",
+      "Mark this project finished / Marcar este proyecto como terminado",
+    );
+    b.addEventListener("click", function () {
+      recordCompletion("finish-button");
+      b.disabled = true;
+      b.innerHTML = bi("✓ Saved to your portfolio", "✓ Guardado en tu portafolio");
+    });
+    wrap.appendChild(b);
+    host.appendChild(wrap);
+    return true;
+  }
+
+  /* ---------------------------------------------- cross-device completion */
+  /* The completion record is a plain localStorage key, and the save/resume
+     payload only carries fields/navigation/dragDrop/custom/progressPercent —
+     so a student who finished a project on a classroom Chromebook and restored
+     their save code at home got their WORK back but not their COMPLETION. The
+     portfolio showed 0 finished and the certificate was unavailable. Canvas
+     already reports these as incomplete by design, so on the second device the
+     completion existed in neither system.
+
+     Registered as a state PROVIDER/RESTORER rather than special-casing the
+     export. A special case is the shape that drifts; the provider contract is
+     what the engine already maintains for every other custom payload. */
+  var travelAttempts = 0;
+
+  function registerCompletionTravel() {
+    var sr = window.NeftSaveResume;
+    if (!sr || typeof sr.registerStateProvider !== "function") {
+      // LOAD ORDER, not absence. On the version-c template this file is emitted
+      // at line 837 and save-resume-engine.js at 855 — both deferred, so they
+      // execute in document order and the engine does not exist yet. Registering
+      // once here silently produced ZERO restorers on those pages, so a save
+      // code carried the work but not the completion. Bounded retry, then stop.
+      if (++travelAttempts <= 10) setTimeout(registerCompletionTravel, 120 * travelAttempts);
+      return;
+    }
+
+    sr.registerStateProvider(function () {
+      // Carry ONLY this page's record. COMPLETE_KEY is a merged map across
+      // every project; shipping the whole map in every project's save code
+      // would grow without bound and put one project's state in another's
+      // export.
+      var mine = jsonGet(COMPLETE_KEY, {})[PATH];
+      return mine ? { projectComplete: mine } : null;
+    });
+
+    sr.registerStateRestorer(function (payload) {
+      if (!payload || !payload.projectComplete) return;
+      // MERGE, never clobber: this device may already hold completions for
+      // other projects and a restore must not erase them. An existing local
+      // record also wins over an imported one — a completion recorded on this
+      // device is first-hand, while the import may be an older snapshot of the
+      // same work.
+      var all = jsonGet(COMPLETE_KEY, {});
+      if (all[PATH]) return;
+      all[PATH] = payload.projectComplete;
+      jsonSet(COMPLETE_KEY, all);
+    });
+  }
+
   /* -------------------------------------------------------------- bootstrap */
 
   function run() {
-    if (!document.body || !document.body.classList.contains("pro-projects")) return;
+    // GATE. Historically body.pro-projects, which left
+    // math/unit-10/projects/world-architect outside the layer entirely — it
+    // simply never got the class. Adding the class to that page would switch on
+    // four unrelated layers (award, answer-key link, partner) that have never
+    // run there, so the completion layer carries its own gate instead: any
+    // project page under /math/<unit>/projects/<page>/ qualifies. Every project
+    // page gets a completion path; nothing else changes.
+    if (!document.body) return;
+    var isProjectPage =
+      document.body.classList.contains("pro-projects") ||
+      /^\/math\/[a-z0-9-]+\/projects\/[a-z0-9-]+\/?$/i.test(PATH);
+    if (!isProjectPage) return;
     if (document.body.dataset.ntCompleteInit === "1") return;
     document.body.dataset.ntCompleteInit = "1";
 
@@ -735,6 +936,14 @@
       if (window.console) console.warn("[projects-complete] reflection skipped:", e);
     }
     try {
+      registerCompletionTravel();
+    } catch (e) {
+      if (window.console) console.warn("[projects-complete] travel skipped:", e);
+    }
+    try {
+      observeReportGeneration();
+      ensureFinishAffordance();
+      armHookDeterministically();
       pollForHook();
       wireClickFallback();
     } catch (e) {

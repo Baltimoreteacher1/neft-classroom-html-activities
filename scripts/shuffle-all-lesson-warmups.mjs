@@ -44,7 +44,7 @@ function processJsonFile(filePath) {
   let data;
   try {
     data = JSON.parse(content);
-  } catch (e) {
+  } catch (_e) {
     return;
   }
 

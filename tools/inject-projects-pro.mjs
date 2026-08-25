@@ -18,6 +18,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PROJECT_UNITS } from "./lib/project-units.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -27,8 +28,8 @@ const DRY = globalThis.process.argv.includes("--dry-run");
 
 const HEAD_BLOCK = [
   "<!-- projects-pro-injected:begin (premium layer — tools/inject-projects-pro.mjs) -->",
-  '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />',
-  '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />',
+  "",
+  '<link href="/assets/fonts/plus-jakarta-sans-4f1f37.css" rel="stylesheet" />',
   '<link rel="stylesheet" href="/shared/projects/projects-pro.css" />',
   "<!-- projects-pro-injected:end -->",
 ];
@@ -39,8 +40,6 @@ const BODY_BLOCK = [
 ];
 
 const _MARK = "projects-pro-injected:begin";
-
-const UNITS = Array.from({ length: 10 }, (_, i) => i + 1);
 
 function addHead(html) {
   if (html.includes("projects-pro.css")) return html;
@@ -79,7 +78,7 @@ function process(rel) {
   }
 }
 
-const DIRS = [...UNITS.map((u) => `math/unit-${u}/projects`), "math/statistics/projects"];
+const DIRS = PROJECT_UNITS.map((u) => `math/${u}/projects`);
 
 /* Enumerate version folders from disk (version-a, version-b, version-c, …).
    A hardcoded ["version-a","version-b"] list is why unit-8/version-c was

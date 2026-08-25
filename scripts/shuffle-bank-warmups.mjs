@@ -10,7 +10,7 @@ function shuffleChoices(choices, correctIndex) {
   if (!choices || choices.length < 2 || correctIndex === undefined) {
     return { choices, correctIndex };
   }
-  const correctChoice = choices[correctIndex];
+  const _correctChoice = choices[correctIndex];
   // Create indexed items
   const items = choices.map((c, i) => ({ text: c, isCorrect: i === correctIndex }));
 
@@ -61,7 +61,7 @@ function walk(dir) {
       } else if (name.endsWith(".html")) {
         processHtmlFile(full);
       }
-    } catch (e) {}
+    } catch (_e) {}
   }
 }
 
@@ -80,7 +80,7 @@ function processHtmlFile(filePath) {
         modified = true;
         htmlUpdatedCount++;
         return `options: ${JSON.stringify(newOpts)}, correct: ${newIdx}`;
-      } catch (e) {
+      } catch (_e) {
         return match;
       }
     },

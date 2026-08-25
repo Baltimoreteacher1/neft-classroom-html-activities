@@ -123,7 +123,11 @@ const ZOOM_PATHS = [
     // Also covers the be-curious / ESOL support panel and the Notice & Wonder
     // academic-word chips: both open this same pop-up.
     must: [
-      /import \{ attachImageZoom, isLightboxOpen \} from "\.\/image-zoom\.js"/,
+      // Both names must be imported from the module; the list is deliberately
+      // not pinned to exactly two, since the renderer also pulls in the
+      // document-wide observer (observeContentImageZoom).
+      /import \{[^}]*\battachImageZoom\b[^}]*\}\s*from\s*"\.\/image-zoom\.js"/,
+      /import \{[^}]*\bisLightboxOpen\b[^}]*\}\s*from\s*"\.\/image-zoom\.js"/,
       /class="obj-popup-img"/,
     ],
     inFunction: { name: "openObjectiveTermPopup", must: /attachImageZoom\(img\)/ },

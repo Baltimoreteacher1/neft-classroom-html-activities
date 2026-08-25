@@ -10,7 +10,14 @@
 // Open by design (/api/* is exempt from the site password) and safe: it only
 // packages activities on eduwonderlab.com (enforced in _lib/scorm.js).
 
-import { buildScormFiles, zipStore } from "../_lib/scorm.js";
+import {
+  buildScormFiles,
+  PackagePreflightError,
+  packageFileName,
+  SCORM_RUNTIME_VERSION,
+  TeacherSurfaceError,
+  zipStore,
+} from "../_lib/scorm.js";
 
 function esc(s) {
   return String(s == null ? "" : s)
@@ -50,7 +57,11 @@ function errorPage(message, status = 400) {
       <p>${esc(message)}</p>
       <p>Expected: <code>?activity=</code> a lesson id like <code>1-3</code>, a site
          path like <code>/ratio-color-mixer/</code>, or a full eduwonderlab.com URL.</p>
-      <p><a href="/curriculum/">← Back to the Curriculum Hub</a><br />
+      <!-- ?teacher=1 because this page is teacher-facing and /curriculum/ is the
+           teacher console: without a current sign-in a bare link bounces to the
+           student lesson picker, which is not where a teacher building a SCORM
+           package was going. -->
+      <p><a href="/curriculum/?teacher=1">← Back to the Curriculum Hub</a><br />
          <a href="/teacher-tools/scorm-builder/">Open the SCORM Builder</a></p>
     </main>
   </body>
@@ -68,7 +79,7 @@ function errorPage(message, status = 400) {
 // a definitive 404 blocks — auth gates (401/403), method quirks (405), and
 // transient 5xx / network errors / timeouts all let the download through, so a
 // hiccup never blocks a legitimate package.
-async function targetExists(lessonUrl) {
+export async function targetExists(lessonUrl) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 4000);
   try {
@@ -108,8 +119,27 @@ export async function onRequest(context) {
 
   let pkg;
   try {
-    pkg = buildScormFiles({ target, title, codes, supports, lang });
+    pkg = buildScormFiles({
+      target,
+      title,
+      codes,
+      supports,
+      lang,
+      generatedAt: new Date().toISOString(),
+      generator: "eduwonderlab/api-scorm",
+    });
   } catch (e) {
+    // A teacher-only target is a refusal (403), not a malformed request. The
+    // message says what happened and nothing about how the gate decides.
+    if (e instanceof TeacherSurfaceError || e?.name === "TeacherSurfaceError") {
+      return errorPage(e.message, 403);
+    }
+    // Pre-flight refused. The whole point is that a teacher never uploads a
+    // package that cannot work, so this is a visible refusal with the reason —
+    // never a zip that fails later, inside a published Canvas assignment.
+    if (e instanceof PackagePreflightError || e?.name === "PackagePreflightError") {
+      return errorPage(e.message, e.status || 400);
+    }
     return errorPage("Could not build package: " + (e.message || e));
   }
 
@@ -124,13 +154,21 @@ export async function onRequest(context) {
   }
 
   const zip = zipStore(pkg.files);
-  const fname = `neft-${pkg.id}${pkg.codes ? "-codes" : ""}.zip`;
+  const fname = packageFileName(pkg.id, pkg.codes);
   return new Response(zip, {
     headers: {
       "Content-Type": "application/zip",
       "Content-Disposition": `attachment; filename="${fname}"`,
       "Cache-Control": "no-store",
       "Access-Control-Allow-Origin": "*",
+      // Download summary, readable by the teacher UI without opening the ZIP,
+      // so the confirmation chip can say what was actually built.
+      "X-EWL-Scorm-Runtime": String(SCORM_RUNTIME_VERSION),
+      "X-EWL-Scorm-Activity": pkg.id,
+      "X-EWL-Scorm-Title": pkg.title.replace(/[^\x20-\x7e]/g, ""),
+      "X-EWL-Scorm-Target": pkg.lessonUrl,
+      "Access-Control-Expose-Headers":
+        "X-EWL-Scorm-Runtime, X-EWL-Scorm-Activity, X-EWL-Scorm-Title, X-EWL-Scorm-Target",
     },
   });
 }

@@ -78,7 +78,78 @@
       grid.appendChild(row);
     });
     card.appendChild(grid);
+
+    /* Fill from the pacing plan.
+     *
+     * Plan Week decides HOW the week is taught; the Pacing Planner decides WHEN
+     * each lesson happens. Before this, the two did not speak, so the teacher
+     * picked the same five lessons twice — once in the planner and again here.
+     *
+     * The planner's live overlay is read from this device first
+     * (localStorage["nt-pacing:overlay"], written by curriculum/planning/
+     * planning-store.js) and the published baseline is the fallback, so this
+     * still fills sensibly on a device that has never opened the planner. The
+     * baseline is fetched ON CLICK, not on load: it is ~400 KB and this page is
+     * student-facing with a request budget. */
+    var status = context.el("p", "ctw-muted");
+    card.appendChild(status);
+
+    function mondayOf(date) {
+      var d = new Date(date.getTime());
+      d.setHours(12, 0, 0, 0);
+      d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+      return d.toISOString().slice(0, 10);
+    }
+
+    function readOverlay() {
+      try {
+        return JSON.parse(localStorage.getItem("nt-pacing:overlay")) || {};
+      } catch (_e) {
+        return {};
+      }
+    }
+
+    function fillFromPlan() {
+      status.textContent = "Reading the pacing plan…";
+      fetch("/data/pacing-baseline-2026-27.json")
+        .then(function (r) {
+          if (!r.ok) throw new Error("unavailable");
+          return r.json();
+        })
+        .then(function (baseline) {
+          var overlay = readOverlay();
+          var monday = mondayOf(new Date());
+          if (monday < baseline.firstStudentDay)
+            monday = mondayOf(new Date(baseline.firstStudentDay + "T12:00:00Z"));
+          var filled = 0;
+          DAYS.forEach(function (day, i) {
+            var iso = new Date(Date.parse(monday + "T12:00:00Z") + i * 86400000)
+              .toISOString()
+              .slice(0, 10);
+            var entry = baseline.days.find(function (d) {
+              return d.date === iso;
+            });
+            if (!entry) return;
+            var plan = Object.assign({}, entry.plan, (overlay[iso] || {}).plan || {});
+            var id = context.lessonsById[plan.lessonId] ? plan.lessonId : "";
+            context.state.week[day] = id;
+            if (id) filled++;
+          });
+          context.saveState();
+          renderWeek(stage, context);
+          status.textContent =
+            filled > 0
+              ? `Filled ${filled} day${filled === 1 ? "" : "s"} from the pacing plan for the week of ${monday}.`
+              : `The pacing plan has no core lessons scheduled for the week of ${monday}.`;
+        })
+        .catch(function () {
+          status.textContent =
+            "The pacing plan could not be read just now. Choose lessons by hand, or open the Pacing Planner.";
+        });
+    }
+
     var actions = context.el("div", "ctw-planning-actions");
+    actions.appendChild(context.button("Fill from the pacing plan", fillFromPlan));
     actions.appendChild(
       context.button("Copy week", function (event) {
         var text = DAYS.map(function (day) {
@@ -371,6 +442,672 @@
     stage.replaceChildren(card);
   }
 
+  /* ── The teacher workspace ──────────────────────────────────────────────────
+   * /curriculum/ had grown into a directory of everything the platform can do:
+   * 42 teacher destinations, 21 of them inside a drawer that is collapsed by
+   * default. A teacher opening it could not answer "where do I teach, plan and
+   * find supports" without reading the whole page.
+   *
+   * This block answers those three questions above everything else, in the
+   * order they actually matter — Lessons dominant, Planner and Supports beside
+   * each other, More as a plain link. It ADDS no destinations and REMOVES none:
+   * every link here already existed somewhere on the page, and everything that
+   * was on the page is still on the page below it.
+   *
+   * No fetches. Everything rendered here is either a static route or already in
+   * the DOM (the resume strip's lesson), because a navigation surface that
+   * waits on data is slower than the page it replaced.
+   */
+  /* ── Class Section → Unit → Lesson ─────────────────────────────────────────
+   * The Teach band's browse control.
+   *
+   * CLASS SECTION is 601 / 602 / 603 — the teacher's class periods. It
+   * establishes WHICH CLASS is being taught; it does NOT filter the
+   * curriculum, because all three classes are taught the same Grade 6
+   * curriculum. Unit filters lessons; class does not filter units.
+   *
+   * This replaced a first cut that read "section" as the MCCRS standards
+   * DOMAIN (Algebraic Thinking, Geometric Reasoning, …) and filtered units by
+   * it. That was the wrong noun: it made the class period look like a
+   * curricular hierarchy and hid two thirds of the curriculum behind a choice
+   * that has nothing to do with which lessons exist. The domain data is
+   * untouched and still used elsewhere — it simply is not this control.
+   *
+   * SOURCES OF TRUTH, both existing:
+   *   the class list      assets/learning-supports/supports-schema.js SECTIONS
+   *   the chosen class    curriculumTeacherWorkflow:v1.section, the key the
+   *                       Teacher Workflow card's own class selector already
+   *                       writes — so picking 602 here and picking 602 there
+   *                       are the same act
+   *   units + lessons     data/curriculum-launch-manifest.json, via
+   *                       window.NTJsonCache, which three other hub scripts
+   *                       already use for this exact file. No extra request.
+   *   unit ORDER          data/pacing-unit-ranges.json, generated by
+   *                       tools/import-pacing-baseline.mjs from the district
+   *                       plan. See the note below — this is a separate source
+   *                       from the manifest ON PURPOSE.
+   *
+   * FAILURE. Anything that goes wrong is confined to this band. The rest of
+   * /curriculum/ is untouched, and the band falls back to the browse and search
+   * links that were always there.
+   */
+
+  /* The canonical class list is supports-schema.js SECTIONS. It is read from
+   * window.EWLSupportsSchema when that schema is loaded and otherwise falls
+   * back to this, which tools/hub-lesson-picker.test.mjs pins against the
+   * schema file so the two cannot drift. */
+  var SECTION_FALLBACK = ["601", "602", "603"];
+  var TEACHER_STATE_KEY = "curriculumTeacherWorkflow:v1";
+  var PICK_LS = "nt-hub-lesson-pick";
+
+  function classSections() {
+    try {
+      var schema = window.EWLSupportsSchema;
+      if (schema && Array.isArray(schema.sections) && schema.sections.length) {
+        return schema.sections.slice();
+      }
+    } catch (_e) {
+      /* fall through */
+    }
+    return SECTION_FALLBACK.slice();
+  }
+
+  /** Read/write the class through the teacher state that already owns it. */
+  function readTeacherState() {
+    try {
+      return JSON.parse(localStorage.getItem(TEACHER_STATE_KEY) || "{}") || {};
+    } catch (_e) {
+      return {};
+    }
+  }
+
+  function writeTeacherSection(value) {
+    try {
+      var state = readTeacherState();
+      if (value) state.section = value;
+      else delete state.section;
+      localStorage.setItem(TEACHER_STATE_KEY, JSON.stringify(state));
+    } catch (_e) {
+      /* private mode — the picker still works, it just does not remember */
+    }
+  }
+
+  function fillOptions(select, items, placeholder) {
+    select.replaceChildren();
+    select.appendChild(option(document, "", placeholder));
+    items.forEach(function (item) {
+      select.appendChild(option(document, item.value, item.label));
+    });
+  }
+
+  function mountLessonPicker(ws) {
+    var sectionSel = ws.querySelector("#tws-section");
+    var unitSel = ws.querySelector("#tws-unit");
+    var lessonSel = ws.querySelector("#tws-lesson");
+    var openBox = ws.querySelector("#tws-open");
+    if (!sectionSel || !unitSel || !lessonSel || !openBox) return;
+
+    var cache = window.NTJsonCache;
+    function loadJson(path) {
+      return cache
+        ? cache.json(path)
+        : fetch(path, { credentials: "same-origin" }).then(function (r) {
+            if (!r.ok) throw new Error(String(r.status));
+            return r.json();
+          });
+    }
+
+    // The unit ORDER is a separate fetch because it is a separate question. The
+    // manifest answers "what is the canonical curriculum?"; the pacing ranges
+    // answer "in what order does the district teach it?". Merging the two would
+    // put a scheduling decision inside the curriculum's source of truth, where a
+    // pacing correction would look like a curriculum edit.
+    //
+    // Pacing is ADVISORY here and never fatal: a missing or unreadable ranges
+    // file leaves the picker on manifest order rather than leaving the teacher
+    // with no lesson list at all. Teaching continues when planning data does not.
+    var request = Promise.all([
+      loadJson("/data/curriculum-launch-manifest.json"),
+      loadJson("/data/pacing-unit-ranges.json").catch(function () {
+        return null;
+      }),
+      /* Authored lesson sequences for units whose membership is an instructional
+       * decision rather than the curriculum's numbering — the Pre-Unit is one.
+       * Advisory like the pacing plan: unreadable means fall back to manifest
+       * membership, never means an empty Lesson dropdown. */
+      loadJson("/data/pacing-unit-lessons.json").catch(function () {
+        return null;
+      }),
+    ]);
+
+    request.then(
+      function (results) {
+        setup(results[0], results[1], results[2]);
+      },
+      function () {
+        fillOptions(sectionSel, [], "Lessons could not be loaded");
+        sectionSel.disabled = true;
+        openBox.replaceChildren();
+        var p = document.createElement("p");
+        p.className = "tws-pick-error";
+        p.textContent = "The lesson list could not be loaded. ";
+        var retry = document.createElement("button");
+        retry.type = "button";
+        retry.className = "tws-btn ghost";
+        retry.textContent = "Try again";
+        retry.addEventListener("click", function () {
+          window.location.reload();
+        });
+        p.appendChild(retry);
+        openBox.appendChild(p);
+      },
+    );
+
+    function setup(manifest, pacing, authored) {
+      var lessons = (manifest && manifest.lessons) || [];
+      // Small-group and catch-up variants, keyed by the core lesson they belong
+      // to — the manifest already carries the relationship, so nothing here
+      // infers a variant's purpose from its number.
+      var variantsByParent = Object.create(null);
+      function addVariant(entry, fallbackLabel, shortLabel) {
+        if (!entry || !entry.parent || !entry.resources || !entry.resources.lesson) return;
+        (variantsByParent[entry.parent] = variantsByParent[entry.parent] || []).push({
+          id: entry.id,
+          title: entry.title || fallbackLabel,
+          shortLabel: shortLabel,
+          href: entry.resources.lesson,
+          resources: entry.resources,
+        });
+      }
+      (manifest.smallGroups || []).forEach(function (g) {
+        addVariant(g, "Small group", g.group ? "Group " + g.group : "Small group");
+      });
+      (manifest.catchUps || []).forEach(function (c) {
+        addVariant(c, "Catch-up", "Catch-up");
+      });
+
+      /* End-of-unit culminating projects, keyed by unit. They are offered at the
+       * BOTTOM of the Lesson dropdown (see lessonsFor) and open through the same
+       * expansion as a lesson, so a teacher reaches the project the same way
+       * they reach anything else they teach. */
+      var projectsByUnit = Object.create(null);
+      (manifest.endOfUnit || []).forEach(function (p) {
+        if (!p || !p.resources || !p.resources.lesson) return;
+        var key = String(p.unit);
+        (projectsByUnit[key] = projectsByUnit[key] || []).push(p);
+      });
+
+      /* renderOpen resolves whatever the Lesson dropdown selected, and that is
+       * now lessons AND projects. Looking only at `lessons` is why an option can
+       * be selectable and expand to nothing. */
+      var openable = lessons.concat(manifest.endOfUnit || []);
+
+      /* WHICH units exist is the curriculum's answer; WHAT ORDER they are taught
+       * in is the district's, and they are not the same answer.
+       *
+       * The manifest lists units 1..10 because that is how the curriculum is
+       * numbered. This district does not teach them in that order — it teaches
+       * Pre, 3, 4, 6, 7, 8, 9, 5, 2, then 10 — so a dropdown reading "Unit 1,
+       * Unit 2, Unit 3…" is not a neutral presentation of the curriculum, it is
+       * an assertion about the sequence, and it is wrong. A teacher opening the
+       * picker in November scrolls past six units they will not teach until
+       * spring to reach the one they are in.
+       *
+       * The order therefore comes from data/pacing-unit-ranges.json, which
+       * tools/import-pacing-baseline.mjs generates from the district plan and
+       * validate:pacing-unit-order pins. Numeric and alphabetical sorting are
+       * both explicitly wrong here, and so is raw manifest order — this reorders
+       * it deliberately rather than leaving it alone.
+       *
+       * Two entries in the pacing plan are not units of this dropdown. MSTAR
+       * carries no curriculumUnit and owns no lessons, so it cannot be a Lesson-
+       * bearing option; it is a pacing entry and it stays in the planner. The
+       * Pre-Unit maps to curriculum unit 1 and is shown under the district's own
+       * label for it, because that is the name on the plan the teacher is
+       * following.
+       *
+       * A unit the pacing plan does not mention is APPENDED, never dropped: the
+       * curriculum is the authority on what exists, and silently hiding a real
+       * unit because a schedule forgot it is the worse failure.
+       *
+       * Class section does not appear in this derivation at all — all three
+       * classes are taught the same curriculum in the same district order. */
+      var lessonsByUnit = Object.create(null);
+      var manifestOrder = [];
+      lessons.forEach(function (l) {
+        var key = String(l.unit);
+        if (!lessonsByUnit[key]) {
+          lessonsByUnit[key] = [];
+          manifestOrder.push(key);
+        }
+        lessonsByUnit[key].push(l);
+      });
+
+      /* AUTHORED MEMBERSHIP. Some paced units are ASSEMBLED rather than
+       * inherited from the curriculum's numbering. The Pre-Unit is the case that
+       * forced this: it is a Grade 5 review sequence drawn from several canonical
+       * units (1-1, then the division-algorithm pair 2-6/2-7, then the fraction-
+       * division pair 6-1/6-2), and reading its membership off `unit === 1` gave
+       * the Unit 1 "Math Is…" arc instead — a different thing entirely.
+       *
+       * data/pacing-unit-lessons.json is the one place that decision lives, keyed
+       * by the PACING key ("PRE"), holding lesson IDS ONLY. Titles resolve from
+       * the manifest below, so a renamed lesson is renamed here too, and listing
+       * 2-6 here does not move it: it is still a Unit 2 lesson and still appears
+       * in Unit 2's own list. */
+      var authoredUnits = (authored && authored.units) || {};
+
+      var unitLabels = Object.create(null);
+      var unitOrder = [];
+      var authoredLessons = Object.create(null);
+      var byId = Object.create(null);
+      lessons.forEach(function (l) {
+        byId[l.id] = l;
+      });
+      var paced = (pacing && pacing.units) || [];
+      paced.forEach(function (entry) {
+        if (entry.curriculumUnit == null) return; // MSTAR and friends: not a unit here.
+        var key = String(entry.curriculumUnit);
+        if (unitOrder.indexOf(key) !== -1) return;
+
+        var authoredEntry = authoredUnits[entry.key];
+        if (authoredEntry && Array.isArray(authoredEntry.lessons)) {
+          /* Resolve ids against the manifest and drop anything it does not have,
+           * so a retired lesson leaves a shorter sequence rather than a dead
+           * option. validate:pacing-unit-order fails on that mismatch, so the
+           * silent shortening cannot survive a build. */
+          var resolved = authoredEntry.lessons
+            .map(function (id) {
+              return byId[id];
+            })
+            .filter(Boolean);
+          if (resolved.length) authoredLessons[key] = resolved;
+        }
+
+        if (!lessonsByUnit[key] && !authoredLessons[key]) return;
+        unitOrder.push(key);
+        if (entry.districtLabel) unitLabels[key] = entry.districtLabel;
+      });
+      manifestOrder.forEach(function (key) {
+        if (unitOrder.indexOf(key) === -1) unitOrder.push(key);
+      });
+
+      var classes = classSections().map(function (id) {
+        return { value: id, label: id };
+      });
+      if (!classes.length || !unitOrder.length) {
+        fillOptions(sectionSel, [], "No classes available");
+        sectionSel.disabled = true;
+        return;
+      }
+      fillOptions(sectionSel, classes, "Select class");
+
+      function unitItems() {
+        return unitOrder.map(function (u) {
+          // The district's own label when the pacing plan gives one ("Unit 3:
+          // Ratios & Rates", "Pre-Unit: Course 1 Pre Unit") — the teacher is
+          // following that document, and the Pre-Unit is not called "Unit 1" on
+          // it. Plain "Unit N" otherwise.
+          return { value: u, label: unitLabels[u] || "Unit " + u };
+        });
+      }
+
+      function lessonsFor(unit) {
+        /* An authored sequence wins for THIS unit only; every other unit keeps
+         * its ordinary manifest membership and order. */
+        var key = String(unit);
+        var items = (authoredLessons[key] || lessonsByUnit[key] || []).map(function (l) {
+          return { value: l.id, label: l.id + " · " + l.title };
+        });
+        /* The culminating project goes LAST, because that is when it is taught —
+         * it is the multi-day performance task at the end of the unit, not
+         * lesson zero. The manifest already carries it as an `endOfUnit` entry
+         * with `lesson: 999` precisely so it sorts there, and it is appended
+         * rather than merged into the lesson list so a unit with no project
+         * simply does not get the option instead of getting a dead one. */
+        (projectsByUnit[key] || []).forEach(function (p) {
+          items.push({ value: p.id, label: p.title });
+        });
+        return items;
+      }
+
+      function setDisabled(select, disabled, placeholder) {
+        select.disabled = disabled;
+        if (disabled) fillOptions(select, [], placeholder);
+      }
+
+      /* The lesson's parts, in the order a teacher meets them: what they teach
+       * from, then what the student writes on, then what goes home. Each entry
+       * is [manifest resource key, button label]. Nothing is rendered for a key
+       * the manifest does not carry — see the note on dead buttons below. */
+      var TEACH_PARTS = [
+        ["guidedNotes", "Guided notes"],
+        ["handout", "Student handout"],
+        ["worksheet", "Worksheet"],
+        ["exitTicket", "Exit ticket"],
+      ];
+      var HOME_PARTS = [
+        ["homework", "Family homework"],
+        ["familyPage", "Family page"],
+        ["studentHelp", "Student help"],
+      ];
+
+      /* What a small-group or catch-up variant hands out, in the order the
+       * teacher meets it at the table: the sheet the group writes on during the
+       * session, then the packet that continues it afterwards. Same [manifest
+       * key, label] shape and same dead-button rule as the parts above — a
+       * catch-up has a worksheet and no practice set, and the manifest says so
+       * per variant rather than this file guessing from the id. */
+      var VARIANT_PARTS = [
+        ["worksheet", "Worksheet"],
+        ["practice", "Practice Set"],
+      ];
+
+      /** One labelled row of links, appended only if it has something in it. */
+      function partRow(lesson, parts, labelText, className) {
+        var present = parts.filter(function (p) {
+          return lesson.resources && lesson.resources[p[0]];
+        });
+        if (!present.length) return;
+        var row = document.createElement("p");
+        row.className = "tws-actions " + className;
+        var label = document.createElement("span");
+        label.className = "tws-open-label";
+        label.textContent = labelText;
+        row.appendChild(label);
+        present.forEach(function (p) {
+          var a = document.createElement("a");
+          a.className = "tws-btn ghost";
+          a.href = lesson.resources[p[0]];
+          a.textContent = p[1];
+          row.appendChild(a);
+        });
+        openBox.appendChild(row);
+      }
+
+      function renderOpen() {
+        openBox.replaceChildren();
+        var lesson = openable.filter(function (l) {
+          return l.id === lessonSel.value;
+        })[0];
+        if (!lesson) return;
+
+        var isProject = lesson.kind === "endOfUnit";
+
+        var head = document.createElement("p");
+        head.className = "tws-open-title";
+        head.textContent = isProject ? lesson.title : "Lesson " + lesson.id + " — " + lesson.title;
+        openBox.appendChild(head);
+
+        var row = document.createElement("p");
+        row.className = "tws-actions tws-open-actions";
+
+        // Only actions the manifest actually carries a route for. A dead button
+        // on a lesson that has no small-group version is worse than no button,
+        // because the teacher finds out at 7:55am.
+        var lessonHref = (lesson.resources && lesson.resources.lesson) || null;
+        if (lessonHref) {
+          var a = document.createElement("a");
+          a.className = "tws-btn";
+          a.href = lessonHref;
+          a.textContent = isProject ? "Open culminating project" : "Open whole-group lesson";
+          row.appendChild(a);
+        }
+        /* The class travels with the lesson, so the supports surface opens on
+         * the configuration for the class being taught rather than the
+         * all-class default. The lesson itself is canonical either way — this
+         * is context, not a different lesson.
+         *
+         * Not offered for a culminating project: the supports catalogue is keyed
+         * by lesson id, and `?lesson=unit-1-project` resolves to nothing there.
+         * A button that opens an empty surface is the dead button this file
+         * already refuses to render elsewhere. */
+        if (!isProject) {
+          var supports = document.createElement("a");
+          supports.className = "tws-btn ghost";
+          supports.href =
+            "/curriculum/student-supports/?lesson=" +
+            encodeURIComponent(lesson.id) +
+            (sectionSel.value ? "&section=" + encodeURIComponent(sectionSel.value) : "");
+          supports.textContent = "Student supports";
+          row.appendChild(supports);
+        }
+        openBox.appendChild(row);
+
+        if (sectionSel.value) {
+          var ctx = document.createElement("p");
+          ctx.className = "tws-open-context";
+          ctx.textContent = "Teaching class " + sectionSel.value + ".";
+          openBox.appendChild(ctx);
+        }
+
+        var variants = variantsByParent[lesson.id] || [];
+        if (variants.length) {
+          var group = document.createElement("p");
+          group.className = "tws-actions tws-open-variants";
+          var label = document.createElement("span");
+          label.className = "tws-open-label";
+          label.textContent = "Small-group lessons";
+          group.appendChild(label);
+          variants.forEach(function (v) {
+            var va = document.createElement("a");
+            va.className = "tws-btn ghost";
+            va.href = v.href;
+            va.textContent = v.title;
+            group.appendChild(va);
+          });
+          openBox.appendChild(group);
+
+          /* One row per variant for what it hands out. Kept separate from the
+           * lessons row above, and labelled with the group it belongs to,
+           * because two groups' worksheets in one undifferentiated row is a
+           * teacher printing Group 2's sheet for Group 1 at 7:55am. */
+          variants.forEach(function (v) {
+            partRow(
+              v,
+              VARIANT_PARTS,
+              (v.shortLabel || v.title) + " printables",
+              "tws-open-variant-parts",
+            );
+          });
+        }
+
+        /* Everything else the lesson ships with. Choosing a lesson here used to
+         * offer two buttons and then send the teacher to /curriculum/units/ to
+         * find the notes, the homework and the family page — the parts are all
+         * in the manifest already, so the trip was pure navigation cost. */
+        partRow(lesson, TEACH_PARTS, "Lesson materials", "tws-open-parts");
+        partRow(lesson, HOME_PARTS, "Home & student support", "tws-open-home");
+      }
+
+      function remember() {
+        try {
+          localStorage.setItem(
+            PICK_LS,
+            JSON.stringify({
+              section: sectionSel.value,
+              unit: unitSel.value,
+              lesson: lessonSel.value,
+            }),
+          );
+        } catch (_e) {
+          /* private mode — the picker still works, it just does not remember */
+        }
+      }
+
+      sectionSel.addEventListener("change", function () {
+        /* Changing class keeps Unit and Lesson exactly where they are. All
+         * three classes are taught the same curriculum, so clearing them would
+         * make "show me this same lesson for my next class" — the single most
+         * common reason to touch this control — into a three-step chore. What
+         * DOES change is the class context the expansion carries, and the class
+         * the rest of the teacher tools consider current. */
+        writeTeacherSection(sectionSel.value || null);
+        renderOpen();
+        remember();
+      });
+
+      unitSel.addEventListener("change", function () {
+        // Changing unit resets the lesson: a Unit 5 lesson is not in Unit 6.
+        var unit = unitSel.value;
+        if (!unit) {
+          setDisabled(lessonSel, true, "Choose a unit first");
+        } else {
+          var items = lessonsFor(unit);
+          fillOptions(lessonSel, items, items.length ? "Select lesson" : "No lessons in this unit");
+          lessonSel.disabled = !items.length;
+        }
+        openBox.replaceChildren();
+        remember();
+      });
+
+      lessonSel.addEventListener("change", function () {
+        renderOpen();
+        remember();
+      });
+
+      /* Restore. The class comes from the teacher state that already owns it,
+       * so a class chosen in the Teacher Workflow card is the class this
+       * control opens on. Unit and lesson come from this control's own memory,
+       * and each is dropped rather than approximated if it stops resolving
+       * against the CURRENT curriculum. */
+      var savedSection = readTeacherState().section;
+      if (
+        classes.some(function (c) {
+          return c.value === savedSection;
+        })
+      ) {
+        sectionSel.value = savedSection;
+      }
+
+      /* Unit and Lesson are available as soon as there is a curriculum. The
+       * class is context, not a gate on the curriculum existing — which is the
+       * correction this control exists to make. */
+      var units = unitItems();
+      fillOptions(unitSel, units, "Select unit");
+      unitSel.disabled = !units.length;
+
+      var saved = null;
+      try {
+        saved = JSON.parse(localStorage.getItem(PICK_LS) || "null");
+      } catch (_e) {
+        saved = null;
+      }
+      if (
+        saved &&
+        units.some(function (u) {
+          return u.value === String(saved.unit);
+        })
+      ) {
+        unitSel.value = String(saved.unit);
+        var items = lessonsFor(saved.unit);
+        fillOptions(lessonSel, items, "Select lesson");
+        lessonSel.disabled = !items.length;
+        if (
+          items.some(function (i) {
+            return i.value === saved.lesson;
+          })
+        ) {
+          lessonSel.value = saved.lesson;
+          renderOpen();
+        }
+      } else if (saved) {
+        try {
+          localStorage.removeItem(PICK_LS);
+        } catch (_e) {
+          /* nothing to clean up */
+        }
+      }
+    }
+  }
+
+  function buildWorkspace(plannerCard) {
+    if (document.querySelector(".tws")) return null;
+    var ws = document.createElement("section");
+    ws.className = "tws hub-teacher-only";
+    ws.setAttribute("aria-label", "Teacher workspace");
+
+    // "Continue Lesson 5-3" beats any description we could write — but only if
+    // the resume strip actually resolved one. No invention.
+    var resumeLink = document.querySelector("#resume-strip a[href]");
+    var resumeHref = resumeLink && resumeLink.getAttribute("href");
+    var resumeText = resumeLink && resumeLink.textContent.replace(/\s+/g, " ").trim();
+
+    ws.innerHTML =
+      '<div class="tws-lead">' +
+      '<p class="tws-kicker">Teach</p>' +
+      "<h2>Lessons</h2>" +
+      '<p class="tws-sub">Choose your class, unit, and lesson.</p>' +
+      // Three native <select>s. Native because a teacher gets their platform's
+      // own picker — including the phone one — keyboard support, screen-reader
+      // naming and type-ahead for free, and none of that is worth rebuilding.
+      '<div class="tws-pick" role="group" aria-label="Choose a lesson">' +
+      '<p class="tws-pick-field">' +
+      '<label for="tws-section">Class Section</label>' +
+      '<select id="tws-section"><option value="">Select class</option></select>' +
+      "</p>" +
+      '<p class="tws-pick-field">' +
+      '<label for="tws-unit">Unit</label>' +
+      '<select id="tws-unit" disabled><option value="">Choose a class first</option></select>' +
+      "</p>" +
+      '<p class="tws-pick-field">' +
+      '<label for="tws-lesson">Lesson</label>' +
+      '<select id="tws-lesson" disabled><option value="">Choose a unit first</option></select>' +
+      "</p>" +
+      "</div>" +
+      '<div class="tws-open" id="tws-open" role="status" aria-live="polite"></div>' +
+      '<p class="tws-actions">' +
+      '<a class="tws-btn ghost" href="/curriculum/units/">Browse units &amp; lessons</a>' +
+      '<a class="tws-btn ghost" href="#hub-content" data-tws="search">Search lessons</a>' +
+      (resumeHref && resumeText
+        ? '<a class="tws-btn ghost" href="' + resumeHref + '">' + resumeText + "</a>"
+        : "") +
+      "</p>" +
+      "</div>" +
+      '<div class="tws-pair">' +
+      '<div class="tws-card">' +
+      '<p class="tws-kicker">Plan</p>' +
+      "<h2>Math Planner</h2>" +
+      '<p class="tws-sub">Today, this week, the whole year. Move a lesson and see what shifts, and record what you actually taught.</p>' +
+      '<p class="tws-actions"><a class="tws-btn" href="/curriculum/planning/">Open the planner</a></p>' +
+      "</div>" +
+      '<div class="tws-card">' +
+      '<p class="tws-kicker">Support students</p>' +
+      "<h2>Student Supports &amp; Accommodations</h2>" +
+      '<p class="tws-sub">Choose the supports a lesson needs, see exactly what they change, and apply them — the interactive lesson and its small-group versions open with them already in place.</p>' +
+      '<p class="tws-actions"><a class="tws-btn" href="/curriculum/student-supports/">Open supports</a></p>' +
+      "</div>" +
+      "</div>" +
+      '<p class="tws-more"><a href="#ctw-more-tools" data-tws="more">More teacher tools</a> — planning documents, exports, Canvas, gradebook, AI tools and classroom utilities.</p>';
+
+    // The Search action focuses the search box that already exists rather than
+    // adding a second one.
+    ws.querySelector('[data-tws="search"]').addEventListener("click", function (e) {
+      var box = document.getElementById("curr-search");
+      if (!box) return;
+      e.preventDefault();
+      box.scrollIntoView({ block: "center", behavior: "smooth" });
+      box.focus();
+    });
+    // "More" opens the drawer it points at, so the link is never a dead anchor.
+    ws.querySelector('[data-tws="more"]').addEventListener("click", function (e) {
+      var drawer = document.querySelector("details.ctw-tools-drawer");
+      if (!drawer) return;
+      e.preventDefault();
+      drawer.open = true;
+      drawer.scrollIntoView({ block: "start", behavior: "smooth" });
+      drawer.querySelector("summary")?.focus();
+    });
+
+    mountLessonPicker(ws);
+
+    // The planner card keeps its full description below the workspace: the
+    // workspace answers "where do I plan", the card explains what the planner
+    // does. Losing it would trade discoverability for tidiness.
+    if (plannerCard) plannerCard.classList.add("tws-has-card");
+    return ws;
+  }
+
   function organizeTools() {
     var tools = document.querySelector(".curriculum-tools-bar");
     if (!tools || tools.closest(".ctw-tools-drawer")) return;
@@ -403,6 +1140,15 @@
     // lift it out of the bar so collapsing the drawer never hides it.
     var resume = tools.querySelector(".resume-strip");
 
+    // Same treatment for the Pacing Planner, and for the same reason. The
+    // planner answers "what am I teaching today", so it cannot live behind a
+    // drawer that is collapsed by default: moving its card to the TOP of the
+    // bar (7ee9e8745) put it at the top of something nobody had open, which is
+    // why it read as missing from /curriculum/ even though the markup, the
+    // route and the teacher gate were all correct. It stays hub-teacher-only,
+    // so students still never see it.
+    var planner = tools.querySelector("section.cns-feature");
+
     // Compact menu derived from the existing cards — the card markup stays the
     // single source of truth. Items copy hub-teacher-only so the existing
     // class-based student-mode gating applies to them unchanged.
@@ -424,6 +1170,10 @@
       }
     }
     tools.querySelectorAll("section").forEach(function (card) {
+      // The planner card is lifted out of the drawer below, so a menu row for
+      // it would be a second control with the same accessible name pointing at
+      // the same place.
+      if (card === planner) return;
       var titleEl = card.querySelector("h2");
       if (!titleEl) return;
       var iconEl = card.querySelector(".mf-icon");
@@ -462,6 +1212,9 @@
     details.appendChild(tools);
     tools.classList.add("ctw-cards-hidden");
     if (resume) details.parentNode.insertBefore(resume, details);
+    // Above the drawer, below the resume strip — the first teacher-facing thing
+    // on the page, and no longer dependent on the drawer's remembered state.
+    if (planner) details.parentNode.insertBefore(planner, details);
 
     // Escape hatch: the classic full-card wall, one toggle away.
     var showAll = document.createElement("button");
@@ -491,7 +1244,53 @@
     var topAnchor =
       document.getElementById("curriculum-teacher-workflow") || document.querySelector(".wrap");
     if (topAnchor && topAnchor.parentNode) topAnchor.parentNode.insertBefore(details, topAnchor);
+    // Re-anchor both lifted blocks AFTER the drawer moves — inserting relative
+    // to its old parent above would otherwise strand them mid-page.
     if (resume && details.parentNode) details.parentNode.insertBefore(resume, details);
+    if (planner && details.parentNode) {
+      // Out of the tools rail, the rail's own layout rules no longer fit: at
+      // >=1080px curriculum-polish.css compacts every .mailbox-feature to
+      // icon+title+button (correct for a narrow rail, wrong for a full-width
+      // band), and the rail was also what constrained the card's width. The
+      // class re-states both for the lifted copy only.
+      planner.classList.add("cns-lifted");
+      // Inline + important: .mailbox-feature is styled by this file's sheet,
+      // by curriculum-polish.css and by the hub's own inline <style>, so a
+      // class-level rule wins or loses on load order. Inline always wins.
+      planner.style.setProperty("max-width", "1180px", "important");
+      planner.style.setProperty("margin", "0 auto 14px", "important");
+      planner.querySelectorAll(".mf-sub, .mf-text").forEach(function (el) {
+        el.style.setProperty("display", "block", "important");
+      });
+      details.parentNode.insertBefore(planner, details);
+    }
+
+    // The drawer needs a stable id for the workspace's "More teacher tools"
+    // link to point at.
+    details.id = details.id || "ctw-more-tools";
+
+    /* Workspace goes at the TOP OF THE PAGE, directly under the "Curriculum
+     * Hub" heading — not merely above the drawer.
+     *
+     * Placing it above the drawer put it at 3297px on desktop and 7552px on
+     * mobile, because the page header alone is ~1780px tall and the preset bar
+     * another ~1030px. Something a teacher must scroll seven screens to reach
+     * has not been made primary; it has been made present, which is the exact
+     * trap the planner card fell into. Anchor to the header's own lede/H1 so
+     * the three pathways are the first thing under the title, and everything
+     * that was on the page stays on the page beneath them. */
+    var workspace = buildWorkspace(planner);
+    if (workspace) {
+      var header = document.querySelector("header.curriculum-guide");
+      var afterTitle =
+        header && (header.querySelector(".curriculum-guide__lede") || header.querySelector("h1"));
+      if (afterTitle && afterTitle.parentNode) {
+        afterTitle.insertAdjacentElement("afterend", workspace);
+      } else {
+        var anchor = planner && planner.parentNode ? planner : details;
+        anchor.parentNode.insertBefore(workspace, anchor);
+      }
+    }
   }
 
   function render(view, stage, context) {

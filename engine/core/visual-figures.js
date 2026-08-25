@@ -1,3 +1,5 @@
+import { pickLang } from "./i18n.js";
+
 // visual-figures.js — shared, accessible SVG data-figure builders (histogram,
 // dot plot, box plot, bar chart, factor tree, number line, tape diagram,
 // coordinate plane). Extracted verbatim from lesson-renderer.js so the full
@@ -106,14 +108,14 @@ export function histogramSVG(cfg) {
     })
     .join("");
   const xLabel = cfg.xLabel
-    ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(cfg.xLabel)}</text>`
+    ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(pickLang(cfg.xLabel, cfg.xLabelEs))}</text>`
     : "";
   const yLabel = cfg.yLabel
-    ? `<text x="14" y="${(padT + plotH / 2).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)" transform="rotate(-90 14 ${(padT + plotH / 2).toFixed(1)})">${esc(cfg.yLabel)}</text>`
+    ? `<text x="14" y="${(padT + plotH / 2).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)" transform="rotate(-90 14 ${(padT + plotH / 2).toFixed(1)})">${esc(pickLang(cfg.yLabel, cfg.yLabelEs))}</text>`
     : "";
   const axis = `<line x1="${padL}" y1="${baseY}" x2="${(W - padR).toFixed(1)}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>`;
   const title = cfg.title
-    ? `<div style="font-weight:700; color:var(--navy,#264653); margin-bottom:var(--sp-2); text-align:center;">${esc(cfg.title)}</div>`
+    ? `<div style="font-weight:600; color:var(--navy,#264653); margin-bottom:var(--sp-2); text-align:center;">${esc(cfg.title)}</div>`
     : "";
   const caption = cfg.caption
     ? `<div style="font-size:0.82rem; color:var(--muted); margin-top:var(--sp-2); text-align:center; font-style:italic;">${esc(cfg.caption)}</div>`
@@ -160,7 +162,7 @@ export function dotPlotSVG(cfg) {
   }
   const axis = `<line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>`;
   const xLabel = cfg.xLabel
-    ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(cfg.xLabel)}</text>`
+    ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(pickLang(cfg.xLabel, cfg.xLabelEs))}</text>`
     : "";
   return svgFigure(cfg, `${axis}${ticks.join("")}${dots}${xLabel}`, W, H, padT, "dot-plot-figure");
 }
@@ -219,24 +221,44 @@ export function barChartSVG(cfg) {
     padB = 50;
   const plotW = W - padL - padR,
     plotH = H - padT - padB;
-  const maxV = Math.max(...bars.map((b) => Number(b.value) || 0), 1);
+  // Signed domain. Unit 7 charts values BELOW sea level, and pinning the
+  // baseline to the bottom of the plot made every negative bar a <rect> with a
+  // negative height — the browser rejected the attribute and the bar simply
+  // did not draw, which is exactly the bar the caption asks students to notice.
+  // Zero always sits inside the domain so the axis line means what it says.
+  const values = bars.map((b) => Number(b.value) || 0);
+  const minV = Math.min(0, ...values);
+  // All-positive charts keep the original domain exactly — including the `, 1`
+  // floor, without which a chart of fractions below 1 would rescale.
+  const maxV = minV < 0 ? Math.max(0, ...values) : Math.max(...values, 1);
+  const span = maxV - minV || 1;
+  const yOf = (v) => padT + (plotH * (maxV - v)) / span;
+  const zeroY = yOf(0);
   const slot = plotW / bars.length,
     bw = slot * 0.6,
     baseY = padT + plotH;
   const rects = bars
     .map((b, i) => {
       const v = Number(b.value) || 0;
-      const h = (v / maxV) * plotH;
+      const vy = yOf(v);
+      const y = Math.min(vy, zeroY);
+      const h = Math.abs(vy - zeroY);
       const x = padL + i * slot + (slot - bw) / 2;
-      const y = baseY - h;
+      // Keep the value readable outside its own bar, on whichever side the bar
+      // grows: above for positives, below for negatives.
+      const labelY = v < 0 ? vy + 15 : vy - 6;
       return (
         `<rect class="bar-rect" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${DATA_1}"/>` +
-        `<text class="bar-val" x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${v}</text>` +
-        `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 18).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${esc(b.label ?? "")}</text>`
+        `<text class="bar-val" x="${(x + bw / 2).toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${v}</text>` +
+        `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + (minV < 0 ? 32 : 18)).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${esc(b.label ?? "")}</text>`
       );
     })
     .join("");
-  const axis = `<line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>`;
+  const axis =
+    `<line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${W - padR}" y2="${zeroY.toFixed(1)}" stroke="var(--ink,#333)" stroke-width="1.5"/>` +
+    (minV < 0
+      ? `<text x="${padL - 6}" y="${(zeroY + 4).toFixed(1)}" text-anchor="end" font-size="11" font-weight="700" fill="var(--ink,#333)">0</text>`
+      : "");
   return svgFigure(cfg, `${axis}${rects}`, W, H, padT, "bar-chart-figure");
 }
 
@@ -318,7 +340,7 @@ export function factorTreeSVG(cfg) {
 
   return `
     <div class="factor-tree-figure" style="margin:var(--sp-3) 0; display:flex; flex-direction:column; align-items:center;">
-      ${cfg.title ? `<div style="font-weight:700; color:var(--navy,#12355b); margin-bottom:var(--sp-1); font-size:0.95rem;">${esc(cfg.title)}</div>` : ""}
+      ${cfg.title ? `<div style="font-weight:600; color:var(--navy,#12355b); margin-bottom:var(--sp-1); font-size:0.95rem;">${esc(cfg.title)}</div>` : ""}
       <svg viewBox="0 0 ${W} ${H}" style="width:100%; height:auto; max-width:320px; display:block; background:#fff; border:1px solid #d7e2ed; border-radius:12px; padding:10px;">
         ${linesSvg}
         ${nodesSvg}
@@ -360,7 +382,7 @@ export function numberLineSVG(cfg) {
 // Shared figure wrapper: optional title + responsive SVG + optional caption.
 export function svgFigure(cfg, inner, W, H, padT = 16, figureClass = "data-figure") {
   const title = cfg.title
-    ? `<div style="font-weight:700; color:var(--navy,#264653); margin-bottom:var(--sp-2); text-align:center;">${esc(cfg.title)}</div>`
+    ? `<div style="font-weight:600; color:var(--navy,#264653); margin-bottom:var(--sp-2); text-align:center;">${esc(cfg.title)}</div>`
     : "";
   const caption = cfg.caption
     ? `<div style="font-size:0.82rem; color:var(--muted); margin-top:var(--sp-2); text-align:center; font-style:italic;">${esc(cfg.caption)}</div>`
@@ -422,7 +444,7 @@ export function coordPlaneSVG(cfg) {
   // Number every axis tick (stride out when the plane is large so labels never
   // crowd). 0 is labeled once at the origin.
   const stride = m > 8 ? 2 : 1;
-  const tick = 'style="font-size:10px;fill:#6b7688;font-weight:600"';
+  const tick = 'style="font-size:10px;fill:#6b7688;font-weight:500"';
   let grid = "";
   for (let i = -m; i <= m; i++) {
     grid += `<line x1="${X(i)}" y1="${pad}" x2="${X(i)}" y2="${H - pad}" stroke="rgba(0,0,0,0.06)"/>`;

@@ -25,7 +25,7 @@
   padding: 10px 14px;
   color: var(--sg-deep);
   font-family: var(--sg-display);
-  font-weight: 900;
+  font-weight: 700;
   list-style: none;
   cursor: pointer;
 }
@@ -46,8 +46,13 @@
 
 /* Collapsed ("reduced") state: shrink the dock to a compact icon tab so the
    lesson — not the toolbar — owns the right edge until a student opens it. */
+/* Compact, but still a real touch target: the collapsed tab used to drop to
+   40x36, which is under the 44px minimum a finger needs on a classroom
+   Chromebook. Narrow is fine; short is not. */
 .sg-annotation-shell:not([open]) > summary {
-  min-height: 0;
+  min-height: 44px;
+  min-width: 44px;
+  justify-content: center;
   padding: 8px 9px;
 }
 
@@ -100,7 +105,7 @@
   border-radius: 10px;
   color: var(--sg-text);
   background: #fff;
-  font-weight: 800;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -151,7 +156,7 @@
 
 .sg-student-bold {
   color: var(--sg-deep);
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .sg-vocab-inline {
@@ -163,7 +168,7 @@
   color: inherit;
   background: color-mix(in srgb, var(--sg-soft) 60%, var(--sg-card));
   font: inherit;
-  font-weight: 800;
+  font-weight: 700;
   line-height: inherit;
   text-align: inherit;
   text-decoration: underline 3px var(--sg-pop);
@@ -210,7 +215,7 @@
   color: var(--sg);
   font-family: var(--sg-display);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -266,7 +271,7 @@
   margin: 5px 0 0;
   color: var(--sg-deep);
   font-size: 21px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.38;
 }
 

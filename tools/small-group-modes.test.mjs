@@ -5,6 +5,7 @@ import { isRight } from "../engine/core/answer-match.js";
 import { resolveVocabImage } from "../engine/core/vocab-images.js";
 import { onRequest as middleware } from "../functions/_middleware.js";
 import { onRequest as teacherRouteHandler } from "../functions/teacher-small-group/[[path]].js";
+import { authoredBank } from "./lib/small-group-authored-banks.mjs";
 
 const teacherRoute = new URL("../functions/teacher-small-group/[[path]].js", import.meta.url);
 assert.equal(existsSync(teacherRoute), true, "teacher facilitation needs a protected server route");
@@ -79,7 +80,20 @@ for (const lessonId of readdirSync(new URL("../lessons", import.meta.url)).filte
       ),
     ),
   );
-  assert.equal(config.parallelPractice?.length, 12, `${lessonId} needs 12 parallel problems`);
+  // A lesson whose practice was authored against its own objective carries no
+  // generated guided-fill bank — its tasks are reasoning items in the practice
+  // tiers. Assert the absence there rather than dropping the count, so a
+  // truncated generator run is still caught for every other lesson.
+  const parent2 = lessonId.replace(/-group[12]$/, "");
+  if (authoredBank(parent2, lessonId.endsWith("group2") ? 2 : 1)) {
+    assert.equal(
+      config.parallelPractice,
+      undefined,
+      `${lessonId} has an authored practice set and should carry no parallel bank`,
+    );
+  } else {
+    assert.equal(config.parallelPractice?.length, 12, `${lessonId} needs 12 parallel problems`);
+  }
   const ids = new Set();
   const parallelStems = new Set();
   for (const item of config.parallelPractice || []) {
@@ -162,8 +176,33 @@ const teacherResponse = await teacherRouteHandler({
 });
 const teacherPayload = await teacherResponse.json();
 assert.equal(teacherPayload.facilitation.label, "Extra Support");
-assert.ok(teacherPayload.facilitation.moves.length >= 3);
 assert.ok(teacherPayload.facilitation.listenFor.length >= 1);
+
+/*
+ * Teacher moves are ASK / LOOK FOR / IF STUCK, not the old prose `moves` list.
+ * That list was replaced because 756 of its 840 lines across the fleet repeated
+ * in 50+ lessons; asserting only that three bullets existed is what let that
+ * happen unnoticed, so this pins the STRUCTURE and the specificity instead.
+ */
+const tm = teacherPayload.facilitation.teacherMoves;
+assert.ok(tm, "support facilitation must carry teacherMoves");
+for (const key of ["ask", "lookFor", "ifStuck"]) {
+  assert.equal(typeof tm[key], "string", `teacherMoves.${key} must be a string`);
+  assert.ok(tm[key].trim().length > 12, `teacherMoves.${key} must say something`);
+}
+assert.ok(!tm.extend, "a support group gets no EXTEND — the re-teach has to finish");
+
+const challengeResponse = await teacherRouteHandler({
+  request: new Request("https://example.test/teacher-small-group/1-1-group2/data"),
+  params: { path: ["1-1-group2", "data"] },
+});
+const challengePayload = await challengeResponse.json();
+const ctm = challengePayload.facilitation.teacherMoves;
+assert.ok(ctm, "challenge facilitation must carry teacherMoves");
+assert.ok(ctm.extend && ctm.extend.trim().length > 12, "challenge must carry an EXTEND move");
+// The two pathways must not be the same guidance with different numbers.
+assert.notEqual(ctm.ask, tm.ask, "challenge ASK must differ from support ASK");
+assert.notEqual(ctm.ifStuck, tm.ifStuck, "challenge IF STUCK must differ from support");
 
 const dom = new JSDOM(
   '<!doctype html><html><head></head><body><div id="app"></div></body></html>',
@@ -270,5 +309,38 @@ assert.ok(
   document.querySelector(".sg-meter-fill"),
   "the sticky rail needs the always-visible progress meter",
 );
+
+// --- the teacher door is not in a student SCORM package ---------------------
+// mountSmallGroupTeacherAccess() mounts a "Student Mode / Teacher access" bar
+// whose link points at /teacher-small-group/<id>/. Harmless on the open web.
+// Inside a SCORM package it sits in the iframe the LMS is grading, so a student
+// who taps it navigates the tracked frame off the lesson — and it is teacher
+// UI in a student assignment either way. Core lessons never showed one; this
+// only became reachable when the 168 group1/group2 variants were added to the
+// SCORM catalog. Guarded by isScormLaunch(), the single reader of that question.
+{
+  const src = readFileSync(
+    new URL("../engine/core/small-group-teacher-access.js", import.meta.url),
+    "utf8",
+  );
+  assert.match(
+    src,
+    /import \{ isScormLaunch \} from "\.\/scorm-bridge\.js"/,
+    "small-group teacher access must ask scorm-bridge, not re-derive the SCORM test",
+  );
+  assert.match(
+    src,
+    /if \(isScormLaunch\(\)\) return false;/,
+    "a SCORM launch must mount no teacher-access bar at all",
+  );
+  // The guard has to come BEFORE the student-mode bar is mounted, or the bar
+  // still renders and the check is decorative.
+  const guardAt = src.indexOf("if (isScormLaunch()) return false;");
+  const barAt = src.indexOf('mountBar(app, modeBar("student"');
+  assert.ok(
+    guardAt > 0 && barAt > guardAt,
+    "the SCORM guard must precede mounting the student bar",
+  );
+}
 
 console.log("small-group mode, structure, and practice contracts passed");
