@@ -1901,9 +1901,36 @@ export function renderLearnItPanel(container, config, options = {}) {
       label: isEs ? "Mírame resolverlo" : "Watch Me Solve It",
       sub: isEs ? "Lee un paso, luego muestra el siguiente" : "Read one step, then show the next",
       build(host) {
-        const visualElemHtml = workedFig
+        let visualElemHtml = workedFig
           ? `<figure class="vl-stepfig vl-workedfig">${workedFig.svg}<figcaption class="vl-stepfig-cap">${isEs ? "El problema se ve así" : "The problem looks like this"}</figcaption></figure>`
           : visualCardHtml;
+
+        if (!workedFig && divFigs.length > 0) {
+          visualElemHtml = `
+            <div class="vl-division-strategy-card" style="background:#f8fafc; border:2px solid #cbd5e1; border-radius:18px; padding:18px; text-align:center; box-shadow:0 4px 14px rgba(15,23,42,0.05);">
+              <div style="font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:800; color:#12355b; margin-bottom:12px;">${isEs ? "Algoritmo de división larga" : "Long Division Algorithm"}</div>
+              <div style="display:flex; flex-direction:column; gap:8px; text-align:left; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:#ccfbf1; border:1px solid #0d9488; border-radius:10px;">
+                  <b style="color:#0f766e; font-size:1.1rem; width:24px; text-align:center;">D</b>
+                  <div><strong style="color:#0f766e;">${isEs ? "Dividir" : "Divide"}:</strong> <span style="font-size:0.88rem; color:#134e48;">${isEs ? "¿Cuántas veces cabe el divisor?" : "How many times does divisor fit?"}</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:#e0f2fe; border:1px solid #0284c7; border-radius:10px;">
+                  <b style="color:#0369a1; font-size:1.1rem; width:24px; text-align:center;">M</b>
+                  <div><strong style="color:#0369a1;">${isEs ? "Multiplicar" : "Multiply"}:</strong> <span style="font-size:0.88rem; color:#0c4a6e;">${isEs ? "Dígito del cociente × divisor" : "Quotient digit × divisor"}</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:#fef3c7; border:1px solid #d97706; border-radius:10px;">
+                  <b style="color:#b45309; font-size:1.1rem; width:24px; text-align:center;">S</b>
+                  <div><strong style="color:#b45309;">${isEs ? "Restar" : "Subtract"}:</strong> <span style="font-size:0.88rem; color:#78350f;">${isEs ? "Halla la diferencia" : "Find the difference (remainder)"}</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:#ede9fe; border:1px solid #7c3aed; border-radius:10px;">
+                  <b style="color:#6d28d9; font-size:1.1rem; width:24px; text-align:center;">B</b>
+                  <div><strong style="color:#6d28d9;">${isEs ? "Bajar" : "Bring Down"}:</strong> <span style="font-size:0.88rem; color:#4c1d95;">${isEs ? "Baja el siguiente dígito y repite" : "Bring next digit down and repeat"}</span></div>
+                </div>
+              </div>
+              <p style="font-size:0.85rem; color:#64748b; margin:0;">${isEs ? "Observa cómo se construye la división paso a paso." : "Follow each step to watch the division build step-by-step."}</p>
+            </div>
+          `;
+        }
 
         const crumbsHtml = iLines.length > 1
           ? `<div class="vl-step-crumbs">

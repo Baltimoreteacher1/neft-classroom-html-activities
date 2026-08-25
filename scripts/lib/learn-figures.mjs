@@ -1012,7 +1012,6 @@ const READERS = [
   readEquationTape,
   readRatioTape,
   readDoubleNumberLine,
-  readLongDivision,
 ];
 
 // The public entry point: a labelled picture of THIS lesson's worked example,

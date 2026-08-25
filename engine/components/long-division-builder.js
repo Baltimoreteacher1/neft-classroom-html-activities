@@ -510,7 +510,7 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
       advance(step);
       return;
     }
-    const raw = answer.value.trim();
+    const raw = answer.value.replace(/,/g, "").trim();
     if (raw === "") {
       say("Type your answer for this step first.", "warn");
       return;
@@ -695,6 +695,28 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     });
   });
 
+  const focusToggle = /** @type {HTMLButtonElement|null} */ (root.querySelector(".ldl-focus-toggle"));
+  if (focusToggle) {
+    focusToggle.addEventListener("click", () => {
+      const isFocus = document.body.classList.toggle("nt-focus-mode");
+      focusToggle.classList.toggle("is-on", isFocus);
+      focusToggle.setAttribute("aria-pressed", isFocus ? "true" : "false");
+      focusToggle.textContent = isFocus ? "✕ Exit Focus" : "🎯 Focus Screen";
+    });
+  }
+
+  const onKeyEsc = (e) => {
+    if (e.key === "Escape" && document.body.classList.contains("nt-focus-mode")) {
+      document.body.classList.remove("nt-focus-mode");
+      if (focusToggle) {
+        focusToggle.classList.remove("is-on");
+        focusToggle.setAttribute("aria-pressed", "false");
+        focusToggle.textContent = "🎯 Focus Screen";
+      }
+    }
+  };
+  document.addEventListener("keydown", onKeyEsc);
+
   for (const chip of root.querySelectorAll(".ldl-chip")) {
     chip.addEventListener("click", () => {
       const [a, b] = String(/** @type {HTMLElement} */ (chip).dataset.p).split("/");
@@ -711,6 +733,8 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
   return {
     destroy: () => {
       stopPlay();
+      document.removeEventListener("keydown", onKeyEsc);
+      document.body.classList.remove("nt-focus-mode");
       root.remove();
     },
   };

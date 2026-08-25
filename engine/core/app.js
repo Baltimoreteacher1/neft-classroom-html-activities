@@ -167,6 +167,9 @@ export function createApp(config) {
   window.__ntClearLessonAnswers = () => {
     clearLessonStorage(config.lessonId);
     try {
+      sessionStorage.removeItem(`nt-active-session:${config.lessonId}`);
+      sessionStorage.removeItem("nt-active-session");
+      localStorage.removeItem(`nt-active-student:${config.lessonId}`);
       window.NeftSaveResume?.reset?.();
     } catch (_) {
       /* save/resume not present on this page */
@@ -572,8 +575,39 @@ function showIdentityScreen(root, config) {
         return;
       }
     }
-  } catch {
-    /* sessionStorage blocked or corrupt — fall through to the name-entry screen */
+  } catch (_) {}
+
+  // Auto-resume active session on page reload:
+  // When a student/teacher refreshes the page, avoid dropping them back to the
+  // name-entry screen. Restore their active session seamlessly.
+  try {
+    let activeSession = null;
+    const sessRaw = sessionStorage.getItem(`nt-active-session:${config.lessonId}`) || sessionStorage.getItem("nt-active-session");
+    if (sessRaw) {
+      const parsed = JSON.parse(sessRaw);
+      if (parsed && (parsed.lessonId === config.lessonId || !parsed.lessonId) && parsed.name) {
+        activeSession = parsed;
+      }
+    }
+    if (!activeSession) {
+      const localRaw = localStorage.getItem(`nt-active-student:${config.lessonId}`);
+      if (localRaw) {
+        const parsed = JSON.parse(localRaw);
+        if (parsed && parsed.name && (Date.now() - (parsed.time || 0) < 12 * 3600 * 1000)) {
+          activeSession = parsed;
+        }
+      }
+    }
+    if (activeSession && activeSession.name) {
+      const studentId = normalizeStudentId(activeSession.name);
+      try {
+        window.NeftIdentity?.set({ name: activeSession.name, section: activeSession.period || "" });
+      } catch (_) {}
+      initMainApp(root, config, studentId, activeSession.name, activeSession.period || "");
+      return;
+    }
+  } catch (_) {
+    /* session restore error — fall through to name screen */
   }
 
   const themeEmoji = config.themeEmoji || "📐";
@@ -716,6 +750,11 @@ function showIdentityScreen(root, config) {
     if (!name) return;
     const studentId = normalizeStudentId(name);
     const period = periodInput.value.trim();
+    // Persist active session so page refresh never returns to sign-in screen
+    try {
+      sessionStorage.setItem(`nt-active-session:${config.lessonId}`, JSON.stringify({ lessonId: config.lessonId, name, period }));
+      localStorage.setItem(`nt-active-student:${config.lessonId}`, JSON.stringify({ name, period, time: Date.now() }));
+    } catch (_) {}
     // Share the typed identity site-wide so grade sync, the save-code gradebook,
     // and curriculum progress sync all pick it up without the student retyping.
     try {
@@ -1316,7 +1355,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     phaseContainer,
     celebrationOverlay,
 
-    renderPhase(index, renderFn) {
+    renderPhase(index, renderFn, jump) {
       closeMathNotesModel();
       applyPhaseAccent(main, index);
       // Stop watching the phase we're replacing so its observer doesn't linger.
@@ -1338,6 +1377,48 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       el.setAttribute("aria-label", phaseConfigs[index]?.name || `Phase ${index + 1}`);
       phaseContainer.append(el);
       renderFn(el, state, this);
+
+      // Phase Subcard Ribbon: Quick jump directly to different parts of the active phase
+      const subList = PHASE_SUBTABS[index] || [];
+      if (subList.length) {
+        const isEs = getPreferredLang() === "es";
+        const ribbon = document.createElement("div");
+        ribbon.className = "phase-subcards-ribbon no-print";
+        ribbon.innerHTML = `
+          <span class="phase-subcards-label">📍 ${isEs ? "Partes de la lección:" : "Lesson Parts:"}</span>
+          <div class="phase-subcards-list">
+            ${subList
+              .map(
+                (t) => `
+              <button type="button" class="phase-subcard-chip" ${t.extra ? `data-sub-extra="${t.extra}"` : `data-sub-jump="${t.jump}"`}>
+                <span class="phase-subcard-icon">${t.icon}</span> <span>${escHtml(t.label)}</span>
+              </button>`,
+              )
+              .join("")}
+          </div>
+        `;
+        ribbon.querySelectorAll("[data-sub-extra]").forEach((b) => {
+          b.addEventListener("click", () => this.openExtra(b.dataset.subExtra));
+        });
+        ribbon.querySelectorAll("[data-sub-jump]").forEach((b) => {
+          b.addEventListener("click", () => {
+            const j = b.dataset.subJump;
+            const target = el.querySelector(`[data-section="${j}"], #${j}, .${j}`);
+            if (target) {
+              target.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          });
+        });
+        el.prepend(ribbon);
+      }
+
+      if (jump) {
+        setTimeout(() => {
+          const target = el.querySelector(`[data-section="${jump}"], #${jump}, .${jump}`);
+          if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 120);
+      }
+
       // Auto-scroll to top smoothly on phase navigation so the student's attention
       // immediately lands on the new phase header.
       if (main) main.scrollTo({ top: 0, behavior: "smooth" });
@@ -1370,7 +1451,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       );
     },
 
-    navigateTo(index) {
+    navigateTo(index, jump) {
       // THE gate. Every way out of a phase — Continue, the sidebar, a minimap
       // dot, an in-phase control — arrives here, so a notebook checkpoint is
       // enforced once, in one place, by phase INDEX. Backward moves are never
@@ -1384,7 +1465,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       this.clearExtraActive();
       state.setPhase(index);
       if (config.phases[index]) {
-        this.renderPhase(index, config.phases[index]);
+        this.renderPhase(index, config.phases[index], jump);
       }
     },
 
@@ -1436,6 +1517,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       if (kind === "printables") return this.openPrintables();
       if (kind === "activity") return this.openActivity();
       if (kind === "objectives") return this.openObjectives();
+      if (kind === "watchme") {
+        this.openExtra("learn");
+        setTimeout(() => {
+          const w = phaseContainer.querySelector(".vl-step-crumbs, .vl-stage-think, .vl-solve-steps, [data-learn-step]");
+          if (w) w.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 150);
+        return;
+      }
 
       if (kind === "vocab") {
         this.setExtraActive("vocab");
@@ -2339,27 +2428,42 @@ function updateSidebar(sidebar, state, phaseConfigs) {
   const nav = sidebar.querySelector('[data-bind="phases"]');
   if (!nav) return;
 
-  // The canonical Math Notes model, right under the Warmup (phase 1) button.
-  const mathNotesBtn = `
-    <button class="phase-btn extra-btn" data-extra="mathnotes">
-      <span class="phase-num" style="background:transparent; box-shadow:none; font-size:1.15rem;">📓</span>
-      <span>Math Notes</span>
-    </button>`;
-
-  // Vocab → Learn It ride directly under the Launch (phase 1) button as
-  // indented sub-tabs — reference material that lives with the lesson flow.
-  const launchSubTabs = [
-    { extra: "vocab", icon: "🔑", label: "Vocab" },
-    { extra: "learn", icon: "💡", label: "Learn It" },
-  ]
-    .map(
-      (t) =>
-        `<button class="phase-btn extra-btn phase-subtab" data-extra="${t.extra}" style="margin-left:var(--sp-4, 18px);">
-        <span class="phase-num" style="background:transparent; box-shadow:none; font-size:1.05rem;">${t.icon}</span>
-        <span>${t.label}</span>
-      </button>`,
-    )
-    .join("\n");
+  const PHASE_SUBTABS = {
+    0: [
+      { extra: "mathnotes", icon: "📓", label: "Math Notes" },
+      { jump: "warmup-card", icon: "⚡", label: "Warmup" },
+    ],
+    1: [
+      { jump: "obj-content", icon: "🎯", label: "Content Goal" },
+      { jump: "obj-language", icon: "🗣️", label: "Language Goal" },
+    ],
+    2: [
+      { extra: "vocab", icon: "🔑", label: "Vocab" },
+      { extra: "learn", icon: "💡", label: "Learn It" },
+      { extra: "watchme", icon: "👀", label: "Watch Me" },
+    ],
+    3: [
+      { jump: "explore-wedo", icon: "🤝", label: "Guided Steps" },
+      { jump: "explore-tool", icon: "🛠️", label: "Visual Lab" },
+    ],
+    4: [
+      { jump: "tier-approaching", icon: "🟢", label: "Approaching" },
+      { jump: "tier-onlevel", icon: "🔵", label: "On-Level" },
+      { jump: "tier-beyond", icon: "🟣", label: "Beyond" },
+    ],
+    5: [
+      { jump: "group-1", icon: "👥", label: "Group 1" },
+      { jump: "group-2", icon: "👥", label: "Group 2" },
+      { jump: "group-3", icon: "👥", label: "Group 3" },
+    ],
+    6: [
+      { jump: "reflect-ticket", icon: "📝", label: "Exit Ticket" },
+      { jump: "reflect-self", icon: "🪞", label: "Reflection" },
+    ],
+    7: [
+      { jump: "summary-mastery", icon: "🏆", label: "Mastery" },
+    ],
+  };
 
   nav.innerHTML = s.phases
     .map((phase, i) => {
@@ -2384,18 +2488,34 @@ function updateSidebar(sidebar, state, phaseConfigs) {
         <span class="phase-stars">${stars}</span>
       </button>
     `;
-      // Warmup is index 0 — drop Math Notes right beneath it.
-      if (i === 0) return btn + mathNotesBtn;
-      // Launch is phase index 2 (Phase 3) — drop Vocab/Learn It right beneath it.
-      if (i === 2) return btn + launchSubTabs;
-      return btn;
+
+      const subList = PHASE_SUBTABS[i] || [];
+      const subTabsHtml = subList
+        .map(
+          (t) =>
+            `<button class="phase-btn ${t.extra ? "extra-btn" : "jump-btn"} phase-subtab" ${t.extra ? `data-extra="${t.extra}"` : `data-phase="${i}" data-jump="${t.jump}"`} style="margin-left:var(--sp-4, 18px); font-size:0.85rem; padding: 5px 12px; min-height: 34px;">
+            <span class="phase-num" style="background:transparent; box-shadow:none; font-size:0.95rem;">${t.icon}</span>
+            <span>${escHtml(t.label)}</span>
+          </button>`,
+        )
+        .join("\n");
+
+      return btn + subTabsHtml;
     })
     .join("");
 
-  nav.querySelectorAll("[data-phase]").forEach((btn) => {
+  nav.querySelectorAll("[data-phase]:not(.jump-btn)").forEach((btn) => {
     btn.addEventListener("click", () => {
       const idx = parseInt(btn.dataset.phase, 10);
       document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: idx } }));
+    });
+  });
+
+  nav.querySelectorAll(".jump-btn[data-jump]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.phase, 10);
+      const target = btn.dataset.jump;
+      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: idx, jump: target } }));
     });
   });
 
