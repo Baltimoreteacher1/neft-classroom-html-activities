@@ -83,8 +83,8 @@ window.GN_STORY = {
               vocab: [
                 {
                   term: "divisor",
-                  en: "The number you split by in a division problem.",
-                  es: "El número entre el que divides en una división.",
+                  en: "The number of equal groups you are dividing into (the number outside the division bracket).",
+                  es: "El número de partes iguales en las que divides (el número fuera de la casilla de división).",
                 },
               ],
             },
@@ -509,13 +509,13 @@ window.GN_STORY = {
       ico: "📚",
       en: "Dividend",
       es: "Dividendo",
-      def: "The number you are splitting up in a division problem.",
+      def: "The total number being divided into equal groups (the number inside the division bracket).",
     },
     {
       ico: "📚",
       en: "Divisor",
       es: "Divisor",
-      def: "The number you split by in a division problem.",
+      def: "The number of equal groups you are dividing into (the number outside the division bracket).",
     },
     {
       ico: "📚",
