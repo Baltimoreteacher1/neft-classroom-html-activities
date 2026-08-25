@@ -800,21 +800,26 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
   // Teacher-only "Clear answers" hook (invoked from the Tools menu item in
   // utility-menu.js). Wipes THIS lesson's saved responses/progress on this
-  // device and drops the Save/Resume pointer so an auto-restore can't re-fill
-  // them, then reloads to re-render the lesson blank. Lets a teacher project a
-  // fresh copy without last period's (or their own demo) answers showing.
+  // device in-place and re-renders the current phase blank without reloading
+  // or redirecting back to the sign-in screen.
   window.__ntClearLessonAnswers = () => {
     try {
-      state.reset();
+      state.clearAllResponses();
     } catch (_) {
-      /* storage blocked — reload still clears in-memory answers */
+      const phases = state.get().phases || [];
+      phases.forEach((_, i) => state.clearPhaseResponses(i));
     }
     try {
-      window.NeftSaveResume?.reset?.();
-    } catch (_) {
-      /* save/resume not present on this page */
-    }
-    window.location.reload();
+      document.querySelectorAll('input:not([type="hidden"]), textarea, select').forEach((input) => {
+        if (input.type === "checkbox" || input.type === "radio") input.checked = false;
+        else if (input.id !== "studentNameInput" && input.name !== "studentName") input.value = "";
+      });
+      document.querySelectorAll(".is-selected, .is-correct, .is-incorrect, .correct, .wrong, .selected").forEach((el) => {
+        el.classList.remove("is-selected", "is-correct", "is-incorrect", "correct", "wrong", "selected");
+      });
+    } catch (_) {}
+    const cur = state.get().currentPhase ?? 0;
+    document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: cur } }));
   };
 
   // Per-page teacher "Clear answers" API. Lets the compact control clear the

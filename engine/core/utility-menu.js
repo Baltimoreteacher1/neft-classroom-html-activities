@@ -40,7 +40,7 @@ export function mountUtilityMenu() {
   const actions = pop.querySelector('[data-slot="actions"]');
 
   // Clear answers (teacher-only) — wipes THIS lesson's saved answers/progress on
-  // this device and reloads it blank, so a teacher can project a fresh copy
+  // this device in-place without reloading, so a teacher can project a fresh copy
   // without last period's (or their own demo) responses showing. Gated to
   // teacher mode so students can never erase their own work from here.
   const clearAnswers = document.createElement("button");
@@ -50,21 +50,22 @@ export function mountUtilityMenu() {
   clearAnswers.addEventListener("click", () => {
     if (
       !window.confirm(
-        "Clear the answers on this lesson and reload it fresh? This only affects this device.",
+        "Clear the answers on this lesson? This only affects this device.",
       )
     )
       return;
     if (typeof window.__ntClearLessonAnswers === "function") {
       window.__ntClearLessonAnswers();
     } else {
-      // Fallback for pages without the lesson-engine hook: at least drop the
-      // Save/Resume pointer so auto-restore can't re-fill fields, then reload.
       try {
         window.NeftSaveResume?.reset?.();
-      } catch (_) {
-        /* save/resume not present */
-      }
-      window.location.reload();
+      } catch (_) {}
+      try {
+        document.querySelectorAll('input:not([type="hidden"]), textarea, select').forEach((input) => {
+          if (input.type === "checkbox" || input.type === "radio") input.checked = false;
+          else if (input.id !== "studentNameInput" && input.name !== "studentName") input.value = "";
+        });
+      } catch (_) {}
     }
     close();
   });
