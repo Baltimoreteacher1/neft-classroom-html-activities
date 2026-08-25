@@ -1378,6 +1378,85 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       phaseContainer.append(el);
       renderFn(el, state, this);
 
+      // Mount subcards ribbon for 1-click jumps between lesson parts
+      const PHASE_SUBCARDS = {
+        0: [
+          { extra: "mathnotes", icon: "📓", label: "Math Notes" },
+          { jump: ".card", icon: "⚡", label: "Warmup" },
+        ],
+        1: [
+          { jump: ".card", icon: "🎯", label: "Goals" },
+        ],
+        2: [
+          { extra: "vocab", icon: "🔑", label: "Vocab" },
+          { extra: "learn", icon: "💡", label: "Learn It" },
+          { extra: "watchme", icon: "👀", label: "Watch Me" },
+        ],
+        3: [
+          { jump: ".card", icon: "🤝", label: "Guided Practice" },
+        ],
+        4: [
+          { level: "1", icon: "🟢", label: "Level 1" },
+          { level: "2", icon: "🔵", label: "Level 2" },
+          { level: "3", icon: "🟣", label: "Level 3" },
+        ],
+        5: [
+          { jump: ".card", icon: "👥", label: "Small Group" },
+        ],
+        6: [
+          { jump: ".card", icon: "📝", label: "Exit Ticket" },
+        ],
+        7: [
+          { jump: ".card", icon: "🏆", label: "Mastery" },
+        ],
+      };
+
+      const subcards = PHASE_SUBCARDS[index] || [];
+      if (subcards.length > 0) {
+        const isEs = getPreferredLang() === "es";
+        const ribbon = document.createElement("div");
+        ribbon.className = "phase-subcards-ribbon no-print";
+        ribbon.setAttribute("role", "navigation");
+        ribbon.setAttribute("aria-label", "Lesson sub-parts");
+        ribbon.innerHTML = `
+          <span class="phase-subcards-label">📍 ${isEs ? "Partes:" : "Subcards:"}</span>
+          <div class="phase-subcards-list">
+            ${subcards
+              .map(
+                (t) => `
+              <button type="button" class="phase-subcard-chip" ${t.extra ? `data-sub-extra="${t.extra}"` : t.level ? `data-sub-level="${t.level}"` : `data-sub-jump="${t.jump}"`}>
+                <span class="phase-subcard-icon">${t.icon}</span> <span>${escHtml(t.label)}</span>
+              </button>`,
+              )
+              .join("")}
+          </div>
+        `;
+        ribbon.querySelectorAll("[data-sub-extra]").forEach((b) => {
+          b.addEventListener("click", () => this.openExtra(b.dataset.subExtra));
+        });
+        ribbon.querySelectorAll("[data-sub-level]").forEach((b) => {
+          b.addEventListener("click", () => {
+            const lvl = b.dataset.subLevel;
+            const targetBtn = el.querySelector(`.practice-level-btn[data-level="${lvl}"], [data-level="${lvl}"]`);
+            if (targetBtn) targetBtn.click();
+          });
+        });
+        ribbon.querySelectorAll("[data-sub-jump]").forEach((b) => {
+          b.addEventListener("click", () => {
+            const sel = b.dataset.subJump;
+            const target = el.querySelector(sel);
+            if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        });
+
+        const header = el.querySelector(".phase-title, .lesson-hero, .phase-header, h1");
+        if (header && header.parentElement) {
+          header.insertAdjacentElement("afterend", ribbon);
+        } else {
+          el.prepend(ribbon);
+        }
+      }
+
       // Auto-scroll to top smoothly on phase navigation so the student's attention
       // immediately lands on the new phase header.
       if (main) main.scrollTo({ top: 0, behavior: "smooth" });
@@ -2394,11 +2473,12 @@ function updateSidebar(sidebar, state, phaseConfigs) {
       <span>Math Notes</span>
     </button>`;
 
-  // Vocab → Learn It ride directly under the Launch (phase 1) button as
+  // Vocab → Learn It → Watch Me ride directly under the Launch (phase 1) button as
   // indented sub-tabs — reference material that lives with the lesson flow.
   const launchSubTabs = [
     { extra: "vocab", icon: "🔑", label: "Vocab" },
     { extra: "learn", icon: "💡", label: "Learn It" },
+    { extra: "watchme", icon: "👀", label: "Watch Me" },
   ]
     .map(
       (t) =>

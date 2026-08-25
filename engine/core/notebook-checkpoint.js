@@ -395,12 +395,18 @@ export function openMathNotesModel(config, defaultLang) {
   dlg.className = "nt-nb-model";
   dlg.setAttribute("aria-label", "Math Notes — what my notebook page looks like");
 
+  let isFullscreen = false;
+
   function renderDialog() {
     const isEs = currentLang === "es";
+    dlg.className = `nt-nb-model ${isFullscreen ? "is-fullscreen" : ""}`;
     dlg.innerHTML = `
       <div class="nt-nb-model-head">
         <h2>${isEs ? "¿Cómo debe verse mi página?" : "What should my page look like?"}</h2>
-        <div style="display:flex; align-items:center; gap:10px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="nt-nb-fullscreen-btn" title="${isFullscreen ? "Exit Full Page" : "Show Math Notes on whole page"}">
+            <span aria-hidden="true">${isFullscreen ? "🗗" : "⛶"}</span> <span>${isFullscreen ? (isEs ? "Vista Normal" : "Dialog View") : (isEs ? "Pantalla Completa" : "Full Page")}</span>
+          </button>
           <div class="nt-nb-lang-toggle" role="group" aria-label="Math Notes Language">
             <button type="button" class="nt-nb-lang-btn ${!isEs ? "active" : ""}" data-lang="en">🇺🇸 EN</button>
             <button type="button" class="nt-nb-lang-btn ${isEs ? "active" : ""}" data-lang="es">🇲🇽 ES</button>
@@ -411,6 +417,10 @@ export function openMathNotesModel(config, defaultLang) {
       ${renderLessonNotesHtml(lessonConfig, currentLang)}`;
 
     dlg.querySelector(".nt-nb-model-close")?.addEventListener("click", () => dlg.close());
+    dlg.querySelector(".nt-nb-fullscreen-btn")?.addEventListener("click", () => {
+      isFullscreen = !isFullscreen;
+      renderDialog();
+    });
     dlg.querySelectorAll(".nt-nb-lang-btn").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const targetLang = /** @type {HTMLElement} */ (e.currentTarget).dataset.lang;
