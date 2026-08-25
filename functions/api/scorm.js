@@ -57,7 +57,11 @@ function errorPage(message, status = 400) {
       <p>${esc(message)}</p>
       <p>Expected: <code>?activity=</code> a lesson id like <code>1-3</code>, a site
          path like <code>/ratio-color-mixer/</code>, or a full eduwonderlab.com URL.</p>
-      <p><a href="/curriculum/">← Back to the Curriculum Hub</a><br />
+      <!-- ?teacher=1 because this page is teacher-facing and /curriculum/ is the
+           teacher console: without a current sign-in a bare link bounces to the
+           student lesson picker, which is not where a teacher building a SCORM
+           package was going. -->
+      <p><a href="/curriculum/?teacher=1">← Back to the Curriculum Hub</a><br />
          <a href="/teacher-tools/scorm-builder/">Open the SCORM Builder</a></p>
     </main>
   </body>

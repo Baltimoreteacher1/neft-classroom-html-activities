@@ -99,7 +99,9 @@ test("the diagnostic probes student pages, assets, a public API, and one teacher
   const paths = TARGETS.map((t) => t.path);
   for (const need of [
     "/",
-    "/curriculum/",
+    // /curriculum/ is the teacher console and redirects a student (AUTH_CONTRACT
+    // §2b); /curriculum/units/ is the student page that must stay a plain 200.
+    "/curriculum/units/",
     "/lessons/1-1/",
     "/assets/app.js",
     "/assets/shared.css",

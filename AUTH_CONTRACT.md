@@ -27,6 +27,14 @@ gate or explicitly marked as unenforced context.**
 > **Do not consolidate these three gates into one.** They look redundant. They
 > are not: they never appear in the same flow, and that separation is the entire
 > reason the model is predictable. See "Why three gates" below.
+>
+> **One extension is sanctioned, and only one** (§2a, added 2026-08-25): a
+> signed 24-hour *receipt* issued after a successful Basic sign-in, so the
+> browser stops re-challenging. It authenticates nobody — it records that
+> `SITE_PASSWORD` was already checked. Delete `_lib/teacher-session.js` and
+> every gate still works exactly as described here, one challenge at a time.
+> That reversibility is the property that makes it safe, and it is what
+> `validate:auth-contract` checks.
 
 ---
 
@@ -67,6 +75,66 @@ system: `SITE_PASSWORD` is *the teacher password*, not a front door.
 - Everything else — every lesson, game, tool, and activity — is open, anonymous,
   no prompt.
 
+## 2a. The 24-hour receipt — no second password before tomorrow
+
+A browser forgets a cached Basic credential when it closes, so before this a
+teacher retyped `SITE_PASSWORD` every morning, and again after every restart.
+
+On a **successful** Basic sign-in the middleware sets one cookie:
+
+    nt_teacher_day=<expiryMs>.<HMAC-SHA256>; Path=/; Max-Age=86400;
+                    HttpOnly; Secure; SameSite=Lax
+
+For the next 24 hours a request carrying it is authorized with no challenge. It
+is a *receipt*, not a credential, and the difference is load-bearing:
+
+- **It is only ever issued where the password was just verified.** One call
+  site, inside the `supplied === password` branch. Pinned by a detector.
+- **Its HMAC key is `SITE_PASSWORD` itself.** There is no second secret to
+  configure, and rotating the password revokes every outstanding receipt for
+  free.
+- **It carries an expiry and a signature and nothing else** — no identity, no
+  role, no key material.
+- **It expires.** 24 hours, fixed from sign-in, not sliding.
+- **HttpOnly**, so no page script can read or mint one.
+
+What it is *not*: a login page, a per-teacher key slot, or an endpoint. Those
+were the rolled-back architecture and remain banned — `validate:auth-contract`
+fails on `teacher-auth` or `teacher-login` appearing in the middleware.
+
+**There is no sign-out.** A browser that has authenticated will keep replaying
+its Basic credential for the session regardless of the cookie, so a "sign out"
+control could not keep its promise. To hand a device to students, use the
+student surfaces directly (§2b).
+
+## 2b. The Curriculum Hub is the teacher console
+
+`/curriculum/` — the index, **exact match only** — is teacher-only. It has no
+student view and no mode toggle: everything that reaches it has already passed
+§2, so Teacher view is the only view.
+
+Unauthorized, it does **not** 401. It **302s to `/curriculum/units/`**, the
+student lesson picker:
+
+| request for `/curriculum/` | answer |
+| --- | --- |
+| valid receipt, or correct Basic password | **200**, the console, `private, no-store` |
+| anything else | **302** → `/curriculum/units/` |
+| `SITE_PASSWORD` unset | **302** → `/curriculum/units/` (fails closed to students) |
+| `/curriculum/?teacher=1` | **401** + Basic challenge — the deliberate sign-in |
+
+**Why a redirect and not a 401.** `/curriculum/` is linked as "the Curriculum
+Hub" from ~600 pages, including every lesson page and every SCORM launch page a
+class opens from Canvas. A password prompt there is a dead end for a student on
+a surface with no other way back. The redirect keeps the link working and keeps
+the console private. It is the reason `isCurriculumHub()` is a **separate**
+predicate from `isTeacherSurface()` (§5): the other two callers of that
+predicate read it as "this path 401s".
+
+**Exact match, never a prefix.** `/curriculum/units/`, `/curriculum/arcade/`,
+`/curriculum/projects/`, `/curriculum/student-launch/`, `/curriculum/my-progress/`
+and every other child stay open to students.
+
 ## 3. TEACHER_KEY — the API credential
 
 `/api/*` endpoints carry **their own** policy; the page gate never runs for them.
@@ -102,12 +170,19 @@ They never meet:
 
 | A teacher opens… | is asked for | asked how many times |
 | --- | --- | --- |
-| a teacher page (`/teacher-tools/`, a planner, an answer key) | `SITE_PASSWORD` | once, by the browser |
+| a teacher page (`/teacher-tools/`, a planner, an answer key, the hub) | `SITE_PASSWORD` | once a day, by the browser (§2a) |
 | Teacher Mode on a student lesson page | the PIN | once, in-page |
 | nothing — the Planner saving in the background | `TEACHER_KEY` | never; it is a header |
 
 There is no flow in which a human is prompted twice. Merging them is what
 produced a flow nobody could follow.
+
+The Curriculum Hub used to be the exception: it sat in the first row *and* the
+second, because a teacher who had already typed `SITE_PASSWORD` to reach a
+teacher tool still had to type the PIN to see the hub in Teacher view. §2b
+removed the second prompt by removing the hub's student view, not by merging
+the gates — the PIN still guards lesson pages and still knows nothing about
+`SITE_PASSWORD`.
 
 ## 5. Protected routes
 
@@ -119,6 +194,12 @@ disagree.
 
 **Gated** — path contains `teacher`, `dashboard`, or `answer-key`, or is prefixed
 `/curriculum/plan-notes`, `/curriculum/planning`, or `/admin`.
+
+`isCurriculumHub()` lives in the same file and is **deliberately separate**: it
+matches `/curriculum`, `/curriculum/` and `/curriculum/index.html` exactly, and
+only the middleware calls it, because the hub redirects where a teacher surface
+401s (§2b). Folding it into `isTeacherSurface()` would make the SCORM builder
+refuse a URL that never prompts anyone.
 
 **Never gated, and this is load-bearing:**
 
@@ -152,7 +233,10 @@ once branched them is deleted and must not return.
 | same, correct password | **200**, `Cache-Control: private, no-store` |
 | refresh | **200** — the browser replays the credential |
 | wrong password | **401**, no content |
-| `/`, `/curriculum/`, any lesson, anonymous | **200**, no prompt |
+| `/`, `/curriculum/units/`, any lesson, anonymous | **200**, no prompt |
+| `/curriculum/`, anonymous | **302** → `/curriculum/units/`, no prompt |
+| `/curriculum/`, with a valid 24-hour receipt | **200**, the teacher console |
+| any teacher page, within 24h of a sign-in | **200**, no second prompt |
 | `/api/pacing/*` without `x-teacher-key` | **401** |
 
 Enforced end to end by `npm run e2e:auth` in **both engines**.
@@ -166,7 +250,8 @@ updated.
 | File | Role |
 | --- | --- |
 | `functions/_middleware.js` | canonical host, Basic gate, fail-closed, config stripping |
-| `functions/_lib/teacher-surface.js` | the one protected-route predicate |
+| `functions/_lib/teacher-surface.js` | the one protected-route predicate, plus `isCurriculumHub()` |
+| `functions/_lib/teacher-session.js` | the 24-hour receipt (§2a) |
 | `engine/core/teacher-mode.js` | Teacher Mode PIN (canonical copy) |
 | `curriculum/planning/planning-store.js` | Planner credential handling (`x-teacher-key`) |
 | `functions/api/pacing/[[path]].js` | the Planner's gated endpoint |

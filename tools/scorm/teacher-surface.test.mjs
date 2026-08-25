@@ -19,7 +19,11 @@ import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildScormFiles, resolveTarget, TeacherSurfaceError } from "../../functions/_lib/scorm.js";
-import { isTeacherSurface, normalizePath } from "../../functions/_lib/teacher-surface.js";
+import {
+  isCurriculumHub,
+  isTeacherSurface,
+  normalizePath,
+} from "../../functions/_lib/teacher-surface.js";
 import { isTeacherSurface as taxonomyPredicate } from "../../scripts/lib/download-taxonomy.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -263,6 +267,37 @@ check("shared student code and data are still not treated as teacher paths", () 
   // teacher-only would 401 a student page's script.
   for (const p of ["/assets/curriculum-teacher-workflow.js", "/data/curriculum-manifest.json"]) {
     assert.ok(!isTeacherSurface(p), `would have gated a shared student asset: ${p}`);
+  }
+});
+
+// --- 6. the hub console predicate is separate, and exact ---------------------
+check("the Curriculum Hub console is NOT part of the shared teacher predicate", () => {
+  // /curriculum/ is teacher-only, but it 302s students to /curriculum/units/
+  // instead of 401ing them (AUTH_CONTRACT §2b). isTeacherSurface() means "this
+  // path 401s", and the SCORM builder refuses anything it says yes to — so
+  // folding the hub in would make the builder refuse a URL that prompts nobody.
+  for (const p of ["/curriculum", "/curriculum/", "/curriculum/index.html"]) {
+    assert.ok(!isTeacherSurface(p), `${p} leaked into the shared teacher predicate`);
+    assert.ok(isCurriculumHub(p), `isCurriculumHub() missed ${p}`);
+  }
+});
+
+check("the hub predicate matches the index and nothing beneath it", () => {
+  for (const p of [
+    "/curriculum/units/",
+    "/curriculum/arcade/",
+    "/curriculum/projects/",
+    "/curriculum/student-launch/",
+    "/curriculum/my-progress/",
+    "/curriculum/units/index.html",
+    "/curriculums/",
+    "/",
+  ]) {
+    assert.ok(!isCurriculumHub(p), `isCurriculumHub() over-matched ${p}`);
+  }
+  // Normalization is shared with isTeacherSurface(), so respellings collapse.
+  for (const p of ["/Curriculum/", "//curriculum//", "/curriculum/x/../", "/curriculum/?a=b"]) {
+    assert.ok(isCurriculumHub(p), `isCurriculumHub() missed the respelling ${p}`);
   }
 });
 

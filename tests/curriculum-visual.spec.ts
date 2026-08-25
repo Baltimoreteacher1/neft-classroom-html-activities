@@ -25,34 +25,22 @@ import { expect, type Page, test } from "@playwright/test";
  */
 
 /**
- * Teacher Mode is not reachable by clicking on the public page — the mode
- * toggle and every guide action carry `hub-teacher-only`, which is display:none
- * for students. That is deliberate (it is the student-mode-leak fix), so a test
- * must enter the mode the way a real teacher's browser does: by setting the
- * shared key, then loading the page.
+ * /curriculum/ is the TEACHER CONSOLE (AUTH_CONTRACT §2b): the middleware serves
+ * it only to a request that has passed the password gate, and redirects everyone
+ * else to /curriculum/units/. It therefore has no student view and no mode
+ * toggle — Teacher view is the only view, entered by loading the page.
  *
- * The value must be one the hub accepts. It stores "true"; other modules in the
- * repo compare against "1". See assets/nt-usage.js for that inconsistency.
+ * These specs run against the static `dist/` build (vite preview), where no
+ * middleware runs, so a plain goto() reaches the console exactly as an
+ * authorized browser would. That is the point: this file asserts what the
+ * console RENDERS. Who is allowed to reach it is asserted server-side, by
+ * tools/auth-contract.test.mjs and tools/e2e-auth.mjs.
+ *
+ * Storage is cleared before any hub script runs — clearing after the first load
+ * and reloading let Chromium restore transient <details open> state under heavy
+ * parallel load, which produced two different mobile screenshots.
  */
-async function enterTeacherMode(page: Page) {
-  await page.goto("/curriculum/");
-  await page.evaluate(() => {
-    localStorage.setItem("nt-teacher-mode", "true");
-  });
-  await page.reload();
-  await page.waitForLoadState("networkidle").catch(() => {});
-}
-
-/**
- * Student Mode is the PUBLIC default, but it is stored in localStorage — so a
- * previous test's teacher session silently changes what the next page renders.
- * Every case here starts from a cleared origin, which is also the only honest
- * way to judge a student-mode leak.
- */
-async function freshStudentSession(page: Page) {
-  // Clear storage before any hub script runs. Clearing after the first load
-  // and reloading let Chromium restore transient <details open> state under
-  // heavy parallel load, which produced two different mobile screenshots.
+async function openConsole(page: Page) {
   await page.addInitScript(() => {
     try {
       localStorage.clear();
@@ -62,6 +50,7 @@ async function freshStudentSession(page: Page) {
     }
   });
   await page.goto("/curriculum/");
+  await page.waitForLoadState("networkidle").catch(() => {});
 }
 
 /**
@@ -162,17 +151,20 @@ const SHOT = {
 test.describe.configure({ mode: "serial" });
 
 test.describe("curriculum hub — visual baselines", () => {
-  test("student mode, default view", async ({ page }) => {
-    await freshStudentSession(page);
+  test("teacher console, default view", async ({ page }) => {
+    await openConsole(page);
     await stabilize(page);
-    await expect(page.locator("#hub-mode-toggle")).toContainText("Student Mode");
-    await expect(page).toHaveScreenshot("hub-student-default.png", SHOT);
+    // Teacher view with NO way to leave it: the toggle is not rendered at all,
+    // and the body class is on from boot rather than after a PIN.
+    await expect(page.locator("body")).toHaveClass(/teacher-mode/);
+    await expect(page.locator("#hub-mode-toggle")).toHaveCount(0);
+    await expect(page).toHaveScreenshot("hub-console-default.png", SHOT);
   });
 
-  test("student mode, mobile width", async ({ page }) => {
-    // The width most students actually open this on when not at a Chromebook.
+  test("teacher console, mobile width", async ({ page }) => {
+    // The width the console is most often opened at when not at a Chromebook.
     await page.setViewportSize({ width: 390, height: 844 });
-    await freshStudentSession(page);
+    await openConsole(page);
     await stabilize(page);
     // CLIPPED, unlike the other four, and deliberately.
     //
@@ -188,14 +180,14 @@ test.describe("curriculum hub — visual baselines", () => {
     // and stops the baseline going stale every time automation touches a
     // lesson row further down. Horizontal overflow is separately asserted
     // functionally in curriculum-journey.spec.ts.
-    await expect(page).toHaveScreenshot("hub-student-mobile.png", {
+    await expect(page).toHaveScreenshot("hub-console-mobile.png", {
       ...SHOT,
       clip: { x: 0, y: 0, width: 390, height: 2200 },
     });
   });
 
   test("teacher mode, workflow open on Today's Teaching", async ({ page }) => {
-    await enterTeacherMode(page);
+    await openConsole(page);
     await page.locator("button[data-guide-teacher-view='today']").click();
     const workflow = page.locator("#curriculum-teacher-workflow");
     await expect(workflow).toBeVisible();
@@ -204,28 +196,39 @@ test.describe("curriculum hub — visual baselines", () => {
   });
 
   test("teacher mode, plan the week", async ({ page }) => {
-    await enterTeacherMode(page);
+    await openConsole(page);
     await page.locator("button[data-guide-teacher-view='week']").click();
     await expect(page.locator("#curriculum-teacher-workflow")).toBeVisible();
     await stabilize(page);
     await expect(page).toHaveScreenshot("hub-teacher-week.png", SHOT);
   });
 
-  test("teacher controls stay hidden from students", async ({ page }) => {
-    // The inverse assertion, and the one that actually protects students: after
-    // a clean session every teacher-only control must be display:none. A
-    // screenshot alone would not catch a leak that renders below the fold.
-    await freshStudentSession(page);
-    await expect(page.locator("#hub-mode-toggle")).toBeHidden();
-    for (const el of await page.locator("[data-guide-teacher-view]").all()) {
-      await expect(el).toBeHidden();
+  test("the console has no student view to fall back into", async ({ page }) => {
+    // The inverse of the old student-mode-leak assertion, and the invariant that
+    // replaces it. Nothing here may offer a way back to a student view — the
+    // page is password-gated, so a "switch to Student" control would only ever
+    // strand a teacher on a hub where every panel had rendered nothing.
+    await openConsole(page);
+    for (const id of ["#hub-mode-toggle", "#hub-student-hint", "#hub-mode-banner"]) {
+      await expect(page.locator(id)).toHaveCount(0);
     }
+    // Teacher actions are the opposite: on this page they must be reachable.
+    const actions = await page.locator("[data-guide-teacher-view]").all();
+    expect(actions.length).toBeGreaterThan(0);
+    for (const el of actions) {
+      await expect(el).toBeVisible();
+    }
+    // The student equivalent is a link to a separate page, not a mode.
+    await expect(page.locator("#hub-student-picker-link")).toHaveAttribute(
+      "href",
+      "/curriculum/units/",
+    );
   });
 
   test("search results render and resolve", async ({ page }) => {
     // Guards the lessonId-vs-id join: a broken join still renders a results
     // container, so only the painted result rows prove the join works.
-    await freshStudentSession(page);
+    await openConsole(page);
     const search = page.locator("#hub-search, input[type='search']").first();
     await search.fill("ratio");
     await page.waitForTimeout(600); // debounce

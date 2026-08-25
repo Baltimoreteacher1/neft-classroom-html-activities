@@ -69,6 +69,26 @@ export function normalizePath(input) {
  * student-safe that the gate would refuse. tools/scorm/teacher-surface.test.mjs
  * pins the two together.
  */
+/**
+ * True for the Curriculum Hub index itself — `/curriculum`, `/curriculum/`,
+ * `/curriculum/index.html` — and for nothing else under `/curriculum/`.
+ *
+ * DELIBERATELY NOT PART OF `isTeacherSurface()`. The hub is teacher-only, but
+ * its unauthenticated behaviour is a *redirect to the student lesson picker*,
+ * not a 401 (see functions/_middleware.js). `isTeacherSurface()` has two other
+ * callers — the SCORM endpoint and the download taxonomy — that read it as
+ * "this path 401s", and folding the hub in would make the SCORM builder refuse
+ * a URL that never prompts anyone for a password. One predicate per meaning.
+ *
+ * The match is EXACT, never a prefix: `/curriculum/` is the teacher console,
+ * while `/curriculum/units/`, `/curriculum/arcade/`, `/curriculum/projects/`
+ * and every other child are student surfaces that must stay open.
+ */
+export function isCurriculumHub(path) {
+  const p = normalizePath(path);
+  return p === "/curriculum" || p === "/curriculum/" || p === "/curriculum/index.html";
+}
+
 export function isTeacherSurface(path) {
   const p = normalizePath(path);
   if (!p.startsWith("/")) return false;

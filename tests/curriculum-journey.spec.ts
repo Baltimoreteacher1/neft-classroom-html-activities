@@ -12,60 +12,30 @@ import { expect, test, type Page } from "@playwright/test";
  * second click was needed).
  */
 
-const TEACHER_PIN = "BlueHeron2026";
-
-// Switching INTO Teacher Mode fires window.prompt("Enter teacher password:").
-// Accept it with the master PIN so a first click can complete end to end.
-function acceptTeacherPin(page: Page) {
-  page.on("dialog", (dialog) => {
-    if (dialog.type() === "prompt") dialog.accept(TEACHER_PIN);
-    else dialog.accept();
-  });
-}
-
 /**
- * Enter Teacher Mode the way a teacher's browser does.
+ * Open the teacher console.
  *
- * These journeys were originally written when the guide's teacher actions were
- * rendered for everyone, and they clicked them straight from the public page.
- * The student-mode-leak fix then gave those controls `hub-teacher-only`
- * (display:none for students), which is correct — and left these tests asserting
- * pre-fix behaviour, red ever since. The one-click regression they guard is
- * still worth guarding; only the precondition changed.
+ * /curriculum/ IS the console now (AUTH_CONTRACT §2b): the middleware serves it
+ * only to a request that passed the password gate and redirects everyone else to
+ * /curriculum/units/, so the page boots in Teacher Mode with no toggle and no
+ * PIN. These specs run against the static `dist/` build, where no middleware
+ * runs, so a plain goto() reaches it exactly as an authorized browser would.
  *
- * The hub stores this key as "true"; other modules compare against "1".
+ * Anchored to the body class, NOT to the button's words — and no longer to the
+ * toggle at all, because there is no toggle. `applyTeacherMode()` sets
+ * `body.teacher-mode` from the same `teacherMode` boolean that drives every
+ * teacher panel, on every mode change AND at boot, so it cannot drift from the
+ * state it reports. It is also language-independent, which visible prose is not:
+ * this assertion used to read `toContainText("Teacher Mode")` and went red on a
+ * deliberate copy change.
  */
 async function enterTeacherMode(page: Page) {
   await page.goto("/curriculum/");
-  await page.evaluate(() => {
-    localStorage.setItem("nt-teacher-mode", "true");
-  });
-  await page.reload();
-  // Anchored to aria-pressed, NOT to the button's words.
-  //
-  // This asserted `toContainText("Teacher Mode")` and went red when the toggle
-  // was relabelled to "👩‍🏫 You're in Teacher view — switch to Student" — a
-  // deliberate improvement, because the old label read equally as "you are in
-  // teacher mode" and "click for teacher mode". The label was right and the
-  // test was wrong.
-  //
-  // Swapping in the new string would have repeated the mistake. Visible prose is
-  // the worst possible key for an assertion on a bilingual site: it changes for
-  // copy reasons, and under ?lang=es it changes entirely. That is the shape of
-  // the article bug, which silently destroyed project completions by matching on
-  // button text.
-  //
-  // `aria-pressed` is set by applyTeacherMode() from the same `teacherMode`
-  // boolean that picks the label, on every mode change AND at boot (the init
-  // sequence calls it), so it cannot drift from the state it reports. It is also
-  // language-independent and has its own reason to be correct — a screen reader
-  // depends on it. Every other state assertion in this file already keys on it.
-  await expect(page.locator("#hub-mode-toggle")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("body")).toHaveClass(/teacher-mode/);
 }
 
 test.describe("guide first-click journeys in Teacher Mode", () => {
   test("Teach today opens the workflow on Today's Teaching in one click", async ({ page }) => {
-    acceptTeacherPin(page);
     await enterTeacherMode(page);
 
     const workflowEl = page.locator("#curriculum-teacher-workflow");
@@ -93,7 +63,6 @@ test.describe("guide first-click journeys in Teacher Mode", () => {
   });
 
   test("Plan the week opens Weekly Pacing in one click (not Today)", async ({ page }) => {
-    acceptTeacherPin(page);
     await enterTeacherMode(page);
     // Opens on Today by default; the regression is that "Plan the week" used to
     // leave it there, so Today being active first is the meaningful baseline.
@@ -127,8 +96,6 @@ test.describe("guide first-click journeys in Teacher Mode", () => {
     // claim, so the assertions below are written against the claim instead:
     // it goes to the unit browser, the browser actually renders, and the student
     // is still a student when they arrive.
-    // Student mode BEFORE the click, read off aria-pressed as everywhere else.
-    await expect(page.locator("#hub-mode-toggle")).toHaveAttribute("aria-pressed", "false");
     await expect(explore).toHaveAttribute("href", "/curriculum/units/");
     await explore.click();
     await expect(page).toHaveURL(/\/curriculum\/units\/$/);
@@ -142,9 +109,10 @@ test.describe("guide first-click journeys in Teacher Mode", () => {
     // fonts.googleapis.com stylesheet, not the page. With that host reachable
     // the units page settles in ~840ms. The assertion below is still the better
     // one — state over rendering — but not for the reason first given.)
-    await expect
-      .poll(async () => page.evaluate(() => localStorage.getItem("nt-teacher-mode")))
-      .not.toBe("true");
+    // The DESTINATION is the student surface, and it must render as one even
+    // though the console the click came from is in Teacher Mode: /curriculum/
+    // writes the shared key, and /curriculum/units/ must not inherit the teacher
+    // workflow panel from it.
     await expect(page.locator("#curriculum-teacher-workflow")).toBeHidden();
     // Nothing is asserted about the units page's RENDERED content. The claim in
     // this test's name — jumps to the unit browser, stays student-safe — is
@@ -157,7 +125,6 @@ test.describe("guide first-click journeys in Teacher Mode", () => {
 });
 
 test("the guide header is keyboard operable", async ({ page }) => {
-  acceptTeacherPin(page);
   await enterTeacherMode(page);
   const teachToday = page.locator("button[data-guide-teacher-view='today']");
   await teachToday.focus();
@@ -168,12 +135,11 @@ test("the guide header is keyboard operable", async ({ page }) => {
 
 test("mobile student layout is student-safe and does not scroll sideways", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/curriculum/");
-  // On a student's phone the teacher actions must NOT be present — this used to
-  // assert the opposite, which is what the student-mode-leak fix corrected.
+  // The STUDENT page, not the console. /curriculum/ is teacher-only now, so the
+  // "is a student safe here?" question moved to the page a student can reach.
+  await page.goto("/curriculum/units/");
   await expect(page.locator("button[data-guide-teacher-view='today']")).toBeHidden();
   await expect(page.locator("button[data-guide-teacher-view='week']")).toBeHidden();
-  await expect(page.getByRole("link", { name: /Explore by unit/ })).toBeVisible();
   // The page must not scroll sideways on a phone.
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -192,9 +158,19 @@ test("mobile teacher layout keeps the guide actions usable", async ({ page }) =>
   expect(overflow).toBeLessThanOrEqual(1);
 });
 
-test("public curriculum landing is accessible", async ({ page }) => {
-  await page.goto("/curriculum/");
-  await expect(page.locator("#curriculum-start")).toBeVisible();
-  const results = await new AxeBuilder({ page }).include("#curriculum-start").analyze();
+test("the public curriculum landing is accessible", async ({ page }) => {
+  // This used to scan `/curriculum/`'s #curriculum-start. That page is the
+  // TEACHER CONSOLE now (AUTH_CONTRACT §2b) and no student can reach it, so the
+  // claim in this test's name moved with the audience: /curriculum/units/ is
+  // where a student lands. Scoped to #interactive-hub, the unit browser itself.
+  //
+  // NOT re-pointed at the console. Scanning it in Teacher view surfaces 208 axe
+  // violations — almost entirely colour contrast inside teacher-only panels that
+  // this test could never see while the hub defaulted to Student view. Those are
+  // real and pre-existing, and fixing them is its own piece of work; adding a
+  // gate here that fails on day one would only teach people to ignore it.
+  await page.goto("/curriculum/units/");
+  await expect(page.locator("#interactive-hub")).toBeVisible();
+  const results = await new AxeBuilder({ page }).include("#interactive-hub").analyze();
   expect(results.violations).toEqual([]);
 });

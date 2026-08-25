@@ -34,7 +34,11 @@ const WWW = (arg("--www") || "https://www.eduwonderlab.com").replace(/\/$/, "");
 /** Apex student runtime the live SCORM iframe actually needs. */
 export const STUDENT_TARGETS = Object.freeze([
   { path: "/", name: "homepage", kind: "document" },
-  { path: "/curriculum/", name: "curriculum hub", kind: "document" },
+  // /curriculum/ is deliberately absent: it is the teacher console and answers a
+  // student with a 302, which is neither the PUBLIC 200 a student target must
+  // return nor the 401 a teacher target must return (AUTH_CONTRACT §2b). Its
+  // behaviour is pinned by tools/auth-contract.test.mjs and tools/e2e-auth.mjs.
+  { path: "/curriculum/units/", name: "student lesson picker", kind: "document" },
   { path: "/lessons/1-1/", name: "lesson 1-1", kind: "document" },
   { path: "/lessons/5-1/", name: "lesson 5-1", kind: "document" },
   { path: "/lessons/1-1/homework.html", name: "homework 1-1", kind: "document" },

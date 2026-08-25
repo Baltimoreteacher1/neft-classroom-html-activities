@@ -13,6 +13,7 @@
  */
 import { strict as assert } from "node:assert";
 import test from "node:test";
+import { mintToken, SESSION_COOKIE } from "../functions/_lib/teacher-session.js";
 import { isTeacherSurface } from "../functions/_lib/teacher-surface.js";
 import { canonicalRedirect, onRequest } from "../functions/_middleware.js";
 
@@ -29,6 +30,9 @@ const call = (
     next: async () => ok(),
     data: {},
   });
+
+/** The `name=value` pair out of a Set-Cookie, ready to send back as `Cookie`. */
+const cookieFrom = (res) => (res.headers.get("set-cookie") || "").split(";")[0];
 
 const basic = (password, user = "teacher") => ({
   Authorization: `Basic ${Buffer.from(`${user}:${password}`).toString("base64")}`,
@@ -151,4 +155,119 @@ test("a gated path cannot be reached by respelling it", () => {
 test("a query string cannot make a student path look teacher-only, or the reverse", () => {
   assert.equal(isTeacherSurface("/lessons/1-1/?next=/teacher-tools/"), false);
   assert.equal(isTeacherSurface("/teacher-tools/?x=/lessons/"), true);
+});
+
+/* ── §11 the 24-hour receipt ───────────────────────────────────────────────── */
+
+test("a successful Basic sign-in issues a 24-hour receipt", async () => {
+  const res = await call("/teacher-tools/", { headers: basic(PW) });
+  assert.equal(res.status, 200);
+  const cookie = res.headers.get("set-cookie") || "";
+  assert.match(cookie, /^nt_teacher_day=/);
+  assert.match(cookie, /HttpOnly/);
+  assert.match(cookie, /Secure/);
+  assert.match(cookie, /SameSite=Lax/);
+  assert.match(cookie, /Max-Age=86400\b/);
+});
+
+test("the receipt opens a teacher surface with no challenge at all", async () => {
+  const cookie = cookieFrom(await call("/teacher-tools/", { headers: basic(PW) }));
+  const res = await call("/teacher-tools/", { headers: { Cookie: cookie } });
+  assert.equal(res.status, 200);
+  assert.equal(res.headers.get("www-authenticate"), null);
+  assert.equal(res.headers.get("cache-control"), "private, no-store");
+});
+
+test("a receipt is worthless once the password rotates", async () => {
+  const cookie = cookieFrom(await call("/teacher-tools/", { headers: basic(PW) }));
+  const res = await call("/teacher-tools/", {
+    headers: { Cookie: cookie },
+    env: { SITE_PASSWORD: "rotated-password" },
+  });
+  assert.equal(res.status, 401);
+});
+
+test("a forged or tampered receipt is refused", async () => {
+  const real = cookieFrom(await call("/teacher-tools/", { headers: basic(PW) }));
+  const forged = [
+    `nt_teacher_day=${Date.now() + 86400000}.not-a-signature`,
+    `nt_teacher_day=${real.replace(/.$/, (c) => (c === "A" ? "B" : "A"))}`,
+    "nt_teacher_day=9999999999999.",
+    "nt_teacher_day=.sig",
+  ];
+  for (const cookie of forged) {
+    const res = await call("/teacher-tools/", { headers: { Cookie: cookie } });
+    assert.equal(res.status, 401, `${cookie} was accepted`);
+  }
+});
+
+test("an expired receipt is refused", async () => {
+  const stale = await mintToken(PW, Date.now() - 25 * 60 * 60 * 1000);
+  const res = await call("/teacher-tools/", {
+    headers: { Cookie: `${SESSION_COOKIE}=${stale}` },
+  });
+  assert.equal(res.status, 401);
+});
+
+/* ── §12 the Curriculum Hub console ────────────────────────────────────────── */
+
+test("the hub index is the teacher console, and a student is sent to the picker", async () => {
+  for (const p of ["/curriculum", "/curriculum/", "/curriculum/index.html"]) {
+    const res = await call(p);
+    assert.equal(res.status, 302, `${p} did not redirect`);
+    assert.equal(res.headers.get("location"), "/curriculum/units/");
+    // Never a password prompt: ~600 pages link here, including SCORM launches.
+    assert.equal(res.headers.get("www-authenticate"), null);
+    assert.match(res.headers.get("cache-control") || "", /no-store/);
+  }
+});
+
+test("an authorized request gets the hub itself", async () => {
+  for (const headers of [
+    basic(PW),
+    { Cookie: cookieFrom(await call("/curriculum/", { headers: basic(PW) })) },
+  ]) {
+    const res = await call("/curriculum/", { headers });
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get("cache-control"), "private, no-store");
+  }
+});
+
+test("?teacher=1 reaches the password prompt instead of the redirect", async () => {
+  const res = await call("/curriculum/?teacher=1");
+  assert.equal(res.status, 401);
+  assert.match(res.headers.get("www-authenticate") || "", /^Basic realm="EduWonderLab"/);
+});
+
+test("everything else under /curriculum/ stays open to students", async () => {
+  for (const p of [
+    "/curriculum/units/",
+    "/curriculum/arcade/",
+    "/curriculum/projects/",
+    "/curriculum/student-launch/",
+    "/curriculum/family-connections/",
+    "/curriculum/my-progress/",
+  ]) {
+    const res = await call(p);
+    assert.equal(res.status, 200, `${p} is no longer open to students`);
+  }
+});
+
+test("the hub fails closed to the STUDENT PICKER when SITE_PASSWORD is unset", async () => {
+  // A 503 here would break a link that every lesson page carries; serving the
+  // console would leak it. The third option is the only correct one.
+  const res = await call("/curriculum/", { env: {} });
+  assert.equal(res.status, 302);
+  assert.equal(res.headers.get("location"), "/curriculum/units/");
+});
+
+test("the hub redirect cannot be turned into an open redirect", async () => {
+  for (const p of [
+    "/curriculum/?teacher=https://evil.example.com",
+    "/curriculum/?next=//evil.example.com",
+  ]) {
+    const res = await call(p);
+    assert.equal(res.status, 302);
+    assert.match(res.headers.get("location") || "", /^\/curriculum\/units\//);
+  }
 });

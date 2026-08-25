@@ -89,6 +89,11 @@
       '<span aria-hidden="true">👩‍🏫</span><strong>Teacher workspace</strong><small>Plan, review, approve, and launch</small>';
     teacher.addEventListener("click", function () {
       var panel = document.getElementById("curriculum-teacher-workflow");
+      // On the Curriculum Hub console the panel is always rendered, because the
+      // page is password-gated and boots in Teacher Mode. The toggle fallback is
+      // for the other pages this bundle loads on, where one may still exist; it
+      // is optional-chained because on the console there is none, and a click on
+      // nothing must be a no-op rather than a throw.
       if (panel && !panel.hidden) panel.scrollIntoView({ behavior: "smooth", block: "start" });
       else document.getElementById("hub-mode-toggle")?.click();
     });

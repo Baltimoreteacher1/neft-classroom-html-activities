@@ -21,6 +21,14 @@
 
   function showTeacherView(view, attempts) {
     attempts = attempts || 0;
+    // Checked FIRST, before anything looks for the mode toggle. On the
+    // Curriculum Hub console the page is server-gated and always in Teacher
+    // Mode, so there is no toggle to wait for — and waiting for one made "Teach
+    // today" and "Plan the week" do nothing for six seconds and then give up.
+    if (document.body.classList.contains("teacher-mode")) {
+      openWorkflowView(view);
+      return;
+    }
     var modeButton = document.getElementById("hub-mode-toggle");
     if (!modeButton) {
       // Bounded wait (~6s): if the mode toggle never renders (e.g. broken
@@ -29,10 +37,6 @@
       setTimeout(function () {
         showTeacherView(view, attempts + 1);
       }, 150);
-      return;
-    }
-    if (document.body.classList.contains("teacher-mode")) {
-      openWorkflowView(view);
       return;
     }
     // Not in teacher mode yet: request it, then open the view once teacher mode

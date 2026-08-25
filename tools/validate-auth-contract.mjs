@@ -79,15 +79,65 @@ const DETECTORS = {
       ? null
       : "the unset-password branch no longer returns 503; an unconfigured gate must never serve teacher material (AUTH_CONTRACT §6)",
 
-  "no session or cookie architecture has returned": (src) =>
-    /Set-Cookie|nt_teacher|teacher-auth/i.test(src)
-      ? "cookie/session auth has been reintroduced into the middleware — this is the model that was rolled back (AUTH_CONTRACT header)"
+  // This detector used to read `/Set-Cookie|nt_teacher|teacher-auth/` and ban
+  // cookies outright. That was the right ban for the thing it was written
+  // against — a session system that REPLACED Basic Auth with a login page and
+  // per-teacher key slots — but it also banned the harmless half: a receipt
+  // issued AFTER the password check that only saves the teacher from retyping
+  // it. The ban is now on the shape that actually failed, not on the word
+  // "cookie". See AUTH_CONTRACT §2a.
+  "no sign-in page or teacher-auth endpoint has returned": (src) =>
+    /teacher-auth|teacher-login/i.test(src)
+      ? "a teacher-auth endpoint or /teacher-login/ page is back in the middleware — that is the architecture that was rolled back (AUTH_CONTRACT header)"
       : null,
+
+  "the password check is still the ONLY thing that grants access": (src) => {
+    const mints = src.match(/mintSessionCookie\s*\(/g) || [];
+    if (mints.length === 0) return null; // no receipt at all is also fine
+    if (mints.length > 1) {
+      return "mintSessionCookie() is called from more than one place; a receipt may only be issued where SITE_PASSWORD was just verified (AUTH_CONTRACT §2a)";
+    }
+    const verified = src.indexOf("supplied === password");
+    const minted = src.indexOf("mintSessionCookie(");
+    if (verified < 0) {
+      return "the SITE_PASSWORD comparison is gone from the middleware (AUTH_CONTRACT §2)";
+    }
+    return minted > verified
+      ? null
+      : "a session receipt is issued before SITE_PASSWORD is verified, which makes the cookie a credential in its own right (AUTH_CONTRACT §2a)";
+  },
 
   "no per-browser branching has returned": (src) =>
     /Sec-Fetch-Mode|sec-fetch-mode/i.test(src)
       ? "the middleware branches on Sec-Fetch-Mode again; Chromium and WebKit must see ONE flow (AUTH_CONTRACT §7)"
       : null,
+};
+
+/**
+ * The receipt is a receipt, not a second credential: it must be signed with
+ * SITE_PASSWORD itself, so rotating the password revokes every outstanding one
+ * and there is no second secret anybody has to remember to set.
+ */
+const SESSION_DETECTORS = {
+  "the receipt reads no environment binding of its own": (src) =>
+    /\benv\b/.test(stripComments(src))
+      ? "the session module reads an environment binding; its key must be SITE_PASSWORD, passed in, so rotation revokes every receipt (AUTH_CONTRACT §2a)"
+      : null,
+
+  "the receipt is signed, not merely encoded": (src) =>
+    /crypto\.subtle\.sign/.test(src) && /HMAC/.test(src)
+      ? null
+      : "the session token is no longer HMAC-signed; an unsigned token is a password anyone can write (AUTH_CONTRACT §2a)",
+
+  "the receipt expires": (src) =>
+    /SESSION_TTL_MS\s*=\s*24 \* 60 \* 60 \* 1000/.test(src) && /expiresAt <= now/.test(src)
+      ? null
+      : "the 24-hour expiry is gone; a receipt that never expires is a permanent bypass of the password (AUTH_CONTRACT §2a)",
+
+  "the receipt cookie is not readable by page scripts": (src) =>
+    /HttpOnly/.test(src) && /Secure/.test(src) && /SameSite=Lax/.test(src)
+      ? null
+      : "the receipt cookie lost HttpOnly/Secure/SameSite=Lax (AUTH_CONTRACT §2a)",
 };
 
 /** The Planner must send its credential as a header, never persist or expose it. */
@@ -136,7 +186,19 @@ function selfTest() {
       good.replace('Basic realm="EduWonderLab"', 'Basic realm="Other"'),
     ],
     ["a missing SITE_PASSWORD fails closed", good.replace(/status:\s*503/, "status: 200")],
-    ["no session or cookie architecture has returned", `${good}\nheaders.set("Set-Cookie", x);`],
+    [
+      "no sign-in page or teacher-auth endpoint has returned",
+      `${good}\nif (p === "/api/teacher-auth/login") return login(request);`,
+    ],
+    [
+      "the password check is still the ONLY thing that grants access",
+      // The failure that matters: a receipt handed out before, or instead of,
+      // the password comparison.
+      good.replace(
+        'const header = request.headers.get("Authorization") || "";',
+        'const c = await mintSessionCookie(password);\nconst header = request.headers.get("Authorization") || "";',
+      ),
+    ],
     ["no per-browser branching has returned", `${good}\nconst m = h.get("Sec-Fetch-Mode");`],
   ];
   for (const [name, mutated] of cases) {
@@ -147,6 +209,26 @@ function selfTest() {
   for (const [name, fn] of Object.entries(DETECTORS)) {
     if (fn(good) !== null) {
       throw new Error(`self-test: detector "${name}" fires on the CURRENT source: ${fn(good)}`);
+    }
+  }
+  const session = read("functions/_lib/teacher-session.js");
+  const sessionCases = [
+    ["the receipt reads no environment binding of its own", `${session}\nconst k = env.OTHER_KEY;`],
+    [
+      "the receipt is signed, not merely encoded",
+      session.replace(/crypto\.subtle\.sign/g, "fakeSign"),
+    ],
+    ["the receipt expires", session.replace(/expiresAt <= now/, "false")],
+    ["the receipt cookie is not readable by page scripts", session.replace(/HttpOnly/g, "")],
+  ];
+  for (const [name, mutated] of sessionCases) {
+    if (SESSION_DETECTORS[name](mutated) === null) {
+      throw new Error(`self-test: detector "${name}" did not fire on a mutated source`);
+    }
+  }
+  for (const [name, fn] of Object.entries(SESSION_DETECTORS)) {
+    if (fn(session) !== null) {
+      throw new Error(`self-test: detector "${name}" fires on the CURRENT source: ${fn(session)}`);
     }
   }
   // Negative fixtures for the smaller detector sets.
@@ -160,7 +242,7 @@ function selfTest() {
   ) {
     throw new Error("self-test: the PIN/server-binding detector did not fire");
   }
-  return cases.length + 2;
+  return cases.length + sessionCases.length + 2;
 }
 
 /* ── Run ───────────────────────────────────────────────────────────────────── */
@@ -214,6 +296,12 @@ for (const [_name, fn] of Object.entries(STORE_DETECTORS)) {
   checks++;
   const problem = fn(store);
   if (problem) failures.push(`curriculum/planning/planning-store.js — ${problem}`);
+}
+const sessionSrc = read("functions/_lib/teacher-session.js");
+for (const [_name, fn] of Object.entries(SESSION_DETECTORS)) {
+  checks++;
+  const problem = fn(sessionSrc);
+  if (problem) failures.push(`functions/_lib/teacher-session.js — ${problem}`);
 }
 const pin = read("engine/core/teacher-mode.js");
 for (const [_name, fn] of Object.entries(PIN_DETECTORS)) {

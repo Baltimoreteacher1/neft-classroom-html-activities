@@ -30,6 +30,7 @@
  */
 import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
+import { request as httpsRequest } from "node:https";
 
 const argv = process.argv.slice(2);
 const arg = (name, fallback = null) => {
@@ -39,6 +40,8 @@ const arg = (name, fallback = null) => {
 const PRODUCTION = argv.includes("--production");
 const ALLOW_SKIP = argv.includes("--allow-skip");
 const PORT = Number(arg("--port", "8798"));
+/** The local server speaks HTTPS — see startServer() for why. */
+const LOCAL_BASE = `https://127.0.0.1:${PORT}`;
 const PASSWORD = `e2e-${randomBytes(12).toString("hex")}`;
 
 let base = arg("--base", null);
@@ -51,15 +54,29 @@ const record = (engine, name, state, detail = "") => {
 
 /* ── server ────────────────────────────────────────────────────────────────── */
 
+/**
+ * Is the local server answering yet?
+ *
+ * Deliberately NOT `fetch()`: the local server presents wrangler's self-signed
+ * certificate, Node rejects it, and the readiness probe would then time out
+ * against a perfectly healthy server. `node:https` takes `rejectUnauthorized`
+ * per request, so the exception stays scoped to this one probe instead of
+ * becoming a process-wide NODE_TLS_REJECT_UNAUTHORIZED that would also disarm
+ * certificate checking for the `--production` run in the same process.
+ */
 async function waitFor(url, ms = 120000) {
   const deadline = Date.now() + ms;
   while (Date.now() < deadline) {
-    try {
-      await fetch(url, { redirect: "manual" });
-      return true;
-    } catch {
-      await new Promise((r) => setTimeout(r, 1000));
-    }
+    const answered = await new Promise((resolve) => {
+      const req = httpsRequest(url, { rejectUnauthorized: false }, (res) => {
+        res.resume();
+        resolve(true);
+      });
+      req.on("error", () => resolve(false));
+      req.end();
+    });
+    if (answered) return true;
+    await new Promise((r) => setTimeout(r, 1000));
   }
   return false;
 }
@@ -78,11 +95,22 @@ async function startServer() {
       `SITE_PASSWORD=${PASSWORD}`,
       `TEACHER_KEY=${PASSWORD}-api`,
       "--compatibility-date=2025-01-01",
+      // HTTPS, with wrangler's self-signed certificate, because the 24-hour
+      // receipt is a `Secure` cookie and this suite must be able to see it.
+      // Chromium treats 127.0.0.1 as a secure context and stores Secure cookies
+      // over plain http; WebKit does not. Over http the two engines therefore
+      // disagreed about whether signing in issued a receipt at all — a pure
+      // harness artifact that reads exactly like the per-engine auth divergence
+      // AUTH_CONTRACT §7 exists to forbid. Dropping `Secure` to make the test
+      // pass would have been the other way to "fix" it, and it would have put
+      // the teacher's session on the wire in production.
+      "--local-protocol",
+      "https",
     ],
     { cwd: process.cwd(), stdio: "ignore", detached: true },
   );
   child.unref();
-  const up = await waitFor(`http://127.0.0.1:${PORT}/`);
+  const up = await waitFor(`${LOCAL_BASE}/`);
   if (!up) throw new Error(`wrangler pages dev did not come up on :${PORT} (is dist/ built?)`);
   return child;
 }
@@ -105,15 +133,38 @@ async function runEngine(engineName, engine, target, { authenticated }) {
     : `https://www.${origin.host}`;
 
   // 1. anonymous: the site is open
-  const anon = await browser.newContext();
+  const anon = await browser.newContext({ ignoreHTTPSErrors: true });
   const page = await anon.newPage();
   for (const [label, path] of [
     ["site root is open", "/"],
-    ["curriculum is open", "/curriculum/"],
+    // The student lesson picker, NOT /curriculum/ — the hub index is the teacher
+    // console now (AUTH_CONTRACT §2b) and answers a student with a redirect.
+    ["the student lesson picker is open", "/curriculum/units/"],
     ["a lesson is open", "/lessons/1-1/"],
   ]) {
     const r = await page.goto(target + path, { waitUntil: "domcontentloaded" }).catch(() => null);
     record(engineName, label, r?.status() === 200 ? "PASS" : "FAIL", `${r?.status()}`);
+  }
+
+  // The teacher console sends a student on to the picker, and never prompts:
+  // ~600 pages link to /curriculum/, including every SCORM launch page.
+  {
+    const r = await page
+      .goto(`${target}/curriculum/`, { waitUntil: "domcontentloaded" })
+      .catch(() => null);
+    const landed = page.url();
+    record(
+      engineName,
+      "the hub console sends an anonymous visitor to the student picker",
+      r?.status() === 200 && landed.endsWith("/curriculum/units/") ? "PASS" : "FAIL",
+      `${r?.status()} final=${landed}`,
+    );
+    record(
+      engineName,
+      "the hub console never challenges a student",
+      r?.headers?.()["www-authenticate"] ? "FAIL" : "PASS",
+      `${r?.headers?.()["www-authenticate"] || "no challenge"}`,
+    );
   }
 
   // 2. www → apex, before any challenge (production only: localhost has no www)
@@ -156,6 +207,7 @@ async function runEngine(engineName, engine, target, { authenticated }) {
 
   // 4. the password opens the planner, and a refresh keeps it open
   const authed = await browser.newContext({
+    ignoreHTTPSErrors: true,
     httpCredentials: { username: "teacher", password: PASSWORD },
   });
   const p2 = await authed.newPage();
@@ -188,6 +240,58 @@ async function runEngine(engineName, engine, target, { authenticated }) {
     `${tools?.status()}`,
   );
 
+  // 4b. THE 24-HOUR RECEIPT — the reason this feature exists.
+  //
+  // A browser drops its cached Basic credential when it closes, so "signed in"
+  // has to survive a context that has never seen the password. This carries ONLY
+  // the cookie into a brand-new context with no httpCredentials at all, which is
+  // exactly what tomorrow morning looks like. A test that reuses the
+  // authenticated context proves nothing here: it would pass on the Basic
+  // credential alone and report the receipt working while it did nothing.
+  const receipt = (await authed.cookies()).find((c) => c.name === "nt_teacher_day");
+  record(
+    engineName,
+    "signing in issues a 24-hour receipt",
+    receipt && receipt.httpOnly && receipt.sameSite === "Lax" ? "PASS" : "FAIL",
+    receipt
+      ? `httpOnly=${receipt.httpOnly} sameSite=${receipt.sameSite} path=${receipt.path}`
+      : "(no cookie)",
+  );
+  if (receipt) {
+    const returning = await browser.newContext({ ignoreHTTPSErrors: true });
+    await returning.addCookies([receipt]);
+    const rp = await returning.newPage();
+    const reopened = await rp.goto(`${target}/teacher-tools/`, {
+      waitUntil: "domcontentloaded",
+    });
+    record(
+      engineName,
+      "the receipt alone reopens a teacher surface — no second password",
+      reopened?.status() === 200 && !reopened?.headers()["www-authenticate"] ? "PASS" : "FAIL",
+      `${reopened?.status()} ${reopened?.headers()["www-authenticate"] || "no challenge"}`,
+    );
+    const console_ = await rp.goto(`${target}/curriculum/`, { waitUntil: "domcontentloaded" });
+    record(
+      engineName,
+      "the receipt opens the hub console instead of redirecting",
+      console_?.status() === 200 && rp.url().endsWith("/curriculum/") ? "PASS" : "FAIL",
+      `${console_?.status()} final=${rp.url()}`,
+    );
+    // And the console renders as Teacher view with no way back to a student view.
+    const consoleState = await rp.evaluate(() => ({
+      teacher: document.body.classList.contains("teacher-mode"),
+      toggles: document.querySelectorAll("#hub-mode-toggle, #hub-student-hint, #hub-mode-banner")
+        .length,
+    }));
+    record(
+      engineName,
+      "the console is Teacher view only, with no mode toggle",
+      consoleState.teacher && consoleState.toggles === 0 ? "PASS" : "FAIL",
+      `teacher-mode=${consoleState.teacher} leftover-toggles=${consoleState.toggles}`,
+    );
+    await returning.close();
+  }
+
   // 5. the pacing endpoint authorizes on the header, not the page session
   const apiAnon = await p2.request.post(`${target}/api/pacing/day`, {
     data: {},
@@ -203,6 +307,7 @@ async function runEngine(engineName, engine, target, { authenticated }) {
 
   // 6. a wrong password is refused
   const bad = await browser.newContext({
+    ignoreHTTPSErrors: true,
     httpCredentials: { username: "teacher", password: "definitely-wrong" },
   });
   const p3 = await bad.newPage();
@@ -233,7 +338,7 @@ try {
   } else if (!base) {
     console.log(`e2e-auth: starting wrangler pages dev on :${PORT} with a throwaway password…`);
     server = await startServer();
-    base = `http://127.0.0.1:${PORT}`;
+    base = LOCAL_BASE;
   }
 
   for (const [name, engine] of [

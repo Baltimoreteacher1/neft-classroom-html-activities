@@ -35,7 +35,10 @@ const TIMEOUT_MS = 15000;
 
 const TARGETS = [
   { path: "/", name: "homepage", audience: "student" },
-  { path: "/curriculum/", name: "curriculum hub", audience: "student" },
+  // The hub INDEX is the teacher console (AUTH_CONTRACT §2b) — probing it as a
+  // student surface would report a 302 as an outage. The student picker is the
+  // page a class actually opens.
+  { path: "/curriculum/units/", name: "student lesson picker", audience: "student" },
   { path: "/lessons/1-1/", name: "lesson 1-1", audience: "student" },
   { path: "/assets/app.js", name: "shared JS", audience: "student" },
   { path: "/assets/shared.css", name: "shared CSS", audience: "student" },
