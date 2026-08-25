@@ -204,6 +204,273 @@ body.editorial .phase [class*="work-step"] {
   font-weight: var(--fw-semibold);
   color: var(--navy);
 }
+body.editorial .work-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #ffffff;
+  font-family: var(--fl-body);
+  font-weight: var(--fw-bold);
+  font-size: 0.85rem;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Multiple Choice & Option Selectors (Publisher-Grade) ─────────────────── */
+body.editorial .mc-problem .mc-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+
+body.editorial .mc-problem .mc-option-label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  min-height: 52px;
+  border: 1.5px solid var(--fl-rule);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--ink);
+  font-family: var(--fl-body);
+  font-size: var(--fl-base);
+  font-weight: var(--fw-medium);
+  line-height: 1.5;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+  box-shadow: 0 1px 2px rgba(18, 53, 91, 0.03);
+}
+
+body.editorial .mc-problem .mc-option-label:hover:not(.is-correct):not(.is-incorrect) {
+  border-color: var(--teal);
+  background: rgba(31, 166, 162, 0.04);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(18, 53, 91, 0.06);
+}
+
+body.editorial .mc-problem .mc-option-label .mc-letter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--fl-paper);
+  border: 1.5px solid var(--fl-rule-strong);
+  color: var(--navy);
+  font-family: var(--fl-body);
+  font-size: 0.95rem;
+  font-weight: var(--fw-bold);
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+body.editorial .mc-problem .mc-option-label.is-selected:not(.is-correct):not(.is-incorrect) {
+  border-color: var(--teal);
+  background: rgba(31, 166, 162, 0.08);
+  box-shadow: 0 0 0 1px var(--teal);
+}
+
+body.editorial .mc-problem .mc-option-label.is-selected .mc-letter-badge {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #ffffff;
+}
+
+body.editorial .mc-problem .mc-option-label.is-correct {
+  border-color: #16a34a;
+  background: #f0fdf4;
+  color: #14532d;
+}
+
+body.editorial .mc-problem .mc-option-label.is-correct .mc-letter-badge {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: #ffffff;
+}
+
+body.editorial .mc-problem .mc-option-label.is-incorrect {
+  border-color: #f59e0b;
+  background: #fffbeb;
+  color: #78350f;
+}
+
+body.editorial .mc-problem .mc-option-label.is-incorrect .mc-letter-badge {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  color: #ffffff;
+}
+
+/* ── Named Misconception Diagnosis Chip ──────────────────────────────────── */
+body.editorial .mc-diagnosis {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 4px;
+  font-family: var(--fl-body);
+  font-size: 0.88rem;
+  font-weight: var(--fw-semibold);
+  color: #78350f;
+  margin-bottom: var(--sp-2);
+}
+
+/* ── Progressive 3-Step Hint Ladder ───────────────────────────────────────── */
+body.editorial .hint-ladder {
+  margin: var(--sp-4) 0;
+  padding: var(--sp-4);
+  background: #faf6ee;
+  border: 1px solid var(--fl-rule);
+  border-left: 3px solid var(--amber);
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(18, 53, 91, 0.03);
+}
+
+body.editorial .hint-ladder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sp-3);
+}
+
+body.editorial .hint-ladder-title {
+  font-family: var(--fl-serif);
+  font-weight: var(--fw-bold);
+  font-size: 1.05rem;
+  color: var(--navy);
+}
+
+body.editorial .hint-ladder-count {
+  font-family: var(--fl-body);
+  font-size: var(--fl-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgba(0, 0, 0, 0.05);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+body.editorial .hint-ladder-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+body.editorial .hint-ladder-step {
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+
+body.editorial .hint-ladder-btn {
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1px solid var(--fl-rule);
+  border-radius: 6px;
+  font-family: var(--fl-body);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fl-small);
+  color: var(--navy);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+body.editorial .hint-ladder-btn:hover:not(:disabled) {
+  background: #fdfaf3;
+  border-color: var(--amber);
+}
+
+body.editorial .hint-ladder-step.is-open .hint-ladder-btn {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-color: var(--fl-rule-strong);
+  background: #f8f4ea;
+}
+
+body.editorial .hint-ladder-body {
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1px solid var(--fl-rule);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  font-size: var(--fl-base);
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+/* ── Mathematical Typography & Formulas ──────────────────────────────────── */
+body.editorial .math,
+body.editorial .katex,
+body.editorial [class*="formula"] {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+body.editorial .formula-card {
+  background: #ffffff;
+  border: 1px solid var(--fl-rule);
+  border-left: 3px solid var(--navy);
+  border-radius: 4px;
+  padding: 14px 20px;
+  margin: var(--sp-4) 0;
+  box-shadow: 0 1px 2px rgba(18, 53, 91, 0.03);
+}
+
+body.editorial table {
+  font-variant-numeric: tabular-nums;
+  border-collapse: collapse;
+}
+
+/* ── Pedagogical Callouts ("Notice & Wonder", "Talk About It") ────────────── */
+body.editorial .discourse-moment,
+body.editorial .turn-and-talk {
+  background: #f8fbfb;
+  border: 1px solid rgba(31, 166, 162, 0.25);
+  border-left: 3px solid var(--teal);
+  border-radius: 6px;
+  padding: var(--sp-5);
+  margin: var(--sp-4) 0;
+}
+
+body.editorial .twr-connector {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: var(--fw-bold);
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+body.editorial .twr-because { background: #e0f2fe; color: #0369a1; }
+body.editorial .twr-but { background: #ffedd5; color: #c2410c; }
+body.editorial .twr-so { background: #e0e7ff; color: #4338ca; }
+
+/* ── Visual Math SVG Canvas Framing ───────────────────────────────────────── */
+body.editorial svg,
+body.editorial .figure-canvas,
+body.editorial .interactive-visual-container {
+  background: #ffffff;
+  border-radius: 4px;
+}
+
 
 /* ── Buttons: refined, less candy ─────────────────────────────────────────── */
 body.editorial .btn {
