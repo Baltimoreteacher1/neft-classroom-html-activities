@@ -70,6 +70,50 @@ jobs:
       - name: Interactive visuals render
         run: npm run validate:lesson-visuals -- --concurrency 4
 
+  visual-drift:
+    # WEEKLY SCREENSHOT DIFF of the canonical lesson surfaces (lesson 2-7).
+    #
+    # Every other check in this repo asks a question somebody already knew to
+    # ask. This one asks only "does it still look like it looked", which is the
+    # one form of coverage that needs no theory of what will break next — and
+    # the class of failure whose current detection mechanism is Joel opening the
+    # lesson in front of a class.
+    #
+    # REPORT, NOT GATE, and `continue-on-error` says so in the one place that
+    # decides: a pixel diff cannot tell a broken layout from an intended
+    # redesign, and a weekly red X for "the deck was restyled on purpose" is how
+    # a check stops being read. The report is uploaded either way; drift pages a
+    # human through the artifact, it does not fail the run.
+    #
+    # Blessing a new baseline is a human judgement (it declares the current
+    # appearance CORRECT), so nothing here regenerates it — same posture as
+    # refresh-visual-baseline.yml. Run `npm run visual:baseline:update` and
+    # review the images in the PR.
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Capture and diff the canonical lesson surfaces
+        continue-on-error: true
+        run: npm run visual:baseline
+      - name: Upload the drift report and side-by-side images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-drift
+          path: |
+            reports/visual-drift.md
+            reports/visual-diff/
+          if-no-files-found: warn
+          retention-days: 30
+
   live-smoke:
     # Checks the DEPLOYED site (catches a broken Cloudflare deploy that source
     # audits would miss). Runs independently of the source-audit job.

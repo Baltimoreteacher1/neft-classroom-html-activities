@@ -42,6 +42,16 @@ reports/*
 # Same reasoning for a work order: it is a deliverable handed to a human, not a
 # regenerable artefact, and an ignored file reaches nobody.
 !reports/*-workorder-*.md
+# The visual baseline is COMMITTED ON PURPOSE, for the same reason as the a11y
+# report above: it is the reference the check compares against, so an ignored
+# one means there is nothing to compare against and the weekly job can only ever
+# report "no baseline". `reports/*` excludes contents rather than the directory
+# precisely so negations like this one work.
+#
+# The DIFF output is not committed — it is regenerated on every run and only
+# meaningful next to the run that produced it.
+!reports/visual-baseline/
+!reports/visual-baseline/**
 tmp/
 
 .codex/backups/
