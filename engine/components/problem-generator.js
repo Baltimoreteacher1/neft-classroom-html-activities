@@ -96,6 +96,47 @@ function divPair(d) {
   return { a: b * rint(qlo, qhi), b }; // a is a multiple of b ⇒ exact division
 }
 
+// "Try another like this" has to mean LIKE THIS. The difficulty bands above are
+// generic, so a long-division lesson whose items are "1,125 ÷ 9" regenerated
+// "9 ÷ 3" — the same operation, a different skill. These keep the new operands
+// in the same size class as the ones the author actually wrote.
+function digits(n) {
+  return String(Math.abs(Math.trunc(Number(n) || 0))).length;
+}
+
+/** A random integer with exactly `d` digits (1 → 1..9, 2 → 10..99, …). */
+function withDigits(d) {
+  const n = Math.max(1, Math.min(6, d));
+  const lo = n === 1 ? 1 : 10 ** (n - 1);
+  return rint(lo, 10 ** n - 1);
+}
+
+/**
+ * Operands the same size as the authored pair. Division stays exact: the
+ * divisor matches the authored divisor's size and the quotient is chosen so the
+ * dividend lands in the authored dividend's size class where it can.
+ */
+function magnitudeMatched(op, authoredA, authoredB) {
+  const da = digits(authoredA);
+  const db = digits(authoredB);
+  if (op === "/") {
+    // Fix the DIVISOR's size and then draw the dividend as a multiple of it
+    // inside the authored dividend's size class. The quotient then comes out
+    // the size the author's did, because that is the relationship they wrote.
+    // Matching the dividend alone let "936 ÷ 12" (quotient 78) come back as
+    // "132 ÷ 66" (quotient 2) — the right size numbers, the wrong exercise.
+    const bb = Math.max(2, withDigits(db));
+    const lo = Math.ceil((da === 1 ? 1 : 10 ** (da - 1)) / bb);
+    const hi = Math.floor((10 ** da - 1) / bb);
+    const q = hi >= Math.max(2, lo) ? rint(Math.max(2, lo), hi) : Math.max(2, lo);
+    return { a: bb * q, b: bb };
+  }
+  const a = withDigits(da);
+  const b = withDigits(db);
+  if (op === "-" && a < b) return { a: b, b: a };
+  return { a, b };
+}
+
 // ── 1) integer arithmetic ─────────────────────────────────────────────────────
 function genArithmetic(item, difficulty) {
   const m = String(item.stem).match(ARITH_RE);
@@ -105,25 +146,34 @@ function genArithmetic(item, difficulty) {
   // If the authored problem uses a negative operand, keep new problems signed
   // too (integer-unit practice) — the answer stays computed, so it's exact.
   const signed = Number(m[1]) < 0 || Number(m[3]) < 0;
+  // Size the new operands off the authored ones when the author wrote anything
+  // bigger than the generic band would produce; otherwise keep the band, which
+  // is tuned to the difficulty tier.
+  const authored = magnitudeMatched(op, m[1], m[3]);
+  const bigger = digits(m[1]) > 2 || digits(m[3]) > 2;
   let a, b, answer;
   if (op === "+") {
-    [a, b] = addPair(difficulty);
+    [a, b] = bigger ? [authored.a, authored.b] : addPair(difficulty);
     if (signed) [a, b] = [maybeNeg(a), maybeNeg(b)];
     answer = a + b;
   } else if (op === "-") {
-    [a, b] = subPair(difficulty);
+    [a, b] = bigger ? [authored.a, authored.b] : subPair(difficulty);
     if (signed) [a, b] = [maybeNeg(a), maybeNeg(b)];
     answer = a - b;
   } else if (op === "*") {
-    [a, b] = mulPair(difficulty);
+    [a, b] = bigger ? [authored.a, authored.b] : mulPair(difficulty);
     if (signed) [a, b] = [maybeNeg(a), maybeNeg(b)];
     answer = a * b;
   } else {
-    ({ a, b } = divPair(difficulty));
+    ({ a, b } = bigger ? authored : divPair(difficulty));
     answer = a / b; // exact by construction
   }
-  // Print negative operands in parentheses ("8 + (-3)") — standard integer form.
-  const fmt = (n) => (n < 0 ? `(${n})` : String(n));
+  // Print negative operands in parentheses ("8 + (-3)") — standard integer form,
+  // and group thousands when the author did ("2,485 ÷ 5"), so the regenerated
+  // stem reads like the one it is standing in for.
+  const grouped = /\d,\d{3}/.test(String(item.rawStem || item.stem));
+  const show = (n) => (grouped ? Number(n).toLocaleString("en-US") : String(n));
+  const fmt = (n) => (n < 0 ? `(${show(n)})` : show(n));
   const stem = item.stem.replace(ARITH_RE, `${fmt(a)} ${sym} ${fmt(b)}`); // keep author's symbol
   return {
     stem,
@@ -403,7 +453,15 @@ function genAreaPerimeter(item, difficulty) {
 // ── routing ───────────────────────────────────────────────────────────────────
 function generatorFor(item, difficulty) {
   const kind = String(item.visual?.kind || "").toLowerCase();
-  if (/percent/.test(kind) || PCT_RE.test(item.stem)) return genPercent(item, difficulty);
+  if (/percent/.test(kind) || PCT_RE.test(item.stem)) {
+    // The same coverage rule the arithmetic path applies: a number outside the
+    // "P% of W" match is a number the answer depends on that this generator
+    // will not touch. "Your estimate … was 22 pounds (using 10% of 220)" kept
+    // both 22s while rewriting the percent, and answered a third thing.
+    const pm = String(item.stem).match(PCT_RE);
+    if (pm && !expressionIsTheWholeAsk(item.stem, pm[0], pm.index)) return null;
+    return genPercent(item, difficulty);
+  }
   if (/unit-rate|unit rate|ratio|rate/.test(kind))
     return genRate(item, difficulty, analyzeRate(item));
   // Fractions BEFORE plain arithmetic — "1/2 + 1/3" also loosely matches ARITH_RE
@@ -411,10 +469,7 @@ function generatorFor(item, difficulty) {
   if (FRAC_RE.test(item.stem)) return genFraction(item, difficulty);
   const area = genAreaPerimeter(item, difficulty);
   if (area) return area;
-  const ex = findExpr(item.stem);
-  if (ex && (ex.ops >= 2 || ex.hasParen)) return genOrder(item, difficulty, ex);
-  if (ARITH_RE.test(item.stem)) return genArithmetic(item, difficulty);
-  return null;
+  return plainArithmeticGen(item, difficulty);
 }
 
 // Authored stems print large numbers with thousands separators ("2,485 ÷ 5").
@@ -427,26 +482,166 @@ function stripThousands(stem) {
 }
 function normItem(item) {
   return item && typeof item.stem === "string"
-    ? { ...item, stem: stripThousands(item.stem) }
+    ? { ...item, stem: stripThousands(item.stem), rawStem: item.stem }
     : item;
+}
+
+// ── the safety gate for the plain-arithmetic fallthrough ─────────────────────
+//
+// WHY THIS EXISTS. `ARITH_RE` matches `a OP b` ANYWHERE in a stem, and the
+// arithmetic and order-of-operations generators then rewrite that fragment and
+// compute the answer FROM THE FRAGMENT ALONE. When the fragment is the whole
+// question ("What is 1,125 ÷ 9?") that is exactly right. When it is a fragment
+// of a larger ask, every one of these shipped a WRONG ANSWER to students:
+//
+//   "…will be 5/6 as tall as One World Trade Center, which is 540 meters"
+//        → "4 / 2 as tall as … 540 meters", answer 2   (540 never used)
+//   "What is 0.7 × 1.5?"     → "0.3 × 9.5", answer 27   (decimals ignored: 3×9)
+//   "Convert 7/20 to a percent"  → "132 / 11", answer 12 (not a percent)
+//   "Which property is shown? 47 + 0 = 47" → "77 + 33 = 47" (a false equation)
+//   "Simplify 7x + 3x."      → "11 + 6 × 11 - 5x", answer 72 (there is an x)
+//   "In Lesson 1-1 you estimated…" → "In Lesson 95 - 11 …"  (a lesson label)
+//
+// So the fallthrough now regenerates ONLY when the matched expression is the
+// entire mathematical content of the ask. Everything else declines, and the
+// caller simply does not offer "Try another like this" — which is the module's
+// stated contract ("decline rather than risk a wrong answer") applied to the
+// case that was actually reaching students.
+
+/**
+ * Disqualifiers that apply to EVERY generator, not just the arithmetic
+ * fallthrough. Each is a shape where rewriting the numbers changes what is
+ * being asked, or where this module cannot compute the answer it prints:
+ *
+ *   =            a stated relationship, not a value question. Rewriting one
+ *                side leaves a false equation ("77 + 33 = 47").
+ *   a variable   algebra; none of these generators do algebra ("Simplify 7x").
+ *   an exponent  not evaluated here — "(6 + 11) × 9³" was answered 153, which
+ *                is 17 × 9 with the cube silently dropped.
+ *   a label      "Lesson 1-1" is not a subtraction ("In Lesson 95 - 11 …").
+ *   a reasoning  the answer is a judgement, and fresh numbers make the
+ *   ask          narrative around it false ("Marcus solved 2/3 ÷ 1/4 and got
+ *                8/3 … Is his reasoning correct?").
+ */
+function stemIsRegenerable(stem) {
+  const text = String(stem || "");
+  if (!text.trim()) return false;
+  if (/=/.test(text)) return false;
+  if (/\d[a-z](?![a-z])|(^|[\s(])[xyn](?![a-z])/i.test(text)) return false;
+  if (/[\u00B2\u00B3\u2070-\u209F]|\^/.test(text)) return false;
+  // A mixed number ("1 1/2 ÷ 3/4"): the fraction generator reads only the
+  // fractional part, so it answered 2/7 ÷ 1/2 for a stem that showed 1 2/7.
+  if (/\d+\s+\d+\s*\/\s*\d+/.test(text)) return false;
+  // A decimal percent ("8.6% of 216"): PCT_RE matches integers only, so it
+  // printed "8.40%" and computed 40% of the whole.
+  if (/\d\.\d\s*%/.test(text)) return false;
+  if (/\b(lesson|unit|standard|grade|chapter|module|page|step|question)\s+\d/i.test(text)) {
+    return false;
+  }
+  return !/\b(mean|means|meaning|first step|which property|who is|why|explain|describe|represent|correct|reasoning|agree|disagree|which number|higher or lower)\b/i.test(
+    text,
+  );
+}
+
+/** Every run of digits in `stem`, as [start, end) spans. */
+function numberSpans(stem) {
+  const out = [];
+  const re = /\d[\d.,]*/g;
+  let m = re.exec(stem);
+  while (m) {
+    out.push([m.index, m.index + m[0].length]);
+    m = re.exec(stem);
+  }
+  return out;
+}
+
+/**
+ * True when `span` (found at `index`) is the ONLY mathematics in the stem, so
+ * rewriting it cannot change what the rest of the sentence is asking.
+ */
+function expressionIsTheWholeAsk(stem, span, index) {
+  const text = String(stem);
+
+  // An `=` means the stem states a relationship rather than asking for a value
+  // ("Which property is shown? 47 + 0 = 47"). Rewriting one side breaks it.
+  if (/=/.test(text)) return false;
+
+  // A variable makes this algebra, and none of these generators do algebra.
+  // A coefficient-bound letter ("7x", "3n") or a standalone x / y / n.
+  if (/\d[a-z](?![a-z])|(^|[\s(])[xyn](?![a-z])/i.test(text)) return false;
+
+  // Decimals: ARITH_RE only sees integers, so "0.7 × 1.5" matches as "7 × 1"
+  // and the answer is computed for the wrong numbers.
+  if (/\d\.\d/.test(text)) return false;
+
+  // A lesson or standard label ("Lesson 1-1", "6.NOS.2") is not arithmetic.
+  if (/\b(lesson|unit|standard|grade|chapter|module|page|step|question)\s+\d/i.test(text))
+    return false;
+
+  // "7/20 to a percent", "3/4 mile" — a slash between integers inside prose is
+  // a fraction far more often than a division ask. Only trust it when the stem
+  // says so, or when the whole stem IS the expression.
+  const usesSlash = /\//.test(span);
+  const saysDivide = /÷|\bdivid|\bquotient/i.test(text);
+  if (usesSlash && !saysDivide && text.trim() !== span.trim()) return false;
+
+  // Every number in the stem must take part in the expression. This is the
+  // rule that catches "5/6 as tall as … 540 meters", "edge lengths 1/2 m, 3 m,
+  // and 4 m", and "gets 30. Margaret gets 6." — numbers the answer depends on
+  // that sit outside the span the generator rewrites.
+  const end = index + span.length;
+  for (const [a, b] of numberSpans(text)) {
+    if (a < index || b > end) return false;
+  }
+
+  // Finally, the ask must be for the VALUE of the expression. "What does 3 ÷
+  // 1/4 mean?", "What is the first step in evaluating…", "Who is right?" all
+  // contain arithmetic whose value is not the answer.
+  if (
+    /\b(mean|means|meaning|first step|which property|who is|why|explain|describe|represent)\b/i.test(
+      text,
+    )
+  )
+    return false;
+
+  return true;
+}
+
+/** The arithmetic / order-of-operations fallthrough, gated. */
+function plainArithmeticGen(item, difficulty) {
+  const ex = findExpr(item.stem);
+  if (ex && !expressionIsTheWholeAsk(item.stem, ex.span, ex.index)) return null;
+  // A slash inside a multi-operator span is a FRACTION this curriculum wrote
+  // ("6 ÷ 2/3"), not an order-of-operations expression. genOrder rebuilds the
+  // operators from scratch, so it turned that stem into "4 × 4 + 5" — a
+  // different problem with a different answer. If FRAC_RE could not claim it,
+  // nothing here should.
+  if (ex && ex.ops >= 2 && /\//.test(ex.span)) return null;
+  if (ex && (ex.ops >= 2 || ex.hasParen)) return genOrder(item, difficulty, ex);
+  if (!ARITH_RE.test(item.stem)) return null;
+  const m = String(item.stem).match(ARITH_RE);
+  if (!expressionIsTheWholeAsk(item.stem, m[0], m.index)) return null;
+  return genArithmetic(item, difficulty);
 }
 
 // ── public API ────────────────────────────────────────────────────────────────
 export function canRegenerate(item) {
   if (!item || typeof item.stem !== "string") return false;
+  if (!stemIsRegenerable(item.stem)) return false;
   item = normItem(item);
   const kind = String(item.visual?.kind || "").toLowerCase();
   if (/percent/.test(kind) || PCT_RE.test(item.stem)) return true;
   if (/unit-rate|unit rate|ratio|rate/.test(kind)) return analyzeRate(item) != null;
   if (FRAC_RE.test(item.stem)) return true;
   if (genAreaPerimeter(item, "core") != null) return true;
-  const ex = findExpr(item.stem);
-  if (ex && (ex.ops >= 2 || ex.hasParen)) return true;
-  return ARITH_RE.test(item.stem);
+  // The fallthrough must answer the same question `generatorFor` will: offering
+  // the button and then declining is the dead button this module refuses.
+  return plainArithmeticGen(item, "core") != null;
 }
 
 export function regenerate(item, opts = {}) {
   if (!item || typeof item.stem !== "string") return null;
+  if (!stemIsRegenerable(item.stem)) return null;
   item = normItem(item);
   const difficulty = pickDiff(item, opts);
   let gen;
