@@ -3402,7 +3402,6 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
 // rendered got NOTHING — the moved content was unreachable on that path.
 export function renderLearnItExtrasInto(learnHost, config, state) {
   if (!learnHost) return;
-  const cfg = config.launch;
 
   // 1) The application scenario card (the word problem + optional theme art).
   learnHost.append(buildLaunchProblemCard(config));

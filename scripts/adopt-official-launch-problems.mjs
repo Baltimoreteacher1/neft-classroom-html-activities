@@ -67,6 +67,8 @@ const CHECK = process.argv.includes("--check");
 const ADOPTIONS = [
   {
     lesson: "2-7",
+    launchTalk:
+      "The order form shows the school paid $394.50 in total for 75 workbooks. What division would tell you the cost of one workbook, and why is it division and not multiplication?",
     badge: "Textbook Purchases",
     // The worked example's last line read "Correct — 3 pods can be filled",
     // which named the space-station story this script replaces and nothing else
@@ -87,6 +89,8 @@ const ADOPTIONS = [
   },
   {
     lesson: "2-9",
+    launchTalk:
+      "The forecast shows seven high temperatures and their mean is 79°F. Which day is farthest from the mean, and what does that tell you about the week?",
     badge: "High Temperature",
     deck: "2_9",
     img: "s06-0faade06494c.png",
@@ -95,6 +99,8 @@ const ADOPTIONS = [
   },
   {
     lesson: "2-10",
+    launchTalk:
+      "The students collected years of teaching experience. What would make you choose the median instead of the mean to describe this data?",
     badge: "Teaching Experience",
     deck: "2_10",
     img: null,
@@ -103,6 +109,8 @@ const ADOPTIONS = [
   },
   {
     lesson: "3-3",
+    launchTalk:
+      "The clay recipe uses 2 cups of baking soda for every 1 cup of cornstarch. If Brian doubles the batch, what happens to each ingredient — and what stays the same?",
     badge: "Making Homemade Clay",
     deck: "3_3",
     img: "s06-98fedf025adc.png",
@@ -111,6 +119,8 @@ const ADOPTIONS = [
   },
   {
     lesson: "3-4",
+    launchTalk:
+      "Each bag holds the same number of soccer balls, and the picture shows one bag with 6 balls. How can you use that one bag to find what 6 bags hold?",
     badge: "Soccer Balls",
     deck: "3_4",
     img: "s06-66335aad6052.png",
@@ -119,6 +129,8 @@ const ADOPTIONS = [
   },
   {
     lesson: "3-5",
+    launchTalk:
+      "Reginald used 3 red and 3 blue cans; Anwar used 2 red and 3 blue. Why is 'who used more blue cans' a different question from 'whose paint is more blue'?",
     badge: "Purple Paint Mixture",
     deck: "3_5",
     img: "s06-cd265d26c0b4.png",
@@ -127,6 +139,8 @@ const ADOPTIONS = [
   },
   {
     lesson: "6-5",
+    launchTalk:
+      "The items cost $1.50, $12.95 and $0.65 per student, plus one $23.50 shipping fee. Which of those numbers gets multiplied by the number of students, and which does not — and why?",
     badge: "Class Field Day",
     deck: "6_5",
     img: "s07-752913a48894.png",
@@ -135,6 +149,8 @@ const ADOPTIONS = [
   },
   {
     lesson: "7-2",
+    launchTalk:
+      "The flower is 7/8 foot above the ground and the roots are 7/8 foot below. How are those two distances the same, and how are they different?",
     badge: "Arihi's Plant",
     deck: "7_2",
     img: "s06-6dd0efc0b935.png",
@@ -213,6 +229,28 @@ for (const entry of ADOPTIONS) {
   // observe now is the Notice & Wonder image and the problem's own figure, both
   // of which are about today's story.
   if (config.launch.visual) delete config.launch.visual;
+
+  // The launch Turn & Talk discusses the LAUNCH PROBLEM. The authored one was
+  // written for the story this script replaces — 2-7's still asked about "the
+  // station's 18.9 kilograms of mineral" under an order form for math
+  // workbooks (Joel, 2026-08-26: "🗣️ Turn & Talk also is a problem in the
+  // launch part"). Where the entry writes a new question it is about the
+  // adopted problem; lessons whose authored question already stands on its own
+  // (7-3, 7-4) or already matches the new problem (9-2, 9-3) carry none and
+  // keep theirs.
+  if (entry.launchTalk && Array.isArray(config.turnAndTalk)) {
+    const slot = config.turnAndTalk.find((t) => t && t.phase === "launch");
+    if (slot) {
+      slot.question = entry.launchTalk;
+      // The Spanish lane and the fill-in starters were written for the old
+      // question; stale support under a new prompt is worse than the engine's
+      // generic starters, so they are cleared rather than half-kept.
+      delete slot.questionEs;
+      delete slot.stems;
+      delete slot.kernel;
+      delete slot.wordBank;
+    }
+  }
 
   // A worked-example line that named the replaced story, repaired verbatim.
   // Exact-match only: a line that has already been edited is left alone rather

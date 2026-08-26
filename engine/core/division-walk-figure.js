@@ -56,6 +56,26 @@ function numbersIn(line) {
  */
 function findProblem(lines) {
   const text = lines.join(" ");
+  // DECIMALS FIRST. A decimal walk restates itself in integers mid-way ("The
+  // problem is now 189 ÷ 63"), so matching the integer pair first hid the
+  // decimal origin and with it the opening frame that shows 18.9 ÷ 6.3.
+  const decFirst = text.match(/([\d.,]*\.\d+)\s*÷\s*([\d.,]*\.\d+)/);
+  if (decFirst) {
+    const shifts = new Map();
+    for (const m of text.matchAll(/([\d.,]+)\s+becomes\s+(\d[\d,]*)\b/g)) {
+      shifts.set(m[1].replace(/,/g, ""), Number(m[2].replace(/,/g, "")));
+    }
+    const dividend = shifts.get(decFirst[1].replace(/,/g, ""));
+    const divisor = shifts.get(decFirst[2].replace(/,/g, ""));
+    if (dividend && divisor && divisor > 1) {
+      return {
+        dividend,
+        divisor,
+        originalDividendText: decFirst[1].replace(/,/g, ""),
+        originalDivisorText: decFirst[2].replace(/,/g, ""),
+      };
+    }
+  }
   // The lookahead rejects a decimal continuation ("12.5") but must accept a
   // sentence-ending period ("÷ 12. The dividend…").
   const intPair = text.match(/(\d[\d,]*)\s*÷\s*(\d[\d,]*)(?!\d|\.\d)/);
@@ -74,7 +94,17 @@ function findProblem(lines) {
     }
     const dividend = shifts.get(decPair[1].replace(/,/g, ""));
     const divisor = shifts.get(decPair[2].replace(/,/g, ""));
-    if (dividend && divisor && divisor > 1) return { dividend, divisor };
+    if (dividend && divisor && divisor > 1) {
+      // Carry the AUTHORED decimal texts too: the walk should open on the
+      // problem as the student meets it (18.9 ÷ 6.3), not on the shifted
+      // integers the algorithm works with — the shift IS one of the steps.
+      return {
+        dividend,
+        divisor,
+        originalDividendText: decPair[1].replace(/,/g, ""),
+        originalDivisorText: decPair[2].replace(/,/g, ""),
+      };
+    }
   }
   return null;
 }
@@ -248,6 +278,50 @@ function drawTableau(problem, events, upTo, fresh) {
 }
 
 /**
+ * The problem AS WRITTEN — decimal points and all — in the empty bracket. The
+ * opening frames of a decimal-division walk showed the already-shifted
+ * integers ("63)189" for 18.9 ÷ 6.3) with the move faded in as though it had
+ * been made before the student arrived (Joel, 2026-08-26: "watch me solve it
+ * starts with the division problem without decimals. It should start with the
+ * problem that has decimals and change with each part"). This is the frame the
+ * walk opens on; the shifted tableau takes over when the point-moving lines
+ * have been read.
+ */
+function drawDecimalSetup(dividendText, divisorText) {
+  const dChars = String(dividendText).split("");
+  const vChars = String(divisorText).split("");
+  const cw = (ch) => (ch === "." ? U * 0.45 : U);
+  let x = U / 2;
+  const head = [];
+  for (const ch of vChars) {
+    head.push(svgText(x, R + R - 10, ch, ch === "." ? "dwf-point dwf-old" : "dwf-old"));
+    x += cw(ch);
+  }
+  const left = x + U / 2;
+  head.push(
+    `<path d="M ${left - 6} ${R + 4} q 8 ${R / 2} 0 ${R} " class="dwf-bracket" fill="none"/>`,
+  );
+  let dx = left + U / 2;
+  for (const ch of dChars) {
+    head.push(svgText(dx, R + R - 10, ch, ch === "." ? "dwf-point dwf-old" : "dwf-old"));
+    dx += cw(ch);
+  }
+  const width = dx + U / 2;
+  head.splice(
+    vChars.length + 1,
+    0,
+    `<line x1="${left - 6}" y1="${R + 4}" x2="${width - U / 2}" y2="${R + 4}" class="dwf-bracket"/>`,
+  );
+  const alt = `Long division set up: ${dividendText} divided by ${divisorText}, before any steps.`;
+  return (
+    `<svg class="dwf" viewBox="0 0 ${width} ${3 * R}" role="img" aria-label="${alt}" ` +
+    `style="max-width:${Math.min(width, 380)}px">` +
+    head.join("") +
+    `</svg>`
+  );
+}
+
+/**
  * One SVG per authored line (null for lines that do not move the tableau),
  * or null when this worked example is not a verifiable long-division walk.
  * The setup line — the one stating the whole-number problem — gets the empty
@@ -327,6 +401,17 @@ export function carriedDivisionFigures(lines) {
   }
   const lastMove = figures.reduce((last, svg, i) => (svg ? i : last), -1);
   if (lastMove < 0) return [];
+
+  // A decimal walk OPENS on the decimal problem. The lines before the first
+  // tableau are the ones moving the point, and they used to carry no figure at
+  // all — so the seeded frame was the shifted integers, a move ahead of the
+  // narration. findProblem carries the authored decimal texts for exactly this.
+  const problem = findProblem(list.filter((l) => typeof l === "string"));
+  if (problem && problem.originalDividendText) {
+    const setup = drawDecimalSetup(problem.originalDividendText, problem.originalDivisorText);
+    for (let i = 0; i < figures.length && !figures[i]; i++) figures[i] = i === 0 ? setup : null;
+    if (!figures[0]) figures[0] = setup;
+  }
 
   let lastLine = lastMove;
   while (lastLine + 1 < list.length && CYCLE_STEP.test(String(list[lastLine + 1]))) {

@@ -142,7 +142,13 @@ function renderReview(host, state, ctx, config) {
       const slot = el("div");
       slot.style.marginBottom = "14px";
       wcard.append(slot);
-      renderComponent(slot, q, () => {}, {
+      // No interactive lab in the warm-up. renderComponent auto-mounts the
+      // long-division builder on any "a ÷ b" stem, so 2-7's three warm-up
+      // questions each arrived with a full lab attached — three labs before
+      // the first answer (Joel, 2026-08-26: "Do not include the interactive
+      // division lab features for the warm-up"). A warm-up is a quick
+      // autograded check; the lab lives in the group-work sets below.
+      renderComponent(slot, { ...q, suppressAutoDiagram: true }, () => {}, {
         number: i + 1,
         total: questions.length,
         tier: "onLevel",

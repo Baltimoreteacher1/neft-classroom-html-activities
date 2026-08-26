@@ -27,6 +27,7 @@
 // Phase identity in this engine is POSITIONAL: lesson-renderer.js hands
 // createApp a fixed 8-slot array of render functions. These names are the
 // stable ids lesson data refers to, mapped to those slots.
+import { carriedDivisionFigures, DIVISION_FIGURE_CSS } from "./division-walk-figure.js";
 import { attachImageZoomAll } from "./image-zoom.js";
 import { vocabImageAlt } from "./vocab-images.js";
 
@@ -535,10 +536,36 @@ function renderCopyPanelHtml(cp, isEs = false, config = null) {
       const firstIdeaSentence = config.launch.conceptIntro.keyIdeaEs.split(/\.\s+/)[0];
       if (firstIdeaSentence) ruleText = firstIdeaSentence.trim();
     }
-    const stepsHtml =
-      Array.isArray(cp.copyPanel.steps) && cp.copyPanel.steps.length > 0
-        ? `<ol class="nt-nb-copy-steps">${cp.copyPanel.steps.map(renderStepHtml).join("")}</ol>`
-        : "";
+    // A SIMPLE MODEL TO COPY, when the lesson can draw one. An algorithm
+    // lesson's box 2 used to hand students three sentences of prose ("1. Make
+    // the divisor a whole number: slide its decimal point…") as the thing to
+    // copy into a notebook (Joel, 2026-08-26: "students should just copy a
+    // simple model of this — not write out 3 separate things that are
+    // unclear"). When the lesson's own worked example yields a completed
+    // division tableau, THAT is the copy task — the picture of the algorithm,
+    // drawn from this lesson's numbers — and the prose steps are dropped. A
+    // lesson with no drawable model keeps its steps unchanged.
+    let modelHtml = "";
+    let steps = Array.isArray(cp.copyPanel.steps) ? cp.copyPanel.steps : [];
+    if (steps.length && config?.launch?.conceptIntro?.iDo?.lines) {
+      try {
+        const figs = carriedDivisionFigures(config.launch.conceptIntro.iDo.lines);
+        const finished = figs ? [...figs].reverse().find(Boolean) : null;
+        if (finished) {
+          modelHtml = `<style>${DIVISION_FIGURE_CSS}</style>
+            <figure class="nt-nb-copy-model" style="margin:10px auto 4px; text-align:center;">
+              ${finished.replace(/style="max-width:\s*\d+px"/, 'style="max-width:300px"')}
+              <figcaption style="margin-top:6px; font-size:.95rem; font-weight:600; color:#475569;">${isEs ? "Copia este modelo." : "Copy this model."}</figcaption>
+            </figure>`;
+          steps = [];
+        }
+      } catch {
+        /* no drawable model — the prose steps remain the copy task */
+      }
+    }
+    const stepsHtml = steps.length
+      ? `<ol class="nt-nb-copy-steps">${steps.map(renderStepHtml).join("")}</ol>`
+      : "";
     const formulaHtml = cp.copyPanel.formula
       ? `<div class="nt-nb-copy-formulas" role="group" aria-label="Formulas to copy">${cp.copyPanel.formula
           .split(/\s\|\s/)
@@ -551,6 +578,7 @@ function renderCopyPanelHtml(cp, isEs = false, config = null) {
       <div class="nt-nb-copy-banner">${bannerText}</div>
       <div class="nt-nb-copy-rule">${esc(ruleText)}</div>
       ${formulaHtml}
+      ${modelHtml}
       ${stepsHtml}
       ${cp.copyPanel.meaning ? `<div class="nt-nb-copy-meaning">${esc(cp.copyPanel.meaning)}</div>` : ""}
       ${cp.copyPanel.example ? `<div class="nt-nb-copy-example"><span class="nt-nb-copy-example-label">${exampleLabel}</span> <span class="nt-nb-eq">${esc(cp.copyPanel.example)}</span></div>` : ""}

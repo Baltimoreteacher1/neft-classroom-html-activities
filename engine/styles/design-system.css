@@ -2970,11 +2970,19 @@ body:has(.identity-screen) .export-toolbar {
 
 .launch-problem-img {
   display: block;
-  width: auto;
-  max-width: 100%;
-  max-height: 340px;
+  /* The figure carries the problem's numbers, so it renders READABLE-first:
+     small source art (2-7's order form is 302px) scales up to fill the card
+     rather than sitting at its intrinsic size in a 1100px panel (Joel,
+     2026-08-26: "I am still not seeing the images for the launch and the
+     numbers/problems that go with them"). Pixelation at 2× is a fair trade for
+     legible numbers; the click-to-zoom lightbox still offers the original. */
+  width: 100%;
+  max-width: 640px;
+  max-height: 480px;
   height: auto;
+  object-fit: contain;
   margin: 0 auto;
+  image-rendering: auto;
 }
 
 .launch-scenario-card {
@@ -5326,6 +5334,18 @@ textarea.syw-input {
    * notice/wonder"). Reading the variable means the next rail change cannot
    * reopen this. */
   inset: 0 0 0 var(--nt-rail-w, 300px);
+  /* A fixed-position panel is exactly one viewport tall, and .extra-panel lays
+     its children out with flex — whose children SHRINK by default. Content
+     taller than the screen was therefore compressed instead of scrolled: the
+     Launch scenario card squeezed down to its 64px badge row with the problem
+     text and figure clipped under overflow:hidden, which is why "the launch is
+     missing" kept coming back no matter what rendered into it (Joel,
+     2026-08-26, repeatedly). Children keep their natural height; overflow-y on
+     this panel is what scrolling is for.
+
+     NB: `display: block` here LOSES to `body.editorial .phase { display: flex }`
+     on specificity — the browser said so, not the cascade I imagined — hence
+     the doubled rule below rather than a property on this one. */
   z-index: 8000;
   margin: 0;
   padding: 8px clamp(8px, 1.5vw, 16px) 12px;
@@ -5345,6 +5365,19 @@ textarea.syw-input {
     transform: none;
   }
 }
+/* Must out-rank `body.editorial .phase` (0,2,1), which turns every phase into a
+   column flex container. (0,3,1) both ways, and belt-and-braces: block layout
+   AND no shrinking, so whichever rule a future skin wins with, content taller
+   than the viewport scrolls instead of compressing. */
+body.editorial .phase.extra-panel--fullpage,
+body .phase.extra-panel--fullpage {
+  display: block;
+}
+body.editorial .phase.extra-panel--fullpage > *,
+body .phase.extra-panel--fullpage > * {
+  flex-shrink: 0;
+}
+
 .extra-panel--fullpage .extra-head {
   position: sticky;
   top: 0;

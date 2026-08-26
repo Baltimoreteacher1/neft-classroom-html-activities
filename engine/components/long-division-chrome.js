@@ -108,7 +108,7 @@ export function injectStyles() {
   const s = document.createElement("style");
   s.id = "ldl-styles";
   s.textContent = `
-  .ldl{max-width:680px;margin:0 auto;text-align:center;background:var(--tool-surface);border:1.5px solid var(--tool-line);border-radius:var(--tool-radius);padding:18px 20px 22px;font-family:"Hanken Grotesk",system-ui,sans-serif;color:var(--tool-ink);box-shadow:0 4px 16px rgba(18,53,91,0.06);}
+  .ldl{max-width:980px;margin:0 auto;text-align:center;background:var(--tool-surface);border:1.5px solid var(--tool-line);border-radius:var(--tool-radius);padding:18px 20px 22px;font-family:"Hanken Grotesk",system-ui,sans-serif;color:var(--tool-ink);box-shadow:0 4px 16px rgba(18,53,91,0.06);}
   .ldl [hidden]{display:none!important;}
   .ldl-dmsb-banner{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:0 auto 12px;padding:8px 12px;background:var(--tool-canvas);border:1px solid var(--tool-line);border-radius:var(--tool-radius-sm);max-width:max-content;}
   .ldl-dmsb-chip{display:inline-flex;align-items:center;gap:5px;font-size:.82rem;font-weight:700;color:${C.navy};}
@@ -142,7 +142,11 @@ export function injectStyles() {
   .ldl-pill.is-on .ldl-badge{background:#dc2626;color:#fff;}
   .ldl-pill.is-on .ldl-op-symbol{color:#dc2626;}
   .ldl-loop{font-size:.82rem;font-weight:700;color:${C.teal};}
-  .ldl-board{display:grid;justify-content:center;align-items:end;margin:12px auto 6px;padding:16px 22px;max-width:max-content;background:var(--tool-canvas);border:2px solid var(--tool-accent);border-radius:var(--tool-radius);overflow-x:auto;font-family:"Outfit",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:1.55rem;font-weight:800;line-height:1.25;color:${C.navy};box-shadow:0 2px 8px rgba(29,78,216,0.06);}
+  /* The board is the lab: it gets the size. 1.55rem digits inside a 680px
+     card read like a caption from the back row (Joel, 2026-08-26: "The long
+     division lab should be much bigger and centered (it should be most of the
+     page)"). The card is 980px and the digits 2.4rem, and both stay centered. */
+  .ldl-board{display:grid;justify-content:center;align-items:end;margin:14px auto 8px;padding:22px 30px;max-width:max-content;background:var(--tool-canvas);border:2px solid var(--tool-accent);border-radius:var(--tool-radius);overflow-x:auto;font-family:"Outfit",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:2.4rem;font-weight:800;line-height:1.3;color:${C.navy};box-shadow:0 2px 8px rgba(29,78,216,0.06);}
   .ldl-board>span{text-align:center;}
   .ldl-board.is-waiting{opacity:.4;}
   .ldl-divisor{padding-right:.15em;text-align:right;}

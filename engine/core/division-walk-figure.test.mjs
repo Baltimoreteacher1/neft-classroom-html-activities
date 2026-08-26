@@ -116,11 +116,28 @@ test("the check-by-multiplying coda gets NO tableau — it is a different comput
   }
 });
 
-test("lines before the first snapshot stay bare — nothing is carried backwards", () => {
+test("a decimal walk OPENS on the decimal problem — and never a step ahead of it", () => {
+  // The rule this replaces was "lines before the first snapshot stay bare".
+  // Bare was wrong for a decimal lesson: with no opening frame the panel
+  // seeded itself with the SHIFTED tableau (63)189), showing the point already
+  // moved before the narration moved it (Joel, 2026-08-26: "watch me solve it
+  // starts with the division problem without decimals"). The opening frame is
+  // now the problem AS WRITTEN — decimals in place, no work marks — and the
+  // integer tableau still must not appear before the narration reaches it.
   const lines = lessonLines("2-7");
   const carried = carriedDivisionFigures(lines);
-  assert.equal(carried[0], null, "the problem statement gets no tableau");
-  assert.equal(carried[1], null, "the move-the-point line gets no tableau");
+  assert.match(carried[0] || "", /18\.9.*6\.3|6\.3.*18\.9/s, "frame 0 shows the decimal problem");
+  assert.ok(!/dwf-q|dwf-new/.test(carried[0] || ""), "frame 0 carries no work marks");
+  assert.match(carried[1] || "", /before any steps/, "the move-the-point line still shows the decimal setup");
+  // Integer-only walks are unchanged: 2-6 has no decimal origin, so its
+  // pre-snapshot lines stay bare exactly as before.
+  const intCarried = carriedDivisionFigures(lessonLines("2-6"));
+  const firstFig = intCarried.findIndex(Boolean);
+  assert.ok(firstFig >= 0, "2-6 still yields figures");
+  assert.ok(
+    !/before any steps/.test(intCarried[firstFig] || ""),
+    "an integer walk gets no decimal setup frame",
+  );
 });
 
 test("a worked example the algorithm cannot verify carries nothing", () => {
