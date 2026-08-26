@@ -126,16 +126,47 @@ const needsOf = (c) => (c === "build" ? [] : ["build"]);
  * harnesses racing on a loaded machine is how a gate becomes flaky enough to
  * get bypassed.
  *
- * `validate:visibility` joined them on 2026-08-26. It was already a browser
- * harness with its own static server, and it got heavier that day — it now
- * opens five pages instead of three and DRIVES them (answering a warm-up and
- * submitting it) rather than just measuring a first paint. Run alongside the
- * other two it produced exactly the failures this comment describes, and they
- * were the convincing kind: `Failed to resolve module specifier "web-vitals"`
- * and an `ERR_HTTP_RESPONSE_CODE_FAILURE` for a file that was on disk the whole
- * time. Both read as real page defects. Both vanish when the check runs on its
- * own against the same dist/. A third Chromium was the difference. */
-const EXCLUSIVE = new Set(["validate:lesson-boot", "smoke:injection", "validate:visibility"]);
+ * `validate:visibility` joined them on 2026-08-26, and `test` joined them later
+ * the same day for a DIFFERENT reason that had been misdiagnosed as this one.
+ *
+ * The symptom: `validate:visibility` failed inside the gate with
+ * `Failed to resolve module specifier "web-vitals"`, and passed standalone
+ * against the same dist/. That was first read as browser contention — a third
+ * Chromium — and adding it to this set was the fix. It was the wrong cause, so
+ * the symptom came straight back, twice in a row, with all three harnesses
+ * already taking turns.
+ *
+ * The real cause is that `test` WRITES dist/. `npm test` runs
+ * tools/build-injectors-idempotent.test.mjs, which expands the whole `build`
+ * script and executes every step of it — `vite build` included, deliberately,
+ * because vite's own plugin splices the save/resume layer into tracked HTML and
+ * that is exactly what the test exists to catch. So roughly 90 seconds after the
+ * build BARRIER reports done, a second full build lands in dist/ — 10,556 files
+ * rewritten, timestamps ~90s past the barrier — underneath every check reading
+ * it.
+ *
+ * `web-vitals` names the window precisely rather than at random.
+ * copyStandaloneHtml treats assets/nt-web-vitals.js as an UNHASHED_BUNDLE: it
+ * snapshots vite's bundled output, lets the static copy overwrite it with the
+ * hand-written SOURCE file (which opens `import … from "web-vitals"`, a bare
+ * specifier no browser can resolve), and restores the bundle afterwards. A page
+ * loaded inside those few seconds gets the source copy. Nothing is wrong with
+ * dist/ before or after — which is why grepping the finished tree for that
+ * specifier finds nothing, and why the failure could never be reproduced by
+ * hand.
+ *
+ * Fixing it in vite.config.js is off the table: the plugin resolves every
+ * destination against __dirname/dist, so `--outDir` does not redirect it, and
+ * repointing it is a deploy-config change. Serialising here is the honest fix —
+ * `test` is a tree WRITER, so it takes its turn against the tree READERS rather
+ * than running under them. Costs nothing measurable: `test` is the gate's long
+ * pole either way, and the three browser checks together add ~33s to it. */
+const EXCLUSIVE = new Set([
+  "validate:lesson-boot",
+  "smoke:injection",
+  "validate:visibility",
+  "test",
+]);
 
 /* --------------------------------------------------------------------------
  * Change coverage. Each rule is [RegExp, checks[]]. A changed path uses the
