@@ -138,7 +138,7 @@ function vocabImageEl(entry) {
   img.loading = "lazy";
   img.draggable = false;
   img.style.cssText = `
-    width:52px; aspect-ratio:4 / 3; flex:0 0 auto; vertical-align:middle;
+    width:40px; aspect-ratio:4 / 3; flex:0 0 auto; vertical-align:middle;
     border-radius:var(--radius-sm); background:var(--card);
     border:1px solid var(--line); object-fit:contain;
   `;
@@ -176,21 +176,27 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
   const board = document.createElement("div");
   board.className = "vdm-board";
   board.style.cssText =
-    // The arrow column is a fixed 44px gutter; the two card columns are
-    // minmax(0, 1fr) so the larger type wraps inside them instead of widening
-    // the grid and pushing the board off the page.
-    "display:grid; grid-template-columns:minmax(0, 1fr) 44px minmax(0, 1fr); gap:var(--sp-3); align-items:start;";
+    // FITTING THE BOARD ON ONE SCREEN. With 8 pairs this ran past 1,000px —
+    // taller than a classroom laptop — so a student could not see the options
+    // they were matching between (Joel, 2026-08-26: "it is hard to see all of
+    // the options on the screen … because of the sizing and formatting").
+    //
+    // The height came from padding, a 64px min-height and a 52px image on every
+    // row, NOT from the type, so the type is untouched and the padding is not.
+    // The arrow gutter drops 44px → 26px, which also gives the text more width
+    // and so fewer wrapped lines.
+    "display:grid; grid-template-columns:minmax(0, 1fr) 26px minmax(0, 1fr); gap:10px; align-items:start;";
 
   const termsCol = document.createElement("div");
-  termsCol.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2); min-width:0;";
+  termsCol.style.cssText = "display:flex; flex-direction:column; gap:8px; min-width:0;";
 
   const arrowCol = document.createElement("div");
   arrowCol.className = "vdm-arrow-col";
   arrowCol.style.cssText =
-    "display:flex; flex-direction:column; gap:var(--sp-2); align-items:center; padding-top:12px;";
+    "display:flex; flex-direction:column; gap:8px; align-items:center; padding-top:8px;";
 
   const defsCol = document.createElement("div");
-  defsCol.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2); min-width:0;";
+  defsCol.style.cssText = "display:flex; flex-direction:column; gap:8px; min-width:0;";
 
   let selectedTerm = null;
   let selectedTermEl = null;
@@ -202,8 +208,8 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
     el.dataset.termName = term.term;
     el.style.cssText = `
       display:flex; align-items:center; gap:var(--sp-2);
-      padding:16px 18px; border:2px solid var(--teal); border-radius:var(--radius-md);
-      background:white; font-weight:600; font-size:1.35rem; text-align:left;
+      padding:10px 14px; border:2px solid var(--teal); border-radius:var(--radius-md);
+      background:white; font-weight:600; font-size:1.35rem; line-height:1.25; text-align:left;
       cursor:pointer; transition:all var(--duration-fast) ease; width:100%;
       color:var(--ink);
     `;
@@ -255,9 +261,9 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
     const arrow = document.createElement("span");
     arrow.className = "vdm-arrow";
     arrow.style.cssText =
-      // Height tracks the definition card's min-height (64px) so the decorative
-      // arrows keep roughly lining up with the rows now that the type is larger.
-      "color:var(--muted); font-size:1.4rem; height:64px; display:grid; place-items:center;";
+      // Height tracks the definition card's min-height so the decorative arrows
+      // keep roughly lining up with the rows.
+      "color:var(--muted); font-size:1.2rem; height:56px; display:grid; place-items:center;";
     arrow.textContent = "→";
     arrowCol.append(arrow);
   });
@@ -269,9 +275,9 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
     // (`term`) and used by checkMatch — it is deliberately NOT written to a
     // data-* attribute, which would expose the answer pairing in the DOM.
     el.style.cssText = `
-      padding:16px 18px; border:2px dashed var(--line); border-radius:var(--radius-md);
-      background:white; font-size:1.15rem; text-align:left; cursor:pointer;
-      transition:all var(--duration-fast) ease; width:100%; min-height:64px;
+      padding:10px 14px; border:2px dashed var(--line); border-radius:var(--radius-md);
+      background:white; font-size:1.15rem; line-height:1.35; text-align:left; cursor:pointer;
+      transition:all var(--duration-fast) ease; width:100%; min-height:56px;
       color:var(--ink);
     `;
     el.textContent = term.definition;

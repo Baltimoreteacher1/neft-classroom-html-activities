@@ -27,7 +27,7 @@ function ok(name) {
     !PHASE_TIME_ESTIMATES.some((p) => /vocab/i.test(p.name)),
     "the removed Vocab phase must not reappear in PHASE_TIME_ESTIMATES",
   );
-  const expectedOrder = ["Launch & Focus", "Lesson", "Exit Ticket"];
+  const expectedOrder = ["Warm-Up", "Lesson", "Exit Ticket"];
   PHASE_TIME_ESTIMATES.forEach((p, i) => {
     assert.equal(p.name, expectedOrder[i], `phase ${i} name`);
     // The index-based label the consumers render must match the row's own name.

@@ -863,6 +863,9 @@ const PHASE_SUBTABS = {
   ],
   1: [
     { extra: "vocab", icon: "🔑", label: "Vocab" },
+    // The Launch — today's problem, with the guided solve — sits directly under
+    // Vocab because it belongs with the teaching, not in front of it.
+    { extra: "launch", icon: "🚀", label: "Launch" },
     { extra: "learn", icon: "💡", label: "Learn It" },
     { extra: "watchme", icon: "👀", label: "Watch Me" },
     // The lesson's own manipulatives, opened in their OWN window rather than as
@@ -1020,7 +1023,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         icon: String(m?.icon || "📘"),
       }))
     : [
-        { name: phaseName(0), icon: "🚀" }, // Act 1: Launch & Focus
+        { name: phaseName(0), icon: "⚡" }, // Act 1: Warm-Up
         { name: phaseName(1), icon: "📐" }, // Act 2: Lesson
         { name: phaseName(2), icon: "📝" }, // Act 3: Exit Ticket
       ];
@@ -1639,7 +1642,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           kind === "learn" ||
           kind === "notes" ||
           kind === "objectives" ||
-          kind === "noticewonder",
+          kind === "noticewonder" ||
+          kind === "launch",
       );
     },
     clearExtraActive() {
@@ -1660,6 +1664,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       if (kind === "activity") return this.openActivity();
       if (kind === "objectives") return this.openObjectives();
       if (kind === "noticewonder") return this.openNoticeWonder();
+      if (kind === "launch") return this.openLaunch();
       if (kind === "watchme") {
         this.openExtra("learn");
         setTimeout(() => {
@@ -1723,13 +1728,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           // Practice skipped the Explore phase entirely.
           state,
           onComplete: () => this.navigateTo(PHASE_EXPLORE),
-          // The application scenario + Show Your Work moved out of Launch to
-          // live under Learn It. This branch predates the
-          // ctx.renderLearnItExtras hook and never called it, so the moved
-          // content rendered NOWHERE — the panel now hosts it as its final
-          // "Apply It" step. Called directly (not via the hook) because the
-          // hook is only assigned once the Launch phase has rendered.
-          renderExtras: (host) => renderLearnItExtrasInto(host, config, state),
+          // No "Apply It" step here any more: the scenario and its guided solve
+          // are the 🚀 Launch subcard now, one row above this one, so hosting
+          // them here as well would put the same problem in two places and
+          // leave a student wondering which copy their work was saved in.
         });
         el.append(
           chainContinueButton("Continue to Explore 🔍 →", () => this.navigateTo(PHASE_EXPLORE)),
@@ -1930,6 +1932,47 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
      * be a step every student walked through on the way to today's problem;
      * as a card the teacher opens it when the class is ready for it.
      */
+    /**
+     * 🚀 Launch — today's word problem AND the whole guided solve: the scenario
+     * with its official figure, the Reveal slides for it, and the typeable
+     * know / need / plan / work / answer / how-I-know scaffold with the "I'm
+     * stuck" bar (renderLearnItExtrasInto).
+     *
+     * It used to be the last step of Act 1, which put the problem in front of
+     * the teaching and left it buried under a step strip (Joel, 2026-08-26:
+     * "it should allow the whole problem to be solved with steps and clear
+     * guidance. Also, it is kind of buried in the lesson"). Same content, one
+     * click from the sidebar, with room to work.
+     */
+    openLaunch() {
+      this.setExtraActive("launch");
+      phaseContainer.innerHTML = "";
+      const el = document.createElement("div");
+      el.className = "phase active extra-panel extra-panel--fullpage";
+      el.tabIndex = -1;
+      el.setAttribute("role", "region");
+      el.setAttribute("aria-label", "Launch");
+      el.innerHTML = `
+        <div class="extra-head" style="display:flex; flex-wrap:wrap; gap:var(--sp-3, 12px); align-items:center; justify-content:space-between; margin-bottom:var(--sp-4, 18px); padding-right:110px;">
+          <div>
+            <div class="section-title" style="font-size:2rem;">🚀 Launch</div>
+            <div class="section-desc" style="font-size:1.1rem;">Today's problem, one step at a time. Work it here.</div>
+          </div>
+          <div><button class="btn btn-secondary" data-act="close">✕ Close</button></div>
+        </div>`;
+      phaseContainer.append(el);
+      renderLearnItExtrasInto(el, config, state);
+      const launchVocab = augmentVocabWithGlossary(config.vocabulary);
+      underlineVocabTerms(el, launchVocab);
+      observeVocabTerms(el, launchVocab);
+
+      const back = () => this.navigateTo(state.get().currentPhase ?? 1);
+      el.querySelector('[data-act="close"]')?.addEventListener("click", back);
+      el.append(chainContinueButton("Continue to Learn It 📖 →", () => this.openExtra("learn")));
+      el.scrollIntoView({ block: "start" });
+      el.focus?.({ preventScroll: true });
+    },
+
     openNoticeWonder() {
       this.setExtraActive("noticewonder");
       phaseContainer.innerHTML = "";
@@ -1948,6 +1991,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         </div>`;
       phaseContainer.append(el);
       renderCuriousStep(el, state, this, config);
+      // Underline the lesson's math words here too. A takeover panel is not the
+      // phase body, so the pass in renderPhase never reaches it — measured at 0
+      // tap-to-define terms on this panel while Act 2 had 48 (Joel, 2026-08-26:
+      // "make sure the vocabulary is covered throughout the whole interactive
+      // lesson"). The observer keeps the WODB set, which loads async, covered.
+      const nwVocab = augmentVocabWithGlossary(config.vocabulary);
+      underlineVocabTerms(el, nwVocab);
+      observeVocabTerms(el, nwVocab);
 
       const back = () => this.navigateTo(state.get().currentPhase ?? 0);
       el.querySelector('[data-act="close"]')?.addEventListener("click", back);

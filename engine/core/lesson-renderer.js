@@ -155,7 +155,7 @@ export function bootLesson(config) {
   }
   createApp({
     ...config,
-    // 3-Act Streamlined Pedagogical Flow (Launch & Focus → Lesson → Exit Ticket)
+    // 3-Act Streamlined Pedagogical Flow (Warm-Up → Lesson → Exit Ticket)
     phases: [
       (el, state, ctx) => renderAct1Launch(el, state, ctx, config),
       (el, state, ctx) => renderAct2Studio(el, state, ctx, config),
@@ -176,6 +176,8 @@ export function bootLesson(config) {
   mountChalkAnnotations(document);
   // Tools menu → "Interactive Tools" (?mode=tools) when the lesson has any.
   mountToolsMenuItem(config);
+  // Read-aloud voice chooser in the same Tools menu.
+  import("./speech-voice.js").then((m) => m.mountVoicePicker?.()).catch(() => {});
   // …and the same models WITHOUT leaving the lesson. `?mode=tools` is a
   // full-page takeover: reaching a manipulative mid-lesson meant navigating
   // away from the phase you were on and the problem you were part-way through,
@@ -2689,7 +2691,7 @@ function renderWarmupPhase(el, state, ctx, config, opts = {}) {
       el,
       "1",
       "section-icon-teal",
-      "Act 1: Launch & Focus · Warmup",
+      "Act 1: Warm-Up",
       "Complete these quick warmup questions reviewing previous lesson material.",
     );
   }
@@ -3478,7 +3480,7 @@ function renderLaunchPhase(el, state, ctx, config, opts = {}) {
       el,
       "1",
       "section-icon-teal",
-      "Act 1: Launch & Focus",
+      "Act 1: Warm-Up",
       "Look at today's scene. What do you notice? What do you wonder?",
     );
   }
@@ -5900,14 +5902,14 @@ export function renderCuriousStep(host, state, ctx, config) {
   });
 }
 
-// ── Act 1: Launch & Focus ──
+// ── Act 1: Warm-Up ──
 export function renderAct1Launch(el, state, ctx, config) {
   phaseHeader(
     el,
     "1",
     "section-icon-teal",
-    "Act 1: Launch & Focus",
-    "Warm up first, then explore the launch scene. Today's goals are on the 🎯 Objectives card.",
+    "Act 1: Warm-Up",
+    "Start here. Math Notes, today's goals and Notice & Wonder are on the cards above.",
   );
 
   // Today's objectives are NOT rendered here. Posting the full two-card
@@ -5951,21 +5953,32 @@ export function renderAct1Launch(el, state, ctx, config) {
       render: (host) => renderWarmupPhase(host, state, ctx, config, { standalone: false }),
     });
   }
-  // Notice & Wonder and Which One Doesn't Belong are a SUBCARD, not a step —
-  // the 🤔 chip beside 📓 Math Notes and 🎯 Objectives (PHASE_SUBTABS[0] in
-  // engine/core/app.js), opened when the class is ready for it (Joel,
-  // 2026-08-26: "Put the notice/wonder under the objectives button as its own
-  // subcard"). As a step it sat between the Warm-Up and the Launch and every
-  // student had to walk through it to reach today's problem.
-  steps.push({
-    key: "launch",
-    icon: "🚀",
-    label: "Launch",
-    render: (host) => {
-      renderLaunchPhase(host, state, ctx, config, { standalone: false, curious: false });
+  // ACT 1 IS THE WARM-UP. Its other pieces are subcards on the row above it —
+  // 📓 Math Notes, 🎯 Objectives, 🤔 Notice & Wonder — and the Launch moved to
+  // Act 2, under Vocab, because it belongs with the teaching rather than in
+  // front of it (Joel, 2026-08-26: "The launch should be right under the
+  // vocabulary (under #2) lesson … math notes, objectives, notice/wonder, then
+  // lesson, vocabulary and launch (with the problem)").
+  //
+  // The hook Learn It needs is assigned by renderLaunchPhase, which no longer
+  // runs in this act, so it is set here instead.
+  ctx.renderLearnItExtras = (learnHost) => renderLearnItExtrasInto(learnHost, config, state);
+  if (steps.length) {
+    const last = steps[steps.length - 1];
+    const inner = last.render;
+    last.render = (host) => {
+      inner(host);
       host.append(nextBtn);
-    },
-  });
+    };
+  } else {
+    // A lesson with no authored warm-up still needs a way into Act 2.
+    steps.push({
+      key: "start",
+      icon: "🚀",
+      label: "Start",
+      render: (host) => host.append(nextBtn),
+    });
+  }
   renderActSteps(el, state, 0, steps);
 
   // Identity & homework header, BELOW the steps. It used to sit above them, and
