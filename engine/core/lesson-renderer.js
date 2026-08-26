@@ -3456,19 +3456,26 @@ function renderLaunchPhase(el, state, ctx, config, opts = {}) {
   renderLaunchVisual(el, cfg.visual);
 
   // Which One Doesn't Belong — a low-floor argument before any notation appears.
-  // It sits between the scene and the notice/wonder boxes on purpose: it warms
-  // up the same justification move those boxes ask for, but with four concrete
-  // objects instead of a blank field. Async and opt-in — a lesson whose standard
-  // has no authored set renders nothing here and the phase is unchanged.
-  const wodbHost = document.createElement("div");
-  el.append(wodbHost);
-  mountWodbOpener(wodbHost, config, state, 0).catch(() => {
-    /* the opener is additive — never block Launch on it */
-  });
+  // It warms up the same justification move the notice/wonder boxes ask for, but
+  // with four concrete objects instead of a blank field, so the two belong
+  // together. Async and opt-in — a lesson whose standard has no authored set
+  // renders nothing here.
+  //
+  // `opts.curious === false` means the caller is rendering the Launch STEP of
+  // Act 1 and has already shown these two in the step before it (Joel,
+  // 2026-08-26: "I should see the warm up first, then the next subcard would be
+  // the which one doesn't belong and the notice/wonder").
+  if (opts.curious !== false) {
+    const wodbHost = document.createElement("div");
+    el.append(wodbHost);
+    mountWodbOpener(wodbHost, config, state, 0).catch(() => {
+      /* the opener is additive — never block Launch on it */
+    });
+  }
 
   // Level 3 · Adaptive Small Group launch link. Teacher-only, and only for
   // lessons with a validated configuration. Additive: see level3-launch.js.
-  mountLevel3Launch(el, config);
+  if (!opts.curiousOnly) mountLevel3Launch(el, config);
 
   // Notice & Wonder + language support laid out side-by-side: the notice/wonder
   // boxes fill the left column (nwMain); the "Words & phrases to use" support
@@ -3527,11 +3534,20 @@ function renderLaunchPhase(el, state, ctx, config, opts = {}) {
   // bottom: scene image beside the boxes, then the word/phrase bank under them.
   // Tapped chips still insert into whichever notice/wonder box was focused —
   // `nwStack` is the shared root that scopes that focus lookup.
-  const nwStack = document.createElement("div");
-  nwStack.className = "nw-support-stack";
-  nwStack.append(nwMain);
-  renderNoticeWonderSupport(nwStack, cfg.beCurious, config, nwStack);
-  el.append(nwStack);
+  if (opts.curious !== false) {
+    const nwStack = document.createElement("div");
+    nwStack.className = "nw-support-stack";
+    nwStack.append(nwMain);
+    renderNoticeWonderSupport(nwStack, cfg.beCurious, config, nwStack);
+    el.append(nwStack);
+  }
+
+  // `curiousOnly` renders Act 1's opener STEP — the visual to look at, the
+  // argument, and the notice/wonder capture — and stops. Everything past this
+  // point (the Be Curious answer flow, the Learn It hook, the phase's own
+  // advance button) belongs to the Launch step that follows it, and rendering it
+  // twice would give the act two competing "continue" buttons.
+  if (opts.curiousOnly) return;
 
   // Note: Objectives card sits directly in between Warmup and Launch (rendered at bottom of Warmup phase).
 
@@ -5771,6 +5787,26 @@ function renderActSteps(el, state, phaseIdx, steps) {
   show(start, false);
 }
 
+/**
+ * Act 1's opener: Which One Doesn't Belong, then the Notice & Wonder capture.
+ * Rendered by reusing renderLaunchPhase's own curious half rather than a second
+ * copy of it — one implementation, so the two can never drift apart.
+ */
+function renderCuriousStep(host, state, ctx, config) {
+  const card = document.createElement("div");
+  card.className = "curious-step";
+  card.innerHTML = `
+    <p style="margin:0 0 14px; font-size:1.05rem; color:#475569; line-height:1.55;">
+      Look first, then argue. There is no wrong noticing here.
+    </p>`;
+  host.append(card);
+  renderLaunchPhase(host, state, ctx, config, {
+    standalone: false,
+    curious: true,
+    curiousOnly: true,
+  });
+}
+
 // ── Act 1: Launch & Focus ──
 export function renderAct1Launch(el, state, ctx, config) {
   phaseHeader(
@@ -5822,12 +5858,36 @@ export function renderAct1Launch(el, state, ctx, config) {
       render: (host) => renderWarmupPhase(host, state, ctx, config, { standalone: false }),
     });
   }
+  // Notice & Wonder and Which One Doesn't Belong get their OWN step, between the
+  // Warm-Up and the Launch scene. They are the lesson's opener — the official
+  // Reveal deck puts them on its first content slide — and buried at the bottom
+  // of the Launch step, after the scene and the visual, they were the last thing
+  // a student reached instead of the first thing they argued about (Joel,
+  // 2026-08-26: "I should see the warm up first, then the next subcard would be
+  // the which one doesn't belong and the notice/wonder").
+  const hasCurious = Boolean(
+    (config.noticeAndWonder && typeof config.noticeAndWonder === "object") ||
+      (config.launch && config.launch.beCurious) ||
+      (config.launch && Array.isArray(config.launch.noticePrompts)),
+  );
+  if (hasCurious) {
+    steps.push({
+      key: "curious",
+      icon: "🤔",
+      label: "Notice & Wonder",
+      render: (host) => renderCuriousStep(host, state, ctx, config),
+    });
+  }
+
   steps.push({
     key: "launch",
     icon: "🚀",
     label: "Launch",
     render: (host) => {
-      renderLaunchPhase(host, state, ctx, config, { standalone: false });
+      renderLaunchPhase(host, state, ctx, config, {
+        standalone: false,
+        curious: !hasCurious,
+      });
       host.append(nextBtn);
     },
   });

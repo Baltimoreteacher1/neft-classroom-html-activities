@@ -926,7 +926,10 @@ function injectVocabLearnStyles() {
     /* Dual-Track Think-Aloud Workspace */
     .vl-dual-stage {
       display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      /* The right column carries prose — the step text and its workspace — so it
+         gets the wider share. At 1.15fr / 1fr the steps wrapped at about 25
+         characters and every step became a tall thin ribbon. */
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
       gap: 16px;
       align-items: start;
       margin: 12px 0;
@@ -1306,6 +1309,35 @@ function injectVocabLearnStyles() {
       width: 100%;
       max-width: 420px;
       height: auto;
+    }
+    /* The live problem: LARGE, and it stays on screen while the student scrolls
+       the steps beside it, because the whole point is that the steps happen ON
+       this problem. Sticky only where there is a second column to scroll past
+       it — on one column it just sits at the top like any other figure. */
+    .vl-livefig {
+      margin: 0;
+      border: none;
+      padding: 4px 0 0;
+      background: transparent;
+    }
+    /* The division figure carries class "dwf", not "li-fig-svg", so the shared
+       rule above never reached it and it rendered at its intrinsic 182px inside
+       a 430px column. This is the "large problem" half of the ask.
+       NOTE: no backticks in this comment — the whole block is a JS template
+       literal, and a single backtick here would end it. */
+    .vl-livefig svg,
+    .vl-livefig .li-fig-svg {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+    }
+    @media (min-width: 861px) {
+      .vl-stage-visual:has(.vl-livefig) {
+        position: sticky;
+        top: 12px;
+      }
     }
     ${DIVISION_FIGURE_CSS}
     .sr-only {
@@ -1794,7 +1826,7 @@ export function renderLearnItPanel(container, config, options = {}) {
   // Reveal-one-step-at-a-time wiring shared by "Watch me" and "Try with me".
   // All items exist in the DOM (print shows everything); pacing is display
   // only. With 0–1 items the pace row never appears.
-  const wirePaced = (host, onAllShown) => {
+  const wirePaced = (host, onAllShown, onStep) => {
     const items = Array.from(host.querySelectorAll(".vl-solve-step"));
     const pace = /** @type {HTMLElement|null} */ (host.querySelector(".vl-pace"));
     const crumbs = Array.from(host.querySelectorAll(".vl-crumb-pill"));
@@ -1813,6 +1845,7 @@ export function renderLearnItPanel(container, config, options = {}) {
     if (items.length <= 1 || !pace) {
       items.forEach((it) => it.classList.remove("vl-hidden"));
       updateCrumbs();
+      onStep?.(items.length - 1);
       finish();
       return;
     }
@@ -1822,6 +1855,8 @@ export function renderLearnItPanel(container, config, options = {}) {
     const update = () => {
       if (count) count.textContent = `${shown} / ${items.length}`;
       updateCrumbs();
+      // The problem on the left continues to the step the student is on.
+      onStep?.(shown - 1);
     };
     update();
     nextBtn.addEventListener("click", () => {
@@ -1920,31 +1955,37 @@ export function renderLearnItPanel(container, config, options = {}) {
           ? `<figure class="vl-stepfig vl-workedfig">${workedFig.svg}<figcaption class="vl-stepfig-cap">${isEs ? "El problema se ve así" : "The problem looks like this"}</figcaption></figure>`
           : visualCardHtml;
 
-        if (!workedFig && divFigs.length > 0) {
+        // THE PROBLEM ITSELF, LARGE, ON THE LEFT — and it grows as the steps
+        // are revealed. What used to sit here was a static D/M/S/B legend card
+        // ("Divide: how many times does the divisor fit?" …), which repeated
+        // what the steps beside it already said and left the actual division
+        // duplicated as a small figure under every step in the right-hand
+        // column (Joel, 2026-08-26: "get rid of the DMSB part on the screen —
+        // not necessary (this is in the watch me)" and "make it a large problem
+        // with steps that happen directly on the problem and then the problem
+        // continues").
+        //
+        // `divFigs[i]` is the division as it stands after step i, so showing the
+        // latest revealed one is literally the problem continuing.
+        // The division SVG ships an INLINE style="max-width:…px" sized for a
+        // small in-step figure, and an inline style beats any stylesheet rule
+        // without !important. The live stage wants it full width, so the cap is
+        // stripped here rather than fought with specificity — and only here, so
+        // the small per-step figures elsewhere keep theirs.
+        const widen = (svg) => String(svg || "").replace(/style="max-width:\s*\d+px"/g, "");
+        const liveFigs = !workedFig && divFigs.length > 0 ? divFigs : null;
+        // Not every step has a figure: the first lines of 2-7 move the decimal
+        // point before the tall form exists, and the last one is the check. The
+        // host is seeded with the first REAL figure and an empty entry means
+        // "no change", so the problem is on screen from the start and never
+        // blanks out mid-solve.
+        const firstLiveFig = liveFigs ? liveFigs.find(Boolean) || "" : "";
+        if (liveFigs) {
           visualElemHtml = `
-            <div class="vl-division-strategy-card" style="background:#f8fafc; border:2px solid #cbd5e1; border-radius:18px; padding:18px; text-align:center; box-shadow:0 4px 14px rgba(15,23,42,0.05);">
-              <div style="font-family:'Outfit',sans-serif; font-size:1.15rem; font-weight:800; color:#12355b; margin-bottom:12px;">${isEs ? "Algoritmo de división larga" : "Long Division Algorithm"}</div>
-              <div style="display:flex; flex-direction:column; gap:8px; text-align:left; margin-bottom:14px;">
-                <div style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:#ccfbf1; border:1px solid #0d9488; border-radius:10px;">
-                  <b style="color:#0f766e; font-size:1.1rem; width:24px; text-align:center;">D</b>
-                  <div><strong style="color:#0f766e;">${isEs ? "Dividir" : "Divide"}:</strong> <span style="font-size:0.88rem; color:#134e48;">${isEs ? "¿Cuántas veces cabe el divisor?" : "How many times does divisor fit?"}</span></div>
-                </div>
-                <div style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:#e0f2fe; border:1px solid #0284c7; border-radius:10px;">
-                  <b style="color:#0369a1; font-size:1.1rem; width:24px; text-align:center;">M</b>
-                  <div><strong style="color:#0369a1;">${isEs ? "Multiplicar" : "Multiply"}:</strong> <span style="font-size:0.88rem; color:#0c4a6e;">${isEs ? "Dígito del cociente × divisor" : "Quotient digit × divisor"}</span></div>
-                </div>
-                <div style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:#fef3c7; border:1px solid #d97706; border-radius:10px;">
-                  <b style="color:#b45309; font-size:1.1rem; width:24px; text-align:center;">S</b>
-                  <div><strong style="color:#b45309;">${isEs ? "Restar" : "Subtract"}:</strong> <span style="font-size:0.88rem; color:#78350f;">${isEs ? "Halla la diferencia" : "Find the difference (remainder)"}</span></div>
-                </div>
-                <div style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:#ede9fe; border:1px solid #7c3aed; border-radius:10px;">
-                  <b style="color:#6d28d9; font-size:1.1rem; width:24px; text-align:center;">B</b>
-                  <div><strong style="color:#6d28d9;">${isEs ? "Bajar" : "Bring Down"}:</strong> <span style="font-size:0.88rem; color:#4c1d95;">${isEs ? "Baja el siguiente dígito y repite" : "Bring next digit down and repeat"}</span></div>
-                </div>
-              </div>
-              <p style="font-size:0.85rem; color:#64748b; margin:0;">${isEs ? "Observa cómo se construye la división paso a paso." : "Follow each step to watch the division build step-by-step."}</p>
-            </div>
-          `;
+            <figure class="vl-stepfig vl-livefig" data-live-fig>
+              ${widen(firstLiveFig)}
+              <figcaption class="vl-stepfig-cap">${isEs ? "La división hasta ahora" : "The division so far"}</figcaption>
+            </figure>`;
         }
 
         const crumbsHtml =
@@ -1973,6 +2014,10 @@ export function renderLearnItPanel(container, config, options = {}) {
                   <span class="vl-step-text">${renderMathText(shown(iLinesEs, idx, line))}</span>
                   ${lineEquation(line)}
                   ${(() => {
+                    // The live figure on the left is already showing the
+                    // division at this step; repeating it inside every step was
+                    // the same picture eight times down one column.
+                    if (liveFigs) return "";
                     const fig = stepFigureFor(idx);
                     return fig
                       ? `<figure class="vl-stepfig">${fig.svg}<figcaption class="vl-stepfig-cap">${fig.cap}</figcaption></figure>`
@@ -1998,7 +2043,7 @@ export function renderLearnItPanel(container, config, options = {}) {
               ? `
             <div class="vl-dual-stage">
               <div class="vl-stage-visual">
-                <div class="vl-stage-visual-head">🎨 ${isEs ? "Modelo visual del problema" : "Problem Visual Model"}</div>
+                <div class="vl-stage-visual-head">${liveFigs ? `🧮 ${isEs ? "El problema" : "The problem"}` : `🎨 ${isEs ? "Modelo visual del problema" : "Problem Visual Model"}`}</div>
                 ${visualElemHtml}
               </div>
               <div class="vl-stage-think">
@@ -2040,12 +2085,30 @@ export function renderLearnItPanel(container, config, options = {}) {
         }
         const toolBlock = /** @type {HTMLElement|null} */ (host.querySelector(".vl-tool-block"));
         let toolMounted = false;
-        wirePaced(host, () => {
-          if (!toolBlock || toolMounted) return;
-          toolMounted = true;
-          toolBlock.classList.remove("vl-hidden");
-          mountInteractiveVisuals(toolBlock, { state });
-        });
+        // Swap the live figure to the latest revealed step. Cheap: the SVGs are
+        // already built, and a step with no figure of its own keeps the last one
+        // on screen rather than blanking the problem mid-solve.
+        const liveHost = liveFigs
+          ? /** @type {HTMLElement|null} */ (host.querySelector("[data-live-fig]"))
+          : null;
+        const showLiveFig = liveHost
+          ? (idx) => {
+              const svg = widen(liveFigs[Math.max(0, Math.min(idx, liveFigs.length - 1))]);
+              if (!svg) return;
+              const cap = liveHost.querySelector(".vl-stepfig-cap");
+              liveHost.innerHTML = svg + (cap ? cap.outerHTML : "");
+            }
+          : undefined;
+        wirePaced(
+          host,
+          () => {
+            if (!toolBlock || toolMounted) return;
+            toolMounted = true;
+            toolBlock.classList.remove("vl-hidden");
+            mountInteractiveVisuals(toolBlock, { state });
+          },
+          showLiveFig,
+        );
       },
     });
   }

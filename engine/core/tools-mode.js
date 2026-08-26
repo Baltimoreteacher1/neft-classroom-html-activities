@@ -699,11 +699,34 @@ function toast(message) {
  *
  * No links to other lessons — safe to post to students on its own.
  */
+/**
+ * ONE CARD PER TOOL KIND. `collectTools` keys its dedupe on the whole config
+ * object, so a lesson that authors the same model three times with different
+ * numbers — 2-7 mounts the long-division builder three times, 3-7 the ratio
+ * table four — put three or four identical widgets on this page, one under the
+ * other (Joel, 2026-08-26: "stuff like this should only have one on the
+ * screen"). Every one of these tools has a "Change the numbers" control, so the
+ * second copy adds nothing a student cannot do in the first. 46 of the 84 core
+ * lessons repeat at least one kind.
+ *
+ * The FIRST instance wins, which is the one the lesson introduces the model
+ * with, so the numbers a student lands on are the numbers they were taught.
+ */
+function oneCardPerKind(tools) {
+  const seen = new Set();
+  return tools.filter(({ v }) => {
+    const kind = String(v && v.kind);
+    if (seen.has(kind)) return false;
+    seen.add(kind);
+    return true;
+  });
+}
+
 export function renderToolsPage(config, root) {
   if (!root) return;
   ensureStyles();
   document.body.classList.add("nt-tools-mode");
-  const tools = collectTools(config);
+  const tools = oneCardPerKind(collectTools(config));
   const title = config?.title || "This Lesson";
   const lessonId = String(config?.lessonId || "");
   const lessonNo = lessonId ? `Lesson ${lessonId}` : "";
