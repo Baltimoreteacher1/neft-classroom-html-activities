@@ -165,8 +165,8 @@ const STRINGS = {
     es: "Inténtalo primero — escribe un paso o una respuesta, y luego revisa.",
   },
   spFirstMiss: {
-    en: "Not quite yet. Re-read the problem, check your steps against the Worked Example above, then check again to see the answer.",
-    es: "Todavía no. Vuelve a leer el problema, compara tus pasos con el Ejemplo Resuelto de arriba, y revisa otra vez para ver la respuesta.",
+    en: "Not quite yet. Re-read the problem, check your steps against Watch Me Solve It in Learn It, then check again to see the answer.",
+    es: "Todavía no. Vuelve a leer el problema, compara tus pasos con Mírame Resolverlo en Apréndelo, y revisa otra vez para ver la respuesta.",
   },
   contentObjective: { en: "Content Objective", es: "Objetivo de contenido" },
   languageObjective: { en: "Language Objective", es: "Objetivo de lenguaje" },

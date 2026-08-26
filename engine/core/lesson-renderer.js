@@ -121,7 +121,6 @@ import {
 import resolveVocabImage, { hasRealVocabImage, vocabImageAlt } from "./vocab-images.js";
 import { buildVocabMatcher } from "./vocab-match.js";
 import { mountWodbOpener } from "./wodb.js";
-import { deriveWorkedSteps } from "./worked-steps.js";
 
 export function bootLesson(config) {
   // Canvas/SCORM resume relay. No-op unless ?lms=scorm, so a normal lesson
@@ -3821,34 +3820,6 @@ const TIER_VOICE = {
   level2: "🟣 Stretch challenge & error analysis — test your deepest understanding.",
 };
 
-function renderWorkedExamplePanel(host, config) {
-  const worked = deriveWorkedSteps(config);
-  if (!worked.iDo) return;
-
-  const panel = document.createElement("details");
-  panel.className = "worked-example-panel";
-  panel.open = true;
-
-  const steps = (worked.iDo.steps || [])
-    .map(
-      (s, i) =>
-        `<li class="worked-step"><span class="worked-step-num">${i + 1}</span><span>${esc(s)}</span></li>`,
-    )
-    .join("");
-
-  panel.innerHTML = `
-    <summary class="worked-example-summary">
-      <span class="worked-example-icon" aria-hidden="true">📝</span>
-      <span><strong>Worked Example</strong> — watch how it's done before you practice</span>
-    </summary>
-    <div class="worked-example-body">
-      <p class="worked-example-problem">${esc(worked.iDo.problem)}</p>
-      <ol class="worked-example-steps">${steps}</ol>
-      ${worked.iDo.answer ? `<div class="worked-example-answer"><strong>Answer:</strong> ${esc(worked.iDo.answer)}</div>` : ""}
-    </div>`;
-  host.append(panel);
-}
-
 // Normalize a typed math answer for the "is this simple enough to mark wrong?"
 // heuristic below: lowercase, strip spaces, unify the many multiplication
 // symbols, and turn unicode superscripts into ^n. Equivalence itself is decided
@@ -4134,18 +4105,16 @@ function renderSkillProbe(reveal, move, { answer, why, onSettled }) {
 
 function renderSkillPractice(host, config, state) {
   const p = config.practice || {};
-  // The Worked Example panel above (renderWorkedExamplePanel) reveals the I-Do
-  // problem AND its answer, derived from the first eligible practice stem item.
-  // Skip that exact item here so "Problem 1" isn't the same question the student
-  // was just handed the answer to — otherwise practice starts pre-solved.
-  const revealedStem = deriveWorkedSteps(config).iDo?.problem || null;
+  // Nothing is pre-revealed on this page any more, so nothing is skipped. This
+  // used to drop the item the Worked Example panel had already answered; with
+  // the panel gone, keeping the skip would silently cost every lesson a
+  // practice problem for a reason that no longer exists.
   const pool = []
     .concat(p.approaching || [], p.onLevel || [], p.extending || [])
     .filter(
       (it) =>
         it &&
         it.stem &&
-        it.stem !== revealedStem &&
         (Array.isArray(it.choices) || it.sampleAnswer || it.answer) &&
         (it.type === "multiple-choice" || it.type === "open-response" || !it.type),
     )
@@ -4423,7 +4392,12 @@ function renderPracticePhase(el, state, ctx, config, opts = {}) {
     workHost = pair.main;
   }
 
-  renderWorkedExamplePanel(workHost, config);
+  // The Worked Example panel used to open here, revealing the I-Do problem AND
+  // its answer before a student had tried anything (Joel, 2026-08-26: "this
+  // shouldn't be included either in interactive lessons"). Watch Me Solve It
+  // inside Learn It is where an interactive lesson shows a worked solve, on the
+  // student's own click. The printable packets keep theirs — deriveWorkedSteps
+  // still serves generate-notes and generate-docx.
 
   // Lead with real skill practice — solve problems, show steps — before the
   // interactive games/sorts below.

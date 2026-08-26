@@ -7,7 +7,7 @@ import {
   extractStepMove,
   parseKeyIdea,
   parseStepCycle,
-  splitGuidedLine,
+  splitGuidedSteps,
 } from "../core/learn-step-model.js";
 import { underlineVocabTerms } from "../core/lesson-renderer.js";
 import {
@@ -595,6 +595,20 @@ function injectVocabLearnStyles() {
       background: #ea580c;
       color: #ffffff;
       border-color: #ea580c;
+    }
+    /* The problem this Turn & Talk is about, quoted so both partners can see
+       what "it" refers to. Quieter than the prompt — it is the context, not
+       the ask. */
+    .vl-turntalk-context {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #7c2d12;
+      line-height: 1.55;
+      margin-bottom: 10px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 12px;
+      border-left: 4px solid #fdba74;
     }
     .vl-turntalk-question {
       font-size: 1.18rem;
@@ -2045,27 +2059,42 @@ export function renderLearnItPanel(container, config, options = {}) {
       label: isEs ? "Inténtalo conmigo" : "Try It With Me",
       sub: isEs ? "Responde primero, luego comprueba" : "Answer first in your head, then check",
       build(host) {
+        // ONE STEP PER TAUGHT MOVE. An authored line can hold several: 2-6
+        // writes "MULTIPLY: 4 × 8 = ? (32 …) SUBTRACT: 38 − 32 = ? (6.)" on one
+        // line, and rendering that as a single numbered step showed 3 steps for
+        // a 4-move algorithm and gave the next question away inside the
+        // previous answer's reveal. splitGuidedSteps cuts at each ask; both
+        // language lanes are split the same way so the ask and its "Check" stay
+        // together in whichever one is showing.
         const guided = weLines
-          .map((line, idx) => {
-            // Split BOTH lanes on their own parenthetical, so the ask and the
-            // "Check" reveal stay together in whichever language is showing.
-            // The equation strip still comes from the English (lineEquation
-            // reads the numbers out of the sentence).
-            const g = splitGuidedLine(line);
-            const gEs = isEs && weLinesEs?.[idx]?.trim() ? splitGuidedLine(weLinesEs[idx]) : null;
-            const ask = gEs ? gEs.ask : g.ask;
-            const tell = gEs ? gEs.tell || g.tell : g.tell;
-            const reveal = tell
-              ? `<details class="vl-check-reveal"><summary>✓ ${isEs ? "Comprueba" : "Check"}</summary><div class="vl-check-body">${renderMathText(tell)}</div></details>`
-              : lineEquation(g.ask);
+          .flatMap((line, idx) => {
+            const segs = splitGuidedSteps(line);
+            const segsEs =
+              isEs && weLinesEs?.[idx]?.trim() ? splitGuidedSteps(weLinesEs[idx]) : null;
+            return segs.map((g, k) => {
+              // Only pair the Spanish lane when it split into the same number of
+              // moves; a mismatched split would show move 2's Spanish under
+              // move 1's English.
+              const gEs = segsEs && segsEs.length === segs.length ? segsEs[k] : null;
+              return {
+                ask: gEs ? gEs.ask : g.ask,
+                tell: gEs ? gEs.tell || g.tell : g.tell,
+                enAsk: g.ask,
+              };
+            });
+          })
+          .map((step, idx) => {
+            const reveal = step.tell
+              ? `<details class="vl-check-reveal"><summary>✓ ${isEs ? "Comprueba" : "Check"}</summary><div class="vl-check-body">${renderMathText(step.tell)}</div></details>`
+              : lineEquation(step.enAsk);
             return `
               <li class="vl-solve-step${idx === 0 ? "" : " vl-hidden"}">
                 <span class="vl-step-num">${idx + 1}</span>
                 <div class="vl-solve-body">
-                  <span class="vl-step-text">${renderMathText(ask)}</span>
+                  <span class="vl-step-text">${renderMathText(step.ask)}</span>
                   ${reveal}
                 </div>
-                <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(ask)}">🔊 <span class="sr-only">${isEs ? "Escuchar" : "Hear step"} ${idx + 1}</span></button>
+                <button type="button" class="vl-step-speak-btn" data-step-text="${escHtml(step.ask)}">🔊 <span class="sr-only">${isEs ? "Escuchar" : "Hear step"} ${idx + 1}</span></button>
               </li>`;
           })
           .join("");
@@ -2141,30 +2170,60 @@ export function renderLearnItPanel(container, config, options = {}) {
         host.append(tryItCard);
       }
 
-      // Turn & Talk — authored bilingual prompt + sentence starters.
+      // Turn & Talk — about THE PROBLEM DIRECTLY ABOVE IT.
+      //
+      // This card sits under the Quick Check problem, and it used to ask the
+      // lesson-level `config.turnAndTalk[0].question` — a prompt written for the
+      // lesson as a whole, with no connection to the problem a student had just
+      // answered. Two partners would be looking at one problem and talking about
+      // something else (Joel, 2026-08-26).
+      //
+      // When there is a problem above, the prompt is about that problem and the
+      // problem is quoted in the card so both partners can see what "it" means.
+      // The lesson-level prompt is still the fallback, and it is still rendered
+      // in full by the lesson's own Turn & Talk phase — nothing is lost here.
       const turnAndTalkData = (Array.isArray(config.turnAndTalk) && config.turnAndTalk[0]) || {};
       let currentLangEs = isEs;
-      const defaultQuestionEn =
-        turnAndTalkData.question ||
-        "Turn and talk with your partner: which step could you teach to someone else, and which step is still fuzzy?";
-      const defaultQuestionEs =
-        turnAndTalkData.questionEs ||
-        "Habla con tu compañero: ¿qué paso podrías enseñar a otra persona y cuál todavía es confuso?";
+      const aboveEn = tryIt ? String(tryIt.question || "") : "";
+      const aboveEs = tryIt ? String(tryIt.questionEs || tryIt.question || "") : "";
+      const defaultQuestionEn = tryIt
+        ? "Look at the problem above. Tell your partner which answer you chose and how you decided — then, if you chose different answers, work out together which one is right and why."
+        : turnAndTalkData.question ||
+          "Turn and talk with your partner: which step could you teach to someone else, and which step is still fuzzy?";
+      const defaultQuestionEs = tryIt
+        ? "Mira el problema de arriba. Dile a tu compañero qué respuesta escogiste y cómo lo decidiste — y si escogieron respuestas distintas, decidan juntos cuál es la correcta y por qué."
+        : turnAndTalkData.questionEs ||
+          "Habla con tu compañero: ¿qué paso podrías enseñar a otra persona y cuál todavía es confuso?";
       const authoredStems = Array.isArray(turnAndTalkData.stems) ? turnAndTalkData.stems : [];
       const stemText = (stem, lang) => (typeof stem === "string" ? stem : stem?.[lang]);
       const authoredEn = authoredStems.map((st) => stemText(st, "en")).filter(Boolean);
       const authoredEs = authoredStems.map((st) => stemText(st, "es")).filter(Boolean);
-      const startersEn = authoredEn.length
-        ? authoredEn
-        : ["I noticed that ______.", "The most important step is ______ because ______."];
-      const startersEs = authoredEs.length
-        ? authoredEs
-        : ["Noté que ______.", "El paso más importante es ______ porque ______."];
+      // Starters that fit the prompt: about the answer when there is a problem
+      // above, about the steps when there is not.
+      const startersEn = tryIt
+        ? [
+            "I chose ______ because ______.",
+            "I can prove it by ______.",
+            "You chose ______ — show me how you got it.",
+          ]
+        : authoredEn.length
+          ? authoredEn
+          : ["I noticed that ______.", "The most important step is ______ because ______."];
+      const startersEs = tryIt
+        ? [
+            "Escogí ______ porque ______.",
+            "Lo puedo comprobar así: ______.",
+            "Tú escogiste ______ — muéstrame cómo lo obtuviste.",
+          ]
+        : authoredEs.length
+          ? authoredEs
+          : ["Noté que ______.", "El paso más importante es ______ porque ______."];
 
       const ttContainer = document.createElement("div");
       ttContainer.className = "vl-turntalk-card";
       const renderTurnAndTalk = () => {
         const qText = currentLangEs ? defaultQuestionEs : defaultQuestionEn;
+        const above = currentLangEs ? aboveEs : aboveEn;
         const starters = currentLangEs ? startersEs : startersEn;
         ttContainer.innerHTML = `
           <div class="vl-turntalk-head">
@@ -2174,6 +2233,11 @@ export function renderLearnItPanel(container, config, options = {}) {
               <button type="button" class="vl-tt-btn" id="ttLangBtn">${currentLangEs ? "🇺🇸 English" : "🇲🇽 Español"}</button>
             </div>
           </div>
+          ${
+            above
+              ? `<div class="vl-turntalk-context">${currentLangEs ? "Sobre el problema de arriba" : "About the problem above"}: <em>${renderMathText(above)}</em></div>`
+              : ""
+          }
           <div class="vl-turntalk-question">"${escHtml(qText)}"</div>
           <div class="vl-starters-label">${currentLangEs ? "💬 Frases de Inicio (Toca para escuchar):" : "💬 Sentence Starters (Tap to speak & practice):"}</div>
           <div class="vl-starters-grid">

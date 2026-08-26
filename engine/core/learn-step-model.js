@@ -416,14 +416,85 @@ export function extractStepMove(line) {
  * @param {string} line
  * @returns {{ ask: string, tell: string }}
  */
-export function splitGuidedLine(line) {
+/**
+ * A guided We-Do line, split into ONE STEP PER TAUGHT MOVE.
+ *
+ * An authored line can carry several moves: 2-6 teaches long division as
+ * DIVIDE → MULTIPLY → SUBTRACT → BRING DOWN, and writes
+ *
+ *   "MULTIPLY: 4 × 8 = ? (32 — write it under the 38.) SUBTRACT: 38 − 32 = ? (6.)"
+ *
+ * Splitting on the FIRST "?" alone made that a single numbered step whose
+ * "Check" reveal contained the answer to the first move AND the whole of the
+ * second — so the panel showed 3 steps for a 4-move algorithm and gave the next
+ * question away with the previous answer (Joel: "it should match the steps that
+ * are taught").
+ *
+ * Each returned segment is `{ ask, tell }`: the ask runs up to and including its
+ * "?", and the tell is what follows up to the next ask — unwrapped when the
+ * author parenthesised it. A line with no "?" is one segment with an empty tell.
+ */
+export function splitGuidedSteps(line) {
   const text = String(line || "").trim();
-  const idx = text.indexOf("?");
-  if (idx === -1 || idx === text.length - 1) return { ask: text, tell: "" };
-  const ask = text.slice(0, idx + 1).trim();
-  let tell = text.slice(idx + 1).trim();
-  // Authored answers often arrive parenthesised: "…to get 100? (20)".
-  const paren = tell.match(/^\(([^)]+)\)\s*$/);
-  if (paren) tell = paren[1].trim();
-  return { ask, tell };
+  if (!text) return [{ ask: "", tell: "" }];
+
+  // Every "?" is the end of an ask. Cut there, then hand the text between that
+  // "?" and the next ask's start to the previous segment as its tell.
+  const asks = [];
+  for (let i = 0; i < text.length; i += 1) if (text[i] === "?") asks.push(i);
+  if (!asks.length) return [{ ask: text, tell: "" }];
+
+  const out = [];
+  let cursor = 0;
+  asks.forEach((qIdx, n) => {
+    const ask = text.slice(cursor, qIdx + 1).trim();
+    const after =
+      n + 1 < asks.length ? text.slice(qIdx + 1, asks[n + 1] + 1) : text.slice(qIdx + 1);
+    // The tell is what sits between this answer and the next ask. When there is
+    // a next ask, the parenthetical immediately after this "?" is this step's
+    // answer and everything past it belongs to the next step.
+    let tell;
+    let consumed = qIdx + 1;
+    const paren = after.match(/^\s*\(([^)]*)\)/);
+    if (paren) {
+      tell = paren[1].trim();
+      consumed = qIdx + 1 + paren[0].length;
+    } else if (n + 1 < asks.length) {
+      tell = "";
+    } else {
+      tell = text.slice(qIdx + 1).trim();
+      const whole = tell.match(/^\(([^)]+)\)$/);
+      if (whole) tell = whole[1].trim();
+      consumed = text.length;
+    }
+    if (n + 1 < asks.length && !paren) {
+      // No parenthesised answer: the prose up to the next ask is the tell, and
+      // the next ask starts after it.
+      const nextStart = text.lastIndexOf(".", asks[n + 1]);
+      if (nextStart > qIdx) {
+        tell = text.slice(qIdx + 1, nextStart + 1).trim();
+        consumed = nextStart + 1;
+      }
+    }
+    if (ask) out.push({ ask, tell });
+    cursor = consumed;
+  });
+  // Prose after the last answer is still teaching ("(8.) MULTIPLY: 8 × 8 = 64.
+  // SUBTRACT: 64 − 64 = 0."), so it joins the last step's tell rather than
+  // being dropped on the floor.
+  const trailing = text.slice(cursor).trim();
+  if (trailing && out.length) {
+    const last = out[out.length - 1];
+    last.tell = last.tell ? `${last.tell} ${trailing}` : trailing;
+  }
+  return out.length ? out : [{ ask: text, tell: "" }];
+}
+
+/**
+ * The FIRST guided segment of a line. Kept for callers that render one
+ * ask/tell pair (the slide-alignment gate); the panel itself uses
+ * splitGuidedSteps so every taught move gets its own numbered step.
+ */
+export function splitGuidedLine(line) {
+  return splitGuidedSteps(line)[0];
 }
