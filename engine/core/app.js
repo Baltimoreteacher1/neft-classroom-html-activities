@@ -34,6 +34,7 @@ import {
   mountNotebookCheckpoint,
   openMathNotesModel,
 } from "./notebook-checkpoint.js";
+import { resolveObjectiveVisuals } from "./objective-visuals.js";
 import { applyPlainLanguage, isPlainLanguageOn } from "./plain-language.js";
 import { applyPhaseAccent, buildLessonCoverExtras, mountCoverArt } from "./premium.js";
 import { initPresentMode } from "./present-mode.js";
@@ -2048,10 +2049,26 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         return out;
       };
 
-      const objectiveCard = ({ accent, color, icon, label, text, key, prompt, starter }) =>
+      // THE VISUAL MODEL BELONGS ON THIS CARD. The objectives used to render
+      // inline at the top of Act 1 with a "See the visual model" figure under
+      // each goal; moving them to this panel dropped the picture and left two
+      // walls of text (Joel, 2026-08-26: "the images are missing"). Same source
+      // as the old block — resolveObjectiveVisuals — so the picture a student
+      // sees here is the one the lesson has always paired with that goal.
+      const objectiveVisuals = resolveObjectiveVisuals(config);
+      const visualBlock = (v) =>
+        v?.src
+          ? `<figure class="obj-visual" style="margin:0 0 var(--sp-4, 18px); border:1.5px solid #d7e2ed; border-radius:var(--radius-md, 12px); overflow:hidden; background:#fff;">
+               <img src="${escHtml(v.src)}" alt="${escHtml(v.alt || "")}" loading="lazy" decoding="async" style="display:block; width:100%; max-height:260px; height:auto; object-fit:contain; background:#fff;" />
+               ${v.caption ? `<figcaption style="padding:10px 14px; border-top:1px solid #e2e8f0; font-size:.98rem; font-weight:600; color:#0f172a; line-height:1.5;">${escHtml(v.caption)}</figcaption>` : ""}
+             </figure>`
+          : "";
+
+      const objectiveCard = ({ accent, color, icon, label, text, key, prompt, starter, visual }) =>
         `<div class="card ${accent} obj-card" style="margin-bottom:var(--sp-4, 18px); padding:var(--sp-5, 22px);">
           <div style="font-size:1.15rem; font-weight:700; color:var(${color}); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
           <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:500; color:var(--navy, #264653);">${linkifyObjectiveTerms(text, objectiveVocab)}</p>
+          ${visualBlock(visual)}
           <div style="display:flex; flex-direction:column; gap:var(--sp-2, 8px); background:#fff; border:2px solid var(${color}); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 14px) var(--sp-4, 18px); margin-bottom:var(--sp-3, 12px);">
             <div style="font-weight:700; color:var(--navy, #264653); font-size:1.05rem;">Can I do this?</div>
             <label style="display:flex; align-items:center; gap:10px; font-size:1.2rem; cursor:pointer;"><input type="checkbox" data-obj-check="${key}-before" style="width:22px; height:22px; flex:0 0 auto;" /> <span>⏱️ <strong>Before</strong> the lesson — I can do this.</span></label>
@@ -2085,6 +2102,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           prompt:
             "Turn and talk: In your own words, what will you be able to do by the end of this lesson?",
           starter: "By the end of today, I will be able to ______.",
+          visual: objectiveVisuals?.content,
         })}
         ${objectiveCard({
           accent: "card-coral",
@@ -2096,6 +2114,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           prompt:
             "Turn and talk: Which math words will you use today, and what do you think they mean?",
           starter: "One math word I will use is ______. I think it means ______.",
+          visual: objectiveVisuals?.language,
         })}
       `;
       phaseContainer.append(el);
