@@ -3408,7 +3408,25 @@ export function renderLearnItExtrasInto(learnHost, config, state) {
   scenario.innerHTML = `
       <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
       <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
-  if (cfg.contextImage || config.theme || config.heroFigure) {
+  // The official Reveal figure for THIS problem, when the lesson has adopted the
+  // deck's opening problem (scripts/adopt-official-launch-problems.mjs). These
+  // problems keep their numbers in the picture — "as shown in the order form",
+  // "the temperatures … are shown" — so without it there is nothing to solve.
+  // It replaces the decorative theme art rather than joining it: two pictures
+  // above one problem is a student asking which one to read.
+  if (cfg.problemImage) {
+    const fig = document.createElement("figure");
+    fig.className = "launch-problem-figure";
+    const img = document.createElement("img");
+    img.className = "launch-problem-img";
+    img.setAttribute("loading", "lazy");
+    img.setAttribute("decoding", "async");
+    img.src = String(cfg.problemImage);
+    img.alt = String(cfg.problemImageAlt || "Figure for this problem");
+    fig.append(img);
+    scenario.append(fig);
+    attachImageZoom(img);
+  } else if (cfg.contextImage || config.theme || config.heroFigure) {
     renderThemeIllustration(scenario, config.theme, cfg.contextImage || null, config.heroFigure);
   }
   learnHost.append(scenario);
