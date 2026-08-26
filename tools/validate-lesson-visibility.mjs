@@ -219,6 +219,10 @@ for (const id of SAMPLE) {
     continue;
   }
 
+  /* The warm-up first: it is the phase the lesson lands on, and everything
+   * below navigates away from it. */
+  if (WARMUP_SAMPLE.includes(id)) await checkWarmupAnswerable(page, id);
+
   // exactly one visible way forward in Act 1
   const fwd = await page.evaluate(() =>
     [...document.querySelectorAll(".phase.active button")]
@@ -290,10 +294,15 @@ for (const id of SAMPLE) {
  * Measured, not counted: `getClientRects()` plus a real painted box, because
  * the compression bug this file exists for produced elements that existed,
  * matched their selector, and occupied no pixels.
+ *
+ * Runs on the page the SAMPLE loop already opened, before it navigates to the
+ * Launch takeover — the warm-up is the phase a lesson lands on, so no extra
+ * page load is needed to reach it. It used to open two more pages of its own,
+ * and browser count is not free here: three concurrent Chromium harnesses on
+ * this repo's 3-way scheduler produced page errors and HTTP failures that did
+ * not reproduce when the check ran alone.
  * -------------------------------------------------------------------------- */
-for (const id of WARMUP_SAMPLE) {
-  const page = await open(id);
-
+async function checkWarmupAnswerable(page, id) {
   const shape = await page.evaluate(() => {
     /* Visible means PAINTED: laid out, non-zero, not hidden, not transparent. */
     const painted = (node, min = 8) => {
@@ -319,10 +328,9 @@ for (const id of WARMUP_SAMPLE) {
       submit: !!submit,
       submitVisible: submit ? painted(submit, 40) : false,
       submitBox: submit
-        ? `${Math.round(submit.getBoundingClientRect().width)}×${Math.round(submit.getBoundingClientRect().height)}`
-        : "—",
+        ? `${Math.round(submit.getBoundingClientRect().width)}\u00d7${Math.round(submit.getBoundingClientRect().height)}`
+        : "\u2014",
       badgeVisible: painted(badge, 20),
-      badgeText: badge ? badge.textContent.replace(/\s+/g, " ").trim() : "",
     };
   });
 
@@ -330,8 +338,7 @@ for (const id of WARMUP_SAMPLE) {
     /* Zero-match is a FAILURE. A renamed card class must not read as a lesson
      * that simply has no warm-up. */
     fail(`${id}: no .card-warmup-phase rendered — the warm-up did not draw at all`);
-    await page.close();
-    continue;
+    return;
   }
   if (shape.visibleRadios < 4)
     fail(
@@ -353,9 +360,7 @@ for (const id of WARMUP_SAMPLE) {
     for (const radio of card.querySelectorAll("input[type=radio]")) {
       if (!groups.has(radio.name)) groups.set(radio.name, radio);
     }
-    for (const first of groups.values()) {
-      first.click();
-    }
+    for (const first of groups.values()) first.click();
     const submit = [...card.querySelectorAll("button")].find((b) =>
       /submit warmup|enviar respuestas/i.test(b.textContent || ""),
     );
@@ -368,31 +373,25 @@ for (const id of WARMUP_SAMPLE) {
       answered: groups.size,
       badgeText: badge ? badge.textContent.replace(/\s+/g, " ").trim() : "",
       badgePainted: badge ? badge.getClientRects().length > 0 : false,
-      submitDisabled: submit.disabled,
     };
   });
 
-  const SCORE = /Final Score:\s*(\d+)\s*\/\s*(\d+)/i;
-  const match = SCORE.exec(scored.badgeText || "");
-  if (!scored.clicked) {
-    fail(`${id}: could not press Submit on the warm-up`);
-  } else if (!match) {
+  const match = /Final Score:\s*(\d+)\s*\/\s*(\d+)/i.exec(scored.badgeText || "");
+  if (!scored.clicked) fail(`${id}: could not press Submit on the warm-up`);
+  else if (!match)
     fail(
       `${id}: submitting the warm-up left the badge reading "${scored.badgeText}" — no score was shown`,
     );
-  } else if (!scored.badgePainted) {
-    fail(`${id}: the warm-up score was written but is not painted`);
-  } else if (Number(match[2]) !== scored.answered) {
+  else if (!scored.badgePainted) fail(`${id}: the warm-up score was written but is not painted`);
+  else if (Number(match[2]) !== scored.answered)
     fail(
       `${id}: scored out of ${match[2]} but ${scored.answered} questions were answered — ` +
         "the score does not cover the warm-up",
     );
-  } else {
+  else
     note(
       `${id}: warm-up answerable — ${shape.visibleRadios} visible controls, Submit ${shape.submitBox}, scored ${match[0]}`,
     );
-  }
-  await page.close();
 }
 
 /* Part 2: the warm-up is a quick check, never a lab session. */
