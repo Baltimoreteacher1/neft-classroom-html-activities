@@ -5314,11 +5314,18 @@ textarea.syw-input {
 .extra-panel.extra-panel--fullpage {
   position: fixed;
   /* Leave the sticky sidebar column visible: the takeover fills the content
-   * area to the RIGHT of the 260px rail (see .app grid). Without this the panel
-   * spans the full viewport, the rail paints over its left edge, and the
-   * centered iframe content ends up clipped/off-center. Left offset tracks the
-   * sidebar width per breakpoint (260 → 220 → 0 stacked on mobile). */
-  inset: 0 0 0 260px;
+   * area to the RIGHT of the rail (see .app grid). Without this the panel spans
+   * the full viewport, the rail paints over its left edge, and the content ends
+   * up clipped and off-centre.
+   *
+   * The offset is the RAIL VARIABLE, not a copy of its value. It was hardcoded
+   * at 260px, which is what the rail used to be — it has been 300px since
+   * 2026-07-20, so every takeover (Objectives, Notice & Wonder, Vocab, Learn
+   * It) started 40px left of the content column and slid under the rail (Joel,
+   * 2026-08-26: "fix formatting for objectives — it is too far left", "and the
+   * notice/wonder"). Reading the variable means the next rail change cannot
+   * reopen this. */
+  inset: 0 0 0 var(--nt-rail-w, 300px);
   z-index: 8000;
   margin: 0;
   padding: 8px clamp(8px, 1.5vw, 16px) 12px;
@@ -5368,7 +5375,8 @@ textarea.syw-input {
  * phones — see the .app grid rules above. */
 @media (min-width: 769px) and (max-width: 1100px) {
   .extra-panel.extra-panel--fullpage {
-    inset: 0 0 0 220px;
+    /* Same rule as above: read the rail variable, never a copy of its value. */
+    inset: 0 0 0 var(--nt-rail-w, 220px);
   }
 }
 @media (max-width: 768px) {

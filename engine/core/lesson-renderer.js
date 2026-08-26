@@ -5932,12 +5932,18 @@ export function renderAct1Launch(el, state, ctx, config) {
   nextBtn.className = "btn btn-primary";
   nextBtn.style.cssText =
     "margin: 24px auto 8px; display: block; padding: 14px 36px; font-weight: 800; font-size: 16px; border-radius: 12px; background: #0f766e; color: #ffffff; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25); cursor: pointer;";
-  nextBtn.textContent = "Start Act 2: Lesson 🚀";
+  // Act 2 opens on VOCABULARY, not on the interactive Explore step. The taught
+  // order is vocabulary → launch → learn it → explore, and jumping the class
+  // straight into a manipulative skips the words the rest of the lesson uses
+  // (Joel, 2026-08-26: "The lesson should go to vocabulary first (not the
+  // interactive features — it should jump into the vocabulary (and then to the
+  // launch, etc…)"). The phase still advances underneath, so the sidebar marks
+  // Act 2 active and closing the panel lands there.
+  nextBtn.textContent = "Continue to Vocabulary 🔑";
   nextBtn.addEventListener("click", () => {
     state.markCompleted(0);
-    if (ctx && typeof ctx.nextPhase === "function") {
-      ctx.nextPhase();
-    }
+    if (ctx && typeof ctx.nextPhase === "function") ctx.nextPhase();
+    if (ctx && typeof ctx.openExtra === "function") ctx.openExtra("vocab");
   });
 
   const steps = [];

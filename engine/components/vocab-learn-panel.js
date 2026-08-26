@@ -1310,10 +1310,31 @@ function injectVocabLearnStyles() {
       max-width: 420px;
       height: auto;
     }
+    /* One column: the problem, then the steps that happen on it. The figure is
+       sticky at the top of the stage so it stays in view while the steps scroll
+       under it — which is the thing the two-column layout was trying to buy,
+       without squeezing both into half a panel each. */
+    .vl-solve-stage {
+      display: block;
+    }
+    .vl-solve-stage .vl-stage-visual {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      margin-bottom: 14px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+    }
+    .vl-solve-stage .vl-livefig svg {
+      max-width: 460px;
+    }
+
     /* The live problem: LARGE, and it stays on screen while the student scrolls
-       the steps beside it, because the whole point is that the steps happen ON
-       this problem. Sticky only where there is a second column to scroll past
-       it — on one column it just sits at the top like any other figure. */
+       the steps under it, because the whole point is that the steps happen ON
+       this problem. */
     /* The move this step makes — DIVIDE, MULTIPLY, SUBTRACT, BRING DOWN — as a
        chip at the head of the step, so the four-move cycle is visible as a
        shape instead of being buried at the front of a sentence. */
@@ -1349,12 +1370,7 @@ function injectVocabLearnStyles() {
       height: auto;
       margin: 0 auto;
     }
-    @media (min-width: 861px) {
-      .vl-stage-visual:has(.vl-livefig) {
-        position: sticky;
-        top: 12px;
-      }
-    }
+
     ${DIVISION_FIGURE_CSS}
     .sr-only {
       position: absolute;
@@ -1953,6 +1969,15 @@ export function renderLearnItPanel(container, config, options = {}) {
   // simulating the algorithm and drawn only when every snapshot's numbers
   // are the ones the authored line states (division-walk-figure.js).
   const divFigs = carriedDivisionFigures(iLines);
+  // Try It With Me walks a DIFFERENT problem from Watch Me (2-7 models
+  // 18.9 ÷ 6.3 and then practises 384 ÷ 8), so it needs its own tableau built
+  // from its own lines. Without this it talked a student through DIVIDE,
+  // MULTIPLY, SUBTRACT and BRING DOWN with no division on screen to do it on
+  // (Joel, 2026-08-26: "Try It With Me also does not fit the division pattern
+  // in 2.7 (at all). It should show the actual division (long division) and it
+  // doesn't"). Same builder, same guarantees — it returns nothing for a lesson
+  // whose lines are not a long division, and that lesson is unchanged.
+  const weDivFigs = carriedDivisionFigures(weLines);
   // Factor-tree walks (6-13) reuse the exact reader/drawer the generated
   // learn.html pages already trust (scripts/lib/learn-figures.mjs — gated by
   // validate:learn-figures): the tree gains a branch per authored line. Fed
@@ -2088,20 +2113,24 @@ export function renderLearnItPanel(container, config, options = {}) {
           </div>
         `;
 
+        // ONE COLUMN. The problem on top, the steps under it. Side by side, the
+        // figure got a 346px column and the steps a 455px one inside a takeover
+        // panel — the tableau shrank, every step wrapped, and only one step was
+        // ever on screen beside it (Joel, 2026-08-26: "The watch me part for
+        // 2.7 is an absolute mess — it doesn't need 2 columns and it is really
+        // messy the presentation of it").
         host.innerHTML = `
           ${iDo.title ? `<p class="vl-lead"><strong>${escHtml(isEs && iDo.titleEs ? iDo.titleEs : iDo.title)}</strong></p>` : ""}
           ${
             visualElemHtml
               ? `
-            <div class="vl-dual-stage">
+            <div class="vl-solve-stage">
               <div class="vl-stage-visual">
                 <div class="vl-stage-visual-head">${liveFigs ? `🧮 ${isEs ? "El problema" : "The problem"}` : `🎨 ${isEs ? "Modelo visual del problema" : "Problem Visual Model"}`}</div>
                 ${visualElemHtml}
               </div>
-              <div class="vl-stage-think">
-                ${crumbsHtml}
-                ${stepsHtml}
-              </div>
+              ${crumbsHtml}
+              ${stepsHtml}
             </div>
           `
               : `
@@ -2181,12 +2210,18 @@ export function renderLearnItPanel(container, config, options = {}) {
         // previous answer's reveal. splitGuidedSteps cuts at each ask; both
         // language lanes are split the same way so the ask and its "Check" stay
         // together in whichever one is showing.
+        const stepLine = [];
         const guided = weLines
           .flatMap((line, idx) => {
             const segs = splitGuidedSteps(line);
             const segsEs =
               isEs && weLinesEs?.[idx]?.trim() ? splitGuidedSteps(weLinesEs[idx]) : null;
             return segs.map((g, k) => {
+              // Which authored LINE this move came from. The figures are built
+              // per line and the steps are one per move, so a 3-line walkthrough
+              // that splits into 5 steps would otherwise show step 5 the figure
+              // for line 3 and steps 4-5 the same picture.
+              stepLine.push(idx);
               // Only pair the Spanish lane when it split into the same number of
               // moves; a mismatched split would show move 2's Spanish under
               // move 1's English.
@@ -2213,10 +2248,25 @@ export function renderLearnItPanel(container, config, options = {}) {
               </li>`;
           })
           .join("");
+        // The problem this walkthrough is about, drawn and updating with the
+        // steps — same single-column stage as Watch Me. Without it a student was
+        // told to DIVIDE, MULTIPLY, SUBTRACT and BRING DOWN with no division on
+        // screen to do it on.
+        const weLive = weDivFigs.filter(Boolean).length ? weDivFigs : null;
+        const weFirst = weLive ? weLive.find(Boolean) || "" : "";
+        const weWiden = (svg) => String(svg || "").replace(/style="max-width:\s*\d+px"/g, "");
         host.innerHTML = `
           ${
             weLines.length
               ? `${weDo.title ? `<p class="vl-lead"><strong>${escHtml(isEs && weDo.titleEs ? weDo.titleEs : weDo.title)}</strong></p>` : ""}
+          ${
+            weLive
+              ? `<div class="vl-solve-stage"><div class="vl-stage-visual">
+                   <div class="vl-stage-visual-head">🧮 ${isEs ? "El problema" : "The problem"}</div>
+                   <figure class="vl-stepfig vl-livefig" data-we-live-fig>${weWiden(weFirst)}<figcaption class="vl-stepfig-cap">${isEs ? "La división hasta ahora" : "The division so far"}</figcaption></figure>
+                 </div></div>`
+              : ""
+          }
           <ol class="vl-solve-steps">${guided}</ol>
           <div class="vl-pace no-print">
             <button type="button" class="vl-pace-next">${isEs ? "Muestra el siguiente paso" : "Show the next step"} ▸ <span class="vl-pace-count"></span></button>
@@ -2233,7 +2283,22 @@ export function renderLearnItPanel(container, config, options = {}) {
               : ""
           }`;
         speakButtonsIn(host);
-        wirePaced(host, null);
+        const weLiveHost = weLive
+          ? /** @type {HTMLElement|null} */ (host.querySelector("[data-we-live-fig]"))
+          : null;
+        wirePaced(
+          host,
+          null,
+          weLiveHost
+            ? (idx) => {
+                const line = stepLine[Math.max(0, Math.min(idx, stepLine.length - 1))] ?? 0;
+                const svg = weWiden(weLive[Math.max(0, Math.min(line, weLive.length - 1))]);
+                if (!svg) return;
+                const cap = weLiveHost.querySelector(".vl-stepfig-cap");
+                weLiveHost.innerHTML = svg + (cap ? cap.outerHTML : "");
+              }
+            : undefined,
+        );
       },
     });
   }
