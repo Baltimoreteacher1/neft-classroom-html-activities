@@ -29,6 +29,7 @@
 // stable ids lesson data refers to, mapped to those slots.
 import {
   carriedDivisionFigures,
+  DECIMAL_SHIFT_FIGURE_CSS,
   DIVISION_FIGURE_CSS,
   decimalShiftFigure,
 } from "./division-walk-figure.js";
@@ -564,7 +565,7 @@ function renderCopyPanelHtml(cp, isEs = false, config = null) {
         const figs = shift ? null : carriedDivisionFigures(iDoLines);
         const finished = shift || (figs ? [...figs].reverse().find(Boolean) : null);
         if (finished) {
-          modelHtml = `<style>${DIVISION_FIGURE_CSS}</style>
+          modelHtml = `<style>${DIVISION_FIGURE_CSS}${DECIMAL_SHIFT_FIGURE_CSS}</style>
             <figure class="nt-nb-copy-model" style="margin:10px auto 4px; text-align:center;">
               ${finished.replace(/style="max-width:\s*\d+px"/, 'style="max-width:300px"')}
               <figcaption style="margin-top:6px; font-size:.95rem; font-weight:600; color:#475569;">${isEs ? "Copia este modelo." : "Copy this model."}</figcaption>

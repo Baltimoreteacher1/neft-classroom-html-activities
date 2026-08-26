@@ -550,6 +550,17 @@ export const DIVISION_FIGURE_CSS = `
   .dwf .dwf-q { font-weight: 700; }
   .dwf .dwf-bring { fill: #b45309; }
   .dwf .dwf-new { fill: #0d7a76; font-weight: 700; }
+`;
+
+/**
+ * The decimalShiftFigure's own classes, SEPARATE from DIVISION_FIGURE_CSS on
+ * purpose: generate-worksheets.mjs bakes DIVISION_FIGURE_CSS into all 576
+ * committed worksheet pages, so adding these rules there made every worksheet
+ * stale against its generator and turned `generated-pages-fresh` red at the
+ * ship gate — a 576-file regeneration for CSS no worksheet uses. Only the
+ * surfaces that render the shift figure interpolate this string.
+ */
+export const DECIMAL_SHIFT_FIGURE_CSS = `
   .dwf .dwf-point { fill: #b91c1c; font-weight: 700; }
   .dwf .dwf-shift-arrow { stroke: #b91c1c; stroke-width: 2.5; fill: none; }
   .dwf .dwf-shift-head { fill: #b91c1c; }
