@@ -124,8 +124,18 @@ const needsOf = (c) => (c === "build" ? [] : ["build"]);
 /* Never run more than one of these at a time. `validate:lesson-boot` binds a
  * fixed port; `smoke:injection` launches a second Chromium, and two browser
  * harnesses racing on a loaded machine is how a gate becomes flaky enough to
- * get bypassed. */
-const EXCLUSIVE = new Set(["validate:lesson-boot", "smoke:injection"]);
+ * get bypassed.
+ *
+ * `validate:visibility` joined them on 2026-08-26. It was already a browser
+ * harness with its own static server, and it got heavier that day — it now
+ * opens five pages instead of three and DRIVES them (answering a warm-up and
+ * submitting it) rather than just measuring a first paint. Run alongside the
+ * other two it produced exactly the failures this comment describes, and they
+ * were the convincing kind: `Failed to resolve module specifier "web-vitals"`
+ * and an `ERR_HTTP_RESPONSE_CODE_FAILURE` for a file that was on disk the whole
+ * time. Both read as real page defects. Both vanish when the check runs on its
+ * own against the same dist/. A third Chromium was the difference. */
+const EXCLUSIVE = new Set(["validate:lesson-boot", "smoke:injection", "validate:visibility"]);
 
 /* --------------------------------------------------------------------------
  * Change coverage. Each rule is [RegExp, checks[]]. A changed path uses the
