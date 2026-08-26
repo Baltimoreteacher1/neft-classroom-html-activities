@@ -371,14 +371,19 @@ const STRINGS = {
 
 const PHASE_NAMES = {
   act1: { en: "Launch & Focus", es: "Inicio y Enfoque" },
-  act2: { en: "Interactive Studio", es: "Estudio Interactivo" },
+  // Act 2 is "Lesson", not "Interactive Studio". The old name described the
+  // manipulatives rather than the act, and the act is where the lesson is
+  // taught — explore, practice, connect. The Interactive Studio is now one
+  // subcard inside it (PHASE_SUBTABS[1] in engine/core/app.js) that opens the
+  // lesson's models in their own window.
+  act2: { en: "Lesson", es: "Lección" },
   act3: { en: "Exit Ticket", es: "Boleto de Salida" },
   warmup: { en: "Launch & Focus", es: "Inicio y Enfoque" },
   launch: { en: "Launch & Focus", es: "Inicio y Enfoque" },
   vocab: { en: "Vocabulary", es: "Vocabulario" },
-  explore: { en: "Interactive Studio", es: "Estudio Interactivo" },
-  practice: { en: "Interactive Studio", es: "Estudio Interactivo" },
-  connect: { en: "Interactive Studio", es: "Estudio Interactivo" },
+  explore: { en: "Lesson", es: "Lección" },
+  practice: { en: "Lesson", es: "Lección" },
+  connect: { en: "Lesson", es: "Lección" },
   reflect: { en: "Exit Ticket", es: "Boleto de Salida" },
   objectives: { en: "Objectives", es: "Objetivos" },
 };

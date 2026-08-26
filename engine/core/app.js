@@ -45,6 +45,7 @@ import {
   isTeacherMode,
   mountIdentityTeacherButton,
 } from "./teacher-mode.js";
+import { collectTools } from "./tools-mode.js";
 import { mountTranslate } from "./translate.js";
 import { mountUtilityMenu } from "./utility-menu.js";
 import { mountVoiceNav } from "./voice-nav.js";
@@ -856,6 +857,12 @@ const PHASE_SUBTABS = {
     { extra: "vocab", icon: "🔑", label: "Vocab" },
     { extra: "learn", icon: "💡", label: "Learn It" },
     { extra: "watchme", icon: "👀", label: "Watch Me" },
+    // The lesson's own manipulatives, opened in their OWN window rather than as
+    // an in-page takeover: reaching a model used to mean leaving the phase you
+    // were on and the problem you were part-way through. Rendered as a real <a>
+    // (see the ribbon and sidebar below), because target="_blank" is a link's
+    // job, not a click handler's.
+    { href: "?mode=tools", newWindow: true, icon: "🧪", label: "Interactive Studio" },
   ],
 };
 
@@ -867,7 +874,23 @@ function subtabsFor(config, index) {
   const override = config && config.phaseSubtabs;
   const table = override && typeof override === "object" ? override : PHASE_SUBTABS;
   const list = table[index];
-  return Array.isArray(list) ? list : [];
+  if (!Array.isArray(list)) return [];
+  // A lesson with no authored manipulative gets no Interactive Studio chip. The
+  // dead-button rule this file already applies everywhere else: a chip that
+  // opens an empty page is worse than no chip.
+  if (list.some((t) => t && t.href === "?mode=tools") && !collectTools(config).length) {
+    return list.filter((t) => !t || t.href !== "?mode=tools");
+  }
+  return list;
+}
+
+/** The href a subtab chip points at, resolved against the current lesson URL. */
+function subtabHref(spec) {
+  if (!spec || !spec.href) return null;
+  if (!spec.href.startsWith("?")) return spec.href;
+  const u = new URL(window.location.href);
+  for (const [k, v] of new URLSearchParams(spec.href.slice(1))) u.searchParams.set(k, v);
+  return u.pathname + u.search;
 }
 
 function initMainApp(root, config, studentId, studentName, studentPeriod) {
@@ -982,7 +1005,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   // A lesson surface with a genuinely different shape — Part 2, whose three
   // phases are Review / Today's Problem / Group Work — names its own phases via
   // `config.phaseMeta`, so the sidebar, the phase strip and every aria-label
-  // read the truth instead of "Act 2: Interactive Studio".
+  // read the truth instead of "Act 2: Lesson".
   const phaseConfigs = Array.isArray(config.phaseMeta)
     ? config.phaseMeta.map((m, i) => ({
         name: String(m?.name || phaseName(i)),
@@ -990,7 +1013,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       }))
     : [
         { name: phaseName(0), icon: "🚀" }, // Act 1: Launch & Focus
-        { name: phaseName(1), icon: "📐" }, // Act 2: Interactive Studio
+        { name: phaseName(1), icon: "📐" }, // Act 2: Lesson
         { name: phaseName(2), icon: "📝" }, // Act 3: Exit Ticket
       ];
 
@@ -1436,12 +1459,19 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           <span class="phase-subcards-label">📍 ${isEs ? "Partes:" : "Subcards:"}</span>
           <div class="phase-subcards-list">
             ${subcards
-              .map(
-                (t) => `
+              .map((t) => {
+                const href = subtabHref(t);
+                if (href) {
+                  return `
+              <a class="phase-subcard-chip" href="${escHtml(href)}"${t.newWindow ? ' target="_blank" rel="noopener"' : ""}>
+                <span class="phase-subcard-icon">${t.icon}</span> <span>${escHtml(t.label)}</span>${t.newWindow ? ' <span aria-hidden="true">↗</span>' : ""}
+              </a>`;
+                }
+                return `
               <button type="button" class="phase-subcard-chip" ${t.extra ? `data-sub-extra="${t.extra}"` : t.level ? `data-sub-level="${t.level}"` : `data-sub-jump="${t.jump}"`}>
                 <span class="phase-subcard-icon">${t.icon}</span> <span>${escHtml(t.label)}</span>
-              </button>`,
-              )
+              </button>`;
+              })
               .join("")}
           </div>
         `;
@@ -2554,13 +2584,21 @@ function updateSidebar(sidebar, state, phaseConfigs, config) {
 
       const subList = subtabsFor(config, i);
       const subTabsHtml = subList
-        .map(
-          (t) =>
-            `<button class="phase-btn ${t.extra ? "extra-btn" : t.level ? "level-btn" : "jump-btn"} phase-subtab" ${t.extra ? `data-extra="${t.extra}"` : t.level ? `data-phase="${i}" data-level="${t.level}"` : `data-phase="${i}" data-jump="${t.jump}"`} style="margin-left:var(--sp-4, 18px); font-size:0.84rem; padding: 5px 12px; min-height: 32px;">
-            <span class="phase-num" style="background:transparent; box-shadow:none; font-size:0.95rem;">${t.icon}</span>
-            <span>${escHtml(t.label)}</span>
-          </button>`,
-        )
+        .map((t) => {
+          const style =
+            "margin-left:var(--sp-4, 18px); font-size:0.84rem; padding: 5px 12px; min-height: 32px;";
+          const inner = `<span class="phase-num" style="background:transparent; box-shadow:none; font-size:0.95rem;">${t.icon}</span>
+            <span>${escHtml(t.label)}</span>`;
+          const href = subtabHref(t);
+          if (href) {
+            return `<a class="phase-btn extra-btn phase-subtab" href="${escHtml(href)}"${t.newWindow ? ' target="_blank" rel="noopener"' : ""} style="${style}">
+            ${inner}${t.newWindow ? '<span aria-hidden="true">↗</span>' : ""}
+          </a>`;
+          }
+          return `<button class="phase-btn ${t.extra ? "extra-btn" : t.level ? "level-btn" : "jump-btn"} phase-subtab" ${t.extra ? `data-extra="${t.extra}"` : t.level ? `data-phase="${i}" data-level="${t.level}"` : `data-phase="${i}" data-jump="${t.jump}"`} style="${style}">
+            ${inner}
+          </button>`;
+        })
         .join("\n");
 
       return btn + subTabsHtml;

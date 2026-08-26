@@ -156,7 +156,7 @@ export function bootLesson(config) {
   }
   createApp({
     ...config,
-    // 3-Act Streamlined Pedagogical Flow (Launch & Focus → Interactive Studio → Exit Ticket)
+    // 3-Act Streamlined Pedagogical Flow (Launch & Focus → Lesson → Exit Ticket)
     phases: [
       (el, state, ctx) => renderAct1Launch(el, state, ctx, config),
       (el, state, ctx) => renderAct2Studio(el, state, ctx, config),
@@ -3608,7 +3608,7 @@ function renderExplorePhase(el, state, ctx, config, opts = {}) {
       el,
       "🔍",
       "section-icon-teal",
-      "Act 2: Interactive Studio · Explore",
+      "Act 2: Lesson · Explore",
       cfg.goal ||
         "Build it yourself first. You do not need the formula yet — you are looking for it.",
       cfg.goal ? cfg.goalEs || "" : t("exploreGoalDefault"),
@@ -4378,7 +4378,7 @@ function renderPracticePhase(el, state, ctx, config, opts = {}) {
       el,
       "✏️",
       "section-icon-navy",
-      "Act 2: Interactive Studio · Practice",
+      "Act 2: Lesson · Practice",
       "Problems adapt to how you're doing — keep going!",
     );
   }
@@ -5807,10 +5807,6 @@ export function renderAct1Launch(el, state, ctx, config) {
     "Warm up first, then explore the launch scene. Today's goals are on the 🎯 Objectives card.",
   );
 
-  // Identity & homework header stays above the steps — it is who you are, not
-  // a moment in the lesson.
-  renderLaunchHeader(el, state, config);
-
   // Today's objectives are NOT rendered here. Posting the full two-card
   // objectives block at the top of Act 1 pushed the Warm-Up — the first thing a
   // student is supposed to do — most of a screen below the fold, so Act 1 read
@@ -5831,7 +5827,7 @@ export function renderAct1Launch(el, state, ctx, config) {
   nextBtn.className = "btn btn-primary";
   nextBtn.style.cssText =
     "margin: 24px auto 8px; display: block; padding: 14px 36px; font-weight: 800; font-size: 16px; border-radius: 12px; background: #0f766e; color: #ffffff; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25); cursor: pointer;";
-  nextBtn.textContent = "Start Act 2: Interactive Studio 🚀";
+  nextBtn.textContent = "Start Act 2: Lesson 🚀";
   nextBtn.addEventListener("click", () => {
     state.markCompleted(0);
     if (ctx && typeof ctx.nextPhase === "function") {
@@ -5862,15 +5858,24 @@ export function renderAct1Launch(el, state, ctx, config) {
     },
   });
   renderActSteps(el, state, 0, steps);
+
+  // Identity & homework header, BELOW the steps. It used to sit above them, and
+  // between it, the phase header, the subcard ribbon and the "New to this skill"
+  // callout, the Warm-Up heading landed at the very bottom of a 900px screen —
+  // so Act 1 opened on a name box the student had already filled in at the door
+  // (Joel, twice: "the launch and focus should first start with the warmups").
+  // It is not deleted: the name and period still feed submissions and exports,
+  // and the homework link is the one download a teacher points at from here.
+  renderLaunchHeader(el, state, config);
 }
 
-// ── Act 2: Interactive Studio ──
+// ── Act 2: the Lesson ──
 export function renderAct2Studio(el, state, ctx, config) {
   phaseHeader(
     el,
     "2",
     "section-icon-coral",
-    "Act 2: Interactive Studio",
+    "Act 2: Lesson",
     "Explore the model, then practice, then connect it to the real world.",
   );
 

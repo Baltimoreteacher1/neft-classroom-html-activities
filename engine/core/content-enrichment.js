@@ -83,7 +83,7 @@ export function deriveLaunchBeats(config) {
  */
 export const PHASE_TIME_ESTIMATES = [
   { name: "Launch & Focus", icon: "🚀", minutes: 11 },
-  { name: "Interactive Studio", icon: "📐", minutes: 28 },
+  { name: "Lesson", icon: "📐", minutes: 28 },
   { name: "Exit Ticket", icon: "📝", minutes: 5 },
 ];
 
