@@ -18,6 +18,7 @@ import {
   linkifyObjectiveTerms,
   observeVocabTerms,
   renderComponent,
+  renderCuriousStep,
   renderLearnItExtrasInto,
   resolveContentObjective,
   resolveLanguageObjective,
@@ -37,7 +38,13 @@ import { applyPlainLanguage, isPlainLanguageOn } from "./plain-language.js";
 import { applyPhaseAccent, buildLessonCoverExtras, mountCoverArt } from "./premium.js";
 import { initPresentMode } from "./present-mode.js";
 import { reportScore } from "./score-reporter.js";
-import { clearLessonStorage, createState, findSavedStudents, normalizeStudentId } from "./state.js";
+import {
+  clearLessonStorage,
+  clearStudentLessonState,
+  createState,
+  findSavedStudents,
+  normalizeStudentId,
+} from "./state.js";
 import { mountTeacherClearButton } from "./teacher-clear.js";
 import {
   buildWelcomeTeacherNotes,
@@ -852,6 +859,7 @@ const PHASE_SUBTABS = {
   0: [
     { extra: "mathnotes", icon: "📓", label: "Math Notes" },
     { extra: "objectives", icon: "🎯", label: "Objectives" },
+    { extra: "noticewonder", icon: "🤔", label: "Notice & Wonder" },
   ],
   1: [
     { extra: "vocab", icon: "🔑", label: "Vocab" },
@@ -1385,6 +1393,43 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     updateMinimap();
   });
 
+  /**
+   * "Start this lesson over" — offered once every phase is complete.
+   *
+   * A finished lesson restores as finished on the next visit, and the only
+   * reset in the shell was the TEACHER-mode "Clear answers" on the cover. So a
+   * student who wanted another run at it had no way back (Joel, 2026-08-26:
+   * "after I finish a lesson, it won't let me restart it fresh"). This clears
+   * THIS student's saved state only — the rest of the class's work on a shared
+   * device is untouched — and reloads.
+   */
+  function offerRestart() {
+    if (document.getElementById("nt-restart-lesson")) return;
+    const bar = document.createElement("div");
+    bar.id = "nt-restart-lesson";
+    bar.className = "no-print";
+    bar.style.cssText =
+      "display:flex; justify-content:center; margin:22px auto 8px; padding:0 16px;";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn-secondary";
+    btn.style.cssText = "padding:12px 26px; font-weight:800; border-radius:12px; cursor:pointer;";
+    btn.textContent = "🔄 Start this lesson over";
+    btn.addEventListener("click", () => {
+      btn.disabled = true;
+      btn.textContent = "Starting over…";
+      clearStudentLessonState(config.lessonId, studentId);
+      try {
+        sessionStorage.removeItem(`nt-active-session:${config.lessonId}`);
+      } catch (_) {
+        /* session storage blocked — the reload still starts from saved state */
+      }
+      window.location.reload();
+    });
+    bar.append(btn);
+    (document.querySelector(".main") || document.body).append(bar);
+  }
+
   let scoreReported = false;
   state.subscribe(() => {
     if (scoreReported) return;
@@ -1395,6 +1440,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       if (window.fireConfetti) window.fireConfetti();
       ensureEduPulse().finally(() => reportScore(state, config));
       completeLesson(state, config);
+      offerRestart();
     }
   });
 
@@ -1589,7 +1635,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // clears the lock.
       document.documentElement.classList.toggle(
         "nt-extra-fullpage-open",
-        kind === "vocab" || kind === "learn" || kind === "notes" || kind === "objectives",
+        kind === "vocab" ||
+          kind === "learn" ||
+          kind === "notes" ||
+          kind === "objectives" ||
+          kind === "noticewonder",
       );
     },
     clearExtraActive() {
@@ -1609,6 +1659,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       if (kind === "printables") return this.openPrintables();
       if (kind === "activity") return this.openActivity();
       if (kind === "objectives") return this.openObjectives();
+      if (kind === "noticewonder") return this.openNoticeWonder();
       if (kind === "watchme") {
         this.openExtra("learn");
         setTimeout(() => {
@@ -1873,6 +1924,49 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // Objectives are resolved from the lesson config (contentObjective /
     // languageObjective), so this stays in sync with the Launch header and the
     // notes. Non-graded: never touches phase state, XP, or stars.
+    /**
+     * 🤔 Notice & Wonder — Which One Doesn't Belong plus the notice/wonder
+     * capture, as a full-page takeover from the Act 1 subcard row. It used to
+     * be a step every student walked through on the way to today's problem;
+     * as a card the teacher opens it when the class is ready for it.
+     */
+    openNoticeWonder() {
+      this.setExtraActive("noticewonder");
+      phaseContainer.innerHTML = "";
+      const el = document.createElement("div");
+      el.className = "phase active extra-panel extra-panel--fullpage";
+      el.tabIndex = -1;
+      el.setAttribute("role", "region");
+      el.setAttribute("aria-label", "Notice and Wonder");
+      el.innerHTML = `
+        <div class="extra-head" style="display:flex; flex-wrap:wrap; gap:var(--sp-3, 12px); align-items:center; justify-content:space-between; margin-bottom:var(--sp-4, 18px); padding-right:110px;">
+          <div>
+            <div class="section-title" style="font-size:2rem;">🤔 Notice &amp; Wonder</div>
+            <div class="section-desc" style="font-size:1.1rem;">Look first, then argue. There is no wrong noticing here.</div>
+          </div>
+          <div><button class="btn btn-secondary" data-act="close">✕ Close</button></div>
+        </div>`;
+      phaseContainer.append(el);
+      renderCuriousStep(el, state, this, config);
+
+      const back = () => this.navigateTo(state.get().currentPhase ?? 0);
+      el.querySelector('[data-act="close"]')?.addEventListener("click", back);
+      const onKey = (e) => {
+        if (!document.body.contains(el)) {
+          document.removeEventListener("keydown", onKey);
+          return;
+        }
+        if (e.key === "Escape") {
+          document.removeEventListener("keydown", onKey);
+          back();
+        }
+      };
+      document.addEventListener("keydown", onKey);
+      el.append(chainContinueButton("Back to the lesson 🚀 →", back));
+      el.scrollIntoView({ block: "start" });
+      el.focus?.({ preventScroll: true });
+    },
+
     openObjectives() {
       // resolveContentObjective / resolveLanguageObjective return text that is
       // already HTML-escaped, so insert directly (do not re-escape).

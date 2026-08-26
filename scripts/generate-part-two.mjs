@@ -262,9 +262,14 @@ function buildGroupLevels(id, config, readVariant) {
   return Object.keys(out).length ? out : null;
 }
 
-/** "5.3 Determine the Area of Trapezoids" → the Part 2 display title. */
+/**
+ * The Part 2 title is the LESSON NUMBER and Part II — "2.7 · Part II" (Joel,
+ * 2026-08-26: "instead of the word review, just title it … the lesson number
+ * and Part II"). Day 2 is not a different lesson, so it does not restate the
+ * lesson's name; it says which lesson and which day.
+ */
 function partTwoTitle(config) {
-  return `${config.title} · Part 2`;
+  return `${config.unit}.${config.lesson} · Part II`;
 }
 
 function buildConfig(id, core, readVariant) {

@@ -3596,12 +3596,63 @@ function renderLaunchPhase(el, state, ctx, config, opts = {}) {
   // The hook closes over this lesson's cfg / config / state. Show Your Work still
   // reads and writes on phase index 0 (Launch) — see renderShowYourWork — so any
   // work a student saved persists exactly as before, wherever it is rendered.
-  // The Launch step opens on today's problem. Everything a student needs to
-  // read it is here; the typeable solve stays under Learn It, where the
-  // scaffold and the "I'm stuck" bar live.
-  if (cfg.narrative) el.append(buildLaunchProblemCard(config));
+  // The Launch step opens on today's problem — and MAKES SENSE OF IT before
+  // moving on. It used to be the problem card and a Continue button, so a
+  // student read the words and jumped straight to Vocab without ever doing
+  // anything with them (Joel, 2026-08-26: "the launch part with the launch
+  // problem doesn't go through the problem — it just jumps ahead").
+  //
+  // These two fields are the SAME response keys renderShowYourWork uses, on the
+  // same phase, on purpose: what a student writes here is already filled in when
+  // they reach the solve under Learn It. One piece of thinking, carried forward,
+  // not asked twice.
+  if (cfg.narrative) {
+    el.append(buildLaunchProblemCard(config));
+
+    const sense = document.createElement("section");
+    sense.className = "card launch-sense-card";
+    sense.innerHTML = `
+      <h3 style="margin:0 0 4px; font-size:1.2rem; color:#0f172a;">🧭 Make sense of it</h3>
+      <p style="margin:0 0 12px; font-size:1rem; color:#475569;">Before any arithmetic — read it twice, then answer these two.</p>`;
+    const senseField = (key, label, hint) => {
+      const wrap = document.createElement("div");
+      wrap.className = "syw-field";
+      const id = `launch-sense-${key}`;
+      const lab = document.createElement("label");
+      lab.className = "syw-label";
+      lab.setAttribute("for", id);
+      lab.innerHTML = `${esc(label)} <span class="syw-hint">${esc(hint)}</span>`;
+      const ta = document.createElement("textarea");
+      ta.id = id;
+      ta.rows = 2;
+      ta.className = "text-input syw-input";
+      ta.value = (state.getResponse && state.getResponse(0, key)) || "";
+      ta.addEventListener("input", () => state.saveResponse?.(0, key, ta.value));
+      wrap.append(lab, ta);
+      return wrap;
+    };
+    sense.append(
+      senseField("know", "1 · What we KNOW", "the numbers and facts the problem gives us"),
+      senseField("need", "2 · What we NEED to find", "what is the problem actually asking for?"),
+    );
+    // The same "I'm stuck" bar the solve offers, on the problem that is on this
+    // screen — so a student who cannot get started here is not stuck alone.
+    mountStuckSupport(sense, { config, state, problem: String(cfg.narrative || "") });
+    el.append(sense);
+  }
 
   ctx.renderLearnItExtras = (learnHost) => renderLearnItExtrasInto(learnHost, config, state);
+
+  // ONE WAY FORWARD PER STEP. Inside the Act 1 step strip the act-advance
+  // button ("Start Act 2: Lesson") is the next part, and this used to add a
+  // SECOND, different destination beside it — "Continue to Vocab →" — so the
+  // last step of Act 1 offered two buttons going two places (Joel, 2026-08-26:
+  // "the buttons to move forward only offer the next part (if we need to move
+  // somewhere else, they can click on the side)"). Vocab and Learn It are
+  // subcards on Act 2; the sidebar and the subcard row are how you reach them.
+  //
+  // A STANDALONE launch page has no act-advance button, so it keeps this one.
+  if (opts.standalone === false) return;
 
   const isEs = getPreferredLang() === "es";
   const btn = document.createElement("button");
@@ -5828,11 +5879,13 @@ function renderActSteps(el, state, phaseIdx, steps) {
 }
 
 /**
- * Act 1's opener: Which One Doesn't Belong, then the Notice & Wonder capture.
- * Rendered by reusing renderLaunchPhase's own curious half rather than a second
- * copy of it — one implementation, so the two can never drift apart.
+ * Which One Doesn't Belong, then the Notice & Wonder capture — the lesson's
+ * "look first, then argue" opener. Rendered by reusing renderLaunchPhase's own
+ * curious half rather than a second copy of it, so the two cannot drift apart.
+ * Mounted by app.js as the 🤔 subcard on Act 1, beside Math Notes and
+ * Objectives.
  */
-function renderCuriousStep(host, state, ctx, config) {
+export function renderCuriousStep(host, state, ctx, config) {
   const card = document.createElement("div");
   card.className = "curious-step";
   card.innerHTML = `
@@ -5898,36 +5951,18 @@ export function renderAct1Launch(el, state, ctx, config) {
       render: (host) => renderWarmupPhase(host, state, ctx, config, { standalone: false }),
     });
   }
-  // Notice & Wonder and Which One Doesn't Belong get their OWN step, between the
-  // Warm-Up and the Launch scene. They are the lesson's opener — the official
-  // Reveal deck puts them on its first content slide — and buried at the bottom
-  // of the Launch step, after the scene and the visual, they were the last thing
-  // a student reached instead of the first thing they argued about (Joel,
-  // 2026-08-26: "I should see the warm up first, then the next subcard would be
-  // the which one doesn't belong and the notice/wonder").
-  const hasCurious = Boolean(
-    (config.noticeAndWonder && typeof config.noticeAndWonder === "object") ||
-      (config.launch && config.launch.beCurious) ||
-      (config.launch && Array.isArray(config.launch.noticePrompts)),
-  );
-  if (hasCurious) {
-    steps.push({
-      key: "curious",
-      icon: "🤔",
-      label: "Notice & Wonder",
-      render: (host) => renderCuriousStep(host, state, ctx, config),
-    });
-  }
-
+  // Notice & Wonder and Which One Doesn't Belong are a SUBCARD, not a step —
+  // the 🤔 chip beside 📓 Math Notes and 🎯 Objectives (PHASE_SUBTABS[0] in
+  // engine/core/app.js), opened when the class is ready for it (Joel,
+  // 2026-08-26: "Put the notice/wonder under the objectives button as its own
+  // subcard"). As a step it sat between the Warm-Up and the Launch and every
+  // student had to walk through it to reach today's problem.
   steps.push({
     key: "launch",
     icon: "🚀",
     label: "Launch",
     render: (host) => {
-      renderLaunchPhase(host, state, ctx, config, {
-        standalone: false,
-        curious: !hasCurious,
-      });
+      renderLaunchPhase(host, state, ctx, config, { standalone: false, curious: false });
       host.append(nextBtn);
     },
   });

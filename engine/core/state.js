@@ -57,6 +57,21 @@ export function clearLessonStorage(lessonId) {
   }
 }
 
+/**
+ * Wipe ONE student's saved work for this lesson, leaving everybody else's on
+ * the device alone. `clearLessonStorage` above is the teacher's between-periods
+ * reset and wipes the lot; this is the student's own "start over", so it must
+ * not take the rest of the class's work with it.
+ */
+export function clearStudentLessonState(lessonId, studentId) {
+  if (!lessonId) return;
+  try {
+    localStorage.removeItem(buildStorageKey(lessonId, studentId));
+  } catch (_) {
+    /* storage blocked — a reload still clears in-memory answers */
+  }
+}
+
 export function findSavedStudents(lessonId) {
   const prefix = `${STORAGE_PREFIX}${lessonId}_`;
   const students = [];

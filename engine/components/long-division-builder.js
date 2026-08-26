@@ -225,9 +225,22 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
 
   // ── the notation grid ────────────────────────────────────────────────────
   function draw() {
-    const { digits, pointAt, cycles } = plan;
+    const { digits, cycles } = plan;
     const solving = mode === "solve";
     const n = digits.length;
+    // BEFORE THE POINT IS MOVED, SHOW THE PROBLEM AS IT WAS WRITTEN. `plan`
+    // carries the WORKING numbers — the ones after the shift — so the tableau
+    // was drawing "6)37.8" for 3.78 ÷ 0.6 before the student had done anything,
+    // with the move already made and greyed (Joel, 2026-08-26: "the changes are
+    // already made (faded but made) … I want it to start with the original
+    // decimal division and change as we make the changes").
+    //
+    // The digits themselves never move — only the point does — so the original
+    // position is the working one minus the shift, and the divisor shows its
+    // authored text until the move is made.
+    const preShift = solving && plan.shift > 0 && !shiftDone;
+    const pointAt = preShift ? plan.pointAt - plan.shift : plan.pointAt;
+    const divisorText = preShift ? plan.divisorText : plan.workingDivisorText;
     const hasPoint = pointAt < n;
     const colOf = (i) => 3 + i + (hasPoint && i >= pointAt ? 1 : 0);
     const done = progress();
@@ -251,7 +264,7 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
       );
 
     // Bracket, vinculum, divisor, dividend.
-    cell(2, 1, plan.workingDivisorText, "ldl-divisor");
+    cell(2, 1, divisorText, "ldl-divisor");
     cell(2, 2, ")", "ldl-bracket");
     parts.push(
       `<span class="ldl-vinculum" style="grid-row:1;grid-column:2 / ${colOf(n - 1) + 1}"></span>`,

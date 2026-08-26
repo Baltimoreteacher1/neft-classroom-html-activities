@@ -120,10 +120,36 @@ function renderReview(host, state, ctx, config) {
   phaseHeading(
     host,
     1,
-    "🔁",
-    "Review",
-    "Day 2. Three things from yesterday, then a warm-up to get your hands moving.",
+    "⚡",
+    "Warm-Up",
+    "Day 2. Answer these first, then check what you need from yesterday below.",
   );
+  // A WARM-UP, not a single quick check: three autograded questions from
+  // yesterday's own practice set, easiest first, so every student gets in.
+  const warmup = config.reviewWarmup;
+  const questions = warmup && Array.isArray(warmup.questions) ? warmup.questions : [];
+  if (questions.length) {
+    const wcard = el("section", "card");
+    wcard.append(
+      el(
+        "div",
+        null,
+        `<h3 style="margin:0 0 4px; font-size:1.3rem; color:#0f172a;">⚡ ${esc(warmup.title || "Warm-Up")}</h3>
+         <p style="margin:0 0 14px; font-size:1rem; color:#475569;">${questions.length} questions from yesterday${warmup.prevLessonTitle ? ` — <strong>${esc(warmup.prevLessonTitle)}</strong>` : ""}. Autograded.</p>`,
+      ),
+    );
+    questions.forEach((q, i) => {
+      const slot = el("div");
+      slot.style.marginBottom = "14px";
+      wcard.append(slot);
+      renderComponent(slot, q, () => {}, {
+        number: i + 1,
+        total: questions.length,
+        tier: "onLevel",
+      });
+    });
+    host.append(wcard);
+  }
 
   // The objectives, POSTED in full — the same two cards the 🎯 Objectives page
   // shows, because on day 2 the goal has not changed and a student walking in
@@ -203,33 +229,6 @@ function renderReview(host, state, ctx, config) {
       ),
     );
     host.append(vcard);
-  }
-
-  // A WARM-UP, not a single quick check: three autograded questions from
-  // yesterday's own practice set, easiest first, so every student gets in.
-  const warmup = config.reviewWarmup;
-  const questions = warmup && Array.isArray(warmup.questions) ? warmup.questions : [];
-  if (questions.length) {
-    const wcard = el("section", "card");
-    wcard.append(
-      el(
-        "div",
-        null,
-        `<h3 style="margin:0 0 4px; font-size:1.3rem; color:#0f172a;">⚡ ${esc(warmup.title || "Warm-Up")}</h3>
-         <p style="margin:0 0 14px; font-size:1rem; color:#475569;">${questions.length} questions from yesterday${warmup.prevLessonTitle ? ` — <strong>${esc(warmup.prevLessonTitle)}</strong>` : ""}. Autograded.</p>`,
-      ),
-    );
-    questions.forEach((q, i) => {
-      const slot = el("div");
-      slot.style.marginBottom = "14px";
-      wcard.append(slot);
-      renderComponent(slot, q, () => {}, {
-        number: i + 1,
-        total: questions.length,
-        tier: "onLevel",
-      });
-    });
-    host.append(wcard);
   }
 
   host.append(advanceButton("See today's problem 📋 →", state, ctx, 0));
@@ -620,7 +619,7 @@ export function bootPartTwo(config) {
   createApp({
     ...config,
     phaseMeta: [
-      { name: "Review", icon: "🔁" },
+      { name: "Warm-Up", icon: "⚡" },
       { name: "Today's Problem", icon: "📋" },
       { name: "Group Work", icon: "👥" },
     ],
