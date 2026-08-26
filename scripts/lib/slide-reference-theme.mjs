@@ -985,38 +985,6 @@ export const REFERENCE_CSS = `
       padding: 10px 12px;
       margin: 8px 0;
     }
-    /* Apply — the Reveal word problem beside the figure it was drawn for.
-       Three tracks so the picture never crowds the problem or the workspace;
-       drops to a single column when a lesson's Apply task has no artwork. */
-    .apply-layout {
-      display: grid;
-      grid-template-columns: 1.15fr 1fr 0.85fr;
-      gap: 10px;
-      align-items: stretch;
-    }
-    .apply-layout > .slide-card { display: flex; flex-direction: column; }
-    .apply-layout-solo { grid-template-columns: 1.6fr 1fr; }
-    .apply-text { font-size: 11.5px; line-height: 1.5; margin: 6px 0 0; }
-    .apply-question {
-      font-size: 11.5px;
-      line-height: 1.5;
-      margin: 8px 0 0;
-      padding-top: 8px;
-      border-top: 1px dashed rgba(28, 46, 66, 0.25);
-    }
-    .apply-visual { display: flex; align-items: center; justify-content: center; }
-    .apply-figure { margin: 0; text-align: center; }
-    .apply-figure img {
-      max-width: 100%;
-      max-height: 250px;
-      width: auto;
-      border-radius: 8px;
-      border: 1px solid #d8e3ea;
-      background: white;
-    }
-    .apply-sample { margin-top: 8px; font-size: 10px; }
-    .apply-sample summary { cursor: pointer; font-weight: 700; color: var(--ref-navy); }
-    .apply-sample p { margin: 6px 0 0; line-height: 1.45; }
 
     /* Lined inputs — notebook feel */
     .ref-lined-input, .ref-main-panel .slide-input-placeholder {

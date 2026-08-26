@@ -1436,26 +1436,10 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
     });
   }
 
-  // ⑤ Apply it — a real-world application problem (cfg.revealWordProblem) with
-  // an earned sample-answer reveal, so the skill lands in a concrete situation
-  // right after the gradual-release ladder.
-  const apply = cfg.revealWordProblem;
-  if (apply && apply.text) {
-    const applyTitle = (apply.title || "").replace(/^apply:\s*/i, "").trim();
-    stages.push({
-      id: "apply",
-      accent: "apply",
-      icon: "🌍",
-      label: "Apply it",
-      sub: "Use the same math in a real situation",
-      body: `${applyTitle ? `<p class="li-lead"><strong>${esc(applyTitle)}</strong></p>` : ""}
-        <p class="li-problem-q">${popoverize(apply.text, vocab)}</p>
-        ${apply.image ? `<figure class="li-figure"><img src="${esc(apply.image)}" alt="${esc(applyTitle || "Figure for this problem")}" loading="lazy" decoding="async" /></figure>` : ""}
-        ${liWork("apply", "Show your work")}
-        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field data-nt-key="apply-answer" placeholder="Type your answer" /></p>
-        ${apply.sampleAnswer ? `<details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Sample answer:</strong> ${esc(apply.sampleAnswer)}</div></details>` : ""}`,
-    });
-  }
+  // ⑤ Apply it is NOT a stage on this page. The Reveal Apply problem is day 2's
+  // whole lesson now (/lessons/<id>-part2/ — the word problem plus four named
+  // group jobs), so rendering it here as well would teach it twice and leave
+  // Part 2 repeating the end of yesterday. `git show 151111e03` has the stage.
 
   // ⑥ Turn & Talk — a discussion prompt with sentence starters (EN + ES) and a
   // word bank so every learner, including ESOL, can talk the math through with a

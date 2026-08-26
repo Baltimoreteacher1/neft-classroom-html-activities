@@ -469,8 +469,14 @@ await t("a selected lesson resolves its own routes, and only real ones", async (
   const expectedVariants = [
     ...(MANIFEST.smallGroups || []).filter((g) => g.parent === "5-3"),
     ...(MANIFEST.catchUps || []).filter((c) => c.parent === "5-3"),
+    /* Part 2 is day 2 of this same lesson, not a variant, but it is derived
+     * here for the same reason: a Part 2 that exists in the manifest and is not
+     * offered in the picker is a page the teacher cannot reach from the surface
+     * they actually open. */
+    ...(MANIFEST.partTwo || []).filter((p) => p.parent === "5-3"),
   ].flatMap((v) => Object.values(v.resources));
   for (const href of expectedVariants) assert.ok(hrefs.includes(href), `variant ${href} missing`);
+  assert.ok(hrefs.includes("/lessons/5-3-part2/"), "Part 2 is not offered in the expansion");
 
   /* EVERY part the manifest carries for this lesson is offered. Derived from the
    * manifest rather than listed here, so adding a resource to the curriculum

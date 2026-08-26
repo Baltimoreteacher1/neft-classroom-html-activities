@@ -853,45 +853,6 @@ function buildSummarizeSlide(title, keyIdea, _vocabList, contentObj) {
     )}`;
 }
 
-/**
- * Apply — the Reveal deck's culminating word problem, figure and all. The text,
- * title and artwork come from `config.revealWordProblem`, which is sourced from
- * the official Reveal "Apply: <name>" slide, so the picture on screen always
- * belongs to the numbers in the problem. Slide is skipped when a lesson has no
- * authored Apply problem.
- */
-function buildApplySlide(wp, themeEmoji, themeName, contentObj) {
-  const title =
-    String(wp.title || "")
-      .replace(/^apply:\s*/i, "")
-      .trim() || "Apply";
-  const text = String(wp.text || "");
-  // Reveal writes the ask as a trailing "Question: ..." line. Splitting it out
-  // lets the question sit in its own emphasised block instead of being buried.
-  const qm = text.match(/(^|\n)\s*Question\s*\d*\s*:\s*([\s\S]+)$/i);
-  const body = (qm ? text.slice(0, qm.index) : text).trim();
-  const question = qm ? qm[2].trim() : "";
-  const figure = wp.image
-    ? `<figure class="apply-figure"><img src="${esc(wp.image)}" alt="${esc(wp.imageAlt || title)}" loading="lazy" decoding="async" /></figure>`
-    : "";
-  return `
-    ${learningHeader(contentObj)}
-    ${slideHeader(themeEmoji, themeName, `Apply: ${title}`)}
-    <div class="apply-layout${figure ? "" : " apply-layout-solo"}">
-      <div class="slide-card apply-problem">
-        <span class="slide-badge badge-amber">🌍 APPLY</span>
-        <p class="apply-text">${esc(body)}${readAloudBtn(body, { label: "Read the problem aloud" })}</p>
-        ${question ? `<p class="apply-question"><strong>Question:</strong> ${esc(question)}${readAloudBtn(question, { label: "Read the question aloud" })}</p>` : ""}
-      </div>
-      ${figure ? `<div class="slide-card apply-visual">${figure}</div>` : ""}
-      <div class="slide-card card-teal-light apply-work">
-        <h2 class="card-title">✍️ Show your work</h2>
-        <textarea class="ref-lined-input" rows="3" placeholder="Plan, solve, then explain how you know..."></textarea>
-        ${wp.sampleAnswer ? `<details class="apply-sample"><summary>Sample answer (teacher)</summary><p>${esc(wp.sampleAnswer)}</p></details>` : ""}
-      </div>
-    </div>`;
-}
-
 function buildGoalTrackerSlide(contentObj, _themeEmoji, _themeName) {
   const levels = [
     { num: 1, label: "Not Yet", desc: "I need more help. The idea does not make sense to me yet." },
@@ -1723,17 +1684,17 @@ export function buildTptSlideDeckV3(ctx) {
     );
   }
 
-  const applyProblem = data.revealWordProblem;
-  if (applyProblem && (applyProblem.text || applyProblem.image)) {
-    add("🌍 Apply", "Apply", buildApplySlide(applyProblem, themeEmoji, themeName, contentObj), {
-      type: "apply",
-      section: "connect",
-      slideTitle: "Apply",
-      notes:
-        "The Reveal Apply task. Give students quiet think time first, then partner talk, then share strategies.",
-    });
-    maybeCfu("Thumbs up when you have a plan for the Apply problem.");
-  }
+  // THE APPLY SLIDE IS NOT IN THIS DECK. This is the day-1 deck, and the Reveal
+  // Apply task is now day 2's whole lesson at /lessons/<id>-part2/ — the
+  // culminating word problem plus four named group jobs, presented from the page
+  // itself (Present Mode). Rendering it here too would teach it twice and make
+  // Part 2 a repeat of the last five minutes of yesterday.
+  //
+  // The slide renderer that used to live here (`buildApplySlide`, with the
+  // `.apply-*` rules in slide-reference-theme.mjs) is deleted rather than left
+  // unreachable — an unused branch that still looks wired is how a deck starts
+  // showing a problem again by accident. `git show 151111e03` has it if a Part 2
+  // deck ever wants it back.
 
   // Section: Closure
   add("✅ Close", "Closure Section", buildSectionDivider("CLOSURE &amp; REFLECT", 8, "✅"), {

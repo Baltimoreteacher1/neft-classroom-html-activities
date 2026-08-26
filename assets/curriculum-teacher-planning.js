@@ -626,6 +626,19 @@
         addVariant(c, "Catch-up", "Catch-up");
       });
 
+      /* Part 2 — the second day of the SAME lesson, where the Reveal Apply word
+       * problem is now taught. It is deliberately NOT a variant: a variant is a
+       * different version of the lesson for a different group of students, and
+       * Part 2 is the same lesson for the same students on the next day. So it
+       * is offered in the top action row beside "Open whole-group lesson"
+       * rather than under the "Small-group lessons" label, which would tell a
+       * teacher the opposite of what is true. */
+      var partTwoByParent = Object.create(null);
+      (manifest.partTwo || []).forEach(function (p2) {
+        if (!p2 || !p2.parent || !p2.resources || !p2.resources.lesson) return;
+        partTwoByParent[p2.parent] = p2;
+      });
+
       /* End-of-unit culminating projects, keyed by unit. They are offered at the
        * BOTTOM of the Lesson dropdown (see lessonsFor) and open through the same
        * expansion as a lesson, so a teacher reaches the project the same way
@@ -862,6 +875,18 @@
          * by lesson id, and `?lesson=unit-1-project` resolves to nothing there.
          * A button that opens an empty surface is the dead button this file
          * already refuses to render elsewhere. */
+        /* Day 2 of this lesson, when it has one. 76 of the 84 core lessons do —
+         * the 8 without are the "Math is…" mindset lessons whose Apply is a
+         * reflection prompt, and they get no button rather than a dead one. */
+        var p2 = !isProject ? partTwoByParent[lesson.id] : null;
+        if (p2) {
+          var p2a = document.createElement("a");
+          p2a.className = "tws-btn ghost";
+          p2a.href = p2.resources.lesson;
+          p2a.textContent = "Open Part 2 · Apply";
+          row.appendChild(p2a);
+        }
+
         if (!isProject) {
           var supports = document.createElement("a");
           supports.className = "tws-btn ghost";
